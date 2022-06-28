@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345164AbiF1LBR (ORCPT
+        id S1344435AbiF1LBV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
+        Tue, 28 Jun 2022 07:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345133AbiF1LA0 (ORCPT
+        with ESMTP id S1345146AbiF1LA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 07:00:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2593C29820
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:00:24 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5022610A
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:00:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7A0C61952
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:00:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42CD8C3411D;
-        Tue, 28 Jun 2022 11:00:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C8CBB81C53
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30AC5C341CA;
+        Tue, 28 Jun 2022 11:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656414023;
-        bh=Vx2HiSQOnAqnP7AFygjo9EjJfyEX9Om6OUx56ll06/4=;
+        s=k20201202; t=1656414020;
+        bh=DdP1+mRFirhHeoMbIBd/dAxi5rsoEvtggJcRVbZU3kg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFDDcoG91844daZ3JKhMTcpbVaakVd5hw+RoV115vjKB7jFxgMH8ORzYf7cDrIKYy
-         nkhHSo6UpxHQrawqy662NwjaxwuSLtBUD3rmivdL80Ty3C1cpknSPRxgZc8TEhHYXd
-         3UKjJrN4MmAFbL1q36/0hhHj8bMoBngFmBvDZUND3ky0nePrU0PT8dkWURb+dvHWq1
-         M/T3NXxc+GYQuBc1WDgmbt3erPzciDsNbEHLCOQC6ieY3b003E3mEjV+6QmCNn9Oaz
-         ajN+GFOn8AnoE/YhluCt+tA7Cx7kU+jjTUOkKmxs486nsBKML/JmQiGFro6H39xnjs
-         WV4qstr6NnNOQ==
+        b=kLvkflElUSKvU1hiftWkKMu7J+MZMIcFS/a6Omjgiy8G0UVNrEdqq+iNBgd+Qi1Fo
+         20/6VGqe+6Gvmkz82ZzidLADtWnLb6+KHW2VdtphUB2ExEnqK4U5W5AQub+D5NE+v+
+         L+6FJHxnDEbY3KrPObmBFOv9pJY7ju72G799Pp/KcBpWmvrZ01QkNB89UdWI1h9ygZ
+         PENRxLdJ9AvDXW6kX8qEh/+VoRNsKYjK0I4geDEkLD5kqSdfV1apS5rj5QfAvGH13g
+         YsM3qRH6kytBwdl8CmgcsX6ZsoXX2M3IdfYBYA2bVlnx3q4RXuMm/GdgfXmxlRBjG0
+         ZJwUgiv/QrPrg==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org
-Subject: [PATCH v2 10/12] habanalabs: add gaudi2 wait-for-CS support
-Date:   Tue, 28 Jun 2022 13:59:56 +0300
-Message-Id: <20220628105958.1254875-11-ogabbay@kernel.org>
+Cc:     gregkh@linuxfoundation.org, Ofir Bitton <obitton@habana.ai>
+Subject: [PATCH v2 08/12] habanalabs/gaudi2: add gaudi2 security module
+Date:   Tue, 28 Jun 2022 13:59:54 +0300
+Message-Id: <20220628105958.1254875-9-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220628105958.1254875-1-ogabbay@kernel.org>
 References: <20220628105958.1254875-1-ogabbay@kernel.org>
@@ -48,774 +48,3951 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In Gaudi2 we moved to a different wait for command submission
-completion model. Instead of receiving interrupt only on external
-queues, we use the device's sync manager to notify us when the
-entire command submission finishes.
+From: Ofir Bitton <obitton@habana.ai>
 
-This enables us to remove the categorization of queues to external
-and internal, and treat each queue equally, without the need to parse
-and patch any command buffer.
+Use the generic security module to block all registers in the ASIC and
+then open only those that are needed to be accessed by the user.
 
-This change also requires refactoring to the IRQ handling of
-CS completions.
-
+Signed-off-by: Ofir Bitton <obitton@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
-Changes in v2:
- - Remove unused function and set some functions to be static
+ drivers/misc/habanalabs/gaudi2/Makefile       |    2 +-
+ drivers/misc/habanalabs/gaudi2/gaudi2.c       |   16 +-
+ drivers/misc/habanalabs/gaudi2/gaudi2P.h      |    2 +
+ .../misc/habanalabs/gaudi2/gaudi2_security.c  | 3849 +++++++++++++++++
+ 4 files changed, 3867 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/misc/habanalabs/gaudi2/gaudi2_security.c
 
- .../habanalabs/common/command_submission.c    | 118 +++++++++++-------
- drivers/misc/habanalabs/common/debugfs.c      |  21 ++--
- drivers/misc/habanalabs/common/device.c       |  48 ++++---
- drivers/misc/habanalabs/common/habanalabs.h   |   6 +
- drivers/misc/habanalabs/common/hw_queue.c     |  10 ++
- drivers/misc/habanalabs/common/irq.c          |  94 ++++++++++----
- drivers/misc/habanalabs/common/security.c     |   2 +-
- 7 files changed, 210 insertions(+), 89 deletions(-)
-
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index 3805c6d6b65c..e91ca31d4930 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -12,7 +12,7 @@
- #include <linux/slab.h>
+diff --git a/drivers/misc/habanalabs/gaudi2/Makefile b/drivers/misc/habanalabs/gaudi2/Makefile
+index e4857daa1253..9fbd905166a2 100644
+--- a/drivers/misc/habanalabs/gaudi2/Makefile
++++ b/drivers/misc/habanalabs/gaudi2/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
  
- #define HL_CS_FLAGS_TYPE_MASK	(HL_CS_FLAGS_SIGNAL | HL_CS_FLAGS_WAIT | \
--				HL_CS_FLAGS_COLLECTIVE_WAIT)
-+					HL_CS_FLAGS_COLLECTIVE_WAIT)
+-HL_GAUDI2_FILES := gaudi2/gaudi2.o
++HL_GAUDI2_FILES := gaudi2/gaudi2.o gaudi2/gaudi2_security.o \
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index 2224d1459e89..0c45954580ae 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -2696,6 +2696,7 @@ static int gaudi2_late_init(struct hl_device *hdev)
  
- #define MAX_TS_ITER_NUM 10
+ 	gaudi2_init_arcs(hdev);
+ 	gaudi2_scrub_arcs_dccm(hdev);
++	gaudi2_init_security(hdev);
  
-@@ -29,8 +29,7 @@ enum hl_cs_wait_status {
- };
+ 	return 0;
  
- static void job_wq_completion(struct work_struct *work);
--static int _hl_cs_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
--				u64 timeout_us, u64 seq,
-+static int _hl_cs_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx, u64 timeout_us, u64 seq,
- 				enum hl_cs_wait_status *status, s64 *timestamp);
- static void cs_do_release(struct kref *ref);
- 
-@@ -249,7 +248,7 @@ static void cs_job_do_release(struct kref *ref)
- 	kfree(job);
- }
- 
--static void cs_job_put(struct hl_cs_job *job)
-+static void hl_cs_job_put(struct hl_cs_job *job)
- {
- 	kref_put(&job->refcount, cs_job_do_release);
- }
-@@ -344,7 +343,7 @@ static int cs_parser(struct hl_fpriv *hpriv, struct hl_cs_job *job)
- 	return rc;
- }
- 
--static void complete_job(struct hl_device *hdev, struct hl_cs_job *job)
-+static void hl_complete_job(struct hl_device *hdev, struct hl_cs_job *job)
- {
- 	struct hl_cs *cs = job->cs;
- 
-@@ -363,12 +362,12 @@ static void complete_job(struct hl_device *hdev, struct hl_cs_job *job)
- 
- 	/* For H/W queue jobs, if a user CB was allocated by driver and MMU is
- 	 * enabled, the user CB isn't released in cs_parser() and thus should be
--	 * released here.
--	 * This is also true for INT queues jobs which were allocated by driver
-+	 * released here. This is also true for INT queues jobs which were
-+	 * allocated by driver.
- 	 */
--	if (job->is_kernel_allocated_cb &&
-+	if ((job->is_kernel_allocated_cb &&
- 		((job->queue_type == QUEUE_TYPE_HW && hdev->mmu_enable) ||
--				job->queue_type == QUEUE_TYPE_INT)) {
-+				job->queue_type == QUEUE_TYPE_INT))) {
- 		atomic_dec(&job->user_cb->cs_cnt);
- 		hl_cb_put(job->user_cb);
- 	}
-@@ -396,11 +395,10 @@ static void complete_job(struct hl_device *hdev, struct hl_cs_job *job)
- 	 * flow by calling 'hl_hw_queue_update_ci'.
- 	 */
- 	if (cs_needs_completion(cs) &&
--		(job->queue_type == QUEUE_TYPE_EXT ||
--			job->queue_type == QUEUE_TYPE_HW))
-+		(job->queue_type == QUEUE_TYPE_EXT || job->queue_type == QUEUE_TYPE_HW))
- 		cs_put(cs);
- 
--	cs_job_put(job);
-+	hl_cs_job_put(job);
- }
- 
- /*
-@@ -690,7 +688,7 @@ static void cs_do_release(struct kref *ref)
- 	 * still holds a pointer to them (but no reference).
- 	 */
- 	list_for_each_entry_safe(job, tmp, &cs->job_list, cs_node)
--		complete_job(hdev, job);
-+		hl_complete_job(hdev, job);
- 
- 	if (!cs->submitted) {
- 		/*
-@@ -756,6 +754,7 @@ static void cs_do_release(struct kref *ref)
- 	 */
- 	hl_debugfs_remove_cs(cs);
- 
-+	hdev->shadow_cs_queue[cs->sequence & (hdev->asic_prop.max_pending_cs - 1)] = NULL;
- 
- 	/* We need to mark an error for not submitted because in that case
- 	 * the hl fence release flow is different. Mainly, we don't need
-@@ -1007,7 +1006,7 @@ static void cs_rollback(struct hl_device *hdev, struct hl_cs *cs)
- 	staged_cs_put(hdev, cs);
- 
- 	list_for_each_entry_safe(job, tmp, &cs->job_list, cs_node)
--		complete_job(hdev, job);
-+		hl_complete_job(hdev, job);
- }
- 
- void hl_cs_rollback_all(struct hl_device *hdev, bool skip_wq_flush)
-@@ -1024,6 +1023,7 @@ void hl_cs_rollback_all(struct hl_device *hdev, bool skip_wq_flush)
- 		for (i = 0 ; i < hdev->asic_prop.completion_queues_count ; i++)
- 			flush_workqueue(hdev->cq_wq[i]);
- 
-+		flush_workqueue(hdev->cs_cmplt_wq);
+@@ -5176,6 +5177,17 @@ static void gaudi2_execute_soft_reset(struct hl_device *hdev, u32 reset_sleep_ms
+ 		return;
  	}
  
- 	/* Make sure we don't have leftovers in the CS mirror list */
-@@ -1031,7 +1031,7 @@ void hl_cs_rollback_all(struct hl_device *hdev, bool skip_wq_flush)
- 		cs_get(cs);
- 		cs->aborted = true;
- 		dev_warn_ratelimited(hdev->dev, "Killing CS %d.%llu\n",
--				cs->ctx->asid, cs->sequence);
-+					cs->ctx->asid, cs->sequence);
- 		cs_rollback(hdev, cs);
- 		cs_put(cs);
- 	}
-@@ -1092,7 +1092,17 @@ static void job_wq_completion(struct work_struct *work)
- 	struct hl_device *hdev = cs->ctx->hdev;
++	/* Block access to engines, QMANs and SM during reset, these
++	 * RRs will be reconfigured after soft reset.
++	 * PCIE_MSIX is left unsecured to allow NIC packets processing during the reset.
++	 */
++	gaudi2_write_rr_to_all_lbw_rtrs(hdev, RR_TYPE_LONG, NUM_LONG_LBW_RR - 1,
++					mmDCORE0_TPC0_QM_DCCM_BASE, mmPCIE_MSIX_BASE);
++
++	gaudi2_write_rr_to_all_lbw_rtrs(hdev, RR_TYPE_LONG, NUM_LONG_LBW_RR - 2,
++				mmPCIE_MSIX_BASE + HL_BLOCK_SIZE,
++				mmPCIE_VDEC1_MSTR_IF_RR_SHRD_HBW_BASE + HL_BLOCK_SIZE);
++
+ 	WREG32(mmPSOC_RESET_CONF_SOFT_RST, 1);
+ }
  
- 	/* job is no longer needed */
--	complete_job(hdev, job);
-+	hl_complete_job(hdev, job);
+@@ -5954,6 +5966,7 @@ static int gaudi2_non_hard_reset_late_init(struct hl_device *hdev)
+ 	 */
+ 	gaudi2_init_arcs(hdev);
+ 	gaudi2_scrub_arcs_dccm(hdev);
++	gaudi2_init_security(hdev);
+ 
+ 	/* Unmask all IRQs since some could have been received during the soft reset */
+ 	irq_arr_size = gaudi2->num_of_valid_hw_events * sizeof(gaudi2->hw_events[0]);
+@@ -9727,12 +9740,13 @@ static const struct hl_asic_funcs gaudi2_funcs = {
+ 	.reset_sob = gaudi2_reset_sob,
+ 	.reset_sob_group = gaudi2_reset_sob_group,
+ 	.get_device_time = gaudi2_get_device_time,
+-	.pb_print_security_errors = NULL,
++	.pb_print_security_errors = gaudi2_pb_print_security_errors,
+ 	.collective_wait_init_cs = gaudi2_collective_wait_init_cs,
+ 	.collective_wait_create_jobs = gaudi2_collective_wait_create_jobs,
+ 	.get_dec_base_addr = gaudi2_get_dec_base_addr,
+ 	.scramble_addr = gaudi2_mmu_scramble_addr,
+ 	.descramble_addr = gaudi2_mmu_descramble_addr,
++	.ack_protection_bits_errors = gaudi2_ack_protection_bits_errors,
+ 	.get_hw_block_id = gaudi2_get_hw_block_id,
+ 	.hw_block_mmap = gaudi2_block_mmap,
+ 	.enable_events_from_fw = gaudi2_enable_events_from_fw,
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2P.h b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
+index e5ba1fdac61a..dc0094a2a911 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2P.h
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
+@@ -530,5 +530,7 @@ void gaudi2_write_rr_to_all_lbw_rtrs(struct hl_device *hdev, u8 rr_type, u32 rr_
+ 					u64 max_val);
+ void gaudi2_pb_print_security_errors(struct hl_device *hdev, u32 block_addr, u32 cause,
+ 					u32 offended_addr);
++int gaudi2_init_security(struct hl_device *hdev);
++void gaudi2_ack_protection_bits_errors(struct hl_device *hdev);
+ 
+ #endif /* GAUDI2P_H_ */
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2_security.c b/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
+new file mode 100644
+index 000000000000..afca8352a223
+--- /dev/null
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
+@@ -0,0 +1,3849 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * Copyright 2020-2022 HabanaLabs, Ltd.
++ * All Rights Reserved.
++ */
++
++#include "gaudi2P.h"
++#include "../include/gaudi2/asic_reg/gaudi2_regs.h"
++
++#define UNSET_GLBL_SEC_BIT(array, b) ((array)[((b) / 32)] |= (1 << ((b) % 32)))
++
++#define SPECIAL_GLBL_ERR_CAUSE_APB_PRIV_RD PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_APB_PRIV_RD_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_APB_SEC_RD PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_APB_SEC_RD_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_APB_PRIV_WR PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_APB_PRIV_WR_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_APB_SEC_WR PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_APB_SEC_WR_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_EXT_SEC_WR PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_EXT_SEC_WR_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_APB_UNMAPPED_RD \
++		PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_APB_UNMAPPED_RD_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_APB_UNMAPPED_WR \
++		PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_APB_UNMAPPED_WR_MASK
++#define SPECIAL_GLBL_ERR_CAUSE_EXT_UNMAPPED_WR \
++		PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_EXT_UNMAPPED_WR_MASK
++
++/* LBW RR */
++#define SFT_NUM_OF_LBW_RTR		1
++#define SFT_LBW_RTR_OFFSET		0
++#define RR_LBW_LONG_MASK		0x7FFFFFFull
++#define RR_LBW_SHORT_MASK		0x7FFF000ull
++
++/* HBW RR */
++#define SFT_NUM_OF_HBW_RTR		2
++#define RR_HBW_SHORT_LO_MASK		0xFFFFFFFF000ull
++#define RR_HBW_SHORT_HI_MASK		0xF00000000000ull
++#define RR_HBW_LONG_LO_MASK		0xFFFFFFFF000ull
++#define RR_HBW_LONG_HI_MASK		0xFFFFF00000000000ull
++
++struct rr_config {
++	u64 min;
++	u64 max;
++	u32 index;
++	u8 type;
++};
++
++struct gaudi2_atypical_bp_blocks {
++	u32 mm_block_base_addr;
++	u32 block_size;
++	u32 glbl_sec_offset;
++	u32 glbl_sec_length;
++};
++
++static const struct gaudi2_atypical_bp_blocks gaudi2_pb_dcr0_sm_objs = {
++	mmDCORE0_SYNC_MNGR_OBJS_BASE,
++	128 * 1024,
++	SM_OBJS_PROT_BITS_OFFS,
++	640
++};
++
++static const u32 gaudi2_pb_sft0[] = {
++	mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE,
++	mmSFT0_HBW_RTR_IF0_RTR_H3_BASE,
++	mmSFT0_HBW_RTR_IF0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmSFT0_HBW_RTR_IF0_ADDR_DEC_HBW_BASE,
++	mmSFT0_HBW_RTR_IF1_RTR_CTRL_BASE,
++	mmSFT0_HBW_RTR_IF1_RTR_H3_BASE,
++	mmSFT0_HBW_RTR_IF1_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmSFT0_HBW_RTR_IF1_ADDR_DEC_HBW_BASE,
++	mmSFT0_LBW_RTR_IF_RTR_CTRL_BASE,
++	mmSFT0_LBW_RTR_IF_RTR_H3_BASE,
++	mmSFT0_LBW_RTR_IF_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmSFT0_LBW_RTR_IF_ADDR_DEC_HBW_BASE,
++	mmSFT0_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_hif[] = {
++	mmDCORE0_HIF0_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_rtr0[] = {
++	mmDCORE0_RTR0_CTRL_BASE,
++	mmDCORE0_RTR0_H3_BASE,
++	mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmDCORE0_RTR0_ADD_DEC_HBW_BASE,
++	mmDCORE0_RTR0_BASE,
++	mmDCORE0_RTR0_DBG_ADDR_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_hmmu0[] = {
++	mmDCORE0_HMMU0_MMU_BASE,
++	mmDCORE0_HMMU0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmDCORE0_HMMU0_SCRAMB_OUT_BASE,
++	mmDCORE0_HMMU0_STLB_BASE,
++};
++
++static const u32 gaudi2_pb_cpu_if[] = {
++	mmCPU_IF_BASE,
++};
++
++static const u32 gaudi2_pb_cpu[] = {
++	mmCPU_CA53_CFG_BASE,
++	mmCPU_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_kdma[] = {
++	mmARC_FARM_KDMA_BASE,
++	mmARC_FARM_KDMA_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_pdma0[] = {
++	mmPDMA0_CORE_BASE,
++	mmPDMA0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPDMA0_QM_BASE,
++};
++
++static const u32 gaudi2_pb_pdma0_arc[] = {
++	mmPDMA0_QM_ARC_AUX_BASE,
++};
++
++static const struct range gaudi2_pb_pdma0_arc_unsecured_regs[] = {
++	{mmPDMA0_QM_ARC_AUX_RUN_HALT_REQ, mmPDMA0_QM_ARC_AUX_RUN_HALT_ACK},
++	{mmPDMA0_QM_ARC_AUX_CLUSTER_NUM, mmPDMA0_QM_ARC_AUX_WAKE_UP_EVENT},
++	{mmPDMA0_QM_ARC_AUX_ARC_RST_REQ, mmPDMA0_QM_ARC_AUX_CID_OFFSET_7},
++	{mmPDMA0_QM_ARC_AUX_SCRATCHPAD_0, mmPDMA0_QM_ARC_AUX_INFLIGHT_LBU_RD_CNT},
++	{mmPDMA0_QM_ARC_AUX_CBU_EARLY_BRESP_EN, mmPDMA0_QM_ARC_AUX_CBU_EARLY_BRESP_EN},
++	{mmPDMA0_QM_ARC_AUX_LBU_EARLY_BRESP_EN, mmPDMA0_QM_ARC_AUX_LBU_EARLY_BRESP_EN},
++	{mmPDMA0_QM_ARC_AUX_DCCM_QUEUE_BASE_ADDR_0, mmPDMA0_QM_ARC_AUX_DCCM_QUEUE_ALERT_MSG},
++	{mmPDMA0_QM_ARC_AUX_DCCM_Q_PUSH_FIFO_CNT, mmPDMA0_QM_ARC_AUX_QMAN_ARC_CQ_SHADOW_CI},
++	{mmPDMA0_QM_ARC_AUX_ARC_AXI_ORDERING_WR_IF_CNT, mmPDMA0_QM_ARC_AUX_MME_ARC_UPPER_DCCM_EN},
++};
++
++static const u32 gaudi2_pb_pdma0_unsecured_regs[] = {
++	mmPDMA0_CORE_CTX_AXUSER_HB_WR_REDUCTION,
++	mmPDMA0_CORE_CTX_WR_COMP_ADDR_HI,
++	mmPDMA0_CORE_CTX_WR_COMP_ADDR_LO,
++	mmPDMA0_CORE_CTX_WR_COMP_WDATA,
++	mmPDMA0_CORE_CTX_SRC_BASE_LO,
++	mmPDMA0_CORE_CTX_SRC_BASE_HI,
++	mmPDMA0_CORE_CTX_DST_BASE_LO,
++	mmPDMA0_CORE_CTX_DST_BASE_HI,
++	mmPDMA0_CORE_CTX_SRC_TSIZE_0,
++	mmPDMA0_CORE_CTX_SRC_TSIZE_1,
++	mmPDMA0_CORE_CTX_SRC_TSIZE_2,
++	mmPDMA0_CORE_CTX_SRC_TSIZE_3,
++	mmPDMA0_CORE_CTX_SRC_TSIZE_4,
++	mmPDMA0_CORE_CTX_SRC_STRIDE_1,
++	mmPDMA0_CORE_CTX_SRC_STRIDE_2,
++	mmPDMA0_CORE_CTX_SRC_STRIDE_3,
++	mmPDMA0_CORE_CTX_SRC_STRIDE_4,
++	mmPDMA0_CORE_CTX_SRC_OFFSET_LO,
++	mmPDMA0_CORE_CTX_SRC_OFFSET_HI,
++	mmPDMA0_CORE_CTX_DST_TSIZE_0,
++	mmPDMA0_CORE_CTX_DST_TSIZE_1,
++	mmPDMA0_CORE_CTX_DST_TSIZE_2,
++	mmPDMA0_CORE_CTX_DST_TSIZE_3,
++	mmPDMA0_CORE_CTX_DST_TSIZE_4,
++	mmPDMA0_CORE_CTX_DST_STRIDE_1,
++	mmPDMA0_CORE_CTX_DST_STRIDE_2,
++	mmPDMA0_CORE_CTX_DST_STRIDE_3,
++	mmPDMA0_CORE_CTX_DST_STRIDE_4,
++	mmPDMA0_CORE_CTX_DST_OFFSET_LO,
++	mmPDMA0_CORE_CTX_DST_OFFSET_HI,
++	mmPDMA0_CORE_CTX_COMMIT,
++	mmPDMA0_CORE_CTX_CTRL,
++	mmPDMA0_CORE_CTX_TE_NUMROWS,
++	mmPDMA0_CORE_CTX_IDX,
++	mmPDMA0_CORE_CTX_IDX_INC,
++	mmPDMA0_QM_CQ_CFG0_0,
++	mmPDMA0_QM_CQ_CFG0_1,
++	mmPDMA0_QM_CQ_CFG0_2,
++	mmPDMA0_QM_CQ_CFG0_3,
++	mmPDMA0_QM_CQ_CFG0_4,
++	mmPDMA0_QM_CP_FENCE0_RDATA_0,
++	mmPDMA0_QM_CP_FENCE0_RDATA_1,
++	mmPDMA0_QM_CP_FENCE0_RDATA_2,
++	mmPDMA0_QM_CP_FENCE0_RDATA_3,
++	mmPDMA0_QM_CP_FENCE0_RDATA_4,
++	mmPDMA0_QM_CP_FENCE1_RDATA_0,
++	mmPDMA0_QM_CP_FENCE1_RDATA_1,
++	mmPDMA0_QM_CP_FENCE1_RDATA_2,
++	mmPDMA0_QM_CP_FENCE1_RDATA_3,
++	mmPDMA0_QM_CP_FENCE1_RDATA_4,
++	mmPDMA0_QM_CP_FENCE2_RDATA_0,
++	mmPDMA0_QM_CP_FENCE2_RDATA_1,
++	mmPDMA0_QM_CP_FENCE2_RDATA_2,
++	mmPDMA0_QM_CP_FENCE2_RDATA_3,
++	mmPDMA0_QM_CP_FENCE2_RDATA_4,
++	mmPDMA0_QM_CP_FENCE3_RDATA_0,
++	mmPDMA0_QM_CP_FENCE3_RDATA_1,
++	mmPDMA0_QM_CP_FENCE3_RDATA_2,
++	mmPDMA0_QM_CP_FENCE3_RDATA_3,
++	mmPDMA0_QM_CP_FENCE3_RDATA_4,
++	mmPDMA0_QM_CP_FENCE0_CNT_0,
++	mmPDMA0_QM_CP_FENCE0_CNT_1,
++	mmPDMA0_QM_CP_FENCE0_CNT_2,
++	mmPDMA0_QM_CP_FENCE0_CNT_3,
++	mmPDMA0_QM_CP_FENCE0_CNT_4,
++	mmPDMA0_QM_CP_FENCE1_CNT_0,
++	mmPDMA0_QM_CP_FENCE1_CNT_1,
++	mmPDMA0_QM_CP_FENCE1_CNT_2,
++	mmPDMA0_QM_CP_FENCE1_CNT_3,
++	mmPDMA0_QM_CP_FENCE1_CNT_4,
++	mmPDMA0_QM_CP_FENCE2_CNT_0,
++	mmPDMA0_QM_CP_FENCE2_CNT_1,
++	mmPDMA0_QM_CP_FENCE2_CNT_2,
++	mmPDMA0_QM_CP_FENCE2_CNT_3,
++	mmPDMA0_QM_CP_FENCE2_CNT_4,
++	mmPDMA0_QM_CP_FENCE3_CNT_0,
++	mmPDMA0_QM_CP_FENCE3_CNT_1,
++	mmPDMA0_QM_CP_FENCE3_CNT_2,
++	mmPDMA0_QM_CP_FENCE3_CNT_3,
++	mmPDMA0_QM_CP_FENCE3_CNT_4,
++	mmPDMA0_QM_CQ_PTR_LO_0,
++	mmPDMA0_QM_CQ_PTR_HI_0,
++	mmPDMA0_QM_CQ_TSIZE_0,
++	mmPDMA0_QM_CQ_CTL_0,
++	mmPDMA0_QM_CQ_PTR_LO_1,
++	mmPDMA0_QM_CQ_PTR_HI_1,
++	mmPDMA0_QM_CQ_TSIZE_1,
++	mmPDMA0_QM_CQ_CTL_1,
++	mmPDMA0_QM_CQ_PTR_LO_2,
++	mmPDMA0_QM_CQ_PTR_HI_2,
++	mmPDMA0_QM_CQ_TSIZE_2,
++	mmPDMA0_QM_CQ_CTL_2,
++	mmPDMA0_QM_CQ_PTR_LO_3,
++	mmPDMA0_QM_CQ_PTR_HI_3,
++	mmPDMA0_QM_CQ_TSIZE_3,
++	mmPDMA0_QM_CQ_CTL_3,
++	mmPDMA0_QM_CQ_PTR_LO_4,
++	mmPDMA0_QM_CQ_PTR_HI_4,
++	mmPDMA0_QM_CQ_TSIZE_4,
++	mmPDMA0_QM_CQ_CTL_4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR0_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR0_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR1_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR1_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR2_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR2_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR3_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR3_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR4_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR4_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR5_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR5_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR6_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR6_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR7_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR7_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR8_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR8_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR9_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR9_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR10_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR10_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR11_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR11_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR12_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR12_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR13_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR13_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR14_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR14_BASE + 4,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR15_BASE,
++	mmPDMA0_QM_QMAN_WR64_BASE_ADDR15_BASE + 4,
++	mmPDMA0_QM_ARC_CQ_PTR_LO,
++	mmPDMA0_QM_ARC_CQ_PTR_LO_STS,
++	mmPDMA0_QM_ARC_CQ_PTR_HI,
++	mmPDMA0_QM_ARC_CQ_PTR_HI_STS,
++	mmPDMA0_QM_ARB_CFG_0,
++	mmPDMA0_QM_ARB_MST_QUIET_PER,
++	mmPDMA0_QM_ARB_CHOICE_Q_PUSH,
++	mmPDMA0_QM_ARB_WRR_WEIGHT_0,
++	mmPDMA0_QM_ARB_WRR_WEIGHT_1,
++	mmPDMA0_QM_ARB_WRR_WEIGHT_2,
++	mmPDMA0_QM_ARB_WRR_WEIGHT_3,
++	mmPDMA0_QM_ARB_BASE_LO,
++	mmPDMA0_QM_ARB_BASE_HI,
++	mmPDMA0_QM_ARB_MST_SLAVE_EN,
++	mmPDMA0_QM_ARB_MST_SLAVE_EN_1,
++	mmPDMA0_QM_ARB_MST_CRED_INC,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_0,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_1,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_2,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_3,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_4,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_5,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_6,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_7,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_8,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_9,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_10,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_11,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_12,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_13,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_14,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_15,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_16,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_17,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_18,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_19,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_20,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_21,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_22,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_23,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_24,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_25,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_26,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_27,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_28,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_29,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_30,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_31,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_32,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_33,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_34,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_35,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_36,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_37,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_38,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_39,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_40,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_41,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_42,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_43,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_44,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_45,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_46,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_47,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_48,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_49,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_50,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_51,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_52,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_53,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_54,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_55,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_56,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_57,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_58,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_59,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_60,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_61,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_62,
++	mmPDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_63,
++	mmPDMA0_QM_ARB_SLV_ID,
++	mmPDMA0_QM_ARB_SLV_MASTER_INC_CRED_OFST,
++	mmPDMA0_QM_ARC_CQ_CFG0,
++	mmPDMA0_QM_CQ_IFIFO_CI_0,
++	mmPDMA0_QM_CQ_IFIFO_CI_1,
++	mmPDMA0_QM_CQ_IFIFO_CI_2,
++	mmPDMA0_QM_CQ_IFIFO_CI_3,
++	mmPDMA0_QM_CQ_IFIFO_CI_4,
++	mmPDMA0_QM_ARC_CQ_IFIFO_CI,
++	mmPDMA0_QM_CQ_CTL_CI_0,
++	mmPDMA0_QM_CQ_CTL_CI_1,
++	mmPDMA0_QM_CQ_CTL_CI_2,
++	mmPDMA0_QM_CQ_CTL_CI_3,
++	mmPDMA0_QM_CQ_CTL_CI_4,
++	mmPDMA0_QM_ARC_CQ_CTL_CI,
++	mmPDMA0_QM_ARC_CQ_TSIZE,
++	mmPDMA0_QM_ARC_CQ_CTL,
++	mmPDMA0_QM_CP_SWITCH_WD_SET,
++	mmPDMA0_QM_CP_EXT_SWITCH,
++	mmPDMA0_QM_CP_PRED_0,
++	mmPDMA0_QM_CP_PRED_1,
++	mmPDMA0_QM_CP_PRED_2,
++	mmPDMA0_QM_CP_PRED_3,
++	mmPDMA0_QM_CP_PRED_4,
++	mmPDMA0_QM_CP_PRED_UPEN_0,
++	mmPDMA0_QM_CP_PRED_UPEN_1,
++	mmPDMA0_QM_CP_PRED_UPEN_2,
++	mmPDMA0_QM_CP_PRED_UPEN_3,
++	mmPDMA0_QM_CP_PRED_UPEN_4,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_LO_0,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_LO_1,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_LO_2,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_LO_3,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_LO_4,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_HI_0,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_HI_1,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_HI_2,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_HI_3,
++	mmPDMA0_QM_CP_MSG_BASE0_ADDR_HI_4,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_LO_0,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_LO_1,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_LO_2,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_LO_3,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_LO_4,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_HI_0,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_HI_1,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_HI_2,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_HI_3,
++	mmPDMA0_QM_CP_MSG_BASE1_ADDR_HI_4,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_LO_0,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_LO_1,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_LO_2,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_LO_3,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_LO_4,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_HI_0,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_HI_1,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_HI_2,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_HI_3,
++	mmPDMA0_QM_CP_MSG_BASE2_ADDR_HI_4,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_LO_0,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_LO_1,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_LO_2,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_LO_3,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_LO_4,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_HI_0,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_HI_1,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_HI_2,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_HI_3,
++	mmPDMA0_QM_CP_MSG_BASE3_ADDR_HI_4,
++	mmPDMA0_QM_ARC_CQ_IFIFO_MSG_BASE_LO,
++	mmPDMA0_QM_ARC_CQ_CTL_MSG_BASE_LO,
++	mmPDMA0_QM_CQ_IFIFO_MSG_BASE_LO,
++	mmPDMA0_QM_CQ_CTL_MSG_BASE_LO
++};
++
++static const u32 gaudi2_pb_dcr0_edma0[] = {
++	mmDCORE0_EDMA0_CORE_BASE,
++	mmDCORE0_EDMA0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmDCORE0_EDMA0_QM_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_edma0_arc[] = {
++	mmDCORE0_EDMA0_QM_ARC_AUX_BASE,
++};
++
++static const struct range gaudi2_pb_dcr0_edma0_arc_unsecured_regs[] = {
++	{mmDCORE0_EDMA0_QM_ARC_AUX_RUN_HALT_REQ, mmDCORE0_EDMA0_QM_ARC_AUX_RUN_HALT_ACK},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_CLUSTER_NUM, mmDCORE0_EDMA0_QM_ARC_AUX_WAKE_UP_EVENT},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_ARC_RST_REQ, mmDCORE0_EDMA0_QM_ARC_AUX_CID_OFFSET_7},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_SCRATCHPAD_0, mmDCORE0_EDMA0_QM_ARC_AUX_INFLIGHT_LBU_RD_CNT},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_CBU_EARLY_BRESP_EN,
++		mmDCORE0_EDMA0_QM_ARC_AUX_CBU_EARLY_BRESP_EN},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_LBU_EARLY_BRESP_EN,
++		mmDCORE0_EDMA0_QM_ARC_AUX_LBU_EARLY_BRESP_EN},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_DCCM_QUEUE_BASE_ADDR_0,
++		mmDCORE0_EDMA0_QM_ARC_AUX_DCCM_QUEUE_ALERT_MSG},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_DCCM_Q_PUSH_FIFO_CNT,
++		mmDCORE0_EDMA0_QM_ARC_AUX_QMAN_ARC_CQ_SHADOW_CI},
++	{mmDCORE0_EDMA0_QM_ARC_AUX_ARC_AXI_ORDERING_WR_IF_CNT,
++		mmDCORE0_EDMA0_QM_ARC_AUX_MME_ARC_UPPER_DCCM_EN},
++};
++
++static const u32 gaudi2_pb_dcr0_edma0_unsecured_regs[] = {
++	mmDCORE0_EDMA0_CORE_CTX_AXUSER_HB_WR_REDUCTION,
++	mmDCORE0_EDMA0_CORE_CTX_WR_COMP_ADDR_HI,
++	mmDCORE0_EDMA0_CORE_CTX_WR_COMP_ADDR_LO,
++	mmDCORE0_EDMA0_CORE_CTX_WR_COMP_WDATA,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_BASE_LO,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_BASE_HI,
++	mmDCORE0_EDMA0_CORE_CTX_DST_BASE_LO,
++	mmDCORE0_EDMA0_CORE_CTX_DST_BASE_HI,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_0,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_1,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_2,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_3,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_4,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_1,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_2,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_3,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_4,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_OFFSET_LO,
++	mmDCORE0_EDMA0_CORE_CTX_SRC_OFFSET_HI,
++	mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_0,
++	mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_1,
++	mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_2,
++	mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_3,
++	mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_4,
++	mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_1,
++	mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_2,
++	mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_3,
++	mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_4,
++	mmDCORE0_EDMA0_CORE_CTX_DST_OFFSET_LO,
++	mmDCORE0_EDMA0_CORE_CTX_DST_OFFSET_HI,
++	mmDCORE0_EDMA0_CORE_CTX_COMMIT,
++	mmDCORE0_EDMA0_CORE_CTX_CTRL,
++	mmDCORE0_EDMA0_CORE_CTX_TE_NUMROWS,
++	mmDCORE0_EDMA0_CORE_CTX_IDX,
++	mmDCORE0_EDMA0_CORE_CTX_IDX_INC,
++	mmDCORE0_EDMA0_QM_CQ_CFG0_0,
++	mmDCORE0_EDMA0_QM_CQ_CFG0_1,
++	mmDCORE0_EDMA0_QM_CQ_CFG0_2,
++	mmDCORE0_EDMA0_QM_CQ_CFG0_3,
++	mmDCORE0_EDMA0_QM_CQ_CFG0_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_RDATA_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_RDATA_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_RDATA_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_RDATA_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_RDATA_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_RDATA_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_RDATA_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_RDATA_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_RDATA_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_RDATA_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_RDATA_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_RDATA_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_RDATA_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_RDATA_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_RDATA_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_RDATA_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_RDATA_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_RDATA_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_RDATA_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_RDATA_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_CNT_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_CNT_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_CNT_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_CNT_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE0_CNT_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_CNT_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_CNT_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_CNT_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_CNT_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE1_CNT_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_CNT_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_CNT_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_CNT_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_CNT_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE2_CNT_4,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_CNT_0,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_CNT_1,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_CNT_2,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_CNT_3,
++	mmDCORE0_EDMA0_QM_CP_FENCE3_CNT_4,
++	mmDCORE0_EDMA0_QM_CQ_PTR_LO_0,
++	mmDCORE0_EDMA0_QM_CQ_PTR_HI_0,
++	mmDCORE0_EDMA0_QM_CQ_TSIZE_0,
++	mmDCORE0_EDMA0_QM_CQ_CTL_0,
++	mmDCORE0_EDMA0_QM_CQ_PTR_LO_1,
++	mmDCORE0_EDMA0_QM_CQ_PTR_HI_1,
++	mmDCORE0_EDMA0_QM_CQ_TSIZE_1,
++	mmDCORE0_EDMA0_QM_CQ_CTL_1,
++	mmDCORE0_EDMA0_QM_CQ_PTR_LO_2,
++	mmDCORE0_EDMA0_QM_CQ_PTR_HI_2,
++	mmDCORE0_EDMA0_QM_CQ_TSIZE_2,
++	mmDCORE0_EDMA0_QM_CQ_CTL_2,
++	mmDCORE0_EDMA0_QM_CQ_PTR_LO_3,
++	mmDCORE0_EDMA0_QM_CQ_PTR_HI_3,
++	mmDCORE0_EDMA0_QM_CQ_TSIZE_3,
++	mmDCORE0_EDMA0_QM_CQ_CTL_3,
++	mmDCORE0_EDMA0_QM_CQ_PTR_LO_4,
++	mmDCORE0_EDMA0_QM_CQ_PTR_HI_4,
++	mmDCORE0_EDMA0_QM_CQ_TSIZE_4,
++	mmDCORE0_EDMA0_QM_CQ_CTL_4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR0_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR0_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR1_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR1_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR2_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR2_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR3_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR3_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR4_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR4_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR5_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR5_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR6_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR6_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR7_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR7_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR8_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR8_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR9_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR9_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR10_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR10_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR11_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR11_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR12_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR12_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR13_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR13_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR14_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR14_BASE + 4,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR15_BASE,
++	mmDCORE0_EDMA0_QM_QMAN_WR64_BASE_ADDR15_BASE + 4,
++	mmDCORE0_EDMA0_QM_ARC_CQ_PTR_LO,
++	mmDCORE0_EDMA0_QM_ARC_CQ_PTR_LO_STS,
++	mmDCORE0_EDMA0_QM_ARC_CQ_PTR_HI,
++	mmDCORE0_EDMA0_QM_ARC_CQ_PTR_HI_STS,
++	mmDCORE0_EDMA0_QM_ARB_CFG_0,
++	mmDCORE0_EDMA0_QM_ARB_MST_QUIET_PER,
++	mmDCORE0_EDMA0_QM_ARB_CHOICE_Q_PUSH,
++	mmDCORE0_EDMA0_QM_ARB_WRR_WEIGHT_0,
++	mmDCORE0_EDMA0_QM_ARB_WRR_WEIGHT_1,
++	mmDCORE0_EDMA0_QM_ARB_WRR_WEIGHT_2,
++	mmDCORE0_EDMA0_QM_ARB_WRR_WEIGHT_3,
++	mmDCORE0_EDMA0_QM_ARB_BASE_LO,
++	mmDCORE0_EDMA0_QM_ARB_BASE_HI,
++	mmDCORE0_EDMA0_QM_ARB_MST_SLAVE_EN,
++	mmDCORE0_EDMA0_QM_ARB_MST_SLAVE_EN_1,
++	mmDCORE0_EDMA0_QM_ARB_MST_CRED_INC,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_0,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_1,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_2,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_3,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_4,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_5,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_6,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_7,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_8,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_9,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_10,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_11,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_12,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_13,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_14,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_15,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_16,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_17,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_18,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_19,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_20,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_21,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_22,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_23,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_24,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_25,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_26,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_27,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_28,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_29,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_30,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_31,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_32,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_33,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_34,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_35,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_36,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_37,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_38,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_39,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_40,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_41,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_42,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_43,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_44,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_45,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_46,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_47,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_48,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_49,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_50,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_51,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_52,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_53,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_54,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_55,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_56,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_57,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_58,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_59,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_60,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_61,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_62,
++	mmDCORE0_EDMA0_QM_ARB_MST_CHOICE_PUSH_OFST_63,
++	mmDCORE0_EDMA0_QM_ARB_SLV_ID,
++	mmDCORE0_EDMA0_QM_ARB_SLV_MASTER_INC_CRED_OFST,
++	mmDCORE0_EDMA0_QM_ARC_CQ_CFG0,
++	mmDCORE0_EDMA0_QM_CQ_IFIFO_CI_0,
++	mmDCORE0_EDMA0_QM_CQ_IFIFO_CI_1,
++	mmDCORE0_EDMA0_QM_CQ_IFIFO_CI_2,
++	mmDCORE0_EDMA0_QM_CQ_IFIFO_CI_3,
++	mmDCORE0_EDMA0_QM_CQ_IFIFO_CI_4,
++	mmDCORE0_EDMA0_QM_ARC_CQ_IFIFO_CI,
++	mmDCORE0_EDMA0_QM_CQ_CTL_CI_0,
++	mmDCORE0_EDMA0_QM_CQ_CTL_CI_1,
++	mmDCORE0_EDMA0_QM_CQ_CTL_CI_2,
++	mmDCORE0_EDMA0_QM_CQ_CTL_CI_3,
++	mmDCORE0_EDMA0_QM_CQ_CTL_CI_4,
++	mmDCORE0_EDMA0_QM_ARC_CQ_CTL_CI,
++	mmDCORE0_EDMA0_QM_ARC_CQ_TSIZE,
++	mmDCORE0_EDMA0_QM_ARC_CQ_CTL,
++	mmDCORE0_EDMA0_QM_CP_SWITCH_WD_SET,
++	mmDCORE0_EDMA0_QM_CP_EXT_SWITCH,
++	mmDCORE0_EDMA0_QM_CP_PRED_0,
++	mmDCORE0_EDMA0_QM_CP_PRED_1,
++	mmDCORE0_EDMA0_QM_CP_PRED_2,
++	mmDCORE0_EDMA0_QM_CP_PRED_3,
++	mmDCORE0_EDMA0_QM_CP_PRED_4,
++	mmDCORE0_EDMA0_QM_CP_PRED_UPEN_0,
++	mmDCORE0_EDMA0_QM_CP_PRED_UPEN_1,
++	mmDCORE0_EDMA0_QM_CP_PRED_UPEN_2,
++	mmDCORE0_EDMA0_QM_CP_PRED_UPEN_3,
++	mmDCORE0_EDMA0_QM_CP_PRED_UPEN_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_LO_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_LO_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_LO_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_LO_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_LO_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_HI_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_HI_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_HI_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_HI_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE0_ADDR_HI_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_LO_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_LO_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_LO_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_LO_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_LO_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_HI_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_HI_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_HI_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_HI_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE1_ADDR_HI_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_LO_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_LO_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_LO_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_LO_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_LO_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_HI_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_HI_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_HI_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_HI_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE2_ADDR_HI_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_LO_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_LO_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_LO_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_LO_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_LO_4,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_HI_0,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_HI_1,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_HI_2,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_HI_3,
++	mmDCORE0_EDMA0_QM_CP_MSG_BASE3_ADDR_HI_4,
++	mmDCORE0_EDMA0_QM_ARC_CQ_IFIFO_MSG_BASE_LO,
++	mmDCORE0_EDMA0_QM_ARC_CQ_CTL_MSG_BASE_LO,
++	mmDCORE0_EDMA0_QM_CQ_IFIFO_MSG_BASE_LO,
++	mmDCORE0_EDMA0_QM_CQ_CTL_MSG_BASE_LO
++};
++
++static const u32 gaudi2_pb_dcr0_mme_sbte[] = {
++	mmDCORE0_MME_SBTE0_BASE,
++	mmDCORE0_MME_SBTE0_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_mme_qm[] = {
++	mmDCORE0_MME_QM_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_mme_eng[] = {
++	mmDCORE0_MME_ACC_BASE,
++	mmDCORE0_MME_CTRL_HI_BASE,
++	mmDCORE0_MME_CTRL_LO_BASE,
++	mmDCORE0_MME_CTRL_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmDCORE0_MME_WB0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmDCORE0_MME_WB1_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_mme_arc[] = {
++	mmDCORE0_MME_QM_ARC_AUX_BASE,
++	mmDCORE0_MME_QM_ARC_DUP_ENG_BASE,
++};
++
++static const struct range gaudi2_pb_dcr0_mme_arc_unsecured_regs[] = {
++	{mmDCORE0_MME_QM_ARC_AUX_RUN_HALT_REQ, mmDCORE0_MME_QM_ARC_AUX_RUN_HALT_ACK},
++	{mmDCORE0_MME_QM_ARC_AUX_CLUSTER_NUM, mmDCORE0_MME_QM_ARC_AUX_WAKE_UP_EVENT},
++	{mmDCORE0_MME_QM_ARC_AUX_ARC_RST_REQ, mmDCORE0_MME_QM_ARC_AUX_CID_OFFSET_7},
++	{mmDCORE0_MME_QM_ARC_AUX_SCRATCHPAD_0, mmDCORE0_MME_QM_ARC_AUX_INFLIGHT_LBU_RD_CNT},
++	{mmDCORE0_MME_QM_ARC_AUX_CBU_EARLY_BRESP_EN, mmDCORE0_MME_QM_ARC_AUX_CBU_EARLY_BRESP_EN},
++	{mmDCORE0_MME_QM_ARC_AUX_LBU_EARLY_BRESP_EN, mmDCORE0_MME_QM_ARC_AUX_LBU_EARLY_BRESP_EN},
++	{mmDCORE0_MME_QM_ARC_AUX_DCCM_QUEUE_BASE_ADDR_0,
++		mmDCORE0_MME_QM_ARC_AUX_DCCM_QUEUE_ALERT_MSG},
++	{mmDCORE0_MME_QM_ARC_AUX_DCCM_Q_PUSH_FIFO_CNT,
++		mmDCORE0_MME_QM_ARC_AUX_QMAN_ARC_CQ_SHADOW_CI},
++	{mmDCORE0_MME_QM_ARC_AUX_ARC_AXI_ORDERING_WR_IF_CNT,
++		mmDCORE0_MME_QM_ARC_AUX_MME_ARC_UPPER_DCCM_EN},
++	{mmDCORE0_MME_QM_ARC_DUP_ENG_DUP_TPC_ENG_ADDR_0,
++		mmDCORE0_MME_QM_ARC_DUP_ENG_ARC_CID_OFFSET_63},
++	{mmDCORE0_MME_QM_ARC_DUP_ENG_AXUSER_HB_STRONG_ORDER,
++		mmDCORE0_MME_QM_ARC_DUP_ENG_AXUSER_LB_OVRD},
++};
++
++static const u32 gaudi2_pb_dcr0_mme_qm_unsecured_regs[] = {
++	mmDCORE0_MME_QM_CQ_CFG0_0,
++	mmDCORE0_MME_QM_CQ_CFG0_1,
++	mmDCORE0_MME_QM_CQ_CFG0_2,
++	mmDCORE0_MME_QM_CQ_CFG0_3,
++	mmDCORE0_MME_QM_CQ_CFG0_4,
++	mmDCORE0_MME_QM_CP_FENCE0_RDATA_0,
++	mmDCORE0_MME_QM_CP_FENCE0_RDATA_1,
++	mmDCORE0_MME_QM_CP_FENCE0_RDATA_2,
++	mmDCORE0_MME_QM_CP_FENCE0_RDATA_3,
++	mmDCORE0_MME_QM_CP_FENCE0_RDATA_4,
++	mmDCORE0_MME_QM_CP_FENCE1_RDATA_0,
++	mmDCORE0_MME_QM_CP_FENCE1_RDATA_1,
++	mmDCORE0_MME_QM_CP_FENCE1_RDATA_2,
++	mmDCORE0_MME_QM_CP_FENCE1_RDATA_3,
++	mmDCORE0_MME_QM_CP_FENCE1_RDATA_4,
++	mmDCORE0_MME_QM_CP_FENCE2_RDATA_0,
++	mmDCORE0_MME_QM_CP_FENCE2_RDATA_1,
++	mmDCORE0_MME_QM_CP_FENCE2_RDATA_2,
++	mmDCORE0_MME_QM_CP_FENCE2_RDATA_3,
++	mmDCORE0_MME_QM_CP_FENCE2_RDATA_4,
++	mmDCORE0_MME_QM_CP_FENCE3_RDATA_0,
++	mmDCORE0_MME_QM_CP_FENCE3_RDATA_1,
++	mmDCORE0_MME_QM_CP_FENCE3_RDATA_2,
++	mmDCORE0_MME_QM_CP_FENCE3_RDATA_3,
++	mmDCORE0_MME_QM_CP_FENCE3_RDATA_4,
++	mmDCORE0_MME_QM_CP_FENCE0_CNT_0,
++	mmDCORE0_MME_QM_CP_FENCE0_CNT_1,
++	mmDCORE0_MME_QM_CP_FENCE0_CNT_2,
++	mmDCORE0_MME_QM_CP_FENCE0_CNT_3,
++	mmDCORE0_MME_QM_CP_FENCE0_CNT_4,
++	mmDCORE0_MME_QM_CP_FENCE1_CNT_0,
++	mmDCORE0_MME_QM_CP_FENCE1_CNT_1,
++	mmDCORE0_MME_QM_CP_FENCE1_CNT_2,
++	mmDCORE0_MME_QM_CP_FENCE1_CNT_3,
++	mmDCORE0_MME_QM_CP_FENCE1_CNT_4,
++	mmDCORE0_MME_QM_CP_FENCE2_CNT_0,
++	mmDCORE0_MME_QM_CP_FENCE2_CNT_1,
++	mmDCORE0_MME_QM_CP_FENCE2_CNT_2,
++	mmDCORE0_MME_QM_CP_FENCE2_CNT_3,
++	mmDCORE0_MME_QM_CP_FENCE2_CNT_4,
++	mmDCORE0_MME_QM_CP_FENCE3_CNT_0,
++	mmDCORE0_MME_QM_CP_FENCE3_CNT_1,
++	mmDCORE0_MME_QM_CP_FENCE3_CNT_2,
++	mmDCORE0_MME_QM_CP_FENCE3_CNT_3,
++	mmDCORE0_MME_QM_CP_FENCE3_CNT_4,
++	mmDCORE0_MME_QM_CQ_PTR_LO_0,
++	mmDCORE0_MME_QM_CQ_PTR_HI_0,
++	mmDCORE0_MME_QM_CQ_TSIZE_0,
++	mmDCORE0_MME_QM_CQ_CTL_0,
++	mmDCORE0_MME_QM_CQ_PTR_LO_1,
++	mmDCORE0_MME_QM_CQ_PTR_HI_1,
++	mmDCORE0_MME_QM_CQ_TSIZE_1,
++	mmDCORE0_MME_QM_CQ_CTL_1,
++	mmDCORE0_MME_QM_CQ_PTR_LO_2,
++	mmDCORE0_MME_QM_CQ_PTR_HI_2,
++	mmDCORE0_MME_QM_CQ_TSIZE_2,
++	mmDCORE0_MME_QM_CQ_CTL_2,
++	mmDCORE0_MME_QM_CQ_PTR_LO_3,
++	mmDCORE0_MME_QM_CQ_PTR_HI_3,
++	mmDCORE0_MME_QM_CQ_TSIZE_3,
++	mmDCORE0_MME_QM_CQ_CTL_3,
++	mmDCORE0_MME_QM_CQ_PTR_LO_4,
++	mmDCORE0_MME_QM_CQ_PTR_HI_4,
++	mmDCORE0_MME_QM_CQ_TSIZE_4,
++	mmDCORE0_MME_QM_CQ_CTL_4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR0_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR0_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR1_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR1_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR2_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR2_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR3_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR3_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR4_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR4_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR5_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR5_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR6_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR6_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR7_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR7_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR8_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR8_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR9_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR9_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR10_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR10_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR11_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR11_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR12_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR12_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR13_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR13_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR14_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR14_BASE + 4,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR15_BASE,
++	mmDCORE0_MME_QM_QMAN_WR64_BASE_ADDR15_BASE + 4,
++	mmDCORE0_MME_QM_ARC_CQ_PTR_LO,
++	mmDCORE0_MME_QM_ARC_CQ_PTR_LO_STS,
++	mmDCORE0_MME_QM_ARC_CQ_PTR_HI,
++	mmDCORE0_MME_QM_ARC_CQ_PTR_HI_STS,
++	mmDCORE0_MME_QM_ARB_CFG_0,
++	mmDCORE0_MME_QM_ARB_MST_QUIET_PER,
++	mmDCORE0_MME_QM_ARB_CHOICE_Q_PUSH,
++	mmDCORE0_MME_QM_ARB_WRR_WEIGHT_0,
++	mmDCORE0_MME_QM_ARB_WRR_WEIGHT_1,
++	mmDCORE0_MME_QM_ARB_WRR_WEIGHT_2,
++	mmDCORE0_MME_QM_ARB_WRR_WEIGHT_3,
++	mmDCORE0_MME_QM_ARB_BASE_LO,
++	mmDCORE0_MME_QM_ARB_BASE_HI,
++	mmDCORE0_MME_QM_ARB_MST_SLAVE_EN,
++	mmDCORE0_MME_QM_ARB_MST_SLAVE_EN_1,
++	mmDCORE0_MME_QM_ARB_MST_CRED_INC,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_0,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_1,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_2,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_3,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_4,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_5,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_6,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_7,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_8,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_9,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_10,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_11,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_12,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_13,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_14,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_15,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_16,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_17,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_18,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_19,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_20,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_21,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_22,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_23,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_24,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_25,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_26,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_27,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_28,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_29,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_30,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_31,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_32,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_33,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_34,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_35,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_36,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_37,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_38,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_39,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_40,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_41,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_42,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_43,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_44,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_45,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_46,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_47,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_48,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_49,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_50,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_51,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_52,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_53,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_54,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_55,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_56,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_57,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_58,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_59,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_60,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_61,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_62,
++	mmDCORE0_MME_QM_ARB_MST_CHOICE_PUSH_OFST_63,
++	mmDCORE0_MME_QM_ARB_SLV_ID,
++	mmDCORE0_MME_QM_ARB_SLV_MASTER_INC_CRED_OFST,
++	mmDCORE0_MME_QM_ARC_CQ_CFG0,
++	mmDCORE0_MME_QM_CQ_IFIFO_CI_0,
++	mmDCORE0_MME_QM_CQ_IFIFO_CI_1,
++	mmDCORE0_MME_QM_CQ_IFIFO_CI_2,
++	mmDCORE0_MME_QM_CQ_IFIFO_CI_3,
++	mmDCORE0_MME_QM_CQ_IFIFO_CI_4,
++	mmDCORE0_MME_QM_ARC_CQ_IFIFO_CI,
++	mmDCORE0_MME_QM_CQ_CTL_CI_0,
++	mmDCORE0_MME_QM_CQ_CTL_CI_1,
++	mmDCORE0_MME_QM_CQ_CTL_CI_2,
++	mmDCORE0_MME_QM_CQ_CTL_CI_3,
++	mmDCORE0_MME_QM_CQ_CTL_CI_4,
++	mmDCORE0_MME_QM_ARC_CQ_CTL_CI,
++	mmDCORE0_MME_QM_ARC_CQ_TSIZE,
++	mmDCORE0_MME_QM_ARC_CQ_CTL,
++	mmDCORE0_MME_QM_CP_SWITCH_WD_SET,
++	mmDCORE0_MME_QM_CP_EXT_SWITCH,
++	mmDCORE0_MME_QM_CP_PRED_0,
++	mmDCORE0_MME_QM_CP_PRED_1,
++	mmDCORE0_MME_QM_CP_PRED_2,
++	mmDCORE0_MME_QM_CP_PRED_3,
++	mmDCORE0_MME_QM_CP_PRED_4,
++	mmDCORE0_MME_QM_CP_PRED_UPEN_0,
++	mmDCORE0_MME_QM_CP_PRED_UPEN_1,
++	mmDCORE0_MME_QM_CP_PRED_UPEN_2,
++	mmDCORE0_MME_QM_CP_PRED_UPEN_3,
++	mmDCORE0_MME_QM_CP_PRED_UPEN_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_LO_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_LO_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_LO_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_LO_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_LO_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_HI_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_HI_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_HI_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_HI_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE0_ADDR_HI_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_LO_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_LO_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_LO_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_LO_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_LO_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_HI_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_HI_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_HI_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_HI_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE1_ADDR_HI_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_LO_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_LO_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_LO_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_LO_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_LO_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_HI_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_HI_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_HI_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_HI_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE2_ADDR_HI_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_LO_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_LO_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_LO_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_LO_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_LO_4,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_HI_0,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_HI_1,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_HI_2,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_HI_3,
++	mmDCORE0_MME_QM_CP_MSG_BASE3_ADDR_HI_4,
++	mmDCORE0_MME_QM_ARC_CQ_IFIFO_MSG_BASE_LO,
++	mmDCORE0_MME_QM_ARC_CQ_CTL_MSG_BASE_LO,
++	mmDCORE0_MME_QM_CQ_IFIFO_MSG_BASE_LO,
++	mmDCORE0_MME_QM_CQ_CTL_MSG_BASE_LO
++};
++
++static const u32 gaudi2_pb_dcr0_mme_eng_unsecured_regs[] = {
++	mmDCORE0_MME_CTRL_LO_CMD,
++	mmDCORE0_MME_CTRL_LO_AGU,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_BRAINS_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_BRAINS_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_HEADER_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_HEADER_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_EUS_MASTER,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_EUS_SLAVE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_CONV_KERNEL_SIZE_MINUS_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_CONV_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_CONV_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_OUTER_LOOP,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_NUM_ITERATIONS_MINUS_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SB_REPEAT,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_FP8_BIAS,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_RATE_LIMITER,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_USER_DATA,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_PERF_EVT_IN,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_PERF_EVT_OUT,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_PCU,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SLAVE_SYNC_OBJ0_ADDR,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SLAVE_SYNC_OBJ1_ADDR,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_POWER_LOOP,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE0_MASTER,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE1_MASTER,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE2_MASTER,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE3_MASTER,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE0_SLAVE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE1_SLAVE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE2_SLAVE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_SPARE3_SLAVE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_WKL_ID,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_VALID_ELEMENTS_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_VALID_ELEMENTS_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_VALID_ELEMENTS_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_VALID_ELEMENTS_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_VALID_ELEMENTS_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_LOOP_STRIDE_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_LOOP_STRIDE_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_LOOP_STRIDE_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_LOOP_STRIDE_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_LOOP_STRIDE_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_ROI_SIZE_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_ROI_SIZE_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_ROI_SIZE_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_ROI_SIZE_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_SPATIAL_STRIDES_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_SPATIAL_STRIDES_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_SPATIAL_STRIDES_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_SPATIAL_STRIDES_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_START_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_START_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_START_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_START_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_COUT1_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_COUT1_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_COUT0_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_COUT0_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_A_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_A_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_B_LOW,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_B_HIGH,
++	mmDCORE0_MME_CTRL_LO_ARCH_STATUS,
++	mmDCORE0_MME_CTRL_LO_ARCH_SYNC_OBJ_DW0,
++	mmDCORE0_MME_CTRL_LO_ARCH_SYNC_OBJ_ADDR0,
++	mmDCORE0_MME_CTRL_LO_ARCH_SYNC_OBJ_VAL0,
++	mmDCORE0_MME_CTRL_LO_ARCH_SYNC_OBJ_ADDR1,
++	mmDCORE0_MME_CTRL_LO_ARCH_SYNC_OBJ_VAL1,
++	mmDCORE0_MME_CTRL_LO_ARCH_A_SS,
++	mmDCORE0_MME_CTRL_LO_ARCH_B_SS,
++	mmDCORE0_MME_CTRL_LO_ARCH_COUT_SS,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_MASTER_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_MASTER_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_MASTER_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_MASTER_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_MASTER_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_VALID_ELEMENTS_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_VALID_ELEMENTS_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_VALID_ELEMENTS_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_VALID_ELEMENTS_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_VALID_ELEMENTS_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_LOOP_STRIDE_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_LOOP_STRIDE_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_LOOP_STRIDE_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_LOOP_STRIDE_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_LOOP_STRIDE_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_ROI_SIZE_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_ROI_SIZE_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_ROI_SIZE_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_ROI_SIZE_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_SPATIAL_STRIDES_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_SPATIAL_STRIDES_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_SPATIAL_STRIDES_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_SPATIAL_STRIDES_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_START_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_START_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_START_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_START_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_BASE_ADDR_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_START_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_A_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_COUT_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN1_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN2_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN3_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_MASTER_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT1_SLAVE_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_BASE,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_COUT0_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_VALID_ELEMENTS_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_VALID_ELEMENTS_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_VALID_ELEMENTS_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_VALID_ELEMENTS_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_VALID_ELEMENTS_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_LOOP_STRIDE_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_LOOP_STRIDE_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_LOOP_STRIDE_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_LOOP_STRIDE_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_LOOP_STRIDE_4,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_ROI_SIZE_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_ROI_SIZE_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_ROI_SIZE_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_ROI_SIZE_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_SPATIAL_STRIDES_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_SPATIAL_STRIDES_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_SPATIAL_STRIDES_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_SPATIAL_STRIDES_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_START_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_START_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_START_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_TENSOR_B_START_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_SLAVE_ROI_BASE_OFFSET_0,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_SLAVE_ROI_BASE_OFFSET_1,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_SLAVE_ROI_BASE_OFFSET_2,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_SLAVE_ROI_BASE_OFFSET_3,
++	mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN0_SLAVE_ROI_BASE_OFFSET_4,
++	mmDCORE0_MME_ACC_AP_LFSR_POLY,
++	mmDCORE0_MME_ACC_AP_LFSR_SEED_WDATA,
++	mmDCORE0_MME_ACC_AP_LFSR_SEED_SEL,
++	mmDCORE0_MME_ACC_AP_LFSR_SEED_RDATA,
++	mmDCORE0_MME_ACC_AP_LFSR_CLOSE_CGATE_DLY,
++	mmDCORE0_MME_ACC_WBC_SRC_BP,
++};
++
++static const u32 gaudi2_pb_dcr0_tpc0[] = {
++	mmDCORE0_TPC0_QM_BASE,
++	mmDCORE0_TPC0_CFG_BASE,
++	mmDCORE0_TPC0_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_tpc0_arc[] = {
++	mmDCORE0_TPC0_QM_ARC_AUX_BASE,
++};
++
++static const struct range gaudi2_pb_dcr0_tpc0_arc_unsecured_regs[] = {
++	{mmDCORE0_TPC0_QM_ARC_AUX_RUN_HALT_REQ, mmDCORE0_TPC0_QM_ARC_AUX_RUN_HALT_ACK},
++	{mmDCORE0_TPC0_QM_ARC_AUX_CLUSTER_NUM, mmDCORE0_TPC0_QM_ARC_AUX_WAKE_UP_EVENT},
++	{mmDCORE0_TPC0_QM_ARC_AUX_ARC_RST_REQ, mmDCORE0_TPC0_QM_ARC_AUX_CID_OFFSET_7},
++	{mmDCORE0_TPC0_QM_ARC_AUX_SCRATCHPAD_0, mmDCORE0_TPC0_QM_ARC_AUX_INFLIGHT_LBU_RD_CNT},
++	{mmDCORE0_TPC0_QM_ARC_AUX_CBU_EARLY_BRESP_EN, mmDCORE0_TPC0_QM_ARC_AUX_CBU_EARLY_BRESP_EN},
++	{mmDCORE0_TPC0_QM_ARC_AUX_LBU_EARLY_BRESP_EN, mmDCORE0_TPC0_QM_ARC_AUX_LBU_EARLY_BRESP_EN},
++	{mmDCORE0_TPC0_QM_ARC_AUX_DCCM_QUEUE_BASE_ADDR_0,
++		mmDCORE0_TPC0_QM_ARC_AUX_DCCM_QUEUE_ALERT_MSG},
++	{mmDCORE0_TPC0_QM_ARC_AUX_DCCM_Q_PUSH_FIFO_CNT,
++		mmDCORE0_TPC0_QM_ARC_AUX_QMAN_ARC_CQ_SHADOW_CI},
++	{mmDCORE0_TPC0_QM_ARC_AUX_ARC_AXI_ORDERING_WR_IF_CNT,
++		mmDCORE0_TPC0_QM_ARC_AUX_MME_ARC_UPPER_DCCM_EN},
++};
++
++static const u32 gaudi2_pb_dcr0_tpc0_unsecured_regs[] = {
++	mmDCORE0_TPC0_QM_CQ_CFG0_0,
++	mmDCORE0_TPC0_QM_CQ_CFG0_1,
++	mmDCORE0_TPC0_QM_CQ_CFG0_2,
++	mmDCORE0_TPC0_QM_CQ_CFG0_3,
++	mmDCORE0_TPC0_QM_CQ_CFG0_4,
++	mmDCORE0_TPC0_QM_CP_FENCE0_RDATA_0,
++	mmDCORE0_TPC0_QM_CP_FENCE0_RDATA_1,
++	mmDCORE0_TPC0_QM_CP_FENCE0_RDATA_2,
++	mmDCORE0_TPC0_QM_CP_FENCE0_RDATA_3,
++	mmDCORE0_TPC0_QM_CP_FENCE0_RDATA_4,
++	mmDCORE0_TPC0_QM_CP_FENCE1_RDATA_0,
++	mmDCORE0_TPC0_QM_CP_FENCE1_RDATA_1,
++	mmDCORE0_TPC0_QM_CP_FENCE1_RDATA_2,
++	mmDCORE0_TPC0_QM_CP_FENCE1_RDATA_3,
++	mmDCORE0_TPC0_QM_CP_FENCE1_RDATA_4,
++	mmDCORE0_TPC0_QM_CP_FENCE2_RDATA_0,
++	mmDCORE0_TPC0_QM_CP_FENCE2_RDATA_1,
++	mmDCORE0_TPC0_QM_CP_FENCE2_RDATA_2,
++	mmDCORE0_TPC0_QM_CP_FENCE2_RDATA_3,
++	mmDCORE0_TPC0_QM_CP_FENCE2_RDATA_4,
++	mmDCORE0_TPC0_QM_CP_FENCE3_RDATA_0,
++	mmDCORE0_TPC0_QM_CP_FENCE3_RDATA_1,
++	mmDCORE0_TPC0_QM_CP_FENCE3_RDATA_2,
++	mmDCORE0_TPC0_QM_CP_FENCE3_RDATA_3,
++	mmDCORE0_TPC0_QM_CP_FENCE3_RDATA_4,
++	mmDCORE0_TPC0_QM_CP_FENCE0_CNT_0,
++	mmDCORE0_TPC0_QM_CP_FENCE0_CNT_1,
++	mmDCORE0_TPC0_QM_CP_FENCE0_CNT_2,
++	mmDCORE0_TPC0_QM_CP_FENCE0_CNT_3,
++	mmDCORE0_TPC0_QM_CP_FENCE0_CNT_4,
++	mmDCORE0_TPC0_QM_CP_FENCE1_CNT_0,
++	mmDCORE0_TPC0_QM_CP_FENCE1_CNT_1,
++	mmDCORE0_TPC0_QM_CP_FENCE1_CNT_2,
++	mmDCORE0_TPC0_QM_CP_FENCE1_CNT_3,
++	mmDCORE0_TPC0_QM_CP_FENCE1_CNT_4,
++	mmDCORE0_TPC0_QM_CP_FENCE2_CNT_0,
++	mmDCORE0_TPC0_QM_CP_FENCE2_CNT_1,
++	mmDCORE0_TPC0_QM_CP_FENCE2_CNT_2,
++	mmDCORE0_TPC0_QM_CP_FENCE2_CNT_3,
++	mmDCORE0_TPC0_QM_CP_FENCE2_CNT_4,
++	mmDCORE0_TPC0_QM_CP_FENCE3_CNT_0,
++	mmDCORE0_TPC0_QM_CP_FENCE3_CNT_1,
++	mmDCORE0_TPC0_QM_CP_FENCE3_CNT_2,
++	mmDCORE0_TPC0_QM_CP_FENCE3_CNT_3,
++	mmDCORE0_TPC0_QM_CP_FENCE3_CNT_4,
++	mmDCORE0_TPC0_QM_CQ_PTR_LO_0,
++	mmDCORE0_TPC0_QM_CQ_PTR_HI_0,
++	mmDCORE0_TPC0_QM_CQ_TSIZE_0,
++	mmDCORE0_TPC0_QM_CQ_CTL_0,
++	mmDCORE0_TPC0_QM_CQ_PTR_LO_1,
++	mmDCORE0_TPC0_QM_CQ_PTR_HI_1,
++	mmDCORE0_TPC0_QM_CQ_TSIZE_1,
++	mmDCORE0_TPC0_QM_CQ_CTL_1,
++	mmDCORE0_TPC0_QM_CQ_PTR_LO_2,
++	mmDCORE0_TPC0_QM_CQ_PTR_HI_2,
++	mmDCORE0_TPC0_QM_CQ_TSIZE_2,
++	mmDCORE0_TPC0_QM_CQ_CTL_2,
++	mmDCORE0_TPC0_QM_CQ_PTR_LO_3,
++	mmDCORE0_TPC0_QM_CQ_PTR_HI_3,
++	mmDCORE0_TPC0_QM_CQ_TSIZE_3,
++	mmDCORE0_TPC0_QM_CQ_CTL_3,
++	mmDCORE0_TPC0_QM_CQ_PTR_LO_4,
++	mmDCORE0_TPC0_QM_CQ_PTR_HI_4,
++	mmDCORE0_TPC0_QM_CQ_TSIZE_4,
++	mmDCORE0_TPC0_QM_CQ_CTL_4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR0_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR0_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR1_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR1_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR2_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR2_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR3_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR3_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR4_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR4_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR5_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR5_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR6_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR6_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR7_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR7_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR8_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR8_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR9_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR9_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR10_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR10_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR11_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR11_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR12_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR12_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR13_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR13_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR14_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR14_BASE + 4,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR15_BASE,
++	mmDCORE0_TPC0_QM_QMAN_WR64_BASE_ADDR15_BASE + 4,
++	mmDCORE0_TPC0_QM_ARC_CQ_PTR_LO,
++	mmDCORE0_TPC0_QM_ARC_CQ_PTR_LO_STS,
++	mmDCORE0_TPC0_QM_ARC_CQ_PTR_HI,
++	mmDCORE0_TPC0_QM_ARC_CQ_PTR_HI_STS,
++	mmDCORE0_TPC0_QM_ARB_CFG_0,
++	mmDCORE0_TPC0_QM_ARB_MST_QUIET_PER,
++	mmDCORE0_TPC0_QM_ARB_CHOICE_Q_PUSH,
++	mmDCORE0_TPC0_QM_ARB_WRR_WEIGHT_0,
++	mmDCORE0_TPC0_QM_ARB_WRR_WEIGHT_1,
++	mmDCORE0_TPC0_QM_ARB_WRR_WEIGHT_2,
++	mmDCORE0_TPC0_QM_ARB_WRR_WEIGHT_3,
++	mmDCORE0_TPC0_QM_ARB_BASE_LO,
++	mmDCORE0_TPC0_QM_ARB_BASE_HI,
++	mmDCORE0_TPC0_QM_ARB_MST_SLAVE_EN,
++	mmDCORE0_TPC0_QM_ARB_MST_SLAVE_EN_1,
++	mmDCORE0_TPC0_QM_ARB_MST_CRED_INC,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_0,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_1,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_2,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_3,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_4,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_5,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_6,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_7,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_8,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_9,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_10,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_11,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_12,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_13,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_14,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_15,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_16,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_17,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_18,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_19,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_20,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_21,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_22,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_23,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_24,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_25,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_26,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_27,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_28,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_29,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_30,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_31,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_32,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_33,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_34,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_35,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_36,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_37,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_38,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_39,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_40,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_41,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_42,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_43,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_44,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_45,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_46,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_47,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_48,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_49,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_50,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_51,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_52,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_53,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_54,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_55,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_56,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_57,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_58,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_59,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_60,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_61,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_62,
++	mmDCORE0_TPC0_QM_ARB_MST_CHOICE_PUSH_OFST_63,
++	mmDCORE0_TPC0_QM_ARB_SLV_ID,
++	mmDCORE0_TPC0_QM_ARB_SLV_MASTER_INC_CRED_OFST,
++	mmDCORE0_TPC0_QM_ARC_CQ_CFG0,
++	mmDCORE0_TPC0_QM_CQ_IFIFO_CI_0,
++	mmDCORE0_TPC0_QM_CQ_IFIFO_CI_1,
++	mmDCORE0_TPC0_QM_CQ_IFIFO_CI_2,
++	mmDCORE0_TPC0_QM_CQ_IFIFO_CI_3,
++	mmDCORE0_TPC0_QM_CQ_IFIFO_CI_4,
++	mmDCORE0_TPC0_QM_ARC_CQ_IFIFO_CI,
++	mmDCORE0_TPC0_QM_CQ_CTL_CI_0,
++	mmDCORE0_TPC0_QM_CQ_CTL_CI_1,
++	mmDCORE0_TPC0_QM_CQ_CTL_CI_2,
++	mmDCORE0_TPC0_QM_CQ_CTL_CI_3,
++	mmDCORE0_TPC0_QM_CQ_CTL_CI_4,
++	mmDCORE0_TPC0_QM_ARC_CQ_CTL_CI,
++	mmDCORE0_TPC0_QM_ARC_CQ_TSIZE,
++	mmDCORE0_TPC0_QM_ARC_CQ_CTL,
++	mmDCORE0_TPC0_QM_CP_SWITCH_WD_SET,
++	mmDCORE0_TPC0_QM_CP_EXT_SWITCH,
++	mmDCORE0_TPC0_QM_CP_PRED_0,
++	mmDCORE0_TPC0_QM_CP_PRED_1,
++	mmDCORE0_TPC0_QM_CP_PRED_2,
++	mmDCORE0_TPC0_QM_CP_PRED_3,
++	mmDCORE0_TPC0_QM_CP_PRED_4,
++	mmDCORE0_TPC0_QM_CP_PRED_UPEN_0,
++	mmDCORE0_TPC0_QM_CP_PRED_UPEN_1,
++	mmDCORE0_TPC0_QM_CP_PRED_UPEN_2,
++	mmDCORE0_TPC0_QM_CP_PRED_UPEN_3,
++	mmDCORE0_TPC0_QM_CP_PRED_UPEN_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_LO_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_LO_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_LO_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_LO_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_LO_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_HI_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_HI_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_HI_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_HI_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE0_ADDR_HI_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_LO_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_LO_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_LO_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_LO_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_LO_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_HI_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_HI_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_HI_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_HI_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE1_ADDR_HI_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_LO_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_LO_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_LO_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_LO_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_LO_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_HI_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_HI_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_HI_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_HI_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE2_ADDR_HI_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_LO_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_LO_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_LO_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_LO_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_LO_4,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_HI_0,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_HI_1,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_HI_2,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_HI_3,
++	mmDCORE0_TPC0_QM_CP_MSG_BASE3_ADDR_HI_4,
++	mmDCORE0_TPC0_QM_ARC_CQ_IFIFO_MSG_BASE_LO,
++	mmDCORE0_TPC0_QM_ARC_CQ_CTL_MSG_BASE_LO,
++	mmDCORE0_TPC0_QM_CQ_IFIFO_MSG_BASE_LO,
++	mmDCORE0_TPC0_QM_CQ_CTL_MSG_BASE_LO,
++	mmDCORE0_TPC0_CFG_QM_SYNC_OBJECT_MESSAGE,
++	mmDCORE0_TPC0_CFG_QM_SYNC_OBJECT_ADDR,
++	mmDCORE0_TPC0_CFG_QM_KERNEL_BASE_ADDRESS_LOW,
++	mmDCORE0_TPC0_CFG_QM_KERNEL_BASE_ADDRESS_HIGH,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_DIM_0,
++	mmDCORE0_TPC0_CFG_QM_TID_SIZE_DIM_0,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_DIM_1,
++	mmDCORE0_TPC0_CFG_QM_TID_SIZE_DIM_1,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_DIM_2,
++	mmDCORE0_TPC0_CFG_QM_TID_SIZE_DIM_2,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_DIM_3,
++	mmDCORE0_TPC0_CFG_QM_TID_SIZE_DIM_3,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_DIM_4,
++	mmDCORE0_TPC0_CFG_QM_TID_SIZE_DIM_4,
++	mmDCORE0_TPC0_CFG_QM_KERNEL_CONFIG,
++	mmDCORE0_TPC0_CFG_QM_KERNEL_ID,
++	mmDCORE0_TPC0_CFG_QM_POWER_LOOP,
++	mmDCORE0_TPC0_CFG_LUT_FUNC32_BASE2_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC32_BASE2_ADDR_HI,
++	mmDCORE0_TPC0_CFG_LUT_FUNC64_BASE2_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC64_BASE2_ADDR_HI,
++	mmDCORE0_TPC0_CFG_LUT_FUNC128_BASE2_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC128_BASE2_ADDR_HI,
++	mmDCORE0_TPC0_CFG_LUT_FUNC256_BASE2_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC256_BASE2_ADDR_HI,
++	mmDCORE0_TPC0_CFG_ROUND_CSR,
++	mmDCORE0_TPC0_CFG_CONV_ROUND_CSR,
++	mmDCORE0_TPC0_CFG_SEMAPHORE,
++	mmDCORE0_TPC0_CFG_LFSR_POLYNOM,
++	mmDCORE0_TPC0_CFG_STATUS,
++	mmDCORE0_TPC0_CFG_TPC_CMD,
++	mmDCORE0_TPC0_CFG_TPC_EXECUTE,
++	mmDCORE0_TPC0_CFG_TPC_DCACHE_L0CD,
++	mmDCORE0_TPC0_CFG_ICACHE_BASE_ADDERESS_LOW,
++	mmDCORE0_TPC0_CFG_ICACHE_BASE_ADDERESS_HIGH,
++	mmDCORE0_TPC0_CFG_RD_RATE_LIMIT,
++	mmDCORE0_TPC0_CFG_WR_RATE_LIMIT,
++	mmDCORE0_TPC0_CFG_LUT_FUNC32_BASE_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC32_BASE_ADDR_HI,
++	mmDCORE0_TPC0_CFG_LUT_FUNC64_BASE_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC64_BASE_ADDR_HI,
++	mmDCORE0_TPC0_CFG_LUT_FUNC128_BASE_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC128_BASE_ADDR_HI,
++	mmDCORE0_TPC0_CFG_LUT_FUNC256_BASE_ADDR_LO,
++	mmDCORE0_TPC0_CFG_LUT_FUNC256_BASE_ADDR_HI,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_0,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_1,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_2,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_3,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_4,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_5,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_6,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_7,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_8,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_9,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_10,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_11,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_12,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_13,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_14,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_15,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_16,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_17,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_18,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_19,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_20,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_21,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_22,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_23,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_24,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_25,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_26,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_27,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_28,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_29,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_30,
++	mmDCORE0_TPC0_CFG_KERNEL_SRF_31,
++	mmDCORE0_TPC0_CFG_TPC_SB_L0CD,
++	mmDCORE0_TPC0_CFG_QM_KERNEL_ID_INC,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_SIZE_HIGH_DIM_0,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_SIZE_HIGH_DIM_1,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_SIZE_HIGH_DIM_2,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_SIZE_HIGH_DIM_3,
++	mmDCORE0_TPC0_CFG_QM_TID_BASE_SIZE_HIGH_DIM_4,
++	mmDCORE0_TPC0_CFG_SPECIAL_GLBL_SPARE_0,
++	mmDCORE0_TPC0_CFG_SPECIAL_GLBL_SPARE_1,
++	mmDCORE0_TPC0_CFG_SPECIAL_GLBL_SPARE_2,
++	mmDCORE0_TPC0_CFG_SPECIAL_GLBL_SPARE_3
++};
++
++static const u32 gaudi2_pb_dcr0_tpc0_ktensor_unsecured_regs[] = {
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_BASE_ADDR_LOW,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_BASE_ADDR_HIGH,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_PADDING_VALUE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_TENSOR_CONFIG,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_0_SIZE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_0_STRIDE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_1_SIZE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_1_STRIDE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_2_SIZE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_2_STRIDE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_3_SIZE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_3_STRIDE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_4_SIZE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_4_STRIDE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_PREF_STRIDE,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_0_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_1_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_2_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_3_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_DIM_4_SIZE_STRIDE_HIGH,
++};
++
++static const u32 gaudi2_pb_dcr0_tpc0_qtensor_unsecured_regs[] = {
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_BASE_ADDR_LOW,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_BASE_ADDR_HIGH,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_PADDING_VALUE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_TENSOR_CONFIG,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_0_SIZE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_0_STRIDE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_1_SIZE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_1_STRIDE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_2_SIZE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_2_STRIDE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_3_SIZE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_3_STRIDE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_SIZE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_STRIDE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_PREF_STRIDE,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_0_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_1_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_2_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_3_SIZE_STRIDE_HIGH,
++	mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_SIZE_STRIDE_HIGH,
++};
++
++static const u32 gaudi2_pb_dcr0_sram0[] = {
++	mmDCORE0_SRAM0_BANK_BASE,
++	mmDCORE0_SRAM0_DBG_CNT_N_HBW_DBG_CNT_BASE,
++	mmDCORE0_SRAM0_RTR_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_sm_mstr_if[] = {
++	mmDCORE0_SYNC_MNGR_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_dcr0_sm_glbl[] = {
++	mmDCORE0_SYNC_MNGR_GLBL_BASE,
++};
++
++static const struct range gaudi2_pb_dcr0_sm_glbl_unsecured_regs[] = {
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_L_1, mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_L_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_H_1, mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_H_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_SIZE_LOG2_1, mmDCORE0_SYNC_MNGR_GLBL_CQ_SIZE_LOG2_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_PI_1, mmDCORE0_SYNC_MNGR_GLBL_CQ_PI_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_L_1, mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_L_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_H_1, mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_H_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_LBW_DATA_1, mmDCORE0_SYNC_MNGR_GLBL_LBW_DATA_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_INC_MODE_1, mmDCORE0_SYNC_MNGR_GLBL_CQ_INC_MODE_63},
++};
++
++static const struct range gaudi2_pb_dcr_x_sm_glbl_unsecured_regs[] = {
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_L_0, mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_L_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_H_0, mmDCORE0_SYNC_MNGR_GLBL_CQ_BASE_ADDR_H_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_SIZE_LOG2_0, mmDCORE0_SYNC_MNGR_GLBL_CQ_SIZE_LOG2_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_PI_0, mmDCORE0_SYNC_MNGR_GLBL_CQ_PI_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_L_0, mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_L_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_H_0, mmDCORE0_SYNC_MNGR_GLBL_LBW_ADDR_H_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_LBW_DATA_0, mmDCORE0_SYNC_MNGR_GLBL_LBW_DATA_63},
++	{mmDCORE0_SYNC_MNGR_GLBL_CQ_INC_MODE_0, mmDCORE0_SYNC_MNGR_GLBL_CQ_INC_MODE_63},
++};
++
++static const u32 gaudi2_pb_arc_sched[] = {
++	mmARC_FARM_ARC0_AUX_BASE,
++	mmARC_FARM_ARC0_DUP_ENG_BASE,
++	mmARC_FARM_ARC0_ACP_ENG_BASE,
++};
++
++static const struct range gaudi2_pb_arc_sched_unsecured_regs[] = {
++	{mmARC_FARM_ARC0_AUX_RUN_HALT_REQ, mmARC_FARM_ARC0_AUX_RUN_HALT_ACK},
++	{mmARC_FARM_ARC0_AUX_CLUSTER_NUM, mmARC_FARM_ARC0_AUX_WAKE_UP_EVENT},
++	{mmARC_FARM_ARC0_AUX_ARC_RST_REQ, mmARC_FARM_ARC0_AUX_CID_OFFSET_7},
++	{mmARC_FARM_ARC0_AUX_SCRATCHPAD_0, mmARC_FARM_ARC0_AUX_INFLIGHT_LBU_RD_CNT},
++	{mmARC_FARM_ARC0_AUX_CBU_EARLY_BRESP_EN, mmARC_FARM_ARC0_AUX_CBU_EARLY_BRESP_EN},
++	{mmARC_FARM_ARC0_AUX_LBU_EARLY_BRESP_EN, mmARC_FARM_ARC0_AUX_LBU_EARLY_BRESP_EN},
++	{mmARC_FARM_ARC0_AUX_DCCM_QUEUE_BASE_ADDR_0, mmARC_FARM_ARC0_AUX_DCCM_QUEUE_ALERT_MSG},
++	{mmARC_FARM_ARC0_AUX_DCCM_Q_PUSH_FIFO_CNT, mmARC_FARM_ARC0_AUX_QMAN_ARC_CQ_SHADOW_CI},
++	{mmARC_FARM_ARC0_AUX_ARC_AXI_ORDERING_WR_IF_CNT, mmARC_FARM_ARC0_AUX_MME_ARC_UPPER_DCCM_EN},
++	{mmARC_FARM_ARC0_DUP_ENG_DUP_TPC_ENG_ADDR_0, mmARC_FARM_ARC0_DUP_ENG_ARC_CID_OFFSET_63},
++	{mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_STRONG_ORDER, mmARC_FARM_ARC0_DUP_ENG_AXUSER_LB_OVRD},
++	{mmARC_FARM_ARC0_ACP_ENG_ACP_PI_REG_0, mmARC_FARM_ARC0_ACP_ENG_ACP_DBG_REG},
++};
++
++static const u32 gaudi2_pb_xbar_mid[] = {
++	mmXBAR_MID_0_BASE,
++};
++
++static const u32 gaudi2_pb_xbar_mid_unsecured_regs[] = {
++	mmXBAR_MID_0_UPSCALE,
++	mmXBAR_MID_0_DOWN_CONV,
++	mmXBAR_MID_0_DOWN_CONV_LFSR_EN,
++	mmXBAR_MID_0_DOWN_CONV_LFSR_SET_VLD,
++	mmXBAR_MID_0_DOWN_CONV_LFSR_SET_VALUE,
++	mmXBAR_MID_0_DOWN_CONV_LFSR_CFG_POLY,
++};
++
++static const u32 gaudi2_pb_xbar_edge[] = {
++	mmXBAR_EDGE_0_BASE,
++};
++
++static const u32 gaudi2_pb_xbar_edge_unsecured_regs[] = {
++	mmXBAR_EDGE_0_UPSCALE,
++	mmXBAR_EDGE_0_DOWN_CONV,
++	mmXBAR_EDGE_0_DOWN_CONV_LFSR_EN,
++	mmXBAR_EDGE_0_DOWN_CONV_LFSR_SET_VLD,
++	mmXBAR_EDGE_0_DOWN_CONV_LFSR_SET_VALUE,
++	mmXBAR_EDGE_0_DOWN_CONV_LFSR_CFG_POLY,
++};
++
++static const u32 gaudi2_pb_nic0[] = {
++	mmNIC0_TMR_BASE,
++	mmNIC0_RXB_CORE_BASE,
++	mmNIC0_RXE0_BASE,
++	mmNIC0_RXE1_BASE,
++	mmNIC0_RXE0_AXUSER_AXUSER_CQ0_BASE,
++	mmNIC0_RXE1_AXUSER_AXUSER_CQ0_BASE,
++	mmNIC0_TXS0_BASE,
++	mmNIC0_TXS1_BASE,
++	mmNIC0_TXE0_BASE,
++	mmNIC0_TXE1_BASE,
++	mmNIC0_TXB_BASE,
++	mmNIC0_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_nic0_qm_qpc[] = {
++	mmNIC0_QM0_BASE,
++	mmNIC0_QPC0_BASE,
++};
++
++static const u32 gaudi2_pb_nic0_qm_arc_aux0[] = {
++	mmNIC0_QM_ARC_AUX0_BASE,
++};
++
++static const struct range gaudi2_pb_nic0_qm_arc_aux0_unsecured_regs[] = {
++	{mmNIC0_QM_ARC_AUX0_RUN_HALT_REQ, mmNIC0_QM_ARC_AUX0_RUN_HALT_ACK},
++	{mmNIC0_QM_ARC_AUX0_CLUSTER_NUM, mmNIC0_QM_ARC_AUX0_WAKE_UP_EVENT},
++	{mmNIC0_QM_ARC_AUX0_ARC_RST_REQ, mmNIC0_QM_ARC_AUX0_CID_OFFSET_7},
++	{mmNIC0_QM_ARC_AUX0_SCRATCHPAD_0, mmNIC0_QM_ARC_AUX0_INFLIGHT_LBU_RD_CNT},
++	{mmNIC0_QM_ARC_AUX0_LBU_EARLY_BRESP_EN, mmNIC0_QM_ARC_AUX0_LBU_EARLY_BRESP_EN},
++	{mmNIC0_QM_ARC_AUX0_DCCM_QUEUE_BASE_ADDR_0, mmNIC0_QM_ARC_AUX0_DCCM_QUEUE_ALERT_MSG},
++	{mmNIC0_QM_ARC_AUX0_DCCM_Q_PUSH_FIFO_CNT, mmNIC0_QM_ARC_AUX0_QMAN_ARC_CQ_SHADOW_CI},
++	{mmNIC0_QM_ARC_AUX0_ARC_AXI_ORDERING_WR_IF_CNT, mmNIC0_QM_ARC_AUX0_MME_ARC_UPPER_DCCM_EN},
++};
++
++static const u32 gaudi2_pb_nic0_umr[] = {
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE,
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 1, /* UMR0_1 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 2, /* UMR0_2 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 3, /* UMR0_3 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 4, /* UMR0_4 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 5, /* UMR0_5 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 6, /* UMR0_6 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 7, /* UMR0_7 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 8, /* UMR0_8 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 9, /* UMR0_9 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 10, /* UMR0_10 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 11, /* UMR0_11 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 12, /* UMR0_12 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 13, /* UMR0_13 */
++	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 14, /* UMR0_14 */
++};
++
++static const struct range gaudi2_pb_nic0_umr_unsecured_regs[] = {
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32,
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 1, /* UMR0_1 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 1},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 2, /* UMR0_2 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 2},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 3, /* UMR0_3 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 3},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 4, /* UMR0_4 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 4},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 5, /* UMR0_5 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 5},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 6, /* UMR0_6 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 6},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 7, /* UMR0_7 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 7},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 8, /* UMR0_8 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 8},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 9, /* UMR0_9 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 9},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 10, /* UMR0_10 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 10},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 11, /* UMR0_11 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 11},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 12, /* UMR0_12 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 12},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 13, /* UMR0_13 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 13},
++	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 14, /* UMR0_14 */
++		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 14},
++};
++
++/*
++ * mmNIC0_QPC0_LINEAR_WQE_QPN and mmNIC0_QPC0_MULTI_STRIDE_WQE_QPN are 32-bit
++ * registers and since the user writes in bulks of 64 bits we need to un-secure
++ * also the following 32 bits (that's why we added also the next 4 bytes to the
++ * table). In the RTL, as part of ECO (2874), writing to the next 4 bytes
++ * triggers a write to the SPECIAL_GLBL_SPARE register, hence it's must be
++ * unsecured as well.
++ */
++#define mmNIC0_QPC0_LINEAR_WQE_RSV (mmNIC0_QPC0_LINEAR_WQE_QPN + 4)
++#define mmNIC0_QPC0_MULTI_STRIDE_WQE_RSV (mmNIC0_QPC0_MULTI_STRIDE_WQE_QPN + 4)
++#define mmNIC0_QPC0_SPECIAL_GLBL_SPARE 0x541FF60
++
++static const u32 gaudi2_pb_nic0_qm_qpc_unsecured_regs[] = {
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_0,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_1,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_2,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_3,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_4,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_5,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_6,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_7,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_8,
++	mmNIC0_QPC0_LINEAR_WQE_STATIC_9,
++	mmNIC0_QPC0_LINEAR_WQE_DYNAMIC_0,
++	mmNIC0_QPC0_LINEAR_WQE_DYNAMIC_1,
++	mmNIC0_QPC0_LINEAR_WQE_DYNAMIC_2,
++	mmNIC0_QPC0_LINEAR_WQE_DYNAMIC_3,
++	mmNIC0_QPC0_LINEAR_WQE_DYNAMIC_4,
++	mmNIC0_QPC0_LINEAR_WQE_DYNAMIC_5,
++	mmNIC0_QPC0_LINEAR_WQE_QPN,
++	mmNIC0_QPC0_LINEAR_WQE_RSV,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_0,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_1,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_2,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_3,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_4,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_5,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_6,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_7,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_8,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_9,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_10,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_11,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_12,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_13,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_14,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_15,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_16,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_STATIC_17,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_DYNAMIC_0,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_DYNAMIC_1,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_DYNAMIC_2,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_DYNAMIC_3,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_DYNAMIC_4,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_DYNAMIC_5,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_QPN,
++	mmNIC0_QPC0_MULTI_STRIDE_WQE_RSV,
++	mmNIC0_QPC0_QMAN_DOORBELL,
++	mmNIC0_QPC0_QMAN_DOORBELL_QPN,
++	mmNIC0_QPC0_SPECIAL_GLBL_SPARE,
++	mmNIC0_QM0_CQ_CFG0_0,
++	mmNIC0_QM0_CQ_CFG0_1,
++	mmNIC0_QM0_CQ_CFG0_2,
++	mmNIC0_QM0_CQ_CFG0_3,
++	mmNIC0_QM0_CQ_CFG0_4,
++	mmNIC0_QM0_CP_FENCE0_RDATA_0,
++	mmNIC0_QM0_CP_FENCE0_RDATA_1,
++	mmNIC0_QM0_CP_FENCE0_RDATA_2,
++	mmNIC0_QM0_CP_FENCE0_RDATA_3,
++	mmNIC0_QM0_CP_FENCE0_RDATA_4,
++	mmNIC0_QM0_CP_FENCE1_RDATA_0,
++	mmNIC0_QM0_CP_FENCE1_RDATA_1,
++	mmNIC0_QM0_CP_FENCE1_RDATA_2,
++	mmNIC0_QM0_CP_FENCE1_RDATA_3,
++	mmNIC0_QM0_CP_FENCE1_RDATA_4,
++	mmNIC0_QM0_CP_FENCE2_RDATA_0,
++	mmNIC0_QM0_CP_FENCE2_RDATA_1,
++	mmNIC0_QM0_CP_FENCE2_RDATA_2,
++	mmNIC0_QM0_CP_FENCE2_RDATA_3,
++	mmNIC0_QM0_CP_FENCE2_RDATA_4,
++	mmNIC0_QM0_CP_FENCE3_RDATA_0,
++	mmNIC0_QM0_CP_FENCE3_RDATA_1,
++	mmNIC0_QM0_CP_FENCE3_RDATA_2,
++	mmNIC0_QM0_CP_FENCE3_RDATA_3,
++	mmNIC0_QM0_CP_FENCE3_RDATA_4,
++	mmNIC0_QM0_CP_FENCE0_CNT_0,
++	mmNIC0_QM0_CP_FENCE0_CNT_1,
++	mmNIC0_QM0_CP_FENCE0_CNT_2,
++	mmNIC0_QM0_CP_FENCE0_CNT_3,
++	mmNIC0_QM0_CP_FENCE0_CNT_4,
++	mmNIC0_QM0_CP_FENCE1_CNT_0,
++	mmNIC0_QM0_CP_FENCE1_CNT_1,
++	mmNIC0_QM0_CP_FENCE1_CNT_2,
++	mmNIC0_QM0_CP_FENCE1_CNT_3,
++	mmNIC0_QM0_CP_FENCE1_CNT_4,
++	mmNIC0_QM0_CP_FENCE2_CNT_0,
++	mmNIC0_QM0_CP_FENCE2_CNT_1,
++	mmNIC0_QM0_CP_FENCE2_CNT_2,
++	mmNIC0_QM0_CP_FENCE2_CNT_3,
++	mmNIC0_QM0_CP_FENCE2_CNT_4,
++	mmNIC0_QM0_CP_FENCE3_CNT_0,
++	mmNIC0_QM0_CP_FENCE3_CNT_1,
++	mmNIC0_QM0_CP_FENCE3_CNT_2,
++	mmNIC0_QM0_CP_FENCE3_CNT_3,
++	mmNIC0_QM0_CP_FENCE3_CNT_4,
++	mmNIC0_QM0_CQ_PTR_LO_0,
++	mmNIC0_QM0_CQ_PTR_HI_0,
++	mmNIC0_QM0_CQ_TSIZE_0,
++	mmNIC0_QM0_CQ_CTL_0,
++	mmNIC0_QM0_CQ_PTR_LO_1,
++	mmNIC0_QM0_CQ_PTR_HI_1,
++	mmNIC0_QM0_CQ_TSIZE_1,
++	mmNIC0_QM0_CQ_CTL_1,
++	mmNIC0_QM0_CQ_PTR_LO_2,
++	mmNIC0_QM0_CQ_PTR_HI_2,
++	mmNIC0_QM0_CQ_TSIZE_2,
++	mmNIC0_QM0_CQ_CTL_2,
++	mmNIC0_QM0_CQ_PTR_LO_3,
++	mmNIC0_QM0_CQ_PTR_HI_3,
++	mmNIC0_QM0_CQ_TSIZE_3,
++	mmNIC0_QM0_CQ_CTL_3,
++	mmNIC0_QM0_CQ_PTR_LO_4,
++	mmNIC0_QM0_CQ_PTR_HI_4,
++	mmNIC0_QM0_CQ_TSIZE_4,
++	mmNIC0_QM0_CQ_CTL_4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR0_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR0_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR1_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR1_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR2_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR2_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR3_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR3_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR4_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR4_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR5_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR5_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR6_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR6_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR7_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR7_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR8_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR8_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR9_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR9_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR10_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR10_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR11_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR11_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR12_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR12_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR13_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR13_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR14_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR14_BASE + 4,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR15_BASE,
++	mmNIC0_QM0_QMAN_WR64_BASE_ADDR15_BASE + 4,
++	mmNIC0_QM0_ARC_CQ_PTR_LO,
++	mmNIC0_QM0_ARC_CQ_PTR_LO_STS,
++	mmNIC0_QM0_ARC_CQ_PTR_HI,
++	mmNIC0_QM0_ARC_CQ_PTR_HI_STS,
++	mmNIC0_QM0_ARB_CFG_0,
++	mmNIC0_QM0_ARB_MST_QUIET_PER,
++	mmNIC0_QM0_ARB_CHOICE_Q_PUSH,
++	mmNIC0_QM0_ARB_WRR_WEIGHT_0,
++	mmNIC0_QM0_ARB_WRR_WEIGHT_1,
++	mmNIC0_QM0_ARB_WRR_WEIGHT_2,
++	mmNIC0_QM0_ARB_WRR_WEIGHT_3,
++	mmNIC0_QM0_ARB_BASE_LO,
++	mmNIC0_QM0_ARB_BASE_HI,
++	mmNIC0_QM0_ARB_MST_SLAVE_EN,
++	mmNIC0_QM0_ARB_MST_SLAVE_EN_1,
++	mmNIC0_QM0_ARB_MST_CRED_INC,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_0,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_1,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_2,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_3,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_4,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_5,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_6,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_7,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_8,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_9,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_10,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_11,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_12,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_13,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_14,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_15,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_16,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_17,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_18,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_19,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_20,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_21,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_22,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_23,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_24,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_25,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_26,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_27,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_28,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_29,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_30,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_31,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_32,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_33,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_34,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_35,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_36,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_37,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_38,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_39,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_40,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_41,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_42,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_43,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_44,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_45,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_46,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_47,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_48,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_49,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_50,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_51,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_52,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_53,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_54,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_55,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_56,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_57,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_58,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_59,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_60,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_61,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_62,
++	mmNIC0_QM0_ARB_MST_CHOICE_PUSH_OFST_63,
++	mmNIC0_QM0_ARB_SLV_ID,
++	mmNIC0_QM0_ARB_SLV_MASTER_INC_CRED_OFST,
++	mmNIC0_QM0_ARC_CQ_CFG0,
++	mmNIC0_QM0_CQ_IFIFO_CI_0,
++	mmNIC0_QM0_CQ_IFIFO_CI_1,
++	mmNIC0_QM0_CQ_IFIFO_CI_2,
++	mmNIC0_QM0_CQ_IFIFO_CI_3,
++	mmNIC0_QM0_CQ_IFIFO_CI_4,
++	mmNIC0_QM0_ARC_CQ_IFIFO_CI,
++	mmNIC0_QM0_CQ_CTL_CI_0,
++	mmNIC0_QM0_CQ_CTL_CI_1,
++	mmNIC0_QM0_CQ_CTL_CI_2,
++	mmNIC0_QM0_CQ_CTL_CI_3,
++	mmNIC0_QM0_CQ_CTL_CI_4,
++	mmNIC0_QM0_ARC_CQ_CTL_CI,
++	mmNIC0_QM0_ARC_CQ_TSIZE,
++	mmNIC0_QM0_ARC_CQ_CTL,
++	mmNIC0_QM0_CP_SWITCH_WD_SET,
++	mmNIC0_QM0_CP_EXT_SWITCH,
++	mmNIC0_QM0_CP_PRED_0,
++	mmNIC0_QM0_CP_PRED_1,
++	mmNIC0_QM0_CP_PRED_2,
++	mmNIC0_QM0_CP_PRED_3,
++	mmNIC0_QM0_CP_PRED_4,
++	mmNIC0_QM0_CP_PRED_UPEN_0,
++	mmNIC0_QM0_CP_PRED_UPEN_1,
++	mmNIC0_QM0_CP_PRED_UPEN_2,
++	mmNIC0_QM0_CP_PRED_UPEN_3,
++	mmNIC0_QM0_CP_PRED_UPEN_4,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_LO_0,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_LO_1,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_LO_2,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_LO_3,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_LO_4,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_HI_0,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_HI_1,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_HI_2,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_HI_3,
++	mmNIC0_QM0_CP_MSG_BASE0_ADDR_HI_4,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_LO_0,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_LO_1,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_LO_2,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_LO_3,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_LO_4,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_HI_0,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_HI_1,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_HI_2,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_HI_3,
++	mmNIC0_QM0_CP_MSG_BASE1_ADDR_HI_4,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_0,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_1,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_2,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_3,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_4,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_HI_0,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_HI_1,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_HI_2,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_HI_3,
++	mmNIC0_QM0_CP_MSG_BASE2_ADDR_HI_4,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_LO_0,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_LO_1,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_LO_2,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_LO_3,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_LO_4,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_HI_0,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_HI_1,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_HI_2,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_HI_3,
++	mmNIC0_QM0_CP_MSG_BASE3_ADDR_HI_4,
++	mmNIC0_QM0_ARC_CQ_IFIFO_MSG_BASE_LO,
++	mmNIC0_QM0_ARC_CQ_CTL_MSG_BASE_LO,
++	mmNIC0_QM0_CQ_IFIFO_MSG_BASE_LO,
++	mmNIC0_QM0_CQ_CTL_MSG_BASE_LO
++};
++
++static const u32 gaudi2_pb_rot0[] = {
++	mmROT0_BASE,
++	mmROT0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmROT0_QM_BASE,
++};
++
++static const u32 gaudi2_pb_rot0_arc[] = {
++	mmROT0_QM_ARC_AUX_BASE
++};
++
++static const struct range gaudi2_pb_rot0_arc_unsecured_regs[] = {
++	{mmROT0_QM_ARC_AUX_RUN_HALT_REQ, mmROT0_QM_ARC_AUX_RUN_HALT_ACK},
++	{mmROT0_QM_ARC_AUX_CLUSTER_NUM, mmROT0_QM_ARC_AUX_WAKE_UP_EVENT},
++	{mmROT0_QM_ARC_AUX_ARC_RST_REQ, mmROT0_QM_ARC_AUX_CID_OFFSET_7},
++	{mmROT0_QM_ARC_AUX_SCRATCHPAD_0, mmROT0_QM_ARC_AUX_INFLIGHT_LBU_RD_CNT},
++	{mmROT0_QM_ARC_AUX_CBU_EARLY_BRESP_EN, mmROT0_QM_ARC_AUX_CBU_EARLY_BRESP_EN},
++	{mmROT0_QM_ARC_AUX_LBU_EARLY_BRESP_EN, mmROT0_QM_ARC_AUX_LBU_EARLY_BRESP_EN},
++	{mmROT0_QM_ARC_AUX_DCCM_QUEUE_BASE_ADDR_0, mmROT0_QM_ARC_AUX_DCCM_QUEUE_ALERT_MSG},
++	{mmROT0_QM_ARC_AUX_DCCM_Q_PUSH_FIFO_CNT, mmROT0_QM_ARC_AUX_QMAN_ARC_CQ_SHADOW_CI},
++	{mmROT0_QM_ARC_AUX_ARC_AXI_ORDERING_WR_IF_CNT, mmROT0_QM_ARC_AUX_MME_ARC_UPPER_DCCM_EN},
++};
++
++static const u32 gaudi2_pb_rot0_unsecured_regs[] = {
++	mmROT0_QM_CQ_CFG0_0,
++	mmROT0_QM_CQ_CFG0_1,
++	mmROT0_QM_CQ_CFG0_2,
++	mmROT0_QM_CQ_CFG0_3,
++	mmROT0_QM_CQ_CFG0_4,
++	mmROT0_QM_CP_FENCE0_RDATA_0,
++	mmROT0_QM_CP_FENCE0_RDATA_1,
++	mmROT0_QM_CP_FENCE0_RDATA_2,
++	mmROT0_QM_CP_FENCE0_RDATA_3,
++	mmROT0_QM_CP_FENCE0_RDATA_4,
++	mmROT0_QM_CP_FENCE1_RDATA_0,
++	mmROT0_QM_CP_FENCE1_RDATA_1,
++	mmROT0_QM_CP_FENCE1_RDATA_2,
++	mmROT0_QM_CP_FENCE1_RDATA_3,
++	mmROT0_QM_CP_FENCE1_RDATA_4,
++	mmROT0_QM_CP_FENCE2_RDATA_0,
++	mmROT0_QM_CP_FENCE2_RDATA_1,
++	mmROT0_QM_CP_FENCE2_RDATA_2,
++	mmROT0_QM_CP_FENCE2_RDATA_3,
++	mmROT0_QM_CP_FENCE2_RDATA_4,
++	mmROT0_QM_CP_FENCE3_RDATA_0,
++	mmROT0_QM_CP_FENCE3_RDATA_1,
++	mmROT0_QM_CP_FENCE3_RDATA_2,
++	mmROT0_QM_CP_FENCE3_RDATA_3,
++	mmROT0_QM_CP_FENCE3_RDATA_4,
++	mmROT0_QM_CP_FENCE0_CNT_0,
++	mmROT0_QM_CP_FENCE0_CNT_1,
++	mmROT0_QM_CP_FENCE0_CNT_2,
++	mmROT0_QM_CP_FENCE0_CNT_3,
++	mmROT0_QM_CP_FENCE0_CNT_4,
++	mmROT0_QM_CP_FENCE1_CNT_0,
++	mmROT0_QM_CP_FENCE1_CNT_1,
++	mmROT0_QM_CP_FENCE1_CNT_2,
++	mmROT0_QM_CP_FENCE1_CNT_3,
++	mmROT0_QM_CP_FENCE1_CNT_4,
++	mmROT0_QM_CP_FENCE2_CNT_0,
++	mmROT0_QM_CP_FENCE2_CNT_1,
++	mmROT0_QM_CP_FENCE2_CNT_2,
++	mmROT0_QM_CP_FENCE2_CNT_3,
++	mmROT0_QM_CP_FENCE2_CNT_4,
++	mmROT0_QM_CP_FENCE3_CNT_0,
++	mmROT0_QM_CP_FENCE3_CNT_1,
++	mmROT0_QM_CP_FENCE3_CNT_2,
++	mmROT0_QM_CP_FENCE3_CNT_3,
++	mmROT0_QM_CP_FENCE3_CNT_4,
++	mmROT0_QM_CQ_PTR_LO_0,
++	mmROT0_QM_CQ_PTR_HI_0,
++	mmROT0_QM_CQ_TSIZE_0,
++	mmROT0_QM_CQ_CTL_0,
++	mmROT0_QM_CQ_PTR_LO_1,
++	mmROT0_QM_CQ_PTR_HI_1,
++	mmROT0_QM_CQ_TSIZE_1,
++	mmROT0_QM_CQ_CTL_1,
++	mmROT0_QM_CQ_PTR_LO_2,
++	mmROT0_QM_CQ_PTR_HI_2,
++	mmROT0_QM_CQ_TSIZE_2,
++	mmROT0_QM_CQ_CTL_2,
++	mmROT0_QM_CQ_PTR_LO_3,
++	mmROT0_QM_CQ_PTR_HI_3,
++	mmROT0_QM_CQ_TSIZE_3,
++	mmROT0_QM_CQ_CTL_3,
++	mmROT0_QM_CQ_PTR_LO_4,
++	mmROT0_QM_CQ_PTR_HI_4,
++	mmROT0_QM_CQ_TSIZE_4,
++	mmROT0_QM_CQ_CTL_4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR0_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR0_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR1_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR1_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR2_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR2_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR3_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR3_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR4_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR4_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR5_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR5_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR6_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR6_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR7_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR7_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR8_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR8_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR9_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR9_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR10_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR10_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR11_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR11_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR12_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR12_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR13_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR13_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR14_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR14_BASE + 4,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR15_BASE,
++	mmROT0_QM_QMAN_WR64_BASE_ADDR15_BASE + 4,
++	mmROT0_QM_ARC_CQ_PTR_LO,
++	mmROT0_QM_ARC_CQ_PTR_LO_STS,
++	mmROT0_QM_ARC_CQ_PTR_HI,
++	mmROT0_QM_ARC_CQ_PTR_HI_STS,
++	mmROT0_QM_ARB_CFG_0,
++	mmROT0_QM_ARB_MST_QUIET_PER,
++	mmROT0_QM_ARB_CHOICE_Q_PUSH,
++	mmROT0_QM_ARB_WRR_WEIGHT_0,
++	mmROT0_QM_ARB_WRR_WEIGHT_1,
++	mmROT0_QM_ARB_WRR_WEIGHT_2,
++	mmROT0_QM_ARB_WRR_WEIGHT_3,
++	mmROT0_QM_ARB_BASE_LO,
++	mmROT0_QM_ARB_BASE_HI,
++	mmROT0_QM_ARB_MST_SLAVE_EN,
++	mmROT0_QM_ARB_MST_SLAVE_EN_1,
++	mmROT0_QM_ARB_MST_CRED_INC,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_0,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_1,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_2,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_3,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_4,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_5,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_6,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_7,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_8,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_9,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_10,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_11,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_12,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_13,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_14,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_15,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_16,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_17,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_18,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_19,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_20,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_21,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_22,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_23,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_24,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_25,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_26,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_27,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_28,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_29,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_30,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_31,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_32,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_33,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_34,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_35,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_36,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_37,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_38,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_39,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_40,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_41,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_42,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_43,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_44,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_45,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_46,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_47,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_48,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_49,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_50,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_51,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_52,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_53,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_54,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_55,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_56,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_57,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_58,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_59,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_60,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_61,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_62,
++	mmROT0_QM_ARB_MST_CHOICE_PUSH_OFST_63,
++	mmROT0_QM_ARB_SLV_ID,
++	mmROT0_QM_ARB_SLV_MASTER_INC_CRED_OFST,
++	mmROT0_QM_ARC_CQ_CFG0,
++	mmROT0_QM_CQ_IFIFO_CI_0,
++	mmROT0_QM_CQ_IFIFO_CI_1,
++	mmROT0_QM_CQ_IFIFO_CI_2,
++	mmROT0_QM_CQ_IFIFO_CI_3,
++	mmROT0_QM_CQ_IFIFO_CI_4,
++	mmROT0_QM_ARC_CQ_IFIFO_CI,
++	mmROT0_QM_CQ_CTL_CI_0,
++	mmROT0_QM_CQ_CTL_CI_1,
++	mmROT0_QM_CQ_CTL_CI_2,
++	mmROT0_QM_CQ_CTL_CI_3,
++	mmROT0_QM_CQ_CTL_CI_4,
++	mmROT0_QM_ARC_CQ_CTL_CI,
++	mmROT0_QM_ARC_CQ_TSIZE,
++	mmROT0_QM_ARC_CQ_CTL,
++	mmROT0_QM_CP_SWITCH_WD_SET,
++	mmROT0_QM_CP_EXT_SWITCH,
++	mmROT0_QM_CP_PRED_0,
++	mmROT0_QM_CP_PRED_1,
++	mmROT0_QM_CP_PRED_2,
++	mmROT0_QM_CP_PRED_3,
++	mmROT0_QM_CP_PRED_4,
++	mmROT0_QM_CP_PRED_UPEN_0,
++	mmROT0_QM_CP_PRED_UPEN_1,
++	mmROT0_QM_CP_PRED_UPEN_2,
++	mmROT0_QM_CP_PRED_UPEN_3,
++	mmROT0_QM_CP_PRED_UPEN_4,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_LO_0,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_LO_1,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_LO_2,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_LO_3,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_LO_4,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_HI_0,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_HI_1,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_HI_2,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_HI_3,
++	mmROT0_QM_CP_MSG_BASE0_ADDR_HI_4,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_LO_0,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_LO_1,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_LO_2,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_LO_3,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_LO_4,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_HI_0,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_HI_1,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_HI_2,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_HI_3,
++	mmROT0_QM_CP_MSG_BASE1_ADDR_HI_4,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_LO_0,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_LO_1,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_LO_2,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_LO_3,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_LO_4,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_HI_0,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_HI_1,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_HI_2,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_HI_3,
++	mmROT0_QM_CP_MSG_BASE2_ADDR_HI_4,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_LO_0,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_LO_1,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_LO_2,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_LO_3,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_LO_4,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_HI_0,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_HI_1,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_HI_2,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_HI_3,
++	mmROT0_QM_CP_MSG_BASE3_ADDR_HI_4,
++	mmROT0_QM_ARC_CQ_IFIFO_MSG_BASE_LO,
++	mmROT0_QM_ARC_CQ_CTL_MSG_BASE_LO,
++	mmROT0_QM_CQ_IFIFO_MSG_BASE_LO,
++	mmROT0_QM_CQ_CTL_MSG_BASE_LO,
++	mmROT0_DESC_CONTEXT_ID,
++	mmROT0_DESC_IN_IMG_START_ADDR_L,
++	mmROT0_DESC_IN_IMG_START_ADDR_H,
++	mmROT0_DESC_OUT_IMG_START_ADDR_L,
++	mmROT0_DESC_OUT_IMG_START_ADDR_H,
++	mmROT0_DESC_CFG,
++	mmROT0_DESC_IM_READ_SLOPE,
++	mmROT0_DESC_SIN_D,
++	mmROT0_DESC_COS_D,
++	mmROT0_DESC_IN_IMG,
++	mmROT0_DESC_IN_STRIDE,
++	mmROT0_DESC_IN_STRIPE,
++	mmROT0_DESC_IN_CENTER,
++	mmROT0_DESC_OUT_IMG,
++	mmROT0_DESC_OUT_STRIDE,
++	mmROT0_DESC_OUT_STRIPE,
++	mmROT0_DESC_OUT_CENTER,
++	mmROT0_DESC_BACKGROUND,
++	mmROT0_DESC_CPL_MSG_EN,
++	mmROT0_DESC_IDLE_STATE,
++	mmROT0_DESC_CPL_MSG_ADDR,
++	mmROT0_DESC_CPL_MSG_DATA,
++	mmROT0_DESC_X_I_START_OFFSET,
++	mmROT0_DESC_X_I_START_OFFSET_FLIP,
++	mmROT0_DESC_X_I_FIRST,
++	mmROT0_DESC_Y_I_FIRST,
++	mmROT0_DESC_Y_I,
++	mmROT0_DESC_OUT_STRIPE_SIZE,
++	mmROT0_DESC_RSB_CFG_0,
++	mmROT0_DESC_RSB_PAD_VAL,
++	mmROT0_DESC_OWM_CFG,
++	mmROT0_DESC_CTRL_CFG,
++	mmROT0_DESC_PIXEL_PAD,
++	mmROT0_DESC_PREC_SHIFT,
++	mmROT0_DESC_MAX_VAL,
++	mmROT0_DESC_A0_M11,
++	mmROT0_DESC_A1_M12,
++	mmROT0_DESC_A2,
++	mmROT0_DESC_B0_M21,
++	mmROT0_DESC_B1_M22,
++	mmROT0_DESC_B2,
++	mmROT0_DESC_C0,
++	mmROT0_DESC_C1,
++	mmROT0_DESC_C2,
++	mmROT0_DESC_D0,
++	mmROT0_DESC_D1,
++	mmROT0_DESC_D2,
++	mmROT0_DESC_INV_PROC_SIZE_M_1,
++	mmROT0_DESC_MESH_IMG_START_ADDR_L,
++	mmROT0_DESC_MESH_IMG_START_ADDR_H,
++	mmROT0_DESC_MESH_IMG,
++	mmROT0_DESC_MESH_STRIDE,
++	mmROT0_DESC_MESH_STRIPE,
++	mmROT0_DESC_MESH_CTRL,
++	mmROT0_DESC_MESH_GH,
++	mmROT0_DESC_MESH_GV,
++	mmROT0_DESC_MRSB_CFG_0,
++	mmROT0_DESC_MRSB_PAD_VAL,
++	mmROT0_DESC_BUF_CFG,
++	mmROT0_DESC_CID_OFFSET,
++	mmROT0_DESC_PUSH_DESC
++};
++
++static const u32 gaudi2_pb_psoc_global_conf[] = {
++	mmPSOC_GLOBAL_CONF_BASE
++};
++
++static const u32 gaudi2_pb_psoc[] = {
++	mmPSOC_EFUSE_BASE,
++	mmPSOC_BTL_BASE,
++	mmPSOC_CS_TRACE_BASE,
++	mmPSOC_DFT_EFUSE_BASE,
++	mmPSOC_PID_BASE,
++	mmPSOC_ARC0_CFG_BASE,
++	mmPSOC_ARC0_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPSOC_ARC0_AUX_BASE,
++	mmPSOC_ARC1_CFG_BASE,
++	mmPSOC_ARC1_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPSOC_ARC1_AUX_BASE,
++	mmJT_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmSMI_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmI2C_S_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPSOC_SVID0_BASE,
++	mmPSOC_SVID1_BASE,
++	mmPSOC_SVID2_BASE,
++	mmPSOC_AVS0_BASE,
++	mmPSOC_AVS1_BASE,
++	mmPSOC_AVS2_BASE,
++	mmPSOC_PWM0_BASE,
++	mmPSOC_PWM1_BASE,
++	mmPSOC_MSTR_IF_RR_SHRD_HBW_BASE,
++};
++
++static const u32 gaudi2_pb_pmmu[] = {
++	mmPMMU_HBW_MMU_BASE,
++	mmPMMU_HBW_STLB_BASE,
++	mmPMMU_HBW_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPMMU_PIF_BASE,
++};
++
++static const u32 gaudi2_pb_psoc_pll[] = {
++	mmPSOC_MME_PLL_CTRL_BASE,
++	mmPSOC_CPU_PLL_CTRL_BASE,
++	mmPSOC_VID_PLL_CTRL_BASE
++};
++
++static const u32 gaudi2_pb_pmmu_pll[] = {
++	mmPMMU_MME_PLL_CTRL_BASE,
++	mmPMMU_VID_PLL_CTRL_BASE
++};
++
++static const u32 gaudi2_pb_xbar_pll[] = {
++	mmDCORE0_XBAR_DMA_PLL_CTRL_BASE,
++	mmDCORE0_XBAR_MMU_PLL_CTRL_BASE,
++	mmDCORE0_XBAR_IF_PLL_CTRL_BASE,
++	mmDCORE0_XBAR_MESH_PLL_CTRL_BASE,
++	mmDCORE1_XBAR_DMA_PLL_CTRL_BASE,
++	mmDCORE1_XBAR_MMU_PLL_CTRL_BASE,
++	mmDCORE1_XBAR_IF_PLL_CTRL_BASE,
++	mmDCORE1_XBAR_MESH_PLL_CTRL_BASE,
++	mmDCORE1_XBAR_HBM_PLL_CTRL_BASE,
++	mmDCORE2_XBAR_DMA_PLL_CTRL_BASE,
++	mmDCORE2_XBAR_MMU_PLL_CTRL_BASE,
++	mmDCORE2_XBAR_IF_PLL_CTRL_BASE,
++	mmDCORE2_XBAR_BANK_PLL_CTRL_BASE,
++	mmDCORE2_XBAR_HBM_PLL_CTRL_BASE,
++	mmDCORE3_XBAR_DMA_PLL_CTRL_BASE,
++	mmDCORE3_XBAR_MMU_PLL_CTRL_BASE,
++	mmDCORE3_XBAR_IF_PLL_CTRL_BASE,
++	mmDCORE3_XBAR_BANK_PLL_CTRL_BASE
++};
++
++static const u32 gaudi2_pb_xft_pll[] = {
++	mmDCORE0_HBM_PLL_CTRL_BASE,
++	mmDCORE0_TPC_PLL_CTRL_BASE,
++	mmDCORE0_PCI_PLL_CTRL_BASE,
++	mmDCORE1_HBM_PLL_CTRL_BASE,
++	mmDCORE1_TPC_PLL_CTRL_BASE,
++	mmDCORE1_NIC_PLL_CTRL_BASE,
++	mmDCORE2_HBM_PLL_CTRL_BASE,
++	mmDCORE2_TPC_PLL_CTRL_BASE,
++	mmDCORE3_HBM_PLL_CTRL_BASE,
++	mmDCORE3_TPC_PLL_CTRL_BASE,
++	mmDCORE3_NIC_PLL_CTRL_BASE,
++};
++
++static const u32 gaudi2_pb_pcie[] = {
++	mmPCIE_ELBI_RR_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPCIE_LBW_RR_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPCIE_MSTR_RR_MSTR_IF_RR_SHRD_HBW_BASE,
++	mmPCIE_WRAP_BASE,
++};
++
++static const u32 gaudi2_pb_thermal_sensor0[] = {
++	mmDCORE0_XFT_BASE,
++	mmDCORE0_TSTDVS_BASE,
++};
++
++static const u32 gaudi2_pb_hbm[] = {
++	mmHBM0_MC0_BASE,
++	mmHBM0_MC1_BASE,
++};
++
++static const u32 gaudi2_pb_mme_qm_arc_acp_eng[] = {
++	mmDCORE0_MME_QM_ARC_ACP_ENG_BASE,
++};
++
++static const struct range gaudi2_pb_mme_qm_arc_acp_eng_unsecured_regs[] = {
++	{mmDCORE0_MME_QM_ARC_ACP_ENG_ACP_PI_REG_0, mmDCORE0_MME_QM_ARC_ACP_ENG_ACP_DBG_REG},
++};
++
++struct gaudi2_tpc_pb_data {
++	struct hl_block_glbl_sec *glbl_sec;
++	u32 block_array_size;
++};
++
++static void gaudi2_config_tpcs_glbl_sec(struct hl_device *hdev, int dcore, int inst, u32 offset,
++					void *data)
++{
++	struct gaudi2_tpc_pb_data *pb_data = (struct gaudi2_tpc_pb_data *)data;
++
++	hl_config_glbl_sec(hdev, gaudi2_pb_dcr0_tpc0, pb_data->glbl_sec,
++					offset, pb_data->block_array_size);
 +}
 +
-+static void cs_completion(struct work_struct *work)
++static int gaudi2_init_pb_tpc(struct hl_device *hdev)
 +{
-+	struct hl_cs *cs = container_of(work, struct hl_cs, finish_work);
-+	struct hl_device *hdev = cs->ctx->hdev;
-+	struct hl_cs_job *job, *tmp;
++	u32 stride, kernel_tensor_stride, qm_tensor_stride, block_array_size;
++	struct gaudi2_tpc_pb_data tpc_pb_data;
++	struct hl_block_glbl_sec *glbl_sec;
++	struct iterate_module_ctx tpc_iter;
++	int i;
 +
-+	list_for_each_entry_safe(job, tmp, &cs->job_list, cs_node)
-+		hl_complete_job(hdev, job);
- }
- 
- static int validate_queue_index(struct hl_device *hdev,
-@@ -1115,7 +1125,13 @@ static int validate_queue_index(struct hl_device *hdev,
- 	hw_queue_prop = &asic->hw_queues_props[chunk->queue_index];
- 
- 	if (hw_queue_prop->type == QUEUE_TYPE_NA) {
--		dev_err(hdev->dev, "Queue index %d is invalid\n",
-+		dev_err(hdev->dev, "Queue index %d is not applicable\n",
-+			chunk->queue_index);
-+		return -EINVAL;
++	block_array_size = ARRAY_SIZE(gaudi2_pb_dcr0_tpc0);
++
++	glbl_sec = kcalloc(block_array_size, sizeof(struct hl_block_glbl_sec), GFP_KERNEL);
++	if (!glbl_sec)
++		return -ENOMEM;
++
++	kernel_tensor_stride = mmDCORE0_TPC0_CFG_KERNEL_TENSOR_1_BASE -
++				mmDCORE0_TPC0_CFG_KERNEL_TENSOR_0_BASE;
++	qm_tensor_stride = mmDCORE0_TPC0_CFG_QM_TENSOR_1_BASE - mmDCORE0_TPC0_CFG_QM_TENSOR_0_BASE;
++
++	hl_secure_block(hdev, glbl_sec, block_array_size);
++	hl_unsecure_registers(hdev, gaudi2_pb_dcr0_tpc0_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_unsecured_regs),
++			0, gaudi2_pb_dcr0_tpc0, glbl_sec,
++			block_array_size);
++
++	/* Unsecure all TPC kernel tensors */
++	for (i = 0 ; i < TPC_NUM_OF_KERNEL_TENSORS ; i++)
++		hl_unsecure_registers(hdev,
++			gaudi2_pb_dcr0_tpc0_ktensor_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_ktensor_unsecured_regs),
++			i * kernel_tensor_stride, gaudi2_pb_dcr0_tpc0,
++			glbl_sec, block_array_size);
++
++	/* Unsecure all TPC QM tensors */
++	for (i = 0 ; i < TPC_NUM_OF_QM_TENSORS ; i++)
++		hl_unsecure_registers(hdev,
++			gaudi2_pb_dcr0_tpc0_qtensor_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_qtensor_unsecured_regs),
++			i * qm_tensor_stride,
++			gaudi2_pb_dcr0_tpc0, glbl_sec, block_array_size);
++
++	/* unsecure all 32 TPC QM SRF regs */
++	stride = mmDCORE0_TPC0_CFG_QM_SRF_1 - mmDCORE0_TPC0_CFG_QM_SRF_0;
++	for (i = 0 ; i < 32 ; i++)
++		hl_unsecure_register(hdev, mmDCORE0_TPC0_CFG_QM_SRF_0,
++				i * stride, gaudi2_pb_dcr0_tpc0, glbl_sec,
++				block_array_size);
++
++	/* unsecure the 4 TPC LOCK VALUE regs */
++	stride = mmDCORE0_TPC0_CFG_TPC_LOCK_VALUE_1 - mmDCORE0_TPC0_CFG_TPC_LOCK_VALUE_0;
++	for (i = 0 ; i < 4 ; i++)
++		hl_unsecure_register(hdev, mmDCORE0_TPC0_CFG_TPC_LOCK_VALUE_0,
++				i * stride, gaudi2_pb_dcr0_tpc0, glbl_sec,
++				block_array_size);
++
++	/* prepare data for TPC iterator */
++	tpc_pb_data.glbl_sec = glbl_sec;
++	tpc_pb_data.block_array_size = block_array_size;
++	tpc_iter.fn = &gaudi2_config_tpcs_glbl_sec;
++	tpc_iter.data = &tpc_pb_data;
++	gaudi2_iterate_tpcs(hdev, &tpc_iter);
++
++	kfree(glbl_sec);
++
++	return 0;
++}
++
++struct gaudi2_tpc_arc_pb_data {
++	u32 unsecured_regs_arr_size;
++	u32 arc_regs_arr_size;
++	int rc;
++};
++
++static void gaudi2_config_tpcs_pb_ranges(struct hl_device *hdev, int dcore, int inst, u32 offset,
++					void *data)
++{
++	struct gaudi2_tpc_arc_pb_data *pb_data = (struct gaudi2_tpc_arc_pb_data *)data;
++
++	pb_data->rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA, 1,
++					offset, gaudi2_pb_dcr0_tpc0_arc,
++					pb_data->arc_regs_arr_size,
++					gaudi2_pb_dcr0_tpc0_arc_unsecured_regs,
++					pb_data->unsecured_regs_arr_size);
++}
++
++static int gaudi2_init_pb_tpc_arc(struct hl_device *hdev)
++{
++	struct gaudi2_tpc_arc_pb_data tpc_arc_pb_data;
++	struct iterate_module_ctx tpc_iter;
++
++	tpc_arc_pb_data.arc_regs_arr_size = ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_arc);
++	tpc_arc_pb_data.unsecured_regs_arr_size =
++			ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_arc_unsecured_regs);
++	tpc_arc_pb_data.rc = 0;
++	tpc_iter.fn = &gaudi2_config_tpcs_pb_ranges;
++	tpc_iter.data = &tpc_arc_pb_data;
++	gaudi2_iterate_tpcs(hdev, &tpc_iter);
++
++	return tpc_arc_pb_data.rc;
++}
++
++static int gaudi2_init_pb_sm_objs(struct hl_device *hdev)
++{
++	int i, j, glbl_sec_array_len = gaudi2_pb_dcr0_sm_objs.glbl_sec_length;
++	u32 sec_entry, *sec_array, array_base, first_sob, first_mon;
++
++	array_base = gaudi2_pb_dcr0_sm_objs.mm_block_base_addr +
++				gaudi2_pb_dcr0_sm_objs.glbl_sec_offset;
++
++	sec_array = kcalloc(glbl_sec_array_len, sizeof(u32), GFP_KERNEL);
++	if (!sec_array)
++		return -ENOMEM;
++
++	first_sob = GAUDI2_RESERVED_SOBS;
++	first_mon = GAUDI2_RESERVED_MONITORS;
++
++	/* 8192 SOB_OBJs skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (j = i = first_sob ; i < DCORE_NUM_OF_SOB ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* 2048 MON_PAY ADDR_L skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* 2048 MON_PAY ADDR_H skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* 2048 MON_PAY DATA skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* 2048 MON_ARM skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* 2048 MON_CONFIG skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* 2048 MON_STATUS skipping first GAUDI2_MAX_PENDING_CS of them */
++	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
++		UNSET_GLBL_SEC_BIT(sec_array, j);
++
++	/* Unsecure selected Dcore0 registers */
++	for (i = 0 ; i < glbl_sec_array_len ; i++) {
++		sec_entry = array_base + i * sizeof(u32);
++		WREG32(sec_entry, sec_array[i]);
 +	}
 +
-+	if (hw_queue_prop->binned) {
-+		dev_err(hdev->dev, "Queue index %d is binned out\n",
- 			chunk->queue_index);
- 		return -EINVAL;
- 	}
-@@ -1257,17 +1273,16 @@ static int hl_cs_sanity_checks(struct hl_fpriv *hpriv, union hl_cs_args *args)
- 	cs_type = hl_cs_get_cs_type(cs_type_flags);
- 	num_chunks = args->in.num_chunks_execute;
- 
--	if (unlikely((cs_type != CS_TYPE_DEFAULT) &&
--					!hdev->supports_sync_stream)) {
-+	if (unlikely((cs_type == CS_TYPE_SIGNAL || cs_type == CS_TYPE_WAIT ||
-+			cs_type == CS_TYPE_COLLECTIVE_WAIT) &&
-+			!hdev->supports_sync_stream)) {
- 		dev_err(hdev->dev, "Sync stream CS is not supported\n");
- 		return -EINVAL;
- 	}
- 
- 	if (cs_type == CS_TYPE_DEFAULT) {
- 		if (!num_chunks) {
--			dev_err(hdev->dev,
--				"Got execute CS with 0 chunks, context %d\n",
--				ctx->asid);
-+			dev_err(hdev->dev, "Got execute CS with 0 chunks, context %d\n", ctx->asid);
- 			return -EINVAL;
- 		}
- 	} else if (num_chunks != 1) {
-@@ -1367,7 +1382,7 @@ static int cs_ioctl_default(struct hl_fpriv *hpriv, void __user *chunks,
- 				u32 encaps_signals_handle, u32 timeout,
- 				u16 *signal_initial_sob_count)
- {
--	bool staged_mid, int_queues_only = true;
-+	bool staged_mid, int_queues_only = true, using_hw_queues = false;
- 	struct hl_device *hdev = hpriv->hdev;
- 	struct hl_cs_chunk *cs_chunk_array;
- 	struct hl_cs_counters_atomic *cntr;
-@@ -1456,6 +1471,9 @@ static int cs_ioctl_default(struct hl_fpriv *hpriv, void __user *chunks,
- 							chunk->queue_index);
- 		}
- 
-+		if (queue_type == QUEUE_TYPE_HW)
-+			using_hw_queues = true;
++	/* Unsecure Dcore1 - Dcore3 registers */
++	memset(sec_array, -1, glbl_sec_array_len * sizeof(u32));
 +
- 		job = hl_cs_allocate_job(hdev, queue_type,
- 						is_kernel_allocated_cb);
- 		if (!job) {
-@@ -1476,6 +1494,7 @@ static int cs_ioctl_default(struct hl_fpriv *hpriv, void __user *chunks,
- 		job->hw_queue_id = chunk->queue_index;
- 
- 		cs->jobs_in_queue_cnt[job->hw_queue_id]++;
-+		cs->jobs_cnt++;
- 
- 		list_add_tail(&job->cs_node, &cs->job_list);
- 
-@@ -1516,6 +1535,9 @@ static int cs_ioctl_default(struct hl_fpriv *hpriv, void __user *chunks,
- 		goto free_cs_object;
- 	}
- 
-+	if (using_hw_queues)
-+		INIT_WORK(&cs->finish_work, cs_completion);
-+
- 	/*
- 	 * store the (external/HW queues) streams used by the CS in the
- 	 * fence object for multi-CS completion
-@@ -1864,6 +1886,7 @@ static int cs_ioctl_signal_wait_create_jobs(struct hl_device *hdev,
- 	cs_get(cs);
- 
- 	cs->jobs_in_queue_cnt[job->hw_queue_id]++;
-+	cs->jobs_cnt++;
- 
- 	list_add_tail(&job->cs_node, &cs->job_list);
- 
-@@ -2282,6 +2305,9 @@ static int cs_ioctl_signal_wait(struct hl_fpriv *hpriv, enum hl_cs_type cs_type,
- 	if (rc)
- 		goto free_cs_object;
- 
-+	if (q_type == QUEUE_TYPE_HW)
-+		INIT_WORK(&cs->finish_work, cs_completion);
-+
- 	rc = hl_hw_queue_schedule_cs(cs);
- 	if (rc) {
- 		/* In case wait cs failed here, it means the signal cs
-@@ -2412,8 +2438,7 @@ int hl_cs_ioctl(struct hl_fpriv *hpriv, void *data)
- }
- 
- static int hl_wait_for_fence(struct hl_ctx *ctx, u64 seq, struct hl_fence *fence,
--				enum hl_cs_wait_status *status, u64 timeout_us,
--				s64 *timestamp)
-+				enum hl_cs_wait_status *status, u64 timeout_us, s64 *timestamp)
- {
- 	struct hl_device *hdev = ctx->hdev;
- 	ktime_t timestamp_kt;
-@@ -2432,9 +2457,8 @@ static int hl_wait_for_fence(struct hl_ctx *ctx, u64 seq, struct hl_fence *fence
- 	if (!fence) {
- 		if (!hl_pop_cs_outcome(&ctx->outcome_store, seq, &timestamp_kt, &error)) {
- 			dev_dbg(hdev->dev,
--			"Can't wait on seq %llu because current CS is at seq %llu (Fence is gone)\n",
-+				"Can't wait on seq %llu because current CS is at seq %llu (Fence is gone)\n",
- 				seq, ctx->cs_sequence);
--
- 			*status = CS_WAIT_STATUS_GONE;
- 			return 0;
- 		}
-@@ -2542,8 +2566,7 @@ static int hl_cs_poll_fences(struct multi_cs_data *mcs_data, struct multi_cs_com
- 		 * function won't sleep as it is called with timeout 0 (i.e.
- 		 * poll the fence)
- 		 */
--		rc = hl_wait_for_fence(mcs_data->ctx, seq_arr[i], fence,
--						&status, 0, NULL);
-+		rc = hl_wait_for_fence(mcs_data->ctx, seq_arr[i], fence, &status, 0, NULL);
- 		if (rc) {
- 			dev_err(hdev->dev,
- 				"wait_for_fence error :%d for CS seq %llu\n",
-@@ -2612,8 +2635,7 @@ static int hl_cs_poll_fences(struct multi_cs_data *mcs_data, struct multi_cs_com
- 	return rc;
- }
- 
--static int _hl_cs_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
--				u64 timeout_us, u64 seq,
-+static int _hl_cs_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx, u64 timeout_us, u64 seq,
- 				enum hl_cs_wait_status *status, s64 *timestamp)
- {
- 	struct hl_fence *fence;
-@@ -2914,8 +2936,7 @@ static int hl_cs_wait_ioctl(struct hl_fpriv *hpriv, void *data)
- 	s64 timestamp;
- 	int rc;
- 
--	rc = _hl_cs_wait_ioctl(hdev, hpriv->ctx, args->in.timeout_us, seq,
--				&status, &timestamp);
-+	rc = _hl_cs_wait_ioctl(hdev, hpriv->ctx, args->in.timeout_us, seq, &status, &timestamp);
- 
- 	if (rc == -ERESTARTSYS) {
- 		dev_err_ratelimited(hdev->dev,
-@@ -3200,7 +3221,6 @@ static int _hl_interrupt_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
- static int _hl_interrupt_wait_ioctl_user_addr(struct hl_device *hdev, struct hl_ctx *ctx,
- 				u64 timeout_us, u64 user_address,
- 				u64 target_value, struct hl_user_interrupt *interrupt,
--
- 				u32 *status,
- 				u64 *timestamp)
- {
-@@ -3322,12 +3342,12 @@ static int hl_interrupt_wait_ioctl(struct hl_fpriv *hpriv, void *data)
- 	struct hl_user_interrupt *interrupt;
- 	union hl_wait_cs_args *args = data;
- 	u32 status = HL_WAIT_CS_STATUS_BUSY;
-+	int rc, int_idx;
- 	u64 timestamp;
--	int rc;
- 
- 	prop = &hdev->asic_prop;
- 
--	if (!prop->user_interrupt_count) {
-+	if (!(prop->user_interrupt_count + prop->user_dec_intr_count)) {
- 		dev_err(hdev->dev, "no user interrupts allowed");
- 		return -EPERM;
- 	}
-@@ -3337,17 +3357,29 @@ static int hl_interrupt_wait_ioctl(struct hl_fpriv *hpriv, void *data)
- 	first_interrupt = prop->first_available_user_interrupt;
- 	last_interrupt = prop->first_available_user_interrupt + prop->user_interrupt_count - 1;
- 
--	if ((interrupt_id < first_interrupt || interrupt_id > last_interrupt) &&
--			interrupt_id != HL_COMMON_USER_INTERRUPT_ID) {
-+	if (interrupt_id < prop->user_dec_intr_count) {
-+
-+		/* Check if the requested core is enabled */
-+		if (!(prop->decoder_enabled_mask & BIT(interrupt_id))) {
-+			dev_err(hdev->dev, "interrupt on a disabled core(%u) not allowed",
-+				interrupt_id);
-+			return -EINVAL;
++	for (i = 1 ; i < NUM_OF_DCORES ; i++) {
++		for (j = 0 ; j < glbl_sec_array_len ; j++) {
++			sec_entry = DCORE_OFFSET * i + array_base + j * sizeof(u32);
++			WREG32(sec_entry, sec_array[j]);
 +		}
-+
-+		interrupt = &hdev->user_interrupt[interrupt_id];
-+
-+	} else if (interrupt_id >= first_interrupt && interrupt_id <= last_interrupt) {
-+
-+		int_idx = interrupt_id - first_interrupt + prop->user_dec_intr_count;
-+		interrupt = &hdev->user_interrupt[int_idx];
-+
-+	} else if (interrupt_id == HL_COMMON_USER_INTERRUPT_ID) {
-+		interrupt = &hdev->common_user_interrupt;
-+	} else {
- 		dev_err(hdev->dev, "invalid user interrupt %u", interrupt_id);
- 		return -EINVAL;
- 	}
- 
--	if (interrupt_id == HL_COMMON_USER_INTERRUPT_ID)
--		interrupt = &hdev->common_user_interrupt;
--	else
--		interrupt = &hdev->user_interrupt[interrupt_id - first_interrupt];
--
- 	if (args->in.flags & HL_WAIT_CS_FLAGS_INTERRUPT_KERNEL_CQ)
- 		rc = _hl_interrupt_wait_ioctl(hdev, hpriv->ctx, &hpriv->mem_mgr, &hpriv->mem_mgr,
- 				args->in.interrupt_timeout_us, args->in.cq_counters_handle,
-diff --git a/drivers/misc/habanalabs/common/debugfs.c b/drivers/misc/habanalabs/common/debugfs.c
-index 831b050a1bf0..90273481a466 100644
---- a/drivers/misc/habanalabs/common/debugfs.c
-+++ b/drivers/misc/habanalabs/common/debugfs.c
-@@ -152,12 +152,12 @@ static int command_submission_show(struct seq_file *s, void *data)
- 		if (first) {
- 			first = false;
- 			seq_puts(s, "\n");
--			seq_puts(s, " CS ID   CTX ASID   CS RefCnt   Submitted    Completed\n");
--			seq_puts(s, "------------------------------------------------------\n");
-+			seq_puts(s, " CS ID   CS TYPE   CTX ASID   CS RefCnt   Submitted    Completed\n");
-+			seq_puts(s, "----------------------------------------------------------------\n");
- 		}
- 		seq_printf(s,
--			"   %llu       %d          %d           %d            %d\n",
--			cs->sequence, cs->ctx->asid,
-+			"   %llu        %d          %d          %d           %d            %d\n",
-+			cs->sequence, cs->type, cs->ctx->asid,
- 			kref_read(&cs->refcount),
- 			cs->submitted, cs->completed);
- 	}
-@@ -183,17 +183,18 @@ static int command_submission_jobs_show(struct seq_file *s, void *data)
- 		if (first) {
- 			first = false;
- 			seq_puts(s, "\n");
--			seq_puts(s, " JOB ID   CS ID    CTX ASID   JOB RefCnt   H/W Queue\n");
--			seq_puts(s, "----------------------------------------------------\n");
-+			seq_puts(s, " JOB ID   CS ID    CS TYPE    CTX ASID   JOB RefCnt   H/W Queue\n");
-+			seq_puts(s, "---------------------------------------------------------------\n");
- 		}
- 		if (job->cs)
- 			seq_printf(s,
--				"   %02d      %llu        %d          %d           %d\n",
--				job->id, job->cs->sequence, job->cs->ctx->asid,
--				kref_read(&job->refcount), job->hw_queue_id);
-+				"   %02d      %llu        %d        %d          %d           %d\n",
-+				job->id, job->cs->sequence, job->cs->type,
-+				job->cs->ctx->asid, kref_read(&job->refcount),
-+				job->hw_queue_id);
- 		else
- 			seq_printf(s,
--				"   %02d      0        %d          %d           %d\n",
-+				"   %02d      0        0        %d          %d           %d\n",
- 				job->id, HL_KERNEL_ASID_ID,
- 				kref_read(&job->refcount), job->hw_queue_id);
- 	}
-diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
-index 4b6b6ba5b2fa..ff7634d32282 100644
---- a/drivers/misc/habanalabs/common/device.c
-+++ b/drivers/misc/habanalabs/common/device.c
-@@ -15,14 +15,14 @@
- 
- #define HL_RESET_DELAY_USEC		10000	/* 10ms */
- 
--#define MEM_SCRUB_DEFAULT_VAL 0x1122334455667788
--
- enum dma_alloc_type {
- 	DMA_ALLOC_COHERENT,
- 	DMA_ALLOC_CPU_ACCESSIBLE,
- 	DMA_ALLOC_POOL,
- };
- 
-+#define MEM_SCRUB_DEFAULT_VAL 0x1122334455667788
-+
- /*
-  * hl_set_dram_bar- sets the bar to allow later access to address
-  *
-@@ -412,8 +412,8 @@ static int hl_device_release(struct inode *inode, struct file *filp)
- 	 */
- 	hl_release_pending_user_interrupts(hpriv->hdev);
- 
--	hl_mem_mgr_fini(&hpriv->mem_mgr);
- 	hl_ctx_mgr_fini(hdev, &hpriv->ctx_mgr);
-+	hl_mem_mgr_fini(&hpriv->mem_mgr);
- 
- 	hdev->compute_ctx_in_release = 1;
- 
-@@ -461,7 +461,7 @@ static int hl_device_release_ctrl(struct inode *inode, struct file *filp)
-  * @*filp: pointer to file structure
-  * @*vma: pointer to vm_area_struct of the process
-  *
-- * Called when process does an mmap on habanalabs device. Call the device's mmap
-+ * Called when process does an mmap on habanalabs device. Call the relevant mmap
-  * function at the end of the common code.
-  */
- static int hl_mmap(struct file *filp, struct vm_area_struct *vma)
-@@ -486,7 +486,6 @@ static int hl_mmap(struct file *filp, struct vm_area_struct *vma)
- 	case HL_MMAP_TYPE_TS_BUFF:
- 		return hl_mem_mgr_mmap(&hpriv->mem_mgr, vma, NULL);
- 	}
--
- 	return -EINVAL;
- }
- 
-@@ -686,12 +685,20 @@ static int device_early_init(struct hl_device *hdev)
- 		goto free_cq_wq;
- 	}
- 
-+	hdev->cs_cmplt_wq = alloc_workqueue("hl-cs-completions", WQ_UNBOUND, 0);
-+	if (!hdev->cs_cmplt_wq) {
-+		dev_err(hdev->dev,
-+			"Failed to allocate CS completions workqueue\n");
-+		rc = -ENOMEM;
-+		goto free_eq_wq;
 +	}
 +
- 	hdev->ts_free_obj_wq = alloc_workqueue("hl-ts-free-obj", WQ_UNBOUND, 0);
- 	if (!hdev->ts_free_obj_wq) {
- 		dev_err(hdev->dev,
- 			"Failed to allocate Timestamp registration free workqueue\n");
- 		rc = -ENOMEM;
--		goto free_eq_wq;
-+		goto free_cs_cmplt_wq;
- 	}
- 
- 	hdev->pf_wq = alloc_workqueue("hl-prefetch", WQ_UNBOUND, 0);
-@@ -748,6 +755,8 @@ static int device_early_init(struct hl_device *hdev)
- 	destroy_workqueue(hdev->pf_wq);
- free_ts_free_wq:
- 	destroy_workqueue(hdev->ts_free_obj_wq);
-+free_cs_cmplt_wq:
-+	destroy_workqueue(hdev->cs_cmplt_wq);
- free_eq_wq:
- 	destroy_workqueue(hdev->eq_wq);
- free_cq_wq:
-@@ -788,6 +797,7 @@ static void device_early_fini(struct hl_device *hdev)
- 
- 	destroy_workqueue(hdev->pf_wq);
- 	destroy_workqueue(hdev->ts_free_obj_wq);
-+	destroy_workqueue(hdev->cs_cmplt_wq);
- 	destroy_workqueue(hdev->eq_wq);
- 	destroy_workqueue(hdev->device_reset_work.wq);
- 
-@@ -1706,13 +1716,12 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	if (rc)
- 		goto free_dev_ctrl;
- 
--	user_interrupt_cnt = hdev->asic_prop.user_interrupt_count;
-+	user_interrupt_cnt = hdev->asic_prop.user_dec_intr_count +
-+				hdev->asic_prop.user_interrupt_count;
- 
- 	if (user_interrupt_cnt) {
--		hdev->user_interrupt = kcalloc(user_interrupt_cnt,
--				sizeof(*hdev->user_interrupt),
--				GFP_KERNEL);
--
-+		hdev->user_interrupt = kcalloc(user_interrupt_cnt, sizeof(*hdev->user_interrupt),
-+						GFP_KERNEL);
- 		if (!hdev->user_interrupt) {
- 			rc = -ENOMEM;
- 			goto early_fini;
-@@ -1725,7 +1734,7 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	 */
- 	rc = hdev->asic_funcs->sw_init(hdev);
- 	if (rc)
--		goto user_interrupts_fini;
-+		goto free_usr_intr_mem;
- 
- 
- 	/* initialize completion structure for multi CS wait */
-@@ -1773,6 +1782,13 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 		hdev->completion_queue[i].cq_idx = i;
- 	}
- 
-+	hdev->shadow_cs_queue = kcalloc(hdev->asic_prop.max_pending_cs,
-+					sizeof(*hdev->shadow_cs_queue), GFP_KERNEL);
-+	if (!hdev->shadow_cs_queue) {
-+		rc = -ENOMEM;
-+		goto cq_fini;
-+	}
++	kfree(sec_array);
 +
- 	/*
- 	 * Initialize the event queue. Must be done before hw_init,
- 	 * because there the address of the event queue is being
-@@ -1781,7 +1797,7 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	rc = hl_eq_init(hdev, &hdev->event_queue);
- 	if (rc) {
- 		dev_err(hdev->dev, "failed to initialize event queue\n");
--		goto cq_fini;
-+		goto free_shadow_cs_queue;
- 	}
- 
- 	/* MMU S/W must be initialized before kernel context is created */
-@@ -1932,6 +1948,8 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	hl_mmu_fini(hdev);
- eq_fini:
- 	hl_eq_fini(hdev, &hdev->event_queue);
-+free_shadow_cs_queue:
-+	kfree(hdev->shadow_cs_queue);
- cq_fini:
- 	for (i = 0 ; i < cq_ready_cnt ; i++)
- 		hl_cq_fini(hdev, &hdev->completion_queue[i]);
-@@ -1940,7 +1958,7 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	hl_hw_queues_destroy(hdev);
- sw_fini:
- 	hdev->asic_funcs->sw_fini(hdev);
--user_interrupts_fini:
-+free_usr_intr_mem:
- 	kfree(hdev->user_interrupt);
- early_fini:
- 	device_early_fini(hdev);
-@@ -2080,6 +2098,8 @@ void hl_device_fini(struct hl_device *hdev)
- 
- 	hl_eq_fini(hdev, &hdev->event_queue);
- 
-+	kfree(hdev->shadow_cs_queue);
-+
- 	for (i = 0 ; i < hdev->asic_prop.completion_queues_count ; i++)
- 		hl_cq_fini(hdev, &hdev->completion_queue[i]);
- 	kfree(hdev->completion_queue);
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index 62a228ce9775..7723575ba737 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -2893,9 +2893,13 @@ struct hl_reset_info {
-  * @common_user_interrupt: common user interrupt for all user interrupts.
-  *                         upon any user interrupt, driver will monitor the
-  *                         list of fences registered to this common structure.
-+ * @shadow_cs_queue: pointer to a shadow queue that holds pointers to
-+ *                   outstanding command submissions.
-  * @cq_wq: work queues of completion queues for executing work in process
-  *         context.
-  * @eq_wq: work queue of event queue for executing work in process context.
-+ * @cs_cmplt_wq: work queue of CS completions for executing work in process
-+ *               context.
-  * @ts_free_obj_wq: work queue for timestamp registration objects release.
-  * @pf_wq: work queue for MMU pre-fetch operations.
-  * @kernel_ctx: Kernel driver context structure.
-@@ -3053,8 +3057,10 @@ struct hl_device {
- 	struct hl_cq			*completion_queue;
- 	struct hl_user_interrupt	*user_interrupt;
- 	struct hl_user_interrupt	common_user_interrupt;
-+	struct hl_cs			**shadow_cs_queue;
- 	struct workqueue_struct		**cq_wq;
- 	struct workqueue_struct		*eq_wq;
-+	struct workqueue_struct		*cs_cmplt_wq;
- 	struct workqueue_struct		*ts_free_obj_wq;
- 	struct workqueue_struct		*pf_wq;
- 	struct hl_ctx			*kernel_ctx;
-diff --git a/drivers/misc/habanalabs/common/hw_queue.c b/drivers/misc/habanalabs/common/hw_queue.c
-index 1abd2340927a..3f15ab9d827f 100644
---- a/drivers/misc/habanalabs/common/hw_queue.c
-+++ b/drivers/misc/habanalabs/common/hw_queue.c
-@@ -696,6 +696,16 @@ int hl_hw_queue_schedule_cs(struct hl_cs *cs)
- 			goto unroll_cq_resv;
- 	}
- 
-+	rc = hdev->asic_funcs->pre_schedule_cs(cs);
-+	if (rc) {
-+		dev_err(hdev->dev,
-+			"Failed in pre-submission operations of CS %d.%llu\n",
-+			ctx->asid, cs->sequence);
-+		goto unroll_cq_resv;
-+	}
-+
-+	hdev->shadow_cs_queue[cs->sequence &
-+				(hdev->asic_prop.max_pending_cs - 1)] = cs;
- 
- 	if (cs->encaps_signals && cs->staged_first) {
- 		rc = encaps_sig_first_staged_cs_handler(hdev, cs);
-diff --git a/drivers/misc/habanalabs/common/irq.c b/drivers/misc/habanalabs/common/irq.c
-index 02c6faf9a10d..c1088377d1de 100644
---- a/drivers/misc/habanalabs/common/irq.c
-+++ b/drivers/misc/habanalabs/common/irq.c
-@@ -66,6 +66,56 @@ static void irq_handle_eqe(struct work_struct *work)
- 	kfree(eqe_work);
- }
- 
-+/**
-+ * job_finish - queue job finish work
-+ *
-+ * @hdev: pointer to device structure
-+ * @cs_seq: command submission sequence
-+ * @cq: completion queue
-+ *
-+ */
-+static void job_finish(struct hl_device *hdev, u32 cs_seq, struct hl_cq *cq)
-+{
-+	struct hl_hw_queue *queue;
-+	struct hl_cs_job *job;
-+
-+	queue = &hdev->kernel_queues[cq->hw_queue_id];
-+	job = queue->shadow_queue[hl_pi_2_offset(cs_seq)];
-+	queue_work(hdev->cq_wq[cq->cq_idx], &job->finish_work);
-+
-+	atomic_inc(&queue->ci);
++	return 0;
 +}
 +
-+/**
-+ * cs_finish - queue all cs jobs finish work
-+ *
-+ * @hdev: pointer to device structure
-+ * @cs_seq: command submission sequence
-+ *
-+ */
-+static void cs_finish(struct hl_device *hdev, u16 cs_seq)
++static void gaudi2_write_lbw_range_register(struct hl_device *hdev, u64 base, void *data)
 +{
-+	struct asic_fixed_properties *prop = &hdev->asic_prop;
-+	struct hl_hw_queue *queue;
-+	struct hl_cs *cs;
-+	struct hl_cs_job *job;
++	u32 reg_min_offset, reg_max_offset, write_min, write_max;
++	struct rr_config *rr_cfg = (struct rr_config *) data;
 +
-+	cs = hdev->shadow_cs_queue[cs_seq & (prop->max_pending_cs - 1)];
-+	if (!cs) {
-+		dev_warn(hdev->dev,
-+			"No pointer to CS in shadow array at index %d\n",
-+			cs_seq);
++	switch (rr_cfg->type) {
++	case RR_TYPE_SHORT:
++		reg_min_offset = RR_LBW_SEC_RANGE_MIN_SHORT_0_OFFSET;
++		reg_max_offset = RR_LBW_SEC_RANGE_MAX_SHORT_0_OFFSET;
++		break;
++
++	case RR_TYPE_LONG:
++		reg_min_offset = RR_LBW_SEC_RANGE_MIN_0_OFFSET;
++		reg_max_offset = RR_LBW_SEC_RANGE_MAX_0_OFFSET;
++		break;
++
++	case RR_TYPE_SHORT_PRIV:
++		reg_min_offset = RR_LBW_PRIV_RANGE_MIN_SHORT_0_OFFSET;
++		reg_max_offset = RR_LBW_PRIV_RANGE_MAX_SHORT_0_OFFSET;
++		break;
++
++	case RR_TYPE_LONG_PRIV:
++		reg_min_offset = RR_LBW_PRIV_RANGE_MIN_0_OFFSET;
++		reg_max_offset = RR_LBW_PRIV_RANGE_MAX_0_OFFSET;
++		break;
++
++	default:
++		dev_err(hdev->dev, "Invalid LBW RR type %u\n", rr_cfg->type);
 +		return;
 +	}
 +
-+	list_for_each_entry(job, &cs->job_list, cs_node) {
-+		queue = &hdev->kernel_queues[job->hw_queue_id];
-+		atomic_inc(&queue->ci);
++	reg_min_offset += rr_cfg->index * sizeof(u32);
++	reg_max_offset += rr_cfg->index * sizeof(u32);
++
++	if (rr_cfg->type == RR_TYPE_SHORT || rr_cfg->type == RR_TYPE_SHORT_PRIV) {
++		write_min = FIELD_GET(RR_LBW_SHORT_MASK, lower_32_bits(rr_cfg->min));
++		write_max = FIELD_GET(RR_LBW_SHORT_MASK, lower_32_bits(rr_cfg->max));
++
++	} else {
++		write_min = FIELD_GET(RR_LBW_LONG_MASK, lower_32_bits(rr_cfg->min));
++		write_max = FIELD_GET(RR_LBW_LONG_MASK, lower_32_bits(rr_cfg->max));
 +	}
 +
-+	queue_work(hdev->cs_cmplt_wq, &cs->finish_work);
++	/* Configure LBW RR:
++	 * Both RR types start blocking from base address 0x1000007FF8000000
++	 * SHORT RRs address bits [26:12]
++	 * LONG RRs address bits [26:0]
++	 */
++	WREG32(base + reg_min_offset, write_min);
++	WREG32(base + reg_max_offset, write_max);
 +}
 +
- /**
-  * hl_irq_handler_cq - irq handler for completion queue
-  *
-@@ -77,9 +127,7 @@ irqreturn_t hl_irq_handler_cq(int irq, void *arg)
- {
- 	struct hl_cq *cq = arg;
- 	struct hl_device *hdev = cq->hdev;
--	struct hl_hw_queue *queue;
--	struct hl_cs_job *job;
--	bool shadow_index_valid;
-+	bool shadow_index_valid, entry_ready;
- 	u16 shadow_index;
- 	struct hl_cq_entry *cq_entry, *cq_base;
- 
-@@ -93,37 +141,41 @@ irqreturn_t hl_irq_handler_cq(int irq, void *arg)
- 	cq_base = cq->kernel_address;
- 
- 	while (1) {
--		bool entry_ready = ((le32_to_cpu(cq_base[cq->ci].data) &
--					CQ_ENTRY_READY_MASK)
--						>> CQ_ENTRY_READY_SHIFT);
-+		cq_entry = (struct hl_cq_entry *) &cq_base[cq->ci];
- 
-+		entry_ready = !!FIELD_GET(CQ_ENTRY_READY_MASK,
-+				le32_to_cpu(cq_entry->data));
- 		if (!entry_ready)
- 			break;
- 
--		cq_entry = (struct hl_cq_entry *) &cq_base[cq->ci];
--
- 		/* Make sure we read CQ entry contents after we've
- 		 * checked the ownership bit.
- 		 */
- 		dma_rmb();
- 
--		shadow_index_valid = ((le32_to_cpu(cq_entry->data) &
--					CQ_ENTRY_SHADOW_INDEX_VALID_MASK)
--					>> CQ_ENTRY_SHADOW_INDEX_VALID_SHIFT);
--
--		shadow_index = (u16) ((le32_to_cpu(cq_entry->data) &
--					CQ_ENTRY_SHADOW_INDEX_MASK)
--					>> CQ_ENTRY_SHADOW_INDEX_SHIFT);
-+		shadow_index_valid =
-+			!!FIELD_GET(CQ_ENTRY_SHADOW_INDEX_VALID_MASK,
-+					le32_to_cpu(cq_entry->data));
- 
--		queue = &hdev->kernel_queues[cq->hw_queue_id];
-+		shadow_index = FIELD_GET(CQ_ENTRY_SHADOW_INDEX_MASK,
-+				le32_to_cpu(cq_entry->data));
- 
--		if ((shadow_index_valid) && (!hdev->disabled)) {
--			job = queue->shadow_queue[hl_pi_2_offset(shadow_index)];
--			queue_work(hdev->cq_wq[cq->cq_idx], &job->finish_work);
-+		/*
-+		 * CQ interrupt handler has 2 modes of operation:
-+		 * 1. Interrupt per CS completion: (Single CQ for all queues)
-+		 *    CQ entry represents a completed CS
-+		 *
-+		 * 2. Interrupt per CS job completion in queue: (CQ per queue)
-+		 *    CQ entry represents a completed job in a certain queue
-+		 */
-+		if (shadow_index_valid && !hdev->disabled) {
-+			if (hdev->asic_prop.completion_mode ==
-+					HL_COMPLETION_MODE_CS)
-+				cs_finish(hdev, shadow_index);
-+			else
-+				job_finish(hdev, shadow_index, cq);
- 		}
- 
--		atomic_inc(&queue->ci);
--
- 		/* Clear CQ entry ready bit */
- 		cq_entry->data = cpu_to_le32(le32_to_cpu(cq_entry->data) &
- 						~CQ_ENTRY_READY_MASK);
-diff --git a/drivers/misc/habanalabs/common/security.c b/drivers/misc/habanalabs/common/security.c
-index b27ab097776b..6196c0487c8b 100644
---- a/drivers/misc/habanalabs/common/security.c
-+++ b/drivers/misc/habanalabs/common/security.c
-@@ -44,7 +44,7 @@ static int hl_get_pb_block(struct hl_device *hdev, u32 mm_reg_addr,
-  *
-  */
- static int hl_unset_pb_in_block(struct hl_device *hdev, u32 reg_offset,
--		struct hl_block_glbl_sec *sgs_entry)
-+				struct hl_block_glbl_sec *sgs_entry)
- {
- 	if ((reg_offset >= HL_BLOCK_SIZE) || (reg_offset & 0x3)) {
- 		dev_err(hdev->dev,
++void gaudi2_write_rr_to_all_lbw_rtrs(struct hl_device *hdev, u8 rr_type, u32 rr_index, u64 min_val,
++					u64 max_val)
++{
++	struct dup_block_ctx block_ctx;
++	struct rr_config rr_cfg;
++
++	if ((rr_type == RR_TYPE_SHORT || rr_type == RR_TYPE_SHORT_PRIV) &&
++								rr_index >= NUM_SHORT_LBW_RR) {
++
++		dev_err(hdev->dev, "invalid short LBW %s range register index: %u",
++			rr_type == RR_TYPE_SHORT ? "secure" : "privileged", rr_index);
++		return;
++	}
++
++	if ((rr_type == RR_TYPE_LONG || rr_type == RR_TYPE_LONG_PRIV) &&
++								rr_index >= NUM_LONG_LBW_RR) {
++
++		dev_err(hdev->dev, "invalid long LBW %s range register index: %u",
++			rr_type == RR_TYPE_LONG ? "secure" : "privileged", rr_index);
++		return;
++	}
++
++	rr_cfg.type = rr_type;
++	rr_cfg.index = rr_index;
++	rr_cfg.min = min_val;
++	rr_cfg.max = max_val;
++
++	block_ctx.instance_cfg_fn = &gaudi2_write_lbw_range_register;
++	block_ctx.data = &rr_cfg;
++
++	/* SFT */
++	block_ctx.base = mmSFT0_LBW_RTR_IF_MSTR_IF_RR_SHRD_LBW_BASE;
++	block_ctx.blocks = NUM_OF_SFT;
++	block_ctx.block_off = SFT_OFFSET;
++	block_ctx.instances = SFT_NUM_OF_LBW_RTR;
++	block_ctx.instance_off = SFT_LBW_RTR_OFFSET;
++	gaudi2_init_blocks(hdev, &block_ctx);
++
++	/* SIF */
++	block_ctx.base = mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_BASE;
++	block_ctx.blocks = NUM_OF_DCORES;
++	block_ctx.block_off = DCORE_OFFSET;
++	block_ctx.instances = NUM_OF_RTR_PER_DCORE;
++	block_ctx.instance_off = DCORE_RTR_OFFSET;
++	gaudi2_init_blocks(hdev, &block_ctx);
++
++	block_ctx.blocks = 1;
++	block_ctx.block_off = 0;
++	block_ctx.instances = 1;
++	block_ctx.instance_off = 0;
++
++	/* PCIE ELBI */
++	block_ctx.base = mmPCIE_ELBI_RR_MSTR_IF_RR_SHRD_LBW_BASE;
++	gaudi2_init_blocks(hdev, &block_ctx);
++
++	/* PCIE MSTR */
++	block_ctx.base = mmPCIE_MSTR_RR_MSTR_IF_RR_SHRD_LBW_BASE;
++	gaudi2_init_blocks(hdev, &block_ctx);
++
++	/* PCIE LBW */
++	block_ctx.base = mmPCIE_LBW_RR_MSTR_IF_RR_SHRD_LBW_BASE;
++	gaudi2_init_blocks(hdev, &block_ctx);
++}
++
++static void gaudi2_init_lbw_range_registers_secure(struct hl_device *hdev)
++{
++	int i;
++
++	/* Up to 14 14bit-address regs.
++	 *
++	 * - range 0: NIC0_CFG
++	 * - range 1: NIC1_CFG
++	 * - range 2: NIC2_CFG
++	 * - range 3: NIC3_CFG
++	 * - range 4: NIC4_CFG
++	 * - range 5: NIC5_CFG
++	 * - range 6: NIC6_CFG
++	 * - range 7: NIC7_CFG
++	 * - range 8: NIC8_CFG
++	 * - range 9: NIC9_CFG
++	 * - range 10: NIC10_CFG
++	 * - range 11: NIC11_CFG + *_DBG (not including TPC_DBG)
++	 *
++	 * If F/W security is not enabled:
++	 * - ranges 12,13: PSOC_CFG (excluding PSOC_TIMESTAMP)
++	 */
++	u64 lbw_range_min_short[] = {
++		mmNIC0_TX_AXUSER_BASE,
++		mmNIC1_TX_AXUSER_BASE,
++		mmNIC2_TX_AXUSER_BASE,
++		mmNIC3_TX_AXUSER_BASE,
++		mmNIC4_TX_AXUSER_BASE,
++		mmNIC5_TX_AXUSER_BASE,
++		mmNIC6_TX_AXUSER_BASE,
++		mmNIC7_TX_AXUSER_BASE,
++		mmNIC8_TX_AXUSER_BASE,
++		mmNIC9_TX_AXUSER_BASE,
++		mmNIC10_TX_AXUSER_BASE,
++		mmNIC11_TX_AXUSER_BASE,
++		mmPSOC_I2C_M0_BASE,
++		mmPSOC_EFUSE_BASE
++	};
++	u64 lbw_range_max_short[] = {
++		mmNIC0_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC1_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC2_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC3_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC4_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC5_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC6_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC7_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC8_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC9_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC10_MAC_CH3_MAC_PCS_BASE + HL_BLOCK_SIZE,
++		mmNIC11_DBG_FUNNEL_NCH_BASE + HL_BLOCK_SIZE,
++		mmPSOC_WDOG_BASE + HL_BLOCK_SIZE,
++		mmSVID2_AC_BASE + HL_BLOCK_SIZE
++	};
++
++	/* Up to 4 26bit-address regs.
++	 *
++	 * - range 0: TPC_DBG
++	 * - range 1: PCIE_DBI.MSIX_DOORBELL_OFF
++	 * - range 2/3: used in soft reset to block access to several blocks and are cleared here
++	 */
++	u64 lbw_range_min_long[] = {
++		mmDCORE0_TPC0_ROM_TABLE_BASE,
++		mmPCIE_DBI_MSIX_DOORBELL_OFF,
++		0x0,
++		0x0
++	};
++	u64 lbw_range_max_long[] = {
++		mmDCORE3_TPC5_EML_CS_BASE + HL_BLOCK_SIZE,
++		mmPCIE_DBI_MSIX_DOORBELL_OFF + 0x4,
++		0x0,
++		0x0
++	};
++
++	/* write short range registers to all lbw rtrs */
++	for (i = 0 ; i < ARRAY_SIZE(lbw_range_min_short) ; i++) {
++		if ((lbw_range_min_short[i] == mmPSOC_I2C_M0_BASE ||
++				lbw_range_min_short[i] == mmPSOC_EFUSE_BASE) &&
++				hdev->asic_prop.fw_security_enabled)
++			continue;
++
++		gaudi2_write_rr_to_all_lbw_rtrs(hdev, RR_TYPE_SHORT, i,
++				lbw_range_min_short[i], lbw_range_max_short[i]);
++	}
++
++	/* write long range registers to all lbw rtrs */
++	for (i = 0 ; i < ARRAY_SIZE(lbw_range_min_long) ; i++) {
++		gaudi2_write_rr_to_all_lbw_rtrs(hdev, RR_TYPE_LONG, i,
++				lbw_range_min_long[i], lbw_range_max_long[i]);
++	}
++}
++
++static void gaudi2_init_lbw_range_registers(struct hl_device *hdev)
++{
++	gaudi2_init_lbw_range_registers_secure(hdev);
++}
++
++static void gaudi2_write_hbw_range_register(struct hl_device *hdev, u64 base, void *data)
++{
++	u32 min_lo_reg_offset, min_hi_reg_offset, max_lo_reg_offset, max_hi_reg_offset;
++	struct rr_config *rr_cfg = (struct rr_config *) data;
++	u64 val_min, val_max;
++
++	switch (rr_cfg->type) {
++	case RR_TYPE_SHORT:
++		min_lo_reg_offset = RR_SHRD_HBW_SEC_RANGE_MIN_SHORT_LO_0_OFFSET;
++		min_hi_reg_offset = RR_SHRD_HBW_SEC_RANGE_MIN_SHORT_HI_0_OFFSET;
++		max_lo_reg_offset = RR_SHRD_HBW_SEC_RANGE_MAX_SHORT_LO_0_OFFSET;
++		max_hi_reg_offset = RR_SHRD_HBW_SEC_RANGE_MAX_SHORT_HI_0_OFFSET;
++		break;
++
++	case RR_TYPE_LONG:
++		min_lo_reg_offset = RR_SHRD_HBW_SEC_RANGE_MIN_LO_0_OFFSET;
++		min_hi_reg_offset = RR_SHRD_HBW_SEC_RANGE_MIN_HI_0_OFFSET;
++		max_lo_reg_offset = RR_SHRD_HBW_SEC_RANGE_MAX_LO_0_OFFSET;
++		max_hi_reg_offset = RR_SHRD_HBW_SEC_RANGE_MAX_HI_0_OFFSET;
++		break;
++
++	case RR_TYPE_SHORT_PRIV:
++		min_lo_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MIN_SHORT_LO_0_OFFSET;
++		min_hi_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MIN_SHORT_HI_0_OFFSET;
++		max_lo_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MAX_SHORT_LO_0_OFFSET;
++		max_hi_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MAX_SHORT_HI_0_OFFSET;
++		break;
++
++	case RR_TYPE_LONG_PRIV:
++		min_lo_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MIN_LO_0_OFFSET;
++		min_hi_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MIN_HI_0_OFFSET;
++		max_lo_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MAX_LO_0_OFFSET;
++		max_hi_reg_offset = RR_SHRD_HBW_PRIV_RANGE_MAX_HI_0_OFFSET;
++		break;
++
++	default:
++		dev_err(hdev->dev, "Invalid HBW RR type %u\n", rr_cfg->type);
++		return;
++	}
++
++	min_lo_reg_offset += rr_cfg->index * sizeof(u32);
++	min_hi_reg_offset += rr_cfg->index * sizeof(u32);
++	max_lo_reg_offset += rr_cfg->index * sizeof(u32);
++	max_hi_reg_offset += rr_cfg->index * sizeof(u32);
++
++	if (rr_cfg->type == RR_TYPE_SHORT || rr_cfg->type == RR_TYPE_SHORT_PRIV) {
++		val_min = FIELD_GET(RR_HBW_SHORT_HI_MASK, rr_cfg->min) |
++				FIELD_GET(RR_HBW_SHORT_LO_MASK, rr_cfg->min);
++		val_max = FIELD_GET(RR_HBW_SHORT_HI_MASK, rr_cfg->max) |
++				FIELD_GET(RR_HBW_SHORT_LO_MASK, rr_cfg->max);
++	} else {
++		val_min = FIELD_GET(RR_HBW_LONG_HI_MASK, rr_cfg->min) |
++				FIELD_GET(RR_HBW_LONG_LO_MASK, rr_cfg->min);
++		val_max = FIELD_GET(RR_HBW_LONG_HI_MASK, rr_cfg->max) |
++				FIELD_GET(RR_HBW_LONG_LO_MASK, rr_cfg->max);
++	}
++
++	/* Configure HBW RR:
++	 * SHORT RRs (0x1000_<36bits>000) - HI: address bits [47:44], LO: address bits [43:12]
++	 * LONG  RRs (0x<52bits>000)      - HI: address bits [63:44], LO: address bits [43:12]
++	 */
++	WREG32(base + min_lo_reg_offset, lower_32_bits(val_min));
++	WREG32(base + min_hi_reg_offset, upper_32_bits(val_min));
++	WREG32(base + max_lo_reg_offset, lower_32_bits(val_max));
++	WREG32(base + max_hi_reg_offset, upper_32_bits(val_max));
++}
++
++static void gaudi2_write_hbw_rr_to_all_mstr_if(struct hl_device *hdev, u8 rr_type, u32 rr_index,
++						u64 min_val, u64 max_val)
++{
++	struct dup_block_ctx block_ctx;
++	struct rr_config rr_cfg;
++
++	if ((rr_type == RR_TYPE_SHORT || rr_type == RR_TYPE_SHORT_PRIV) &&
++								rr_index >= NUM_SHORT_HBW_RR) {
++
++		dev_err(hdev->dev, "invalid short HBW %s range register index: %u",
++			rr_type == RR_TYPE_SHORT ? "secure" : "privileged", rr_index);
++		return;
++	}
++
++	if ((rr_type == RR_TYPE_LONG || rr_type == RR_TYPE_LONG_PRIV) &&
++								rr_index >= NUM_LONG_HBW_RR) {
++
++		dev_err(hdev->dev, "invalid long HBW %s range register index: %u",
++			rr_type == RR_TYPE_LONG ? "secure" : "privileged", rr_index);
++		return;
++	}
++
++	rr_cfg.type = rr_type;
++	rr_cfg.index = rr_index;
++	rr_cfg.min = min_val;
++	rr_cfg.max = max_val;
++
++	block_ctx.instance_cfg_fn = &gaudi2_write_hbw_range_register;
++	block_ctx.data = &rr_cfg;
++
++	/* SFT */
++	block_ctx.base = mmSFT0_HBW_RTR_IF0_MSTR_IF_RR_SHRD_HBW_BASE;
++	block_ctx.blocks = NUM_OF_SFT;
++	block_ctx.block_off = SFT_OFFSET;
++	block_ctx.instances = SFT_NUM_OF_HBW_RTR;
++	block_ctx.instance_off = SFT_IF_RTR_OFFSET;
++	gaudi2_init_blocks(hdev, &block_ctx);
++
++	/* SIF */
++	block_ctx.base = mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE;
++	block_ctx.blocks = NUM_OF_DCORES;
++	block_ctx.block_off = DCORE_OFFSET;
++	block_ctx.instances = NUM_OF_RTR_PER_DCORE;
++	block_ctx.instance_off = DCORE_RTR_OFFSET;
++	gaudi2_init_blocks(hdev, &block_ctx);
++
++	/* PCIE MSTR */
++	block_ctx.base = mmPCIE_MSTR_RR_MSTR_IF_RR_SHRD_HBW_BASE;
++	block_ctx.blocks = 1;
++	block_ctx.block_off = 0;
++	block_ctx.instances = 1;
++	block_ctx.instance_off = 0;
++	gaudi2_init_blocks(hdev, &block_ctx);
++}
++
++static void gaudi2_init_hbw_range_registers(struct hl_device *hdev)
++{
++	int i;
++
++	/* Up to 6 short RR (0x1000_<36bits>000) and 4 long RR (0x<52bits>000).
++	 *
++	 * - short range 0:
++	 *	SPI Flash, ARC0/1 ICCM/DCCM, Secure Boot ROM, PSOC_FW/Scratchpad/PCIE_FW SRAM
++	 */
++	u64 hbw_range_min_short[] = {
++		SPI_FLASH_BASE_ADDR
++	};
++	u64 hbw_range_max_short[] = {
++		PCIE_FW_SRAM_ADDR + PCIE_FW_SRAM_SIZE
++	};
++
++	for (i = 0 ; i < ARRAY_SIZE(hbw_range_min_short) ; i++) {
++		gaudi2_write_hbw_rr_to_all_mstr_if(hdev, RR_TYPE_SHORT, i, hbw_range_min_short[i],
++							hbw_range_max_short[i]);
++	}
++}
++
++static void gaudi2_write_mmu_range_register(struct hl_device *hdev, u64 base,
++						struct rr_config *rr_cfg)
++{
++	u32 min_lo_reg_offset, min_hi_reg_offset, max_lo_reg_offset, max_hi_reg_offset;
++
++	switch (rr_cfg->type) {
++	case RR_TYPE_LONG:
++		min_lo_reg_offset = MMU_RR_SEC_MIN_31_0_0_OFFSET;
++		min_hi_reg_offset = MMU_RR_SEC_MIN_63_32_0_OFFSET;
++		max_lo_reg_offset = MMU_RR_SEC_MAX_31_0_0_OFFSET;
++		max_hi_reg_offset = MMU_RR_SEC_MAX_63_32_0_OFFSET;
++		break;
++
++	case RR_TYPE_LONG_PRIV:
++		min_lo_reg_offset = MMU_RR_PRIV_MIN_31_0_0_OFFSET;
++		min_hi_reg_offset = MMU_RR_PRIV_MIN_63_32_0_OFFSET;
++		max_lo_reg_offset = MMU_RR_PRIV_MAX_31_0_0_OFFSET;
++		max_hi_reg_offset = MMU_RR_PRIV_MAX_63_32_0_OFFSET;
++		break;
++
++	default:
++		dev_err(hdev->dev, "Invalid MMU RR type %u\n", rr_cfg->type);
++		return;
++	}
++
++	min_lo_reg_offset += rr_cfg->index * sizeof(u32);
++	min_hi_reg_offset += rr_cfg->index * sizeof(u32);
++	max_lo_reg_offset += rr_cfg->index * sizeof(u32);
++	max_hi_reg_offset += rr_cfg->index * sizeof(u32);
++
++	/* Configure MMU RR (address bits [63:0]) */
++	WREG32(base + min_lo_reg_offset, lower_32_bits(rr_cfg->min));
++	WREG32(base + min_hi_reg_offset, upper_32_bits(rr_cfg->min));
++	WREG32(base + max_lo_reg_offset, lower_32_bits(rr_cfg->max));
++	WREG32(base + max_hi_reg_offset, upper_32_bits(rr_cfg->max));
++}
++
++static void gaudi2_init_mmu_range_registers(struct hl_device *hdev)
++{
++	u32 dcore_id, hmmu_id, hmmu_base;
++	struct rr_config rr_cfg;
++
++	/* Up to 8 ranges [63:0].
++	 *
++	 * - range 0: Reserved HBM area for F/W and driver
++	 */
++
++	/* The RRs are located after the HMMU so need to use the scrambled addresses */
++	rr_cfg.min = hdev->asic_funcs->scramble_addr(hdev, DRAM_PHYS_BASE);
++	rr_cfg.max = hdev->asic_funcs->scramble_addr(hdev, hdev->asic_prop.dram_user_base_address);
++	rr_cfg.index = 0;
++	rr_cfg.type = RR_TYPE_LONG;
++
++	for (dcore_id = 0 ; dcore_id < NUM_OF_DCORES ; dcore_id++) {
++		for (hmmu_id = 0 ; hmmu_id < NUM_OF_HMMU_PER_DCORE; hmmu_id++) {
++			if (!gaudi2_is_hmmu_enabled(hdev, dcore_id, hmmu_id))
++				continue;
++
++			hmmu_base = mmDCORE0_HMMU0_MMU_BASE + dcore_id * DCORE_OFFSET +
++					hmmu_id * DCORE_HMMU_OFFSET;
++
++			gaudi2_write_mmu_range_register(hdev, hmmu_base, &rr_cfg);
++		}
++	}
++}
++
++/**
++ * gaudi2_init_range_registers -
++ * Initialize range registers of all initiators
++ *
++ * @hdev: pointer to hl_device structure
++ */
++static void gaudi2_init_range_registers(struct hl_device *hdev)
++{
++	gaudi2_init_lbw_range_registers(hdev);
++	gaudi2_init_hbw_range_registers(hdev);
++	gaudi2_init_mmu_range_registers(hdev);
++}
++
++/**
++ * gaudi2_init_protection_bits -
++ * Initialize protection bits of specific registers
++ *
++ * @hdev: pointer to hl_device structure
++ *
++ * All protection bits are 1 by default, means not protected. Need to set to 0
++ * each bit that belongs to a protected register.
++ *
++ */
++static int gaudi2_init_protection_bits(struct hl_device *hdev)
++{
++	struct asic_fixed_properties *prop = &hdev->asic_prop;
++	u32 instance_offset;
++	int rc = 0;
++	u8 i;
++
++	/* SFT */
++	instance_offset = mmSFT1_HBW_RTR_IF0_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE;
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
++			gaudi2_pb_sft0, ARRAY_SIZE(gaudi2_pb_sft0),
++			NULL, HL_PB_NA);
++
++	/* HIF */
++	instance_offset = mmDCORE0_HIF1_BASE - mmDCORE0_HIF0_BASE;
++	rc |= hl_init_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			NUM_OF_HIF_PER_DCORE, instance_offset,
++			gaudi2_pb_dcr0_hif, ARRAY_SIZE(gaudi2_pb_dcr0_hif),
++			NULL, HL_PB_NA, prop->hmmu_hif_enabled_mask);
++
++	/* RTR */
++	instance_offset = mmDCORE0_RTR1_CTRL_BASE - mmDCORE0_RTR0_CTRL_BASE;
++	rc |= hl_init_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
++			gaudi2_pb_dcr0_rtr0, ARRAY_SIZE(gaudi2_pb_dcr0_rtr0),
++			NULL, HL_PB_NA);
++
++	/* HMMU */
++	rc |= hl_init_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			NUM_OF_HMMU_PER_DCORE, DCORE_HMMU_OFFSET,
++			gaudi2_pb_dcr0_hmmu0, ARRAY_SIZE(gaudi2_pb_dcr0_hmmu0),
++			NULL, HL_PB_NA, prop->hmmu_hif_enabled_mask);
++
++	/* CPU.
++	 * Except for CPU_IF, skip when security is enabled in F/W, because the blocks are protected
++	 * by privileged RR.
++	 */
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_cpu_if, ARRAY_SIZE(gaudi2_pb_cpu_if),
++			NULL, HL_PB_NA);
++
++	if (!hdev->asic_prop.fw_security_enabled)
++		rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_cpu, ARRAY_SIZE(gaudi2_pb_cpu),
++				NULL, HL_PB_NA);
++
++	/* KDMA */
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_kdma, ARRAY_SIZE(gaudi2_pb_kdma),
++			NULL, HL_PB_NA);
++
++	/* PDMA */
++	instance_offset = mmPDMA1_CORE_BASE - mmPDMA0_CORE_BASE;
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, 2, instance_offset,
++			gaudi2_pb_pdma0, ARRAY_SIZE(gaudi2_pb_pdma0),
++			gaudi2_pb_pdma0_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_pdma0_unsecured_regs));
++
++	/* ARC PDMA */
++	rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA, 2,
++			instance_offset, gaudi2_pb_pdma0_arc,
++			ARRAY_SIZE(gaudi2_pb_pdma0_arc),
++			gaudi2_pb_pdma0_arc_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_pdma0_arc_unsecured_regs));
++
++	/* EDMA */
++	instance_offset = mmDCORE0_EDMA1_CORE_BASE - mmDCORE0_EDMA0_CORE_BASE;
++	rc |= hl_init_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
++			instance_offset, gaudi2_pb_dcr0_edma0,
++			ARRAY_SIZE(gaudi2_pb_dcr0_edma0),
++			gaudi2_pb_dcr0_edma0_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_unsecured_regs),
++			prop->edma_enabled_mask);
++
++	/* ARC EDMA */
++	rc |= hl_init_pb_ranges_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
++			instance_offset, gaudi2_pb_dcr0_edma0_arc,
++			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_arc),
++			gaudi2_pb_dcr0_edma0_arc_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_arc_unsecured_regs),
++			prop->edma_enabled_mask);
++
++	/* MME */
++	instance_offset = mmDCORE0_MME_SBTE1_BASE - mmDCORE0_MME_SBTE0_BASE;
++
++	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
++		/* MME SBTE */
++		rc |= hl_init_pb_single_dcore(hdev, (DCORE_OFFSET * i), 5,
++				instance_offset, gaudi2_pb_dcr0_mme_sbte,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_sbte), NULL,
++				HL_PB_NA);
++
++		/* MME */
++		rc |= hl_init_pb_single_dcore(hdev, (DCORE_OFFSET * i),
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_mme_eng,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_eng),
++				gaudi2_pb_dcr0_mme_eng_unsecured_regs,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_eng_unsecured_regs));
++	}
++
++	/*
++	 * we have special iteration for case in which we would like to
++	 * configure stubbed MME's ARC/QMAN
++	 */
++	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
++		/* MME QM */
++		rc |= hl_init_pb_single_dcore(hdev, (DCORE_OFFSET * i),
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_mme_qm,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_qm),
++				gaudi2_pb_dcr0_mme_qm_unsecured_regs,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_qm_unsecured_regs));
++
++		/* ARC MME */
++		rc |= hl_init_pb_ranges_single_dcore(hdev, (DCORE_OFFSET * i),
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_mme_arc,
++			ARRAY_SIZE(gaudi2_pb_dcr0_mme_arc),
++			gaudi2_pb_dcr0_mme_arc_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_mme_arc_unsecured_regs));
++	}
++
++	/* MME QM ARC ACP ENG */
++	rc |= hl_init_pb_ranges_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_mme_qm_arc_acp_eng,
++			ARRAY_SIZE(gaudi2_pb_mme_qm_arc_acp_eng),
++			gaudi2_pb_mme_qm_arc_acp_eng_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_mme_qm_arc_acp_eng_unsecured_regs),
++			(BIT(NUM_OF_DCORES * NUM_OF_MME_PER_DCORE) - 1));
++
++	/* TPC */
++	rc |= gaudi2_init_pb_tpc(hdev);
++	rc |= gaudi2_init_pb_tpc_arc(hdev);
++
++	/* SRAM */
++	instance_offset = mmDCORE0_SRAM1_BANK_BASE - mmDCORE0_SRAM0_BANK_BASE;
++	rc |= hl_init_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
++			gaudi2_pb_dcr0_sram0, ARRAY_SIZE(gaudi2_pb_dcr0_sram0),
++			NULL, HL_PB_NA);
++
++	/* Sync Manager MSTR IF */
++	rc |= hl_init_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_sm_mstr_if,
++			ARRAY_SIZE(gaudi2_pb_dcr0_sm_mstr_if),
++			NULL, HL_PB_NA);
++
++	/* Sync Manager GLBL */
++
++	/* Unsecure all CQ registers */
++	rc |= hl_init_pb_ranges(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_sm_glbl,
++			ARRAY_SIZE(gaudi2_pb_dcr0_sm_glbl),
++			gaudi2_pb_dcr_x_sm_glbl_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr_x_sm_glbl_unsecured_regs));
++
++	/* Secure Dcore0 CQ0 registers */
++	rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_sm_glbl,
++			ARRAY_SIZE(gaudi2_pb_dcr0_sm_glbl),
++			gaudi2_pb_dcr0_sm_glbl_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_dcr0_sm_glbl_unsecured_regs));
++
++	/* PSOC.
++	 * Except for PSOC_GLOBAL_CONF, skip when security is enabled in F/W, because the blocks are
++	 * protected by privileged RR.
++	 */
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_psoc_global_conf, ARRAY_SIZE(gaudi2_pb_psoc_global_conf),
++			NULL, HL_PB_NA);
++
++	if (!hdev->asic_prop.fw_security_enabled)
++		rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_psoc, ARRAY_SIZE(gaudi2_pb_psoc),
++				NULL, HL_PB_NA);
++
++	/* PMMU */
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_pmmu, ARRAY_SIZE(gaudi2_pb_pmmu),
++			NULL, HL_PB_NA);
++
++	/* PLL.
++	 * Skip PSOC/XFT PLL when security is enabled in F/W, because these blocks are protected by
++	 * privileged RR.
++	 */
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_pmmu_pll, ARRAY_SIZE(gaudi2_pb_pmmu_pll),
++			NULL, HL_PB_NA);
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_xbar_pll, ARRAY_SIZE(gaudi2_pb_xbar_pll),
++			NULL, HL_PB_NA);
++
++	if (!hdev->asic_prop.fw_security_enabled) {
++		rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_psoc_pll, ARRAY_SIZE(gaudi2_pb_psoc_pll),
++				NULL, HL_PB_NA);
++		rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_xft_pll, ARRAY_SIZE(gaudi2_pb_xft_pll),
++				NULL, HL_PB_NA);
++	}
++
++	/* PCIE */
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_pcie, ARRAY_SIZE(gaudi2_pb_pcie),
++			NULL, HL_PB_NA);
++
++	/* Thermal Sensor.
++	 * Skip when security is enabled in F/W, because the blocks are protected by privileged RR.
++	 */
++	if (!hdev->asic_prop.fw_security_enabled) {
++		instance_offset = mmDCORE1_XFT_BASE - mmDCORE0_XFT_BASE;
++		rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
++				gaudi2_pb_thermal_sensor0,
++				ARRAY_SIZE(gaudi2_pb_thermal_sensor0), NULL, HL_PB_NA);
++	}
++
++	/* HBM */
++	/* Temporarily skip until SW-63348 is solved
++	 * instance_offset = mmHBM1_MC0_BASE - mmHBM0_MC0_BASE;
++	 * rc |= hl_init_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, GAUDI2_HBM_NUM,
++	 *		instance_offset, gaudi2_pb_hbm,
++	 *		ARRAY_SIZE(gaudi2_pb_hbm), NULL, HL_PB_NA,
++	 *		prop->dram_enabled_mask);
++	 */
++
++	/* Scheduler ARCs */
++	instance_offset = mmARC_FARM_ARC1_AUX_BASE - mmARC_FARM_ARC0_AUX_BASE;
++	rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA,
++			NUM_OF_ARC_FARMS_ARC,
++			instance_offset, gaudi2_pb_arc_sched,
++			ARRAY_SIZE(gaudi2_pb_arc_sched),
++			gaudi2_pb_arc_sched_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_arc_sched_unsecured_regs));
++
++	/* XBAR MIDs */
++	instance_offset = mmXBAR_MID_1_BASE - mmXBAR_MID_0_BASE;
++	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
++			instance_offset, gaudi2_pb_xbar_mid,
++			ARRAY_SIZE(gaudi2_pb_xbar_mid),
++			gaudi2_pb_xbar_mid_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_xbar_mid_unsecured_regs));
++
++	/* XBAR EDGEs */
++	instance_offset = mmXBAR_EDGE_1_BASE - mmXBAR_EDGE_0_BASE;
++	rc |= hl_init_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
++			instance_offset, gaudi2_pb_xbar_edge,
++			ARRAY_SIZE(gaudi2_pb_xbar_edge),
++			gaudi2_pb_xbar_edge_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_xbar_edge_unsecured_regs),
++			prop->xbar_edge_enabled_mask);
++
++	/* NIC */
++	rc |= hl_init_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_nic0, ARRAY_SIZE(gaudi2_pb_nic0),
++			NULL, HL_PB_NA, hdev->nic_ports_mask);
++
++	/* NIC QM and QPC */
++	rc |= hl_init_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET,
++			NIC_NUMBER_OF_QM_PER_MACRO, NIC_QM_OFFSET,
++			gaudi2_pb_nic0_qm_qpc, ARRAY_SIZE(gaudi2_pb_nic0_qm_qpc),
++			gaudi2_pb_nic0_qm_qpc_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_nic0_qm_qpc_unsecured_regs),
++			hdev->nic_ports_mask);
++
++	/* NIC QM ARC */
++	rc |= hl_init_pb_ranges_with_mask(hdev, NIC_NUMBER_OF_MACROS,
++			NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO, NIC_QM_OFFSET,
++			gaudi2_pb_nic0_qm_arc_aux0,
++			ARRAY_SIZE(gaudi2_pb_nic0_qm_arc_aux0),
++			gaudi2_pb_nic0_qm_arc_aux0_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_nic0_qm_arc_aux0_unsecured_regs),
++			hdev->nic_ports_mask);
++
++	/* NIC UMR */
++	rc |= hl_init_pb_ranges_with_mask(hdev, NIC_NUMBER_OF_MACROS,
++			NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO, NIC_QM_OFFSET,
++			gaudi2_pb_nic0_umr,
++			ARRAY_SIZE(gaudi2_pb_nic0_umr),
++			gaudi2_pb_nic0_umr_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_nic0_umr_unsecured_regs),
++			hdev->nic_ports_mask);
++
++	/* Rotators */
++	instance_offset = mmROT1_BASE - mmROT0_BASE;
++	rc |= hl_init_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ROT,
++			instance_offset, gaudi2_pb_rot0,
++			ARRAY_SIZE(gaudi2_pb_rot0),
++			gaudi2_pb_rot0_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_rot0_unsecured_regs),
++			(BIT(NUM_OF_ROT) - 1));
++
++	/* Rotators ARCS */
++	rc |= hl_init_pb_ranges_with_mask(hdev, HL_PB_SHARED,
++			HL_PB_NA, NUM_OF_ROT, instance_offset,
++			gaudi2_pb_rot0_arc, ARRAY_SIZE(gaudi2_pb_rot0_arc),
++			gaudi2_pb_rot0_arc_unsecured_regs,
++			ARRAY_SIZE(gaudi2_pb_rot0_arc_unsecured_regs),
++			(BIT(NUM_OF_ROT) - 1));
++
++	rc |= gaudi2_init_pb_sm_objs(hdev);
++
++	return rc;
++}
++
++/**
++ * gaudi2_init_security - Initialize security model
++ *
++ * @hdev: pointer to hl_device structure
++ *
++ * Initialize the security model of the device
++ * That includes range registers and protection bit per register.
++ */
++int gaudi2_init_security(struct hl_device *hdev)
++{
++	int rc;
++
++	rc = gaudi2_init_protection_bits(hdev);
++	if (rc)
++		return rc;
++
++	gaudi2_init_range_registers(hdev);
++
++	return 0;
++}
++
++struct gaudi2_ack_pb_tpc_data {
++	u32 tpc_regs_array_size;
++	u32 arc_tpc_regs_array_size;
++};
++
++static void gaudi2_ack_pb_tpc_config(struct hl_device *hdev, int dcore, int inst, u32 offset,
++					void *data)
++{
++	struct gaudi2_ack_pb_tpc_data *pb_data = (struct gaudi2_ack_pb_tpc_data *)data;
++
++	hl_ack_pb_single_dcore(hdev, offset, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_tpc0, pb_data->tpc_regs_array_size);
++
++	hl_ack_pb_single_dcore(hdev, offset, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_tpc0_arc, pb_data->arc_tpc_regs_array_size);
++}
++
++static void gaudi2_ack_pb_tpc(struct hl_device *hdev)
++{
++	struct iterate_module_ctx tpc_iter = {
++		.fn = &gaudi2_ack_pb_tpc_config,
++	};
++	struct gaudi2_ack_pb_tpc_data data;
++
++	data.tpc_regs_array_size = ARRAY_SIZE(gaudi2_pb_dcr0_tpc0);
++	data.arc_tpc_regs_array_size = ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_arc);
++	tpc_iter.data = &data;
++
++	gaudi2_iterate_tpcs(hdev, &tpc_iter);
++}
++
++/**
++ * gaudi2_ack_protection_bits_errors - scan all blocks having protection bits
++ * and for every protection error found, display the appropriate error message
++ * and clear the error.
++ *
++ * @hdev: pointer to hl_device structure
++ *
++ * All protection bits are 1 by default, means not protected. Need to set to 0
++ * each bit that belongs to a protected register.
++ *
++ */
++void gaudi2_ack_protection_bits_errors(struct hl_device *hdev)
++{
++	struct asic_fixed_properties *prop = &hdev->asic_prop;
++	u32 instance_offset;
++	u8 i;
++
++	/* SFT */
++	instance_offset = mmSFT1_HBW_RTR_IF0_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE;
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
++			gaudi2_pb_sft0, ARRAY_SIZE(gaudi2_pb_sft0));
++
++	/* HIF */
++	instance_offset = mmDCORE0_HIF1_BASE - mmDCORE0_HIF0_BASE;
++	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			NUM_OF_HIF_PER_DCORE, instance_offset,
++			gaudi2_pb_dcr0_hif, ARRAY_SIZE(gaudi2_pb_dcr0_hif),
++			prop->hmmu_hif_enabled_mask);
++
++	/* RTR */
++	instance_offset = mmDCORE0_RTR1_CTRL_BASE - mmDCORE0_RTR0_CTRL_BASE;
++	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
++			gaudi2_pb_dcr0_rtr0, ARRAY_SIZE(gaudi2_pb_dcr0_rtr0));
++
++	/* HMMU */
++	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			NUM_OF_HMMU_PER_DCORE, DCORE_HMMU_OFFSET,
++			gaudi2_pb_dcr0_hmmu0, ARRAY_SIZE(gaudi2_pb_dcr0_hmmu0),
++			prop->hmmu_hif_enabled_mask);
++
++	/* CPU.
++	 * Except for CPU_IF, skip when security is enabled in F/W, because the blocks are protected
++	 * by privileged RR.
++	 */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_cpu_if, ARRAY_SIZE(gaudi2_pb_cpu_if));
++	if (!hdev->asic_prop.fw_security_enabled)
++		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_cpu, ARRAY_SIZE(gaudi2_pb_cpu));
++
++	/* KDMA */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_kdma, ARRAY_SIZE(gaudi2_pb_kdma));
++
++	/* PDMA */
++	instance_offset = mmPDMA1_CORE_BASE - mmPDMA0_CORE_BASE;
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 2, instance_offset,
++			gaudi2_pb_pdma0, ARRAY_SIZE(gaudi2_pb_pdma0));
++
++	/* ARC PDMA */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 2, instance_offset,
++			gaudi2_pb_pdma0_arc, ARRAY_SIZE(gaudi2_pb_pdma0_arc));
++
++	/* EDMA */
++	instance_offset = mmDCORE0_EDMA1_CORE_BASE - mmDCORE0_EDMA0_CORE_BASE;
++	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
++			instance_offset, gaudi2_pb_dcr0_edma0,
++			ARRAY_SIZE(gaudi2_pb_dcr0_edma0),
++			prop->edma_enabled_mask);
++
++	/* ARC EDMA */
++	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
++			instance_offset, gaudi2_pb_dcr0_edma0_arc,
++			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_arc),
++			prop->edma_enabled_mask);
++
++	/* MME */
++	instance_offset = mmDCORE0_MME_SBTE1_BASE - mmDCORE0_MME_SBTE0_BASE;
++
++	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
++		/* MME SBTE */
++		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i), 5,
++				instance_offset, gaudi2_pb_dcr0_mme_sbte,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_sbte));
++
++		/* MME */
++		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i),
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_mme_eng,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_eng));
++	}
++
++	/*
++	 * we have special iteration for case in which we would like to
++	 * configure stubbed MME's ARC/QMAN
++	 */
++	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
++		/* MME QM */
++		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i),
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_mme_qm,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_qm));
++
++		/* ARC MME */
++		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i),
++				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_dcr0_mme_arc,
++				ARRAY_SIZE(gaudi2_pb_dcr0_mme_arc));
++	}
++
++	/* MME QM ARC ACP ENG */
++	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
++			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_mme_qm_arc_acp_eng,
++			ARRAY_SIZE(gaudi2_pb_mme_qm_arc_acp_eng),
++			(BIT(NUM_OF_DCORES * NUM_OF_MME_PER_DCORE) - 1));
++
++	/* TPC */
++	gaudi2_ack_pb_tpc(hdev);
++
++	/* SRAM */
++	instance_offset = mmDCORE0_SRAM1_BANK_BASE - mmDCORE0_SRAM0_BANK_BASE;
++	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
++			gaudi2_pb_dcr0_sram0, ARRAY_SIZE(gaudi2_pb_dcr0_sram0));
++
++	/* Sync Manager MSTR IF */
++	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_sm_mstr_if, ARRAY_SIZE(gaudi2_pb_dcr0_sm_mstr_if));
++
++	/* Sync Manager */
++	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_sm_glbl, ARRAY_SIZE(gaudi2_pb_dcr0_sm_glbl));
++
++	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_dcr0_sm_mstr_if, ARRAY_SIZE(gaudi2_pb_dcr0_sm_mstr_if));
++
++	/* PSOC.
++	 * Except for PSOC_GLOBAL_CONF, skip when security is enabled in F/W, because the blocks are
++	 * protected by privileged RR.
++	 */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_psoc_global_conf, ARRAY_SIZE(gaudi2_pb_psoc_global_conf));
++	if (!hdev->asic_prop.fw_security_enabled)
++		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_psoc, ARRAY_SIZE(gaudi2_pb_psoc));
++
++	/* PMMU */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_pmmu, ARRAY_SIZE(gaudi2_pb_pmmu));
++
++	/* PLL.
++	 * Skip PSOC/XFT PLL when security is enabled in F/W, because these blocks are protected by
++	 * privileged RR.
++	 */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_pmmu_pll, ARRAY_SIZE(gaudi2_pb_pmmu_pll));
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_xbar_pll, ARRAY_SIZE(gaudi2_pb_xbar_pll));
++	if (!hdev->asic_prop.fw_security_enabled) {
++		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_psoc_pll, ARRAY_SIZE(gaudi2_pb_psoc_pll));
++		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++				gaudi2_pb_xft_pll, ARRAY_SIZE(gaudi2_pb_xft_pll));
++	}
++
++	/* PCIE */
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_pcie, ARRAY_SIZE(gaudi2_pb_pcie));
++
++	/* Thermal Sensor.
++	 * Skip when security is enabled in F/W, because the blocks are protected by privileged RR.
++	 */
++	if (!hdev->asic_prop.fw_security_enabled) {
++		instance_offset = mmDCORE1_XFT_BASE - mmDCORE0_XFT_BASE;
++		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
++				gaudi2_pb_thermal_sensor0, ARRAY_SIZE(gaudi2_pb_thermal_sensor0));
++	}
++
++	/* HBM */
++	instance_offset = mmHBM1_MC0_BASE - mmHBM0_MC0_BASE;
++	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, GAUDI2_HBM_NUM,
++			instance_offset, gaudi2_pb_hbm,
++			ARRAY_SIZE(gaudi2_pb_hbm), prop->dram_enabled_mask);
++
++	/* Scheduler ARCs */
++	instance_offset = mmARC_FARM_ARC1_AUX_BASE - mmARC_FARM_ARC0_AUX_BASE;
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ARC_FARMS_ARC,
++			instance_offset, gaudi2_pb_arc_sched,
++			ARRAY_SIZE(gaudi2_pb_arc_sched));
++
++	/* XBAR MIDs */
++	instance_offset = mmXBAR_MID_1_BASE - mmXBAR_MID_0_BASE;
++	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
++			instance_offset, gaudi2_pb_xbar_mid,
++			ARRAY_SIZE(gaudi2_pb_xbar_mid));
++
++	/* XBAR EDGEs */
++	instance_offset = mmXBAR_EDGE_1_BASE - mmXBAR_EDGE_0_BASE;
++	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
++			instance_offset, gaudi2_pb_xbar_edge,
++			ARRAY_SIZE(gaudi2_pb_xbar_edge), prop->xbar_edge_enabled_mask);
++
++	/* NIC */
++	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
++			gaudi2_pb_nic0, ARRAY_SIZE(gaudi2_pb_nic0), hdev->nic_ports_mask);
++
++	/* NIC QM and QPC */
++	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO,
++			NIC_QM_OFFSET, gaudi2_pb_nic0_qm_qpc, ARRAY_SIZE(gaudi2_pb_nic0_qm_qpc),
++			hdev->nic_ports_mask);
++
++	/* NIC QM ARC */
++	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO,
++			NIC_QM_OFFSET, gaudi2_pb_nic0_qm_arc_aux0,
++			ARRAY_SIZE(gaudi2_pb_nic0_qm_arc_aux0), hdev->nic_ports_mask);
++
++	/* NIC UMR */
++	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO,
++			NIC_QM_OFFSET, gaudi2_pb_nic0_umr, ARRAY_SIZE(gaudi2_pb_nic0_umr),
++			hdev->nic_ports_mask);
++
++	/* Rotators */
++	instance_offset = mmROT1_BASE - mmROT0_BASE;
++	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ROT, instance_offset,
++			gaudi2_pb_rot0, ARRAY_SIZE(gaudi2_pb_rot0), (BIT(NUM_OF_ROT) - 1));
++
++	/* Rotators ARCS */
++	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ROT, instance_offset,
++			gaudi2_pb_rot0_arc, ARRAY_SIZE(gaudi2_pb_rot0_arc), (BIT(NUM_OF_ROT) - 1));
++}
++
++/*
++ * Print PB security errors
++ */
++
++void gaudi2_pb_print_security_errors(struct hl_device *hdev, u32 block_addr, u32 cause,
++					u32 offended_addr)
++{
++	int i = 0;
++	const char *error_format =
++		"Security error at block 0x%x, offending address 0x%x\n"
++		"Cause 0x%x: %s %s %s %s %s %s %s %s\n";
++	char *mcause[8] = {"Unknown", "", "", "", "", "", "", "" };
++
++	if (!cause)
++		return;
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_APB_PRIV_RD)
++		mcause[i++] = "APB_PRIV_RD";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_APB_SEC_RD)
++		mcause[i++] = "APB_SEC_RD";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_APB_UNMAPPED_RD)
++		mcause[i++] = "APB_UNMAPPED_RD";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_APB_PRIV_WR)
++		mcause[i++] = "APB_PRIV_WR";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_APB_SEC_WR)
++		mcause[i++] = "APB_SEC_WR";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_APB_UNMAPPED_WR)
++		mcause[i++] = "APB_UNMAPPED_WR";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_EXT_SEC_WR)
++		mcause[i++] = "EXT_SEC_WR";
++
++	if (cause & SPECIAL_GLBL_ERR_CAUSE_EXT_UNMAPPED_WR)
++		mcause[i++] = "APB_EXT_UNMAPPED_WR";
++
++	dev_err_ratelimited(hdev->dev, error_format, block_addr, offended_addr,
++			cause, mcause[0], mcause[1], mcause[2], mcause[3],
++			mcause[4], mcause[5], mcause[6], mcause[7]);
++}
 -- 
 2.25.1
 
