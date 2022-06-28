@@ -2,208 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DF1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ED1CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234844AbiF1S6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
+        id S234213AbiF1TAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234021AbiF1S6a (ORCPT
+        with ESMTP id S232604AbiF1TAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:58:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C50561171
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:58:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656442702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2lf7QwNhxdo+quqMTGK7aQY+8Wzt942aQ0JT7PbSYKk=;
-        b=MXSIJWSTJ2Zzjp3qqraBUAbQD7rRJj3KZdpGGi4hsK6xv5bPbkACX1OT83+SBUvA9Fg30M
-        BSLt6O4zOsiubHxjhA01LcZGRW2me5nqLKtYTloFSuN9ddgOMkECkkgaWLv/uYKPHCVLUY
-        NCprf8pMAPRNpbyJhkXU6VXrTO7SqOA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-60-RsjZgpj2NBO_ixqJjRh3nQ-1; Tue, 28 Jun 2022 14:58:21 -0400
-X-MC-Unique: RsjZgpj2NBO_ixqJjRh3nQ-1
-Received: by mail-wm1-f71.google.com with SMTP id j19-20020a05600c191300b003a048196712so4160033wmq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 11:58:20 -0700 (PDT)
+        Tue, 28 Jun 2022 15:00:14 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A672764A;
+        Tue, 28 Jun 2022 11:59:54 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id z7so18862477edm.13;
+        Tue, 28 Jun 2022 11:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+5svx5LwjLEEoN4gETD1VRjFETGWrIKeBab47sR6QxQ=;
+        b=gBsgfrXhzDpMZG/uB1HEIAh8ul/REXioVN/FTh/1X2T4t2y7Ht43pNoarj1FLNOYRG
+         9oknH/ocoEsmauWwT93Nqe49Y3WtPlTCPCj0fsHOelyplkHXOj1W/8zL6ORteF3MYTx5
+         UwM3b/JO1GeySOonAuQgNw8yXDw6SdBdpAi6Zici3spAd/q6C104xQCtiniWuk2/5hYl
+         lHZUdweAKbXKhvEz9rlUFIOJId4i1un1RXbyAmhOOxl3P5A9KQ0TrV974dp94W5CPRac
+         2aOimt2FSTltpNNcnuyNIpGTkspG8V0xpUb8vxkgThCIgSSNKpI8dGGOqxhlDPjV9yD6
+         LQ9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2lf7QwNhxdo+quqMTGK7aQY+8Wzt942aQ0JT7PbSYKk=;
-        b=j9wXdmSWL2QUteYKaHD2yJbNJPam2o5TVSJLebKz9SrV8bP89BA9+UErHTkadFXsbu
-         c/rREsragZsPqBdmGTBoz9t4qoq5ikguOF2BWSYAx6056Q1Ce8fM3u+HZ6NtudfiiUZ8
-         V/2wvsUE+od7YCxMRekOuQFIk5JhVEfP1aHxB7w36sU/SVsiC4OLrKimG7Ex6dZ3yL+Y
-         KG/ToT6c/zSZqfF+sGUADu7nscJhPHk6bB3daoXJhLNsMlbT2shHj0V6d3UpwK0Cp9t3
-         RRKhk6iDcKBGpUz6mtLcUJWyS2oJUTOo/WmptIuIuHEHfCPReESoTjK9Wo8QUxRJ9Ji8
-         y4/A==
-X-Gm-Message-State: AJIora/xM7W2EuwBm/jxbbfr6s65/MvMw5NrJgI5O7H9K2zmTenYCGvB
-        bVLY4gHYJAfBygQEkue9gKETP1a6iBz+Ld65raJpiO9roD522bLK1ytfdE1vd0Js/NdSV1lAmuP
-        DDhB1u39A3JfE8eiu7rGYYCHk
-X-Received: by 2002:a05:600c:5022:b0:39c:7f6c:ab44 with SMTP id n34-20020a05600c502200b0039c7f6cab44mr1136473wmr.97.1656442699781;
-        Tue, 28 Jun 2022 11:58:19 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1szlySBmm8GkNFrjrCF0IMcWnh1Lja8Zw3SseqWkis7etEldh2DCLEG7RhUJHJijP9HlpeLSQ==
-X-Received: by 2002:a05:600c:5022:b0:39c:7f6c:ab44 with SMTP id n34-20020a05600c502200b0039c7f6cab44mr1136417wmr.97.1656442699439;
-        Tue, 28 Jun 2022 11:58:19 -0700 (PDT)
-Received: from work-vm (cpc109025-salf6-2-0-cust480.10-2.cable.virginm.net. [82.30.61.225])
-        by smtp.gmail.com with ESMTPSA id s2-20020adfea82000000b0021b90d7b2c9sm14365759wrm.24.2022.06.28.11.58.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+5svx5LwjLEEoN4gETD1VRjFETGWrIKeBab47sR6QxQ=;
+        b=H1oCMOMJqzw0IdtK5M6ZS0yRDRhwbef24rXOY7078GFKfrt8olVh/uT6R0mnRDi7ng
+         yh00FIe2GHDTfamdLPq94l18QKAtgbf9V0YZcqLp0fSIFfsNYK6fz82xV8bg1xhXF7u8
+         IsIxssmLQ4hp1Bhlr6FfOffQFuvvp7wRAXWC+8ng2eOsRMErZCxSaq5AM4yRXUafAjyY
+         Sr/RNPBMvbOavoA4o9zv8o/fadR0pUPwJX9Lmy9a8QBljpMu+ekPIZ3X4XNgI2660EKp
+         bD2pmceMsB+b/KvS+lAWnUZ6TJRZ8mzfEh6FZgjS24BZGA9upcHEH7bxLWgcZjfUgAam
+         2f7g==
+X-Gm-Message-State: AJIora+P/727QXGVty2ZTASFL0hYtpdncCXar2UdDaVeX5yNSGaVB/XP
+        f2dn6GRGpkIDEwybfX2INBR9BTkzCXluMA==
+X-Google-Smtp-Source: AGRyM1vS7ZvW2V/yomp7fG86RmudHB9XbPpcXCZSGU4ezs3/2UisA33JqF1qB8Ns+EVE/6Wi9lTbpA==
+X-Received: by 2002:a05:6402:e83:b0:435:a9bd:8134 with SMTP id h3-20020a0564020e8300b00435a9bd8134mr24664533eda.243.1656442792470;
+        Tue, 28 Jun 2022 11:59:52 -0700 (PDT)
+Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.11.59.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 11:58:18 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 19:58:15 +0100
-From:   "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
-Cc:     "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "jroedel@suse.de" <jroedel@suse.de>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "slp@redhat.com" <slp@redhat.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
-        "tobin@ibm.com" <tobin@ibm.com>, "bp@alien8.de" <bp@alien8.de>,
-        "Roth, Michael" <Michael.Roth@amd.com>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "marcorr@google.com" <marcorr@google.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "alpergun@google.com" <alpergun@google.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>
-Subject: Re: [PATCH Part2 v6 06/49] x86/sev: Add helper functions for
- RMPUPDATE and PSMASH instruction
-Message-ID: <YrtPR+qylZ74ciMT@work-vm>
-References: <cover.1655761627.git.ashish.kalra@amd.com>
- <e4643e9d37fcb025d0aec9080feefaae5e9245d5.1655761627.git.ashish.kalra@amd.com>
- <YrH0ca3Sam7Ru11c@work-vm>
- <SN6PR12MB2767FBF0848B906B9F0284D28EB39@SN6PR12MB2767.namprd12.prod.outlook.com>
- <BYAPR12MB2759910E715C69D1027CCE678EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
- <Yrrc/6x70wa14c5t@work-vm>
- <SN6PR12MB27677062FBBF9D62C7BF41D88EB89@SN6PR12MB2767.namprd12.prod.outlook.com>
+        Tue, 28 Jun 2022 11:59:52 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [RFC net-next v3 00/29] io_uring zerocopy send
+Date:   Tue, 28 Jun 2022 19:56:22 +0100
+Message-Id: <cover.1653992701.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN6PR12MB27677062FBBF9D62C7BF41D88EB89@SN6PR12MB2767.namprd12.prod.outlook.com>
-User-Agent: Mutt/2.2.6 (2022-06-05)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Kalra, Ashish (Ashish.Kalra@amd.com) wrote:
-> [AMD Official Use Only - General]
-> 
-> Hello Dave,
-> 
-> -----Original Message-----
-> From: Dr. David Alan Gilbert <dgilbert@redhat.com> 
-> Sent: Tuesday, June 28, 2022 5:51 AM
-> To: Kalra, Ashish <Ashish.Kalra@amd.com>
-> Cc: x86@kernel.org; linux-kernel@vger.kernel.org; kvm@vger.kernel.org; linux-coco@lists.linux.dev; linux-mm@kvack.org; linux-crypto@vger.kernel.org; tglx@linutronix.de; mingo@redhat.com; jroedel@suse.de; Lendacky, Thomas <Thomas.Lendacky@amd.com>; hpa@zytor.com; ardb@kernel.org; pbonzini@redhat.com; seanjc@google.com; vkuznets@redhat.com; jmattson@google.com; luto@kernel.org; dave.hansen@linux.intel.com; slp@redhat.com; pgonda@google.com; peterz@infradead.org; srinivas.pandruvada@linux.intel.com; rientjes@google.com; dovmurik@linux.ibm.com; tobin@ibm.com; bp@alien8.de; Roth, Michael <Michael.Roth@amd.com>; vbabka@suse.cz; kirill@shutemov.name; ak@linux.intel.com; tony.luck@intel.com; marcorr@google.com; sathyanarayanan.kuppuswamy@linux.intel.com; alpergun@google.com; jarkko@kernel.org
-> Subject: Re: [PATCH Part2 v6 06/49] x86/sev: Add helper functions for RMPUPDATE and PSMASH instruction
-> 
-> * Kalra, Ashish (Ashish.Kalra@amd.com) wrote:
-> > [AMD Official Use Only - General]
-> > 
-> > >>>  /*
-> > >>>   * The RMP entry format is not architectural. The format is 
-> > >>> defined in PPR @@ -126,6 +128,15 @@ struct snp_guest_platform_data {
-> > >>>  	u64 secrets_gpa;
-> > >>>  };
-> > >>>  
-> > >>> +struct rmpupdate {
-> > >>> +	u64 gpa;
-> > >>> +	u8 assigned;
-> > >>> +	u8 pagesize;
-> > >>> +	u8 immutable;
-> > >>> +	u8 rsvd;
-> > >>> +	u32 asid;
-> > >>> +} __packed;
-> > 
-> > >>I see above it says the RMP entry format isn't architectural; is this 'rmpupdate' structure? If not how is this going to get handled when we have a couple >of SNP capable CPUs with different layouts?
-> > 
-> > >Architectural implies that it is defined in the APM and shouldn't change in such a way as to not be backward compatible. 
-> > >I probably think the wording here should be architecture independent or more precisely platform independent.
-> > 
-> > Some more clarity on this: 
-> > 
-> > Actually, the PPR for family 19h Model 01h, Rev B1 defines the RMP entry format as below:
-> > 
-> > 2.1.4.2 RMP Entry Format
-> > Architecturally the format of RMP entries are not specified in APM. In order to assist software, the following table specifies select portions of the RMP entry format for this specific product. Each RMP entry is 16B in size and is formatted as follows. Software should not rely on any field definitions not specified in this table and the format of an RMP entry may change in future processors. 
-> > 
-> > Architectural implies that it is defined in the APM and shouldn't change in such a way as to not be backward compatible. So non-architectural in this context means that it is only defined in our PPR.
-> > 
-> > So actually this RPM entry definition is platform dependent and will need to be changed for different AMD processors and that change has to be handled correspondingly in the dump_rmpentry() code. 
-> 
-> > You'll need a way to make that fail cleanly when run on a newer CPU with different layout, and a way to build kernels that can handle more than one layout.
-> 
-> Yes, I will be adding a check for CPU family/model as following :
-> 
-> static int __init snp_rmptable_init(void)
-> {
-> +       int family, model;
-> 
->       if (!boot_cpu_has(X86_FEATURE_SEV_SNP))
->                return 0;
-> 
-> +       family = boot_cpu_data.x86;
-> +       model  = boot_cpu_data.x86_model;
-> 
-> +       /*
-> +        * RMP table entry format is not architectural and it can vary by processor and
-> +        * is defined by the per-processor PPR. Restrict SNP support on the known CPU
-> +        * model and family for which the RMP table entry format is currently defined for.
-> +        */
-> +       if (family != 0x19 || model > 0xaf)
-> +               goto nosnp;
+The third iteration of patches for zerocopy io_uring sends. I fixed
+all known issues since the previous version and reshuffled io_uring
+patches, but the net/ code didn't change much. I think it's ready
+and will send it as a non-RFC soon.
 
-please add a print there to say why you're not enabling SNP.
+All tests below are done using io_uring with all relevant performance
+options turned on. Numbers look good, send + flush per request, which
+is the worst case, is on par with non-zerocopy with the payload size
+lower than 600 bytes with dummy netdev and b/w 1200-1500 for NIC tests.
+Without "buffer-free" notification flushing at all it's on par with NIC
+at around 600 bytes.
 
-It would be great if your firmware could give you an 'rmpentry version'; and
-then if a new model came out that happened to have the same layout
-everything would just carryon working by checking that rather than
-the actual family/model.
+dummy:
+IO size | non-zc (tx/s) | zc (tx/s)      | zc + flush (tx/s)
+8000    | 1299916       | 2396600 (+84%) | 2224219 (+71%)
+4000    | 1869230       | 2344146 (+25%) | 2170069 (+16%)
+1200    | 2071617       | 2361960 (+14%) | 2203052 (+6%)
+600     | 2106794       | 2381527 (+13%) | 2195295 (+4%)
 
-> +
-> 
-> This way SNP will only be enabled specifically on the platforms for which this RMP entry
-> format is defined in those processor's PPR. This will work for Milan and Genoa as of now.
-> 
-> Additionally as per Sean's suggestion, I will be moving the RMP structure definition to sev.c,
-> which will make it a private structure and not exposed to other parts of the kernel.
-> 
-> Also in the future we will have an architectural interface to read the RMP table entry,
-> we will first check for it's availability and if not available fall back to the RMP table
-> entry structure definition.
+NIC:
+IO size | non-zc (tx/s) | zc (tx/s)      | zc + flush (tx/s)
+4000    | 495134        | 606420 (+22%)  | 558971 (+12%)
+1500    | 551808        | 577116 (+4.5%) | 565803 (+2.5%)
+1000    | 584677        | 592088 (+1.2%) | 560885 (-4%)
+600     | 596292        | 598550 (+0.4%) | 555366 (-6.7%)
 
-Dave
+Apart from zerocopy, it also removes page referencing for reigstered
+buffers (used in all zc tests). I'm experimenting with notificaiton
+optimsation, which should improve the 3rd column, but that will go
+separately from this series. I've also seen good CPU usage reduction
+for TCP comparing to non-zc, but not posting numbers as had problems
+saturating CPU.
 
->  Thanks,
->  Ashish
-> 
+Links:
+
+  RFC v1:
+  https://lore.kernel.org/io-uring/cover.1638282789.git.asml.silence@gmail.com/
+
+  RFC v2:
+  https://lore.kernel.org/io-uring/cover.1640029579.git.asml.silence@gmail.com/
+
+  liburing (copy of the benchmark + some tests):
+  https://github.com/isilence/liburing/tree/zc_v3
+
+  kernel repo:
+  https://github.com/isilence/linux/tree/zc_v3
+
+API design overview:
+
+  First we take an internal zerocopy handler, aka struct ubuf_info, and let
+  io_uring to pass it into the network layer in struct msghdr. io_uring
+  stores them as wrapping into struct io_notif.
+
+  It also has an array of so called notification slots, each keeps one and
+  only one active notifier at a time, to which the userspace can bind requests
+  by specifying the slot index. Then the userspace can request to flush a
+  notifier, so when all buffers and requests used with this notifier
+  complete/freed it'll post one CQE.
+
+  The userspace can't bind new requests to a flushed notifier, however,
+  it can use the slot as flushing automatically replaces the notifier with
+  a new one.
+
+Changelog:
+
+  RFC v2 -> RFC v3:
+    TCP support
+    accounting for normal (non-registered) buffers
+    allow to combine reg and normal requests within a notifier
+    notification flushing via IORING_OP_RSRC_UPDATE
+    overriding io_uring notification tag/user_data
+    add ubuf_info submmision side reference caching/batching
+    fix buffer indexing
+    fix io-wq ->uring_lock locking
+    fix bugs when mixing with MSG_ZEROCOPY
+    fix managed refs bugs in skbuff.c
+    numerous cleanups
+
+  RFC -> RFC v2:
+    remove additional overhead for non-zc from skb_release_data()
+    avoid msg propagation, hide extra bits of non-zc overhead
+    task_work based "buffer free" notifications
+    improve io_uring's notification refcounting
+    added 5/19, (no pfmemalloc tracking)
+    added 8/19 and 9/19 preventing small copies with zc
+    misc small changes
+
+Pavel Begunkov (29):
+  ipv4: avoid partial copy for zc
+  ipv6: avoid partial copy for zc
+  skbuff: add SKBFL_DONT_ORPHAN flag
+  skbuff: carry external ubuf_info in msghdr
+  net: bvec specific path in zerocopy_sg_from_iter
+  net: optimise bvec-based zc page referencing
+  net: don't track pfmemalloc for managed frags
+  skbuff: don't mix ubuf_info of different types
+  ipv4/udp: support zc with managed data
+  ipv6/udp: support zc with managed data
+  tcp: support zc with managed data
+  tcp: kill extra io_uring's uarg refcounting
+  net: let callers provide extra ubuf_info refs
+  io_uring: opcode independent fixed buf import
+  io_uring: add zc notification infrastructure
+  io_uring: cache struct io_notif
+  io_uring: complete notifiers in tw
+  io_uring: add notification slot registration
+  io_uring: rename IORING_OP_FILES_UPDATE
+  io_uring: add zc notification flush requests
+  io_uring: wire send zc request type
+  io_uring: account locked pages for non-fixed zc
+  io_uring: allow to pass addr into sendzc
+  io_uring: add rsrc referencing for notifiers
+  io_uring: sendzc with fixed buffers
+  io_uring: flush notifiers after sendzc
+  io_uring: allow to override zc tag on flush
+  io_uring: batch submission notif referencing
+  selftests/io_uring: test zerocopy send
+
+ fs/io_uring.c                                 | 566 +++++++++++++++-
+ include/linux/skbuff.h                        |  59 +-
+ include/linux/socket.h                        |   8 +
+ include/uapi/linux/io_uring.h                 |  43 +-
+ net/compat.c                                  |   2 +
+ net/core/datagram.c                           |  53 +-
+ net/core/skbuff.c                             |  35 +-
+ net/ipv4/ip_output.c                          |  66 +-
+ net/ipv4/tcp.c                                |  56 +-
+ net/ipv6/ip6_output.c                         |  65 +-
+ net/socket.c                                  |   6 +
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/io_uring_zerocopy_tx.c      | 605 ++++++++++++++++++
+ .../selftests/net/io_uring_zerocopy_tx.sh     | 131 ++++
+ 14 files changed, 1613 insertions(+), 83 deletions(-)
+ create mode 100644 tools/testing/selftests/net/io_uring_zerocopy_tx.c
+ create mode 100755 tools/testing/selftests/net/io_uring_zerocopy_tx.sh
+
 -- 
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+2.36.1
 
