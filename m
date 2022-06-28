@@ -2,301 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7226C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347746AbiF1PDT (ORCPT
+        id S1347755AbiF1PEv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:03:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
+        Tue, 28 Jun 2022 11:04:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347711AbiF1PDC (ORCPT
+        with ESMTP id S1347720AbiF1PEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:03:02 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E52333E94
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:03:01 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 25SEooRB009892
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:03:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=XcSPD6iqW0QERWybzBYEyeXKnxx4udfiL5IBrKJFiyA=;
- b=DANhO+5t14dsEcpfq83Xhj87X5Uk3UqgTkLscjJ2V+FbBZQT5Pz/PwebdS/NbQK9qi3t
- ToIVonaWSUWTcJfyiYEyGRc3QNRr6qDY9udEudjSVXj5jgLETFk3kqD8KywBLaeGYLBQ
- XLH1SZCr2x+iB7Y2RxAmfRmm9321hTbIlyQ= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3h03ru0386-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:03:00 -0700
-Received: from twshared25107.07.ash9.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 28 Jun 2022 08:02:56 -0700
-Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id 15830244BBDB; Tue, 28 Jun 2022 08:02:38 -0700 (PDT)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        <io-uring@vger.kernel.org>
-CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH for-next 8/8] io_uring: multishot recv
-Date:   Tue, 28 Jun 2022 08:02:28 -0700
-Message-ID: <20220628150228.1379645-9-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628150228.1379645-1-dylany@fb.com>
-References: <20220628150228.1379645-1-dylany@fb.com>
+        Tue, 28 Jun 2022 11:04:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EB91D301;
+        Tue, 28 Jun 2022 08:04:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2CC2B81E39;
+        Tue, 28 Jun 2022 15:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F5CFC3411D;
+        Tue, 28 Jun 2022 15:04:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656428686;
+        bh=ENgejiw+sgjk1N/1PkHBRhDYnDtcy5LgtLT6/pcL9XY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=UDGL8Qieu0VRAUh2s/g6/HiBTtvuzwhPkwtmcs4kHRCf1smoNrrqiZtbsGG4AFrxX
+         neBuBEhnWXf9WhUNNSlOX2F6+YVBoLYclb8tO/s/E39ava4dXeRqSzjq7BYk7JrM+F
+         bn4t/cEtK+djEniP4h6ZJlcmP0JvXUadmBvTlZYSDBBYysDQXbWyBrTJDnCiqdQ16n
+         8MhfcECywObJV14zwWVWutmWlI0lkpWnrGdDyWW1B3NPKE2oeNqDyg3K6S1JvYSmnY
+         TYBHiOXBbFezIO0IH4110YIbwgLXCsbl8baEeGkvwVnFVp1KSukdPfawmEEBTktKzL
+         UBszwnFWdOPPQ==
+Message-ID: <002f8deb-f664-cc1b-53e6-b4297c8c6b49@kernel.org>
+Date:   Tue, 28 Jun 2022 09:04:42 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: CYo18ilUmCI1YxsM0tZn0lVCx6U1jpIr
-X-Proofpoint-GUID: CYo18ilUmCI1YxsM0tZn0lVCx6U1jpIr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_08,2022-06-28_01,2022-06-22_01
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH] ipv6: remove redundant store to value after addition
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220628145406.183527-1-colin.i.king@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220628145406.183527-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support multishot receive for io_uring.
-Typical server applications will run a loop where for each recv CQE it
-requeues another recv/recvmsg.
+On 6/28/22 8:54 AM, Colin Ian King wrote:
+> There is no need to store the result of the addition back to variable count
+> after the addition. The store is redundant, replace += with just +
+> 
+> Cleans up clang scan build warning:
+> warning: Although the value stored to 'count' is used in the enclosing
+> expression, the value is never actually read from 'count'
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  net/ipv6/route.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-This can be simplified by using the existing multishot functionality
-combined with io_uring's provided buffers.
-The API is to add the IORING_RECV_MULTISHOT flag to the SQE. CQEs will
-then be posted (with IORING_CQE_F_MORE flag set) when data is available
-and is read. Once an error occurs or the socket ends, the multishot will
-be removed and a completion without IORING_CQE_F_MORE will be posted.
-
-The benefit to this is that the recv is much more performant.
- * Subsequent receives are queued up straight away without requiring the
-   application to finish a processing loop.
- * If there are more data in the socket (sat the provided buffer size is
-   smaller than the socket buffer) then the data is immediately
-   returned, improving batching.
- * Poll is only armed once and reused, saving CPU cycles
-
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
----
- io_uring/net.c | 93 +++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 81 insertions(+), 12 deletions(-)
-
-diff --git a/io_uring/net.c b/io_uring/net.c
-index 0268c4603f5d..9bf8c6c0b549 100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -389,6 +389,8 @@ int io_recvmsg_prep_async(struct io_kiocb *req)
- 	return ret;
- }
-=20
-+#define RECVMSG_FLAGS (IORING_RECVSEND_POLL_FIRST | IORING_RECV_MULTISHO=
-T)
-+
- int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe=
-)
- {
- 	struct io_sr_msg *sr =3D io_kiocb_to_cmd(req);
-@@ -399,13 +401,22 @@ int io_recvmsg_prep(struct io_kiocb *req, const str=
-uct io_uring_sqe *sqe)
- 	sr->umsg =3D u64_to_user_ptr(READ_ONCE(sqe->addr));
- 	sr->len =3D READ_ONCE(sqe->len);
- 	sr->flags =3D READ_ONCE(sqe->addr2);
--	if (sr->flags & ~IORING_RECVSEND_POLL_FIRST)
-+	if (sr->flags & ~(RECVMSG_FLAGS))
- 		return -EINVAL;
- 	sr->msg_flags =3D READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
- 	if (sr->msg_flags & MSG_DONTWAIT)
- 		req->flags |=3D REQ_F_NOWAIT;
- 	if (sr->msg_flags & MSG_ERRQUEUE)
- 		req->flags |=3D REQ_F_CLEAR_POLLIN;
-+	if (sr->flags & IORING_RECV_MULTISHOT) {
-+		if (!(req->flags & REQ_F_BUFFER_SELECT))
-+			return -EINVAL;
-+		if (sr->msg_flags & MSG_WAITALL)
-+			return -EINVAL;
-+		if (req->opcode =3D=3D IORING_OP_RECV && sr->len)
-+			return -EINVAL;
-+		req->flags |=3D REQ_F_APOLL_MULTISHOT;
-+	}
-=20
- #ifdef CONFIG_COMPAT
- 	if (req->ctx->compat)
-@@ -415,6 +426,14 @@ int io_recvmsg_prep(struct io_kiocb *req, const stru=
-ct io_uring_sqe *sqe)
- 	return 0;
- }
-=20
-+static inline void io_recv_prep_retry(struct io_kiocb *req)
-+{
-+	struct io_sr_msg *sr =3D io_kiocb_to_cmd(req);
-+
-+	sr->done_io =3D 0;
-+	sr->len =3D 0; /* get from the provided buffer */
-+}
-+
- int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_sr_msg *sr =3D io_kiocb_to_cmd(req);
-@@ -424,6 +443,7 @@ int io_recvmsg(struct io_kiocb *req, unsigned int iss=
-ue_flags)
- 	unsigned flags;
- 	int ret, min_ret =3D 0;
- 	bool force_nonblock =3D issue_flags & IO_URING_F_NONBLOCK;
-+	size_t len =3D sr->len;
-=20
- 	sock =3D sock_from_file(req->file);
- 	if (unlikely(!sock))
-@@ -442,16 +462,17 @@ int io_recvmsg(struct io_kiocb *req, unsigned int i=
-ssue_flags)
- 	    (sr->flags & IORING_RECVSEND_POLL_FIRST))
- 		return io_setup_async_msg(req, kmsg);
-=20
-+retry_multishot:
- 	if (io_do_buffer_select(req)) {
- 		void __user *buf;
-=20
--		buf =3D io_buffer_select(req, &sr->len, issue_flags);
-+		buf =3D io_buffer_select(req, &len, issue_flags);
- 		if (!buf)
- 			return -ENOBUFS;
- 		kmsg->fast_iov[0].iov_base =3D buf;
--		kmsg->fast_iov[0].iov_len =3D sr->len;
-+		kmsg->fast_iov[0].iov_len =3D len;
- 		iov_iter_init(&kmsg->msg.msg_iter, READ, kmsg->fast_iov, 1,
--				sr->len);
-+				len);
- 	}
-=20
- 	flags =3D sr->msg_flags;
-@@ -463,8 +484,15 @@ int io_recvmsg(struct io_kiocb *req, unsigned int is=
-sue_flags)
- 	kmsg->msg.msg_get_inq =3D 1;
- 	ret =3D __sys_recvmsg_sock(sock, &kmsg->msg, sr->umsg, kmsg->uaddr, fla=
-gs);
- 	if (ret < min_ret) {
--		if (ret =3D=3D -EAGAIN && force_nonblock)
--			return io_setup_async_msg(req, kmsg);
-+		if (ret =3D=3D -EAGAIN && force_nonblock) {
-+			ret =3D io_setup_async_msg(req, kmsg);
-+			if (ret =3D=3D -EAGAIN && (req->flags & IO_APOLL_MULTI_POLLED) =3D=3D
-+					       IO_APOLL_MULTI_POLLED) {
-+				io_kbuf_recycle(req, issue_flags);
-+				ret =3D IOU_ISSUE_SKIP_COMPLETE;
-+			}
-+			return ret;
-+		}
- 		if (ret =3D=3D -ERESTARTSYS)
- 			ret =3D -EINTR;
- 		if (ret > 0 && io_net_retry(sock, flags)) {
-@@ -491,8 +519,24 @@ int io_recvmsg(struct io_kiocb *req, unsigned int is=
-sue_flags)
- 	cflags =3D io_put_kbuf(req, issue_flags);
- 	if (kmsg->msg.msg_inq)
- 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
-+
-+	if (!(req->flags & REQ_F_APOLL_MULTISHOT)) {
-+		io_req_set_res(req, ret, cflags);
-+		return IOU_OK;
-+	}
-+
-+	if (ret > 0) {
-+		if (io_post_aux_cqe(req->ctx, req->cqe.user_data, ret,
-+				    cflags | IORING_CQE_F_MORE)) {
-+			io_recv_prep_retry(req);
-+			goto retry_multishot;
-+		} else {
-+			ret =3D -ECANCELED;
-+		}
-+	}
-+
- 	io_req_set_res(req, ret, cflags);
--	return IOU_OK;
-+	return req->flags & REQ_F_POLLED ? IOU_STOP_MULTISHOT : ret;
- }
-=20
- int io_recv(struct io_kiocb *req, unsigned int issue_flags)
-@@ -505,6 +549,7 @@ int io_recv(struct io_kiocb *req, unsigned int issue_=
-flags)
- 	unsigned flags;
- 	int ret, min_ret =3D 0;
- 	bool force_nonblock =3D issue_flags & IO_URING_F_NONBLOCK;
-+	size_t len =3D sr->len;
-=20
- 	if (!(req->flags & REQ_F_POLLED) &&
- 	    (sr->flags & IORING_RECVSEND_POLL_FIRST))
-@@ -514,16 +559,17 @@ int io_recv(struct io_kiocb *req, unsigned int issu=
-e_flags)
- 	if (unlikely(!sock))
- 		return -ENOTSOCK;
-=20
-+retry_multishot:
- 	if (io_do_buffer_select(req)) {
- 		void __user *buf;
-=20
--		buf =3D io_buffer_select(req, &sr->len, issue_flags);
-+		buf =3D io_buffer_select(req, &len, issue_flags);
- 		if (!buf)
- 			return -ENOBUFS;
- 		sr->buf =3D buf;
- 	}
-=20
--	ret =3D import_single_range(READ, sr->buf, sr->len, &iov, &msg.msg_iter=
-);
-+	ret =3D import_single_range(READ, sr->buf, len, &iov, &msg.msg_iter);
- 	if (unlikely(ret))
- 		goto out_free;
-=20
-@@ -543,8 +589,14 @@ int io_recv(struct io_kiocb *req, unsigned int issue=
-_flags)
-=20
- 	ret =3D sock_recvmsg(sock, &msg, flags);
- 	if (ret < min_ret) {
--		if (ret =3D=3D -EAGAIN && force_nonblock)
--			return -EAGAIN;
-+		if (ret =3D=3D -EAGAIN && force_nonblock) {
-+			if ((req->flags & IO_APOLL_MULTI_POLLED) =3D=3D IO_APOLL_MULTI_POLLED=
-) {
-+				io_kbuf_recycle(req, issue_flags);
-+				ret =3D IOU_ISSUE_SKIP_COMPLETE;
-+			}
-+
-+			return ret;
-+		}
- 		if (ret =3D=3D -ERESTARTSYS)
- 			ret =3D -EINTR;
- 		if (ret > 0 && io_net_retry(sock, flags)) {
-@@ -570,8 +622,25 @@ int io_recv(struct io_kiocb *req, unsigned int issue=
-_flags)
- 	cflags =3D io_put_kbuf(req, issue_flags);
- 	if (msg.msg_inq)
- 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
-+
-+
-+	if (!(req->flags & REQ_F_APOLL_MULTISHOT)) {
-+		io_req_set_res(req, ret, cflags);
-+		return IOU_OK;
-+	}
-+
-+	if (ret > 0) {
-+		if (io_post_aux_cqe(req->ctx, req->cqe.user_data, ret,
-+				    cflags | IORING_CQE_F_MORE)) {
-+			io_recv_prep_retry(req);
-+			goto retry_multishot;
-+		} else {
-+			ret =3D -ECANCELED;
-+		}
-+	}
-+
- 	io_req_set_res(req, ret, cflags);
--	return IOU_OK;
-+	return req->flags & REQ_F_POLLED ? IOU_STOP_MULTISHOT : ret;
- }
-=20
- int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
---=20
-2.30.2
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
