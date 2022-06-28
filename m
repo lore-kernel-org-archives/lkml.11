@@ -2,125 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBAAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC39EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 14:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346187AbiF1OLt (ORCPT
+        id S1346146AbiF1ONc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 10:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51456 "EHLO
+        Tue, 28 Jun 2022 10:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345924AbiF1OLn (ORCPT
+        with ESMTP id S231414AbiF1ONa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 10:11:43 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E91736150
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:11:40 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id l68so2402848wml.3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:11:40 -0700 (PDT)
+        Tue, 28 Jun 2022 10:13:30 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE811EC51
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:13:30 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id q132so22398353ybg.10
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 07:13:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=z6rZSThE7hjHMykxwD6G3CLunLDgT8dkRZWO7hFrMlc=;
-        b=E14bCHFAJHEKjAz3a2lSSKKAKgMH8nSUaKpBBhdBtLPYkBu0W31aQtkY03sC1zEkVc
-         FiDofXOMIBM6p89lrcTgMas9mDeuNZ2IdHzWfFBULzcC45sbYJVkKgvhrufDwGDkwSby
-         mbNRGEjJ2jkCWZBxE+1M5f+xMG1cZFeiJeiWGhuCZcZedEV9Yee4Kij8RkBC9PhrLfj0
-         jzR8t7i4zLmaqwwRlVbW5uh5yAr+iVTRaNP2FGEOa72yoXEOY1DDzcVlb03F08k3F7C/
-         MaAJ3rAMWURmtIcyWHe+yyTuzKWiOEq6IjUKpQCN+SFhgMUN4uNUHhdkVX6DFfwXzc+c
-         Wp2w==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5Ak9fGBSyNTC9/zM2LmAtjsPfz0fauhmhcL7y4wTmPs=;
+        b=AWjGfj5bvqdOWR0OCeEbsZwXgKhFXY1IVpM59omVQIQ5g9UT3qIVK+sTls/SSa8N0u
+         gNKxXtFnuCj8BwgRlShIV6JZ7rRPMV0WYd/Z3v5UP6m4nht2KvodkA9Ra5fSqwgpvT1A
+         6odq10H/hYXdyKO68R1v/pgTC24/DPfGWy+I5KQJRi8NqRUkLHKvw8x/nL474HqXUPuO
+         Wn8AKWrpRfmNr2+TsU7XoTRiQkpz6cdKZF7OHeT6yM6qK5EWaEfzpk0VRWJjsnMwQ/VB
+         ldZXGycBnyUmJ6+6Auv9MiEwoy/75pubtFPA2hsaqieRS1YF/P4QuQHbO/rida3LwNN7
+         g9ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=z6rZSThE7hjHMykxwD6G3CLunLDgT8dkRZWO7hFrMlc=;
-        b=S+giV4jLBtywBX9e3iNYh5cojcAOGE5f3/gOoBdPFNDERPm7gD0VvVahNS8ks7yX+r
-         kSaiy6xMN45Yl8LMr2n9YlNp1QH0IaML6f4PeALXgOMMO7N2sr7KSC5clMnv9DihET8I
-         9RC5pxljv1n0VKqrlE6aSjycMNeEliEPFbGu+jLIad3DV3E4IX+r9vU0lBt/FCWSWUp4
-         U+1hKS/rzAPZ+RKBBH9EtF5Nd/FjaJC6NWBwYsi41Ly9d9vC39vwcqWw56OGqYHk3hOQ
-         UDZxzXfDITMdGrn9AFTyCStnRv8wVcEAUkpq6+pjesASdUblYB+bd9Rbn1uat6ay6VzB
-         5PAw==
-X-Gm-Message-State: AJIora8qqQjpXizd7KfpzDziYGOCvo6UJb9pEjsmmFr+h1ED7q1sivY0
-        UHdlJlskuHcSTtYiP4gQGUnW5w==
-X-Google-Smtp-Source: AGRyM1sYVVXgAazao0K/lpqse9gQZXQrTog4KvhzBzsiHswnBk9UIffH0I3WCPb3MN3iprzQZzmnFQ==
-X-Received: by 2002:a05:600c:34d0:b0:3a0:2c07:73ac with SMTP id d16-20020a05600c34d000b003a02c0773acmr27247171wmq.85.1656425498512;
-        Tue, 28 Jun 2022 07:11:38 -0700 (PDT)
-Received: from google.com (44.232.78.34.bc.googleusercontent.com. [34.78.232.44])
-        by smtp.gmail.com with ESMTPSA id ay5-20020a05600c1e0500b003a04e900552sm3796880wmb.1.2022.06.28.07.11.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 07:11:38 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 14:11:36 +0000
-From:   Sebastian Ene <sebastianene@google.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Rob Herring <robh+dt@kernel.org>, qperret@google.com,
-        maz@kernel.org, linux-watchdog@vger.kernel.org, will@kernel.org,
-        vdonnefort@google.com
-Subject: Re: [PATCH v8 2/2] misc: Add a mechanism to detect stalls on guest
- vCPUs
-Message-ID: <YrsMGAVljIcypDl4@google.com>
-References: <20220627102810.1811311-1-sebastianene@google.com>
- <20220627102810.1811311-3-sebastianene@google.com>
- <b87a4407-29fd-4715-1394-ae6afaf4a192@roeck-us.net>
- <YrrP3NvAuxso0rzO@google.com>
- <194f5edc-5877-af3f-9aa1-be1e275ea304@roeck-us.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5Ak9fGBSyNTC9/zM2LmAtjsPfz0fauhmhcL7y4wTmPs=;
+        b=tKLntu0V5TZDtkuuIZmvx3Napi5ETgqde2biQvcFh5xwzavx+vLVwouxY0Z8/sT+xu
+         kqAe7h6Mv51dYZZaKq2HOBhj3Kj7PipWot7OUW6hNBnbmpdQPVJexJItykh9Yn44oNqq
+         lgV1Cic2iNrXhAmoVjDDUzFnCTCjLLJvXwtLNKfIOJ75Btt6x3zVNGHBSxa6t7GbSFMM
+         m9C14mDSE5qBP5Rty/cUPuKy7CUq/WiuQyfSzQoxWdenmpZvG/folqiSJVq0Sdi1cq2f
+         oAYy09BSllgwZPdWaKzkQOgl9mXQ90oWjolWr7DTjUv81G/BhxfBOC0I9riqQr3WL4sk
+         DSCw==
+X-Gm-Message-State: AJIora+7Z5y3KWol/c3cXsln7YTms6pemcplIj+NF6cycObohL8q0IQ8
+        X3BCWuCfozB+9fF/rUN6ZksCFMKVqOjJPIy3ZkX41g==
+X-Google-Smtp-Source: AGRyM1tzbdsFHeeYT4fOTsfzgP49TpefwICfzEQ63caT6oTXLjkLH1NlVPVj5M+nSxqLxg5MWOERTK9fRabKLmHP74g=
+X-Received: by 2002:a25:cac5:0:b0:66d:2c32:8593 with SMTP id
+ a188-20020a25cac5000000b0066d2c328593mr3202257ybg.626.1656425609426; Tue, 28
+ Jun 2022 07:13:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <194f5edc-5877-af3f-9aa1-be1e275ea304@roeck-us.net>
+References: <20220627142350.742973-1-fabien.dessenne@foss.st.com>
+In-Reply-To: <20220627142350.742973-1-fabien.dessenne@foss.st.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 28 Jun 2022 16:13:18 +0200
+Message-ID: <CACRpkdZQNs6BgchbxFN4rHzk41xUnJKcxKTi78xTduq32y4urQ@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: stm32: fix optional IRQ support to gpios
+To:     Fabien Dessenne <fabien.dessenne@foss.st.com>
+Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-gpio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 07:00:05AM -0700, Guenter Roeck wrote:
-> On 6/28/22 02:54, Sebastian Ene wrote:
-> [ ... ]
-> > > > +static struct platform_device *virt_dev;
-> > > > +
+On Mon, Jun 27, 2022 at 4:24 PM Fabien Dessenne
+<fabien.dessenne@foss.st.com> wrote:
 
-Hi,
+> To act as an interrupt controller, a gpio bank relies on the
+> "interrupt-parent" of the pin controller.
+> When this optional "interrupt-parent" misses, do not create any IRQ domain.
+>
+> This fixes a "NULL pointer in stm32_gpio_domain_alloc()" kernel crash when
+> the interrupt-parent = <exti> property is not declared in the Device Tree.
+>
+> Fixes: 0eb9f683336d ("pinctrl: Add IRQ support to STM32 gpios")
+>
+> Signed-off-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
 
-> > > 
-> > > virt_dev is only used to call platform_set_drvdata() and platform_get_drvdata()
-> > > on it. Why not just have a static variable named vm_stall_detect ?
-> > > 
-> > 
-> > I think this should also work. I wanted to make use of the provided APIs
-> > like platform_set/platform_get.
-> > 
-> 
-> That doesn't mean such APIs should be used just to get used, though.
-> 
+Patch applied for fixes.
 
-I will remove these calls and keep it static.
-
-> > > > +
-> > > > +	vm_stall_detect = (struct vm_stall_detect_s __percpu *)
-> > > > +		platform_get_drvdata(virt_dev);
-> > > 
-> > > platform_get_drvdata() returns void *; typecast to it is unnecessary.
-> > > 
-> > > 
-> > 
-> > I needed this typecast because the variable is per-cpu and some
-> > compilers(eg. gcc for ARCH=h8300) complain if we don't specify this
-> > hint.
-> > 
-> Hmm, interesting. I didn't know that. We live and learn.
-> Though h8300 is gone now :-)
-
-I had some Intel robot complaining about this in my previous series(v5) and
-I fixed the warnings by adding these compiler hints.
-
-> 
-> Did you reply in private on purpose ?
-> 
-
-I misused my CC list but I will fix this in my reply. 
-
-> Thanks,
-> Guenter
-
-Thanks for the response,
-Seb
+Yours,
+Linus Walleij
