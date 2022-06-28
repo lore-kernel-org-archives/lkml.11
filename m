@@ -2,93 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE214C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C37C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232601AbiF1UYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:24:31 -0400
+        id S233318AbiF1UZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:25:09 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbiF1UV6 (ORCPT
+        with ESMTP id S233019AbiF1UYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:21:58 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B73A3DA4A
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:46 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id p8so18720510oip.8
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:46 -0700 (PDT)
+        Tue, 28 Jun 2022 16:24:47 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16361E8B
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:22:14 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31bf327d4b5so39504877b3.13
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:22:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4K1yIyRlfarxdrcJIzjiuU7hE/FjddqU64uWG9lU5uE=;
-        b=lbQqjU431Wi9OuZDFQyx7Bl/jXktkn19UGNRQGHrPqTpTVbR/33SCwCPq47m5ZEth9
-         BCG6LofI/0ryNHTqyqT2+EgPR9o27P8CYHE5JEl8RPKLAsB3cps5rDl5RGEwEtdzgDAf
-         qD3BY8oda35aPIcwoTO6gkviHFXrbPRgMzmp0T4faq5A6hISzUiyh3tOJdSrh7yrwIFU
-         K2bo+zS2ZVb3EF0SlOhM/VlsBDLevDVJ6QyVl9Q1XHfJBJJsM5fsQBn7saBG3WqnBw22
-         OS4C56JVs7ozuprOV5qjJW75+SKUHikTQcwrJcvGjbOzmq+Ot8Ccpk6EDmIT3Yr0aXpI
-         9gfQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=soRYWtsPJuPgBzgOfiqcgq8BhmfYCuH0eXHHZJEWVAM=;
+        b=j9BI7gp7y1yuGAEAYZQStxRnAob1tpvxFeSDkSnmrNlbTwJSmgUIl3fnciJfrbckqk
+         D5cvKn1H2wpz12SEOsSc9+zmLFQ+NMJUnl88UY/RcX6lzY85fPYGRi89xS4Mimgrf1Sn
+         h9YEc4m3Kjwqme/SeaRjDL9gpzHH4Pse4OmQoSaI6VXH1FUaJleQ8zTPNtBu/BZXiIDV
+         MMTbOUxxQB9WE9AQmJg+c9EVDFao8+NVG0P0VYTG/AhrmaYC0b3e96yL5URneROsPGbO
+         jV1kxin28RlbQshCTGOd2WuH9wF6TOnFs0/8UgJS0uz6QdNIJO/SJ2Sy0auCelmeRUna
+         KEjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4K1yIyRlfarxdrcJIzjiuU7hE/FjddqU64uWG9lU5uE=;
-        b=yaOKx3O0ld1w90ykUh2SziF99z4hnPJrNKxW52gAjAivSMEPP6T5Tn3rHSFG8S4cBi
-         66r3uM94hOvpXFQYXab606pbJ5iCaQErrBYaD28A/dTm/KbJ0KptrXjJjefjeybvhig8
-         MDv/V5QAJjtrxtjTVbQvGRnRpg0nrurH37DFh4EkGOJJwiI1efk6Lo68AX2zySp9a75h
-         oNbNslzWp51dHtaDKsR7OIfdAu7PGiGvKScpJYf3QTOCET9TrjBxrvJidJIBBE0RB4ij
-         olbjlqLGC8Fn1QTw9jwqIZH2ggU9gJIaXHO006Cjh8i8ujLPSn98OnZohr3FNPemwyNX
-         TwNA==
-X-Gm-Message-State: AJIora8nvJan5ASd4kNkqiQ8/sBgxr14V4qCtjm3dfkEesGYDI3lig2r
-        u5cc8m6BuwYI8ZMLUk0oTGO34g==
-X-Google-Smtp-Source: AGRyM1sV/uc5rapmEnvedSYRD9dxwsr83iT1JIXKk5etidOjlOK90qhSAkEX8h2nVT5NhEsf1HGvWQ==
-X-Received: by 2002:a05:6808:d50:b0:333:415e:2ca5 with SMTP id w16-20020a0568080d5000b00333415e2ca5mr948193oik.53.1656447586121;
-        Tue, 28 Jun 2022 13:19:46 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 13:19:45 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, robh+dt@kernel.org,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        agross@kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        manivannan.sadhasivam@linaro.org
-Subject: Re: (subset) [PATCH v2 0/4] Devicetree updates for Interconnect, USB3 and PHY support
-Date:   Tue, 28 Jun 2022 15:19:12 -0500
-Message-Id: <165644753307.10525.4732064519492926832.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1651482395-29443-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1651482395-29443-1-git-send-email-quic_rohiagar@quicinc.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=soRYWtsPJuPgBzgOfiqcgq8BhmfYCuH0eXHHZJEWVAM=;
+        b=VRg9NcmWUdew+yTOZbGo00iUOZc1hjZNJ30wHYhytaZ3yEhNaoK0ixYxH1CHEP4re0
+         Hqn4brkPZmGNND7caY1g/6y8er8q4iISPyalwpWVxfW/HO7F0xMxw+UG0aDWQqJV1E1Z
+         bGCqfjkTvaP3b8tZDnOXFvLe1Thgp0P7kSKE/gD1dJ2gtKHQsRLkDfcIq9WQxhdO8WQb
+         BtdFYgPuJ8uutSByu9UtjntSsQTqxiHcVggQXnPiVibFcvbjk0b/aLG88qTKtOC+uRR9
+         CnCRQsQHLShhfXu3IhpTAn+iwus8yTZ5svffowcD52VBkQiI+bzPieUwlJGtQ/+F6oSH
+         Fpfg==
+X-Gm-Message-State: AJIora+yDoLSa4YsPTalmM5cxSXu6xzNi0x4mBRcmXcKzLIvpBF39ihQ
+        k44n5n8xPkNNbYi/7Vt4Isb9TR+rM0ZgmnswlY0erQ==
+X-Google-Smtp-Source: AGRyM1tJUNZB01tRem3hFP43pssManUrJJQ/Uz/2Tk+U4lLvxJtyyxmRl/qMxGkw8ksXLo9a6CEpUAR3gTFGskb21IM=
+X-Received: by 2002:a0d:eace:0:b0:317:87ac:b3a8 with SMTP id
+ t197-20020a0deace000000b0031787acb3a8mr24231841ywe.126.1656447733193; Tue, 28
+ Jun 2022 13:22:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220610204057.2203419-1-robh@kernel.org>
+In-Reply-To: <20220610204057.2203419-1-robh@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 28 Jun 2022 22:22:01 +0200
+Message-ID: <CACRpkdZBozy5Z3UjQcAfiuDyuA-OESfmhWZ_YNv8Y5ZVLGqG5A@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: arm/fvp-base-revc: Remove 'panel-dpi' compatible
+To:     Rob Herring <robh@kernel.org>
+Cc:     Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2 May 2022 14:36:31 +0530, Rohit Agarwal wrote:
-> This series adds the devicetree nodes to support the interconnect, USB3 and PHY support.
-> 
-> Changes from v1:
->  - Addressed Krzysztof's comments.
->  - Rebased on top of 5.18-rc5.
-> 
-> Thanks,
-> Rohit.
-> 
-> [...]
+On Fri, Jun 10, 2022 at 10:41 PM Rob Herring <robh@kernel.org> wrote:
 
-Applied, thanks!
+> The rtsm-display panel timing node was removed in commit 928faf5e3e8d
+> ("arm64: dts: fvp: Remove panel timings"). Without the node, 'panel-dpi'
+> is not needed either.
+>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-[1/4] ARM: dts: qcom: sdx65: Add interconnect nodes
-      commit: b456b5e7d1df276a4e1050680eec86ccb99d8a82
-[3/4] ARM: dts: qcom: sdx65: Add USB3 and PHY support
-      commit: fbb6447deba87dc409e274d9d6d90d9c79851fb7
-[4/4] ARM: dts: qcom: sdx65-mtp: Enable USB3 and PHY support
-      commit: eeaec4f2b926ffcb35a9c1c4af549ac9f7a6ce56
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Best regards,
--- 
-Bjorn Andersson <bjorn.andersson@linaro.org>
+Yours,
+Linus Walleij
