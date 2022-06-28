@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7481DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED67C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343661AbiF1Ibc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
+        id S242494AbiF1Ibm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245628AbiF1IbS (ORCPT
+        with ESMTP id S1343880AbiF1Ibh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:31:18 -0400
-Received: from relay.uni-heidelberg.de (relay.uni-heidelberg.de [129.206.100.212])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2499C26542
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:31:16 -0700 (PDT)
-X-IPAS-Result: =?us-ascii?q?A2BkBACEu7piffxkzoFagliDJYFXlBABAQEGjHGHH4ong?=
- =?us-ascii?q?gcBAQEBAQEBAQEJLxMEAQFAig8nNAkOAQIEAQEBAQMCAwEBAQEBAQMBAQYBA?=
- =?us-ascii?q?QEBAQcEFAEBIzwnhWgNhkMGJwsBRhBRVxmCeAIBAQKCZAEDMK4uMoEBhloBg?=
- =?us-ascii?q?T+BZYE9iVmFH4FAgRCBFTODNYQLgQaFbgSaBgoDCQQHBUYXEk4xIQJFCxwBC?=
- =?us-ascii?q?AYGBwEIAQUIKAQCAQEBBgUYFAEDAQETEgUTDAcoChICEgwKGwcHAwsFMg0CD?=
- =?us-ascii?q?gcBAQwPAQIPAwECEQEHAgkSCAYPKwgDAQEDAQcBAgIDIAsCAxYJBwgCAQIFA?=
- =?us-ascii?q?gIBAw8BCAocEhAUAgQNBB4JAggBAhkeLAcCAgQOAyMfCAsKAw4DBAMBEAIYB?=
- =?us-ascii?q?wIBFQEFAgQIBAEDBgMIFRkBDScEBwMSAg0BBgECBgEBBQUBAxgIAxQDBQECC?=
- =?us-ascii?q?AMWBwECIQUKJgkEDQMBIhsCAwMBBBsKAgECAgUWBQIBAQIDAgYVBgICPy8RH?=
- =?us-ascii?q?Q0IBAgECRIcIwECDAEEAQIHLwUELQIBAR4EBQEFDwIIAQEWAgYEAwICAwEBA?=
- =?us-ascii?q?gEWAhAIAggnFwcTMxkBBTcUDg8BAwYIGRwiBwkHBQYWAwwVKR4pBQcREhsPB?=
- =?us-ascii?q?A0NCjQgFiQBAQ4FAwESGREOBxQKUyYhFRAGASsWAwQBAwMCBhoBAgMiAhILC?=
- =?us-ascii?q?RUCBC0FASIdGZtKAYENTpd7q2EHg1EQAYsQlSaFRZEdApIAlnCicYRPNYEsS?=
- =?us-ascii?q?YFMTSODOAlIGQ+XVIUeczsCBgsBAQMJjDmCSAEB?=
-IronPort-Data: A9a23:ACpbUq+G6j8vTQhpLJ4vDrUDGn6TJUtcMsCJ2f8bNWPcYEJGY0x3x
- zYZC2yDM66CNGT2e491bY+w9RlTvsTRyNRnQAY5/3xEQiMRo6IpJ/zAcxiqb33ORiHgoOCLy
- +1EN7Es+ehtFie0Si+Fa+Sn9T8mvU2xbuKU5NTsYkidfic5DnZ74f5fs7Rh2NQw34LpW1rlV
- e7a+qUzBnf0g1aYDUpJs8pvmDs31BglkGpF1rCWTakjUG72zxH5PrpGTU2CByOQrr1vIwKPb
- 72rIIdVXo/u10xF5tuNyt4Xe6CRK1LYFVDmZnF+A8BOjvXez8A/+v5TCRYSVatYoxeAwPB76
- YwTibihWQtyL7LjuOI5UgYNRkmSPYUekFPGCX22sMjLlgvbdXqpw/hvAEwyN4AC9aB7DAmi9
- 9RBcmFLNEjdwbvumPThF7MEascLdaEHOKsEsXFkwCnBAOwOWozeT+PX494d3Doxis1KF/vEa
- IwVZFKDaTyZPUASYwtOV85WcOGAwUTmKQxahXmplbMcpEmO3g1b84TAGY+AEjCNbZ4JwBrC/
- zquE37CKg4YL9uDwBKK93utgqnEmiaTcI0IGbK79tZugVuO1mIUFRsaXEe6pv//jVSxM/pbK
- koJ6m81saE99UqkZt38RAGj5nqFuAMMHdZdDYUS5lqWwaqS7AeFLm8ZUjpGb99gv8gzLRQu1
- 1mUj5bqCCZpvbm9V32Q7PGXoCm0NCxTKnUNDRLoViMA6tjn+Nh1kxTOC9ZuEaK4itf4Az62z
- z3iQDUCa6s7r8dU96+apA77pyO8qsPYUSEV4CHWQTfwhu9mX7KNa4ut4FndyP9PKoeFU1WM1
- ETofeDAtYji6rnQxESwrPUx8KKBu6fZaWWD6bJ7N8l/p2z0k5K2Vd0IuFlDyFFV3tEsVRKBj
- KX7mQ5Q6JJXNnawYsebiKrvWp1wlcAM+fzPX/zZaJ9xyUxraBOK+Stjf0H44owAuE0lkKVnY
- NGGd8fpDXsbBaljxjesSKER3NfHJxzSJ0uNFfgXLDz+j9JygUJ5r59ZbzNiichivcu5TP39q
- Yo3Cidz40w3vBfCSifW65UPClsBMGI2A5v7w+QOKLPdeVc6Rjt/VaSIqV/ER2CDt/oE/gsv1
- i/hMnK0NHKh1BUr1C3QMiE+NuqxNXqBhSJgbXxE0amUN4gLOtrxsP1GL/PbjJEt+eh80PM8U
- v8EZciaGfVTW3zB9igCaoP+xLGOhzz07T9iyxGNPmNlF7Y+HFOhxzMRVlGynMX4Jnbs6JFWT
- nzJ/l+zfKfvsCw4XJqLN6r+nwjq1ZXf8corN3b1zhBoUB2E2OBXx+bZ15fb/+lkxc3/+wan
-IronPort-HdrOrdr: A9a23:/yYrSKGn8inyCg2npLqExMeALOsnbusQ8zAXPo5KOHhom7+j5q
- OTdZMgpGfJYVcqKQgdcL+7V5VoLUmskqKdpLNhW4tKPzOJhILLFu1fBOLZqlWKdhEWtNQtsJ
- uIGJIfNDSfNykZsS+32miFOudl6OW70eSTpd629R1QpW0GUdAa0ztE
-X-IronPort-Anti-Spam-Filtered: true
-Received: from mail01.uni-heidelberg.de ([129.206.100.252])
-  by relay.uni-heidelberg.de with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jun 2022 10:31:16 +0200
-Received: from localhost (ip-037-209-006-204.um11.pools.vodafone-ip.de [37.209.6.204])
-        (Authenticated sender: ln194)
-        by mail01.uni-heidelberg.de (Postfix) with ESMTPSA id 129EF30011A5C;
-        Tue, 28 Jun 2022 10:31:15 +0200 (CEST)
-From:   Felix Schlepper <f3sch.git@outlook.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        wjsota@gmail.com, Felix Schlepper <f3sch.git@outlook.com>
-Subject: [PATCH 7/7] Staging: rtl8192e: Added spaces around '+'
-Date:   Tue, 28 Jun 2022 10:30:56 +0200
-Message-Id: <89740728c6b1f5c89baf72dcb2ef499e73ca693d.1656402464.git.f3sch.git@outlook.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1656402464.git.f3sch.git@outlook.com>
-References: <cover.1656402464.git.f3sch.git@outlook.com>
+        Tue, 28 Jun 2022 04:31:37 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCFB275E1;
+        Tue, 28 Jun 2022 01:31:35 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id s206so2514055pgs.3;
+        Tue, 28 Jun 2022 01:31:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4YUppmcH9DGFbiFvJ50NDFp5rvlwmUubF5n3PRvNMgc=;
+        b=WtHQcxrKWFb2K9B9boiU1Bi//tvsO6QUM6wkTogqoKBJOSNFKMWse7SXsuuk4x+iT1
+         93d6LTv5O67ZpPJI2qk3llusmAYNYSl2pN47Fvxh/TKwV6vIG2+bgUqkW7sAP4BoOTJ+
+         JLH1qM9KOmKulzKmG9Amr4PsjXGKrqgb5JCItUjdHR9EwoshWGNf9NB8idZhdCmEZiZ0
+         y9MuO9PxUL/9q85b/VsKWMw6Vw1ukBDiSvWOXLOl1p35WCsrOzsGsGBMEpQYcIRji3yk
+         jdFMelVA4hcZ/yKnMeBrMY12se1Wq4bdOJaQUBoAg44XGAqEtLX1r3kNgfZbgSbvDqwm
+         8+NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4YUppmcH9DGFbiFvJ50NDFp5rvlwmUubF5n3PRvNMgc=;
+        b=BWSJXuOClOHqDX4kN6zzvfogcn7cAC6Qc4uiheE1gDEA0+IZtWyehkM/n09pkq3TIo
+         +8a+jKRwO87EcGg+JLNn8wEZkttP0ZbxA3sF/uT4Io2QR/qaoaETzmKb2xx6O6gU29Kl
+         c5Obwfdiskx2IldgN91V11yAr4liz6y8gxjbsGN+8PzJNtHgXLQi9F3Q98KC2JWfegla
+         h4ETnEeYcWwz8AGTiE3dhU3lRdOxawxhpvY4b4a8u1C1sWp8LoN7HgDFKrHQ3f/OnDAq
+         YCAq2TIHuIF8hn07YeNJWqz73NwQS/ezYYWMmUjlvyUpOlv86gUXUC5kXz7a6ajYsYvb
+         8lBA==
+X-Gm-Message-State: AJIora+I3RkzSDHg+NNNWvAFGhPUvYX34BLz8U64rn3WXiJLEGS3mzsv
+        OcPDA7RZ8by3Rh44Rb9qj24XrOxzhEGFjdY3
+X-Google-Smtp-Source: AGRyM1utu+zRDoU2mf3jHnY+RweqiTweJg5TodgmiqeLpUNAtJC6maZfLtZQwB2+4TpWugfe1Kpe6Q==
+X-Received: by 2002:a63:6d7:0:b0:411:51f2:6de2 with SMTP id 206-20020a6306d7000000b0041151f26de2mr3858740pgg.184.1656405095276;
+        Tue, 28 Jun 2022 01:31:35 -0700 (PDT)
+Received: from localhost.localdomain ([103.84.139.165])
+        by smtp.gmail.com with ESMTPSA id c16-20020a170902b69000b001678dcb4c5asm8653339pls.100.2022.06.28.01.31.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 01:31:34 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        tung.q.nguyen@dektech.com.au
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH v2] net: tipc: fix possible infoleak in tipc_mon_rcv()
+Date:   Tue, 28 Jun 2022 16:31:22 +0800
+Message-Id: <20220628083122.26942-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This addresses two issues raised by checkpatch.pl:
+dom_bef is use to cache current domain record only if current domain
+exists. But when current domain does not exist, dom_bef will still be used
+in mon_identify_lost_members. This may lead to an information leak.
 
-     $ ./scripts/checkpatch.pl --terse -f drivers/staging/rtl8192e/rtllib_wx.c
-     CHECK: spaces preferred around that '+' (ctx:VxV)
+Fix this by adding a memset before using dom_bef.
 
-Signed-off-by: Felix Schlepper <f3sch.git@outlook.com>
+Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- drivers/staging/rtl8192e/rtllib_wx.c | 2 +-
+
+v2: remove redundant 'dom_bef.member_cnt = 0;'
+
+ net/tipc/monitor.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_wx.c b/drivers/staging/rtl8192e/rtllib_wx.c
-index 9945f3f136d1..52e5e4e5977b 100644
---- a/drivers/staging/rtl8192e/rtllib_wx.c
-+++ b/drivers/staging/rtl8192e/rtllib_wx.c
-@@ -780,7 +780,7 @@ int rtllib_wx_set_gen_ie(struct rtllib_device *ieee, u8 *ie, size_t len)
- 	kfree(ieee->wps_ie);
- 	ieee->wps_ie = NULL;
- 	if (len) {
--		if (len != ie[1]+2)
-+		if (len != ie[1] + 2)
- 			return -EINVAL;
- 		buf = kmemdup(ie, len, GFP_KERNEL);
- 		if (!buf)
+diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
+index 2f4d23238a7e..03b5d0b65169 100644
+--- a/net/tipc/monitor.c
++++ b/net/tipc/monitor.c
+@@ -534,7 +534,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
+ 	state->peer_gen = new_gen;
+ 
+ 	/* Cache current domain record for later use */
+-	dom_bef.member_cnt = 0;
++	memset(&dom_bef, 0, sizeof(dom_bef));
+ 	dom = peer->domain;
+ 	if (dom)
+ 		memcpy(&dom_bef, dom, dom->len);
 -- 
-2.36.1
+2.25.1
 
