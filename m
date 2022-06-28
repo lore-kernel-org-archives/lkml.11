@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98730C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8587C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243120AbiF1CTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        id S243360AbiF1CTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243306AbiF1CS7 (ORCPT
+        with ESMTP id S243035AbiF1CS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 22:18:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8BB23BE6;
-        Mon, 27 Jun 2022 19:18:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBA3248C7;
+        Mon, 27 Jun 2022 19:18:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4B90B81C0A;
-        Tue, 28 Jun 2022 02:18:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84E93C341D0;
-        Tue, 28 Jun 2022 02:18:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 292EA617BB;
+        Tue, 28 Jun 2022 02:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DCD8C34115;
+        Tue, 28 Jun 2022 02:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382726;
-        bh=Ys0RJPZ4GxYz/5tskLY3MZu3a5KGfyWFRcYRdYGjEjU=;
+        s=k20201202; t=1656382732;
+        bh=Xkb0VAVnJd5IRM7nock+vyU/sDGgNuk4ZOFBIVhKWjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KtQE6WNxOpA89ZzVTtCjNDk/lrjftwTqTY/uEe5nw23o5Rx2QtRhtrkik/xXyVZEW
-         jfYyJeILjEvt+CX6x+MMGwzMeuKzOploGAPrCmFjdowgD88k1hTbG0qP/VHm1myG6/
-         f1AITnyit+34pIGvTZMV0Cq5RuxboU0bxRitH2TZoz9lg0dp5dbtFnBhOIjSTSXC0M
-         dbkXYkv8d0cAWDfNCLgx6wmVG5hckRA1quwM0YCoVtsrcHwJnP0hUbN5rdThLS7ToF
-         cDUCkaGqxOobHwKCcw0asoA7CIMn9+EGGPxOgljONdrHDYzn4V6ylChHvUuCIjZfcW
-         ZiGaX5rB/1MvQ==
+        b=Ao6Kdh3GTqFnHAAFrdCLZyB2Fm8GgiveBTV0WVj+rS0+3cfzUnBulMg1zRBhUso1v
+         jDUdnsFXYHJYMFU7RdpFz4BvXqBhPhyoy7o77GHoMAEgXxJTGJxHDAB+dPrFWffNWS
+         y1rj7yXnGY7FO3FHfqAAoTwzmYRTLawDkOspeNXod7vdCE7ir6kh2RW+Y7oZNQ58LZ
+         TF1WEHm2tdt7WLTxdinumZRWV3PZUYuniDkHx1pmvySbcK9oSC9AkAdthFDhgGWjSJ
+         VKttOFFnxUwMnAsG/R4kenC7bY1Z8oDnmxYXew7ojCC/k5MMSdnnYQFxcep+Enh/ta
+         S0m6oRmcMX5ag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Fabio Estevam <festevam@denx.de>, Chester Lin <clin@suse.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 04/53] arm64: s32g2: Pass unit name to soc node
-Date:   Mon, 27 Jun 2022 22:17:50 -0400
-Message-Id: <20220628021839.594423-4-sashal@kernel.org>
+Cc:     Daniil Dementev <d.dementev@ispras.ru>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 06/53] ALSA: usb-audio: US16x08: Move overflow check before array access
+Date:   Mon, 27 Jun 2022 22:17:52 -0400
+Message-Id: <20220628021839.594423-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628021839.594423-1-sashal@kernel.org>
 References: <20220628021839.594423-1-sashal@kernel.org>
@@ -53,36 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Daniil Dementev <d.dementev@ispras.ru>
 
-[ Upstream commit 4266e2f70d4388b8c6a95056169954ff049ced94 ]
+[ Upstream commit 3ddbe35d9a2ebd4924d458e0246b4ba6c13bb456 ]
 
-Pass unit name to soc node to fix the following W=1 build warning:
+Buffer overflow could occur in the loop "while", due to accessing an
+array element before checking the index.
 
-arch/arm64/boot/dts/freescale/s32g2.dtsi:82.6-123.4: Warning (unit_address_vs_reg): /soc: node has a reg or ranges property, but no unit name
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Chester Lin <clin@suse.com>
-Signed-off-by: Chester Lin <clin@suse.com>
-Link: https://lore.kernel.org/r/20220514143505.1554813-1-festevam@gmail.com
+Signed-off-by: Daniil Dementev <d.dementev@ispras.ru>
+Reviewed-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Link: https://lore.kernel.org/r/20220610165732.2904-1-d.dementev@ispras.ru
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/s32g2.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/usb/mixer_us16x08.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/s32g2.dtsi b/arch/arm64/boot/dts/freescale/s32g2.dtsi
-index 59ea8a25aa4c..824d401e7a2c 100644
---- a/arch/arm64/boot/dts/freescale/s32g2.dtsi
-+++ b/arch/arm64/boot/dts/freescale/s32g2.dtsi
-@@ -79,7 +79,7 @@ psci {
- 		};
- 	};
- 
--	soc {
-+	soc@0 {
- 		compatible = "simple-bus";
- 		#address-cells = <1>;
- 		#size-cells = <1>;
+diff --git a/sound/usb/mixer_us16x08.c b/sound/usb/mixer_us16x08.c
+index b7b6f3834ed5..6eb7d93b358d 100644
+--- a/sound/usb/mixer_us16x08.c
++++ b/sound/usb/mixer_us16x08.c
+@@ -637,10 +637,10 @@ static int snd_get_meter_comp_index(struct snd_us16x08_meter_store *store)
+ 		}
+ 	} else {
+ 		/* skip channels with no compressor active */
+-		while (!store->comp_store->val[
++		while (store->comp_index <= SND_US16X08_MAX_CHANNELS
++			&& !store->comp_store->val[
+ 			COMP_STORE_IDX(SND_US16X08_ID_COMP_SWITCH)]
+-			[store->comp_index - 1]
+-			&& store->comp_index <= SND_US16X08_MAX_CHANNELS) {
++			[store->comp_index - 1]) {
+ 			store->comp_index++;
+ 		}
+ 		ret = store->comp_index++;
 -- 
 2.35.1
 
