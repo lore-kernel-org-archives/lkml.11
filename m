@@ -2,58 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 968ACCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347683AbiF1PCw (ORCPT
+        id S1347697AbiF1PC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
+        Tue, 28 Jun 2022 11:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347670AbiF1PCr (ORCPT
+        with ESMTP id S1347675AbiF1PCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:02:47 -0400
+        Tue, 28 Jun 2022 11:02:49 -0400
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7094E33E3C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A3D33E3B
         for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:47 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SAE7ZG013208
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:47 -0700
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SABx6x014952
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:46 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=htEEzCcE4766+UwdC1leFCQGb+BeCyqpCEFz/0YnVKE=;
- b=CDx4QR6emayqwiddP+de7/TmBe6lA0yOj4AW7JjXjypzFlQGOZkBWukq8CeAJfeeSDnV
- iB4hdJZUxAqklfngOqnBVYpD/FrvUAWgZ7HaBFEghtP63VmUHqhHTWx8nbStHBj7tMNY
- +SiHDFqyRbMRwnMDXLZokCDJqqcsprMTpT4= 
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=pyAltF8DYKNcGBUwgWnhf6MefK8rwWmpC3KIBrdgbWM=;
+ b=gIsKjSgVCHFLr+AU4YJ/Sfi1sw97O2hx1MsCJkcvTAQewoP7DzFpIS+vDKamWQOfSBVK
+ NfSPs1iEeWLT5klSTzLAX5ViE20bNK3U9jz2isB08FG9SFH4ZojiBok/iqdM20ffaLPA
+ 91nHSxjWeOmPbUrjZ/BdNwOy3ewHEYyyVaE= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gyxx31y7r-3
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gyp234bp8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:47 -0700
-Received: from twshared25107.07.ash9.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:02:46 -0700
+Received: from twshared25478.08.ash9.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.28; Tue, 28 Jun 2022 08:02:45 -0700
 Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id EF0E8244BBD3; Tue, 28 Jun 2022 08:02:37 -0700 (PDT)
+        id 7377F244BBC2; Tue, 28 Jun 2022 08:02:37 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>,
         <io-uring@vger.kernel.org>
 CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
         Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH for-next 4/8] io_uring: recycle buffers on error
-Date:   Tue, 28 Jun 2022 08:02:24 -0700
-Message-ID: <20220628150228.1379645-5-dylany@fb.com>
+Subject: [PATCH for-next 0/8] io_uring: multishot recv
+Date:   Tue, 28 Jun 2022 08:02:20 -0700
+Message-ID: <20220628150228.1379645-1-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628150228.1379645-1-dylany@fb.com>
-References: <20220628150228.1379645-1-dylany@fb.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: HeckgzlDznf4h7Kc37CQmZxyi2t16Ykx
-X-Proofpoint-ORIG-GUID: HeckgzlDznf4h7Kc37CQmZxyi2t16Ykx
+X-Proofpoint-ORIG-GUID: 1aLYv5mj_slGG3qwzRlOfk1oeZ1l7DMk
+X-Proofpoint-GUID: 1aLYv5mj_slGG3qwzRlOfk1oeZ1l7DMk
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-06-28_08,2022-06-28_01,2022-06-22_01
@@ -61,50 +59,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than passing an error back to the user with a buffer attached,
-recycle the buffer immediately.
+This series adds support for multishot recv/recvmsg to io_uring.
 
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
----
- io_uring/net.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+The idea is that generally socket applications will be continually
+enqueuing a new recv() when the previous one completes. This can be
+improved on by allowing the application to queue a multishot receive,
+which will post completions as and when data is available. It uses the
+provided buffers feature to receive new data into a pool provided by
+the application.
 
-diff --git a/io_uring/net.c b/io_uring/net.c
-index 5e84f7ab92a3..0268c4603f5d 100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -481,10 +481,13 @@ int io_recvmsg(struct io_kiocb *req, unsigned int i=
-ssue_flags)
- 	if (kmsg->free_iov)
- 		kfree(kmsg->free_iov);
- 	req->flags &=3D ~REQ_F_NEED_CLEANUP;
--	if (ret >=3D 0)
-+	if (ret > 0)
- 		ret +=3D sr->done_io;
- 	else if (sr->done_io)
- 		ret =3D sr->done_io;
-+	else
-+		io_kbuf_recycle(req, issue_flags);
-+
- 	cflags =3D io_put_kbuf(req, issue_flags);
- 	if (kmsg->msg.msg_inq)
- 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
-@@ -557,10 +560,13 @@ int io_recv(struct io_kiocb *req, unsigned int issu=
-e_flags)
- 		req_set_fail(req);
- 	}
-=20
--	if (ret >=3D 0)
-+	if (ret > 0)
- 		ret +=3D sr->done_io;
- 	else if (sr->done_io)
- 		ret =3D sr->done_io;
-+	else
-+		io_kbuf_recycle(req, issue_flags);
-+
- 	cflags =3D io_put_kbuf(req, issue_flags);
- 	if (msg.msg_inq)
- 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
+This is more performant in a few ways:
+* Subsequent receives are queued up straight away without requiring the
+  application to finish a processing loop.
+* If there are more data in the socket (sat the provided buffer
+  size is smaller than the socket buffer) then the data is immediately
+  returned, improving batching.
+*  Poll is only armed once and reused, saving CPU cycles
+
+Running a small network benchmark [1] shows improved QPS of ~6-8% over a ra=
+nge of loads.
+
+[1]: https://github.com/DylanZA/netbench/tree/multishot_recv
+
+Dylan Yudaken (8):
+  io_uring: allow 0 length for buffer select
+  io_uring: restore bgid in io_put_kbuf
+  io_uring: allow iov_len =3D 0 for recvmsg and buffer select
+  io_uring: recycle buffers on error
+  io_uring: clean up io_poll_check_events return values
+  io_uring: add IOU_STOP_MULTISHOT return code
+  io_uring: add IORING_RECV_MULTISHOT flag
+  io_uring: multishot recv
+
+ include/uapi/linux/io_uring.h |   5 ++
+ io_uring/io_uring.h           |   7 ++
+ io_uring/kbuf.c               |   4 +-
+ io_uring/kbuf.h               |   8 ++-
+ io_uring/net.c                | 119 ++++++++++++++++++++++++++++------
+ io_uring/poll.c               |  30 ++++++---
+ 6 files changed, 140 insertions(+), 33 deletions(-)
+
+
+base-commit: 755441b9029317d981269da0256e0a7e5a7fe2cc
 --=20
 2.30.2
 
