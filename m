@@ -2,115 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75BBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27DA3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbiF1R2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 13:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
+        id S233206AbiF1R2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 13:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233039AbiF1R1x (ORCPT
+        with ESMTP id S232209AbiF1R2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 13:27:53 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3DE3A1AE
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:51 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ay16so27232395ejb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8enEY7C1gWoeSidj5O4iKotu18rloK7WpGazqUwbRIY=;
-        b=TJkTA81PK2rsKdDhsaZqdWiQNHpCCo0Drc1YQmCq2L8M1HNJZakhKjYssJNfe258So
-         qMcO5/9BPWEInBQVKtHeh+NkXQkpr3XNj1ioGaz1To85geFjNdcjMnAECWwkZYSH9sx/
-         W2cjvoSUQE3GTSz9eC/albPMpyfb2xbdIMyUk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8enEY7C1gWoeSidj5O4iKotu18rloK7WpGazqUwbRIY=;
-        b=cQ6A468sngGZODIA3eOGSLxJ+U+zCZA2FVpSc5sotju476O2Xp6OAMGvdg59TFqAGW
-         YMKj/NQc/79tJYJt7rkfp/TXVVxosTPvb7iPthW7BxKvnDATu1mwJ4Vdx8TbYdlCtqmh
-         j7DFjvpiqmSAA+vJG6qw0qYsGgK0AMY0RpWxDMQF4ykHrjBWQ6uMdh4rxz9bgHAh5Utf
-         BU6D3BRkvu60DtB7Q1uFPNrVOJeVty18UU1hY3MJZjNeXkAYwTgzoXIXXaDkSZeAZEyk
-         n3TsEp8EmVikQ6OckWJWRwlX+vyeMe67FVJpgvSjtdkOhnYDd3R240cFKaEjwMrp6XGA
-         2ZUA==
-X-Gm-Message-State: AJIora+umg8zVaE1CXydnBYzAvKNEHXCiwyG11Kn3OZ+yKaCHoOp3xEc
-        ePel0HzGuxRuYmu+nidLIcVX6TgsLXNFpzE5W44=
-X-Google-Smtp-Source: AGRyM1tBfIEAdnOhAhM7YlOt5pB4ojg9ID8iEN6/3msRuLmRYvciDG5nzMKBVIm8c1PAheTacyXk1A==
-X-Received: by 2002:a17:907:6d9e:b0:726:8f7a:7a7a with SMTP id sb30-20020a1709076d9e00b007268f7a7a7amr15908831ejc.425.1656437270010;
-        Tue, 28 Jun 2022 10:27:50 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id t4-20020a17090605c400b00706242d297fsm6560538ejt.212.2022.06.28.10.27.48
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 10:27:48 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id v193-20020a1cacca000000b003a051f41541so1656552wme.5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:48 -0700 (PDT)
-X-Received: by 2002:a05:600c:681:b0:3a0:2da6:d173 with SMTP id
- a1-20020a05600c068100b003a02da6d173mr793598wmn.68.1656437268408; Tue, 28 Jun
- 2022 10:27:48 -0700 (PDT)
+        Tue, 28 Jun 2022 13:28:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75FA537A1F
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:28:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656437308;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BxBrwqAstyFfAs6v5/7UNTyZeq12M0ezD0pRqc5c/pY=;
+        b=bGPBRtMVOFWzx4deh0xIhyL87jpvnj5gGJy+c2ysa9frm1QpFUOdcYLrYqjU1dxSAg4YpV
+        7WHpAG9uDhSlmFlv4XQswAvfQ2sdwxbI3L0yyPsZ3a6bp9n5OKP1ioALLykdNBsJJ83q2n
+        JK680OIqlKhTSOXHEH2cMOcwtFvl00o=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-197-ZhCWIlzqNg2J2U3oJdHLiw-1; Tue, 28 Jun 2022 13:28:27 -0400
+X-MC-Unique: ZhCWIlzqNg2J2U3oJdHLiw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 590FC1035340;
+        Tue, 28 Jun 2022 17:28:26 +0000 (UTC)
+Received: from [10.22.34.187] (unknown [10.22.34.187])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 74CA42166B26;
+        Tue, 28 Jun 2022 17:28:25 +0000 (UTC)
+Message-ID: <b2d958e0-e500-fb5c-676c-00fe542ff56c@redhat.com>
+Date:   Tue, 28 Jun 2022 13:28:25 -0400
 MIME-Version: 1.0
-References: <CAK-6q+hd-L54cqOiFNuufS2_VF5XS0R8cjQL7es8921+2u3uwQ@mail.gmail.com>
- <20220627184232.tjfuzeir57l3h5ll@mail> <CAK-6q+haOfQD8_N6pEm80BTrUXwaj07ZBcXP-EBHftpTVEc1XQ@mail.gmail.com>
- <CAK-6q+g795MwPvUGxWXTE+s-TfJnbh2wf=Udb1k7r6ru-4FTMQ@mail.gmail.com> <20220628085821.kn3jjrviyprgai4w@mail>
-In-Reply-To: <20220628085821.kn3jjrviyprgai4w@mail>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 28 Jun 2022 10:27:32 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wie9HSY-MmFr9zHeizRTgSfdONop0-4ezBiq5hYNp4U6g@mail.gmail.com>
-Message-ID: <CAHk-=wie9HSY-MmFr9zHeizRTgSfdONop0-4ezBiq5hYNp4U6g@mail.gmail.com>
-Subject: Re: sparse warnings related to kref_put_lock() and refcount_dec_and_lock()
-To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc:     Alexander Aring <aahringo@redhat.com>, jacob.e.keller@intel.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        thunder.leizhen@huawei.com,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>,
-        cluster-devel <cluster-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v7] x86/paravirt: useless assignment instructions cause
+ Unixbench full core performance degradation
+Content-Language: en-US
+To:     Guo Hui <guohui@uniontech.com>, peterz@infradead.org
+Cc:     jgross@suse.com, srivatsa@csail.mit.edu, amakhalov@vmware.com,
+        pv-drivers@vmware.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, will@kernel.org, boqun.feng@gmail.com,
+        virtualization@lists.linux-foundation.org,
+        wangxiaohua@uniontech.com, linux-kernel@vger.kernel.org
+References: <588a3276-5481-0a9f-9eac-fed09eede4f2@redhat.com>
+ <20220628161251.21950-1-guohui@uniontech.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220628161251.21950-1-guohui@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 1:58 AM Luc Van Oostenryck
-<luc.vanoostenryck@gmail.com> wrote:
+On 6/28/22 12:12, Guo Hui wrote:
+> The instructions assigned to the vcpu_is_preempted function parameter
+> in the X86 architecture physical machine are redundant instructions,
+> causing the multi-core performance of Unixbench to drop by about 4% to 5%.
+> The C function is as follows:
+> static bool vcpu_is_preempted(long vcpu);
 >
-> I would certainly not recommend this but ...
-> if it's OK to cheat and lie then you can do:
-> +       bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock) __acquires(lock);
+> The parameter 'vcpu' in the function osq_lock
+> that calls the function vcpu_is_preempted is assigned as follows:
+>
+> The C code is in the function node_cpu:
+> cpu = node->cpu - 1;
+>
+> The instructions corresponding to the C code are:
+> mov 0x14(%rax),%edi
+> sub $0x1,%edi
+>
+> The above instructions are unnecessary
+> in the X86 Native operating environment,
+> causing high cache-misses and degrading performance.
+>
+> This patch uses static_key to not execute this instruction
+> in the Native runtime environment.
+>
+> The patch effect is as follows two machines,
+> Unixbench runs with full core score:
+>
+> 1. Machine configuration:
+> Intel(R) Xeon(R) Silver 4210 CPU @ 2.20GHz
+> CPU core: 40
+> Memory: 256G
+> OS Kernel: 5.19-rc3
+>
+> Before using the patch:
+> System Benchmarks Index Values               BASELINE       RESULT    INDEX
+> Dhrystone 2 using register variables         116700.0  948326591.2  81261.9
+> Double-Precision Whetstone                       55.0     211986.3  38543.0
+> Execl Throughput                                 43.0      43453.2  10105.4
+> File Copy 1024 bufsize 2000 maxblocks          3960.0     438936.2   1108.4
+> File Copy 256 bufsize 500 maxblocks            1655.0     118197.4    714.2
+> File Copy 4096 bufsize 8000 maxblocks          5800.0    1534674.7   2646.0
+> Pipe Throughput                               12440.0   46482107.6  37365.0
+> Pipe-based Context Switching                   4000.0    1915094.2   4787.7
+> Process Creation                                126.0      85442.2   6781.1
+> Shell Scripts (1 concurrent)                     42.4      69400.7  16368.1
+> Shell Scripts (8 concurrent)                      6.0       8877.2  14795.3
+> System Call Overhead                          15000.0    4714906.1   3143.3
+>                                                                     ========
+> System Benchmarks Index Score                                        7923.3
+>
+> After using the patch:
+> System Benchmarks Index Values               BASELINE       RESULT    INDEX
+> Dhrystone 2 using register variables         116700.0  947032915.5  81151.1
+> Double-Precision Whetstone                       55.0     211971.2  38540.2
+> Execl Throughput                                 43.0      45054.8  10477.9
+> File Copy 1024 bufsize 2000 maxblocks          3960.0     515024.9   1300.6
+> File Copy 256 bufsize 500 maxblocks            1655.0     146354.6    884.3
+> File Copy 4096 bufsize 8000 maxblocks          5800.0    1679995.9   2896.5
+> Pipe Throughput                               12440.0   46466394.2  37352.4
+> Pipe-based Context Switching                   4000.0    1898221.4   4745.6
+> Process Creation                                126.0      85653.1   6797.9
+> Shell Scripts (1 concurrent)                     42.4      69437.3  16376.7
+> Shell Scripts (8 concurrent)                      6.0       8898.9  14831.4
+> System Call Overhead                          15000.0    4658746.7   3105.8
+>                                                                     ========
+> System Benchmarks Index Score                                        8248.8
+>
+> 2. Machine configuration:
+> Hygon C86 7185 32-core Processor
+> CPU core: 128
+> Memory: 256G
+> OS Kernel: 5.19-rc3
+>
+> Before using the patch:
+> System Benchmarks Index Values               BASELINE       RESULT    INDEX
+> Dhrystone 2 using register variables         116700.0 2256644068.3 193371.4
+> Double-Precision Whetstone                       55.0     438969.9  79812.7
+> Execl Throughput                                 43.0      10108.6   2350.8
+> File Copy 1024 bufsize 2000 maxblocks          3960.0     275892.8    696.7
+> File Copy 256 bufsize 500 maxblocks            1655.0      72082.7    435.5
+> File Copy 4096 bufsize 8000 maxblocks          5800.0     925043.4   1594.9
+> Pipe Throughput                               12440.0  118905512.5  95583.2
+> Pipe-based Context Switching                   4000.0    7820945.7  19552.4
+> Process Creation                                126.0      31233.3   2478.8
+> Shell Scripts (1 concurrent)                     42.4      49042.8  11566.7
+> Shell Scripts (8 concurrent)                      6.0       6656.0  11093.3
+> System Call Overhead                          15000.0    6816047.5   4544.0
+>                                                                     ========
+> System Benchmarks Index Score                                        7756.6
+>
+> After using the patch:
+> System Benchmarks Index Values               BASELINE       RESULT    INDEX
+> Dhrystone 2 using register variables         116700.0 2252272929.4 192996.8
+> Double-Precision Whetstone                       55.0     451847.2  82154.0
+> Execl Throughput                                 43.0      10595.1   2464.0
+> File Copy 1024 bufsize 2000 maxblocks          3960.0     301279.3    760.8
+> File Copy 256 bufsize 500 maxblocks            1655.0      79291.3    479.1
+> File Copy 4096 bufsize 8000 maxblocks          5800.0    1039755.2   1792.7
+> Pipe Throughput                               12440.0  118701468.1  95419.2
+> Pipe-based Context Switching                   4000.0    8073453.3  20183.6
+> Process Creation                                126.0      33440.9   2654.0
+> Shell Scripts (1 concurrent)                     42.4      52722.6  12434.6
+> Shell Scripts (8 concurrent)                      6.0       7050.4  11750.6
+> System Call Overhead                          15000.0    6834371.5   4556.2
+>                                                                     ========
+> System Benchmarks Index Score                                        8157.8
+>
+> Signed-off-by: Guo Hui <guohui@uniontech.com>
+> ---
+>   arch/x86/kernel/paravirt-spinlocks.c |  4 ++++
+>   kernel/locking/osq_lock.c            | 19 ++++++++++++++++++-
+>   2 files changed, 22 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/x86/kernel/paravirt-spinlocks.c b/arch/x86/kernel/paravirt-spinlocks.c
+> index 9e1ea99ad..a2eb375e2 100644
+> --- a/arch/x86/kernel/paravirt-spinlocks.c
+> +++ b/arch/x86/kernel/paravirt-spinlocks.c
+> @@ -33,6 +33,8 @@ bool pv_is_native_vcpu_is_preempted(void)
+>   		__raw_callee_save___native_vcpu_is_preempted;
+>   }
+>   
+> +DECLARE_STATIC_KEY_TRUE(vcpu_has_preemption);
+> +
+>   void __init paravirt_set_cap(void)
+>   {
+>   	if (!pv_is_native_spin_unlock())
+> @@ -40,4 +42,6 @@ void __init paravirt_set_cap(void)
+>   
+>   	if (!pv_is_native_vcpu_is_preempted())
+>   		setup_force_cpu_cap(X86_FEATURE_VCPUPREEMPT);
+> +	else
+> +		static_branch_disable(&vcpu_has_preemption);
+>   }
+> diff --git a/kernel/locking/osq_lock.c b/kernel/locking/osq_lock.c
+> index d5610ad52..f521b0f6d 100644
+> --- a/kernel/locking/osq_lock.c
+> +++ b/kernel/locking/osq_lock.c
+> @@ -27,6 +27,23 @@ static inline int node_cpu(struct optimistic_spin_node *node)
+>   	return node->cpu - 1;
+>   }
+>   
+> +#ifdef vcpu_is_preempted
+> +DEFINE_STATIC_KEY_TRUE(vcpu_has_preemption);
+> +
+> +static inline bool vcpu_is_preempted_node(struct optimistic_spin_node *node)
+> +{
+> +	if (static_branch_likely(&vcpu_has_preemption))
+> +		return vcpu_is_preempted(node_cpu(node->prev));
+> +
+> +	return false;
+> +}
+> +#else
+> +static inline bool vcpu_is_preempted_node(struct optimistic_spin_node *node)
+> +{
+> +	return false;
+> +}
+> +#endif
+> +
+>   static inline struct optimistic_spin_node *decode_cpu(int encoded_cpu_val)
+>   {
+>   	int cpu_nr = encoded_cpu_val - 1;
+> @@ -141,7 +158,7 @@ bool osq_lock(struct optimistic_spin_queue *lock)
+>   	 * polling, be careful.
+>   	 */
+>   	if (smp_cond_load_relaxed(&node->locked, VAL || need_resched() ||
+> -				  vcpu_is_preempted(node_cpu(node->prev))))
+> +						vcpu_is_preempted_node(node)))
+>   		return true;
+>   
+>   	/* unqueue */
+Reviewed-by: Waiman Long <longman@redhat.com>
 
-Actually, we have "__cond_lock()" in the kernel to actually document
-that something takes a lock only in certain conditions.
-
-It needs to be declared as a macro in the header file, with this as an example:
-
-   #define raw_spin_trylock(lock)  __cond_lock(lock, _raw_spin_trylock(lock))
-
-ie that says that "raw_spin_trylock() takes 'lock' when
-_raw_spin_trylock() returned true".
-
-That then makes it possible to write code like
-
-    if (raw_spin_trylock(lock)) {..
-                 raw_spin_unlock(lock));
-    }
-
-and sparse will get the nesting right.
-
-But that does *not* solve the issue of people then writing this as
-
-    locked = raw_spin_trylock(lock);
-    .. do_something ..
-    if (locked)
-                 raw_spin_unlock(lock));
-
-and you end up with the same thing again.
-
-Anyway, for things like refcount_dec_and_lock(), I suspect that first
-pattern should work, because you really shouldn't have that second
-pattern. If you just decremented without any locking, the actions are
-completely different from the "oh, got the last decrement and now it's
-locked and I need to free things" or whatever.
-
-                Linus
