@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD6FCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2614C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344518AbiF1Jt3 (ORCPT
+        id S1344527AbiF1Jtc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
+        Tue, 28 Jun 2022 05:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344509AbiF1Js7 (ORCPT
+        with ESMTP id S1344511AbiF1JtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:48:59 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7917D2AC74
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:48:47 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id x184so18539640ybg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nnzSecJwwLdHdpah55TWOev8stQAWT9vGpRIkDipvhw=;
-        b=I7H7zqGdOfwwpsDfe9uF8VojqU+qtuDQRgt7FtGBoFlVFCSJN9YFG+1NWGSiIuox8S
-         W+KTN+aOhO/ktobsqKb4feN5yBBDNx0wm/w13zu9GE1MpTeJ9BkKCl/bKqoxTj+butyG
-         02/IG1kxsMpY40YD0RA6epXortCUPMP7sMFf2G2KAsGaM15F0G20pAiOcgk96rxpR8ke
-         4UAfgPRBQGXYCKfOAsUeqXv2EnFCWpyg0H2uCQj9u81Sa+kwI5qveTjwZLSeOF0LEPCz
-         orDz4fOkku7jaCsorv9stb6v1uGkuYXGTaB+8k6Pjso/QtNIucekoLsh+TNJkKdQ3yXO
-         +FxQ==
+        Tue, 28 Jun 2022 05:49:00 -0400
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A9E2CDF0;
+        Tue, 28 Jun 2022 02:48:55 -0700 (PDT)
+Received: by mail-qv1-f46.google.com with SMTP id cs6so19172817qvb.6;
+        Tue, 28 Jun 2022 02:48:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nnzSecJwwLdHdpah55TWOev8stQAWT9vGpRIkDipvhw=;
-        b=JAYkJT7cRKkzbkfZyBi23j3OqR7hQUX8EssHbRHF5S5hVtdSaYagS4P5w+gv3ryc8V
-         Wr3k37Uqw6AHwy+fKi84NvyOqOGnQgpkXJpMFZalFqx8L3lHIaFO4/X4A5Qkg9NhsNCa
-         LVtLF+FjJWVRfvKGGakIXaPqTINBhX2APUuWryBq3NxMOyWyZFwIMRRHqW5P0Sc2iUFC
-         HVS07fxG+UTw4WnFeo+V0tBswwR8GMoj7dO7M8uuw0u/FnLR66+DqAJg2NUJKzj8DUH0
-         AhO4dQAVO4qU7fZY29yeXz/EowcLEG7QgESrkKfkTyLwh4K89b82IswUPyqCYVXot4yY
-         kzVg==
-X-Gm-Message-State: AJIora9iAh7ymyYPQtHvJdry65X9i85fDMjtq+wn/pMrhkvmLrGZ/Rjx
-        zJ1m0OHuesKNgnQp2hkevZ3SpjhRxbnbTHi3+BA/Kw==
-X-Google-Smtp-Source: AGRyM1vPz47fcquk2IzBhzy+bTY7luIs+lRfkEnNwxblxcyPcZABp99gUxefsLLFGaLceF6zmZkkxVh4KZO10IEsTiQ=
-X-Received: by 2002:a05:6902:152:b0:66c:e116:6a7 with SMTP id
- p18-20020a056902015200b0066ce11606a7mr8598779ybh.533.1656409726603; Tue, 28
- Jun 2022 02:48:46 -0700 (PDT)
+        bh=qmsHjaT7nLNEUigJCn2XHg2FRw3Jceu7QHHPyWgnjqo=;
+        b=g5JAVx8ZIm1q8Y7AknFfm7h6VYFxH09KkZoOBIfWOZKJTFYcos7Mj/2Ot0ksGUnq3J
+         63pqG2OSuCnag4pUCj66FmuW+WlTlfH40MoBmmZ0v8Cb0uCp0k9dw/BNkFexGkAeU0jr
+         k9G7IJ5+3bPd5nMDYnQFxJ7RKW97kvvLfZjfcFmY/2c3c3evUBNSJxxE6xk84NBdPpoy
+         ZENdiMLHTK0i/R1L+TTaS9iekN6T5Jb+XZbLPKP4Vr4dPsdvOEZQDLtmNqg39uDthWhA
+         JEf23U9Aoucfr0dA2S9L8VRWbD75K/2IIJV5fKLMBvcVf+UuVA4YMjnSCxB1y+n1MEb3
+         cqpQ==
+X-Gm-Message-State: AJIora8m/03PPZOzQvuyJL1als/Wtbq1uHJf5SWj82h/6vWAqcJZHwv0
+        xKl9IHFqvCUf77vMg7ho/XFBV9QQRpM5Ew==
+X-Google-Smtp-Source: AGRyM1vv8FMtgbhpCc3DfK5B3yHX8YT5E/HLbE1yPAxs+AAoNh0T3/m3lJxflo9ovLN6I7FlIC0sLA==
+X-Received: by 2002:a05:622a:54a:b0:318:444c:d9cf with SMTP id m10-20020a05622a054a00b00318444cd9cfmr11919011qtx.646.1656409734082;
+        Tue, 28 Jun 2022 02:48:54 -0700 (PDT)
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
+        by smtp.gmail.com with ESMTPSA id s9-20020ac85289000000b00304efba3d84sm8748589qtn.25.2022.06.28.02.48.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 02:48:53 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id v185so11759474ybe.8;
+        Tue, 28 Jun 2022 02:48:53 -0700 (PDT)
+X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
+ l10-20020a056902000a00b0065cb38e6d9fmr19354286ybh.36.1656409733344; Tue, 28
+ Jun 2022 02:48:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1656409369.git.mchehab@kernel.org> <687a2e724020d135bc7dfef0ec9010a00ecc0a3a.1656409369.git.mchehab@kernel.org>
-In-Reply-To: <687a2e724020d135bc7dfef0ec9010a00ecc0a3a.1656409369.git.mchehab@kernel.org>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 28 Jun 2022 11:48:10 +0200
-Message-ID: <CANpmjNPbHYKJqFB-qNjPWsLQyk3fWrqfU3qob_E-8KMLrzpCQQ@mail.gmail.com>
-Subject: Re: [PATCH 14/22] kfence: fix a kernel-doc parameter
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
+References: <20220622181723.13033-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220622181723.13033-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220622181723.13033-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 28 Jun 2022 11:48:41 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX-yE3MAR8ugEj6CZ5u-Bfv81pvs0FC0gZ4WrXOt0DHzg@mail.gmail.com>
+Message-ID: <CAMuHMdX-yE3MAR8ugEj6CZ5u-Bfv81pvs0FC0gZ4WrXOt0DHzg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: clock: r9a07g043-cpg: Add Renesas
+ RZ/Five CPG Clock and Reset Definitions
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 at 11:46, Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
+On Wed, Jun 22, 2022 at 8:17 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Renesas RZ/Five SoC has almost the same clock structure compared to the
+> Renesas RZ/G2UL SoC, re-use the r9a07g043-cpg.h header file and just
+> amend the RZ/Five CPG clock and reset definitions.
 >
-> The kernel-doc markup is missing the slab pointer description:
->
->         include/linux/kfence.h:221: warning: Function parameter or member 'slab' not described in '__kfence_obj_info'
->
-> Document it.
->
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Reviewed-by: Marco Elver <elver@google.com>
+Will queue in renesas-clk-for-v5.20.
 
-Thank you.
+Gr{oetje,eeting}s,
 
-> ---
->
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
->
->  include/linux/kfence.h | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/include/linux/kfence.h b/include/linux/kfence.h
-> index 726857a4b680..9c242f4e9fab 100644
-> --- a/include/linux/kfence.h
-> +++ b/include/linux/kfence.h
-> @@ -210,6 +210,7 @@ struct kmem_obj_info;
->   * __kfence_obj_info() - fill kmem_obj_info struct
->   * @kpp: kmem_obj_info to be filled
->   * @object: the object
-> + * @slab: pointer to slab
->   *
->   * Return:
->   * * false - not a KFENCE object
-> --
-> 2.36.1
->
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
