@@ -2,286 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A0D0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE299C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343925AbiF1Id2 (ORCPT
+        id S1343936AbiF1Iev (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56070 "EHLO
+        Tue, 28 Jun 2022 04:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343882AbiF1IdU (ORCPT
+        with ESMTP id S229672AbiF1Ieq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:33:20 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9672B25E
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:33:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405198; x=1687941198;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1v8Gpbm1c7T1z+eaHvi0kry3YBGC4Ducql/yn6DtDIA=;
-  b=BDwPiz34Kj76W/LgtArNZBxuN9QYkkF5/4XGSthqak6bWRC5IBlyPcCb
-   UhnQtbobY/WKZlogFyNnkblwv8A2PKPEz/MZt2nwWv8QWQY1rL3JhJy2f
-   tVEH4TLQuyAfV6I3dRvNiTF8blOR8U17Wr+gqNBkqLeCyjl384+h8MZYm
-   YRaHVEu7lcuFsEr778yH9EuuRC0R4rGwCjwYjHQrUe5KPyojwod2MhT0B
-   AyqSzmiMdWUuU0J946WSaYD++LYbeSbhZsUYdKtAep22CKW743JdeMwuO
-   AgsVnNqLtjb+z23472d+K1//kaSXWEUJ2w0AqyKZgobY3oqXNdkxNuYaC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282411025"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="282411025"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:33:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="693006586"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Jun 2022 01:33:16 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o66eq-0009lO-0F;
-        Tue, 28 Jun 2022 08:33:16 +0000
-Date:   Tue, 28 Jun 2022 16:32:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Moti Haimovski <mhaimovski@habana.ai>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Oded Gabbay <ogabbay@kernel.org>
-Subject: [ogabbay:gaudi2 59/61]
- drivers/misc/habanalabs/common/mmu/mmu.c:874:73: error: passing argument 3
- of 'hl_asic_dma_alloc_coherent' from incompatible pointer type
-Message-ID: <202206281635.B4gHvlZ7-lkp@intel.com>
+        Tue, 28 Jun 2022 04:34:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C7DB2DAA5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:34:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656405284;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=G3OVg0/+USZTuncktGnY+Rt80pNYe8Z8u40tYvJiacA=;
+        b=TRoIhQ1TDKDKdCDULA9LvSeRE4ETKYl0V/NYKSmqAOgERsBmkoskPBuR9QlD5bAtZg6rIx
+        GEvdATCSQB+PowlRFcfVqJqHzpWFrEA6x7SnIIXmtkgBsAz8RUDM094XUp3yl/o29na+y3
+        NhtrkqkaJjW3JzAGJvxxpUs41+agfkY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-589-1qg0e1ArNbq317LgoOjj4g-1; Tue, 28 Jun 2022 04:34:38 -0400
+X-MC-Unique: 1qg0e1ArNbq317LgoOjj4g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1942A8FE6CE;
+        Tue, 28 Jun 2022 08:34:38 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-87.pek2.redhat.com [10.72.13.87])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 40D20C15D40;
+        Tue, 28 Jun 2022 08:34:32 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     dan.j.williams@intel.com, vishal.l.verma@intel.com,
+        dave.jiang@intel.com, ira.weiny@intel.com, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, mst@redhat.com
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Pankaj Gupta <pankaj.gupta@amd.com>
+Subject: [PATCH V3 1/2] virtio_pmem: initialize provider_data through nd_region_desc
+Date:   Tue, 28 Jun 2022 16:34:29 +0800
+Message-Id: <20220628083430.61856-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2
-head:   a76819ab38942fcb341142a55e9dc81f3eaf08e3
-commit: 950d1a3888fe751fb5b2e51a44ebf89d963fdde5 [59/61] habanalabs: add gaudi2 MMU support
-config: csky-randconfig-r001-20220627 (https://download.01.org/0day-ci/archive/20220628/202206281635.B4gHvlZ7-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=950d1a3888fe751fb5b2e51a44ebf89d963fdde5
-        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
-        git fetch --no-tags ogabbay gaudi2
-        git checkout 950d1a3888fe751fb5b2e51a44ebf89d963fdde5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash drivers/misc/
+We used to initialize the provider_data manually after
+nvdimm_pemm_region_create(). This seems to be racy if the flush is
+issued before the initialization of provider_data[1]. Fixing this by
+initializing the provider_data through nd_region_desc to make sure the
+provider_data is ready after the pmem is created.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+[1]:
 
-All error/warnings (new ones prefixed by >>):
+[   80.152281] nd_pmem namespace0.0: unable to guarantee persistence of writes
+[   92.393956] BUG: kernel NULL pointer dereference, address: 0000000000000318
+[   92.394551] #PF: supervisor read access in kernel mode
+[   92.394955] #PF: error_code(0x0000) - not-present page
+[   92.395365] PGD 0 P4D 0
+[   92.395566] Oops: 0000 [#1] PREEMPT SMP PTI
+[   92.395867] CPU: 2 PID: 506 Comm: mkfs.ext4 Not tainted 5.19.0-rc1+ #453
+[   92.396365] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+[   92.397178] RIP: 0010:virtio_pmem_flush+0x2f/0x1f0
+[   92.397521] Code: 55 41 54 55 53 48 81 ec a0 00 00 00 65 48 8b 04
+25 28 00 00 00 48 89 84 24 98 00 00 00 31 c0 48 8b 87 78 03 00 00 48
+89 04 24 <48> 8b 98 18 03 00 00 e8 85 bf 6b 00 ba 58 00 00 00 be c0 0c
+00 00
+[   92.398982] RSP: 0018:ffff9a7380aefc88 EFLAGS: 00010246
+[   92.399349] RAX: 0000000000000000 RBX: ffff8e77c3f86f00 RCX: 0000000000000000
+[   92.399833] RDX: ffffffffad4ea720 RSI: ffff8e77c41e39c0 RDI: ffff8e77c41c5c00
+[   92.400388] RBP: ffff8e77c41e39c0 R08: ffff8e77c19f0600 R09: 0000000000000000
+[   92.400874] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8e77c0814e28
+[   92.401364] R13: 0000000000000000 R14: 0000000000000000 R15: ffff8e77c41e39c0
+[   92.401849] FS:  00007f3cd75b2780(0000) GS:ffff8e7937d00000(0000)
+knlGS:0000000000000000
+[   92.402423] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   92.402821] CR2: 0000000000000318 CR3: 0000000103c80002 CR4: 0000000000370ee0
+[   92.403307] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   92.403793] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   92.404278] Call Trace:
+[   92.404481]  <TASK>
+[   92.404654]  ? mempool_alloc+0x5d/0x160
+[   92.404939]  ? terminate_walk+0x5f/0xf0
+[   92.405226]  ? bio_alloc_bioset+0xbb/0x3f0
+[   92.405525]  async_pmem_flush+0x17/0x80
+[   92.405806]  nvdimm_flush+0x11/0x30
+[   92.406067]  pmem_submit_bio+0x1e9/0x200
+[   92.406354]  __submit_bio+0x80/0x120
+[   92.406621]  submit_bio_noacct_nocheck+0xdc/0x2a0
+[   92.406958]  submit_bio_wait+0x4e/0x80
+[   92.407234]  blkdev_issue_flush+0x31/0x50
+[   92.407526]  ? punt_bios_to_rescuer+0x230/0x230
+[   92.407852]  blkdev_fsync+0x1e/0x30
+[   92.408112]  do_fsync+0x33/0x70
+[   92.408354]  __x64_sys_fsync+0xb/0x10
+[   92.408625]  do_syscall_64+0x43/0x90
+[   92.408895]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[   92.409257] RIP: 0033:0x7f3cd76c6c44
 
-   drivers/misc/habanalabs/common/mmu/mmu.c: In function 'hl_mmu_hr_init':
->> drivers/misc/habanalabs/common/mmu/mmu.c:874:73: error: passing argument 3 of 'hl_asic_dma_alloc_coherent' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     874 |                                                                         &phys_addr,
-         |                                                                         ^~~~~~~~~~
-         |                                                                         |
-         |                                                                         u64 * {aka long long unsigned int *}
-   In file included from drivers/misc/habanalabs/common/mmu/mmu.c:10:
-   drivers/misc/habanalabs/common/mmu/../habanalabs.h:3334:83: note: expected 'dma_addr_t *' {aka 'unsigned int *'} but argument is of type 'u64 *' {aka 'long long unsigned int *'}
-    3334 | void *hl_asic_dma_alloc_coherent(struct hl_device *hdev, size_t size, dma_addr_t *dma_handle,
-         |                                                                       ~~~~~~~~~~~~^~~~~~~~~~
->> drivers/misc/habanalabs/common/mmu/mmu.c:896:73: error: passing argument 3 of 'gen_pool_dma_zalloc_align' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     896 |                                                                         &hop0_pgt->phys_addr,
-         |                                                                         ^~~~~~~~~~~~~~~~~~~~
-         |                                                                         |
-         |                                                                         u64 * {aka long long unsigned int *}
-   In file included from drivers/misc/habanalabs/common/mmu/../habanalabs.h:26,
-                    from drivers/misc/habanalabs/common/mmu/mmu.c:10:
-   include/linux/genalloc.h:166:29: note: expected 'dma_addr_t *' {aka 'unsigned int *'} but argument is of type 'u64 *' {aka 'long long unsigned int *'}
-     166 |                 dma_addr_t *dma, int align);
-         |                 ~~~~~~~~~~~~^~~
-   drivers/misc/habanalabs/common/mmu/mmu.c: In function 'hl_mmu_hr_write_pte':
->> drivers/misc/habanalabs/common/mmu/mmu.c:998:10: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-     998 |         *(u64 *) virt_addr = val;
-         |          ^
-   {standard input}: Assembler messages:
->> {standard input}:1916: Error: The instruction is not recognized.
-   cc1: some warnings being treated as errors
+Fixes 6e84200c0a29 ("virtio-pmem: Add virtio pmem driver")
+Acked-by: Pankaj Gupta <pankaj.gupta@amd.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+Changes since V1:
+- Add calltrace to explain the issue in detail
+---
+ drivers/nvdimm/virtio_pmem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-vim +/hl_asic_dma_alloc_coherent +874 drivers/misc/habanalabs/common/mmu/mmu.c
-
-   830	
-   831	/**
-   832	 * hl_mmu_hr_init() - initialize the MMU module.
-   833	 * @hdev: habanalabs device structure.
-   834	 * @hr_priv: MMU HR private data.
-   835	 * @hop_table_size: HOP table size.
-   836	 * @pgt_size: memory size allocated for the page table
-   837	 *
-   838	 * @return 0 on success otherwise non-zero error code
-   839	 *
-   840	 * This function does the following:
-   841	 * - Create a pool of pages for pgt_infos.
-   842	 * - Create a shadow table for pgt
-   843	 */
-   844	int hl_mmu_hr_init(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv, u32 hop_table_size,
-   845				u64 pgt_size)
-   846	{
-   847		struct asic_fixed_properties *prop = &hdev->asic_prop;
-   848		size_t pool_chunk_size = SZ_4M;
-   849		struct pgt_info *hop0_pgt;
-   850		u64 virt_addr, phys_addr;
-   851		int i, rc;
-   852	
-   853		/*
-   854		 * we set alloc size as PAGE_SIZE (sine dma_alloc_coherent allocation order/size is
-   855		 * PAGE_SHIFT/PAGE_SIZE) in order to be able to control the allocations alignment.
-   856		 * This way we can call "DMA alloc align" according to dma_alloc granularity and supply
-   857		 * allocations with higher-order alignment restrictions
-   858		 */
-   859		hr_priv->mmu_pgt_pool = gen_pool_create(PAGE_SHIFT, -1);
-   860		if (ZERO_OR_NULL_PTR(hr_priv->mmu_pgt_pool)) {
-   861			dev_err(hdev->dev, "Failed to create hr page pool\n");
-   862			return -ENOMEM;
-   863		}
-   864	
-   865		hr_priv->mmu_asid_hop0 = kvcalloc(prop->max_asid, sizeof(struct pgt_info), GFP_KERNEL);
-   866		if (ZERO_OR_NULL_PTR(hr_priv->mmu_asid_hop0)) {
-   867			dev_err(hdev->dev, "Failed to allocate hr-mmu hop0 table\n");
-   868			rc = -ENOMEM;
-   869			goto destroy_mmu_pgt_pool;
-   870		}
-   871	
-   872		for (i = 0 ; i < pgt_size ; i += pool_chunk_size) {
-   873			virt_addr = (uintptr_t) hl_asic_dma_alloc_coherent(hdev, pool_chunk_size,
- > 874										&phys_addr,
-   875										GFP_KERNEL | __GFP_ZERO);
-   876			if (ZERO_OR_NULL_PTR(virt_addr)) {
-   877				dev_err(hdev->dev,
-   878					"Failed to allocate memory for host-resident page pool\n");
-   879				rc = -ENOMEM;
-   880				goto destroy_mmu_pgt_pool;
-   881			}
-   882	
-   883			rc = gen_pool_add_virt(hr_priv->mmu_pgt_pool, virt_addr, phys_addr,
-   884							pool_chunk_size, -1);
-   885			if (rc) {
-   886				dev_err(hdev->dev, "Failed to fill host-resident page pool\n");
-   887				goto destroy_mmu_pgt_pool;
-   888			}
-   889		}
-   890	
-   891		for (i = 0 ; i < prop->max_asid ; i++) {
-   892			hop0_pgt = &hr_priv->mmu_asid_hop0[i];
-   893			hop0_pgt->virt_addr = (uintptr_t)
-   894						gen_pool_dma_zalloc_align(hr_priv->mmu_pgt_pool,
-   895										hop_table_size,
- > 896										&hop0_pgt->phys_addr,
-   897										hop_table_size);
-   898			if (!hop0_pgt->virt_addr) {
-   899				dev_err(hdev->dev, "Failed to allocate HOP from pgt pool\n");
-   900				rc = -ENOMEM;
-   901				goto destroy_mmu_pgt_pool;
-   902			}
-   903		}
-   904	
-   905		/* MMU H/W init will be done in device hw_init() */
-   906	
-   907		return 0;
-   908	
-   909	destroy_mmu_pgt_pool:
-   910		hl_mmu_hr_pool_destroy(hdev, hr_priv, hop_table_size);
-   911		if (!ZERO_OR_NULL_PTR(hr_priv->mmu_asid_hop0))
-   912			kvfree(hr_priv->mmu_asid_hop0);
-   913	
-   914		return rc;
-   915	}
-   916	
-   917	/**
-   918	 * hl_mmu_hr_fini() - release the MMU module.
-   919	 * @hdev: habanalabs device structure.
-   920	 * @hr_priv: MMU host resident private info.
-   921	 * @hop_table_size: HOP table size
-   922	 *
-   923	 * This function does the following:
-   924	 * - Disable MMU in H/W.
-   925	 * - Free the pgt_infos pool.
-   926	 *
-   927	 * All contexts should be freed before calling this function.
-   928	 */
-   929	void hl_mmu_hr_fini(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv, u32 hop_table_size)
-   930	{
-   931		/* MMU H/W fini was already done in device hw_fini() */
-   932	
-   933		hl_mmu_hr_pool_destroy(hdev, hr_priv, hop_table_size);
-   934	
-   935		if (!ZERO_OR_NULL_PTR(hr_priv->mmu_asid_hop0)) {
-   936			kvfree(hr_priv->mmu_asid_hop0);
-   937	
-   938			/* Make sure that if we arrive here again without init was
-   939			 * called we won't cause kernel panic. This can happen for
-   940			 * example if we fail during hard reset code at certain points
-   941			 */
-   942			hr_priv->mmu_asid_hop0 = NULL;
-   943		}
-   944	}
-   945	
-   946	/**
-   947	 * hl_mmu_hr_free_hop_remove_pgt() - free HOP and remove PGT from hash
-   948	 * @pgt_info: page table info structure.
-   949	 * @hr_priv: MMU HR private data.
-   950	 * @hop_table_size: HOP table size.
-   951	 */
-   952	void hl_mmu_hr_free_hop_remove_pgt(struct pgt_info *pgt_info, struct hl_mmu_hr_priv *hr_priv,
-   953						u32 hop_table_size)
-   954	{
-   955		gen_pool_free(hr_priv->mmu_pgt_pool, pgt_info->virt_addr, hop_table_size);
-   956		hash_del(&pgt_info->node);
-   957		kfree(pgt_info);
-   958	}
-   959	
-   960	/**
-   961	 * hl_mmu_hr_pte_phys_to_virt() - translate PTE phys addr to virt addr
-   962	 * @ctx: pointer to the context structure
-   963	 * @pgt: pgt_info for the HOP hosting the PTE
-   964	 * @phys_pte_addr: phys address of the PTE
-   965	 * @hop_table_size: HOP table size
-   966	 *
-   967	 * @return PTE virtual address
-   968	 *
-   969	 * The function use the pgt_info to get HOP base virt addr and obtain the PTE's virt addr
-   970	 * by adding the PTE offset.
-   971	 */
-   972	u64 hl_mmu_hr_pte_phys_to_virt(struct hl_ctx *ctx, struct pgt_info *pgt,
-   973								u64 phys_pte_addr, u32 hop_table_size)
-   974	{
-   975		u64 page_mask = (hop_table_size - 1);
-   976		u64 pte_offset = phys_pte_addr & page_mask;
-   977	
-   978		return pgt->virt_addr + pte_offset;
-   979	}
-   980	
-   981	/**
-   982	 * hl_mmu_hr_write_pte() - write HR PTE
-   983	 * @ctx: pointer to the context structure
-   984	 * @pgt_info: HOP's page table info structure
-   985	 * @phys_pte_addr: phys PTE address
-   986	 * @val: raw PTE data
-   987	 * @hop_table_size: HOP table size
-   988	 */
-   989	void hl_mmu_hr_write_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info, u64 phys_pte_addr,
-   990									u64 val, u32 hop_table_size)
-   991	{
-   992		/*
-   993		 * The value to write is the phys address of the next hop +
-   994		 * flags at the 12 LSBs.
-   995		 */
-   996		u64 virt_addr = hl_mmu_hr_pte_phys_to_virt(ctx, pgt_info, phys_pte_addr, hop_table_size);
-   997	
- > 998		*(u64 *) virt_addr = val;
-   999	}
-  1000	
-
+diff --git a/drivers/nvdimm/virtio_pmem.c b/drivers/nvdimm/virtio_pmem.c
+index 995b6cdc67ed..48f8327d0431 100644
+--- a/drivers/nvdimm/virtio_pmem.c
++++ b/drivers/nvdimm/virtio_pmem.c
+@@ -81,6 +81,7 @@ static int virtio_pmem_probe(struct virtio_device *vdev)
+ 	ndr_desc.res = &res;
+ 	ndr_desc.numa_node = nid;
+ 	ndr_desc.flush = async_pmem_flush;
++	ndr_desc.provider_data = vdev;
+ 	set_bit(ND_REGION_PAGEMAP, &ndr_desc.flags);
+ 	set_bit(ND_REGION_ASYNC, &ndr_desc.flags);
+ 	nd_region = nvdimm_pmem_region_create(vpmem->nvdimm_bus, &ndr_desc);
+@@ -89,7 +90,6 @@ static int virtio_pmem_probe(struct virtio_device *vdev)
+ 		err = -ENXIO;
+ 		goto out_nd;
+ 	}
+-	nd_region->provider_data = dev_to_virtio(nd_region->dev.parent->parent);
+ 	return 0;
+ out_nd:
+ 	nvdimm_bus_unregister(vpmem->nvdimm_bus);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
