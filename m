@@ -2,152 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D3AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5820ACCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347256AbiF1P0P (ORCPT
+        id S1347190AbiF1P0w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
+        Tue, 28 Jun 2022 11:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347190AbiF1P0J (ORCPT
+        with ESMTP id S241367AbiF1P0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:26:09 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4ABF2DAA3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:26:08 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id i25so12706625wrc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:26:08 -0700 (PDT)
+        Tue, 28 Jun 2022 11:26:49 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428CE2D1F1
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:26:48 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id u15so26490366ejc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:26:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vHL7KLG7cNuB7LCeGAkW01vH5AeHqBrHUv1IstKU05Q=;
-        b=G/lrcJnISuX92SQ+iq8Fv8dYzQO9R72BfpagBmEOi8ngHAQNAOTDrcoKNScmK3DnOz
-         io06T+YiFAkKhPc42RDQ/rqHyaC/yVa8sAFk2QkjQvwUydzOBgZHXQwZuIJIN13kDgG5
-         iPO3AVOjd+v78xfoUsPuMADZA5UzKM/CbJ2xX59v9oHhi4s+uXSJeVPYqF2kNRW3GgXI
-         MYXT0+vM7agOcZ1esrJPUW9n785ddjsPA/l4m0EOsA/sTqvgmLiOOOcn9S8E+70BcOJr
-         NmBhkNE5lxe4xbdCDWtgtpiX71HiRSjXuZifF6LnjV42gVazBha68w/qzjKIzhJNzpBg
-         ciRA==
+        bh=Kjcf0myN8xEQpjIbs4vYCmYvnjer77kYAUZMxxZfr54=;
+        b=MiqvpNPpX09362l61nV5eWebMheEbAXmxJOrBhDRX9t2YTF5o5w2iCtTbO1xXIH5nR
+         ASy9dmUFwVTdqmjxSF+6j6raG1Q+AFow9+pdiQfKvQSOG9FnVfm/Iars+cCsYTRDwWJ2
+         blL4bPLQKmBe41kTNFlNa3aGPvHmNMHmbNpdL7HfS+YfAaTOlO8pbzXSjqezxbtTGMZ8
+         V3Cm91faw349kLNwWbRfZ24EphQ6eUiegf/jmqv6CADm7866SFiOWCcI0lJit/6nzDzr
+         GuXsdCATpbqWgsp23sUBuS0b2O8DSdpl4ta0/Snjzwfw7LOF6yuzOCfs1+UHBZGsljsl
+         Fryw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=vHL7KLG7cNuB7LCeGAkW01vH5AeHqBrHUv1IstKU05Q=;
-        b=flZEA8izaoF18nLTfE1tOwJROfrj+6HbAv0sM5w86igqHasgXh4kq1aCSHti6kFcyN
-         1Vl/oTQTUB+oTyTFLLuIK3kGwXQ2HoshMnA1qkLZSdtKnxpMtobVfSLg7gjf7x5Rh4lh
-         CbFducPCDFbqhGrWIELuOdrzmOOiBQtgDvOrSMVtYzFW9pEI1Hz3KQgj/k/5WON+dY1Y
-         kJcdm1OlSgh6xQ2a7Ya8qFxeoZjFuLLMgwrj63kSpAKTn81aEkZ/f7mWmrBS9zPt4NfJ
-         v82XWoWsbnObz4bfbhvYs8LIMFErukLo7HouijETb2zKSv8DgGJUpfi1SCY5SB6KLE3V
-         ulng==
-X-Gm-Message-State: AJIora9epMF8XCC2gS5sdVydiGs4yq2jHEHU+9VOlQ1DUNkOF/5fC5jM
-        BQJs1fPunD/wWw/iknARNcgGdA==
-X-Google-Smtp-Source: AGRyM1uImHgo1CFyv3j+ARJwngGN5DnquV/SQpht6gc3qTPcHnrSKpRMhocjL0T1LMvu/CHIwwBECw==
-X-Received: by 2002:a5d:6da9:0:b0:21b:bf88:1ab0 with SMTP id u9-20020a5d6da9000000b0021bbf881ab0mr16293580wrs.66.1656429967115;
-        Tue, 28 Jun 2022 08:26:07 -0700 (PDT)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id g13-20020adffc8d000000b0021b99efceb6sm14057462wrr.22.2022.06.28.08.26.06
+        bh=Kjcf0myN8xEQpjIbs4vYCmYvnjer77kYAUZMxxZfr54=;
+        b=xyNmZgMnBhoyQ2VaWcIIZP5pGuzNOcaIHG773BH7yrdUB0vXjB7A3JJNTM0C9DfhmI
+         QhnE8DKogqING0AHEMDXLascOypqHG0yPhl3+B+GpORamdi0XZSsIdZcAuyGA/rQxol9
+         Kf5SLBgYk0Tt5OeE4dursX1KKzv5h0PNLFOzbgR2yGPqA80LUBfA61/KgOyoZLaVgCgU
+         lcTYR91kagsY8mjfORdniT1jGwAUFvFXvdpMcTWUHzVJIOVNl5AWzF+p1gn+OtWE2cXM
+         CHntHMsYFLR0E6GYmS07BbybCtrU5y9aeEXLul0gxOIsP4NPnuH6TfzegOXtsipxydwg
+         P+Dg==
+X-Gm-Message-State: AJIora8H5IKETitvcTI172NGbnEh+EhTFQCzmfMARaIXhxBAMzc2GrB+
+        BEwij1BX64UedEl5mFCfjjQoHQ==
+X-Google-Smtp-Source: AGRyM1uzxpsWrvBGixfnmSdbGTuYjpVh/2OxG/8e+M42tgEx0u0q8hE/de6Xy/LxgcLt473rap2OJQ==
+X-Received: by 2002:a17:907:1693:b0:726:4322:c330 with SMTP id hc19-20020a170907169300b007264322c330mr17576956ejc.9.1656430006883;
+        Tue, 28 Jun 2022 08:26:46 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id z15-20020a170906944f00b006fe8d8c54a7sm6527208ejx.87.2022.06.28.08.26.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 08:26:06 -0700 (PDT)
-Message-ID: <0603d0e5-df0b-f47c-4391-b0860b07c13a@linaro.org>
-Date:   Tue, 28 Jun 2022 17:26:05 +0200
+        Tue, 28 Jun 2022 08:26:46 -0700 (PDT)
+Message-ID: <c8dddfe6-6385-ed34-e789-9f845c8a32bd@linaro.org>
+Date:   Tue, 28 Jun 2022 17:26:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/3] thermal/sysfs: Remove cooling device sysfs statistics
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: chosen: document rng-seed property
 Content-Language: en-US
-To:     Wei Wang <wvw@google.com>, linux-kernel@vger.kernel.org
-Cc:     linux-pm@vger.kernel.org
-References: <20220601151441.9128-1-daniel.lezcano@linaro.org>
- <20220601151441.9128-3-daniel.lezcano@linaro.org>
- <be8395e3-98d7-7a8f-7153-c491b22d4463@arm.com>
- <cb35e356-bc90-2a67-6983-1a4c3a0ea62d@linaro.org>
- <eada018c-b857-7946-ae4b-2532e6866a45@arm.com>
- <CAHRSSEz9ExOgvByycztKYf1ncxCKeoy3uHuyQcnUC1r5nujc2w@mail.gmail.com>
- <0ca654c0-d7b4-b955-7e9b-542452659694@linaro.org>
- <CAGXk5yqCNUpGpHkecVP8U=ys9NF6dJAMu6R0E+jpgvcSVFN+Ug@mail.gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <CAGXk5yqCNUpGpHkecVP8U=ys9NF6dJAMu6R0E+jpgvcSVFN+Ug@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     robh@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        Kees Cook <keescook@chromium.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Will Deacon <will@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <20220627152107.645860-1-Jason@zx2c4.com>
+ <CAJMQK-jGsobw7i4NjQ4oezA0rU03ECs_nY=Txr6TgsHFu2jXhg@mail.gmail.com>
+ <Yrsc+50Y2UX1wlYH@zx2c4.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Yrsc+50Y2UX1wlYH@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/06/2022 08:02, Wei Wang wrote:
-> On Fri, Jun 3, 2022 at 4:04 AM Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
->>
->>
->> Hi Todd,
->>
->> [adding Wei]
->>
->> On 02/06/2022 21:02, Todd Kjos wrote:
->>> On Thu, Jun 2, 2022 at 2:16 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
->>
->> [ ... ]
->>
->>>> I see, it makes sense. Let's see if Todd and Android folks don't
->>>> use this thermal sysfs stats, so we could remove them.
->>>
->>> Android HALs do use the thermal sysfs stats. debugfs isn't a viable
->>> replacement since debugfs must not be mounted during normal operation.
->>
->> Thanks for your answer.
->>
->> I'm curious, what is the purpose of getting the statistics, especially
->> the transitions stats from normal operation?
->>
->> There were some complains about systems having a high number of cooling
->> devices with a lot of states. The state transitions are represented as a
->> matrix and result in up to hundred of megabytes of memory wasted.
->>
->> Moreover, sysfs being limited a page size, the output is often truncated.
->>
->> As it is automatically enabled for GKI, this waste of memory which is
->> not negligible for system with low memory can not be avoided.
->>
->> I went through the thermal HAL but did not find an usage of these
->> statistics, do you have a pointer to the code using them ?
->>
->> Thanks
->>
->>     -- Daniel
->>
->>
+On 28/06/2022 17:23, Jason A. Donenfeld wrote:
+> Hi Hsin-Yi,
 > 
-> Sorry for the late reply, trying to catch up on emails after sick
-> recovery. We use it for stats collection to understand thermal
-> residency, and it is not in the HAL code, we don't use the transition
-> table heavily though. Are some of the devices having too many cooling
-> devices? Can we have a config to enable stats for a given cooling
-> device?
+> On Tue, Jun 28, 2022 at 11:39:38AM +0800, Hsin-Yi Wang wrote:
+>> On Mon, Jun 27, 2022 at 11:21 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>>>
+>>> Document the /chosen/rng-seed property, which has existed for quite some
+>>> time but without an entry in this file.
+>>>
+>>> Fixes: 428826f5358c ("fdt: add support for rng-seed")
+>>> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+>>> Cc: Kees Cook <keescook@chromium.org>
+>>> Cc: Rob Herring <robh@kernel.org>
+>>> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>>> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+>>> ---
+>> It's currently documented in
+>> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/chosen.yaml
+>>
+>> https://lore.kernel.org/lkml/CAL_Jsq+uSdk9YNbUW35yjN3q8-3FDobrxHmBpy=4RKmCfnB0KQ@mail.gmail.com/
+> 
+> Well, let's see. That email says:
+> 
+>> Already documented here[1]. I've been meaning to delete chosen.txt so
+>> that's a bit more obvious.
+>>
+>> I realize it's a bit harder to find what's documented where. Long term
+>> we'd like to generate documentation from the schema and integrate as
+>> part of the spec. Short term, it would be quite trivial to make a 'am
+>> I documented' utility.
+> 
+> That sounds reasonable. But when was that email written? April 2, 2020.
+> That's 817 days ago.
+
+817 days And the field is documented, so nothing to do here regarding
+"rng-seed".
 
 
-The stats table is bogus. As soon as the combination of the states leads 
-to a size greater than a page size, then the result is truncated.
+> So I call BS on this being a continued justification for rejecting this
+> patch (which apparently was submitted by Florian over two years ago
+> too). 
 
-As the cooling devices is also abused to mimic power capping capable 
-device, we are ending up to 1024 states sometimes.
+Because patch is not needed and is already done....
 
-Moreover, having the option set also create tables which take MB of 
-memory for nothing.
+> Rob clearly hasn't followed through.
 
-The option only enables the stats for all the cooling device stats.
+You got there link to repo, what do you need more to follow? Remove the
+chosen.txt? Sure - submit a separate patch.
 
-As you mentioned, it seems to you are using the stats for debugging 
-purpose. The debugfs provides the same information, except it does only 
-show the transitions would actually happened and we are no longer 
-limited to a page size.
+>  So please apply this patch so
+> that chosen.txt remains maintained.
 
-Would it be acceptable to remove the sysfs stats ?
+Instead submit a patch removing it. There is no particular point to
+duplicate bindings and dt-schema is the core here, the main one.
+
+> 
+> Later if he moves forward with his plan, then no harm done, since the
+> file will be deleted anyway.
+> 
+> Sometimes it's best to reassess things based on the reality of the
+> situation, you know?
 
 
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Best regards,
+Krzysztof
