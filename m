@@ -2,66 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C5D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C35C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232267AbiF1UWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33754 "EHLO
+        id S230265AbiF1UWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:22:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbiF1UVa (ORCPT
+        with ESMTP id S231733AbiF1UVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:21:30 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251643CFDA
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:20 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-101ab23ff3fso18615327fac.1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:20 -0700 (PDT)
+        Tue, 28 Jun 2022 16:21:34 -0400
+Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42030E65
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:26 -0700 (PDT)
+Received: by mail-oo1-xc2a.google.com with SMTP id h12-20020a4aa28c000000b00425ab778155so1000013ool.2
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s4j/VUuwpqAhpSmewB4QnlDQdKmoLMZa5xK7xdwSdiY=;
-        b=fCceC5v0ighl7q4Q/LNtvixvAyZkLH98vCNJu7JsIt/odnS5zfkGFKbJQASWEXeraY
-         W93TV/DY1qqNvu8mDFQlUkSauPmKLrC641yKZK3ybpEEWHfSRYX5n6rqn0G/JdFqUYZq
-         PrwOsP1reyTu7JJVlKYMVsr7uDK1Qi2oW+/JnM/iOjxKd4KHqsoGdM1wWZE5ZAcR9rq/
-         VGWL9Tli5HAO6vxgi6awDnwtyLF4uDFBdCUmzAMrJ6CFPp0cNDP97Iroxog/2rNBKIC3
-         wAttVtcWIKpmvgAfc1AXeO+/MPtpDI3UOmAszgeMWdcz0dS0SpkxTzX6c3dMrPinRv5J
-         13Lg==
+        bh=eExg43XsltTCVbwLDSdcT/fQY2g0pil+aiJvJCGyZ1E=;
+        b=K5fWHXxAgdq/qiDFOKF4is2WgdvkKkBkyAcD59vbiHaU4oUQ/a/HCra7mjrjQkyHr8
+         FoPYBliprIhqyQ1+Wz0DgN2aqYv84dc5D6Uars2mJePWLh03Cmjju5q2B65R/3Av2Nj6
+         TF+bmiVcHp+40EfoRU+smZAi8QvUON0vcejhjiNjd33ot3zoHioOv4aVtqk//EWtkMvg
+         6pv2YdGRDxmDO/9RbTBpKLAeGNHcU+EVouMIBdI9eXioaF5qxprGWp4VFUUoTsAxItJ6
+         yqGghlMIumkl2HKTRVp+Bihi9QmZJx92cCkn3iPtbSB4ibg5oblp0M4jPIZGlORECXLe
+         b3Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s4j/VUuwpqAhpSmewB4QnlDQdKmoLMZa5xK7xdwSdiY=;
-        b=3h9XhG1Sx/zNtzDrOrIqQEKo8Lf++mPMX3xrl8Es21dAiLpt9x291ZDyMKI/0FVMzi
-         f7dovZBaOAZXihbSdaMtMwFLMMiTJJXHHSYdoJdlUl9mANaOOlm6soNpGeV5o/1BlWrF
-         AVU+Um/5v55+BDzEQUx/jLnxUc03ciQjTFxYzwIj8hk96gGpHZ4VcwECFEbh1Y2bJ4wL
-         b1XFUEh4NuxN9e0XeXbsTQgYJIUHaRy7vUSgXJ40IFvjeTLBJFSykf46b30pAoOTZQl2
-         7gPB3p3gkV0X7AMXKzxyTWhdCeYZWxJAyX+YJ5rPBfb2w5vgeNHBFk2/0NrQ6sAc/0sg
-         j1tg==
-X-Gm-Message-State: AJIora8M3YRJFnGTSdi0PIUqGUGOWreMKGDm8wdOwXWAJU6YVI9lVmew
-        Jle+KIJ+dk2+TVfVtMtnXHV8Og==
-X-Google-Smtp-Source: AGRyM1t174wUlHbxXOqM4bbDzzYwPcVUN1D9gm8KhN+pNVbPVi7JI8C5EOvMqDK7JeAwLThjphA2yQ==
-X-Received: by 2002:a05:6870:3920:b0:101:d628:b053 with SMTP id b32-20020a056870392000b00101d628b053mr851287oap.111.1656447559505;
-        Tue, 28 Jun 2022 13:19:19 -0700 (PDT)
+        bh=eExg43XsltTCVbwLDSdcT/fQY2g0pil+aiJvJCGyZ1E=;
+        b=GOdTpG88wtn9EeOM1yP0NgmV4CUBxa0eec5WTkFJk3VL0y3ieZ8b4JBC4gcXDwucDt
+         c0bQPucFcNIfdbOZ6ThPRGtqhsZWsL+eATnECS2eYMrd4BRzSJ6ZM+k9Yhts2PJk2+T4
+         PwNgITmqIrqgTtNvdC1H8Ois+hjmVj74CG15hBgWJg2KnSo2R2ERgMRlS26nGYPhR80x
+         nWBsR1xl/1QujPn+wevDrx5zX8q3XnvMGkFTUfTNXzTl1kzdhf5zvUXTvSlmjljxglmD
+         qzvGTpsQWM5Uh77c5dKVPbUUXKJdwgXRYbWLb4hGWeGWzxwoYj3TkPGHATuqC0YcuoTp
+         6yXg==
+X-Gm-Message-State: AJIora+YinN1h6fWCAKRczaIHO8DVdfF0r+wbZ1gw/gTbaM+wY3d2/f8
+        e/H9anU4jibmrR3MJMqjZNsJdQ==
+X-Google-Smtp-Source: AGRyM1sWU5jlEM2LNF47tc4zFn3YAD8ACpBl+Vdp0Ix8tQ7otecNLPwHXjVM/mrSwDqNC3+3jZ4Sjg==
+X-Received: by 2002:a4a:864b:0:b0:425:71ed:ada7 with SMTP id w11-20020a4a864b000000b0042571edada7mr8880259ooh.92.1656447566000;
+        Tue, 28 Jun 2022 13:19:26 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.18
+        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 13:19:18 -0700 (PDT)
+        Tue, 28 Jun 2022 13:19:25 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+To:     ~postmarketos/upstreaming@lists.sr.ht,
         Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: Re: (subset) [PATCH v3] soc: qcom: cmd-db: replace strscpy_pad() with strncpy()
-Date:   Tue, 28 Jun 2022 15:18:54 -0500
-Message-Id: <165644753308.10525.5322214498477940111.b4-ty@linaro.org>
+Cc:     martin.botka@somainline.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, marijn.suijten@somainline.org,
+        linux-arm-msm@vger.kernel.org, jamipkettunen@somainline.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        angelogioacchino.delregno@somainline.org
+Subject: Re: (subset) [PATCH] arm64: dts: qcom: msm8996-tone: Rule out PM(I)8994 variants
+Date:   Tue, 28 Jun 2022 15:18:58 -0500
+Message-Id: <165644753307.10525.11981290491933074203.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220628064301.v3.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
-References: <20220628064301.v3.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
+In-Reply-To: <20220430162525.607946-1-konrad.dybcio@somainline.org>
+References: <20220430162525.607946-1-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,22 +71,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 06:43:13 -0700, Douglas Anderson wrote:
-> Commit ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with
-> strscpy_pad()") breaks booting on my sc7280-herobrine-herobrine
-> device. From printouts I see that at bootup the function is called
-> with an id of "lnbclka2" which is 8 bytes big.
+On Sat, 30 Apr 2022 18:25:24 +0200, Konrad Dybcio wrote:
+> It looks like all Tone devices out in the wild are using PMI8996, which
+> suggests the PMI8994-variant DTs are not needed. Remove them.
 > 
-> Previously all 8 bytes of this string were copied to the
-> destination. Now only 7 bytes will be copied since strscpy_pad() saves
-> a byte for '\0' termination.
 > 
-> [...]
 
 Applied, thanks!
 
-[1/1] soc: qcom: cmd-db: replace strscpy_pad() with strncpy()
-      commit: fe72f9bce137055fb744d4f8a91baa234ec07baa
+[1/1] arm64: dts: qcom: msm8996-tone: Rule out PM(I)8994 variants
+      commit: a743dff7acc4a4c613e6853a8748430946f941a4
 
 Best regards,
 -- 
