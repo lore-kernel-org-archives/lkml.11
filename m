@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9179C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABFDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343552AbiF1Cdc (ORCPT
+        id S1343720AbiF1Cdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40768 "EHLO
+        Mon, 27 Jun 2022 22:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244793AbiF1C2B (ORCPT
+        with ESMTP id S244836AbiF1C2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:28:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175C826116;
-        Mon, 27 Jun 2022 19:26:26 -0700 (PDT)
+        Mon, 27 Jun 2022 22:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8202B24F3D;
+        Mon, 27 Jun 2022 19:26:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAF66B81C0A;
-        Tue, 28 Jun 2022 02:26:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D182C36AEB;
-        Tue, 28 Jun 2022 02:26:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D7DB618F4;
+        Tue, 28 Jun 2022 02:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E04C34115;
+        Tue, 28 Jun 2022 02:26:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383183;
-        bh=wkSmQyAu5AuFSwI7zDzGyA+yFclqeuoENP4rZQ/qlVA=;
+        s=k20201202; t=1656383203;
+        bh=Jbj3KyWfrVnGUc7SFB+0dOvbp461Vbc7uw0NCV65NlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sD2AXDF/dIRnhBn/fX5XD4OWz069WXUPi1BZR51nekOFo/VULvx7RcoAbbf4E2ZcP
-         0RfOokk7YAwjTW0X3UsvOSY0TupC2G38B3si9XjDkCKF/FVFDKpHgHcX6qOPx1svW/
-         TaZxHvH+0Jfd3ypvLMk44CzP+pV9Eo9y1YvnL7P48Nx87kwzvRxTc3fv+85s+OOjQy
-         zVx4jP5sCVYCj5LkO3sIq6KTB8LLln8sV2dQajQh38GUg9KPAS++RwDZUJA5eFHbCm
-         HF2E/R0bnFjrNrVmszMaqyv+m2LabQzTLa2KeaC6SSXLrpqKhPOH4uHmtrmawnfvtG
-         /FggKRPgOZM0Q==
+        b=hIA5Mmw5fcwBASZaLlKM0/sDYrsDg6P748WxKwfknynhWEOqzbkXymMQBe5yRJCHP
+         zMkFBlahqfJ7Ose+Y8h8/smpMG/moPcIaKhBKqaN3fyJqSb/Uvg3W+0raPPibBkMPL
+         rAd0tCRSv+U1Q/I67YZKQh3QrOARzbRCpmxpb6GqAzzdKpJEo65cG7IzwImo10nWc0
+         Ezh1q47erh/eMRr9v5w9KL6GM3Ms23RnqbKZ7AxbU3Z2wJfjlWQkCwEDMsha6Uhg6F
+         5nn6Z9Tu2mciUVhzSnOBc7BKTdQXTFNucE99MVLyueszLyhjmwG6mR3sxsUsZTzo0S
+         ehuqF/LtfWygA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Ripard <maxime@cerno.tech>, Melissa Wen <mwen@igalia.com>,
-        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
-        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 04/17] drm/vc4: crtc: Use an union to store the page flip callback
-Date:   Mon, 27 Jun 2022 22:26:02 -0400
-Message-Id: <20220628022615.596977-4-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 11/17] mips: mti-malta: Fix refcount leak in malta-time.c
+Date:   Mon, 27 Jun 2022 22:26:09 -0400
+Message-Id: <20220628022615.596977-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022615.596977-1-sashal@kernel.org>
 References: <20220628022615.596977-1-sashal@kernel.org>
@@ -53,74 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 2523e9dcc3be91bf9fdc0d1e542557ca00bbef42 ]
+[ Upstream commit 608d94cb84c42585058d692f2fe5d327f8868cdb ]
 
-We'll need to extend the vc4_async_flip_state structure to rely on
-another callback implementation, so let's move the current one into a
-union.
+In update_gic_frequency_dt(), of_find_compatible_node() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-Reviewed-by: Melissa Wen <mwen@igalia.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220610115149.964394-10-maxime@cerno.tech
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ arch/mips/mti-malta/malta-time.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index 7747f160c740..2ef60dd42a52 100644
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -737,17 +737,17 @@ struct vc4_async_flip_state {
- 	struct drm_framebuffer *fb;
- 	struct drm_pending_vblank_event *event;
+diff --git a/arch/mips/mti-malta/malta-time.c b/arch/mips/mti-malta/malta-time.c
+index 66c866740ff2..eef336192d7f 100644
+--- a/arch/mips/mti-malta/malta-time.c
++++ b/arch/mips/mti-malta/malta-time.c
+@@ -231,6 +231,8 @@ static void update_gic_frequency_dt(void)
  
--	struct vc4_seqno_cb cb;
-+	union {
-+		struct vc4_seqno_cb seqno;
-+	} cb;
- };
- 
- /* Called when the V3D execution for the BO being flipped to is done, so that
-  * we can actually update the plane's address to point to it.
-  */
- static void
--vc4_async_page_flip_complete(struct vc4_seqno_cb *cb)
-+vc4_async_page_flip_complete(struct vc4_async_flip_state *flip_state)
- {
--	struct vc4_async_flip_state *flip_state =
--		container_of(cb, struct vc4_async_flip_state, cb);
- 	struct drm_crtc *crtc = flip_state->crtc;
- 	struct drm_device *dev = crtc->dev;
- 	struct vc4_dev *vc4 = to_vc4_dev(dev);
-@@ -769,6 +769,14 @@ vc4_async_page_flip_complete(struct vc4_seqno_cb *cb)
- 	up(&vc4->async_modeset);
+ 	if (of_update_property(node, &gic_frequency_prop) < 0)
+ 		pr_err("error updating gic frequency property\n");
++
++	of_node_put(node);
  }
  
-+static void vc4_async_page_flip_seqno_complete(struct vc4_seqno_cb *cb)
-+{
-+	struct vc4_async_flip_state *flip_state =
-+		container_of(cb, struct vc4_async_flip_state, cb.seqno);
-+
-+	vc4_async_page_flip_complete(flip_state);
-+}
-+
- /* Implements async (non-vblank-synced) page flips.
-  *
-  * The page flip ioctl needs to return immediately, so we grab the
-@@ -814,8 +822,8 @@ static int vc4_async_page_flip(struct drm_crtc *crtc,
- 	drm_atomic_set_fb_for_plane(plane->state, fb);
- 	plane->fb = fb;
- 
--	vc4_queue_seqno_cb(dev, &flip_state->cb, bo->seqno,
--			   vc4_async_page_flip_complete);
-+	vc4_queue_seqno_cb(dev, &flip_state->cb.seqno, bo->seqno,
-+			   vc4_async_page_flip_seqno_complete);
- 
- 	/* Driver takes ownership of state on successful async commit. */
- 	return 0;
+ #endif
 -- 
 2.35.1
 
