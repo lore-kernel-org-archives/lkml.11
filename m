@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590A1CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9564DCCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343601AbiF1Cdf (ORCPT
+        id S1343687AbiF1Cdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
+        Mon, 27 Jun 2022 22:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244831AbiF1C2J (ORCPT
+        with ESMTP id S244844AbiF1C2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D592612F;
-        Mon, 27 Jun 2022 19:26:37 -0700 (PDT)
+        Mon, 27 Jun 2022 22:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C36C25283;
+        Mon, 27 Jun 2022 19:26:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECE4CB81C00;
-        Tue, 28 Jun 2022 02:26:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89448C341CC;
-        Tue, 28 Jun 2022 02:26:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 088CA618B9;
+        Tue, 28 Jun 2022 02:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88614C34115;
+        Tue, 28 Jun 2022 02:26:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383194;
-        bh=MUI0g+P5Tea9OVrYzqPo9ISB1lDMPbc+HFynI4qkWbw=;
+        s=k20201202; t=1656383207;
+        bh=s9Ol33kpSrjmzFWdc4sW7eWoQqLfe0AJTiY9sp9s7jY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lWjSja8WpWVWL3iWK82+md7xTtHJHXcMRGB1hvHOpsOkrkIHPPc5HbNFim/GxudlA
-         Y+vhdlTaaFG6jvxfNVtpweKwVfg+5Y5sI/3SonWcGxmeZWmgsp4FMzKajKy/MYg8/2
-         SYvzP4YZHen/kh42sCCDYcN3Xyi24qLmqWDXUfEAZNb4El5DgWQpDYn4oJ021Gbd8q
-         hmXQLAjjtJV3Rf1LmW7Ob6XyAksBEn5bszuA0SQubF3XWuCbA0ddE1epWq/X0Fs6Ya
-         Ev+gK/BePy2kA+rkRVKhfFveSgsbJT1/gTPQvXqzy8qtrnKVHYwAazB6B2TAB0Imms
-         09ynBquIokGDA==
+        b=PKB1e82Xp8QN5mBRnV9FgcIK6Efh97vr1e9ttg6zFT3kl1X7bnqI2rAWaW29VZU+2
+         gD6UDRZnG8Ksws0RsW3ys1ycjXeVCnJ9TwYXDit8x+FSZ/61JAjuPHOKjryrP/cT9M
+         rGwgg6dhCkkKTIkBrW1Q7Hd+zOqXATG7AblqoAqq3munpqnPJ26nKRzyMryKIeCQZ/
+         Nz+VXNZnve++nzV/Nd/trS4AIkH2buVHugpxTw9AQSMM1HfCWhCyERkqZ8z/qQfomN
+         XI+UGYEzS4aqtZfGOobYa8bVuwgCOU7ytQz87/CPFfPR2ryjTBqP66ovoCaXxAc8ZI
+         7kRFWKoHRM+oA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiang wangx <wangxiang@cdjrlc.com>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>, daniel.vetter@ffwll.ch,
-        geert@linux-m68k.org, svens@stackframe.org, cssk@net-c.es,
-        bhelgaas@google.com, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 07/17] video: fbdev: skeletonfb: Fix syntax errors in comments
-Date:   Mon, 27 Jun 2022 22:26:05 -0400
-Message-Id: <20220628022615.596977-7-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        xkernel.wang@foxmail.com, wangborong@cdjrlc.com,
+        linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/17] mips: lantiq: falcon: Fix refcount leak bug in sysctrl
+Date:   Mon, 27 Jun 2022 22:26:11 -0400
+Message-Id: <20220628022615.596977-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022615.596977-1-sashal@kernel.org>
 References: <20220628022615.596977-1-sashal@kernel.org>
@@ -54,32 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang wangx <wangxiang@cdjrlc.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit fc378794a2f7a19cf26010dc33b89ba608d4c70f ]
+[ Upstream commit 72a2af539fff975caadd9a4db3f99963569bd9c9 ]
 
-Delete the redundant word 'its'.
+In ltq_soc_init(), of_find_compatible_node() will return a node pointer
+with refcount incremented. We should use of_node_put() when it is not
+used anymore.
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/skeletonfb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/lantiq/falcon/sysctrl.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/video/fbdev/skeletonfb.c b/drivers/video/fbdev/skeletonfb.c
-index 7f4e908330bf..b7d364673026 100644
---- a/drivers/video/fbdev/skeletonfb.c
-+++ b/drivers/video/fbdev/skeletonfb.c
-@@ -96,7 +96,7 @@ static const struct fb_fix_screeninfo xxxfb_fix = {
+diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+index 714d92659489..665739bd4190 100644
+--- a/arch/mips/lantiq/falcon/sysctrl.c
++++ b/arch/mips/lantiq/falcon/sysctrl.c
+@@ -210,6 +210,12 @@ void __init ltq_soc_init(void)
+ 			of_address_to_resource(np_sysgpe, 0, &res_sys[2]))
+ 		panic("Failed to get core resources");
  
-     /*
-      * 	Modern graphical hardware not only supports pipelines but some 
--     *  also support multiple monitors where each display can have its  
-+     *  also support multiple monitors where each display can have
-      *  its own unique data. In this case each display could be  
-      *  represented by a separate framebuffer device thus a separate 
-      *  struct fb_info. Now the struct xxx_par represents the graphics
++	of_node_put(np_status);
++	of_node_put(np_ebu);
++	of_node_put(np_sys1);
++	of_node_put(np_syseth);
++	of_node_put(np_sysgpe);
++
+ 	if ((request_mem_region(res_status.start, resource_size(&res_status),
+ 				res_status.name) < 0) ||
+ 		(request_mem_region(res_ebu.start, resource_size(&res_ebu),
 -- 
 2.35.1
 
