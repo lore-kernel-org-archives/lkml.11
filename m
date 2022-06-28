@@ -2,175 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45363C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 890ADC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 18:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234411AbiF1SuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 14:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        id S234087AbiF1SuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 14:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233853AbiF1Str (ORCPT
+        with ESMTP id S234041AbiF1St7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 14:49:47 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCCC2494B;
-        Tue, 28 Jun 2022 11:49:46 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id sb34so27571562ejc.11;
-        Tue, 28 Jun 2022 11:49:46 -0700 (PDT)
+        Tue, 28 Jun 2022 14:49:59 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B1024956;
+        Tue, 28 Jun 2022 11:49:58 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id d17so13361411wrc.10;
+        Tue, 28 Jun 2022 11:49:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3hs1h6z81DTKF28gSkM1hmpoN1hgElxYH3buRnm51V4=;
-        b=Rz6A0UYLrFVNp59roNRJ/OoDCj8CZW2aTol+JZVxP5SBujZ6Ypnx1J0xJfuKQs+UhB
-         dGRyvhNFoZ8oS62bC21BtO0w+9w3U9k6l2ZBBWYpfoCmUvXKZA90orDcwjP6wnC7GsHL
-         ZnZWg7Lyf2xONtDn/eE31A4ihKiEEcLJM1doPEAMYi6oOveQnquwD7n9eG7fY9XuXs9F
-         AhmU3XAUY4esVgzREu1ExKfofz0fd0KIFvym7/2RU6Cdqiqnrm1SazWSpoPw7TN6VaKO
-         Pxb8D5rolp8rga4TvNMPpPsuB0fhtEwG+O5u7cAuT7Hh6kU52JuUeKCd1guXOJNfQujO
-         AoMg==
+        bh=v12W7lrwEZaMnJj/8/YW2fjv7549ZdYfdH8DoyJsAPU=;
+        b=Oc8qV2LqyBUhEWiuQFy7QvJeR4shc+Sfl5kJtkr/YIsuWRVZbdRkF8CD9PUPE1Vn8F
+         evZHqpoMaVN6ODzvR68EVjtVmhEZl+Il3Qymm1rCZBpUUnLcToS7JJTZSDiFLiz86SSy
+         APZ87lZJ/aWVOpMlctUc46BcvpePcH3tQD+Y8+ldRzayq6i3gMWZhevjZurKQcJXBiLQ
+         yqWFVebYZRbjyNATEDol9ONAP7t86DmjoVI81ODlhal7Yb1I7JPNKLyZ3RnCYMSaMMTv
+         u9UpzNY39krMjzIKeeIQRhxc4+Aej06Bd19deVppPpLEjXZoYJKr5Jk3xHZd3LIFnMin
+         KmIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3hs1h6z81DTKF28gSkM1hmpoN1hgElxYH3buRnm51V4=;
-        b=MnowJGb0x7uT8EybC2oUJcuT2x39Wvinw4qiCi3wbIQ2vyjGQCAMr84cJEa29widDo
-         VEPGAzgXYaTQB8A5t1BmVO6Ao768/ePacpT1Bf3o2sXAy/+NbtGifCKh5qXCIYpGmvM8
-         YoKvGcMbfaHdzkiJc8m17oIuy5JfrSFsi3rK85hXZMiUXWzfaX++BQ2kMPCMQVthAoS6
-         gPdFL7evsWTe5LmjclrF9hlhXaZyIZk6rnt+lxYU2T2FAsTv033qdJ6/kOUpxHMyG5ux
-         5oIXHqGefIcJ/9HJDi15upBd3Ei/hhRKxH1zEUYNssrYQsue2phRatP89ntlLRlZSkdR
-         o19Q==
-X-Gm-Message-State: AJIora/5yL0LvG2ikp0BBsSPjx1fULBw8NE7VueIClxlNs0k9C8/IPPU
-        DsafKQGR6dF+P2s3qEAadBA=
-X-Google-Smtp-Source: AGRyM1sFNqH2o0iEzWOXlPTJ+cex7HQa6KdetSBAEqklx7/FKY8oRD+IXSINVWhZGuby7hfHm7tMtg==
-X-Received: by 2002:a17:907:1b25:b0:6da:8206:fc56 with SMTP id mp37-20020a1709071b2500b006da8206fc56mr851746ejc.81.1656442184865;
-        Tue, 28 Jun 2022 11:49:44 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9747593edw.90.2022.06.28.11.49.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v12W7lrwEZaMnJj/8/YW2fjv7549ZdYfdH8DoyJsAPU=;
+        b=wFfHRWYPD088Z1qlSN0c7QbMNy/tZPfnzcMMKzCi8HndxPlnoHDEXq7bytuas37XDp
+         d7qn9C4V/ZdWV5kKn/Wb3I/H8CgGk3b1Xg7+8IzMN5mm7HmQ8a2vEbxhaFEBQLZHCa8m
+         jwAlTCTMPW/jFkvsivF02j7p2hkRgDQgdDPI/uAj5YEhJgGHG/NGLBqy0c1W9/PtK5WT
+         z50AoiBhzbYRwgEkL8+J/ikTp2cpTBX2LY9cF97VC0/hxZRPGrRltUMT+vapBPL5rcgn
+         eNyQwaysm3hRuSHv79p5/JuGxISItur5Fne7N6N+2HTRsy4cHDrdFqEOyWi+chSdd2Tf
+         GEdw==
+X-Gm-Message-State: AJIora/4r2HLmIp/gOOkf/STm5yEID+dAaaGSAH9tf5rQpuEnoluSuZk
+        nGPp8aUnC4+FygBvl/QgmcyYsMPQig4=
+X-Google-Smtp-Source: AGRyM1ue70t4mReX8BosJPQG8RZjjJfVbUvjGPOzvXYf2h4d6+aXr3IYvgrLVgeEsaKhmBPo4Ugu5w==
+X-Received: by 2002:a5d:6b91:0:b0:21b:bc0b:7282 with SMTP id n17-20020a5d6b91000000b0021bbc0b7282mr19213599wrx.375.1656442196924;
+        Tue, 28 Jun 2022 11:49:56 -0700 (PDT)
+Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id z21-20020a1c4c15000000b0039c871d3191sm460368wmf.3.2022.06.28.11.49.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 11:49:44 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Tue, 28 Jun 2022 11:49:54 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Tyler Hicks <code@tyhicks.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Seth Forshee <sforshee@digitalocean.com>,
+        Amir Goldstein <amir73il@gmail.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v3 4/4] ARM: dts: qcom: fix various wrong definition for kpss-gcc node
-Date:   Tue, 28 Jun 2022 20:41:37 +0200
-Message-Id: <20220628184137.21678-5-ansuelsmth@gmail.com>
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jan Kara <jack@suse.cz>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        "Theodore Ts'o" <tytso@mit.edu>, ecryptfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: [RFC PATCH] ecryptfs: Replace kmap() with kmap_local_page()
+Date:   Tue, 28 Jun 2022 20:49:50 +0200
+Message-Id: <20220628184950.2045-1-fmdefrancesco@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220628184137.21678-1-ansuelsmth@gmail.com>
-References: <20220628184137.21678-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix dtbs_check warning now that we have a correct kpss-gcc yaml
-schema. Add additional qcom,kpss-gcc compatible to differentiate
-devices where kpss-gcc should provide a clk and where kpss-gcc should
-just provide the registers and the syscon phandle.
-Add missing #clock-cells and remove useless clock-output-names for
-ipq806x.
-Add missing binding for msm8090 kpss-gcc node.
+The use of kmap() is being deprecated in favor of kmap_local_page().
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+With kmap_local_page() the mappings are per thread, CPU local and not
+globally visible.
+
+Use kmap_local_page() on all calling sites where kmap() is currently used.
+
+The mappings in fs/ecryptfs seem to conform to the prerequisites for
+easy conversions to kmap_local_page(), however I am not familiar with this
+code.
+
+This is why this is an RFC PATCH. I'd appreciate if people familiar with
+eCryptfs could test and confirm whether these conversions are safe or not.
+
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- arch/arm/boot/dts/qcom-apq8064.dtsi | 2 +-
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ++--
- arch/arm/boot/dts/qcom-mdm9615.dtsi | 2 +-
- arch/arm/boot/dts/qcom-msm8660.dtsi | 2 +-
- arch/arm/boot/dts/qcom-msm8960.dtsi | 7 +++++--
- 5 files changed, 10 insertions(+), 7 deletions(-)
+ fs/ecryptfs/crypto.c     | 8 ++++----
+ fs/ecryptfs/read_write.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-apq8064.dtsi b/arch/arm/boot/dts/qcom-apq8064.dtsi
-index a1c8ae516d21..a79eda05a7c2 100644
---- a/arch/arm/boot/dts/qcom-apq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-apq8064.dtsi
-@@ -836,7 +836,7 @@ mmcc: clock-controller@4000000 {
- 		};
+diff --git a/fs/ecryptfs/crypto.c b/fs/ecryptfs/crypto.c
+index e3f5d7f3c8a0..03263ebcccc6 100644
+--- a/fs/ecryptfs/crypto.c
++++ b/fs/ecryptfs/crypto.c
+@@ -465,10 +465,10 @@ int ecryptfs_encrypt_page(struct page *page)
+ 	}
  
- 		l2cc: clock-controller@2011000 {
--			compatible	= "qcom,kpss-gcc", "syscon";
-+			compatible	= "qcom,kpss-gcc-apq8064", "qcom,kpss-gcc", "syscon";
- 			reg		= <0x2011000 0x1000>;
- 		};
+ 	lower_offset = lower_offset_for_page(crypt_stat, page);
+-	enc_extent_virt = kmap(enc_extent_page);
++	enc_extent_virt = kmap_local_page(enc_extent_page);
+ 	rc = ecryptfs_write_lower(ecryptfs_inode, enc_extent_virt, lower_offset,
+ 				  PAGE_SIZE);
+-	kunmap(enc_extent_page);
++	kunmap_local(enc_extent_virt);
+ 	if (rc < 0) {
+ 		ecryptfs_printk(KERN_ERR,
+ 			"Error attempting to write lower page; rc = [%d]\n",
+@@ -514,10 +514,10 @@ int ecryptfs_decrypt_page(struct page *page)
+ 	BUG_ON(!(crypt_stat->flags & ECRYPTFS_ENCRYPTED));
  
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 996f4458d9fc..34b20b3d2243 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -780,11 +780,11 @@ tcsr: syscon@1a400000 {
- 		};
+ 	lower_offset = lower_offset_for_page(crypt_stat, page);
+-	page_virt = kmap(page);
++	page_virt = kmap_local_page(page);
+ 	rc = ecryptfs_read_lower(page_virt, lower_offset, PAGE_SIZE,
+ 				 ecryptfs_inode);
+-	kunmap(page);
++	kunmap_local(page_virt);
+ 	if (rc < 0) {
+ 		ecryptfs_printk(KERN_ERR,
+ 			"Error attempting to read lower page; rc = [%d]\n",
+diff --git a/fs/ecryptfs/read_write.c b/fs/ecryptfs/read_write.c
+index 60bdcaddcbe5..5edf027c8359 100644
+--- a/fs/ecryptfs/read_write.c
++++ b/fs/ecryptfs/read_write.c
+@@ -64,11 +64,11 @@ int ecryptfs_write_lower_page_segment(struct inode *ecryptfs_inode,
  
- 		l2cc: clock-controller@2011000 {
--			compatible = "qcom,kpss-gcc", "syscon";
-+			compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc", "syscon";
- 			reg = <0x2011000 0x1000>;
- 			clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
- 			clock-names = "pll8_vote", "pxo";
--			clock-output-names = "acpu_l2_aux";
-+			#clock-cells = <0>;
- 		};
+ 	offset = ((((loff_t)page_for_lower->index) << PAGE_SHIFT)
+ 		  + offset_in_page);
+-	virt = kmap(page_for_lower);
++	virt = kmap_local_page(page_for_lower);
+ 	rc = ecryptfs_write_lower(ecryptfs_inode, virt, offset, size);
+ 	if (rc > 0)
+ 		rc = 0;
+-	kunmap(page_for_lower);
++	kunmap_local(virt);
+ 	return rc;
+ }
  
- 		lcc: clock-controller@28000000 {
-diff --git a/arch/arm/boot/dts/qcom-mdm9615.dtsi b/arch/arm/boot/dts/qcom-mdm9615.dtsi
-index 4d4f37cebf21..216668b4f274 100644
---- a/arch/arm/boot/dts/qcom-mdm9615.dtsi
-+++ b/arch/arm/boot/dts/qcom-mdm9615.dtsi
-@@ -152,7 +152,7 @@ lcc: clock-controller@28000000 {
- 		};
+@@ -253,11 +253,11 @@ int ecryptfs_read_lower_page_segment(struct page *page_for_ecryptfs,
+ 	int rc;
  
- 		l2cc: clock-controller@2011000 {
--			compatible = "qcom,kpss-gcc", "syscon";
-+			compatible = "qcom,kpss-gcc-mdm9615", "qcom,kpss-gcc", "syscon";
- 			reg = <0x02011000 0x1000>;
- 		};
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8660.dtsi b/arch/arm/boot/dts/qcom-msm8660.dtsi
-index a258abb23a64..db90f336f029 100644
---- a/arch/arm/boot/dts/qcom-msm8660.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8660.dtsi
-@@ -391,7 +391,7 @@ vibrator@4a {
- 		};
- 
- 		l2cc: clock-controller@2082000 {
--			compatible	= "qcom,kpss-gcc", "syscon";
-+			compatible	= "qcom,kpss-gcc-msm8660", "qcom,kpss-gcc", "syscon";
- 			reg		= <0x02082000 0x1000>;
- 		};
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index 4a2d74cf01d2..a11a0fe7e0a9 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -63,7 +63,7 @@ cxo_board {
- 			clock-output-names = "cxo_board";
- 		};
- 
--		pxo_board {
-+		pxo_board: pxo_board {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <27000000>;
-@@ -148,8 +148,11 @@ clock-controller@4000000 {
- 		};
- 
- 		l2cc: clock-controller@2011000 {
--			compatible	= "qcom,kpss-gcc", "syscon";
-+			compatible	= "qcom,kpss-gcc-msm8960", "qcom,kpss-gcc", "syscon";
- 			reg		= <0x2011000 0x1000>;
-+			clocks		= <&gcc PLL8_VOTE>, <&pxo_board>;
-+			clock-names	= "pll8_vote", "pxo";
-+			#clock-cells	= <0>;
- 		};
- 
- 		rpm@108000 {
+ 	offset = ((((loff_t)page_index) << PAGE_SHIFT) + offset_in_page);
+-	virt = kmap(page_for_ecryptfs);
++	virt = kmap_local_page(page_for_ecryptfs);
+ 	rc = ecryptfs_read_lower(virt, offset, size, ecryptfs_inode);
+ 	if (rc > 0)
+ 		rc = 0;
+-	kunmap(page_for_ecryptfs);
++	kunmap_local(virt);
+ 	flush_dcache_page(page_for_ecryptfs);
+ 	return rc;
+ }
 -- 
 2.36.1
 
