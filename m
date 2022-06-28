@@ -2,75 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB38C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 15:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346642AbiF1PYz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
+        id S231124AbiF1PZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 11:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346971AbiF1PYw (ORCPT
+        with ESMTP id S1346653AbiF1PYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 11:24:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38D02DAA3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 08:24:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DE7761553
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F88C341CD;
-        Tue, 28 Jun 2022 15:24:44 +0000 (UTC)
-Date:   Tue, 28 Jun 2022 11:24:42 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     John 'Warthog9' Hawley <warthog9@eaglescrag.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: possible trace_printk() bug in v5.19-rc1
-Message-ID: <20220628112442.2b530c3b@gandalf.local.home>
-In-Reply-To: <25C37F40-7D8E-41C6-961F-0774C8138CCB@oracle.com>
-References: <F6C267B0-83EA-4151-A4EC-44482AC52C59@oracle.com>
-        <20220616113400.15335d91@gandalf.local.home>
-        <E309A098-DA06-490D-A75C-E6295C2987B9@oracle.com>
-        <20220617155019.373adda7@gandalf.local.home>
-        <3BAD2CD9-3A34-4140-A28C-0FE798B83C41@oracle.com>
-        <355D2478-33D3-4046-8422-E512F42C51BC@oracle.com>
-        <20220624190819.59df11d3@rorschach.local.home>
-        <3EB14A14-767B-4B66-9B28-97DDE7EECFD2@oracle.com>
-        <20220625134552.08c1a23a@rorschach.local.home>
-        <0bf1d366-348c-0f91-8f0a-fc9cc6228783@kernel.org>
-        <12417afa-331b-e0f6-a3b0-19623e38590b@eaglescrag.net>
-        <308F6A3B-1FB9-42CD-8239-12B0FD0F5FDB@oracle.com>
-        <20220627131140.56761db9@gandalf.local.home>
-        <25C37F40-7D8E-41C6-961F-0774C8138CCB@oracle.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 28 Jun 2022 11:24:53 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B7B2DAB5;
+        Tue, 28 Jun 2022 08:24:48 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id r133so13221204iod.3;
+        Tue, 28 Jun 2022 08:24:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eLyuLD15Aw0Be/kq7JIpgE2do6KM/UKTXxIdVTRE3sc=;
+        b=qERk90jaQ3zsjXchyCff82HyevmOvxF4+R6XNB0yFggouQ4mUlgCpwCcOdwCxw5x7k
+         zsXNYwVPpWZ8aJy79efKYk7M0MSLdGkV79eAbAvUq5sYpmvYFn5JjJRXOFMrU8Mvl2od
+         A0KeaSjEG1WmET6j4ouMZqBCzQ3/jroUCPwXBi6XTvPb/1EHk/f7ZGeQxVlb0/eqoo+q
+         vD7TRhvoAuU4sQUwHV9I9lK4WmfTjr6e2NVxCwh8kl1E31o9zOF2C6SoWWo7aXi5FNT6
+         Qf87jozrVf7NjIPhYGiu5/O48Yb0bH9imTvh1wL2Vp7iSMhKKS6EDaqs8R4enoGyAFt7
+         HGag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eLyuLD15Aw0Be/kq7JIpgE2do6KM/UKTXxIdVTRE3sc=;
+        b=VwWsqbE+iGaJq3XHzaCY4eYGrY1Ru0NoFbZaT6Z261cgL+IOKcqF9Tq9Q42bm8LUNF
+         ifKTm5JREt66RksHtRTA5K5wLUpiygm0hh0l2VsqjToHlOTeLOivrihOj7c566empnrd
+         KHLGPX4zkjEV2yV3z3zwy9IbZiy5/1yWJcWYhJMSJ04h3NFzwDX3d+2hhMdGvNHBilTn
+         PugwQgW/0h95XspHmqhFbwkrvfKrr0gytSwcHDFqO/KVMy9Z9k4zTU5/f3+CSKAVE+/3
+         ySB0ZVXkhWrUM1dpYg8w0IOEFvhRuFWqORmL5RUjqFqLV8O0vg0vczk7SMm0pl3VkXRx
+         sv5w==
+X-Gm-Message-State: AJIora9JKxegb/WlapMsDZCm7cl90YVjb7zUOjTqmy/0BHZNAJDw51RM
+        1rQbUo0nNm46SCyCDHgzwzWf8ikkaniBkQ==
+X-Google-Smtp-Source: AGRyM1ur49F6ppP1KpfkrUv5BG+7OUqsCfEqHbgDFghyK1MNyzHYSTMXncripVNXUchzJ3K67vQaGw==
+X-Received: by 2002:a05:6638:4195:b0:33c:ae8e:c240 with SMTP id az21-20020a056638419500b0033cae8ec240mr4193770jab.269.1656429888118;
+        Tue, 28 Jun 2022 08:24:48 -0700 (PDT)
+Received: from localhost.localdomain (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id p18-20020a056638217200b00339cae5cb8fsm6222596jak.103.2022.06.28.08.24.44
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 Jun 2022 08:24:47 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     alex.williamson@redhat.com, cohuck@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Schspa Shi <schspa@gmail.com>
+Subject: [PATCH v2] vfio: Clear the caps->buf to NULL after free
+Date:   Tue, 28 Jun 2022 23:24:29 +0800
+Message-Id: <20220628152429.286-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 27 Jun 2022 17:19:18 +0000
-Chuck Lever III <chuck.lever@oracle.com> wrote:
+API vfio_info_cap_add will free caps->buf, clear it to NULL after
+free.
 
-> > The symbol lookup problem still exists. What about the get_sockaddr() not
-> > processing?  
-> 
-> "trace-cmd report" no longer produces the get_sockaddr warning messages,
-> but tracepoints that use __get_sockaddr() still FAIL TO PARSE on my
-> system:
-> 
->             nfsd-1167  [005]   117.853235: nfsd_cb_probe:        [FAILED TO PARSE] state=0x1 cl_boot=1656349219 cl_id=3054917767 addr=ARRAY[02, 00, 00, 00, c0, a8, 02, 43, 00, 00, 00, 00, 00, 00, 00, 00]
->    kworker/u24:2-985   [003]   117.853368: nfsd_cb_setup:        [FAILED TO PARSE] cl_boot=1656349219 cl_id=3054917767 authflavor=0x1 addr=ARRAY[02, 00, 00, 00, c0, a8, 02, 43, 00, 00, 00, 00, 00, 00, 00, 00] netid=rdma
->    kworker/u24:2-985   [003]   117.853370: nfsd_cb_state:        [FAILED TO PARSE] state=0x0 cl_boot=1656349219 cl_id=3054917767 addr=ARRAY[02, 00, 00, 00, c0, a8, 02, 43, 00, 00, 00, 00, 00, 00, 00, 00]
-> 
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+---
+ drivers/vfio/vfio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I remember writing a patch to fix this, but it looks to never have been
-applied. And worse yet, I can't find it :-/
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 61e71c1154be..a0fb93866f61 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1812,6 +1812,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
+ 	if (!buf) {
+ 		kfree(caps->buf);
++		caps->buf = NULL;
+ 		caps->size = 0;
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+-- 
+2.24.3 (Apple Git-128)
 
-Oh well, I guess I just need to write it again.
-
--- Steve
