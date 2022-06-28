@@ -2,91 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F4B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbiF1ToP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        id S229945AbiF1Tox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiF1Tns (ORCPT
+        with ESMTP id S232315AbiF1Toe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:43:48 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA5E3FD90;
-        Tue, 28 Jun 2022 12:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656444904; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8ZFWrplxgeK81PZ17A7+6OYx0jA+Vvk198LQfz5y7DU=;
-        b=raa6QRnLYnT1wKKeL7INXr9bc1nzAQ84Zi8arVzIFwuknxM1FFvMHH+HVftDjadIcg8Fv/
-        0HgYV+OzNfYetIfLde9VtZq6xuDrQtnHFM5w4XTInQLfLO53yKKsl3gGvXHLBcZ0uTmjvf
-        2a/Dfp+Vf2FDMR5qn+BLSsN8eAkBGqU=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 8/8] watchdog: wdat_wdt: Remove #ifdef guards for PM related functions
-Date:   Tue, 28 Jun 2022 20:34:49 +0100
-Message-Id: <20220628193449.160585-9-paul@crapouillou.net>
-In-Reply-To: <20220628193449.160585-1-paul@crapouillou.net>
-References: <20220628193449.160585-1-paul@crapouillou.net>
+        Tue, 28 Jun 2022 15:44:34 -0400
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A206F3C71F;
+        Tue, 28 Jun 2022 12:37:21 -0700 (PDT)
+Received: by mail-il1-f178.google.com with SMTP id a7so3764855ilj.2;
+        Tue, 28 Jun 2022 12:37:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cO3ERK4XtbJUrNznv3o2iz6iblK9YD2fF9VbD6eP290=;
+        b=bRBf8yD3xU6YnLnP3cf5rKY9/QNBioiHm/blJBqW+hjTgO33PjDqsCGSHfnRyKNgOM
+         cXwor9UjBBfc4HCkHj6Ah1T8c2I3yJcMSsQtUGdovNk8W+bg0AaevPV/QdUT6/cIt8M6
+         fSq8p7qiPFv1Zm1J1lSoVxwLT46Tqbf9bodeEG1wbAyUp/mB5pnwTatUGJLkIRHacE85
+         Gn/X2IUHmHM7ZMYLwWvMAswFzkS0ybnC53KvPTkxDvJkhhlnIZodANy7i3MJTd+Y/V1M
+         +XMCIpLA17ZI1I61obPRLgFxVKe5IfkYPePNC+qVOKg9z62atPacuMqf+LFT+faUQxvW
+         11aA==
+X-Gm-Message-State: AJIora9SRQItduYXhc/D7LS4lfdFtM0UB4a3lP5d54ZZFW7BHgWnBrSl
+        RcKEaZ6k/m+emNdUBjfDfA==
+X-Google-Smtp-Source: AGRyM1tWmrYkETu7J79v1CMzaMfG8jQE/J3ICVZ7PYuE+lwFA6fFbPDw1GpXcmEA8PpxTOE+0bCtFQ==
+X-Received: by 2002:a05:6e02:190c:b0:2d6:5c98:d0e5 with SMTP id w12-20020a056e02190c00b002d65c98d0e5mr11018037ilu.193.1656445040891;
+        Tue, 28 Jun 2022 12:37:20 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id v17-20020a056e020f9100b002d6d8398e88sm6166005ilo.70.2022.06.28.12.37.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 12:37:20 -0700 (PDT)
+Received: (nullmailer pid 852286 invoked by uid 1000);
+        Tue, 28 Jun 2022 19:37:19 -0000
+Date:   Tue, 28 Jun 2022 13:37:19 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, michals@xilinx.com,
+        bhelgaas@google.com, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, lorenzo.pieralisi@arm.com
+Subject: Re: [PATCH v5 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5
+ Root Port
+Message-ID: <20220628193719.GA852253-robh@kernel.org>
+References: <20220621113653.2354462-1-bharat.kumar.gogada@xilinx.com>
+ <20220621113653.2354462-2-bharat.kumar.gogada@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621113653.2354462-2-bharat.kumar.gogada@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new NOIRQ_SYSTEM_SLEEP_PM_OPS() and pm_sleep_ptr() macros to
-handle the .suspend/.resume callbacks.
+On Tue, 21 Jun 2022 17:06:52 +0530, Bharat Kumar Gogada wrote:
+> Xilinx Versal Premium series has CPM5 block which supports Root Port
+> functionality at Gen5 speed.
+> 
+> Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
+> 
+> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+> ---
+>  .../bindings/pci/xilinx-versal-cpm.yaml       | 38 ++++++++++++++++++-
+>  1 file changed, 37 insertions(+), 1 deletion(-)
+> 
 
-These macros allow the suspend and resume functions to be automatically
-dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-to use #ifdef guards. Not using #ifdef guards means that the code is
-always compiled independently of any Kconfig option, and thanks to that
-bugs and regressions are easier to catch.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/watchdog/wdat_wdt.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-index e6f95e99156d..aeadaa07c891 100644
---- a/drivers/watchdog/wdat_wdt.c
-+++ b/drivers/watchdog/wdat_wdt.c
-@@ -467,7 +467,6 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 	return devm_watchdog_register_device(dev, &wdat->wdd);
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int wdat_wdt_suspend_noirq(struct device *dev)
- {
- 	struct wdat_wdt *wdat = dev_get_drvdata(dev);
-@@ -528,18 +527,16 @@ static int wdat_wdt_resume_noirq(struct device *dev)
- 
- 	return wdat_wdt_start(&wdat->wdd);
- }
--#endif
- 
- static const struct dev_pm_ops wdat_wdt_pm_ops = {
--	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(wdat_wdt_suspend_noirq,
--				      wdat_wdt_resume_noirq)
-+	NOIRQ_SYSTEM_SLEEP_PM_OPS(wdat_wdt_suspend_noirq, wdat_wdt_resume_noirq)
- };
- 
- static struct platform_driver wdat_wdt_driver = {
- 	.probe = wdat_wdt_probe,
- 	.driver = {
- 		.name = "wdat_wdt",
--		.pm = &wdat_wdt_pm_ops,
-+		.pm = pm_sleep_ptr(&wdat_wdt_pm_ops),
- 	},
- };
- 
--- 
-2.35.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
