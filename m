@@ -2,73 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47ED0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63528C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346098AbiF1NPj (ORCPT
+        id S1346097AbiF1NPn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
+        Tue, 28 Jun 2022 09:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344517AbiF1NP3 (ORCPT
+        with ESMTP id S1346071AbiF1NPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:15:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58ECF31236;
+        Tue, 28 Jun 2022 09:15:31 -0400
+Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEE33135C;
+        Tue, 28 Jun 2022 06:15:28 -0700 (PDT)
+Received: by mail-io1-f42.google.com with SMTP id u20so12765660iob.8;
+        Tue, 28 Jun 2022 06:15:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=eoO/x7bu4aRqXGjs88nzeRONL3YMYzeWgMsbV8yMbpY=;
+        b=GqnlDCteBaxHcmNyqFKO4yDJRQ7CFaXvj6C56+crQit8n8o1bnesLY6XQM0o3tx4zP
+         sg52qHkT0infg/vWhL3TWXQZmqHTikespCPh1YkkNmiEhtRcP7KSvnNik1skvYi5od0w
+         ctJ0o9ZhYk6n9bohAas3P/LAzeYJWukv1bQKyJjQ1AeABmXH5w6TnpYAZudCcVCInNsR
+         Y+pkJd8ZomHss5OfsjCY8vX+IpMJ72XQeyMhNGOx8vVJ+sA8N4yDZxlYRMetPpu5UujG
+         LHWTl7VX3lHhnMNTcyTmrWAUFxYbDh/6GkNwQ6sFMhWMvrtsWGfOyFR0r40E78LVd3Uu
+         06Yg==
+X-Gm-Message-State: AJIora8lNdb+rDGn/geC6qdY4fSqH2GzikO5BFT94woGNbFBrwj1GeQY
+        l8Yng8NZoyo3Xd6V8FrmG1yo1UVXAA==
+X-Google-Smtp-Source: AGRyM1uLRQIsoQb/m55If6Pna11BMZb9W0F/Ss94rf+Kxx2UN5mK1VltXoovNGgZqa3DJA5DrrhtYQ==
+X-Received: by 2002:a6b:3f8a:0:b0:672:77f8:c000 with SMTP id m132-20020a6b3f8a000000b0067277f8c000mr9507935ioa.11.1656422128117;
+        Tue, 28 Jun 2022 06:15:28 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id b15-20020a056602218f00b00669b2ffad32sm6640154iob.54.2022.06.28.06.15.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 28 Jun 2022 06:15:27 -0700 (PDT)
-Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQ5V2PZCzkWg9;
-        Tue, 28 Jun 2022 21:13:34 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500023.china.huawei.com
- (7.221.188.76) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 21:15:23 +0800
-From:   Peng Wu <wupeng58@huawei.com>
-To:     <clement.leger@bootlin.com>, <andrew@lunn.ch>,
-        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
-        <olteanv@gmail.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <linux-renesas-soc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <liwei391@huawei.com>,
-        <wupeng58@huawei.com>
-Subject: [PATCH] net: dsa: rzn1-a5psw: fix a NULL vs IS_ERR() check in a5psw_probe()
-Date:   Tue, 28 Jun 2022 13:09:20 +0000
-Message-ID: <20220628130920.49493-1-wupeng58@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500023.china.huawei.com (7.221.188.76)
-X-CFilter-Loop: Reflected
+Received: (nullmailer pid 313748 invoked by uid 1000);
+        Tue, 28 Jun 2022 13:15:23 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     miquel.raynal@bootlin.com, richard@nod.at, tlanger@maxlinear.com,
+        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        vigneshr@ti.com, linux-kernel@vger.kernel.org,
+        rtanwar@maxlinear.com
+In-Reply-To: <20220628112731.2041976-2-martin.blumenstingl@googlemail.com>
+References: <20220628112731.2041976-1-martin.blumenstingl@googlemail.com> <20220628112731.2041976-2-martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH RFC v1 1/8] dt-bindings: mtd: intel: lgm-nand: Fix compatible string
+Date:   Tue, 28 Jun 2022 07:15:23 -0600
+Message-Id: <1656422123.522235.313747.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The devm_platform_ioremap_resource() function never returns NULL.
-It returns error pointers.
+On Tue, 28 Jun 2022 13:27:24 +0200, Martin Blumenstingl wrote:
+> The driver which was added at the same time as the dt-bindings uses the
+> compatible string "intel,lgm-ebunand". Use the same compatible string
+> also in the dt-bindings.
+> 
+> Fixes: 2f9cea8eae44f5 ("dt-bindings: mtd: Add Nand Flash Controller support for Intel LGM SoC")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  Documentation/devicetree/bindings/mtd/intel,lgm-nand.yaml | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Reported-by: Hulk Robot <hulkci@huawei.com>
----
- drivers/net/dsa/rzn1_a5psw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-index 3e910da98ae2..5b14e2ba9b79 100644
---- a/drivers/net/dsa/rzn1_a5psw.c
-+++ b/drivers/net/dsa/rzn1_a5psw.c
-@@ -946,8 +946,8 @@ static int a5psw_probe(struct platform_device *pdev)
- 	mutex_init(&a5psw->lk_lock);
- 	spin_lock_init(&a5psw->reg_lock);
- 	a5psw->base = devm_platform_ioremap_resource(pdev, 0);
--	if (!a5psw->base)
--		return -EINVAL;
-+	if (IS_ERR(a5psw->base))
-+		return PTR_ERR(a5psw->base);
- 
- 	ret = a5psw_pcs_get(a5psw);
- 	if (ret)
--- 
-2.17.1
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/mtd/intel,lgm-nand.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/mtd/intel,lgm-nand.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
