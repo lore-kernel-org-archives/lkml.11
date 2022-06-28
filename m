@@ -2,108 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C80C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 23:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2215CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 23:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231951AbiF1XJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 19:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
+        id S231975AbiF1XKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 19:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiF1XJ4 (ORCPT
+        with ESMTP id S231949AbiF1XJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 19:09:56 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CC3369C4
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 16:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656457796; x=1687993796;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wUj6mi1i6Mz/4b+vZQugUFHfysI4IESJ2PixHryeAeU=;
-  b=B0zdXFsxm21GEjx5vaHsZ9FkPwmna9h7kmj0GafmcvcANehqIE+v3oE9
-   j85lR9CsHIRwAvRvlffjCxeJmhRk7RLiy0O5Wy3V8xtnxIeIASpkI7Vwr
-   akokzJcgCY3a9j0uMJrzGuLqRioDNKOnkYGjuVgUU3feei2qBMBWCDXFm
-   epSx8W9LqNCejhCJHeM36Hmjb84S9u6PJtxs2aZp3E8R6dwxDX/i25b39
-   5cd23TcMZtxAY+6Cd9hmmFGrXLebUw2tmNNlA8HNQNUfJlZ8wTzKuINim
-   cXo55v9KTXNL7a4yNfcfwoseIP30Zk0yE/QuARTTHp0CpaVRUsYBKbkEa
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="270634542"
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="270634542"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 16:09:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="732941827"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Jun 2022 16:09:39 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o6KKw-000Aj8-SK;
-        Tue, 28 Jun 2022 23:09:38 +0000
-Date:   Wed, 29 Jun 2022 07:08:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Moti Haimovski <mhaimovski@habana.ai>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Oded Gabbay <ogabbay@kernel.org>
-Subject: [ogabbay:gaudi2 60/61]
- drivers/misc/habanalabs/common/mmu/mmu.c:998:19: sparse: sparse: non
- size-preserving integer to pointer cast
-Message-ID: <202206290743.xHHvh1c5-lkp@intel.com>
+        Tue, 28 Jun 2022 19:09:58 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F432CC89;
+        Tue, 28 Jun 2022 16:09:57 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 0E8151FD8B;
+        Tue, 28 Jun 2022 23:09:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1656457796; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z3EDuY+Ya/PyFfjJ28NCPihRwor6RW8Z8zdG/gLgK3Q=;
+        b=Sv4Z/Ucqnzxl9V2xY3v4TjVTDL8wkk7iSPL5afSMenPwWpDR7POZyGarhs2fXPNhsQeqpm
+        zDkbN8MGW5V5Di8+n+a064ETw+AytqpYlziiNOz7eSFn2y0AqN28Hw5eP26y0fn6JkFSyj
+        jJzG0KCLtjt+aG8F/C/TZIWrVaLMUAw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1656457796;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z3EDuY+Ya/PyFfjJ28NCPihRwor6RW8Z8zdG/gLgK3Q=;
+        b=GO9X1yOdSv5OwL9cdYiokZIrPweeF5p+CR/f+Pb49OnwqA0q5O/dAcmfxYsoJCnkjt9YdZ
+        WHVQvfSTvSDl0YDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CC530139E9;
+        Tue, 28 Jun 2022 23:09:53 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id PYCQIUGKu2KUJAAAMHmgww
+        (envelope-from <neilb@suse.de>); Tue, 28 Jun 2022 23:09:53 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+From:   "NeilBrown" <neilb@suse.de>
+To:     "Chuck Lever III" <chuck.lever@oracle.com>
+Cc:     "Al Viro" <viro@zeniv.linux.org.uk>,
+        "Daire Byrne" <daire@dneg.com>,
+        "Trond Myklebust" <trond.myklebust@hammerspace.com>,
+        "Linux NFS Mailing List" <linux-nfs@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "LKML" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 08/12] nfsd: allow parallel creates from nfsd
+In-reply-to: <CF45DA56-C7C7-434C-A985-A0FE08703F8D@oracle.com>
+References: <165516173293.21248.14587048046993234326.stgit@noble.brown>,
+ <165516230200.21248.15108802355330895562.stgit@noble.brown>,
+ <CF45DA56-C7C7-434C-A985-A0FE08703F8D@oracle.com>
+Date:   Wed, 29 Jun 2022 09:09:50 +1000
+Message-id: <165645779028.15378.2009203210771986783@noble.neil.brown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2
-head:   f645d04ce63b73c46a8839a621e34a28f1b2a7ba
-commit: 374bb7eeacb91bc4e53fc429c17d1d55c0e1fc6b [60/61] habanalabs: add gaudi2 MMU support
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220629/202206290743.xHHvh1c5-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-31-g4880bd19-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=374bb7eeacb91bc4e53fc429c17d1d55c0e1fc6b
-        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
-        git fetch --no-tags ogabbay gaudi2
-        git checkout 374bb7eeacb91bc4e53fc429c17d1d55c0e1fc6b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/misc/
+On Wed, 29 Jun 2022, Chuck Lever III wrote:
+>=20
+> > On Jun 13, 2022, at 7:18 PM, NeilBrown <neilb@suse.de> wrote:
+> > diff --git a/fs/nfsd/nfsfh.c b/fs/nfsd/nfsfh.c
+> > index c29baa03dfaf..a50db688c60d 100644
+> > --- a/fs/nfsd/nfsfh.c
+> > +++ b/fs/nfsd/nfsfh.c
+> > @@ -616,7 +616,7 @@ fh_update(struct svc_fh *fhp)
+> >  * @fhp: file handle to be updated
+> >  *
+> >  */
+> > -void fh_fill_pre_attrs(struct svc_fh *fhp)
+> > +void fh_fill_pre_attrs(struct svc_fh *fhp, bool atomic)
+>=20
+> Hi Neil, just noticed this:
+>=20
+>   CC [M]  fs/nfsd/nfsfh.o
+>   CHECK   /home/cel/src/linux/linux/fs/nfsd/nfsfh.c
+> /home/cel/src/linux/linux/fs/nfsd/nfsfh.c:621: warning: Function parameter =
+or member 'atomic' not described in 'fh_fill_pre_attrs'
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks.  I"ll address that, and also the other issues that you raised in
+your patch-by-patch review.  Thanks for those.
 
+>=20
+> And... do you intend to repost this series with the supplemental
+> fixes applied?
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/misc/habanalabs/common/mmu/mmu.c:998:19: sparse: sparse: non size-preserving integer to pointer cast
+I've been a bit distracted this week, but my current plan is to
+reorganise the patches to put as many of the NFS and NFSD patches as
+possible before the VFS patches.  There should then just be one each for
+NFS and NFSD after the VFS changes.  I hope to post that series early
+next week.
 
-vim +998 drivers/misc/habanalabs/common/mmu/mmu.c
+>=20
+> Should we come up with a plan to merge these during the next
+> window, or do you feel more work is needed?
 
-   980	
-   981	/**
-   982	 * hl_mmu_hr_write_pte() - write HR PTE
-   983	 * @ctx: pointer to the context structure
-   984	 * @pgt_info: HOP's page table info structure
-   985	 * @phys_pte_addr: phys PTE address
-   986	 * @val: raw PTE data
-   987	 * @hop_table_size: HOP table size
-   988	 */
-   989	void hl_mmu_hr_write_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info, u64 phys_pte_addr,
-   990									u64 val, u32 hop_table_size)
-   991	{
-   992		/*
-   993		 * The value to write is the phys address of the next hop +
-   994		 * flags at the 12 LSBs.
-   995		 */
-   996		u64 virt_addr = hl_mmu_hr_pte_phys_to_virt(ctx, pgt_info, phys_pte_addr, hop_table_size);
-   997	
- > 998		*((u64 *) virt_addr) = val;
-   999	}
-  1000	
+I think it would be reasonable to merge the preliminary NFS and NFSD
+patches in the next window.  I'd really like to hear from Al before
+pushing the rest too hard.  Probably after rc1 I'll post the remainder
+of the series and include Linus if we haven't heard from Al.  I'd be
+perfectly happy if the main content of the series landed in the
+subsequent merge window.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+NeilBrown
