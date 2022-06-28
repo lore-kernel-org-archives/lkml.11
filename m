@@ -2,113 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA12C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A92C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 08:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245035AbiF1IcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
+        id S1343917AbiF1IdV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241877AbiF1IcP (ORCPT
+        with ESMTP id S243975AbiF1IdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:32:15 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CE62D1D8;
-        Tue, 28 Jun 2022 01:32:13 -0700 (PDT)
+        Tue, 28 Jun 2022 04:33:19 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDA42B26A
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 01:33:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405133; x=1687941133;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=2kqXa/uuLryKUFs3CLbGBD4etwbcUy4VHXIUo9tYGK4=;
-  b=LEVPB3/vXo+at6YRCU8O0vDKzzxD2b8WiylDwv6IZ/j3wVXsKiTELTAL
-   6AdS0clRVgvYc0bNHuq1g3iHegZW+qx4yODv3caqZ6GSLYCTbjxRLGg+k
-   n1QfU5pl04jkfCfW6dBY7lPGRbiM69X1U7AUQ5GxXSgjRqLXFHWrSi3oy
-   LAE5ZXaHtAE3PW89P86ITAjX1vw7xPyDl/PT0v2n8aYuRzC3sagdu467e
-   CJd45vSeabwfhL65mPsq+5TKHWi7xnyjpFuejxSdBXihKKcEMSI++gHTc
-   3utqS9PDS6voCnP4fk2fRPYkzqBb75c5u+05B+lX9NMwlFZqrE0W78HtF
+  t=1656405198; x=1687941198;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=PqOZK4p5iy5VlTvZkF+x67ZPH9QxdCWJtvI/8U16WnI=;
+  b=HJe8yvAB2dHJn/Di9dyPzM6p5oszldxamStj/LMhtoROswyjjP86Nbw7
+   HLDYlxJToM/p3rWBojYqPuLHOJccelx/G2UcUQSPkZKDJxirZhoBo+tIi
+   bc14fdhym6I19wVBb5+y0XmJMoXvbsUp0zGVQeSuC0l8Df0QdsSifkvS+
+   ng0GJC1uo9uN+3GjOUC2uvqs9hYqtjIUEOeEDGSMcghIxQTqAgJ3cTguh
+   6gEASqM2BprQnEEjd+QUggnGI6OwMlf5AAwFxTuI+XxvtJ4SVCjoaF19m
+   asaNBkA5dvZrhwtrJLYbu1+VzV4ff3Rwm5jkdMQZ+SQQBL3UwS1LcWrBd
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="264716123"
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="367987900"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="264716123"
+   d="scan'208";a="367987900"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:32:13 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:33:18 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646818234"
-Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:32:09 -0700
-Date:   Tue, 28 Jun 2022 11:31:50 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-In-Reply-To: <067e6fa2-6015-2eea-5719-8b75fb08882c@gmx.de>
-Message-ID: <9239f2ea-1a1c-ff27-70b9-931ab99c16@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-3-LinoSanfilippo@gmx.de> <20220625195844.GB2879@wunner.de> <067e6fa2-6015-2eea-5719-8b75fb08882c@gmx.de>
+   d="scan'208";a="646818500"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 28 Jun 2022 01:33:16 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o66eq-0009lT-2Q;
+        Tue, 28 Jun 2022 08:33:16 +0000
+Date:   Tue, 28 Jun 2022 16:32:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>
+Subject: [hare-scsi-devel:auth.v15 10/11] drivers/nvme/target/auth.c:491:18:
+ warning: format specifies type 'unsigned long' but the argument has type
+ 'size_t' (aka 'unsigned int')
+Message-ID: <202206281641.MOCcvNmX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 26 Jun 2022, Lino Sanfilippo wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git auth.v15
+head:   2a3a7d0493841ac5944dc0ba861b53d1c2b28014
+commit: 59e3ea5fe9113bf2026d17fc969d69001bc1b746 [10/11] nvmet-auth: Diffie-Hellman key exchange support
+config: riscv-randconfig-c006-20220627 (https://download.01.org/0day-ci/archive/20220628/202206281641.MOCcvNmX-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 016342e319fd31e41cf5ed16a6140a8ea2de74dd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=59e3ea5fe9113bf2026d17fc969d69001bc1b746
+        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
+        git fetch --no-tags hare-scsi-devel auth.v15
+        git checkout 59e3ea5fe9113bf2026d17fc969d69001bc1b746
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/nvme/target/
 
-> On 25.06.22 at 21:58, Lukas Wunner wrote:
-> > On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
-> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>
-> >> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> >> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> >> since the concerning GPIO expander is connected via SPI or I2C).
-> >>
-> >> Fix this by setting the termination line outside of the uart_port spinlock
-> >> in the serial core.
-> > [...]
-> >> --- a/drivers/tty/serial/serial_core.c
-> >> +++ b/drivers/tty/serial/serial_core.c
-> >> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port *port,
-> >>  	if (ret)
-> >>  		return ret;
-> >>  	uart_sanitize_serial_rs485(port, &rs485);
-> >> +	uart_set_rs485_termination(port, &rs485);
-> >>
-> >>  	spin_lock_irqsave(&port->lock, flags);
-> >>  	ret = port->rs485_config(port, &rs485);
-> >
-> > That's one way to solve the issue.  Another would be to push
-> > acquisition of the port spinlock down into drivers.
-> >
-> > I think in most drivers we don't need to take the port spinlock at all
-> > or only for a few specific register accesses.  So taking the lock here
-> > in the midlayer is likely unwarranted.  However, changing that requires
-> > going through every single driver's ->rs485_config() callback and
-> > checking whether it needs the lock or not.
-> 
-> As a first step its sufficient to take the lock in each drivers rs485_config()
-> function and remove it from uart_set_rs485_config(). Then after time sort out
-> the drivers that dont require the lock and remove it from their function.
-> 
-> However the point of this patch was also to generalize the handling of the
-> termination GPIO, so I would still see this placed in uart_set_rs485_config().
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Additional thing to consider is that core currently handles also the 
-port->rs485 assignment under spinlock when ->rs485_config() was 
-successful. TIOCSRS485 ioctl calls are synchronized by other primitives 
-wrt. each other (port mutex and now also termios_rwsem) but drivers 
-probably would like to see consistent rs485 which can only be realized by 
-holding port->lock.
+All warnings (new ones prefixed by >>):
 
+>> drivers/nvme/target/auth.c:491:18: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
+                           ctrl->cntlid, ctrl->dh_keysize, buf_size);
+                                         ^~~~~~~~~~~~~~~~
+   include/linux/printk.h:528:37: note: expanded from macro 'pr_warn'
+           printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
+                                      ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:475:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:447:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   fatal error: too many errors emitted, stopping now [-ferror-limit=]
+   1 warning and 20 errors generated.
+
+
+vim +491 drivers/nvme/target/auth.c
+
+   478	
+   479	int nvmet_auth_ctrl_exponential(struct nvmet_req *req,
+   480					u8 *buf, int buf_size)
+   481	{
+   482		struct nvmet_ctrl *ctrl = req->sq->ctrl;
+   483		int ret = 0;
+   484	
+   485		if (!ctrl->dh_key) {
+   486			pr_warn("ctrl %d no DH public key!\n", ctrl->cntlid);
+   487			return -ENOKEY;
+   488		}
+   489		if (buf_size != ctrl->dh_keysize) {
+   490			pr_warn("ctrl %d DH public key size mismatch, need %lu is %d\n",
+ > 491				ctrl->cntlid, ctrl->dh_keysize, buf_size);
+   492			ret = -EINVAL;
+   493		} else {
+   494			memcpy(buf, ctrl->dh_key, buf_size);
+   495			pr_debug("%s: ctrl %d public key %*ph\n", __func__,
+   496				 ctrl->cntlid, (int)buf_size, buf);
+   497		}
+   498	
+   499		return ret;
+   500	}
+   501	
 
 -- 
- i.
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
