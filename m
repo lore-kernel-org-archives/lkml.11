@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D316C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245018AbiF1CbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40030 "EHLO
+        id S245257AbiF1Cb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244596AbiF1C1a (ORCPT
+        with ESMTP id S244620AbiF1C1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B093225C65;
-        Mon, 27 Jun 2022 19:24:56 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB65C25C74;
+        Mon, 27 Jun 2022 19:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29E176172F;
-        Tue, 28 Jun 2022 02:24:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCB83C385A5;
-        Tue, 28 Jun 2022 02:24:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EEB2B81C0B;
+        Tue, 28 Jun 2022 02:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BDE1C36AE2;
+        Tue, 28 Jun 2022 02:25:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383095;
-        bh=anLhliyHGY0kXL0L8OJyHWPAZjs0KG+Pn8XaiHcCoq8=;
+        s=k20201202; t=1656383101;
+        bh=vqAIaDWW3iv2j339ceMXd+UQ8Tm0iyh9/X6XHm3k25s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rZGUK2xLFoHic0/3wcr+WLBcDmvRjBCjdkWU1/HRmPI6wRGrQntM7qfpifr52/tB+
-         oQuQw0+cRLrOQLiNkvflfZz+DclqSTOBYBiJ5g2kKQnvbDo8VF5tHY205+hIqLTx7Z
-         qZgEEWKCh1w/Ui9n+1G41SeyqA8hi7Do18gUup8Il5iCzNkqRUsanh3/0DJh8EwA2m
-         t9lD1cLViVUEt0pakT3sLAtX+TxYRslQEUkqOwJ+tCtcGZva7Udcozd/TQKsHDB2F/
-         IJZil1Z/87GqrGiIe55YfyVMRGQ7a3smu2j0ytAkl+CJqB6gdZjtaPgq+bNR+1Szna
-         7zQmBQNiPdvZQ==
+        b=nFDfTI9E8vsS4XETH0t0448pT13XvrimGHzNsDifMtTabTKa6okMt+ERClO69/g0F
+         6eQKtlfiOZTLMq862rJBUjbAC0X5UaKEGN9XmcMmXSfu85JatffYBNp+HJL8hulVPy
+         s1+m4Uvo8ttXuks6jvabRvkjYupQBnB/g7Q10LartBRkvmiSBckCnCiAKChk6W1Gi5
+         zzAcsJoSx6V0KX06tlTnoSlUl64+9071ZTia2UNQP6P5Ky347Fj67arLi2TvwDJ67Y
+         lZSr8sPLKoLVyBryQRb8hMT8f9+WSq+DDa+UOSUj030YFQ/JKa+Nr+/IegXo9iJfN1
+         41tgBWFSWlGiA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Liang He <windhl@126.com>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>, john@phrozen.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/27] mips: ralink: Fix refcount leak in of.c
-Date:   Mon, 27 Jun 2022 22:24:04 -0400
-Message-Id: <20220628022413.596341-18-sashal@kernel.org>
+        xkernel.wang@foxmail.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 20/27] mips: lantiq: xway: Fix refcount leak bug in sysctrl
+Date:   Mon, 27 Jun 2022 22:24:06 -0400
+Message-Id: <20220628022413.596341-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
@@ -54,32 +54,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 48ca54e39173d1ed4c4dc8cf045484014bb26eaf ]
+[ Upstream commit 76695592711ef1e215cc24ed3e1cd857d7fc3098 ]
 
-In plat_of_remap_node(), plat_of_remap_node() will return a node
-pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+In ltq_soc_init(), of_find_compatible_node() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
 Signed-off-by: Liang He <windhl@126.com>
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/ralink/of.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/mips/lantiq/xway/sysctrl.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/mips/ralink/of.c b/arch/mips/ralink/of.c
-index e2c71c6c667d..a5ebc376ff11 100644
---- a/arch/mips/ralink/of.c
-+++ b/arch/mips/ralink/of.c
-@@ -40,6 +40,8 @@ __iomem void *plat_of_remap_node(const char *node)
- 	if (of_address_to_resource(np, 0, &res))
- 		panic("Failed to get resource for %s", node);
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index 6c2d9779ac72..c5eb7830bab1 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -437,6 +437,10 @@ void __init ltq_soc_init(void)
+ 			of_address_to_resource(np_ebu, 0, &res_ebu))
+ 		panic("Failed to get core resources");
  
-+	of_node_put(np);
++	of_node_put(np_pmu);
++	of_node_put(np_cgu);
++	of_node_put(np_ebu);
 +
- 	if (!request_mem_region(res.start,
- 				resource_size(&res),
- 				res.name))
+ 	if (!request_mem_region(res_pmu.start, resource_size(&res_pmu),
+ 				res_pmu.name) ||
+ 		!request_mem_region(res_cgu.start, resource_size(&res_cgu),
 -- 
 2.35.1
 
