@@ -2,137 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5016C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73233CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344434AbiF1NvH (ORCPT
+        id S1346962AbiF1Nww (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
+        Tue, 28 Jun 2022 09:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236414AbiF1NvE (ORCPT
+        with ESMTP id S1346915AbiF1Nwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:51:04 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C0C1F635
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:51:03 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id i25so12289439wrc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:51:03 -0700 (PDT)
+        Tue, 28 Jun 2022 09:52:49 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D544B25
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:52:49 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31bf327d4b5so28369937b3.13
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:52:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=CuCbBwkvPnJNnIdbwpSf7SFi7ylwDdTKSQ4thFgSXMQ=;
-        b=jobcASpV9i7JAhttUMV5Qfwdjs4GAg+t7XuLGiCS3dZ0qTRZeDHlFwNyjDX7BC3VTS
-         AroWtyAGMcY5qngbW0OneRSAd85GlXJSCSDWbZ9gTvkqcpUvW0rflbm6IBCBnxyeEJ5Q
-         3pOADyf6RUyQrw4W85auTePIZCceM+VYNOY32NJL0BPenAK6vYg2X3CDrltNnYfdTI0L
-         gEZxqRiELzwhhoUCeEZWdBE6qya+gEj7UvgYWhKDxqq1TxJvh4UWaw1+EXzt7QCc35eN
-         xBQj+Sgf8WQUKdaJYOj5p2fC1rfk/8D1/+015yQJDuilu5L5fNOx4F+FyjanYJPCuoQ+
-         a+tw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9upcBG0MMkWjokT486LIbH25iwXepLGTqHnlYogNOEY=;
+        b=NcSg2PNgj9jzoGvu0M+Ne6MJkj3SU7Cyyf74+X1VWhPOM/JZ3QtfuYLUlbRYnpUKfD
+         j9zSF7BulNjjY5isG6haWnfY7PSEa1HpcHMPmkq7ICp/nQYMN9yns9a4wrNOxGsWIV5N
+         fj/TFcRcnckkPIvIFrw4rr6LAWgozasMh2vTJRfQM9v493ghlTY8LrkUiUsRYUsaGCFV
+         EcnzeXjBJ1Yjh3LhbHmqq+gaA+NoUMv3pzTU2VH6Rv5En0kSMFODZmIIbplwYUbXSBiV
+         dZTTrTa6XY7oLPZGTWGVZxmPV124tcc7Q7BqM9YPsERic4J9U8CzTPOJZboaKIM6WxaT
+         c/Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=CuCbBwkvPnJNnIdbwpSf7SFi7ylwDdTKSQ4thFgSXMQ=;
-        b=642pUNn58NEC02RjSUR44lbuhZUfPohWRwWRYUs1LkQNVy2O56083H6H/bpo5zKW7I
-         0oth9kQzD/IJcqweKo5/T158Km5W5Yu1ap7tqawYU2DJRkMSkrG/1J56ZFeTebE21SBy
-         B0HX7VObJJExN8XuZIM6yX4vnU2ogsr4ok0m56skZU/O6DlWNzYEV6kGiK4gNZRyhXWh
-         idr2ugm7flxAvyPPaXX30W+VLXzCEzs/8lcqntT3QepcnCyTIVLGR/5ZIRInFkQ9F02l
-         GYMhPieqHF2zmoErKNJiKYQR4JksuipIOfJhGHbfovMMKHCWQ2zwHh1+rcoYO8p2V0Up
-         A3gA==
-X-Gm-Message-State: AJIora/bUw+tGKS/DsoelE4Q+bOYdmKmy9c14NPQasQuzHX6brT4zUeZ
-        QFjwkkg3EdBc2e6lUWAo22wpOw==
-X-Google-Smtp-Source: AGRyM1vO42CnUgwJEKE3lPzV1mTghn8QpMp5Icmi8ZY5d2az84r+c2xdR5hmJcVfB+ceOdgJZWDqtg==
-X-Received: by 2002:a5d:430d:0:b0:210:2ce0:e2a9 with SMTP id h13-20020a5d430d000000b002102ce0e2a9mr17668939wrq.627.1656424261847;
-        Tue, 28 Jun 2022 06:51:01 -0700 (PDT)
-Received: from [192.168.0.254] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id v6-20020a5d6106000000b00213ba0cab3asm14014874wrt.44.2022.06.28.06.51.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 06:51:01 -0700 (PDT)
-Message-ID: <3ab8afab-b6b7-46aa-06d4-6740cee422d7@linaro.org>
-Date:   Tue, 28 Jun 2022 15:51:00 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9upcBG0MMkWjokT486LIbH25iwXepLGTqHnlYogNOEY=;
+        b=keKr136Mxyt5IpGlz1NCC92km+U2VpLfH0Sw62i6kdPmnZaQ/qCHqacHGvat+ZBQgR
+         bmPvpRA7U9ONn2/gufvXrGooJOnfsUd75sM7ghOQeCC2XN0i24LZxlDn2qcR4KFwZ3mO
+         Uv6UxPJwX5lPqcn0EWv0N/5pKtpwK4G1lD/5v3hfrGOVT6Fw/BpYDasPzZa1x4WDLkJ7
+         NDXSNHydewqBPAU70H6nMPlJjjzIltR+Lehoe5zCsNhjJ8Eik3SmNIXTyZQ7bcEQR+fy
+         k/57hVOr1XQGIzvieRXGCmWmWJelpM2rIiRjQgY7ZBDFe3ImA71XXE738FyNxqo/+OIi
+         0quQ==
+X-Gm-Message-State: AJIora8lBf+SdWxzUkNwIxaVErufKjUwkmfTcitHHOJDzYhobYF1QU97
+        DR/xCKSq8TsnVMw48lnWL0ukulGJLugJM60LThoI+g==
+X-Google-Smtp-Source: AGRyM1svsZstAnVyKZcSo4aSnNDXoorFrsgBhav2DdlBbI8yV5im1Z5GT7JHDXDdnUYGFMbclrnWlsJ6mdvr9wNdUuk=
+X-Received: by 2002:a81:d05:0:b0:317:76a1:9507 with SMTP id
+ 5-20020a810d05000000b0031776a19507mr21678625ywn.151.1656424368411; Tue, 28
+ Jun 2022 06:52:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-References: <4e1d5db9dea68d82c94336a1d6aac404@walle.cc>
- <Yrrhs3D++V79/4Jk@smile.fi.intel.com>
- <f17d3ecfecf4491dd15b1fa092205f3f@walle.cc>
- <CAHp75Vd6e3WwHPfyL=GP=vsoWhwGXadwQziiRRwfHPfjkX2eFg@mail.gmail.com>
- <2f2d7685e0e43194270a310034004970@walle.cc>
- <CAHp75VcANMjxgS6S24Zh+mz66usb6LBnQk-ENvU9JHSXXsG1DA@mail.gmail.com>
- <9e58f421c27121977d11381530757a6e@walle.cc>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <9e58f421c27121977d11381530757a6e@walle.cc>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220613054310.21186-1-a-govindraju@ti.com>
+In-Reply-To: <20220613054310.21186-1-a-govindraju@ti.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 28 Jun 2022 15:52:37 +0200
+Message-ID: <CACRpkdZB1T1cKQcNDiriCdeQuHGMH-9BvV=a9mP21YENThA-bQ@mail.gmail.com>
+Subject: Re: [PATCH v3] gpio: davinci: Add support for system suspend/resume PM
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>, Keerthy <j-keerthy@ti.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/06/2022 15:47, Michael Walle wrote:
-> [adding Horatiu Vultur, because we now digress to the bug
-> in the switch, rather than that odd OF behavior]
-> 
-> Am 2022-06-28 15:29, schrieb Andy Shevchenko:
->> On Tue, Jun 28, 2022 at 3:23 PM Michael Walle <michael@walle.cc> wrote:
->>>
->>>>> I was trying to fix the lan966x driver [1] which doesn't work if there
->>>>> are disabled nodes in between.
->>>>
->>>> Can you elaborate what's wrong now in the behaviour of the driver? In
->>>> the code it uses twice the _available variant.
->>>
->>> Imagine the following device tree snippet:
->>>   port0 {
->>>     reg = <0>;
->>>     status = "okay";
->>>   }
->>>   port1 {
->>>     reg = <1>;
->>>     status = "disabled";
->>>   }
->>>   port@2 {
->>>     reg = <2>;
->>>     status = "okay";
->>>   }
->>>
->>> The driver will set num_phys_ports to 2. When port@2 is probed, it
->>> will have the (correct!) physical port number 2. That will then
->>> trigger various EINVAL checks with "port_num >= num_phys_ports" or
->>> WARN()s.
->>
->> It means the above mentioned condition is wrong: it should be
->>
->> "port_idx >= num_phys_ports" (if the port_idx doesn't exists, that's
->> the bug in the first place)
-> 
-> I can't follow you here. Please note, that you need the actual
-> physical port number. It's not a made up number, but corresponds
-> to a physical port on that ethernet switch. So you can't just skip
-> the disabled ones. port@2 must have port number 2.
+On Mon, Jun 13, 2022 at 7:43 AM Aswath Govindraju <a-govindraju@ti.com> wrote:
 
-The number "2" you get from the reg property, so where is exactly the
-problem?
+> From: Devarsh Thakkar <devarsht@ti.com>
+>
+> Add support for system suspend/resume PM hooks, save the
+> register context of all the required gpio registers on suspend
+> and restore context on the resume.
+>
+> Signed-off-by: Devarsh Thakkar <devarsht@ti.com>
+> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 
-If you want to validate it against some maximum number of ports, based
-on DTS, it makes no sense... One can supply a DTS with port number 10000
-and 10000 nodes, or with specific property "maximum-port-number=10000".
-It would make sense if you validate it against driver-hard-coded values
-(which you later mentioned in your reply).
+Hijacking thread!
 
+Aswath, if you are testing DaVinci boards can you look at these two
+patches:
+https://lore.kernel.org/linux-gpio/20220507124536.171930-1-linus.walleij@linaro.org/
+https://lore.kernel.org/linux-gpio/20220507124536.171930-2-linus.walleij@linaro.org/
 
-Best regards,
-Krzysztof
+I resend them every new kernel release but they never get merged :D
+
+If you can test them, maybe I can queue them directly for the SoC
+tree.
+
+Yours,
+Linus Walleij
