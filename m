@@ -2,68 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E91C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B21CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232851AbiF1UWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
+        id S233235AbiF1UWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232203AbiF1UVg (ORCPT
+        with ESMTP id S232299AbiF1UVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:21:36 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549973D1CB
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:29 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id w3-20020a4ab6c3000000b0041c1e737283so2702708ooo.12
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:29 -0700 (PDT)
+        Tue, 28 Jun 2022 16:21:39 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EF410D2
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:33 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id n12-20020a9d64cc000000b00616ebd87fc4so1707482otl.7
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:19:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UvDcjSbWOKZl6gE5mzkeTi2PBrYErL+/ZA1UKHwrnYM=;
-        b=cYevLFYXedFSBrq2GFIjF/GS6ahMDdV7aa8UrMEpTpZYXFAs5i9NrNoyQiQK/sJwaA
-         eWHs8hmf+ntjplgCrv/v4H4nRb56+VyNGkM2S3QzWb7T7C/27kpmI339VruSlNJFJsSL
-         6qS8sO0YTPgTHmE6cPScbfUpgR1BCtRyc/emF73IH89BdQutlOMpsD1SDREHTZHBKEjZ
-         eAjU08PK4DJDhPejyoKzVddNDCgUpD/4O1rRMuAM0+fKHaCDUFROIz1sfejMzmkOfOc8
-         qS+Fj7oEC29o8AK8mOewI6ydV0dI46TnoSXAlWGEzeXDE+7bvBP9zzMLQAhNMOgoea5O
-         ukWw==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=86x1pCfc8rA3POoegBiHBkAv35qybvdQxmmuFQbL0RY=;
+        b=A6HkriEQVjr8xBuNaJxh8JbFRPp03vxUK0kdmszuwswcz3UumF7ltjqYHiPb5zguuv
+         kldVj/3VuIudYRuWWPOEGV6Ww2HO28uttd9nIej6BtkFUbARrqboOl5omXaEJDKUcbGu
+         NUlwAlhXGlPx/UJp+osIXmBD/cPWvb2j8b7fXR7gLBNBjLVXlkG4ZaFrII8ajmpj0FoY
+         /JDZTYHD3BuNjGJlSA6uaDsxtI1x3L7PA3m5oUGeENCqHfD3e4S+97nSMTbF2cYPcIAs
+         CiOqVKtC7EX+AM1w0fLIG/zKfFdSdTBYR5rKHSf3kzm/p4JdypB2ck6X1LNCNlgimwK8
+         V0fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UvDcjSbWOKZl6gE5mzkeTi2PBrYErL+/ZA1UKHwrnYM=;
-        b=vYxhVp1bVkSsXywR+7f56lyCMUa+KhSTA4RYcQMlO7lJpVIHOG6TuO28bNbPPPM1g1
-         GR28pXDrZy7fBZfFjLgIuxjIgwY/HtxTNxBj/CK2Njz97O+q2deYjXakfDiPgJl7smO3
-         BJ0IucWA2xF+WfMj1bdrwBf/u/x4whydiz/XX30HEI3WnLjOtb0an+3AAZGa7oyRMIUL
-         QsEgm3innTt+iEAvTSypyQtbyUzmXDYuiseJzxyOfsQH6h52rXzMM63dReRl6zzbTyxM
-         8H0EuOIsIGQ/UItFNcf+eGg6yNvocYMbQaGSjjysxYU5S1ZGtZUr/Vp5ruTCaUVQd5Tp
-         ++OA==
-X-Gm-Message-State: AJIora/b9DZ/aDeDUPhfAZliKkr2QKPjtSD0kM4nv39sSZB5rU5yv0rt
-        UmV3fvupJuC644scbRf7fKyXsNsbaSjX5A==
-X-Google-Smtp-Source: AGRyM1vc6vnZRPxqDOS7LbUETNGPpdTYQWj/OTm5nkD+g5CCRf1C3dpUxIxPfHAFHwH+Mr+Y9Qwf2g==
-X-Received: by 2002:a4a:244f:0:b0:425:7575:f167 with SMTP id v15-20020a4a244f000000b004257575f167mr8989846oov.78.1656447568612;
-        Tue, 28 Jun 2022 13:19:28 -0700 (PDT)
+        bh=86x1pCfc8rA3POoegBiHBkAv35qybvdQxmmuFQbL0RY=;
+        b=nkObqEd55VIraAE3hpvCpjGWz9Bav6jAVXb304NGwAA7JaGC46oOLxo+PK1dcH2Flj
+         Q4uPEs+ZtvHjgf3ap0aIAdofkZHR+xIjUfOHRwR86EruSkLbMHteR052IVEXAe5IgsPr
+         gh7dwYvzaFu53O/Kdydj/JuV/JtnzArL2sM2TbJM7gl8Qzetcp3sD0cJ8VP4boNby4GP
+         0qMOT/EM+5EVrsnGR/Diiwad24suA3HNEbbMwd4V35r+I0GRyr0HqbC+WldJIdGA9LbP
+         n8r4wS7BGDHkU2cQBalz3inOo0/ZPWUZU6Wb0JZjk5wxnpisq7ZzD/GJ1KKgJlreLiUJ
+         lXqA==
+X-Gm-Message-State: AJIora84DdHiaG3Gc3QzUP36XOcivS/2P/ABmUPdNmbONUtJe4eR/NBN
+        J02ApD5mFiEiwgm5ofwU3VCXX5q5ZmLRfg==
+X-Google-Smtp-Source: AGRyM1v2wSkt8bjJkTtoUzltW4b6g1kt7GztuslhqRHJPErlzBtKH9XduvJ8939ewp16ELTmMuJOQQ==
+X-Received: by 2002:a9d:6ac4:0:b0:616:b183:c7e6 with SMTP id m4-20020a9d6ac4000000b00616b183c7e6mr9307839otq.353.1656447572712;
+        Tue, 28 Jun 2022 13:19:32 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.27
+        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000f30837129esm9536923oaq.55.2022.06.28.13.19.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 13:19:27 -0700 (PDT)
+        Tue, 28 Jun 2022 13:19:32 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Andy Gross <agross@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Luca Weiss <luca@z3ntu.xyz>, David Heidelberg <david@ixit.cz>
-Subject: Re: (subset) [PATCH 0/4] dt-bindings/pinctrl/arm: qcom: second round of minor cleanups of QCOM PMIC pinctrl
-Date:   Tue, 28 Jun 2022 15:19:00 -0500
-Message-Id: <165644753308.10525.5708687805772676299.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH v2] arm64: dts: qcom: align OPP table names with DT schema
+Date:   Tue, 28 Jun 2022 15:19:03 -0500
+Message-Id: <165644753306.10525.17507331661457165326.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220508135932.132378-1-krzysztof.kozlowski@linaro.org>
-References: <20220508135932.132378-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
+References: <20220627093250.84391-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -71,23 +68,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 8 May 2022 15:59:28 +0200, Krzysztof Kozlowski wrote:
-> Dependencies
-> ============
-> This is on top of:
-> dt-bindings/pinctrl/arm: qcom: minor cleanups of QCOM PMIC pinctrl
-> https://lore.kernel.org/linux-arm-msm/20220507194913.261121-1-krzysztof.kozlowski@linaro.org/T/#t
+On Mon, 27 Jun 2022 11:32:50 +0200, Krzysztof Kozlowski wrote:
+> DT schema expects names of operating points tables to start with
+> "opp-table":
 > 
-> Not really tested on hardware (except SDM845).
+>   ipq6018-cp01-c1.dtb: cpu_opp_table: $nodename:0: 'cpu_opp_table' does not match '^opp-table(-[a-z0-9]+)?$'
+> 
+> Use hyphens instead of underscores, fix the names to match DT schema or
+> remove the prefix entirely when it is not needed.
 > 
 > [...]
 
 Applied, thanks!
 
-[2/4] arm64: dts: qcom: add missing gpio-ranges in PMIC GPIOs
-      commit: b07bfd8ebe31b0a39184cba522fdae433b6cd0ad
-[3/4] arm64: dts: qcom: correct interrupt controller on PM8916 and PMS405
-      commit: a984d5d191527108a934cb9da2a15b07ea05a8ea
+[1/1] arm64: dts: qcom: align OPP table names with DT schema
+      commit: 0e3e654696074b304302c7cc2a67314b7875f1ae
 
 Best regards,
 -- 
