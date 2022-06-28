@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB523C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5239DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245024AbiF1CbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
+        id S244857AbiF1CbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244580AbiF1C13 (ORCPT
+        with ESMTP id S244567AbiF1C10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7CE24F12;
-        Mon, 27 Jun 2022 19:24:52 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D018825C59;
+        Mon, 27 Jun 2022 19:24:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 865F361853;
-        Tue, 28 Jun 2022 02:24:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B1BC34115;
-        Tue, 28 Jun 2022 02:24:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8867DB81C18;
+        Tue, 28 Jun 2022 02:24:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69DF4C341CB;
+        Tue, 28 Jun 2022 02:24:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383091;
-        bh=fsCtIVhV2ef0xHT+nArdUMGg/mCyQ7k6RoDeoHr3e6k=;
+        s=k20201202; t=1656383089;
+        bh=ChdpymeB3TsEFGpqxL1k20A2RoBePNdIlStDwn97s5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pqxci9/gkO0W2q3NV/txFSpLowJnVrMgZU2Zj25M60uabLTHNiBNCrAFQbHG7TRe7
-         JlFwg1PUj/C0AlYHE/otCkM3qtObqD0D8S39sGE5s91Wt75vkUk6dpVj7SHS382UZc
-         1HoQmzYNi8cntEMCfbYoEoCi8B5HCiiCeIzoadRCPlqUmOIa4fCZ3r9klM+Xpk8LJp
-         302bC3dm4adaW4sCN8uHw4sjl15WDIvOP2ql8f9zuWLRA+H1aMXQ0R85+rMLfZh2qf
-         d3hOgb2Vyiy1ABalMAf3dlOAzpFaec8HhKBJnkwe8J2Di83dcCDKa3V0XRnVr2/gHI
-         aDpe0Oh/R2rkA==
+        b=hOrjheNBZBfgx6pp1aMHeYTsGcaHOegKXOTrTmtcZQXaOKxm54v4F214S5eMn8AME
+         wS3usjX90tTJ6bDo83+kE1+tSmjBu3M4TJffB15uk0Sp/+kBNHJDi3SSsJDmuBa6pR
+         nBigfb67SAsq+MfIpI11Qe6iSt53LSnAeYXa3Q7SfRYQ1/s0vYhkIPEMO9LUdtTIxz
+         z5BIRR+lQ0Prjr8oQ29NKlPfzNPpbr5crYy7w574kYpEkNNvaMwDK3zloNxe4cFmyZ
+         /Qq4CAl5QeKuU0wmuiGz3OFLqTcko4n96lTwALkCjIpNH1bQorndKFaRtKuvdN3e+7
+         UoC5cBO2G9wxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, miodrag.dinic@mips.com,
-        paulburton@kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/27] arch: mips: generic: Add missing of_node_put() in board-ranchu.c
-Date:   Mon, 27 Jun 2022 22:24:02 -0400
-Message-Id: <20220628022413.596341-16-sashal@kernel.org>
+Cc:     Yihao Han <hanyihao@vivo.com>, Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 14/27] video: fbdev: simplefb: Check before clk_put() not needed
+Date:   Mon, 27 Jun 2022 22:24:00 -0400
+Message-Id: <20220628022413.596341-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
 References: <20220628022413.596341-1-sashal@kernel.org>
@@ -52,33 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Yihao Han <hanyihao@vivo.com>
 
-[ Upstream commit 4becf6417bbdc293734a590fe4ed38437bbcea2c ]
+[ Upstream commit 5491424d17bdeb7b7852a59367858251783f8398 ]
 
-In ranchu_measure_hpt_freq(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_put_node()
-when it is not used anymore.
+clk_put() already checks the clk ptr using !clk and IS_ERR()
+so there is no need to check it again before calling it.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Yihao Han <hanyihao@vivo.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/generic/board-ranchu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/video/fbdev/simplefb.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/mips/generic/board-ranchu.c b/arch/mips/generic/board-ranchu.c
-index a89aaad59cb1..930c45041882 100644
---- a/arch/mips/generic/board-ranchu.c
-+++ b/arch/mips/generic/board-ranchu.c
-@@ -44,6 +44,7 @@ static __init unsigned int ranchu_measure_hpt_freq(void)
- 		      __func__);
- 
- 	rtc_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!rtc_base)
- 		panic("%s(): Failed to ioremap Goldfish RTC base!", __func__);
- 
+diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
+index 7dc0105f700d..f03705666983 100644
+--- a/drivers/video/fbdev/simplefb.c
++++ b/drivers/video/fbdev/simplefb.c
+@@ -225,8 +225,7 @@ static int simplefb_clocks_get(struct simplefb_par *par,
+ 		if (IS_ERR(clock)) {
+ 			if (PTR_ERR(clock) == -EPROBE_DEFER) {
+ 				while (--i >= 0) {
+-					if (par->clks[i])
+-						clk_put(par->clks[i]);
++					clk_put(par->clks[i]);
+ 				}
+ 				kfree(par->clks);
+ 				return -EPROBE_DEFER;
 -- 
 2.35.1
 
