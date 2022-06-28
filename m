@@ -2,81 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DD5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346582AbiF1Ndl (ORCPT
+        id S1346684AbiF1Ndp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
+        Tue, 28 Jun 2022 09:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346540AbiF1NdC (ORCPT
+        with ESMTP id S1346558AbiF1NdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:33:02 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F6FA1B4;
-        Tue, 28 Jun 2022 06:33:01 -0700 (PDT)
-Received: (Authenticated sender: ash@heyquark.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9D04C200014;
-        Tue, 28 Jun 2022 13:32:53 +0000 (UTC)
-From:   Ash Logan <ash@heyquark.com>
-To:     krzysztof.kozlowski+dt@linaro.org, paulus@samba.org,
-        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
-        robh+dt@kernel.org, benh@kernel.crashing.org
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        j.ne@posteo.net, linkmauve@linkmauve.fr,
-        rw-r-r-0644@protonmail.com, devicetree@vger.kernel.org,
-        joel@jms.id.au
-Subject: [PATCH v3 09/12] powerpc: espresso processor support
-Date:   Tue, 28 Jun 2022 23:31:41 +1000
-Message-Id: <20220628133144.142185-10-ash@heyquark.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220628133144.142185-1-ash@heyquark.com>
-References: <20220622131037.57604-1-ash@heyquark.com>
- <20220628133144.142185-1-ash@heyquark.com>
+        Tue, 28 Jun 2022 09:33:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C73517597;
+        Tue, 28 Jun 2022 06:33:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCF3A61840;
+        Tue, 28 Jun 2022 13:33:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20892C3411D;
+        Tue, 28 Jun 2022 13:33:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656423181;
+        bh=vy3vuOmznWhEncPhENdIaQ8B4RXL0dQ2DU1vhKaw1wI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y4XsWQD1zmi+SuFbeJ2RykJ9dWBaMzWEmTVs23IF4PWHmoayVxci28MQxiDiVXFaI
+         YTTzC1R0uZOzpCBgoo3Uk/vTErquLXkYaLmDMQgKioT6+LoYc6BI+b4wqasI8uqE86
+         UuXLS3orUpGW3WONEmJ1G+xN6tfpZ6bQIeQzReDDOcLH+69V4PHRZn7OCFdELqo+H1
+         coitz3iAazmVnU7Uu7ljQJVBsVr9NVJrh7dPTObH1IQRvPM6ZsY0P3MpGPwop9F2E4
+         9fnRy0YTKILmijwGUj4qCXVQwha+5A2yDwHmtkVYnTIxTiBGnxrivSc4h03EWdWl2p
+         9ZX7rwA0BnKtw==
+Date:   Tue, 28 Jun 2022 09:32:59 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH 5.18 097/181] Revert "net/tls: fix tls_sk_proto_close
+ executed repeatedly"
+Message-ID: <YrsDCwxiIqm1N9K+@sashalap>
+References: <20220627111944.553492442@linuxfoundation.org>
+ <20220627111947.372126973@linuxfoundation.org>
+ <20220627083313.285787a5@kernel.org>
+ <YrnRxxAUbk8fdjac@kroah.com>
+ <20220627085728.643737fb@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220627085728.643737fb@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds a cputable entry for the "Espresso" processor found on the Nintendo
-Wii U, which has a PVR unrelated to other 750CL-like chips.
-Only this revision has been seen in the wild.
+On Mon, Jun 27, 2022 at 08:57:28AM -0700, Jakub Kicinski wrote:
+>On Mon, 27 Jun 2022 17:50:31 +0200 Greg Kroah-Hartman wrote:
+>> On Mon, Jun 27, 2022 at 08:33:13AM -0700, Jakub Kicinski wrote:
+>> > On Mon, 27 Jun 2022 13:21:10 +0200 Greg Kroah-Hartman wrote:
+>> > > From: Jakub Kicinski <kuba@kernel.org>
+>> > >
+>> > > [ Upstream commit 1b205d948fbb06a7613d87dcea0ff5fd8a08ed91 ]
+>> > >
+>> > > This reverts commit 69135c572d1f84261a6de2a1268513a7e71753e2.
+>> > >
+>> > > This commit was just papering over the issue, ULP should not
+>> > > get ->update() called with its own sk_prot. Each ULP would
+>> > > need to add this check.
+>> > >
+>> > > Fixes: 69135c572d1f ("net/tls: fix tls_sk_proto_close executed repeatedly")
+>> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>> >
+>> > Mm? How did 69135c572d1f get into stableh?
+>> > I reverted it before it hit Linus's tree.
+>> > Don't see the notification about it either.
+>>
+>> It is commit 075/181 in this series as you can see here:
+>> 	https://lore.kernel.org/r/20220627111946.738369250@linuxfoundation.org
+>
+>Argh, I forgot I'm not gonna get CCed if my tags aren't on the
+>commit in question, sorry for the confusion.
+>
+>So I expected patches 075 and 097 would just get dropped since
+>they are in the same series and are canceling each other out.
+>But I guess people may edit reverts so you prefer not to
+>automatically do that?
 
-Signed-off-by: Roberto Van Eeden <rw-r-r-0644@protonmail.com>
-Signed-off-by: Ash Logan <ash@heyquark.com>
----
- arch/powerpc/kernel/cputable.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+It's also the case that it's useful for historical purposes to keep
+track of why a certain commit made it in or not.
 
-diff --git a/arch/powerpc/kernel/cputable.c b/arch/powerpc/kernel/cputable.c
-index a5dbfccd2047..3a4e84d1f674 100644
---- a/arch/powerpc/kernel/cputable.c
-+++ b/arch/powerpc/kernel/cputable.c
-@@ -736,6 +736,22 @@ static struct cpu_spec __initdata cpu_specs[] = {
- 		.platform		= "ppc750",
- 		.oprofile_cpu_type      = "ppc/750",
- 	},
-+	{	/* "Espresso" (750CL-like) */
-+		.pvr_mask		= 0xffffffff,
-+		.pvr_value		= 0x70010201,
-+		.cpu_name		= "Espresso",
-+		.cpu_features		= CPU_FTRS_750CL,
-+		.cpu_user_features	= COMMON_USER | PPC_FEATURE_PPC_LE,
-+		.mmu_features		= MMU_FTR_HPTE_TABLE | MMU_FTR_USE_HIGH_BATS,
-+		.icache_bsize		= 32,
-+		.dcache_bsize		= 32,
-+		.num_pmcs		= 4,
-+		.pmc_type		= PPC_PMC_IBM,
-+		.cpu_setup		= __setup_cpu_750,
-+		.machine_check		= machine_check_generic,
-+		.platform		= "ppc750",
-+		.oprofile_cpu_type      = "ppc/750",
-+	},
- 	{	/* 745/755 */
- 		.pvr_mask		= 0xfffff000,
- 		.pvr_value		= 0x00083000,
 -- 
-2.36.1
-
+Thanks,
+Sasha
