@@ -2,137 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6850FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F118C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345362AbiF1MLD (ORCPT
+        id S1345628AbiF1MNb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        Tue, 28 Jun 2022 08:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345239AbiF1MK7 (ORCPT
+        with ESMTP id S1344914AbiF1MN3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:10:59 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701BA34673
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:10:55 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id l11so21800808ybu.13
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:10:55 -0700 (PDT)
+        Tue, 28 Jun 2022 08:13:29 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A7A237C2
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:13:28 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cv13so12387283pjb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:13:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kivkjIcW/dBwtKQGxzqBhqyQNzFDh/iWcq1jAKuPzjQ=;
-        b=CLRflZYyQbg2Iw8XCTaSt3HhmxKw/xrafgduTJjfhqjN2UgMgl+t/Gw4w6ILs6K9J4
-         MiBhpvtp9dwuJoICS/Nb1ZrtA3RQX7LEA7Mz5j+bBQgqJZtt6/ayHu+r5Hhb3qNZ4MWa
-         hFjTG4fGYnkRgTZZBBgzYCRgfxmHlPzv/4ipJqE4P/j7/2M+hTvxyKMHh77AZQv+DXXp
-         HhfG34tq68ucJafyFKHbBlkKZIavzOm2MyDj5K6/Q7swKn5I+xF/JVEwmlCwkvsZvZHr
-         w9cyP8LjUEu4elAD/I0i18jI8ov478QkOC5jYowuBKa+OZLBRkMIuuXZdJu9woKbWYNY
-         OIWw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bSDinnzl56D9PFKDeB860nkVQnIp9oqH1T1HFaPBfr4=;
+        b=LZrAI0t9vW3GfRkSpY5xnTWBpPAMoPHypn1lKSOQhWtqPjmYD3IWl5ZGZwnfqNH4cA
+         UNELUthAvR2LaChKvDDw8gu9lKukzIBW1qWYIakbZ2iOSuacjr0Xi5vGfhCIvf3edIoG
+         Iym+3aKlyhlV8HgZaFldWhGZM/KL1pBVLab4Qn0wUwzNv22YkDl/2EmzqhDUVe8vh/d5
+         CrdV9xvFs1eslvwDl+QI6nx6D4NFcuvzAk58AmdWg7p4DkFHRYMgFrunqJDT2eQ1POvO
+         OvziMaJsAhq/Ued3JYdCr+Z+mQvn1bDRO6QwdMUH2j8tNCWzZPYpUhKlJZQM0Dvi2iiF
+         FneA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kivkjIcW/dBwtKQGxzqBhqyQNzFDh/iWcq1jAKuPzjQ=;
-        b=Bly5R69UUccL2PvWv3qobDovVUTsIwIFIFIKFuNa84N90DmAeRo2/y0rz3kZkzAQsX
-         wFv2USASqYmz3CWlqwnZmlj7fjrUBGaFZOmd99HvkydwR9n/YuDLDCx7CfGfAnXkspiG
-         WmdG5AL/MlMv9p+iMFQCA0nxlQl/WNnjHMHnZFVeC5WdfJoOrwf7sxrQC667H4PYExVL
-         fTUxMwSm9xPVinFr6u+mnEDLPDiNz1X5wKOVhbDFZD7+7f2tftq1pViGnm011O32DoAB
-         5RyxkzqVnvb8R/4lzuw12B1SkT21slbGncqDrtwOg6wOvbYgoX9NkgxM/WjO+RJ1iK3d
-         FLvg==
-X-Gm-Message-State: AJIora8mJB9lmEb1fYo+P3v/prQBeNTYiuPf5dC/jutWuuPsVidDJOZh
-        yg+Z49VUddlYIsm6bMGY7tF8wdg5Xgv8NWxDhXsQ60OK+NHcqg==
-X-Google-Smtp-Source: AGRyM1smrNVxZFq8RnZCs9l8cbaNFOI8pfYR4MykJ5KZXRx6x1Zw9wNjdz4oF5DQdShpdaP6Z1l8ckzfBHZHCRervgg=
-X-Received: by 2002:a25:cc56:0:b0:66c:d0f6:2f0e with SMTP id
- l83-20020a25cc56000000b0066cd0f62f0emr10988742ybf.168.1656418254817; Tue, 28
- Jun 2022 05:10:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628113714.7792-1-yee.lee@mediatek.com> <20220628113714.7792-2-yee.lee@mediatek.com>
-In-Reply-To: <20220628113714.7792-2-yee.lee@mediatek.com>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 28 Jun 2022 14:10:18 +0200
-Message-ID: <CANpmjNNSHEksMq+xR62mV5dzb0ZO7UPhUzt2ghSbqcR-Bsm_2w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] mm: kfence: apply kmemleak_ignore_phys on early
- allocated pool
-To:     yee.lee@mediatek.com
-Cc:     linux-kernel@vger.kernel.org, catalin.marinas@arm.com,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bSDinnzl56D9PFKDeB860nkVQnIp9oqH1T1HFaPBfr4=;
+        b=2wN77AuybqYuQjSd/Hvz3kHKDth/xLrb7mPMhR0t6maJsRZOwoTE2lhTP3xL+fVp2u
+         LrUfeH8EBicC8EFxQi6hePgGFkJbzMhtO+KNHIhOMCSczSnT7taexh3ZjXw06RFZ7YmL
+         evaafTD2qfdHk4ZvtApGnc/DUwa1QWU/pX01czBrl9XRF/pqcZqEAWfvmjHx+r+q+6pv
+         GhevMMTdlTO+f9OdVU0MlgulcF/hWXw8cyfPqTFwbY62+MW+FxEWh+SFei3yYFsJFh0S
+         2iZQlpACwln9pjDydpBA42xBDoEOXtHMLKaDnmGNZ+EBNDyLoxsX3vkxAzJUa8rtUeK+
+         wgDw==
+X-Gm-Message-State: AJIora85Hf1fHmO++Z+ceZHVcGpFAfVjsljIqxviD15GRIT4if0tcnyr
+        GwEMGjGeUALDxBrCGhHo9rbgX9FkX2AH7A==
+X-Google-Smtp-Source: AGRyM1sAf5ZuIfFPHYHjm02zMm3ex+WsIGHP3DaH/nqnRS89Qycce/vuhFMht33UFBTpn5MzHyxBPQ==
+X-Received: by 2002:a17:902:c40f:b0:16a:37de:89c2 with SMTP id k15-20020a170902c40f00b0016a37de89c2mr3505380plk.105.1656418408006;
+        Tue, 28 Jun 2022 05:13:28 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:37e8:2f95:a443:c532])
+        by smtp.gmail.com with ESMTPSA id r19-20020a170902e3d300b00163f8ddf160sm9070496ple.161.2022.06.28.05.13.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 05:13:27 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Roger Lu <roger.lu@mediatek.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:KFENCE" <kasan-dev@googlegroups.com>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-mediatek@lists.infradead.org,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH] drivers/soc/mediatek: mark svs_resume and svs_suspend as maybe unused
+Date:   Tue, 28 Jun 2022 05:13:26 -0700
+Message-Id: <20220628121326.2097912-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 at 13:37, yee.lee via kasan-dev
-<kasan-dev@googlegroups.com> wrote:
->
-> From: Yee Lee <yee.lee@mediatek.com>
->
-> This patch solves two issues.
->
-> (1) The pool allocated by memblock needs to unregister from
-> kmemleak scanning. Apply kmemleak_ignore_phys to replace the
-> original kmemleak_free as its address now is stored in the phys tree.
->
-> (2) The pool late allocated by page-alloc doesn't need to unregister.
-> Move out the freeing operation from its call path.
->
-> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
-> Suggested-by: Marco Elver <elver@google.com>
-> Signed-off-by: Yee Lee <yee.lee@mediatek.com>
+This fixes the following build errors on platforms without hibernation
+support in linux-next:
 
-Reviewed-by: Marco Elver <elver@google.com>
+drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not used [-Werror=unused-function]
+drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not used [-Werror=unused-function]
 
-Does this want a Fixes tag?
+Fixes: 681a02e95000 ("soc: mediatek: SVS: introduce MTK SVS engine")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ drivers/soc/mediatek/mtk-svs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> ---
->  mm/kfence/core.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-> index 4e7cd4c8e687..32a4a75e820c 100644
-> --- a/mm/kfence/core.c
-> +++ b/mm/kfence/core.c
-> @@ -600,14 +600,6 @@ static unsigned long kfence_init_pool(void)
->                 addr += 2 * PAGE_SIZE;
->         }
->
-> -       /*
-> -        * The pool is live and will never be deallocated from this point on.
-> -        * Remove the pool object from the kmemleak object tree, as it would
-> -        * otherwise overlap with allocations returned by kfence_alloc(), which
-> -        * are registered with kmemleak through the slab post-alloc hook.
-> -        */
-> -       kmemleak_free(__kfence_pool);
-> -
->         return 0;
->  }
->
-> @@ -620,8 +612,16 @@ static bool __init kfence_init_pool_early(void)
->
->         addr = kfence_init_pool();
->
-> -       if (!addr)
-> +       if (!addr) {
-> +               /*
-> +                * The pool is live and will never be deallocated from this point on.
-> +                * Ignore the pool object from the kmemleak phys object tree, as it would
-> +                * otherwise overlap with allocations returned by kfence_alloc(), which
-> +                * are registered with kmemleak through the slab post-alloc hook.
-> +                */
-> +               kmemleak_ignore_phys(__pa(__kfence_pool));
->                 return true;
-> +       }
->
->         /*
->          * Only release unprotected pages, and do not try to go back and change
-> --
-> 2.18.0
+diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
+index 87e05ab51552..363ab8bffa9f 100644
+--- a/drivers/soc/mediatek/mtk-svs.c
++++ b/drivers/soc/mediatek/mtk-svs.c
+@@ -1478,7 +1478,7 @@ static int svs_start(struct svs_platform *svsp)
+ 	return 0;
+ }
+ 
+-static int svs_suspend(struct device *dev)
++static int __maybe_unused svs_suspend(struct device *dev)
+ {
+ 	struct svs_platform *svsp = dev_get_drvdata(dev);
+ 	struct svs_bank *svsb;
+@@ -1512,7 +1512,7 @@ static int svs_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int svs_resume(struct device *dev)
++static int __maybe_unused svs_resume(struct device *dev)
+ {
+ 	struct svs_platform *svsp = dev_get_drvdata(dev);
+ 	int ret;
+-- 
+2.30.2
+
