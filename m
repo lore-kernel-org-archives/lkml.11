@@ -2,110 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93A9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00D7CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiF1Geh (ORCPT
+        id S1343530AbiF1Gep (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        Tue, 28 Jun 2022 02:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245711AbiF1Gd4 (ORCPT
+        with ESMTP id S245712AbiF1GeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:33:56 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6200F11A04
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:33:45 -0700 (PDT)
-X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
-        LIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(20103:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Tue, 28 Jun 2022 14:26:59 +0800 (CST)
-From:   Qin Jian <qinjian@cqplus1.com>
-To:     sboyd@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
-        olof@lixom.net, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Qin Jian <qinjian@cqplus1.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v20 01/11] dt-bindings: arm: sunplus: Add bindings for Sunplus SP7021 SoC boards
-Date:   Tue, 28 Jun 2022 14:26:41 +0800
-Message-Id: <73f5f913290ca77d13e63439a81767519e7c9268.1656396767.git.qinjian@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1656396767.git.qinjian@cqplus1.com>
-References: <cover.1656396767.git.qinjian@cqplus1.com>
+        Tue, 28 Jun 2022 02:34:02 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7288DF6A;
+        Mon, 27 Jun 2022 23:34:00 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25S6XnhV075706;
+        Tue, 28 Jun 2022 01:33:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1656398029;
+        bh=gQpauwvT+3IQ8TE9iAJyxTmOdu5H7mkPZ8142Alt/ZQ=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=CcedCWVNtcXPfdTNMyDG/eZ3M3lIqIfACq25+4HoyA/5yjJdWG99LBrDnLMdYpz57
+         RRojxX1Ec3PV5Gl/B2hMWOaJrl2wSahEHyYhciFrmNcmnW2zqjge6q8iJGCMigsCXy
+         ZQxwbWSMN/tpoM2rEN7GZcIgGqicjP+dPFlLbJ4k=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25S6Xnhk036982
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 28 Jun 2022 01:33:49 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 28
+ Jun 2022 01:33:48 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 28 Jun 2022 01:33:48 -0500
+Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25S6XjNn026376;
+        Tue, 28 Jun 2022 01:33:46 -0500
+Message-ID: <894d0c03-487b-40fc-5634-5b1a78b48701@ti.com>
+Date:   Tue, 28 Jun 2022 12:03:45 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] arm64: dts: ti: k3-j721s2-main: Enable crypto accelerator
+Content-Language: en-US
+To:     Jayesh Choudhary <j-choudhary@ti.com>, <devicetree@vger.kernel.org>
+CC:     <nm@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220628054518.350717-1-j-choudhary@ti.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <20220628054518.350717-1-j-choudhary@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This introduces bindings for boards based Sunplus SP7021 SoC.
+Hi,
 
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Qin Jian <qinjian@cqplus1.com>
----
- .../bindings/arm/sunplus,sp7021.yaml          | 29 +++++++++++++++++++
- MAINTAINERS                                   |  7 +++++
- 2 files changed, 36 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+On 28/06/22 11:15, Jayesh Choudhary wrote:
+> +	main_crypto: crypto@4e00000 {
+> +		compatible = "ti,j721e-sa2ul";
+> +		reg = <0x00 0x4e00000 0x00 0x1200>;
+> +		power-domains = <&k3_pds 297 TI_SCI_PD_SHARED>;
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges = <0x00 0x04e00000 0x00 0x04e00000 0x00 0x30000>;
+> +
+> +		dmas = <&main_udmap 0xca40>, <&main_udmap 0x4a40>,
+> +				<&main_udmap 0x4a41>;
+> +		dma-names = "tx", "rx1", "rx2";
 
-diff --git a/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml b/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
-new file mode 100644
-index 000000000..def7d0cfe
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
-@@ -0,0 +1,29 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/sunplus,sp7021.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus SP7021 Boards
-+
-+maintainers:
-+  - qinjian <qinjian@cqplus1.com>
-+
-+description: |
-+  ARM platforms using Sunplus SP7021, an ARM Cortex A7 (4-cores) based SoC.
-+  Wiki: https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-+
-+properties:
-+  $nodename:
-+    const: '/'
-+  compatible:
-+    items:
-+      - enum:
-+          - sunplus,sp7021-achip
-+          - sunplus,sp7021-demo-v3
-+      - const: sunplus,sp7021
-+
-+additionalProperties: true
-+
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fe5daf141..3258a4d1a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2825,6 +2825,13 @@ F:	drivers/clocksource/armv7m_systick.c
- N:	stm32
- N:	stm
- 
-+ARM/SUNPLUS SP7021 SOC SUPPORT
-+M:	Qin Jian <qinjian@cqplus1.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
-+S:	Maintained
-+W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-+F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
-+
- ARM/Synaptics SoC support
- M:	Jisheng Zhang <jszhang@kernel.org>
- M:	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+
+> +		dma-coherent;
+
+
+Crytpo device itself is not dma-coherent as it can never be bus master.
+Its the DMAengine that does data movement and the buffers are to be
+mapped to dmaengine provider. So this property should be dropped
+
+> +	};
+> +
+
 -- 
-2.33.1
-
+Regards
+Vignesh
