@@ -2,136 +2,403 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52ACAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D423AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346253AbiF1NRw (ORCPT
+        id S1346265AbiF1NR4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
+        Tue, 28 Jun 2022 09:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346211AbiF1NRM (ORCPT
+        with ESMTP id S1346287AbiF1NRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:17:12 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D86F32052
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:17:02 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id i18so22220566lfu.8
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:17:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X57uwopXnuwAGxBJfo3nXt3MJLIDmWTaNVtJmoGBIrs=;
-        b=AT2t+rTr3KgCX8AA8eDt3WrbxtMhylo4g1A8Gxq1VecJhw5AD9vpsoz/2xq2XcDZUW
-         tptAB4ig8ybMBqdwhS7/u5onHQdA/cUFgW1Ek02/2U2+Gtw3+8M6eRTac5lfoAAsHvgz
-         sF7cUuFbFVDR3quRsL6I5+94M/OE/UypLaxuAlAgRuKl+84iwY2kdjwtNwj/SnloBiO8
-         kk/odc9q3zUdO+qVSQVt5Aex46qwxbLOO+ypHzWbk1RNAm1y5U8i4UZ6aSNKoLhC42Tu
-         3hKZMpRbPk9Y7KC45eeLp7Q6lCepZHZhMUNxP/XCOKqwWXygnxUMKaLuCS5aiD3/K6PE
-         Yaeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X57uwopXnuwAGxBJfo3nXt3MJLIDmWTaNVtJmoGBIrs=;
-        b=oyNGTbA2zc9Gq4wkwrrDWY5fZRE8pGXyWZPvRoqOQj53y0nhhCe18X4GbIaMx1qc4m
-         7YWTVWGCO+J75BNpohB2kT1hZmPHOP08Dfh1DN268Q3TJJf5mnNczE6cst84pngyxJr4
-         /Ov8+HyteszaKMh1hDepxEwA7nBDxn2nHOF+rizNA1TRAbb2s1h1qDDSVNTmaOzsziBA
-         I0GiCzJ6lELCxickZhlIlbXILXftYfmn3I/dxj850IbtRQ1xwdtIM873i2yihF/0RZHC
-         HcHZCSKGqKJmGSGFltsOOK41yncxq1gWgfl1gZOJ1ZxXNrKdaFgHROnHbVdLZyT69T/2
-         8bDQ==
-X-Gm-Message-State: AJIora89Zw2zaUZOP1r2+Bwep3T0BsSV4TlHvnm3W8iy5LZoOfwvmL5U
-        Ln1Yv3qygSDdDoXanUixIYTHhUemfk3XFF+fjsA8aA==
-X-Google-Smtp-Source: AGRyM1tG67YPf8p5Qp1qLNRMlMNTKwh2CzvgbvnW3zyfeM/E1CTmSMCbEimuXozCm7RVAzd+EXswJxcxpkMBCM0PW6s=
-X-Received: by 2002:a05:6512:39ce:b0:481:31e4:1e06 with SMTP id
- k14-20020a05651239ce00b0048131e41e06mr1777836lfu.376.1656422220502; Tue, 28
- Jun 2022 06:17:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628095833.2579903-1-elver@google.com> <20220628095833.2579903-7-elver@google.com>
-In-Reply-To: <20220628095833.2579903-7-elver@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 28 Jun 2022 15:16:49 +0200
-Message-ID: <CACT4Y+bkQNci3gOyvBAkcfJjqE9h2kPJ2nKjrD7XjQ+sg1L4kg@mail.gmail.com>
-Subject: Re: [PATCH v2 06/13] perf/hw_breakpoint: Make hw_breakpoint_weight() inlinable
-To:     Marco Elver <elver@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Tue, 28 Jun 2022 09:17:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D5E3205A
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:17:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 715E4B81E18
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547A8C36AE3;
+        Tue, 28 Jun 2022 13:16:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656422222;
+        bh=8NrkgWBmzj6wkplyCNQcKBMr3/tG9ae96Y+JyySuqc4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=O6Z3TqgAVU56zeHoz4ms+2LBgFxMTIy6UT7uOK8YcPfiqtt33hnwYUDYIEJz4mgAg
+         E1IugtbVeG2L9NBsKBGSdL+0bnQSzZcAxFUb7QHvZ5rzeEV1AneyHZLswGBEvB7K/2
+         Wvq7oHM/Dxnfsi58hNf8MQ3jf50aBGQNhwaAF7pXXZ8XGxNdG9MxTVXVHcY5D7bpV4
+         i+v0or3NA8LBgDu279AUC/hTiK6a2GIpWc0HokgSYJfGFqy73M32X/54OPAwG0NzUY
+         AyNEyHtf0affMUWSsb2mvQd2x77lEBlIDoIlBHWUCuQ+PtO8XE1Z2s1hjxPQ/oMQGp
+         hJ3E4N50EzITg==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
         Frederic Weisbecker <frederic@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Marco Elver <elver@google.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, linux-sh@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        kernel test robot <lkp@intel.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: [PATCH 08/20] context_tracking: Take idle eqs entrypoints over RCU
+Date:   Tue, 28 Jun 2022 15:16:07 +0200
+Message-Id: <20220628131619.2109651-9-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220628131619.2109651-1-frederic@kernel.org>
+References: <20220628131619.2109651-1-frederic@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 at 11:59, Marco Elver <elver@google.com> wrote:
->
-> Due to being a __weak function, hw_breakpoint_weight() will cause the
-> compiler to always emit a call to it. This generates unnecessarily bad
-> code (register spills etc.) for no good reason; in fact it appears in
-> profiles of `perf bench -r 100 breakpoint thread -b 4 -p 128 -t 512`:
->
->     ...
->     0.70%  [kernel]       [k] hw_breakpoint_weight
->     ...
->
-> While a small percentage, no architecture defines its own
-> hw_breakpoint_weight() nor are there users outside hw_breakpoint.c,
-> which makes the fact it is currently __weak a poor choice.
->
-> Change hw_breakpoint_weight()'s definition to follow a similar protocol
-> to hw_breakpoint_slots(), such that if <asm/hw_breakpoint.h> defines
-> hw_breakpoint_weight(), we'll use it instead.
->
-> The result is that it is inlined and no longer shows up in profiles.
->
-> Signed-off-by: Marco Elver <elver@google.com>
+The RCU dynticks counter is going to be merged into the context tracking
+subsystem. Start with moving the idle extended quiescent states
+entrypoints to context tracking. For now those are dumb redirections to
+existing RCU calls.
 
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc: Yu Liao <liaoyu15@huawei.com>
+Cc: Phil Auld <pauld@redhat.com>
+Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
+Cc: Alex Belits <abelits@marvell.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Tested-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+---
+ Documentation/RCU/stallwarn.rst   |  4 ++--
+ arch/arm/mach-imx/cpuidle-imx6q.c |  5 +++--
+ drivers/acpi/processor_idle.c     |  5 +++--
+ drivers/cpuidle/cpuidle.c         |  9 +++++----
+ include/linux/context_tracking.h  |  8 ++++++++
+ include/linux/rcupdate.h          |  2 +-
+ kernel/context_tracking.c         | 15 +++++++++++++++
+ kernel/locking/lockdep.c          |  2 +-
+ kernel/rcu/Kconfig                |  2 ++
+ kernel/rcu/tree.c                 |  2 --
+ kernel/rcu/update.c               |  2 +-
+ kernel/sched/idle.c               | 10 +++++-----
+ kernel/sched/sched.h              |  1 +
+ kernel/time/Kconfig               |  6 ++++++
+ 14 files changed, 53 insertions(+), 20 deletions(-)
 
-> ---
->  include/linux/hw_breakpoint.h | 1 -
->  kernel/events/hw_breakpoint.c | 4 +++-
->  2 files changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/hw_breakpoint.h b/include/linux/hw_breakpoint.h
-> index 78dd7035d1e5..9fa3547acd87 100644
-> --- a/include/linux/hw_breakpoint.h
-> +++ b/include/linux/hw_breakpoint.h
-> @@ -79,7 +79,6 @@ extern int dbg_reserve_bp_slot(struct perf_event *bp);
->  extern int dbg_release_bp_slot(struct perf_event *bp);
->  extern int reserve_bp_slot(struct perf_event *bp);
->  extern void release_bp_slot(struct perf_event *bp);
-> -int hw_breakpoint_weight(struct perf_event *bp);
->  int arch_reserve_bp_slot(struct perf_event *bp);
->  void arch_release_bp_slot(struct perf_event *bp);
->  void arch_unregister_hw_breakpoint(struct perf_event *bp);
-> diff --git a/kernel/events/hw_breakpoint.c b/kernel/events/hw_breakpoint.c
-> index a089302ddf59..a124786e3ade 100644
-> --- a/kernel/events/hw_breakpoint.c
-> +++ b/kernel/events/hw_breakpoint.c
-> @@ -124,10 +124,12 @@ static __init int init_breakpoint_slots(void)
->  }
->  #endif
->
-> -__weak int hw_breakpoint_weight(struct perf_event *bp)
-> +#ifndef hw_breakpoint_weight
-> +static inline int hw_breakpoint_weight(struct perf_event *bp)
->  {
->         return 1;
->  }
-> +#endif
->
->  static inline enum bp_type_idx find_slot_idx(u64 bp_type)
->  {
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+diff --git a/Documentation/RCU/stallwarn.rst b/Documentation/RCU/stallwarn.rst
+index 794837eb519b..b95bda7755fa 100644
+--- a/Documentation/RCU/stallwarn.rst
++++ b/Documentation/RCU/stallwarn.rst
+@@ -97,8 +97,8 @@ warnings:
+ 	which will include additional debugging information.
+ 
+ -	A low-level kernel issue that either fails to invoke one of the
+-	variants of rcu_user_enter(), rcu_user_exit(), rcu_idle_enter(),
+-	rcu_idle_exit(), rcu_irq_enter(), or rcu_irq_exit() on the one
++	variants of rcu_user_enter(), rcu_user_exit(), ct_idle_enter(),
++	ct_idle_exit(), rcu_irq_enter(), or rcu_irq_exit() on the one
+ 	hand, or that invokes one of them too many times on the other.
+ 	Historically, the most frequent issue has been an omission
+ 	of either irq_enter() or irq_exit(), which in turn invoke
+diff --git a/arch/arm/mach-imx/cpuidle-imx6q.c b/arch/arm/mach-imx/cpuidle-imx6q.c
+index 094337dc1bc7..d086cbae09c3 100644
+--- a/arch/arm/mach-imx/cpuidle-imx6q.c
++++ b/arch/arm/mach-imx/cpuidle-imx6q.c
+@@ -3,6 +3,7 @@
+  * Copyright (C) 2012 Freescale Semiconductor, Inc.
+  */
+ 
++#include <linux/context_tracking.h>
+ #include <linux/cpuidle.h>
+ #include <linux/module.h>
+ #include <asm/cpuidle.h>
+@@ -24,9 +25,9 @@ static int imx6q_enter_wait(struct cpuidle_device *dev,
+ 		imx6_set_lpm(WAIT_UNCLOCKED);
+ 	raw_spin_unlock(&cpuidle_lock);
+ 
+-	rcu_idle_enter();
++	ct_idle_enter();
+ 	cpu_do_idle();
+-	rcu_idle_exit();
++	ct_idle_exit();
+ 
+ 	raw_spin_lock(&cpuidle_lock);
+ 	if (num_idle_cpus-- == num_online_cpus())
+diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
+index 6a5572a1a80c..1401d193a2df 100644
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -23,6 +23,7 @@
+ #include <linux/minmax.h>
+ #include <linux/perf_event.h>
+ #include <acpi/processor.h>
++#include <linux/context_tracking.h>
+ 
+ /*
+  * Include the apic definitions for x86 to have the APIC timer related defines
+@@ -647,11 +648,11 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 		raw_spin_unlock(&c3_lock);
+ 	}
+ 
+-	rcu_idle_enter();
++	ct_idle_enter();
+ 
+ 	acpi_idle_do_entry(cx);
+ 
+-	rcu_idle_exit();
++	ct_idle_exit();
+ 
+ 	/* Re-enable bus master arbitration */
+ 	if (dis_bm) {
+diff --git a/drivers/cpuidle/cpuidle.c b/drivers/cpuidle/cpuidle.c
+index ef2ea1b12cd8..62dd956025f3 100644
+--- a/drivers/cpuidle/cpuidle.c
++++ b/drivers/cpuidle/cpuidle.c
+@@ -23,6 +23,7 @@
+ #include <linux/suspend.h>
+ #include <linux/tick.h>
+ #include <linux/mmu_context.h>
++#include <linux/context_tracking.h>
+ #include <trace/events/power.h>
+ 
+ #include "cpuidle.h"
+@@ -150,12 +151,12 @@ static void enter_s2idle_proper(struct cpuidle_driver *drv,
+ 	 */
+ 	stop_critical_timings();
+ 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+-		rcu_idle_enter();
++		ct_idle_enter();
+ 	target_state->enter_s2idle(dev, drv, index);
+ 	if (WARN_ON_ONCE(!irqs_disabled()))
+ 		local_irq_disable();
+ 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+-		rcu_idle_exit();
++		ct_idle_exit();
+ 	tick_unfreeze();
+ 	start_critical_timings();
+ 
+@@ -233,10 +234,10 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
+ 
+ 	stop_critical_timings();
+ 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+-		rcu_idle_enter();
++		ct_idle_enter();
+ 	entered_state = target_state->enter(dev, drv, index);
+ 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+-		rcu_idle_exit();
++		ct_idle_exit();
+ 	start_critical_timings();
+ 
+ 	sched_clock_idle_wakeup_event();
+diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
+index e35ae66b4794..01abadb2f993 100644
+--- a/include/linux/context_tracking.h
++++ b/include/linux/context_tracking.h
+@@ -119,4 +119,12 @@ extern void context_tracking_init(void);
+ static inline void context_tracking_init(void) { }
+ #endif /* CONFIG_CONTEXT_TRACKING_USER_FORCE */
+ 
++#ifdef CONFIG_CONTEXT_TRACKING_IDLE
++extern void ct_idle_enter(void);
++extern void ct_idle_exit(void);
++#else
++static inline void ct_idle_enter(void) { }
++static inline void ct_idle_exit(void) { }
++#endif /* !CONFIG_CONTEXT_TRACKING_IDLE */
++
+ #endif
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index 1a32036c918c..6ebe754501c3 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -128,7 +128,7 @@ static inline void rcu_nocb_flush_deferred_wakeup(void) { }
+  * @a: Code that RCU needs to pay attention to.
+  *
+  * RCU read-side critical sections are forbidden in the inner idle loop,
+- * that is, between the rcu_idle_enter() and the rcu_idle_exit() -- RCU
++ * that is, between the ct_idle_enter() and the ct_idle_exit() -- RCU
+  * will happily ignore any such read-side critical sections.  However,
+  * things like powertop need tracepoints in the inner idle loop.
+  *
+diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
+index f3dec1be2bf6..c0b3798d4e94 100644
+--- a/kernel/context_tracking.c
++++ b/kernel/context_tracking.c
+@@ -22,6 +22,21 @@
+ #include <linux/export.h>
+ #include <linux/kprobes.h>
+ 
++
++#ifdef CONFIG_CONTEXT_TRACKING_IDLE
++noinstr void ct_idle_enter(void)
++{
++	rcu_idle_enter();
++}
++EXPORT_SYMBOL_GPL(ct_idle_enter);
++
++void ct_idle_exit(void)
++{
++	rcu_idle_exit();
++}
++EXPORT_SYMBOL_GPL(ct_idle_exit);
++#endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
++
+ #ifdef CONFIG_CONTEXT_TRACKING_USER
+ 
+ #define CREATE_TRACE_POINTS
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index f06b91ca6482..5ea690cb4f7a 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6570,7 +6570,7 @@ void lockdep_rcu_suspicious(const char *file, const int line, const char *s)
+ 
+ 	/*
+ 	 * If a CPU is in the RCU-free window in idle (ie: in the section
+-	 * between rcu_idle_enter() and rcu_idle_exit(), then RCU
++	 * between ct_idle_enter() and ct_idle_exit(), then RCU
+ 	 * considers that CPU to be in an "extended quiescent state",
+ 	 * which means that RCU will be completely ignoring that CPU.
+ 	 * Therefore, rcu_read_lock() and friends have absolutely no
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index 1c630e573548..3fa24e63d6f9 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -8,6 +8,8 @@ menu "RCU Subsystem"
+ config TREE_RCU
+ 	bool
+ 	default y if SMP
++	# Dynticks-idle tracking
++	select CONTEXT_TRACKING_IDLE
+ 	help
+ 	  This option selects the RCU implementation that is
+ 	  designed for very large SMP system with hundreds or
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 9a5edab5558c..051fed0844b6 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -664,7 +664,6 @@ void noinstr rcu_idle_enter(void)
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
+ 	rcu_eqs_enter(false);
+ }
+-EXPORT_SYMBOL_GPL(rcu_idle_enter);
+ 
+ #ifdef CONFIG_NO_HZ_FULL
+ 
+@@ -904,7 +903,6 @@ void noinstr rcu_idle_exit(void)
+ 	rcu_eqs_exit(false);
+ 	raw_local_irq_restore(flags);
+ }
+-EXPORT_SYMBOL_GPL(rcu_idle_exit);
+ 
+ #ifdef CONFIG_NO_HZ_FULL
+ /**
+diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
+index fc7fef575606..147214b2cd68 100644
+--- a/kernel/rcu/update.c
++++ b/kernel/rcu/update.c
+@@ -85,7 +85,7 @@ module_param(rcu_normal_after_boot, int, 0444);
+  * and while lockdep is disabled.
+  *
+  * Note that if the CPU is in the idle loop from an RCU point of view (ie:
+- * that we are in the section between rcu_idle_enter() and rcu_idle_exit())
++ * that we are in the section between ct_idle_enter() and ct_idle_exit())
+  * then rcu_read_lock_held() sets ``*ret`` to false even if the CPU did an
+  * rcu_read_lock().  The reason for this is that RCU ignores CPUs that are
+  * in such a section, considering these as in extended quiescent state,
+diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
+index 328cccbee444..f26ab2675f7d 100644
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -53,14 +53,14 @@ static noinline int __cpuidle cpu_idle_poll(void)
+ {
+ 	trace_cpu_idle(0, smp_processor_id());
+ 	stop_critical_timings();
+-	rcu_idle_enter();
++	ct_idle_enter();
+ 	local_irq_enable();
+ 
+ 	while (!tif_need_resched() &&
+ 	       (cpu_idle_force_poll || tick_check_broadcast_expired()))
+ 		cpu_relax();
+ 
+-	rcu_idle_exit();
++	ct_idle_exit();
+ 	start_critical_timings();
+ 	trace_cpu_idle(PWR_EVENT_EXIT, smp_processor_id());
+ 
+@@ -98,12 +98,12 @@ void __cpuidle default_idle_call(void)
+ 		 *
+ 		 * Trace IRQs enable here, then switch off RCU, and have
+ 		 * arch_cpu_idle() use raw_local_irq_enable(). Note that
+-		 * rcu_idle_enter() relies on lockdep IRQ state, so switch that
++		 * ct_idle_enter() relies on lockdep IRQ state, so switch that
+ 		 * last -- this is very similar to the entry code.
+ 		 */
+ 		trace_hardirqs_on_prepare();
+ 		lockdep_hardirqs_on_prepare();
+-		rcu_idle_enter();
++		ct_idle_enter();
+ 		lockdep_hardirqs_on(_THIS_IP_);
+ 
+ 		arch_cpu_idle();
+@@ -116,7 +116,7 @@ void __cpuidle default_idle_call(void)
+ 		 */
+ 		raw_local_irq_disable();
+ 		lockdep_hardirqs_off(_THIS_IP_);
+-		rcu_idle_exit();
++		ct_idle_exit();
+ 		lockdep_hardirqs_on(_THIS_IP_);
+ 		raw_local_irq_enable();
+ 
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 47b89a0fc6e5..0cfe2d0af294 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -27,6 +27,7 @@
+ #include <linux/capability.h>
+ #include <linux/cgroup_api.h>
+ #include <linux/cgroup.h>
++#include <linux/context_tracking.h>
+ #include <linux/cpufreq.h>
+ #include <linux/cpumask_api.h>
+ #include <linux/ctype.h>
+diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
+index 41f99bcfe9e6..a41753be1a2b 100644
+--- a/kernel/time/Kconfig
++++ b/kernel/time/Kconfig
+@@ -76,6 +76,12 @@ config TIME_KUNIT_TEST
+ config CONTEXT_TRACKING
+ 	bool
+ 
++config CONTEXT_TRACKING_IDLE
++	bool
++	select CONTEXT_TRACKING
++	help
++	  Tracks idle state on behalf of RCU.
++
+ if GENERIC_CLOCKEVENTS
+ menu "Timers subsystem"
+ 
+-- 
+2.25.1
+
