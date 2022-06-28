@@ -2,165 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA464C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE79C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbiF1U4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 16:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
+        id S230208AbiF1U5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiF1U4h (ORCPT
+        with ESMTP id S229733AbiF1U5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 16:56:37 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB7238BE9
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:56:35 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id q132so24273286ybg.10
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 13:56:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yKQEF36ycuzYUOPVu3KHfZYhntaUg963Kzu5sKnBaTc=;
-        b=hrycYo1Ilsww+6NSQ+00snPQqSnCaqYxagPNrHHbji/zEqKK13+YAs/PV+CuDfQbBu
-         1hqyk4kUqZ87fcFU2QapjCjwUok2kTlDVLOgj8IhXpbiZ6Pk2rqljqQjXtn+fUJOBF4o
-         lHcwA+kIIuZmPGVBLi+HinV4qMJyrpvEDpgMU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yKQEF36ycuzYUOPVu3KHfZYhntaUg963Kzu5sKnBaTc=;
-        b=0xMESutbaaHXYUj31rxyM5DaQkkfbQuBomYAkFfmw2HLma675hCXCBfu8qDp73WB7a
-         7ZdFKlAnEDAu7rxNjbI5AQnRoOZhLg19Z+KGlJasnVWXNx+xiCQMMyCYNeEnG1WxO3mO
-         AlmXVgZofSDL9Xe5XYA0UNVTjTVUo88PwXx+Ql9wIRu0Ffq9hVGQLMjma3GT6vmZMmQ6
-         MG65+iVha2Cw8U44eW6s8hDloXzSKIF21b/ioJ+OO24EX3rgxLNvS55HqkqmvmZpd8Qr
-         HQYDUAMAmW0Vxpu/zads74aK3I5id08hSQ4MPC23M00BBA9s1yWtMhFzSytXMuP7yvs/
-         7VhA==
-X-Gm-Message-State: AJIora+GXZTnNy90ylEhT1Ce3MYhzCH1VXXEiwtO31g0/irxnhzzPm+B
-        eDsLPAJfuJ1xxW6cl2DuU5kGr/A/hn6d92HvNoQtCA==
-X-Google-Smtp-Source: AGRyM1vOU4sWRKsuKs1MQzRMOWXKj7H/A1ySaV28jwKyhx0FOruidnjEBvhX9AMkjs2jfYPoSZZSOGETFzHMDMKUVHo=
-X-Received: by 2002:a25:da0b:0:b0:66c:850f:1b71 with SMTP id
- n11-20020a25da0b000000b0066c850f1b71mr22360839ybf.336.1656449794292; Tue, 28
- Jun 2022 13:56:34 -0700 (PDT)
+        Tue, 28 Jun 2022 16:57:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1724838DA8;
+        Tue, 28 Jun 2022 13:57:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD56DB81F8C;
+        Tue, 28 Jun 2022 20:57:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F0DC341C8;
+        Tue, 28 Jun 2022 20:57:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656449829;
+        bh=JYjpGNT6iEQTqD1KKuuhn/8Y9wh6ZQGSQyJkPuIoo+8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZvOztGuB2lWfBDSlogHmcoiTa/KqdhlmdFnYHIGLR/JnJA89NgtoYgugSdXnJzAYy
+         xs4vORpyPVQqXK63ZGVHbgXzSnZ8lDPULFeXe2t9hIrQTOp5ZSEU/lh7t+M+mQKJQr
+         7OO8yBZEr1tgdZcLSEfDDnJVPR1BVRHvssPcSLJ5TmRF89QdniFCZO12YAhFFQD3LN
+         a1uc5cO/+uXCRpjkv8EXGyF0Am+kHLfyj9r6gVPCXhJZV/vekNCssNF8CHgZDXPhij
+         VWjyOD5cpcC+KSQLJHCwyHl6XALIgaf5Yz0X6Wl8aZkeSQCeUyYNsYHKLdPusdl6qK
+         ktmiW5J2fPNwQ==
+Date:   Tue, 28 Jun 2022 13:57:09 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Dave Chinner <david@fromorbit.com>, linux-xfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>, linux-mm@kvack.org
+Subject: Re: Multi-page folio issues in 5.19-rc4 (was [PATCH v3 25/25] xfs:
+ Support large folios)
+Message-ID: <YrtrJRxg8ZoSr3kr@magnolia>
+References: <20211216210715.3801857-1-willy@infradead.org>
+ <20211216210715.3801857-26-willy@infradead.org>
+ <YrO243DkbckLTfP7@magnolia>
+ <Yrku31ws6OCxRGSQ@magnolia>
+ <Yrm6YM2uS+qOoPcn@casper.infradead.org>
+ <YrosM1+yvMYliw2l@magnolia>
+ <20220628073120.GI227878@dread.disaster.area>
+ <YrrlrMK/7pyZwZj2@casper.infradead.org>
+ <Yrrmq4hmJPkf5V7s@casper.infradead.org>
+ <Yrr/oBlf1Eig8uKS@casper.infradead.org>
 MIME-Version: 1.0
-References: <20220622173605.1168416-1-pmalani@chromium.org>
- <20220622173605.1168416-6-pmalani@chromium.org> <CAE-0n517BB8YbN5AZG6M3ZrZGOJDV=+t0R9d8wD+gVqO1aD1Xg@mail.gmail.com>
- <CACeCKafR8hFke_tc2=1VGDNF-CFrZoAG1aUKuxGJG-6pd37hbg@mail.gmail.com> <CAE-0n50XbO5Wu4-429Ao05A4QrbSXoi1wBjTpGFjKm3pZj1Ybg@mail.gmail.com>
-In-Reply-To: <CAE-0n50XbO5Wu4-429Ao05A4QrbSXoi1wBjTpGFjKm3pZj1Ybg@mail.gmail.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Tue, 28 Jun 2022 13:56:22 -0700
-Message-ID: <CACeCKafzB0wW_B2TOEWywLMyB+UhYCpXYDVBV=UbyxBiGnv1Rw@mail.gmail.com>
-Subject: Re: [PATCH v5 5/9] drm/bridge: anx7625: Add typec_mux_set callback function
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Pin-Yen Lin <treapking@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yrr/oBlf1Eig8uKS@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 1:40 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Prashant Malani (2022-06-28 12:48:11)
-> > On Tue, Jun 28, 2022 at 12:25 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> > >
-> > > Quoting Prashant Malani (2022-06-22 10:34:34)
-> > > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > > index bd21f159b973..5992fc8beeeb 100644
-> > > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> [..]
-> > > > +
-> > > > +       if (ctx->num_typec_switches == 1)
-> > >
-> > > How do we handle the case where the usb-c-connector is directly
-> > > connected to the RX1/TX1 and RX2/TX2 pins? This device would be an
-> > > orientation (normal/reverse) and mode switch (usb/dp) in that scenario,
-> > > but this code is written in a way that the orientation switch isn't
-> > > going to flip the crosspoint switch for the different pin assignments.
-> >
-> > If all 4 SS lanes are connected to 1 usb-c-connector; there would be
-> > just 1 "typec-switch" node.
-> > In that case, the DT would only specify it as an "orientation-switch"
-> > and register
-> > an orientation-switch with the Type-C framework. The orientation switch would
-> > pretty much do what the mode-switch callback does here (configuring
-> > the crosspoint
-> > switch).
-> > One could also register a "mode-switch" there but it wouldn't do
-> > anything (all 4 lanes are already
-> > connected so there is nothing to re-route in the crosspoint switch).
-> > Hence the above "if" check.
->
-> Would we still want to route the DP traffic out if the pin assignment
-> didn't have DP? Does the hardware support some mode where the DP traffic
-> is shutdown? Or maybe the HPD pin needs to be quieted unless DP is
-> assigned?
+On Tue, Jun 28, 2022 at 02:18:24PM +0100, Matthew Wilcox wrote:
+> On Tue, Jun 28, 2022 at 12:31:55PM +0100, Matthew Wilcox wrote:
+> > On Tue, Jun 28, 2022 at 12:27:40PM +0100, Matthew Wilcox wrote:
+> > > On Tue, Jun 28, 2022 at 05:31:20PM +1000, Dave Chinner wrote:
+> > > > So using this technique, I've discovered that there's a dirty page
+> > > > accounting leak that eventually results in fsx hanging in
+> > > > balance_dirty_pages().
+> > > 
+> > > Alas, I think this is only an accounting error, and not related to
+> > > the problem(s) that Darrick & Zorro are seeing.  I think what you're
+> > > seeing is dirty pages being dropped at truncation without the
+> > > appropriate accounting.  ie this should be the fix:
+> > 
+> > Argh, try one that actually compiles.
+> 
+> ... that one's going to underflow the accounting.  Maybe I shouldn't
+> be writing code at 6am?
 
-I reference this below, but in the 1 connector case, CC lines would also be
-routed to the anx7625 from the usb-connector, so it will know when HPD
-is asserted
-or not.
+I dunno, it's been running on my test VMs for 160 minutes (same debug
+setup as yesterday) and 100 minutes (regular g/522, no -C/-I flags to
+fsx, no debugging junk) and neither have reported corruptions.
 
->
-> I suppose none of those things matter though as long as there is some
-> typec switch registered here so that the driver can be informed of the
-> pin assignment. Is it right that the "mode-switch" property is only
-> required in DT if this device is going to control the mode of the
-> connector, i.e. USB+DP, or just DP? Where this device can't do that
-> because it doesn't support only DP.
+$ grep Dirty /proc/meminfo
+Dirty:               100 kB
 
-If the anx7625 is used just to route all lanes from 1 usb-c-connector (i.e
-the USB+DP case), a mode-switch wouldn't be of much use, since one
-would also route the CC lines to the built-in PD controller; so it will
-already have knowledge of what mode the switch is in.
+So, pretty good for writing code at 6am while on holiday.  I'll let this
+run overnight, but I think you've fixed the problem, at least for me...
 
-The mode-switch is likely only relevant for this hardware configuration(
-it's "DP only" in the sense that the USB pins to the SoC never go anywhere).
-One only has 2 SS lanes each (from each usb-c-connector).
+--D
 
-Since there is no CC-line, the anx7625 needs to know which one has DP
-enabled on it.
-
->
-> >
-> > Unfortunately, I don't have hardware which connects all 4 SS lanes
-> > from 1 Type-C port
-> > to the anx7625, so I didn't add the orientation switch handling to the
-> > driver (since I have no way of verifying it).
->
-> Alright. Maybe add a TODO then so it's more obvious that orientation
-> isn't handled.
-
-Ack. Will add a comment in v6.
-
->
-> >
-> > Regarding DP alt-mode pin assignments : I think anx7625 will only support Pin D
-> > (only 2 lane DP, no 4 lane DP).
-> >
->
-> Makes sense. Thanks!
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index f7248002dad9..4eec6ee83e44 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/shrinker.h>
+>  #include <linux/mm_inline.h>
+>  #include <linux/swapops.h>
+> +#include <linux/backing-dev.h>
+>  #include <linux/dax.h>
+>  #include <linux/khugepaged.h>
+>  #include <linux/freezer.h>
+> @@ -2439,11 +2440,15 @@ static void __split_huge_page(struct page *page, struct list_head *list,
+>  		__split_huge_page_tail(head, i, lruvec, list);
+>  		/* Some pages can be beyond EOF: drop them from page cache */
+>  		if (head[i].index >= end) {
+> -			ClearPageDirty(head + i);
+> -			__delete_from_page_cache(head + i, NULL);
+> +			struct folio *tail = page_folio(head + i);
+> +
+>  			if (shmem_mapping(head->mapping))
+>  				shmem_uncharge(head->mapping->host, 1);
+> -			put_page(head + i);
+> +			else if (folio_test_clear_dirty(tail))
+> +				folio_account_cleaned(tail,
+> +					inode_to_wb(folio->mapping->host));
+> +			__filemap_remove_folio(tail, NULL);
+> +			folio_put(tail);
+>  		} else if (!PageAnon(page)) {
+>  			__xa_store(&head->mapping->i_pages, head[i].index,
+>  					head + i, 0);
