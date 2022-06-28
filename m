@@ -2,132 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02399CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8A4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbiF1WuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 18:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
+        id S231206AbiF1Wua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 18:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiF1WuK (ORCPT
+        with ESMTP id S230396AbiF1Wu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 18:50:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DE3139833
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656456608;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=W3kLhAZGK2ncHck2YD7sSY1Nrpc3ON/goS7rYhosu+8=;
-        b=UL1SNrMwUdd20s0cmAaG3JJ2iRMZW4q3oCJwymQxqFI0j5fBBS9VBlwy78BQ0Sl0fXBv5n
-        cA/n+wWOjakgC2kc/8BYvqqbR+y/laS/f1SiVFMj3EEDybVJ/4Yy1OuUPGusRjxT471g8R
-        iG/pqxJAawUAz7fOzaIw3qzBVz9LqmY=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-384-T_bPul65N5WCITLsYaO6xg-1; Tue, 28 Jun 2022 18:50:07 -0400
-X-MC-Unique: T_bPul65N5WCITLsYaO6xg-1
-Received: by mail-io1-f72.google.com with SMTP id x4-20020a6bd004000000b00675354ad495so4047011ioa.20
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:50:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W3kLhAZGK2ncHck2YD7sSY1Nrpc3ON/goS7rYhosu+8=;
-        b=ltXI0tGmjPjFvbVR8axGPBkbYF394vc+wFf2XO3zkD8SRkUaMN8FB4v5W9/U2OQujC
-         xONkvcHL7sPn1DZuc3BruZQs3kcqBpun1VfpBuqLeXxlN5T4lVLwue5mCZb5RpLw57H0
-         LY8AmLJV/FVtYZi+mQRh63/CE8R/Jtz1F7wzTLCIQzdcOT0qve/2vKsHzCVByxiXTr9I
-         2kHgF/DAWPihO087NM7vBg0E/OPaD4dHaCYHAmoBgXyqhI967q3lfw1ex8TDgIwZcrLa
-         mGdkmDGcPmqWcedqWMbHJrDIc+qlHB+bijr/TKj7rvdqKbxRUH5dwyXg37TVkSeXHCtM
-         Z0hA==
-X-Gm-Message-State: AJIora/ir4eykBSE2P7LQJRyIZongawkmitLBhaNg3tz5fZvd/K4TDL3
-        2Lx9HehKQGqgN+4ZVpbmZvD/sYAWRc7kGsTD0MXP42zNThc6SQJc/Xhf3kbytffsgaYvQidbccq
-        pthWFC0nnGX5pvOALNtVzX58J
-X-Received: by 2002:a05:6e02:15c9:b0:2da:c33e:49c7 with SMTP id q9-20020a056e0215c900b002dac33e49c7mr18965ilu.26.1656456606271;
-        Tue, 28 Jun 2022 15:50:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uvOepd4UW7ERHSNp4aEwCJ76y/hhPsMiiTQrUS6nrxdaYCpU21kA6tkiY9yBbjfWLSCFQliA==
-X-Received: by 2002:a05:6e02:15c9:b0:2da:c33e:49c7 with SMTP id q9-20020a056e0215c900b002dac33e49c7mr18948ilu.26.1656456606042;
-        Tue, 28 Jun 2022 15:50:06 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id j25-20020a02a699000000b00339c33df66bsm6537922jam.118.2022.06.28.15.50.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 15:50:05 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 18:50:03 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH 2/4] kvm: Merge "atomic" and "write" in
- __gfn_to_pfn_memslot()
-Message-ID: <YruFm8vJMPxVUJTO@xz-m1.local>
-References: <20220622213656.81546-1-peterx@redhat.com>
- <20220622213656.81546-3-peterx@redhat.com>
- <c047c213-252b-4a0b-9720-070307962d23@nvidia.com>
- <Yrtar+i2X0YjmD/F@xz-m1.local>
- <02831f10-3077-8836-34d0-bb853516099f@nvidia.com>
+        Tue, 28 Jun 2022 18:50:28 -0400
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 954DF39833;
+        Tue, 28 Jun 2022 15:50:27 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 092A910E7862;
+        Wed, 29 Jun 2022 08:17:58 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1o6JWv-00CEcF-Ry; Wed, 29 Jun 2022 08:17:57 +1000
+Date:   Wed, 29 Jun 2022 08:17:57 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>, linux-xfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>, linux-mm@kvack.org
+Subject: Re: Multi-page folio issues in 5.19-rc4 (was [PATCH v3 25/25] xfs:
+ Support large folios)
+Message-ID: <20220628221757.GJ227878@dread.disaster.area>
+References: <20211216210715.3801857-1-willy@infradead.org>
+ <20211216210715.3801857-26-willy@infradead.org>
+ <YrO243DkbckLTfP7@magnolia>
+ <Yrku31ws6OCxRGSQ@magnolia>
+ <Yrm6YM2uS+qOoPcn@casper.infradead.org>
+ <YrosM1+yvMYliw2l@magnolia>
+ <20220628073120.GI227878@dread.disaster.area>
+ <YrrlrMK/7pyZwZj2@casper.infradead.org>
+ <Yrrmq4hmJPkf5V7s@casper.infradead.org>
+ <Yrr/oBlf1Eig8uKS@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <02831f10-3077-8836-34d0-bb853516099f@nvidia.com>
+In-Reply-To: <Yrr/oBlf1Eig8uKS@casper.infradead.org>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=62bb7e19
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=kj9zAlcOel0A:10 a=JPEYwPQDsx4A:10 a=20KFwNOVAAAA:8 a=7-415B0cAAAA:8
+        a=I0e5OopBZKVaJ7lt07gA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 02:52:04PM -0700, John Hubbard wrote:
-> On 6/28/22 12:46, Peter Xu wrote:
-> > I'd try to argu with "I prefixed it with kvm_", but oh well.. yes they're a
-> > bit close :)
-> > 
+On Tue, Jun 28, 2022 at 02:18:24PM +0100, Matthew Wilcox wrote:
+> On Tue, Jun 28, 2022 at 12:31:55PM +0100, Matthew Wilcox wrote:
+> > On Tue, Jun 28, 2022 at 12:27:40PM +0100, Matthew Wilcox wrote:
+> > > On Tue, Jun 28, 2022 at 05:31:20PM +1000, Dave Chinner wrote:
+> > > > So using this technique, I've discovered that there's a dirty page
+> > > > accounting leak that eventually results in fsx hanging in
+> > > > balance_dirty_pages().
 > > > 
-> > > Yes, "read the code", but if you can come up with a better TLA than GTP
-> > > here, let's consider using it.
+> > > Alas, I think this is only an accounting error, and not related to
+> > > the problem(s) that Darrick & Zorro are seeing.  I think what you're
+> > > seeing is dirty pages being dropped at truncation without the
+> > > appropriate accounting.  ie this should be the fix:
 > > 
-> > Could I ask what's TLA?  Any suggestions on the abbrev, btw?
+> > Argh, try one that actually compiles.
 > 
-> "Three-Letter Acronym". I love "TLA" because the very fact that one has
-> to ask what it means, shows why using them makes it harder to communicate. :)
-
-Ha!
-
+> ... that one's going to underflow the accounting.  Maybe I shouldn't
+> be writing code at 6am?
 > 
-> As for alternatives, here I'll demonstrate that "GTP" actually is probably
-> better than anything else I can come up with, heh. Brainstorming:
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index f7248002dad9..4eec6ee83e44 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/shrinker.h>
+>  #include <linux/mm_inline.h>
+>  #include <linux/swapops.h>
+> +#include <linux/backing-dev.h>
+>  #include <linux/dax.h>
+>  #include <linux/khugepaged.h>
+>  #include <linux/freezer.h>
+> @@ -2439,11 +2440,15 @@ static void __split_huge_page(struct page *page, struct list_head *list,
+>  		__split_huge_page_tail(head, i, lruvec, list);
+>  		/* Some pages can be beyond EOF: drop them from page cache */
+>  		if (head[i].index >= end) {
+> -			ClearPageDirty(head + i);
+> -			__delete_from_page_cache(head + i, NULL);
+> +			struct folio *tail = page_folio(head + i);
+> +
+>  			if (shmem_mapping(head->mapping))
+>  				shmem_uncharge(head->mapping->host, 1);
+> -			put_page(head + i);
+> +			else if (folio_test_clear_dirty(tail))
+> +				folio_account_cleaned(tail,
+> +					inode_to_wb(folio->mapping->host));
+> +			__filemap_remove_folio(tail, NULL);
+> +			folio_put(tail);
+>  		} else if (!PageAnon(page)) {
+>  			__xa_store(&head->mapping->i_pages, head[i].index,
+>  					head + i, 0);
 > 
->     * GPN ("Guest pfn to pfn")
->     * GTPN (similar, but with a "T" for "to")
->     * GFNC ("guest frame number conversion")
 
-Always a challenge on the naming kongfu. :-D
+Yup, that fixes the leak.
 
-One good thing on using TLA in macros, flags and codes (rather than simply
-mention some three letters): we can easily jump to the label of any of the
-flags when we want to figure out what it means, and logically there'll (and
-should) be explanations of the abbrev in the headers if it's a good header.
+Tested-by: Dave Chinner <dchinner@redhat.com>
 
-Example: it's even not easy to figure out what GFP is in GFP_KERNEL flag
-for someone not familiar with mm (when I wrote this line, I got lost!), but
-when that happens we do jump label and at the entry of gfp.h we'll see:
+Cheers,
 
- * ...  The GFP acronym stands for get_free_pages(),
-
-And if you see the patch I actually did something similar (in kvm_host.h):
-
- /* gfn_to_pfn (gtp) flags */
- ...
-
-I'd still go for GTP, but let me know if you think any of the above is
-better, I can switch.
-
-Thanks,
-
+Dave.
 -- 
-Peter Xu
-
+Dave Chinner
+david@fromorbit.com
