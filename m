@@ -2,112 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D09B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241950AbiF1HIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44326 "EHLO
+        id S240824AbiF1HJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiF1HIf (ORCPT
+        with ESMTP id S229591AbiF1HJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:08:35 -0400
+        Tue, 28 Jun 2022 03:09:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4A0B4A0;
-        Tue, 28 Jun 2022 00:08:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEBAB1F7;
+        Tue, 28 Jun 2022 00:09:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A4E9B81CD2;
-        Tue, 28 Jun 2022 07:08:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5220EC341D0;
-        Tue, 28 Jun 2022 07:08:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656400112;
-        bh=Dm+i1ahm5JO1Y0z9h4uqTDK4kJt3Abm9W7KKXWn4iRE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qC+UQmphl8Hd+1T1U0QD9tDpqj4RMtyFkgyHY4s5qIB7gRI+xS50dQLQF60N4d53a
-         pt8nrB+n/0dsGBpX9rzm604Cauhg2V1pGMdOs9Z8ftj1edDPVWFevjoguG98IqrTXI
-         ivqLmEwSVJigzb4BvjUY8SyP2jqcLYvPGrfQt0+Lb4o5OGtjK05l74oqdAtZe6v+RV
-         EiZUgKYNvTN+ggir5o2MPXO4/eJKq2WsfCAQvCsHp1NxR2fH/lMZBuGL6JAF9vspsB
-         biRI4WdoUfZ8vhFQRuwocB5PEe84qldt+0c/fmHu+92iK9/LCneqYIva5kjHPnQFrz
-         CH1QITDOJFbvA==
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-318889e6a2cso107031767b3.1;
-        Tue, 28 Jun 2022 00:08:32 -0700 (PDT)
-X-Gm-Message-State: AJIora8MiVwDMPyfVFDg50UsNzIa8HEXJj852LRFNF2XK4Bl+jtVzBSX
-        IkfkG7HMbEQJR83rL6kkMQu46XNHYTFUCNfeJ4o=
-X-Google-Smtp-Source: AGRyM1vKbt5VKtzdC4XgmSFOrmSiRmjlG5/FEc3iJTDP+CtgJE9woQ9uDs2lLsQ8604dHCHHG6u5L7MmI7NPb3gwZE4=
-X-Received: by 2002:a81:1d43:0:b0:318:638d:2ca with SMTP id
- d64-20020a811d43000000b00318638d02camr20536106ywd.135.1656400111255; Tue, 28
- Jun 2022 00:08:31 -0700 (PDT)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04115B81C52;
+        Tue, 28 Jun 2022 07:09:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64907C3411D;
+        Tue, 28 Jun 2022 07:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656400148;
+        bh=KnezzPTo8Q9ZlvqT1K8y4aDTmHK/lvlmr89a7q7X7AY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bwWKIZpcQgl01V43jknNke+c7QERjiyVYr/1S+vMI76fgbiPRCCtanZJj8p6+GE2W
+         UGOwEWmm63w/OvylJOo7FZFgc1BTkHRybjZJj1eOntMjPuA/8ZVXwBQHFlGWXlgLAO
+         fiffY81sAwbmN+5uRO0xJH40HKesOhTFpit9LXLA=
+Date:   Tue, 28 Jun 2022 09:09:05 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: Re: [PATCH 5.18 112/181] vmcore: convert copy_oldmem_page() to take
+ an iov_iter
+Message-ID: <YrqpEZV3yu31t6E2@kroah.com>
+References: <20220627111944.553492442@linuxfoundation.org>
+ <20220627111947.945731832@linuxfoundation.org>
+ <YrnaYJA675eGIy03@osiris>
 MIME-Version: 1.0
-References: <20220617125750.728590-1-arnd@kernel.org> <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com> <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
- <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com> <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
-In-Reply-To: <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 28 Jun 2022 09:08:14 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
-Message-ID: <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        Khalid Aziz <khalid@gonehiking.org>,
-        "Maciej W . Rozycki" <macro@orcam.me.uk>,
-        Matt Wang <wwentao@vmware.com>,
-        Miquel van Smoorenburg <mikevs@xs4all.net>,
-        Mark Salyzyn <salyzyn@android.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Denis Efremov <efremov@linux.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrnaYJA675eGIy03@osiris>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 5:25 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
->
-> Leaving the bounce buffer handling in place, and taking a few other
-> liberties - this is what converting the easiest case (a3000 SCSI) might
-> look like. Any obvious mistakes? The mvme147 driver would be very
-> similar to handle (after conversion to a platform device).
->
-> The driver allocates bounce buffers using kmalloc if it hits an
-> unaligned data buffer - can such buffers still even happen these days?
-> If I understand dma_map_single() correctly, the resulting dma handle
-> would be equally misaligned?
->
-> To allocate a bounce buffer, would it be OK to use dma_alloc_coherent()
-> even though AFAIU memory used for DMA buffers generally isn't consistent
-> on m68k?
+On Mon, Jun 27, 2022 at 06:27:12PM +0200, Heiko Carstens wrote:
+> On Mon, Jun 27, 2022 at 01:21:25PM +0200, Greg Kroah-Hartman wrote:
+> > From: Matthew Wilcox (Oracle) <willy@infradead.org>
+> > 
+> > [ Upstream commit 5d8de293c224896a4da99763fce4f9794308caf4 ]
+> > 
+> > Patch series "Convert vmcore to use an iov_iter", v5.
+> > 
+> > For some reason several people have been sending bad patches to fix
+> > compiler warnings in vmcore recently.  Here's how it should be done.
+> > Compile-tested only on x86.  As noted in the first patch, s390 should take
+> > this conversion a bit further, but I'm not inclined to do that work
+> > myself.
+> > 
+> > This patch (of 3):
+> > 
+> > Instead of passing in a 'buf' and 'userbuf' argument, pass in an iov_iter.
+> > s390 needs more work to pass the iov_iter down further, or refactor, but
+> > I'd be more comfortable if someone who can test on s390 did that work.
+> > 
+> > It's more convenient to convert the whole of read_from_oldmem() to take an
+> > iov_iter at the same time, so rename it to read_from_oldmem_iter() and add
+> > a temporary read_from_oldmem() wrapper that creates an iov_iter.
+> > 
+> > Link: https://lkml.kernel.org/r/20220408090636.560886-1-bhe@redhat.com
+> > Link: https://lkml.kernel.org/r/20220408090636.560886-2-bhe@redhat.com
+> > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> > Signed-off-by: Baoquan He <bhe@redhat.com>
+> > Reviewed-by: Christoph Hellwig <hch@lst.de>
+> > Cc: Heiko Carstens <hca@linux.ibm.com>
+> > Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> > Signed-off-by: Sasha Levin <sashal@kernel.org>
+> > ---
+> >  arch/arm/kernel/crash_dump.c     | 27 +++-------------
+> >  arch/arm64/kernel/crash_dump.c   | 29 +++--------------
+> >  arch/ia64/kernel/crash_dump.c    | 32 +++----------------
+> >  arch/mips/kernel/crash_dump.c    | 27 +++-------------
+> >  arch/powerpc/kernel/crash_dump.c | 35 +++------------------
+> >  arch/riscv/kernel/crash_dump.c   | 26 +++------------
+> >  arch/s390/kernel/crash_dump.c    | 13 +++++---
+> >  arch/sh/kernel/crash_dump.c      | 29 +++--------------
+> >  arch/x86/kernel/crash_dump_32.c  | 29 +++--------------
+> >  arch/x86/kernel/crash_dump_64.c  | 41 +++++++-----------------
+> >  fs/proc/vmcore.c                 | 54 ++++++++++++++++++++------------
+> >  include/linux/crash_dump.h       |  9 +++---
+> >  12 files changed, 91 insertions(+), 260 deletions(-)
+> 
+> This one breaks s390. You would also need to apply the following two commits:
+> 
+> cc02e6e21aa5 ("s390/crash: add missing iterator advance in copy_oldmem_page()")
+> af2debd58bd7 ("s390/crash: make copy_oldmem_page() return number of bytes copied")
 
-I think it makes sense to skip the bounce buffering as you do here:
-the only standardized way we have for integrating that part is to
-use the swiotlb infrastructure, but as you mentioned earlier that
-part is probably too resource-heavy here for Amiga.
+Both of them are also in the 5.18-rc queue here, right?
 
-I see two other problems with your patch though:
+thanks,
 
-a) you still duplicate the cache handling: the cache_clear()/cache_push()
-is supposed to already be done by dma_map_single() when the device
-is not cache-coherent.
-
-b) The bounce buffer is never mapped here, instead you have the
-virt_to_phys() here, which is not the same. I think you need to map
-the pointer that actually gets passed down to the device after deciding
-to use a bouce buffer or not.
-
-     Arnd
+greg k-h
