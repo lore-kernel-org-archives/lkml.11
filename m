@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58878C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32774C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235142AbiF1TBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
+        id S235202AbiF1TBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiF1TA2 (ORCPT
+        with ESMTP id S234356AbiF1TA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 15:00:28 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE90418B28;
-        Tue, 28 Jun 2022 12:00:10 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id lw20so27726288ejb.4;
-        Tue, 28 Jun 2022 12:00:10 -0700 (PDT)
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582BF17A9C;
+        Tue, 28 Jun 2022 12:00:07 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id eq6so18872171edb.6;
+        Tue, 28 Jun 2022 12:00:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UONJeK+9EHyQ+C5KYc2Q0yOxdhk4aZ1zarcHPxbpVEY=;
-        b=FjK/M13ETjiXIqAKhIdhfR2WpMeaoovAIhcP2sJfYOENz6mOGZrIdO8aH75lI/KPt/
-         Bw6w/brAwILJ5A1STFGloCjay/dkeIX8LVUoVsiv1DPDXuVLNMJ6tnnoY2yqfVjgmkUJ
-         RJu9ettGHpJJRqrpuhvHkFgzuXHD9uH2jS/FRM2xYgm5XuWFgHwCLjllPdIhcWLj0bTA
-         53DWfk2ytIDL1j1WXZ2XNtjRv+kaU0dYAFMjMvdSEDjQx+4VrzfVxgdx5IDiYUuA47so
-         Nflx+Xnrx98AqgZRKw3crBq9oXycoJhapIZXVBZjS7zQ/yeqi+XCw4gaNNJBwtDNuuyd
-         ksTw==
+        bh=5DskBu6zK/vS94aIx3bV1D04eBSiML1zSrR0iXhmDVw=;
+        b=Xi3HjuCqDt5f5v6qFcqs8wBXNipUK5e1yBMsksvYLbz4Yug+qWtGS70p/lM1XWmFrK
+         7wi8pHMzynNaVaQ10q++3oSpKFsIK6cdPWxdfYPisyahGnut51iQaYt9w2NSNFyWjsWB
+         FUrh93nvW4mmO63XAlPT/S7cWsjjmQDntNIMoYqiNWQ5POCjwfC/tUfCZAYi62XBKZry
+         gsCkWhBrf+FFHLOUWoyb8+csdgi0iv8Di1l8YxG+OfGP/m6RLMnyRMh/M0nporHK7Lib
+         EkxrK4EadrtTk5GYbigaAttggzGWoBxlAkn4IYG6XTWCutmV+rnq1i2GBLbKOVIxXoWa
+         Ef5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UONJeK+9EHyQ+C5KYc2Q0yOxdhk4aZ1zarcHPxbpVEY=;
-        b=56+0NVYO+oV4DNIk609mZ/gb7cAqvPR3DEqu0S7OoOQGwYMwqSJPPC8ITw0MPF/Bt+
-         OBR5uOHsCSJp2NXfkYcj65CxVq+9sPUx+lurfGkWI/lWykosusC9HUwTQ8G3pMf/9UuM
-         +7Vh0HiSUPwnDFhaOVdT8w6EhFioG9ChXDFnoSnZ4qjYaLT5oBwUBH76/ziQaKbkx7wV
-         eLuwm6f6ViohaR7KCf05uxTqDIPmdAX/aKnTVhzshJiYp569bgAsPfz+r/HUpaay7nAC
-         1iPSXL1bhHpKH6upNKHZxd68/STCcDDiyiC6jjwHuptC9XgMEC43k7lUoW+jex0WimLV
-         qmvQ==
-X-Gm-Message-State: AJIora+vFrM4zFYWLKn3cYZDoWloWNarxxL/lr1rDOHSV3Y8snf82Px6
-        UW/IH9Mu3G19783COhiMgiPIc9wAAqO3Pw==
-X-Google-Smtp-Source: AGRyM1sqoPxWmG3jBD+RHQNAsgIEpV0+nyh4rKhc8jV5q3gGuiC0v43l5+foAmsZFEKZB9WiRCqV2Q==
-X-Received: by 2002:a17:907:1c01:b0:6f4:2692:e23 with SMTP id nc1-20020a1709071c0100b006f426920e23mr18883015ejc.243.1656442809225;
-        Tue, 28 Jun 2022 12:00:09 -0700 (PDT)
+        bh=5DskBu6zK/vS94aIx3bV1D04eBSiML1zSrR0iXhmDVw=;
+        b=HcylnpzhgE8tDe7Oxs8BcCJiJtrRnETlmNP4PwML2zlFNt6JfZl+TwwBDw6/GxEVdn
+         i7xrN/KIEaN49hZS5oYLurLcgbzJ7PXBfMqCXLon6gViZaMuRqRUY4LbRbcIzfzrZiNo
+         A9usV9alcH+HbY1aCGrHi3uZaG9J4gSwXCjmTs6huomAEhioPHcLh5qvA7Xbzq3MJj8S
+         mtBEt14tgVnLU2bt7zZkGTWokDYllV3f17xszFSpp5GaNCJJgQfYddANpCmeeEcF74Kp
+         P0SdvSKZlS26dgJj39ik8PIO52auNInFe/IlpGXcEs/oYd+IVfZ8d1fMbOe9ew2AkWoI
+         GpYg==
+X-Gm-Message-State: AJIora8iILo1StO+fJDuJRoRkVoQ9AfOZmTvLkqootUCWHh2a0743LQ0
+        ggiCxRWVdGs++JqK07+X06KFamYfZ0AagQ==
+X-Google-Smtp-Source: AGRyM1s7lwC8AO+svb+wrB69arjJr8HZojfDGncuroRBaSog16ZdmPUj3VX+v7AWqBS9n4T5TMrQQA==
+X-Received: by 2002:a05:6402:538d:b0:435:7ca6:a136 with SMTP id ew13-20020a056402538d00b004357ca6a136mr25601657edb.268.1656442805664;
+        Tue, 28 Jun 2022 12:00:05 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.08
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
+        Tue, 28 Jun 2022 12:00:05 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 14/29] io_uring: opcode independent fixed buf import
-Date:   Tue, 28 Jun 2022 19:56:36 +0100
-Message-Id: <b72ba1d67363445c1b660cb166713f68468f09a2.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 11/29] tcp: support zc with managed data
+Date:   Tue, 28 Jun 2022 19:56:33 +0100
+Message-Id: <2d0c627c125cf1019096e1db04264e1cb6149dec.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -69,43 +69,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extract an opcode independent helper from io_import_fixed for
-initialising an iov_iter with a fixed buffer.
+Also make tcp to use managed data and propagate SKBFL_MANAGED_FRAG_REFS
+to optimise frag pages referencing.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ net/ipv4/tcp.c | 51 +++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 34 insertions(+), 17 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 6a57a5ae18fb..e47629adf3f7 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3728,11 +3728,11 @@ static void kiocb_done(struct io_kiocb *req, ssize_t ret,
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 9984d23a7f3e..832c1afcdbe7 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1202,17 +1202,23 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ 	flags = msg->msg_flags;
+ 
+-	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
++	if ((flags & MSG_ZEROCOPY) && size) {
+ 		skb = tcp_write_queue_tail(sk);
+-		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
+-		if (!uarg) {
+-			err = -ENOBUFS;
+-			goto out_err;
+-		}
+ 
+-		zc = sk->sk_route_caps & NETIF_F_SG;
+-		if (!zc)
+-			uarg->zerocopy = 0;
++		if (msg->msg_ubuf) {
++			uarg = msg->msg_ubuf;
++			net_zcopy_get(uarg);
++			zc = sk->sk_route_caps & NETIF_F_SG;
++		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
++			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
++			if (!uarg) {
++				err = -ENOBUFS;
++				goto out_err;
++			}
++			zc = sk->sk_route_caps & NETIF_F_SG;
++			if (!zc)
++				uarg->zerocopy = 0;
++		}
  	}
- }
  
--static int __io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter,
--			     struct io_mapped_ubuf *imu)
-+static int __io_import_fixed(int rw, struct iov_iter *iter,
-+			     struct io_mapped_ubuf *imu,
-+			     u64 buf_addr, size_t len)
- {
--	size_t len = req->rw.len;
--	u64 buf_end, buf_addr = req->rw.addr;
-+	u64 buf_end;
- 	size_t offset;
+ 	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
+@@ -1335,8 +1341,13 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
- 	if (unlikely(check_add_overflow(buf_addr, (u64)len, &buf_end)))
-@@ -3802,7 +3802,7 @@ static int io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter,
- 		imu = READ_ONCE(ctx->user_bufs[index]);
- 		req->imu = imu;
- 	}
--	return __io_import_fixed(req, rw, iter, imu);
-+	return __io_import_fixed(rw, iter, imu, req->rw.addr, req->rw.len);
- }
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
  
- static int io_buffer_add_list(struct io_ring_ctx *ctx,
+-			if (tcp_downgrade_zcopy_pure(sk, skb) ||
+-			    !sk_wmem_schedule(sk, copy))
++			if (unlikely(skb_zcopy_pure(skb) || skb_zcopy_managed(skb))) {
++				if (tcp_downgrade_zcopy_pure(sk, skb))
++					goto wait_for_space;
++				skb_zcopy_downgrade_managed(skb);
++			}
++
++			if (!sk_wmem_schedule(sk, copy))
+ 				goto wait_for_space;
+ 
+ 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
+@@ -1357,14 +1368,20 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 			pfrag->offset += copy;
+ 		} else {
+ 			/* First append to a fragless skb builds initial
+-			 * pure zerocopy skb
++			 * zerocopy skb
+ 			 */
+-			if (!skb->len)
++			if (!skb->len) {
++				if (msg->msg_managed_data)
++					skb_shinfo(skb)->flags |= SKBFL_MANAGED_FRAG_REFS;
+ 				skb_shinfo(skb)->flags |= SKBFL_PURE_ZEROCOPY;
+-
+-			if (!skb_zcopy_pure(skb)) {
+-				if (!sk_wmem_schedule(sk, copy))
+-					goto wait_for_space;
++			} else {
++				/* appending, don't mix managed and unmanaged */
++				if (!msg->msg_managed_data)
++					skb_zcopy_downgrade_managed(skb);
++				if (!skb_zcopy_pure(skb)) {
++					if (!sk_wmem_schedule(sk, copy))
++						goto wait_for_space;
++				}
+ 			}
+ 
+ 			err = skb_zerocopy_iter_stream(sk, skb, msg, copy, uarg);
 -- 
 2.36.1
 
