@@ -2,70 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF69DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242421AbiF1Ju1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        id S245735AbiF1Jvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241460AbiF1JuZ (ORCPT
+        with ESMTP id S241460AbiF1Jvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:50:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F0AB82
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 02:50:23 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXKXP60h0zdZqY;
-        Tue, 28 Jun 2022 17:48:05 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 17:50:20 +0800
-From:   Xu Qiang <xuqiang36@huawei.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <elic@nvidia.com>,
-        <si-wei.liu@oracle.com>, <parav@nvidia.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <xuqiang36@huawei.com>,
-        <rui.xiang@huawei.com>
-Subject: [PATCH -next] vdpa/mlx5: Use eth_zero_addr() to assign zero address
-Date:   Tue, 28 Jun 2022 09:44:18 +0000
-Message-ID: <20220628094418.27973-1-xuqiang36@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 28 Jun 2022 05:51:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D98A2AE3F;
+        Tue, 28 Jun 2022 02:51:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B654B81D79;
+        Tue, 28 Jun 2022 09:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5884C3411D;
+        Tue, 28 Jun 2022 09:51:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656409900;
+        bh=2MJDoSVSUvHYBQTXDGlST2aZE277KT5703sWMj70kjM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pws1kpE3r+YJwttZPjszbUdhTl59v0B+/FxkYHEkwFNThrNOZAknMy4RPwk2Vw085
+         WfTfoGcl5pK5xqZsh/dr8omX0xXEjsTBYdEXker6SL707CqtbGnUiAu3vOrCKVkDqI
+         C9qyRQ+G0KUZEvZqz6WBPlcvtV9qWU3Z0AM1rmQ9ppFNTP6sdCcTEgpICnJqpGi3Rd
+         7wXzFjJZdzb9hpxW63tbO0w0JsJtqlzR4Qc2rdmDm2EpsF+c9lwrq+JpwabcfrrUse
+         O7DEm59lo29LpDcKhKjPSm+L2nFTdLetyKsrZNbn+IaCaVRKX9QHuyi1f3DC14LpSe
+         l8Y7IQCUqNFOQ==
+Received: by pali.im (Postfix)
+        id C50A77AE; Tue, 28 Jun 2022 11:51:36 +0200 (CEST)
+Date:   Tue, 28 Jun 2022 11:51:36 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Allen Yan <yanwei@marvell.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: mvebu: Apply old baudrate to termios
+Message-ID: <20220628095136.fhtjjjkj3mre7hwa@pali>
+References: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using eth_zero_addr() to assign zero address insetad of
-memset().
+On Tuesday 28 June 2022 12:41:55 Ilpo Järvinen wrote:
+> A fallback baud rate was derived from old termios but got never applied
+> to (new/current) termios. Old termios is dropped once ->set_termios()
+> call chain completes, only termios persists the values. Encode also the
+> old baud rate into termios.
+> 
+> Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hello! Could you explain a bit more what is this patch fixing? I have
+not caught it yet. Do you have a test scenario which can demonstrate
+this issue? Because I have tested this driver more deeply (on Mox
+and Espressobin) and I have not seen any remaining issue with reporting
+incorrect baudrate.
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index e85c1d71f4ed..f738c78ef446 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1457,8 +1457,8 @@ static int mlx5_vdpa_add_mac_vlan_rules(struct mlx5_vdpa_net *ndev, u8 *mac,
- 
- 	*ucast = rule;
- 
--	memset(dmac_c, 0, ETH_ALEN);
--	memset(dmac_v, 0, ETH_ALEN);
-+	eth_zero_addr(dmac_c);
-+	eth_zero_addr(dmac_v);
- 	dmac_c[0] = 1;
- 	dmac_v[0] = 1;
- 	rule = mlx5_add_flow_rules(ndev->rxft, spec, &flow_act, &dest, 1);
--- 
-2.17.1
-
+> ---
+>  drivers/tty/serial/mvebu-uart.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> index 0429c2a54290..12a79018697f 100644
+> --- a/drivers/tty/serial/mvebu-uart.c
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -592,10 +592,9 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+>  		if (old)
+>  			baud = uart_get_baud_rate(port, old, NULL,
+>  						  min_baud, max_baud);
+> -	} else {
+> -		tty_termios_encode_baud_rate(termios, baud, baud);
+> -		uart_update_timeout(port, termios->c_cflag, baud);
+>  	}
+> +	tty_termios_encode_baud_rate(termios, baud, baud);
+> +	uart_update_timeout(port, termios->c_cflag, baud);
+>  
+>  	/* Only the following flag changes are supported */
+>  	if (old) {
+> 
+> -- 
+> tg: (f287f971e256..) fix/mvebu-apply-old-baud (depends on: tty-next)
