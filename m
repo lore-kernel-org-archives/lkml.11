@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F50CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2723CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245499AbiF1Ccn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        id S245555AbiF1Cct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244742AbiF1C1z (ORCPT
+        with ESMTP id S244746AbiF1C1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 27 Jun 2022 22:27:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A3425EBF;
-        Mon, 27 Jun 2022 19:25:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D396226101;
+        Mon, 27 Jun 2022 19:25:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1ECECB808C0;
-        Tue, 28 Jun 2022 02:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1927C341CA;
-        Tue, 28 Jun 2022 02:25:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7080A617BF;
+        Tue, 28 Jun 2022 02:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65B7C34115;
+        Tue, 28 Jun 2022 02:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383150;
-        bh=W5aHuIyUt7EUKzbojV1B5uexPabw4oNZbrTRw+bOEYI=;
+        s=k20201202; t=1656383157;
+        bh=s9Ol33kpSrjmzFWdc4sW7eWoQqLfe0AJTiY9sp9s7jY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xam8TW3GFiZIXB5LTq+2ajiYy3W8JmEAAyXZqSWL0OsfqpYMfJEN+QKfjgf2T3sSM
-         3tgFpaDOHInZz74lBo7H9m2HG2wodgqWziFoamxZCUDLOwMW+uCaYcJ13CRc9tACwq
-         vISemIiusIm69wdl05p+aUkVulpUdNPAJvG4KmDiJltzChZfKNqS9wb+fqyyDCYggC
-         OzNl03CS6IiGKh598Lc6MYvMUcRhLHOCsMBPx9HxpnVnwF7Tfgg9Bc0FNW001o+S3a
-         xB61k+4xhGEXN6ymyHO1/DaGgzPA1evlvUDIg5we4e9QRdFqEvjWVBJlpsOW7jrfVS
-         a9lm/kMTzMGqw==
+        b=M/3cjNeOPVkNjKlZON8JDm03q/DzBYxEQPdc7kJOQ/zs+Oyag78qW57frs9kZz2ze
+         H1Zv7JdZQeb9/EK4tzdyoJ25xgZb/6kaMV3Hefp7Mvm6cicUmzUAGcA15C4TMNJyaP
+         TCI1DJwNme3KGO0ilz1W2K6qDDX0LYsSAESqE4M6KKSJL9XwIt1Pz4ecgyvFwXrx6n
+         bjHmg8HesAS9biSjNM+G3gtROmzvITw1xqrzhadtU5l0FCk4Go2m/tlsGKsvpybuG4
+         VhHARjZdeypckqkv0pCLpbf4ASiYi6IAEJF/NbjLjnoqeEYbCpRffTEh5HLOLiEwIs
+         FXCDuqt2Tw3cg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Liang He <windhl@126.com>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, miodrag.dinic@mips.com,
-        paulburton@kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 13/22] arch: mips: generic: Add missing of_node_put() in board-ranchu.c
-Date:   Mon, 27 Jun 2022 22:25:08 -0400
-Message-Id: <20220628022518.596687-13-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        xkernel.wang@foxmail.com, wangborong@cdjrlc.com,
+        linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/22] mips: lantiq: falcon: Fix refcount leak bug in sysctrl
+Date:   Mon, 27 Jun 2022 22:25:11 -0400
+Message-Id: <20220628022518.596687-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
 References: <20220628022518.596687-1-sashal@kernel.org>
@@ -54,31 +55,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 4becf6417bbdc293734a590fe4ed38437bbcea2c ]
+[ Upstream commit 72a2af539fff975caadd9a4db3f99963569bd9c9 ]
 
-In ranchu_measure_hpt_freq(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_put_node()
-when it is not used anymore.
+In ltq_soc_init(), of_find_compatible_node() will return a node pointer
+with refcount incremented. We should use of_node_put() when it is not
+used anymore.
 
 Signed-off-by: Liang He <windhl@126.com>
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/generic/board-ranchu.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/lantiq/falcon/sysctrl.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/mips/generic/board-ranchu.c b/arch/mips/generic/board-ranchu.c
-index 59a8c18fa2cc..019c5888efd2 100644
---- a/arch/mips/generic/board-ranchu.c
-+++ b/arch/mips/generic/board-ranchu.c
-@@ -48,6 +48,7 @@ static __init unsigned int ranchu_measure_hpt_freq(void)
- 		      __func__);
+diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+index 714d92659489..665739bd4190 100644
+--- a/arch/mips/lantiq/falcon/sysctrl.c
++++ b/arch/mips/lantiq/falcon/sysctrl.c
+@@ -210,6 +210,12 @@ void __init ltq_soc_init(void)
+ 			of_address_to_resource(np_sysgpe, 0, &res_sys[2]))
+ 		panic("Failed to get core resources");
  
- 	rtc_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!rtc_base)
- 		panic("%s(): Failed to ioremap Goldfish RTC base!", __func__);
- 
++	of_node_put(np_status);
++	of_node_put(np_ebu);
++	of_node_put(np_sys1);
++	of_node_put(np_syseth);
++	of_node_put(np_sysgpe);
++
+ 	if ((request_mem_region(res_status.start, resource_size(&res_status),
+ 				res_status.name) < 0) ||
+ 		(request_mem_region(res_ebu.start, resource_size(&res_ebu),
 -- 
 2.35.1
 
