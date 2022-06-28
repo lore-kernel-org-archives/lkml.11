@@ -2,186 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A09BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BB5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 10:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344964AbiF1Kg6 (ORCPT
+        id S1344967AbiF1Kh0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        Tue, 28 Jun 2022 06:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242533AbiF1Kgu (ORCPT
+        with ESMTP id S1343572AbiF1KhZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:36:50 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF9231531;
-        Tue, 28 Jun 2022 03:36:48 -0700 (PDT)
+        Tue, 28 Jun 2022 06:37:25 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5AE31531
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 03:37:24 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id c205so11617534pfc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 03:37:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656412608; x=1687948608;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=1h3Ad1P2uje3a2YC79vqJWHkfZs0sePiLmeOINXKY0I=;
-  b=bYojQsMGwmYcpeRNMwGn/lbCebUW8jnNBJQKm9ObEO+3VXHdEZralORF
-   MXSzEzO8M1LEI9xKWnhSEH0gtJmP6sZdR+HmDPTxWFM7xNEGXbnq+bZiU
-   48ztIzQsX2gFIfp/xiJ2QQG4KXVi+wqeE1qUW3ftDetfBMlHpceYoq48u
-   s=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 28 Jun 2022 03:36:48 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:36:47 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 28 Jun 2022 03:36:47 -0700
-Received: from [10.216.26.50] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 28 Jun
- 2022 03:36:40 -0700
-Message-ID: <59b5115e-0fe5-dbe1-552b-c29e771c0583@quicinc.com>
-Date:   Tue, 28 Jun 2022 16:06:36 +0530
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=bA/LvK4VSTipcL5wV6o8JEN/FGRXth+GfF/ix8DPlqk=;
+        b=1nsW17eI0m+TEU/Df0xZQtSTzWNuPJPL+cLBH9mby00SGpNKYQRzuIOAEoEMoc+VKe
+         iCAT0u1uqqmmGT4PwhCCk+O+G7OnqLCTQOTw7/mKjzMdIPZtT7TSe8vLV+dHBc16dL6X
+         C4Pw5FCCR16UdzC0sWtGpp9sE9mn8xU85ECfUiu9azx1vbpEeuGGP5pJeB3i4pGHRxAc
+         r4hcwChYJc+B/j/LDiDB16YmSmGUhWwh2berMI2z/BtIDEyeFfyHsYa8H/sl1mWeI0Re
+         TtGn2m1sQAYM2Dpy7yReXWCYc6jBYjubil8OCQZNk797m47PzWLQqpVtvB6NLN42AsPy
+         zT4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bA/LvK4VSTipcL5wV6o8JEN/FGRXth+GfF/ix8DPlqk=;
+        b=wPzMGHL4qumLlB1MQ68ps7w6A8V5JvTt8oj8FD8xYZxz8EuZ8bWl5UfwYU6hYlIWtQ
+         MosqVK3R0pJTFFrXUmM4kFZQb1IG42YYmAx9EoH0mMQ2ZT6MMGbMY/t988ql59EZutgw
+         uHcIKjcMTojub25uOxm0qvZgNdNEj0vEHI85W1GutbbQiQ9KSPB82OoJf7LX0KgrhtnV
+         ptFRyCCaJg6XvpqELfzZd8fiRFEMxohTE+pq7fbzrmbyNbWgDm1DdOdzRoAiM6K2MbsQ
+         ka6i0KnGyl/7XpMDCycwEL+jm34QJwL0CeX+Ybl4hNi28/1KZebQ1ETqHfililWzb4wh
+         nCSg==
+X-Gm-Message-State: AJIora9Tq72pKrTXxHZux6PrmKWgG/zN9W28T3aF0PvDYHqvRXEejTaR
+        /wdYlzRrSxJV4/NyohSyBxhtxg==
+X-Google-Smtp-Source: AGRyM1sgdtMMGgOPriW4iR/+QS0YLrSxxcIGWj1Rf59BTEslFGmjr3RopsGIwcWviAn2MFtjl1Oucg==
+X-Received: by 2002:a63:1259:0:b0:40d:d290:24ef with SMTP id 25-20020a631259000000b0040dd29024efmr13117043pgs.141.1656412643393;
+        Tue, 28 Jun 2022 03:37:23 -0700 (PDT)
+Received: from localhost ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id z9-20020a1709027e8900b0016b865ea2d6sm2670238pla.82.2022.06.28.03.37.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 03:37:22 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 18:37:18 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     HORIGUCHI =?utf-8?B?TkFPWUEo5aCA5Y+j44CA55u05LmfKQ==?= 
+        <naoya.horiguchi@nec.com>
+Cc:     Naoya Horiguchi <nao.horiguchi@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/9] mm, hwpoison, hugetlb: support saving mechanism
+ of raw error pages
+Message-ID: <YrrZ3hZlqEb3rlM0@FVFYT0MHHV2J>
+References: <20220623235153.2623702-1-naoya.horiguchi@linux.dev>
+ <20220623235153.2623702-5-naoya.horiguchi@linux.dev>
+ <Yrl3qT3V6s9pLuvr@FVFYT0MHHV2J.usts.net>
+ <20220628024121.GF2159330@hori.linux.bs1.fc.nec.co.jp>
+ <YrqfJ5wHXIEdu4BM@FVFYT0MHHV2J.usts.net>
+ <20220628081754.GA2206088@hori.linux.bs1.fc.nec.co.jp>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 4/4] arm64: dts: qcom: sdm845: Add CPU BWMON
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Andy Gross <agross@kernel.org>, Georgi Djakov <djakov@kernel.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Thara Gopinath" <thara.gopinath@linaro.org>
-References: <20220601101140.170504-1-krzysztof.kozlowski@linaro.org>
- <20220601101140.170504-5-krzysztof.kozlowski@linaro.org>
- <bc423d7b-df03-d4e2-2898-0873db710943@quicinc.com>
- <64eb52ee-b3ac-3d94-cfce-ceb1c88dddb6@linaro.org>
- <042cb765-113b-9335-edae-595addf50dd0@quicinc.com>
- <23320e3c-40c3-12bb-0a1c-7e659a1961f2@linaro.org>
- <YrfSWw9Wpq5TsRUt@builder.lan>
- <47e1fcb4-237b-b880-b1b2-3910cc19e727@linaro.org>
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-In-Reply-To: <47e1fcb4-237b-b880-b1b2-3910cc19e727@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220628081754.GA2206088@hori.linux.bs1.fc.nec.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 6/27/2022 6:09 PM, Krzysztof Kozlowski wrote:
-> On 26/06/2022 05:28, Bjorn Andersson wrote:
->> On Thu 23 Jun 07:58 CDT 2022, Krzysztof Kozlowski wrote:
->>
->>> On 23/06/2022 08:48, Rajendra Nayak wrote:
->>>>>>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>>>>> index 83e8b63f0910..adffb9c70566 100644
->>>>>>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>>>>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>>>>> @@ -2026,6 +2026,60 @@ llcc: system-cache-controller@1100000 {
->>>>>>>     			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>     		};
->>>>>>>     
->>>>>>> +		pmu@1436400 {
->>>>>>> +			compatible = "qcom,sdm845-cpu-bwmon";
->>>>>>> +			reg = <0 0x01436400 0 0x600>;
->>>>>>> +
->>>>>>> +			interrupts = <GIC_SPI 581 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>> +
->>>>>>> +			interconnects = <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_EBI1 3>,
->>>>>>> +					<&osm_l3 MASTER_OSM_L3_APPS &osm_l3 SLAVE_OSM_L3>;
->>>>>>> +			interconnect-names = "ddr", "l3c";
->>>>>>
->>>>>> Is this the pmu/bwmon instance between the cpu and caches or the one between the caches and DDR?
->>>>>
->>>>> To my understanding this is the one between CPU and caches.
->>>>
->>>> Ok, but then because the OPP table lists the DDR bw first and Cache bw second, isn't the driver
->>>> ending up comparing the bw values thrown by the pmu against the DDR bw instead of the Cache BW?
->>>
->>> I double checked now and you're right.
->>>
->>>> Atleast with my testing on sc7280 I found this to mess things up and I always was ending up at
->>>> higher OPPs even while the system was completely idle. Comparing the values against the Cache bw
->>>> fixed it.(sc7280 also has a bwmon4 instance between the cpu and caches and a bwmon5 between the cache
->>>> and DDR)
->>>
->>> In my case it exposes different issue - under performance. Somehow the
->>> bwmon does not report bandwidth high enough to vote for high bandwidth.
->>>
->>> After removing the DDR interconnect and bandwidth OPP values I have for:
->>> sysbench --threads=8 --time=60 --memory-total-size=20T --test=memory
->>> --memory-block-size=4M run
->>>
->>> 1. Vanilla: 29768 MB/s
->>> 2. Vanilla without CPU votes: 8728 MB/s
->>> 3. Previous bwmon (voting too high): 32007 MB/s
->>> 4. Fixed bwmon 24911 MB/s
->>> Bwmon does not vote for maximum L3 speed:
->>> bwmon report 9408 MB/s (thresholds set: <9216000 15052801>
->>> )
->>> osm l3 aggregate 14355 MBps -> 897 MHz, level 7, bw 14355 MBps
->>>
->>> Maybe that's just problem with missing governor which would vote for
->>> bandwidth rounding up or anticipating higher needs.
->>>
->>>>>> Depending on which one it is, shouldn;t we just be scaling either one and not both the interconnect paths?
->>>>>
->>>>> The interconnects are the same as ones used for CPU nodes, therefore if
->>>>> we want to scale both when scaling CPU, then we also want to scale both
->>>>> when seeing traffic between CPU and cache.
->>>>
->>>> Well, they were both associated with the CPU node because with no other input to decide on _when_
->>>> to scale the caches and DDR, we just put a mapping table which simply mapped a CPU freq to a L3 _and_
->>>> DDR freq. So with just one input (CPU freq) we decided on what should be both the L3 freq and DDR freq.
->>>>
->>>> Now with 2 pmu's, we have 2 inputs, so we can individually scale the L3 based on the cache PMU
->>>> counters and DDR based on the DDR PMU counters, no?
->>>>
->>>> Since you said you have plans to add the other pmu support as well (bwmon5 between the cache and DDR)
->>>> how else would you have the OPP table associated with that pmu instance? Would you again have both the
->>>> L3 and DDR scale based on the inputs from that bwmon too?
->>>
->>> Good point, thanks for sharing. I think you're right. I'll keep only the
->>> l3c interconnect path.
->>>
->>
->> If I understand correctly, <&osm_l3 MASTER_OSM_L3_APPS &osm_l3
->> SLAVE_OSM_L3> relates to the L3 cache speed, which sits inside the CPU
->> subsystem. As such traffic hitting this cache will not show up in either
->> bwmon instance.
->>
->> The path <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_EBI1 3>
->> affects the DDR frequency. So the traffic measured by the cpu-bwmon
->> would be the CPU subsystems traffic that missed the L1/L2/L3 caches and
->> hits the memory bus towards DDR.
-
-That seems right, looking some more into the downstream code and register definitions
-I see the 2 bwmon instances actually lie on the path outside CPU SS towards DDR,
-first one (bwmon4) is between the CPUSS and LLCC (system cache) and the second one
-(bwmon5) between LLCC and DDR. So we should use the counters from bwmon4 to
-scale the CPU-LLCC path (and not L3), on sc7280 that would mean splitting the
-<&gem_noc MASTER_APPSS_PROC 3 &mc_virt SLAVE_EBI1 3> into
-<&gem_noc MASTER_APPSS_PROC 3 &gem_noc SLAVE_LLCC 3> (voting based on the bwmon4 inputs)
-and <&mc_virt MASTER_LLCC 3 &mc_virt SLAVE_EBI1 3> (voting based on the bwmon5 inputs)
-and similar for sdm845 too.
-
-L3 should perhaps still be voted based on the cpu freq as done today.
-
->> If this is the case it seems to make sense to keep the L3 scaling in the
->> opp-tables for the CPU and make bwmon only scale the DDR path. What do
->> you think?
+On Tue, Jun 28, 2022 at 08:17:55AM +0000, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Tue, Jun 28, 2022 at 02:26:47PM +0800, Muchun Song wrote:
+> > On Tue, Jun 28, 2022 at 02:41:22AM +0000, HORIGUCHI NAOYA(堀口 直也) wrote:
+> > > On Mon, Jun 27, 2022 at 05:26:01PM +0800, Muchun Song wrote:
+> > > > On Fri, Jun 24, 2022 at 08:51:48AM +0900, Naoya Horiguchi wrote:
+> > > > > From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> ...
+> > > > > +	} else {
+> > > > > +		/*
+> > > > > +		 * Failed to save raw error info.  We no longer trace all
+> > > > > +		 * hwpoisoned subpages, and we need refuse to free/dissolve
+> > > > > +		 * this hwpoisoned hugepage.
+> > > > > +		 */
+> > > > > +		set_raw_hwp_unreliable(hpage);
+> > > > > +		return ret;
+> > > > > +	}
+> > > > > +	return ret;
+> > > > > +}
+> > > > > +
+> > > > > +inline int hugetlb_clear_page_hwpoison(struct page *hpage)
+> > > > > +{
+> > > > > +	struct llist_head *head;
+> > > > > +	struct llist_node *t, *tnode;
+> > > > > +
+> > > > > +	if (raw_hwp_unreliable(hpage))
+> > > > > +		return -EBUSY;
+> > > > 
+> > > > IIUC, we use head page's PageHWPoison to synchronize hugetlb_clear_page_hwpoison()
+> > > > and hugetlb_set_page_hwpoison(), right? If so, who can set hwp_unreliable here?
+> > > 
+> > > Sorry if I might miss your point, but raw_hwp_unreliable is set when
+> > > allocating raw_hwp_page failed.  hugetlb_set_page_hwpoison() can be called
+> > 
+> > Sorry. I have missed this. Thanks for your clarification.
+> > 
+> > > multiple times on a hugepage and if one of the calls fails, the hwpoisoned
+> > > hugepage becomes unreliable.
+> > > 
+> > > BTW, as you pointed out above, if we switch to passing GFP_ATOMIC to kmalloc(),
+> > > the kmalloc() never fails, so we no longer have to implement this unreliable
+> > 
+> > No. kmalloc() with GFP_ATOMIC can fail unless I miss something important.
 > 
-> The reported data throughput by this bwmon instance is beyond the DDR
-> OPP table bandwidth, e.g.: 16-22 GB/s, so it seems it measures still
-> within cache controller, not the memory bus.
+> OK, I've interpretted the comment about GFP_ATOMIC wrongly.
 > 
-> Best regards,
-> Krzysztof
+>  * %GFP_ATOMIC users can not sleep and need the allocation to succeed. A lower
+>  * watermark is applied to allow access to "atomic reserves".
+>  
+> 
+> > > flag, so things get simpler.
+> > > 
+> > > > 
+> > > > > +	ClearPageHWPoison(hpage);
+> > > > > +	head = raw_hwp_list_head(hpage);
+> > > > > +	llist_for_each_safe(tnode, t, head->first) {
+> > > > 
+> > > > Is it possible that a new item is added hugetlb_set_page_hwpoison()  and we do not
+> > > > traverse it (we have cleared page's PageHWPoison)? Then we ignored a real hwpoison
+> > > > page, right?
+> > > 
+> > > Maybe you are mentioning the race like below. Yes, that's possible.
+> > >
+> > 
+> > Sorry, ignore my previous comments, I'm thinking something wrong.
+> > 
+> > >   CPU 0                            CPU 1
+> > > 
+> > >                                    free_huge_page
+> > >                                      lock hugetlb_lock
+> > >                                      ClearHPageMigratable
+> > 				       remove_hugetlb_page()
+> > 				       // the page is non-HugeTLB now
+> 
+> Oh, I missed that.
+> 
+> > >                                      unlock hugetlb_lock
+> > >   get_huge_page_for_hwpoison
+> > >     lock hugetlb_lock
+> > >     __get_huge_page_for_hwpoison
+> > 
+> > 	// cannot reach here since it is not a HugeTLB page now.
+> > 	// So this race is impossible. Then we fallback to normal
+> > 	// page handling. Seems there is a new issue here.
+> > 	//
+> > 	// memory_failure()
+> > 	//	try_memory_failure_hugetlb()
+> > 	//	if (hugetlb)
+> > 	//		goto unlock_mutex;
+> > 	//	if (TestSetPageHWPoison(p)) {
+> > 	//	// This non-HugeTLB page's vmemmap is still optimized.
+> > 	
+> > Setting COMPOUND_PAGE_DTOR after hugetlb_vmemmap_restore() might fix this
+> > issue, but we will encounter this race as you mentioned below.
+> 
+> I don't have clear ideas about this now (I don't test vmemmap-optimized case
+> yet), so I will think more about this case. Maybe memory_failure() need
+> detect it because memory_failure() heaviliy depends on the status of struct
+> page.
+>
+
+Because HVO (HugeTLB Vmemmap Optimization) will map all tail vmemmap pages
+with read-only, we cannot write any data to some tail struct pages. It is
+a new issue unrelated to this patch.
+
+Thanks.
+ 
+> Thanks,
+> Naoya Horiguchi
+> 
+> > 
+> > Thanks.
+> > 	
+> > >       hugetlb_set_page_hwpoison
+> > >         allocate raw_hwp_page
+> > >         TestSetPageHWPoison
+> > >                                      update_and_free_page
+> > >                                        __update_and_free_page
+> > >                                          if (PageHWPoison)
+> > >                                            hugetlb_clear_page_hwpoison
+> > >                                              TestClearPageHWPoison
+> > >                                              // remove all list items
+> > >         llist_add
+> > >     unlock hugetlb_lock
+> > > 
+> > > 
+> > > The end result seems not critical (leaking raced raw_hwp_page?), but
+> > > we need fix.
