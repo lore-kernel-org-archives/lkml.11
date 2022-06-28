@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A555CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6113C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244355AbiF1CZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S244364AbiF1CZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243790AbiF1CVy (ORCPT
+        with ESMTP id S243550AbiF1CWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:21:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9B924F23;
-        Mon, 27 Jun 2022 19:21:28 -0700 (PDT)
+        Mon, 27 Jun 2022 22:22:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25894248D6;
+        Mon, 27 Jun 2022 19:21:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 526C161852;
-        Tue, 28 Jun 2022 02:21:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344D1C34115;
-        Tue, 28 Jun 2022 02:21:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1A61B81C15;
+        Tue, 28 Jun 2022 02:21:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04C52C34115;
+        Tue, 28 Jun 2022 02:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382887;
-        bh=eNniy0Kmh5T69pDeELmX4we8oQUPfZo885vIdUET7Gk=;
+        s=k20201202; t=1656382900;
+        bh=7+vAJRMgtUyHbUhQ3ZnX7OzDRmk02qzdXICIrnOXpPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vaw+6C1sw/2irosJXCUUA2nTm6G6e9ohsOq3//ClaNk4gUqwRiK4OwtMdLdo6aevh
-         n1Qo72FaWM6NtB9cIpBbXi5KHzLhoOCHAdZgKH1YYPkqIgsuhLv3NUgtfOZmxutmQf
-         IhO2K8cI4jA9TQlNdw6o+8rAS3qfEyCC+ubcD+H8qIWwAkIVY7nIgwWNDR/lR9Gry7
-         tyg6gOp1nS5bRy3HDmN2iNrEoZtNhT9tPmg2UCN6F34B/64G4oZgNXR/MNYjcSWtEI
-         tCLBCoqN9W0MVHcn7SeBcBUmy5qUGUzbuDq9kUhyfPC5kCsk5HUYGk2y46NHaD1FOk
-         J3L/rYTJlfxgw==
+        b=kLdOhpI2cwqrbQrajZkKuLpg7qNyYCkG+vnq0mE6ehJGXEvzgYvmazMnXR8yfS6XQ
+         Yqmfya0+rjqKCI5ZyZ/WRkv/N+AumQ2HkMFekSUa9nA8LIV8VGsnhsId5s4/CUOioi
+         TZCJ3p7lUeg3dUPIYr4cWExXRXfHcSLX6HGR4GzpMjur4CcjnJr+Mkw61a8pmf2k2X
+         v75ty0B99pQtrnncI4W5nSH2OT3FpcZid8GcPuBcZ67fQo/3QOp513tOlZdjAz5bfw
+         cbLFIEV8loK55BuMk/GpXCTyKtjmd3VIhjHZFbq9yCynqS90latO9YsJPKjxwVBY/Z
+         7FvHljPE2nfrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        matthias.bgg@gmail.com, beanhuo@micron.com, avri.altman@wdc.com,
-        daejun7.park@samsung.com, linux-scsi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 12/41] scsi: ufs: Simplify ufshcd_clear_cmd()
-Date:   Mon, 27 Jun 2022 22:20:31 -0400
-Message-Id: <20220628022100.595243-12-sashal@kernel.org>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, jiasheng@iscas.ac.cn,
+        gushengxian@yulong.com, nizhen@uniontech.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 15/41] ALSA: x86: intel_hdmi_audio: use pm_runtime_resume_and_get()
+Date:   Mon, 27 Jun 2022 22:20:34 -0400
+Message-Id: <20220628022100.595243-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
 References: <20220628022100.595243-1-sashal@kernel.org>
@@ -57,49 +56,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit da8badd7d3583f447eac2ab65a332f2d773deca1 ]
+[ Upstream commit bb30b453fedac277d66220431fd7063d9ddc10d8 ]
 
-Remove the local variable 'err'. This patch does not change any
-functionality.
+The current code does not check for errors and does not release the
+reference on errors.
 
-Link: https://lore.kernel.org/r/20220613214442.212466-2-bvanassche@acm.org
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220616222910.136854-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ sound/x86/intel_hdmi_audio.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 5c9a31f18b7f..311170e63410 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -2798,7 +2798,6 @@ static int ufshcd_compose_dev_cmd(struct ufs_hba *hba,
- static int
- ufshcd_clear_cmd(struct ufs_hba *hba, int tag)
- {
--	int err = 0;
- 	unsigned long flags;
- 	u32 mask = 1 << tag;
+diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
+index b16657de9d25..fea043ec42fe 100644
+--- a/sound/x86/intel_hdmi_audio.c
++++ b/sound/x86/intel_hdmi_audio.c
+@@ -1068,7 +1068,9 @@ static int had_pcm_open(struct snd_pcm_substream *substream)
+ 	intelhaddata = snd_pcm_substream_chip(substream);
+ 	runtime = substream->runtime;
  
-@@ -2811,11 +2810,8 @@ ufshcd_clear_cmd(struct ufs_hba *hba, int tag)
- 	 * wait for h/w to clear corresponding bit in door-bell.
- 	 * max. wait is 1 sec.
- 	 */
--	err = ufshcd_wait_for_register(hba,
--			REG_UTP_TRANSFER_REQ_DOOR_BELL,
--			mask, ~mask, 1000, 1000);
--
--	return err;
-+	return ufshcd_wait_for_register(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL,
-+					mask, ~mask, 1000, 1000);
- }
+-	pm_runtime_get_sync(intelhaddata->dev);
++	retval = pm_runtime_resume_and_get(intelhaddata->dev);
++	if (retval < 0)
++		return retval;
  
- static int
+ 	/* set the runtime hw parameter with local snd_pcm_hardware struct */
+ 	runtime->hw = had_pcm_hardware;
+@@ -1549,8 +1551,12 @@ static void had_audio_wq(struct work_struct *work)
+ 		container_of(work, struct snd_intelhad, hdmi_audio_wq);
+ 	struct intel_hdmi_lpe_audio_pdata *pdata = ctx->dev->platform_data;
+ 	struct intel_hdmi_lpe_audio_port_pdata *ppdata = &pdata->port[ctx->port];
++	int ret;
++
++	ret = pm_runtime_resume_and_get(ctx->dev);
++	if (ret < 0)
++		return;
+ 
+-	pm_runtime_get_sync(ctx->dev);
+ 	mutex_lock(&ctx->mutex);
+ 	if (ppdata->pipe < 0) {
+ 		dev_dbg(ctx->dev, "%s: Event: HAD_NOTIFY_HOT_UNPLUG : port = %d\n",
 -- 
 2.35.1
 
