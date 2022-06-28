@@ -2,60 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F01CCCA485
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72383C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343886AbiF1JrF (ORCPT
+        id S1344403AbiF1JrJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:47:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        Tue, 28 Jun 2022 05:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344305AbiF1Jqe (ORCPT
+        with ESMTP id S242209AbiF1Jqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:46:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C5125C7A;
-        Tue, 28 Jun 2022 02:46:33 -0700 (PDT)
+        Tue, 28 Jun 2022 05:46:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED21225C5A;
+        Tue, 28 Jun 2022 02:46:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4FC0617C5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7257BB81D8E;
         Tue, 28 Jun 2022 09:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BF3C36AE7;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BAC3C3411D;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656409590;
-        bh=4DMz4UXLGu0uFuXPe+nKrtjSJ9DOJhlkac6gN7tBAmU=;
+        bh=sTi4x9ZoZpkbQr4+xjPIIlVa/suTKm/0lLP05XVf1f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OgiGPoKdlAxpDh13ECLhDLR7tvZLpF+oBjOo2jCH+fdAGuBmotoBAKdxRqZyUKbWE
-         0PdrXAAAkXmSFwMwTLEh9Z4y+Sxv4K0LW7R18MJcIKtE+9JNzXL3xcsV5wE6F2Ng+M
-         K72cPmR/1P+xpT436+VvFwG2i0lAN1Y+sh7Vqw76jzyXlSVwA16rcv6c4/kEw3HxyC
-         62GxkYn4VHWClZ+wgcXIvk3lecpOMx/RlREtZE1/EokQq4VSM6cy42Rq+YZR8ONohI
-         Nm6qZWgzKnm34TYbR7T8y1EYCiTGDqb9SFOlAMQL3wifHEeDe4aQe/DvfAkDc8f04W
-         RdFbNbjuDPvSg==
+        b=Roh2K2uEouhV7ax8h2Vhchn+12/YTfUUS2F/Uz48hFp0Tr1yfOXCYbtIMoY+R2VbR
+         hc6oX+g3EgDon6XPqm8DKQFGi1kn0bfZcEMkv4iSGTu71abraXin7rwX+hprHq8sQF
+         TO6rLghyUh0UGj6iXohFEdC0Bjc0z/DmawhKH1jHN4EROLOWbatoJejD236ecrWvEV
+         PjN2wCmDgMal/iycvRUWV1H4x9nDj4Jy2HKBl8jZTGQb4vyrZhfMlUdVY/6kPpMOSK
+         RAClAg2j9sYe1JOdj6hdnZtvLDw0oxrGEWxC7A3kAYk9NndT+TmlDAk5nCM31wLLrM
+         iooErJJYiRWQg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o67nf-005HFD-Qp;
+        id 1o67nf-005HF1-Nz;
         Tue, 28 Jun 2022 10:46:27 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Evan Quan <evan.quan@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        Kevin Wang <kevin1.wang@amd.com>, Lang Yu <lang.yu@amd.com>,
-        Somalapuram Amaranath <Amaranath.Somalapuram@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 10/22] drm: amdgpu: amdgpu_device.c: fix a kernel-doc markup
-Date:   Tue, 28 Jun 2022 10:46:14 +0100
-Message-Id: <ac8ece934af1145bc16531b9f10d69c76216cb66.1656409369.git.mchehab@kernel.org>
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 06/22] fs: attr: update vfs uid/gid parameters at kernel-doc
+Date:   Tue, 28 Jun 2022 10:46:10 +0100
+Message-Id: <cd2746e9496731e559dc8129c6bade369be25c4b.1656409369.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
 References: <cover.1656409369.git.mchehab@kernel.org>
@@ -65,8 +56,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function was renamed without renaming also kernel-doc markup:
-	drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5095: warning: expecting prototype for amdgpu_device_gpu_recover_imp(). Prototype was for amdgpu_device_gpu_recover() instead
+The vfs uid/gid parameters have a different name at the function
+prototype causing kernel-doc warnings. Update them for the parameters
+to match, fixing those warnings:
+
+	fs/attr.c:36: warning: Function parameter or member 'ia_vfsuid' not described in 'chown_ok'
+	fs/attr.c:36: warning: Excess function parameter 'uid' description in 'chown_ok'
+	fs/attr.c:63: warning: Function parameter or member 'ia_vfsgid' not described in 'chgrp_ok'
+	fs/attr.c:63: warning: Excess function parameter 'gid' description in 'chgrp_ok'
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -74,22 +71,31 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
 
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/attr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 9d6418bb963e..6d74767591e7 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -5079,7 +5079,7 @@ static inline void amdggpu_device_stop_pedning_resets(struct amdgpu_device *adev
- 
- 
- /**
-- * amdgpu_device_gpu_recover_imp - reset the asic and recover scheduler
-+ * amdgpu_device_gpu_recover - reset the asic and recover scheduler
+diff --git a/fs/attr.c b/fs/attr.c
+index 1ba7ddef537f..b5b8835ddf15 100644
+--- a/fs/attr.c
++++ b/fs/attr.c
+@@ -22,7 +22,7 @@
+  * chown_ok - verify permissions to chown inode
+  * @mnt_userns:	user namespace of the mount @inode was found from
+  * @inode:	inode to check permissions on
+- * @uid:	uid to chown @inode to
++ * @ia_vfsuid:	uid to chown @inode to
   *
-  * @adev: amdgpu_device pointer
-  * @job: which job trigger hang
+  * If the inode has been found through an idmapped mount the user namespace of
+  * the vfsmount must be passed through @mnt_userns. This function will then
+@@ -49,7 +49,7 @@ static bool chown_ok(struct user_namespace *mnt_userns,
+  * chgrp_ok - verify permissions to chgrp inode
+  * @mnt_userns:	user namespace of the mount @inode was found from
+  * @inode:	inode to check permissions on
+- * @gid:	gid to chown @inode to
++ * @ia_vfsgid:	gid to chown @inode to
+  *
+  * If the inode has been found through an idmapped mount the user namespace of
+  * the vfsmount must be passed through @mnt_userns. This function will then
 -- 
 2.36.1
 
