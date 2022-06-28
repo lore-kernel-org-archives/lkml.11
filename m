@@ -2,97 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B39C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B43FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343588AbiF1Gzl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S229548AbiF1G4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiF1Gzi (ORCPT
+        with ESMTP id S245583AbiF1G4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:55:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B7E22BCE
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:55:37 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: bbrezillon)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 271F46601856;
-        Tue, 28 Jun 2022 07:55:36 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656399336;
-        bh=CQRz8B+bkCZiBSEzDEK0Y9ZfKFUVGt+3EPrz6C/F4nY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O+RMMaj3oBnqHjdgpSOaqa6f+tPOSOEwu1KRsgBClppDzGAMEKwdrouboQx1xoaHj
-         Qt+dZ4yKEZJuqujtaMAVddWovXt20NWHKAJk4g6wgUKdk0GGQqIN4EKsHbsn7uta/r
-         vAgkHTcgjTso4dwIzGHXoC32yWxpoz/MdOj40AkpVK02QSQU+uEcgq98mEviu9pxEB
-         e5MJWzaTT0AghPFLD1KGjSold/SE/VkhEkiqPn+zB3S6HZSDTNSZhNjQAro6lZUZpM
-         wdvT+GFW980Thc3wInmUjDug9aPLc1alUgWp+QabbGjpZlvOi17SI8wWq2OmabedMG
-         97P8/KZ0wvB2w==
-Date:   Tue, 28 Jun 2022 08:55:33 +0200
-From:   Boris Brezillon <boris.brezillon@collabora.com>
-To:     Yu Liao <liaoyu15@huawei.com>
-Cc:     <emma@anholt.net>, <mripard@kernel.org>, <eric@anholt.net>,
-        <bbrezillon@kernel.org>, <liwei391@huawei.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drm/vc4: fix dereference before NULL check
-Message-ID: <20220628085533.7b7885fb@collabora.com>
-In-Reply-To: <20220628063657.3169049-1-liaoyu15@huawei.com>
-References: <20220628063657.3169049-1-liaoyu15@huawei.com>
-Organization: Collabora
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Tue, 28 Jun 2022 02:56:05 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871022715A;
+        Mon, 27 Jun 2022 23:56:03 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXFgG2rrfzdZS9;
+        Tue, 28 Jun 2022 14:53:46 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
+ 2022 14:56:01 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH] crypto: hisilicon - Kunpeng916 crypto driver don't sleep when in softirq
+Date:   Tue, 28 Jun 2022 15:01:14 +0800
+Message-ID: <20220628070114.265315-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 14:36:57 +0800
-Yu Liao <liaoyu15@huawei.com> wrote:
+When kunpeng916 encryption driver is used to deencrypt and decrypt
+packets during the softirq, it is not allowed to use mutex lock.
 
-> The "perfmon" pointer is equal to the return value of idr_find
-> which may be NULL, access by vc4_perfmon_get before checking if
-> it was NULL. Fix this by dereferencing "perfmon" after "perfmon"
-> has been null checked.
-> 
-> Addresses-Coverity: ("Dereference before null check")
-> Fixes: 65101d8c9108 ("drm/vc4: Expose performance counters to userspace")
-> Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ drivers/crypto/hisilicon/sec/sec_algs.c | 14 +++++++-------
+ drivers/crypto/hisilicon/sec/sec_drv.h  |  2 +-
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
-
-> ---
->  drivers/gpu/drm/vc4/vc4_perfmon.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/vc4/vc4_perfmon.c b/drivers/gpu/drm/vc4/vc4_perfmon.c
-> index c7f5adb6bcf8..ca969b8c7dde 100644
-> --- a/drivers/gpu/drm/vc4/vc4_perfmon.c
-> +++ b/drivers/gpu/drm/vc4/vc4_perfmon.c
-> @@ -17,13 +17,17 @@
->  
->  void vc4_perfmon_get(struct vc4_perfmon *perfmon)
->  {
-> -	struct vc4_dev *vc4 = perfmon->dev;
-> +	struct vc4_dev *vc4;
-> +
-> +	if (!perfmon)
-> +		return;
-> +
-> +	vc4 = perfmon->dev;
->  
->  	if (WARN_ON_ONCE(vc4->is_vc5))
->  		return;
->  
-> -	if (perfmon)
-> -		refcount_inc(&perfmon->refcnt);
-> +	refcount_inc(&perfmon->refcnt);
->  }
->  
->  void vc4_perfmon_put(struct vc4_perfmon *perfmon)
+diff --git a/drivers/crypto/hisilicon/sec/sec_algs.c b/drivers/crypto/hisilicon/sec/sec_algs.c
+index 0a3c8f019b02..571a82a38fd3 100644
+--- a/drivers/crypto/hisilicon/sec/sec_algs.c
++++ b/drivers/crypto/hisilicon/sec/sec_algs.c
+@@ -449,7 +449,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 		 */
+ 	}
+ 
+-	mutex_lock(&ctx->queue->queuelock);
++	spin_lock(&ctx->queue->queuelock);
+ 	/* Put the IV in place for chained cases */
+ 	switch (ctx->cipher_alg) {
+ 	case SEC_C_AES_CBC_128:
+@@ -509,7 +509,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 			list_del(&backlog_req->backlog_head);
+ 		}
+ 	}
+-	mutex_unlock(&ctx->queue->queuelock);
++	spin_unlock(&ctx->queue->queuelock);
+ 
+ 	mutex_lock(&sec_req->lock);
+ 	list_del(&sec_req_el->head);
+@@ -798,7 +798,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 	 */
+ 
+ 	/* Grab a big lock for a long time to avoid concurrency issues */
+-	mutex_lock(&queue->queuelock);
++	spin_lock(&queue->queuelock);
+ 
+ 	/*
+ 	 * Can go on to queue if we have space in either:
+@@ -814,15 +814,15 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 		ret = -EBUSY;
+ 		if ((skreq->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)) {
+ 			list_add_tail(&sec_req->backlog_head, &ctx->backlog);
+-			mutex_unlock(&queue->queuelock);
++			spin_unlock(&queue->queuelock);
+ 			goto out;
+ 		}
+ 
+-		mutex_unlock(&queue->queuelock);
++		spin_unlock(&queue->queuelock);
+ 		goto err_free_elements;
+ 	}
+ 	ret = sec_send_request(sec_req, queue);
+-	mutex_unlock(&queue->queuelock);
++	spin_unlock(&queue->queuelock);
+ 	if (ret)
+ 		goto err_free_elements;
+ 
+@@ -881,7 +881,7 @@ static int sec_alg_skcipher_init(struct crypto_skcipher *tfm)
+ 	if (IS_ERR(ctx->queue))
+ 		return PTR_ERR(ctx->queue);
+ 
+-	mutex_init(&ctx->queue->queuelock);
++	spin_lock_init(&ctx->queue->queuelock);
+ 	ctx->queue->havesoftqueue = false;
+ 
+ 	return 0;
+diff --git a/drivers/crypto/hisilicon/sec/sec_drv.h b/drivers/crypto/hisilicon/sec/sec_drv.h
+index 179a8250d691..e2a50bf2234b 100644
+--- a/drivers/crypto/hisilicon/sec/sec_drv.h
++++ b/drivers/crypto/hisilicon/sec/sec_drv.h
+@@ -347,7 +347,7 @@ struct sec_queue {
+ 	DECLARE_BITMAP(unprocessed, SEC_QUEUE_LEN);
+ 	DECLARE_KFIFO_PTR(softqueue, typeof(struct sec_request_el *));
+ 	bool havesoftqueue;
+-	struct mutex queuelock;
++	spinlock_t queuelock;
+ 	void *shadow[SEC_QUEUE_LEN];
+ };
+ 
+-- 
+2.17.1
 
