@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 434C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A56D0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 22:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbiF1WVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 18:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
+        id S229561AbiF1WV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 18:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiF1WV2 (ORCPT
+        with ESMTP id S230173AbiF1WVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 18:21:28 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6053F30F
+        Tue, 28 Jun 2022 18:21:33 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8773EABD
         for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 15:18:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656454703; x=1687990703;
+  t=1656454704; x=1687990704;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=FHwNmTlimRwHlMbSKeoQ89340hJRsjpWPe2o5s0ZoOA=;
-  b=A2LbUht88mGc14N46L4CzH6kACKV/BMY4HSh9o3S30KPewslUpD2nN5S
-   89NYWH0aI5PMp8SzVe1BHSJNuLxosX3jQqz5IAPZQnduKd0uC+D4k2hXZ
-   IMBjg/E7S+PhVltImTsUKhr1//6Kb5hwMqTyCTPrMpbbFnMXT+UQxD1u2
-   fwRrbStxMFnHyy6mNeASKe2qD9Ks3PnP3GlcbcSQQ5epl6XsnTiUPs2O0
-   Cf60b3S8KdpTaHrEtPCGUZGvpwOss+0YTecALQqBYcyR+2KtVJRjZSMQI
-   uzAaZH8g9DR7O4j9fJ308dEcK+iBNPmlp5PLQkpW0FkVEd3wqvBrPSuHX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="345856986"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="345856986"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 15:17:46 -0700
+  bh=tsrIS7eevSFDeW6trWsynUK7xKIjsc1FM2rbb0q95ao=;
+  b=SUJ3Snc+ei3lcyZyvxUMM/ho2VhwoNks/JmzTFSzP/WudTdUYffgC1ZD
+   i4eDz1Trs81mDjoPOLJ3U6aMlHrkkoUjzfBr24VL77l99kK/NZ0Aaty/F
+   y1v+dENB2GCZGwg2Co8Sc1vs0Q6t0TWOTAbckuhatZMYhZthqOaXnf+TA
+   bjaj9PudBUOSJaKdm80tMJcj7tukBO506020SIYLr6BbHB8/7sWKsxp/O
+   LYM81N4Ha3LB7jDZrbgjdkfkMBja4xTGaZxvoKoYTdx0+J5CLJoG1kfL3
+   qXFmRdH8XUsUfmUcMDFiMjuxgH9dZKj78+evHTfO8ZKPkA1jUoN/27aqE
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282596267"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="282596267"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 15:17:46 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="617341440"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="717590950"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jun 2022 15:17:45 -0700
+  by orsmga004.jf.intel.com with ESMTP; 28 Jun 2022 15:17:45 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 21EDA5F9; Wed, 29 Jun 2022 01:17:49 +0300 (EEST)
+        id 3CABC7AA; Wed, 29 Jun 2022 01:17:49 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 08/11] mfd: intel_soc_pmic_bxtwc: Use bits.h macros for all masks
-Date:   Wed, 29 Jun 2022 01:17:44 +0300
-Message-Id: <20220628221747.33956-8-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 11/11] mfd: intel_soc_pmic_bxtwc: Fix spelling in the comment
+Date:   Wed, 29 Jun 2022 01:17:47 +0300
+Message-Id: <20220628221747.33956-11-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628221747.33956-1-andriy.shevchenko@linux.intel.com>
 References: <20220628221747.33956-1-andriy.shevchenko@linux.intel.com>
@@ -56,79 +56,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently we are using BIT(), but GENMASK(). Make use of the latter one
-as well (far less error-prone, far more concise).
+There are a few of spelling issues in the comment, fix them.
+While at it, fix indentation in the MODULE_AUTHOR() parameter
+and update copyright years.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
-v2: added tag (Lee)
-
- drivers/mfd/intel_soc_pmic_bxtwc.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+v2: more spelling and grammar fixes (Lee)
+ drivers/mfd/intel_soc_pmic_bxtwc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-index f79ae0ddc495..5ac623eda1c1 100644
+index 1a80038c0e36..8dac0d41f64f 100644
 --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
 +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-@@ -6,6 +6,7 @@
+@@ -2,7 +2,7 @@
+ /*
+  * MFD core driver for Intel Broxton Whiskey Cove PMIC
+  *
+- * Copyright (C) 2015 Intel Corporation. All rights reserved.
++ * Copyright (C) 2015-2017, 2022 Intel Corporation. All rights reserved.
   */
  
  #include <linux/acpi.h>
-+#include <linux/bits.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
-@@ -18,9 +19,9 @@
- #include <asm/intel_scu_ipc.h>
+@@ -525,11 +525,11 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, ret, "Failed to add devices\n");
  
- /* PMIC device registers */
--#define REG_ADDR_MASK		0xFF00
-+#define REG_ADDR_MASK		GENMASK(15, 8)
- #define REG_ADDR_SHIFT		8
--#define REG_OFFSET_MASK		0xFF
-+#define REG_OFFSET_MASK		GENMASK(7, 0)
+ 	/*
+-	 * There is known hw bug. Upon reset BIT 5 of register
++	 * There is a known H/W bug. Upon reset, BIT 5 of register
+ 	 * BXTWC_CHGR_LVL1_IRQ is 0 which is the expected value. However,
+ 	 * later it's set to 1(masked) automatically by hardware. So we
+-	 * have the software workaround here to unmaksed it in order to let
+-	 * charger interrutp work.
++	 * place the software workaround here to unmask it again in order
++	 * to re-enable the charger interrupt.
+ 	 */
+ 	regmap_update_bits(pmic->regmap, BXTWC_MIRQLVL1, BXTWC_MIRQLVL1_MCHGR, 0);
  
- /* Interrupt Status Registers */
- #define BXTWC_IRQLVL1		0x4E02
-@@ -112,29 +113,29 @@ static const struct regmap_irq bxtwc_regmap_irqs[] = {
- };
+@@ -582,4 +582,4 @@ static struct platform_driver bxtwc_driver = {
+ module_platform_driver(bxtwc_driver);
  
- static const struct regmap_irq bxtwc_regmap_irqs_pwrbtn[] = {
--	REGMAP_IRQ_REG(BXTWC_PWRBTN_IRQ, 0, 0x01),
-+	REGMAP_IRQ_REG(BXTWC_PWRBTN_IRQ, 0, BIT(0)),
- };
- 
- static const struct regmap_irq bxtwc_regmap_irqs_bcu[] = {
--	REGMAP_IRQ_REG(BXTWC_BCU_IRQ, 0, 0x1f),
-+	REGMAP_IRQ_REG(BXTWC_BCU_IRQ, 0, GENMASK(4, 0)),
- };
- 
- static const struct regmap_irq bxtwc_regmap_irqs_adc[] = {
--	REGMAP_IRQ_REG(BXTWC_ADC_IRQ, 0, 0xff),
-+	REGMAP_IRQ_REG(BXTWC_ADC_IRQ, 0, GENMASK(7, 0)),
- };
- 
- static const struct regmap_irq bxtwc_regmap_irqs_chgr[] = {
--	REGMAP_IRQ_REG(BXTWC_USBC_IRQ, 0, 0x20),
--	REGMAP_IRQ_REG(BXTWC_CHGR0_IRQ, 0, 0x1f),
--	REGMAP_IRQ_REG(BXTWC_CHGR1_IRQ, 1, 0x1f),
-+	REGMAP_IRQ_REG(BXTWC_USBC_IRQ, 0, BIT(5)),
-+	REGMAP_IRQ_REG(BXTWC_CHGR0_IRQ, 0, GENMASK(4, 0)),
-+	REGMAP_IRQ_REG(BXTWC_CHGR1_IRQ, 1, GENMASK(4, 0)),
- };
- 
- static const struct regmap_irq bxtwc_regmap_irqs_tmu[] = {
--	REGMAP_IRQ_REG(BXTWC_TMU_IRQ, 0, 0x06),
-+	REGMAP_IRQ_REG(BXTWC_TMU_IRQ, 0, GENMASK(2, 1)),
- };
- 
- static const struct regmap_irq bxtwc_regmap_irqs_crit[] = {
--	REGMAP_IRQ_REG(BXTWC_CRIT_IRQ, 0, 0x03),
-+	REGMAP_IRQ_REG(BXTWC_CRIT_IRQ, 0, GENMASK(1, 0)),
- };
- 
- static struct regmap_irq_chip bxtwc_regmap_irq_chip = {
+ MODULE_LICENSE("GPL v2");
+-MODULE_AUTHOR("Qipeng Zha<qipeng.zha@intel.com>");
++MODULE_AUTHOR("Qipeng Zha <qipeng.zha@intel.com>");
 -- 
 2.35.1
 
