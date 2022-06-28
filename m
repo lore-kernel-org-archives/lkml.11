@@ -2,49 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E8CCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 965D0CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245687AbiF1CdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
+        id S245751AbiF1CdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244750AbiF1C1z (ORCPT
+        with ESMTP id S244773AbiF1C17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25DF1DA43;
-        Mon, 27 Jun 2022 19:26:05 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E872610B;
+        Mon, 27 Jun 2022 19:26:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F58961791;
-        Tue, 28 Jun 2022 02:26:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08725C34115;
-        Tue, 28 Jun 2022 02:26:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1625B81C00;
+        Tue, 28 Jun 2022 02:26:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBD5C341CC;
+        Tue, 28 Jun 2022 02:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383164;
-        bh=FLIlumWy9MvT64Z6j0K6B/r+aHemoWqFt8wxgtZA+4E=;
+        s=k20201202; t=1656383172;
+        bh=ptZUL1nkkf4uKm85SgdBZGLGysVXez9VzASn1Xx4EBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z58asedUbMkIQ6WeYKRgMTAU0/s0ZS7d4M1mT/UXAtzZjTBMRFIoyEhdd50ONrmpo
-         PFmlYx8lHj3rIWjbSP3XM9mEdg9NtfK3G0Pwh6BWUAlD3eela5A8Zn72H/40K4RiSO
-         W8zyG8Z76OuppM2TpaamxCK7Jl2VrshJR0ao1cVleZe9B3AD/ZlwKcSJ+YEiBwSH4o
-         iZfwCMjdp244C+ZxcYAppkt2PEJqbA057VaIycXu0rUwpFIcZe3LeZCgxkAE2M/zus
-         UmVsYjOMwq9qQc8M196UKiO5OIpCFF5bhBX4ylVYfzHWHHrpqd6s2ky18VmpiHkCGW
-         0eHp31jj2XfuA==
+        b=nvoW7Q48c4nefPIiL0QaolqwzA+LtREhpCDsQ1TcuGSp1OI1WQhaBu2VnqLs1SEG8
+         X5KCo/qIjzE7mhEmFuid0+Yd4nqdSWHHAek0auy9fL1P8kvqnN7uKXIG/Wr1UDjptK
+         rsFD392MT3UpV8nLK8I0g104NVCde1dVvZUX9P5OjJvJcWHgY3JjVOJL3MMO/eN5Ss
+         43lKd+4oqM2A4qq/OTeRY/8iKfZu1be7wYSB6QkxMj4Nv/pjtgou+CaIuUHkNmVrpm
+         OhLfA0CSEdTS2KQMlwNEdyq0u7BVp1JRTTjhijBZ0Pir4rIv8wMbVwJefmjNq39JcC
+         R0GUIKFtFbIVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, yangtiezhu@loongson.cn,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 18/22] mips/pic32/pic32mzda: Fix refcount leak bugs
-Date:   Mon, 27 Jun 2022 22:25:13 -0400
-Message-Id: <20220628022518.596687-18-sashal@kernel.org>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Felix.Kuehling@amd.com, nirmoy.das@amd.com, jonathan.kim@amd.com,
+        kevin1.wang@amd.com, zackr@vmware.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 21/22] drm/amdgpu: Adjust logic around GTT size (v3)
+Date:   Mon, 27 Jun 2022 22:25:16 -0400
+Message-Id: <20220628022518.596687-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
 References: <20220628022518.596687-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,61 +56,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit eb9e9bc4fa5fb489c92ec588b3fb35f042ba6d86 ]
+[ Upstream commit f15345a377c6ea9c7cc74f079616af8856aff37f ]
 
-of_find_matching_node(), of_find_compatible_node() and
-of_find_node_by_path() will return node pointers with refcout
-incremented. We should call of_node_put() when they are not
-used anymore.
+Certain GL unit tests for large textures can cause problems
+with the OOM killer since there is no way to link this memory
+to a process.  This was originally mitigated (but not necessarily
+eliminated) by limiting the GTT size.  The problem is this limit
+is often too low for many modern games so just make the limit 1/2
+of system memory. The OOM accounting needs to be addressed, but
+we shouldn't prevent common 3D applications from being usable
+just to potentially mitigate that corner case.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Set default GTT size to max(3G, 1/2 of system ram) by default.
+
+v2: drop previous logic and default to 3/4 of ram
+v3: default to half of ram to align with ttm
+v4: fix spelling in comment (Kent)
+
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1942
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/pic32/pic32mzda/init.c | 7 ++++++-
- arch/mips/pic32/pic32mzda/time.c | 3 +++
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/arch/mips/pic32/pic32mzda/init.c b/arch/mips/pic32/pic32mzda/init.c
-index 406c6c5cec29..f8985d4573e6 100644
---- a/arch/mips/pic32/pic32mzda/init.c
-+++ b/arch/mips/pic32/pic32mzda/init.c
-@@ -131,13 +131,18 @@ static int __init pic32_of_prepare_platform_data(struct of_dev_auxdata *lookup)
- 		np = of_find_compatible_node(NULL, NULL, lookup->compatible);
- 		if (np) {
- 			lookup->name = (char *)np->name;
--			if (lookup->phys_addr)
-+			if (lookup->phys_addr) {
-+				of_node_put(np);
- 				continue;
-+			}
- 			if (!of_address_to_resource(np, 0, &res))
- 				lookup->phys_addr = res.start;
-+			of_node_put(np);
- 		}
- 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index 50807d621eca..7018873324d0 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -1782,18 +1782,26 @@ int amdgpu_ttm_init(struct amdgpu_device *adev)
+ 	DRM_INFO("amdgpu: %uM of VRAM memory ready\n",
+ 		 (unsigned) (adev->gmc.real_vram_size / (1024 * 1024)));
  
-+	of_node_put(root);
-+
- 	return 0;
- }
+-	/* Compute GTT size, either bsaed on 3/4th the size of RAM size
++	/* Compute GTT size, either based on 1/2 the size of RAM size
+ 	 * or whatever the user passed on module init */
+ 	if (amdgpu_gtt_size == -1) {
+ 		struct sysinfo si;
  
-diff --git a/arch/mips/pic32/pic32mzda/time.c b/arch/mips/pic32/pic32mzda/time.c
-index 1894e50939b5..04879b85aac9 100644
---- a/arch/mips/pic32/pic32mzda/time.c
-+++ b/arch/mips/pic32/pic32mzda/time.c
-@@ -40,6 +40,9 @@ static unsigned int pic32_xlate_core_timer_irq(void)
- 		goto default_map;
+ 		si_meminfo(&si);
+-		gtt_size = min(max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
+-			       adev->gmc.mc_vram_size),
+-			       ((uint64_t)si.totalram * si.mem_unit * 3/4));
+-	}
+-	else
++		/* Certain GL unit tests for large textures can cause problems
++		 * with the OOM killer since there is no way to link this memory
++		 * to a process.  This was originally mitigated (but not necessarily
++		 * eliminated) by limiting the GTT size.  The problem is this limit
++		 * is often too low for many modern games so just make the limit 1/2
++		 * of system memory which aligns with TTM. The OOM accounting needs
++		 * to be addressed, but we shouldn't prevent common 3D applications
++		 * from being usable just to potentially mitigate that corner case.
++		 */
++		gtt_size = max((AMDGPU_DEFAULT_GTT_SIZE_MB << 20),
++			       (u64)si.totalram * si.mem_unit / 2);
++	} else {
+ 		gtt_size = (uint64_t)amdgpu_gtt_size << 20;
++	}
  
- 	irq = irq_of_parse_and_map(node, 0);
-+
-+	of_node_put(node);
-+
- 	if (!irq)
- 		goto default_map;
- 
+ 	/* Initialize GTT memory pool */
+ 	r = ttm_bo_init_mm(&adev->mman.bdev, TTM_PL_TT, gtt_size >> PAGE_SHIFT);
 -- 
 2.35.1
 
