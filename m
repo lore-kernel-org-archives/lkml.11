@@ -2,80 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B7ACCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F201DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346073AbiF1NDl (ORCPT
+        id S1346121AbiF1ND6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        Tue, 28 Jun 2022 09:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346375AbiF1NDM (ORCPT
+        with ESMTP id S1345493AbiF1NDy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:03:12 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74C21EECA;
-        Tue, 28 Jun 2022 06:03:11 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LXPrj4yQWz9snC;
-        Tue, 28 Jun 2022 21:02:29 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 21:03:09 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 21:03:08 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>
-CC:     <clement.leger@bootlin.com>, <olteanv@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>
-Subject: [PATCH -next v2] net: pcs-rzn1-miic: fix return value check in miic_probe()
-Date:   Tue, 28 Jun 2022 21:12:59 +0800
-Message-ID: <20220628131259.3109124-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 28 Jun 2022 09:03:54 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42932F666
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:03:52 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id f14so9585451qkm.0
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:03:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RfTPOLA/b2n52+mjjXM2dhhI51g7dFYPV2V5TbPKmas=;
+        b=WaSHRYE2hvuxQmsWc0SvnAN4tiv17MiK+3qy6zaDnTIdcQqzxaiZOpv6wpmImsYmfY
+         kmjqWCQO79upp4IaX63rXkjNOKGzHSWeTRUXqL0D+/iNuSouuvMslXtp+gPHE8u+coBw
+         45tqt1TN3TyriiJX6+WIRH0eSBXoS8Jk9QfghYLxetn37BTcuB9V0BAG9GB7jpvFrAM/
+         /rgR5zg9MsdA6MhHKh3WdZBib/rY/YR5rIPrzZKmWKrUiTF/gShfs8/JfDX3h9SlcTex
+         GzPm3cCe+rQrhQ/QyyXd3oHXazXphIB822tgHiCAQyRU2GYpaXR1IwQV13sdu2taTEdX
+         zkUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RfTPOLA/b2n52+mjjXM2dhhI51g7dFYPV2V5TbPKmas=;
+        b=DvypPYpaswd9RwoaM07LyveXRr9487gdmoG2qBOzA3+x2PdPy/bdpMRV6lwi105meb
+         eTTIjDjjP24wbeUGGMiXBJsqnHRj/rX+D0duw2JbVt7Yqh/Z+FI/38HzVdJ9E+zdrLxq
+         5na2drvB3ZQiozAx/AtNOJrkPoT2aBK48EijSguNHloaiNL5sZhd49VmvKxM3sJmUjDP
+         yJTx2KU4xYEgxEYKuGPFLs5cQ47LU3WpjZlkX9fuOazrLpxv7Nu5djngeyGaO3bwXs6G
+         lRAjqnkTXCEScR7tDrWaYrIzH9fs4cZBYDHZwu7TMMbmWZ51H3ahdB65ohLgs0irPit7
+         8DJQ==
+X-Gm-Message-State: AJIora9y+T+CqHebquy7g+lVAx2oMP1WjqBVUFD2Hsb/Yp0tWNEpGk69
+        qObuy5MyyYoYykhIKG2aZCVwIw==
+X-Google-Smtp-Source: AGRyM1uHEMhM9NkhBpa9Cto8d3fMzuKczLR2QRFpR4+30YVcHeHk6+62HxsdfVF+jCXWw8m9EvdQwA==
+X-Received: by 2002:a37:a815:0:b0:6ae:e677:d56e with SMTP id r21-20020a37a815000000b006aee677d56emr11125041qke.722.1656421431593;
+        Tue, 28 Jun 2022 06:03:51 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id w11-20020a05622a190b00b003162a22f8f4sm3962969qtc.49.2022.06.28.06.03.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 06:03:50 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1o6Asg-002uOb-2L; Tue, 28 Jun 2022 10:03:50 -0300
+Date:   Tue, 28 Jun 2022 10:03:50 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Steven Sistare <steven.sistare@oracle.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        lizhe.67@bytedance.com, cohuck@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lizefan.x@bytedance.com
+Subject: Re: [PATCH] vfio: remove useless judgement
+Message-ID: <20220628130350.GN23621@ziepe.ca>
+References: <20220627035109.73745-1-lizhe.67@bytedance.com>
+ <20220627160640.7edca0dd.alex.williamson@redhat.com>
+ <7217566f-9c40-ae9d-6fd6-2ef93f13f853@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7217566f-9c40-ae9d-6fd6-2ef93f13f853@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On failure, devm_platform_ioremap_resource() returns a ERR_PTR() value
-and not NULL. Fix return value checking by using IS_ERR() and return
-PTR_ERR() as error value.
+On Tue, Jun 28, 2022 at 08:48:11AM -0400, Steven Sistare wrote:
+> For cpr, old qemu directly exec's new qemu, so task does not change.
+> 
+> To support fork+exec, the ownership test needs to be deleted or modified.
+> 
+> Pinned page accounting is another issue, as the parent counts pins in its
+> mm->locked_vm.  If the child unmaps, it cannot simply decrement its own
+> mm->locked_vm counter.
 
-Fixes: 7dc54d3b8d91 ("net: pcs: add Renesas MII converter driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  change commit message as Clément suggested.
----
- drivers/net/pcs/pcs-rzn1-miic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It is fine already:
 
-diff --git a/drivers/net/pcs/pcs-rzn1-miic.c b/drivers/net/pcs/pcs-rzn1-miic.c
-index 8f5e910f443d..d896961e48cc 100644
---- a/drivers/net/pcs/pcs-rzn1-miic.c
-+++ b/drivers/net/pcs/pcs-rzn1-miic.c
-@@ -461,8 +461,8 @@ static int miic_probe(struct platform_device *pdev)
- 	spin_lock_init(&miic->lock);
- 	miic->dev = dev;
- 	miic->base = devm_platform_ioremap_resource(pdev, 0);
--	if (!miic->base)
--		return -EINVAL;
-+	if (IS_ERR(miic->base))
-+		return PTR_ERR(miic->base);
- 
- 	ret = devm_pm_runtime_enable(dev);
- 	if (ret < 0)
--- 
-2.25.1
 
+	mm = async ? get_task_mm(dma->task) : dma->task->mm;
+	if (!mm)
+		return -ESRCH; /* process exited */
+
+	ret = mmap_write_lock_killable(mm);
+	if (!ret) {
+		ret = __account_locked_vm(mm, abs(npage), npage > 0, dma->task,
+					  dma->lock_cap);
+
+Each 'dma' already stores a pointer to the mm that sourced it and only
+manipulates the counter in that mm. AFAICT 'current' is not used
+during unmap.
+
+> As you and I have discussed, the count is also wrong in the direct
+> exec model, because exec clears mm->locked_vm.
+
+Really? Yikes, I thought exec would generate a new mm?
+
+> I am thinking vfio could count pins in struct user locked_vm to handle both 
+> models.  The user struct and its count would persist across direct exec,
+> and be shared by parent and child for fork+exec.  However, that does change
+> the RLIMIT_MEMLOCK value that applications must set, because the limit must
+> accommodate vfio plus other sub-systems that count in user->locked_vm, which
+> includes io_uring, skbuff, xdp, and perf.  Plus, the limit must accommodate all
+> processes of that user, not just a single process.
+
+We discussed this, for iommufd we are currently planning to go this
+way and will See How it Goes.
+
+Jason
