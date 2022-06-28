@@ -2,128 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9960CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E68CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233926AbiF1T42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
+        id S233735AbiF1T4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233306AbiF1Twk (ORCPT
+        with ESMTP id S231496AbiF1Tu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:52:40 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D7313E20
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:51:32 -0700 (PDT)
+        Tue, 28 Jun 2022 15:50:56 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0251C62;
+        Tue, 28 Jun 2022 12:49:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445893; x=1687981893;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=q8umaFOje/eRne1Av8ajQn3KiIWVFHtZIStU9Ey/2AY=;
-  b=GDF9KBI+6h4W/M2KjBMucf11qXC6VA7VsIozSIhu1weccRRy+HMlMVNf
-   EwUMdkOReYE+z6rhRZ5+xrp5Ex74pRKdinlo7UocR0wJFmHOqxa7F/jiC
-   eqmk4nhwLNGOo7RXDkKdkF/XlH428t/i9v8mmq2CHWGWzoSkOc6fPSO5S
-   pNWR+R1iSph4NDrZWc90G7mR+KwG7n7gvbJ7hNocNepOc6taS6jhlDazL
-   xrU/Kh2exg+Xfl/1l1jwA1RxVI12m6qsM5JSqSzVo0lNS5bWUIGyiK+tk
-   MjmH1jKLzfQy2XfNFTnpb3KJvfrlPTFuN81Ju4vkFu1G/fKJot3sFNfj4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="345828837"
+  t=1656445786; x=1687981786;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zVh8rnbRSL6yxYm7j3MFZi5+oKCgLy0ivUDvveHIa48=;
+  b=f2mOXHr1NtwdvSEGGpKwL2vuiVs+AXEzzrqeKg7DFtjzoX/KmuJfQVN4
+   FH43XfU3W3w6vDFrGbRH60fhLuUN8KdQPHiawSINVur6itITi/O6ITM2T
+   SZZKHXr4M/8HyugzqOOufwlvN0YmksqN/woK5BWxFB1fxNBFyztx0wSJr
+   V8asIJ5DaP9qsczjI9/KvBO3ZtfNFBEzsVa9nEEPn8ItOLZgfGtGhmbfQ
+   zJFOAQaV7IKrFEVnRusz9jpOIE0fy+Lxr1lAYulvE+u55z7eELFsfigbI
+   W+9U9zw1Hsom7HVOyFkeWsLr5FplJnqOG+lFqsvn5gHtEE8/eEMNaUhwV
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="280595962"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="345828837"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:51:32 -0700
+   d="scan'208";a="280595962"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:46 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="594928122"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2022 12:51:31 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o6HFC-000AZw-Kw;
-        Tue, 28 Jun 2022 19:51:30 +0000
-Date:   Wed, 29 Jun 2022 03:50:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:sched/core] BUILD SUCCESS
- 70fb5ccf2ebb09a0c8ebba775041567812d45f86
-Message-ID: <62bb5b8a.rTtdSO8XcjN/p00y%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="732883439"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Jun 2022 12:49:42 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9Z022013;
+        Tue, 28 Jun 2022 20:49:40 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Toke Hoiland-Jorgensen <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+Subject: [PATCH RFC bpf-next 35/52] net, skbuff: introduce napi_skb_cache_get_bulk()
+Date:   Tue, 28 Jun 2022 21:47:55 +0200
+Message-Id: <20220628194812.1453059-36-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-branch HEAD: 70fb5ccf2ebb09a0c8ebba775041567812d45f86  sched/fair: Introduce SIS_UTIL to search idle CPU based on sum of util_avg
+Add a function to get an array of skbs from the NAPI percpu cache.
+It's supposed to be a drop-in replacement for
+kmem_cache_alloc_bulk(skbuff_head_cache, GFP_ATOMIC) and
+xdp_alloc_skb_bulk(GFP_ATOMIC). The difference (apart from the
+requirement to call it only from the BH) is that it tries to use
+as many NAPI cache entries for skbs as possible, and allocate new
+ones only if and as less as needed.
+It can save significant amounts of CPU cycles if there are GRO
+cycles and/or Tx completion cycles (anything that descends to
+napi_skb_cache_put()) happening on this CPU. If the function is
+not able to provide the requested number of entries due to an
+allocation error, it returns as much as it got.
 
-elapsed time: 725m
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ include/linux/skbuff.h |  1 +
+ net/core/skbuff.c      | 43 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-configs tested: 52
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-ia64                             allmodconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-alpha                            allyesconfig
-arc                              allyesconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64               randconfig-a012-20220627
-x86_64               randconfig-a011-20220627
-x86_64               randconfig-a013-20220627
-x86_64               randconfig-a014-20220627
-x86_64               randconfig-a015-20220627
-x86_64               randconfig-a016-20220627
-i386                 randconfig-a014-20220627
-i386                 randconfig-a012-20220627
-i386                 randconfig-a015-20220627
-i386                 randconfig-a011-20220627
-i386                 randconfig-a013-20220627
-i386                 randconfig-a016-20220627
-arc                  randconfig-r043-20220627
-s390                 randconfig-r044-20220627
-riscv                randconfig-r042-20220627
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-
-clang tested configs:
-x86_64               randconfig-a002-20220627
-x86_64               randconfig-a003-20220627
-x86_64               randconfig-a001-20220627
-x86_64               randconfig-a004-20220627
-x86_64               randconfig-a006-20220627
-x86_64               randconfig-a005-20220627
-i386                 randconfig-a002-20220627
-i386                 randconfig-a004-20220627
-i386                 randconfig-a001-20220627
-i386                 randconfig-a005-20220627
-i386                 randconfig-a006-20220627
-i386                 randconfig-a003-20220627
-hexagon              randconfig-r041-20220627
-hexagon              randconfig-r045-20220627
-
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0a95f753c1d9..0c1e5446653b 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1240,6 +1240,7 @@ struct sk_buff *build_skb_around(struct sk_buff *skb,
+ void skb_attempt_defer_free(struct sk_buff *skb);
+ 
+ struct sk_buff *napi_build_skb(void *data, unsigned int frag_size);
++size_t napi_skb_cache_get_bulk(void **skbs, size_t n);
+ 
+ /**
+  * alloc_skb - allocate a network buffer
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5b23fc7f1157..9b075f52d1fb 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -190,6 +190,49 @@ static struct sk_buff *napi_skb_cache_get(void)
+ 	return skb;
+ }
+ 
++/**
++ * napi_skb_cache_get_bulk - obtain a number of zeroed skb heads from the cache
++ * @skbs: a pointer to an at least @n-sized array to fill with skb pointers
++ * @n: the number of entries to provide
++ *
++ * Tries to obtain @n &sk_buff entries from the NAPI percpu cache and writes
++ * the pointers into the provided array @skbs. If there are less entries
++ * available, bulk-allocates the diff from the MM layer.
++ * The heads are being zeroed with either memset() or %__GFP_ZERO, so they are
++ * ready for {,__}build_skb_around() and don't have any data buffers attached.
++ * Must be called *only* from the BH context.
++ *
++ * Returns the number of successfully allocated skbs (@n if
++ * kmem_cache_alloc_bulk() didn't fail).
++ */
++size_t napi_skb_cache_get_bulk(void **skbs, size_t n)
++{
++	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
++	size_t total = n;
++
++	if (nc->skb_count < n)
++		n -= kmem_cache_alloc_bulk(skbuff_head_cache,
++					   GFP_ATOMIC | __GFP_ZERO,
++					   n - nc->skb_count,
++					   skbs + nc->skb_count);
++	if (unlikely(nc->skb_count < n)) {
++		total -= n - nc->skb_count;
++		n = nc->skb_count;
++	}
++
++	for (size_t i = 0; i < n; i++) {
++		skbs[i] = nc->skb_cache[nc->skb_count - n + i];
++
++		kasan_unpoison_object_data(skbuff_head_cache, skbs[i]);
++		memset(skbs[i], 0, offsetof(struct sk_buff, tail));
++	}
++
++	nc->skb_count -= n;
++
++	return total;
++}
++EXPORT_SYMBOL_GPL(napi_skb_cache_get_bulk);
++
+ /* Caller must provide SKB that is memset cleared */
+ static void __build_skb_around(struct sk_buff *skb, void *data,
+ 			       unsigned int frag_size)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
