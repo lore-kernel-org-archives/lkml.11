@@ -2,87 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4826AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE5DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346998AbiF1Nz7 (ORCPT
+        id S1346435AbiF1N4a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
+        Tue, 28 Jun 2022 09:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346012AbiF1Nz5 (ORCPT
+        with ESMTP id S1345626AbiF1N42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:55:57 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE1531528
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:55:56 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-317710edb9dso118413087b3.0
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kxOhQolvwduRWfHp8nzmrFY1G8WxOuz7AW66OC89GlU=;
-        b=aIvg8hbrgemKNvg22KLNdqF1iZoyHZJHvQ+cI+1v3vreL1Y0S/gmjfQZRi5rozr2NI
-         n3Mg0QxI1maN80y0myC76XImJj4HD1RLw+ZsrntlrYTIRfINOWrtKjFTl9j9pEHxTRIH
-         CaBkZBYNtfv0LqzNEIAyMsaDTCLdG2X6M1ur4zd4FD3M5OM94hTv3E7iOtT+YeLF4fcX
-         JYs2H7JNSAHpqyUrfpPnrRfedI/SjA36/E3kp3426It+zCbbrtRlghG2I36Tpgby2rLC
-         H7jxp/FZGvL0IT50hh9/1jInVjASJeRXbayWWnpkHzeO4EHnOwgTCJxIv8xpsKUGrzDx
-         kxTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kxOhQolvwduRWfHp8nzmrFY1G8WxOuz7AW66OC89GlU=;
-        b=1K1HyoPU08IMZtkUHrPBHZb1ShFX6jBpPbVUemVj9SlvhyDoCagjRKFgeTfukN4VfH
-         bzk/0hi1S8QohrTkA0J27GKux0tAx83DQaBpyFpgs+eAsRTCb3X683yaNqJUip2O17qH
-         H71/dNOR/zwDuatympUo5Q2uw2Djo+CfnbR70wX5cwvlRHAPKkdUryfdZtlL4JZt2OLm
-         HgL3vqOjwP/XyIcjA4SsN7YPmPQYgQm8chTXp2qOkCAsQgAGUlf3kNOtEfwLA7C7KvRQ
-         75J3rXsw7zRgGkmhCiScLmPupDhDhMb2e5E/SafWs22OEA6spqOBqq+j3oHtmih9ADXc
-         osXQ==
-X-Gm-Message-State: AJIora/ypr67RDO5WYftMS4m5xG7Wja3kCszoolaUdTCADy8b2N2BBrB
-        MZ7q4IO2krYRLNoc8tAxPM/N3V8ydQaZbdJtsP1vIw==
-X-Google-Smtp-Source: AGRyM1szGG02RfG3EL5P+6lP1i3HtBscAKZM0qaNbzmp3Aol7aLOgPMpcWX50uoxmoqOY7esyzE1BBj3sY16WXS+L74=
-X-Received: by 2002:a0d:e20a:0:b0:317:ce36:a3a0 with SMTP id
- l10-20020a0de20a000000b00317ce36a3a0mr22354878ywe.448.1656424555304; Tue, 28
- Jun 2022 06:55:55 -0700 (PDT)
+        Tue, 28 Jun 2022 09:56:28 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612F533378;
+        Tue, 28 Jun 2022 06:56:27 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SDWhjQ007289;
+        Tue, 28 Jun 2022 13:56:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=Tf1deUgt9rwdxUuyNJ03TR1/LhveJ3DTEEiG3eS7IZI=;
+ b=S87c1eT5kAoQ9ixpRf9aXOekRG/+qJPZ+/+hKP/FXQ6pzqrrU//zIiSv8aL6c1bvV7IH
+ YLZJ+LSX4CIjrB1mg7YTenZGoSLhqZa04XfIkKNXVij2SaNBrdYFl3vzY7nGVfBW6NG+
+ fivuW8iGqc9Y4CTcdQfIYzJKfkHKomJ9ENVdA83HTIg9xayQ3sLWRJjlWZUIgxK+htUA
+ bv8NfMNN9+j4ZXFh6z5j1SGDf9iPhHTZJ2pDb0xvHRsaqJP8w+CUu9FpacX0p4zrbzPg
+ bWA6h0bGjT9f7a1OF0g+IPjzPCsfFwQctsRskVd9nabzfVcMbl3B9HILG6JZIrfLW4m4 bQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h02d0hn6w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 13:56:26 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SDHIhg005670;
+        Tue, 28 Jun 2022 13:56:26 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h02d0hn5f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 13:56:25 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SDp9Js007950;
+        Tue, 28 Jun 2022 13:56:24 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gwt08vxrs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jun 2022 13:56:23 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SDuKrg7405866
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jun 2022 13:56:20 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CB3654C040;
+        Tue, 28 Jun 2022 13:56:20 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 70DE84C044;
+        Tue, 28 Jun 2022 13:56:20 +0000 (GMT)
+Received: from p-imbrenda.boeblingen.de.ibm.com (unknown [9.152.224.40])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Jun 2022 13:56:20 +0000 (GMT)
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com, nrb@linux.ibm.com
+Subject: [PATCH v12 02/18] KVM: s390: pv: handle secure storage violations for protected guests
+Date:   Tue, 28 Jun 2022 15:56:03 +0200
+Message-Id: <20220628135619.32410-3-imbrenda@linux.ibm.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220628135619.32410-1-imbrenda@linux.ibm.com>
+References: <20220628135619.32410-1-imbrenda@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220624081022.32384-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220624081022.32384-1-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 28 Jun 2022 15:55:44 +0200
-Message-ID: <CACRpkdabjb45WNLPa6gRDiCDm0u1swDpYq3D1pju4HmcCetoYA@mail.gmail.com>
-Subject: Re: [GIT PULL][PATCH] pinctrl: samsung: do not use bindings header
- with constants
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <snawrocki@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: _HGAlXFY2nC-jcQflto1mtzSm7M-I211
+X-Proofpoint-ORIG-GUID: zPK9c69DJ6rzWgQi_Ob06cOAplfUH5Fk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-28_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=839
+ impostorscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 bulkscore=0
+ spamscore=0 mlxscore=0 priorityscore=1501 adultscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206280057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 10:10 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> The Samsung SoC pin controller driver uses only three defines from the
-> bindings header with pin configuration register values, which proves
-> the point that this header is not a proper bindings-type abstraction
-> layer with IDs.
->
-> Define the needed register values directly in the driver and stop using
-> the bindings header.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Chanho Park <chanho61.park@samsung.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Link: https://lore.kernel.org/r/20220605160508.134075-8-krzysztof.kozlowski@linaro.org
+A secure storage violation is triggered when a protected guest tries to
+access secure memory that has been mapped erroneously, or that belongs
+to a different protected guest or to the ultravisor.
 
-Patch applied.
+With upcoming patches, protected guests will be able to trigger secure
+storage violations in normal operation. This happens for example if a
+protected guest is rebooted with deferred destroy enabled and the new
+guest is also protected.
 
-Yours,
-Linus Walleij
+When the new protected guest touches pages that have not yet been
+destroyed, and thus are accounted to the previous protected guest, a
+secure storage violation is raised.
+
+This patch adds handling of secure storage violations for protected
+guests.
+
+This exception is handled by first trying to destroy the page, because
+it is expected to belong to a defunct protected guest where a destroy
+should be possible. Note that a secure page can only be destroyed if
+its protected VM does not have any CPUs, which only happens when the
+protected VM is being terminated. If that fails, a normal export of
+the page is attempted.
+
+This means that pages that trigger the exception will be made
+non-secure (in one way or another) before attempting to use them again
+for a different secure guest.
+
+Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Acked-by: Janosch Frank <frankja@linux.ibm.com>
+---
+ arch/s390/include/asm/uv.h |  1 +
+ arch/s390/kernel/uv.c      | 55 ++++++++++++++++++++++++++++++++++++++
+ arch/s390/mm/fault.c       | 10 +++++++
+ 3 files changed, 66 insertions(+)
+
+diff --git a/arch/s390/include/asm/uv.h b/arch/s390/include/asm/uv.h
+index cfea7b77a5b8..ba64e0be03bb 100644
+--- a/arch/s390/include/asm/uv.h
++++ b/arch/s390/include/asm/uv.h
+@@ -378,6 +378,7 @@ static inline int is_prot_virt_host(void)
+ }
+ 
+ int gmap_make_secure(struct gmap *gmap, unsigned long gaddr, void *uvcb);
++int gmap_destroy_page(struct gmap *gmap, unsigned long gaddr);
+ int uv_destroy_owned_page(unsigned long paddr);
+ int uv_convert_from_secure(unsigned long paddr);
+ int uv_convert_owned_from_secure(unsigned long paddr);
+diff --git a/arch/s390/kernel/uv.c b/arch/s390/kernel/uv.c
+index a5425075dd25..ce14fd0b573c 100644
+--- a/arch/s390/kernel/uv.c
++++ b/arch/s390/kernel/uv.c
+@@ -334,6 +334,61 @@ int gmap_convert_to_secure(struct gmap *gmap, unsigned long gaddr)
+ }
+ EXPORT_SYMBOL_GPL(gmap_convert_to_secure);
+ 
++/**
++ * gmap_destroy_page - Destroy a guest page.
++ * @gmap: the gmap of the guest
++ * @gaddr: the guest address to destroy
++ *
++ * An attempt will be made to destroy the given guest page. If the attempt
++ * fails, an attempt is made to export the page. If both attempts fail, an
++ * appropriate error is returned.
++ */
++int gmap_destroy_page(struct gmap *gmap, unsigned long gaddr)
++{
++	struct vm_area_struct *vma;
++	unsigned long uaddr;
++	struct page *page;
++	int rc;
++
++	rc = -EFAULT;
++	mmap_read_lock(gmap->mm);
++
++	uaddr = __gmap_translate(gmap, gaddr);
++	if (IS_ERR_VALUE(uaddr))
++		goto out;
++	vma = vma_lookup(gmap->mm, uaddr);
++	if (!vma)
++		goto out;
++	/*
++	 * Huge pages should not be able to become secure
++	 */
++	if (is_vm_hugetlb_page(vma))
++		goto out;
++
++	rc = 0;
++	/* we take an extra reference here */
++	page = follow_page(vma, uaddr, FOLL_WRITE | FOLL_GET);
++	if (IS_ERR_OR_NULL(page))
++		goto out;
++	rc = uv_destroy_owned_page(page_to_phys(page));
++	/*
++	 * Fault handlers can race; it is possible that two CPUs will fault
++	 * on the same secure page. One CPU can destroy the page, reboot,
++	 * re-enter secure mode and import it, while the second CPU was
++	 * stuck at the beginning of the handler. At some point the second
++	 * CPU will be able to progress, and it will not be able to destroy
++	 * the page. In that case we do not want to terminate the process,
++	 * we instead try to export the page.
++	 */
++	if (rc)
++		rc = uv_convert_owned_from_secure(page_to_phys(page));
++	put_page(page);
++out:
++	mmap_read_unlock(gmap->mm);
++	return rc;
++}
++EXPORT_SYMBOL_GPL(gmap_destroy_page);
++
+ /*
+  * To be called with the page locked or with an extra reference! This will
+  * prevent gmap_make_secure from touching the page concurrently. Having 2
+diff --git a/arch/s390/mm/fault.c b/arch/s390/mm/fault.c
+index e173b6187ad5..af1ac49168fb 100644
+--- a/arch/s390/mm/fault.c
++++ b/arch/s390/mm/fault.c
+@@ -837,6 +837,16 @@ NOKPROBE_SYMBOL(do_non_secure_storage_access);
+ 
+ void do_secure_storage_violation(struct pt_regs *regs)
+ {
++	unsigned long gaddr = regs->int_parm_long & __FAIL_ADDR_MASK;
++	struct gmap *gmap = (struct gmap *)S390_lowcore.gmap;
++
++	/*
++	 * If the VM has been rebooted, its address space might still contain
++	 * secure pages from the previous boot.
++	 * Clear the page so it can be reused.
++	 */
++	if (!gmap_destroy_page(gmap, gaddr))
++		return;
+ 	/*
+ 	 * Either KVM messed up the secure guest mapping or the same
+ 	 * page is mapped into multiple secure guests.
+-- 
+2.36.1
+
