@@ -2,129 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 20:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233717AbiF1T5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
+        id S231547AbiF1UCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 16:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232145AbiF1Tu5 (ORCPT
+        with ESMTP id S229955AbiF1UBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:50:57 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C27101D5;
-        Tue, 28 Jun 2022 12:49:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445788; x=1687981788;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=f++W//QJlwHfgm1DNYa0qsrg7yVxZsil1tIeQfMWplE=;
-  b=AfngGRlqtLpC26acAHuYJlvLDUCzpYtJFlIVJ3OpNBzqU1GAhGZOWofQ
-   xKodbPyGv1lHZzKBTylTQaRxe3jZzTCVU7TrwFu7fIOfXmqBVp5xNAGiG
-   2B3mwNg+VMPj5dmEyro/+9Do9pu9fKSQtn2r/Tfv3S7tSPGt5OY7I+FwN
-   eFK+xR81T1/fU28tRQx/CLEb8Ubdf4vmF7kWCDdBkdLCua7oriLGRp1si
-   RFuuNH9dGcXL3gxC1/GHJS60PcN5SR7XsmujSnmMKlUqOFV//HEpZjDLM
-   8ot3BKOZTTf0pZ4aKWldmljbiJURTeeyCHNRHZSH81NC4VaxGhgz9sfza
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="264874207"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="264874207"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="565181352"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 28 Jun 2022 12:49:43 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9a022013;
-        Tue, 28 Jun 2022 20:49:41 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Toke Hoiland-Jorgensen <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 36/52] bpf, cpumap: switch to napi_skb_cache_get_bulk()
-Date:   Tue, 28 Jun 2022 21:47:56 +0200
-Message-Id: <20220628194812.1453059-37-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
-References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+        Tue, 28 Jun 2022 16:01:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF233B3C0;
+        Tue, 28 Jun 2022 12:54:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 961B860C49;
+        Tue, 28 Jun 2022 19:54:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E4FC341C8;
+        Tue, 28 Jun 2022 19:54:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656446061;
+        bh=eZUfr5felgN92tClv9rcTibAmU/Gkmrb/pcPN45R3VI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tU9YwxD/l6NMWg8WQSMi0C1M6PTME0xZzDMH27K1XBNIplK2c5ivxFfK666D3dmpD
+         jYVIEEnfVSGoYKOSA298y6Lo9v1gjrsKW9BZkfoFRZ3IGDm9WGsIJOq79c/0OvLwrW
+         VZcqElh5uI89c/e+nxsu0dKVtwKzoLOXcKhGbJij+gKpTuq1qCwmunP1u6gnNe2IuG
+         A13vYgCxehFxdVgda2rf14umnPMHhtM4JT4jpX9qC6IGCdo4KFB+jtgGQxMxLw0YnG
+         s+RnSvT0MBCnNDB3Sz8GBXcxZfNRkrcqb1Dc61QEucuj7zZm4d2QhyVNiUvfDhoOTC
+         K4UnPW9IWQPEQ==
+Date:   Tue, 28 Jun 2022 21:54:18 +0200
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] io_uring: replace zero-length array with
+ flexible-array member
+Message-ID: <20220628195418.GA52851@embeddedor>
+References: <20220628193320.GA52629@embeddedor>
+ <37147b0c-4b11-37df-6c4a-ee2dfeb9cbb7@kernel.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37147b0c-4b11-37df-6c4a-ee2dfeb9cbb7@kernel.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that cpumap uses GRO, which drops unused skb heads to the NAPI
-cache, use napi_skb_cache_get_bulk() to try to reuse cached entries
-and lower the MM layer pressure.
-In the situation when all 8 skbs from one cpumap batch goes into one
-GRO skb (so the rest 7 go into the cache), there will now be only 1
-skb to allocate per cycle instead of 8. If there is some other work
-happening in between the cycles, even all 8 might be getting
-decached each cycle.
-This makes the BH-off period per each batch slightly longer --
-previously, skb allocation was happening in the process context.
+On Tue, Jun 28, 2022 at 01:38:44PM -0600, Jens Axboe wrote:
+> Thanks for sending this separately. As mentioned out-of-band, we already
+> have it like this in the io_uring.h header in liburing.
+> 
+> Applied for 5.20.
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- kernel/bpf/cpumap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Great! :)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 145f49de0931..1bb3ae570e6c 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -365,7 +365,6 @@ static int cpu_map_kthread_run(void *data)
- 	while (!kthread_should_stop() || !__ptr_ring_empty(rcpu->queue)) {
- 		struct xdp_cpumap_stats stats = {}; /* zero stats */
- 		unsigned int kmem_alloc_drops = 0, sched = 0;
--		gfp_t gfp = __GFP_ZERO | GFP_ATOMIC;
- 		int i, n, m, nframes, xdp_n;
- 		void *frames[CPUMAP_BATCH];
- 		void *skbs[CPUMAP_BATCH];
-@@ -416,8 +415,10 @@ static int cpu_map_kthread_run(void *data)
- 
- 		/* Support running another XDP prog on this CPU */
- 		nframes = cpu_map_bpf_prog_run(rcpu, frames, xdp_n, &stats, &list);
-+		local_bh_disable();
-+
- 		if (nframes) {
--			m = kmem_cache_alloc_bulk(skbuff_head_cache, gfp, nframes, skbs);
-+			m = napi_skb_cache_get_bulk(skbs, nframes);
- 			if (unlikely(m == 0)) {
- 				for (i = 0; i < nframes; i++)
- 					skbs[i] = NULL; /* effect: xdp_return_frame */
-@@ -425,7 +426,6 @@ static int cpu_map_kthread_run(void *data)
- 			}
- 		}
- 
--		local_bh_disable();
- 		for (i = 0; i < nframes; i++) {
- 			struct xdp_frame *xdpf = frames[i];
- 			struct sk_buff *skb = skbs[i];
--- 
-2.36.1
-
+Thanks, Jens.
+--
+Gustavo
