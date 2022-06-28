@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A23ECCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8E8CCA47B
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:33:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245473AbiF1Ccl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40392 "EHLO
+        id S245417AbiF1Ccf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244743AbiF1C1z (ORCPT
+        with ESMTP id S244739AbiF1C1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:27:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F5426100;
-        Mon, 27 Jun 2022 19:25:54 -0700 (PDT)
+        Mon, 27 Jun 2022 22:27:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F3925EBC;
+        Mon, 27 Jun 2022 19:25:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F16D61799;
-        Tue, 28 Jun 2022 02:25:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB28C36AE2;
-        Tue, 28 Jun 2022 02:25:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90918617BF;
+        Tue, 28 Jun 2022 02:25:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18E3C341CA;
+        Tue, 28 Jun 2022 02:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383153;
-        bh=7k2kLI+LWAGXILLrGN3IgTWV98zgUQw3YiOqNApUtzY=;
+        s=k20201202; t=1656383148;
+        bh=9BkiyLBsVzXzC2PyiRUjj1lfylL5hzUuyzqnpUyygY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qECeJ2ClBJsRTzo95wjRtvR3I2ZQkljqodUfqrenx/H2rhp7l4PbXQuvzvrG+12C3
-         tUtCt7/XKQNn9w+ItBiah1xqEbCSfmJ51J/mwruonwc8DSFamCkhbI16IU/lMI2Iqk
-         8tcBu5+8WS4DBV0Q1grWCmYjPCPVaApp6I2c3L8jLtxKKoHTkwm/1A5GeMdV3eDDZl
-         X+tgBRP1E/J94In4Dv/pyZ5aPux9tn+0r78bIEQQ2iWNQvgB+yGS8FOWHQ4xKeYT8w
-         DC7JEntC6RPyHoWXwYEW2I+qpElimMvfIUcSyIvbp2kGnogtKq9Doxc7gzQ+PV/srV
-         l3ZFC8EEVl77A==
+        b=kaajD7JwjM2hu5HPTIMsb+Sr0oQKr3vZI/hpCVnXpElO3VuKVBJRVQYk31LUL6jLl
+         7e7eV88MnHI2fdB5szk4y7hm3zQF57/yOwJwg0B5FYBx4cyJOyxSMhy1EHX7I/BPpb
+         rNKYsimMjpEve3t3pqpNkYf1y85+84A/6fR/tDVObvJKTdM/dv1r3kfYnsg/ufzoZ/
+         0Dw2ibmHCvslJ1FvNfqQiZreamvjxvn1WG5LngNS9CCyfAN8iR/WnLgm9fny+uecAF
+         /sX0mK60zZvX5wE5sMv97K8RZLe1+8n0DdGzE8NDylK1UeRl1pH3nvNX4VSXgVZxBR
+         Z9ZPun2CzizYQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 14/22] mips: mti-malta: Fix refcount leak in malta-time.c
-Date:   Mon, 27 Jun 2022 22:25:09 -0400
-Message-Id: <20220628022518.596687-14-sashal@kernel.org>
+Cc:     Hyunwoo Kim <imv4bel@gmail.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, yangyingliang@huawei.com,
+        yang.lee@linux.alibaba.com, cai.huoqing@linux.dev,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 11/22] video: fbdev: pxa3xx-gcu: Fix integer overflow in pxa3xx_gcu_write
+Date:   Mon, 27 Jun 2022 22:25:06 -0400
+Message-Id: <20220628022518.596687-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
 References: <20220628022518.596687-1-sashal@kernel.org>
@@ -51,34 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Hyunwoo Kim <imv4bel@gmail.com>
 
-[ Upstream commit 608d94cb84c42585058d692f2fe5d327f8868cdb ]
+[ Upstream commit a09d2d00af53b43c6f11e6ab3cb58443c2cac8a7 ]
 
-In update_gic_frequency_dt(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+In pxa3xx_gcu_write, a count parameter of type size_t is passed to words of
+type int.  Then, copy_from_user() may cause a heap overflow because it is used
+as the third argument of copy_from_user().
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Hyunwoo Kim <imv4bel@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mti-malta/malta-time.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/video/fbdev/pxa3xx-gcu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/mti-malta/malta-time.c b/arch/mips/mti-malta/malta-time.c
-index d22b7edc3886..d6f5dc822680 100644
---- a/arch/mips/mti-malta/malta-time.c
-+++ b/arch/mips/mti-malta/malta-time.c
-@@ -231,6 +231,8 @@ static void update_gic_frequency_dt(void)
+diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
+index 43695a33f062..aec0b85db5bf 100644
+--- a/drivers/video/fbdev/pxa3xx-gcu.c
++++ b/drivers/video/fbdev/pxa3xx-gcu.c
+@@ -394,7 +394,7 @@ pxa3xx_gcu_write(struct file *file, const char *buff,
+ 	struct pxa3xx_gcu_batch	*buffer;
+ 	struct pxa3xx_gcu_priv *priv = to_pxa3xx_gcu_priv(file);
  
- 	if (of_update_property(node, &gic_frequency_prop) < 0)
- 		pr_err("error updating gic frequency property\n");
-+
-+	of_node_put(node);
- }
+-	int words = count / 4;
++	size_t words = count / 4;
  
- #endif
+ 	/* Does not need to be atomic. There's a lock in user space,
+ 	 * but anyhow, this is just for statistics. */
 -- 
 2.35.1
 
