@@ -2,166 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B0BFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B2DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346649AbiF1NkV (ORCPT
+        id S1346697AbiF1NlA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        Tue, 28 Jun 2022 09:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346388AbiF1NkS (ORCPT
+        with ESMTP id S1346688AbiF1Nk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:40:18 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665C227171;
-        Tue, 28 Jun 2022 06:40:17 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SDB1Sn016705;
-        Tue, 28 Jun 2022 13:40:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=FBgDUWz9zu+SVcHFsLwmqLmheCUV+tCagUD444+K/iM=;
- b=nP9nGTSpJTTxLCM/e7EHiIx/Ndo31kBdhG01AiT+nVxGGOIJd+VYZVpA7fXPpKTNr8JK
- /l/54zwUbAFYlGGx64R6SFaLrZnHYD5PIseGAUQykf8TjO8d0h7b+rWGKVzSRHNHT9wJ
- Sxx9ZG1Kwhg4BMHR/dLp1+6xhPFq7sZHJnpo4ZWDe0dGXiJsQ6Fy/UonAOXQ0aXSEq8X
- dF0D8+rbJG3YU66L9xcBB9mTfMcGWNA/IdbhiFAsG1ozb8eg7vTcGuo1FzK/8gdGuyNN
- BkroJEpsq1eUs4k7bFbEk9xRt7UNEms7wnhXIi6IaTh/IY/jjnpFV5gh/7QA9quWN9h6 9g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h01tjaa5b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 13:40:15 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SDC7x4021996;
-        Tue, 28 Jun 2022 13:40:13 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h01tjaa0t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 13:40:13 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SDb8C7025960;
-        Tue, 28 Jun 2022 13:40:11 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01dal.us.ibm.com with ESMTP id 3gwt09857t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 13:40:11 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SDeAWv32834002
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 13:40:10 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4C2B9AC05E;
-        Tue, 28 Jun 2022 13:40:10 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CE79AAC05B;
-        Tue, 28 Jun 2022 13:40:02 +0000 (GMT)
-Received: from [9.163.8.193] (unknown [9.163.8.193])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jun 2022 13:40:02 +0000 (GMT)
-Message-ID: <425d3030-94e2-efeb-60fd-08516443a06a@linux.ibm.com>
-Date:   Tue, 28 Jun 2022 09:40:01 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v9 00/21] KVM: s390: enable zPCI for interpretive
- execution
-Content-Language: en-US
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
- <f86e2e05-114a-cc9e-8f3a-96b36889063d@linux.ibm.com>
- <c98e7c10-272c-2bbb-6909-046d57d721d1@linux.ibm.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <c98e7c10-272c-2bbb-6909-046d57d721d1@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: jBnlD9HRmTZN25V0BQZsmMSBZ2YhhOAb
-X-Proofpoint-ORIG-GUID: 2Jd4WNhrYwTB9D6Hdj11r_eT12oohFQV
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 28 Jun 2022 09:40:56 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C603827CFE
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:40:53 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-50-YWi63-uoNrW8kmPB3ciyCQ-1; Tue, 28 Jun 2022 14:40:35 +0100
+X-MC-Unique: YWi63-uoNrW8kmPB3ciyCQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Tue, 28 Jun 2022 14:38:07 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Tue, 28 Jun 2022 14:38:07 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christian Brauner' <brauner@kernel.org>,
+        Ralph Corderoy <ralph@inputplus.co.uk>
+CC:     Matthew Wilcox <willy@infradead.org>,
+        Nate Karstens <nate.karstens@garmin.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        "Jeff Layton" <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        "Arnd Bergmann" <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Changli Gao <xiaosuo@gmail.com>
+Subject: RE: [PATCH v2] Implement close-on-fork
+Thread-Topic: [PATCH v2] Implement close-on-fork
+Thread-Index: AQHYivDThpuxuu360k2l3JKLwphwnK1k0dbQ
+Date:   Tue, 28 Jun 2022 13:38:07 +0000
+Message-ID: <35d0facc934748f995c2e7ab695301f7@AcuMS.aculab.com>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
+ <20220618114111.61EC71F981@orac.inputplus.co.uk>
+ <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
+ <20220619104228.A9789201F7@orac.inputplus.co.uk>
+ <20220628131304.gbiqqxamg6pmvsxf@wittgenstein>
+In-Reply-To: <20220628131304.gbiqqxamg6pmvsxf@wittgenstein>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_07,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- priorityscore=1501 phishscore=0 adultscore=0 malwarescore=0
- lowpriorityscore=0 clxscore=1015 bulkscore=0 spamscore=0 mlxlogscore=999
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280057
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/28/22 8:35 AM, Christian Borntraeger wrote:
-> Am 27.06.22 um 22:57 schrieb Matthew Rosato:
->> On 6/6/22 4:33 PM, Matthew Rosato wrote:
->>> Enable interpretive execution of zPCI instructions + adapter 
->>> interruption
->>> forwarding for s390x KVM vfio-pci.  This is done by triggering a routine
->>> when the VFIO group is associated with the KVM guest, transmitting to
->>> firmware a special token (GISA designation) to enable that specific 
->>> guest
->>> for interpretive execution on that zPCI device.  Load/store 
->>> interpreation
->>> enablement is then controlled by userspace (based upon whether or not a
->>> SHM bit is placed in the virtual function handle).  Adapter Event
->>> Notification interpretation is controlled from userspace via a new KVM
->>> ioctl.
->>>
->>> By allowing intepretation of zPCI instructions and firmware delivery of
->>> interrupts to guests, we can reduce the frequency of guest SIE exits for
->>> zPCI.
->>>
->>>  From the perspective of guest configuration, you passthrough zPCI 
->>> devices
->>> in the same manner as before, with intepretation support being used by
->>> default if available in kernel+qemu.
->>>
->>> Will follow up with a link the most recent QEMU series.
->>>
->>> Changelog v8->v9:
->>> - Rebase on top of 5.19-rc1, adjust ioctl and capability defines
->>> - s/kzdev = 0/kzdev = NULL/ (Alex)
->>> - rename vfio_pci_zdev_open to vfio_pci_zdev_open_device (Jason)
->>> - rename vfio_pci_zdev_release to vfio_pci_zdev_close_device (Jason)
->>> - make vfio_pci_zdev_close_device return void, instead WARN_ON or ignore
->>>    errors in lower level function (kvm_s390_pci_unregister_kvm) (Jason)
->>> - remove notifier accidentally left in struct zpci_dev + associated
->>>    include statment (Jason)
->>> - Remove patch 'KVM: s390: introduce CPU feature for zPCI 
->>> Interpretation'
->>>    based on discussion in QEMU thread.
->>>
->>
->> Ping -- I'm hoping this can make the next merge window, but there are 
->> still 2 patches left without any review tag (16 & 17).
-> 
-> Yes, I will queue this (as is). Ideally you would rebase this on top of 
-> kvm/next but I can also do while applying.
-> Let me know if you want to respin with the Nits from Pierre.
+RnJvbTogQ2hyaXN0aWFuIEJyYXVuZXINCj4gU2VudDogMjggSnVuZSAyMDIyIDE0OjEzDQo+IA0K
+PiBPbiBTdW4sIEp1biAxOSwgMjAyMiBhdCAxMTo0MjoyOEFNICswMTAwLCBSYWxwaCBDb3JkZXJv
+eSB3cm90ZToNCj4gPiBIaSBNYXR0aGV3LCB0aGFua3MgZm9yIHJlcGx5aW5nLg0KPiA+DQo+ID4g
+PiA+IFRoZSBuZWVkIGZvciBPX0NMT0ZPUksgbWlnaHQgYmUgbWFkZSBtb3JlIGNsZWFyIGJ5IGxv
+b2tpbmcgYXQgYQ0KPiA+ID4gPiBsb25nLXN0YW5kaW5nIEdvIGlzc3VlLCBpLmUuIHVucmVsYXRl
+ZCB0byBzeXN0ZW0oMyksIHdoaWNoIHdhcyBzdGFydGVkDQo+ID4gPiA+IGluIDIwMTcgYnkgUnVz
+cyBDb3ggd2hlbiBoZSBzdW1tZWQgdXAgdGhlIGN1cnJlbnQgcmFjZS1jb25kaXRpb24NCj4gPiA+
+ID4gYmVoYXZpb3VyIG9mIHRyeWluZyB0byBleGVjdmUoMikgYSBuZXdseSBjcmVhdGVkIGZpbGU6
+DQo+ID4gPiA+IGh0dHBzOi8vZ2l0aHViLmNvbS9nb2xhbmcvZ28vaXNzdWVzLzIyMzE1Lg0KPiA+
+ID4NCj4gPiA+IFRoZSBwcm9ibGVtIGlzIHRoYXQgcGVvcGxlIGFkdm9jYXRpbmcgZm9yIE9fQ0xP
+Rk9SSyB1bmRlcnN0YW5kIGl0cw0KPiA+ID4gdmFsdWUsIGJ1dCBub3QgaXRzIGNvc3QuICBPdGhl
+ciBnb29nbGUgZW1wbG95ZWVzIGhhdmUgYSBzeXN0ZW0gd2hpY2gNCj4gPiA+IGhhcyBsaXRlcmFs
+bHkgbWlsbGlvbnMgb2YgZmlsZSBkZXNjcmlwdG9ycyBpbiBhIHNpbmdsZSBwcm9jZXNzLg0KPiA+
+ID4gSGF2aW5nIHRvIG1haW50YWluIHRoaXMgZXh0cmEgc3RhdGUgcGVyLWZkIGlzIGEgY29zdCB0
+aGV5IGRvbid0IHdhbnQNCj4gPiA+IHRvIHBheSAoYW5kIGhhdmUgYmVlbiBxdWl0ZSB2b2NhbCBh
+Ym91dCBlYXJsaWVyIGluIHRoaXMgdGhyZWFkKS4NCj4gPg0KPiA+IFNvIGRvIHlvdSBhZ3JlZSB0
+aGUgdXNlcnNwYWNlIGlzc3VlIGlzIGJlc3Qgc29sdmVkIGJ5ICpfQ0xPRk9SSyBhbmQgdGhlDQo+
+ID4gcHJvYmxlbSBpcyBob3cgdG8gaW1wbGVtZW50ICpfQ0xPRk9SSyBhdCBhbiBhY2NlcHRhYmxl
+IGNvc3Q/DQo+ID4NCj4gPiBPVE9IIERhdmlkIExhaWdodCB3YXMgbWFraW5nIHN1Z2dlc3Rpb25z
+IG9uIG1vdmluZyB0aGUgbG9hZCB0byB0aGUNCj4gPiBmb3JrL2V4ZWMgcGF0aCBlYXJsaWVyIGlu
+IHRoZSB0aHJlYWQsIGJ1dCBPVE9IIEFsIFZpcm8gbWVudGlvbmVkIGENCj4gPiDigJhwb3J0YWJs
+ZSBzb2x1dGlvbuKAmSwgdGhvdWdoIHRoYXQgY291bGQgaGF2ZSBiZWVuIHRvIGEgc3BlY2lmaWMg
+aXNzdWUNCj4gPiByYXRoZXIgdGhhbiB0aGUgbW9yZSBnZW5lcmFsIGNhc2UuDQo+ID4NCj4gPiBI
+b3cgd291bGQgeW91IHJlY29tbWVuZCBhcHByb2FjaGluZyBhbiBhY2NlcHRhYmxlIGNvc3QgaXMg
+cHJvZ3Jlc3NlZD8NCj4gPiBJdGVyYXRlIG9uIHBhdGNoIHZlcnNpb25zPyAgT3BlbiBhIGJ1Z3pp
+bGxhLmtlcm5lbC5vcmcgZm9yIGNlbnRyYWwNCj4gPiB0cmFja2luZyBhbmQgbGlua2luZyBmcm9t
+IHRoZSBvdGhlciBwcm9qZWN0cz8gIC4uPw0KPiANCj4gUXVvdGluZyBmcm9tIHRoYXQgZ28gdGhy
+ZWFkDQo+IA0KPiAiSWYgdGhlIE9TIGhhZCBhICJjbG9zZSBhbGwgZmRzIGFib3ZlIHgiLCB3ZSBj
+b3VsZCB1c2UgdGhhdC4gKEkgZG9uJ3Qga25vdyBvZiBhbnkgdGhhdCBkbywgYnV0IGl0IHN1cmUN
+Cj4gd291bGQgaGVscC4pIg0KPiANCj4gU28gd2h5IGNhbid0IHRoaXMgYmUgc29sdmVkIHdpdGg6
+DQo+IGNsb3NlX3JhbmdlKGZkX2ZpcnN0LCBmZF9sYXN0LCBDTE9TRV9SQU5HRV9DTE9FWEVDIHwg
+Q0xPU0VfUkFOR0VfVU5TSEFSRSk/DQo+IGUuZy4NCj4gY2xvc2VfcmFuZ2UoMTAwLCB+MFUsIENM
+T1NFX1JBTkdFX0NMT0VYRUMgfCBDTE9TRV9SQU5HRV9VTlNIQVJFKT8NCg0KVGhhdCBpcyBhIHJl
+bGF0aXZlbHkgcmVjZW50IGxpbnV4IHN5c3RlbSBjYWxsLg0KQWx0aG91Z2ggaXQgY2FuIGJlICht
+b3N0bHkpIGVtdWxhdGVkIGJ5IHJlYWRpbmcgL3Byb2MvZmQNCi0gYnV0IHRoYXQgbWF5IG5vdCBi
+ZSBtb3VudGVkLg0KDQpJbiBhbnkgY2FzZSBhbm90aGVyIHRocmVhZCBjYW4gb3BlbiBhbiBmZCBi
+ZXR3ZWVuIHRoZSBjbG9zZV9yYW5nZSgpDQphbmQgZm9yaygpIGNhbGxzLg0KDQooSSBjYW4ndCBy
+ZW1lbWJlciB3aGF0IEkgc2FpZCBiZWZvcmUgOi0pDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVk
+IEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5l
+cywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-Ah, sorry -- I assume you mean Paolo's kvm/next?  I tried now and see 
-some conflicts with the ioctl patch.
-
-Why don't I rebase on top of kvm/next along with these couple of changes 
-from Pierre and send this as a v10 for you to queue.
-
-While at it, there's one other issue to be aware of -- There will also 
-be small merge conflicts with a patch that just hit vfio-next, "vfio: 
-de-extern-ify function prototypes" - My series already avoids adding 
-externs to new prototypes, but adjacent code changes will cause a 
-conflict with patches 10 and 17.
-
-Not sure what the best way to proceed there is.
-
-https://lore.kernel.org/kvm/165471414407.203056.474032786990662279.stgit@omen/
