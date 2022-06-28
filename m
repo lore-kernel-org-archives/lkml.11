@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7A3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244231AbiF1CYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33352 "EHLO
+        id S244236AbiF1CYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 27 Jun 2022 22:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243976AbiF1CWh (ORCPT
+        with ESMTP id S243955AbiF1CWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:22:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BB82528C;
-        Mon, 27 Jun 2022 19:22:04 -0700 (PDT)
+        Mon, 27 Jun 2022 22:22:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132C025285;
+        Mon, 27 Jun 2022 19:22:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6542A617C4;
-        Tue, 28 Jun 2022 02:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE81AC341CD;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 430E2B81C12;
         Tue, 28 Jun 2022 02:22:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0556CC341CD;
+        Tue, 28 Jun 2022 02:21:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656382923;
-        bh=39mQqdEYNICeu1z3BzFMggiTFKEliPD2oRwcgHuljhA=;
+        s=k20201202; t=1656382921;
+        bh=rOos/ArnyqrU9+/UDMZ/R2BUkprdvSdRzCRG/yD/lQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NE7C4qlQNVho16VaxY1Ty5J6T2JrWT8wsDWRyKEGufSdYbkLGPdHsTUpmLi0plC40
-         hmlueoStEry1Y0VqPnRACmLPsl4T+NQSpS4/s7qNnnUNoi1tVCxIjSyArH8io914nS
-         8jpLYt1bNyWtn7oIznCJ2IMriRjRERM2+0un3W7p+060AyTfLYzulFChMSc7hhtgM0
-         aJ7Sc7VxBo7/54CTD+w8r2rsxOjwqE0ZTfcTR1SpJ9JVbVJ83SPNYOfjNrjQSsWiMj
-         +j4h44G2cD8YIjZaGTfA1H3i9Vpg062HLmqKiasBl1+5rwhePvbA7Ur4CygFG16HaH
-         WzmBKLSfIIm/A==
+        b=bBczAIs825MzX6CRYQGzoLE37ery5+KW1kpHUG2AvwvjsVa0jAjW0TGjMYExCzSfd
+         2d/iuwTnordUhtmK6SrgvB6/Jgj23EvvJTsfjtxWz/ASsX0DLNqh/O/Vg0PpIyqiyG
+         ltbRdOL06T8QnbZXmvhV5nlOdPuZooi8bv/UBaoKObPXM0GZ2jMMHr40g2mv/nvEfa
+         G6c1ErlVMeGGpXLxg2wB3KfE7fRSFwnzuF9t09CHuEgIJ1DNxLAhFCt8SWGhoPadsj
+         P0hW8TrOgBQod6zb2XOo/sDK/sG58IfUuFsQd9lCsvG/yys1F9gG9tiDugIxudXAI2
+         +8OvTtxO3+kig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Filipe Manana <fdmanana@suse.com>, Boris Burkov <boris@bur.io>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 24/41] btrfs: add missing inode updates on each iteration when replacing extents
-Date:   Mon, 27 Jun 2022 22:20:43 -0400
-Message-Id: <20220628022100.595243-24-sashal@kernel.org>
+Cc:     Hyunwoo Kim <imv4bel@gmail.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, yang.lee@linux.alibaba.com,
+        yangyingliang@huawei.com, cai.huoqing@linux.dev,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 22/41] video: fbdev: pxa3xx-gcu: Fix integer overflow in pxa3xx_gcu_write
+Date:   Mon, 27 Jun 2022 22:20:41 -0400
+Message-Id: <20220628022100.595243-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220628022100.595243-1-sashal@kernel.org>
 References: <20220628022100.595243-1-sashal@kernel.org>
@@ -52,106 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Hyunwoo Kim <imv4bel@gmail.com>
 
-[ Upstream commit 983d8209c6803345c9958f4cc358d1155f93a099 ]
+[ Upstream commit a09d2d00af53b43c6f11e6ab3cb58443c2cac8a7 ]
 
-When replacing file extents, called during fallocate, hole punching,
-clone and deduplication, we may not be able to replace/drop all the
-target file extent items with a single transaction handle. We may get
--ENOSPC while doing it, in which case we release the transaction handle,
-balance the dirty pages of the btree inode, flush delayed items and get
-a new transaction handle to operate on what's left of the target range.
+In pxa3xx_gcu_write, a count parameter of type size_t is passed to words of
+type int.  Then, copy_from_user() may cause a heap overflow because it is used
+as the third argument of copy_from_user().
 
-By dropping and replacing file extent items we have effectively modified
-the inode, so we should bump its iversion and update its mtime/ctime
-before we update the inode item. This is because if the transaction
-we used for partially modifying the inode gets committed by someone after
-we release it and before we finish the rest of the range, a power failure
-happens, then after mounting the filesystem our inode has an outdated
-iversion and mtime/ctime, corresponding to the values it had before we
-changed it.
-
-So add the missing iversion and mtime/ctime updates.
-
-Reviewed-by: Boris Burkov <boris@bur.io>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Hyunwoo Kim <imv4bel@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ctree.h   |  2 ++
- fs/btrfs/file.c    | 19 +++++++++++++++++++
- fs/btrfs/inode.c   |  1 +
- fs/btrfs/reflink.c |  1 +
- 4 files changed, 23 insertions(+)
+ drivers/video/fbdev/pxa3xx-gcu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-index 21c44846b002..bd665a123d5c 100644
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -1290,6 +1290,8 @@ struct btrfs_replace_extent_info {
- 	 * existing extent into a file range.
- 	 */
- 	bool is_new_extent;
-+	/* Indicate if we should update the inode's mtime and ctime. */
-+	bool update_times;
- 	/* Meaningful only if is_new_extent is true. */
- 	int qgroup_reserved;
- 	/*
-diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
-index ff578c934bbc..07ec05a810b4 100644
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2829,6 +2829,25 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
- 			extent_info->file_offset += replace_len;
- 		}
+diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
+index 9421d14d0eb0..9e9888e40c57 100644
+--- a/drivers/video/fbdev/pxa3xx-gcu.c
++++ b/drivers/video/fbdev/pxa3xx-gcu.c
+@@ -381,7 +381,7 @@ pxa3xx_gcu_write(struct file *file, const char *buff,
+ 	struct pxa3xx_gcu_batch	*buffer;
+ 	struct pxa3xx_gcu_priv *priv = to_pxa3xx_gcu_priv(file);
  
-+		/*
-+		 * We are releasing our handle on the transaction, balance the
-+		 * dirty pages of the btree inode and flush delayed items, and
-+		 * then get a new transaction handle, which may now point to a
-+		 * new transaction in case someone else may have committed the
-+		 * transaction we used to replace/drop file extent items. So
-+		 * bump the inode's iversion and update mtime and ctime except
-+		 * if we are called from a dedupe context. This is because a
-+		 * power failure/crash may happen after the transaction is
-+		 * committed and before we finish replacing/dropping all the
-+		 * file extent items we need.
-+		 */
-+		inode_inc_iversion(&inode->vfs_inode);
-+
-+		if (!extent_info || extent_info->update_times) {
-+			inode->vfs_inode.i_mtime = current_time(&inode->vfs_inode);
-+			inode->vfs_inode.i_ctime = inode->vfs_inode.i_mtime;
-+		}
-+
- 		ret = btrfs_update_inode(trans, root, inode);
- 		if (ret)
- 			break;
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 044d584c3467..9fd1d8fc0a53 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -10260,6 +10260,7 @@ static struct btrfs_trans_handle *insert_prealloc_file_extent(
- 	extent_info.file_offset = file_offset;
- 	extent_info.extent_buf = (char *)&stack_fi;
- 	extent_info.is_new_extent = true;
-+	extent_info.update_times = true;
- 	extent_info.qgroup_reserved = qgroup_released;
- 	extent_info.insertions = 0;
+-	int words = count / 4;
++	size_t words = count / 4;
  
-diff --git a/fs/btrfs/reflink.c b/fs/btrfs/reflink.c
-index fa60af00ebca..8545e8e812b7 100644
---- a/fs/btrfs/reflink.c
-+++ b/fs/btrfs/reflink.c
-@@ -489,6 +489,7 @@ static int btrfs_clone(struct inode *src, struct inode *inode,
- 			clone_info.file_offset = new_key.offset;
- 			clone_info.extent_buf = buf;
- 			clone_info.is_new_extent = false;
-+			clone_info.update_times = !no_time_update;
- 			ret = btrfs_replace_file_extents(BTRFS_I(inode), path,
- 					drop_start, new_key.offset + datal - 1,
- 					&clone_info, &trans);
+ 	/* Does not need to be atomic. There's a lock in user space,
+ 	 * but anyhow, this is just for statistics. */
 -- 
 2.35.1
 
