@@ -2,87 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B72DCCCA486
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C30CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245500AbiF1G1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
+        id S244958AbiF1G1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234982AbiF1G1M (ORCPT
+        with ESMTP id S235976AbiF1G1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:27:12 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8672316E
+        Tue, 28 Jun 2022 02:27:13 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8039E2316F
         for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:27:11 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LXF3n4sDFz9stm;
-        Tue, 28 Jun 2022 14:26:29 +0800 (CST)
-Received: from dggpeml500003.china.huawei.com (7.185.36.200) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 14:27:09 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500003.china.huawei.com
- (7.185.36.200) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 14:27:08 +0800
-From:   Yu Liao <liaoyu15@huawei.com>
-To:     <emma@anholt.net>, <mripard@kernel.org>, <eric@anholt.net>,
-        <bbrezillon@kernel.org>
-CC:     <liaoyu15@huawei.com>, <liwei391@huawei.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] drm/vc4: fix dereference before NULL check
-Date:   Tue, 28 Jun 2022 14:36:57 +0800
-Message-ID: <20220628063657.3169049-1-liaoyu15@huawei.com>
-X-Mailer: git-send-email 2.25.1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656397631; x=1687933631;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=VwpkHRbckHfhNUb4oL5+dzv724A12Fx42ijmC1IsKvo=;
+  b=aRkSAtpfKgGPyp54eV40Rz4T16KLnmGACN0nEO7BkZzXHU8zQbMdQd/O
+   OFIg0apsUkNLd16tCIMZcSMElLDRCqi65uKRhRh0uVjbQ9AS+zvSPg9yy
+   yKYi3ypPOfi+/ksSAs/7Ka1W4Pnmc3skermT36I3GIVjOG9QnWSvoE9FD
+   6+gRZ6ONWk5cn/dNuRtjhMlhHPw4TR+sRdOQcoWDFsg0PuAeWJagT/pIo
+   OVTMq0ipuyZEx4kHsAdnNz3hzjnvcdqWlu9QnBrMO5KghA7C0MAyQkRer
+   /bmAHWNCUSEyL4P8xtCxQ2leMdl07o7mSqKzGu35ypKeXA+TpIM8TcT67
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279194263"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="279194263"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 23:27:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="836542352"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 27 Jun 2022 23:27:09 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o64gn-0009cf-7l;
+        Tue, 28 Jun 2022 06:27:09 +0000
+Date:   Tue, 28 Jun 2022 14:26:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Moti Haimovski <mhaimovski@habana.ai>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>
+Subject: [ogabbay:gaudi2 59/61]
+ drivers/misc/habanalabs/common/mmu/mmu.c:785:16: error: invalid instruction
+Message-ID: <202206281401.zrwZ9lWF-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500003.china.huawei.com (7.185.36.200)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "perfmon" pointer is equal to the return value of idr_find
-which may be NULL, access by vc4_perfmon_get before checking if
-it was NULL. Fix this by dereferencing "perfmon" after "perfmon"
-has been null checked.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git gaudi2
+head:   a76819ab38942fcb341142a55e9dc81f3eaf08e3
+commit: 950d1a3888fe751fb5b2e51a44ebf89d963fdde5 [59/61] habanalabs: add gaudi2 MMU support
+config: s390-buildonly-randconfig-r003-20220628 (https://download.01.org/0day-ci/archive/20220628/202206281401.zrwZ9lWF-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project df18167ac56d05f2ab55f9d874aee7ab6d5bc9a2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=950d1a3888fe751fb5b2e51a44ebf89d963fdde5
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay gaudi2
+        git checkout 950d1a3888fe751fb5b2e51a44ebf89d963fdde5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-Addresses-Coverity: ("Dereference before null check")
-Fixes: 65101d8c9108 ("drm/vc4: Expose performance counters to userspace")
-Signed-off-by: Yu Liao <liaoyu15@huawei.com>
----
- drivers/gpu/drm/vc4/vc4_perfmon.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/gpu/drm/vc4/vc4_perfmon.c b/drivers/gpu/drm/vc4/vc4_perfmon.c
-index c7f5adb6bcf8..ca969b8c7dde 100644
---- a/drivers/gpu/drm/vc4/vc4_perfmon.c
-+++ b/drivers/gpu/drm/vc4/vc4_perfmon.c
-@@ -17,13 +17,17 @@
- 
- void vc4_perfmon_get(struct vc4_perfmon *perfmon)
- {
--	struct vc4_dev *vc4 = perfmon->dev;
-+	struct vc4_dev *vc4;
-+
-+	if (!perfmon)
-+		return;
-+
-+	vc4 = perfmon->dev;
- 
- 	if (WARN_ON_ONCE(vc4->is_vc5))
- 		return;
- 
--	if (perfmon)
--		refcount_inc(&perfmon->refcnt);
-+	refcount_inc(&perfmon->refcnt);
- }
- 
- void vc4_perfmon_put(struct vc4_perfmon *perfmon)
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/misc/habanalabs/common/mmu/mmu.c:10:
+   In file included from drivers/misc/habanalabs/common/mmu/../habanalabs.h:11:
+   In file included from drivers/misc/habanalabs/common/mmu/../../include/common/cpucp_if.h:12:
+   In file included from include/linux/if_ether.h:19:
+   In file included from include/linux/skbuff.h:31:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/misc/habanalabs/common/mmu/mmu.c:10:
+   In file included from drivers/misc/habanalabs/common/mmu/../habanalabs.h:11:
+   In file included from drivers/misc/habanalabs/common/mmu/../../include/common/cpucp_if.h:12:
+   In file included from include/linux/if_ether.h:19:
+   In file included from include/linux/skbuff.h:31:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/misc/habanalabs/common/mmu/mmu.c:10:
+   In file included from drivers/misc/habanalabs/common/mmu/../habanalabs.h:11:
+   In file included from drivers/misc/habanalabs/common/mmu/../../include/common/cpucp_if.h:12:
+   In file included from include/linux/if_ether.h:19:
+   In file included from include/linux/skbuff.h:31:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/misc/habanalabs/common/mmu/mmu.c:785:16: error: invalid instruction
+           asm volatile ("mfence" : : : "memory");
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           mfence
+           ^~~~~~
+   12 warnings and 1 error generated.
+
+
+vim +785 drivers/misc/habanalabs/common/mmu/mmu.c
+
+   780	
+   781	void hl_mmu_hr_flush(struct hl_ctx *ctx)
+   782	{
+   783		/* a flush operation requires memory barrier */
+   784		mb();
+ > 785		asm volatile ("mfence" : : : "memory");
+   786	}
+   787	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
