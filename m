@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7158BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03D4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 06:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245618AbiF1Gd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 02:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
+        id S245602AbiF1GeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 02:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245745AbiF1Gdo (ORCPT
+        with ESMTP id S245666AbiF1Gdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 02:33:44 -0400
+        Tue, 28 Jun 2022 02:33:45 -0400
 Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1641E63C5
-        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:33:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C13D63F2
+        for <linux-kernel@vger.kernel.org>; Mon, 27 Jun 2022 23:33:39 -0700 (PDT)
 X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
         LIVER,40,3)
 Received: from 172.28.114.216
@@ -27,10 +27,10 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         olof@lixom.net, soc@kernel.org,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v20 05/11] clk: gate: Add devm_clk_hw_register_gate_parent_data()
-Date:   Tue, 28 Jun 2022 14:26:45 +0800
-Message-Id: <cae295192fa149801ab2fa848a1606654d75cf39.1656396767.git.qinjian@cqplus1.com>
+        Qin Jian <qinjian@cqplus1.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v20 07/11] dt-bindings: interrupt-controller: Add bindings for SP7021 interrupt controller
+Date:   Tue, 28 Jun 2022 14:26:47 +0800
+Message-Id: <86d703e52fd9380f0973c539c1e12d8860def0ea.1656396767.git.qinjian@cqplus1.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1656396767.git.qinjian@cqplus1.com>
 References: <cover.1656396767.git.qinjian@cqplus1.com>
@@ -40,42 +40,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devm_clk_hw_register_gate_parent_data() - devres-managed version
-of clk_hw_register_gate_parent_data()
+Add documentation to describe Sunplus SP7021 interrupt controller bindings.
 
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- include/linux/clk-provider.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ .../sunplus,sp7021-intc.yaml                  | 62 +++++++++++++++++++
+ MAINTAINERS                                   |  5 ++
+ 2 files changed, 67 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
 
-diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-index c10dc4c65..179346c5c 100644
---- a/include/linux/clk-provider.h
-+++ b/include/linux/clk-provider.h
-@@ -567,6 +567,23 @@ struct clk *clk_register_gate(struct device *dev, const char *name,
- 	__devm_clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL, \
- 			       NULL, (flags), (reg), (bit_idx),		      \
- 			       (clk_gate_flags), (lock))
-+/**
-+ * devm_clk_hw_register_gate_parent_data - register a gate clock with the
-+ * clock framework
-+ * @dev: device that is registering this clock
-+ * @name: name of this clock
-+ * @parent_data: parent clk data
-+ * @flags: framework-specific flags for this clock
-+ * @reg: register address to control gating of this clock
-+ * @bit_idx: which bit in the register controls gating of this clock
-+ * @clk_gate_flags: gate-specific flags for this clock
-+ * @lock: shared register lock for this clock
-+ */
-+#define devm_clk_hw_register_gate_parent_data(dev, name, parent_data, flags,  \
-+				       reg, bit_idx, clk_gate_flags, lock)    \
-+	__devm_clk_hw_register_gate((dev), NULL, (name), NULL, NULL,	      \
-+			       (parent_data), (flags), (reg), (bit_idx),      \
-+			       (clk_gate_flags), (lock))
- void clk_unregister_gate(struct clk *clk);
- void clk_hw_unregister_gate(struct clk_hw *hw);
- int clk_gate_is_enabled(struct clk_hw *hw);
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+new file mode 100644
+index 000000000..bd0021dba
+--- /dev/null
++++ b/Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/interrupt-controller/sunplus,sp7021-intc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 SoC Interrupt Controller
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    items:
++      - const: sunplus,sp7021-intc
++
++  reg:
++    maxItems: 2
++    description:
++      Specifies base physical address(s) and size of the controller regs.
++      The 1st region include type/polarity/priority/mask regs.
++      The 2nd region include clear/masked_ext0/masked_ext1/group regs.
++
++  interrupt-controller: true
++
++  "#interrupt-cells":
++    const: 2
++    description:
++      The first cell is the IRQ number, the second cell is the trigger
++      type as defined in interrupt.txt in this directory.
++
++  interrupts:
++    maxItems: 2
++    description:
++      EXT_INT0 & EXT_INT1, 2 interrupts references to primary interrupt
++      controller.
++
++required:
++  - compatible
++  - reg
++  - interrupt-controller
++  - "#interrupt-cells"
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    intc: interrupt-controller@9c000780 {
++        compatible = "sunplus,sp7021-intc";
++        reg = <0x9c000780 0x80>, <0x9c000a80 0x80>;
++        interrupt-controller;
++        #interrupt-cells = <2>;
++        interrupt-parent = <&gic>;
++        interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>, /* EXT_INT0 */
++                     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>; /* EXT_INT1 */
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 63aa492a4..ca11740e8 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2832,8 +2832,13 @@ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
++F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	arch/arm/boot/dts/sunplus-sp7021*.dts*
++F:	arch/arm/configs/sp7021_*defconfig
++F:	arch/arm/mach-sunplus/
+ F:	drivers/clk/clk-sp7021.c
++F:	drivers/irqchip/irq-sp7021-intc.c
+ F:	drivers/reset/reset-sunplus.c
+ F:	include/dt-bindings/clock/sunplus,sp7021-clkc.h
+ F:	include/dt-bindings/reset/sunplus,sp7021-reset.h
 -- 
 2.33.1
 
