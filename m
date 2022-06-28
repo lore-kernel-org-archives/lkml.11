@@ -2,85 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBACC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B769C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 12:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345990AbiF1Mzh (ORCPT
+        id S1346005AbiF1Mzk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 08:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        Tue, 28 Jun 2022 08:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345986AbiF1Mzd (ORCPT
+        with ESMTP id S1345995AbiF1Mze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 08:55:33 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47F02F3B1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:55:31 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id l11so21994034ybu.13
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zmWEZn/MDT8BVlOf2j/0dbSY8mXMBqqiVxeYK+9B6lQ=;
-        b=JhUf9b2e4wqWDqQ8nebU+X8F21tnUWwiBkQ3caAT8ggv5nqGzZBBSIs1fyVqGmgTSz
-         P0bx2uU/Um+sT7/JMfPoyd+TMY/C0h/HDqX3iWSan4x+3gVgOFqQqxl7uMlO4YALgj1P
-         axnMd8R2aq8xen9gsHvKZXoB+QewakVfuJ8MoMEhQLsS7rq+b6tDv+KHy0ssO7jdghqo
-         YO21b4nExNXO9RgjmR71guAnd6SFsChnxgBNFeKm96PNLhb4OobEGJJroUD1rrau/T8h
-         1IW/3R1VEMOEupRLy+W8KoRPDUYOoNLb+cC2bED7huckB8a5gxeW6VgpiKBa8TJCGma3
-         hCoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zmWEZn/MDT8BVlOf2j/0dbSY8mXMBqqiVxeYK+9B6lQ=;
-        b=aeGGPyOUDsOGxuwBsr1n0FXjh0GyWGm8W6C60iLZ/MIW1ikPsyMabx279dvqBb2ZLg
-         iECDoMmSVvoxugzU4EPClOD/KEY5N+lFs1iZQOJ/y8c3fH0X/WRapCP4gk6/OZiHF6YM
-         i0mYdaD2q+03TkHkU2VNQfcVyLE3+n2xX9tTD48g7cX3FdPUqHg3T3a2zBQsbd1gWH2Y
-         T4sNoMQ+w5xYNwdhZ6/TrMJxG4eCDYMBOi40DFx7oQ6mku8N+UyGZX3MTe5/fv8yQn5d
-         KUrsGP9H9Cbg+PAMgB17hQ98t3G0uEZfYydJHQlCEuCRa90ojRNkbAOVOBLebAtHTAhN
-         ZsIw==
-X-Gm-Message-State: AJIora+9fEgdh/JA50iq7NVmuH2nxlrAgtdEU4cxrLu7Qa1mwknOTkH3
-        QQoJGeH/RQg1SS8YMCVzvg6JB4RZRqSDbz1l3GOECg==
-X-Google-Smtp-Source: AGRyM1tsaB9tgNaMSUle5S5+neod2eZjuTku0yKoAV6tHrXr5lM2cYOKc71QeSQjdMvN2lSTcPjYvD5JGxKdrp2cnJY=
-X-Received: by 2002:a25:cac5:0:b0:66d:2c32:8593 with SMTP id
- a188-20020a25cac5000000b0066d2c328593mr2819682ybg.626.1656420931032; Tue, 28
- Jun 2022 05:55:31 -0700 (PDT)
+        Tue, 28 Jun 2022 08:55:34 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345DE2F39A
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 05:55:33 -0700 (PDT)
+Message-ID: <e20dccc7-8ab6-7c15-7088-e82e67e7ad48@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1656420931;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mqAG6NtuPeXXT/iyoPFvKD2DWm9Jh7e8oexC24YjANo=;
+        b=JppEkjCyCOm7jL3qbB/qIlKo/Ny7szXdrp5BiRkHoo7g9tt/HVC3/+2Ua/h1/dEEMiDk5G
+        GXWSHNvPaVj2lYes5quE+T4r5wIt/zUC4j4HUgMZ+zzK+ReON1jee0ET5c00Sn2te7xwSx
+        iRZWGfNPsQKGuvAsmnFDzrfsOuGgrXg=
+Date:   Tue, 28 Jun 2022 15:55:29 +0300
 MIME-Version: 1.0
-References: <20220621161126.15883-1-quic_srichara@quicinc.com>
-In-Reply-To: <20220621161126.15883-1-quic_srichara@quicinc.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 28 Jun 2022 14:55:19 +0200
-Message-ID: <CACRpkdZs=kwFciZaNGWR3t=Q4Vy08qg6UNH6obcyubC=6jkYuw@mail.gmail.com>
-Subject: Re: [PATCH V2 0/8] Add minimal boot support for IPQ5018
-To:     Sricharan R <quic_srichara@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     agross@kernel.org, robh+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, catalin.marinas@arm.com, p.zabel@pengutronix.de,
-        quic_varada@quicinc.com, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v3 1/1] Create debugfs file with virtio balloon usage
+ information
+Content-Language: en-US
+To:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kernel@openvz.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220627163714-mutt-send-email-mst@kernel.org>
+ <20220628092324.23656-1-alexander.atanasov@virtuozzo.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vasily Averin <vasily.averin@linux.dev>
+In-Reply-To: <20220628092324.23656-1-alexander.atanasov@virtuozzo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 6:11 PM Sricharan R <quic_srichara@quicinc.com> wrote:
+On 6/28/22 12:23, Alexander Atanasov wrote:
+> +static int virtio_balloon_debug_show(struct seq_file *f, void *offset)
+> +{
+> +	struct virtio_balloon *b = f->private;
+> +	u32 num_pages;
+> +	struct sysinfo i;
+> +
+> +	si_meminfo(&i);
+> +
+> +	seq_printf(f, "%-22s: %d\n", "page_size", 4096);
 
-> The IPQ5018 is Qualcomm's 802.11ax SoC for Routers,
-> Gateways and Access Points.
->
-> This series adds minimal board boot support for ipq5018-mp03.1-c2 board.
+This output of the constant looks strange for me.
+Could you please explain why this is required?
 
-Pretty cool!
-
->   dt-bindings: pinctrl: qcom: Add ipq5018 pinctrl bindings
->   pinctrl: qcom: Add IPQ5018 pinctrl driver
-
-I'm happy to merge the two pinctrl patches separately to the pinctrl
-tree if I can get a review from Bjorn or Krzysztof.
-
-Yours,
-Linus Walleij
+Thank you,
+	Vasily Averin
