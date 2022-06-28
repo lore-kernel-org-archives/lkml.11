@@ -2,72 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE00C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 460F0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 11:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345240AbiF1LsI (ORCPT
+        id S1345263AbiF1LsL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
+        Tue, 28 Jun 2022 07:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345277AbiF1LrV (ORCPT
+        with ESMTP id S1345355AbiF1LrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:47:21 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DFA31205
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:46:03 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id v38so11042784ybi.3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 04:46:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nua9RNJzDCWgVHpkEh0NUQ8tFuGKU1srt8vXN1gfZic=;
-        b=Q3iU0RpT3JDULxDcaqXjRljk/CgOygq4zgLTnYVoRAX8++JnCCjTHthMRJRsDks1jq
-         hDIB6ccWfXxryvY4lbt3esNxqyZya/Z3j15fH8N/UGYS6PgMKv5fCbP8ROdbQvevneAh
-         /2KgA/X/3KO4C9dKiam7XRbuoTG6ocU/jO1p0KpTqWbZdxYyMS9GT7sqIrWHyL4mA3Y+
-         0/IukjtN8k2PYecQv36ge2VXtPbyPB0wm+Ul5eqGM6yU4GA31V9WSXqBoispPgaYGRM1
-         rZ97fkHNANrIYWVp9LNQCNxOwJ/WBtorpWdV1Uskz7FxyU8S1iEguDho7S6SB3IX+lkL
-         +mlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nua9RNJzDCWgVHpkEh0NUQ8tFuGKU1srt8vXN1gfZic=;
-        b=gWNgA/EtrBTc80peOpbLC8a78gn75jwgofzpISnIeMfirycOu1MZO7y7EiSpHXR9Pr
-         9OL2z7ZV2MISTVr+ihE0zMlmIfZv6SKjabrI2jb7hTHswe51P8rajbTTnUziMUEiMxWz
-         NSxjW37zLSbssk4+X4yJxaedTbcrnoyihlPaDcWQv6pIDGBmVVAbEqUDaTmQgJLCtu7P
-         DsSvqhxJTKDJ5ukczLxEbmWu3Q/m6BoeYUYCUK1jz3LSPGRCuT/Shq7SzDlmgT1K8u7q
-         iLpfcUdt6ooqmFb7BA+kNhhcMv/U/dnjI753anzTRMjgpR4XiZjpwUNj0nuPvUdF55T4
-         gmMg==
-X-Gm-Message-State: AJIora/nddDFRQDk1sSgtVfngcHg4OCVtA6ZbOXbgteI4kAv/Dj49uSd
-        cHjRz2fMf+1tbI5o+UMMOVcRIB3fYjt/diKhTEtiyg==
-X-Google-Smtp-Source: AGRyM1txnIEflUovpqZSdzrs97LsZmYjv6cqdQQ6duzljYSGfyoALBguW/HSjhp3Q6Dip7ppRUr56SVwuq0HncjH3tQ=
-X-Received: by 2002:a25:8403:0:b0:66c:a405:a01e with SMTP id
- u3-20020a258403000000b0066ca405a01emr12850746ybk.369.1656416762419; Tue, 28
- Jun 2022 04:46:02 -0700 (PDT)
+        Tue, 28 Jun 2022 07:47:25 -0400
+Received: from forward501j.mail.yandex.net (forward501j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3403207F;
+        Tue, 28 Jun 2022 04:46:58 -0700 (PDT)
+Received: from vla5-169af227e802.qloud-c.yandex.net (vla5-169af227e802.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3523:0:640:169a:f227])
+        by forward501j.mail.yandex.net (Yandex) with ESMTP id 60737624139;
+        Tue, 28 Jun 2022 14:46:57 +0300 (MSK)
+Received: from vla3-178a3f795968.qloud-c.yandex.net (vla3-178a3f795968.qloud-c.yandex.net [2a02:6b8:c15:2584:0:640:178a:3f79])
+        by vla5-169af227e802.qloud-c.yandex.net (mxback/Yandex) with ESMTP id RtX9GFYHRZ-kumWQbta;
+        Tue, 28 Jun 2022 14:46:57 +0300
+X-Yandex-Fwd: 2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1656416817;
+        bh=EDkgTYXqCHYjbvERnqJf2pJgEiUWEp1aF8bjZ/VqbsU=;
+        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
+        b=INebxkcjGQQpnsfSoAtCkFIBdbIiqVzL0BcPkF1qFQdB6i5OevjTmdM24rEd0c5Sj
+         UldiHM4iBqBrXXW8x3yq2rdN3D8uceAJm6baqO2CpcmUoE6hwJDBNcykvXqJxVG2wV
+         IlS0YwdAwAZzk6+Wv05haZdu/c/415jVbvGpxHsQ=
+Authentication-Results: vla5-169af227e802.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+Received: by vla3-178a3f795968.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id s5dKAuvn1y-ksMC9AYW;
+        Tue, 28 Jun 2022 14:46:56 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     linux@yadro.com, Genevieve Chan <genevieve.chan@starfivetech.com>,
+        =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
+        <joao.mario@tecnico.ulisboa.pt>,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v5] perf arch events: riscv sbi firmware std event files
+Date:   Tue, 28 Jun 2022 14:45:57 +0300
+Message-Id: <20220628114625.166665-4-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220628114625.166665-1-nikita.shubin@maquefel.me>
+References: <20220628114625.166665-1-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
-References: <20220622185010.2022515-1-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220622185010.2022515-1-aidanmacdonald.0x0@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 28 Jun 2022 13:45:51 +0200
-Message-ID: <CACRpkdb9JacaDrOo_8zyLMQQedcfztU-KSpX0ZoKBk+8VS8j6A@mail.gmail.com>
-Subject: Re: [PATCH v3 0/2] pinctrl: ingenic: Convert to immutable irq chip
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     paul@crapouillou.net, maz@kernel.org, andy.shevchenko@gmail.com,
-        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 8:49 PM Aidan MacDonald
-<aidanmacdonald.0x0@gmail.com> wrote:
+From: Nikita Shubin <n.shubin@yadro.com>
 
-> Two cleanup patches for pinctrl-ingenic.
+Firmware events are defined by "RISC-V Supervisor Binary Interface
+Specification", which means they should be always available as long as
+firmware supports >= 0.3.0 SBI.
 
-Patches applied!
+Expose them to arch std events, so they can be reused by particular
+PMU bindings.
 
-Yours,
-Linus Walleij
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+---
+v4->v5:
+- changed EventCode to ConfigCode, as 63 bit exceeds event code format
+---
+ .../arch/riscv/riscv-sbi-firmware.json        | 134 ++++++++++++++++++
+ 1 file changed, 134 insertions(+)
+ create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
+
+diff --git a/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json b/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
+new file mode 100644
+index 000000000000..b9d305f1ada8
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
+@@ -0,0 +1,134 @@
++[
++  {
++    "PublicDescription": "Misaligned load trap",
++    "ConfigCode": "0x8000000000000000",
++    "EventName": "FW_MISALIGNED_LOAD",
++    "BriefDescription": "Misaligned load trap event"
++  },
++  {
++    "PublicDescription": "Misaligned store trap",
++    "ConfigCode": "0x8000000000000001",
++    "EventName": "FW_MISALIGNED_STORE",
++    "BriefDescription": "Misaligned store trap event"
++  },
++  {
++    "PublicDescription": "Load access trap",
++    "ConfigCode": "0x8000000000000002",
++    "EventName": "FW_ACCESS_LOAD",
++    "BriefDescription": "Load access trap event"
++  },
++  {
++    "PublicDescription": "Store access trap",
++    "ConfigCode": "0x8000000000000003",
++    "EventName": "FW_ACCESS_STORE",
++    "BriefDescription": "Store access trap event"
++  },
++  {
++    "PublicDescription": "Illegal instruction trap",
++    "ConfigCode": "0x8000000000000004",
++    "EventName": "FW_ILLEGAL_INSN",
++    "BriefDescription": "Illegal instruction trap event"
++  },
++  {
++    "PublicDescription": "Set timer event",
++    "ConfigCode": "0x8000000000000005",
++    "EventName": "FW_SET_TIMER",
++    "BriefDescription": "Set timer event"
++  },
++  {
++    "PublicDescription": "Sent IPI to other HART event",
++    "ConfigCode": "0x8000000000000006",
++    "EventName": "FW_IPI_SENT",
++    "BriefDescription": "Sent IPI to other HART event"
++  },
++  {
++    "PublicDescription": "Received IPI from other HART event",
++    "ConfigCode": "0x8000000000000007",
++    "EventName": "FW_IPI_RECEIVED",
++    "BriefDescription": "Received IPI from other HART event"
++  },
++  {
++    "PublicDescription": "Sent FENCE.I request to other HART event",
++    "ConfigCode": "0x8000000000000008",
++    "EventName": "FW_FENCE_I_SENT",
++    "BriefDescription": "Sent FENCE.I request to other HART event"
++  },
++  {
++    "PublicDescription": "Received FENCE.I request from other HART event",
++    "ConfigCode": "0x8000000000000009",
++    "EventName": "FW_FENCE_I_RECEIVED",
++    "BriefDescription": "Received FENCE.I request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent SFENCE.VMA request to other HART event",
++    "ConfigCode": "0x80000000000000a",
++    "EventName": "FW_SFENCE_VMA_SENT",
++    "BriefDescription": "Sent SFENCE.VMA request to other HART event"
++  },
++  {
++    "PublicDescription": "Received SFENCE.VMA request from other HART event",
++    "ConfigCode": "0x800000000000000b",
++    "EventName": "FW_SFENCE_VMA_RECEIVED",
++    "BriefDescription": "Received SFENCE.VMA request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent SFENCE.VMA with ASID request to other HART event",
++    "ConfigCode": "0x800000000000000c",
++    "EventName": "FW_SFENCE_VMA_RECEIVED",
++    "BriefDescription": "Sent SFENCE.VMA with ASID request to other HART event"
++  },
++  {
++    "PublicDescription": "Received SFENCE.VMA with ASID request from other HART event",
++    "ConfigCode": "0x800000000000000d",
++    "EventName": "FW_SFENCE_VMA_ASID_RECEIVED",
++    "BriefDescription": "Received SFENCE.VMA with ASID request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.GVMA request to other HART event",
++    "ConfigCode": "0x800000000000000e",
++    "EventName": "FW_HFENCE_GVMA_SENT",
++    "BriefDescription": "Sent HFENCE.GVMA request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.GVMA request from other HART event",
++    "ConfigCode": "0x800000000000000f",
++    "EventName": "FW_HFENCE_GVMA_RECEIVED",
++    "BriefDescription": "Received HFENCE.GVMA request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.GVMA with VMID request to other HART event",
++    "ConfigCode": "0x8000000000000010",
++    "EventName": "FW_HFENCE_GVMA_VMID_SENT",
++    "BriefDescription": "Sent HFENCE.GVMA with VMID request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.GVMA with VMID request from other HART event",
++    "ConfigCode": "0x8000000000000011",
++    "EventName": "FW_HFENCE_GVMA_VMID_RECEIVED",
++    "BriefDescription": "Received HFENCE.GVMA with VMID request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.VVMA request to other HART event",
++    "ConfigCode": "0x8000000000000012",
++    "EventName": "FW_HFENCE_VVMA_SENT",
++    "BriefDescription": "Sent HFENCE.VVMA request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.VVMA request from other HART event",
++    "ConfigCode": "0x8000000000000013",
++    "EventName": "FW_HFENCE_VVMA_RECEIVED",
++    "BriefDescription": "Received HFENCE.VVMA request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.VVMA with ASID request to other HART event",
++    "ConfigCode": "0x8000000000000014",
++    "EventName": "FW_HFENCE_VVMA_ASID_SENT",
++    "BriefDescription": "Sent HFENCE.VVMA with ASID request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.VVMA with ASID request from other HART event",
++    "ConfigCode": "0x8000000000000015",
++    "EventName": "FW_HFENCE_VVMA_ASID_RECEIVED",
++    "BriefDescription": "Received HFENCE.VVMA with ASID request from other HART event"
++  }
++]
+-- 
+2.30.2
+
