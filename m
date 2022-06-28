@@ -2,53 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AC4CCA487
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E04ECCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 09:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344300AbiF1Jqe (ORCPT
+        id S1344326AbiF1Jqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        Tue, 28 Jun 2022 05:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344226AbiF1Jqc (ORCPT
+        with ESMTP id S1344151AbiF1Jqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 05:46:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B8525C6D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4791F25C69;
         Tue, 28 Jun 2022 02:46:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFF9B617B8;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB414617B3;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2580BC341CC;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F00C341CB;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656409590;
-        bh=0NbCo+YW090Jj7w8/2xxoP/ojPkPgosUj8xMfRMxsao=;
+        bh=aNsBjoam9FomQGP0KLpmbiHeL/xAsgah34KubXmo/7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZZBB3B2yZQo7yy3G4Geuz38zgBKXEW3Nrm02C58j4UcwkLy6kw988E2IoNArMmX7
-         r+TJ5L6OXqthHeUEBTXoCkrGKHZjdBT6ZszKQzhma67ADFyzR0M0aAXbAC4CebXr9E
-         0yAqdQPeZUMS2PJz+L18H8m5aLmykqgJCszCuz2AdfJ2MVcOWfEDFfZg3/Q/UUYCEo
-         es7SZfiqAXXIneq1tgySVZHENjRumhMRY3u8BaAizyCxDyaUsGd31WdQALc6f6sy4D
-         QN7oSmNrS/E3NcBm/vCdgUXM6ItvG20llGu6D9mfEIJUARqHdr6rG/H3bKwRZfzhx9
-         LOiGJPLvTAQzw==
+        b=cV5jmYDejNl2eM22Og0AgzjAq1KUDXy9YVpy90dvsGq8t/J9oBSRJNZghpgru6e0Y
+         JYBCsSth17DmDu3kVrH+RNB93KNImGfVfHSmW47GIW8Tl05c5Ut4hDUtDobfYxEsRf
+         mxqamINcbsAdtUplbsQvMHKxMsq09w28pP/gwXI2t8siWGQUBxxVOdqcTP4Fpynqkb
+         wVdayItZkl0b80YceJnP0ZniXQPtKvQF4PtE0Z0sHF9sBORrn/D/XUIuNOWybdTeSO
+         be7YmggGzSrSKeLWWtotW1sUshOjPdtnsByqEJLAEeoCznotST7ObjBOVgcbiecHwB
+         kwDMrHjS7TACg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o67nf-005HFN-SY;
+        id 1o67nf-005HEs-Lu;
         Tue, 28 Jun 2022 10:46:27 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 12/22] drm: gpu_scheduler: fix a kernel-doc warning
-Date:   Tue, 28 Jun 2022 10:46:16 +0100
-Message-Id: <0129fa0ffb8d418ab66f2ab0f1d525cb49f01f75.1656409369.git.mchehab@kernel.org>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 03/22] net: mac80211: sta_info: fix a missing kernel-doc struct element
+Date:   Tue, 28 Jun 2022 10:46:07 +0100
+Message-Id: <37d898634bb30776442a33833c48cbb21c90ecc6.1656409369.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
 References: <cover.1656409369.git.mchehab@kernel.org>
@@ -58,11 +60,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dev field was not documented:
+struct link_sta_info has now a cur_max_bandwidth data:
 
-	include/drm/gpu_scheduler.h:463: warning: Function parameter or member 'dev' not described in 'drm_gpu_scheduler'
+	net/mac80211/sta_info.h:569: warning: Function parameter or member 'cur_max_bandwidth' not described in 'link_sta_info'
 
-Document it.
+Copy the meaning from struct sta_info, documenting it.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -70,20 +72,21 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
 
- include/drm/gpu_scheduler.h | 1 +
- 1 file changed, 1 insertion(+)
+ net/mac80211/sta_info.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/drm/gpu_scheduler.h b/include/drm/gpu_scheduler.h
-index addb135eeea6..c7c487e0c40e 100644
---- a/include/drm/gpu_scheduler.h
-+++ b/include/drm/gpu_scheduler.h
-@@ -435,6 +435,7 @@ struct drm_sched_backend_ops {
-  * @_score: score used when the driver doesn't provide one
-  * @ready: marks if the underlying HW is ready to work
-  * @free_guilty: A hit to time out handler to free the guilty job.
-+ * @dev: pointer to struct device.
-  *
-  * One scheduler is implemented for each hardware ring.
+diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+index 218430790660..4e0b969891de 100644
+--- a/net/mac80211/sta_info.h
++++ b/net/mac80211/sta_info.h
+@@ -517,6 +517,8 @@ struct ieee80211_fragment_cache {
+  * @status_stats.last_ack_signal: last ACK signal
+  * @status_stats.ack_signal_filled: last ACK signal validity
+  * @status_stats.avg_ack_signal: average ACK signal
++ * @cur_max_bandwidth: maximum bandwidth to use for TX to the station,
++ *	taken from HT/VHT capabilities or VHT operating mode notification
+  * @pub: public (driver visible) link STA data
+  * TODO Move other link params from sta_info as required for MLD operation
   */
 -- 
 2.36.1
