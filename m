@@ -2,36 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFAEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 13:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346433AbiF1Naj (ORCPT
+        id S1345594AbiF1Nal (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
+        Tue, 28 Jun 2022 09:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346256AbiF1N3w (ORCPT
+        with ESMTP id S1346396AbiF1N3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:29:52 -0400
+        Tue, 28 Jun 2022 09:29:54 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E352A706
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:39 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQNl6WqFzkWlW;
-        Tue, 28 Jun 2022 21:26:47 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792A52A738
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 06:28:42 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXQLv1wYpzTgJ6;
+        Tue, 28 Jun 2022 21:25:11 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 28 Jun
- 2022 21:28:37 +0800
+ 2022 21:28:40 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
         <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 00/16] A few cleanup patches for huge_memory
-Date:   Tue, 28 Jun 2022 21:28:19 +0800
-Message-ID: <20220628132835.8925-1-linmiaohe@huawei.com>
+Subject: [PATCH v2 05/16] mm/huge_memory: use helper touch_pmd in huge_pmd_set_accessed
+Date:   Tue, 28 Jun 2022 21:28:24 +0800
+Message-ID: <20220628132835.8925-6-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220628132835.8925-1-linmiaohe@huawei.com>
+References: <20220628132835.8925-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,46 +45,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
-This series contains a few cleaup patches to remove duplicated codes,
-add/use helper functions, fix some obsolete comments and so on. More
-details can be found in the respective changelogs. Thanks!
----
-v2
-  This patch set is rebased on linux-next-20220628.
-  Collect Reviewed-by tag and Acked-by per Muchun and Zach. Thanks.
-  fix typo in 3/16
-  replace last parameter of touch_p[u|m]d to bool
-  split "mm/huge_memory: minor cleanup for split_huge_pages_pid"
-  drop "mm/huge_memory: add helper __get_deferred_split_queue"
-  enhance comment of page_deferred_list
-v1
-  This patch set is based on linux-next-20220621.
----
-Miaohe Lin (16):
-  mm/huge_memory: use flush_pmd_tlb_range in move_huge_pmd
-  mm/huge_memory: access vm_page_prot with READ_ONCE in
-    remove_migration_pmd
-  mm/huge_memory: fix comment of __pud_trans_huge_lock
-  mm/huge_memory: use helper touch_pud in huge_pud_set_accessed
-  mm/huge_memory: use helper touch_pmd in huge_pmd_set_accessed
-  mm/huge_memory: rename mmun_start to haddr in remove_migration_pmd
-  mm/huge_memory: use helper function vma_lookup in split_huge_pages_pid
-  mm/huge_memory: use helper macro __ATTR_RW
-  mm/huge_memory: fix comment in zap_huge_pud
-  mm/huge_memory: check pmd_present first in is_huge_zero_pmd
-  mm/huge_memory: try to free subpage in swapcache when possible
-  mm/huge_memory: minor cleanup for split_huge_pages_all
-  mm/huge_memory: fix comment of page_deferred_list
-  mm/huge_memory: correct comment of prep_transhuge_page
-  mm/huge_memory: comment the subtly logic in __split_huge_pmd
-  mm/huge_memory: use helper macro IS_ERR_OR_NULL in
-    split_huge_pages_pid
+Use helper touch_pmd to set pmd accessed to simplify the code and improve
+the readability. No functional change intended.
 
- include/linux/huge_mm.h |  6 +--
- mm/huge_memory.c        | 90 +++++++++++++++++------------------------
- 2 files changed, 40 insertions(+), 56 deletions(-)
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/huge_memory.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index d55d5efa06c8..d9fe9b034783 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1120,15 +1120,15 @@ EXPORT_SYMBOL_GPL(vmf_insert_pfn_pud_prot);
+ #endif /* CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
+ 
+ static void touch_pmd(struct vm_area_struct *vma, unsigned long addr,
+-		pmd_t *pmd, int flags)
++		      pmd_t *pmd, bool write)
+ {
+ 	pmd_t _pmd;
+ 
+ 	_pmd = pmd_mkyoung(*pmd);
+-	if (flags & FOLL_WRITE)
++	if (write)
+ 		_pmd = pmd_mkdirty(_pmd);
+ 	if (pmdp_set_access_flags(vma, addr & HPAGE_PMD_MASK,
+-				pmd, _pmd, flags & FOLL_WRITE))
++				  pmd, _pmd, write))
+ 		update_mmu_cache_pmd(vma, addr, pmd);
+ }
+ 
+@@ -1398,21 +1398,13 @@ void huge_pud_set_accessed(struct vm_fault *vmf, pud_t orig_pud)
+ 
+ void huge_pmd_set_accessed(struct vm_fault *vmf)
+ {
+-	pmd_t entry;
+-	unsigned long haddr;
+ 	bool write = vmf->flags & FAULT_FLAG_WRITE;
+-	pmd_t orig_pmd = vmf->orig_pmd;
+ 
+ 	vmf->ptl = pmd_lock(vmf->vma->vm_mm, vmf->pmd);
+-	if (unlikely(!pmd_same(*vmf->pmd, orig_pmd)))
++	if (unlikely(!pmd_same(*vmf->pmd, vmf->orig_pmd)))
+ 		goto unlock;
+ 
+-	entry = pmd_mkyoung(orig_pmd);
+-	if (write)
+-		entry = pmd_mkdirty(entry);
+-	haddr = vmf->address & HPAGE_PMD_MASK;
+-	if (pmdp_set_access_flags(vmf->vma, haddr, vmf->pmd, entry, write))
+-		update_mmu_cache_pmd(vmf->vma, vmf->address, vmf->pmd);
++	touch_pmd(vmf->vma, vmf->address, vmf->pmd, write);
+ 
+ unlock:
+ 	spin_unlock(vmf->ptl);
 -- 
 2.23.0
 
