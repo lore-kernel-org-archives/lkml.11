@@ -2,247 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 17:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbiF1R1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 13:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
+        id S233094AbiF1R17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 13:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231578AbiF1R1E (ORCPT
+        with ESMTP id S233026AbiF1R1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 13:27:04 -0400
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D7B3A1B1
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:02 -0700 (PDT)
-Received: by mail-vs1-xe29.google.com with SMTP id j1so12654256vsj.12
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:02 -0700 (PDT)
+        Tue, 28 Jun 2022 13:27:51 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA323A1B1
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:49 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id e63so12838334pgc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 10:27:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qhyBnAO5QNoF6w+Lsog5TuZgN4aDac8U8BguLGYhLjI=;
-        b=S8APzwr+Vhh9BgpyrDN8EoZVFKgT2q0w+Qh23YJX0OKJtu8sLxD3jZG31rxdq7f503
-         fRXSZTW2kMrWo1JzoRd21ArLvAEN5Oe7vAdthOKUpEDRFVkeKOxGYXlvPF+616rKbqpU
-         jEA1yha7GfeElgBTHD+HW6q0QTfbGYlFGnII7QLC4Eru1tXy+4B82YAri7wnv+IGEeM9
-         RM0hX8rKRtcHqZHcZNmkAD5aShH482DzlFCDcmHgfwLN2aMGg1nk0Qsm97zu5wxbKR6k
-         hKecFNqXGvj0PEyhDQhCSoshBmB+7UIKBaoeeJv+XCP6hKa0dnW2bh6s7Dc6Sqq4/XcG
-         LUWw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=osgld0pzQy4iTsusCsWDaWoG0N8IqLVBxYU5+GF9/J4=;
+        b=utePYlHH3nRgmww4DbnonjD9OWHAYpU9JCXYlTStomKuNGt03UXXfjWbV/btUimeIl
+         4vXRaoRj5qZEhNWLDBZk1A6RKFYmaiMYLpx8H+FTO+YjxWJ4ZlX+auWvTO0avF+sI3XG
+         a2n3iQsWVarA5wPuoq4V2g2XByCWSFuSCKeIEYhLIjQ5vqjgtU+aPgbMSJgr2x4nuFSi
+         929UEcvtBDNyEF29CAHTwr7OJRWl9QEBbN+intjof9KKw1cwh5PC8FkPYupXrpMf+BAd
+         8cxcwEzFClhA3QQcpl9HBRR1HXafcgAFoo7vwIHvqT8qQ97LFR1RTzdP/TIpq9oHuzvE
+         +IKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qhyBnAO5QNoF6w+Lsog5TuZgN4aDac8U8BguLGYhLjI=;
-        b=KYm+LqJDltNgSfHmaKwXQzSfPS5Qvkcs6FwXbyuHpF/0Eysxm8cBCKxuLb7hBpfe7P
-         90a7YGZampyP9VxtC7lenODMz17KSUzmZu54K/W+mfCzXy+BONaJWbujaSzD0GqrQvWz
-         7naFhte7bLS27gCgpsLW95rcrjBtj54oBAsrT8DUfWrfz8e9+xixdPf0YhKIH6QkgZgr
-         BA455nJS3YrIjflzPbzVTSTWOr4wgac/P1N5jad4RHqC//+E4VdPslH2gUU4yqbjyQXq
-         cuHA+VlQi1PMrg2xFL5iTWgheBmkl99uvqbNbbagGXFxzMtNgpJLE/fVs2JW4/6/eyrU
-         Z0Ng==
-X-Gm-Message-State: AJIora/XHSAlcql0ZHU90HOLO8WYt1QFTvQeiTh62vjIDFGepkmk+knr
-        uU3yuj5pTUGONKN1xYHeEoVeQ9hpkXdTbShvFfga9g==
-X-Google-Smtp-Source: AGRyM1v1HZYiDVEp7Bu2EbXStl1WmLdTrAmR/vKEBHl8rLxLi1E90YW5y+3EigoFHkQ8yB3rcF5EvJu58kpHOoWkHBY=
-X-Received: by 2002:a67:f958:0:b0:354:3f56:8a2d with SMTP id
- u24-20020a67f958000000b003543f568a2dmr2171129vsq.59.1656437221096; Tue, 28
- Jun 2022 10:27:01 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=osgld0pzQy4iTsusCsWDaWoG0N8IqLVBxYU5+GF9/J4=;
+        b=qPtrlCdb0Z0WRsdofGu+DKgoWmCjTRqyABGEcVZNhSLIVk/mcsNnIgFTGTg8LpJAPV
+         Hjs0YvEEILAosNnwa4qR7lbeDZZg7ABukgJ/PhKU8jXdFFHSg99K5wwK2iWCaMvIGZl+
+         aSxDV9sFs/YPdeNRJuoNMXlQumEg3yrvvl4Il0QsP7agIWgz5S9z3dsaxKEYIh6Q6PWI
+         dgd94byTor1VhPu2lTWzrha3FbkjhNPm2nUjA05IpIc3IEQ04tSoyz05M43PL93o1fux
+         8fenDsWyURgWHQ1sjtqfR20Ns1dQVzeaShpI9/pCpJyYh7nGNxdCMb1f4fBIiyBmvu9b
+         F2lw==
+X-Gm-Message-State: AJIora/XTQcPJI8LKZe8JQVVlUov3uc84anpB8ceCSWvvlRWT1op/1ap
+        HLjVFxNOrQUxmOXHUrMJmyOikzOQChnR2g==
+X-Google-Smtp-Source: AGRyM1vwRc7KhbpvgRIHUN/TFthYtddimgoYRgo4Bh9++Wof7fy0wsL7BW/PKLLQ2pmhpnQ4b/higg==
+X-Received: by 2002:a63:1360:0:b0:410:702f:d1d4 with SMTP id 32-20020a631360000000b00410702fd1d4mr7989478pgt.625.1656437269373;
+        Tue, 28 Jun 2022 10:27:49 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id r7-20020a17090a690700b001ec9f9fe028sm86860pjj.46.2022.06.28.10.27.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 10:27:48 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 11:27:46 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     bjorn.andersson@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V3 3/6] remoteproc: imx_rproc: support attaching to
+ i.MX8QXP M4
+Message-ID: <20220628172746.GB1942439@p14s>
+References: <20220517064937.4033441-1-peng.fan@oss.nxp.com>
+ <20220517064937.4033441-4-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-References: <20220624173656.2033256-1-jthoughton@google.com>
- <CAHS8izPnJd5EQjUi9cOk=03u3X1rk0PexTQZi+bEE4VMtFfksQ@mail.gmail.com> <CADrL8HWse7-=1Z=1_d8szwdkhFH1t8L4pOBO7E7yxgCYF-gc8w@mail.gmail.com>
-In-Reply-To: <CADrL8HWse7-=1Z=1_d8szwdkhFH1t8L4pOBO7E7yxgCYF-gc8w@mail.gmail.com>
-From:   Mina Almasry <almasrymina@google.com>
-Date:   Tue, 28 Jun 2022 10:26:49 -0700
-Message-ID: <CAHS8izNSsEW88Q=ozcC2rbnmvcX3zOL-qkFTPgn=M6S1R5t=Yw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/26] hugetlb: Introduce HugeTLB high-granularity mapping
-To:     James Houghton <jthoughton@google.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Jue Wang <juew@google.com>,
-        Manish Mishra <manish.mishra@nutanix.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517064937.4033441-4-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 9:27 AM James Houghton <jthoughton@google.com> wrote:
->
-> On Fri, Jun 24, 2022 at 11:41 AM Mina Almasry <almasrymina@google.com> wrote:
-> >
-> > On Fri, Jun 24, 2022 at 10:37 AM James Houghton <jthoughton@google.com> wrote:
-> > >
-> > > [trimmed...]
-> > > ---- Userspace API ----
-> > >
-> > > This patch series introduces a single way to take advantage of
-> > > high-granularity mapping: via UFFDIO_CONTINUE. UFFDIO_CONTINUE allows
-> > > userspace to resolve MINOR page faults on shared VMAs.
-> > >
-> > > To collapse a HugeTLB address range that has been mapped with several
-> > > UFFDIO_CONTINUE operations, userspace can issue MADV_COLLAPSE. We expect
-> > > userspace to know when all pages (that they care about) have been fetched.
-> > >
-> >
-> > Thanks James! Cover letter looks good. A few questions:
-> >
-> > Why not have the kernel collapse the hugepage once all the 4K pages
-> > have been fetched automatically? It would remove the need for a new
-> > userspace API, and AFACT there aren't really any cases where it is
-> > beneficial to have a hugepage sharded into 4K mappings when those
-> > mappings can be collapsed.
->
-> The reason that we don't automatically collapse mappings is because it
-> would take additional complexity, and it is less flexible. Consider
-> the case of 1G pages on x86: currently, userspace can collapse the
-> whole page when it's all ready, but they can also choose to collapse a
-> 2M piece of it. On architectures with more supported hugepage sizes
-> (e.g., arm64), userspace has even more possibilities for when to
-> collapse. This likely further complicates a potential
-> automatic-collapse solution. Userspace may also want to collapse the
-> mapping for an entire hugepage without completely mapping the hugepage
-> first (this would also be possible by issuing UFFDIO_CONTINUE on all
-> the holes, though).
->
+Hi Peng,
 
-To be honest I'm don't think I'm a fan of this. I don't think this
-saves complexity, but rather pushes it to the userspace. I.e. the
-userspace now must track which regions are faulted in and which are
-not to call MADV_COLLAPSE at the right time. Also, if the userspace
-gets it wrong it may accidentally not call MADV_COLLAPSE (and not get
-any hugepages) or call MADV_COLLAPSE too early and have to deal with a
-storm of maybe hundreds of minor faults at once which may take too
-long to resolve and may impact guest stability, yes?
+On Tue, May 17, 2022 at 02:49:34PM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> When M4 is kicked by SCFW, M4 runs in its own hardware partition, Linux
+> could only do IPC with M4, it could not start, stop, update image.
+> 
+> We disable recovery reboot when M4 is managed by SCFW, because
+> remoteproc core still not support M4 auto-recovery without loading
+> image.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  drivers/remoteproc/imx_rproc.c | 88 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 88 insertions(+)
+> 
+> diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
+> index 4a3352821b1d..2e751fc90760 100644
+> --- a/drivers/remoteproc/imx_rproc.c
+> +++ b/drivers/remoteproc/imx_rproc.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/arm-smccc.h>
+>  #include <linux/clk.h>
+>  #include <linux/err.h>
+> +#include <linux/firmware/imx/sci.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+>  #include <linux/mailbox_client.h>
+> @@ -59,6 +60,8 @@
+>  #define IMX_SIP_RPROC_STARTED		0x01
+>  #define IMX_SIP_RPROC_STOP		0x02
+>  
+> +#define	IMX_SC_IRQ_GROUP_REBOOTED	5
+> +
+>  /**
+>   * struct imx_rproc_mem - slim internal memory structure
+>   * @cpu_addr: MPU virtual address of the memory region
+> @@ -89,6 +92,10 @@ struct imx_rproc {
+>  	struct work_struct		rproc_work;
+>  	struct workqueue_struct		*workqueue;
+>  	void __iomem			*rsc_table;
+> +	struct imx_sc_ipc		*ipc_handle;
+> +	struct notifier_block		rproc_nb;
+> +	u32				rproc_pt;	/* partition id */
+> +	u32				rsrc_id;	/* resource id */
+>  };
+>  
+>  static const struct imx_rproc_att imx_rproc_att_imx93[] = {
+> @@ -117,6 +124,18 @@ static const struct imx_rproc_att imx_rproc_att_imx93[] = {
+>  	{ 0xD0000000, 0xa0000000, 0x10000000, 0 },
+>  };
+>  
+> +static const struct imx_rproc_att imx_rproc_att_imx8qxp[] = {
+> +	{ 0x08000000, 0x08000000, 0x10000000, 0 },
+> +	/* TCML/U */
+> +	{ 0x1FFE0000, 0x34FE0000, 0x00040000, ATT_OWN | ATT_IOMEM },
+> +	/* OCRAM(Low 96KB) */
+> +	{ 0x21000000, 0x00100000, 0x00018000, 0 },
+> +	/* OCRAM */
+> +	{ 0x21100000, 0x00100000, 0x00040000, 0 },
+> +	/* DDR (Data) */
+> +	{ 0x80000000, 0x80000000, 0x60000000, 0 },
+> +};
+> +
+>  static const struct imx_rproc_att imx_rproc_att_imx8mn[] = {
+>  	/* dev addr , sys addr  , size	    , flags */
+>  	/* ITCM   */
+> @@ -255,6 +274,12 @@ static const struct imx_rproc_dcfg imx_rproc_cfg_imx8mq = {
+>  	.method		= IMX_RPROC_MMIO,
+>  };
+>  
+> +static const struct imx_rproc_dcfg imx_rproc_cfg_imx8qxp = {
+> +	.att		= imx_rproc_att_imx8qxp,
+> +	.att_size	= ARRAY_SIZE(imx_rproc_att_imx8qxp),
+> +	.method		= IMX_RPROC_SCU_API,
+> +};
+> +
+>  static const struct imx_rproc_dcfg imx_rproc_cfg_imx8ulp = {
+>  	.att		= imx_rproc_att_imx8ulp,
+>  	.att_size	= ARRAY_SIZE(imx_rproc_att_imx8ulp),
+> @@ -683,6 +708,22 @@ static void imx_rproc_free_mbox(struct rproc *rproc)
+>  	mbox_free_channel(priv->rx_ch);
+>  }
+>  
+> +static int imx_rproc_partition_notify(struct notifier_block *nb,
+> +				      unsigned long event, void *group)
+> +{
+> +	struct imx_rproc *priv = container_of(nb, struct imx_rproc, rproc_nb);
+> +
+> +	/* Ignore other irqs */
+> +	if (!((event & BIT(priv->rproc_pt)) && (*(u8 *)group == IMX_SC_IRQ_GROUP_REBOOTED)))
+> +		return 0;
+> +
+> +	rproc_report_crash(priv->rproc, RPROC_WATCHDOG);
+> +
+> +	pr_info("Partition%d reset!\n", priv->rproc_pt);
+> +
+> +	return 0;
+> +}
+> +
+>  static int imx_rproc_detect_mode(struct imx_rproc *priv)
+>  {
+>  	struct regmap_config config = { .name = "imx-rproc" };
+> @@ -692,6 +733,7 @@ static int imx_rproc_detect_mode(struct imx_rproc *priv)
+>  	struct arm_smccc_res res;
+>  	int ret;
+>  	u32 val;
+> +	u8 pt;
+>  
+>  	switch (dcfg->method) {
+>  	case IMX_RPROC_NONE:
+> @@ -702,6 +744,51 @@ static int imx_rproc_detect_mode(struct imx_rproc *priv)
+>  		if (res.a0)
+>  			priv->rproc->state = RPROC_DETACHED;
+>  		return 0;
+> +	case IMX_RPROC_SCU_API:
+> +		ret = imx_scu_get_handle(&priv->ipc_handle);
+> +		if (ret)
+> +			return ret;
+> +		ret = of_property_read_u32(dev->of_node, "fsl,resource-id", &priv->rsrc_id);
+> +		if (ret) {
+> +			dev_err(dev, "No fsl,resource-id property\n");
+> +			return ret;
+> +		}
+> +
+> +		/*
+> +		 * If Mcore resource is not owned by Acore partition, It is kicked by ROM,
+> +		 * and Linux could only do IPC with Mcore and nothing else.
+> +		 */
+> +		if (imx_sc_rm_is_resource_owned(priv->ipc_handle, priv->rsrc_id))
+> +			return 0;
+> +
+> +		priv->rproc->state = RPROC_DETACHED;
+> +		priv->rproc->recovery_disabled = true;
+> +
+> +		/* Get partition id and enable irq in SCFW */
+> +		ret = imx_sc_rm_get_resource_owner(priv->ipc_handle, priv->rsrc_id, &pt);
+> +		if (ret) {
+> +			dev_err(dev, "not able to get resource owner\n");
+> +			return ret;
+> +		}
+> +
+> +		priv->rproc_pt = pt;
+> +		priv->rproc_nb.notifier_call = imx_rproc_partition_notify;
+> +
+> +		ret = imx_scu_irq_register_notifier(&priv->rproc_nb);
+> +		if (ret) {
+> +			dev_warn(dev, "register scu notifier failed.\n");
+> +			return ret;
+> +		}
 
-For these reasons I think automatic collapsing is something that will
-eventually be implemented by us or someone else, and at that point
-MADV_COLLAPSE for hugetlb memory will become obsolete; i.e. this patch
-is adding a userspace API that will probably need to be maintained for
-perpetuity but actually is likely going to be going obsolete "soon".
-For this reason I had hoped that automatic collapsing would come with
-V1.
+I woul have expected to see imx_scu_irq_register_notifier() being called when
+the driver is removed and in the probe() error path.  More comments to come.
 
-I wonder if we can have a very simple first try at automatic
-collapsing for V1? I.e., can we support collapsing to the hstate size
-and only that? So 4K pages can only be either collapsed to 2MB or 1G
-on x86 depending on the hstate size. I think this may be not too
-difficult to implement: we can have a counter similar to mapcount that
-tracks how many of the subpages are mapped (subpage_mapcount). Once
-all the subpages are mapped (the counter reaches a certain value),
-trigger collapsing similar to hstate size MADV_COLLAPSE.
+Thanks,
+Mathieu
 
-I gather that no one else reviewing this has raised this issue thus
-far so it might not be a big deal and I will continue to review the
-RFC, but I had hoped for automatic collapsing myself for the reasons
-above.
-
-> >
-> > > ---- HugeTLB Changes ----
-> > >
-> > > - Mapcount
-> > > The way mapcount is handled is different from the way that it was handled
-> > > before. If the PUD for a hugepage is not none, a hugepage's mapcount will
-> > > be increased. This scheme means that, for hugepages that aren't mapped at
-> > > high granularity, their mapcounts will remain the same as what they would
-> > > have been pre-HGM.
-> > >
-> >
-> > Sorry, I didn't quite follow this. It says mapcount is handled
-> > differently, but the same if the page is not mapped at high
-> > granularity. Can you elaborate on how the mapcount handling will be
-> > different when the page is mapped at high granularity?
->
-> I guess I didn't phrase this very well. For the sake of simplicity,
-> consider 1G pages on x86, typically mapped with leaf-level PUDs.
-> Previously, there were two possibilities for how a hugepage was
-> mapped, either it was (1) completely mapped (PUD is present and a
-> leaf), or (2) it wasn't mapped (PUD is none). Now we have a third
-> case, where the PUD is not none but also not a leaf (this usually
-> means that the page is partially mapped). We handle this case as if
-> the whole page was mapped. That is, if we partially map a hugepage
-> that was previously unmapped (making the PUD point to PMDs), we
-> increment its mapcount, and if we completely unmap a partially mapped
-> hugepage (making the PUD none), we decrement its mapcount. If we
-> collapse a non-leaf PUD to a leaf PUD, we don't change mapcount.
->
-> It is possible for a PUD to be present and not a leaf (mapcount has
-> been incremented) but for the page to still be unmapped: if the PMDs
-> (or PTEs) underneath are all none. This case is atypical, and as of
-> this RFC (without bestowing MADV_DONTNEED with HGM flexibility), I
-> think it would be very difficult to get this to happen.
->
-
-Thank you for the detailed explanation. Please add it to the cover letter.
-
-I wonder the case "PUD present but all the PMD are none": is that a
-bug? I don't understand the usefulness of that. Not a comment on this
-patch but rather a curiosity.
-
-> >
-> > > - Page table walking and manipulation
-> > > A new function, hugetlb_walk_to, handles walking HugeTLB page tables for
-> > > high-granularity mappings. Eventually, it's possible to merge
-> > > hugetlb_walk_to with huge_pte_offset and huge_pte_alloc.
-> > >
-> > > We keep track of HugeTLB page table entries with a new struct, hugetlb_pte.
-> > > This is because we generally need to know the "size" of a PTE (previously
-> > > always just huge_page_size(hstate)).
-> > >
-> > > For every page table manipulation function that has a huge version (e.g.
-> > > huge_ptep_get and ptep_get), there is a wrapper for it (e.g.
-> > > hugetlb_ptep_get).  The correct version is used depending on if a HugeTLB
-> > > PTE really is "huge".
-> > >
-> > > - Synchronization
-> > > For existing bits of HugeTLB, synchronization is unchanged. For splitting
-> > > and collapsing HugeTLB PTEs, we require that the i_mmap_rw_sem is held for
-> > > writing, and for doing high-granularity page table walks, we require it to
-> > > be held for reading.
-> > >
-> > > ---- Limitations & Future Changes ----
-> > >
-> > > This patch series only implements high-granularity mapping for VM_SHARED
-> > > VMAs.  I intend to implement enough HGM to support 4K unmapping for memory
-> > > failure recovery for both shared and private mappings.
-> > >
-> > > The memory failure use case poses its own challenges that can be
-> > > addressed, but I will do so in a separate RFC.
-> > >
-> > > Performance has not been heavily scrutinized with this patch series. There
-> > > are places where lock contention can significantly reduce performance. This
-> > > will be addressed later.
-> > >
-> > > The patch series, as it stands right now, is compatible with the VMEMMAP
-> > > page struct optimization[3], as we do not need to modify data contained
-> > > in the subpage page structs.
-> > >
-> > > Other omissions:
-> > >  - Compatibility with userfaultfd write-protect (will be included in v1).
-> > >  - Support for mremap() (will be included in v1). This looks a lot like
-> > >    the support we have for fork().
-> > >  - Documentation changes (will be included in v1).
-> > >  - Completely ignores PMD sharing and hugepage migration (will be included
-> > >    in v1).
-> > >  - Implementations for architectures that don't use GENERAL_HUGETLB other
-> > >    than arm64.
-> > >
-> > > ---- Patch Breakdown ----
-> > >
-> > > Patch 1     - Preliminary changes
-> > > Patch 2-10  - HugeTLB HGM core changes
-> > > Patch 11-13 - HugeTLB HGM page table walking functionality
-> > > Patch 14-19 - HugeTLB HGM compatibility with other bits
-> > > Patch 20-23 - Userfaultfd and collapse changes
-> > > Patch 24-26 - arm64 support and selftests
-> > >
-> > > [1] This used to be called HugeTLB double mapping, a bad and confusing
-> > >     name. "High-granularity mapping" is not a great name either. I am open
-> > >     to better names.
-> >
-> > I would drop 1 extra word and do "granular mapping", as in the mapping
-> > is more granular than what it normally is (2MB/1G, etc).
->
-> Noted. :)
+> +
+> +		ret = imx_scu_irq_group_enable(IMX_SC_IRQ_GROUP_REBOOTED, BIT(priv->rproc_pt),
+> +					       true);
+> +		if (ret) {
+> +			imx_scu_irq_unregister_notifier(&priv->rproc_nb);
+> +			dev_warn(dev, "Enable irq failed.\n");
+> +			return ret;
+> +		}
+> +
+> +		return 0;
+>  	default:
+>  		break;
+>  	}
+> @@ -855,6 +942,7 @@ static const struct of_device_id imx_rproc_of_match[] = {
+>  	{ .compatible = "fsl,imx8mm-cm4", .data = &imx_rproc_cfg_imx8mq },
+>  	{ .compatible = "fsl,imx8mn-cm7", .data = &imx_rproc_cfg_imx8mn },
+>  	{ .compatible = "fsl,imx8mp-cm7", .data = &imx_rproc_cfg_imx8mn },
+> +	{ .compatible = "fsl,imx8qxp-cm4", .data = &imx_rproc_cfg_imx8qxp },
+>  	{ .compatible = "fsl,imx8ulp-cm33", .data = &imx_rproc_cfg_imx8ulp },
+>  	{ .compatible = "fsl,imx93-cm33", .data = &imx_rproc_cfg_imx93 },
+>  	{},
+> -- 
+> 2.25.1
+> 
