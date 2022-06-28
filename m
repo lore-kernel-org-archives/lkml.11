@@ -2,47 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1217C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EACB4C43334
 	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 02:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343529AbiF1Cd3 (ORCPT
+        id S1343568AbiF1Cdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 27 Jun 2022 22:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
+        Mon, 27 Jun 2022 22:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244782AbiF1C2A (ORCPT
+        with ESMTP id S244808AbiF1C2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 27 Jun 2022 22:28:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE8D17598;
-        Mon, 27 Jun 2022 19:26:18 -0700 (PDT)
+        Mon, 27 Jun 2022 22:28:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5203926114;
+        Mon, 27 Jun 2022 19:26:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62C086192D;
-        Tue, 28 Jun 2022 02:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3208C34115;
-        Tue, 28 Jun 2022 02:26:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11AA7B81C0A;
+        Tue, 28 Jun 2022 02:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70BCAC385A5;
+        Tue, 28 Jun 2022 02:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383177;
-        bh=TUIICHVAkc2BUiqrFw9pQvGvBCl73qsrSwPO5S8ZyW4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oRw9vcsGYq0QKR7dWb7Smyi/7Qx07S1xa+fuNFpO9JHfw+Q8Yrd4BV5BCQahj8myL
-         SgAUqnVGa901OyhQs5P0aqj/lbg5z6tI/m676mlSaEOTRR8l6opgoe47YWQx5A72ym
-         jnMKTSDmp36pusHsCsE/pq0odx1p/ImeiaUTLRAqVbk7BJ0ek9EY4KWHsCErjmY+YO
-         vdzXX23Qidc3JwXxER86AsXYFnwNbE9oLgeQZ0Er0PY1MugD5udMQaifqrmf4XGVL6
-         +NKuBT9cjglbJlFy4p5nEZGY+5EGha3jnlYPyioBj5qSdXivoyRN8z8gGUS1ZqKNaa
-         w5CyvBW8PiTDA==
+        s=k20201202; t=1656383186;
+        bh=zrAyaFapqko+OKphU5GEF1mHMbCDxCUYsWwHGUS7jsg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=t4hXigOaqTpl/Vb8LEWm8z1b3nJ2Z1amgZgN6k9aKG1aS1JXtp70tJX9ukbrGKtSk
+         ZIfU3lMkZ46HA40cT9Vb8O2nQmFNnKhItf1HKe9qF+s8vfOqf05UkyuRnI4WmMZJsg
+         bOnfyHoslmPPCF2qKe3xiKpn4HJpfis94GkElJNVHInDR04+N6qhECgwCGdf+XrgUQ
+         ERjXP0+mGPtkkqdkD5GDoeVZsORfLvwRIK8xPkD0amhTWus45riDLiOLdZwi4xjEKk
+         vURM2JMqw/Ud/20ZP32e0gdN9SMQCYG19tsv3NPKyLUpxsoSTtLCu3usqWK0dQBRGK
+         dZcqMalDSwzew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/17] spi: spi-cadence: Fix SPI CS gets toggling sporadically
-Date:   Mon, 27 Jun 2022 22:25:59 -0400
-Message-Id: <20220628022615.596977-1-sashal@kernel.org>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, nizhen@uniontech.com,
+        jiasheng@iscas.ac.cn, gushengxian@yulong.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 05/17] ALSA: x86: intel_hdmi_audio: enable pm_runtime and set autosuspend delay
+Date:   Mon, 27 Jun 2022 22:26:03 -0400
+Message-Id: <20220628022615.596977-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220628022615.596977-1-sashal@kernel.org>
+References: <20220628022615.596977-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,65 +57,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 21b511ddee09a78909035ec47a6a594349fe3296 ]
+[ Upstream commit e87c65aeb46ca4f5b7dc08531200bcb8a426c62e ]
 
-As part of unprepare_transfer_hardware, SPI controller will be disabled
-which will indirectly deassert the CS line. This will create a problem
-in some of the devices where message will be transferred with
-cs_change flag set(CS should not be deasserted).
-As per SPI controller implementation, if SPI controller is disabled then
-all output enables are inactive and all pins are set to input mode which
-means CS will go to default state high(deassert). This leads to an issue
-when core explicitly ask not to deassert the CS (cs_change = 1). This
-patch fix the above issue by checking the Slave select status bits from
-configuration register before disabling the SPI.
+The existing code uses pm_runtime_get_sync/put_autosuspend, but
+pm_runtime was not explicitly enabled. The autosuspend delay was not
+set either, the value is set to 5s since HDMI is rather painful to
+resume.
 
-Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Link: https://lore.kernel.org/r/20220606062525.18447-1-amit.kumar-mahapatra@xilinx.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220616222910.136854-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/x86/intel_hdmi_audio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/spi/spi-cadence.c b/drivers/spi/spi-cadence.c
-index d9aeb9efa7aa..810f92a0ef7c 100644
---- a/drivers/spi/spi-cadence.c
-+++ b/drivers/spi/spi-cadence.c
-@@ -73,6 +73,7 @@
- #define CDNS_SPI_BAUD_DIV_SHIFT		3 /* Baud rate divisor shift in CR */
- #define CDNS_SPI_SS_SHIFT		10 /* Slave Select field shift in CR */
- #define CDNS_SPI_SS0			0x1 /* Slave Select zero */
-+#define CDNS_SPI_NOSS			0x3C /* No Slave select */
+diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
+index bf894087e5fa..84ac01b6e93d 100644
+--- a/sound/x86/intel_hdmi_audio.c
++++ b/sound/x86/intel_hdmi_audio.c
+@@ -42,6 +42,8 @@
+ #include <drm/intel_lpe_audio.h>
+ #include "intel_hdmi_audio.h"
  
- /*
-  * SPI Interrupt Registers bit Masks
-@@ -457,15 +458,20 @@ static int cdns_prepare_transfer_hardware(struct spi_master *master)
-  * @master:	Pointer to the spi_master structure which provides
-  *		information about the controller.
-  *
-- * This function disables the SPI master controller.
-+ * This function disables the SPI master controller when no slave selected.
-  *
-  * Return:	0 always
-  */
- static int cdns_unprepare_transfer_hardware(struct spi_master *master)
- {
- 	struct cdns_spi *xspi = spi_master_get_devdata(master);
-+	u32 ctrl_reg;
++#define INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS  5000
++
+ #define for_each_pipe(card_ctx, pipe) \
+ 	for ((pipe) = 0; (pipe) < (card_ctx)->num_pipes; (pipe)++)
+ #define for_each_port(card_ctx, port) \
+@@ -1885,8 +1887,11 @@ static int hdmi_lpe_audio_probe(struct platform_device *pdev)
+ 	pdata->notify_audio_lpe = notify_audio_lpe;
+ 	spin_unlock_irq(&pdata->lpe_audio_slock);
  
--	cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
-+	/* Disable the SPI if slave is deselected */
-+	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
-+	ctrl_reg = (ctrl_reg & CDNS_SPI_CR_SSCTRL) >>  CDNS_SPI_SS_SHIFT;
-+	if (ctrl_reg == CDNS_SPI_NOSS)
-+		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
++	pm_runtime_set_autosuspend_delay(&pdev->dev, INTEL_HDMI_AUDIO_SUSPEND_DELAY_MS);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_mark_last_busy(&pdev->dev);
++	pm_runtime_idle(&pdev->dev);
  
- 	return 0;
- }
+ 	dev_dbg(&pdev->dev, "%s: handle pending notification\n", __func__);
+ 	for_each_port(card_ctx, port) {
 -- 
 2.35.1
 
