@@ -2,249 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C5EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:45:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 16:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235044AbiF1QpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
+        id S229742AbiF1QqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235346AbiF1Qnu (ORCPT
+        with ESMTP id S229492AbiF1QpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:43:50 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075BC5F94;
-        Tue, 28 Jun 2022 09:42:06 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25SGbsuW028382;
-        Tue, 28 Jun 2022 16:42:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=K/UBgtt6/6uSNgscEd4vgJNPQ+dVZWfUMfcvFGbarcg=;
- b=DSAEI3dS00lCLQ6/zm/wqXchVF94xuTxk2xA5sGeRRwOVxycQzC+IlW0Czb6iaTzIBGf
- s9S79PPet2qs5vt5sXrTstqVoXmNhXs+FfHnEGyQDOVgNIC4ry2IILqSZxXUYG8J90rM
- AnRvjSkKz08MktFM3WU2Q0PAY65Zxt/m0+45ysITi1ttvFvT7i2wFAeRFudoE0r0hLa0
- 7NUSBA5hOQk9/dm7lWN+iNmlwx5PBhss29kDoCUrSXqdUHIr1I8ELOkKge5TU80VBFqj
- nn2zESMU+Q2BLG26T7mWGkD+0jhUisGxbAkdhfJbjjvWHRTxn5o6Wlu8gUsQvGD7Szv1 jQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h04ybgmsc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 16:42:05 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25SGc76A032403;
-        Tue, 28 Jun 2022 16:42:05 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h04ybgmrj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 16:42:05 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25SGLHa7023234;
-        Tue, 28 Jun 2022 16:42:03 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 3gwsmhuvan-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jun 2022 16:42:03 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25SGg0VK22348200
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jun 2022 16:42:00 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 09360A4054;
-        Tue, 28 Jun 2022 16:42:00 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5EFBCA405B;
-        Tue, 28 Jun 2022 16:41:59 +0000 (GMT)
-Received: from [9.171.1.134] (unknown [9.171.1.134])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jun 2022 16:41:59 +0000 (GMT)
-Message-ID: <03c79e51-7a0b-f406-d4d2-b10f43b6a7a1@linux.ibm.com>
-Date:   Tue, 28 Jun 2022 18:41:59 +0200
+        Tue, 28 Jun 2022 12:45:09 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7481C8;
+        Tue, 28 Jun 2022 09:43:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656434583; x=1687970583;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=NhKjfewExfPtIEFNW16jO4WbBDb9PuMf4kR1mDNu4Nc=;
+  b=BHc1q2pNsmVJrOPI7izShhHp8W5qpWKLxd3Kj9jnPK/mt0YPsh+rwDWg
+   0lEz/5jiZ/yOkIp2drCOv09Dv2a8y/+gvULXA59GtbP0YDcBAqljlRNbi
+   4BtDDaicHdGBfiL1RtQ5pweGW8bn6F26C6OIVKNdyRpHT/0rC71ElPJuY
+   RxclVH//VIRUunoH6i2+i6LBTghlo3Cb8cvVzBwem3CNlUC4lM7F0akT3
+   Ag4nZxM/2Luq5rYBulSbXlE75AZ1oKy8o4nov7E14rujaE6/GOt5HTuOn
+   ejLgss8Gi8WYqAjBkUuEQYNny6VlwVX+3AoKhgBcK7DIvYm7JpcMJealQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282884870"
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="282884870"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 09:43:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="732824424"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Jun 2022 09:43:02 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 28 Jun 2022 09:43:02 -0700
+Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 28 Jun 2022 09:43:01 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 28 Jun 2022 09:43:01 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 28 Jun 2022 09:43:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SLrGZu/cVnUcjXLpFNvdnK9iLl+s4aXPFo2nqG6SSC5N4C3ynMLNHxcuUxd8DpnX7iQ0SY409JE1pOcxNhqXNkQY2nfdpH7C0lz/qbBAwfvTt+eCu41KxTLqkWyye8xOpdm+GJjTS6rmxBtyxDu/7eGm/4HpMIyidBPzKvcBC35FJGUVU1ZoA/2DtRJpkBGd2bE85IA9s+IVUcgEc64jX68JjVzPaTDc3oKDhbHiMSYMVTFE3HEnec3NjlTdkgF86IjGSSlNf3Kb/i5UfpQ4eXRyC4TXQStUadN+M80fIR+yWg419mABSYW1ulNpp9C9VoEYspA+m06YmoGMqcmE2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zigG1cuGNyHSd88AQ/Mcs7ezmuQbxIjSnBfulmrWErs=;
+ b=hzE9jxiG59/cdKDbqPWipZkhXwF1Nym1KjXNI2MAHXvDLa8894hGwH5/1XRMOsz1ePHA6cAtykYAUkd5y1mjVVQzrtV9vxJHuX/ib//IgHw5W/nkxffosjyFF3sLeQ0J5uzPYNQU+lTzl/3k27MwzzLBLxX8tYvrtOKBqLdz8j08jYWh0I4WKv9oe4KveQIbHnYiA3hxPO+JTO0bKD8CYnkx0fanMktcdfoDLRCG20I35vxW0BsgkxqR3mpkusSQNP20oCZfvJ96wue0i47QLQxz+MeCpnzqcKZYP5GWW8YJQtG+XSUE3Bbw420H75a/BAiVGKq2g8Fv6MSLLkMSHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6311.namprd11.prod.outlook.com (2603:10b6:8:a6::21) by
+ SN6PR11MB3248.namprd11.prod.outlook.com (2603:10b6:805:c4::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5373.17; Tue, 28 Jun 2022 16:42:59 +0000
+Received: from DM4PR11MB6311.namprd11.prod.outlook.com
+ ([fe80::e912:6a38:4502:f207]) by DM4PR11MB6311.namprd11.prod.outlook.com
+ ([fe80::e912:6a38:4502:f207%5]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
+ 16:42:59 +0000
+Date:   Tue, 28 Jun 2022 09:42:50 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        "Vishal Verma" <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Ben Widawsky" <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V12 5/9] driver-core: Introduce BIN_ATTR_ADMIN_{RO,RW}
+Message-ID: <Yrsvilq7/JILlGLA@iweiny-desk3>
+References: <20220628041527.742333-1-ira.weiny@intel.com>
+ <20220628041527.742333-6-ira.weiny@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220628041527.742333-6-ira.weiny@intel.com>
+X-ClientProxiedBy: BYAPR11CA0048.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::25) To DM4PR11MB6311.namprd11.prod.outlook.com
+ (2603:10b6:8:a6::21)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v10 3/3] KVM: s390: resetting the Topology-Change-Report
-Content-Language: en-US
-To:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220620125437.37122-1-pmorel@linux.ibm.com>
- <20220620125437.37122-4-pmorel@linux.ibm.com>
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-In-Reply-To: <20220620125437.37122-4-pmorel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: dt4x60niNnGOVhDQfRJjS-0ITOpfPtao
-X-Proofpoint-ORIG-GUID: T7exu_1iiNudLmngWcsfkf-13S1dGpGU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-28_09,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0 impostorscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 phishscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280065
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 523c7070-38ee-4a57-be9b-08da5925429c
+X-MS-TrafficTypeDiagnostic: SN6PR11MB3248:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h2Rp7tuHdOIx0LQZAdKdO+dhvYSH4S/VEo+gmiBkocv63H68GBjtdNJDGUs0h3bgPXIYYASuIwHzNUmh5iwNu/rl6rFpaGo+bdU7J1LXu6lZu9l1bHc6BuC95KsesBGe4Z6mgLsy3a5JwQnOnFLPY3d/xOQ7r3RsVSNKg2G+9UQGNmX4d+ZHX+ea6/5fNo4Uqr4xTVJ1esSTUaG69aBLEvQorzE07OTY076NVHL6z0rPsRB9/9Af+9d7GkxnycigGPYmUIEY9RyNSFsqZgXhXEhc+HBuylDeBvYgxlW7QH1IlbU5dspVguo9hl0eoahxDMc0DPkUxloUMHECiqvSe4/zcj/QuAI7pczDRDN6NBl8ol8eUY3dkRAIfJHJFY6JoTjaob3QPnoHJ99Z9LdWrmtkn+eOTqTkV2lh5AilReGVkx07pYsnFWqMn59H7xuZWJDcy0Qi3DdBcTBLo0M9QPdonr9AO+9b9IEbmiRA07ftDHku/yV3n5qbbMdJkWOCrApBbn7W7vPNC7G98dhTgm6bCZQ327pYIa+R9w+ukzmjkfghFwkc/PTLexpiKeX5lLFHwGUXZM3qzbeJTR5KkUclAlq6EaOAlTrV1dK2nHLcnePVtPQOknXBaDdLFLjg+juPnSEZYRGRHSOD2B2JrI5HzElaPPR1dPBVDn2mxkzSbGrjUpO785AHKqKYtaKWURa28B1Fy64G+havyC445Qwbl6YLWwj2hTjuyJ98FbM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6311.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(39860400002)(366004)(346002)(376002)(136003)(396003)(44832011)(66946007)(6486002)(4326008)(8676002)(66556008)(66476007)(5660300002)(6506007)(316002)(110136005)(54906003)(6512007)(186003)(9686003)(8936002)(41300700001)(478600001)(82960400001)(83380400001)(86362001)(6666004)(2906002)(38100700002)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KMKosWEtmjIaaonFfK+KVuFErbGI4ADQ0sCN+Dl7yWcJ5DbgH7tOdT8eD4yf?=
+ =?us-ascii?Q?S7LWr1BD4o8SEG9CWaOJq//s8Z1rIMO2CPqmgmObLLZoJ53vSBiTA6UKqxh7?=
+ =?us-ascii?Q?WEaM1Ox23u/Rcf81I6IOzK90P5oQHze9JQoIuoGMFhUg6Wj//mfrU4UObQuL?=
+ =?us-ascii?Q?i6eoVMDCOwFiO6b3X5fNtrWNNqTOJuynTUfBGBsk69kHcFDPPgISSSKgBisj?=
+ =?us-ascii?Q?cUI+usCMAfsjvmUkBd5ZTBrZQ4A3ZkyIxI2QUTczM1CWf8tXjrgk0r1VYf2g?=
+ =?us-ascii?Q?Iy0y6Xey/erTlnrX9gviwpRycX8NydB5poC84Mbk83KSQ7sEDLKWqLTHFmdg?=
+ =?us-ascii?Q?Z3+1TTBsHVZvnOSSwauA0kJephJUxJ7NSpEFIUPLIyqFZSeOkFE4VWH6M7Cq?=
+ =?us-ascii?Q?Eh7pVvBDf7setJpgJNIco5jqiGShKX6POdvznF/k32KFpT4lTvEruP9uQd6D?=
+ =?us-ascii?Q?XUK+1IqGyBDTX9px3wXmL7JOeO3nMlp7IPf7oo1mmj9LFS0gsatj36DmDqet?=
+ =?us-ascii?Q?VF/TE2m611hJPDTtaWZqOkVffgUJhohbGABUo8Xjs9A/b3w5t6pacVytT9lH?=
+ =?us-ascii?Q?f72B7KXslfrX/HjAsUNWNjpHaAyCtmdfr76u9tYdqn6lJDviPdX1ipR2B0yM?=
+ =?us-ascii?Q?SztnFS/TWxNJC11w5W7riXSUsfH0m7NcxpllR8MLftdtSPFDOpSF6spmdhSl?=
+ =?us-ascii?Q?g4aDd2WacflOOSimC0QNDs4DcTsTXb2pPeZgIyFxjPWeMiUko7DUlSRLPkMb?=
+ =?us-ascii?Q?sgJULEVcfHtR/Mce+acUBQ4CDplR5MHLve6eXWNprXQtuuNWw8djrdWo5IMw?=
+ =?us-ascii?Q?GxGf1Gq5vqS2Klx33hT4K3xc+ScB7Wf/DAMKdEuqHZk+WtiBCuLIzGeKMUrv?=
+ =?us-ascii?Q?2b6QNoTkv7E75nifxfL5KN8U2RaDg43OKmmoMeORD8N85TjUBDvNX3tsU2QN?=
+ =?us-ascii?Q?36fBlv6xqwxFJNFO/AaZg5uAYtDu9ktf1YkRS3dKWBwlAJmk3bVK91nLkRGl?=
+ =?us-ascii?Q?dcetd2gy9Mfa54HAv/2e5Ys6Fe3EYhv4ybKFtbGucE5vPjtBWzn+dNKN3zBx?=
+ =?us-ascii?Q?eCt/TwFMs+IsheQ4qWmERs4u3sGutU9yPoVsQJEW/rg747SzZ+VbRKjU7ELM?=
+ =?us-ascii?Q?9wzNRoWCHNrLfm+sMiOtz47LGm1zKmplSfBeY8Xe47vS9ieOLJmG6ngv/bJo?=
+ =?us-ascii?Q?GOc1hjai0OcEuPKousroEpJWUQRKzVgx4dLFYVxLRSmSt6nQ9v/f8j94bSnH?=
+ =?us-ascii?Q?13OSPB1bAISiKU7VqFjlaKiFghwwAyyZhy7aeU3wRotfTVA7soj3JhGEQlNf?=
+ =?us-ascii?Q?Dv/VLUOt8utWaxOR7RRRCsSCm/OWtaAZmnBAG5PBufo1+wKXnfpMuer8JRBQ?=
+ =?us-ascii?Q?HQHNJH0jeerJum4IlxAjfmm+q3pKs/x1tLKMvlOSRCV3AjNEBX5ACygUPry+?=
+ =?us-ascii?Q?ta/Wf/zRhdy+rfgeeBuiYscE1ftyuuem7RkNkV9PObFAqJqJfWklb7P6H1NJ?=
+ =?us-ascii?Q?RxUB1A7JpoGR03QHAgaBe9Xy6uprPf2KYAVnTOzQw9SbrfzYEJ9wPB8fB7UR?=
+ =?us-ascii?Q?+aPGk1cuin+b5+07eDMeFw8CrYHAzk6sBW5Tm0W6DoWYz/GXKMXSslngVhxV?=
+ =?us-ascii?Q?MfjhPmerkbGzvr9FpURnujICk45SrNOnQW9tBQuzJIUA?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 523c7070-38ee-4a57-be9b-08da5925429c
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6311.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 16:42:59.3514
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xZj7Rz4wnIDz9vF4S/6lZjNroyrIhhU24ZDe1Nn4m5AxnHPWeDf8g+x2YpwSDHpTq3FLEsOemx578VK9DlB4/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3248
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 14:54, Pierre Morel wrote:
-> During a subsystem reset the Topology-Change-Report is cleared.
-> Let's give userland the possibility to clear the MTCR in the case
-> of a subsystem reset.
+On Mon, Jun 27, 2022 at 09:15:23PM -0700, Ira wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
 > 
-> To migrate the MTCR, we give userland the possibility to
-> query the MTCR state.
+> Many binary attributes need to limit access to CAP_SYS_ADMIN only; ie
+> many binary attributes specify is_visible with 0400 or 0600.
 > 
-> We indicate KVM support for the CPU topology facility with a new
-> KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
+> Make setting the permissions of such attributes more explicit by
+> defining BIN_ATTR_ADMIN_{RO,RW}.
 > 
-> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+
+This should have had a suggested by tag on it.  I'm hoping that Lore will pick
+it up with this email.
+
+Suggested-by: Dan Williams <dan.j.williams@intel.com>
+
+My apologies to Dan.
+Ira
+
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> 
 > ---
->  Documentation/virt/kvm/api.rst   | 31 +++++++++++
->  arch/s390/include/uapi/asm/kvm.h | 10 ++++
->  arch/s390/kvm/kvm-s390.c         | 96 ++++++++++++++++++++++++++++++++
->  include/uapi/linux/kvm.h         |  1 +
->  4 files changed, 138 insertions(+)
+> Changes from V11:
+> 	New Patch
+> ---
+>  include/linux/sysfs.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
 > 
-> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-> index 11e00a46c610..326f8b7e7671 100644
-> --- a/Documentation/virt/kvm/api.rst
-> +++ b/Documentation/virt/kvm/api.rst
-> @@ -7956,6 +7956,37 @@ should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
->  When enabled, KVM will exit to userspace with KVM_EXIT_SYSTEM_EVENT of
->  type KVM_SYSTEM_EVENT_SUSPEND to process the guest suspend request.
+> diff --git a/include/linux/sysfs.h b/include/linux/sysfs.h
+> index e3f1e8ac1f85..fd3fe5c8c17f 100644
+> --- a/include/linux/sysfs.h
+> +++ b/include/linux/sysfs.h
+> @@ -235,6 +235,22 @@ struct bin_attribute bin_attr_##_name = __BIN_ATTR_WO(_name, _size)
+>  #define BIN_ATTR_RW(_name, _size)					\
+>  struct bin_attribute bin_attr_##_name = __BIN_ATTR_RW(_name, _size)
+>  
+> +
+> +#define __BIN_ATTR_ADMIN_RO(_name, _size) {					\
+> +	.attr	= { .name = __stringify(_name), .mode = 0400 },		\
+> +	.read	= _name##_read,						\
+> +	.size	= _size,						\
+> +}
+> +
+> +#define __BIN_ATTR_ADMIN_RW(_name, _size)					\
+> +	__BIN_ATTR(_name, 0600, _name##_read, _name##_write, _size)
+> +
+> +#define BIN_ATTR_ADMIN_RO(_name, _size)					\
+> +struct bin_attribute bin_attr_##_name = __BIN_ATTR_ADMIN_RO(_name, _size)
+> +
+> +#define BIN_ATTR_ADMIN_RW(_name, _size)					\
+> +struct bin_attribute bin_attr_##_name = __BIN_ATTR_ADMIN_RW(_name, _size)
+> +
+>  struct sysfs_ops {
+>  	ssize_t	(*show)(struct kobject *, struct attribute *, char *);
+>  	ssize_t	(*store)(struct kobject *, struct attribute *, const char *, size_t);
+> -- 
+> 2.35.3
 > 
-> +8.37 KVM_CAP_S390_CPU_TOPOLOGY
-> +------------------------------
-> +
-> +:Capability: KVM_CAP_S390_CPU_TOPOLOGY
-> +:Architectures: s390
-> +:Type: vm
-> +
-> +This capability indicates that KVM will provide the S390 CPU Topology
-> +facility which consist of the interpretation of the PTF instruction for
-> +the Function Code 2 along with interception and forwarding of both the
-> +PTF instruction with Function Codes 0 or 1 and the STSI(15,1,x)
-> +instruction to the userland hypervisor.
-
-The way the code is written, STSI 15.x.x is forwarded to user space,
-might actually make sense to future proof the code by restricting that
-to 15.1.2-6 in priv.c.
-> +
-> +The stfle facility 11, CPU Topology facility, should not be provided
-> +to the guest without this capability.
-> +
-> +When this capability is present, KVM provides a new attribute group
-> +on vm fd, KVM_S390_VM_CPU_TOPOLOGY.
-> +This new attribute allows to get, set or clear the Modified Change
-> +Topology Report (MTCR) bit of the SCA through the kvm_device_attr
-> +structure.
-> +
-> +Getting the MTCR bit is realized by using a kvm_device_attr attr
-> +entry value of KVM_GET_DEVICE_ATTR and with kvm_device_attr addr
-> +entry pointing to the address of a struct kvm_cpu_topology.
-> +The value of the MTCR is return by the bit mtcr of the structure.
-> +
-> +When using KVM_SET_DEVICE_ATTR the MTCR is set by using the
-> +attr->attr value KVM_S390_VM_CPU_TOPO_MTCR_SET and cleared by
-> +using KVM_S390_VM_CPU_TOPO_MTCR_CLEAR.
-> +
->  9. Known KVM API problems
->  =========================
-> 
-> diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
-> index 7a6b14874d65..df5e8279ffd0 100644
-> --- a/arch/s390/include/uapi/asm/kvm.h
-> +++ b/arch/s390/include/uapi/asm/kvm.h
-> @@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
->  #define KVM_S390_VM_CRYPTO		2
->  #define KVM_S390_VM_CPU_MODEL		3
->  #define KVM_S390_VM_MIGRATION		4
-> +#define KVM_S390_VM_CPU_TOPOLOGY	5
-> 
->  /* kvm attributes for mem_ctrl */
->  #define KVM_S390_VM_MEM_ENABLE_CMMA	0
-> @@ -171,6 +172,15 @@ struct kvm_s390_vm_cpu_subfunc {
->  #define KVM_S390_VM_MIGRATION_START	1
->  #define KVM_S390_VM_MIGRATION_STATUS	2
-> 
-> +/* kvm attributes for cpu topology */
-> +#define KVM_S390_VM_CPU_TOPO_MTCR_CLEAR	0
-> +#define KVM_S390_VM_CPU_TOPO_MTCR_SET	1
-
-Are you going to transition to a set-value-provided-by-user API with the next series?
-I don't particularly like that MTCR is user visible, it's kind of an implementation detail.
-
-> +
-> +struct kvm_cpu_topology {
-> +	__u16 mtcr : 1;
-
-So I'd give this a more descriptive name, report_topology_change/topo_change_report_pending ?
-
-> +	__u16 reserved : 15;
-
-Are these bits for future proofing? If so a few more would do no harm IMO.
-> +};
-
-The use of a bit field in uapi surprised my, but I guess it's fine and kvm_sync_regs has them too.
-> +
->  /* for KVM_GET_REGS and KVM_SET_REGS */
->  struct kvm_regs {
->  	/* general purpose regs for s390 */
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index 95b96019ca8e..ae39041bb149 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -606,6 +606,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
->  	case KVM_CAP_S390_PROTECTED:
->  		r = is_prot_virt_host();
->  		break;
-> +	case KVM_CAP_S390_CPU_TOPOLOGY:
-> +		r = test_facility(11);
-> +		break;
->  	default:
->  		r = 0;
->  	}
-> @@ -817,6 +820,20 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm, struct kvm_enable_cap *cap)
->  		icpt_operexc_on_all_vcpus(kvm);
->  		r = 0;
->  		break;
-> +	case KVM_CAP_S390_CPU_TOPOLOGY:
-> +		r = -EINVAL;
-> +		mutex_lock(&kvm->lock);
-> +		if (kvm->created_vcpus) {
-> +			r = -EBUSY;
-> +		} else if (test_facility(11)) {
-> +			set_kvm_facility(kvm->arch.model.fac_mask, 11);
-> +			set_kvm_facility(kvm->arch.model.fac_list, 11);
-> +			r = 0;
-> +		}
-> +		mutex_unlock(&kvm->lock);
-> +		VM_EVENT(kvm, 3, "ENABLE: CPU TOPOLOGY %s",
-
-Most of the other cases spell out the cap, so it'd be "ENABLE: CAP_S390_CPU_TOPOLOGY %s".
-
-> +			 r ? "(not available)" : "(success)");
-> +		break;
->  	default:
->  		r = -EINVAL;
->  		break;
-> @@ -1710,6 +1727,76 @@ static void kvm_s390_sca_set_mtcr(struct kvm *kvm)
->  	ipte_unlock(kvm);
->  }
-> 
-
-Some brainstorming function names:
-
-kvm_s390_get_topo_change_report
-kvm_s390_(un|re)set_topo_change_report
-kvm_s390_(publish|revoke|unpublish)_topo_change_report
-kvm_s390_(report|signal|revoke)_topology_change
-
-[...]
-
