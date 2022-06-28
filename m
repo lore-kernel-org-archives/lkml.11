@@ -2,89 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBAFCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 19:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbiF1Tpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 15:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        id S229973AbiF1Tpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 15:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiF1TpV (ORCPT
+        with ESMTP id S231396AbiF1Tp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 15:45:21 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC273CA6F
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:38:48 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id k9so3687891pfg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 12:38:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=R/m0Mpk7pVuJiIWprQOno/Hpe4AFomZAEcga9jL9YLA=;
-        b=bhe/sbwpuGVDQTIiuE1vanGErx/2iYmd4JWtUJ9ONgGYg9xWkpKeD/AFx7lxB4Z/1q
-         3/JOWQm0J40kHqjM7KmdJ7b0ORREudvPV3vR2QpJIMz4VsRhAFBhYmfbwJIClZhJFkcB
-         ZTkxA1+uiy/3uB2TDvG90iKHTkB6UafPQXBXntJbSIBHIzWKiZbV96ZGLiEqTn3M1u9H
-         A9dSVBsWM5F5qxyN8i2cxi6OmDkJEYnkrbAmHAf943MJEU9kNJq9XPps/0BsMk85UpMA
-         +YwkTcMRPEYFzgrThZMpITDuq/jmD8Egxrgf6mJiQ3seAVjN7Wa23b/CUgZB14j4tN9v
-         XawQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=R/m0Mpk7pVuJiIWprQOno/Hpe4AFomZAEcga9jL9YLA=;
-        b=dpZMzfV7Y0krO68LEQNIj9S+pPS9aAqQVloortPcy9jkTuDueO43KeF7SKQ7Tmd08E
-         I6Rd9rIWGBRMIqnjO4O0ytzWS719tg1cmfNoSI9/QXh1MsQ1hylALvA6/ctOMrFoJe6b
-         4wgJC0GjnmyDnDM8sDLcLyScNGTUKRtReoozEoo4u0TYAhUU21eXLbii16Qu46v3uwnW
-         k5hCVDztP2x1jQKEyCr4Zv9aC1WAdTgP0GcyezBITyLykc/Bo+gJDWPtg3nUaypObq3u
-         Vwii1/MPy98SLu8YVfhdBefzt8VTfKEu0NklvQ4FlsSNa5nEDz+C9oXXtaH+DAfnPE3E
-         SvxQ==
-X-Gm-Message-State: AJIora8nhQVSK29vKlqOhkW5EGgpX7ebyEHeFMsB1hZIsSBXP76vZXn1
-        NIBFs0zH6NxDaiDlWsDs94hC5gMXZrmWPA==
-X-Google-Smtp-Source: AGRyM1seN+3lufLgwt0RnuEk9fybZPgxUv9NUsBwylD1Xh4AvsqeKC6WmitZPWs5OCP9YsaX9dJAfg==
-X-Received: by 2002:aa7:96dd:0:b0:525:8869:df13 with SMTP id h29-20020aa796dd000000b005258869df13mr6354581pfq.14.1656445127638;
-        Tue, 28 Jun 2022 12:38:47 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c085:21e1::165b? ([2620:10d:c090:400::5:f46f])
-        by smtp.gmail.com with ESMTPSA id g4-20020a655944000000b003fe4da67980sm9595041pgu.68.2022.06.28.12.38.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 12:38:47 -0700 (PDT)
-Message-ID: <37147b0c-4b11-37df-6c4a-ee2dfeb9cbb7@kernel.dk>
-Date:   Tue, 28 Jun 2022 13:38:44 -0600
+        Tue, 28 Jun 2022 15:45:29 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829D6393C8;
+        Tue, 28 Jun 2022 12:39:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656445144; x=1687981144;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+1EpxwGS9Cq1c0vv29dIM1+KCfkLYVP7Y5EIdg4E8Uo=;
+  b=IEnBJc3qECYCzWlsJcpWZeWYFy1ceTP2KFtw2BD1cRaP4GFzds+UC0Li
+   Ik7ubh9R7cGyNhG8htLKLbfrVzP6Ny+pSmwYIP/Ps9ANkKGmRAq6YBC65
+   9+Nm4WB0xj8NwYir1XGju51iw894T2kzQLaDp///WSsYNc2TYe9Mtqibr
+   Ail/zA3QrEsyrUA+PGsS80rsE/ea2XKUz0m7l3HVrqVPMjbzZ35UvLr3F
+   waQ/spYWG2kPyq7TimCQ0ZdrtjlWDo5i+mDZmnsx0SQTOQsOZSsdTk6a2
+   +Ko0Cad7QXfu8AutYU+xmrlkW29iOASgLwHiyNZTBYm5OVoWPGj5DXDiF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="368145176"
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="368145176"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:39:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="767286192"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2022 12:39:02 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 4BF8314F; Tue, 28 Jun 2022 22:39:08 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Michael Hennerich <michael.hennerich@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH v1 3/3] gpio: adp5588: sort header inclusion alphabetically
+Date:   Tue, 28 Jun 2022 22:39:05 +0300
+Message-Id: <20220628193906.36350-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220628193906.36350-1-andriy.shevchenko@linux.intel.com>
+References: <20220628193906.36350-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH][next] io_uring: replace zero-length array with
- flexible-array member
-Content-Language: en-US
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <20220628193320.GA52629@embeddedor>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220628193320.GA52629@embeddedor>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/28/22 1:33 PM, Gustavo A. R. Silva wrote:
-> There is a regular need in the kernel to provide a way to declare
-> having a dynamically sized set of trailing elements in a structure.
-> Kernel code should always use ?flexible array members?[1] for these
-> cases. The older style of one-element or zero-length arrays should
-> no longer be used[2].
-> 
-> [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+Sort header inclusion alphabetically.
 
-Thanks for sending this separately. As mentioned out-of-band, we already
-have it like this in the io_uring.h header in liburing.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/gpio/gpio-adp5588.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Applied for 5.20.
-
+diff --git a/drivers/gpio/gpio-adp5588.c b/drivers/gpio/gpio-adp5588.c
+index d6a229a67044..d49f12560cde 100644
+--- a/drivers/gpio/gpio-adp5588.c
++++ b/drivers/gpio/gpio-adp5588.c
+@@ -6,15 +6,15 @@
+  * Copyright 2009-2010 Analog Devices Inc.
+  */
+ 
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/init.h>
+-#include <linux/i2c.h>
+ #include <linux/gpio/driver.h>
++#include <linux/i2c.h>
++#include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
++#include <linux/kernel.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
++#include <linux/slab.h>
+ 
+ #include <linux/platform_data/adp5588.h>
+ 
 -- 
-Jens Axboe
+2.35.1
 
