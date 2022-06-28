@@ -2,81 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28056C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 28 Jun 2022 07:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242002AbiF1HVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 03:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53714 "EHLO
+        id S242315AbiF1HXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 03:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241877AbiF1HVf (ORCPT
+        with ESMTP id S241877AbiF1HXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 03:21:35 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4352CE15
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:21:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=BfwuO3yToSKKNpMuSUtAZ3qwE6LV09InSfgFlwAkYX0=; b=NBDZqIgaz1sZFsdEWewwgbTfbQ
-        vdyi/GgCsDZOlWIgrMbEY3ZsH0JRaBNV8d2FVp0ddXCvzeTHyPU1UQ0vL5YSu+7waDMj83O326IWy
-        6nmQDEYdnviKL1UFPtMd8JDVlFNwdNTWq0/oxZUrqIpNy3J86oCG8sXN/1f7KJHlrZUHlYQ52azBY
-        aJHx7dRHFtpT+mgm1Mc2+e22XgEs5xu2tcPDzq2oJL1AnsZzVvHyvSRzQXGY0TUtiEEpx2kIyX5NM
-        T3aZNIsGktbJSgggrc504X0wpRlJiDZZvTVTAOfj0oQiWndavEc+9ojqlV80AvXk/97ZcZIfBLyGp
-        fs7q/LIg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o65XJ-00C4cq-O2; Tue, 28 Jun 2022 07:21:26 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+        Tue, 28 Jun 2022 03:23:11 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA7B2DD6
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 00:23:10 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-118-164.nat.spd-mgts.ru [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A741B30017D;
-        Tue, 28 Jun 2022 09:21:23 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 78CA5200BE346; Tue, 28 Jun 2022 09:21:23 +0200 (CEST)
-Date:   Tue, 28 Jun 2022 09:21:23 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Vincent Donnefort <vdonnefort@google.com>
-Cc:     mingo@redhat.com, vincent.guittot@linaro.org,
-        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, tao.zhou@linux.dev, kernel-team@android.com
-Subject: Re: [PATCH v11 0/7] feec() energy margin removal
-Message-ID: <Yrqr84h5xe2GYMVb@hirez.programming.kicks-ass.net>
-References: <20220621090414.433602-1-vdonnefort@google.com>
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 26D926601856;
+        Tue, 28 Jun 2022 08:23:09 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656400989;
+        bh=tkMWwHg3XLqb6lHOLMAd96X4R33y38F3yPePIgGCoK4=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=DS4rM0xlJ/PsTDzSk5MFk9QRUuAF4NvI53elJoysMMoSbdStn25/OGcattMVg66ZY
+         mj8oGKbiUSXJESayjg0iEwFwm6fb66nD4BD+Ea/Py3FBW0lpqMJQE19YjGK8MljcQs
+         gzzxmPNjqAZvLepvbTbrYQnzInrAeZ6PJJM1HZSDhw39VHxxkUl7+XDaioBSsODIC6
+         yj25QOcHqBLjT+Oo2GxUFRb55Wa9nzo8/dxcSegJ5vsgGEJsbhAQgjUE/w6rJpCHWI
+         sDNhPDdozSSc8wQXYu9F3jIJ4aNNZTiSwPzfQJVVEW92xI5eBPnVLWhldKRC83OiF1
+         aaAExN1t8Y9qg==
+Message-ID: <253e9ec1-bcd8-c790-95b8-afbcc21e7163@collabora.com>
+Date:   Tue, 28 Jun 2022 10:23:06 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621090414.433602-1-vdonnefort@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1] ARM: Silence proc-v7-bugs.c spam about disabled
+ Spectre workarounds
+Content-Language: en-US
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220519161310.1489625-1-dmitry.osipenko@collabora.com>
+In-Reply-To: <20220519161310.1489625-1-dmitry.osipenko@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:04:07AM +0100, Vincent Donnefort wrote:
+On 5/19/22 19:13, Dmitry Osipenko wrote:
+> Print message about disabled Spectre workarounds only once to stop
+> endless spam into KSMG each time CPU goes out from idling state.
+> This spam makes system unusable with CONFIG_HARDEN_BRANCH_PREDICTOR=n
+> for those who don't care about security and wants maximum performance.
+> 
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>  arch/arm/mm/proc-v7-bugs.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+> index fb9f3eb6bf48..f9730eba0632 100644
+> --- a/arch/arm/mm/proc-v7-bugs.c
+> +++ b/arch/arm/mm/proc-v7-bugs.c
+> @@ -108,8 +108,7 @@ static unsigned int spectre_v2_install_workaround(unsigned int method)
+>  #else
+>  static unsigned int spectre_v2_install_workaround(unsigned int method)
+>  {
+> -	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
+> -		smp_processor_id());
+> +	pr_info_once("Spectre V2: workarounds disabled by configuration\n");
+>  
+>  	return SPECTRE_VULNERABLE;
+>  }
 
-> Dietmar Eggemann (3):
->   sched, drivers: Remove max param from
->     effective_cpu_util()/sched_cpu_util()
->   sched/fair: Rename select_idle_mask to select_rq_mask
->   sched/fair: Use the same cpumask per-PD throughout
->     find_energy_efficient_cpu()
-> 
-> Vincent Donnefort (4):
->   sched/fair: Provide u64 read for 32-bits arch helper
->   sched/fair: Decay task PELT values during wakeup migration
->   sched/fair: Remove task_util from effective utilization in feec()
->   sched/fair: Remove the energy margin in feec()
-> 
->  drivers/powercap/dtpm_cpu.c       |  33 +--
->  drivers/thermal/cpufreq_cooling.c |   6 +-
->  include/linux/sched.h             |   2 +-
->  kernel/sched/core.c               |  15 +-
->  kernel/sched/cpufreq_schedutil.c  |   5 +-
->  kernel/sched/fair.c               | 470 +++++++++++++++++++-----------
->  kernel/sched/pelt.h               |  40 ++-
->  kernel/sched/sched.h              |  53 +++-
->  8 files changed, 400 insertions(+), 224 deletions(-)
+Hello Russell,
+
+Could you please apply this patch? I tried to use yours patch tracker
+today and it doesn't allow me to recover my password (server error: MAIL
+FROM command failed Detail: Space shortage).
 
 Thanks!
+
+-- 
+Best regards,
+Dmitry
