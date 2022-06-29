@@ -2,100 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7A4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbiF2RTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 13:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33800 "EHLO
+        id S231559AbiF2RTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 13:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiF2RTh (ORCPT
+        with ESMTP id S230254AbiF2RTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 13:19:37 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B4E1CFFD;
-        Wed, 29 Jun 2022 10:19:36 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id o19-20020a05600c4fd300b003a0489f414cso38963wmq.4;
-        Wed, 29 Jun 2022 10:19:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=4nADTKeLD2xTEnrpqrxwkxFoYTSDirzPyX0vZg0rTsM=;
-        b=N1AyvilMJRoh5IetQt38Sjs59abbCcMZBDXO3lHpiwBivsIbw8Smy7eeK0+yz5zDGX
-         ZkYNvRUQkdf/tiMgO4tFDWnw3kVN4MQfUQym08ZXwX/LSbNnAe9LH2vJVUKLZAj2JKKc
-         dhrsKDrfgv5HosHCZmIhe+Q/vc0MXUgi+03EGmIdeqhBvIpvCbkpHZlRljqNeD1EbR4/
-         KUBIsrMwYSpNQnSN4uSt05W9QDWNNMGjNrZn/mE+hlzzZVrzN+FtjfWVcO7X3lYCPTek
-         6wFasx7AjYU0TYG3dG9MgXYvfsT2nHzmb/2mQms/tAB5rC+pftvCsh8GbPqkZUAl4yhR
-         EmvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=4nADTKeLD2xTEnrpqrxwkxFoYTSDirzPyX0vZg0rTsM=;
-        b=0gP/Qb2mBnE952iDjcVppBb7NzFq/rpF9M7/7TFaB93IqoMG03wwQ3xCxR5mk5kWvv
-         ty/VdevmwzQnh667OpOMhjtAEAFtWY/JSeQCcS2SHp42IWE33EjhN7YsE6vW4wcVqAaA
-         buE+1tElDQzc0RikGg2F6sFW9Ab25At4re0+Yl9t0JGUmXadUBZ+HJJP6qwwydceExr+
-         sqDW1yPbe+KXSAm9kkQ8N+iWEQJikQgLvz8iEL1Y4C37i2mFrdL9dc7QpWJ0dALFSupS
-         8jgiO2iP/o0zsdjcMOcr2OvCpmUuCJ2tlywyGr8FKCs+Mz578whz2YpTFyTrIci3ybz/
-         mhdA==
-X-Gm-Message-State: AJIora96BDtIgUz+OWap+SB/kLDhI/9dkNdefzWmDF0UsH/VNcm9A9bw
-        C9tnULz5sr+rAIJiJDdYgg==
-X-Google-Smtp-Source: AGRyM1uowr7j1Na59IcvC1skgsVTVpFFaFz5VJbJRxTrsPqGs559NdTRDzYM8mvP9v8Je4w3Z+7sRg==
-X-Received: by 2002:a05:600c:198e:b0:3a1:6db7:fdd0 with SMTP id t14-20020a05600c198e00b003a16db7fdd0mr3593678wmq.14.1656523174670;
-        Wed, 29 Jun 2022 10:19:34 -0700 (PDT)
-Received: from playground (host-78-146-72-11.as13285.net. [78.146.72.11])
-        by smtp.gmail.com with ESMTPSA id 23-20020a05600c22d700b003a018e43df2sm3729572wmg.34.2022.06.29.10.19.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 10:19:34 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 18:19:30 +0100
-From:   Jules Irenge <jbi.octave@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Elana.Copperman@mobileye.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] btf: Fix error of Macros with multiple statements
-Message-ID: <YryJosfh8z2DhKC0@playground>
+        Wed, 29 Jun 2022 13:19:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E74822289;
+        Wed, 29 Jun 2022 10:19:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A13DF61E6B;
+        Wed, 29 Jun 2022 17:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D9E1C341C8;
+        Wed, 29 Jun 2022 17:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656523184;
+        bh=7SEzehmTNiedxnN/WyWz5hw+VLLOK+1tiViOeyV+LwU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nTB2P46GglBZYH8eYlOmT0yhVsC0SdQpx2SlanJHUQqipHLAZHXfbNFgBiQ0FQM/F
+         cD+JTc+uDNS6UJ9YPZzL8dsW2GbUU5yf8dl5N9O/jtPNDW7Zui8HY9idCsKDfXZd8W
+         46gApD0MR22xzwtQEPeLhQJLah20KDBiKC3GVi7Y=
+Date:   Wed, 29 Jun 2022 19:19:36 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>, rcu@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+Message-ID: <YryJqI/ppVfMhRhI@kroah.com>
+References: <20220629161020.GA24891@lst.de>
+ <Yrx6EVHtroXeEZGp@zx2c4.com>
+ <20220629161527.GA24978@lst.de>
+ <Yrx8/Fyx15CTi2zq@zx2c4.com>
+ <20220629163007.GA25279@lst.de>
+ <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
+ <20220629164543.GA25672@lst.de>
+ <CAHmME9rwKmEQcn84GfTrCPzaK3g6vh6rpQ=YcgyTo_PWpJ5VcA@mail.gmail.com>
+ <YryFKXsx/Bgv/oBE@kroah.com>
+ <YryHk06Ye/12dMEN@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <YryHk06Ye/12dMEN@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes an error reported by checkpatch.pl
+On Wed, Jun 29, 2022 at 07:10:43PM +0200, Jason A. Donenfeld wrote:
+> On Wed, Jun 29, 2022 at 07:00:25PM +0200, Greg Kroah-Hartman wrote:
+> > I think that by the time the next kernel release comes out, and
+> > percolates to a real Android device, the years gone by will have caused
+> > those who care about this to fix it.
+> 
+> You assume that there aren't Android devices using kernels outside of
+> the ones you're referring to. That's a rather Google-centric
+> perspective. It's still breakage, even if Google has the ability to fix
+> it locally after "years gone by". If you want Android things to be
+> upstream, this is the way you must think about it; otherwise, what's the
+> point? By your logic, upstream should probably remove the Android code
+> everywhere and let Google handle it downstream. Except nobody wants
+> that; we want Android upstream. So let's keep it working upstream, not
+> intentionally break it.
 
-ERROR: Macros with multiple statements should be
-enclosed in a do while loop
+I would be totally and completly amazed if there are any Android kernels
+in real devices in the world that are not at the very least, based on
+LTS releases.  But maybe there is, this patch series isn't going to land
+until 5.20, and by then, I think the "define behavior, not hardware" fix
+for random and wg will be properly resolved :)
 
-To fix this a do while(0) loop is used
-to encloses the multiple statements.
+> > In the meantime, this might actually fix issues in desktop distros that
+> > were enabling this option, thinking it only affected the building of a
+> > driver
+> 
+> That sounds like a false dichotomy. It's not about "fix Android" vs "fix
+> distros". What I'm suggesting is fixing Android AND fixing distros, by
+> looking at the problem holistically. Trading a bad problem on Android
+> (wg connections are broken) for a manageable problem on distros (something
+> something theoretical warm boot attack something) doesn't sound like a
+> nice trade off. Let's instead get this all fixed at the same time.
 
-Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
----
- kernel/bpf/btf.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Agreed, so what should we use instead in the wg code?  What userspace
+functionality are you trying to trigger off of here in the current
+CONFIG_ANDROID check?
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 1bc496162572..95c1ee525e28 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5057,8 +5057,10 @@ extern struct btf *btf_vmlinux;
- static union {
- 	struct bpf_ctx_convert {
- #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
--	prog_ctx_type _id##_prog; \
--	kern_ctx_type _id##_kern;
-+		do { \
-+			prog_ctx_type _id##_prog; \
-+			kern_ctx_type _id##_kern; \
-+		} while (0)
- #include <linux/bpf_types.h>
- #undef BPF_PROG_TYPE
- 	} *__t;
--- 
-2.36.1
+The RCU stuff is already handled as Paul has stated, so that's not an
+issue.
 
+thanks,
+
+greg k-h
