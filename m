@@ -2,2005 +2,426 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224A9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94829C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbiF2DWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 23:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50436 "EHLO
+        id S231548AbiF2DW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 23:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231472AbiF2DWr (ORCPT
+        with ESMTP id S231482AbiF2DWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 23:22:47 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D328E0E8;
-        Tue, 28 Jun 2022 20:22:40 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 25T34APR013034;
-        Wed, 29 Jun 2022 11:04:11 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 29 Jun
- 2022 11:20:13 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "Andrew Jeffery" <andrew@aj.id.au>,
-        Dhananjay Phadke <dhphadke@microsoft.com>,
-        "Johnny Huang" <johnny_huang@aspeedtech.com>
-CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>
-Subject: [PATCH v5 1/5] crypto: aspeed: Add HACE hash driver
-Date:   Wed, 29 Jun 2022 11:20:04 +0800
-Message-ID: <20220629032008.1579899-2-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629032008.1579899-1-neal_liu@aspeedtech.com>
-References: <20220629032008.1579899-1-neal_liu@aspeedtech.com>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61719581
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 20:22:43 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXmtd1M5bzhYWQ;
+        Wed, 29 Jun 2022 11:20:25 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 11:22:41 +0800
+CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <bristot@redhat.com>,
+        <prime.zeng@huawei.com>, <jonathan.cameron@huawei.com>,
+        <ego@linux.vnet.ibm.com>, <srikar@linux.vnet.ibm.com>,
+        <linuxarm@huawei.com>, <21cnbao@gmail.com>,
+        <guodong.xu@linaro.org>, <hesham.almatary@huawei.com>,
+        <john.garry@huawei.com>, <shenyang39@huawei.com>,
+        <feng.tang@intel.com>
+Subject: Re: [PATCH v4 1/2] sched: Add per_cpu cluster domain info and
+ cpus_share_resources API
+To:     K Prateek Nayak <kprateek.nayak@amd.com>,
+        Abel Wu <wuyun.abel@bytedance.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Yicong Yang <yangyicong@hisilicon.com>, <peterz@infradead.org>,
+        <mingo@redhat.com>, <juri.lelli@redhat.com>,
+        <vincent.guittot@linaro.org>, <gautham.shenoy@amd.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220609120622.47724-1-yangyicong@hisilicon.com>
+ <20220609120622.47724-2-yangyicong@hisilicon.com>
+ <e000b124-afd4-28e1-fde2-393b0e38ce19@amd.com>
+ <81fbcadb-a58d-2cef-9c05-154555ec1d68@huawei.com>
+ <6bf4f032-7d07-d4a4-4f5a-28f3871131c0@amd.com>
+ <b87ddfd7a8dd418edfcdbad22a4fc1e9ef03109a.camel@linux.intel.com>
+ <5638aed5-bbd0-a74e-759f-0de51e3651f7@amd.com>
+ <cf13647f-6bb6-34d5-c6b6-41a7500a9612@bytedance.com>
+ <3db2443d-3c30-703d-d4c1-b184eccbf3b5@amd.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <1f3158f3-9c17-d229-2b28-e2e60b3a5db5@huawei.com>
+Date:   Wed, 29 Jun 2022 11:22:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 25T34APR013034
+In-Reply-To: <3db2443d-3c30-703d-d4c1-b184eccbf3b5@amd.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hash and Crypto Engine (HACE) is designed to accelerate the
-throughput of hash data digest, encryption, and decryption.
+On 2022/6/28 19:55, K Prateek Nayak wrote:
+> Hello Abel,
+> 
+> Thank you for looking into this issue.
+> 
+> tl;dr
+> 
+> We have found two variables that need to be
+> co-located on the same cache line to restore tbench
+> performance.
+> 
+> As this issue is unrelated to the functionality of
+> the patch, it should not hold this patch series from
+> landing given the performance improvements seen on
+> systems with CPU clusters.
+> 
+> The results of our analysis are discussed in
+> detail below.
+> 
+> On 6/20/2022 7:07 PM, Abel Wu wrote:
+>>
+>> On 6/20/22 7:20 PM, K Prateek Nayak Wrote:
+>>> Hello Tim,
+>>>
+>>> Thank you for looking into this.
+>>>
+>>> On 6/17/2022 10:20 PM, Tim Chen wrote:
+>>>> On Fri, 2022-06-17 at 17:50 +0530, K Prateek Nayak wrote:
+>>>>>
+>>>>>
+>>>>> -- 
+>>>>> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+>>>>> index e9f3dc6dcbf4..97a3895416ab 100644
+>>>>> --- a/kernel/sched/sched.h
+>>>>> +++ b/kernel/sched/sched.h
+>>>>> @@ -1750,12 +1750,12 @@ static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
+>>>>>       return sd;
+>>>>>   }
+>>>>>   +DECLARE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+>>>>> +DECLARE_PER_CPU(int, sd_share_id);
+>>>>>   DECLARE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+>>>>>   DECLARE_PER_CPU(int, sd_llc_size);
+>>>>>   DECLARE_PER_CPU(int, sd_llc_id);
+>>>>> -DECLARE_PER_CPU(int, sd_share_id);
+>>>>>   DECLARE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
+>>>>> -DECLARE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+>>>>>   DECLARE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+>>>>>   DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+>>>>>   DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_cpucapacity);
+>>>>> -- 
+>>>>>
+>>>>> The System-map of each kernel is as follows:
+>>>>>
+>>>>> - On "tip"
+>>>>>
+>>>>> 0000000000020518 D sd_asym_cpucapacity
+>>>>> 0000000000020520 D sd_asym_packing
+>>>>> 0000000000020528 D sd_numa
+>>>>> 0000000000020530 D sd_llc_shared
+>>>>> 0000000000020538 D sd_llc_id
+>>>>> 000000000002053c D sd_llc_size
+>>>>> -------------------------------------------- 64B Cacheline Boundary
+>>>>> 0000000000020540 D sd_llc
+>>>>>
+>>>>> - On "tip + Patch 1 only" and "tip + both patches"
+>>>>>
+>>>>> 0000000000020518 D sd_asym_cpucapacity
+>>>>> 0000000000020520 D sd_asym_packing
+>>>>> 0000000000020528 D sd_numa
+>>>>> 0000000000020530 D sd_cluster     <-----
+>>>>> 0000000000020538 D sd_llc_shared
+>>>>> -------------------------------------------- 64B Cacheline Boundary
+>>>>> 0000000000020540 D sd_share_id    <-----
+>>>>> 0000000000020544 D sd_llc_id
+>>>>> 0000000000020548 D sd_llc_size
+>>>>> 0000000000020550 D sd_llc
+>>>>>
+>>>>>
+>>>>> - On "tip + both patches (Move declaration to top)"
+>>>>>
+>>>>> 0000000000020518 D sd_asym_cpucapacity
+>>>>> 0000000000020520 D sd_asym_packing
+>>>>> 0000000000020528 D sd_numa
+>>>>> 0000000000020530 D sd_llc_shared
+>>>>> 0000000000020538 D sd_llc_id
+>>>>> 000000000002053c D sd_llc_size
+>>>>> -------------------------------------------- 64B Cacheline Boundary
+>>>>> 0000000000020540 D sd_llc
+>>>>
+>>>> Wonder if it will help to try keep sd_llc and sd_llc_size into the same
+>>>> cache line.  They are both used in the wake up path.
+>>>
+>>> We are still evaluating keeping which set of variables on the same
+>>> cache line will provide the best results.
+>>>
+>>> I would have expected the two kernel variants - "tip" and the
+>>> "tip + both patches (Move declaration to top)" - to give similar results
+>>> as their System map for all the old variables remain the same and the
+>>> addition of "sd_share_id" and "sd_cluster: fit in the gap after "sd_llc".
+>>> However, now we see a regression for higher number of client.
+>>>
+>>> This probably hints that access to "sd_cluster" variable in Patch 2 and
+>>> bringing in the extra cache line could be responsible for the regression
+>>> we see with "tip + both patches (Move declaration to top)"
+>>>
+>>>>
+>>>>
+>>>>> 0000000000020548 D sd_share_id    <-----
+>>>>> 0000000000020550 D sd_cluster     <-----
+>>>>>
+>>>>>> Or change the layout a bit to see if there's any difference,
+>>>>>> like:
+>>>>>>
+>>>>>>   DEFINE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+>>>>>>   DEFINE_PER_CPU(int, sd_llc_size);
+>>>>>>   DEFINE_PER_CPU(int, sd_llc_id);
+>>>>>>   DEFINE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
+>>>>>> +DEFINE_PER_CPU(int, sd_share_id);
+>>>>>> +DEFINE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+>>>>>>   DEFINE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+>>>>>>   DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+>>>>>>
+>>>>>> I need to further look into it and have some tests on a SMT machine. Would you mind to share
+>>>>>> the kernel config as well? I'd like to compare the config as well.
+>>>>>
+>>>>> I've attached the kernel config used to build the test kernel
+>>>>> to this mail.
+>>>>>
+>>>>>> Thanks,
+>>>>>> Yicong
+>>>>>
+>>>>> We are trying to debug the issue using perf and find an optimal
+>>>>> arrangement of the per cpu declarations to get the relevant data
+>>>>> used in the wakeup path on the same 64B cache line.
+>>>>
+>>>> A check of perf c2c profile difference between tip and the move new declarations to
+>>>> the top case could be useful.  It may give some additional clues of possibel
+>>>> false sharing issues.
+>>>
+>>> Thank you for the suggestion. We are currently looking at perf counter
+>>> data to see how the cache efficiency has changed between the two kernels.
+>>> We suspect that the need for the data in the other cache line too in the
+>>> wakeup path is resulting in higher cache misses in the levels closer to
+>>> the core.
+>>>
+>>> I don't think it is a false sharing problem as these per CPU data are
+>>> set when the system first boots up and will only be change again during
+>>> a CPU hotplug operation. However, it might be beneficial to see the c2c
+>>> profile if perf counters don't indicate anything out of the ordinary.
+>>>
+>>
+>> Would it be possible if any other frequent-written variables share
+>> same cacheline with these per-cpu data causing false sharing? 
+> 
+> This indeed seems to be the case. I'll leave the
+> detailed analysis below.
+> 
 
-Basically, HACE can be divided into two independently engines
-- Hash Engine and Crypto Engine. This patch aims to add HACE
-hash engine driver for hash accelerator.
+The percpu variables seems won't be affected by the non-percpu variables as the
+percpu section is already cacheline aligned. arm64's vmlinux.ld.S shows
+PERCPU_SECTION(L1_CACHE_BYTES).
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
----
- MAINTAINERS                              |    7 +
- drivers/crypto/Kconfig                   |    1 +
- drivers/crypto/Makefile                  |    1 +
- drivers/crypto/aspeed/Kconfig            |   23 +
- drivers/crypto/aspeed/Makefile           |    6 +
- drivers/crypto/aspeed/aspeed-hace-hash.c | 1428 ++++++++++++++++++++++
- drivers/crypto/aspeed/aspeed-hace.c      |  212 ++++
- drivers/crypto/aspeed/aspeed-hace.h      |  181 +++
- 8 files changed, 1859 insertions(+)
- create mode 100644 drivers/crypto/aspeed/Kconfig
- create mode 100644 drivers/crypto/aspeed/Makefile
- create mode 100644 drivers/crypto/aspeed/aspeed-hace-hash.c
- create mode 100644 drivers/crypto/aspeed/aspeed-hace.c
- create mode 100644 drivers/crypto/aspeed/aspeed-hace.h
+>> What
+>> about making all these sd_* data DEFINE_PER_CPU_READ_MOSTLY?
+>>
+> 
+> Making all the sd_* variables DEFINE_PER_CPU_READ_MOSTLY or
+> placing all the sd_* variables on the same cache line doesn't
+> help the regression. In fact, it makes it worse.
+> 
+> Following are the results on different test kernels:
+> tip				- 5.19.0-rc2 tip
+> 				  (commit: f3dd3f674555 "sched: Remove the limitation of WF_ON_CPU on wakelist if wakee cpu is idle")
+> cluster				- tip + both the patches of the series
+> Patch1				- tip + only Patch 1
+> align_first (Patch 1) 		- tip + only Patch 1 + all sd_* variables in same cache line
+> per_cpu_aigned_struct (Patch 1) - tip + only Patch 1 + all sd_* variables part of a per_cpu struct which is cacheline aligned
+> 
+> Clients:       tip                    cluster                 Patch1             align_first (Patch 1)       per_cpu_aigned_struct (Patch 1)
+>     8    3263.81 (0.00 pct)      3086.81 (-5.42 pct)     3018.63 (-7.51 pct)     2993.65 (-8.27 pct)         1728.89 (-47.02 pct)
+>    16    6011.19 (0.00 pct)      5360.28 (-10.82 pct)    4869.26 (-18.99 pct)    4820.18 (-19.81 pct)        3840.64 (-36.10 pct)
+>    32    12058.31 (0.00 pct)     8769.08 (-27.27 pct)    8159.60 (-32.33 pct)    7868.82 (-34.74 pct)        7130.19 (-40.86 pct)
+>    64    21258.21 (0.00 pct)     19021.09 (-10.52 pct)   13161.92 (-38.08 pct)   12327.86 (-42.00 pct)       12572.70 (-40.85 pct)
+> 
+> Following is the system map for the kernel variant "align_first (Patch 1)":
+> 
+> --
+> 00000000000204c0 d sugov_cpu
+>  ------------------------------------------------ 20500 (Cache Line Start)
+> 0000000000020508 d root_cpuacct_cpuusage
+> 0000000000020510 D cpufreq_update_util_data
+>  ------------------------------------------------ 20540 (Cache Line Start)
+> 0000000000020540 D sd_asym_cpucapacity                  
+> 0000000000020548 D sd_asym_packing                      
+> 0000000000020550 D sd_numa                              
+> 0000000000020558 D sd_cluster                           
+> 0000000000020560 D sd_llc_shared                        
+> 0000000000020568 D sd_share_id                          
+> 000000000002056c D sd_llc_id                            
+> 0000000000020570 D sd_llc_size                          
+> 0000000000020578 D sd_llc                               
+>  ------------------------------------------------ 20580 (Cache Line Start)
+> 0000000000020580 d wake_up_klogd_work
+> 00000000000205a0 d printk_pending
+> 00000000000205a4 d printk_count_nmi
+> 00000000000205a5 d printk_count
+> 00000000000205a8 d printk_context
+>  ------------------------------------------------ 205c0 (Cache Line Start)
+> 00000000000205c0 d rcu_tasks_trace__percpu
+> --
+> 
+> At this point it was clear that one or more sd_* variable needs
+> to be co-located with the per CPU variables in cache line starting
+> at 20540. We began moving variable out of the cache line one by one
+> to see which variable makes the difference as we found out that as
+> long as root_cpuacct_cpuusage and sd_llc_id are on the same cache
+> line, the results were equivalent of what we saw on the tip. As both
+> the variables seem to be accesses very frequently, access to one will
+> prime the cache line containing the other variable as well leading to
+> better cache efficiency.
+> 
+> Placing root_cpuacct_cpuusage, sd_llc_id, sd_share_id, sd_llc_shared
+> and sd_cluster on the same cache line, the results are as follows:
+> 
+> Kernel versions:
+> tip					- 5.19.0-rc2 tip
+> cluster					- tip + both the patches of the series
+> cluster (Custom Layout)			- tip + both the patches of the series + reworked system map
+> cluster (Custom Layout) + SIS_UTIL	- cluster (Custom Layout) + v4 of SIS_UTIL patchset by Chenyu
+> 					  (https://lore.kernel.org/lkml/20220612163428.849378-1-yu.c.chen@intel.com/)
+> 
+> Clients:      tip                     cluster          cluster (Custom Layout)       cluster (Custom Layout)
+>                                                                                             + SIS Util
+>     1    444.41 (0.00 pct)       439.27 (-1.15 pct)      438.06 (-1.42 pct)             447.75 (0.75 pct)
+>     2    879.23 (0.00 pct)       831.49 (-5.42 pct)      846.98 (-3.66 pct)             871.64 (-0.86 pct)
+>     4    1648.83 (0.00 pct)      1608.07 (-2.47 pct)     1621.38 (-1.66 pct)            1656.34 (0.45 pct)
+>     8    3263.81 (0.00 pct)      3086.81 (-5.42 pct)     3103.40 (-4.91 pct)     *      3227.88 (-1.10 pct)
+>    16    6011.19 (0.00 pct)      5360.28 (-10.82 pct)    5838.04 (-2.88 pct)            6232.92 (3.68 pct)
+>    32    12058.31 (0.00 pct)     8769.08 (-27.27 pct)    11577.73 (-3.98 pct)           11774.10 (-2.35 pct)
+>    64    21258.21 (0.00 pct)     19021.09 (-10.52 pct)   19563.57 (-7.97 pct)    *      22044.93 (3.70 pct)
+>   128    30795.27 (0.00 pct)     30861.34 (0.21 pct)     31705.47 (2.95 pct)            28986.14 (-5.87 pct)    *
+>   256    25138.43 (0.00 pct)     24711.90 (-1.69 pct)    23929.42 (-4.80 pct)    *      43984.52 (74.96 pct)    [Known to be unstable without SIS_UTIL]
+>   512    51287.93 (0.00 pct)     51855.55 (1.10 pct)     52278.33 (1.93 pct)            51511.51 (0.43 pct)
+>  1024    53176.97 (0.00 pct)     52554.55 (-1.17 pct)    52995.27 (-0.34 pct)           52807.04 (-0.69 pct)
+> 
+> Chenyu's SIS_UTIL patch was merged today in the tip
+> (commit: 70fb5ccf2ebb "sched/fair: Introduce SIS_UTIL to search idle CPU based on sum of util_avg")
+> and seems to bring back performance to the same level
+> as seen on the tip used during our testing.
+> 
+> The system map of the tested configuration labelled "Custom Layout"
+> is as follows:
+> 
+> --
+> 00000000000204c0 d sugov_cpu
+>  ------------------------------------------------ 20500 (Cache Line Start)
+> 0000000000020508 d root_cpuacct_cpuusage
+> 0000000000020510 D cpufreq_update_util_data
+> 0000000000020518 D sd_llc_id
+> 000000000002051c D sd_share_id
+> 0000000000020520 D sd_llc_shared
+> 0000000000020528 D sd_cluster
+> 0000000000020530 D sd_asym_cpucapacity
+> 0000000000020538 D sd_asym_packing
+>  ------------------------------------------------ 20540 (Cache Line Start)
+> 0000000000020540 D sd_numa
+> 0000000000020548 D sd_llc_size
+> 0000000000020550 D sd_llc
+> 0000000000020560 d wake_up_klogd_work
+>  ------------------------------------------------ 20580 (Cache Line Start)
+> 0000000000020580 d printk_pending
+> 0000000000020584 d printk_count_nmi
+> 0000000000020585 d printk_count
+> 0000000000020588 d printk_context
+>  ------------------------------------------------ 205c0 (Cache Line Start)
+> 00000000000205c0 d rcu_tasks_trace__percpu
+> --
+> 
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3cf9842d9233..63276700ee26 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3136,6 +3136,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/media/aspeed-video.txt
- F:	drivers/media/platform/aspeed/
- 
-+ASPEED CRYPTO DRIVER
-+M:	Neal Liu <neal_liu@aspeedtech.com>
-+L:	linux-aspeed@lists.ozlabs.org (moderated for non-subscribers)
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
-+F:	drivers/crypto/aspeed/
-+
- ASUS NOTEBOOKS AND EEEPC ACPI/WMI EXTRAS DRIVERS
- M:	Corentin Chary <corentin.chary@gmail.com>
- L:	acpi4asus-user@lists.sourceforge.net
-diff --git a/drivers/crypto/Kconfig b/drivers/crypto/Kconfig
-index ee99c02c84e8..b9f5ee126881 100644
---- a/drivers/crypto/Kconfig
-+++ b/drivers/crypto/Kconfig
-@@ -933,5 +933,6 @@ config CRYPTO_DEV_SA2UL
- 	  acceleration for cryptographic algorithms on these devices.
- 
- source "drivers/crypto/keembay/Kconfig"
-+source "drivers/crypto/aspeed/Kconfig"
- 
- endif # CRYPTO_HW
-diff --git a/drivers/crypto/Makefile b/drivers/crypto/Makefile
-index f81703a86b98..116de173a66c 100644
---- a/drivers/crypto/Makefile
-+++ b/drivers/crypto/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_CRYPTO_DEV_ALLWINNER) += allwinner/
-+obj-$(CONFIG_CRYPTO_DEV_ASPEED) += aspeed/
- obj-$(CONFIG_CRYPTO_DEV_ATMEL_AES) += atmel-aes.o
- obj-$(CONFIG_CRYPTO_DEV_ATMEL_SHA) += atmel-sha.o
- obj-$(CONFIG_CRYPTO_DEV_ATMEL_TDES) += atmel-tdes.o
-diff --git a/drivers/crypto/aspeed/Kconfig b/drivers/crypto/aspeed/Kconfig
-new file mode 100644
-index 000000000000..7c741695e9b1
---- /dev/null
-+++ b/drivers/crypto/aspeed/Kconfig
-@@ -0,0 +1,23 @@
-+config CRYPTO_DEV_ASPEED
-+	tristate "Support for Aspeed cryptographic engine driver"
-+	depends on ARCH_ASPEED
-+	help
-+	  Hash and Crypto Engine (HACE) is designed to accelerate the
-+	  throughput of hash data digest, encryption and decryption.
-+
-+	  Select y here to have support for the cryptographic driver
-+	  available on Aspeed SoC.
-+
-+config CRYPTO_DEV_ASPEED_HACE_HASH
-+	bool "Enable Aspeed Hash & Crypto Engine (HACE) hash"
-+	depends on CRYPTO_DEV_ASPEED
-+	select CRYPTO_ENGINE
-+	select CRYPTO_SHA1
-+	select CRYPTO_SHA256
-+	select CRYPTO_SHA512
-+	select CRYPTO_HMAC
-+	help
-+	  Select here to enable Aspeed Hash & Crypto Engine (HACE)
-+	  hash driver.
-+	  Supports multiple message digest standards, including
-+	  SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, and so on.
-diff --git a/drivers/crypto/aspeed/Makefile b/drivers/crypto/aspeed/Makefile
-new file mode 100644
-index 000000000000..8bc8d4fed5a9
---- /dev/null
-+++ b/drivers/crypto/aspeed/Makefile
-@@ -0,0 +1,6 @@
-+obj-$(CONFIG_CRYPTO_DEV_ASPEED) += aspeed_crypto.o
-+aspeed_crypto-objs := aspeed-hace.o \
-+		      $(hace-hash-y)
-+
-+obj-$(CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH) += aspeed-hace-hash.o
-+hace-hash-$(CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH) := aspeed-hace-hash.o
-diff --git a/drivers/crypto/aspeed/aspeed-hace-hash.c b/drivers/crypto/aspeed/aspeed-hace-hash.c
-new file mode 100644
-index 000000000000..8cb1a4d184b5
---- /dev/null
-+++ b/drivers/crypto/aspeed/aspeed-hace-hash.c
-@@ -0,0 +1,1428 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (c) 2021 Aspeed Technology Inc.
-+ */
-+
-+#include "aspeed-hace.h"
-+
-+#ifdef ASPEED_AHASH_DEBUG
-+#define AHASH_DBG(h, fmt, ...)	\
-+	dev_dbg((h)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
-+#else
-+#define AHASH_DBG(h, fmt, ...)	\
-+	((void)(h))
-+#endif
-+
-+/* Initialization Vectors for SHA-family */
-+static const u32 sha1_iv[8] = {
-+	cpu_to_be32(SHA1_H0), cpu_to_be32(SHA1_H1),
-+	cpu_to_be32(SHA1_H2), cpu_to_be32(SHA1_H3),
-+	cpu_to_be32(SHA1_H4), 0, 0, 0
-+};
-+
-+static const u32 sha224_iv[8] = {
-+	cpu_to_be32(SHA224_H0), cpu_to_be32(SHA224_H1),
-+	cpu_to_be32(SHA224_H2), cpu_to_be32(SHA224_H3),
-+	cpu_to_be32(SHA224_H4), cpu_to_be32(SHA224_H5),
-+	cpu_to_be32(SHA224_H6), cpu_to_be32(SHA224_H7),
-+};
-+
-+static const u32 sha256_iv[8] = {
-+	cpu_to_be32(SHA256_H0), cpu_to_be32(SHA256_H1),
-+	cpu_to_be32(SHA256_H2), cpu_to_be32(SHA256_H3),
-+	cpu_to_be32(SHA256_H4), cpu_to_be32(SHA256_H5),
-+	cpu_to_be32(SHA256_H6), cpu_to_be32(SHA256_H7),
-+};
-+
-+static const u64 sha384_iv[8] = {
-+	cpu_to_be64(SHA384_H0), cpu_to_be64(SHA384_H1),
-+	cpu_to_be64(SHA384_H2), cpu_to_be64(SHA384_H3),
-+	cpu_to_be64(SHA384_H4), cpu_to_be64(SHA384_H5),
-+	cpu_to_be64(SHA384_H6), cpu_to_be64(SHA384_H7)
-+};
-+
-+static const u64 sha512_iv[8] = {
-+	cpu_to_be64(SHA512_H0), cpu_to_be64(SHA512_H1),
-+	cpu_to_be64(SHA512_H2), cpu_to_be64(SHA512_H3),
-+	cpu_to_be64(SHA512_H4), cpu_to_be64(SHA512_H5),
-+	cpu_to_be64(SHA512_H6), cpu_to_be64(SHA512_H7)
-+};
-+
-+static const u32 sha512_224_iv[16] = {
-+	cpu_to_be32(0xC8373D8CUL), cpu_to_be32(0xA24D5419UL),
-+	cpu_to_be32(0x6699E173UL), cpu_to_be32(0xD6D4DC89UL),
-+	cpu_to_be32(0xAEB7FA1DUL), cpu_to_be32(0x829CFF32UL),
-+	cpu_to_be32(0x14D59D67UL), cpu_to_be32(0xCF9F2F58UL),
-+	cpu_to_be32(0x692B6D0FUL), cpu_to_be32(0xA84DD47BUL),
-+	cpu_to_be32(0x736FE377UL), cpu_to_be32(0x4289C404UL),
-+	cpu_to_be32(0xA8859D3FUL), cpu_to_be32(0xC8361D6AUL),
-+	cpu_to_be32(0xADE61211UL), cpu_to_be32(0xA192D691UL)
-+};
-+
-+static const u32 sha512_256_iv[16] = {
-+	cpu_to_be32(0x94213122UL), cpu_to_be32(0x2CF72BFCUL),
-+	cpu_to_be32(0xA35F559FUL), cpu_to_be32(0xC2644CC8UL),
-+	cpu_to_be32(0x6BB89323UL), cpu_to_be32(0x51B1536FUL),
-+	cpu_to_be32(0x19773896UL), cpu_to_be32(0xBDEA4059UL),
-+	cpu_to_be32(0xE23E2896UL), cpu_to_be32(0xE3FF8EA8UL),
-+	cpu_to_be32(0x251E5EBEUL), cpu_to_be32(0x92398653UL),
-+	cpu_to_be32(0xFC99012BUL), cpu_to_be32(0xAAB8852CUL),
-+	cpu_to_be32(0xDC2DB70EUL), cpu_to_be32(0xA22CC581UL)
-+};
-+
-+static void aspeed_ahash_iV(struct aspeed_sham_reqctx *rctx)
-+{
-+	if (rctx->flags & SHA_FLAGS_SHA1)
-+		memcpy(rctx->digest, sha1_iv, 32);
-+	else if (rctx->flags & SHA_FLAGS_SHA224)
-+		memcpy(rctx->digest, sha224_iv, 32);
-+	else if (rctx->flags & SHA_FLAGS_SHA256)
-+		memcpy(rctx->digest, sha256_iv, 32);
-+	else if (rctx->flags & SHA_FLAGS_SHA384)
-+		memcpy(rctx->digest, sha384_iv, 64);
-+	else if (rctx->flags & SHA_FLAGS_SHA512)
-+		memcpy(rctx->digest, sha512_iv, 64);
-+	else if (rctx->flags & SHA_FLAGS_SHA512_224)
-+		memcpy(rctx->digest, sha512_224_iv, 64);
-+	else if (rctx->flags & SHA_FLAGS_SHA512_256)
-+		memcpy(rctx->digest, sha512_256_iv, 64);
-+}
-+
-+/* The purpose of this padding is to ensure that the padded message is a
-+ * multiple of 512 bits (SHA1/SHA224/SHA256) or 1024 bits (SHA384/SHA512).
-+ * The bit "1" is appended at the end of the message followed by
-+ * "padlen-1" zero bits. Then a 64 bits block (SHA1/SHA224/SHA256) or
-+ * 128 bits block (SHA384/SHA512) equals to the message length in bits
-+ * is appended.
-+ *
-+ * For SHA1/SHA224/SHA256, padlen is calculated as followed:
-+ *  - if message length < 56 bytes then padlen = 56 - message length
-+ *  - else padlen = 64 + 56 - message length
-+ *
-+ * For SHA384/SHA512, padlen is calculated as followed:
-+ *  - if message length < 112 bytes then padlen = 112 - message length
-+ *  - else padlen = 128 + 112 - message length
-+ */
-+static void aspeed_ahash_fill_padding(struct aspeed_hace_dev *hace_dev,
-+				      struct aspeed_sham_reqctx *rctx)
-+{
-+	unsigned int index, padlen;
-+	__be64 bits[2];
-+
-+	AHASH_DBG(hace_dev, "rctx flags:0x%x\n", (u32)rctx->flags);
-+
-+	switch (rctx->flags & SHA_FLAGS_MASK) {
-+	case SHA_FLAGS_SHA1:
-+	case SHA_FLAGS_SHA224:
-+	case SHA_FLAGS_SHA256:
-+		bits[0] = cpu_to_be64(rctx->digcnt[0] << 3);
-+		index = rctx->bufcnt & 0x3f;
-+		padlen = (index < 56) ? (56 - index) : ((64 + 56) - index);
-+		*(rctx->buffer + rctx->bufcnt) = 0x80;
-+		memset(rctx->buffer + rctx->bufcnt + 1, 0, padlen - 1);
-+		memcpy(rctx->buffer + rctx->bufcnt + padlen, bits, 8);
-+		rctx->bufcnt += padlen + 8;
-+		break;
-+	default:
-+		bits[1] = cpu_to_be64(rctx->digcnt[0] << 3);
-+		bits[0] = cpu_to_be64(rctx->digcnt[1] << 3 |
-+				      rctx->digcnt[0] >> 61);
-+		index = rctx->bufcnt & 0x7f;
-+		padlen = (index < 112) ? (112 - index) : ((128 + 112) - index);
-+		*(rctx->buffer + rctx->bufcnt) = 0x80;
-+		memset(rctx->buffer + rctx->bufcnt + 1, 0, padlen - 1);
-+		memcpy(rctx->buffer + rctx->bufcnt + padlen, bits, 16);
-+		rctx->bufcnt += padlen + 16;
-+		break;
-+	}
-+}
-+
-+/*
-+ * Prepare DMA buffer before hardware engine
-+ * processing.
-+ */
-+static int aspeed_ahash_dma_prepare(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct device *dev = hace_dev->dev;
-+	int length, remain;
-+
-+	length = rctx->total + rctx->bufcnt;
-+	remain = length % rctx->block_size;
-+
-+	AHASH_DBG(hace_dev, "length:0x%x, remain:0x%x\n", length, remain);
-+
-+	if (rctx->bufcnt)
-+		memcpy(hash_engine->ahash_src_addr, rctx->buffer, rctx->bufcnt);
-+
-+	if (rctx->total + rctx->bufcnt < ASPEED_CRYPTO_SRC_DMA_BUF_LEN) {
-+		scatterwalk_map_and_copy(hash_engine->ahash_src_addr +
-+					 rctx->bufcnt, rctx->src_sg,
-+					 rctx->offset, rctx->total - remain, 0);
-+		rctx->offset += rctx->total - remain;
-+
-+	} else {
-+		dev_warn(dev, "Hash data length is too large\n");
-+		return -EINVAL;
-+	}
-+
-+	scatterwalk_map_and_copy(rctx->buffer, rctx->src_sg,
-+				 rctx->offset, remain, 0);
-+
-+	rctx->bufcnt = remain;
-+	rctx->digest_dma_addr = dma_map_single(hace_dev->dev, rctx->digest,
-+					       SHA512_DIGEST_SIZE,
-+					       DMA_BIDIRECTIONAL);
-+	if (dma_mapping_error(hace_dev->dev, rctx->digest_dma_addr)) {
-+		dev_warn(hace_dev->dev, "dma_map() rctx digest error\n");
-+		return -ENOMEM;
-+	}
-+
-+	hash_engine->src_length = length - remain;
-+	hash_engine->src_dma = hash_engine->ahash_src_dma_addr;
-+	hash_engine->digest_dma = rctx->digest_dma_addr;
-+
-+	return 0;
-+}
-+
-+/*
-+ * Prepare DMA buffer as SG list buffer before
-+ * hardware engine processing.
-+ */
-+static int aspeed_ahash_dma_prepare_sg(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct aspeed_sg_list *src_list;
-+	struct scatterlist *s;
-+	int length, remain, sg_len, i;
-+	int rc = 0;
-+
-+	remain = (rctx->total + rctx->bufcnt) % rctx->block_size;
-+	length = rctx->total + rctx->bufcnt - remain;
-+
-+	AHASH_DBG(hace_dev, "%s:0x%x, %s:0x%x, %s:0x%x, %s:0x%x\n",
-+		  "rctx total", rctx->total, "bufcnt", rctx->bufcnt,
-+		  "length", length, "remain", remain);
-+
-+	sg_len = dma_map_sg(hace_dev->dev, rctx->src_sg, rctx->src_nents,
-+			    DMA_TO_DEVICE);
-+	if (!sg_len) {
-+		dev_warn(hace_dev->dev, "dma_map_sg() src error\n");
-+		rc = -ENOMEM;
-+		goto end;
-+	}
-+
-+	src_list = (struct aspeed_sg_list *)hash_engine->ahash_src_addr;
-+	rctx->digest_dma_addr = dma_map_single(hace_dev->dev, rctx->digest,
-+					       SHA512_DIGEST_SIZE,
-+					       DMA_BIDIRECTIONAL);
-+	if (dma_mapping_error(hace_dev->dev, rctx->digest_dma_addr)) {
-+		dev_warn(hace_dev->dev, "dma_map() rctx digest error\n");
-+		rc = -ENOMEM;
-+		goto free_src_sg;
-+	}
-+
-+	if (rctx->bufcnt != 0) {
-+		rctx->buffer_dma_addr = dma_map_single(hace_dev->dev,
-+						       rctx->buffer,
-+						       rctx->block_size * 2,
-+						       DMA_TO_DEVICE);
-+		if (dma_mapping_error(hace_dev->dev, rctx->buffer_dma_addr)) {
-+			dev_warn(hace_dev->dev, "dma_map() rctx buffer error\n");
-+			rc = -ENOMEM;
-+			goto free_rctx_digest;
-+		}
-+
-+		src_list[0].phy_addr = rctx->buffer_dma_addr;
-+		src_list[0].len = rctx->bufcnt;
-+		length -= src_list[0].len;
-+
-+		/* Last sg list */
-+		if (length == 0)
-+			src_list[0].len |= HASH_SG_LAST_LIST;
-+
-+		src_list[0].phy_addr = cpu_to_le32(src_list[0].phy_addr);
-+		src_list[0].len = cpu_to_le32(src_list[0].len);
-+		src_list++;
-+	}
-+
-+	if (length != 0) {
-+		for_each_sg(rctx->src_sg, s, sg_len, i) {
-+			src_list[i].phy_addr = sg_dma_address(s);
-+
-+			if (length > sg_dma_len(s)) {
-+				src_list[i].len = sg_dma_len(s);
-+				length -= sg_dma_len(s);
-+
-+			} else {
-+				/* Last sg list */
-+				src_list[i].len = length;
-+				src_list[i].len |= HASH_SG_LAST_LIST;
-+				length = 0;
-+			}
-+
-+			src_list[i].phy_addr = cpu_to_le32(src_list[i].phy_addr);
-+			src_list[i].len = cpu_to_le32(src_list[i].len);
-+		}
-+	}
-+
-+	if (length != 0) {
-+		rc = -EINVAL;
-+		goto free_rctx_buffer;
-+	}
-+
-+	rctx->offset = rctx->total - remain;
-+	hash_engine->src_length = rctx->total + rctx->bufcnt - remain;
-+	hash_engine->src_dma = hash_engine->ahash_src_dma_addr;
-+	hash_engine->digest_dma = rctx->digest_dma_addr;
-+
-+	goto end;
-+
-+free_rctx_buffer:
-+	if (rctx->bufcnt != 0)
-+		dma_unmap_single(hace_dev->dev, rctx->buffer_dma_addr,
-+				 rctx->block_size * 2, DMA_TO_DEVICE);
-+free_rctx_digest:
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+free_src_sg:
-+	dma_unmap_sg(hace_dev->dev, rctx->src_sg, rctx->src_nents,
-+		     DMA_TO_DEVICE);
-+end:
-+	return rc;
-+}
-+
-+static int aspeed_ahash_complete(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	hash_engine->flags &= ~CRYPTO_FLAGS_BUSY;
-+
-+	crypto_finalize_hash_request(hace_dev->crypt_engine_hash, req, 0);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Copy digest to the corresponding request result.
-+ * This function will be called at final() stage.
-+ */
-+static int aspeed_ahash_transfer(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+
-+	dma_unmap_single(hace_dev->dev, rctx->buffer_dma_addr,
-+			 rctx->block_size * 2, DMA_TO_DEVICE);
-+
-+	memcpy(req->result, rctx->digest, rctx->digsize);
-+
-+	return aspeed_ahash_complete(hace_dev);
-+}
-+
-+/*
-+ * Trigger hardware engines to do the math.
-+ */
-+static int aspeed_hace_ahash_trigger(struct aspeed_hace_dev *hace_dev,
-+				     aspeed_hace_fn_t resume)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+
-+	AHASH_DBG(hace_dev, "src_dma:0x%x, digest_dma:0x%x, length:0x%x\n",
-+		  hash_engine->src_dma, hash_engine->digest_dma,
-+		  hash_engine->src_length);
-+
-+	rctx->cmd |= HASH_CMD_INT_ENABLE;
-+	hash_engine->resume = resume;
-+
-+	ast_hace_write(hace_dev, hash_engine->src_dma, ASPEED_HACE_HASH_SRC);
-+	ast_hace_write(hace_dev, hash_engine->digest_dma,
-+		       ASPEED_HACE_HASH_DIGEST_BUFF);
-+	ast_hace_write(hace_dev, hash_engine->digest_dma,
-+		       ASPEED_HACE_HASH_KEY_BUFF);
-+	ast_hace_write(hace_dev, hash_engine->src_length,
-+		       ASPEED_HACE_HASH_DATA_LEN);
-+
-+	/* Memory barrier to ensure all data setup before engine starts */
-+	mb();
-+
-+	ast_hace_write(hace_dev, rctx->cmd, ASPEED_HACE_HASH_CMD);
-+
-+	return -EINPROGRESS;
-+}
-+
-+/*
-+ * HMAC resume aims to do the second pass produces
-+ * the final HMAC code derived from the inner hash
-+ * result and the outer key.
-+ */
-+static int aspeed_ahash_hmac_resume(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_sha_hmac_ctx *bctx = tctx->base;
-+	int rc = 0;
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+
-+	dma_unmap_single(hace_dev->dev, rctx->buffer_dma_addr,
-+			 rctx->block_size * 2, DMA_TO_DEVICE);
-+
-+	/* o key pad + hash sum 1 */
-+	memcpy(rctx->buffer, bctx->opad, rctx->block_size);
-+	memcpy(rctx->buffer + rctx->block_size, rctx->digest, rctx->digsize);
-+
-+	rctx->bufcnt = rctx->block_size + rctx->digsize;
-+	rctx->digcnt[0] = rctx->block_size + rctx->digsize;
-+
-+	aspeed_ahash_fill_padding(hace_dev, rctx);
-+	aspeed_ahash_iV(rctx);
-+
-+	rctx->digest_dma_addr = dma_map_single(hace_dev->dev, rctx->digest,
-+					       SHA512_DIGEST_SIZE,
-+					       DMA_BIDIRECTIONAL);
-+	if (dma_mapping_error(hace_dev->dev, rctx->digest_dma_addr)) {
-+		dev_warn(hace_dev->dev, "dma_map() rctx digest error\n");
-+		rc = -ENOMEM;
-+		goto end;
-+	}
-+
-+	rctx->buffer_dma_addr = dma_map_single(hace_dev->dev, rctx->buffer,
-+					       rctx->block_size * 2,
-+					       DMA_TO_DEVICE);
-+	if (dma_mapping_error(hace_dev->dev, rctx->buffer_dma_addr)) {
-+		dev_warn(hace_dev->dev, "dma_map() rctx buffer error\n");
-+		rc = -ENOMEM;
-+		goto free_rctx_digest;
-+	}
-+
-+	hash_engine->src_dma = rctx->buffer_dma_addr;
-+	hash_engine->src_length = rctx->bufcnt;
-+	hash_engine->digest_dma = rctx->digest_dma_addr;
-+
-+	return aspeed_hace_ahash_trigger(hace_dev, aspeed_ahash_transfer);
-+
-+free_rctx_digest:
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+end:
-+	return rc;
-+}
-+
-+static int aspeed_ahash_req_final(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	int rc = 0;
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	aspeed_ahash_fill_padding(hace_dev, rctx);
-+
-+	rctx->digest_dma_addr = dma_map_single(hace_dev->dev,
-+					       rctx->digest,
-+					       SHA512_DIGEST_SIZE,
-+					       DMA_BIDIRECTIONAL);
-+	if (dma_mapping_error(hace_dev->dev, rctx->digest_dma_addr)) {
-+		dev_warn(hace_dev->dev, "dma_map() rctx digest error\n");
-+		rc = -ENOMEM;
-+		goto end;
-+	}
-+
-+	rctx->buffer_dma_addr = dma_map_single(hace_dev->dev,
-+					       rctx->buffer,
-+					       rctx->block_size * 2,
-+					       DMA_TO_DEVICE);
-+	if (dma_mapping_error(hace_dev->dev, rctx->buffer_dma_addr)) {
-+		dev_warn(hace_dev->dev, "dma_map() rctx buffer error\n");
-+		rc = -ENOMEM;
-+		goto free_rctx_digest;
-+	}
-+
-+	hash_engine->src_dma = rctx->buffer_dma_addr;
-+	hash_engine->src_length = rctx->bufcnt;
-+	hash_engine->digest_dma = rctx->digest_dma_addr;
-+
-+	if (rctx->flags & SHA_FLAGS_HMAC)
-+		return aspeed_hace_ahash_trigger(hace_dev,
-+						 aspeed_ahash_hmac_resume);
-+
-+	return aspeed_hace_ahash_trigger(hace_dev, aspeed_ahash_transfer);
-+
-+free_rctx_digest:
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+end:
-+	return rc;
-+}
-+
-+static int aspeed_ahash_update_resume_sg(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	dma_unmap_sg(hace_dev->dev, rctx->src_sg, rctx->src_nents,
-+		     DMA_TO_DEVICE);
-+
-+	if (rctx->bufcnt != 0)
-+		dma_unmap_single(hace_dev->dev, rctx->buffer_dma_addr,
-+				 rctx->block_size * 2,
-+				 DMA_TO_DEVICE);
-+
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+
-+	scatterwalk_map_and_copy(rctx->buffer, rctx->src_sg, rctx->offset,
-+				 rctx->total - rctx->offset, 0);
-+
-+	rctx->bufcnt = rctx->total - rctx->offset;
-+	rctx->cmd &= ~HASH_CMD_HASH_SRC_SG_CTRL;
-+
-+	if (rctx->flags & SHA_FLAGS_FINUP)
-+		return aspeed_ahash_req_final(hace_dev);
-+
-+	return aspeed_ahash_complete(hace_dev);
-+}
-+
-+static int aspeed_ahash_update_resume(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	dma_unmap_single(hace_dev->dev, rctx->digest_dma_addr,
-+			 SHA512_DIGEST_SIZE, DMA_BIDIRECTIONAL);
-+
-+	if (rctx->flags & SHA_FLAGS_FINUP)
-+		return aspeed_ahash_req_final(hace_dev);
-+
-+	return aspeed_ahash_complete(hace_dev);
-+}
-+
-+static int aspeed_ahash_req_update(struct aspeed_hace_dev *hace_dev)
-+{
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	struct ahash_request *req = hash_engine->req;
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	aspeed_hace_fn_t resume;
-+	int ret;
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	if (hace_dev->version == AST2600_VERSION) {
-+		rctx->cmd |= HASH_CMD_HASH_SRC_SG_CTRL;
-+		resume = aspeed_ahash_update_resume_sg;
-+
-+	} else {
-+		resume = aspeed_ahash_update_resume;
-+	}
-+
-+	ret = hash_engine->dma_prepare(hace_dev);
-+	if (ret)
-+		return ret;
-+
-+	return aspeed_hace_ahash_trigger(hace_dev, resume);
-+}
-+
-+static int aspeed_hace_hash_handle_queue(struct aspeed_hace_dev *hace_dev,
-+				  struct ahash_request *req)
-+{
-+	return crypto_transfer_hash_request_to_engine(
-+			hace_dev->crypt_engine_hash, req);
-+}
-+
-+static int aspeed_ahash_do_request(struct crypto_engine *engine, void *areq)
-+{
-+	struct ahash_request *req = ahash_request_cast(areq);
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	struct aspeed_engine_hash *hash_engine;
-+	int ret = 0;
-+
-+	hash_engine = &hace_dev->hash_engine;
-+	hash_engine->flags |= CRYPTO_FLAGS_BUSY;
-+
-+	if (rctx->op == SHA_OP_UPDATE)
-+		ret = aspeed_ahash_req_update(hace_dev);
-+	else if (rctx->op == SHA_OP_FINAL)
-+		ret = aspeed_ahash_req_final(hace_dev);
-+
-+	if (ret != -EINPROGRESS)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int aspeed_ahash_prepare_request(struct crypto_engine *engine,
-+					void *areq)
-+{
-+	struct ahash_request *req = ahash_request_cast(areq);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	struct aspeed_engine_hash *hash_engine;
-+
-+	hash_engine = &hace_dev->hash_engine;
-+	hash_engine->req = req;
-+
-+	if (hace_dev->version == AST2600_VERSION)
-+		hash_engine->dma_prepare = aspeed_ahash_dma_prepare_sg;
-+	else
-+		hash_engine->dma_prepare = aspeed_ahash_dma_prepare;
-+
-+	return 0;
-+}
-+
-+static int aspeed_sham_update(struct ahash_request *req)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+
-+	AHASH_DBG(hace_dev, "req->nbytes: %d\n", req->nbytes);
-+
-+	rctx->total = req->nbytes;
-+	rctx->src_sg = req->src;
-+	rctx->offset = 0;
-+	rctx->src_nents = sg_nents(req->src);
-+	rctx->op = SHA_OP_UPDATE;
-+
-+	rctx->digcnt[0] += rctx->total;
-+	if (rctx->digcnt[0] < rctx->total)
-+		rctx->digcnt[1]++;
-+
-+	if (rctx->bufcnt + rctx->total < rctx->block_size) {
-+		scatterwalk_map_and_copy(rctx->buffer + rctx->bufcnt,
-+					 rctx->src_sg, rctx->offset,
-+					 rctx->total, 0);
-+		rctx->bufcnt += rctx->total;
-+
-+		return 0;
-+	}
-+
-+	return aspeed_hace_hash_handle_queue(hace_dev, req);
-+}
-+
-+static int aspeed_sham_shash_digest(struct crypto_shash *tfm, u32 flags,
-+				    const u8 *data, unsigned int len, u8 *out)
-+{
-+	SHASH_DESC_ON_STACK(shash, tfm);
-+
-+	shash->tfm = tfm;
-+
-+	return crypto_shash_digest(shash, data, len, out);
-+}
-+
-+static int aspeed_sham_final(struct ahash_request *req)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+
-+	AHASH_DBG(hace_dev, "req->nbytes:%d, rctx->total:%d\n",
-+		  req->nbytes, rctx->total);
-+	rctx->op = SHA_OP_FINAL;
-+
-+	return aspeed_hace_hash_handle_queue(hace_dev, req);
-+}
-+
-+static int aspeed_sham_finup(struct ahash_request *req)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	int rc1, rc2;
-+
-+	AHASH_DBG(hace_dev, "req->nbytes: %d\n", req->nbytes);
-+
-+	rctx->flags |= SHA_FLAGS_FINUP;
-+
-+	rc1 = aspeed_sham_update(req);
-+	if (rc1 == -EINPROGRESS || rc1 == -EBUSY)
-+		return rc1;
-+
-+	/*
-+	 * final() has to be always called to cleanup resources
-+	 * even if update() failed, except EINPROGRESS
-+	 */
-+	rc2 = aspeed_sham_final(req);
-+
-+	return rc1 ? : rc2;
-+}
-+
-+static int aspeed_sham_init(struct ahash_request *req)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	struct aspeed_sha_hmac_ctx *bctx = tctx->base;
-+
-+	AHASH_DBG(hace_dev, "%s: digest size:%d\n",
-+		  crypto_tfm_alg_name(&tfm->base),
-+		  crypto_ahash_digestsize(tfm));
-+
-+	rctx->cmd = HASH_CMD_ACC_MODE;
-+	rctx->flags = 0;
-+
-+	switch (crypto_ahash_digestsize(tfm)) {
-+	case SHA1_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA1 | HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA1;
-+		rctx->digsize = SHA1_DIGEST_SIZE;
-+		rctx->block_size = SHA1_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha1_iv, 32);
-+		break;
-+	case SHA224_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA224 | HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA224;
-+		rctx->digsize = SHA224_DIGEST_SIZE;
-+		rctx->block_size = SHA224_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha224_iv, 32);
-+		break;
-+	case SHA256_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA256 | HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA256;
-+		rctx->digsize = SHA256_DIGEST_SIZE;
-+		rctx->block_size = SHA256_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha256_iv, 32);
-+		break;
-+	case SHA384_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA512_SER | HASH_CMD_SHA384 |
-+			     HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA384;
-+		rctx->digsize = SHA384_DIGEST_SIZE;
-+		rctx->block_size = SHA384_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha384_iv, 64);
-+		break;
-+	case SHA512_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA512_SER | HASH_CMD_SHA512 |
-+			     HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA512;
-+		rctx->digsize = SHA512_DIGEST_SIZE;
-+		rctx->block_size = SHA512_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha512_iv, 64);
-+		break;
-+	default:
-+		dev_warn(tctx->hace_dev->dev, "digest size %d not support\n",
-+			 crypto_ahash_digestsize(tfm));
-+		return -EINVAL;
-+	}
-+
-+	rctx->bufcnt = 0;
-+	rctx->total = 0;
-+	rctx->digcnt[0] = 0;
-+	rctx->digcnt[1] = 0;
-+
-+	/* HMAC init */
-+	if (tctx->flags & SHA_FLAGS_HMAC) {
-+		rctx->digcnt[0] = rctx->block_size;
-+		rctx->bufcnt = rctx->block_size;
-+		memcpy(rctx->buffer, bctx->ipad, rctx->block_size);
-+		rctx->flags |= SHA_FLAGS_HMAC;
-+	}
-+
-+	return 0;
-+}
-+
-+static int aspeed_sha512s_init(struct ahash_request *req)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	struct aspeed_sha_hmac_ctx *bctx = tctx->base;
-+
-+	AHASH_DBG(hace_dev, "digest size: %d\n", crypto_ahash_digestsize(tfm));
-+
-+	rctx->cmd = HASH_CMD_ACC_MODE;
-+	rctx->flags = 0;
-+
-+	switch (crypto_ahash_digestsize(tfm)) {
-+	case SHA224_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA512_SER | HASH_CMD_SHA512_224 |
-+			     HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA512_224;
-+		rctx->digsize = SHA224_DIGEST_SIZE;
-+		rctx->block_size = SHA512_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha512_224_iv, SHA224_BLOCK_SIZE);
-+		break;
-+	case SHA256_DIGEST_SIZE:
-+		rctx->cmd |= HASH_CMD_SHA512_SER | HASH_CMD_SHA512_256 |
-+			     HASH_CMD_SHA_SWAP;
-+		rctx->flags |= SHA_FLAGS_SHA512_256;
-+		rctx->digsize = SHA256_DIGEST_SIZE;
-+		rctx->block_size = SHA512_BLOCK_SIZE;
-+		memcpy(rctx->digest, sha512_256_iv, SHA256_BLOCK_SIZE);
-+		break;
-+	default:
-+		dev_warn(tctx->hace_dev->dev, "digest size %d not support\n",
-+			 crypto_ahash_digestsize(tfm));
-+		return -EINVAL;
-+	}
-+
-+	rctx->bufcnt = 0;
-+	rctx->total = 0;
-+	rctx->digcnt[0] = 0;
-+	rctx->digcnt[1] = 0;
-+
-+	/* HMAC init */
-+	if (tctx->flags & SHA_FLAGS_HMAC) {
-+		rctx->digcnt[0] = rctx->block_size;
-+		rctx->bufcnt = rctx->block_size;
-+		memcpy(rctx->buffer, bctx->ipad, rctx->block_size);
-+		rctx->flags |= SHA_FLAGS_HMAC;
-+	}
-+
-+	return 0;
-+}
-+
-+static int aspeed_sham_digest(struct ahash_request *req)
-+{
-+	return aspeed_sham_init(req) ? : aspeed_sham_finup(req);
-+}
-+
-+static int aspeed_sham_setkey(struct crypto_ahash *tfm, const u8 *key,
-+			      unsigned int keylen)
-+{
-+	struct aspeed_sham_ctx *tctx = crypto_ahash_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	struct aspeed_sha_hmac_ctx *bctx = tctx->base;
-+	int ds = crypto_shash_digestsize(bctx->shash);
-+	int bs = crypto_shash_blocksize(bctx->shash);
-+	int err = 0;
-+	int i;
-+
-+	AHASH_DBG(hace_dev, "%s: keylen:%d\n", crypto_tfm_alg_name(&tfm->base),
-+		  keylen);
-+
-+	if (keylen > bs) {
-+		err = aspeed_sham_shash_digest(bctx->shash,
-+					       crypto_shash_get_flags(bctx->shash),
-+					       key, keylen, bctx->ipad);
-+		if (err)
-+			return err;
-+		keylen = ds;
-+
-+	} else {
-+		memcpy(bctx->ipad, key, keylen);
-+	}
-+
-+	memset(bctx->ipad + keylen, 0, bs - keylen);
-+	memcpy(bctx->opad, bctx->ipad, bs);
-+
-+	for (i = 0; i < bs; i++) {
-+		bctx->ipad[i] ^= HMAC_IPAD_VALUE;
-+		bctx->opad[i] ^= HMAC_OPAD_VALUE;
-+	}
-+
-+	return err;
-+}
-+
-+static int aspeed_sham_cra_init_alg(struct crypto_tfm *tfm,
-+				    const char *alg_base)
-+{
-+	struct ahash_alg *alg = __crypto_ahash_alg(tfm->__crt_alg);
-+	struct aspeed_sham_ctx *tctx = crypto_tfm_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+	struct aspeed_hace_alg *ast_alg;
-+
-+	ast_alg = container_of(alg, struct aspeed_hace_alg, alg.ahash);
-+	tctx->hace_dev = ast_alg->hace_dev;
-+	tctx->flags = 0;
-+
-+	crypto_ahash_set_reqsize(__crypto_ahash_cast(tfm),
-+				 sizeof(struct aspeed_sham_reqctx));
-+
-+	if (alg_base) {
-+		struct aspeed_sha_hmac_ctx *bctx = tctx->base;
-+
-+		tctx->flags |= SHA_FLAGS_HMAC;
-+		bctx->shash = crypto_alloc_shash(alg_base, 0,
-+						 CRYPTO_ALG_NEED_FALLBACK);
-+		if (IS_ERR(bctx->shash)) {
-+			dev_warn(hace_dev->dev,
-+				 "base driver '%s' could not be loaded.\n",
-+				 alg_base);
-+			return PTR_ERR(bctx->shash);
-+		}
-+	}
-+
-+	tctx->enginectx.op.do_one_request = aspeed_ahash_do_request;
-+	tctx->enginectx.op.prepare_request = aspeed_ahash_prepare_request;
-+	tctx->enginectx.op.unprepare_request = NULL;
-+
-+	return 0;
-+}
-+
-+static int aspeed_sham_cra_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, NULL);
-+}
-+
-+static int aspeed_sham_cra_sha1_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha1");
-+}
-+
-+static int aspeed_sham_cra_sha224_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha224");
-+}
-+
-+static int aspeed_sham_cra_sha256_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha256");
-+}
-+
-+static int aspeed_sham_cra_sha384_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha384");
-+}
-+
-+static int aspeed_sham_cra_sha512_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha512");
-+}
-+
-+static int aspeed_sham_cra_sha512_224_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha512_224");
-+}
-+
-+static int aspeed_sham_cra_sha512_256_init(struct crypto_tfm *tfm)
-+{
-+	return aspeed_sham_cra_init_alg(tfm, "sha512_256");
-+}
-+
-+static void aspeed_sham_cra_exit(struct crypto_tfm *tfm)
-+{
-+	struct aspeed_sham_ctx *tctx = crypto_tfm_ctx(tfm);
-+	struct aspeed_hace_dev *hace_dev = tctx->hace_dev;
-+
-+	AHASH_DBG(hace_dev, "%s\n", crypto_tfm_alg_name(tfm));
-+
-+	if (tctx->flags & SHA_FLAGS_HMAC) {
-+		struct aspeed_sha_hmac_ctx *bctx = tctx->base;
-+
-+		crypto_free_shash(bctx->shash);
-+	}
-+}
-+
-+static int aspeed_sham_export(struct ahash_request *req, void *out)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+
-+	memcpy(out, rctx, sizeof(*rctx));
-+
-+	return 0;
-+}
-+
-+static int aspeed_sham_import(struct ahash_request *req, const void *in)
-+{
-+	struct aspeed_sham_reqctx *rctx = ahash_request_ctx(req);
-+
-+	memcpy(rctx, in, sizeof(*rctx));
-+
-+	return 0;
-+}
-+
-+struct aspeed_hace_alg aspeed_ahash_algs[] = {
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA1_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha1",
-+					.cra_driver_name	= "aspeed-sha1",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA1_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA256_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha256",
-+					.cra_driver_name	= "aspeed-sha256",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA256_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA224_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha224",
-+					.cra_driver_name	= "aspeed-sha224",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA224_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA1_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha1)",
-+					.cra_driver_name	= "aspeed-hmac-sha1",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA1_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha1_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA224_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha224)",
-+					.cra_driver_name	= "aspeed-hmac-sha224",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA224_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha224_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA256_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha256)",
-+					.cra_driver_name	= "aspeed-hmac-sha256",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA256_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha256_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+};
-+
-+struct aspeed_hace_alg aspeed_ahash_algs_g6[] = {
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA384_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha384",
-+					.cra_driver_name	= "aspeed-sha384",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA384_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA512_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha512",
-+					.cra_driver_name	= "aspeed-sha512",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA512_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sha512s_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA224_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha512_224",
-+					.cra_driver_name	= "aspeed-sha512_224",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA512_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sha512s_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA256_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "sha512_256",
-+					.cra_driver_name	= "aspeed-sha512_256",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA512_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA384_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha384)",
-+					.cra_driver_name	= "aspeed-hmac-sha384",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA384_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha384_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sham_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA512_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha512)",
-+					.cra_driver_name	= "aspeed-hmac-sha512",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA512_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha512_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sha512s_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA224_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha512_224)",
-+					.cra_driver_name	= "aspeed-hmac-sha512_224",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA512_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha512_224_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+	{
-+		.alg.ahash = {
-+			.init	= aspeed_sha512s_init,
-+			.update	= aspeed_sham_update,
-+			.final	= aspeed_sham_final,
-+			.finup	= aspeed_sham_finup,
-+			.digest	= aspeed_sham_digest,
-+			.setkey	= aspeed_sham_setkey,
-+			.export	= aspeed_sham_export,
-+			.import	= aspeed_sham_import,
-+			.halg = {
-+				.digestsize = SHA256_DIGEST_SIZE,
-+				.statesize = sizeof(struct aspeed_sham_reqctx),
-+				.base = {
-+					.cra_name		= "hmac(sha512_256)",
-+					.cra_driver_name	= "aspeed-hmac-sha512_256",
-+					.cra_priority		= 300,
-+					.cra_flags		= CRYPTO_ALG_TYPE_AHASH |
-+								  CRYPTO_ALG_ASYNC |
-+								  CRYPTO_ALG_KERN_DRIVER_ONLY,
-+					.cra_blocksize		= SHA512_BLOCK_SIZE,
-+					.cra_ctxsize		= sizeof(struct aspeed_sham_ctx) +
-+								sizeof(struct aspeed_sha_hmac_ctx),
-+					.cra_alignmask		= 0,
-+					.cra_module		= THIS_MODULE,
-+					.cra_init		= aspeed_sham_cra_sha512_256_init,
-+					.cra_exit		= aspeed_sham_cra_exit,
-+				}
-+			}
-+		},
-+	},
-+};
-+
-+void aspeed_unregister_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(aspeed_ahash_algs); i++)
-+		crypto_unregister_ahash(&aspeed_ahash_algs[i].alg.ahash);
-+
-+	if (hace_dev->version != AST2600_VERSION)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(aspeed_ahash_algs_g6); i++)
-+		crypto_unregister_ahash(&aspeed_ahash_algs_g6[i].alg.ahash);
-+}
-+
-+void aspeed_register_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
-+{
-+	int rc, i;
-+
-+	AHASH_DBG(hace_dev, "\n");
-+
-+	for (i = 0; i < ARRAY_SIZE(aspeed_ahash_algs); i++) {
-+		aspeed_ahash_algs[i].hace_dev = hace_dev;
-+		rc = crypto_register_ahash(&aspeed_ahash_algs[i].alg.ahash);
-+		if (rc) {
-+			AHASH_DBG(hace_dev, "Failed to register %s\n",
-+				  aspeed_ahash_algs[i].alg.ahash.halg.cra_name);
-+		}
-+	}
-+
-+	if (hace_dev->version != AST2600_VERSION)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(aspeed_ahash_algs_g6); i++) {
-+		aspeed_ahash_algs_g6[i].hace_dev = hace_dev;
-+		rc = crypto_register_ahash(&aspeed_ahash_algs_g6[i].alg.ahash);
-+		if (rc) {
-+			AHASH_DBG(hace_dev, "Failed to register %s\n",
-+				  aspeed_ahash_algs_g6[i].alg.ahash.halg.cra_name);
-+		}
-+	}
-+}
-diff --git a/drivers/crypto/aspeed/aspeed-hace.c b/drivers/crypto/aspeed/aspeed-hace.c
-new file mode 100644
-index 000000000000..61fedc6f7ef4
---- /dev/null
-+++ b/drivers/crypto/aspeed/aspeed-hace.c
-@@ -0,0 +1,212 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (c) 2021 Aspeed Technology Inc.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/module.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
-+#include <linux/of_irq.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#include "aspeed-hace.h"
-+
-+#ifdef ASPEED_HACE_DEBUG
-+#define HACE_DBG(d, fmt, ...)	\
-+	dev_dbg((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
-+#else
-+#define HACE_DBG(d, fmt, ...)
-+#endif
-+
-+/* Weak function for HACE hash */
-+void __weak aspeed_register_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
-+{
-+	pr_warn("%s: Not supported yet\n", __func__);
-+}
-+
-+void __weak aspeed_unregister_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
-+{
-+	pr_warn("%s: Not supported yet\n", __func__);
-+}
-+
-+/* HACE interrupt service routine */
-+static irqreturn_t aspeed_hace_irq(int irq, void *dev)
-+{
-+	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)dev;
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+	u32 sts;
-+
-+	HACE_DBG("irq status: 0x%x\n", sts);
-+
-+	sts = ast_hace_read(hace_dev, ASPEED_HACE_STS);
-+	ast_hace_write(hace_dev, sts, ASPEED_HACE_STS);
-+
-+	if (sts & HACE_HASH_ISR) {
-+		if (hash_engine->flags & CRYPTO_FLAGS_BUSY)
-+			tasklet_schedule(&hash_engine->done_task);
-+		else
-+			dev_warn(hace_dev->dev, "HASH no active requests.\n");
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void aspeed_hace_hash_done_task(unsigned long data)
-+{
-+	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)data;
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+
-+	hash_engine->resume(hace_dev);
-+}
-+
-+static void aspeed_hace_register(struct aspeed_hace_dev *hace_dev)
-+{
-+	aspeed_register_hace_hash_algs(hace_dev);
-+}
-+
-+static void aspeed_hace_unregister(struct aspeed_hace_dev *hace_dev)
-+{
-+	aspeed_unregister_hace_hash_algs(hace_dev);
-+}
-+
-+static const struct of_device_id aspeed_hace_of_matches[] = {
-+	{ .compatible = "aspeed,ast2500-hace", .data = (void *)5, },
-+	{ .compatible = "aspeed,ast2600-hace", .data = (void *)6, },
-+	{},
-+};
-+
-+static int aspeed_hace_probe(struct platform_device *pdev)
-+{
-+	const struct of_device_id *hace_dev_id;
-+	struct aspeed_engine_hash *hash_engine;
-+	struct aspeed_hace_dev *hace_dev;
-+	struct resource *res;
-+	int rc;
-+
-+	hace_dev = devm_kzalloc(&pdev->dev, sizeof(struct aspeed_hace_dev),
-+				GFP_KERNEL);
-+	if (!hace_dev)
-+		return -ENOMEM;
-+
-+	hace_dev_id = of_match_device(aspeed_hace_of_matches, &pdev->dev);
-+	if (!hace_dev_id) {
-+		dev_err(&pdev->dev, "Failed to match hace dev id\n");
-+		return -EINVAL;
-+	}
-+
-+	hace_dev->dev = &pdev->dev;
-+	hace_dev->version = (unsigned long)hace_dev_id->data;
-+	hash_engine = &hace_dev->hash_engine;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	platform_set_drvdata(pdev, hace_dev);
-+
-+	hace_dev->regs = devm_ioremap_resource(&pdev->dev, res);
-+	if (!hace_dev->regs) {
-+		dev_err(&pdev->dev, "Failed to map resources\n");
-+		return -ENOMEM;
-+	}
-+
-+	/* Get irq number and register it */
-+	hace_dev->irq = platform_get_irq(pdev, 0);
-+	if (!hace_dev->irq) {
-+		dev_err(&pdev->dev, "Failed to get interrupt\n");
-+		return -ENXIO;
-+	}
-+
-+	rc = devm_request_irq(&pdev->dev, hace_dev->irq, aspeed_hace_irq, 0,
-+			      dev_name(&pdev->dev), hace_dev);
-+	if (rc) {
-+		dev_err(&pdev->dev, "Failed to request interrupt\n");
-+		return rc;
-+	}
-+
-+	/* Get clk and enable it */
-+	hace_dev->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(hace_dev->clk)) {
-+		dev_err(&pdev->dev, "Failed to get clk\n");
-+		return -ENODEV;
-+	}
-+
-+	rc = clk_prepare_enable(hace_dev->clk);
-+	if (rc) {
-+		dev_err(&pdev->dev, "Failed to enable clock 0x%x\n", rc);
-+		return rc;
-+	}
-+
-+	/* Initialize crypto hardware engine structure for hash */
-+	hace_dev->crypt_engine_hash = crypto_engine_alloc_init(hace_dev->dev,
-+							       true);
-+	if (!hace_dev->crypt_engine_hash) {
-+		rc = -ENOMEM;
-+		goto clk_exit;
-+	}
-+
-+	rc = crypto_engine_start(hace_dev->crypt_engine_hash);
-+	if (rc)
-+		goto err_engine_hash_start;
-+
-+	tasklet_init(&hash_engine->done_task, aspeed_hace_hash_done_task,
-+		     (unsigned long)hace_dev);
-+
-+	/* Allocate DMA buffer for hash engine input used */
-+	hash_engine->ahash_src_addr =
-+		dmam_alloc_coherent(&pdev->dev,
-+				    ASPEED_HASH_SRC_DMA_BUF_LEN,
-+				    &hash_engine->ahash_src_dma_addr,
-+				    GFP_KERNEL);
-+	if (!hash_engine->ahash_src_addr) {
-+		dev_err(&pdev->dev, "Failed to allocate dma buffer\n");
-+		rc = -ENOMEM;
-+		goto err_engine_hash_start;
-+	}
-+
-+	aspeed_hace_register(hace_dev);
-+
-+	dev_info(&pdev->dev, "Aspeed Crypto Accelerator successfully registered\n");
-+
-+	return 0;
-+
-+err_engine_hash_start:
-+	crypto_engine_exit(hace_dev->crypt_engine_hash);
-+clk_exit:
-+	clk_disable_unprepare(hace_dev->clk);
-+
-+	return rc;
-+}
-+
-+static int aspeed_hace_remove(struct platform_device *pdev)
-+{
-+	struct aspeed_hace_dev *hace_dev = platform_get_drvdata(pdev);
-+	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
-+
-+	aspeed_hace_unregister(hace_dev);
-+
-+	crypto_engine_exit(hace_dev->crypt_engine_hash);
-+
-+	tasklet_kill(&hash_engine->done_task);
-+
-+	clk_disable_unprepare(hace_dev->clk);
-+
-+	return 0;
-+}
-+
-+MODULE_DEVICE_TABLE(of, aspeed_hace_of_matches);
-+
-+static struct platform_driver aspeed_hace_driver = {
-+	.probe		= aspeed_hace_probe,
-+	.remove		= aspeed_hace_remove,
-+	.driver         = {
-+		.name   = KBUILD_MODNAME,
-+		.of_match_table = aspeed_hace_of_matches,
-+	},
-+};
-+
-+module_platform_driver(aspeed_hace_driver);
-+
-+MODULE_AUTHOR("Neal Liu <neal_liu@aspeedtech.com>");
-+MODULE_DESCRIPTION("Aspeed HACE driver Crypto Accelerator");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/crypto/aspeed/aspeed-hace.h b/drivers/crypto/aspeed/aspeed-hace.h
-new file mode 100644
-index 000000000000..a9aa1e1d90fe
---- /dev/null
-+++ b/drivers/crypto/aspeed/aspeed-hace.h
-@@ -0,0 +1,181 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+#ifndef __ASPEED_HACE_H__
-+#define __ASPEED_HACE_H__
-+
-+#include <linux/interrupt.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/fips.h>
-+#include <linux/dma-mapping.h>
-+#include <crypto/scatterwalk.h>
-+#include <crypto/internal/aead.h>
-+#include <crypto/internal/akcipher.h>
-+#include <crypto/internal/hash.h>
-+#include <crypto/internal/kpp.h>
-+#include <crypto/internal/skcipher.h>
-+#include <crypto/algapi.h>
-+#include <crypto/engine.h>
-+#include <crypto/hmac.h>
-+#include <crypto/sha1.h>
-+#include <crypto/sha2.h>
-+
-+/*****************************
-+ *                           *
-+ * HACE register definitions *
-+ *                           *
-+ * ***************************/
-+
-+#define ASPEED_HACE_STS			0x1C	/* HACE Status Register */
-+#define ASPEED_HACE_HASH_SRC		0x20	/* Hash Data Source Base Address Register */
-+#define ASPEED_HACE_HASH_DIGEST_BUFF	0x24	/* Hash Digest Write Buffer Base Address Register */
-+#define ASPEED_HACE_HASH_KEY_BUFF	0x28	/* Hash HMAC Key Buffer Base Address Register */
-+#define ASPEED_HACE_HASH_DATA_LEN	0x2C	/* Hash Data Length Register */
-+#define ASPEED_HACE_HASH_CMD		0x30	/* Hash Engine Command Register */
-+
-+/* interrupt status reg */
-+#define  HACE_HASH_ISR			BIT(9)
-+#define  HACE_HASH_BUSY			BIT(0)
-+
-+/* hash cmd reg */
-+#define  HASH_CMD_MBUS_REQ_SYNC_EN	BIT(20)
-+#define  HASH_CMD_HASH_SRC_SG_CTRL	BIT(18)
-+#define  HASH_CMD_SHA512_224		(0x3 << 10)
-+#define  HASH_CMD_SHA512_256		(0x2 << 10)
-+#define  HASH_CMD_SHA384		(0x1 << 10)
-+#define  HASH_CMD_SHA512		(0)
-+#define  HASH_CMD_INT_ENABLE		BIT(9)
-+#define  HASH_CMD_HMAC			(0x1 << 7)
-+#define  HASH_CMD_ACC_MODE		(0x2 << 7)
-+#define  HASH_CMD_HMAC_KEY		(0x3 << 7)
-+#define  HASH_CMD_SHA1			(0x2 << 4)
-+#define  HASH_CMD_SHA224		(0x4 << 4)
-+#define  HASH_CMD_SHA256		(0x5 << 4)
-+#define  HASH_CMD_SHA512_SER		(0x6 << 4)
-+#define  HASH_CMD_SHA_SWAP		(0x2 << 2)
-+
-+#define HASH_SG_LAST_LIST		BIT(31)
-+
-+#define CRYPTO_FLAGS_BUSY		BIT(1)
-+
-+#define SHA_OP_UPDATE			1
-+#define SHA_OP_FINAL			2
-+
-+#define SHA_FLAGS_SHA1			BIT(0)
-+#define SHA_FLAGS_SHA224		BIT(1)
-+#define SHA_FLAGS_SHA256		BIT(2)
-+#define SHA_FLAGS_SHA384		BIT(3)
-+#define SHA_FLAGS_SHA512		BIT(4)
-+#define SHA_FLAGS_SHA512_224		BIT(5)
-+#define SHA_FLAGS_SHA512_256		BIT(6)
-+#define SHA_FLAGS_HMAC			BIT(8)
-+#define SHA_FLAGS_FINUP			BIT(9)
-+#define SHA_FLAGS_MASK			(0xff)
-+
-+#define ASPEED_CRYPTO_SRC_DMA_BUF_LEN	0xa000
-+#define ASPEED_CRYPTO_DST_DMA_BUF_LEN	0xa000
-+#define ASPEED_CRYPTO_GCM_TAG_OFFSET	0x9ff0
-+#define ASPEED_HASH_SRC_DMA_BUF_LEN	0xa000
-+#define ASPEED_HASH_QUEUE_LENGTH	50
-+
-+struct aspeed_hace_dev;
-+
-+typedef int (*aspeed_hace_fn_t)(struct aspeed_hace_dev *);
-+
-+struct aspeed_sg_list {
-+	u32 len;
-+	u32 phy_addr;
-+};
-+
-+struct aspeed_engine_hash {
-+	struct tasklet_struct		done_task;
-+	unsigned long			flags;
-+	struct ahash_request		*req;
-+
-+	/* input buffer */
-+	void				*ahash_src_addr;
-+	dma_addr_t			ahash_src_dma_addr;
-+
-+	dma_addr_t			src_dma;
-+	dma_addr_t			digest_dma;
-+
-+	size_t				src_length;
-+
-+	/* callback func */
-+	aspeed_hace_fn_t		resume;
-+	aspeed_hace_fn_t		dma_prepare;
-+};
-+
-+struct aspeed_sha_hmac_ctx {
-+	struct crypto_shash *shash;
-+	u8 ipad[SHA512_BLOCK_SIZE];
-+	u8 opad[SHA512_BLOCK_SIZE];
-+};
-+
-+struct aspeed_sham_ctx {
-+	struct crypto_engine_ctx	enginectx;
-+
-+	struct aspeed_hace_dev		*hace_dev;
-+	unsigned long			flags;	/* hmac flag */
-+
-+	struct aspeed_sha_hmac_ctx	base[0];
-+};
-+
-+struct aspeed_sham_reqctx {
-+	unsigned long		flags;		/* final update flag should no use*/
-+	unsigned long		op;		/* final or update */
-+	u32			cmd;		/* trigger cmd */
-+
-+	/* walk state */
-+	struct scatterlist	*src_sg;
-+	int			src_nents;
-+	unsigned int		offset;		/* offset in current sg */
-+	unsigned int		total;		/* per update length */
-+
-+	size_t			digsize;
-+	size_t			block_size;
-+
-+	/* remain data buffer */
-+	u8			buffer[SHA512_BLOCK_SIZE * 2];
-+	dma_addr_t		buffer_dma_addr;
-+	size_t			bufcnt;		/* buffer counter */
-+
-+	/* output buffer */
-+	u8			digest[SHA512_DIGEST_SIZE] __aligned(64);
-+	dma_addr_t		digest_dma_addr;
-+	u64			digcnt[2];
-+};
-+
-+struct aspeed_hace_dev {
-+	void __iomem			*regs;
-+	struct device			*dev;
-+	int				irq;
-+	struct clk			*clk;
-+	unsigned long			version;
-+
-+	struct crypto_engine		*crypt_engine_hash;
-+
-+	struct aspeed_engine_hash	hash_engine;
-+};
-+
-+struct aspeed_hace_alg {
-+	struct aspeed_hace_dev		*hace_dev;
-+	union {
-+		struct skcipher_alg	skcipher;
-+		struct ahash_alg	ahash;
-+	} alg;
-+};
-+
-+enum aspeed_version {
-+	AST2500_VERSION = 5,
-+	AST2600_VERSION
-+};
-+
-+#define ast_hace_write(hace, val, offset)	\
-+	writel((val), (hace)->regs + (offset))
-+#define ast_hace_read(hace, offset)		\
-+	readl((hace)->regs + (offset))
-+
-+void aspeed_register_hace_hash_algs(struct aspeed_hace_dev *hace_dev);
-+void aspeed_unregister_hace_hash_algs(struct aspeed_hace_dev *hace_dev);
-+
-+#endif
--- 
-2.25.1
+Thanks for the data. It looks sufficient to illustrate the issue. I'm still a little curious that
+is it specific on Zen 3? Since I cannot get the Zen 3 machine so I tried to reproduce this on the a
+AMD 7742 (2 x 64C/128T) and an Intel 6148 (2 x 40C/80T) machine with your config based on tip/sche/core
+of commit f3dd3f674555 "sched: Remove the limitation of WF_ON_CPU on wakelist if wakee cpu is idle".
+With cluster's percpu definition patch(the worst case) the root_cpuacct_cpuusage and sd_llc_id are
+separated but make little difference to the tbench.
+
+For 7742 with NPS = 1:					
+	tip/sched/core				tip/sched/core-cls-percpu				
+threads	iter-1	iter-2	iter-3	avg		iter-1	iter-2	iter-3	avg	
+1	287.254	285.252	288.29	286.93		288.105	285.884	286.164	286.72   (-0.075%)
+2	573.623	570.326	573.67	572.54		577.242	574.257	575.611	575.70   (0.553%)
+4	1140.01	1135.54	1137.9	1137.82		1153.45	1146.66	1149.8	1149.97  (1.068%)
+8	2232.73	2228.71	2237.47	2232.97		2280.83	2291.94	2287.55	2286.77  (2.409%)
+16	4510.65	4465.2	4522.22	4499.36		4551.19	4573.85	4575.78	4566.94  (1.502%)
+32	8432.43	8542.35	8404.7	8459.83		8627.4	8712.29	8764.53	8701.41  (2.856%)
+64	16404.2	16464.7	15686.4	16185.10	15878.3	15638.3	15735.6	15750.73 (-2.684%)
+128	23327.6	22767.4	21017.3	22370.77	23774.9	23733.2	21744.9	23084.33 (3.190%)
+
+layout of core-cls-percpu:
+0000000000020508 d root_cpuacct_cpuusage
+0000000000020510 D cpufreq_update_util_data
+0000000000020518 D sd_asym_cpucapacity
+0000000000020520 D sd_asym_packing
+0000000000020528 D sd_numa
+0000000000020530 D sd_cluster
+0000000000020538 D sd_llc_shared
+---------------------------------boundary
+0000000000020540 D sd_share_id
+0000000000020544 D sd_llc_id
+0000000000020548 D sd_llc_size
+0000000000020550 D sd_llc
+
+For 6148 with SNC disabled:
+         tip/sched/core       tip/sched/core-cls-percpu
+1        314.44 (   0.00%)      316.68 *   0.71%*
+2        630.22 (   0.00%)      633.84 *   0.57%*
+4       1260.70 (   0.00%)     1267.32 *   0.52%*
+8       2475.31 (   0.00%)     2485.94 *   0.43%*
+16      4684.03 (   0.00%)     4682.21 *  -0.04%*
+32      7496.28 (   0.00%)     7360.41 *  -1.81%*
+64      7981.56 (   0.00%)     7851.73 *  -1.63%*
+128    15359.81 (   0.00%)    15255.68 *  -0.68%*
+256    15104.31 (   0.00%)    15253.85 *   0.99%*
+320    15146.47 (   0.00%)    15151.39 *   0.03%*
+
+layout of core-cls-percpu:
+0000000000020508 d root_cpuacct_cpuusage
+0000000000020510 D cpufreq_update_util_data
+0000000000020518 D sd_asym_cpucapacity
+0000000000020520 D sd_asym_packing
+0000000000020528 D sd_numa
+0000000000020530 D sd_cluster
+0000000000020538 D sd_llc_shared
+---------------------------------boundary
+0000000000020540 D sd_share_id
+0000000000020544 D sd_llc_id
+0000000000020548 D sd_llc_size
+0000000000020550 D sd_llc
+
+
+> The System-map is however dependent on multiple factors
+> such as config options enabled, etc. which can change from
+> build to build.
+> Finding a permanent solution to the issue might take
+> some more time.
+> 
+> Meanwhile, as this is an issue unrelated to the
+> functionality of this patch, it should not block
+> the landing of this patch series.
+> Thank you everyone for your pointers and patience
+> during this debug.
+> 
+> Tested-by: K Prateek Nayak <kprateek.nayak@amd.com>
+
+Thanks. Then I'll respin the patch.
+
+Regards,
+Yicong
 
