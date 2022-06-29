@@ -2,73 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8EDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B85CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232203AbiF2HsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
+        id S231465AbiF2Hv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232153AbiF2HsA (ORCPT
+        with ESMTP id S230514AbiF2Hvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:48:00 -0400
-Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B0E38DA6;
-        Wed, 29 Jun 2022 00:47:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1656488873; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=DhK++zDkXH1xcTO3PgDvNVPur+HbX+iFbKa1Dy3JwVudvk/J6kwDtSMH15/vCi7M2VF4tBv7sXzazBpNiIHJ4IfKD4VwsIR0Ioh1Kl2OtyTHrgtqx3YfOJQh15G5/d0tmlXjoURKbdkbGZFwjRVRIfN0A/6iaeooOCrDE0ggdBo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1656488873; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=RrVeZTg3W+OqqISkusTJIHrK51fZ7mNS1Xl+uRCbfBI=; 
-        b=PZl0bBKKCMQgIt7dALGTnLE6AAIof/munAO29KIgM8ousmOa9rxE3l1mJv4b17qPGBQ0xeQdZglW8n2F7ioFp9TzoOSAzBm5rMQUbPxFCkj6CNwpSSu9gGpddMjW0W2dg0Abh6AIznwf0kmmxcgbJyPEkzLhRCG46N/wAR4YlZ0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=gvisoc.com;
-        spf=pass  smtp.mailfrom=gabriel@gvisoc.com;
-        dmarc=pass header.from=<gabriel@gvisoc.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656488873;
-        s=zoho; d=gvisoc.com; i=gabriel@gvisoc.com;
-        h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-        bh=RrVeZTg3W+OqqISkusTJIHrK51fZ7mNS1Xl+uRCbfBI=;
-        b=PG7IbTzVwhcLWDBsh22A0w5O1qjj9977tb1mX3C4Nd0x560GwmIClkTPd7RPl7UH
-        40OfREl/PIEo0hKWVxzarMhSAX9uswd8aHmjveoYV7RbQ882z18rhI5MoL8nTW+lWrD
-        3v+zSAl/a8hEPan8KUjUbyIZVE8GgzJC7lYQtQl8=
-Received: from localhost (61-68-176-95.tpgi.com.au [61.68.176.95]) by mx.zohomail.com
-        with SMTPS id 1656488872842632.2175981479204; Wed, 29 Jun 2022 00:47:52 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 17:47:48 +1000
-From:   Gabriel Viso Carrera <gabriel@gvisoc.com>
-To:     Greg KH <greg@kroah.com>
-Cc:     Joe Perches <joe@perches.com>, andreas.noever@gmail.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] staging: Thunderbolt: ctl.c: Fixed comment coding
- style issues
-Message-ID: <YrwDpD+MaNPN+Sl1@vao>
-References: <20220625084913.603556-1-gabriel@gvisoc.com>
- <20220625084913.603556-4-gabriel@gvisoc.com>
- <1a35d3bdf6adde4f21e7c1401f3a2aba64367eb0.camel@perches.com>
- <Yrv3PTCgzZGu3l8j@vao>
- <Yrv5HLEXHL+iIVXq@kroah.com>
+        Wed, 29 Jun 2022 03:51:55 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606E125C57
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:51:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656489112; x=1688025112;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nv6IKg36g4e5eVCX/5L0FmvRD5dFbZMAXtl/6cXjhDk=;
+  b=AfDhXHFBBwxjJLvPx4aElSXSJofRRicj5q2otTWTvVlTYEfJ/FykhO0S
+   C8P7ybhfP9W1QjKN0PRXckf8HmiOztB/l6lK9bqVeFI4XlFvZN7AcEEmR
+   Vl0f8cwz0IrNnFuLZw32baK9ZlGxPpUl+0RJj+fqxKIhPSAJJ7g+ySiz7
+   /zSFAYLt7Xc3OxTK93nlTa40ALv4rFjM6x94wTpL3N8Eh5yoxpP2yKLm6
+   cUU7cjpLr3lLywZwFEm7H+bw6kGqc+1APAkmgbDhX16+PcudUN8W1FhZ9
+   jks1NRetvBDbwrUhNYkLbGnHUhCkmn3ZGNDw9hB1kM9tM04mQb3oiS3EU
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="270719356"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="270719356"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 00:51:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="588209571"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 29 Jun 2022 00:51:49 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     iommu@lists.linux-foundation.org, iommu@lists.linux.dev
+Cc:     Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 00/11] iommu/vt-d: Optimize the use of locks
+Date:   Wed, 29 Jun 2022 15:47:14 +0800
+Message-Id: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yrv5HLEXHL+iIVXq@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 09:02:52AM +0200, Greg KH wrote:
-> If you are just learning how to do all of this, I strongly recommend you
-> stick to drivers/staging/* which is much more forgiving and welcoming
-> for basic coding style cleanups.  After you get some experience there,
-> then go out into other subsystems.  Many subsystems do not like coding
-> style fixes as it causes conflicts with other development that is
-> happening.
-> 
-> thanks,
-> 
-> greg k-h
+Hi folks,
 
-I am doing these patches as my first step, yes.
-Will do as suggested, thanks for that. 
+This series tries to optimize the uses of two locks in the Intel IOMMU
+driver:
 
-~Gabriel
+- The intel_iommu::lock is used to protect the IOMMU resources shared by
+  devices. They include the IOMMU root and context tables, the pasid
+  tables and the domain IDs.
+- The global device_domain_lock is used to protect the global and the
+  per-domain device tracking lists.
+
+The optimization includes:
+
+- Remove the unnecessary global device tracking list;
+- Remove unnecessary locking;
+- Reduce the scope of the lock as much as possible, that is, use the
+  lock only where necessary;
+- The global lock is transformed into a local lock to improve the
+  efficiency.
+
+This series is also available on github:
+https://github.com/LuBaolu/intel-iommu/commits/intel-iommu-lock-optimization-v3
+
+Your comments and suggestions are very appreciated.
+
+Best regards,
+baolu
+
+Change log:
+
+v3:
+ - Split reduction of lock ranges from changing irqsave.
+   https://lore.kernel.org/linux-iommu/BN9PR11MB52760A3D7C6BF1AF9C9D34658CAA9@BN9PR11MB5276.namprd11.prod.outlook.com/
+ - Fully initialize the dev_info before adding it to the list.
+   https://lore.kernel.org/linux-iommu/BN9PR11MB52764D7CD86448C5E4EB46668CAA9@BN9PR11MB5276.namprd11.prod.outlook.com/
+ - Various code and comments refinement.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220614025137.1632762-1-baolu.lu@linux.intel.com/
+ - Split the lock-free page walk issue into a new patch:
+   https://lore.kernel.org/linux-iommu/20220609070811.902868-1-baolu.lu@linux.intel.com/
+ - Drop the conversion from spinlock to mutex and make this series
+   cleanup purpose only.
+ - Address several comments received during v1 review.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220527063019.3112905-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+Lu Baolu (11):
+  iommu/vt-d: debugfs: Remove device_domain_lock usage
+  iommu/vt-d: Remove clearing translation data in disable_dmar_iommu()
+  iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()
+  iommu/vt-d: Unnecessary spinlock for root table alloc and free
+  iommu/vt-d: Replace spin_lock_irqsave() with spin_lock()
+  iommu/vt-d: Acquiring lock in domain ID allocation helpers
+  iommu/vt-d: Acquiring lock in pasid manipulation helpers
+  iommu/vt-d: Check device list of domain in domain free path
+  iommu/vt-d: Fold __dmar_remove_one_dev_info() into its caller
+  iommu/vt-d: Use device_domain_lock accurately
+  iommu/vt-d: Convert global spinlock into per domain lock
+
+ drivers/iommu/intel/iommu.h   |   3 +-
+ drivers/iommu/intel/pasid.h   |   1 +
+ drivers/iommu/intel/debugfs.c |  49 ++++---
+ drivers/iommu/intel/iommu.c   | 248 ++++++++++------------------------
+ drivers/iommu/intel/pasid.c   | 103 +++++++-------
+ drivers/iommu/intel/svm.c     |   5 +-
+ 6 files changed, 164 insertions(+), 245 deletions(-)
+
+-- 
+2.25.1
+
