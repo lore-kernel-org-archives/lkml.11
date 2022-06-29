@@ -2,79 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B91C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E62FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbiF2IHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
+        id S230176AbiF2IHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 04:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232088AbiF2IHi (ORCPT
+        with ESMTP id S232088AbiF2IHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 04:07:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85213B574;
-        Wed, 29 Jun 2022 01:07:36 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 79B8D66015AE;
-        Wed, 29 Jun 2022 09:07:34 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656490055;
-        bh=2x7JJI7Gpw9v/avN+IvIawiJAZWgc780v4UFmC7WN1M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=KIpXSyrfyDOlg0nVmlbqYjC3ymVb5Sap7cwjq6Udb6iHNuvrq9iIMOa/2ca4p4V/5
-         P/kJAMUJa/ciPMEkWhzKE30x2Zz9KoSJXwZFAa9Aq6AsRxgQZQpsmgNT2zKWSAObba
-         vJMVJVOh+/82uJjnZ1HBPPjeNIcBIR7X5qXvMCq1GXYCvOOdFgcAYuPRFnxN7oVa0f
-         yVQiDkg+yDZ3JPMRaB3cnTWx47bg8fBBB2zx9aMQijBlEXSK9iiEGRx/Emi09q2BGT
-         BUXkBXOxHvhjq0d4HQoopaqO0/2SXdiKbvCSZ4DcIvUnXlkJLboMNEEKkg4HQYXGWF
-         mvqB6VSuVbclg==
-Message-ID: <4329eb0e-eb4b-f0d2-358f-e1d15a9c49de@collabora.com>
-Date:   Wed, 29 Jun 2022 10:07:31 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] usb: gadget: f_uac1: add interface association
- descriptor
-Content-Language: en-US
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Pavel Hofman <pavel.hofman@ivitera.com>,
-        Julian Scheel <julian@jusst.de>,
-        Ruslan Bilovol <ruslan.bilovol@gmail.com>,
-        Yunhao Tian <t123yh.xyz@gmail.com>,
-        xin lin <xin.lin@mediatek.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220629021304.21725-1-chunfeng.yun@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220629021304.21725-1-chunfeng.yun@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 29 Jun 2022 04:07:41 -0400
+Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 293803B574
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:07:39 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.141.245])
+        by APP-05 (Coremail) with SMTP id zQCowADX3bFICLxiXQt3CA--.48308S2;
+        Wed, 29 Jun 2022 16:07:37 +0800 (CST)
+From:   sunying@nj.iscas.ac.cn
+To:     monstr@monstr.eu
+Cc:     linux-kernel@vger.kernel.org, Ying Sun <sunying@nj.iscas.ac.cn>
+Subject: [PATCH] arch: microblaze: Remove unused "select HANDLE_DOMAIN_IRQ"
+Date:   Wed, 29 Jun 2022 16:06:52 +0800
+Message-Id: <20220629080652.28029-1-sunying@nj.iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: zQCowADX3bFICLxiXQt3CA--.48308S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XFWxuw4fCw1ftrW3ZF1DKFg_yoWxCrb_G3
+        yxKa1rJr4rZ3y2kr98Wr1FgFn0v3yUWa9IkrWjyr1aqa42gw13W398Gr1kXrnrJw4jgFWx
+        WrW8Xr1qkrn7tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Jr0_
+        Gr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr
+        1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWxJVW8Jr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwAKzVCY07xG64k0F24l
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1Y6r17MIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUQ4SrUUUUU=
+X-Originating-IP: [124.16.141.245]
+X-CM-SenderInfo: 5vxq5xdqj60y4olvutnvoduhdfq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 29/06/22 04:13, Chunfeng Yun ha scritto:
-> From: xin lin <xin.lin@mediatek.com>
-> 
-> When we want to use a composite device that supports UVC, UAC1 and
-> ADB at the same time, encounter that UAC1 can't work when connected
-> to windows 10 system.
-> from the online documents of microsoft, "overview of enumeration of
-> interface collections on usb composite devices", it recommends that
-> vendors use IADs (interface association descriptor) to define
-> interface collections.
-> After addding IAD, we can fix the issue.
-> 
-> Signed-off-by: xin lin <xin.lin@mediatek.com>
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+From: Ying Sun <sunying@nj.iscas.ac.cn>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+The "CONFIG_HANDLE_DOMAIN_IRQ" item has not been used right now.
+Remove the old unused selection in config MICROBLAZE.
+
+Signed-off-by: Ying Sun <sunying@nj.iscas.ac.cn>
+---
+ arch/microblaze/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 8cf429ad1c84..ed9ce6117263 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -45,7 +45,6 @@ config MICROBLAZE
+ 	select ZONE_DMA
+ 	select TRACE_IRQFLAGS_SUPPORT
+ 	select GENERIC_IRQ_MULTI_HANDLER
+-	select HANDLE_DOMAIN_IRQ
+ 
+ # Endianness selection
+ choice
+-- 
+2.17.1
 
