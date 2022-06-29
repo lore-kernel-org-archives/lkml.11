@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C05C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbiF2W4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 18:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S231361AbiF2W4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 18:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231470AbiF2Wz5 (ORCPT
+        with ESMTP id S230382AbiF2Wz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 18:55:57 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC5741327;
-        Wed, 29 Jun 2022 15:55:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D265841325;
+        Wed, 29 Jun 2022 15:55:14 -0700 (PDT)
 Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25TM4bsA000913;
-        Wed, 29 Jun 2022 22:54:37 GMT
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25TM4ain000903;
+        Wed, 29 Jun 2022 22:54:28 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references :
  content-transfer-encoding : content-type : mime-version;
- s=corp-2021-07-09; bh=i4VgjLtjq9jjVTPpB14Hukd5jRRaep/rnkhxQlDqB0E=;
- b=jkdbdPHIG2tjtJup0SY4Cfw6sr6k0QUwqfDSRi0JOyO6wjqXZMQdBRyVZuMtZvufpAg3
- ZUQ9lmzSgIzK3FtZrGpp02RyOhuuIY3Eu4A70A79/D53xCpsmeHuYKdoCqxwmvZ6NzC7
- bukYNJcr9Gj48UMcH2EI9NDqUBcRjznEoecYcrsN2C3UsLQEuCWCy9EAuPfVg1CpWqEG
- 5R2pm+LtmTA6sojAA+trPtqInd5qMTYUItPmoSXRx+1jCJzer43R548PTHsjr6hbPZQ4
- FilbiWkgQTzjeOmr5yrI12KSwG3jG72qfgqOEzbgpro+pxALCrToxxnnC/jeV3CuZRYU fA== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gwry0jnkm-1
+ s=corp-2021-07-09; bh=w05FYHNlKNrWph18aS5RLxPDQ90bMPDdwIo7huXc+tk=;
+ b=ICDvyNIiYYntUWkd3FULW3fwML0R8tgjmyJYREDpRhHOAPoF2jVipNvGeMBh3FJwOdWn
+ csGdXCp/xitEQecxBOpIBO96E9D6l1MyH3JIeQcVMV/vHi7lvW1/Iz6rD9cqXSrkmFIu
+ rr7y2GkI5BxfA8E5dH/cneHVY9rc0ycPVR/7yjqz7qAEoKjlz4c/CVrkyLlTzNUpkuXy
+ 1xbQZcbnHcqcMeAWd8t8Oda1bqcbCDMk13gAhDLS1QuNPop/flgPksigkjluYhAgVgOI
+ /ef+HnVDlLroE31salhXTKu6+GhfCd4BP+8XPyEK8db02VPAfyX0iV0rFHs0X6Cmap6N pw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gwry0jnk9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Jun 2022 22:54:36 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25TMflb9004850;
-        Wed, 29 Jun 2022 22:54:36 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2177.outbound.protection.outlook.com [104.47.55.177])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gwrt37q8m-1
+        Wed, 29 Jun 2022 22:54:27 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25TMeS2v031827;
+        Wed, 29 Jun 2022 22:54:19 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2174.outbound.protection.outlook.com [104.47.55.174])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gwrt3h9rp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Jun 2022 22:54:35 +0000
+        Wed, 29 Jun 2022 22:54:19 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F+PsQ+vf7uVzBMmUED9DjViimY9YR/GSc2/f0YcbyNqNKXrM/6gUD/nO6241AuCN+v6I0kujwBK2qp01/8To7mKyZCW3647PBncj+eKRfm+LJy/T6pZE6pG9DiYwE3bEBGfE20Uc1ELwk3zA//rhSFsd1Fb2k5VGZpkIc7nA3DdCbQONm504jZDf+XV1KThd/DPykcZqglwnG9AiNxG+Wyw0NTZlOxTRzHRRNe27N31qkNDPm1Axw0ynJ6k/v9rg5Y1nL9dPlFzCrzTkRWBc1SbuStTfmX+iUD1zhuibP/NTwCytZEB599zkmII4zLK63ktpqfuSUCUeMGC4/zy7/A==
+ b=EWpL9iTGpVXwMVZLNEWdxiJkfmlwO3Aqv6lkI6JK/zvXmIkjK/5aReCTg2StcLGemPZrpr74uyxy21wR+thO2sFNkAgvJBPg+vHJPKXXwXFg4EY+mA6Zgj1qGiqTrTmqqa0zBfaxKIh79VzZ25ro2r0NQwpYwjdpjlPiD5zhycpXH1Z1sEvwbz59OJRywq24DR++mNnZ3EmxW2Cc5v1lXA+g1DtdsPhOMvo6KcdCknyDr8RjRjbAu2UgJwPPuJxkci12IDAicVjB10rJv/GYqDiLyhd0lQK7SA5YPMWhgJf9Klp/RiSOpPOVqMWWVdY3v1sDYEHZc7L01BOUz954UA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i4VgjLtjq9jjVTPpB14Hukd5jRRaep/rnkhxQlDqB0E=;
- b=XY40N8WkBsBoTtgH0jQPk+Z7RG+YjkQPpVMCZZO36euuJIldATV8nfhqhaBWavmIv23RbMuCE6jymRFc58jo0AYgE8scibWT4TawnU4B4dVztlWhu7/omzGykz2VHEOZiS5thrT++TRziaSLSf2s74JjIX+AGlRFcXEpb20GX7DXAQ9zNZEug3skLzxbcSIDdFRlK9KEq3jRp49XT0+39fgrfiFxKUpYw1QAwNOH7xOJhUnPQ5aEK4U/AeJWWMcawLhUH15dMaFlQ0YUmVgvYC5EeTuGh0G/iIhUsP+5wtn3Uplp+DlHOseQkXvc/WbdlJWQa4mlqYFiv+c7sRnIHA==
+ bh=w05FYHNlKNrWph18aS5RLxPDQ90bMPDdwIo7huXc+tk=;
+ b=AXuLY4BxwSvxt1vrT2QLpuu+MLKSd8rsZ0Fet+98lWOGkYUXwMKoEfFPoNSRkcCcHnn6djCaowwjc6ZwhqQ2uVzUFrIx3TjrWGUF+ziy2bmBi0cs8Cwa7BZyL99aOgw6mLlf/U2Q2/Th2roW3X9g35ouS1pinbOsgQkub7oJL8h2Y3as153exWeSeUVpbtM76tC/UbfwtYZOVTS07gf6dt3s7LbPTkNM0ZffEZphaWxE5pNmHGtf9ueCacoAcRIiF8PPIP58XfmTYg1LQ9TK9qDNlJDDebzEtR/OFy09+lpK3ril6ijh807pGb8lcJpLqDzU5OMN3TtSfR1nuO8ENA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i4VgjLtjq9jjVTPpB14Hukd5jRRaep/rnkhxQlDqB0E=;
- b=YVZbgp20ZvlfSBKb039Kh0dksfNnPDHYGKuH95G/UL23fsY9gV/xfbYEehkMWeHkJ7AIhEbdUfSYUTZ1R28O/fhTQfjoE2Zm43yoxbtQ3H0XIS8IcczE3nqRE/S+3J6kMpbsrtDmYvxw/LeBdtG7oTf1ihGkKYlnHGu0bIus2SE=
+ bh=w05FYHNlKNrWph18aS5RLxPDQ90bMPDdwIo7huXc+tk=;
+ b=qL7sX2FnZEd9Vj1t3bqXVO3ghN+G4GbjYqu4r1y7Fvms9HicY7TsS2KD5Ze4SZIlnhZqkTQtuLnfcULxN2dIlssLJSz8TKq6yCszbxZ7FV2TUUfhQB4huomvaR/BCfigcckQKM4pdisyT4EUtI50xwVMrJ2bMHrCZxrtZxMVv5Y=
 Received: from BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
  by DM5PR10MB1834.namprd10.prod.outlook.com (2603:10b6:3:10b::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
- 2022 22:54:33 +0000
+ 2022 22:54:18 +0000
 Received: from BN8PR10MB3220.namprd10.prod.outlook.com
  ([fe80::28d2:e82b:afa1:bbc2]) by BN8PR10MB3220.namprd10.prod.outlook.com
  ([fe80::28d2:e82b:afa1:bbc2%3]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
- 22:54:33 +0000
+ 22:54:17 +0000
 From:   Khalid Aziz <khalid.aziz@oracle.com>
 To:     akpm@linux-foundation.org, willy@infradead.org
 Cc:     Khalid Aziz <khalid.aziz@oracle.com>, aneesh.kumar@linux.ibm.com,
@@ -75,9 +75,9 @@ Cc:     Khalid Aziz <khalid.aziz@oracle.com>, aneesh.kumar@linux.ibm.com,
         pcc@google.com, rppt@kernel.org, sieberf@amazon.com,
         sjpark@amazon.de, surenb@google.com, tst@schoebel-theuer.de,
         yzaikin@google.com
-Subject: [PATCH v2 8/9] mm/mshare: Add basic page table sharing support
-Date:   Wed, 29 Jun 2022 16:53:59 -0600
-Message-Id: <7b768f38ad8a8be3aa35ac1e6316e556b121e866.1656531090.git.khalid.aziz@oracle.com>
+Subject: [PATCH v2 1/9] mm: Add msharefs filesystem
+Date:   Wed, 29 Jun 2022 16:53:52 -0600
+Message-Id: <de5566e71e038d95342d00364c6760c7078cb091.1656531090.git.khalid.aziz@oracle.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1656531090.git.khalid.aziz@oracle.com>
 References: <cover.1656531090.git.khalid.aziz@oracle.com>
@@ -88,473 +88,237 @@ X-ClientProxiedBy: SN7P222CA0021.NAMP222.PROD.OUTLOOK.COM
  (2603:10b6:408:c8::18)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f0ab85f9-6383-4c8e-5878-08da5a22551b
+X-MS-Office365-Filtering-Correlation-Id: 9ae2a4b2-e0f2-4184-8652-08da5a224be5
 X-MS-TrafficTypeDiagnostic: DM5PR10MB1834:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VYsRLBHZv8qovgyO5Q+/7l9NsrXYn6P0W6akpKohUeLOlub8/pAjdSE0/F1x+tCfJBHcHZZDClfexzVfhRemZq70h4XVhBXu5j7eE4d7SajDbKDh8Qar6xe69DbA5H0/bT3pYReVrHOWhKHJIhyn/rISmNdzpctJAI6Og8xYHA7taQgj/N+6GPBqfIzXgd49we4rKwOzydzX4Tc82ZCZvxLKRa1uxbLPGhEKJoFrrYMk1uajuovKptb7HNGEBODV79ADcFyzn4FuttlFP5UUeUojsqDRrmcK/eOytseIIcoGNvC+9kRK3ml8TuhSO3tJAGALmaoE6QgkRWDqVR+QBKcvKbki4TYAwxYiUDLVHpUsuEreUtAZDbiCLbFPiNxo7ES1qyQItl2+Z6JEjGgB3CYyWf67jS29n7fca8AeeiAmaP0bMua1CZ8HYeun3y/YlDC1Prf4a3J0OZcgAXQ7UYNxMYBjrIslQrgkJVqispbSpV5slsVywq9Dn0PORfmgnnybDRaY04I1xnz4yQKtNmE1PzHnRZvbAwMMjT731jk+0/kgBESuQEcjWTYX33/MXt3jHI9giYEps48+6uHG7bQotdniebsaQdOC+fz4wxZZH8qff0K5byeDR7xX/Hxeq771CGMHlK02ykW6J4vKgEpuyj6dr86d+e8jt+450kyDQ406vjofl9adStegXaZ8QpNsyy6hnnRRFqfVzojZN6sYu5aP8O+DxHamaku2LaIZjRxds7azn++mhbA8CxFmUXCMSiJyMVykwKsxGZ8koLtSJwVlIhqdnR81OxbgGWI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(136003)(39860400002)(366004)(396003)(6666004)(52116002)(41300700001)(186003)(6506007)(8676002)(66556008)(2616005)(6512007)(66476007)(38100700002)(83380400001)(44832011)(7416002)(8936002)(316002)(30864003)(36756003)(2906002)(86362001)(66946007)(6486002)(5660300002)(478600001)(4326008)(21314003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: VxfIi/GrdJHnGL5Tdd9eQA6PNu0MHMk+Cl9HcA1H9MY0YJOoeZkQHJM1XJU/+VP+snIKaH7sH5NI8cZk4nfZB1c34ryLY1DRWzjV4Y0d/jQMr8aTqoorHaw5zFuv99RO1r4+iCugEiV1g/4wwCLwyFqQzGvGrLf6c5ybZQEyyOZEE0E0ok/cW5lNA3Z9c2mzd2GoazKOKvRmUUgjJ6G8RC8zvrcOy3OC55SmCY+o0OR5yAQXWFWGDamRJiQjYr6aPsHIot2YjN/Bfu2W/821Bcw3F3fDwuqhPUQHSO83cvbTXQGLHu1eBmrJzNQsnpsr4Rp1MIuZBCfFWEDfxUt1ivlNFzxRcJpKrLfGyGC8rdsPQZ6nZNC2M6OYAS45YGmcsRAbAdaKIMIrU/EEV9jbwSpDT1qiT5B7SwYbwPKpuNkdO+5luTV+8diRvbXiG5dJQg7odAJDk7RulkvWBetwNrxZ2TPDlCqppDb48w7by8QXkWDWZ1/a6VCf8EkinQAC9hrpNtV9+JryZesWfOa26u+Mfu52KIxjIPO1pST0+qGck2PeNP6WwuzivNhFTnF7ALjX4rI8iiKZafKxhTi1uEozsoSDbS04SKg/jyN9iP7uC/WU4nEHE1J9Nq4yjxmo0hHGSYgHFmDcYktNRvJiNytBTXvmiv523aXKSnrHPWZTUrsQAjHbpxDJ4xMuGZpMs8bIR/E1gLG9PSO8qVtNUHQhir2cpFQHSuvItNY+2yM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(136003)(39860400002)(366004)(396003)(6666004)(52116002)(41300700001)(186003)(6506007)(8676002)(66556008)(2616005)(6512007)(66476007)(38100700002)(83380400001)(44832011)(7416002)(8936002)(316002)(36756003)(2906002)(86362001)(66946007)(6486002)(5660300002)(478600001)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ug5KJhjdqaIqVtHaMKnCdbCMPqyqDvtZgE6IQshbGVJQJKvScdmOgK61xNbI?=
- =?us-ascii?Q?5ut++V9fiGhvqs9CwaXnh8x02b0nvc2FtaXzVKSQy8Xp22vgttUJsxsalDQ7?=
- =?us-ascii?Q?xm8XD62Mi9KV1etetCMx9KDwG7PhHoerGv6O26d+43/V0Eu6/ZFyAhQmg5t4?=
- =?us-ascii?Q?tN6+K6GvKokhYJxUf9mRCeNdQtflLJA/yN5AJK/wJ0aGnpDTbe38vdXvKiDv?=
- =?us-ascii?Q?uhpfcOlzNJzkEj49wtpC4hGHREXjZyQOowp5NplB/B6lU4SkVdS8If7iRVRN?=
- =?us-ascii?Q?kWbiwrkIv2tF+G6rRwHwgjbcvyQM1jSlrYqBo9N4Cb7Pb+rPsZE1i7MdJli+?=
- =?us-ascii?Q?dWmwifPufOx3/bTNd+smZqRBDsSXDkacyBIOtt2tRnGyFxytnNDjN+A1FBax?=
- =?us-ascii?Q?sAB5R8u4zLcGdBZii+XeDXptRkSWhE+nmbDBjpsD2ZUnzAdENeok/daKz/LF?=
- =?us-ascii?Q?cQTpBUavmqJg/O91swk1PJwk9s/5McQmzbWmd2XjEZdn+qDzokNyyDNuF/lU?=
- =?us-ascii?Q?twyQJZwF6eDtXGgm6CcKjgtZVfc8prXw53eHA3UbYilO42mmXIG/tXAoLnn6?=
- =?us-ascii?Q?fU1FgxZxLMXtxRhUX90wb2MKrt41YQF74gLCncJo/fj4hBSErfY49A8V8cDW?=
- =?us-ascii?Q?UQr+EYLsU17eQhbH2fwayWhTSh9+SIaqc0/5O7DAiE0tBfgMWjIzNsAfMAhj?=
- =?us-ascii?Q?AVgAn/O3esZqZ/8FkZtK/z/k4CwMMrpTIGAr0ReQbyrGXRXlJl4qew6NAAk4?=
- =?us-ascii?Q?fpz0qqLyHFFXJnSvJehIaavdof5GDrq32KxYRMUOPGoz0yfzP9iguCN9Rhhw?=
- =?us-ascii?Q?j3UaxUaVsoCLtlr9kzmLhje6mvhfbqZ20xo4dUGqhVu+O7vNv3JCQySN2bKC?=
- =?us-ascii?Q?UkhXBOcxmSrMqFXhge5RE/jkf9iCYJIFva8qlrdRqNYSEMBALnB7sPx6afAL?=
- =?us-ascii?Q?6+jKn1DlD2rLv6I5hJWcy+5p+EG/Zogsy9KEf0OUtwCLUcleoFN1f8ROvtoO?=
- =?us-ascii?Q?MpBLBEqXSiXyZp20PO80017QFaOvYOmtUmDE4mRCGKveV3FsWJ+demC5Co8/?=
- =?us-ascii?Q?Jsse5nR8ZCrynq11Lbh4d2KaiJ3+GT5/aQeP70Exkj0s6gsXt3GYSHTQN39p?=
- =?us-ascii?Q?tHTbwXgWYmukzfMrSC2kP8b5L9FPRuvL2NrHVy27ReGCIxo3d9Y6wKr//sba?=
- =?us-ascii?Q?b4ZsuImRYphGwn6BSqsyes75GzJEb4jn4KCK+IbSWqIa4dewm1lcgCpaq+51?=
- =?us-ascii?Q?ElD7RFRCLGTZvQ1qy4Nu9Q1f5fNe8NfKDNyrC+qanKVN5/FpRt0lORtGZcQX?=
- =?us-ascii?Q?vQejkMI0qFAlRDApT1vuoWAxI5XDIT3zTtHELGOzc9a1UEORI+2FFzSResDg?=
- =?us-ascii?Q?8wTWKVRK72Vh2ycoM5QJNtOiGesHf6frnwl9gxVKlXFcxnmskWcUcDvPCrLA?=
- =?us-ascii?Q?M+Q/bLbpfDCvKpXCXyGHfI1w+AQx8qJoAFb0etvpmTclmfBpse3DQaGQb9JT?=
- =?us-ascii?Q?Q4QE6GweGynouphlKbyRTQNFDa2mHIErctG/8Cf8e/bfH3YRR8BQmBiqT6qd?=
- =?us-ascii?Q?q2IbCMbesHpAP2WfxjynxLhlD8lkcIaU6Z3O5TVdE9RI8PAw7ENBE9QAiduW?=
- =?us-ascii?Q?zFI0oYuh1VLH3DJPW5poSr3wWlamHVdtZ22gmaHK5KDs9O/THukNRxcwa+7P?=
- =?us-ascii?Q?qCXBag=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XsklGQ1jNXpnPtWr9IIVIHKgLe8vjWVSaB6AnB+hl6BeRrTtwMo3x6z14/70?=
+ =?us-ascii?Q?ck/MTLXCsMqLuowarkgTd963Bj/3+DuhcLHxYyWDab+CkIbHydG8PxOQkLTC?=
+ =?us-ascii?Q?fBoWmEONmqgy8Byiv6etm1Do1lq0iGK5qdBHQh/bFnulT2ohxZMsh2sqPWzQ?=
+ =?us-ascii?Q?lbdQISQ/zdvlcT7gQiy/J0xMC1xBWsPF+QgzJxukRrauKm1TeSepmazdTkuk?=
+ =?us-ascii?Q?EgGezLs4qWzF2MfDmoMVFG5DEVV6fkYgcKeOpGCLUYyLahgrZ3QLgYTChdov?=
+ =?us-ascii?Q?FhEHetzJ/ztTKQiL796y5oLmuC9LD5Tjd+KtteD1OkCM9/2LLDq1gCt67Hnc?=
+ =?us-ascii?Q?mZtI+DHT751NvFV/PPR+6a9xDZEQ6Zgr9fwy2bTIZA4sA/2r+ujRQJYYAuqw?=
+ =?us-ascii?Q?ZP78RlmYAd13VrKfK8+B6Ujiloj92QqgwhsJCEqc9xZ+88nbWxgCRhOOL4Ez?=
+ =?us-ascii?Q?Rg7gepDgCwSdkBjPqeOcrCTR19B/t5B72eZVSjnuDFr/2UiB/cynYN8b4eg2?=
+ =?us-ascii?Q?Lh9eWsnGyI/3Bi2OPjPON/EsLrT81FJZzYQk4zgGj9wByot7nxclxbaB0kDG?=
+ =?us-ascii?Q?wraUvJlLCTzSeQ9dIzXxQkOK1kYANSeqbJ042goY0WE4IAwBod8RBsI4S9ua?=
+ =?us-ascii?Q?uOSlc0vU4qkgqV9q+ew/sgw2xrOKxgLEdYUdDhWvd+jeHPhbbl+ISqg+VXGK?=
+ =?us-ascii?Q?XXKekHwHIXtGybgSKT/j5oTPdyyxPRe2Etw8Tu6TSOwWtxbn4xQ4ArIk8C7N?=
+ =?us-ascii?Q?XapAxNwlu988iBqWwduFk66bEaMQVDO3RcWI+9qsMeNLMMNSk19rKAA8i5an?=
+ =?us-ascii?Q?mOae/ZJGipfwOcn38gzQrM431qYGkpLrVh0H7/+43+Y2szSxUzJb5UAgph6M?=
+ =?us-ascii?Q?nUVm2RYRk0o2/DmAoQPQnYl2WbLvKwBbqcuwgCAk1Lvhye7qEys/djSz01TY?=
+ =?us-ascii?Q?NPTS0GfI+M1sdvqhPMpp673/oGehBWY9e8kT9BX+WMLHyjpr8PyrBAZh2JOt?=
+ =?us-ascii?Q?rvld4FaTifCijASgCgvNNKOLtPivwSvk6Kpqsz/wuIKbJoEqauiZQYaccfr5?=
+ =?us-ascii?Q?g5rQqnilBkG6AqQGq6zDEFoDb7kWkNhnpI9izaGpXvBkz9UQ+14sPSxOVBJn?=
+ =?us-ascii?Q?UqR6ZKYGRVGAPGQHnvgstQx047NZdHs6iSSeIfmK0tBaQ9GK/eqKNytLLS4j?=
+ =?us-ascii?Q?gqKZelfrm32PclHxdREWuKhcU1HznyAFvTIDM3dK73GZ6J7eDVRLq+80+3Z9?=
+ =?us-ascii?Q?tuNmPntDVrD72NCJMNbKUHRk/DAlHI0ajfaNkkdaERLx65hcrYBtkGtuyFYC?=
+ =?us-ascii?Q?qGrLdheRj4VMUbmvHLEtkrj2cR4L2wBxgF6LLPm50BmIgVrplvFwgBDCsIdU?=
+ =?us-ascii?Q?emaQMNWzuTOlOob5Z16QZrPkqs/OxHjAwp2Vz3IbTSFEhtrL73cTr1M5QnnX?=
+ =?us-ascii?Q?NY6wJGxxR9pt2IFsVAnQhfKWApVD/6U9w5v/T5QIHIaFgbmQOvxO6iJZQI5o?=
+ =?us-ascii?Q?XOqm/4B/b9YvJ+CUdDpVmmWjYuIr/diwFEXVDUtqwGTvpkFTv3pPXIBJVPMp?=
+ =?us-ascii?Q?daG5nSie+wCL035Fbu6v5PW1DSRrT3f3ruL/+avf67iIqhJZbiU5vWCW33oC?=
+ =?us-ascii?Q?xBqzeIPpWGO+oerH5H5WGx/o0pfveBmNSMHATtKKMH6j?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0ab85f9-6383-4c8e-5878-08da5a22551b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ae2a4b2-e0f2-4184-8652-08da5a224be5
 X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3220.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 22:54:33.1933
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 22:54:17.7567
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PWEk1ENf/kmoVatfXz9xf0quCs1bl8xEiGRmvEpNcLemTosCRELptAEzxwxAIemjBMzPOwRN+Wsge1taFCpKlw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JWM58AzVeAoYEqqjkWEuLcfIu8AgbOtsDxTK4QvHDgINi/Fak1FnIudqrMPQrjgqrXuqFDJM/2PlqvJ2nr8lvQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1834
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
  definitions=2022-06-29_22:2022-06-28,2022-06-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 bulkscore=0
- phishscore=0 mlxlogscore=999 adultscore=0 mlxscore=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=999 spamscore=0 adultscore=0 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
  definitions=main-2206290078
-X-Proofpoint-GUID: R_b32MokIkcEaiBl6LgM0eyVQaxbj8W9
-X-Proofpoint-ORIG-GUID: R_b32MokIkcEaiBl6LgM0eyVQaxbj8W9
+X-Proofpoint-GUID: U_44Uyr39N6VLmhZKqP5bc78xPmdhb6r
+X-Proofpoint-ORIG-GUID: U_44Uyr39N6VLmhZKqP5bc78xPmdhb6r
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for creating a new set of shared page tables in a new
-mm_struct upon mmap of an mshare region. Add page fault handling in
-this now mshare'd region. Modify exit_mmap path to make sure page
-tables in the mshare'd regions are kept intact when a process using
-mshare'd region exits. Clean up mshare mm_struct when the mshare
-region is deleted. This support is for the process creating mshare
-region only. Subsequent patches will add support for other processes
-to be able to map the mshare region.
+Add a ram-based filesystem that contains page table sharing
+information and files that enables processes to share page tables.
+This patch adds the basic filesystem that can be mounted.
 
 Signed-off-by: Khalid Aziz <khalid.aziz@oracle.com>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/mm.h |   2 +
- mm/internal.h      |   2 +
- mm/memory.c        | 101 +++++++++++++++++++++++++++++-
- mm/mshare.c        | 149 ++++++++++++++++++++++++++++++++++++---------
- 4 files changed, 222 insertions(+), 32 deletions(-)
+ Documentation/filesystems/msharefs.rst |  19 +++++
+ include/uapi/linux/magic.h             |   1 +
+ mm/Makefile                            |   2 +-
+ mm/mshare.c                            | 103 +++++++++++++++++++++++++
+ 4 files changed, 124 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/filesystems/msharefs.rst
+ create mode 100644 mm/mshare.c
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 0ddc3057f73b..63887f06b37b 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1859,6 +1859,8 @@ void free_pgd_range(struct mmu_gather *tlb, unsigned long addr,
- 		unsigned long end, unsigned long floor, unsigned long ceiling);
- int
- copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma);
-+int
-+mshare_copy_ptes(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma);
- int follow_pte(struct mm_struct *mm, unsigned long address,
- 	       pte_t **ptepp, spinlock_t **ptlp);
- int follow_pfn(struct vm_area_struct *vma, unsigned long address,
-diff --git a/mm/internal.h b/mm/internal.h
-index 3f2790aea918..6ae7063ac10d 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -861,6 +861,8 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags);
+diff --git a/Documentation/filesystems/msharefs.rst b/Documentation/filesystems/msharefs.rst
+new file mode 100644
+index 000000000000..fd161f67045d
+--- /dev/null
++++ b/Documentation/filesystems/msharefs.rst
+@@ -0,0 +1,19 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=====================================================
++msharefs - a filesystem to support shared page tables
++=====================================================
++
++msharefs is a ram-based filesystem that allows multiple processes to
++share page table entries for shared pages.
++
++msharefs is typically mounted like this::
++
++	mount -t msharefs none /sys/fs/mshare
++
++When a process calls mshare syscall with a name for the shared address
++range, a file with the same name is created under msharefs with that
++name. This file can be opened by another process, if permissions
++allow, to query the addresses shared under this range. These files are
++removed by mshare_unlink syscall and can not be deleted directly.
++Hence these files are created as immutable files.
+diff --git a/include/uapi/linux/magic.h b/include/uapi/linux/magic.h
+index f724129c0425..2a57a6ec6f3e 100644
+--- a/include/uapi/linux/magic.h
++++ b/include/uapi/linux/magic.h
+@@ -105,5 +105,6 @@
+ #define Z3FOLD_MAGIC		0x33
+ #define PPC_CMM_MAGIC		0xc7571590
+ #define SECRETMEM_MAGIC		0x5345434d	/* "SECM" */
++#define MSHARE_MAGIC		0x4d534852	/* "MSHR" */
  
- DECLARE_PER_CPU(struct per_cpu_nodestat, boot_nodestats);
+ #endif /* __LINUX_MAGIC_H__ */
+diff --git a/mm/Makefile b/mm/Makefile
+index 6f9ffa968a1a..51a2ab9080d9 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -37,7 +37,7 @@ CFLAGS_init-mm.o += $(call cc-disable-warning, override-init)
+ CFLAGS_init-mm.o += $(call cc-disable-warning, initializer-overrides)
  
-+extern vm_fault_t find_shared_vma(struct vm_area_struct **vma,
-+					unsigned long *addrp);
- static inline bool vma_is_shared(const struct vm_area_struct *vma)
- {
- 	return vma->vm_flags & VM_SHARED_PT;
-diff --git a/mm/memory.c b/mm/memory.c
-index 7a089145cad4..2a8d5b8928f5 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -416,15 +416,20 @@ void free_pgtables(struct mmu_gather *tlb, struct vm_area_struct *vma,
- 		unlink_anon_vmas(vma);
- 		unlink_file_vma(vma);
- 
-+		/*
-+		 * There is no page table to be freed for vmas that
-+		 * are mapped in mshare regions
-+		 */
- 		if (is_vm_hugetlb_page(vma)) {
- 			hugetlb_free_pgd_range(tlb, addr, vma->vm_end,
- 				floor, next ? next->vm_start : ceiling);
--		} else {
-+		} else if (!vma_is_shared(vma)) {
- 			/*
- 			 * Optimization: gather nearby vmas into one call down
- 			 */
- 			while (next && next->vm_start <= vma->vm_end + PMD_SIZE
--			       && !is_vm_hugetlb_page(next)) {
-+			       && !is_vm_hugetlb_page(next)
-+			       && !vma_is_shared(next)) {
- 				vma = next;
- 				next = vma->vm_next;
- 				unlink_anon_vmas(vma);
-@@ -1260,6 +1265,54 @@ vma_needs_copy(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
- 	return false;
- }
- 
+ mmu-y			:= nommu.o
+-mmu-$(CONFIG_MMU)	:= highmem.o memory.o mincore.o \
++mmu-$(CONFIG_MMU)	:= highmem.o memory.o mincore.o mshare.o \
+ 			   mlock.o mmap.o mmu_gather.o mprotect.o mremap.o \
+ 			   msync.o page_vma_mapped.o pagewalk.o \
+ 			   pgtable-generic.o rmap.o vmalloc.o
+diff --git a/mm/mshare.c b/mm/mshare.c
+new file mode 100644
+index 000000000000..c8fab3869bab
+--- /dev/null
++++ b/mm/mshare.c
+@@ -0,0 +1,103 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Copy PTEs for mshare'd pages.
-+ * This code is based upon copy_page_range()
++ * Enable copperating processes to share page table between
++ * them to reduce the extra memory consumed by multiple copies
++ * of page tables.
++ *
++ * This code adds an in-memory filesystem - msharefs.
++ * msharefs is used to manage page table sharing
++ *
++ *
++ * Copyright (C) 2022 Oracle Corp. All rights reserved.
++ * Author:	Khalid Aziz <khalid.aziz@oracle.com>
++ *
 + */
-+int
-+mshare_copy_ptes(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
++
++#include <linux/fs.h>
++#include <linux/mount.h>
++#include <linux/syscalls.h>
++#include <linux/uaccess.h>
++#include <linux/pseudo_fs.h>
++#include <linux/fileattr.h>
++#include <uapi/linux/magic.h>
++#include <uapi/linux/limits.h>
++
++static struct super_block *msharefs_sb;
++
++static const struct file_operations msharefs_file_operations = {
++	.open	= simple_open,
++	.llseek	= no_llseek,
++};
++
++static int
++msharefs_d_hash(const struct dentry *dentry, struct qstr *qstr)
 +{
-+	pgd_t *src_pgd, *dst_pgd;
-+	unsigned long next;
-+	unsigned long addr = src_vma->vm_start;
-+	unsigned long end = src_vma->vm_end;
-+	struct mm_struct *dst_mm = dst_vma->vm_mm;
-+	struct mm_struct *src_mm = src_vma->vm_mm;
-+	struct mmu_notifier_range range;
++	unsigned long hash = init_name_hash(dentry);
++	const unsigned char *s = qstr->name;
++	unsigned int len = qstr->len;
++
++	while (len--)
++		hash = partial_name_hash(*s++, hash);
++	qstr->hash = end_name_hash(hash);
++	return 0;
++}
++
++static const struct dentry_operations msharefs_d_ops = {
++	.d_hash = msharefs_d_hash,
++};
++
++static int
++msharefs_fill_super(struct super_block *sb, struct fs_context *fc)
++{
++	static const struct tree_descr empty_descr = {""};
++	int err;
++
++	sb->s_d_op = &msharefs_d_ops;
++	err = simple_fill_super(sb, MSHARE_MAGIC, &empty_descr);
++	if (err)
++		return err;
++
++	msharefs_sb = sb;
++	return 0;
++}
++
++static int
++msharefs_get_tree(struct fs_context *fc)
++{
++	return get_tree_single(fc, msharefs_fill_super);
++}
++
++static const struct fs_context_operations msharefs_context_ops = {
++	.get_tree	= msharefs_get_tree,
++};
++
++static int
++mshare_init_fs_context(struct fs_context *fc)
++{
++	fc->ops = &msharefs_context_ops;
++	return 0;
++}
++
++static struct file_system_type mshare_fs = {
++	.name			= "msharefs",
++	.init_fs_context	= mshare_init_fs_context,
++	.kill_sb		= kill_litter_super,
++};
++
++static int
++mshare_init(void)
++{
 +	int ret = 0;
 +
-+	mmu_notifier_range_init(&range, MMU_NOTIFY_PROTECTION_PAGE,
-+				0, src_vma, src_mm, addr, end);
-+	mmu_notifier_invalidate_range_start(&range);
-+	/*
-+	 * Disabling preemption is not needed for the write side, as
-+	 * the read side doesn't spin, but goes to the mmap_lock.
-+	 *
-+	 * Use the raw variant of the seqcount_t write API to avoid
-+	 * lockdep complaining about preemptibility.
-+	 */
-+	mmap_assert_write_locked(src_mm);
-+	raw_write_seqcount_begin(&src_mm->write_protect_seq);
++	ret = sysfs_create_mount_point(fs_kobj, "mshare");
++	if (ret)
++		return ret;
 +
-+	dst_pgd = pgd_offset(dst_mm, addr);
-+	src_pgd = pgd_offset(src_mm, addr);
-+	do {
-+		next = pgd_addr_end(addr, end);
-+		if (pgd_none_or_clear_bad(src_pgd))
-+			continue;
-+		if (unlikely(copy_p4d_range(dst_vma, src_vma, dst_pgd, src_pgd,
-+					    addr, next))) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+	} while (dst_pgd++, src_pgd++, addr = next, addr != end);
-+
-+	raw_write_seqcount_end(&src_mm->write_protect_seq);
-+	mmu_notifier_invalidate_range_end(&range);
++	ret = register_filesystem(&mshare_fs);
++	if (ret)
++		sysfs_remove_mount_point(fs_kobj, "mshare");
 +
 +	return ret;
 +}
 +
- int
- copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
- {
-@@ -1628,6 +1681,13 @@ void unmap_page_range(struct mmu_gather *tlb,
- 	pgd_t *pgd;
- 	unsigned long next;
- 
-+	/*
-+	 * No need to unmap vmas that share page table through
-+	 * mshare region
-+	 */
-+	if (vma_is_shared(vma))
-+		return;
-+
- 	BUG_ON(addr >= end);
- 	tlb_start_vma(tlb, vma);
- 	pgd = pgd_offset(vma->vm_mm, addr);
-@@ -5113,6 +5173,8 @@ vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
- 			   unsigned int flags, struct pt_regs *regs)
- {
- 	vm_fault_t ret;
-+	bool shared = false;
-+	struct mm_struct *orig_mm;
- 
- 	__set_current_state(TASK_RUNNING);
- 
-@@ -5122,6 +5184,16 @@ vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
- 	/* do counter updates before entering really critical section. */
- 	check_sync_rss_stat(current);
- 
-+	orig_mm = vma->vm_mm;
-+	if (unlikely(vma_is_shared(vma))) {
-+		ret = find_shared_vma(&vma, &address);
-+		if (ret)
-+			return ret;
-+		if (!vma)
-+			return VM_FAULT_SIGSEGV;
-+		shared = true;
-+	}
-+
- 	if (!arch_vma_access_permitted(vma, flags & FAULT_FLAG_WRITE,
- 					    flags & FAULT_FLAG_INSTRUCTION,
- 					    flags & FAULT_FLAG_REMOTE))
-@@ -5139,6 +5211,31 @@ vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
- 	else
- 		ret = __handle_mm_fault(vma, address, flags);
- 
-+	/*
-+	 * Release the read lock on shared VMA's parent mm unless
-+	 * __handle_mm_fault released the lock already.
-+	 * __handle_mm_fault sets VM_FAULT_RETRY in return value if
-+	 * it released mmap lock. If lock was released, that implies
-+	 * the lock would have been released on task's original mm if
-+	 * this were not a shared PTE vma. To keep lock state consistent,
-+	 * make sure to release the lock on task's original mm
-+	 */
-+	if (shared) {
-+		int release_mmlock = 1;
-+
-+		if (!(ret & VM_FAULT_RETRY)) {
-+			mmap_read_unlock(vma->vm_mm);
-+			release_mmlock = 0;
-+		} else if ((flags & FAULT_FLAG_ALLOW_RETRY) &&
-+			(flags & FAULT_FLAG_RETRY_NOWAIT)) {
-+			mmap_read_unlock(vma->vm_mm);
-+			release_mmlock = 0;
-+		}
-+
-+		if (release_mmlock)
-+			mmap_read_unlock(orig_mm);
-+	}
-+
- 	if (flags & FAULT_FLAG_USER) {
- 		mem_cgroup_exit_user_fault();
- 		/*
-diff --git a/mm/mshare.c b/mm/mshare.c
-index 90ce0564a138..2ec0e56ffd69 100644
---- a/mm/mshare.c
-+++ b/mm/mshare.c
-@@ -15,7 +15,7 @@
-  */
- 
- #include <linux/fs.h>
--#include <linux/mount.h>
-+#include <linux/mm.h>
- #include <linux/syscalls.h>
- #include <linux/uaccess.h>
- #include <linux/pseudo_fs.h>
-@@ -24,6 +24,7 @@
- #include <uapi/linux/limits.h>
- #include <uapi/linux/mman.h>
- #include <linux/sched/mm.h>
-+#include <linux/mmu_context.h>
- 
- static struct super_block *msharefs_sb;
- struct mshare_data {
-@@ -33,6 +34,43 @@ struct mshare_data {
- 	struct mshare_info *minfo;
- };
- 
-+/* Returns holding the host mm's lock for read.  Caller must release. */
-+vm_fault_t
-+find_shared_vma(struct vm_area_struct **vmap, unsigned long *addrp)
-+{
-+	struct vm_area_struct *vma, *guest = *vmap;
-+	struct mshare_data *info = guest->vm_private_data;
-+	struct mm_struct *host_mm = info->mm;
-+	unsigned long host_addr;
-+	pgd_t *pgd, *guest_pgd;
-+
-+	mmap_read_lock(host_mm);
-+	host_addr = *addrp - guest->vm_start + host_mm->mmap_base;
-+	pgd = pgd_offset(host_mm, host_addr);
-+	guest_pgd = pgd_offset(guest->vm_mm, *addrp);
-+	if (!pgd_same(*guest_pgd, *pgd)) {
-+		set_pgd(guest_pgd, *pgd);
-+		mmap_read_unlock(host_mm);
-+		return VM_FAULT_NOPAGE;
-+	}
-+
-+	*addrp = host_addr;
-+	vma = find_vma(host_mm, host_addr);
-+
-+	/* XXX: expand stack? */
-+	if (vma && vma->vm_start > host_addr)
-+		vma = NULL;
-+
-+	*vmap = vma;
-+
-+	/*
-+	 * release host mm lock unless a matching vma is found
-+	 */
-+	if (!vma)
-+		mmap_read_unlock(host_mm);
-+	return 0;
-+}
-+
- static const struct inode_operations msharefs_dir_inode_ops;
- static const struct inode_operations msharefs_file_inode_ops;
- 
-@@ -64,6 +102,14 @@ msharefs_read(struct kiocb *iocb, struct iov_iter *iov)
- 	return ret;
- }
- 
-+static void
-+msharefs_delmm(struct mshare_data *info)
-+{
-+	mmput(info->mm);
-+	kfree(info->minfo);
-+	kfree(info);
-+}
-+
- static void
- msharefs_close(struct vm_area_struct *vma)
- {
-@@ -73,9 +119,7 @@ msharefs_close(struct vm_area_struct *vma)
- 		mmap_read_lock(info->mm);
- 		if (info->deleted) {
- 			mmap_read_unlock(info->mm);
--			mmput(info->mm);
--			kfree(info->minfo);
--			kfree(info);
-+			msharefs_delmm(info);
- 		} else {
- 			mmap_read_unlock(info->mm);
- 		}
-@@ -90,31 +134,80 @@ static int
- msharefs_mmap(struct file *file, struct vm_area_struct *vma)
- {
- 	struct mshare_data *info = file->private_data;
--	struct mm_struct *mm = info->mm;
-+	struct mm_struct *new_mm = info->mm;
-+	int err = 0;
- 
--	mmap_write_lock(mm);
-+	mmap_write_lock(new_mm);
- 	/*
--	 * If this mshare region has been set up once already, bail out
-+	 * If this mshare region has not been set up, set up the
-+	 * applicable address range for the region and prepare for
-+	 * page table sharing
- 	 */
--	if (mm->mmap_base != 0)
-+	if (new_mm->mmap_base != 0) {
- 		return -EINVAL;
-+	} else {
-+		struct mm_struct *old_mm;
-+		struct vm_area_struct *new_vma;
-+
-+		if ((vma->vm_start | vma->vm_end) & (PGDIR_SIZE - 1))
-+			return -EINVAL;
-+
-+		old_mm = current->mm;
-+		mmap_assert_write_locked(old_mm);
-+		new_mm->mmap_base = vma->vm_start;
-+		new_mm->task_size = vma->vm_end - vma->vm_start;
-+		if (!new_mm->task_size)
-+			new_mm->task_size--;
-+		info->minfo->start = new_mm->mmap_base;
-+		info->minfo->size = new_mm->task_size;
-+		info->deleted = 0;
-+		refcount_inc(&info->refcnt);
-+
-+		/*
-+		 * Mark current VMA as shared and copy over to mshare
-+		 * mm_struct
-+		 */
-+		vma->vm_private_data = info;
-+		new_vma = vm_area_dup(vma);
-+		if (!new_vma) {
-+			vma->vm_private_data = NULL;
-+			mmap_write_unlock(new_mm);
-+			err = -ENOMEM;
-+			goto err_out;
-+		}
-+		vma->vm_flags |= (VM_SHARED_PT|VM_SHARED);
-+		vma->vm_ops = &msharefs_vm_ops;
-+
-+		/*
-+		 * Newly created mshare mapping is anonymous mapping
-+		 */
-+		new_vma->vm_mm = new_mm;
-+		vma_set_anonymous(new_vma);
-+		new_vma->vm_file = NULL;
-+		new_vma->vm_flags &= ~VM_SHARED;
-+
-+		/*
-+		 * Do not use THP for mshare region
-+		 */
-+		new_vma->vm_flags |= VM_NOHUGEPAGE;
-+		err = insert_vm_struct(new_mm, new_vma);
-+		if (err) {
-+			mmap_write_unlock(new_mm);
-+			err = -ENOMEM;
-+			goto err_out;
-+		}
- 
--	if ((vma->vm_start | vma->vm_end) & (PGDIR_SIZE - 1))
--		return -EINVAL;
-+		/*
-+		 * Copy over current PTEs
-+		 */
-+		err = mshare_copy_ptes(new_vma, vma);
-+	}
- 
--	mm->mmap_base = vma->vm_start;
--	mm->task_size = vma->vm_end - vma->vm_start;
--	if (!mm->task_size)
--		mm->task_size--;
--	mmap_write_unlock(mm);
--	info->minfo->start = mm->mmap_base;
--	info->minfo->size = mm->task_size;
--	info->deleted = 0;
--	refcount_inc(&info->refcnt);
--	vma->vm_flags |= VM_SHARED_PT;
--	vma->vm_private_data = info;
--	vma->vm_ops = &msharefs_vm_ops;
--	return 0;
-+	mmap_write_unlock(new_mm);
-+	return err;
-+
-+err_out:
-+	return err;
- }
- 
- static const struct file_operations msharefs_file_operations = {
-@@ -291,14 +384,10 @@ msharefs_unlink(struct inode *dir, struct dentry *dentry)
- 	mmap_write_unlock(info->mm);
- 
- 	/*
--	 * Is this the last reference? If so, delete mshare region and
--	 * remove the file
-+	 * Is this the last reference? If so, delete mshare region
- 	 */
--	if (!refcount_dec_and_test(&info->refcnt)) {
--		mmput(info->mm);
--		kfree(info->minfo);
--		kfree(info);
--	}
-+	if (refcount_dec_and_test(&info->refcnt))
-+		msharefs_delmm(info);
- 	return 0;
- }
- 
++fs_initcall(mshare_init);
 -- 
 2.32.0
 
