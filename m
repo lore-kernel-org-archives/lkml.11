@@ -2,77 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B81C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 02:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CAACCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 02:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231244AbiF2CKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 22:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        id S229664AbiF2CKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 22:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231145AbiF2CJ6 (ORCPT
+        with ESMTP id S231189AbiF2CKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 22:09:58 -0400
-Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D490A2EA21;
-        Tue, 28 Jun 2022 19:09:56 -0700 (PDT)
-Received: by mail-il1-f177.google.com with SMTP id a16so9378431ilr.6;
-        Tue, 28 Jun 2022 19:09:56 -0700 (PDT)
+        Tue, 28 Jun 2022 22:10:01 -0400
+Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E883205E;
+        Tue, 28 Jun 2022 19:09:59 -0700 (PDT)
+Received: by mail-il1-f171.google.com with SMTP id f15so8912563ilj.11;
+        Tue, 28 Jun 2022 19:09:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=+E+IwrlF8yVm8FNfRDWHfRgRNf789XE4MP3pOdLVg04=;
-        b=gQXe4CFY2nT0W0nEh8W8yEUFHDYwMLoVpa0B5Il9W/+t9vq9mPKVd1qtHE2mfP8MXE
-         VH+ffus6s0aMxUEekFY0igYBwxUzaYDSca9PH8WU2FyBQDjpdYRTzwZAcV98WSBDr5/2
-         0NgjVkCE6eGHSRZNDpWsXuALco4goIF4XHqljUkH/ERvQLgh6GxaKvvdlASM1Da7WarL
-         L7QFCHIKeLWE9goLEdWnnMlYf5nxcN5j+fV+0IHf1w2QwL8zrCbgJ8dSd9HLOUoMugcT
-         BMF3gzfLePuu69kJ4phW2oue+b3AuijqpTX8QGC1VMM3IIP4CEWfuBDxEiZ0/qiQXPwr
-         Cs9w==
-X-Gm-Message-State: AJIora+SbXrBJNev0T2Y4BOw7ZKmVPTETSXVeupBDY2/XJCWfn6UNGXF
-        A20oAXD3GN4KxS3+DLSOfQ==
-X-Google-Smtp-Source: AGRyM1vOfFiGO+DjQDQmIuMMu0i0Dd2Uu/SlNrumhi5j6JrS/pttau9aR1iYNwMFpZXBciwfjZR7Kw==
-X-Received: by 2002:a05:6e02:198e:b0:2d9:5a65:6ce1 with SMTP id g14-20020a056e02198e00b002d95a656ce1mr645556ilf.50.1656468595932;
-        Tue, 28 Jun 2022 19:09:55 -0700 (PDT)
+        bh=y+RTC0AjihlAiwWDvXzA47g2ErYV5HcVBpXJ4IiEfIU=;
+        b=qS+RBMGamTv2DLz/8uGD4vDJf6vx70fbgdzwAyt9VzzsCtwVj4mb1p+mc6iGusPBTH
+         V0uNIm3q02flh/KKjnMV3w6PKKwED2GJd2+YAHeFBjXqVoSjgJQa0p0IfhJS9Sq85ElX
+         XbQDMRblLMJMPz+sPj0SRHGawQqn+wCO8Iu1rFYcbYBBSL7wZoHZvRkDw3bASG7xcogo
+         rYBJyG79sUffIu5KlooFgLw5dXnb3ki5Zh5lp1lUYN83fsJ5aFQd7W/3SwPE1cE5uB3c
+         e2c5vfiMwFMwa3N3X4EvVEOTIFE8cZ4HnSwjysiUko3Q4xxLsYuPLkign2VOTPpbapm0
+         bsNQ==
+X-Gm-Message-State: AJIora/htHalyA2kewY/pQQYXGQdeAGmVXOjr4fgmZn7ZvsLDQelH9bK
+        2gCi3QmrKdjYHFgEfBfk+g==
+X-Google-Smtp-Source: AGRyM1uJFlnkUhRF4s/C169vokrsoZHMo0DUNb/hlCfpx9DWEDCPyVvbgorEGVHVkbMSerE3Kh7alg==
+X-Received: by 2002:a05:6e02:20c9:b0:2d9:4742:9411 with SMTP id 9-20020a056e0220c900b002d947429411mr622645ilq.302.1656468599198;
+        Tue, 28 Jun 2022 19:09:59 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id z19-20020a05663822b300b00331f1f828adsm6789737jas.16.2022.06.28.19.09.54
+        by smtp.gmail.com with ESMTPSA id u13-20020a5d870d000000b00669ceb1d521sm7348686iom.10.2022.06.28.19.09.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 19:09:55 -0700 (PDT)
-Received: (nullmailer pid 1403674 invoked by uid 1000);
+        Tue, 28 Jun 2022 19:09:58 -0700 (PDT)
+Received: (nullmailer pid 1403686 invoked by uid 1000);
         Wed, 29 Jun 2022 02:09:39 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-arm-msm@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        netdev@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220628184137.21678-2-ansuelsmth@gmail.com>
-References: <20220628184137.21678-1-ansuelsmth@gmail.com> <20220628184137.21678-2-ansuelsmth@gmail.com>
-Subject: Re: [PATCH v3 1/4] dt-bindings: clock: Convert qcom,krait-cc to yaml
+        devicetree@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>
+In-Reply-To: <20220628221404.1444200-3-sean.anderson@seco.com>
+References: <20220628221404.1444200-1-sean.anderson@seco.com> <20220628221404.1444200-3-sean.anderson@seco.com>
+Subject: Re: [PATCH net-next v2 02/35] dt-bindings: net: Convert FMan MAC bindings to yaml
 Date:   Tue, 28 Jun 2022 20:09:39 -0600
-Message-Id: <1656468579.892280.1403673.nullmailer@robh.at.kernel.org>
+Message-Id: <1656468579.946817.1403685.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 20:41:34 +0200, Christian Marangi wrote:
-> Convert qcom,krait-cc to yaml Documentation.
+On Tue, 28 Jun 2022 18:13:31 -0400, Sean Anderson wrote:
+> This converts the MAC portion of the FMan MAC bindings to yaml.
 > 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> Acked-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 > ---
->  .../bindings/clock/qcom,krait-cc.txt          | 34 -----------
->  .../bindings/clock/qcom,krait-cc.yaml         | 59 +++++++++++++++++++
->  2 files changed, 59 insertions(+), 34 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+> 
+> Changes in v2:
+> - New
+> 
+>  .../bindings/net/fsl,fman-dtsec.yaml          | 144 ++++++++++++++++++
+>  .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
+>  2 files changed, 145 insertions(+), 127 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
