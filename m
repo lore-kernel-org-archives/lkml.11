@@ -2,159 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 126BFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0DCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233450AbiF2OKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
+        id S233918AbiF2OKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232781AbiF2OKF (ORCPT
+        with ESMTP id S233882AbiF2OKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:10:05 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2116.outbound.protection.outlook.com [40.107.20.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E36C2E9CC;
-        Wed, 29 Jun 2022 07:10:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fnAAl2BVOD1s6vPj7zMgcbi8WQyeSDyv0CpdYhMtF23u+GtPqXfEb3+cQsyVuKhVrowlhFxL46K7+c5iCTYEvqHWdpVKeSSv8hoE4j0rDfDtpCR1daeb1YwiyOuP7uWRCULbRLPZf1MK6wEJZ7V2GaD2BTONP9cvk6w8e2zOwVm+GFHJxmC4AQS4VjkR6KJkbVCJiBWz2MJSyadr136uzpePB5flvfOmd5BmGl0KfjlunPxERqBCbqQPxq56xDxU5aG6Bv9uryHgpKygHyn7KrKHTGYpmNS3JUT9tcKcgXYY73CIG0YyYjaG7WL/IY0z0hLEjXbwJDlvTfdoq94yfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bHThc8eVEe0TpomFXLLQwZkZNXRCrg2OI+ZNzrsyLuc=;
- b=gc3CM53zahj9iR0k+4khs6suHBebwayT1tfdXGBkmJTP7C6GZxlDFpG2HztMhXFH6qRDhV8916srYyqzyK+J5JPtWMfJpxSHPifnVvmJfdcft4aoPzt9TbwQL0gr5D/YpIHU7XC0HbS74QTFXwWKlHLjBm4m/p15FZTI2hlYy443GlqIHppCZAG4qT17kaU34Wbq30bNqeUNQkslwnz5YeXfZjPFy9+QJL8rjN5zaiFIfSAvJm7cS1SFK49Gt1+DZTKTqh1cI+uDlD+g+o7qZs1iLXUGsuLB6Bf5RqSGotwRjNEAw70BX7YnKEZjps2tsXWITi2IUtJolJX2Y35VzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bHThc8eVEe0TpomFXLLQwZkZNXRCrg2OI+ZNzrsyLuc=;
- b=yPXnWaXq+4JVqJktk58hFyYMM7y/Y4rg6X1ksFKGtkOrs2oCGwQEuoSeE3DnGIRbWaXk+zM6lx7Y6XU46FIMOTs1t2VaIemmdEx2LJLerjZsW4vGbKdrkt7lfTA6Lntj01smLIwj5KfYZnqEdPu+wY7PwhewpTFghTlBrt+EY2A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nokia.com;
-Received: from DU2PR07MB8110.eurprd07.prod.outlook.com (2603:10a6:10:239::15)
- by AM5PR0701MB2913.eurprd07.prod.outlook.com (2603:10a6:203:43::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
- 2022 14:10:00 +0000
-Received: from DU2PR07MB8110.eurprd07.prod.outlook.com
- ([fe80::8885:ac49:4a47:2293]) by DU2PR07MB8110.eurprd07.prod.outlook.com
- ([fe80::8885:ac49:4a47:2293%9]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
- 14:10:00 +0000
-Message-ID: <6cf9647e-10dd-8523-962d-a7c40b532fe2@nokia.com>
-Date:   Wed, 29 Jun 2022 16:09:55 +0200
+        Wed, 29 Jun 2022 10:10:08 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250942CE13
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 07:10:07 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B5BAA1F927;
+        Wed, 29 Jun 2022 14:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656511805; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SKb3qQs7axuf7v6bLmTJKcj9bTFBrGGLvM5cZkiAZxo=;
+        b=TjC5VTtis4QEO4FRYj+PKvphz69NIKvetmKIm8BwgSWqI7OmA2ImJdGpQ9VJ2AaSijPpMq
+        GKgaVygxvU0c5fh3xSMPAulF5LxFwrK74uMASC0CEK1ACiQUikdZ9R2ILogTrJVcBlJFM/
+        +cWGlyQAaRN+Wrewd3EshkXTR5P1pfE=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6BE89133D1;
+        Wed, 29 Jun 2022 14:10:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 6VbqGD1dvGKqAgAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 29 Jun 2022 14:10:05 +0000
+Message-ID: <2592493b-4339-3e54-8acf-585dcf90be96@suse.com>
+Date:   Wed, 29 Jun 2022 16:10:04 +0200
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2 03/10] i2c: xiic: Switch to Xiic standard mode for
- i2c-read
 Content-Language: en-US
-To:     Marek Vasut <marex@denx.de>,
-        Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
-        linux-i2c@vger.kernel.org, michal.simek@xilinx.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, joe@perches.com
-References: <20210626102806.15402-1-raviteja.narayanam@xilinx.com>
- <20210626102806.15402-4-raviteja.narayanam@xilinx.com>
- <ad7626bd-bcbb-48fc-5e32-bc95fafcb917@nokia.com>
- <80c524c3-8c31-346d-2691-48f93fa6001f@denx.de>
-From:   Krzysztof Adamski <krzysztof.adamski@nokia.com>
-In-Reply-To: <80c524c3-8c31-346d-2691-48f93fa6001f@denx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: HE1PR05CA0241.eurprd05.prod.outlook.com
- (2603:10a6:3:fb::17) To DU2PR07MB8110.eurprd07.prod.outlook.com
- (2603:10a6:10:239::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ab7fe03b-9a7a-4643-7e62-08da59d90d6e
-X-MS-TrafficTypeDiagnostic: AM5PR0701MB2913:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JRs0bVDWUvKL68XaoocjfXAZ/xlCxQ6c79Xhdyn/TuRmSRiZhoelgrxGF/7vZMnbhTnJpz4R89ee1B72GeGid510/R3HyBzTL7eHZHjFL+D+6VRl2wXUHqn+pMeM0u2c4UBGJNwLXXqwyksB99KPDDgE5sq7TSrKPur97MEqlbmZ5kjkLAegY3LXKSnYO6vRIFouyAzwuvpBpBOmbUGT/4ZpYLE8DP5RpfjZE3A1YFJAfh5Jcg9mZsK04SNPHCVL4EE1yvX8PICjdSYsLq+qtcZ6rxDZ51OJBJSb4ZoTLSaw8aLTj6EEXCt8IgkBBkq3TyHe6lL/WYg5wvkiVft9ugsQN7rOpGx1haPlzzID80wJRdh3Es1JqUuile/igblYG9tpWvzeus6PyDIrjphuJ57EZk4vUnRv8DKjGaUX2urCd07qj3p/DTsuo+F+vyfi771sIxjwyelQ0IZ8eJZBKM+/7FhBOG3J9SpyjPf4ugXGyv44mGpSU0+UJ6O9kFrXYzAFHSyEgW0nbG5+g3mnskHgRjT0KToo35IkhcydMQvrKEvN8NKk1558vS1rALz+NRx8+sIQD1vmmE9SEGGoTKYBaeXW0HbQ1+wwF7RYJ9lNCbT2Syd5RwwgQivLflyUTrNYjOF7LezPL539wIAcWEKgX+4OYhI+SEQy1Dd0IfkKGcAchpei2FoZSj7/v1fmA+fmDOMZL29tMfxbIn2PhkbMmn+e9jeiHq0oFAlYvOCREPuudmEdF4/A3zqSPss3GN701wpkMhUx69/1TFJqm2QinMJblmzmQk9AWYypHQBssDi20C3f9S6NggsmzIq/X52sttoTnxfgQNw9sNn8Kg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR07MB8110.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(366004)(39860400002)(346002)(396003)(186003)(36756003)(31696002)(83380400001)(82960400001)(6506007)(38100700002)(6666004)(41300700001)(2906002)(6512007)(26005)(110136005)(478600001)(66556008)(8676002)(316002)(6486002)(2616005)(66946007)(4326008)(44832011)(66476007)(5660300002)(8936002)(31686004)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?STdWUFZyWVBqQmFZTzM4eXZyeVF3MUZtNWdGbjQ3T3ExTnNGOEdhd0pydFpP?=
- =?utf-8?B?dVdYclgwZ2hQeHBuMmprS1g5NzVsajFEc3BKMm1nUFpYaHZ2YkJzcWJtdEh6?=
- =?utf-8?B?M1pxT2gzMkxkZHl4Z0tTb0xsZUVEREZEVDZIMng1R3JORTVjdEFFS201TTRI?=
- =?utf-8?B?RDhJWW1rK2J3NW1kV3g3Vm1Jem9uYmRCeFN5MzhrZ2lTbmJtaGhxR0ZnUllF?=
- =?utf-8?B?MnkvYVRDY1ZveW1yQVJvR0I5TzhyWERLZEt2UVhWSWZCQXYxWHlOSXk2bXIy?=
- =?utf-8?B?YzhoMElNcnhxbGRMbk5NZngxTm1nSW9XNlpmU2JySmZydEU4aUU0NUNQeDlX?=
- =?utf-8?B?MnRqaUFwMGJ4eFN2T3BFMVdGczV2K1diWHBwUUJERnlnYjdzY0hlWFhwVXhG?=
- =?utf-8?B?anNoTWJsNkovSzJvUmJRTVRVbFNJeWFEZkFnTFlKZmE0R0JZTG03TFAzNXFr?=
- =?utf-8?B?blB0SmQrNFVUL3o3b1lPMWhOQTNjd0g5WEYyaE1xbEhmRE9Od1BBNU83TDlr?=
- =?utf-8?B?TXRZWmhNSzlYN3RhdWFDck9xU0FwT1FtdEdTalpjNHRIbldibTRFcVEvcEM3?=
- =?utf-8?B?Y1lEQ3NCbWlrVU55a0hwOHRQR2NpQ09KNlNMSWFvVGRXbndubG83OE1FQjNL?=
- =?utf-8?B?K1JNd3E0QklTbmd6WUdLRXFiTDJHSFBCNzgzTC9ONlZlNVdjRExjWTF0V01w?=
- =?utf-8?B?TW5ZMmNkS2wwVzdiUHNuZ0ZkNklYL3FkallrakxNZUR3d3AwNkJ1YmFsOHRo?=
- =?utf-8?B?ODdmN21XdXFQUG9TanFwdDhNczRhK0hKWElDby9CMnQrUjFzNmRWcDBOSEo2?=
- =?utf-8?B?QjBxTklGMXJwZFlVR0ZtVFlBS2NWVHFZemM2YmlYYk1wTjRHOU9EcldYNU1V?=
- =?utf-8?B?cmVsOUpNSG44RVJqWGN6K0sraDRmMlY0QnlxTkpvNDRhQ0NGZkQyMUNQMHZK?=
- =?utf-8?B?WWtpRjA5U2szU2tDSHRBYUJCWkNISlZseSsrRnZMTlU1YmE4bGlMM20zdXJz?=
- =?utf-8?B?aUx6QmdFK0VWd0pVMmRxaU9pU0xyWlQ2SThlR0NXTk0zclZYQlhibnJuWWcz?=
- =?utf-8?B?dytCYWJTdkZHdDFnYjFWdEJVdjN2WTJIQWV1K1RlZ1JiZzVGdlRJN2pCTFdY?=
- =?utf-8?B?cFpReFB4SUsvVWdIQnFuOXhFR2NpTFZkZllBVGg3Mmo1bnpLK0FkRDNrakV3?=
- =?utf-8?B?WDVaYnNkQkNmQVZIeVVlRTkzY1NaSzN6TGVHMTA3SWg1TkREYzFVOHFQeEs2?=
- =?utf-8?B?MVJPbVhLU3ZFRC9GZG9NNTV5WWtvdTFrRkt5QlJzL0E2d0RHdm1kRHpDOFRP?=
- =?utf-8?B?TmUydHhaajFOUVk4WjF4bE1jSW1QUFBRV3ZtSjBNV3hKVWlaV2VHYUVVQnlz?=
- =?utf-8?B?cEVFTGw0Vlk0amtDdjlkcVhQeENZOWV0MlZ1SzBuYll0V1JxZTc4RjdZVlBD?=
- =?utf-8?B?K3o1c2RqVms4bnE5L21RMDZ6cGc0OENqMUMrYXkzRGhOQVRna2hsNFN1YUEv?=
- =?utf-8?B?Vm82S3hqblJxOVdKMFhpNFFYbk5yYUV1YlNLYVVOQnJmTzJoOG85RXE2bUhw?=
- =?utf-8?B?OVRBNTgwaElrbTJEWENGVkdkK1pIa0tLdnl0NW81WEZIblN3ajhYb3RSM2lY?=
- =?utf-8?B?L2lGT21iTWh5U2pvZUpxNHlMVXVvZUFuNVFUMFh0cU5HdFpRb2wvWVNKMlFk?=
- =?utf-8?B?MmoyOER6YzJwWXk0dkNlaGd6TmdSVk5oRlNYV00yS2pZZGEzOStoMHRRdTUx?=
- =?utf-8?B?UFRKNG00MVkzSHJhQ0YzeWdMZ09PaHdiS2xsVHVVMndjcVJkTFRrTUZKY2tJ?=
- =?utf-8?B?YmIzZ0J2OEhtenJ0UnkzbnZ3R3U5NmxNYldGU1NQbXQyb2M1NGx3RDlwbkdW?=
- =?utf-8?B?YU01em1jbHBzU3RkK09MSE1aaW9TRStxWktjeG1pa2taMFlQQkJQcVV1czho?=
- =?utf-8?B?UTFwNW5rWkhzMTNjS0ZZOVFPS3RtbWpCVHZwTWZCeUU3b2MvOVJ2MkFudTZm?=
- =?utf-8?B?QXZpU1FnNDRUOVR3VGR4RnJ4dVROWDZ6UFBvMUo1WXY0TlVtN0FCc1BRN3Jj?=
- =?utf-8?B?RHlPSTJmZ0V5T052ZjlkdTYvQXhmQzNndlBUV09EOUcxM3pXZjNsYlNwdmFM?=
- =?utf-8?B?bk92S3JNekg5aEhXU1FiS1h2MjBORk9SZjNvY0VnMmkxazFxUWxCRDVDK3Jt?=
- =?utf-8?B?Vnc9PQ==?=
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ab7fe03b-9a7a-4643-7e62-08da59d90d6e
-X-MS-Exchange-CrossTenant-AuthSource: DU2PR07MB8110.eurprd07.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 14:10:00.7292
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1DbxuHqZkHPSpLVnWU+yAXgP+p3ygkia0bRjShIM3gg0ldWDxGp2TV0xLN7YbPpSRpX/MWTZs1efgzJ4Kfvbl7HRoeclO+QrfhNulsWcVsQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0701MB2913
+To:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        regressions@lists.linux.dev
+References: <20220623094608.7294-1-jgross@suse.com>
+From:   Juergen Gross <jgross@suse.com>
+Subject: Re: [PATCH v2 0/3] x86: fix brk area initialization
+In-Reply-To: <20220623094608.7294-1-jgross@suse.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------uGZghzY610stt0wl6fX7JZ6R"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marek,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------uGZghzY610stt0wl6fX7JZ6R
+Content-Type: multipart/mixed; boundary="------------p9mC49YkD27kudZypFeCdkWn";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: xen-devel@lists.xenproject.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "H. Peter Anvin" <hpa@zytor.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>, regressions@lists.linux.dev
+Message-ID: <2592493b-4339-3e54-8acf-585dcf90be96@suse.com>
+Subject: Re: [PATCH v2 0/3] x86: fix brk area initialization
+References: <20220623094608.7294-1-jgross@suse.com>
+In-Reply-To: <20220623094608.7294-1-jgross@suse.com>
 
-W dniu 29.06.2022 o 16:05, Marek Vasut pisze:
->> [...]
->>
->> If those two modes only differ in software complexity but we are not
->> able to support only the simpler one and we have support for the more
->> complicated (standard mode) anyways, we know that standard mode
->> can handle or the cases while dynamic mode cannot, we also know that
->> dynamic mode is broken on some versions of the core, why do we actually
->> keep support for dynamic mode?
->
-> If I recall it right, the dynamic mode was supposed to handle 
-> transfers longer than 255 Bytes, which the core cannot do in Standard 
-> mode. It is needed e.g. by Atmel MXT touch controller. I spent a lot 
-> of time debugging the race conditions in the XIIC, which I ultimately 
-> fixed (the patches are upstream), but the long transfers I rather 
-> fixed in the MXT driver instead.
->
-> I also recall there was supposed to be some update for the XIIC core 
-> coming with newer vivado, but I might be wrong about that.
+--------------p9mC49YkD27kudZypFeCdkWn
+Content-Type: multipart/mixed; boundary="------------UzDDFnJxJu0cFBGkSu0hNa40"
 
-It seems to be the other way around - dynamic mode is limited to 255 
-bytes - when you trigger dynamic mode you first write the address of the 
-slave to the FIFO, then you write the length as one byte so you can't 
-request more than 255 bytes. So *standard* mode is used for those 
-messages. In other words - dynamic mode is the one that is more limited 
-- everything that you can do in dynamic mode you can also do in standard 
-mode. So why don't we use standard mode always for everything?
+--------------UzDDFnJxJu0cFBGkSu0hNa40
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Krzysztof
+T24gMjMuMDYuMjIgMTE6NDYsIEp1ZXJnZW4gR3Jvc3Mgd3JvdGU6DQo+IFRoZSBicmsgYXJl
+YSBuZWVkcyB0byBiZSB6ZXJvZWQgaW5pdGlhbGx5LCBsaWtlIHRoZSAuYnNzIHNlY3Rpb24u
+DQo+IEF0IHRoZSBzYW1lIHRpbWUgaXRzIG1lbW9yeSBzaG91bGQgYmUgY292ZXJlZCBieSB0
+aGUgRUxGIHByb2dyYW0NCj4gaGVhZGVycy4NCj4gDQo+IEp1ZXJnZW4gR3Jvc3MgKDMpOg0K
+PiAgICB4ODYveGVuOiB1c2UgY2xlYXJfYnNzKCkgZm9yIFhlbiBQViBndWVzdHMNCj4gICAg
+eDg2OiBmaXggc2V0dXAgb2YgYnJrIGFyZWENCj4gICAgeDg2OiBmaXggLmJyayBhdHRyaWJ1
+dGUgaW4gbGlua2VyIHNjcmlwdA0KPiANCj4gICBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9zZXR1
+cC5oICB8ICAzICsrKw0KPiAgIGFyY2gveDg2L2tlcm5lbC9oZWFkNjQuYyAgICAgIHwgIDQg
+KysrLQ0KPiAgIGFyY2gveDg2L2tlcm5lbC92bWxpbnV4Lmxkcy5TIHwgIDIgKy0NCj4gICBh
+cmNoL3g4Ni94ZW4vZW5saWdodGVuX3B2LmMgICB8ICA4ICsrKysrKy0tDQo+ICAgYXJjaC94
+ODYveGVuL3hlbi1oZWFkLlMgICAgICAgfCAxMCArLS0tLS0tLS0tDQo+ICAgNSBmaWxlcyBj
+aGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspLCAxMyBkZWxldGlvbnMoLSkNCj4gDQoNCkNvdWxk
+IEkgcGxlYXNlIGhhdmUgc29tZSBmZWVkYmFjaz8gVGhpcyBzZXJpZXMgaXMgZml4aW5nIGEg
+bWFqb3INCnJlZ3Jlc3Npb24gcmVnYXJkaW5nIHJ1bm5pbmcgYXMgWGVuIFBWIGd1ZXN0IChk
+ZXBlbmRpbmcgb24ga2VybmVsDQpjb25maWd1cmF0aW9uIHN5c3RlbSB3aWxsIGNyYXNoIHZl
+cnkgZWFybHkpLg0KDQojcmVnemJvdCBeaW50cm9kdWNlZCBlMzI2ODNjNmY3ZDINCg0KDQpK
+dWVyZ2VuDQo=
+--------------UzDDFnJxJu0cFBGkSu0hNa40
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------UzDDFnJxJu0cFBGkSu0hNa40--
+
+--------------p9mC49YkD27kudZypFeCdkWn--
+
+--------------uGZghzY610stt0wl6fX7JZ6R
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmK8XTwFAwAAAAAACgkQsN6d1ii/Ey+a
+ZAf/RRtfJG9S29Qozq/Vh4Ztvwb8yuAVX6zeDmhN69LCbbmcNf0veBd555vVoqgph8g2uAdar8RE
++jyKPr9ay4A5GXC5vLW99w0yCGhSP1A0D58w7KXr95qg5CUh7e4rx094nd8dTm5QN0z9YKShIUUN
+B6LYAgHuWju3dW2goGSlA2Hxb+KSi6q6NpcLHA7V2/irXVwlVG3dT64qRShxXD9m3AC1hKC+IxXg
+y2RNPgO0E2FvrDF3ClYXAOsscG2+psCT6GyDS5nzaWqcjvXwX/EJBxVQycN6B/ToVX9mB6FcPzYy
+Eado7aKY7P9aQCGbnoJ4pqnieb/pty6EeFj/H/cYjw==
+=E4vZ
+-----END PGP SIGNATURE-----
+
+--------------uGZghzY610stt0wl6fX7JZ6R--
