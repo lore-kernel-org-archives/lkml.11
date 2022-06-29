@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043B3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB366CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbiF2OrC convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
+        id S233683AbiF2Osh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbiF2OrA (ORCPT
+        with ESMTP id S233679AbiF2Osd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:47:00 -0400
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D18393FF;
-        Wed, 29 Jun 2022 07:46:56 -0700 (PDT)
-Received: by mail-qv1-f51.google.com with SMTP id cu16so25103772qvb.7;
-        Wed, 29 Jun 2022 07:46:56 -0700 (PDT)
+        Wed, 29 Jun 2022 10:48:33 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866E4B7E0
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 07:48:31 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id u8-20020a056e021a4800b002d3a5419d1bso9077338ilv.12
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 07:48:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lKCBOPrNloihbU1g4ZnMBHTpej5sTMCTVYThSbP4lGw=;
-        b=PC9JlThrQbhHwBPk3Jk/H01Pd55bdgWM9LeD1fOerfZnQjy8QGLmxt0VG2gnXssOQ3
-         UqFCnukA0M8DopB7/TCiEut1cY9iP8RHv3Xdsauem8gxdYYayr4JUQc5FFJHCvcd9FGz
-         MtWHU5O7cjdzcCLKSqKpfumoVfjMFfN/iIiyrcMTWulhp6kTsLEm+dSRRVDoOfLUpSYo
-         ngpPWV6D2F6xR2meZNth82sH5GZVJ4KN0T6B0sbIgnWeomzAtqQXqoJEJ6wEv1aAPWLm
-         KZoTpLmuR1QGL0KY+Wk0EW//U85ETRlJjDTAPyqBkX9Ox5U/1+/o2PAITNSxPmb08DEu
-         nekA==
-X-Gm-Message-State: AJIora94A2cMyQHNkyhkFqzoQ2OLVIKbhf4LShp09pQOHbBh4Y+RLakQ
-        Wx/YHM4akISLrtWMA0drCOSfIJV+Aa8VZA==
-X-Google-Smtp-Source: AGRyM1s43fyMd0KroXgg5HnVsInZDjNj+GDeg4cPT5ArtF4/b6kiLgOBt5DArEfzUzFfIT2YhLze0g==
-X-Received: by 2002:a05:622a:54b:b0:305:31e4:51fa with SMTP id m11-20020a05622a054b00b0030531e451famr2792548qtx.165.1656514015770;
-        Wed, 29 Jun 2022 07:46:55 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id b20-20020ae9eb14000000b006aee8580a37sm12975109qkg.10.2022.06.29.07.46.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 07:46:55 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id x184so25629142ybg.12;
-        Wed, 29 Jun 2022 07:46:55 -0700 (PDT)
-X-Received: by 2002:a81:3a81:0:b0:317:7dcf:81d4 with SMTP id
- h123-20020a813a81000000b003177dcf81d4mr4187413ywa.47.1656513525966; Wed, 29
- Jun 2022 07:38:45 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=piY2rqjjpLSURcBVOJ67ylQE4JJjSD/EdRDbwcjkkEw=;
+        b=wes0nqUn0IG/p6RU51Uba/Th4pOF+owjChHaoj+Zwgp5JOqbJ5Gj4kdAU/zzkxlt2r
+         Un/KrMqytK7DtX032CV7lMAmssvXb9SkzeYUwZG9/6dxAZq44ZX/K+lOxVSYQ6LD5FtB
+         q+N6RYgOSpu82epGBREm55qVBe4vpsKbIMhH6gSp9iTckeUfp74EkJRU0BrWlR8uw8Te
+         xzq4X9Rj/AYqLC4Kv6AyHmoJB1VoS+hYtjJCvACHskHWBnPeX34OX5MradZEaNlOaNVT
+         mTxsgAeW4PNG8PnFd7klso4o5CH2oSIiMb0z8+dBIPG4HQqTnvPmVV6TYCwIYQG/eKtX
+         L08Q==
+X-Gm-Message-State: AJIora93AJvshU0FGQRSyFkBp09/DNwxeH6E5IUTMdEuhFfSMo+aynO0
+        VducjP+einne+/aXZkE3krGj9QOH4No9S1/Z38DAyI6haUxB
+X-Google-Smtp-Source: AGRyM1sUZ9tCojVibTV7y72NWNfIQpGOeRuHkb2gvuxp3tttZu+oPGZn5RsZrt2EH9ny3swAAA0KvfrzRFhuhwRVzPQt0CMJrniG
 MIME-Version: 1.0
-References: <20220624144001.95518-1-clement.leger@bootlin.com> <20220624144001.95518-5-clement.leger@bootlin.com>
-In-Reply-To: <20220624144001.95518-5-clement.leger@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 29 Jun 2022 16:38:33 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXw2zuu-Q30VDF16_sLFO8eU1u8HrbxkYnKyCHK6d41hw@mail.gmail.com>
-Message-ID: <CAMuHMdXw2zuu-Q30VDF16_sLFO8eU1u8HrbxkYnKyCHK6d41hw@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 04/16] dt-bindings: net: pcs: add bindings for
- Renesas RZ/N1 MII converter
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Rob Herring <robh@kernel.org>
+X-Received: by 2002:a05:6638:dc4:b0:33c:c2c5:50ab with SMTP id
+ m4-20020a0566380dc400b0033cc2c550abmr2093334jaj.26.1656514110924; Wed, 29 Jun
+ 2022 07:48:30 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 07:48:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000025abbc05e2973f52@google.com>
+Subject: [syzbot] linux-next boot error: WARNING in blk_mq_release
+From:   syzbot <syzbot+7582a7c7cf0affa6c9be@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 4:41 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> This MII converter can be found on the RZ/N1 processor family. The MII
-> converter ports are declared as subnodes which are then referenced by
-> users of the PCS driver such as the switch.
->
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  .../bindings/net/pcs/renesas,rzn1-miic.yaml   | 171 ++++++++++++++++++
->  include/dt-bindings/net/pcs-rzn1-miic.h       |  33 ++++
->  2 files changed, 204 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
->  create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
+Hello,
 
-As the DT binding definitions are shared by driver and DT sources,
-I have queued this patch in renesas-devel for v5.20, too.
-Ideally, it should have been applied to a shared immutable branch.
+syzbot found the following issue on:
 
-Gr{oetje,eeting}s,
+HEAD commit:    c4ef528bd006 Add linux-next specific files for 20220629
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=115f9f4c080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=39ac31f5c81daa7c
+dashboard link: https://syzkaller.appspot.com/bug?extid=7582a7c7cf0affa6c9be
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-                        Geert
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7582a7c7cf0affa6c9be@syzkaller.appspotmail.com
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 2226 at block/blk-mq.c:3876 blk_mq_release+0xf8/0x3e0 block/blk-mq.c:3876
+Modules linked in:
+CPU: 0 PID: 2226 Comm: kworker/0:3 Not tainted 5.19.0-rc4-next-20220629-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events blkg_free_workfn
+RIP: 0010:blk_mq_release+0xf8/0x3e0 block/blk-mq.c:3876
+Code: fd 4c 8d a3 a8 02 00 00 4c 89 e0 48 c1 e8 03 80 3c 28 00 0f 85 14 02 00 00 48 8b 83 a8 02 00 00 49 39 c4 75 b1 e8 28 af 97 fd <0f> 0b eb a8 e8 1f af 97 fd 48 8b 44 24 10 48 05 38 05 00 00 48 89
+RSP: 0000:ffffc90009837ba0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88801bd5c000 RCX: 0000000000000000
+RDX: ffff888024193a80 RSI: ffffffff83e307e8 RDI: 0000000000000000
+RBP: dffffc0000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: ffff88801bd5c2a8
+R13: ffff88801d898190 R14: ffff88801d898048 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000ba8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ blk_release_queue+0x15b/0x280 block/blk-sysfs.c:782
+ kobject_cleanup lib/kobject.c:673 [inline]
+ kobject_release lib/kobject.c:704 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1be/0x4c0 lib/kobject.c:721
+ blkg_free_workfn+0x128/0x210 block/blk-cgroup.c:96
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ </TASK>
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
