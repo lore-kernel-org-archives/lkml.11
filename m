@@ -2,89 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E890C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233234AbiF2Juj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
+        id S233136AbiF2JwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233183AbiF2JuE (ORCPT
+        with ESMTP id S233108AbiF2Jvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:50:04 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1809E3D4A9;
-        Wed, 29 Jun 2022 02:50:02 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id ABBE4E0019;
-        Wed, 29 Jun 2022 09:50:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656496201;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=X4w6NTPvpwoeqhGxtMHGo8FEWQOfamO3Z8w4JG8EcO0=;
-        b=LLuIwFIAdy0eTduyVd9Kj8/0KMEl9Zn4dOeRpRuTD8YZliwMzpCHdc6UwLjYh2r88ZQG5z
-        GwdIjyrfJQX/tcHnD2sedm15wCFFDAOnd52xtrb/Hcx4AKVRpyxrIj9CztPBXK1Qj9W9Sj
-        NPudFQQ0K5WAh0yabsnwgUUHH/9jzjCRCN5AqB0Icwe9kEJMvncpipW2EXrpQosuBw+Lu5
-        TRuP4e6R74bs4KvKmkybgDhLUcXXnXgT16EYtys+7bxj4Xaq+og12RzFtBp24COd9X7oxj
-        O9+NfnPG5N/QfLCpxhglP0niKGXTYh5H3hQyU0yJMbKLOVYiWyIvk8iVre7Qpg==
-Date:   Wed, 29 Jun 2022 11:49:13 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <olteanv@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>
-Subject: Re: [PATCH -next] net: dsa: rzn1-a5psw: add missing of_node_put()
- in a5psw_pcs_get()
-Message-ID: <20220629114913.41670052@fixe.home>
-In-Reply-To: <20220629092435.496051-1-yangyingliang@huawei.com>
-References: <20220629092435.496051-1-yangyingliang@huawei.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Wed, 29 Jun 2022 05:51:52 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5210C3D4AB;
+        Wed, 29 Jun 2022 02:51:51 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3177f4ce3e2so142733977b3.5;
+        Wed, 29 Jun 2022 02:51:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=GElelnyPu+t07uIEEMNg6LAxOxXoiqjQ91T5C4EviUo=;
+        b=k5Dz9Mh62sOyTMvK1jWeC2gk1L7MIejLDCiZiyIRvcclCRkz4ozx33pOhMPnvNMVUl
+         MjyFTRHSY8KdXW81PV6z5oHynmj5QMU8LplegY5n5eWyBQGtOSkfZJJuapRR8+SwYBtQ
+         rROmUXBAUjkrru2etvsjnCDJFjt04o8vFd+u6AoOV49seRLM8K9wtA8GSpXsPEgQuLvF
+         PJlB1eeddl4lI1TzBtc98SQsuQ4dambMemxNJPm5SW51QctVQjPoJvl7zW4nke/Ggapy
+         daYEhlJkgp8BZbpn/ObnS2Cl+6FWaFTG5dxo1MoLDAvr1cwcFNQelzoDIS+o7p4Xij86
+         3rTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=GElelnyPu+t07uIEEMNg6LAxOxXoiqjQ91T5C4EviUo=;
+        b=L9TTzv8FdhtCFWDHOi5hj/gjTSBne/VLJwyvlJgLOKmH0wUKhfwJQ2Ll7im0yQhGIh
+         Od/+YDJSOyaOvpRouWZtEPFJLtIS1u0i0rPbvNqDcYO1AUkOIrNiwzV4owLaacXWaPwO
+         3ilEYqpH9YlbCDHEmh3Q7SNh3mmsBSEbjq8oIDK0D4Rk1ef0B5bp68EONJvNkogadr3G
+         6cyPFiG+JgIiqI2g9kF9SSaHaVg/15T+14Vkx5ua1zVQiVRHbMtNlMKxusniDLIcVd1r
+         C/glclTPlHeod9gbqK0stOwOW7jnaRaOsYvn4QTn5E0E/SceqKXI8fKnaKvVv2W3UgtL
+         Qbcw==
+X-Gm-Message-State: AJIora/wNxzOrsq3Sx3/paO/b5fPa5Kx1ICOAYFhh0jQYV/jTMzLM0Q0
+        QhZmTQwlQr9OGSdMZpFaKuCYzrVCX+LQElMReXs=
+X-Google-Smtp-Source: AGRyM1sLb4+78GKq6YudXBHdKWqNbrWdmM1li71d2ceRvJR5iIAkl+r/YogRx5zau14DkeHiwy1E0ClG7jr5CwzQ+j8=
+X-Received: by 2002:a81:5d88:0:b0:318:31c1:56f3 with SMTP id
+ r130-20020a815d88000000b0031831c156f3mr2860106ywb.18.1656496310543; Wed, 29
+ Jun 2022 02:51:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220628134234.53771-1-ilpo.jarvinen@linux.intel.com>
+ <20220628134234.53771-5-ilpo.jarvinen@linux.intel.com> <CAHp75Vf36sFqX1SL4Sjz6ZgNXP41Nom0Q1s6Psgv9WMFkKtGtg@mail.gmail.com>
+ <29b084c-183b-4a84-2376-2c88eff7d5a@linux.intel.com> <CAHp75VevfptcsTTkFvCRsJRxuKX6aJ2zQ5LyH0O8wP+aB4xXHw@mail.gmail.com>
+ <bc54d67-e573-9ecc-1650-7e7fc35f7897@linux.intel.com>
+In-Reply-To: <bc54d67-e573-9ecc-1650-7e7fc35f7897@linux.intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 29 Jun 2022 11:51:13 +0200
+Message-ID: <CAHp75VdsTjbEwocx4DAhMBM6nwKhuL3xgaJeZhV=ZhBPz3pdRw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] serial: 8250_dw: Rework ->serial_out() LCR write
+ retry logic
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, 29 Jun 2022 17:24:35 +0800,
-Yang Yingliang <yangyingliang@huawei.com> a =C3=A9crit :
+On Wed, Jun 29, 2022 at 11:40 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
+> > On Wed, Jun 29, 2022 at 10:47 AM Ilpo J=C3=A4rvinen
+> > <ilpo.jarvinen@linux.intel.com> wrote:
+> > > On Tue, 28 Jun 2022, Andy Shevchenko wrote:
 
-> of_parse_phandle() will increase the refcount of 'pcs_node', so add
-> of_node_put() before return from a5psw_pcs_get().
->=20
-> Fixes: 888cdb892b61 ("net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 =
-port switch driver")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/dsa/rzn1_a5psw.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-> index 3e910da98ae2..301171ee1061 100644
-> --- a/drivers/net/dsa/rzn1_a5psw.c
-> +++ b/drivers/net/dsa/rzn1_a5psw.c
-> @@ -923,6 +923,7 @@ static int a5psw_pcs_get(struct a5psw *a5psw)
->  	return 0;
-> =20
->  free_pcs:
-> +	of_node_put(pcs_node);
+...
 
-of_node_put(pcs_node) should probably also be called after
-miic_create(a5psw->dev, pcs_node); since it is not needed anymore.
+> > > Eh, are you suggesting I should do write as a side-effect inside one =
+of
+> > > the iopoll.h macros? Because those available seem to only read?
+> > >
+> > > Or should I create another macro there which writes too?
+> >
+> > It seems to me that it would be a macro on top of iopoll's one which
+> > will take an op read and op write arguments depending on the case.
+>
+> The thing is those iopoll macros don't return until the timeout is
+> exhausted
 
-Cl=C3=A9ment
+It returns when the condition is true (in your case verify_lcr is OK).
 
->  	of_node_put(port);
->  	of_node_put(ports);
->  	a5psw_pcs_free(a5psw);
+> so I don't think I can reuse them easily for this task ("on top
+> of iopoll's one")? That is, w/o some major side-effect hack (which is
+> IMHO a no-go).
 
+Basically what we need is a write-read type of polling.
+
+With your current approach I don't like that retries assignment is
+duplicated several times and decrement happens in the callee. What I'm
+trying to suggest is to research alternatives.
 
 --=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+With Best Regards,
+Andy Shevchenko
