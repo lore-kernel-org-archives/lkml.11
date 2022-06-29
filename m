@@ -2,75 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D918DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06986C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232715AbiF2I22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
+        id S232600AbiF2I35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 04:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232784AbiF2I2N (ORCPT
+        with ESMTP id S232032AbiF2I34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 04:28:13 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A378C62C2
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:28:08 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2647A66018F4;
-        Wed, 29 Jun 2022 09:28:07 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656491287;
-        bh=GH2xhOUcGT/R9ajjAeKkq4p/KZEbUFVa0+S35618jKk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=U/OmEbF7QyBSwx/kXpjFoy2wtAZBeaJ4c2au+cijnLontCV72yuWA5wqePOVmKgGF
-         UskLPCJMm4ZqpSKcKU7yUPD8XxHeuVlavouqaz9h5Y8FVdRM+qvF8x261HBXfd+tMX
-         geM22IRqA122lCsqtelQyoapKmdNBj32JFAfSkrvwIWA5VCtR5w2nGKZtLkOOawuRs
-         ItxOZM124S3mLGRcg15ToWiosvXXsYlxflD0CiOT1BpnymuTk67SYaGhcBjJM2pfPx
-         MOBraxrTv65M2qSOZRHXLRNhEnjYYrnvXEN+u2NeICNveweSyDug+ev2N7ymqO9YgO
-         blnHIIeCPxrhA==
-Message-ID: <dbb7bbad-a088-a4d9-3089-166babf99fc2@collabora.com>
-Date:   Wed, 29 Jun 2022 10:28:04 +0200
+        Wed, 29 Jun 2022 04:29:56 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E6435DE7
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:29:55 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ge10so31034581ejb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:29:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hO64UUQSBmd2pGDhWcTf3FCJdGuY3sVi+fiDX10ylYU=;
+        b=G8hrSK1msK0ubzz6iOTKDNcp3A09rIBJqEs6JpvwWHnpzPXaLiJ7KCu57BBwAJv/9k
+         1Je0u9KFaSauDIEgTSnIzj2H7hjOJallDjUs0yJe1dOeIx1T2ZmHurIvNbvweeogDrJ4
+         snY3u9nrQW/h9ngYu4eYSmY46OhN+W7SfaqJau4iOFeQb3ZC/Xx4fyO2kS9f70lK2486
+         co5MGqg/3tmcvlo4qguJlewf/Nes+1V1Hl9cJZ/wO3MjxQ//AxddvhpTBrT4z7veDw8u
+         AsDBmN4Redi4A7O/nHmX3GNG8g/e6GYgf+lIda0K4FEXi25BrySIfuZ7GwDglY2GmjzF
+         0nmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hO64UUQSBmd2pGDhWcTf3FCJdGuY3sVi+fiDX10ylYU=;
+        b=1NUQCOdJuJPTrtM0za/g6q0PWe0aZiAOC9MOlW4NVxc/ETC9x1lHl5BOnMt8bPfF9L
+         XbccDra4Fd8SXV6Ws82iO7tyL0ZsYuPvzp+2aLi7CXHj7u6jDHPBhUNhrpnYQ1A70U98
+         ir5pWAp2rPNJ/TVCF0nMAS7/5sTWGVZyiQsvQMHXRaUmnXInqHV/QOlVCPn+6t6I3mkh
+         xHio3dXMMSxLHN6z4Ta1wQrXSCFTACuJ/x81psPWRCLEIfabGFwXsdtk42DGfd3VaF5I
+         Kdgu0WjDTyZdjvlwZ0ifGrSmRY6STaImEFxnXopB4N4ikagM34LrwJXJupI5kqtvfsaH
+         pP4A==
+X-Gm-Message-State: AJIora/jr7ek4/S6DeN42XiyrV+FuFyup/+StQWZcvg3ALDBhfOf8c6S
+        LdV0CC8zr3hwKrI+91q4Nalfhw==
+X-Google-Smtp-Source: AGRyM1tLM0faLoxLu+OR0ALMIdlWxQdPJ+9mClKlcofNOKro3rqKXbHWjtrdN61k4jlPsCk+pevyOw==
+X-Received: by 2002:a17:907:1de1:b0:72a:3216:96bc with SMTP id og33-20020a1709071de100b0072a321696bcmr1278028ejc.3.1656491393683;
+        Wed, 29 Jun 2022 01:29:53 -0700 (PDT)
+Received: from [192.168.0.183] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id k25-20020aa7d8d9000000b004356c18b2b9sm10961144eds.44.2022.06.29.01.29.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 01:29:52 -0700 (PDT)
+Message-ID: <c1c24c84-a33a-cb43-214f-0970f1948c34@linaro.org>
+Date:   Wed, 29 Jun 2022 10:29:51 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH] drivers/soc/mediatek: mark svs_resume and svs_suspend as
- maybe unused
+Subject: Re: [PATCH v1 RESEND 4/7] dt-bindings: leds: is31fl319x: Document
+ variants specificities
 Content-Language: en-US
-To:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     Roger Lu <roger.lu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-mediatek@lists.infradead.org
-References: <20220628121326.2097912-1-jcmvbkbc@gmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220628121326.2097912-1-jcmvbkbc@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Vincent Knecht <vincent.knecht@mailoo.org>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht
+References: <20220628182147.2837180-1-vincent.knecht@mailoo.org>
+ <20220628182147.2837180-5-vincent.knecht@mailoo.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220628182147.2837180-5-vincent.knecht@mailoo.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 28/06/22 14:13, Max Filippov ha scritto:
-> This fixes the following build errors on platforms without hibernation
-> support in linux-next:
-> 
-> drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not used [-Werror=unused-function]
-> drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not used [-Werror=unused-function]
-> 
-> Fixes: 681a02e95000 ("soc: mediatek: SVS: introduce MTK SVS engine")
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+On 28/06/2022 20:21, Vincent Knecht wrote:
+> Add conditionals depending on compatibles to document variants specs:
+> - possible reg addresses
+> - whether audio-gain-db is supported or not
+> - maximum number of leds
+> - led-max-microamp values
 
-Hello Max,
+This should be squashed with patch #2. You document new variants with
+their constraints. At least the constraints respective to these newly
+added variants.
 
-This is not the right solution... and besides, there's something else in the works;
-check here:
 
-https://patchwork.kernel.org/project/linux-mediatek/patch/20220623030931.2816013-1-jinxiaoyun2@huawei.com/
-
-Regards,
-Angelo
+Best regards,
+Krzysztof
