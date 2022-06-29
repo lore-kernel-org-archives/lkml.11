@@ -2,125 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5953AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF31C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbiF2Dpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 23:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        id S229513AbiF2Dsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 23:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiF2Dpn (ORCPT
+        with ESMTP id S229541AbiF2Dst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 23:45:43 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8D418343;
-        Tue, 28 Jun 2022 20:45:41 -0700 (PDT)
-X-UUID: 78fabd2e204b48a492c26a37b27e5e8d-20220629
-X-GW-Reason: 13103
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 73
-        audit/email.address 1
-        dict/adv 1
-        dict/contack 1
-        dict/job 1
-        dict/notice 1
-        dict/operate 1
-        dict/time 1
-        meta/cnt.alert 1
-X-CPASD-INFO: 79a2431c46c548daab49de3fa2ab5c91@gImbUmFlX5NgVqWBg3uvm4GTZGmUkVO
-        1o2yBlGOTZVGVgnxsTWBnX1OEgnBQYl5dZFZ3dG9RYmBgYlB_i4Jyj1RiXmCCVHSTgHlzgWRiYw==
-X-CLOUD-ID: 79a2431c46c548daab49de3fa2ab5c91
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:2.0,URL:-5,TVAL:182.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:195.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:2.0,CFOB:2.0,SPC:0,SIG:-
-        5,AUF:6,DUF:133,ACD:2,DCD:2,SL:0,EISP:0,AG:0,CFC:0.512,CFSR:0.049,UAT:0,RAF:0
-        ,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EAF:
-        0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: 78fabd2e204b48a492c26a37b27e5e8d-20220629
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1
-X-UUID: 78fabd2e204b48a492c26a37b27e5e8d-20220629
-X-User: xiongxin@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <xiongxin@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 596082055; Wed, 29 Jun 2022 09:12:15 +0800
-From:   xiongxin <xiongxin@kylinos.cn>
-To:     rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz,
-        xiongxin@kylinos.cn, luriwen@kylinos.cn
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH -next 2/2] PM: suspend: advanced pm_wakeup_clear() for normal suspend/hibernate
-Date:   Wed, 29 Jun 2022 09:11:46 +0800
-Message-Id: <20220629011146.299521-3-xiongxin@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629011146.299521-1-xiongxin@kylinos.cn>
-References: <20220629011146.299521-1-xiongxin@kylinos.cn>
+        Tue, 28 Jun 2022 23:48:49 -0400
+Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 20BEF1F2C5;
+        Tue, 28 Jun 2022 20:48:46 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Wed, 29 Jun 2022 11:48:30
+ +0800 (GMT+08:00)
+X-Originating-IP: [221.192.178.115]
+Date:   Wed, 29 Jun 2022 11:48:30 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Paolo Abeni" <pabeni@redhat.com>
+Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3 2/2] net: rose: fix null-ptr-deref caused by
+ rose_kill_by_neigh
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <ecac788497ea0e4e5b725226ad8b1209dc62fa0e.camel@redhat.com>
+References: <cover.1656031586.git.duoming@zju.edu.cn>
+ <c31f454f74833b2003713fffa881aabb190b8290.1656031586.git.duoming@zju.edu.cn>
+ <ecac788497ea0e4e5b725226ad8b1209dc62fa0e.camel@redhat.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <411487ea.1b211.181ad932398.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgDXT0OPy7tilWYZAQ--.7854W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIQAVZdtac28AAAsO
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pm_wakeup_clear() will clear the wakeup source, which can ensure that it
-is not disturbed by useless wakeup signals when doing suspend/hibernate;
-
-At the beginning of the suspend/hibernate process, the notifier
-mechanism is used to notify other device drivers. This action is
-time-consuming (second-level time-consuming). If the process fails due
-to the received wakeup signal during the execution of these functions,
-it can better improve the experience of failing suspend/hibernate
-returns;
-
-Therefore, it is recommended here that for the suspend/hibernate process
-normally called from /sys/power/state, the pm_wakeup_clear() function
-should be brought before the notifier call; for the freeze_process()
-function called from other places, the original logic is kept;
-
-The pm_suspend_target_state variable is used here to identify whether the
-suspend process is going normally.
-
-Signed-off-by: xiongxin <xiongxin@kylinos.cn>
----
- kernel/power/process.c | 5 ++++-
- kernel/power/suspend.c | 6 ++++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/power/process.c b/kernel/power/process.c
-index 3068601e585a..3fde0240b3d1 100644
---- a/kernel/power/process.c
-+++ b/kernel/power/process.c
-@@ -131,7 +131,10 @@ int freeze_processes(void)
- 	if (!pm_freezing)
- 		atomic_inc(&system_freezing_cnt);
- 
--	pm_wakeup_clear(0);
-+	if (pm_suspend_target_state != PM_SUSPEND_ON)
-+		pm_wakeup_clear(1);
-+	else
-+		pm_wakeup_clear(0);
- 	pr_info("Freezing user space processes ... ");
- 	pm_freezing = true;
- 	error = try_to_freeze_tasks(true);
-diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index c754b084ec03..f4259f6c1cc2 100644
---- a/kernel/power/suspend.c
-+++ b/kernel/power/suspend.c
-@@ -569,6 +569,12 @@ static int enter_state(suspend_state_t state)
- 	 * performed from the /sys/power/state entry.
- 	 */
- 	pm_suspend_target_state = state;
-+	/*
-+	 * Put pm_wakeup_clear() before the notifier notification chain to
-+	 * optimize in the suspend process, the wakeup signal can interrupt
-+	 * the suspend in advance and fail to return.
-+	 */
-+	pm_wakeup_clear(0);
- 
- 	if (sync_on_suspend_enabled) {
- 		trace_suspend_resume(TPS("sync_filesystems"), 0, true);
--- 
-2.25.1
-
-
-No virus found
-		Checked by Hillstone Network AntiVirus
+SGVsbG8sCgpPbiBUdWUsIDI4IEp1biAyMDIyIDEzOjEyOjQwICswMjAwIFBhb2xvIEFiZW5pIHdy
+b3RlOgoKPiA+IFdoZW4gdGhlIGxpbmsgbGF5ZXIgY29ubmVjdGlvbiBpcyBicm9rZW4sIHRoZSBy
+b3NlLT5uZWlnaGJvdXIgaXMKPiA+IHNldCB0byBudWxsLiBCdXQgcm9zZS0+bmVpZ2hib3VyIGNv
+dWxkIGJlIHVzZWQgYnkgcm9zZV9jb25uZWN0aW9uKCkKPiA+IGFuZCByb3NlX3JlbGVhc2UoKSBs
+YXRlciwgYmVjYXVzZSB0aGVyZSBpcyBubyBzeW5jaHJvbml6YXRpb24gYW1vbmcKPiA+IHRoZW0u
+IEFzIGEgcmVzdWx0LCB0aGUgbnVsbC1wdHItZGVyZWYgYnVncyB3aWxsIGhhcHBlbi4KPiA+IAo+
+ID4gT25lIG9mIHRoZSBudWxsLXB0ci1kZXJlZiBidWdzIGlzIHNob3duIGJlbG93Ogo+ID4gCj4g
+PiAgICAgKHRocmVhZCAxKSAgICAgICAgICAgICAgICAgIHwgICAgICAgICh0aHJlYWQgMikKPiA+
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgcm9zZV9jb25uZWN0Cj4gPiByb3Nl
+X2tpbGxfYnlfbmVpZ2ggICAgICAgICAgICAgIHwgICAgbG9ja19zb2NrKHNrKQo+ID4gICBzcGlu
+X2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKSB8ICAgIGlmICghcm9zZS0+bmVpZ2hib3VyKQo+ID4g
+ICByb3NlLT5uZWlnaGJvdXIgPSBOVUxMOy8vKDEpICB8Cj4gPiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHwgICAgcm9zZS0+bmVpZ2hib3VyLT51c2UrKzsvLygyKQo+ID4gCj4gPiBU
+aGUgcm9zZS0+bmVpZ2hib3VyIGlzIHNldCB0byBudWxsIGluIHBvc2l0aW9uICgxKSBhbmQgZGVy
+ZWZlcmVuY2VkCj4gPiBpbiBwb3NpdGlvbiAoMikuCj4gPiAKPiA+IFRoZSBLQVNBTiByZXBvcnQg
+dHJpZ2dlcmVkIGJ5IFBPQyBpcyBzaG93biBiZWxvdzoKPiA+IAo+ID4gS0FTQU46IG51bGwtcHRy
+LWRlcmVmIGluIHJhbmdlIFsweDAwMDAwMDAwMDAwMDAwMjgtMHgwMDAwMDAwMDAwMDAwMDJmXQo+
+ID4gLi4uCj4gPiBSSVA6IDAwMTA6cm9zZV9jb25uZWN0KzB4NmMyLzB4ZjMwCj4gPiBSU1A6IDAw
+MTg6ZmZmZjg4ODAwYWI0N2Q2MCBFRkxBR1M6IDAwMDAwMjA2Cj4gPiBSQVg6IDAwMDAwMDAwMDAw
+MDAwMDUgUkJYOiAwMDAwMDAwMDAwMDAwMDJhIFJDWDogMDAwMDAwMDAwMDAwMDAwMAo+ID4gUkRY
+OiBmZmZmODg4MDBhYjM4MDAwIFJTSTogZmZmZjg4ODAwYWI0N2U0OCBSREk6IGZmZmY4ODgwMGFi
+MzgzMDkKPiA+IFJCUDogZGZmZmZjMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5
+OiBmZmZmZWQxMDAxNTY3MDYyCj4gPiBSMTA6IGRmZmZlOTEwMDE1NjcwNjMgUjExOiAxZmZmZjEx
+MDAxNTY3MDYxIFIxMjogMWZmZmYxMTAwMGQxN2NkMAo+ID4gUjEzOiBmZmZmODg4MDA2OGJlNjgw
+IFIxNDogMDAwMDAwMDAwMDAwMDAwMiBSMTU6IDFmZmZmMTEwMDBkMTdjZDAKPiA+IC4uLgo+ID4g
+Q2FsbCBUcmFjZToKPiA+ICAgPFRBU0s+Cj4gPiAgID8gX19sb2NhbF9iaF9lbmFibGVfaXArMHg1
+NC8weDgwCj4gPiAgID8gc2VsaW51eF9uZXRsYmxfc29ja2V0X2Nvbm5lY3QrMHgyNi8weDMwCj4g
+PiAgID8gcm9zZV9iaW5kKzB4NWIwLzB4NWIwCj4gPiAgIF9fc3lzX2Nvbm5lY3QrMHgyMTYvMHgy
+ODAKPiA+ICAgX194NjRfc3lzX2Nvbm5lY3QrMHg3MS8weDgwCj4gPiAgIGRvX3N5c2NhbGxfNjQr
+MHg0My8weDkwCj4gPiAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ2LzB4YjAK
+PiA+IAo+ID4gVGhpcyBwYXRjaCBhZGRzIGxvY2tfc29jaygpIGluIHJvc2Vfa2lsbF9ieV9uZWln
+aCgpIGluIG9yZGVyIHRvCj4gPiBzeW5jaHJvbml6ZSB3aXRoIHJvc2VfY29ubmVjdCgpIGFuZCBy
+b3NlX3JlbGVhc2UoKS4KPiA+IAo+ID4gTWVhbndoaWxlLCB0aGlzIHBhdGNoIGFkZHMgc29ja19o
+b2xkKCkgcHJvdGVjdGVkIGJ5IHJvc2VfbGlzdF9sb2NrCj4gPiB0aGF0IGNvdWxkIHN5bmNocm9u
+aXplIHdpdGggcm9zZV9yZW1vdmVfc29ja2V0KCkgaW4gb3JkZXIgdG8gbWl0aWdhdGUKPiA+IFVB
+RiBidWcgY2F1c2VkIGJ5IGxvY2tfc29jaygpIHdlIGFkZC4KPiA+IAo+ID4gV2hhdCdzIG1vcmUs
+IHRoZXJlIGlzIG5vIG5lZWQgdXNpbmcgcm9zZV9uZWlnaF9saXN0X2xvY2sgdG8gcHJvdGVjdAo+
+ID4gcm9zZV9raWxsX2J5X25laWdoKCkuIEJlY2F1c2Ugd2UgaGF2ZSBhbHJlYWR5IHVzZWQgcm9z
+ZV9uZWlnaF9saXN0X2xvY2sKPiA+IHRvIHByb3RlY3QgdGhlIHN0YXRlIGNoYW5nZSBvZiByb3Nl
+X25laWdoIGluIHJvc2VfbGlua19mYWlsZWQoKSwgd2hpY2gKPiA+IGlzIHdlbGwgc3luY2hyb25p
+emVkLgo+ID4gCj4gPiBGaXhlczogMWRhMTc3ZTRjM2Y0ICgiTGludXgtMi42LjEyLXJjMiIpCj4g
+PiBTaWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+IC0t
+LQo+ID4gQ2hhbmdlcyBzaW5jZSB2MjoKPiA+ICAgLSB2MjogRml4IHJlZmNvdW50IGxlYWsgb2Yg
+c29jay4KPiA+IAo+ID4gIG5ldC9yb3NlL2FmX3Jvc2UuYyAgICB8IDYgKysrKysrCj4gPiAgbmV0
+L3Jvc2Uvcm9zZV9yb3V0ZS5jIHwgMiArKwo+ID4gIDIgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRp
+b25zKCspCj4gPiAKPiA+IGRpZmYgLS1naXQgYS9uZXQvcm9zZS9hZl9yb3NlLmMgYi9uZXQvcm9z
+ZS9hZl9yb3NlLmMKPiA+IGluZGV4IGJmMmQ5ODZhNmJjLi41Y2FhMjIyYzQ5MCAxMDA2NDQKPiA+
+IC0tLSBhL25ldC9yb3NlL2FmX3Jvc2UuYwo+ID4gKysrIGIvbmV0L3Jvc2UvYWZfcm9zZS5jCj4g
+PiBAQCAtMTY5LDkgKzE2OSwxNSBAQCB2b2lkIHJvc2Vfa2lsbF9ieV9uZWlnaChzdHJ1Y3Qgcm9z
+ZV9uZWlnaCAqbmVpZ2gpCj4gPiAgCQlzdHJ1Y3Qgcm9zZV9zb2NrICpyb3NlID0gcm9zZV9zayhz
+KTsKPiA+ICAKPiA+ICAJCWlmIChyb3NlLT5uZWlnaGJvdXIgPT0gbmVpZ2gpIHsKPiA+ICsJCQlz
+b2NrX2hvbGQocyk7Cj4gPiAgCQkJcm9zZV9kaXNjb25uZWN0KHMsIEVORVRVTlJFQUNILCBST1NF
+X09VVF9PRl9PUkRFUiwgMCk7Cj4gPiAgCQkJcm9zZS0+bmVpZ2hib3VyLT51c2UtLTsKPiA+ICsJ
+CQlzcGluX3VubG9ja19iaCgmcm9zZV9saXN0X2xvY2spOwo+ID4gKwkJCWxvY2tfc29jayhzKTsK
+PiA+ICAJCQlyb3NlLT5uZWlnaGJvdXIgPSBOVUxMOwo+ID4gKwkJCXJlbGVhc2Vfc29jayhzKTsK
+PiA+ICsJCQlzcGluX2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKPiAKPiBJJ20gc29ycnksIEkg
+bGlrZWx5IHdhcyBub3QgY2xlYXIgZW5vdWdoIGluIG15IHByZXZpb3VzIHJlcGx5LiBUaGlzIGlz
+Cj4gYnJva2VuLiBJZiBhIGxpc3QgaXMgW3NwaW5fXWxvY2sgcHJvdGVjdGVkLCB5b3UgY2FuJ3Qg
+cmVsZWFzZSB0aGUgbG9jaywKPiByZWFjcXVpcmUgaXQgYW5kIGNvbnRpbnVlIHRyYXZlcnNpbmcg
+dGhlIGxpc3QgZnJvbSB0aGUgW25vdyBpbnZhbGlkXQo+IHNhbWUgaXRlcmF0b3IuCj4gCj4gZS5n
+LiBpZiBzIGlzIHJlbW92ZWQgZnJvbSB0aGUgbGlzdCwgZXZlbiBpZiB0aGUgc29jayBpcyBub3Qg
+ZGUtCj4gYWxsb2NhdGVkIGR1ZSB0byB0aGUgYWRkdGlvbmFsIHJlZmNvdW50LCB0aGUgdHJhdmVy
+c2luZyB3aWxsIGVycm5vdXNseQo+IHN0b3AgYWZ0ZXIgdGhpcyBzb2NrLCBpbnN0ZWFkIG9mIGNv
+bnRpbnVpbmcgcHJvY2Vzc2luZyB0aGUgcmVtYWluaW5nCj4gc29ja3MgaW4gdGhlIGxpc3QuCgpJ
+IHVuZGVyc3RhbmQuIFRoZSBmb2xsb3dpbmcgaXMgYSBuZXcgc29sdXRpb246CgpkaWZmIC0tZ2l0
+IGEvbmV0L3Jvc2UvYWZfcm9zZS5jIGIvbmV0L3Jvc2UvYWZfcm9zZS5jCmluZGV4IGJmMmQ5ODZh
+NmJjLi4yNGRjYmRlODhmYiAxMDA2NDQKLS0tIGEvbmV0L3Jvc2UvYWZfcm9zZS5jCisrKyBiL25l
+dC9yb3NlL2FmX3Jvc2UuYwpAQCAtMTY1LDEzICsxNjUsMjEgQEAgdm9pZCByb3NlX2tpbGxfYnlf
+bmVpZ2goc3RydWN0IHJvc2VfbmVpZ2ggKm5laWdoKQogICAgICAgIHN0cnVjdCBzb2NrICpzOwoK
+ICAgICAgICBzcGluX2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKK2FnYWluOgogICAgICAgIHNr
+X2Zvcl9lYWNoKHMsICZyb3NlX2xpc3QpIHsKICAgICAgICAgICAgICAgIHN0cnVjdCByb3NlX3Nv
+Y2sgKnJvc2UgPSByb3NlX3NrKHMpOwoKICAgICAgICAgICAgICAgIGlmIChyb3NlLT5uZWlnaGJv
+dXIgPT0gbmVpZ2gpIHsKKyAgICAgICAgICAgICAgICAgICAgICAgc29ja19ob2xkKHMpOworICAg
+ICAgICAgICAgICAgICAgICAgICBzcGluX3VubG9ja19iaCgmcm9zZV9saXN0X2xvY2spOworICAg
+ICAgICAgICAgICAgICAgICAgICBsb2NrX3NvY2socyk7CiAgICAgICAgICAgICAgICAgICAgICAg
+IHJvc2VfZGlzY29ubmVjdChzLCBFTkVUVU5SRUFDSCwgUk9TRV9PVVRfT0ZfT1JERVIsIDApOwog
+ICAgICAgICAgICAgICAgICAgICAgICByb3NlLT5uZWlnaGJvdXItPnVzZS0tOwogICAgICAgICAg
+ICAgICAgICAgICAgICByb3NlLT5uZWlnaGJvdXIgPSBOVUxMOworICAgICAgICAgICAgICAgICAg
+ICAgICByZWxlYXNlX3NvY2socyk7CisgICAgICAgICAgICAgICAgICAgICAgIHNwaW5fbG9ja19i
+aCgmcm9zZV9saXN0X2xvY2spOworICAgICAgICAgICAgICAgICAgICAgICBzb2NrX3B1dChzKTsK
+KyAgICAgICAgICAgICAgICAgICAgICAgZ290byBhZ2FpbjsKICAgICAgICAgICAgICAgIH0KICAg
+ICAgICB9CiAgICAgICAgc3Bpbl91bmxvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKZGlmZiAtLWdp
+dCBhL25ldC9yb3NlL3Jvc2Vfcm91dGUuYyBiL25ldC9yb3NlL3Jvc2Vfcm91dGUuYwppbmRleCBm
+ZWU2NDA5YzJiYi4uYjExNjgyOGI0MjIgMTAwNjQ0Ci0tLSBhL25ldC9yb3NlL3Jvc2Vfcm91dGUu
+YworKysgYi9uZXQvcm9zZS9yb3NlX3JvdXRlLmMKQEAgLTgyNyw3ICs4MjcsOSBAQCB2b2lkIHJv
+c2VfbGlua19mYWlsZWQoYXgyNV9jYiAqYXgyNSwgaW50IHJlYXNvbikKICAgICAgICAgICAgICAg
+IGF4MjVfY2JfcHV0KGF4MjUpOwoKICAgICAgICAgICAgICAgIHJvc2VfZGVsX3JvdXRlX2J5X25l
+aWdoKHJvc2VfbmVpZ2gpOworICAgICAgICAgICAgICAgc3Bpbl91bmxvY2tfYmgoJnJvc2VfbmVp
+Z2hfbGlzdF9sb2NrKTsKICAgICAgICAgICAgICAgIHJvc2Vfa2lsbF9ieV9uZWlnaChyb3NlX25l
+aWdoKTsKKyAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICB9CiAgICAgICAgc3Bpbl91bmxv
+Y2tfYmgoJnJvc2VfbmVpZ2hfbGlzdF9sb2NrKTsKIH0KCklmIHMgaXMgcmVtb3ZlZCBmcm9tIHRo
+ZSBsaXN0LCB0aGUgdHJhdmVyc2luZyB3aWxsIG5vdCBzdG9wIGVycm9uZW91c2x5LgoKQmVzdCBy
+ZWdhcmRzLApEdW9taW5nIFpob3U=
