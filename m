@@ -2,110 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 182BACCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66544CCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230263AbiF2Q4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
+        id S231163AbiF2Q45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiF2Q4u (ORCPT
+        with ESMTP id S230447AbiF2Q4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:56:50 -0400
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED602250C;
-        Wed, 29 Jun 2022 09:56:49 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-3177f4ce3e2so154175987b3.5;
-        Wed, 29 Jun 2022 09:56:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZkIej0UJ7PuUWn58IixeF0LRQS/u6RyIKeOWZv4NbdA=;
-        b=GVKIIolGRvve74I/JsxWr1PGQWrExf52MGc8FdFocUJlSUjaw//POtC98qtHGUCdkP
-         BkHALIAtdDOZnyQpvTpQvjJTPDYmaNvskNwxegc/36shoy5MecAVku0fdLUJqvLOG1DL
-         w2QtF6LBAkOGI71M7aVF40qTBSE1ko3i9DBXAq2BpjJ5lXMkr+OrlMK2s2CjUpcjYqOn
-         7u3f5VSWw4JMfs1b+57T8LN0I/M4YxTWOiNHkgzlSXehtTFoRd8HrtGMmWnqyOg4q/Dk
-         BqOr+NUd903AtwllTSvPCyTp26CEOh3LijwL8M4A8cJVuKTcSnw1CdXUlApfbkDy+mNo
-         jlBw==
-X-Gm-Message-State: AJIora+epWyJeq18l0nzioaBfWteAZscjLUsCR0/N1SBdDUeT4Eux650
-        fY3hU5UbI04VZcc+/pWtXUAqFe7L1GAvam0fF7AmcN44
-X-Google-Smtp-Source: AGRyM1s2CbxkModmI/0O7hOvmw6DE7xd5G7FVUCy9hKt/wft6RsAcDx/TDDEpy8faKzufOPehWVJII78xYd5Usg/KAk=
-X-Received: by 2002:a0d:d811:0:b0:31b:ddc4:c0ac with SMTP id
- a17-20020a0dd811000000b0031bddc4c0acmr5025839ywe.149.1656521808695; Wed, 29
- Jun 2022 09:56:48 -0700 (PDT)
+        Wed, 29 Jun 2022 12:56:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4209D25588;
+        Wed, 29 Jun 2022 09:56:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9EB7DCE25C4;
+        Wed, 29 Jun 2022 16:56:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13837C341CB;
+        Wed, 29 Jun 2022 16:56:45 +0000 (UTC)
+Date:   Wed, 29 Jun 2022 12:56:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?UTF-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+Message-ID: <20220629125643.393df70d@gandalf.local.home>
+In-Reply-To: <20220629164543.GA25672@lst.de>
+References: <20220629150102.1582425-1-hch@lst.de>
+        <20220629150102.1582425-2-hch@lst.de>
+        <Yrx5Lt7jrk5BiHXx@zx2c4.com>
+        <20220629161020.GA24891@lst.de>
+        <Yrx6EVHtroXeEZGp@zx2c4.com>
+        <20220629161527.GA24978@lst.de>
+        <Yrx8/Fyx15CTi2zq@zx2c4.com>
+        <20220629163007.GA25279@lst.de>
+        <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
+        <20220629164543.GA25672@lst.de>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220617025152.1908638-1-luriwen@hotmail.com> <TYWP286MB2601A75D517AE71EE569CE15B1AF9@TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM>
- <87v8szoccp.fsf@stealth>
-In-Reply-To: <87v8szoccp.fsf@stealth>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 29 Jun 2022 18:56:37 +0200
-Message-ID: <CAJZ5v0gAJSfWmEJjawSHWnYB-rsBxcMyUQjAf4F3jpMhnjx+-Q@mail.gmail.com>
-Subject: Re: [PATCH v2] ACPI/processor: Remove unused function acpi_processor_get_limit_info()
-To:     Punit Agrawal <punit.agrawal@bytedance.com>
-Cc:     Riwen Lu <luriwen@hotmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Robert Moore <robert.moore@intel.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        Riwen Lu <luriwen@kylinos.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 11:42 AM Punit Agrawal
-<punit.agrawal@bytedance.com> wrote:
->
-> Riwen Lu <luriwen@hotmail.com> writes:
->
-> > From: Riwen Lu <luriwen@kylinos.cn>
-> >
-> > Commit 22e7551eb6fd ("ACPI / processor: Remove acpi_processor_get_limit_info()"),
-> > left behind this, remove it.
-> >
-> > Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
-> >
-> > ---
-> > v1 -> v2:
-> >  - Make this patch base on ("ACPI: Split out processor thermal register
-> >    from ACPI PSS").
->
-> For such changes, it is better to send all the related patches as a
-> series so it's easy to see the dependencies . In a series the easy /
-> obvious fixes should be earlier so it's easier for them to be merged
-> while the more significant changes are still being discussed.
->
-> Hopefully in this case Rafael too agrees with the dependency patch -
-> otherwise, it's just extra churn on the lists.
->
-> But don't resend just yet - give some time for others to add their
-> feedback.
->
-> > ---
-> >  include/acpi/processor.h | 1 -
-> >  1 file changed, 1 deletion(-)
-> >
-> > diff --git a/include/acpi/processor.h b/include/acpi/processor.h
-> > index ba1e3ed98d3d..9fa49686957a 100644
-> > --- a/include/acpi/processor.h
-> > +++ b/include/acpi/processor.h
-> > @@ -441,7 +441,6 @@ static inline int acpi_processor_hotplug(struct acpi_processor *pr)
-> >  #endif /* CONFIG_ACPI_PROCESSOR_IDLE */
-> >
-> >  /* in processor_thermal.c */
-> > -int acpi_processor_get_limit_info(struct acpi_processor *pr);
-> >  int acpi_processor_thermal_init(struct acpi_processor *pr,
-> >                               struct acpi_device *device);
-> >  void acpi_processor_thermal_exit(struct acpi_processor *pr,
->
-> Fwiw,
->
-> Reviewed-by: Punit Agrawal <punit.agrawal@bytedance.com>
 
-Applied as 5.20 material with some edits in the subject and changelog.
+[ Note, I'm not on the Android team and my response has nothing to do with
+  my employer. I would say the same thing with my previous employer. ]
 
-Thanks!
+On Wed, 29 Jun 2022 18:45:43 +0200
+Christoph Hellwig <hch@lst.de> wrote:
+
+> On Wed, Jun 29, 2022 at 06:38:09PM +0200, Jason A. Donenfeld wrote:
+> > On the technical topic, an Android developer friend following this
+> > thread just pointed out to me that Android doesn't use PM_AUTOSLEEP and
+> > just has userspace causing suspend frequently. So by his rough
+> > estimation your patch actually *will* break Android devices. Zoinks.
+> > Maybe he's right, maybe he's not -- I don't know -- but you should
+> > probably look into this if you want this patch to land without breakage.  
+> 
+> And it will also "break" anyone else doing frequent suspends from
+> userspace, as that behavior is still in no way related to
+> CONFIG_ANDROID.
+
+Should there then be a CONFIG_FREQUENT_SUSPENDS ?
+
+That is, if you have system where you know that there will be a lot of
+frequent suspends coming from user space, then you would enable it.
+
+I agree, calling this ANDROID is not related to the functionality change.
+But if there was a config that was related, would that be acceptable?
+
+Then it would not just be Android that could enabled this change, but any
+other system that is doing frequent suspends?
+
+-- Steve
