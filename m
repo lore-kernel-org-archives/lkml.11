@@ -2,153 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74094C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E46ECCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231184AbiF2O2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55754 "EHLO
+        id S231658AbiF2O3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229654AbiF2O2G (ORCPT
+        with ESMTP id S229737AbiF2O3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:28:06 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44EABEB;
-        Wed, 29 Jun 2022 07:28:05 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-31772f8495fso149708077b3.4;
-        Wed, 29 Jun 2022 07:28:05 -0700 (PDT)
+        Wed, 29 Jun 2022 10:29:47 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCA11EC55;
+        Wed, 29 Jun 2022 07:29:46 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id v14so22749097wra.5;
+        Wed, 29 Jun 2022 07:29:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/PXRQGK8TJhXm19HFrifqHWkSQsE6OVYhnj4QH2dbs4=;
+        b=VW+dcxw5pDUMc2R231H81MOut5zXYYNiZKBO1O1EW9swi5295A8xm2UcgY2UFrsq0g
+         dg6lyN+sQkPpTrXV16+yRmp1p21AE75/tTCoKy6LmzBcuS4HXnph2QWgsWePlvqjjcl1
+         4QN8agZFs8pn0anSi9SMyoYRsX/Yd0DR28HgNcO8srzGZvN3AJ+JosrkOOQnhDOrp5fu
+         fMwuny2ja/xbfyrKczzd0N3AeIZeCJIZOvcgQVAi1BTsLk6dY30qG+yJh8GFEdklkkuQ
+         v/rTRUComnyn811y57iNgF7pJY+7kHtCs1QLLSN+bmYSe8Y0EP2FV7OEJeUIauE1g2c8
+         cP7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aHR5ymbsi5Z999J/dNB6LVJ9e+8/Ici1kU2JlqnQpKY=;
-        b=8C1ofLx6XDbqlYzlNHkRvE8nKs8/RB04OrLtfDlpnxG4alW9gcVuoXeB8OBbQSNu6i
-         ulJUeRkiaQ7lGULxKzU+bQ0VXvaZ78Lh5XqPB1IWNWpDb4clitjsjxCIzMs6/vWmAJUZ
-         p+2LJuqDyDCcq2R0M/iBmKTJ9G7c8ftiq/a3ADW+XelhafqlLX8Ch8pPJ8Fv4snCfISq
-         cWfoiXDiuzmm+DgBkCTBTCurwrUqrVuqutXZz+vekAoX5PNOCEndJPh3X5yw0YfebepE
-         zR+oDkAbI6bX1qWwjgnwU7jgbyLYlLbKB5YTW0Y34CBZcCsR9uDGmvf7UO2WXbz7fWrQ
-         hQUA==
-X-Gm-Message-State: AJIora/llUJ08rZpsF62SOLPIKnd6GtnUsyRgNxj674znGj4iHlY01YF
-        CndXT6qUhVzQZKTxCP6fx9DiMnOPq0r8iHFbzpUYRLaXi/A=
-X-Google-Smtp-Source: AGRyM1t7OXAfuIqFWwKLk+lBTxMSyeGPHn3W96IbunZGgW4UmzkbDNhR8beTXQHeD4d5aKYs1HBGZD8huUCIIT8oda8=
-X-Received: by 2002:a81:57d7:0:b0:317:b111:34d5 with SMTP id
- l206-20020a8157d7000000b00317b11134d5mr4228905ywb.7.1656512884315; Wed, 29
- Jun 2022 07:28:04 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/PXRQGK8TJhXm19HFrifqHWkSQsE6OVYhnj4QH2dbs4=;
+        b=yjb23Gs5i0wmNNvbA3n/ZUzSrEIkQnagC717i4OdXZK6sSwYka/6+6OSzl/7JD6XDa
+         tPCQVu3tZ5MKHev9LSOy2aAtoE1n9DyLLuGN7IYqiV/Ag1MOkr17Nvzy4St9xMNbsD+f
+         Uq+fVnHtDpBh4CBFoRRo77hyo3hdonShRlLasUIRQv08Kbky/xBqGis2vKZFy30drNtP
+         7Q8UEd70f6eDIHnGmljh5JL4LKof3OwCSOZmo4OfTzEjm/EXF4YC8ByZJGNeG6+5ZU14
+         90yY5UcrPJ666abW8n/zUs/eR25tJe6tqqJmWDqiAMjxJh7MlxFJxL6c4YEMKmpr9iiC
+         P5PA==
+X-Gm-Message-State: AJIora+XMPc8bSx58VMPeCmflbIUX4Pdrm8KTooUooWr5r5zD+y6132p
+        G5EVmvPPxaCjBNe/ucKawBreWro0S9w=
+X-Google-Smtp-Source: AGRyM1v2kIb49CgnzoHkrPteakkrLfTXsqf1qyOdMzWAE3i4yZ7XkCNRei6Be7GYEixE+CrQK9sxtw==
+X-Received: by 2002:a05:6000:1d84:b0:20e:5fae:6e71 with SMTP id bk4-20020a0560001d8400b0020e5fae6e71mr3504337wrb.224.1656512984923;
+        Wed, 29 Jun 2022 07:29:44 -0700 (PDT)
+Received: from localhost (92.40.168.16.threembb.co.uk. [92.40.168.16])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05600c20c600b003a0426fae52sm3291758wmm.24.2022.06.29.07.29.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 07:29:44 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
+        sre@kernel.org, lee.jones@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org
+Cc:     lars@metafoo.de, quic_gurus@quicinc.com,
+        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
+        michael@walle.cc, rdunlap@infradead.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v4 00/15] Add support for AXP192 PMIC
+Date:   Wed, 29 Jun 2022 15:30:31 +0100
+Message-Id: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-References: <20220522214302.39024-1-james.liu@hpe.com>
-In-Reply-To: <20220522214302.39024-1-james.liu@hpe.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 29 Jun 2022 16:27:53 +0200
-Message-ID: <CAJZ5v0i7CiuXXHOyMqwzS5CUqKPN6rcLC9yxpv20goeAinbKUg@mail.gmail.com>
-Subject: Re: [PATCH v2] ACPI: OSL: Fix the memory mapping of an ACPI GAS that
- addresses a data structure
-To:     James Liu <james.liu@hpe.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        rwright@hpe.com, david.chang@hpe.com, clayc@hpe.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 11:44 PM <james.liu@hpe.com> wrote:
->
-> From: James Liu <james.liu@hpe.com>
->
->     Modify acpi_os_map_generic_address() & acpi_os_unmap_generic_address()
->     to correctly handle cases that a GAS table (i.e., Table 5.1, ACPI 6.4)
->     is used to address a data structure; in the case, the GAS has the field
->     of "Register Bit Width" equal to 0.
->
->     For example, "Injection Instruction Entry" (Table 18.25, ACPI 6.4) has
->     a RegisterRegion field that is a GAS that points to a data structure
->     SET_ERROR_TYPE_WITH_ADDRESS (Table 18.30), which is required when using
->     EINJ (Error Injection module).
->
->     This fix preserves a fairly sufficient memory space (i.e. page size) to
+Changes in v4:
 
-The hard-coded PAGE_SIZE allocation size is kind of a concern, because
-the spec doesn't seem to limit the size of the structure pointed to by
-the GAS to a page.
+* Drop regmap-irq patches and rebase on top of the regmap-irq
+  refactoring series[1], which implements the same functionality.
+* Reorder mfd_cells, putting one-line entries at the bottom.
+* Fix incorrect example in axp192-gpio device tree bindings.
+* Perform adc_en2 flag -> adc_en2_mask conversion in axp20x_adc
+  as a separate patch.
+* Simplify axp192_usb_power_set_current_max().
+* Drop unneeded OF dependency in pin control driver, and document
+  tables used for describing register layouts.
+* Various style fixups suggested by Andy Shevchenko.
 
-Also it is not clear from the spec that the RegisterRegion field in
-Table 18.25 points to a structure.  On the contrary, Section 18.6.2
-says that it points to a register.
+[1]: https://lore.kernel.org/lkml/20220623211420.918875-1-aidanmacdonald.0x0@gmail.com/
 
-In any case, I don't think it is OK to use
-acpi_os_map_generic_address() to map an address from a GAS pointing to
-a data structure.  acpi_os_map_memory() appears to be the right
-interface to map such memory regions.
+Changes in v3:
 
->     store the data structure to prevent EINJ module from loading failure if
->     platform firmware can correctly support Injection Instruction Entry in
->     an EINJ table.
->
-> Signed-off-by: James Liu <james.liu@hpe.com>
-> ---
->  drivers/acpi/osl.c | 27 +++++++++++++++++++++++----
->  1 file changed, 23 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-> index 45c5c0e45..99f987c8c 100644
-> --- a/drivers/acpi/osl.c
-> +++ b/drivers/acpi/osl.c
-> @@ -452,14 +452,20 @@ EXPORT_SYMBOL_GPL(acpi_os_unmap_memory);
->
->  void __iomem *acpi_os_map_generic_address(struct acpi_generic_address *gas)
->  {
-> -       u64 addr;
-> +       u64 addr = 0;
->
->         if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
->                 return NULL;
->
-> +       /* Handle a case that GAS is used to address an ACPI data structure */
-> +       if (!gas->bit_width) {
-> +               pr_info("An ACPI data structure at 0x%llx is mapped\n", addr);
-> +               return  acpi_os_map_iomem(addr, PAGE_SIZE);
-> +       }
-> +
->         /* Handle possible alignment issues */
->         memcpy(&addr, &gas->address, sizeof(addr));
-> -       if (!addr || !gas->bit_width)
-> +       if (!addr)
->                 return NULL;
->
->         return acpi_os_map_iomem(addr, gas->bit_width / 8);
-> @@ -468,15 +474,28 @@ EXPORT_SYMBOL(acpi_os_map_generic_address);
->
->  void acpi_os_unmap_generic_address(struct acpi_generic_address *gas)
->  {
-> -       u64 addr;
-> +       u64 addr = 0;
->         struct acpi_ioremap *map;
->
->         if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
->                 return;
->
-> +       /* Handle a case that GAS is used to address an ACPI data structure */
-> +       if (!gas->bit_width) {
-> +               pr_info("An ACPI data structure at 0x%llx is unmapped\n", addr);
-> +               mutex_lock(&acpi_ioremap_lock);
-> +               map = acpi_map_lookup(addr, PAGE_SIZE);
-> +               if (!map) {
-> +                       mutex_unlock(&acpi_ioremap_lock);
-> +                       return;
-> +               }
-> +               acpi_os_drop_map_ref(map);
-> +               mutex_unlock(&acpi_ioremap_lock);
-> +       }
-> +
->         /* Handle possible alignment issues */
->         memcpy(&addr, &gas->address, sizeof(addr));
-> -       if (!addr || !gas->bit_width)
-> +       if (!addr)
->                 return;
->
->         mutex_lock(&acpi_ioremap_lock);
-> --
-> 2.25.1
->
+* Update pinctrl driver to address Andy Shevchenko's review comments
+  from v1, and fix a few other issues.
+* Add gpio-ranges property and example snippet to gpio DT bindings.
+* Update commit message of patch 01/16 to point out that all register
+  addresses are obtained using sub_irq_reg().
+* Document ccc_table in axp20x_battery. Also update commit message to
+  note a small fix that is part of that patch.
+* Drop axp20x_adc consolidation patch in favor of using separate adc_raw
+  functions. It's a minor code size optimization that may not be worth
+  the effort due to implementation complexity.
+* Use the FIELD_GET macro in axp20x_adc to further clarify intent.
+* Fix a typo in the regulator driver where an AXP20X regulator ID was
+  mistakenly used instead of an AXP192 regulator ID. Also carry over
+  an Acked-by: tag from v1. Hope that's okay.
+* Accumulate Acked-by: tags from v1 on DT patches.
+* Accumulate Acked-by: tags from v2.
+
+Note that regmap maintainer Mark Brown has said the first two patches to
+regmap-irq aren't suitable for inclusion into the kernel in their current
+state. I'm including them for v3 so the series remains testable.
+
+Changes in v2:
+
+* Do a little cleanup of axp20x_adc suggested by Jonathan Cameron
+* Consolidate ADC read functions in axp20x_adc
+* Drop the axp192's read_label callback in axp20x_adc
+* Clean up the axp192-gpio dt bindings
+* Rewrite a problematic bit of code in axp20x_usb_power reported
+  by kernel test robot
+* Support AXP192 in axp20x_battery
+* Split up regmap-irq changes to two separate patches
+
+Cover letter from v1:
+
+Hi all,
+
+This patch series adds support for the X-Powers AXP192 PMIC to the
+AXP20x driver framework.
+
+The first patch is a small change to regmap-irq to support the AXP192's
+unusual IRQ register layout. It isn't possible to include all of the
+IRQ registers in one regmap-irq chip without this.
+
+The rest of the changes are pretty straightforward, I think the only
+notable parts are the axp20x_adc driver where there seems to be some
+opportunities for code reuse (the axp192 is nearly a duplicate of the
+axp20x) and the addition of a new pinctrl driver for the axp192, since
+the axp20x pinctrl driver was not very easy to adapt.
+
+Aidan MacDonald (15):
+  dt-bindings: mfd: add bindings for AXP192 MFD device
+  dt-bindings: iio: adc: axp209: Add AXP192 compatible
+  dt-bindings: power: supply: axp20x: Add AXP192 compatible
+  dt-bindings: gpio: Add AXP192 GPIO bindings
+  dt-bindings: power: axp20x-battery: Add AXP192 compatible
+  mfd: axp20x: Add support for AXP192
+  regulator: axp20x: Add support for AXP192
+  iio: adc: axp20x_adc: Minor code cleanups
+  iio: adc: axp20x_adc: Replace adc_en2 flag with adc_en2_mask field
+  iio: adc: axp20x_adc: Add support for AXP192
+  power: supply: axp20x_usb_power: Add support for AXP192
+  pinctrl: Add AXP192 pin control driver
+  power: axp20x_battery: Add constant charge current table
+  power: axp20x_battery: Support battery status without fuel gauge
+  power: axp20x_battery: Add support for AXP192
+
+ .../bindings/gpio/x-powers,axp192-gpio.yaml   |  68 ++
+ .../bindings/iio/adc/x-powers,axp209-adc.yaml |  18 +
+ .../bindings/mfd/x-powers,axp152.yaml         |   1 +
+ .../x-powers,axp20x-battery-power-supply.yaml |   1 +
+ .../x-powers,axp20x-usb-power-supply.yaml     |   1 +
+ drivers/iio/adc/axp20x_adc.c                  | 356 +++++++++--
+ drivers/mfd/axp20x-i2c.c                      |   2 +
+ drivers/mfd/axp20x.c                          | 152 +++++
+ drivers/pinctrl/Kconfig                       |  13 +
+ drivers/pinctrl/Makefile                      |   1 +
+ drivers/pinctrl/pinctrl-axp192.c              | 598 ++++++++++++++++++
+ drivers/power/supply/axp20x_battery.c         | 142 ++++-
+ drivers/power/supply/axp20x_usb_power.c       |  84 ++-
+ drivers/regulator/axp20x-regulator.c          | 100 ++-
+ include/linux/mfd/axp20x.h                    |  84 +++
+ 15 files changed, 1547 insertions(+), 74 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
+ create mode 100644 drivers/pinctrl/pinctrl-axp192.c
+
+-- 
+2.35.1
+
