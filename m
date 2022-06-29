@@ -2,80 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B598C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D282CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231493AbiF2D3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 23:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57136 "EHLO
+        id S231517AbiF2Def (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 23:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230489AbiF2D3U (ORCPT
+        with ESMTP id S229978AbiF2Dee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 23:29:20 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4C501A050;
-        Tue, 28 Jun 2022 20:29:18 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 27FCC1E80D11;
-        Wed, 29 Jun 2022 11:28:09 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id s7BffYbgTWxE; Wed, 29 Jun 2022 11:28:06 +0800 (CST)
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: kunyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 661CA1E80CDC;
-        Wed, 29 Jun 2022 11:28:06 +0800 (CST)
-From:   Li kunyu <kunyu@nfschina.com>
-To:     tsbogend@alpha.franken.de
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Li kunyu <kunyu@nfschina.com>
-Subject: [PATCH] arch: Fix spelling mistake
-Date:   Wed, 29 Jun 2022 11:29:08 +0800
-Message-Id: <20220629032908.12417-1-kunyu@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Tue, 28 Jun 2022 23:34:34 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8B518342;
+        Tue, 28 Jun 2022 20:34:32 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LXnBq5mqgz4xNm;
+        Wed, 29 Jun 2022 13:34:27 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1656473668;
+        bh=ZkgYchXvx63+PobnrKf/DDwkwBtGCDcHG86cj9IM2YU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ErEEd+NfqYZueaBowFEhJFX0MHJ7LUz444Y8RbNLj9P6u4Kt5QeW6i8wesCPkjNNP
+         3eGv3wR5v4sVi770KbOENnBShtp4rWge5Htt62HF4aITNvA1ofJ58bRc6UrLDcwf4U
+         AAdc+HzE9YLg7AUOcCJN2/QZTLyUIP2FloD578UToRATwD4k743v7ibnuIYjU+wKGI
+         KNfJxLi7IFGaef6GGJYs7Gx06ZQ1eXkDeRtO/z/18q41GzosCXxNknPo8jYRydB8KV
+         X5Vq8EK3U11mH3lpVbiPcP9CJX+MoXw+XwLBtfThPMJQ88vMG5ci3n06diCxj1zYnF
+         sSuGBmKbW7XVg==
+Date:   Wed, 29 Jun 2022 13:34:23 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Pearson <markpearson@lenovo.com>
+Subject: linux-next: manual merge of the drivers-x86 tree with the
+ drivers-x86-fixes tree
+Message-ID: <20220629133423.7aef5b57@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/R5/rL3IiIdFRN.qv+zE/Z1H";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change 'modifed' to 'modified'.
+--Sig_/R5/rL3IiIdFRN.qv+zE/Z1H
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Li kunyu <kunyu@nfschina.com>
----
- arch/mips/include/asm/octeon/cvmx-helper-board.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Hi all,
 
-diff --git a/arch/mips/include/asm/octeon/cvmx-helper-board.h b/arch/mips/include/asm/octeon/cvmx-helper-board.h
-index ce52aafe7a8d..81c40272f2b1 100644
---- a/arch/mips/include/asm/octeon/cvmx-helper-board.h
-+++ b/arch/mips/include/asm/octeon/cvmx-helper-board.h
-@@ -63,7 +63,7 @@ typedef enum {
-  * connected to this port. On chips supporting multiple MII
-  * busses the bus number is encoded in bits <15:8>.
-  *
-- * This function must be modifed for every new Octeon board.
-+ * This function must be modified for every new Octeon board.
-  * Internally it uses switch statements based on the cvmx_sysinfo
-  * data to determine board types and revisions. It relys on the
-  * fact that every Octeon board receives a unique board type
-@@ -81,7 +81,7 @@ extern int cvmx_helper_board_get_mii_address(int ipd_port);
-  * and are handled by the fall through case. This function must be
-  * updated for boards that don't have the normal Marvell PHYs.
-  *
-- * This function must be modifed for every new Octeon board.
-+ * This function must be modified for every new Octeon board.
-  * Internally it uses switch statements based on the cvmx_sysinfo
-  * data to determine board types and revisions. It relys on the
-  * fact that every Octeon board receives a unique board type
-@@ -103,7 +103,7 @@ extern union cvmx_helper_link_info __cvmx_helper_board_link_get(int ipd_port);
-  * support and should return the number of actual ports on the
-  * board.
-  *
-- * This function must be modifed for every new Octeon board.
-+ * This function must be modified for every new Octeon board.
-  * Internally it uses switch statements based on the cvmx_sysinfo
-  * data to determine board types and revisions. It relys on the
-  * fact that every Octeon board receives a unique board type
--- 
-2.18.2
+Today's linux-next merge of the drivers-x86 tree got a conflict in:
 
+  drivers/platform/x86/thinkpad_acpi.c
+
+between commits:
+
+  42504af77536 ("platform/x86: thinkpad-acpi: profile capabilities as integ=
+er")
+  bce6243f767f ("platform/x86: thinkpad_acpi: do not use PSC mode on Intel =
+platforms")
+
+from the drivers-x86-fixes tree and commit:
+
+  6fe391dd5d87 ("platform/x86: thinkpad-acpi: profile capabilities as integ=
+er")
+
+from the drivers-x86 tree.
+
+I fixed it up (I just used the former version) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/R5/rL3IiIdFRN.qv+zE/Z1H
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK7yEAACgkQAVBC80lX
+0GxEfggAg37DRH0MGeqWKpjP88/Nhd6W2Q448/0pekOwAHejDBapylN8sohIqnxV
+/co5xceHFmTbX2dP2PchIrIwjJpJfrmE9+ydouUmX8v21ItW8Vhe7RIGUlwA9Qca
+bMAgl3KRwY38KUgONxY04ADDUtKAxSBzFZRT1EozwjPke9AKO7herCbboiGZ54rG
+Q9tHTbplBCInXZhWXwVLhEU7vdChqUZ+W1kzB3TQjfHEiM3UelQ6ghHsNp5x/sch
+PwdPl+07ut1EYZoQQGhWOWxhm7kZ5YTwboeqBiqooMxbyNyOPwKj2luYU30Ur83E
+3krZqyPw7efHN4IALuhU2sJ41PgZmw==
+=zB6j
+-----END PGP SIGNATURE-----
+
+--Sig_/R5/rL3IiIdFRN.qv+zE/Z1H--
