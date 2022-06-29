@@ -2,165 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78937C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232507AbiF2NvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
+        id S231905AbiF2Nxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbiF2NvL (ORCPT
+        with ESMTP id S230478AbiF2Nxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:51:11 -0400
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02B018E34;
-        Wed, 29 Jun 2022 06:51:10 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id x184so25324390ybg.12;
-        Wed, 29 Jun 2022 06:51:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JCp/LRokJcxZDVsuGLGOHFR2m172HOBXIzph0VMMKOw=;
-        b=UjCVWkrYTSMgHWZOrMmy9fV69edY0W7BFOZcHNd+hBJpA8u4kBbdTLemydBKsASnvy
-         nRFhPqFTADEK/CLP1wKevqqQb9hxUuBHN4LXRfe7/XnYLIbZljC63P3DWzl0/jxawPal
-         lcq6FMapJN+eGsFNQMIIYLG3ZV1j/LrqLZCTHY3ZWy/TR981Ga32lnPjyhFaw70ziNDo
-         N4jDyG2gpaCHe/9BoIAqFkgO3zubLRKC+5kxdMlbthg6UDg5gmjQlCzSmidlgVbSVvmh
-         KiLeMC03MoLt54XBXc7f1EP/6+H5mIhqNLjXjL64UJKZRLpSeE2QhxUz3wQv346U2dVX
-         irMw==
-X-Gm-Message-State: AJIora8EvdiBBblWEZkG1odDKU9iyEBoKNB9e3Xcz32uVn7nar0ktTJI
-        oBtHjRBPJjvrgmWdIpPl5OQqvQBtBBXrAdGVqrw=
-X-Google-Smtp-Source: AGRyM1s66IF0TiL7HjPl7I4lBUzShSoaC6NNemCaiaGJtRsPoy7MMeZdcDP+G6yttdeXcBU4a++p3p7oNEA0ycJSE6M=
-X-Received: by 2002:a25:664f:0:b0:66c:d0f4:36cc with SMTP id
- z15-20020a25664f000000b0066cd0f436ccmr3368498ybm.482.1656510669730; Wed, 29
- Jun 2022 06:51:09 -0700 (PDT)
+        Wed, 29 Jun 2022 09:53:39 -0400
+X-Greylist: delayed 1811 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 06:53:37 PDT
+Received: from m1564.mail.126.com (m1564.mail.126.com [220.181.15.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABE491A836;
+        Wed, 29 Jun 2022 06:53:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=FJN4I
+        IbVkQdw9+cImUILX4gQzGLXp9vFfQmdhbPysgE=; b=dVoaWrZh4suHy0tJGo7kI
+        PpzTqENRgd/LVSYfzLNomZ0Npj+5E6W6nrXZ0AiMlWQ4kf8E+aU4mSLy0UaIvZPO
+        ucJNjdC9t+2PFaFDS/PIfTqmsFym0QT5nRlc43+mYg5KUVJvyzlqLXjinaeLf4rf
+        M+zk2809E6eLGyLH/c+dHA=
+Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr64
+ (Coremail) ; Wed, 29 Jun 2022 21:23:01 +0800 (CST)
+X-Originating-IP: [124.16.139.61]
+Date:   Wed, 29 Jun 2022 21:23:01 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "Pavel Machek" <pavel@denx.de>
+Cc:     "Sasha Levin" <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
+        yangtiezhu@loongson.cn, linux-mips@vger.kernel.org
+Subject: Re:Re: [PATCH AUTOSEL 4.9 11/13] mips/pic32/pic32mzda: Fix refcount
+ leak bugs
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <20220629130617.GE13395@duo.ucw.cz>
+References: <20220628022657.597208-1-sashal@kernel.org>
+ <20220628022657.597208-11-sashal@kernel.org>
+ <20220629130617.GE13395@duo.ucw.cz>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-References: <20220627165047.336669-1-sudeep.holla@arm.com> <20220629130644.1258904-1-sudeep.holla@arm.com>
-In-Reply-To: <20220629130644.1258904-1-sudeep.holla@arm.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 29 Jun 2022 15:50:58 +0200
-Message-ID: <CAJZ5v0jdbS9HNfZ5N=M9jDCOp5uiQ5L30LA6haxpoG6QUFrNbw@mail.gmail.com>
-Subject: Re: [PATCH] ACPI: Remove the unused find_acpi_cpu_cache_topology()
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ionela Voinescu <ionela.voinescu@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Wang Qing <wangqing@vivo.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <120f6850.7be3.181afa11f50.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: QMqowAAnL3M2UrxiBCNCAA--.29325W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGg4vF1-HZZ+vqAAAsJ
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 3:07 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
->
-> The sole user of this find_acpi_cpu_cache_topology() was arm64 topology
-> which is now consolidated into the generic arch_topology without the need
-> of this function.
->
-> Drop the unused function find_acpi_cpu_cache_topology().
->
-> Reported-by: Ionela Voinescu <ionela.voinescu@arm.com>
-> Cc: Rafael J. Wysocki <rafael@kernel.org>
-> Cc: linux-acpi@vger.kernel.org
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->  drivers/acpi/pptt.c  | 37 -------------------------------------
->  include/linux/acpi.h |  5 -----
->  2 files changed, 42 deletions(-)
->
-> Hi Rafael,
->
-> This is another patch that I would like to be part of the series[1].
-> Please ack the same if you are OK to route this via Greg. I am avoiding
-> to repost the whole series just for this one additional patch for now.
-
-Sure.
-
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-> [1] https://lore.kernel.org/all/20220627165047.336669-1-sudeep.holla@arm.com/
->
-> diff --git a/drivers/acpi/pptt.c b/drivers/acpi/pptt.c
-> index 763f021d45e6..dd3222a15c9c 100644
-> --- a/drivers/acpi/pptt.c
-> +++ b/drivers/acpi/pptt.c
-> @@ -691,43 +691,6 @@ int find_acpi_cpu_topology(unsigned int cpu, int level)
->         return find_acpi_cpu_topology_tag(cpu, level, 0);
->  }
->
-> -/**
-> - * find_acpi_cpu_cache_topology() - Determine a unique cache topology value
-> - * @cpu: Kernel logical CPU number
-> - * @level: The cache level for which we would like a unique ID
-> - *
-> - * Determine a unique ID for each unified cache in the system
-> - *
-> - * Return: -ENOENT if the PPTT doesn't exist, or the CPU cannot be found.
-> - * Otherwise returns a value which represents a unique topological feature.
-> - */
-> -int find_acpi_cpu_cache_topology(unsigned int cpu, int level)
-> -{
-> -       struct acpi_table_header *table;
-> -       struct acpi_pptt_cache *found_cache;
-> -       acpi_status status;
-> -       u32 acpi_cpu_id = get_acpi_id_for_cpu(cpu);
-> -       struct acpi_pptt_processor *cpu_node = NULL;
-> -       int ret = -1;
-> -
-> -       status = acpi_get_table(ACPI_SIG_PPTT, 0, &table);
-> -       if (ACPI_FAILURE(status)) {
-> -               acpi_pptt_warn_missing();
-> -               return -ENOENT;
-> -       }
-> -
-> -       found_cache = acpi_find_cache_node(table, acpi_cpu_id,
-> -                                          CACHE_TYPE_UNIFIED,
-> -                                          level,
-> -                                          &cpu_node);
-> -       if (found_cache)
-> -               ret = ACPI_PTR_DIFF(cpu_node, table);
-> -
-> -       acpi_put_table(table);
-> -
-> -       return ret;
-> -}
-> -
->  /**
->   * find_acpi_cpu_topology_package() - Determine a unique CPU package value
->   * @cpu: Kernel logical CPU number
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 4f82a5bc6d98..7b96a8bff6d2 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -1429,7 +1429,6 @@ int find_acpi_cpu_topology(unsigned int cpu, int level);
->  int find_acpi_cpu_topology_cluster(unsigned int cpu);
->  int find_acpi_cpu_topology_package(unsigned int cpu);
->  int find_acpi_cpu_topology_hetero_id(unsigned int cpu);
-> -int find_acpi_cpu_cache_topology(unsigned int cpu, int level);
->  #else
->  static inline int acpi_pptt_cpu_is_thread(unsigned int cpu)
->  {
-> @@ -1451,10 +1450,6 @@ static inline int find_acpi_cpu_topology_hetero_id(unsigned int cpu)
->  {
->         return -EINVAL;
->  }
-> -static inline int find_acpi_cpu_cache_topology(unsigned int cpu, int level)
-> -{
-> -       return -EINVAL;
-> -}
->  #endif
->
->  #ifdef CONFIG_ACPI_PCC
-> --
-> 2.37.0
->
+CgoKCkF0IDIwMjItMDYtMjkgMjE6MDY6MTcsICJQYXZlbCBNYWNoZWsiIDxwYXZlbEBkZW54LmRl
+PiB3cm90ZToKPkhpIQo+Cj4+IEZyb206IExpYW5nIEhlIDx3aW5kaGxAMTI2LmNvbT4KPj4gCj4+
+IFsgVXBzdHJlYW0gY29tbWl0IGViOWU5YmM0ZmE1ZmI0ODljOTJlYzU4OGIzZmIzNWYwNDJiYTZk
+ODYgXQo+PiAKPj4gb2ZfZmluZF9tYXRjaGluZ19ub2RlKCksIG9mX2ZpbmRfY29tcGF0aWJsZV9u
+b2RlKCkgYW5kCj4+IG9mX2ZpbmRfbm9kZV9ieV9wYXRoKCkgd2lsbCByZXR1cm4gbm9kZSBwb2lu
+dGVycyB3aXRoIHJlZmNvdXQKPj4gaW5jcmVtZW50ZWQuIFdlIHNob3VsZCBjYWxsIG9mX25vZGVf
+cHV0KCkgd2hlbiB0aGV5IGFyZSBub3QKPj4gdXNlZCBhbnltb3JlLgo+Cj5JdCBsb29rcyBsaWtl
+IHRoaXMgbWF5IGludHJvZHVjZXMgYW4gdXNlLWFmdGVyLWZyZWUgYnVnOgo+Cj4+ICsrKyBiL2Fy
+Y2gvbWlwcy9waWMzMi9waWMzMm16ZGEvaW5pdC5jCj4+IEBAIC0xMzEsMTMgKzEzMSwxOCBAQCBz
+dGF0aWMgaW50IF9faW5pdCBwaWMzMl9vZl9wcmVwYXJlX3BsYXRmb3JtX2RhdGEoc3RydWN0IG9m
+X2Rldl9hdXhkYXRhICpsb29rdXApCj4+ICAJCW5wID0gb2ZfZmluZF9jb21wYXRpYmxlX25vZGUo
+TlVMTCwgTlVMTCwgbG9va3VwLT5jb21wYXRpYmxlKTsKPj4gIAkJaWYgKG5wKSB7Cj4+ICAJCQls
+b29rdXAtPm5hbWUgPSAoY2hhciAqKW5wLT5uYW1lOwo+PiAtCQkJaWYgKGxvb2t1cC0+cGh5c19h
+ZGRyKQo+PiArCQkJaWYgKGxvb2t1cC0+cGh5c19hZGRyKSB7Cj4+ICsJCQkJb2Zfbm9kZV9wdXQo
+bnApOwo+PiAgCQkJCWNvbnRpbnVlOwo+PiArCQkJfQo+PiAgCQkJaWYgKCFvZl9hZGRyZXNzX3Rv
+X3Jlc291cmNlKG5wLCAwLCAmcmVzKSkKPj4gIAkJCQlsb29rdXAtPnBoeXNfYWRkciA9IHJlcy5z
+dGFydDsKPj4gKwkJCW9mX25vZGVfcHV0KG5wKTsKPj4gIAkJfQo+PiAgCX0KPgo+bG9va3VwLT5u
+YW1lIG5vdyBjb250YWlucyBwb2ludGVyIHRha2VuIGZyb20gbnAtPm5hbWUsIGJ1dCB3ZSBkaWQK
+PnB1dCgpIG9uIHRoZSBucC4gV2hhdCBndWFyYW50ZWVzIG5wLT5uYW1lIGlzIG5vdCBmcmVlZD8K
+Pgo+QmVzdCByZWdhcmRzLAo+CQkJCQkJCQlQYXZlbAoKSGksIFBhdmVsLgoKVGhhbmtzIGZvciB5
+b3UgdG8gcmV2aWV3IHRoaXMgcGF0Y2hlZCBjb2RlLgoKSW4gZmFjdCwgdGhlIHxQVVR8IG9uICdu
+cCcgd2lsbCBub3QgbGVhZCB0byB0aGUgfEZSRUV8LgpGaXJzdCwgYmVmb3JlIGNhbGxpbmcgb2Zf
+ZmluZF9jb21wYXRpYmxlX25vZGUoKSwgdGhlIHRhcmdldCBvYmplY3QncyByZWZjb3VudCBtdXN0
+IGJlID49IDEsIGFzIHRoZSBvYmplY3QgaXMgYWxpdmUuClRoZW4sIGFmdGVyIGNhbGxpbmcgb2Zf
+ZmluZF9jb21wYXRpYmxlX25vZGUoKSwgaXRzIHJlZmNvdW50IG11c3QgYmUgPj0yLgpTbywgYWZ0
+ZXIgY2FsbGluZyBvZl9ub2RlX3B1dChucCksIGl0cyByZWZjb3VudCBtdXN0IGJlIHN0aWxsID49
+MS4KCkluIGZhY3QsIHRoZXNlIHxQVVR8cyBhcmUganVzdCB1c2VkIHRvIGtlZXAgcmVmY291bnQg
+YmFsYW5jZSBmb3IgdGhlIHxHRVR8IGluIG9mX2ZpbmRfY29tcGF0aWJsZV9ub2RlKCkuCgpJZiB0
+aGVyZSBpcyBhbnl0aGluZyB3cm9uZywgcGxlYXNlIGNvcnJlY3QgbWUuCgpUaGFucyB2ZXJ5IG11
+Y2ggdG8gcmV2aWV3IG15IHBhdGNoIGNvZGUuCgpMaWFuZwoKPi0tIAo+REVOWCBTb2Z0d2FyZSBF
+bmdpbmVlcmluZyBHbWJILCAgICAgIE1hbmFnaW5nIERpcmVjdG9yOiBXb2xmZ2FuZyBEZW5rCj5I
+UkIgMTY1MjM1IE11bmljaCwgT2ZmaWNlOiBLaXJjaGVuc3RyLjUsIEQtODIxOTQgR3JvZWJlbnpl
+bGwsIEdlcm1hbnkK
