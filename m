@@ -2,118 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C938C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E510DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233580AbiF2NB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
+        id S233599AbiF2NBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233509AbiF2NBX (ORCPT
+        with ESMTP id S233578AbiF2NBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:01:23 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD91739153;
-        Wed, 29 Jun 2022 06:01:21 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id g7so10587693pjj.2;
-        Wed, 29 Jun 2022 06:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=HqNKV4bR45GvOqHjeBJQ3k55axq+VCZJ2whW1fAz/0M=;
-        b=Cmqk7U/Lx1CxmE+wKYCOQwkJGXpDJajm76ZxpXqESFNmz1ExgInYIhnpQ57v74j1Qw
-         cD6ju4aIsv/pcyIJu2qkK7+je4LU3DLEaJCeV4WwjXRa3equp/JCpMh+OCU2tj4LWSBg
-         XLGos3i5BPRzvj2/2LYH0d/kOIznBthdIlSapY8knNhDs4rM27qQNTJSVx+YmF5RqoWh
-         F9ZiFDn1lKonjn14cA/3FPywH1H6+asUp3rfoX97HOCODuix3kHUMVrV7TewyPi+zNjL
-         6Z2JhBglIkNMFfxWqGN5bedh9SvQlvyQM9v/N+EiKefhPkvpy3ZtJqKc/APx1A/ygYnM
-         r8ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=HqNKV4bR45GvOqHjeBJQ3k55axq+VCZJ2whW1fAz/0M=;
-        b=aTI13BOAvOrwP7hQW/P5XIVF2FE/Ds+RIRaE/4I/67HZwLm2puotdu+4GFZsPr8StF
-         BNwIEj8ZqdEdT8Va7DIO1telwC9Elnil4HKKHrAmf9lvqBK4lyQPqTXpIJwivblvvn4L
-         dp37YhEhUvR3ScBoIzSLwqngOIJhKm/C1MHv+KxxTz3e9BXJc6QOzAaXd2cql22p1ZmL
-         +bGjrDjYzXeZs3/ORAbXb3LhKqFcPUPhf0fIZoBtQyz9deivhMXRCMXStskLjKnPIBTS
-         0sVb0wTccNwtNMQUkMTo2GObo7zD/I8BbyFcywzsHWVZLShcZkugNtEVFSFvgcVlEArA
-         EANg==
-X-Gm-Message-State: AJIora+lhCNErjzIEGzP5vidrN4jDPdH+COog4uc58irhzNtxehzAcia
-        YtAZmbW2T2HV3OpzGjFRVQI=
-X-Google-Smtp-Source: AGRyM1ukLgzdPJmGd07DUSErX6n7geF03OhJc3b0yiu4cyfrWF0xZMcLfe41o0VtkMakIlFvQc3FRg==
-X-Received: by 2002:a17:90b:341:b0:1e0:cf43:df4f with SMTP id fh1-20020a17090b034100b001e0cf43df4fmr3860023pjb.126.1656507681308;
-        Wed, 29 Jun 2022 06:01:21 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id a6-20020a056a000c8600b0051c49fb62b7sm11735880pfv.165.2022.06.29.06.01.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 06:01:20 -0700 (PDT)
-Message-ID: <c3254669-cd71-48e5-665c-430b76f77baa@gmail.com>
-Date:   Wed, 29 Jun 2022 22:01:17 +0900
+        Wed, 29 Jun 2022 09:01:42 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F76839835;
+        Wed, 29 Jun 2022 06:01:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656507699; x=1688043699;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XQI/NCJ05Qj6ATNW0MliX+9pwqsKL8TzUkGsAn8/txw=;
+  b=Wcq4GBj3YTbi1LNhZQPkv6Hf6/YF/Ys+9WxFJ2E4VrYWjev2CbS7tTYK
+   j9lh7wZjHm9FvrcrwxqutajevztTjHFc4p/jZ09bAB24IGSZlXzURAKxw
+   43lJg4YaMlwy0ozK6L4MzbwnHaXYZsMp2F2yG1xsAL7+PKlxNSK92VG/R
+   sXANjdMKpO7gSuRHNJvRIHrOUw6fOZQMlLNZRD/xF6TwPpZIEu3iaytuh
+   grMiDHevojkTbvQNWdLKhDa5ElMe6sNmBGtRa5yxuuJrK/r7HojA79jti
+   NGWMmtSAG5vSRwr0vnsKmjVcazAd6w/HvVh3Iq/BsqdRe2+9SnGnkhV1r
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="162577998"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jun 2022 06:01:37 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 29 Jun 2022 06:01:36 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 29 Jun 2022 06:01:32 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>
+CC:     <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <Kavyasree.Kotagiri@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        "Sergiu Moga" <sergiu.moga@microchip.com>
+Subject: [PATCH] dt-bindings: spi: convert spi_atmel to json-schema
+Date:   Wed, 29 Jun 2022 15:58:04 +0300
+Message-ID: <20220629125804.137099-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Akira Yokosawa <akiyks@gmail.com>
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: [PATCH] media: docs: Remove extraneous \endgroup from P010 table
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The \endgroup command at the bottom of a table added in commit
-5374d8fb75f3 ("media: Add P010 video format") doesn't have a
-corresponding \begingroup command preceding it.
+Convert SPI binding for Atmel/Microchip SoCs to Device Tree Schema
+format.
 
-This imbalance causes an build error in "make pdfdocs".
-
-Fix the issue by removing it.
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Fixes: 5374d8fb75f3 ("media: Add P010 video format")
-Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
 ---
-Hi Mauro,
+ .../devicetree/bindings/spi/atmel,spi.yaml    | 82 +++++++++++++++++++
+ .../devicetree/bindings/spi/spi_atmel.txt     | 36 --------
+ 2 files changed, 82 insertions(+), 36 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/atmel,spi.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
 
-In my (bi-weekly) test of "make pdfdocs" against next-20220629,
-I encountered a build error of userspace-api.tex.
-
-This patch fixes it.
-
-This is relative to 'master' of git://linuxtv.org/media_tree.git
-as merged by Stephen.
-
-        Thanks, Akira
---
- Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-index a900ff66911a..997ce2d094fc 100644
---- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-+++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-@@ -570,9 +570,6 @@ Data in the 10 high bits, zeros in the 6 low bits, arranged in little endian ord
-       - Cb\ :sub:`11`
-       - Cr\ :sub:`11`
- 
--.. raw:: latex
+diff --git a/Documentation/devicetree/bindings/spi/atmel,spi.yaml b/Documentation/devicetree/bindings/spi/atmel,spi.yaml
+new file mode 100644
+index 000000000000..751618a47235
+--- /dev/null
++++ b/Documentation/devicetree/bindings/spi/atmel,spi.yaml
+@@ -0,0 +1,82 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/spi/atmel,spi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel SPI device
++
++maintainers:
++  - Mark Brown <broonie@kernel.org>
++
++allOf:
++  - $ref: "spi-controller.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - const: atmel,at91rm9200-spi
++      - items:
++          - const: microchip,sam9x60-spi
++      - items:
++          - const: microchip,sam9x60-spi
++          - const: atmel,at91rm9200-spi
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  cs-gpios: true
++
++  clock-names:
++    description:
++      Tuple listing input clock names, "spi_clk" is a required element.
++    contains:
++      const: spi_clk
++    additionalItems: true
++
++  clocks:
++    maxItems: 1
++
++  atmel,fifo-size:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: |
++      Maximum number of data the RX and TX FIFOs can store for FIFO
++      capable SPI controllers.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi1: spi@fffcc000 {
++        compatible = "atmel,at91rm9200-spi";
++        reg = <0xfffcc000 0x4000>;
++        interrupts = <13 IRQ_TYPE_LEVEL_HIGH 5>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++        clocks = <&spi1_clk>;
++        clock-names = "spi_clk", "str2";
++        cs-gpios = <&pioB 3 GPIO_ACTIVE_HIGH>;
++        atmel,fifo-size = <32>;
++
++        mmc@0 {
++            compatible = "mmc-spi-slot";
++            reg = <0>;
++            gpios = <&pioC 4 GPIO_ACTIVE_HIGH>;    /* CD */
++            spi-max-frequency = <25000000>;
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/spi/spi_atmel.txt b/Documentation/devicetree/bindings/spi/spi_atmel.txt
+deleted file mode 100644
+index 5bb4a8f1df7a..000000000000
+--- a/Documentation/devicetree/bindings/spi/spi_atmel.txt
++++ /dev/null
+@@ -1,36 +0,0 @@
+-Atmel SPI device
 -
--    \endgroup
- 
- Fully Planar YUV Formats
- ========================
-
-base-commit: 945a9a8e448b65bec055d37eba58f711b39f66f0
+-Required properties:
+-- compatible : should be "atmel,at91rm9200-spi" or "microchip,sam9x60-spi".
+-- reg: Address and length of the register set for the device
+-- interrupts: Should contain spi interrupt
+-- cs-gpios: chipselects (optional for SPI controller version >= 2 with the
+-  Chip Select Active After Transfer feature).
+-- clock-names: tuple listing input clock names.
+-	Required elements: "spi_clk"
+-- clocks: phandles to input clocks.
+-
+-Optional properties:
+-- atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
+-  capable SPI controllers.
+-
+-Example:
+-
+-spi1: spi@fffcc000 {
+-	compatible = "atmel,at91rm9200-spi";
+-	reg = <0xfffcc000 0x4000>;
+-	interrupts = <13 4 5>;
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	clocks = <&spi1_clk>;
+-	clock-names = "spi_clk";
+-	cs-gpios = <&pioB 3 0>;
+-	atmel,fifo-size = <32>;
+-
+-	mmc-slot@0 {
+-		compatible = "mmc-spi-slot";
+-		reg = <0>;
+-		gpios = <&pioC 4 0>;	/* CD */
+-		spi-max-frequency = <25000000>;
+-	};
+-};
 -- 
 2.25.1
 
