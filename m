@@ -2,69 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FADCCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbiF2Mzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
+        id S233485AbiF2Mzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 08:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232912AbiF2MzZ (ORCPT
+        with ESMTP id S232193AbiF2Mzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 08:55:25 -0400
-X-Greylist: delayed 16340 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 05:55:19 PDT
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1C92CDF5;
-        Wed, 29 Jun 2022 05:55:19 -0700 (PDT)
-X-QQ-mid: bizesmtp63t1656507291tfsra6c3
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 29 Jun 2022 20:54:48 +0800 (CST)
-X-QQ-SSF: 0100000000200060C000C00A0000000
-X-QQ-FEAT: xoS364mEyr00dFkTgfgNEjTaoF4BmwMd0CJyYGBO7nG8ghAnd04j3/n2cv+cO
-        +wrHSkmNl3aNXNDMUN9e99ldFJgDUvmcmwIum6NyP7X+i7FA2jTKQgYpOj1j2xucTNyzgq9
-        vJ+a+sqnYHuHkHuVwBM+t0a84XnxTAmTKfj5HULnf06+gYoYZcSdnwY4mNWYeRGnM8A8GCc
-        vh/IbEXoGhH0LRkuVKYm3yPADPKbfXfhn0qV5DS6pd0H9QfkVKG8lMCOfIoAJLxSsgiXlAs
-        zymwHrzeUglHsXnFQiGDwlavaWfVsO1+oTK+ZcFZZc+n+R+qtGp6p4X6mipXeSaZV2tMPN1
-        npWneCq5Y4KttdBBdg=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     pantelis.antoniou@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] freescale/fs_enet:fix repeated words in comments
-Date:   Wed, 29 Jun 2022 20:54:41 +0800
-Message-Id: <20220629125441.62420-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 29 Jun 2022 08:55:52 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CF02E9E0;
+        Wed, 29 Jun 2022 05:55:51 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 3D6114FA;
+        Wed, 29 Jun 2022 12:55:51 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 3D6114FA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1656507351; bh=XJl5q3/vT6FIjNUi1Eb8cZqtdz9msa9ZVePJ+Srhbno=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=g8zXpRz7bRSHh2wpmCa3bR+TZv80X7ujemiyJ30PgS4KXcMl5z63hNUSVC80KcyoD
+         +MeF/mYx4AwKhljGaEeMCKdGLc+6q2dpN2QdpK7B4MuW77e6yOuPAHcVnHv+depega
+         5hSKpLBzEY5p8wfepa2FoRKW1zERC2coUEcK2UmjxjNG8WswAamtiYUy8cPTP38QHU
+         hISEGvAgIDdYUE7CGy/uJhPMQN98AQKR3O+05oJiAVtTPi5J3nM0jNTAKv01sPP/Aw
+         aViVFbyBLygEtnHcqhys8P1jO0ojWDPFjSFEZ3gxs26BDLaoUaSU2tNCE9w9gf1vqO
+         MvLLtSdVmGD8A==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     David Gow <davidgow@google.com>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: Re: [PATCH v2] Documentation: kunit: Cleanup run_wrapper, fix x-ref
+In-Reply-To: <CABVgOSkybS55KynNvSA-B=2Lemwe-iTOwZ55BO4PwaECokizTw@mail.gmail.com>
+References: <20220626101553.1885428-1-davidgow@google.com>
+ <20220629040605.2395481-1-davidgow@google.com>
+ <321d069a-0db3-6abd-c25e-4da46f361bd7@gmail.com>
+ <CABVgOSkybS55KynNvSA-B=2Lemwe-iTOwZ55BO4PwaECokizTw@mail.gmail.com>
+Date:   Wed, 29 Jun 2022 06:55:50 -0600
+Message-ID: <87tu83tyqx.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'a'.
+David Gow <davidgow@google.com> writes:
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/freescale/fs_enet/fs_enet.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Thanks. The rest of this document is using "we" rather than "you", so
+> I used "we'll" for consistency. If "you" is preferred generally, it'd
+> be best to change it throughout the document (probably in a separate
+> patch).
 
-diff --git a/drivers/net/ethernet/freescale/fs_enet/fs_enet.h b/drivers/net/ethernet/freescale/fs_enet/fs_enet.h
-index 5ff2634bee2f..cb419aef8d1b 100644
---- a/drivers/net/ethernet/freescale/fs_enet/fs_enet.h
-+++ b/drivers/net/ethernet/freescale/fs_enet/fs_enet.h
-@@ -201,7 +201,7 @@ void fs_enet_platform_cleanup(void);
- 
- /* access macros */
- #if defined(CONFIG_CPM1)
--/* for a a CPM1 __raw_xxx's are sufficient */
-+/* for a CPM1 __raw_xxx's are sufficient */
- #define __cbd_out32(addr, x)	__raw_writel(x, addr)
- #define __cbd_out16(addr, x)	__raw_writew(x, addr)
- #define __cbd_in32(addr)	__raw_readl(addr)
--- 
-2.36.1
+Nobody has ever tried to articulate a wider policy on first or
+second-person usage for kernel docs, so far as I know, and I think
+that's just fine.  We have far bigger things to worry about before we
+get concerned about consistency at that level.
 
+Thanks,
+
+jon
