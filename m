@@ -2,123 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE26C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BE2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbiF2QxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
+        id S231397AbiF2QxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231844AbiF2Qwg (ORCPT
+        with ESMTP id S229601AbiF2QxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:52:36 -0400
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4244013F81;
-        Wed, 29 Jun 2022 09:52:33 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id A8CD6121B70;
-        Wed, 29 Jun 2022 16:52:29 +0000 (UTC)
-Received: from pdx1-sub0-mail-a288.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id E3364121691;
-        Wed, 29 Jun 2022 16:52:28 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1656521549; a=rsa-sha256;
-        cv=none;
-        b=463jQEBgMFV74iEN+TnjsqGLipT5PWEq525tmOOCXli2QbepPoKWvKoguaEQfzeijCtpMs
-        W0Y97rPbnNRm5r68xkw/uDqYRtflxSW4NoRTk6daRuCoMasw/okGBZzKsPuY2U446Pmfuk
-        Tw+3Ir/hZn0iLQjoetTKNhnkSG0/izN1BgwDhJVVxSqZsXG0qzKYONLsPTlNHhozGO9XH5
-        P40XbXUC0RgHfVa70kpC6k+O+dYjNKtw/5K4C7G5jRWfZPyPfD73wUggz8cOy9YswZxBf1
-        oNpEcjot3rpRasydqHE6CJZssYNhy+Q3oXSH+myVm++K71/uWbeT8ae6u5Vr9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1656521549;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=iOLcV9f/LV1oZPOPbY/80a03Bs1TUR8dCN1QpbUZqE4=;
-        b=dwekxzYpGBHTWMNG8EsSYmZe8KeQDDal4JrGNI/IFmUff19uLy00pgxROV5In2U1C/GEKG
-        vW/lDEU/6eBJy2J7FgVHjmliwPdedvin/wuWEmWcnVmmAS+TXARWXRWd1FScS2aQwWnqP5
-        bvM1oLVtJeJJBOAQA4TVTKAW94yEbWaUl2TI5Yd+z21iX2FzquRO8t5VCL9tLAooAeL/Il
-        iMztYVsJsVYVRlLPrVNog+PKnoSYORgu0BhF+Y/sTh3r8ZQz/cI4t42ToqLtNatIvi4w7M
-        RAVhEMYYzT1xaYDnMJebVqas9hj6AYLXPFmMpoIDUzVlzGUqU0NaVhIob0LZpA==
-ARC-Authentication-Results: i=1;
-        rspamd-674ffb986c-2d48t;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Callous-Imminent: 6e03671f47e34c0e_1656521549255_4186424639
-X-MC-Loop-Signature: 1656521549255:876281039
-X-MC-Ingress-Time: 1656521549255
-Received: from pdx1-sub0-mail-a288.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.105.211.156 (trex/6.7.1);
-        Wed, 29 Jun 2022 16:52:29 +0000
-Received: from offworld.. (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 29 Jun 2022 12:53:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924DD1659C;
+        Wed, 29 Jun 2022 09:53:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a288.dreamhost.com (Postfix) with ESMTPSA id 4LY6vb1v0Mz7x;
-        Wed, 29 Jun 2022 09:52:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1656521547;
-        bh=iOLcV9f/LV1oZPOPbY/80a03Bs1TUR8dCN1QpbUZqE4=;
-        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=Qs9PUCo0Ba8JnusPwvxhulDhgUiFOQeIQlDDOqOC0cHYanyxV8pF3NLeAJ6HkOmcM
-         NidJ1XacUTDGLg1uu5zHFr+1cA6/bmm3C50yjkhEabttoRpZw/NDyCrIbovX/kNEBz
-         1cD2irnktQAi+tqIfLWLd9Kat1Dc5pplWNPfsqG2IB5nvApM9+/4yafe4iK1ENWM9b
-         SesoAI85karEbRoWBM2R/WUxWA6L4GM0iefSj94ufexpxdimVcFcMfboYNG5XCO/Qb
-         lZ9MgJABkn1jtadlQwlLWOY+Uw8QeT8e8UwSRvFrSvG+ljbS3WymUMJWOn0dlCgjd7
-         +zOIrHsoJnqgA==
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     syzbot+ce3408364c4a234dd90c@syzkaller.appspotmail.com
-Cc:     aldas60@gmail.com, gregkh@linuxfoundation.org,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
-        nathan@kernel.org, syzkaller-bugs@googlegroups.com,
-        Davidlohr Bueso <dave@stgolabs.net>
-Subject: [PATCH] staging/wlan-ng: get the correct struct hfa384x in work callback
-Date:   Wed, 29 Jun 2022 09:52:25 -0700
-Message-Id: <20220629165225.3436822-1-dave@stgolabs.net>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <000000000000e3fc8905e2608d4f@google.com>
-References: <000000000000e3fc8905e2608d4f@google.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39A11B8224C;
+        Wed, 29 Jun 2022 16:53:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3302C34114;
+        Wed, 29 Jun 2022 16:53:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656521596;
+        bh=d0xxxonbR5ELLAqkeSrQsOwQMoaotUmqQ4jqNrrFQlQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e5Q4wp9z2OwwGc2/SKsGkRw30kH0xV+QEO3ojaQ34AW/RNQ6npenieKEUSChwmEnc
+         SDyUQU6d+Olg5Mf/G+wKD4s8UG/wHbTg9kHZzPdNLdCdSmRSSerm7++bg+WxZXTBZy
+         Hr+gutN3byKEGTq5b9vnWtiCpf+2u3bDkX3GVIGR4w8NW0QzxuARHZZnHJ92Sa0Z5w
+         8D2Ffvcs+KT6lgXNLDoMOMXdWV7uXJQeurhDFyF40giMn6uzX8Q7D83g6zIYitIkeD
+         wtDaLqqYwX3k3IYQ83h1BlAKj6l9YJ4gAEpg6t9xbABMTCIbWES9CEKQbq9DrR9FcV
+         nyHznkxY1DcPg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 247084096F; Wed, 29 Jun 2022 13:53:14 -0300 (-03)
+Date:   Wed, 29 Jun 2022 13:53:14 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: Re: [PATCH] perf tools: Convert legacy map definition to BTF-defined
+Message-ID: <YryDek+O6cMiKoXw@kernel.org>
+References: <20220629112717.125927-1-jolsa@kernel.org>
+ <CAP-5=fWm5uZYrxakCZuJtWgVFChNje2SpPgDXD+Xs=XnmB2dzA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fWm5uZYrxakCZuJtWgVFChNje2SpPgDXD+Xs=XnmB2dzA@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hfa384x_usbctlx_completion_task() is bogusly using the reaper BH when
-in fact this is the completion_bh. This was reflected when trying
-to acquire the hw->ctlxq.lock and getting a failed lockdep class
-initialized to it.
+Em Wed, Jun 29, 2022 at 09:43:17AM -0700, Ian Rogers escreveu:
+> On Wed, Jun 29, 2022 at 4:27 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > The libbpf is switching off support for legacy map definitions [1],
+> > which will break the perf llvm tests.
+> >
+> > Moving the base source map definition to BTF-defined, so we need
+> > to use -g compile option for to add debug/BTF info.
+> >
+> > [1] https://lore.kernel.org/bpf/20220627211527.2245459-1-andrii@kernel.org/
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  tools/perf/tests/bpf-script-example.c | 15 +++++++++------
+> >  tools/perf/util/llvm-utils.c          |  2 +-
+> >  2 files changed, 10 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/tools/perf/tests/bpf-script-example.c b/tools/perf/tests/bpf-script-example.c
+> > index ab4b98b3165d..065a4ac5d8e5 100644
+> > --- a/tools/perf/tests/bpf-script-example.c
+> > +++ b/tools/perf/tests/bpf-script-example.c
+> > @@ -24,13 +24,16 @@ struct bpf_map_def {
+> >         unsigned int max_entries;
+> >  };
+> >
+> > +#define __uint(name, val) int (*name)[val]
+> > +#define __type(name, val) typeof(val) *name
+> 
+> This is probably worth a comment, reading it hurts :-) I expect that
+> libbpf provides a definition that the rest of the world uses.
+> 
+> Fwiw, the pre bpf counters BPF in perf needs a good overhaul. Arnaldo
+> mentioned switching perf trace's BPF to use BPF skeletons in another
+> post. The tests we have on event filters are flaky. One fewer bpf.h in
+> the world seems like a service to humanity (I'm looking at you
+> tools/perf/include/bpf/bpf.h).
 
-Reported-by: syzbot+ce3408364c4a234dd90c@syzkaller.appspotmail.com
-Fixes: 9442e81d7e7 (staging/wlan-ng, prism2usb: replace completion_bh tasklet with work)
-Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
----
- drivers/staging/wlan-ng/hfa384x_usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yeah, bring perf trace to the modern world :-)
 
-diff --git a/drivers/staging/wlan-ng/hfa384x_usb.c b/drivers/staging/wlan-ng/hfa384x_usb.c
-index 33844526c797..02fdef7a16c8 100644
---- a/drivers/staging/wlan-ng/hfa384x_usb.c
-+++ b/drivers/staging/wlan-ng/hfa384x_usb.c
-@@ -2632,7 +2632,7 @@ static void hfa384x_usbctlx_reaper_task(struct work_struct *work)
-  */
- static void hfa384x_usbctlx_completion_task(struct work_struct *work)
- {
--	struct hfa384x *hw = container_of(work, struct hfa384x, reaper_bh);
-+	struct hfa384x *hw = container_of(work, struct hfa384x, completion_bh);
- 	struct hfa384x_usbctlx *ctlx, *temp;
- 	unsigned long flags;
+- Arnaldo
  
--- 
-2.36.1
+> Thanks,
+> Ian
+> 
+> > +
+> >  #define SEC(NAME) __attribute__((section(NAME), used))
+> > -struct bpf_map_def SEC("maps") flip_table = {
+> > -       .type = BPF_MAP_TYPE_ARRAY,
+> > -       .key_size = sizeof(int),
+> > -       .value_size = sizeof(int),
+> > -       .max_entries = 1,
+> > -};
+> > +struct {
+> > +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> > +       __uint(max_entries, 1);
+> > +       __type(key, int);
+> > +       __type(value, int);
+> > +} flip_table SEC(".maps");
+> >
+> >  SEC("func=do_epoll_wait")
+> >  int bpf_func__SyS_epoll_pwait(void *ctx)
+> > diff --git a/tools/perf/util/llvm-utils.c b/tools/perf/util/llvm-utils.c
+> > index 96c8ef60f4f8..2dc797007419 100644
+> > --- a/tools/perf/util/llvm-utils.c
+> > +++ b/tools/perf/util/llvm-utils.c
+> > @@ -25,7 +25,7 @@
+> >                 "$CLANG_OPTIONS $PERF_BPF_INC_OPTIONS $KERNEL_INC_OPTIONS " \
+> >                 "-Wno-unused-value -Wno-pointer-sign "          \
+> >                 "-working-directory $WORKING_DIR "              \
+> > -               "-c \"$CLANG_SOURCE\" -target bpf $CLANG_EMIT_LLVM -O2 -o - $LLVM_OPTIONS_PIPE"
+> > +               "-c \"$CLANG_SOURCE\" -target bpf $CLANG_EMIT_LLVM -g -O2 -o - $LLVM_OPTIONS_PIPE"
+> >
+> >  struct llvm_param llvm_param = {
+> >         .clang_path = "clang",
+> > --
+> > 2.35.3
+> >
 
+-- 
+
+- Arnaldo
