@@ -2,176 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3090CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33447CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232525AbiF2JMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
+        id S232184AbiF2JNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiF2JMl (ORCPT
+        with ESMTP id S229772AbiF2JN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:12:41 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2067.outbound.protection.outlook.com [40.107.92.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A381D0FD;
-        Wed, 29 Jun 2022 02:12:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aD41KtCc2xID56lqgk6oZnsyA4IuHsVVVinhqSwSxvfXa4uI/TURNtBZmkkrww5Gzr4OLvCZUgsu8iDmefdVcCMNtb0gv04IHVx/zc4O2iDDPelydsXTNfqlNwtPk8DqULxBcLt9dnFW7SgcONKnWSsnxp+bn4bEbN6xueBrT/vQsKzVzxkoZ82Ip9IQ/cmWiTnYGuMke0sTNKCJgej+2L6ty+OIDODAec3jDMpQIBFt5aZGxUHBJLCVE2mZfT9hA8nrKDfWfNxFrjOXWUsLP2PAqY3CjXVgtrCVS0oxKUJWc6pS7p2nSJh/1dg6HnL2IjqxOTtxDPRCqhPdPif+Yw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HKnjmI/D06DvqqJSU5BT8xKxvwJWeZgmuUEikkeXZrY=;
- b=isRtb3mFtsTw0kSIIUpRUPlKFOyLBrflKFvPrG+Gai3EIuhFzDBnMzmgsyGqA3lgD0cCBGJASZfmI7TSBK3T2tEx8vzDtmRMmRz5z5U4pryRtHVFggzCgVfytrj8vly/1P+CvE9JKL5Fk/wHXBM/81ezXH/LiiBPjFjpo6ILoVzPdDSNha9cum1XmrMkhQbycA5D21QS99zxBmQ3UwCTa85YlcvfDjkkjVOE59umfOqMMBrBnGY+Pg+ETUw0h7Hlkhvp7I8gtVa8xZouuyF46IKuSXpg/V0+EyRIvbQ0PfvSmX3XeeGf001Me7hJ7i5gCljhJkFgHP/O+DsoPD8pZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HKnjmI/D06DvqqJSU5BT8xKxvwJWeZgmuUEikkeXZrY=;
- b=N7Gw13+KMXJkIxI5CEmmQSTLYYiEe9RhjNzXcP6EBv8SPbDqKT7/UBoXrgBirnX5ae7EK9lV1SAW5Lvai6jLQszc9vt3BieBnLVY7LRcAHFHm01d8z7fCuhpvlznJ22Z1pQbwYw0mH0U2jQ2ymjvKYsNGIpNOFHNdrx8n8dI23Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by MWHPR1201MB0141.namprd12.prod.outlook.com (2603:10b6:301:56::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
- 2022 09:12:35 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
- 09:12:34 +0000
-Message-ID: <8499b1f1-cd39-5cb4-9fac-735e68393556@amd.com>
-Date:   Wed, 29 Jun 2022 11:12:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1] Fix: SYNCOBJ TIMELINE Test failed.
-Content-Language: en-US
-To:     jie1zhan <jesse.zhang@amd.com>, broonie@kernel.org,
-        alsa-devel@alsa-project.org
-Cc:     Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
-        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
-        Nirmoy Das <nirmoy.das@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>
-References: <20220629060236.3283445-1-jesse.zhang@amd.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20220629060236.3283445-1-jesse.zhang@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AS9PR04CA0137.eurprd04.prod.outlook.com
- (2603:10a6:20b:48a::12) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Wed, 29 Jun 2022 05:13:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9F927B0E;
+        Wed, 29 Jun 2022 02:13:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656494008; x=1688030008;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=zOHATe1LWt9PXvV1uvutZ31aBHVhiH/1Whjdlp8A67Q=;
+  b=kXOlX4aJ9fhJs3QvQyg23Ee0m0uR6FNjeIAVVNRTe4bkOZWKFe/QQGFs
+   m4uswRTtCuviAySOght8nGyqr4xOICO8JvqkxlEQRN9Tgwq0SwcjLuExd
+   diynBMiBB3zSfmvzPkAyBDxu9eLpjMID2F2Z6+en9nr4Oxps6eqwFhZ/p
+   dMJmQfBTfNwwYHM8WHcZ7E1qJeOC/751QOL4leZ4QwXF/2mLGpTF5Jnxd
+   U2LcS4b9jlxRKTDg0kFQI5qeAiHZynRmJBnc8jJueOg75q3TWezxPDJSN
+   Prbrrd+rQsRKaIDJCL/VPRfDD7bB/OGjFmZAM/hrZSvnpjPOEL4DEgy16
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="270744415"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="270744415"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:13:27 -0700
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="917533030"
+Received: from gregantx-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.119.76])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:13:23 -0700
+Message-ID: <3ec0ce3857dbcad8706ae0690d66b54a478c9769.camel@intel.com>
+Subject: Re: [PATCH v5 03/22] cc_platform: Add new attribute to prevent ACPI
+ memory hotplug
+From:   Kai Huang <kai.huang@intel.com>
+To:     Igor Mammedov <imammedo@redhat.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kvm-devel <kvm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Len Brown <len.brown@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        isaku.yamahata@intel.com, Tom Lendacky <thomas.lendacky@amd.com>
+Date:   Wed, 29 Jun 2022 21:13:21 +1200
+In-Reply-To: <20220629104850.07559fee@redhat.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <87dc19c47bad73509359c8e1e3a81d51d1681e4c.1655894131.git.kai.huang@intel.com>
+         <CAJZ5v0jEJNdmkidvcOiRn+OVt01D5095t+nyXaJHKsqEAOvcBQ@mail.gmail.com>
+         <20220628140112.661154cf@redhat.com>
+         <ceb320a00eebd29d2031b94b6123ff31ba74c313.camel@intel.com>
+         <20220629104850.07559fee@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6e61abe0-4415-4f62-cda0-08da59af80ec
-X-MS-TrafficTypeDiagnostic: MWHPR1201MB0141:EE_
-X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: z/UcpfzSfzv6i6bKL116Qx7BeTevDwuDtAqnIfq9K5F5TObuaSCnpshEYLEVN+y0S2hxNRRWWpW21fGqTltcOHAmVXtljVC4kzOfoiXKUEiarA6+nhM70iS+ac77VLIaUMfczJLkLp6jbPTqB1MYQxzz7KSBYsGrmxkYUFiQmpI5BUUgfas6yrOQST/YrpOqFDuwlLII5qRq+Zo7UOyYiId1bwb8QKcnPDfXy+zHxscXexR+evgnNfCLt+9jPdYQvO6C/UVOB5wHTVIPSU7x22tqg1B7cSvioVIjW8sUJEvJtTvCzqAIqE3yrFA3H35PzzuQ8QrLFqBDGBlrG0d9jj2g2o8nYshm+T9nk0WVz+/h+Py7CTHKLztI8Cs3uk4T0TlThzUuyyVANzwM0Jnb1LWRBmkYuWskpNO5KT7ud/opRZ9CCkPzAIcPk2dxDHs1hikPTJNZBWPHtRiRuAML5iSGPM0UbEW2qZoht4zZ204BBTeLqH4JxguHjwvqyHyuYIUdWJCenH0P/vD+w7PGDsKpUMlbCORl4/+IeHUr/Fdv6G1S62b0tI9jdqZ8xaMOdokLpb8EH9INVdJ93EyrRZqUVU9QVY8kHyVTF0cLcjpX2RJK2QDurTVepJM7Ic4lPTJN+gdGsDsuemLTyWCDZd+9l6hXOlsk2xXTYqEKZtq2TjssvRANPNd3t7E9UAzZQ644cPG93yTryS8+SI7BfyqnIwfVYAhlpP7MikRQ6HnMSCDWu+xNBjtY7uYh+PiqmrcbnaurdE5gOlOnner2udmKJPbF4dOaXOKzWDpwLPwet0b5AZDnPBSekQTZ6rs9BjaP9AtFI3eilkNq44OgtDDsafe8+G4XhpNIxd/ENgb8S2IwQeUaVFWw5dZVZOuc
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(376002)(396003)(346002)(39860400002)(31696002)(86362001)(38100700002)(8936002)(5660300002)(6486002)(478600001)(2906002)(41300700001)(7416002)(316002)(54906003)(6666004)(8676002)(4326008)(66476007)(66556008)(66946007)(66574015)(186003)(83380400001)(6506007)(2616005)(6512007)(36756003)(31686004)(45980500001)(43740500002)(414714003)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Uy9DRUR4S1h6Lzdhd3N2L2gyU2VMdHFXbFBwSE9lbFRMYkYwTlg4eDhWUDll?=
- =?utf-8?B?cWxGd09TWU1hK2pkeXhUUjFrTzk4YW00bUtMMWRwdzl3cEFmRVFYU2RtZkow?=
- =?utf-8?B?YmNnR0V4TzZzNjBuYWZkM1d2TjR3aU1ObGVPdjk3SWZxd1RyM3VDbzk1NjBn?=
- =?utf-8?B?KzVDSUdvT0xpVTg1bnEwMEhnM1pob1grdlhvUWtITDdoeVl0LzczSWpKT0o4?=
- =?utf-8?B?UFdxdy85cGxJNjNFVXhoc1JGRUJTcC9meHJoN0lYWjh6SGJ2RlBvcGFYc0g3?=
- =?utf-8?B?RzlJbG91Z0lHMExxeXQ4RVJUQmVWOEJoRDZkYWJndXUwaVNTa3JzeHlFOTFl?=
- =?utf-8?B?VHJ2OUhoL2hHZEFqOEdJZStrc2dRb0NBWTJPeGVodmF0VlBmZVNZM3ZXT2JX?=
- =?utf-8?B?Z1lvemY3eElzRG95LzVBSkk2bWlzTFFweldKbVpHaVlSVjl5Q2tKY2RsQ3Ev?=
- =?utf-8?B?VFlKSHduTFh3MmdpTTg3bFFyMXdnOHlBbE1PdFYxY3hpZDdoLzZnbFNqdXha?=
- =?utf-8?B?djlPZVNYczhNRExBbWU5MW5nRTZUZ2RCeW9KVnNiVFBUaWJJUUltZThDWVYv?=
- =?utf-8?B?OUhFbDZUNGRzWXFrUUluM0xKcXRPc0hvNktYVmkyTXUyZUtWWGFxUjhkd0ln?=
- =?utf-8?B?YXB0ZmV3YSt3V0dpUEVIb2VyV1dLWVl2c0lFdFRMdDU0NUNtVXVlOHBnS3hl?=
- =?utf-8?B?SjJkUHpRTGU1aXRCMXcyb213Z1NqT05uajZFbkxHZW5yd3V4R0htWVRQMzYy?=
- =?utf-8?B?cWdJZ3laL21Nd1VLbnI2ZlI0N1NQZjl3bHBwSndyREo2NUVSRm5JRE5mTW5R?=
- =?utf-8?B?QjUzc1pPWXpNV1haMEp3R2Z0VVQvZDMveG52cDRwZnAyU2NaRDhLZzV6MzNM?=
- =?utf-8?B?ZzFRbXp0b0JObjJ3NnR5Z0E0VCtrWTExTTVGRG1Dem1GTzl5R01sbkdkY2wx?=
- =?utf-8?B?dG1aNHE1OHNHVG01MjZYVzJDWVc3QzFreGRjMTl1NXZHV3I1a3JSNVFyQXd0?=
- =?utf-8?B?TW1YalNaWDVybkY5MjZwbnNHWnRhSVlIL3lIMHM3eUljL2gxeDJmS1o3S1da?=
- =?utf-8?B?dVE2am8wYzZNMTZDS0VUV0FFTGx4RFZzc3RnNVNpTnJTWTdRMUtrL3NZbTla?=
- =?utf-8?B?Zk04UUFVOGNTdGtwTzVCQVdhWmVBWndwSU5ZcC8xSSs3dFlvdTFxMjFkQ1Nu?=
- =?utf-8?B?M3JvRGsySXBNVUQzMmN0RHNoWmVsNDEwZWF0RHVsK2M5WWZLYzFWRjRmQ2ZJ?=
- =?utf-8?B?QU44ejkrbHNXYmwvejZnWE1vZEtSanU1REVjQ2ZKN0I3YkljRmVvRjlVaUJX?=
- =?utf-8?B?U05nZGlQeWNFNFhGYS9FRm02bjhZQzZmMHdmWktMNFNXYS8zb09mcE9xcmNn?=
- =?utf-8?B?aGhTWGNNVnBYd3ZqMVd2QUtIN3pVU3EyN0ViMWt3NVl5azhJWC9sTm13WWhn?=
- =?utf-8?B?blNvUHAyWkZjeFlwNUFuL3BlMCtSRkNMM0JuWG5RcTRkUUZTYmltR24xeWtJ?=
- =?utf-8?B?N0pIcUxod2dSZ2ZmSkk0dmh1L05aS1hrdC9kM1dBZkpPYXkxajVTMXZ3TW9h?=
- =?utf-8?B?eEZNSWxnVHVmdDkxbzdXSEZvcmdRMklLYWVudG5kdnJGcVlQbElDM0ZISi9J?=
- =?utf-8?B?cUR3bHE5ZlVyaThRTEI2Y0U3cERZYnVvcWY0YkF6NWJMKzl6NnVHcUF1UVVN?=
- =?utf-8?B?WjUrSU5WTTM3MjlMYlVmSkl2Z1hKbEIxVm9YREFzazJqU3czRzRjdVd6azh5?=
- =?utf-8?B?Zmw1UHNSd21sTi9abU5yYUQ0amJxRUMyODNyUjJNSHcyblNwSG1tZ0Z0QVlw?=
- =?utf-8?B?ckVNc3QyS1JzVW5DakVUWFBXbW4wOEFDTWtacEFWa0plY3FhbzNsbzAxY3dC?=
- =?utf-8?B?R3V0QXhtallTQXpkTkJtUU5wVVplc1JYNzVFbnVWVFo2aFdwSWNHN1BVK2xj?=
- =?utf-8?B?RGZ0NHI1SVlJMjdkNjRHOTlXeVY2RFM4ZTFoRFBWVHRveHluMWt6WFNXQXR4?=
- =?utf-8?B?aCsxdEZkK2YrUW1DcWdPM2FESTlhM0YwVUI3bFI1UDBKZDFxL1RJcFZBQnN5?=
- =?utf-8?B?T3hSeklJUGFEaVJsWnBFSDdaOXNOM2twRXhXcFcyR2tkUm9TUzI4dkF4aDZB?=
- =?utf-8?B?MlBLZHRIdUxkRGdNaUZFRUl0SDhBTUVqbjUwaVpCcVBvYXBxa3lnUWJCaDNB?=
- =?utf-8?Q?UW5Eb/xy7RVQVOTs2/UlsiCAt/CucRbRYgJqhFSnyghj?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e61abe0-4415-4f62-cda0-08da59af80ec
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 09:12:34.5841
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Iybp/BPA0GSNVfZr7eLMfXvVxSm3LV2y1EXVgXHC14QFpnx8JpocjTHu/3jM5TCs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0141
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 29.06.22 um 08:02 schrieb jie1zhan:
->   The issue cause by the commit :
->
-> 721255b527(drm/syncobj: flatten dma_fence_chains on transfer).
->
-> Because it use the point of dma_fence incorrectly
->
-> Correct the point of dma_fence by fence array
+On Wed, 2022-06-29 at 10:48 +0200, Igor Mammedov wrote:
+> > Hi Rafael,=C2=A0 Igor,
+> >=20
+> > On my test machine, the acpi_memory_device_add() is not called for syst=
+em
+> > memory.=C2=A0 It probably because my machine doesn't have memory device=
+ in ACPI.
+> >=20
+> > I don't know whether we can have any memory device in ACPI if such memo=
+ry is
+> > present during boot?=C2=A0 Any comments here?
+>=20
+> I don't see anything in ACPI spec that forbids memory device being presen=
+t at
+> boot.
+> Such memory may also be present in E820, but in QEMU is not done as linux=
+ used
+> to
+> online all E820 memory as normal which breaks hotplug. And I don't know i=
+f it
+> still true.
+>=20
+> Also NVDIMMs also use memory device, so they may be affected by this patc=
+h as
+> well.
 
-Well that patch is just utterly nonsense as far as I can see.
+AFAICT NVDIMM uses different device ID so won't be impacted.  But right the=
+re's
+no specification around "whether firmware will create ACPI memory device fo=
+r
+boot-time present memory", so I guess we need to treat it is possible.  So =
+I
+agree having the check at the beginning of acpi_memory_device_add() looks
+incorrect. =20
 
->
-> Signed-off-by: jie1zhan <jesse.zhang@amd.com>
->
-> Reviewed-by: Christian König <christian.koenig@amd.com>
->
-> Reviewed-by: Nirmoy Das <nirmoy.das@linux.intel.com>
+Also as Christoph commented I'll give up introducing new CC attribute.
 
-I have strong doubts that Nirmoy has reviewed this and I certainly 
-haven't reviewed it.
+>=20
+> >=20
+> > And CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED is only true on TDX bare-metal
+> > system,
+> > but cannot be true in Qemu guest.=C2=A0 But yes if this flag ever becom=
+es true in
+>=20
+> that's temporary, once TDX support lands in KVM/QEMU, this patch will sil=
+ently
+> break usecase.
 
-Christian.
+I don't think so.  KVM/Qemu won't expose TDX to guest, so this code won't b=
+e
+true in guest.
 
-> ---
->   drivers/gpu/drm/drm_syncobj.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/drm_syncobj.c b/drivers/gpu/drm/drm_syncobj.c
-> index 7e48dcd1bee4..d5db818f1c76 100644
-> --- a/drivers/gpu/drm/drm_syncobj.c
-> +++ b/drivers/gpu/drm/drm_syncobj.c
-> @@ -887,7 +887,7 @@ static int drm_syncobj_flatten_chain(struct dma_fence **f)
->   		goto free_fences;
->   
->   	dma_fence_put(*f);
-> -	*f = &array->base;
-> +	*f = array->fences[0];
->   	return 0;
->   
->   free_fences:
+--=20
+Thanks,
+-Kai
+
 
