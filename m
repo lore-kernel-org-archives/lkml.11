@@ -2,91 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA608C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03758C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbiF2JVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33956 "EHLO
+        id S232635AbiF2JVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232389AbiF2JVe (ORCPT
+        with ESMTP id S232556AbiF2JVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:21:34 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190D2369CF
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:21:33 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z7so21266838edm.13
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:21:33 -0700 (PDT)
+        Wed, 29 Jun 2022 05:21:47 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140F8369CF;
+        Wed, 29 Jun 2022 02:21:47 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id p136so20650045ybg.4;
+        Wed, 29 Jun 2022 02:21:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pnMRKilWNlAu7873VFaFlK0hNBIHlTBOyKkOKC5rhcg=;
-        b=RHgCCOWVYiUr4mFZYHlJl3xoQlwmsZleH4Rn+4lQHL85R+wedzxgBEXinM7ZKrpNxp
-         S1J64FLsZQj11uL1G8rrUKj5ghgyZGUlWfyaknhgHYS19sokZlSbH+bTM2j0EbstjXVA
-         7NmYWYAj8+hH51Lxp2/mXT1th0tyyI7tC+HvHe7s8BSD+c3NRr31vHNu03lBlDBljFEE
-         VYjGfvEgvXBlvfBkxBGkJl4hjC6xfDlxa1oZdxGUt0DVXArRebuD+OYXrCRHoekuAb45
-         ZHWHsk7lOMSKQKDhL3ZWuacU3f1NFVxqxX+1afaYYdfKxLnf+hVxeOaNUje9ncqkNKnn
-         dMAw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Eh9/8QN0XyfFrvsob3PxLqr+FKeuVvmGbb+SLnFK1w8=;
+        b=PPWbglVheR1zvwyNWD8rSPW6EbKmdZgAavX9onplBeIgwxs723trIMU7z3LDmN9k29
+         uh3RckB+t6+3c4qyCYxaWFO/sR8VOrxJw8F2hGqyAcCiBwlElhON9/cAYSrHVAa9JPqL
+         7NkGvNUuSztlynTWjIzgrsY1a20qxeHk1H+AIV4ZkGAXGaXnulfCHsmxuxzDmhEZKTPS
+         y+WuFTLQdRwE3Q+So0fO0WmkJpJ48rFlC8moc57ZG0AJQ+wTfPN3dMANkMqDH81GsgiC
+         OkkXsg2EYLgPeoGGPx4MBqqhELE9UEK3Z1Y6KZaQkKSbbdruOXBMD3viMugUd/MArqaS
+         1puw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pnMRKilWNlAu7873VFaFlK0hNBIHlTBOyKkOKC5rhcg=;
-        b=aBR0ADRocGOV0u+4VU0N2H0s0u8HMJ4uSxxPmk8tOARDEzbT/RyzasMSwv5Wng+Jgk
-         TFL6e26TlEQ7g5nOZXSxf4xO2U7ZGmKg9wDtI8fT88JRksegONsZzLjerOcWG/30C+Cy
-         F7bEcQaKA3OtIef57m+zvnybXeYMTUhQ0D01YjKleroZOTNoW1FDvfJoGOCE0w6CQzcy
-         sFPP/rOa1aBMh3jQriscPu9v8PYpm8MPEuF01xg6zSd7cw94kxAdEX0ABnP2yDUCmNAM
-         XdATF4oyANVlAQ3u6kCer2uAMlZN+JOtagOdNEb7mEs7CjX/oNmOBGVu0uIzotjfcE1K
-         R6FA==
-X-Gm-Message-State: AJIora/SnpHG/MDePg8w6puYDqgz3ahtw+ztJFW/7eyFWUsHndW3fpZG
-        F5k1fWCW9cNyztNSPHHOmz+9NA==
-X-Google-Smtp-Source: AGRyM1uhhoawHmkEy8UOafBQlOcWUDgmphxib0zUjuNZ/HcZ5Eu7QMkJt4f6rtk8lrnS8fgVD513fw==
-X-Received: by 2002:a50:ce4a:0:b0:435:c543:87e8 with SMTP id k10-20020a50ce4a000000b00435c54387e8mr2886466edj.295.1656494491708;
-        Wed, 29 Jun 2022 02:21:31 -0700 (PDT)
-Received: from [192.168.0.183] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i21-20020a508715000000b004357558a243sm11077558edb.55.2022.06.29.02.21.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 02:21:30 -0700 (PDT)
-Message-ID: <33def8ba-2ca3-c2a3-57ff-9b20dbc2337c@linaro.org>
-Date:   Wed, 29 Jun 2022 11:21:29 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Eh9/8QN0XyfFrvsob3PxLqr+FKeuVvmGbb+SLnFK1w8=;
+        b=wxCVu1eUSFvkm12yBQlB7/h1wXCPCySEgMvjsLzbg1D0IkPKw1kG3Pq/rZ3yUsdURn
+         lYjTNHCMmY0088QmAgFf16Vhgh9xV+3xVeszv2K4e7Xft9CXUO3xtFzH5ixsVHwcHbz0
+         QauEx/wCaQncT+o+HA1KpzzEhMXj8YVJ6vIyhgnfzhCf21Q1XWsvKTOOazlw8HygsgmD
+         zXi7gDGgwmYiIsg9IrcHw78RlV6BM6MQsrufMUyyZhGa9p53Vm4PvVNf4xbfqQt/m1+a
+         XxuID4GcORALf0lOwez4s4Yix5dd0wHUlTNyB8/53suXG9npvU/C9UpG3+CQQ+h5IdKy
+         hDig==
+X-Gm-Message-State: AJIora+u2TKAtyVwhyMtWygxKC2dcclxo3qXAj739vYGJ53CUNGzO2Uf
+        rY+ynB46HmxicQXdSM9dV0Aj1rR2SnyrUziQI9hJALhKcVkdNw==
+X-Google-Smtp-Source: AGRyM1uS+cvIcNrFFvfdfOeCNdpGq8GX+n4BbHmYy6esu6LUeW4Sa8uIybAYqDBzFNJslfFaHj0xSak/OZIgcDW4t74=
+X-Received: by 2002:a25:b2a8:0:b0:66c:8110:3331 with SMTP id
+ k40-20020a25b2a8000000b0066c81103331mr2388431ybj.460.1656494506281; Wed, 29
+ Jun 2022 02:21:46 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 2/2] NFC: nxp-nci: don't print header length mismatch
- on i2c error
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>
-Cc:     =?UTF-8?Q?Cl=c3=a9ment_Perrochaud?= <clement.perrochaud@nxp.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220627170643.98239-1-michael@walle.cc>
- <20220627170643.98239-2-michael@walle.cc>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220627170643.98239-2-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
+ <Yrt6FVHilUuoPrnL@smile.fi.intel.com> <CAPUE2ut2+FwHHV=YxoqExet7m1R9Odji23DVB5zrGzCLgxzNdQ@mail.gmail.com>
+In-Reply-To: <CAPUE2ut2+FwHHV=YxoqExet7m1R9Odji23DVB5zrGzCLgxzNdQ@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 29 Jun 2022 11:21:07 +0200
+Message-ID: <CAHp75Ve1rLvjzmPjOxCjA61A1hjXUpVZi=42+SjARw+t58gDcg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] iio: proximity: sx_common: Don't use IIO device
+ for properties
+To:     Gwendal Grignou <gwendal@chromium.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/06/2022 19:06, Michael Walle wrote:
-> Don't print a misleading header length mismatch error if the i2c call
-> returns an error. Instead just return the error code without any error
-> message.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
-> changes since v1:
->  - reworded commit message
->  - removed fixes tag
->  - removed nfc_err() call, as it is done elsewhere in this driver
->  - nxp_nci_i2c_fw_read() has the same issue. also handle it there
-> 
+On Wed, Jun 29, 2022 at 1:41 AM Gwendal Grignou <gwendal@chromium.org> wrote:
+>
+> On Tue, Jun 28, 2022 at 3:01 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > On Wed, Jun 15, 2022 at 02:47:45PM +0300, Andy Shevchenko wrote:
+> > > It's not correct to use artificial device created by IIO core to
+> > > retrieve device properties. Even ->get_default_reg() callback
+> > > takes a simple struct device pointer which suggests it wants to
+> > > operate on the real device.
+> > >
+> > > Correct this by replacing pointer to IIO device by a real device
+> > > pointer in the caller of ->get_default_reg().
+> >
+> > Gwendal, any comments on this version?
+> We can also replace '&indio_dev->dev' with 'dev' when setting
+> ACPI_COMPANION_SET() in the probe routine.
 
+It would make no sense, IIUC. In any case, the second patch in the
+series, which was the same in v1 removes that completely.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
 
+Thanks!
 
-Best regards,
-Krzysztof
+-- 
+With Best Regards,
+Andy Shevchenko
