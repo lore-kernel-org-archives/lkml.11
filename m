@@ -2,179 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7442C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB40CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbiF2ObD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58728 "EHLO
+        id S233158AbiF2ObM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232876AbiF2OaY (ORCPT
+        with ESMTP id S233139AbiF2Oah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:30:24 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F8C35DF2;
-        Wed, 29 Jun 2022 07:30:15 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id s1so22744601wra.9;
-        Wed, 29 Jun 2022 07:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=I/6knLBCspYoJbBWZ+ks97ukajAgwVFBs4o2jAnU4CE=;
-        b=F0whcHo7Zc3k+GEpoS8SmLr8tVyFTKmt1wCz/oaQlx6Ib7ZKEX063yRQrkxoZs0r67
-         WuH740v9d1VXR0yfCyonHdTDr8SULH4ZkFuzdySuwlPcuOZ3LaJDMsxWd41SESYBfEIv
-         H8ji5KUI/doCTfmHIKSZX+Np38hQVSim+qGxZGJwI8ju5NQQox6gytgsiS1hLzkxMhVe
-         oRMky2ppDq/8k+h45DL81Ypj1rsrXdhjxJ/CW3xMCD+sE4+iUveaR5KbVMxWVdpWMNDA
-         81k4aiE8tNaiW0ZsvzBSEG1sNt6/1tKZAl0RtIhF/GQjlSGVa8zdL/IIkkA54mS5jP5f
-         nTvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=I/6knLBCspYoJbBWZ+ks97ukajAgwVFBs4o2jAnU4CE=;
-        b=QarWicW+fkgt/0GTNZH//6FRRqB2kd6Py7+WkTPz+arB9pbW8uR3bZa6daHDfiWzwD
-         KXVq19sZtMoa7nHI9cKB9CGosUnhcHdID3Lr5qgEGlXeIm4JCT0G963S9whz8kyDdhSd
-         9UC2KbOQgkDYjGO9CEY23Rb15WS2PbMjfZSS3/VIzpCDrpcGyV16TpNpNfZRleLH+Y+y
-         AsN25oyJSH0hWev5hziUxidkEcfwaYx6w2yz5ffKRE40g4/NwRVle6j/wIQpOfEMQE8W
-         h3F5SnPrq3XPkwfSTNogfZ//Ta7Ctvfj1wrb1oHl1EyOYS3RMcUdDfVu5puATWWD5/dX
-         8nSA==
-X-Gm-Message-State: AJIora8XkPWU9Px00XwtbiBCAt4Gf1yIcmBk0nD6LuB2NLi8uTRrN3iv
-        MyngoEuwrJNpMNCIV9gYURc=
-X-Google-Smtp-Source: AGRyM1ssJB+8a1pR4WAQ+kpPKxT8wl7jYM6SAD5uwinvRVog9qTcEzaMAvr1kw6gi5jmBcgoMiZX1g==
-X-Received: by 2002:a5d:528e:0:b0:21b:b85b:5873 with SMTP id c14-20020a5d528e000000b0021bb85b5873mr3425379wrv.191.1656513015000;
-        Wed, 29 Jun 2022 07:30:15 -0700 (PDT)
-Received: from localhost (92.40.168.16.threembb.co.uk. [92.40.168.16])
-        by smtp.gmail.com with ESMTPSA id c21-20020a05600c0a5500b0039c4d022a44sm3402041wmq.1.2022.06.29.07.30.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 07:30:14 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        sre@kernel.org, lee.jones@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org
-Cc:     lars@metafoo.de, quic_gurus@quicinc.com,
-        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
-        michael@walle.cc, rdunlap@infradead.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v4 15/15] power: axp20x_battery: Add support for AXP192
-Date:   Wed, 29 Jun 2022 15:30:46 +0100
-Message-Id: <20220629143046.213584-16-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
-References: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
+        Wed, 29 Jun 2022 10:30:37 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDF41EC55;
+        Wed, 29 Jun 2022 07:30:32 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1656513011th4nq7cj
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 29 Jun 2022 22:30:09 +0800 (CST)
+X-QQ-SSF: 0100000000200060C000C00A0000000
+X-QQ-FEAT: ACkb0FcbxRk3MGc6ImTK9UmnAVdZePcX1z96KWehZyPgYCmwgwh4XGH0SK2vf
+        qQnDDf2BildBdjrHleiBlFKBB3otwxfXqb9gKI9UA0TeO1rvBd7wc4LUGIKswbKXozxVmcN
+        Y3X9btPWLkVVoF3+IzaSz2EH5BG3I7xkQN/CrEJ17zv6yGw5wbiEb6M72OU6111pi6x9cDs
+        00YhsHRbTtHx050+5bXFjt1OuiobZkfBeWXzKWJvebSnyguR7cSLSdkScGbpdRhY5ZRrYYn
+        Qn4b8dU9lTYyuuqsXkP5WfqpACzD6vovaIh9ESeTQL2AQLqYkjDMGmDLBp3dSnA8aKG6pTj
+        vTd36H/Nk/pswRq0hk=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] intel/ixgbe:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 22:29:52 +0800
+Message-Id: <20220629142952.18664-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AXP192 has a battery charger similar to other X-Powers PMICs,
-but unlike the other supported devices, it does not have a fuel
-gauge and can't report battery capacity directly.
+Delete the redundant word 'for'.
+Delete the redundant word 'the'.
 
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/power/supply/axp20x_battery.c | 49 +++++++++++++++++++++++++--
- 1 file changed, 46 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 574c1d001556..1e84d26ce8e3 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -544,6 +544,19 @@ static int axp20x_battery_set_prop(struct power_supply *psy,
- 	}
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 77c2e70b0860..23b7e1d9652e 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -5161,7 +5161,7 @@ static int ixgbe_hpbthresh(struct ixgbe_adapter *adapter, int pb)
  }
  
-+static enum power_supply_property axp192_battery_props[] = {
-+	POWER_SUPPLY_PROP_PRESENT,
-+	POWER_SUPPLY_PROP_ONLINE,
-+	POWER_SUPPLY_PROP_STATUS,
-+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-+	POWER_SUPPLY_PROP_CURRENT_NOW,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
-+	POWER_SUPPLY_PROP_HEALTH,
-+	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-+	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-+};
-+
- static enum power_supply_property axp20x_battery_props[] = {
- 	POWER_SUPPLY_PROP_PRESENT,
- 	POWER_SUPPLY_PROP_ONLINE,
-@@ -568,6 +581,16 @@ static int axp20x_battery_prop_writeable(struct power_supply *psy,
- 	       psp == POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX;
- }
- 
-+static const struct power_supply_desc axp192_batt_ps_desc = {
-+	.name = "axp192-battery",
-+	.type = POWER_SUPPLY_TYPE_BATTERY,
-+	.properties = axp192_battery_props,
-+	.num_properties = ARRAY_SIZE(axp192_battery_props),
-+	.property_is_writeable = axp20x_battery_prop_writeable,
-+	.get_property = axp20x_battery_get_prop,
-+	.set_property = axp20x_battery_set_prop,
-+};
-+
- static const struct power_supply_desc axp20x_batt_ps_desc = {
- 	.name = "axp20x-battery",
- 	.type = POWER_SUPPLY_TYPE_BATTERY,
-@@ -578,6 +601,19 @@ static const struct power_supply_desc axp20x_batt_ps_desc = {
- 	.set_property = axp20x_battery_set_prop,
- };
- 
-+static const int axp192_ccc_table[AXP20X_CHRG_CTRL1_TGT_CURR+1] = {
-+	100000,  190000,  280000,  360000,
-+	450000,  550000,  630000,  700000,
-+	780000,  880000,  960000,  1000000,
-+	1080000, 1160000, 1240000, 1320000,
-+};
-+
-+static const struct axp_data axp192_data = {
-+	.ccc_table = axp192_ccc_table,
-+	.get_max_voltage = axp20x_battery_get_max_voltage,
-+	.set_max_voltage = axp20x_battery_set_max_voltage,
-+};
-+
- static const struct axp_data axp209_data = {
- 	.ccc_scale = 100000,
- 	.ccc_offset = 300000,
-@@ -606,6 +642,9 @@ static const struct axp_data axp813_data = {
- 
- static const struct of_device_id axp20x_battery_ps_id[] = {
- 	{
-+		.compatible = "x-powers,axp192-battery-power-supply",
-+		.data = (void *)&axp192_data,
-+	}, {
- 		.compatible = "x-powers,axp209-battery-power-supply",
- 		.data = (void *)&axp209_data,
- 	}, {
-@@ -623,6 +662,7 @@ static int axp20x_power_probe(struct platform_device *pdev)
- 	struct axp20x_batt_ps *axp20x_batt;
- 	struct power_supply_config psy_cfg = {};
- 	struct power_supply_battery_info *info;
-+	const struct power_supply_desc *ps_desc;
- 	struct device *dev = &pdev->dev;
- 
- 	if (!of_device_is_available(pdev->dev.of_node))
-@@ -666,9 +706,12 @@ static int axp20x_power_probe(struct platform_device *pdev)
- 
- 	axp20x_batt->data = (struct axp_data *)of_device_get_match_data(dev);
- 
--	axp20x_batt->batt = devm_power_supply_register(&pdev->dev,
--						       &axp20x_batt_ps_desc,
--						       &psy_cfg);
-+	if (!axp20x_batt->data->has_fg)
-+		ps_desc = &axp192_batt_ps_desc;
-+	else
-+		ps_desc = &axp20x_batt_ps_desc;
-+
-+	axp20x_batt->batt = devm_power_supply_register(&pdev->dev, ps_desc, &psy_cfg);
- 	if (IS_ERR(axp20x_batt->batt)) {
- 		dev_err(&pdev->dev, "failed to register power supply: %ld\n",
- 			PTR_ERR(axp20x_batt->batt));
+ /**
+- * ixgbe_lpbthresh - calculate low water mark for for flow control
++ * ixgbe_lpbthresh - calculate low water mark for flow control
+  *
+  * @adapter: board private structure to calculate for
+  * @pb: packet buffer to calculate
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
+index e4b50c7781ff..35c2b9b8bd19 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
+@@ -1737,7 +1737,7 @@ static s32 ixgbe_setup_sfi_x550a(struct ixgbe_hw *hw, ixgbe_link_speed *speed)
+  * @speed: link speed
+  * @autoneg_wait_to_complete: unused
+  *
+- * Configure the the integrated PHY for native SFP support.
++ * Configure the integrated PHY for native SFP support.
+  */
+ static s32
+ ixgbe_setup_mac_link_sfp_n(struct ixgbe_hw *hw, ixgbe_link_speed speed,
+@@ -1786,7 +1786,7 @@ ixgbe_setup_mac_link_sfp_n(struct ixgbe_hw *hw, ixgbe_link_speed speed,
+  * @speed: link speed
+  * @autoneg_wait_to_complete: unused
+  *
+- * Configure the the integrated PHY for SFP support.
++ * Configure the integrated PHY for SFP support.
+  */
+ static s32
+ ixgbe_setup_mac_link_sfp_x550a(struct ixgbe_hw *hw, ixgbe_link_speed speed,
 -- 
-2.35.1
+2.36.1
 
