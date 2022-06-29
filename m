@@ -2,147 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B2EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A47C2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbiF2PTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
+        id S233870AbiF2PVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233884AbiF2PTl (ORCPT
+        with ESMTP id S230213AbiF2PVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:19:41 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DFA252BE;
-        Wed, 29 Jun 2022 08:19:40 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id b12-20020a17090a6acc00b001ec2b181c98so19768510pjm.4;
-        Wed, 29 Jun 2022 08:19:40 -0700 (PDT)
+        Wed, 29 Jun 2022 11:21:31 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378A7275F7
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:21:31 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-101dc639636so21875675fac.6
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:21:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NCR65AgEN7e8ge6gFaeYgLnI/aL4mIVTifuImi+nxuU=;
-        b=qMfCbq33d4ryv+VK2N01vtFa72jjYz0nYz2EAE3ETlJJxWeYplC5Yv/k7ZMwfNXdam
-         6O0SP3ZF5j0U6qzqCsqJjnFpJTbUUYn7IYHZlIi5A00e4GfeCdCLXdeU8kGpF5dTMpWX
-         2D3POY0dLQ5PrdNZqt369mxc+U/VV4j0MIKyvs2LV1OFFRsQ2tKILcfrGtMIzkahkHu0
-         4+laIdJd2IfgCgVA7a/9kmpu48Ixmz3hRhPZP2W6kyr0EDR+3Nrviv/q/TNTpR5hT2ca
-         bulkofz0F49kSujm4DeWEWVYMWKfdpGr3KWANwT2cGprEMBh4y8yLQYbs5DEHyOY/U+4
-         eCJg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2T0btOHeyWCOKe1UWHkhUvUHS/MItGk1w4QBCDkZ4Gc=;
+        b=QYWJ//L+qI1VaT6BTLpR0mn4ybSfHJjOB59oc66CPuMTLXUXDjVqEZfxrGguTFft+N
+         P1X6hhy4Om6xevvr/INAHWoIR+h94c1mlClgNU1QYzcujw1Nky4FEobcVAmEn1g07eUJ
+         1i0wtm5aCqj7hzniCltu5McaZcnLYvTVg91agdutGXJBrLUtYQ0A0WSlvM/BSr3mWq8E
+         Dv2TzFDVHcFDAO8d87VBLa8doDB3sw00uhee9l9yyNgUpHgYq6N2qxoLZfDfaThecyQ+
+         9RalcLgj9jmSdC/I3gVuyUHwhV/P1JA2glFVLNMhblzPIspZ44voU/ZO13h/WIKFuGyr
+         /ytA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NCR65AgEN7e8ge6gFaeYgLnI/aL4mIVTifuImi+nxuU=;
-        b=7SAAIjVJ+RT0dC6x8Z3BUuXIEgzn/OZ/GhlO2evEsbSCAW0BZ+18VqksElQ44Rx582
-         A/GHySEK+NjOeGF2YWHFSUWnGkMvw/JrpqaXGpJgtXFWlo5Na375ibeGcEmEMVDVDRGH
-         0oBjASTFCuct+hDEKb/VueiXh82OCyJfMML1TBLC8kp24+WW6zehgjwj+KkKTaqAKd2J
-         ssWLYxIFcyTywQsy9Amt6esboDW0lFLByE44bEigbyx8PRLxAphY8fEgBt6MDAMC5mIN
-         eLSHtupfDzp9RCy3UBV/J+HQLdTDUpHhfwiUE5a0q//Ljf63tPONg6AVfUXD/32Fs+Nw
-         6Rng==
-X-Gm-Message-State: AJIora8iNkbJxGPs0vpInq0tel7co7e4JJ1HLc2M6uDWsCFudF+quM/z
-        T94Rmu/hgznPIl3eABfAM8Xk5/cytOPx7A==
-X-Google-Smtp-Source: AGRyM1ua3RPK72bxy2NoNyrj6KWzRCCDDeOXPITO7g4kSTv2G1YxGM4YumrKM4dtu5lXu2gNN/Dd1w==
-X-Received: by 2002:a17:90a:31c1:b0:1ec:729f:36b7 with SMTP id j1-20020a17090a31c100b001ec729f36b7mr6179995pjf.123.1656515980491;
-        Wed, 29 Jun 2022 08:19:40 -0700 (PDT)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id x20-20020a170902b41400b001676dac529asm11522657plr.146.2022.06.29.08.19.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 08:19:39 -0700 (PDT)
-From:   Chuang Wang <nashuiliang@gmail.com>
-Cc:     Chuang Wang <nashuiliang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/3] libbpf: cleanup the legacy uprobe_event on failed add/attach_event()
-Date:   Wed, 29 Jun 2022 23:18:47 +0800
-Message-Id: <20220629151848.65587-4-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629151848.65587-1-nashuiliang@gmail.com>
-References: <20220629151848.65587-1-nashuiliang@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2T0btOHeyWCOKe1UWHkhUvUHS/MItGk1w4QBCDkZ4Gc=;
+        b=Si6B+bbgu/VFb4mDDA65n5hNGQ4pPPEfqzFL7+Sa8QZInpYQwHxNNjl7jC9o/x5n4q
+         Miu/OU8V26RF9OFq+ICO79cdtUuwA1x8dBwAokcDCw4Wym21Yy1XaYYMj73/HPX3kYoY
+         KN37ryXEGm+OhGpPhk808k2OJjDPXjvNHesppwlnROgFLsZ7gHISg2CAf/fCqhrtIwkG
+         ZJhjXIiS3cR+kLWi1cp8baVewMW4PWvwJ1i1bsTLqsV0L7AC9TuVWrFpyCkAB/5pPxAP
+         +uyyYT1HfBNBcrghtw/zXLY2bgT2paNfW2ZNJM+groPoZ6T/Rl5OlXEdZMIbPv2dxzi1
+         J1yA==
+X-Gm-Message-State: AJIora//bwpGEcRdXXjfNPo2M1zEwtLN67hgjYjecrbCx/2RrpWvGg6O
+        8qabHuEFfabMF2kx8mP/bY67y5ueezjdY5ySBw==
+X-Google-Smtp-Source: AGRyM1sMakczPu1rAbNKkhmk2FkXi9/U7dM+O8/FRyHcVcvQYR5xJqmThWxZcXXId8SZkrV6D6F4QUj9XeEFp4DbvyE=
+X-Received: by 2002:a05:6870:8892:b0:101:9d4f:4aa5 with SMTP id
+ m18-20020a056870889200b001019d4f4aa5mr2265968oam.106.1656516089340; Wed, 29
+ Jun 2022 08:21:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220606203802.158958-1-brgerst@gmail.com> <53296bc3-d220-dfe5-514b-bba2496ef4b3@kernel.org>
+In-Reply-To: <53296bc3-d220-dfe5-514b-bba2496ef4b3@kernel.org>
+From:   Brian Gerst <brgerst@gmail.com>
+Date:   Wed, 29 Jun 2022 11:21:17 -0400
+Message-ID: <CAMzpN2iBk4bfFWyxrMtFanxxNAM9MYNXPZ3oQSmyBpQjuNP_Ug@mail.gmail.com>
+Subject: Re: [PATCH 0/8] x86 signal code cleanups
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A potential scenario, when an error is returned after
-add_uprobe_event_legacy() in perf_event_uprobe_open_legacy(), or
-bpf_program__attach_perf_event_opts() in
-bpf_program__attach_uprobe_opts() returns an error, the uprobe_event
-that was previously created is not cleaned.
+On Tue, Jun 28, 2022 at 7:23 PM Andy Lutomirski <luto@kernel.org> wrote:
+>
+> On 6/6/22 13:37, Brian Gerst wrote:
+> > The 32-bit signal code has significant differences from 64-bit, and
+> > those are duplicated for native and compat modes.  This patch series
+> > merges the 32-bit code into one file, and does some general cleanups
+> > in the x86 signal code.  There should be no functional changes.
+> >
+>
+> This looks generally sane.  What kind of testing have you done?
 
-So, with this patch, when an error is returned, fix this by adding
-remove_uprobe_event_legacy()
+I ran all of the self tests, did a parallel kernel build, and general
+usage like web browsing.  Do you have any suggestions for other tests?
 
-Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
----
- tools/lib/bpf/libbpf.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 159b69d8b941..5aa6033a0284 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10240,9 +10240,10 @@ static int perf_event_uprobe_open_legacy(const char *probe_name, bool retprobe,
- 	}
- 	type = determine_uprobe_perf_type_legacy(probe_name, retprobe);
- 	if (type < 0) {
-+		err = type;
- 		pr_warn("failed to determine legacy uprobe event id for %s:0x%zx: %d\n",
--			binary_path, offset, type);
--		return type;
-+			binary_path, offset, err);
-+		goto err_clean_legacy;
- 	}
- 
- 	memset(&attr, 0, sizeof(attr));
-@@ -10257,9 +10258,14 @@ static int perf_event_uprobe_open_legacy(const char *probe_name, bool retprobe,
- 	if (pfd < 0) {
- 		err = -errno;
- 		pr_warn("legacy uprobe perf_event_open() failed: %d\n", err);
--		return err;
-+		goto err_clean_legacy;
- 	}
- 	return pfd;
-+
-+err_clean_legacy:
-+	/* Clear the newly added legacy uprobe_event */
-+	remove_uprobe_event_legacy(probe_name, retprobe);
-+	return err;
- }
- 
- /* Return next ELF section of sh_type after scn, or first of that type if scn is NULL. */
-@@ -10593,7 +10599,7 @@ bpf_program__attach_uprobe_opts(const struct bpf_program *prog, pid_t pid,
- 			prog->name, retprobe ? "uretprobe" : "uprobe",
- 			binary_path, func_offset,
- 			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
--		goto err_out;
-+		goto err_clean_legacy;
- 	}
- 	if (legacy) {
- 		struct bpf_link_perf *perf_link = container_of(link, struct bpf_link_perf, link);
-@@ -10603,10 +10609,14 @@ bpf_program__attach_uprobe_opts(const struct bpf_program *prog, pid_t pid,
- 		perf_link->legacy_is_retprobe = retprobe;
- 	}
- 	return link;
-+
-+err_clean_legacy:
-+	if (legacy)
-+		remove_uprobe_event_legacy(legacy_probe, retprobe);
-+
- err_out:
- 	free(legacy_probe);
- 	return libbpf_err_ptr(err);
--
- }
- 
- /* Format of u[ret]probe section definition supporting auto-attach:
--- 
-2.34.1
-
+--
+Brian Gerst
