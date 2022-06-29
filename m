@@ -2,67 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC88CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DA3CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbiF2Xcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 19:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
+        id S231905AbiF2XeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 19:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231706AbiF2Xck (ORCPT
+        with ESMTP id S231910AbiF2Xdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 19:32:40 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E52E10AB;
-        Wed, 29 Jun 2022 16:32:39 -0700 (PDT)
-Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 15FBF6601907;
-        Thu, 30 Jun 2022 00:32:36 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656545558;
-        bh=oVgoLvTdsd3vaxbfPQK9/lB07D3jznp/onCu5eG80IE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DYZVTa/kWWCEzdcyPjtsQlw1LwuKtkD0cA6/9L6y/+nGcLOi0f5Y39k6bMiekFkxJ
-         tllDtSzjRfpkLgbBcUqOzzh07mw7maRlBggAZpCSxrQ1OxY80SCzM6lIQNbhSFz9Nu
-         dtcvEjO1VLsqpJpmPalVBEeTQTKSWdhM7kQNmaw1wGJ+TB9p2w87alNwjQ3njXGaA/
-         jPglypyCNmhveth26Otc10vnzbGfNpWHfTv3/fmqeddQzp9wkZx+COF2dmsNGZz4l/
-         VONMwpCVJSZNrGvcsNFjQyON+khcMPpYDEybH/X38JXJlSspqJZ7bkxmFge+i/pexi
-         KE//s4DwiSB9w==
-Date:   Wed, 29 Jun 2022 19:32:32 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH 5/5] arm64: dts: mt8192: Add vcodec lat and core nodes
-Message-ID: <20220629233232.a3rz7vqu6qsq3gi6@notapiano>
-References: <20220629121358.19458-1-allen-kh.cheng@mediatek.com>
- <20220629121358.19458-6-allen-kh.cheng@mediatek.com>
+        Wed, 29 Jun 2022 19:33:41 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6F96546
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:33:27 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id s206so7777226pgs.3
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:33:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NsipExiNrrBArXSMUQqN1JMJ/FxaIb/dWMMG0KzbrOs=;
+        b=SKirdDWUbEM76rroMI+QFGcjo0pejKbbRpxDG17OH945v0BbXptuePFWmUkJdnAjDC
+         S2EtS1whCoRGxKcli1T6cnbE4abqW5bDlGUTDrhNt8ay53FxRSaV/ejtnhfaORpv9NCG
+         reeo1rMi9rtgrltdEO9o+VyWwTH8lMHh0bRjA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NsipExiNrrBArXSMUQqN1JMJ/FxaIb/dWMMG0KzbrOs=;
+        b=H6UD+J2He3xvDHwWlyDv17Y/LYrJH1kFc/SIhQPjG0sQfKOJml3nc1x5M8HcWPT2eY
+         m6tRbCiwY5MNYGHgzvM0MhDW1uPKLOd9qPaFnVVBB6SX/3nnMc1lqi1LMhhU5UOcz+sf
+         y+Ok0tTmbKloFYT4cjdYqSXTZgsmc34kchs9pZPve6ryM8Y4rhgdkerPirLhIK3wDxju
+         yi1lhVg/WWr9+GWfa2GdfTmyyKVkF0e4GheJeh6ptBUoTtRunY0oeiB1BHykWk8H+l5q
+         ByM9A8UBN+L0HAt8NldYlb/keHHhVakA/t4G43QTFtM/NCzfqb6QKuG8Oe03j29EM94V
+         7zfw==
+X-Gm-Message-State: AJIora8usMdy/zrRRBj5ty3hFVpp5Rlc15gdNq/+dtfNqXBqVkZYnSSy
+        WEieR5CHSEnxmAUmiMy7oK7jWMK/S+2Tfw==
+X-Google-Smtp-Source: AGRyM1uT9ojCPeeZmZxFDwuVbWK511n55nDUuKeiOFARtW8UIDcnyVk/Bdy/frMbZN1So/MlNR5MRg==
+X-Received: by 2002:a05:6a00:10c3:b0:525:40fe:6e8d with SMTP id d3-20020a056a0010c300b0052540fe6e8dmr12497366pfu.38.1656545604547;
+        Wed, 29 Jun 2022 16:33:24 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id rm1-20020a17090b3ec100b001ed27d132c1sm127305pjb.2.2022.06.29.16.33.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 16:33:23 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH 0/9] platform/chrome: Type-C switch driver and Type-C framework updates
+Date:   Wed, 29 Jun 2022 23:32:18 +0000
+Message-Id: <20220629233314.3540377-1-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220629121358.19458-6-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 08:13:58PM +0800, Allen-KH Cheng wrote:
-> Add vcodec lat and core nodes for mt8192 SoC.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+This series introduces a retimer class to the USB Type-C framework,
+It also introduces a Chrome EC (Embedded Controller) switch driver which
+registers the aforementioned retimer switches as well as mode-switches.
 
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Patch 1 and 2 introduce the retimer class and associated functions to
+the Type-C common code.
 
-Thanks,
-Nícolas
+Patches 3-7 add the cros-typec-switch driver
+
+Patches 8-9 update cros-ec-typec to get and use retimer switch handles
+
+Submission suggestion (as always, open to better suggestions):
+- Patch 1 and 2 can go through the USB repo.
+- Patch 3-9 can go through the chrome-platform repo. Since they depend
+  on patches 1 and 2, we can create an "topic branch" off of
+  usb-next once Patch 1 and 2 are submitted, and then apply Patches 3-9
+  on top of that "topic branch" before merging it back into
+  chrome-platform's for-next branch
+
+Prashant Malani (9):
+  usb: typec: Add support for retimers
+  usb: typec: Add retimer handle to port
+  platform/chrome: Add Type-C mux set command definitions
+  platform/chrome: cros_typec_switch: Add switch driver
+  platform/chrome: cros_typec_switch: Set EC retimer
+  platform/chrome: cros_typec_switch: Add event check
+  platform/chrome: cros_typec_switch: Register mode switches
+  platform/chrome: cros_ec_typec: Cleanup switch handle return paths
+  platform/chrome: cros_ec_typec: Get retimer handle
+
+ MAINTAINERS                                   |   1 +
+ drivers/platform/chrome/Kconfig               |  11 +
+ drivers/platform/chrome/Makefile              |   1 +
+ drivers/platform/chrome/cros_ec_typec.c       |  50 ++-
+ drivers/platform/chrome/cros_typec_switch.c   | 332 ++++++++++++++++++
+ drivers/usb/typec/Makefile                    |   2 +-
+ drivers/usb/typec/class.c                     |  17 +-
+ drivers/usb/typec/class.h                     |   2 +
+ drivers/usb/typec/retimer.c                   | 168 +++++++++
+ drivers/usb/typec/retimer.h                   |  15 +
+ .../linux/platform_data/cros_ec_commands.h    |  18 +
+ include/linux/usb/typec_retimer.h             |  45 +++
+ 12 files changed, 653 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/platform/chrome/cros_typec_switch.c
+ create mode 100644 drivers/usb/typec/retimer.c
+ create mode 100644 drivers/usb/typec/retimer.h
+ create mode 100644 include/linux/usb/typec_retimer.h
+
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
+
