@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03217C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233923AbiF2ONL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
+        id S233662AbiF2ONO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233987AbiF2OMf (ORCPT
+        with ESMTP id S233964AbiF2OMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:12:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E322E08E;
-        Wed, 29 Jun 2022 07:12:33 -0700 (PDT)
+        Wed, 29 Jun 2022 10:12:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFDA02EA28;
+        Wed, 29 Jun 2022 07:12:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F2FF2CE2489;
-        Wed, 29 Jun 2022 14:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED2AC341CD;
-        Wed, 29 Jun 2022 14:12:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D50DB8249B;
+        Wed, 29 Jun 2022 14:12:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFE40C34114;
+        Wed, 29 Jun 2022 14:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656511949;
-        bh=OKbfDOFsHJpH/aKP85UzWCpP7dM3YaM+DQIPp7aJ2Bs=;
+        bh=lR7ZwSAWF+pA7EbW6aJNgBB7QMveHeptOeicRhPqt3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rV0kcX2ohR6AdRNN4JqBj7nfNLn1pXsSyFXqDheZ2J7Kgy4M/Mz3Iv3N+ArTGq+30
-         vFp4qsLmnqNwxzaaTjW+jY6vkZPuSZWSYVTPxLOO0mITk8fPFWP3ODn+4M5eMeTcXr
-         STcjrIVoMTpf7cUjCqybKUQZfSEvW1Ks8Wqf2nByZe3nOSpq97ztY0GTzwQczk6+/D
-         0sgFSRNSLv0DHj7ZxZq8+JGio49WK+8DfzP9g8Gi6h+cO+jGKKoYXfo7DK56BqL3q5
-         SNsQbd8WOhabMbfUHhw7zhXP9i66L/J/su4zrj3dKnyswngKvDhbg2KHBgfx6sssst
-         DpVgTMFtUn8xQ==
+        b=P5ay69S8xdtKXmQ5I15QvuCir9V7FKY73SDHRB2G/DZtFvPKn3oVNNgRFvJkRctnu
+         HN3n++hMJWDEcQJaVD5NKkA4GYJIjNvFPhZMyfv3WUx9vlBa8w3F/TanQc9F8h61eT
+         WBfPZN0ZQcH9tFlrFCPSBhXmR/qxpCfyecQbWtpBsh/ZH/jfbZtSblUkG/TGnTjq2Q
+         XBunFSUldovd1H/+lotIiuk4b3N2HXs3XDfCbi/GZ4DKqUW2Yc0klfVz0NdfkUfuyM
+         ZNguMuTx0ps2nfIWasx3lOfuErki/CWe80/Nn7gNJxlQNQ1J+Ikz4edIZMS+KHkrOD
+         DEm6h9WvjNcSw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o6YQe-0004lI-QN; Wed, 29 Jun 2022 16:12:28 +0200
+        id 1o6YQe-0004l8-CK; Wed, 29 Jun 2022 16:12:28 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Lorenzo Pieralisi <lpieralisi@kernel.org>
@@ -48,9 +48,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 06/10] PCI: qcom: Add support for SC8280XP
-Date:   Wed, 29 Jun 2022 16:09:56 +0200
-Message-Id: <20220629141000.18111-7-johan+linaro@kernel.org>
+Subject: [PATCH 01/10] dt-bindings: PCI: qcom: Fix reset conditional
+Date:   Wed, 29 Jun 2022 16:09:51 +0200
+Message-Id: <20220629141000.18111-2-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220629141000.18111-1-johan+linaro@kernel.org>
 References: <20220629141000.18111-1-johan+linaro@kernel.org>
@@ -60,87 +60,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SC8280XP platform has seven PCIe controllers: two used with USB4,
-two 4-lane, two 2-lane and one 1-lane.
+Fix the reset conditional which always evaluated to true due to a
+misspelled property name ("compatibles" in plural).
 
-Add a new "qcom,pcie-sc8280xp" compatible string and reuse the 1.9.0
-ops.
-
-Note that the SC8280XP controllers need two or three interconnect
-clocks to be enabled. Model these as optional clocks to avoid encoding
-devicetree data in the PCIe driver.
-
-Note that the same could be done for the SM8450 interconnect clocks and
-possibly also for the TBU clocks.
-
+Fixes: 6700a9b00f0a ("dt-bindings: PCI: qcom: Do not require resets on msm8996 platforms")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/pci/qcom,pcie.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index ff1b40f213c1..da3f1cdc4ba6 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -160,7 +160,7 @@ struct qcom_pcie_resources_2_3_3 {
- 
- /* 6 clocks typically, 7 for sm8250 */
- struct qcom_pcie_resources_2_7_0 {
--	struct clk_bulk_data clks[9];
-+	struct clk_bulk_data clks[12];
- 	int num_clks;
- 	struct regulator_bulk_data supplies[2];
- 	struct reset_control *pci_reset;
-@@ -1119,6 +1119,7 @@ static int qcom_pcie_get_resources_2_7_0(struct qcom_pcie *pcie)
- 	struct qcom_pcie_resources_2_7_0 *res = &pcie->res.v2_7_0;
- 	struct dw_pcie *pci = pcie->pci;
- 	struct device *dev = pci->dev;
-+	unsigned int num_clks, num_opt_clks;
- 	unsigned int idx;
- 	int ret;
- 
-@@ -1148,9 +1149,20 @@ static int qcom_pcie_get_resources_2_7_0(struct qcom_pcie *pcie)
- 	if (pcie->cfg->has_aggre1_clk)
- 		res->clks[idx++].id = "aggre1";
- 
-+	num_clks = idx;
-+
-+	ret = devm_clk_bulk_get(dev, num_clks, res->clks);
-+	if (ret < 0)
-+		return ret;
-+
-+	res->clks[idx++].id = "noc_aggr_4";
-+	res->clks[idx++].id = "noc_aggr_south_sf";
-+	res->clks[idx++].id = "cnoc_qx";
-+
-+	num_opt_clks = idx - num_clks;
- 	res->num_clks = idx;
- 
--	ret = devm_clk_bulk_get(dev, res->num_clks, res->clks);
-+	ret = devm_clk_bulk_get_optional(dev, num_opt_clks, res->clks + num_clks);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1449,6 +1461,11 @@ static const struct qcom_pcie_cfg ipq4019_cfg = {
- 	.ops = &ops_2_4_0,
- };
- 
-+static const struct qcom_pcie_cfg sc8280xp_cfg = {
-+	.ops = &ops_1_9_0,
-+	.has_ddrss_sf_tbu_clk = true,
-+};
-+
- static const struct qcom_pcie_cfg sdm845_cfg = {
- 	.ops = &ops_2_7_0,
- 	.has_tbu_clk = true,
-@@ -1613,6 +1630,7 @@ static const struct of_device_id qcom_pcie_match[] = {
- 	{ .compatible = "qcom,pcie-sm8150", .data = &sm8150_cfg },
- 	{ .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
- 	{ .compatible = "qcom,pcie-sc8180x", .data = &sc8180x_cfg },
-+	{ .compatible = "qcom,pcie-sc8280xp", .data = &sc8280xp_cfg },
- 	{ .compatible = "qcom,pcie-sm8450-pcie0", .data = &sm8450_pcie0_cfg },
- 	{ .compatible = "qcom,pcie-sm8450-pcie1", .data = &sm8450_pcie1_cfg },
- 	{ .compatible = "qcom,pcie-sc7280", .data = &sc7280_cfg },
+diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+index 7e84063afe25..ed9f9462a758 100644
+--- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+@@ -615,7 +615,7 @@ allOf:
+   - if:
+       not:
+         properties:
+-          compatibles:
++          compatible:
+             contains:
+               enum:
+                 - qcom,pcie-msm8996
 -- 
 2.35.1
 
