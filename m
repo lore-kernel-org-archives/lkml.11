@@ -2,144 +2,487 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBE5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 06:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B00C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 06:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbiF2GDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 02:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S231292AbiF2GEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 02:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiF2GD1 (ORCPT
+        with ESMTP id S230062AbiF2GEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 02:03:27 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2047.outbound.protection.outlook.com [40.107.237.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3390913F52;
-        Tue, 28 Jun 2022 23:03:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ldUfPkZKCAyeU/6Dg+VS+21dh2LkrOQlgOP1GLHa041n1la8mPYLNxorhnr31niSZSq6/8T8T1GcG7aBim+/SzkGRFyqI3X2n+FhZ2R7RtNoP4vXP+SJ0ExcFuPvScT6x6SbRgYwSTt897xXOKPWkCnXpf/jLO5Tg0SE3Djkm+4YtX6E5iF4nY2p1SgMOfVDznLXxknDRtosLi5luan2irx7Mm5BAHeFIkbOV/Vtn5fJ70weW3cpLUhvj/QwWASnuazJ7cffIDHPQz3B5ALVFTU0NAXWjfbpmNlMVgmih443rFpXLlVQ2iAoXvfvFcpuX5lVcB+xKnx8cGkQZ+USGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WZ+TcqCFNllt9qXQfWvqmWXpPxrDwf0BuFxNn4y5tQw=;
- b=g603jFTNZl7w5H+lv/VPywe61AEx2zoM3I0+gFDXn7NvRj63EBKN8bJ0ho+o9nlghLSrJf2gG9RIneWsm6KkDLbiB93ReKwjQv71inxdUGDiC8Cd9/NQM0ai7+8oULU0d0PawiON6DK51gvbHIGbTlJSmwx4OBCLq35FmoIQUNk7wlhd5kZXQkO/hnmsFLwX9dFFNGWRVSmoOBeAWz+Gbp1KIpuvtdMYtJqGMPz5NJrYBZ1FrrHdtpuN6bXvOZMto52Qg9/9is90vrwmFoV4vspu9E5I/771ZJSdKtlLU8VFzIcMuYrSeWQjhrtFI3t6TV04pKIG/8rOhMK7ai/h+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WZ+TcqCFNllt9qXQfWvqmWXpPxrDwf0BuFxNn4y5tQw=;
- b=Q70vYaCghWBW2kc7R0pSvGyPJmw1fSHvW2fJSlLjymgQ4xI1AJNvjrLFnaSpFv3HRdsq3voBiQUfu1VafCU2VV5F17tKQMXAV8MiO+pjTgwtA3XIYdgyrX0prv58ia31WQ5o4myHV6uT8urqcf5En1a4SrQW/kZ3uGKT/Z4xqlk=
-Received: from DM6PR02CA0120.namprd02.prod.outlook.com (2603:10b6:5:1b4::22)
- by BN6PR12MB1459.namprd12.prod.outlook.com (2603:10b6:405:e::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Wed, 29 Jun
- 2022 06:03:22 +0000
-Received: from DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b4:cafe::3e) by DM6PR02CA0120.outlook.office365.com
- (2603:10b6:5:1b4::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16 via Frontend
- Transport; Wed, 29 Jun 2022 06:03:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT044.mail.protection.outlook.com (10.13.173.185) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5373.15 via Frontend Transport; Wed, 29 Jun 2022 06:02:49 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 29 Jun
- 2022 01:02:48 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 29 Jun
- 2022 01:02:41 -0500
-Received: from dev-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Wed, 29 Jun 2022 01:02:37 -0500
-From:   jie1zhan <jesse.zhang@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <ajitkumar.pandey@amd.com>,
-        jie1zhan <jesse.zhang@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Nirmoy Das <nirmoy.das@linux.intel.com>,
-        "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>
-Subject: [PATCH v1] Fix: SYNCOBJ TIMELINE Test failed.
-Date:   Wed, 29 Jun 2022 14:02:36 +0800
-Message-ID: <20220629060236.3283445-1-jesse.zhang@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 29 Jun 2022 02:04:34 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA74167D5;
+        Tue, 28 Jun 2022 23:04:31 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LXrWw52rwz4xD8;
+        Wed, 29 Jun 2022 16:04:28 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1656482670;
+        bh=++LZ02kVmDl3w6AdDRJR3EAJ4ipt42zCdQwy5pHrD4g=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=lGl0S+EdNdWy4FW7aAEcc/S+H0uudIhrDRUPouvlF1fo2EW12ikToDHi8xyTjxyGr
+         LwWvUShTQsZEis9AdwTnCD9rKC9DLRrfCdrNU+kbATCJb4FdpQT97adKJb9ryZQe/0
+         btPx+aIsAGa10Y0qkFKAMtVeeconHfI0dvbsCiFD4ll0fplOdJ3kKle9DoiefNrokb
+         ZwkT1SRn3QFuUvsNC4jHcoJ2FErCHpSP1FKWVsj6+q++tVdg23tSFCmJdqOPOl3990
+         mUvA9B0km6z7L6+jqVnRKySPOFh5cjYOW5YtLTZN4HsyjE8gQbrXMFMM4JHStySRft
+         yCSPHL51XVrIw==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Xiu Jianfeng <xiujianfeng@huawei.com>, benh@kernel.crashing.org,
+        paulus@samba.org, npiggin@gmail.com, christophe.leroy@csgroup.eu
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH -next, v2] powerpc: add support for syscall stack
+ randomization
+In-Reply-To: <20220516073225.112875-1-xiujianfeng@huawei.com>
+References: <20220516073225.112875-1-xiujianfeng@huawei.com>
+Date:   Wed, 29 Jun 2022 16:04:24 +1000
+Message-ID: <87zghw2efr.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9f8096e2-bdd3-4ebc-fc22-08da59951234
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1459:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VxO6VteLK1W0be7er/A6cSemlLxgh6NjatnY574S0N7+NXZQcBTohgxgieiI9uHwiQygOYEIXpL3tv0QYjNhhuCgs8O+ZSazBtlsUU1kDnWtwx1t6pB4u7vI1j02U0bZmZJ+TQG98WSvL8DMqOqDNEi81Axe42Xn6PSO9zcJf2CACjfG+iGJ1nLabtmViP/TjjFo9MMDb6Yp47uNYl6SFlxcpI/JCKLhTh1iTnDyOFXoAJnZ8GY+g/qpZJHCrdlvZeMy1Lj7fSs7tUumFYGSC/fZfKBCHZhrLQsn7NgEBrdaytUW5EZSRP0W0hMDKT8KM7ifD7/ZLIjynI8uCWBIEJpi/ZOCEYqKOn2o2baqWE3FRU6EjOF/VhPzTyZ5gumwPRuKRGnseEi3WBpDXWOKVxb2508TITcqGazUXx8na1Hi6ItLhtZZkXQYuNgma03UhqB+6jFB8reLt7d0uWLTmLV7IKjuu37knxbMsclly+K9RJxn0jLQIUgvKJHve89QN8+L5R9Ir6wKq5Z5z+DpwF14t+REinVkUGA6BcCeaeZq9j66ym0vVoP7/7tCS0CwLmrlTFaH0We7KW9Us0ULtQrevs23yXLd+0BUzF2+3MArZQCgIYrY8nV3owDOFjrmk8QWe8ZR4qE3djM0McuqZu4qw6pthr5X8pAIkdfJnZjKk1zmkpCCL4eejXD7jNByUZxdM9lHzXVdjocnjg4AVqpdQgQwYr1FzHoFOTrlNC4Fbx/yP1M9bvsPlkdaJiOGM65i6Sdt8BWlawheoi6mJ59nUP7uXr6fA+oj0F9bPvF3hTzi9Dz42N4E1f8ifhMO3UY1m45gUfLOYdtaaNJ9pGn8hVrGaStxlxyNCwvGbFnCwVt6l9BpUif0We2fZykEA8K4awp1x6g2gWpleIyRfgvyuBI12vJDdTKxdsjC4Jo=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(376002)(136003)(346002)(46966006)(36840700001)(40470700004)(426003)(82310400005)(186003)(336012)(66574015)(83380400001)(36860700001)(47076005)(81166007)(82740400003)(41300700001)(8936002)(356005)(40480700001)(40460700003)(7696005)(4326008)(26005)(5660300002)(8676002)(478600001)(2906002)(70206006)(4744005)(1076003)(70586007)(2616005)(54906003)(86362001)(7416002)(110136005)(36756003)(316002)(43062005)(36900700001)(414714003)(473944003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 06:02:49.7142
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f8096e2-bdd3-4ebc-fc22-08da59951234
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1459
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- The issue cause by the commit :
+Xiu Jianfeng <xiujianfeng@huawei.com> writes:
+> Add support for adding a random offset to the stack while handling
+> syscalls. This patch uses mftb() instead of get_random_int() for better
+> performance.
+>
+> In order to avoid unconditional stack canaries on syscall entry (due to
+> the use of alloca()), also disable stack protector to avoid triggering
+> needless checks and slowing down the entry path. As there is no general
+> way to control stack protector coverage with a function attribute, this
+> must be disabled at the compilation unit level.
+>
+> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+>
+> ---
+> Changes in v2:
+>   -move choose choose_random_kstack_offset() to the end of system_call_exception
+>   -allow full 6 (10) bits of entropy
+>   -disable stack-protector for interrupt.c
+> ---
+>  arch/powerpc/Kconfig            |  1 +
+>  arch/powerpc/kernel/Makefile    |  7 +++++++
+>  arch/powerpc/kernel/interrupt.c | 19 ++++++++++++++++++-
+>  3 files changed, 26 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> index 98309eeae09c..2f0019a0054e 100644
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -192,6 +192,7 @@ config PPC
+>  	select HAVE_ARCH_KASAN			if PPC32 && PPC_PAGE_SHIFT <= 14
+>  	select HAVE_ARCH_KASAN_VMALLOC		if PPC32 && PPC_PAGE_SHIFT <= 14
+>  	select HAVE_ARCH_KFENCE			if PPC_BOOK3S_32 || PPC_8xx || 40x
+> +	select HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
+>  	select HAVE_ARCH_KGDB
+>  	select HAVE_ARCH_MMAP_RND_BITS
+>  	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if COMPAT
+> diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+> index 4ddd161aef32..5c5e85b8229b 100644
+> --- a/arch/powerpc/kernel/Makefile
+> +++ b/arch/powerpc/kernel/Makefile
+> @@ -40,6 +40,13 @@ CFLAGS_cputable.o += -DDISABLE_BRANCH_PROFILING
+>  CFLAGS_btext.o += -DDISABLE_BRANCH_PROFILING
+>  endif
+>  
+> +#ifdef CONFIG_RANDOMIZE_KSTACK_OFFSET
+> +# Remove stack protector to avoid triggering unneeded stack canary
+> +# checks due to randomize_kstack_offset.
+> +CFLAGS_REMOVE_interrupt.o = -fstack-protector -fstack-protector-strong
+> +CFLAGS_interrupt.o += -fno-stack-protector
+> +#endif
 
-721255b527(drm/syncobj: flatten dma_fence_chains on transfer).
+I'm a bit reluctant to remove stack protection from all of interrupt.c
+just for this feature.
 
-Because it use the point of dma_fence incorrectly
+It's true that none of the functions in interrupt.c currently trigger
+stack protection, but that could change in future.
 
-Correct the point of dma_fence by fence array
+What about splitting system_call_exception() into a separate file as a
+lead-up patch, example below. Then we can just exclude stack protection
+from that one function.
 
-Signed-off-by: jie1zhan <jesse.zhang@amd.com>
+cheers
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
 
-Reviewed-by: Nirmoy Das <nirmoy.das@linux.intel.com>
----
- drivers/gpu/drm/drm_syncobj.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/drm_syncobj.c b/drivers/gpu/drm/drm_syncobj.c
-index 7e48dcd1bee4..d5db818f1c76 100644
---- a/drivers/gpu/drm/drm_syncobj.c
-+++ b/drivers/gpu/drm/drm_syncobj.c
-@@ -887,7 +887,7 @@ static int drm_syncobj_flatten_chain(struct dma_fence **f)
- 		goto free_fences;
+diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+index f91f0f29a566..ecfd333b95d1 100644
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -61,7 +61,7 @@ obj-y				:= cputable.o syscalls.o \
+ 				   udbg.o misc.o io.o misc_$(BITS).o \
+ 				   of_platform.o prom_parse.o firmware.o \
+ 				   hw_breakpoint_constraints.o interrupt.o \
+-				   kdebugfs.o stacktrace.o
++				   kdebugfs.o stacktrace.o syscall.o
+ obj-y				+= ptrace/
+ obj-$(CONFIG_PPC64)		+= setup_64.o \
+ 				   paca.o nvram_64.o note.o
+diff --git a/arch/powerpc/kernel/interrupt.c b/arch/powerpc/kernel/interrupt.c
+index 784ea3289c84..0e75cb03244a 100644
+--- a/arch/powerpc/kernel/interrupt.c
++++ b/arch/powerpc/kernel/interrupt.c
+@@ -24,8 +24,6 @@
+ unsigned long global_dbcr0[NR_CPUS];
+ #endif
  
- 	dma_fence_put(*f);
--	*f = &array->base;
-+	*f = array->fences[0];
- 	return 0;
+-typedef long (*syscall_fn)(long, long, long, long, long, long);
+-
+ #ifdef CONFIG_PPC_BOOK3S_64
+ DEFINE_STATIC_KEY_FALSE(interrupt_exit_not_reentrant);
+ static inline bool exit_must_hard_disable(void)
+@@ -73,165 +71,6 @@ static notrace __always_inline bool prep_irq_for_enabled_exit(bool restartable)
+ 	return true;
+ }
  
- free_fences:
+-/* Has to run notrace because it is entered not completely "reconciled" */
+-notrace long system_call_exception(long r3, long r4, long r5,
+-				   long r6, long r7, long r8,
+-				   unsigned long r0, struct pt_regs *regs)
+-{
+-	syscall_fn f;
+-
+-	kuap_lock();
+-
+-	regs->orig_gpr3 = r3;
+-
+-	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
+-		BUG_ON(irq_soft_mask_return() != IRQS_ALL_DISABLED);
+-
+-	trace_hardirqs_off(); /* finish reconciling */
+-
+-	CT_WARN_ON(ct_state() == CONTEXT_KERNEL);
+-	user_exit_irqoff();
+-
+-	BUG_ON(regs_is_unrecoverable(regs));
+-	BUG_ON(!(regs->msr & MSR_PR));
+-	BUG_ON(arch_irq_disabled_regs(regs));
+-
+-#ifdef CONFIG_PPC_PKEY
+-	if (mmu_has_feature(MMU_FTR_PKEY)) {
+-		unsigned long amr, iamr;
+-		bool flush_needed = false;
+-		/*
+-		 * When entering from userspace we mostly have the AMR/IAMR
+-		 * different from kernel default values. Hence don't compare.
+-		 */
+-		amr = mfspr(SPRN_AMR);
+-		iamr = mfspr(SPRN_IAMR);
+-		regs->amr  = amr;
+-		regs->iamr = iamr;
+-		if (mmu_has_feature(MMU_FTR_BOOK3S_KUAP)) {
+-			mtspr(SPRN_AMR, AMR_KUAP_BLOCKED);
+-			flush_needed = true;
+-		}
+-		if (mmu_has_feature(MMU_FTR_BOOK3S_KUEP)) {
+-			mtspr(SPRN_IAMR, AMR_KUEP_BLOCKED);
+-			flush_needed = true;
+-		}
+-		if (flush_needed)
+-			isync();
+-	} else
+-#endif
+-		kuap_assert_locked();
+-
+-	booke_restore_dbcr0();
+-
+-	account_cpu_user_entry();
+-
+-	account_stolen_time();
+-
+-	/*
+-	 * This is not required for the syscall exit path, but makes the
+-	 * stack frame look nicer. If this was initialised in the first stack
+-	 * frame, or if the unwinder was taught the first stack frame always
+-	 * returns to user with IRQS_ENABLED, this store could be avoided!
+-	 */
+-	irq_soft_mask_regs_set_state(regs, IRQS_ENABLED);
+-
+-	/*
+-	 * If system call is called with TM active, set _TIF_RESTOREALL to
+-	 * prevent RFSCV being used to return to userspace, because POWER9
+-	 * TM implementation has problems with this instruction returning to
+-	 * transactional state. Final register values are not relevant because
+-	 * the transaction will be aborted upon return anyway. Or in the case
+-	 * of unsupported_scv SIGILL fault, the return state does not much
+-	 * matter because it's an edge case.
+-	 */
+-	if (IS_ENABLED(CONFIG_PPC_TRANSACTIONAL_MEM) &&
+-			unlikely(MSR_TM_TRANSACTIONAL(regs->msr)))
+-		set_bits(_TIF_RESTOREALL, &current_thread_info()->flags);
+-
+-	/*
+-	 * If the system call was made with a transaction active, doom it and
+-	 * return without performing the system call. Unless it was an
+-	 * unsupported scv vector, in which case it's treated like an illegal
+-	 * instruction.
+-	 */
+-#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+-	if (unlikely(MSR_TM_TRANSACTIONAL(regs->msr)) &&
+-	    !trap_is_unsupported_scv(regs)) {
+-		/* Enable TM in the kernel, and disable EE (for scv) */
+-		hard_irq_disable();
+-		mtmsr(mfmsr() | MSR_TM);
+-
+-		/* tabort, this dooms the transaction, nothing else */
+-		asm volatile(".long 0x7c00071d | ((%0) << 16)"
+-				:: "r"(TM_CAUSE_SYSCALL|TM_CAUSE_PERSISTENT));
+-
+-		/*
+-		 * Userspace will never see the return value. Execution will
+-		 * resume after the tbegin. of the aborted transaction with the
+-		 * checkpointed register state. A context switch could occur
+-		 * or signal delivered to the process before resuming the
+-		 * doomed transaction context, but that should all be handled
+-		 * as expected.
+-		 */
+-		return -ENOSYS;
+-	}
+-#endif // CONFIG_PPC_TRANSACTIONAL_MEM
+-
+-	local_irq_enable();
+-
+-	if (unlikely(read_thread_flags() & _TIF_SYSCALL_DOTRACE)) {
+-		if (unlikely(trap_is_unsupported_scv(regs))) {
+-			/* Unsupported scv vector */
+-			_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
+-			return regs->gpr[3];
+-		}
+-		/*
+-		 * We use the return value of do_syscall_trace_enter() as the
+-		 * syscall number. If the syscall was rejected for any reason
+-		 * do_syscall_trace_enter() returns an invalid syscall number
+-		 * and the test against NR_syscalls will fail and the return
+-		 * value to be used is in regs->gpr[3].
+-		 */
+-		r0 = do_syscall_trace_enter(regs);
+-		if (unlikely(r0 >= NR_syscalls))
+-			return regs->gpr[3];
+-		r3 = regs->gpr[3];
+-		r4 = regs->gpr[4];
+-		r5 = regs->gpr[5];
+-		r6 = regs->gpr[6];
+-		r7 = regs->gpr[7];
+-		r8 = regs->gpr[8];
+-
+-	} else if (unlikely(r0 >= NR_syscalls)) {
+-		if (unlikely(trap_is_unsupported_scv(regs))) {
+-			/* Unsupported scv vector */
+-			_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
+-			return regs->gpr[3];
+-		}
+-		return -ENOSYS;
+-	}
+-
+-	/* May be faster to do array_index_nospec? */
+-	barrier_nospec();
+-
+-	if (unlikely(is_compat_task())) {
+-		f = (void *)compat_sys_call_table[r0];
+-
+-		r3 &= 0x00000000ffffffffULL;
+-		r4 &= 0x00000000ffffffffULL;
+-		r5 &= 0x00000000ffffffffULL;
+-		r6 &= 0x00000000ffffffffULL;
+-		r7 &= 0x00000000ffffffffULL;
+-		r8 &= 0x00000000ffffffffULL;
+-
+-	} else {
+-		f = (void *)sys_call_table[r0];
+-	}
+-
+-	return f(r3, r4, r5, r6, r7, r8);
+-}
+-
+ static notrace void booke_load_dbcr0(void)
+ {
+ #ifdef CONFIG_PPC_ADV_DEBUG_REGS
+diff --git a/arch/powerpc/kernel/syscall.c b/arch/powerpc/kernel/syscall.c
+new file mode 100644
+index 000000000000..4d5689eeaf25
+--- /dev/null
++++ b/arch/powerpc/kernel/syscall.c
+@@ -0,0 +1,173 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <linux/compat.h>
++#include <linux/context_tracking.h>
++
++#include <asm/interrupt.h>
++#include <asm/kup.h>
++#include <asm/syscall.h>
++#include <asm/time.h>
++#include <asm/tm.h>
++#include <asm/unistd.h>
++
++
++typedef long (*syscall_fn)(long, long, long, long, long, long);
++
++/* Has to run notrace because it is entered not completely "reconciled" */
++notrace long system_call_exception(long r3, long r4, long r5,
++				   long r6, long r7, long r8,
++				   unsigned long r0, struct pt_regs *regs)
++{
++	syscall_fn f;
++
++	kuap_lock();
++
++	regs->orig_gpr3 = r3;
++
++	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
++		BUG_ON(irq_soft_mask_return() != IRQS_ALL_DISABLED);
++
++	trace_hardirqs_off(); /* finish reconciling */
++
++	CT_WARN_ON(ct_state() == CONTEXT_KERNEL);
++	user_exit_irqoff();
++
++	BUG_ON(regs_is_unrecoverable(regs));
++	BUG_ON(!(regs->msr & MSR_PR));
++	BUG_ON(arch_irq_disabled_regs(regs));
++
++#ifdef CONFIG_PPC_PKEY
++	if (mmu_has_feature(MMU_FTR_PKEY)) {
++		unsigned long amr, iamr;
++		bool flush_needed = false;
++		/*
++		 * When entering from userspace we mostly have the AMR/IAMR
++		 * different from kernel default values. Hence don't compare.
++		 */
++		amr = mfspr(SPRN_AMR);
++		iamr = mfspr(SPRN_IAMR);
++		regs->amr  = amr;
++		regs->iamr = iamr;
++		if (mmu_has_feature(MMU_FTR_BOOK3S_KUAP)) {
++			mtspr(SPRN_AMR, AMR_KUAP_BLOCKED);
++			flush_needed = true;
++		}
++		if (mmu_has_feature(MMU_FTR_BOOK3S_KUEP)) {
++			mtspr(SPRN_IAMR, AMR_KUEP_BLOCKED);
++			flush_needed = true;
++		}
++		if (flush_needed)
++			isync();
++	} else
++#endif
++		kuap_assert_locked();
++
++	booke_restore_dbcr0();
++
++	account_cpu_user_entry();
++
++	account_stolen_time();
++
++	/*
++	 * This is not required for the syscall exit path, but makes the
++	 * stack frame look nicer. If this was initialised in the first stack
++	 * frame, or if the unwinder was taught the first stack frame always
++	 * returns to user with IRQS_ENABLED, this store could be avoided!
++	 */
++	irq_soft_mask_regs_set_state(regs, IRQS_ENABLED);
++
++	/*
++	 * If system call is called with TM active, set _TIF_RESTOREALL to
++	 * prevent RFSCV being used to return to userspace, because POWER9
++	 * TM implementation has problems with this instruction returning to
++	 * transactional state. Final register values are not relevant because
++	 * the transaction will be aborted upon return anyway. Or in the case
++	 * of unsupported_scv SIGILL fault, the return state does not much
++	 * matter because it's an edge case.
++	 */
++	if (IS_ENABLED(CONFIG_PPC_TRANSACTIONAL_MEM) &&
++			unlikely(MSR_TM_TRANSACTIONAL(regs->msr)))
++		set_bits(_TIF_RESTOREALL, &current_thread_info()->flags);
++
++	/*
++	 * If the system call was made with a transaction active, doom it and
++	 * return without performing the system call. Unless it was an
++	 * unsupported scv vector, in which case it's treated like an illegal
++	 * instruction.
++	 */
++#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
++	if (unlikely(MSR_TM_TRANSACTIONAL(regs->msr)) &&
++	    !trap_is_unsupported_scv(regs)) {
++		/* Enable TM in the kernel, and disable EE (for scv) */
++		hard_irq_disable();
++		mtmsr(mfmsr() | MSR_TM);
++
++		/* tabort, this dooms the transaction, nothing else */
++		asm volatile(".long 0x7c00071d | ((%0) << 16)"
++				:: "r"(TM_CAUSE_SYSCALL|TM_CAUSE_PERSISTENT));
++
++		/*
++		 * Userspace will never see the return value. Execution will
++		 * resume after the tbegin. of the aborted transaction with the
++		 * checkpointed register state. A context switch could occur
++		 * or signal delivered to the process before resuming the
++		 * doomed transaction context, but that should all be handled
++		 * as expected.
++		 */
++		return -ENOSYS;
++	}
++#endif // CONFIG_PPC_TRANSACTIONAL_MEM
++
++	local_irq_enable();
++
++	if (unlikely(read_thread_flags() & _TIF_SYSCALL_DOTRACE)) {
++		if (unlikely(trap_is_unsupported_scv(regs))) {
++			/* Unsupported scv vector */
++			_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
++			return regs->gpr[3];
++		}
++		/*
++		 * We use the return value of do_syscall_trace_enter() as the
++		 * syscall number. If the syscall was rejected for any reason
++		 * do_syscall_trace_enter() returns an invalid syscall number
++		 * and the test against NR_syscalls will fail and the return
++		 * value to be used is in regs->gpr[3].
++		 */
++		r0 = do_syscall_trace_enter(regs);
++		if (unlikely(r0 >= NR_syscalls))
++			return regs->gpr[3];
++		r3 = regs->gpr[3];
++		r4 = regs->gpr[4];
++		r5 = regs->gpr[5];
++		r6 = regs->gpr[6];
++		r7 = regs->gpr[7];
++		r8 = regs->gpr[8];
++
++	} else if (unlikely(r0 >= NR_syscalls)) {
++		if (unlikely(trap_is_unsupported_scv(regs))) {
++			/* Unsupported scv vector */
++			_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
++			return regs->gpr[3];
++		}
++		return -ENOSYS;
++	}
++
++	/* May be faster to do array_index_nospec? */
++	barrier_nospec();
++
++	if (unlikely(is_compat_task())) {
++		f = (void *)compat_sys_call_table[r0];
++
++		r3 &= 0x00000000ffffffffULL;
++		r4 &= 0x00000000ffffffffULL;
++		r5 &= 0x00000000ffffffffULL;
++		r6 &= 0x00000000ffffffffULL;
++		r7 &= 0x00000000ffffffffULL;
++		r8 &= 0x00000000ffffffffULL;
++
++	} else {
++		f = (void *)sys_call_table[r0];
++	}
++
++	return f(r3, r4, r5, r6, r7, r8);
++}
 -- 
-2.25.1
+2.35.3
 
