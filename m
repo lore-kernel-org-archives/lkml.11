@@ -2,69 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2194ACCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63926C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233852AbiF2NmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S233688AbiF2Nmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233846AbiF2NmA (ORCPT
+        with ESMTP id S232080AbiF2Nms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:42:00 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D81C16585;
-        Wed, 29 Jun 2022 06:41:55 -0700 (PDT)
-X-QQ-mid: bizesmtp69t1656510095tfjod3ji
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 29 Jun 2022 21:41:32 +0800 (CST)
-X-QQ-SSF: 0100000000200060C000C00A0000000
-X-QQ-FEAT: XcJ1Se6WjemIkNAHg25b978jKUBDTPupJVdN5gEvjEznt7dXK2BHQm93f7fi9
-        gdqSljLpE/iaZ4pvh+supcRcO+y1A0zi03/mXbLQc7h94EPDaeq/r5uojiEReUFvH35p3QI
-        sVy4TGh0rYgajBDaY9vOuagMeU8JXco7jJjphrb3MQrIWGlgf4b5WnXgT7iRWhlseLqfLnf
-        xEfvsdGlMF9FAt9V1GEzmUKRDhk/56C6KCpSVt6KKwGZ70y8+wT/m6fed3SInsuPXNbZfey
-        k9KDIhb/oX3GdvbpRrk9A2SYN0Phv0Sm6S3i/BWkZLRTS0vBqObQ7RH6FVDDDlaqzT5VtEE
-        aHwdWwueX1lG86QYP8=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] intel/i40e:fix repeated words in comments
-Date:   Wed, 29 Jun 2022 21:41:25 +0800
-Message-Id: <20220629134125.49734-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 29 Jun 2022 09:42:48 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7A6165AA;
+        Wed, 29 Jun 2022 06:42:47 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3AA3C66018E6;
+        Wed, 29 Jun 2022 14:42:45 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656510165;
+        bh=yZfjVxY6+YXqMfBxFuUmxRr5cT0DDLUiTsXg6Wh0k2g=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZjsqCrRocInx8/7JVJzW/PWjNnbzcMcStAQJbMxb34J/jG+0YN1VArupFBp05E5EP
+         6BrWQJ3/gecrZof+ZCYEXiLg8v2ZZhsvuQoddMAirjRawu+qfW2qOCmroViDaXb/GJ
+         LxxZs6hoCe3gKNVfQb9qeN2Xj/MFuOyqf4w9HGrWWeK//DDiOI9XCgEOy3fwrp7IhI
+         w4WVANEauc6olby+Ftsnim/FoMDj5lpbLax40AevKHdfOcQRhDV9tlUlb9FMltELcn
+         asGqEYBHtoyeKgLdZ4gHWnyGySIcxZdKKU0UuYx+DhVwQEIVpLdxzxxbkk/OwQM0Vt
+         Jlt95gJ5Bi5Fw==
+Message-ID: <730f334e-c10d-8f8b-94e6-b66a56e03320@collabora.com>
+Date:   Wed, 29 Jun 2022 15:42:42 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 4/5] arm64: dts: mt8192: Add dsi node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>
+References: <20220629121358.19458-1-allen-kh.cheng@mediatek.com>
+ <20220629121358.19458-5-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220629121358.19458-5-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'a'.
+Il 29/06/22 14:13, Allen-KH Cheng ha scritto:
+> Add dsi ndoe for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 18 ++++++++++++++++++
+>   1 file changed, 18 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 26d01544b4ea..72af328126de 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -1334,6 +1334,24 @@
+>   			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xe000 0x1000>;
+>   		};
+>   
+> +		dsi0: dsi@14010000 {
+> +			compatible = "mediatek,mt8183-dsi";
+> +			reg = <0 0x14010000 0 0x1000>;
+> +			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			mediatek,syscon-dsi = <&mmsys 0x140>;
+> +			clocks = <&mmsys CLK_MM_DSI0>,
+> +				 <&mmsys CLK_MM_DSI_DSI0>,
+> +				 <&mipi_tx0>;
+> +			clock-names = "engine", "digital", "hs";
+> +			phys = <&mipi_tx0>;
+> +			phy-names = "dphy";
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+resets = <&mmsys MT8192_MMSYS_SW0_RST_B_DISP_DSI0>;
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 332a608dbaa6..a6e05b14fec6 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -13028,7 +13028,7 @@ static netdev_features_t i40e_features_check(struct sk_buff *skb,
- 	}
- 
- 	/* No need to validate L4LEN as TCP is the only protocol with a
--	 * a flexible value and we support all possible values supported
-+	 * flexible value and we support all possible values supported
- 	 * by TCP, which is at most 15 dwords
- 	 */
- 
--- 
-2.36.1
+^^^ This is missing, please add it and resend :-)
+
+> +			status = "disabled";
+> +
+> +			port {
+> +				dsi_out: endpoint { };
+> +			};
+> +		};
+> +
+>   		ovl_2l2: ovl@14014000 {
+>   			compatible = "mediatek,mt8192-disp-ovl-2l";
+>   			reg = <0 0x14014000 0 0x1000>;
+
 
