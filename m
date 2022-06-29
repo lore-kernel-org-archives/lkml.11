@@ -2,79 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A82B3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 10:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9868FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 10:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233411AbiF2Kw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 06:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
+        id S233401AbiF2KxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 06:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233225AbiF2KwU (ORCPT
+        with ESMTP id S233437AbiF2Kw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 06:52:20 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F38B25290;
-        Wed, 29 Jun 2022 03:52:19 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 29 Jun 2022 06:52:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0C03E5D0;
+        Wed, 29 Jun 2022 03:52:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 526A26601917;
-        Wed, 29 Jun 2022 11:52:17 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656499938;
-        bh=py3LLK2To0yUgU15nM6y7YgY1j1M75MtNNYXz3fL/tU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EeFxBt0xrxABbRTiVOYN4Qc4dWVujwxHOxUh/4P/i/0CQcnLrCpH5ps2FpzxgHVZP
-         M/ZXDs5mihfd/1Bsd/HVLhtU4zqPv8/pVYZ4dfdXr+wDMUEHVGRgpuXvZbFnz0z8tn
-         37tzB8hmbIDQI9FCPW/aIrXyrk9HzPPTKI6QRLnwy6ysutvjHobXJdTgvusNTWOmKK
-         eIdjzfw+/CmiFz9KjMnokKprGDaf+ppoiu+aLYBqvySv8v1k4EXoqDUFRj1erjj9PW
-         Z0Nq3te/Feq2K3Cyv0vafxeXk5T+zyI5rVLdKbutXgPSAPp5T31kU4lUylr2I5F39Y
-         qsHIveHDREcDw==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     mturquette@baylibre.com
-Cc:     sboyd@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        angelogioacchino.delregno@collabora.com, wenst@chromium.org,
-        chun-jie.chen@mediatek.com, miles.chen@mediatek.com,
-        rex-bc.chen@mediatek.com, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH 2/2] clk: mediatek: mt8195: Add reset idx for PCIe0 and PCIe1
-Date:   Wed, 29 Jun 2022 12:52:05 +0200
-Message-Id: <20220629105205.173471-3-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220629105205.173471-1-angelogioacchino.delregno@collabora.com>
-References: <20220629105205.173471-1-angelogioacchino.delregno@collabora.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6746E615ED;
+        Wed, 29 Jun 2022 10:52:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FCFC34114;
+        Wed, 29 Jun 2022 10:52:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656499976;
+        bh=sg27Qejbc/ohUawR6PaI/MniA6EncYUbuLuyuLXhuF8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H0dLfikeIz5rLcYUFW94uZ4KMkchhrg9MFa4hRi2hyXUpKS3R1iZJWSHB8mCpOEej
+         CKzooaLKtgCtXPPdgIHqUGBz1lT3OTOn9eI4+ORnAVYgrTOzwJn5Ll3rcV6y6TUSRG
+         Uva/NUDQgocya4TKi+a34O2Hd7DpSymkXQaawe2w=
+Date:   Wed, 29 Jun 2022 12:52:52 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH 5.15 000/135] 5.15.51-rc1 review
+Message-ID: <YrwvBCFAVibGVdav@kroah.com>
+References: <20220627111938.151743692@linuxfoundation.org>
+ <Yrp3q1gpvfUm8QIP@debian.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yrp3q1gpvfUm8QIP@debian.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reset idx for PCIe P0, P1, located in infra_ao RST2 registers.
+On Tue, Jun 28, 2022 at 10:38:19AM +0700, Bagas Sanjaya wrote:
+> On Mon, Jun 27, 2022 at 01:20:07PM +0200, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.51 release.
+> > There are 135 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> 
+> Successfully cross-compiled for arm (multi_v7_defconfig, GCC 12.1.0,
+> armv7 with neon FPU) and arm64 (bcm2711_defconfig, GCC 12.1.0).
+> 
+> But I see a warning on arm64 build:
+> 
+>   CC [M]  drivers/staging/r8188eu/core/rtw_br_ext.o
+>   CC [M]  net/batman-adv/tvlv.o
+> In function '__nat25_add_pppoe_tag',
+>     inlined from 'nat25_db_handle' at drivers/staging/r8188eu/core/rtw_br_ext.c:520:11:
+> drivers/staging/r8188eu/core/rtw_br_ext.c:83:9: warning: 'memcpy' reading between 2052 and 9220 bytes from a region of size 40 [-Wstringop-overread]
+>    83 |         memcpy((unsigned char *)ph->tag, tag, data_len);
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/staging/r8188eu/core/rtw_br_ext.c: In function 'nat25_db_handle':
+> drivers/staging/r8188eu/core/rtw_br_ext.c:489:63: note: source object 'tag_buf' of size 40
+>   489 |                                                 unsigned char tag_buf[40];
+>       |                                                               ^~~~~~~
+> 
+> Introduced by commit 15865124feed88 ("staging: r8188eu: introduce new core dir
+> for RTL8188eu driver").
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mt8195-infra_ao.c | 2 ++
- 1 file changed, 2 insertions(+)
+That is due to gcc-12 stuff.
 
-diff --git a/drivers/clk/mediatek/clk-mt8195-infra_ao.c b/drivers/clk/mediatek/clk-mt8195-infra_ao.c
-index 97657f255618..ce7ac16a2f42 100644
---- a/drivers/clk/mediatek/clk-mt8195-infra_ao.c
-+++ b/drivers/clk/mediatek/clk-mt8195-infra_ao.c
-@@ -193,6 +193,8 @@ static u16 infra_ao_rst_ofs[] = {
- 
- static u16 infra_ao_idx_map[] = {
- 	[MT8195_INFRA_RST0_THERM_CTRL_SWRST] = 0 * RST_NR_PER_BANK + 0,
-+	[MT8195_INFRA_RST2_PCIE_P0_SWRST] = 2 * RST_NR_PER_BANK + 26,
-+	[MT8195_INFRA_RST2_PCIE_P1_SWRST] = 2 * RST_NR_PER_BANK + 27,
- 	[MT8195_INFRA_RST3_THERM_CTRL_PTP_SWRST] = 3 * RST_NR_PER_BANK + 5,
- 	[MT8195_INFRA_RST4_THERM_CTRL_MCU_SWRST] = 4 * RST_NR_PER_BANK + 10,
- };
--- 
-2.35.1
+thanks for testing.
 
+thanks,
+
+greg k-h
