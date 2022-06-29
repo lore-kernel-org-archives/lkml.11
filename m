@@ -2,81 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 204ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20057C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbiF2M7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S233533AbiF2NAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiF2M7e (ORCPT
+        with ESMTP id S233524AbiF2NAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 08:59:34 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1904E3819D;
-        Wed, 29 Jun 2022 05:59:32 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 6FCEF1C0B8F; Wed, 29 Jun 2022 14:59:29 +0200 (CEST)
-Date:   Wed, 29 Jun 2022 14:59:29 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Bart Van Assche <bvanassche@acm.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        jejb@linux.ibm.com, matthias.bgg@gmail.com, beanhuo@micron.com,
-        avri.altman@wdc.com, daejun7.park@samsung.com,
-        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH AUTOSEL 5.10 10/34] scsi: ufs: Support clearing multiple
- commands at once
-Message-ID: <20220629125929.GA13395@duo.ucw.cz>
-References: <20220628022241.595835-1-sashal@kernel.org>
- <20220628022241.595835-10-sashal@kernel.org>
+        Wed, 29 Jun 2022 09:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE8D39802;
+        Wed, 29 Jun 2022 06:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 015D5B82467;
+        Wed, 29 Jun 2022 13:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C7C95C341C8;
+        Wed, 29 Jun 2022 13:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656507615;
+        bh=BjjCJBidSRratdezAQtBiILIcrmfwCpGeEbZq1JVhdU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KyH21ChHzIBzd83Wp1YnrHhIJ5yZKIoBelCRhli5W144pPzn90RN/nNVtjzcHjHaG
+         DVhEK8EzlOGUZHMhBdo1Gdl6QbrqCZWbpGzl5mi7/MudrBaxDScy/njffaw/lJD2Vx
+         IrFIhVJSboligl2ahfoRBTVvg05sHcm5PoYWNw89rcmV88vxVtUmYJeTN8diSZa8u9
+         MDhmcLyu7AH3krRxh08u+yv2rJBQGBuGyIp4LXdwkbDa8jlFBWCwC9mUmKlJ1BS7B4
+         TALD5bnaY8GJyPubQ29lipsQnwiISn3C12Xqb8HA0BRUGMKUVgZEUR8IPA830eQhdv
+         tdEo5g520dc1g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B2216E49BB8;
+        Wed, 29 Jun 2022 13:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="7JfCtLOvnd9MIVvH"
-Content-Disposition: inline
-In-Reply-To: <20220628022241.595835-10-sashal@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Patch net-next 0/7] net: dsa: microchip: use ksz_chip_reg for
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165650761572.14913.16101231079262583190.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Jun 2022 13:00:15 +0000
+References: <20220628171329.25503-1-arun.ramadoss@microchip.com>
+In-Reply-To: <20220628171329.25503-1-arun.ramadoss@microchip.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello:
 
---7JfCtLOvnd9MIVvH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Hi!
+On Tue, 28 Jun 2022 22:43:22 +0530 you wrote:
+> This patch series tries to use the same approach as struct ksz8 for
+> register which has different address for different switch family. It
+> moves the struct ksz8 from ksz8.h to struct ksz_chip_reg. Based on the
+> switch detect, the corresponding mask, reg and shifts are assigned.
+> 
+> Arun Ramadoss (7):
+>   net: dsa: microchip: move ksz8->regs to ksz_common
+>   net: dsa: microchip: move ksz8->masks to ksz_common
+>   net: dsa: microchip: move ksz8->shifts to ksz_common
+>   net: dsa: microchip: remove the struct ksz8
+>   net: dsa: microchip: change the size of reg from u8 to u16
+>   net: dsa: microchip: add P_STP_CTRL to ksz_chip_reg
+>   net: dsa: microchip: move remaining register offset to ksz_chip_reg
+> 
+> [...]
 
-> [ Upstream commit d1a7644648b7cdacaf8d1013a4285001911e9bc8 ]
->=20
-> Modify ufshcd_clear_cmd() such that it supports clearing multiple commands
-> at once instead of one command at a time. This change will be used in a
-> later patch to reduce the time spent in the reset handler.
+Here is the summary with links:
+  - [net-next,1/7] net: dsa: microchip: move ksz8->regs to ksz_common
+    https://git.kernel.org/netdev/net-next/c/486f9ca715d7
+  - [net-next,2/7] net: dsa: microchip: move ksz8->masks to ksz_common
+    https://git.kernel.org/netdev/net-next/c/d23a5e18606c
+  - [net-next,3/7] net: dsa: microchip: move ksz8->shifts to ksz_common
+    https://git.kernel.org/netdev/net-next/c/34e48383636f
+  - [net-next,4/7] net: dsa: microchip: remove the struct ksz8
+    https://git.kernel.org/netdev/net-next/c/47d82864eee1
+  - [net-next,5/7] net: dsa: microchip: change the size of reg from u8 to u16
+    https://git.kernel.org/netdev/net-next/c/a02579df160e
+  - [net-next,6/7] net: dsa: microchip: add P_STP_CTRL to ksz_chip_reg
+    https://git.kernel.org/netdev/net-next/c/6877102f95f3
+  - [net-next,7/7] net: dsa: microchip: move remaining register offset to ksz_chip_reg
+    https://git.kernel.org/netdev/net-next/c/9d95329c65db
 
-This and "scsi: ufs: Simplify ufshcd_clear_cmd()" are not really
-bugfixes. Patch they are preparing for is not queued for 5.10-stable.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Please drop.
 
-Best regards,
-									Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---7JfCtLOvnd9MIVvH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYrxMsQAKCRAw5/Bqldv6
-8spgAKCrEm3g+0xxO7RBnswwHkbwojFTAQCggJYrnNnnP5agGkiGWSzYQDwjG5M=
-=jUUt
------END PGP SIGNATURE-----
-
---7JfCtLOvnd9MIVvH--
