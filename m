@@ -2,173 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474A3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232955AbiF2JeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
+        id S232634AbiF2Jfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbiF2JeE (ORCPT
+        with ESMTP id S231783AbiF2Jfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:34:04 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B4D377E3;
-        Wed, 29 Jun 2022 02:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656495244; x=1688031244;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=PWO7kyKFs6NNEwkySeNKoskwEXIMMLURLc2AALknVtQ=;
-  b=hoNdKPouS59Ufilhn2efG9pk8cCQ/3DfDtv7jghFrr52iOnYqE2tAnvb
-   ysVFDLisMC/nXehjlY/CSJCLB4UrE15C+fTijPqMtg/BXgFewLBRFH4W0
-   RcdUxTqyTYSUWU5Rzt3cbV+z2644PhfDVf4ZaSD8kSjgpUoIZqJJ8oo2m
-   8=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 29 Jun 2022 02:34:03 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 29 Jun 2022 02:34:02 -0700
-X-QCInternal: smtphost
-Received: from hu-krichai-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.37])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 29 Jun 2022 15:03:39 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 4058933)
-        id E5690423C; Wed, 29 Jun 2022 15:03:39 +0530 (+0530)
-From:   Krishna chaitanya chundru <quic_krichai@quicinc.com>
-To:     helgaas@kernel.org
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_vbadigan@quicinc.com,
-        quic_hemantk@quicinc.com, quic_nitegupt@quicinc.com,
-        quic_skananth@quicinc.com, quic_ramkri@quicinc.com,
-        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
-        dmitry.baryshkov@linaro.org,
-        Krishna chaitanya chundru <quic_krichai@quicinc.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH v2 2/2] PCI: qcom: Restrict pci transactions after pci suspend
-Date:   Wed, 29 Jun 2022 15:03:34 +0530
-Message-Id: <1656495214-4028-3-git-send-email-quic_krichai@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1656495214-4028-1-git-send-email-quic_krichai@quicinc.com>
-References: <1656055682-18817-1-git-send-email-quic_krichai@quicinc.com>
- <1656495214-4028-1-git-send-email-quic_krichai@quicinc.com>
+        Wed, 29 Jun 2022 05:35:48 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5817C3B3D7;
+        Wed, 29 Jun 2022 02:35:47 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-118-164.nat.spd-mgts.ru [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id CD00266017F7;
+        Wed, 29 Jun 2022 10:35:44 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656495345;
+        bh=AYuYIhk2iyHr8WNWalQKmNnI15MJGuNcUQ4QRSGLoao=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Le3ZgNjQupGL0Oa2pGPrNY5tZ3Q/WwBJwU5wtOtL3V0OWFXs764gRzSEpCwldQRW9
+         qIgLpqZA57okZFLng/yWEmZebmcI/1THbZ1fLTCJbwFGj+n/xvYhQ7HkhiXBlUc5Uw
+         HfdWawmidBI/0MGFkHWCTh5KRHw0TrfVbOPt5ADT6nNUcIvv+sCmaY6jYv0k5WjLXx
+         YXlDjtwfwoLH4Edl7BoYvKQ1Kpk4wUGjGqkJ5AvQmKnZQWdTPaVjGQ4fksm9ZPQ6Pi
+         LvlvlTKqd8lemuNpfAUCKbi1ZG8PZPX4vwUm3vgakpdfb3Q1gl3/xLPDv2Y489QRx3
+         9dND+RMinE5jg==
+Message-ID: <0f6cc7d3-5537-cd8f-d234-a61420e1cbc8@collabora.com>
+Date:   Wed, 29 Jun 2022 12:35:42 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/3] thermal/drivers/tegra: Remove get_trend function
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
+        Hardware Monitoring <linux-hwmon@vger.kernel.org>,
+        rafael@kernel.org
+References: <20220616202537.303655-1-daniel.lezcano@linaro.org>
+ <20220616202537.303655-2-daniel.lezcano@linaro.org>
+ <7841a809-e180-70d2-df9b-b30b411647ce@linaro.org>
+ <d186bb7d-cbe6-8ec4-82a1-8323b3901ac2@collabora.com>
+ <20220628151030.GA3361452@roeck-us.net>
+ <20220628184332.GA3624671@roeck-us.net>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <20220628184332.GA3624671@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the endpoint device state is D0 and irq's are not freed, then
-kernel try to mask interrupts by writing in to the vector
-table (for MSIX interrupts) and config space (for MSI's).
+On 6/28/22 21:43, Guenter Roeck wrote:
+> On Tue, Jun 28, 2022 at 08:10:30AM -0700, Guenter Roeck wrote:
+>> On Tue, Jun 28, 2022 at 02:44:31PM +0300, Dmitry Osipenko wrote:
+>>> On 6/28/22 11:41, Daniel Lezcano wrote:
+>>>>
+>>>> Thierry, Dmitry,
+>>>>
+>>>> are fine with this patch?
+>>>
+>>> Seems should be good. I couldn't test it using recent the linux-next
+>>> because of a lockup in LM90 driver. There were quite a lot of changes in
+>>> LM90 recently, adding Guenter.
+>>>
+>>
+>> Weird, I tested those changes to death with real hardware, and I don't
+>> see a code path where the mutex can be left in blocked state unless the
+>> underlying i2c driver locks up for some reason. What is the platform,
+>> and can you point me to the devicetree file ? Also, is there anything
+>> else lm90 or i2c related in the kernel log ?
+>>
+> 
+> Follow-up question: I see that various Tegra systems use lm90 compatible
+> chips, and the interrupt line is in general wired up. Can you check if
+> you get lots of interrupts on that interrupt line ? Also, can you check
+> what happens if you read hwmon attributes directly ?
 
-These transactions are initiated after clocks are getting disabled
-as part of PM suspend call. Due to it, these transactions are
-resulting in un-clocked access and eventual to crashes.
+The number of interrupt fires is okay. It's a Nexus 7 Tegra30 tablet
+device that I'm using for the testing.
 
-So added a logic in qcom driver to restrict the unclocked access.
-And updated the logic to check the link state before masking
-or unmasking the interrupts.
+Today I enabled the lockdep and it immediately showed where the problem is:
 
-Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
----
- drivers/pci/controller/dwc/pcie-designware-host.c | 14 +++++++--
- drivers/pci/controller/dwc/pcie-qcom.c            | 35 +++++++++++++++++++++--
- 2 files changed, 45 insertions(+), 4 deletions(-)
+======================================================
+WARNING: possible circular locking dependency detected
+5.19.0-rc4-next-20220628-00002-g94e5dbbe1c58-dirty #24 Not tainted
+------------------------------------------------------
+irq/91-lm90/130 is trying to acquire lock:
+c27ba380 (&tz->lock){+.+.}-{3:3}, at: thermal_zone_device_update+0x2c/0x64
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 2fa86f3..2a46b40 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -29,13 +29,23 @@ static void dw_msi_ack_irq(struct irq_data *d)
- 
- static void dw_msi_mask_irq(struct irq_data *d)
- {
--	pci_msi_mask_irq(d);
-+	struct pcie_port *pp = irq_data_get_irq_chip_data(d->parent_data);
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+
-+	if (dw_pcie_link_up(pci))
-+		pci_msi_mask_irq(d);
-+
- 	irq_chip_mask_parent(d);
- }
- 
- static void dw_msi_unmask_irq(struct irq_data *d)
- {
--	pci_msi_unmask_irq(d);
-+	struct pcie_port *pp = irq_data_get_irq_chip_data(d->parent_data);
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+
-+	if (dw_pcie_link_up(pci))
-+		pci_msi_unmask_irq(d);
-+
- 	irq_chip_unmask_parent(d);
- }
- 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index 8e9ef37..227bc24a 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1331,12 +1331,41 @@ static int qcom_pcie_disable_clks_2_7_0(struct qcom_pcie *pcie)
- 	return 0;
- }
- 
-+static u32 qcom_pcie_read_dbi(struct dw_pcie *pci, void __iomem *base,
-+				u32 reg, size_t size)
-+{
-+	struct qcom_pcie *pcie = to_qcom_pcie(pci);
-+	u32 val;
-+
-+	if (pcie->is_suspended)
-+		return PCIBIOS_BAD_REGISTER_NUMBER;
-+
-+	dw_pcie_read(base + reg, size, &val);
-+	return val;
-+}
-+
-+static void qcom_pcie_write_dbi(struct dw_pcie *pci, void __iomem *base,
-+					u32 reg, size_t size, u32 val)
-+{
-+	struct qcom_pcie *pcie = to_qcom_pcie(pci);
-+
-+	if (pcie->is_suspended)
-+		return;
-+
-+	dw_pcie_write(base + reg, size, val);
-+}
- 
- static int qcom_pcie_link_up(struct dw_pcie *pci)
- {
--	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
--	u16 val = readw(pci->dbi_base + offset + PCI_EXP_LNKSTA);
-+	struct qcom_pcie *pcie = to_qcom_pcie(pci);
-+	u16 offset;
-+	u16 val;
-+
-+	if (pcie->is_suspended)
-+		return false;
- 
-+	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
-+	val = readw(pci->dbi_base + offset + PCI_EXP_LNKSTA);
- 	return !!(val & PCI_EXP_LNKSTA_DLLLA);
- }
- 
-@@ -1580,6 +1609,8 @@ static const struct qcom_pcie_cfg sc7280_cfg = {
- static const struct dw_pcie_ops dw_pcie_ops = {
- 	.link_up = qcom_pcie_link_up,
- 	.start_link = qcom_pcie_start_link,
-+	.read_dbi = qcom_pcie_read_dbi,
-+	.write_dbi = qcom_pcie_write_dbi,
- };
- 
- static int qcom_pcie_probe(struct platform_device *pdev)
+               but task is already holding lock:
+c27b42c8 (&data->update_lock){+.+.}-{3:3}, at: lm90_irq_thread+0x2c/0x68
+
+               which lock already depends on the new lock.
+
+
+               the existing dependency chain (in reverse order) is:
+
+               -> #1 (&data->update_lock){+.+.}-{3:3}:
+       __mutex_lock+0x9c/0x984
+       mutex_lock_nested+0x2c/0x34
+       lm90_read+0x44/0x3e8
+       hwmon_thermal_get_temp+0x58/0x8c
+       of_thermal_get_temp+0x38/0x44
+       thermal_zone_get_temp+0x5c/0x7c
+       thermal_zone_device_update.part.0+0x48/0x5fc
+       thermal_zone_device_set_mode+0xa0/0xe4
+       thermal_zone_device_enable+0x1c/0x20
+       thermal_zone_of_sensor_register+0x18c/0x19c
+       devm_thermal_zone_of_sensor_register+0x68/0xa4
+       __hwmon_device_register+0x704/0x91c
+       hwmon_device_register_with_info+0x6c/0x80
+       devm_hwmon_device_register_with_info+0x78/0xb4
+       lm90_probe+0x618/0x8c0
+       i2c_device_probe+0x170/0x2e0
+       really_probe+0xd8/0x300
+       __driver_probe_device+0x94/0xf4
+       driver_probe_device+0x40/0x118
+       __device_attach_driver+0xc8/0x10c
+       bus_for_each_drv+0x90/0xdc
+       __device_attach+0xbc/0x1d4
+       device_initial_probe+0x1c/0x20
+       bus_probe_device+0x98/0xa0
+       deferred_probe_work_func+0x8c/0xbc
+       process_one_work+0x2b8/0x774
+       worker_thread+0x17c/0x56c
+       kthread+0x108/0x13c
+       ret_from_fork+0x14/0x28
+       0x0
+
+               -> #0 (&tz->lock){+.+.}-{3:3}:
+       __lock_acquire+0x173c/0x3198
+       lock_acquire+0x128/0x3f0
+       __mutex_lock+0x9c/0x984
+       mutex_lock_nested+0x2c/0x34
+       thermal_zone_device_update+0x2c/0x64
+       hwmon_notify_event+0x128/0x138
+       lm90_update_alarms_locked+0x35c/0x3b8
+       lm90_irq_thread+0x38/0x68
+       irq_thread_fn+0x2c/0x8c
+       irq_thread+0x190/0x29c
+       kthread+0x108/0x13c
+       ret_from_fork+0x14/0x28
+       0x0
+
+               other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&data->update_lock);
+                               lock(&tz->lock);
+                               lock(&data->update_lock);
+  lock(&tz->lock);
+
+                *** DEADLOCK ***
+
+1 lock held by irq/91-lm90/130:
+ #0: c27b42c8 (&data->update_lock){+.+.}-{3:3}, at:
+lm90_irq_thread+0x2c/0x68
+
+               stack backtrace:
+CPU: 1 PID: 130 Comm: irq/91-lm90 Not tainted
+5.19.0-rc4-next-20220628-00002-g94e5dbbe1c58-dirty #24
+Hardware name: NVIDIA Tegra SoC (Flattened Device Tree)
+Backtrace:
+ dump_backtrace from show_stack+0x20/0x24
+ r7:c33d1b60 r6:00000080 r5:60000093 r4:c168c6a4
+ show_stack from dump_stack_lvl+0x68/0x98
+ dump_stack_lvl from dump_stack+0x18/0x1c
+ r7:c33d1b60 r6:c20328cc r5:c203c700 r4:c20328cc
+ dump_stack from print_circular_bug+0x2ec/0x33c
+ print_circular_bug from check_noncircular+0x104/0x168
+ r10:c1a14cc8 r9:c33d1240 r8:00000001 r7:00000000 r6:dfc3dcc0 r5:c33d1b60
+ r4:c33d1b80
+ check_noncircular from __lock_acquire+0x173c/0x3198
+ r7:c33d1b80 r6:c202bc98 r5:c33d1b60 r4:c21d92ac
+ __lock_acquire from lock_acquire+0x128/0x3f0
+ r10:60000013 r9:00000000 r8:00000000 r7:00000000 r6:dfc3dd40 r5:c19ac688
+ r4:c19ac688
+ lock_acquire from __mutex_lock+0x9c/0x984
+ r10:c27ba380 r9:00000000 r8:c21d92ac r7:c33d1240 r6:00000000 r5:00000000
+ r4:c27ba348
+ __mutex_lock from mutex_lock_nested+0x2c/0x34
+ r10:c27b4000 r9:00000000 r8:dfc3de87 r7:00000000 r6:c27ba348 r5:00000000
+ r4:c27ba000
+ mutex_lock_nested from thermal_zone_device_update+0x2c/0x64
+ thermal_zone_device_update from hwmon_notify_event+0x128/0x138
+ r7:00000000 r6:00000000 r5:c2d23ea4 r4:c33fd040
+ hwmon_notify_event from lm90_update_alarms_locked+0x35c/0x3b8
+ r8:c27b4378 r7:c2d23c08 r6:00000020 r5:00000000 r4:c27b4240
+ lm90_update_alarms_locked from lm90_irq_thread+0x38/0x68
+ r9:c01c2814 r8:00000001 r7:c33d2240 r6:c27b4290 r5:c27b4240 r4:c33fc200
+ lm90_irq_thread from irq_thread_fn+0x2c/0x8c
+ r7:c33d2240 r6:c27b4000 r5:c33d1240 r4:c33fc200
+ irq_thread_fn from irq_thread+0x190/0x29c
+ r7:c33d2240 r6:c33fc224 r5:c33d1240 r4:00000000
+ irq_thread from kthread+0x108/0x13c
+ r10:00000000 r9:df9ddbf4 r8:c31d2200 r7:c33fc200 r6:c01c2710 r5:c33d1240
+ r4:c33fc240
+ kthread from ret_from_fork+0x14/0x28
+
 -- 
-2.7.4
-
+Best regards,
+Dmitry
