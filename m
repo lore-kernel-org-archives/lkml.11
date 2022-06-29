@@ -2,183 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 066DFCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbiF2JGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        id S231143AbiF2JGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230389AbiF2JGM (ORCPT
+        with ESMTP id S231401AbiF2JGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:06:12 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E16726126
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:06:11 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so5149111wmb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DozVfSCoMS7yF9rw2V/4crx6IJid1bw3c9FFa29YFDA=;
-        b=swnbEIyRykM+RYWQL4m/8e2HR7eJWojzuraRLqRsCQ+ItpHww4genkpAAW3Px/D52a
-         WU9Q6zjLqlmcc3MpC5mBruhTW5T41feaO2JdOfzncxBnYBD23OipM+SvBthqq0jyYZd8
-         VpvjN+KEr1FF2+LJMoN6R8Fp4QgQHuWdfaPBxuGmyxTNGtF+88ELSnyt4nGSeqNk82Rm
-         tAaChXQ3OXWVznyIBLSLDEE58Bl8z6ATnYJw7byqLADiOipC0J0GfyQ+PUzdJdpI58wk
-         Z8VwAn07QTI0B8ODVxdG55eUeJ6l6FdXSBY82q+6Z8fIDJW9ayRFN0R4ZpIzOcJ2ourp
-         oF+Q==
+        Wed, 29 Jun 2022 05:06:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C49F27CF1
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:06:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656493610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HvWzvzdAUmdish1ZjSGH2vHCDmFvOStbYvaW/KwyrXg=;
+        b=i9xJvqZ0dB8X4DW+xmyB6djIMiyLqJdQ8egMleHFIOMVYL41kvP517I+PaXJ9pohIhac7/
+        t5TA8uNgxwqqn89EB2+psmEy4yFTKAVrkGGs15rhUFbH90iivjoOHBQpOEOOofF5MQ+I0R
+        ZLkhY41FkiKIb8PbPfhaTzU+XcgNMOA=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-567-e5w7inMtN3iAWbWXOXg0vw-1; Wed, 29 Jun 2022 05:06:49 -0400
+X-MC-Unique: e5w7inMtN3iAWbWXOXg0vw-1
+Received: by mail-wm1-f69.google.com with SMTP id 6-20020a1c0206000000b003a02cd754d1so6321735wmc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:06:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DozVfSCoMS7yF9rw2V/4crx6IJid1bw3c9FFa29YFDA=;
-        b=cMkGNBSKRPUcw+Q047T+sa/5Z7O4aPMytKwPwN/sjU9NAwsgn2AyLaIkN0mePGggPH
-         wgb6381BXBNo61LRAXd3hGH1xijaQKxQ+IzLv+b+C51xA5TdX7d67ZmEstPdL5DOlNmz
-         KxF2XtL3Ku7Yvy6qLIY3Zcy+4GxFtiMx/lYoQsjY34iW2Rxbn2hKDKbwMHGiac+txqsG
-         ocVJh2DTDgLdZv/hv3cv0CxKi+Uj45j2HdQng/jhxYmAqsCr84mi5cjmL3fyYtYYnlSB
-         3nRcppcdwdcXsicnRyzEzO0XJx2eSMOM+mNg5BnH94dTPoaa7NoBov2xBN9toavx0Qxj
-         MzHA==
-X-Gm-Message-State: AJIora/rPfN4CTHhuGqHXd7rMosnOwiyXTYURm1yNRGQRcJ9G4nLsjk0
-        f22wvyLcFq5zZfj2K/slzSa7YQvpcccQ9X5A/NtRyg==
-X-Google-Smtp-Source: AGRyM1vuKTo/Kg1riVijAXnw7WrJyILmrMF6b12nu1cEpGYkOy8kBbevD2JT9Hh4kFpPiWtaS+0IEWxPOYXzEA6+Vj4=
-X-Received: by 2002:a7b:ce06:0:b0:3a0:39e0:b322 with SMTP id
- m6-20020a7bce06000000b003a039e0b322mr4415860wmc.55.1656493569616; Wed, 29 Jun
- 2022 02:06:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=HvWzvzdAUmdish1ZjSGH2vHCDmFvOStbYvaW/KwyrXg=;
+        b=K47LEbLk3dsbEf5QzedI1sgx3Bj2o5YDkjPnk/lxgfcGSmDmCarVdWDL3Mz9sUUHsH
+         W3U8RFvNOfblWld1vLGAoVnOM1YOG5V3e7P/lTg2TFGAZMvi6lKaAkpOdm3PSvREsX9Y
+         KCqfwjwJAk14X6UNK3sbk95zJVN4TN8wpLZx6PFT+phXdSNTohdtTGajOQN4ZlEyw+qp
+         inQRf+vW9Wu6k7xapELT+Xsz9SEHmEXi8B33sjZclKHzMROdtUHM448eXL7kjpv5vi5W
+         QAqPEbldAgkqAX2S/UTonhDKA7aVO3QF2tG0mJdSQKhBUQAdAFII9osoMBoKfwW+P0XL
+         YyLw==
+X-Gm-Message-State: AJIora/oldYP8ixwq2sDKK7GnEaRLeCpdu1BQWjCcqjR1uKENQtPLHWL
+        scxlWwhLjc0gF1xGmAmwwSrnpLuRLt9kIM6Wny5ToGZLH00PgP14qg/6wiRC2KaLKm/ghiFNBIs
+        o1eHb5//lPsp1YhHmzXhhxob86oUjM7ZKYLS9v79VEGu7n2DNeH6kborlP0Vw82MFfSKUpWdqkI
+        oT
+X-Received: by 2002:a5d:53ca:0:b0:21b:940f:8e29 with SMTP id a10-20020a5d53ca000000b0021b940f8e29mr2024209wrw.490.1656493607839;
+        Wed, 29 Jun 2022 02:06:47 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1slfgJ4CmLtTDf48t9U1mX1pHXjxoYEcJdwqwzZ9MajWVRs6KVcjT0ny0vB8KhBz1k0tami8A==
+X-Received: by 2002:a5d:53ca:0:b0:21b:940f:8e29 with SMTP id a10-20020a5d53ca000000b0021b940f8e29mr2024164wrw.490.1656493607451;
+        Wed, 29 Jun 2022 02:06:47 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id i206-20020a1c3bd7000000b003a03ae64f57sm2609957wma.8.2022.06.29.02.06.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 02:06:46 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/14] KVM: nVMX: Use vmcs_config for setting up nested
+ VMX MSRs
+In-Reply-To: <CALMp9eQ35g8GpwObYBJRxjuxZAC8P_HNMMaC0v0uZeC+pMeW_Q@mail.gmail.com>
+References: <20220627160440.31857-1-vkuznets@redhat.com>
+ <CALMp9eQL2a+mStk-cLwVX6NVqwAso2UYxAO7UD=Xi2TSGwUM2A@mail.gmail.com>
+ <87y1xgubot.fsf@redhat.com>
+ <CALMp9eSBLcvuNDquvSfUnaF3S3f4ZkzqDRSsz-v93ZeX=xnssg@mail.gmail.com>
+ <87letgu68x.fsf@redhat.com>
+ <CALMp9eQ35g8GpwObYBJRxjuxZAC8P_HNMMaC0v0uZeC+pMeW_Q@mail.gmail.com>
+Date:   Wed, 29 Jun 2022 11:06:46 +0200
+Message-ID: <87czeru9cp.fsf@redhat.com>
 MIME-Version: 1.0
-References: <20220626101553.1885428-1-davidgow@google.com> <20220629040605.2395481-1-davidgow@google.com>
- <321d069a-0db3-6abd-c25e-4da46f361bd7@gmail.com>
-In-Reply-To: <321d069a-0db3-6abd-c25e-4da46f361bd7@gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Wed, 29 Jun 2022 17:05:57 +0800
-Message-ID: <CABVgOSkybS55KynNvSA-B=2Lemwe-iTOwZ55BO4PwaECokizTw@mail.gmail.com>
-Subject: Re: [PATCH v2] Documentation: kunit: Cleanup run_wrapper, fix x-ref
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000d03ca505e29276aa"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000d03ca505e29276aa
-Content-Type: text/plain; charset="UTF-8"
+Jim Mattson <jmattson@google.com> writes:
 
-On Wed, Jun 29, 2022 at 4:44 PM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+> On Tue, Jun 28, 2022 at 9:01 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+>>
+
+...
+
 >
-> On 6/29/22 11:06, David Gow wrote:
-> > +This means that for most architectures, running under qemu is as simple as:
-> > +
-> > +.. code-block:: bash
-> > +
-> > +     ./tools/testing/kunit/kunit.py run --arch=x86_64
-> > +
-> > +When cross-compiling, we'll likely need to specify a different toolchain, for
-> > +example:
-> > +
-> > +.. code-block:: bash
-> > +
-> > +     ./tools/testing/kunit/kunit.py run \
-> > +             --arch=s390 \
-> > +             --cross_compile=s390x-linux-gnu-
-> > +
+> Read-only MSRs cannot be changed after their values may have been
+> observed by the guest.
 >
-> nit: s/we'll/you'll/
+>> Anirudh, the same concern applies to your 'intermediate' patch too.
+>>
+>> Smart ideas on what can be done are more than welcome)
 >
-> Otherwise looks OK.
+> You could define a bunch of "quirks," and userspace could use
+> KVM_CAP_DISABLE_QUIRKS2 to ask that the broken bits be cleared.
 
-Thanks. The rest of this document is using "we" rather than "you", so
-I used "we'll" for consistency. If "you" is preferred generally, it'd
-be best to change it throughout the document (probably in a separate
-patch).
+This sounds correct, but awful :-) I, however, think we can avoid this.
 
-Cheers,
--- David
+For the KVM-on-eVMCS case:
+- When combined with "[PATCH 00/11] KVM: VMX: Support TscScaling and
+EnclsExitingBitmap whith eVMCS" series
+(https://lore.kernel.org/kvm/20220621155830.60115-1-vkuznets@redhat.com/),
+the filtering we do in setup_vmcs_config() is no longer needed. I need
+to check various available Hyper-V versions but my initial investigation
+shows that we were only filtering out TSC Scaling and 'Load
+IA32_PERF_GLOBAL_CTRL' vmexit/vmentry, the rest were never present in
+VMX control MSRs (as presented by Hyper-V) in the first place.
 
---000000000000d03ca505e29276aa
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+For PERF_GLOBAL_CTRL errata:
+- We can move the filtering to vmx_vmexit_ctrl()/vmx_vmentry_ctrl()
+preserving the status quo: KVM doesn't use the feature but it is exposed
+to L1 hypervisor (and L1 hypervisor presumably has the same check and
+doesn't use the feature. FWIW, the workaround was added in 2011 and the
+erratas it references appeared in 2010, this means that the affected
+CPUs are quite old, modern proprietary hypervisors won't likely boot
+there).
 
-MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
-AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
-LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
-Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
-VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
-ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
-OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
-3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
-lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
-R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
-MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCV
-ldMLu4CtOcsbYbWI+bUWMH4sz37soNAiHSK65NneIjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0yMjA2MjkwOTA2MTBaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
-BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
-CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAHLBICzJauzBw95QfYzWT
-/t+WaC5iOD6e6tqVF8iQU2/aRxaFNoVhBzMbv7nWNBaKnw/hmhTV0BjJ9vbTbY2pP0mHLvTuZceq
-3LqQXDimbAe8KvTT9ukFd4Oov004ECZ8jipWfTdblu1/iexBaggEc2b0d4Oz7GYHVecYSh2FjJq4
-IHPRAzOa1ZodfbFaIFsKNOIfHnfIIuhhyrtK3E5c1lNE59313MGPl1gSMwmP+24iSzYBnbbr/66C
-KPwGiCetJ6zHuhMgj/Bqef4nvZj947PsxQljs2nd9eG+Kvg0tQUPNOVm2Tc9rXLIIxmGyKPdYv23
-QWA/ZAZAkVzkZsH7DQ==
---000000000000d03ca505e29276aa--
+If we do the above, there's going to be no changes to VMX control MSRs
+generated by nested_vmx_setup_ctls_msrs(). I, however, need to work on
+a combined series.
+
+-- 
+Vitaly
+
