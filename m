@@ -2,75 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9104C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232143AbiF2R5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 13:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
+        id S231985AbiF2R6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 13:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232055AbiF2R5k (ORCPT
+        with ESMTP id S232060AbiF2R5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 13:57:40 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E7963D1E5;
-        Wed, 29 Jun 2022 10:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=sFjDE
-        3FMbVcbIWhkgqbv+dg2JpKyTv79I9Bu7jtu/kQ=; b=do8bKL87T0qgLSyhTkeXd
-        z6s5zJRw5LKC+OIyBsB1DkJ0p2U8KalSXrq2TQE1VisX3Brta4VtPv3476pPjYoZ
-        GOpH2vzA/BFbxFLXRW/2pSZHELmtQdLq+sWZIL91Kpl3EWPGo7n2d4Z9iXKfDOGV
-        UsRGQc7sOhJcSyRLPZ4h/o=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp3 (Coremail) with SMTP id G9xpCgDneYtfkrxiS9IxMg--.56361S4;
-        Thu, 30 Jun 2022 01:56:58 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     irusskikh@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] net: atlantic: fix potential memory leak in aq_ndev_close()
-Date:   Thu, 30 Jun 2022 01:56:45 +0800
-Message-Id: <20220629175645.2163510-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 29 Jun 2022 13:57:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BDA93D1EE
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 10:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656525467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2krJSuSiEumelFOTMQcJWqcDoHYb7CaBZGf+45J6mwU=;
+        b=EWU/quKmzoyra5MPAbLv7UxYbr2PBxzSu26tFQKpKGvAbvs+/q85F5IoamQHf4cl0GkPhV
+        3GTbXPi54z4ofFMdsedRQspNVNnYIU9CEC3K03sKXV5vcp6Rlpk/iRfu999/lBG9qzciLS
+        O6PFwqpct9mrf28WiOfaxfypvn3TxKs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-261-cjZVf6v7P469qWkp_1gAqA-1; Wed, 29 Jun 2022 13:57:44 -0400
+X-MC-Unique: cjZVf6v7P469qWkp_1gAqA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7CE9581D9DA;
+        Wed, 29 Jun 2022 17:57:43 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.33.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F6B12026D07;
+        Wed, 29 Jun 2022 17:57:43 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id CB8FD220463; Wed, 29 Jun 2022 13:57:42 -0400 (EDT)
+Date:   Wed, 29 Jun 2022 13:57:42 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xieyongji@bytedance.com,
+        fam.zheng@bytedance.com, Miklos Szeredi <mszeredi@redhat.com>
+Subject: Re: [PATCH] fuse: writeback_cache consistency enhancement
+ (writeback_cache_v2)
+Message-ID: <YrySlhapXqHX4/1P@redhat.com>
+References: <20220624055825.29183-1-zhangjiachen.jaycee@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgDneYtfkrxiS9IxMg--.56361S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtFWrtrWfCF4xWF4kAr1rCrg_yoWDJFX_Cr
-        4rX3Z7tw4UKr4jvw4Utr43A3s2vrs2q397Za47trW3K3WkGw47JryqvF43J3yUu34IvFn8
-        GFnrXF42v34jkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRuq2MPUUUUU==
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiFQsvjF5mLifaTwACsb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624055825.29183-1-zhangjiachen.jaycee@bytedance.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If aq_nic_stop() fails, aq_ndev_close() returns err without calling
-aq_nic_deinit() to release the relevant memory and resource, which
-will lead to a memory leak.
+On Fri, Jun 24, 2022 at 01:58:25PM +0800, Jiachen Zhang wrote:
+> Some users may want both the high performance of the writeback_cahe mode and
+> a little bit more consistency among FUSE mounts. In the current writeback
+> mode implementation, users of one FUSE mount can never see the file
+> expansion done by other FUSE mounts.
+> 
+> Based on the suggested writeback V2 patch in the upstream mailing-list [1],
+> this commit allows the cmtime and size to be updated from server in
+> writeback mode. Compared with the writeback V2 patch in [1], this commit has
+> several differences:
+> 
+>     1. Ensure c/mtime are not updated from kernel to server. IOW, the cmtime
+>     generated by kernel are just temporary values that are never flushed to
+>     server, and they can also be updated by the official server cmtime when
+>     the writeback cache is clean.
+> 
+>     2. Skip mtime-based revalidation when fc->auto_inval_data is set with
+>     fc->writeback_cache_v2. Because the kernel-generated temporary cmtime
+>     are likely not equal to the offical server cmtime.
 
-We can fix it by deleting the if condition judgment and goto statement to
-call aq_nic_deinit() directly after aq_nic_stop() to fix the memory leak.
+We have a init flag to negotiate FUSE_AUTO_INVAL_DATA to enable/disable
+fc->auto_inval_data. So should it be filesystem's (user space) responsibility
+to not use FUSE_AUTO_INVAL_DATA when using FUSE_WRITEBACK_CACHE. I mean,
+otherwise it is confusing. On one hand filesystem is using FUSE_AUTO_INVAL_DATA
+but it silently is ingored by kernel because FUSE_WRITEBACK_CACHE is
+being used as well.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_main.c | 2 --
- 1 file changed, 2 deletions(-)
+will it make more sense to just document it and let filesystem authors
+enable options carefully.
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index 88595863d8bc..362f8077ff97 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -94,8 +94,6 @@ static int aq_ndev_close(struct net_device *ndev)
- 	int err = 0;
- 
- 	err = aq_nic_stop(aq_nic);
--	if (err < 0)
--		goto err_exit;
- 	aq_nic_deinit(aq_nic, true);
- 
- err_exit:
--- 
-2.25.1
+BTW, this probably should be a separate patch in the patch series anyway
+with proper explanation.
+
+Thanks
+Vivek
+
+> 
+>     3. If any page is ever flushed to the server during FUSE_GETATTR
+>     handling on fuse server, even if the cache is clean when
+>     fuse_change_attributes() checks, we should not update the i_size. This
+>     is because the FUSE_GETATTR may get a staled size before the FUSE_WRITE
+>     request changes server inode size. This commit ensures this by
+>     increasing attr_version after writeback for writeback_cache_v2. In that
+>     case, we should also ensure the ordering of the attr_version updating
+>     and the fi->writepages RB-tree updating. So that if a fuse page
+>     writeback ever happens during fuse_change_attributes(), either the
+>     fi->writepages is not empty, or the attr_version is increased. So we
+>     never mistakenly update a stale file size from server to kernel.
+> 
+> With this patch, writeback mode can consider the server c/mtime as the
+> official one. When inode attr is timeout or invalidated, kernel has chance
+> to see size and c/mtime modified by others.
+> 
+> Together with another patch [2], a FUSE daemon is able to implement
+> close-to-open (CTO) consistency like what is done in NFS clients.
+> 
+> [1] https://lore.kernel.org/linux-fsdevel/Ymfu8fGbfYi4FxQ4@miu.piliscsaba.redhat.com
+> [2] https://lore.kernel.org/linux-fsdevel/20220608104202.19461-1-zhangjiachen.jaycee@bytedance.com/
+> 
+> Suggested-by: Miklos Szeredi <mszeredi@redhat.com>
+> Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+> ---
+>  fs/fuse/file.c            | 17 +++++++++++++++
+>  fs/fuse/fuse_i.h          |  3 +++
+>  fs/fuse/inode.c           | 44 +++++++++++++++++++++++++++++++++++++--
+>  include/uapi/linux/fuse.h |  5 +++++
+>  4 files changed, 67 insertions(+), 2 deletions(-)
+> 
+> diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+> index 9b64e2ff1c96..35bdc7af8468 100644
+> --- a/fs/fuse/file.c
+> +++ b/fs/fuse/file.c
+> @@ -1829,6 +1829,15 @@ static void fuse_writepage_end(struct fuse_mount *fm, struct fuse_args *args,
+>  		 */
+>  		fuse_send_writepage(fm, next, inarg->offset + inarg->size);
+>  	}
+> +
+> +	if (fc->writeback_cache_v2)
+> +		fi->attr_version = atomic64_inc_return(&fc->attr_version);
+> +	/*
+> +	 * Ensure attr_version increases before the page is move out of the
+> +	 * writepages rb-tree.
+> +	 */
+> +	smp_mb();
+> +
+>  	fi->writectr--;
+>  	fuse_writepage_finish(fm, wpa);
+>  	spin_unlock(&fi->lock);
+> @@ -1858,10 +1867,18 @@ static struct fuse_file *fuse_write_file_get(struct fuse_inode *fi)
+>  
+>  int fuse_write_inode(struct inode *inode, struct writeback_control *wbc)
+>  {
+> +	struct fuse_conn *fc = get_fuse_conn(inode);
+>  	struct fuse_inode *fi = get_fuse_inode(inode);
+>  	struct fuse_file *ff;
+>  	int err;
+>  
+> +	/*
+> +	 * Kernel c/mtime should not be updated to the server in the
+> +	 * writeback_cache_v2 mode as server c/mtime are official.
+> +	 */
+> +	if (fc->writeback_cache_v2)
+> +		return 0;
+> +
+>  	/*
+>  	 * Inode is always written before the last reference is dropped and
+>  	 * hence this should not be reached from reclaim.
+> diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+> index 488b460e046f..47de36146fb8 100644
+> --- a/fs/fuse/fuse_i.h
+> +++ b/fs/fuse/fuse_i.h
+> @@ -654,6 +654,9 @@ struct fuse_conn {
+>  	/* show legacy mount options */
+>  	unsigned int legacy_opts_show:1;
+>  
+> +	/* Improved writeback cache policy */
+> +	unsigned writeback_cache_v2:1;
+> +
+>  	/*
+>  	 * fs kills suid/sgid/cap on write/chown/trunc. suid is killed on
+>  	 * write/trunc only if caller did not have CAP_FSETID.  sgid is killed
+> diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
+> index 8c0665c5dff8..2d5fa82b08b6 100644
+> --- a/fs/fuse/inode.c
+> +++ b/fs/fuse/inode.c
+> @@ -237,14 +237,41 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+>  	u32 cache_mask;
+>  	loff_t oldsize;
+>  	struct timespec64 old_mtime;
+> +	bool try_wb_update = false;
+> +
+> +	if (fc->writeback_cache_v2 && S_ISREG(inode->i_mode)) {
+> +		inode_lock(inode);
+> +		try_wb_update = true;
+> +	}
+>  
+>  	spin_lock(&fi->lock);
+>  	/*
+>  	 * In case of writeback_cache enabled, writes update mtime, ctime and
+>  	 * may update i_size.  In these cases trust the cached value in the
+>  	 * inode.
+> +	 *
+> +	 * In writeback_cache_v2 mode, if all the following conditions are met,
+> +	 * then we allow the attributes to be refreshed:
+> +	 *
+> +	 * - inode is not in the process of being written (I_SYNC)
+> +	 * - inode has no dirty pages (I_DIRTY_PAGES)
+> +	 * - inode data-related attributes are clean (I_DIRTY_DATASYNC)
+> +	 * - inode does not have any page writeback in progress
+> +	 *
+> +	 * Note: checking PAGECACHE_TAG_WRITEBACK is not sufficient in fuse,
+> +	 * since inode can appear to have no PageWriteback pages, yet still have
+> +	 * outstanding write request.
+>  	 */
+>  	cache_mask = fuse_get_cache_mask(inode);
+> +	if (try_wb_update && !(inode->i_state & (I_DIRTY_PAGES | I_SYNC |
+> +	    I_DIRTY_DATASYNC)) && RB_EMPTY_ROOT(&fi->writepages))
+> +		cache_mask &= ~(STATX_MTIME | STATX_CTIME | STATX_SIZE);
+> +	/*
+> +	 * Ensure the ordering of cleanness checking and following attr_version
+> +	 * comparison.
+> +	 */
+> +	smp_mb();
+> +
+>  	if (cache_mask & STATX_SIZE)
+>  		attr->size = i_size_read(inode);
+>  
+> @@ -283,7 +310,13 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+>  			truncate_pagecache(inode, attr->size);
+>  			if (!fc->explicit_inval_data)
+>  				inval = true;
+> -		} else if (fc->auto_inval_data) {
+> +		} else if (!fc->writeback_cache_v2 && fc->auto_inval_data) {
+> +			/*
+> +			 * When fc->writeback_cache_v2 is set, the old_mtime
+> +			 * can be generated by kernel and must not equal to
+> +			 * new_mtime generated by server. So skip in such
+> +			 * case.
+> +			 */
+>  			struct timespec64 new_mtime = {
+>  				.tv_sec = attr->mtime,
+>  				.tv_nsec = attr->mtimensec,
+> @@ -303,6 +336,9 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+>  
+>  	if (IS_ENABLED(CONFIG_FUSE_DAX))
+>  		fuse_dax_dontcache(inode, attr->flags);
+> +
+> +	if (try_wb_update)
+> +		inode_unlock(inode);
+>  }
+>  
+>  static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr)
+> @@ -1153,6 +1189,10 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
+>  				fc->async_dio = 1;
+>  			if (flags & FUSE_WRITEBACK_CACHE)
+>  				fc->writeback_cache = 1;
+> +			if (flags & FUSE_WRITEBACK_CACHE_V2) {
+> +				fc->writeback_cache = 1;
+> +				fc->writeback_cache_v2 = 1;
+> +			}
+>  			if (flags & FUSE_PARALLEL_DIROPS)
+>  				fc->parallel_dirops = 1;
+>  			if (flags & FUSE_HANDLE_KILLPRIV)
+> @@ -1234,7 +1274,7 @@ void fuse_send_init(struct fuse_mount *fm)
+>  		FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
+>  		FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
+>  		FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_INIT_EXT |
+> -		FUSE_SECURITY_CTX;
+> +		FUSE_SECURITY_CTX | FUSE_WRITEBACK_CACHE_V2;
+>  #ifdef CONFIG_FUSE_DAX
+>  	if (fm->fc->dax)
+>  		flags |= FUSE_MAP_ALIGNMENT;
+> diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+> index d6ccee961891..b474763bcf59 100644
+> --- a/include/uapi/linux/fuse.h
+> +++ b/include/uapi/linux/fuse.h
+> @@ -194,6 +194,7 @@
+>   *  - add FUSE_SECURITY_CTX init flag
+>   *  - add security context to create, mkdir, symlink, and mknod requests
+>   *  - add FUSE_HAS_INODE_DAX, FUSE_ATTR_DAX
+> + *  - add FUSE_WRITEBACK_CACHE_V2 init flag
+>   */
+>  
+>  #ifndef _LINUX_FUSE_H
+> @@ -353,6 +354,9 @@ struct fuse_file_lock {
+>   * FUSE_SECURITY_CTX:	add security context to create, mkdir, symlink, and
+>   *			mknod
+>   * FUSE_HAS_INODE_DAX:  use per inode DAX
+> + * FUSE_WRITEBACK_CACHE_V2:
+> + *			allow time/size to be refreshed if no pending write
+> + *			c/mtime not updated from kernel to server
+>   */
+>  #define FUSE_ASYNC_READ		(1 << 0)
+>  #define FUSE_POSIX_LOCKS	(1 << 1)
+> @@ -389,6 +393,7 @@ struct fuse_file_lock {
+>  /* bits 32..63 get shifted down 32 bits into the flags2 field */
+>  #define FUSE_SECURITY_CTX	(1ULL << 32)
+>  #define FUSE_HAS_INODE_DAX	(1ULL << 33)
+> +#define FUSE_WRITEBACK_CACHE_V2	(1ULL << 34)
+>  
+>  /**
+>   * CUSE INIT request/reply flags
+> -- 
+> 2.20.1
+> 
 
