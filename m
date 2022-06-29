@@ -2,124 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE35C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0CCFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiF2SmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
+        id S230292AbiF2Snb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiF2SmG (ORCPT
+        with ESMTP id S229480AbiF2Sna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:42:06 -0400
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A9D29827;
-        Wed, 29 Jun 2022 11:42:04 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id d5so29545964yba.5;
-        Wed, 29 Jun 2022 11:42:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=niDepKniCB5d3I07y4zpYfnckX8GQNMPL/217Nk44uM=;
-        b=364Lo2zzksxZUBSXzgrA+UfG7auHtNmoAZcSnFq8vTie+mrlVHVOEYS6DLv3zkRk3R
-         1wstW/FG9jnhBZlhibDelgcvyqCRPO8KQ0KKEEpkW7bnDHxsP3s8jnUF0JU88JkB7z6B
-         TCDM0Fh4RYYlbXPJHQ+LPSaok8H6OGmDo/ZMJ+bNCz1vyEfWSHuvclQrrVWPs+5uwBy+
-         mgtRcd0CU7SEjaT3MHShhiq6rJqHnth8kv/tvdgUbFLx6s62pzHtLrTNCjzxiJp4Eino
-         dikTAlfY/riGRTRPYfNXqhXd/ZuJnSaKlLIP4HLWkRt5+j/6fejwWkX4Kl1vx0H5wvlP
-         nw1g==
-X-Gm-Message-State: AJIora8UNbTa4dp76VvM3MYGq7h+oFhitZkgjJQgRAWwcAeI2yQ8S35j
-        r803I0KPIS/psry5R9lPOuPIFpCCJ0JOwz/tVPoH5yMD
-X-Google-Smtp-Source: AGRyM1u2pV3v9yOzU1KyjK6E4kduzKglliClPmQ+ZLhcYXW9iky+twdm/TvRio6H/u+xzywgKaQSQ0Em3pryU+SuJwk=
-X-Received: by 2002:a25:5d8:0:b0:66c:dbd1:b2bb with SMTP id
- 207-20020a2505d8000000b0066cdbd1b2bbmr4996934ybf.81.1656528124098; Wed, 29
- Jun 2022 11:42:04 -0700 (PDT)
+        Wed, 29 Jun 2022 14:43:30 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AC11248D4
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:43:30 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 492F11480;
+        Wed, 29 Jun 2022 11:43:30 -0700 (PDT)
+Received: from bogus (unknown [10.57.39.193])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D24E43F5A1;
+        Wed, 29 Jun 2022 11:43:27 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 19:42:17 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Conor.Dooley@microchip.com
+Cc:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        atishp@atishpatra.org, atishp@rivosinc.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        wangqing@vivo.com, robh+dt@kernel.org, rafael@kernel.org,
+        ionela.voinescu@arm.com, pierre.gondois@arm.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org, gshan@redhat.com,
+        Valentina.FernandezAlanis@microchip.com
+Subject: Re: [PATCH v5 09/19] arch_topology: Use the last level cache
+ information from the cacheinfo
+Message-ID: <20220629184217.krzt6l7qadymbj6h@bogus>
+References: <20220627165047.336669-1-sudeep.holla@arm.com>
+ <20220627165047.336669-10-sudeep.holla@arm.com>
+ <bb124e47-f866-e39e-0f76-dc468ce384c6@microchip.com>
+ <3656a067-cc3f-fd5b-e339-5925a856cce1@microchip.com>
 MIME-Version: 1.0
-References: <20220627165832.10246-1-mario.limonciello@amd.com>
-In-Reply-To: <20220627165832.10246-1-mario.limonciello@amd.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 29 Jun 2022 20:41:53 +0200
-Message-ID: <CAJZ5v0g2qfA00=ukatTxSXPnoOaquwvn8tk0oNHaY-0F7ODZQw@mail.gmail.com>
-Subject: Re: [PATCH] ACPI: CPPC: Don't require _OSC if X86_FEATURE_CPPC is supported
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Perry Yuan <perry.yuan@amd.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3656a067-cc3f-fd5b-e339-5925a856cce1@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 6:58 PM Mario Limonciello
-<mario.limonciello@amd.com> wrote:
+On Wed, Jun 29, 2022 at 06:18:25PM +0000, Conor.Dooley@microchip.com wrote:
+> 
+> No, no it doesn't. Not sure what I was thinking there.
+> Prob tested that on the the last commit that bisect tested
+> rather than the one it pointed out the problem was with.
+> 
+> Either way, boot is broken in -next.
 >
-> commit 72f2ecb7ece7 ("ACPI: bus: Set CPPC _OSC bits for all and
-> when CPPC_LIB is supported") added support for claiming to
-> support CPPC in _OSC on non-Intel platforms.
->
-> This unfortunately caused a regression on a vartiety of AMD
-> platforms in the field because a number of AMD platforms don't set
-> the `_OSC` bit 5 or 6 to indicate CPPC or CPPC v2 support.
->
-> As these AMD platforms already claim CPPC support via `X86_FEATURE_CPPC`,
-> use this enable this feature rather than requiring the `_OSC`.
->
-> Fixes: 72f2ecb7ece7 ("Set CPPC _OSC bits for all and when CPPC_LIB is supported")
-> Reported-by: Perry Yuan <perry.yuan@amd.com>
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
->  drivers/acpi/cppc_acpi.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-> index 903528f7e187..5463e6309b9a 100644
-> --- a/drivers/acpi/cppc_acpi.c
-> +++ b/drivers/acpi/cppc_acpi.c
-> @@ -629,6 +629,15 @@ static bool is_cppc_supported(int revision, int num_ent)
->                 return false;
->         }
->
-> +       if (osc_sb_cppc_not_supported) {
-> +               pr_debug("Firmware missing _OSC support\n");
-> +#ifdef CONFIG_X86
-> +               return boot_cpu_has(X86_FEATURE_CPPC);
-> +#else
-> +               return false;
-> +#endif
 
-What about doing
+Can you check if the below fixes the issue ? Assuming presenting L1 as
+LLC might be causing issue.
 
-if (osc_sb_cppc_not_supported) {
-        pr_debug("Firmware missing _OSC support\n");
-        return IS_ENABLED(CONFIG_X86) && boot_cpu_has(X86_FEATURE_CPPC);
-}
+Regards,
+Sudeep
 
-instead for the sake of reducing #ifdeffery?
+-->8
+diff --git i/drivers/base/cacheinfo.c w/drivers/base/cacheinfo.c
+index 167abfa6f37d..a691317f7fdd 100644
+--- i/drivers/base/cacheinfo.c
++++ w/drivers/base/cacheinfo.c
+@@ -60,7 +60,8 @@ bool last_level_cache_is_valid(unsigned int cpu)
 
-Also, this is somewhat risky, because even if the given processor has
-X86_FEATURE_CPPC set, the platform may still not want to expose CPPC
-through ACPI.  How's that going to work after this change?
+        llc = per_cpu_cacheinfo_idx(cpu, cache_leaves(cpu) - 1);
 
+-       return (llc->attributes & CACHE_ID) || !!llc->fw_token;
++       return (llc->type == CACHE_TYPE_UNIFIED) &&
++              ((llc->attributes & CACHE_ID) || !!llc->fw_token);
 
-> +       }
-> +
->         return true;
->  }
->
-> @@ -684,9 +693,6 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
->         acpi_status status;
->         int ret = -ENODATA;
->
-> -       if (osc_sb_cppc_not_supported)
-> -               return -ENODEV;
-> -
->         /* Parse the ACPI _CPC table for this CPU. */
->         status = acpi_evaluate_object_typed(handle, "_CPC", NULL, &output,
->                         ACPI_TYPE_PACKAGE);
-> --
-> 2.34.1
->
+ }
+
