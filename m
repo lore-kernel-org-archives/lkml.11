@@ -2,60 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70230C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 382B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232577AbiF2IZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        id S232674AbiF2IZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 04:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232572AbiF2IZ1 (ORCPT
+        with ESMTP id S232600AbiF2IZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 04:25:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9D93BFA0;
-        Wed, 29 Jun 2022 01:25:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 480A161D69;
-        Wed, 29 Jun 2022 08:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45557C34114;
-        Wed, 29 Jun 2022 08:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656491123;
-        bh=/fEG8o56X8CR58XzBeCiViZTlPIDG3OwyZ/UgWpIrp4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=reDPLsOiXwvihxd/6ECgf2vvHyj/Nwb1s+ziqvznumgQi/VuGApy87VcgXSm6Do2C
-         04vvU3b7Uj+PDspM0Xp8mnDSroRyA6VF9Ml5PJqFvB0Z0Zs95x+IXtqOnSL63qkHtx
-         5o89CGLH2HZWj/NZcg5zYmVZUTTcu+QY3ab6mTpo=
-Date:   Wed, 29 Jun 2022 10:25:19 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jari Ruusu <jariruusu@protonmail.com>
-Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: linux-5.10.127 modpost warning
-Message-ID: <YrwMbylQNI7XqJte@kroah.com>
-References: <B9ViOjUL7reNao5fkvKkt4S91RPpLSuY6lGtyNIFW4WCgET8Z5Y_9-Y7O1GuZJ9FJFk7QouCfASA1ogdd-xaSVQNtR9RN2r2kFD7zu9vbMw=@protonmail.com>
+        Wed, 29 Jun 2022 04:25:31 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4353BFB8
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:25:29 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id q6so30929882eji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:25:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=i9rPYCNsKDfbWoYjqUgzaKgkcSgzPZ+JXR+K4Y0bDbs=;
+        b=Zo88AD7bUVgCpN76GlEuoeeL2hj38HRRCNQM+SXS0A5LNZvRQ+zdzvNDvYbpu2upDk
+         zy3Z47h8xeq4TEYwQC5AyrDzqmIVlFXkzWSF3Gda7eezX0qSxxznB2Bvbjc+L/DGcltd
+         PSOhl7dXScnPHp7dWkFoH0rw3ADXwO1mH9qdUvrmhYsZg4NnDKEgbC5+ypnUntse2Ad1
+         2LwmtrKdfYmtLEDbsebIb43WkqUFSq/Rf3ds8WK2Bja4rzXfs0qIVnBYE5njkdXg3zVa
+         jhYrUZZLxUioIbxiP/DL4AqkP15hCh5g93LUq7I3OhkZFaLCckUTMzUq2Dl6coKtzeEb
+         yf7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=i9rPYCNsKDfbWoYjqUgzaKgkcSgzPZ+JXR+K4Y0bDbs=;
+        b=tofISxWGbSQJszZXx5X8JDA+DuPBvW913EFq2JvEUjG4c4zPVd4OZo9aRYNOTK89yj
+         d+dzEwglgjGJczRmKL/abGAnWR2JtBChWaJpv49PPCkXPBeoSquCBv7atWchD+EP2n1X
+         Huc9FwG6PR8xZImwNvE0ovlZkMRjhmeeaOwOA/RvlSU4KdOUT5pWJFlI1oR7MRj8M7QJ
+         oZMXh6/6vb2PSaDPROy8m/aRZ9cinToFO0QATpEQt76013EJWTAZvQ2bQoszt9X5XeZg
+         ojUeDmMhiSaaAW46BCUG5ASImnDxwiSHV7f7ksyO3kQA9ivWfqLSpSZRFfxI86G7GjuK
+         viUw==
+X-Gm-Message-State: AJIora+RaNonq00RkDDCYXyG9ZhpKmzaxbt/pG6ZZTq+VpK5QJL/zgIW
+        ERnZxa2LOQUMhfr0MjKBHxYDoQ==
+X-Google-Smtp-Source: AGRyM1sMVevj1qymQUk8wAipSgCB8oumS6WTh3j4eu48ndExxP2/mLSsQNe604hrk4l5BlZw35pEbA==
+X-Received: by 2002:a17:906:6a20:b0:726:7675:e15a with SMTP id qw32-20020a1709066a2000b007267675e15amr2024534ejc.668.1656491128068;
+        Wed, 29 Jun 2022 01:25:28 -0700 (PDT)
+Received: from [192.168.0.183] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170906a08200b006fed93bf71fsm7519203ejy.18.2022.06.29.01.25.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 01:25:27 -0700 (PDT)
+Message-ID: <bc6f42d9-f821-ad0c-85c8-b4a4d2146485@linaro.org>
+Date:   Wed, 29 Jun 2022 10:25:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <B9ViOjUL7reNao5fkvKkt4S91RPpLSuY6lGtyNIFW4WCgET8Z5Y_9-Y7O1GuZJ9FJFk7QouCfASA1ogdd-xaSVQNtR9RN2r2kFD7zu9vbMw=@protonmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add rtq6056 adc support
+Content-Language: en-US
+To:     cy_huang <u0084500@gmail.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     lars@metafoo.de, cy_huang@richtek.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <1656469212-12717-1-git-send-email-u0084500@gmail.com>
+ <1656469212-12717-2-git-send-email-u0084500@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1656469212-12717-2-git-send-email-u0084500@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 08:18:04AM +0000, Jari Ruusu wrote:
-> This shows up when building linux-5.10.127
+On 29/06/2022 04:20, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
->   LD      vmlinux.o
->   MODPOST vmlinux.symvers
-> WARNING: modpost: vmlinux.o(___ksymtab+drm_fb_helper_modinit+0x0): Section mismatch in reference from the variable __ksymtab_drm_fb_helper_modinit to the function .init.text:drm_fb_helper_modinit()
-> The symbol drm_fb_helper_modinit is exported and annotated __init
-> Fix this by removing the __init annotation of drm_fb_helper_modinit or drop the export.
+> Add the documentation for Richtek rtq6056.
+> 
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> ---
+> Since v2
+> - Change the resistor property name to be generic 'shunt-resistor-micro-ohms'.
+> 
+> ---
+>  .../bindings/iio/adc/richtek,rtq6056.yaml          | 56 ++++++++++++++++++++++
+>  1 file changed, 56 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+> new file mode 100644
+> index 00000000..fe45d8b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+> @@ -0,0 +1,56 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/richtek,rtq6056.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: RTQ6056 Bi-Directional Current and Power Monitor with 16-bit ADC
+> +
+> +maintainers:
+> +  - ChiYuan Huang <cy_huang@richtek.com>
+> +
+> +description: |
+> +  The RTQ6056 is a high accuracy current-sense monitor with I2C and SMBus
+> +  interface, and the device provides full information for system by reading
+> +  out the loading current and power.
+> +
+> +  The device monitors both of the drops across sense resistor and the BUS
+> +  voltage, converts into the current in amperes, and power in watts through
+> +  internal analog-to-digital converter ADC. The programmable calibration,
+> +  adjustable conversion time, and averaging function are also built in for
+> +  more design flexibility.
+> +
+> +  Datasheet is available at
+> +  https://www.richtek.com/assets/product_file/RTQ6056/DSQ6056-00.pdf
+> +
+> +properties:
+> +  compatible:
+> +    const: richtek,rtq6056
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +  shunt-resistor-micro-ohms:
+> +    description: Shunt IN+/IN- sensing node resistor
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#io-channel-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      rtq6056@40 {
 
-Known issue, see the stable list, I'll be fixing this up for the next
-release, thanks.
+This was not fixed.
 
-greg k-h
+
+Best regards,
+Krzysztof
