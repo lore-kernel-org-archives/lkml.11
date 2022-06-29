@@ -2,130 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD888CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbiF2JVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
+        id S232383AbiF2JVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiF2JVK (ORCPT
+        with ESMTP id S229846AbiF2JVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:21:10 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3341C369C0;
-        Wed, 29 Jun 2022 02:21:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656494449;
-        bh=EkAeX5N6w3YtqO8hOxSosvDf28tnCpFaYhH61mIA+xM=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Z3XzPsNPYg2ClCI0TYTMVAZ3j9MQbwEiFofNt6OMebPo4MwuqH2ZElQFB/nSPB0JM
-         xpYJ9b59N3B9Thw95ysi/UQIE49tQaLoCywMKDZv7+7rdqd6isTA2JtzVaugF2po8Z
-         Tg8NkHQMF/uMnV+mBNGiz8DrjQOvhXRos0Jp5838=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.23]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MY68d-1o7w5c2P8v-00YOJ2; Wed, 29
- Jun 2022 11:20:49 +0200
-Message-ID: <4b2b3a2b-fdc0-a684-d4b1-9725e5b87ccb@gmx.de>
-Date:   Wed, 29 Jun 2022 11:20:47 +0200
+        Wed, 29 Jun 2022 05:21:24 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE9BD369CE;
+        Wed, 29 Jun 2022 02:21:22 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 15F3A80CD;
+        Wed, 29 Jun 2022 09:16:08 +0000 (UTC)
+Date:   Wed, 29 Jun 2022 12:21:21 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: Fix PM usage_count for console handover
+Message-ID: <YrwZkTcU9IyY2DhN@atomide.com>
+References: <20220628165834.63044-1-ilpo.jarvinen@linux.intel.com>
+ <YrtvOSrrSLGX/coS@smile.fi.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v6 5/9] tpm, tpm_tis: Only handle supported interrupts
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
-        lukas@wunner.de, p.rosenberger@kunbus.com
-References: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
- <20220621132447.16281-6-LinoSanfilippo@gmx.de> <Yrf/azvJlzWfOE9y@kernel.org>
- <6b950660-6a78-f329-39b4-11d585e4959c@gmx.de> <Yro4tl7g1IqkEszT@kernel.org>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <Yro4tl7g1IqkEszT@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ejJxBMc0f49kRY5+GOJpGpT422gdXQehGqrdv/3iJwEgq3wWlyZ
- qYetttZl/KJHTWMkWUuVufuUrsRIYQ1PisgVo8zEg2rNHSIOKFHicjDOzEqPyGQXuf6Gwk0
- 3vhEwzXQO+5lyauP/40WgovM/N/QJrdkyWofMYdScQf2qt8Rm/2m6RrAwFkkbm75N98zqjl
- 4QPV5fw30D2v8A84asZIA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:p6CUeDtQxa4=:G3gxnADgZrEBnAOsQCCzbP
- uzEdPo2bpnPcUmlPVk57Xfu8LFAWi2rSGYH24mXPOQKRHIRjdMm8hhEn6KO+SOil1LsRup306
- koQplAiC5E6OVMd4eSA8wKojdE7X27+oNqfGfwKNcx6ydY7XqW9Uq+2sARWD20WxtvWC/oZOm
- FpNkDXwimmtjI4vk/Mze9qagNQsene0rdIUmrQSEeos+K+/uYPZceByABXwQCujhaVvk2GoEa
- KUduV5cpJsM2zo1zgD26wNZjxUbGdXPIJkK5+pmQemZXjAk3FOVdASi+apsJ23GzVKQY9ZrFh
- L/nOKKqLIEi44kAUoOXwsSE7jqKIZuQ8UUC+GiRz84qVj1fjZ8KdHGk6WWgxf7399ApQVgpfC
- 2IB1I6so77thfOtZ8uHmhE1DtVtepGZsU53NLLNnP5K8jfcaurZmr41fV1uQSwzQi1xZ8d1g/
- s+yqAJjOBIZvQa142Wnc+BDyVuh6dSX4NiQx5t2vaM3z0MuGW0pTIyVaeOV2GSIG3DT2CtuSi
- xc/HbAtFd+sGpvm/2s79NxBRsEGadmAWpt8TzTGrGCS/d7OjcRmJtxUY4O1xpOMTKWlMZ8LCP
- re4R0JQlHN0zsVUpyo7ujAVcwqPG9JOOSNoG0jKx9PNC/IvnbpmE/1aQ7aVFk4kY/1i3e7UVy
- tKaI/mW/Y74T+xvM8rqprlg4F+42Ramyu5ggX2CKjDqQEfVMIOr3u+VIzA/uMNmDrMLpJ6WWy
- dIqsPB5oZbCPDfJf9UeYSZUXb0eevvoN5Y6Nbo3Q9mSlzfdOsavlAl0M2+1KGDL2W1ftfy8Ju
- vzkGO0SVptfwc+5UNeiZwIajx9Apm6XSqVo0wADILQShKdnpQBfO3sqaru+40g8SrEMvu+SCz
- LyqbCOhzKRXKY44QlYVq+d9Ec0o9hP+TLoGlosOev/Dh8mNR2C83YsghizFsj1fYgNqMLueyc
- zG0TFOcAxIX8knJW8S0BRd/UfeYw/vmjZ3YUPTgrFEHQ/YKPijIcnYMYMScHHUJ/HRDFOGvuV
- GzhBKHcs0Im4yzPZrpLM821wQP0kIC9mqLxDu0uqLaomQhkM2CT9OfQI0TXVtbXBJvzR5jqES
- 92ms0ar/dOL7PZ0lAHsBny+fe9WLH5ACdxktQ8yg3ztT71dEZMApWyKhA==
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YrtvOSrrSLGX/coS@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [220628 21:09]:
+> On Tue, Jun 28, 2022 at 07:58:34PM +0300, Ilpo Järvinen wrote:
+> > When console is enabled, univ8250_console_setup() calls
+> > serial8250_console_setup() before .dev is set to uart_port. Therefore,
+> > it will not call pm_runtime_get_sync(). Later, when the actual driver
+> > is going to take over univ8250_console_exit() is called. As .dev is
+> > already set, serial8250_console_exit() makes pm_runtime_put_sync() call
+> > with usage count being zero triggering PM usage count warning
+> > (extra debug for univ8250_console_setup(), univ8250_console_exit(), and
+> > serial8250_register_ports()):
 
+Hmm so serial8250_console_setup() calls pm_runtime_get_sync() if dev
+exists..
 
-On 28.06.22 01:09, Jarkko Sakkinen wrote:
-> On Sun, Jun 26, 2022 at 02:18:17PM +0200, Lino Sanfilippo wrote:
->> On 26.06.22 at 08:40, Jarkko Sakkinen wrote:
->>>
->>> I would instead mask out bits and write a helper function
->>> taking care of this:
->>>
->>> static u8 tpm_tis_filter_sts_mask(u8 int_mask, u8 sts_mask)
->>> {
->>>         struct tpm_tis_data *priv =3D dev_get_drvdata(&chip->dev);
->>>
->>>         if (!(int_mask & TPM_INTF_STS_VALID_INT))
->>>                 sts_mask &=3D ~TPM_STS_VALID;
->>>
->>>         if (!(int_mask & TPM_INTF_DATA_AVAIL_INT))
->>>                 sts_mask &=3D ~TPM_STS_DATA_AVAIL;
->>>
->>>         if (!(int_mask & TPM_INTF_CMD_READY_INT))
->>> 		sts_mask &=3D ~TPM_STS_COMMAND_READY;
->>>
->>>         return sts_mask;
->>> }
->>>
->>> Less operations and imho somewhat cleaner structure.
->>>
->>> Add suggested-by if you want.
->>
->> I thought of a helper like this before but then decided to
->> not introduce another function to keep the code changes minimal. But ye=
-s,
->> it is indeed cleaner. I will do the change and resubmit the series.
->>
->> Thanks for the review!
->>
->> Regards,
->> Lino
->
-> Yeah, please don't add suggested-by, it's such a minor detail
-> in the overall patch :-)
+> > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> > index 57e86133af4f..2e83e7367441 100644
+> > --- a/drivers/tty/serial/8250/8250_core.c
+> > +++ b/drivers/tty/serial/8250/8250_core.c
+> > @@ -23,6 +23,7 @@
+> >  #include <linux/sysrq.h>
+> >  #include <linux/delay.h>
+> >  #include <linux/platform_device.h>
+> > +#include <linux/pm_runtime.h>
+> >  #include <linux/tty.h>
+> >  #include <linux/ratelimit.h>
+> >  #include <linux/tty_flip.h>
+> > @@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+> >  
+> >  		up->port.dev = dev;
+> >  
+> > +		if (uart_console_enabled(&up->port))
+> > +			pm_runtime_get_sync(up->port.dev);
+> > +
+> >  		serial8250_apply_quirks(up);
+> >  		uart_add_one_port(drv, &up->port);
+> >  	}
 
-I already created a separate patch which only contains moving the bit chec=
-ks into the
-helper function. For that patch the Suggested-by is fully justified IMHO.
+..and now we also call it here. Are there now cases where pm_runtime_get_sync()
+gets called twice potentially or does uart_console_enabled() ensure that is
+not the case already?
 
+Regards,
 
-Thanks for taking time to fix these
-> glitches and also taking all the feedback into account (and
-> also being patient).
->
-
-No problem. Its always good to have some feedback from people that have a =
-deeper insight
-into the code. Especially when it is as complex as the TPM subsystem and d=
-rivers.
-
-Best regards,
-Lino
+Tony
