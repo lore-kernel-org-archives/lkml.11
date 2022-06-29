@@ -2,315 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E40F9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF90C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiF2HPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        id S231694AbiF2HRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbiF2HPT (ORCPT
+        with ESMTP id S230350AbiF2HQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:15:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB8FE32EDF
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:15:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656486917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yxaIGjt/4YMOZg4WjQlEh9o2Sctvt7eqfm3ZD+2F0lo=;
-        b=fS4xt6XCF11EyeQOu+yMa9oYFqml0DPZmVC8zwNqBnS8abi9bjwXrJjbh6sdB1voI7SrKv
-        gSXOxnerdPjpmDvI2jOEw4kP/qyoLKZjhkmwbhsTqn5n4LpruAV+z8M7Tui18oYy050nyt
-        4C9kBgNNCkqryMYkRAtCEuYzYVKn2p0=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-581-LYFFA_l8N5C33ZnP6gNUfA-1; Wed, 29 Jun 2022 03:15:16 -0400
-X-MC-Unique: LYFFA_l8N5C33ZnP6gNUfA-1
-Received: by mail-wm1-f71.google.com with SMTP id 83-20020a1c0256000000b003a03f8cc1acso721430wmc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:15:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yxaIGjt/4YMOZg4WjQlEh9o2Sctvt7eqfm3ZD+2F0lo=;
-        b=MnC50U+RGGApLMjH1ww3TpksVfmxycFD3UpeNigZrYy3+M03M5yNwwH2YKl0g6ayIc
-         ZQGWtxn/TzWX67zUAfHPJO1hjk+MSG40jwCBh0nX+VLi6rM3vuEDMg0W59WhRWxRnRne
-         T3vGkkTU3vuFfPxN7jQb/zmn7/rSLLtLDBsFp4EhpGhxbY28ETj92qx5llkyq7+wfUdq
-         wbTRaYr17AJYdNyD4PK9xioHjr6xBDIWK2O+eteO6thku+7kGhhvT7i5BOd5Cpl88Mxw
-         SOpJyZGDmQToF3aB9zVIpLUokl/3Tg1NymifTa1nENX7Fc2fZqfarud+bTgwP5L/W4u0
-         UjlA==
-X-Gm-Message-State: AJIora8HdFU6HMhdZRWSTre9hYqIbZ1X2oRNkkaavfaJlqdOhs7z2RuN
-        xYaYjhynpVAPsPDtwJ8OxYLji5iWK20m6P9QBhHPLvqojLtr1C1d90isUt684X997uul+J6YtKv
-        sdKOKNlWKMerKzbOp/DwZdyjl
-X-Received: by 2002:a05:600c:3542:b0:3a1:6855:1153 with SMTP id i2-20020a05600c354200b003a168551153mr1702715wmq.121.1656486915127;
-        Wed, 29 Jun 2022 00:15:15 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tpClGQvlBrnG+3cY/I3Shi+z3wdCHGxIqznCCwszS9iYsWm4igce/0pKeAuj4JN2pzhuyLJw==
-X-Received: by 2002:a05:600c:3542:b0:3a1:6855:1153 with SMTP id i2-20020a05600c354200b003a168551153mr1702662wmq.121.1656486914525;
-        Wed, 29 Jun 2022 00:15:14 -0700 (PDT)
-Received: from redhat.com ([2.52.23.204])
-        by smtp.gmail.com with ESMTPSA id h13-20020adff4cd000000b002103aebe8absm15585352wrp.93.2022.06.29.00.15.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 00:15:14 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 03:15:09 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linux-s390@vger.kernel.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Ben Hutchings <ben@decadent.org.uk>,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH V3] virtio: disable notification hardening by default
-Message-ID: <20220629030600-mutt-send-email-mst@kernel.org>
-References: <CACGkMEuurobpUWmDL8zmZ6T6Ygc0OEMx6vx2EDCSoGNnZQ0r-w@mail.gmail.com>
- <20220627024049-mutt-send-email-mst@kernel.org>
- <CACGkMEvrDXDN7FH1vKoYCob2rkxUsctE_=g61kzHSZ8tNNr6vA@mail.gmail.com>
- <20220627053820-mutt-send-email-mst@kernel.org>
- <CACGkMEvcs+9_SHmO1s3nyzgU7oq7jhU2gircVVR3KDsGDikh5Q@mail.gmail.com>
- <20220628004614-mutt-send-email-mst@kernel.org>
- <CACGkMEsC4A+3WejLSOZoH3enXtai=+JyRNbxcpzK4vODYzhaFw@mail.gmail.com>
- <CACGkMEvu0D0XD7udz0ebVjNM0h5+K9Rjd-5ed=PY_+-aduzG2g@mail.gmail.com>
- <20220629022223-mutt-send-email-mst@kernel.org>
- <CACGkMEuwvzkbPUSFueCOjit7pRJ81v3-W3SZD+7jQJN8btEFdg@mail.gmail.com>
+        Wed, 29 Jun 2022 03:16:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ED433890;
+        Wed, 29 Jun 2022 00:16:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B48C61B4D;
+        Wed, 29 Jun 2022 07:16:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23806C34114;
+        Wed, 29 Jun 2022 07:16:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656487016;
+        bh=BJGEUxs+eowjxLcuCAMavPjidE7iTv+YDJEssZ0S0xE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dV8k6gozrluf3u/tzS+3AkM6zAG7Kf41mLJj6iUjYJT9oOA6McASiBJDbWcheV+HU
+         EfqqYFuZ8cd1FX4BtaCxr3wGryh/a9nCaBm4HEYgxLwNdCby9ERoSzFw151zXVffK0
+         LydsU0sLe+KUttB0nGxU69wbNy/25ZQg/tVD+2uw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 5.4.202
+Date:   Wed, 29 Jun 2022 09:16:52 +0200
+Message-Id: <165648701319366@kroah.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEuwvzkbPUSFueCOjit7pRJ81v3-W3SZD+7jQJN8btEFdg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 03:02:21PM +0800, Jason Wang wrote:
-> On Wed, Jun 29, 2022 at 2:31 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Wed, Jun 29, 2022 at 12:07:11PM +0800, Jason Wang wrote:
-> > > On Tue, Jun 28, 2022 at 2:17 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > >
-> > > > On Tue, Jun 28, 2022 at 1:00 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Tue, Jun 28, 2022 at 11:49:12AM +0800, Jason Wang wrote:
-> > > > > > > Heh. Yea sure. But things work fine for people. What is the chance
-> > > > > > > your review found and fixed all driver bugs?
-> > > > > >
-> > > > > > I don't/can't audit all bugs but the race between open/close against
-> > > > > > ready/reset. It looks to me a good chance to fix them all but if you
-> > > > > > think differently, let me know
-> > > > > >
-> > > > > > > After two attempts
-> > > > > > > I don't feel like hoping audit will fix all bugs.
-> > > > > >
-> > > > > > I've started the auditing and have 15+ patches in the queue. (only
-> > > > > > covers bluetooth, console, pmem, virtio-net and caif). Spotting the
-> > > > > > issue is not hard but the testing, It would take at least the time of
-> > > > > > one release to finalize I guess.
-> > > > >
-> > > > > Absolutely. So I am looking for a way to implement hardening that does
-> > > > > not break existing drivers.
-> > > >
-> > > > I totally agree with you to seek a way without bothering the drivers.
-> > > > Just wonder if this is possbile.
-> > > >
-> > > > >
-> > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > The reason config was kind of easy is that config interrupt is rarely
-> > > > > > > > > vital for device function so arbitrarily deferring that does not lead to
-> > > > > > > > > deadlocks - what you are trying to do with VQ interrupts is
-> > > > > > > > > fundamentally different. Things are especially bad if we just drop
-> > > > > > > > > an interrupt but deferring can lead to problems too.
-> > > > > > > >
-> > > > > > > > I'm not sure I see the difference, disable_irq() stuffs also delay the
-> > > > > > > > interrupt processing until enable_irq().
-> > > > > > >
-> > > > > > >
-> > > > > > > Absolutely. I am not at all sure disable_irq fixes all problems.
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > Consider as an example
-> > > > > > > > >     virtio-net: fix race between ndo_open() and virtio_device_ready()
-> > > > > > > > > if you just defer vq interrupts you get deadlocks.
-> > > > > > > > >
-> > > > > > > > >
-> > > > > > > >
-> > > > > > > > I don't see a deadlock here, maybe you can show more detail on this?
-> > > > > > >
-> > > > > > > What I mean is this: if we revert the above commit, things still
-> > > > > > > work (out of spec, but still). If we revert and defer interrupts until
-> > > > > > > device ready then ndo_open that triggers before device ready deadlocks.
-> > > > > >
-> > > > > > Ok, I guess you meant on a hypervisor that is strictly written with spec.
-> > > > >
-> > > > > I mean on hypervisor that starts processing queues after getting a kick
-> > > > > even without DRIVER_OK.
-> > > >
-> > > > Oh right.
-> > > >
-> > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > So, thinking about all this, how about a simple per vq flag meaning
-> > > > > > > > > "this vq was kicked since reset"?
-> > > > > > > >
-> > > > > > > > And ignore the notification if vq is not kicked? It sounds like the
-> > > > > > > > callback needs to be synchronized with the kick.
-> > > > > > >
-> > > > > > > Note we only need to synchronize it when it changes, which is
-> > > > > > > only during initialization and reset.
-> > > > > >
-> > > > > > Yes.
-> > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > If driver does not kick then it's not ready to get callbacks, right?
-> > > > > > > > >
-> > > > > > > > > Sounds quite clean, but we need to think through memory ordering
-> > > > > > > > > concerns - I guess it's only when we change the value so
-> > > > > > > > >         if (!vq->kicked) {
-> > > > > > > > >                 vq->kicked = true;
-> > > > > > > > >                 mb();
-> > > > > > > > >         }
-> > > > > > > > >
-> > > > > > > > > will do the trick, right?
-> > > > > > > >
-> > > > > > > > There's no much difference with the existing approach:
-> > > > > > > >
-> > > > > > > > 1) your proposal implicitly makes callbacks ready in virtqueue_kick()
-> > > > > > > > 2) my proposal explicitly makes callbacks ready via virtio_device_ready()
-> > > > > > > >
-> > > > > > > > Both require careful auditing of all the existing drivers to make sure
-> > > > > > > > no kick before DRIVER_OK.
-> > > > > > >
-> > > > > > > Jason, kick before DRIVER_OK is out of spec, sure. But it is unrelated
-> > > > > > > to hardening
-> > > > > >
-> > > > > > Yes but with your proposal, it seems to couple kick with DRIVER_OK somehow.
-> > > > >
-> > > > > I don't see how - my proposal ignores DRIVER_OK issues.
-> > > >
-> > > > Yes, what I meant is, in your proposal, the first kick after rest is a
-> > > > hint that the driver is ok (but actually it could not).
-> > > >
-> > > > >
-> > > > > > > and in absence of config interrupts is generally easily
-> > > > > > > fixed just by sticking virtio_device_ready early in initialization.
-> > > > > >
-> > > > > > So if the kick is done before the subsystem registration, there's
-> > > > > > still a window in the middle (assuming we stick virtio_device_ready()
-> > > > > > early):
-> > > > > >
-> > > > > > virtio_device_ready()
-> > > > > > virtqueue_kick()
-> > > > > > /* the window */
-> > > > > > subsystem_registration()
-> > > > >
-> > > > > Absolutely, however, I do not think we really have many such drivers
-> > > > > since this has been known as a wrong thing to do since the beginning.
-> > > > > Want to try to find any?
-> > > >
-> > > > Yes, let me try and update.
-> > >
-> > > This is basically the device that have an RX queue, so I've found the
-> > > following drivers:
-> > >
-> > > scmi, mac80211_hwsim, vsock, bt, balloon.
-> >
-> > Looked and I don't see it yet. Let's consider
-> > ./net/vmw_vsock/virtio_transport.c for example. Assuming we block
-> > callbacks until the first kick, what is the issue with probe exactly?
-> 
-> We need to make sure the callback can survive when it runs before sub
-> system registration.
+I'm announcing the release of the 5.4.202 kernel.
 
-With my proposal no - only if we also kick before registration.
-So I do not see the issue yet.
+All users of the 5.4 kernel series must upgrade.
 
-Consider ./net/vmw_vsock/virtio_transport.c
+The updated 5.4.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-kicks: virtio_transport_send_pkt_work,
-virtio_vsock_rx_fill, virtio_vsock_event_fill
+thanks,
 
-which of these triggers before we are ready to
-handle callbacks?
+greg k-h
 
+------------
 
-> >
-> >
-> > > >
-> > > > >I couldn't ... except maybe bluetooth
-> > > > > but that's just maintainer nacking fixes saying he'll fix it
-> > > > > his way ...
-> > > > >
-> > > > > > And during remove(), we get another window:
-> > > > > >
-> > > > > > subsysrem_unregistration()
-> > > > > > /* the window */
-> > > > > > virtio_device_reset()
-> > > > >
-> > > > > Same here.
-> > >
-> > > Basically for the drivers that set driver_ok before registration,
-> >
-> > I don't see what does driver_ok have to do with it.
-> 
-> I meant for those driver, in probe they do()
-> 
-> virtio_device_ready()
-> subsystem_register()
-> 
-> In remove() they do
-> 
-> subsystem_unregister()
-> virtio_device_reset()
-> 
-> for symmetry
+ Documentation/ABI/testing/sysfs-bus-iio-vf610 |    2 
+ Makefile                                      |    4 
+ arch/arm/boot/dts/imx6qdl.dtsi                |    2 
+ arch/arm/mach-axxia/platsmp.c                 |    1 
+ arch/arm/mach-cns3xxx/core.c                  |    2 
+ arch/arm/mach-exynos/exynos.c                 |    1 
+ arch/mips/vr41xx/common/icu.c                 |    2 
+ arch/parisc/Kconfig                           |    1 
+ arch/powerpc/kernel/process.c                 |    2 
+ arch/powerpc/kernel/rtas.c                    |   11 +
+ arch/powerpc/platforms/powernv/powernv.h      |    2 
+ arch/powerpc/platforms/powernv/rng.c          |   52 ++++++---
+ arch/powerpc/platforms/powernv/setup.c        |    2 
+ arch/powerpc/platforms/pseries/pseries.h      |    2 
+ arch/powerpc/platforms/pseries/rng.c          |   11 -
+ arch/powerpc/platforms/pseries/setup.c        |    2 
+ arch/s390/kernel/perf_cpum_cf.c               |   22 +++
+ arch/xtensa/kernel/time.c                     |    1 
+ arch/xtensa/platforms/xtfpga/setup.c          |    1 
+ drivers/base/regmap/regmap-irq.c              |    5 
+ drivers/char/random.c                         |    6 -
+ drivers/dma-buf/udmabuf.c                     |    5 
+ drivers/gpio/gpio-vr41xx.c                    |    2 
+ drivers/gpio/gpio-winbond.c                   |    7 -
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c      |    2 
+ drivers/iio/accel/bma180.c                    |    3 
+ drivers/iio/accel/mma8452.c                   |   10 +
+ drivers/iio/accel/mxc4005.c                   |    4 
+ drivers/iio/adc/axp288_adc.c                  |    8 +
+ drivers/iio/adc/stm32-adc-core.c              |    2 
+ drivers/iio/chemical/ccs811.c                 |    4 
+ drivers/iio/gyro/mpu3050-core.c               |    1 
+ drivers/iio/trigger/iio-trig-sysfs.c          |    1 
+ drivers/md/dm-era-target.c                    |    8 +
+ drivers/md/dm-log.c                           |    2 
+ drivers/mmc/host/sdhci-pci-o2micro.c          |    2 
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c    |    2 
+ drivers/net/bonding/bond_main.c               |    4 
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   39 ++++++
+ drivers/net/ethernet/intel/igb/igb_main.c     |   12 --
+ drivers/net/phy/aquantia_main.c               |   15 ++
+ drivers/net/virtio_net.c                      |   25 +---
+ drivers/soc/bcm/brcmstb/pm/pm-arm.c           |    1 
+ drivers/tty/vt/vt.c                           |   39 ------
+ drivers/tty/vt/vt_ioctl.c                     |  147 --------------------------
+ drivers/usb/chipidea/udc.c                    |    3 
+ drivers/usb/host/xhci-hub.c                   |    2 
+ drivers/usb/host/xhci.c                       |   15 ++
+ drivers/usb/host/xhci.h                       |    2 
+ drivers/usb/serial/option.c                   |    6 +
+ drivers/xen/features.c                        |    2 
+ fs/afs/inode.c                                |    3 
+ include/linux/kd.h                            |    8 -
+ include/linux/ratelimit.h                     |   12 +-
+ include/trace/events/libata.h                 |    1 
+ net/core/filter.c                             |   34 ++++--
+ net/ipv4/ip_gre.c                             |   15 +-
+ net/ipv6/ip6_gre.c                            |   15 +-
+ net/openvswitch/flow.c                        |    2 
+ net/sched/sch_netem.c                         |    4 
+ scripts/mod/modpost.c                         |    2 
+ sound/pci/hda/patch_conexant.c                |    4 
+ sound/pci/hda/patch_realtek.c                 |   10 +
+ sound/pci/hda/patch_via.c                     |    4 
+ 64 files changed, 314 insertions(+), 309 deletions(-)
 
-Let's leave remove alone for now. I am close to 100% sure we have *lots*
-of issues around it, but while probe is unavoidable remove can be
-avoided by blocking hotplug.
+Aidan MacDonald (1):
+      regmap-irq: Fix a bug in regmap_irq_enable() for type_in_mask chips
 
+Anatolii Gerasymenko (1):
+      ice: ethtool: advertise 1000M speeds properly
 
-> >
-> > > so
-> > > we have a lot:
-> > >
-> > > blk, net, mac80211_hwsim, scsi, vsock, bt, crypto, gpio, gpu, i2c,
-> > > iommu, caif, pmem, input, mem
-> > >
-> > > So I think there's no easy way to harden the notification without
-> > > auditing the driver one by one (especially considering the driver may
-> > > use bh or workqueue). The problem is the notification hardening
-> > > depends on a correct or race-free probe/remove. So we need to fix the
-> > > issues in probe/remove then do the hardening on the notification.
-> > >
-> > > Thanks
-> >
-> > So if drivers kick but are not ready to get callbacks then let's fix
-> > that first of all, these are racy with existing qemu even ignoring
-> > spec compliance.
-> 
-> Yes, (the patches I've posted so far exist even with a well-behaved device).
-> 
-> Thanks
+Andrew Donnellan (1):
+      powerpc/rtas: Allow ibm,platform-dump RTAS call with null buffer address
 
-patches you posted deal with DRIVER_OK spec compliance.
-I do not see patches for kicks before callbacks are ready to run.
+Baruch Siach (1):
+      iio: adc: vf610: fix conversion mode sysfs node name
 
-> >
-> >
-> > --
-> > MST
-> >
+Carlo Lobrano (1):
+      USB: serial: option: add Telit LE910Cx 0x1250 composition
+
+Chevron Li (1):
+      mmc: sdhci-pci-o2micro: Fix card detect by dealing with debouncing
+
+Claudiu Manoil (1):
+      phy: aquantia: Fix AN when higher speeds than 1G are not advertised
+
+Dan Carpenter (1):
+      gpio: winbond: Fix error code in winbond_gpio_get()
+
+David Howells (1):
+      afs: Fix dynamic root getattr
+
+Dmitry Rokosov (3):
+      iio:chemical:ccs811: rearrange iio trigger get and register
+      iio:accel:bma180: rearrange iio trigger get and register
+      iio:accel:mxc4005: rearrange iio trigger get and register
+
+Edward Wu (1):
+      ata: libata: add qc->flags in ata_qc_complete_template tracepoint
+
+Eric Dumazet (1):
+      erspan: do not assume transport header is always set
+
+Gerd Hoffmann (1):
+      udmabuf: add back sanity check
+
+Greg Kroah-Hartman (1):
+      Linux 5.4.202
+
+Haibo Chen (1):
+      iio: accel: mma8452: ignore the return value of reset operation
+
+Hans de Goede (1):
+      iio: adc: axp288: Override TS pin bias current for some models
+
+Helge Deller (1):
+      parisc: Enable ARCH_HAS_STRICT_MODULE_RWX
+
+Jakub Kicinski (1):
+      Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
+
+Jason A. Donenfeld (5):
+      random: schedule mix_interrupt_randomness() less often
+      random: quiet urandom warning ratelimit suppression message
+      powerpc/powernv: wire up rng during setup_arch
+      random: update comment from copy_to_user() -> copy_to_iter()
+      powerpc/pseries: wire up rng during setup_arch()
+
+Jay Vosburgh (1):
+      bonding: ARP monitor spams NETDEV_NOTIFY_PEERS notifiers
+
+Jiri Slaby (1):
+      vt: drop old FONT ioctls
+
+Jon Maxwell (1):
+      bpf: Fix request_sock leak in sk lookup helpers
+
+Julien Grall (1):
+      x86/xen: Remove undefined behavior in setup_features()
+
+Kai-Heng Feng (1):
+      igb: Make DMA faster when CPU is active on the PCIe link
+
+Kailang Yang (1):
+      ALSA: hda/realtek - ALC897 headset MIC no sound
+
+Liang He (2):
+      xtensa: xtfpga: Fix refcount leak bug in setup
+      xtensa: Fix refcount leak bug in time.c
+
+Lucas Stach (1):
+      ARM: dts: imx6qdl: correct PU regulator ramp delay
+
+Macpaul Lin (1):
+      USB: serial: option: add Quectel RM500K module support
+
+Masahiro Yamada (2):
+      modpost: fix section mismatch check for exported init/exit sections
+      kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS (2nd attempt)
+
+Mathias Nyman (1):
+      xhci: turn off port power in shutdown
+
+Miaoqian Lin (5):
+      drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
+      ARM: exynos: Fix refcount leak in exynos_map_pmu
+      soc: bcm: brcmstb: pm: pm-arm: Fix refcount leak in brcmstb_pm_probe
+      ARM: Fix refcount leak in axxia_boot_secondary
+      ARM: cns3xxx: Fix refcount leak in cns3xxx_init
+
+Mikulas Patocka (1):
+      dm mirror log: clear log bits up to BITS_PER_LONG boundary
+
+Naveen N. Rao (1):
+      powerpc: Enable execve syscall exit tracepoint
+
+Nikos Tsironis (1):
+      dm era: commit metadata in postsuspend after worker stops
+
+Olivier Moysan (1):
+      iio: adc: stm32: fix maximum clock rate for stm32mp15x
+
+Peilin Ye (1):
+      net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms
+
+Rosemarie O'Riorden (1):
+      net: openvswitch: fix parsing of nw_proto for IPv6 fragments
+
+Sascha Hauer (1):
+      mtd: rawnand: gpmi: Fix setting busy timeout setting
+
+Stephan Gerhold (1):
+      virtio_net: fix xdp_rxq_info bug after suspend/resume
+
+Takashi Iwai (2):
+      ALSA: hda/via: Fix missing beep setup
+      ALSA: hda/conexant: Fix missing beep setup
+
+Thomas Richter (1):
+      s390/cpumf: Handle events cycles and instructions identical
+
+Tim Crawford (1):
+      ALSA: hda/realtek: Add quirk for Clevo PD70PNT
+
+Vincent Whitchurch (1):
+      iio: trigger: sysfs: fix use-after-free on remove
+
+Xu Yang (1):
+      usb: chipidea: udc: check request status before setting device address
+
+Yonglin Tan (1):
+      USB: serial: option: add Quectel EM05-G modem
+
+Zheyu Ma (1):
+      iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
+
+Ziyang Xuan (1):
+      net/tls: fix tls_sk_proto_close executed repeatedly
+
+huhai (1):
+      MIPS: Remove repetitive increase irq_err_count
 
