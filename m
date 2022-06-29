@@ -2,98 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B6FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 10:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0AECCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 10:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232521AbiF2Ktq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 06:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
+        id S232738AbiF2KuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 06:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232127AbiF2Ktn (ORCPT
+        with ESMTP id S231552AbiF2KuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 06:49:43 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154F91EAE1
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 03:49:42 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id k20so205156edj.13
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 03:49:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QCnND+Ihr0E4grOsKhhsVTMtV8dOmEKSL8p2O7AW2mo=;
-        b=yNq8IvCL5Dg51Uk7RRycS5nTQ1ufinsu06YZxbJrtwMe2AdvrQ8y2tWiPzSnzQDxJt
-         g6JYm2ol8XeEKknqc5daQfBgei7nO5Rzo+vxg07UEgvs3x6ZAv/6N/Kc2ez2Ut9ah4yX
-         25qAwKWwtCYvUkkhMVtHu1U3apXjGaBVplRwyx49+bv0uh8zhQRjKwsVlDpcJnAIuiIi
-         P7nX40urc34Noz/c7SArlRjxDpAnsbiJA4gJBJ2bF0BmsojoVIghTJjTtWmIBIvFOx2Y
-         3OUgAeAQaYSi9d3tkhF0AN6+nteGOdUB3hGv1LeMIx/XZJty7ZDLCcZQCBsco7/5eX8Q
-         Cylg==
+        Wed, 29 Jun 2022 06:50:20 -0400
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD821F2D5;
+        Wed, 29 Jun 2022 03:50:19 -0700 (PDT)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-31c1d580e4bso11846197b3.3;
+        Wed, 29 Jun 2022 03:50:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QCnND+Ihr0E4grOsKhhsVTMtV8dOmEKSL8p2O7AW2mo=;
-        b=n7kGMzTbtW8z+hif+zLNH718dq+WwGmXGv6bhbgzAEiX1bT7H0vnaVlUeAG+iqFxOx
-         CzgIOY1Np56l6cioY+IAj7YiMUIp/f1S7BtBnkISfE9YdcuisIjOC3b9ER+h3oe6tr7Q
-         nTrApsjanYjuKRRNLCB2YulAdhldu8BvNV2UMIZLEd5U+z0GLI7/OXW41FJbUChpjIHv
-         Qa5k01bJsmO3Q9hWlzOVetOBzXue0t5IM2nLp4qy9icHvyJUAVmI+UomZBuks0ewM6JP
-         UHfq5aBeyLWXgOhq2tA2JPB6tX8saf8lgq/Ser6OrjpToWdgofmNwqkrvVvzRxbpYOii
-         hEjA==
-X-Gm-Message-State: AJIora+KRe6lhnrYZHVUUom6COWOYV9Q/tX0hbSR99ixj8ESgwJ80cBj
-        WPIpftQQsWV1fJS5wUQsLTSRFA==
-X-Google-Smtp-Source: AGRyM1vPhtigeGlEU1LfGq5MzvjkEe9jkqsKuNcP6bcK5KLfAijl6m0zJULiQcNe8NSdk7w+UspYZg==
-X-Received: by 2002:a05:6402:d05:b0:425:b7ab:776e with SMTP id eb5-20020a0564020d0500b00425b7ab776emr3460224edb.142.1656499780597;
-        Wed, 29 Jun 2022 03:49:40 -0700 (PDT)
-Received: from [192.168.0.184] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id s16-20020a170906455000b00722bc0aa9e3sm1300091ejq.162.2022.06.29.03.49.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 03:49:40 -0700 (PDT)
-Message-ID: <75bc2de0-1965-ed64-7313-ccf9a88a64c2@linaro.org>
-Date:   Wed, 29 Jun 2022 12:49:38 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SS6WoEyQUxMUch6lopg7oCcr6LEi5hOu3L6HXJpv9gI=;
+        b=sQAr4GiaAcGXcPY57Rofkobrl8ngNKUYhcNRG6xQc+r9Qguu7TiS9GPG3cDAPdgg/a
+         nQ5VIBsCtJaFQNLPDld5PLimCioGMEnlsCO4um2TFo9yUz2uOJ+DtZs8pmYj2JavjcTz
+         ddS7SIQIcwJf80zUIUppiozz5NwxDByqPPWrFiuMTxrGbaaqjUQhHYliyKFraxmni9tK
+         Nf+r/7ieubtMV20aON0Sj6hrnz8mHhJA3bGzC0xHqXNo5dC9h9otHaDz77xcOTUwaFdP
+         WL0dVeTYoe0QPT8KIsXWeSnoUC+1RX8CEKiwQpYSYpAHmCMB+zi8dYG3ftlGLxX23MEb
+         Fqxw==
+X-Gm-Message-State: AJIora+lFPiwEuB+tOxqsTZx7ZHkdhztuvTpjyU5C93Q8KM8ZehiinnO
+        CEAbcx1qHtRJVHEfLyy8gDDGCif45RNIKCY5Fds=
+X-Google-Smtp-Source: AGRyM1saj8RFsYw15qKlx/hCuC7MdY3FuPPzmVeSkUQYkgs0AH54AFOngXa/60gQoNr04F6tP4lPlbwyoKSs5Pq8VY8=
+X-Received: by 2002:a0d:d811:0:b0:31b:ddc4:c0ac with SMTP id
+ a17-20020a0dd811000000b0031bddc4c0acmr3164886ywe.149.1656499818049; Wed, 29
+ Jun 2022 03:50:18 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 2/7] dt-bindings: clock: Add MediaTek Helio X10 MT6795
- clock bindings
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        y.oudjana@protonmail.com, jason-jh.lin@mediatek.com,
-        ck.hu@mediatek.com, fparent@baylibre.com, rex-bc.chen@mediatek.com,
-        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
-        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
-        sam.shih@mediatek.com, wenst@chromium.org,
-        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com, Rob Herring <robh@kernel.org>
-References: <20220627085632.23797-1-angelogioacchino.delregno@collabora.com>
- <20220627085632.23797-3-angelogioacchino.delregno@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220627085632.23797-3-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <4e1d5db9dea68d82c94336a1d6aac404@walle.cc> <b8ec04dc-f803-ee2c-29b7-b0311eb8c5fb@linaro.org>
+ <CAJZ5v0jz=ee5TrvYs0_ovWn9sT06bcKDucmmocD8L-d9ZZ5DzQ@mail.gmail.com> <0b8e357d-1d8b-843f-d8b6-72c760bcd6fb@linaro.org>
+In-Reply-To: <0b8e357d-1d8b-843f-d8b6-72c760bcd6fb@linaro.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 29 Jun 2022 12:50:05 +0200
+Message-ID: <CAJZ5v0g1VqJ2_2MtKGv-sHmKVQ12Rmj9r3Lr6D9wjmUYJwtoCw@mail.gmail.com>
+Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Saravana Kannan <saravanak@google.com>,
+        Grant Likely <grant.likely@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/06/2022 10:56, AngeloGioacchino Del Regno wrote:
-> Add the bindings for MT6795's clock controller.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->  include/dt-bindings/clock/mt6795-clk.h | 275 +++++++++++++++++++++++++
->  1 file changed, 275 insertions(+)
->  create mode 100644 include/dt-bindings/clock/mt6795-clk.h
+On Tue, Jun 28, 2022 at 12:32 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 27/06/2022 15:33, Rafael J. Wysocki wrote:
+> > On Mon, Jun 27, 2022 at 3:08 PM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 27/06/2022 14:49, Michael Walle wrote:
+> >>> Hi,
+> >>>
+> >>> I tired to iterate over all child nodes, regardless if they are
+> >>> available
+> >>> or not. Now there is that handy fwnode_for_each_child_node() (and the
+> >>> fwnode_for_each_available_child_node()). The only thing is the OF
+> >>> backend
+> >>> already skips disabled nodes [1], making fwnode_for_each_child_node()
+> >>> and
+> >>> fwnode_for_each_available_child_node() behave the same with the OF
+> >>> backend.
+> >>>
+> >>> Doesn't seem to be noticed by anyone for now. I'm not sure how to fix
+> >>> that
+> >>> one. fwnode_for_each_child_node() and also fwnode_get_next_child_node()
+> >>> are
+> >>> used by a handful of drivers. I've looked at some, but couldn't decide
+> >>> whether they really want to iterate over all child nodes or just the
+> >>> enabled
+> >>> ones.
+> >>
+> >> If I get it correctly, this was introduced  by 8a0662d9ed29 ("Driver
+> >> core: Unified interface for firmware node properties")
+> >> .
+> >
+> > Originally it was, but then it has been reworked a few times.
+> >
+> > The backend callbacks were introduced by Sakari, in particular.
+>
+> I see you as an author of 8a0662d9ed29 which adds
+> device_get_next_child_node() and uses of_get_next_available_child()
+> instead of of_get_next_child(). Although it was back in 2014, so maybe
+> it will be tricky to get original intention. :)
 
-The same as v3 - you still need vendor prefix.
+The OF part of this was based on Grant's suggestions.  My
+understanding at that time was that this was the right thing to do for
+OF and nobody told me otherwise.
 
-Best regards,
-Krzysztof
+> Which commit do you mean when you refer to Sakari's work?
+
+3708184afc77 device property: Move FW type specific functionality to
+FW specific files
+
+However, it didn't change the "available" vs "any" behavior for OF.
+
+> >
+> >> The question to Rafael - what was your intention when you added
+> >> device_get_next_child_node() looking only for available nodes?
+> >
+> > That depends on the backend.
+>
+> We talk about OF backend. In your commit device_get_next_child_node for
+> OF uses explicitly available node, not any node.
+
+Yes, it does.
+
+If that doesn't match the cases in which it is used, I guess it can be adjusted.
+
+> > fwnode_for_each_available_child_node() is more specific and IIRC it
+> > was introduced for fw_devlink (CC Saravana).
+> >
+> >> My understanding is that this implementation should be consistent with
+> >> OF implementation, so fwnode_get_next_child_node=get any child.
+> >
+> > IIUC, the OF implementation is not consistent with the
+> > fwnode_get_next_child_node=get any child thing.
+> >
+> >> However maybe ACPI treats it somehow differently?
+> >
+> > acpi_get_next_subnode() simply returns the next subnode it can find.
+
+I guess that the confusion is related to what "available" means for ACPI and OF.
+
+In the ACPI case it means "this a device object corresponding to a
+device that is present".  In OF it is related to the "status" property
+AFAICS.
