@@ -2,97 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4823C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 19:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8DFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 19:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231499AbiF2Tsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 15:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
+        id S231631AbiF2TtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 15:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231466AbiF2TsY (ORCPT
+        with ESMTP id S231657AbiF2Tsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 15:48:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDEEA1CB1B
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 12:48:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D7B1014BF;
-        Wed, 29 Jun 2022 12:48:19 -0700 (PDT)
-Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.197.38])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 613983F792;
-        Wed, 29 Jun 2022 12:48:18 -0700 (PDT)
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Ingo Molnar <mingo@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Xuewen Yan <xuewen.yan94@gmail.com>,
-        Wei Wang <wvw@google.com>,
-        Jonathan JMChen <Jonathan.JMChen@mediatek.com>,
-        Hank <han.lin@mediatek.com>, Qais Yousef <qais.yousef@arm.com>
-Subject: [PATCH 7/7] sched/uclamp: Cater for uclamp in find_energy_efficient_cpu()'s early exit condition
-Date:   Wed, 29 Jun 2022 20:46:32 +0100
-Message-Id: <20220629194632.1117723-8-qais.yousef@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629194632.1117723-1-qais.yousef@arm.com>
-References: <20220629194632.1117723-1-qais.yousef@arm.com>
+        Wed, 29 Jun 2022 15:48:53 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E9D3EF24
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 12:48:44 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id t24so29901541lfr.4
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 12:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GDpRTVhKkWSy2MvVKUZ3Z3z1Bt+bBeXV0KIHaszmkuA=;
+        b=g3Uaclg64d1TGHzQcBfl7t9w3I1ww5YYtVkypt3S0N5+TmABgMDxTUWvOXt+9mE0Le
+         is4FHdD4ZkcI9SN/SIcqtii+qeRjvjZe6VAIbiqCVXchroWHh2LwaXMpwGCocA1tbv0B
+         hjr7V6fjm/b+USYataYNnwfHfWPE0kQxbi15bDZMZ58npPO/z1/6UndlovS7hWHSG67i
+         cQLWaO3ZHi2zkaIKnEUd44KY6MliZhLMN928/SwMz5yzbgz3jszpOfA90ilDArEe1HUI
+         8r3NhHwX5cnxRMZvHR8E+HsLScWoSk0y+DodSdeK7w7KCcyrnAph846jsrTCUnHseGvh
+         4nMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GDpRTVhKkWSy2MvVKUZ3Z3z1Bt+bBeXV0KIHaszmkuA=;
+        b=zrl43rqTX18LTv+alzp6QOZ6/jhDdzguXNt4BspgPyI3x0KrJHmM33LnJZhTBWzWkJ
+         4ekD/4mtfiJ2/F+olXr0RTzQuuoES2ulYJKvkXgOw9Uwkpq32w8tqmJBHSj0INdxSf1A
+         e5eGOxQcESFpqE27LkxD+gJJb5+iVYWbTgFXDUO+MMUHhZ7+9rYdA7xemHFeeU/9Uj0f
+         oWcnWBWNZ3rIFypUGc6xOtTDLVXHv9mi3LXQoN4j4nlJR3m6y7fxlrUSl/uiCQFCtHtk
+         27X0uxU1YeKyW9mGjttZoezIPjWlY72spTX7GaOzJgUa2UQsFHwoZSpEULBUqYpkbfH/
+         cPqw==
+X-Gm-Message-State: AJIora/Y4LxJu8csmYuHHUGFS0p1FJBlxvnedBFIfSipbFKi2IlO6bCw
+        LytGX++dvUU19eUtfvKk6Vigx9uKs2tuNMyY1KTU
+X-Google-Smtp-Source: AGRyM1vOzYL8y+rYaHubXte6XVU+zHTAwaKw4l5hfw2LEvmAQQHulkepcxbBzAjO3GZRm1rXAwzmuBMIM7rYOPMx+fg=
+X-Received: by 2002:a05:6512:3503:b0:481:4470:4128 with SMTP id
+ h3-20020a056512350300b0048144704128mr2025991lfs.303.1656532122803; Wed, 29
+ Jun 2022 12:48:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAKwvOdkyY9rsH3eViMK-_4iz_W_usumz5nD+3AhbNCVQ3FRCjA@mail.gmail.com>
+ <CAKwvOdnsZekEM77axBf67MDqQVP0n6PTKH=njSyPSWTNiWAOiA@mail.gmail.com>
+ <87mtf7z0rt.fsf@gnu.org> <6F9E9D93-3913-4022-9384-D809C8EF7715@oracle.com>
+ <CAKwvOdm=_YqBpuBzouqoWHYNe6MMUE10vqF0PUkU=hcOj+UqrQ@mail.gmail.com>
+ <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com> <878rpgpvfj.fsf@gnu.org>
+In-Reply-To: <878rpgpvfj.fsf@gnu.org>
+From:   Bill Wendling <morbo@google.com>
+Date:   Wed, 29 Jun 2022 12:48:31 -0700
+Message-ID: <CAGG=3QVNid_s5QFCtPF1hVChsm89hax=KuHTt8Z=huP+CV_edQ@mail.gmail.com>
+Subject: Re: plumbers session on profiling?
+To:     "Jose E. Marchesi" <jemarch@gnu.org>
+Cc:     Ruud van der Pas <ruud.vanderpas@oracle.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Vladimir Mezentsev <vladimir.mezentsev@oracle.com>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Wenlei He <wenlei@fb.com>, Hongtao Yu <hoy@fb.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>,
+        elena.zannoni@oracle.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the utilization of the woken up task is 0, we skip the energy
-calculation because it has no impact.
+I have experience in this area with our internal production kernel.
 
-But if the task is boosted (uclamp_min != 0) will have an impact on task
-placement and frequency selection. Only skip if the util is truly
-0 after applying uclamp values.
+-bw
 
-Change uclamp_task_cpu() signature to avoid unnecessary additional calls
-to uclamp_eff_get(). feec() is the only user now.
-
-Fixes: 732cd75b8c920 ("sched/fair: Select an energy-efficient CPU on task wake-up")
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
----
- kernel/sched/fair.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 499ef7a7288c..a112ca45864c 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4057,14 +4057,16 @@ static inline unsigned long task_util_est(struct task_struct *p)
- }
- 
- #ifdef CONFIG_UCLAMP_TASK
--static inline unsigned long uclamp_task_util(struct task_struct *p)
-+static inline unsigned long uclamp_task_util(struct task_struct *p,
-+					     unsigned long uclamp_min,
-+					     unsigned long uclamp_max)
- {
--	return clamp(task_util_est(p),
--		     uclamp_eff_value(p, UCLAMP_MIN),
--		     uclamp_eff_value(p, UCLAMP_MAX));
-+	return clamp(task_util_est(p), uclamp_min, uclamp_max);
- }
- #else
--static inline unsigned long uclamp_task_util(struct task_struct *p)
-+static inline unsigned long uclamp_task_util(struct task_struct *p,
-+					     unsigned long uclamp_min,
-+					     unsigned long uclamp_max)
- {
- 	return task_util_est(p);
- }
-@@ -6913,7 +6915,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	target = prev_cpu;
- 
- 	sync_entity_load_avg(&p->se);
--	if (!task_util_est(p))
-+	if (!uclamp_task_util(p, p_util_min, p_util_max))
- 		goto unlock;
- 
- 	for (; pd; pd = pd->next) {
--- 
-2.25.1
-
+On Wed, Jun 29, 2022 at 2:00 AM Jose E. Marchesi <jemarch@gnu.org> wrote:
+>
+>
+> [Added linux-toolchains@vger in CC]
+>
+> It would be interesting to have some discussion in the Toolchains track
+> on building the kernel with PGO/FDO.  I have seen a raise on interest on
+> the topic in several companies, but it would make very little sense if
+> no kernel hacker is interested in participating... anybody?
+>
+> > Hi Nick,
+> >
+> > Apologies for the delay. It's been a busy week with gprofng related work.
+> >
+> >> If you're still considering attending Linux Plumbers conf, please
+> >> submit a proposal:
+> >> https://lpc.events/event/16/abstracts/
+> >> Please make sure to select "Toolchains Track" as the "Track" after
+> >> clicking on "Submit new abstract."
+> >
+> > Thanks for asking!
+> >
+> > Our presence largely depends on a discussion on kernel profiling and
+> > to see what we might be able to do with gprofng regarding this.
+> >
+> >>From our side, the main person will be Vladimir. He knows the code
+> > inside and out, but I will also try to attend such a session.
+> >
+> > Is there any news regarding such a session on kernel profiling?
+> >
+> > Kind regards, Ruud
+> >
+> >>
+> >>>
+> >>> Kind regards, Ruud
+> >>>
+> >>>> On 24 May 2022, at 12:24, Jose E. Marchesi <jemarch@gnu.org> wrote:
+> >>>>
+> >>>>
+> >>>> I am adding Ruud van der Pas in CC. He works in gprofng and would be
+> >>>> willing to participate in a discussion on kernel profiling.
+> >>>>
+> >>>>> (Re-sending with Vladamir's email addr fixed; sorry for the noise)
+> >>>>>
+> >>>>> On Fri, Apr 15, 2022 at 10:54 AM Nick Desaulniers
+> >>>>> <ndesaulniers@google.com> wrote:
+> >>>>>>
+> >>>>>> Hi Sami, Bill, Jose, and Vladamir,
+> >>>>>> Jose and I are currently in the planning process to put together a
+> >>>>>> Kernel+Toolchain microconference track at Linux Plumbers Conference
+> >>>>>> this year (Sept 12-14) in Dublin, Ireland.
+> >>>>>>
+> >>>>>> Would you all be interested in leading a session discussing various
+> >>>>>> profiling related topics such as:
+> >>>>>> * gprofng
+> >>>>>> * PGO
+> >>>>>> * AutoFDO
+> >>>>>>
+> >>>>>> Would others find such a discussion useful?
+> >>>>>> --
+> >>>>>> Thanks,
+> >>>>>> ~Nick Desaulniers
+> >>>
+> >>
+> >>
+> >> --
+> >> Thanks,
+> >> ~Nick Desaulniers
