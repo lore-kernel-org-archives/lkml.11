@@ -2,101 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD06C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A228C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233326AbiF2Mey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36760 "EHLO
+        id S233159AbiF2Mfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 08:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233055AbiF2Mew (ORCPT
+        with ESMTP id S232367AbiF2Mft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 08:34:52 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72311255A0
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:34:46 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LY16B6BK8zTgCQ;
-        Wed, 29 Jun 2022 20:31:14 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 20:34:45 +0800
-Received: from huawei.com (10.175.101.6) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 29 Jun
- 2022 20:34:44 +0800
-From:   ZhaoLong Wang <wangzhaolong1@huawei.com>
-To:     <hughd@google.com>, <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <wangzhaolong1@huawei.com>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
-Subject: [PATCH -next,v2] tmpfs: Fix the issue that the mount and remount results are inconsistent.
-Date:   Wed, 29 Jun 2022 20:43:24 +0800
-Message-ID: <20220629124324.1640807-1-wangzhaolong1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 29 Jun 2022 08:35:49 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB5D29C9A
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:35:47 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id q6so32217386eji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:35:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q8pCybxjWozGkg4XkxF8hCsdW8FgZKjWDEioFfT4qAc=;
+        b=lci++Zen0Iac6DnB8ntK2Y4eGEo+IF3ekd+ab/O8WDauLz4PrhJTqEv6Vk9qLMFruS
+         crrxNjPD8t08uTn8wxxzlgVw2wJlYtgPQBnFmdJ7LC0mC706lmEwpasVczB4BTfc71EQ
+         rYe6CoWvhSanvSRdOSNLRSqr8RcdyM+jGT1oX68C9qkezsFz80L8MQ8xK/EMtN7vmxUd
+         AOWY8Ly/n/gMxgTekdcxrErLkE/4l6mKITxr8zx45+iUA/3knVFG1xRzXKc4UA3Jj0Kq
+         fSB7/p5pcwWyfmcecNBa9Ujkf3Zr43209mEshZwTyYmHHtVMlGanVEPF7BLxd9hO7/4q
+         m7pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q8pCybxjWozGkg4XkxF8hCsdW8FgZKjWDEioFfT4qAc=;
+        b=AfNOJjXXsLSRatG6oXdW5FTbeareTrMd45qbp0kfmmtuvrFsUMyyDNxBEkVCCM5k3C
+         OfOjjK9d3H8XijmxTx4tU24JXhTRFrTDYmSrLDBgiiKtev1yfPiw0HNh6ktKr+wnxnd7
+         Hp3wagk/kknQ0rkcqLehPg52Ywhya43HM8gMT+VM0/UTDHD6XvZtakpx0m3Wq+nRkHX+
+         uX+BNbD6+Duwy18etNDWqzgW/9CeGDf3Cuha8nA+KJ4lXgqgEsO8H4fJCCkuoGzYTnFi
+         z5WQr0pgz3tUykJ1vmNvKIt5M1K+GyeJpAxTkG4A0F9oSxoIuKIW8OsbzhVZm0wbwFD4
+         5S3g==
+X-Gm-Message-State: AJIora97BYJ9gBxYwEqykEUU6i3UbxeO5QdKmMb3TxftN3Lzgfaj3+xp
+        K6tYga9E3QFfbBbIkKzu3jRtYw==
+X-Google-Smtp-Source: AGRyM1u943KaJE2gtYoBez8mvmZ6nHvpsrQFytNjdq485fL9iLkWdn0J4ZOz5mVQgQLA3S/z6G6xqw==
+X-Received: by 2002:a17:906:b782:b0:726:f979:7adb with SMTP id dt2-20020a170906b78200b00726f9797adbmr3014643ejb.498.1656506146499;
+        Wed, 29 Jun 2022 05:35:46 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id s2-20020a1709062ec200b006f4cb79d9a8sm7769345eji.75.2022.06.29.05.35.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 05:35:45 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: soc: samsung: s5pv210-chipid: add S5PV210 ChipID
+Date:   Wed, 29 Jun 2022 14:35:43 +0200
+Message-Id: <20220629123543.94515-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An undefined-behavior issue has not been completely fixed since commit
-d14f5efadd84 ("tmpfs: fix undefined-behaviour in shmem_reconfigure()").
-In the commit, check in the shmem_reconfigure() is added in remount
-process to avoid the Ubsan problem. However, the check is not added to
-the mount process.It cause the inconsistent results between mount
-and remount. The operations to reproduce the problem in user mode
-as follow:
+Add bindings for the S5PV210 ChipID block.
 
-If nr_blocks is set to 0x8000000000000000, the mounting is successful.
-
-  # mount tmpfs /dev/shm/ -t tmpfs -o nr_blocks=0x8000000000000000
-
-However, when -o remount is used, the mount fails because of the
-check in the shmem_reconfigure()
-
-  # mount tmpfs /dev/shm/ -t tmpfs -o remount,nr_blocks=0x8000000000000000
-  mount: /dev/shm: mount point not mounted or bad option.
-
-Therefore, add checks in the shmem_parse_one() function and remove the
-check in shmem_reconfigure() to avoid this problem.
-
-Signed-off-by: ZhaoLong Wang <wangzhaolong1@huawei.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- mm/shmem.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ .../bindings/soc/samsung/s5pv210-chipid.yaml  | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/samsung/s5pv210-chipid.yaml
 
-diff --git a/mm/shmem.c b/mm/shmem.c
-index a6f565308133..b7f2d4a56867 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -3392,7 +3392,7 @@ static int shmem_parse_one(struct fs_context *fc, struct fs_parameter *param)
- 		break;
- 	case Opt_nr_blocks:
- 		ctx->blocks = memparse(param->string, &rest);
--		if (*rest)
-+		if (*rest || ctx->blocks > S64_MAX)
- 			goto bad_value;
- 		ctx->seen |= SHMEM_SEEN_BLOCKS;
- 		break;
-@@ -3514,10 +3514,7 @@ static int shmem_reconfigure(struct fs_context *fc)
- 
- 	raw_spin_lock(&sbinfo->stat_lock);
- 	inodes = sbinfo->max_inodes - sbinfo->free_inodes;
--	if (ctx->blocks > S64_MAX) {
--		err = "Number of blocks too large";
--		goto out;
--	}
+diff --git a/Documentation/devicetree/bindings/soc/samsung/s5pv210-chipid.yaml b/Documentation/devicetree/bindings/soc/samsung/s5pv210-chipid.yaml
+new file mode 100644
+index 000000000000..7c3f4ec47f7e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/samsung/s5pv210-chipid.yaml
+@@ -0,0 +1,30 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/samsung/s5pv210-chipid.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	if ((ctx->seen & SHMEM_SEEN_BLOCKS) && ctx->blocks) {
- 		if (!sbinfo->max_blocks) {
- 			err = "Cannot retroactively limit size";
++title: Samsung S5PV210 SoC series Chipid driver
++
++maintainers:
++  - Krzysztof Kozlowski <krzk@kernel.org>
++
++properties:
++  compatible:
++    const: samsung,s5pv210-chipid
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    chipid@e0000000 {
++        compatible = "samsung,s5pv210-chipid";
++        reg = <0xe0000000 0x1000>;
++    };
 -- 
-2.31.1
+2.34.1
 
