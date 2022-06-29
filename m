@@ -2,88 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3FDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232739AbiF2IaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
+        id S232758AbiF2IaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 04:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbiF2I36 (ORCPT
+        with ESMTP id S232641AbiF2I36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 04:29:58 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1AEF59C;
-        Wed, 29 Jun 2022 01:29:57 -0700 (PDT)
-Received: from mail-yb1-f169.google.com ([209.85.219.169]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MXXZf-1o8VBM1Jsd-00Z2jt; Wed, 29 Jun 2022 10:29:55 +0200
-Received: by mail-yb1-f169.google.com with SMTP id d5so26638252yba.5;
-        Wed, 29 Jun 2022 01:29:55 -0700 (PDT)
-X-Gm-Message-State: AJIora8A75f59M/K0j+nJBVBH4NCK1OqyzJa/yQcAQM1CkenBjQDYWCz
-        vrKmThaczcsqW1yjrhFDwIpCZDEPXBho/AD8H8A=
-X-Google-Smtp-Source: AGRyM1s+0Vdgu6k29DCyj5luRoc2GU/O+zNZO7vZnJQkpulyhuYloGJMkGI6qdeLOKZPe+Xqib0p73hV9hsIc7OQwVE=
-X-Received: by 2002:a25:8b8b:0:b0:669:b37d:f9cd with SMTP id
- j11-20020a258b8b000000b00669b37df9cdmr2039004ybl.394.1656491393923; Wed, 29
- Jun 2022 01:29:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628081707.1997728-1-guoren@kernel.org> <20220628081707.1997728-5-guoren@kernel.org>
- <09abc75e-2ffb-1ab5-d0fc-1c15c943948d@redhat.com> <CAJF2gTQZzOtOsq0DV48Gi76UtBSa+vdY7dLZmoPD_OFUZ0Wbrg@mail.gmail.com>
- <5166750c-3dc6-9b09-4a1e-cd53141cdde8@redhat.com> <CAK8P3a2jQ+UQ54=QcpyVt91vXRyZrvUtOygFYOHWTBzse3q3rg@mail.gmail.com>
- <CAJF2gTTtKiMZJLWBEcRz-4CmNojH0cOgpUYGupLyCXXFjQD_FQ@mail.gmail.com>
-In-Reply-To: <CAJF2gTTtKiMZJLWBEcRz-4CmNojH0cOgpUYGupLyCXXFjQD_FQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 29 Jun 2022 10:29:37 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3GiMgEJdBg5QQHHD0bDnpR0XwPkAw7=zT7ETzf6-sCmg@mail.gmail.com>
-Message-ID: <CAK8P3a3GiMgEJdBg5QQHHD0bDnpR0XwPkAw7=zT7ETzf6-sCmg@mail.gmail.com>
-Subject: Re: [PATCH V7 4/5] asm-generic: spinlock: Add combo spinlock (ticket
- & queued)
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Waiman Long <longman@redhat.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1693719011
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:29:58 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id C204121E33;
+        Wed, 29 Jun 2022 08:29:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656491396; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IHyLFuUf3RdyGXhrYnMdLaANuV96sYIzvJl/tz37qDU=;
+        b=OVDPj70dL/BvwbwDwwsegFN/YQ1viQvqUAxp1IQ+MeZOaah/94fSTsYURx9+vLARDfnMJK
+        NzDLfhSJ1V5Jai/peiiJJ4g7aFPbv5nIEZz6Yi4YpS0GRmibbJnIXOqrlb6n07Xgxr8qIq
+        OxTLcot60syJQWdD1YXcUjZDJWM/u+k=
+Received: from suse.cz (pathway.suse.cz [10.100.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 62CFA2C141;
+        Wed, 29 Jun 2022 08:29:56 +0000 (UTC)
+Date:   Wed, 29 Jun 2022 10:29:56 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:EvcXF/YPtxhEo6ZQIN24NwoJVIM8u0DcYlhjQoAS7Z9YOHzI6GY
- BnI0vZd5alKCc2Uq46bjM5eX7Px0ly1Kds7ETYJoNI1t+cbhKL/+gQAzJBOzrVoN2fT8SL2
- GsI0zI5gSjOW/1m8Nyz+h48HoInMnbINXPF4uVbmCeLQTequ1zDSE+hEMcH5EZXllk1aiS4
- A/BN5q8m2ui42sNQbZiMQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:c875qPA3kBI=:oc0VeV3s6SB4C7TwtGiC59
- saFt9JUU38TgdUowu9dTsSWiiAD+oqRAMQ4zrP7vOJz7TBts8bIo7pHf9dJ80EEW5iSDfEPFz
- 8Fcg3I71eZ3R1rWEVWeymi4z253O4CAhhR2YbldPVeYperP1bUsXQAVjSUo5TNFEFypTPSIye
- 78SrgKUNvxSGocb4aQhtYzNFE3TsF0dDwZAL0Kc55/Ls003MHP2e6ce61he+W6w/8m2f2/+Ce
- 6MEx0Xi+Y8d2P+ZB67xwzSLlOiAzk6eNGIcs/4Ps+gT4nSg2DllsRkJ4s8KQuBZFwVMJvrkML
- VYQqsKY3U7CrVd1Hg93GQvHsLW0A79WmcseQ5xPfgOx7ZKbjg4QGKykDW2aeCz/h/Ww8Xtvru
- 6jY5UhOIya8PyezlW0epmKP/FS6hl79Wlt3Fgt7NnKzyDU63F09YgSS3jGgRzZYU8iswmO6kj
- 0IxZ+4IzgYNKDcWfHnCgOBDwCZD2d+NG1SLNf3fZXFr+PQjusNyMBM8VyrNrRc2sPvmdjkyL9
- +sfG8z/wib+TfxJXXK7TdfRQA2rzHM94vJJl44TwBKDDw3MGtPzgixnqosBdGMngzVGZHlx3e
- ookpZQJ+oMzpzSKAq1r5lRbB5Rzow7W6OP5mHCai9POZCQp8P3sIvCOxaBYI28hsbi+2IwO7k
- CAH5E0b8bgqS9wpvpCTbkL7zzXw+/yT13nT8k+Cm1sYVVE+IuQXD6gT6313dWqW4jMyHZtfRZ
- 8xkEDKpf0giDqWgd+7M25WCTtgU6fphkLet/zg==
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] printk/console: Enable console kthreads only when there
+ is no boot console left
+Message-ID: <20220629082956.GB3111@pathway.suse.cz>
+References: <20220619204949.50d9154d@thinkpad>
+ <87r13kwawb.fsf@jogness.linutronix.de>
+ <20220620112936.48fcb2a4@thinkpad>
+ <YrBdjVwBOVgLfHyb@alley>
+ <CAHk-=wgdquXVVE37CZooVK4X+YdSa7XoGtjr71CEYh8UsdKUow@mail.gmail.com>
+ <YrCDNqsPrY+Hs9ju@alley>
+ <YrCO04oNncE1xF5K@alley>
+ <875ykvaqzm.fsf@jogness.linutronix.de>
+ <20220624184136.4aab12fb@rorschach.local.home>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624184136.4aab12fb@rorschach.local.home>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 10:24 AM Guo Ren <guoren@kernel.org> wrote:
-> On Wed, Jun 29, 2022 at 3:09 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Wed, Jun 29, 2022 at 3:34 AM Waiman Long <longman@redhat.com> wrote:
-> >
-> > From looking at the header file dependencies on arm64, I know that
-> > putting jump labels into core infrastructure like the arch_spin_lock()
-> > makes a big mess of indirect includes and measurably slows down
-> > the kernel build.
-> arm64 needn't combo spinlock, it could use pure qspinlock with keeping
-> current header files included.
+On Fri 2022-06-24 18:41:36, Steven Rostedt wrote:
+> On Tue, 21 Jun 2022 00:57:09 +0206
+> John Ogness <john.ogness@linutronix.de> wrote:
+> 
+> > Since early printing does not use the kernel driver model, I do not see
+> > a clear solution at this point. But since using early printing is not a
+> > typical use, I am OK with this patch.
+> 
+> Does this patch still work if you add the "keep" flag to the
+> earlyprintk kernel parameter?
 
-arm64 has a different problem: there are two separate sets of atomic
-instructions, and the decision between those is similarly done using
-jump labels. I definitely like the ability to choose between qspinlock
-and ticket spinlock on arm64 as well. This can be done as a
-compile-time choice, but both of them still depend on jump labels.
+It works. If the boot console stays then the console kthreads will
+never get enabled.
 
-        Arnd
+Well, I hope that we will be able to add the synchronization and remove
+this constraint. I think that the port->lock should be usable in
+most cases.
+
+Best Regards,
+Petr
