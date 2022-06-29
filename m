@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09377CCA48B
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 134D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231504AbiF2OMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
+        id S233934AbiF2OMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233934AbiF2OMa (ORCPT
+        with ESMTP id S233949AbiF2OMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:12:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C222E9FC;
-        Wed, 29 Jun 2022 07:12:30 -0700 (PDT)
+        Wed, 29 Jun 2022 10:12:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115832E9FC;
+        Wed, 29 Jun 2022 07:12:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5A6660F6A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EC0E61EF2;
+        Wed, 29 Jun 2022 14:12:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FA1C341DF;
         Wed, 29 Jun 2022 14:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00A07C385A2;
-        Wed, 29 Jun 2022 14:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656511949;
-        bh=6LChm1cY49hcWreDbWyQGCmRXOsMW3NMD3tsuxoELSM=;
+        bh=RzV9WoW/wVhCUJ1SeVlcZLX/bhXZa+s9p20TuF8bp6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZqbLA21Vyp+7vCSot6CkMVTBHkbVSQ/0TjsbVi/R4T2Nd2MeQyhWCfvOhxuaZgis7
-         fl07vvkXg+biAvTBoYnnlid+FOPuQ9q+EEW6wH61UMCNsNHuV1GvYzTRUcm+DEOyla
-         Uxxc0Mv/B5bKP8aemW5fhW5cwHhQqKRXi+asozZRUukljhqeJZqlSRwx8EuyTOWWCB
-         fj8N8Bds4j6+6b9ikTYgigUnETrRdX0AjH8TRFXGXD6oEWdkHnw+BY6YfZCDczgpQL
-         Ho3Ak1lCdNjY8Pqk/eKlTJEYjImjFdsu+8sNxBMhpmCoVTkLnsyYcj2wd9eETHZ0H8
-         5TtyRBw4S4DpA==
+        b=Y5S/p55QvOe8QAcheqPSPRPpCc04mcV1/47atDTMRzuZwN4wOYmDgxEon1KJDxTRG
+         OmcPwpeP7sSfpk2xzGH8FrTSy3PYX3FZrpIcvwgoW644Zz6HtA3CUymTsh1Yd38Dju
+         hk+z2LEo//GiUD9fuZETvrMewzAiDswH450f8riFjApl69F0VaYNZtnx4ZqH6/9Axs
+         x4deDFHAq/Tyrv2llnBtgRnakABfHmy7YnUS1jSzJM178RBFkDTKlaaabKj8llYE7Y
+         qsKOmR57o7Wx9BTGaFpTNQOzPqvA/I1A4l634zqMpIHxL/TjdFAJJq9oAwbQoi6aea
+         c27oQuRFsAb+Q==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o6YQe-0004lC-HM; Wed, 29 Jun 2022 16:12:28 +0200
+        id 1o6YQf-0004lX-6h; Wed, 29 Jun 2022 16:12:29 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Lorenzo Pieralisi <lpieralisi@kernel.org>
@@ -48,9 +48,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 03/10] dt-bindings: PCI: qcom: Enumerate platforms with single msi interrupt
-Date:   Wed, 29 Jun 2022 16:09:53 +0200
-Message-Id: <20220629141000.18111-4-johan+linaro@kernel.org>
+Subject: [PATCH 10/10] PCI: qcom: Sort device-id table
+Date:   Wed, 29 Jun 2022 16:10:00 +0200
+Message-Id: <20220629141000.18111-11-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220629141000.18111-1-johan+linaro@kernel.org>
 References: <20220629141000.18111-1-johan+linaro@kernel.org>
@@ -60,52 +60,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Explicitly enumerate the older platforms that have a single msi host
-interrupt. This allows for adding further platforms without resorting
-to nested conditionals.
-
-Drop the redundant comment about older chipsets instead of moving it.
+Sort the device-id table entries alphabetically by compatible string to
+make it easier to find entries and add new ones.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/pci/qcom,pcie.yaml      | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ drivers/pci/controller/dwc/pcie-qcom.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-index a1b4fc70e162..8560c65e6f0b 100644
---- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-+++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-@@ -625,7 +625,6 @@ allOf:
-         - reset-names
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 567601679465..093f4d4bc15d 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1572,23 +1572,23 @@ static int qcom_pcie_remove(struct platform_device *pdev)
+ }
  
-     # On newer chipsets support either 1 or 8 msi interrupts
--    # On older chipsets it's always 1 msi interrupt
-   - if:
-       properties:
-         compatible:
-@@ -660,7 +659,21 @@ allOf:
-                 - const: msi5
-                 - const: msi6
-                 - const: msi7
--    else:
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,pcie-apq8064
-+              - qcom,pcie-apq8084
-+              - qcom,pcie-ipq4019
-+              - qcom,pcie-ipq6018
-+              - qcom,pcie-ipq8064
-+              - qcom,pcie-ipq8064-v2
-+              - qcom,pcie-ipq8074
-+              - qcom,pcie-qcs404
-+    then:
-       properties:
-         interrupts:
-           maxItems: 1
+ static const struct of_device_id qcom_pcie_match[] = {
++	{ .compatible = "qcom,pcie-apq8064", .data = &cfg_2_1_0 },
+ 	{ .compatible = "qcom,pcie-apq8084", .data = &cfg_1_0_0 },
+ 	{ .compatible = "qcom,pcie-ipq8064", .data = &cfg_2_1_0 },
+ 	{ .compatible = "qcom,pcie-ipq8064-v2", .data = &cfg_2_1_0 },
+-	{ .compatible = "qcom,pcie-apq8064", .data = &cfg_2_1_0 },
+-	{ .compatible = "qcom,pcie-msm8996", .data = &cfg_2_3_2 },
+ 	{ .compatible = "qcom,pcie-ipq8074", .data = &cfg_2_3_3 },
+ 	{ .compatible = "qcom,pcie-ipq4019", .data = &cfg_2_4_0 },
+-	{ .compatible = "qcom,pcie-qcs404", .data = &cfg_2_4_0 },
++	{ .compatible = "qcom,pcie-msm8996", .data = &cfg_2_3_2 },
+ 	{ .compatible = "qcom,pcie-sa8540p", .data = &cfg_1_9_0 },
++	{ .compatible = "qcom,pcie-sc7280", .data = &cfg_1_9_0 },
++	{ .compatible = "qcom,pcie-sc8180x", .data = &cfg_1_9_0 },
++	{ .compatible = "qcom,pcie-sc8280xp", .data = &cfg_1_9_0 },
+ 	{ .compatible = "qcom,pcie-sdm845", .data = &cfg_2_7_0 },
+ 	{ .compatible = "qcom,pcie-sm8150", .data = &cfg_1_9_0 },
+ 	{ .compatible = "qcom,pcie-sm8250", .data = &cfg_1_9_0 },
+-	{ .compatible = "qcom,pcie-sc8180x", .data = &cfg_1_9_0 },
+-	{ .compatible = "qcom,pcie-sc8280xp", .data = &cfg_1_9_0 },
+ 	{ .compatible = "qcom,pcie-sm8450-pcie0", .data = &cfg_1_9_0 },
+ 	{ .compatible = "qcom,pcie-sm8450-pcie1", .data = &cfg_1_9_0 },
+-	{ .compatible = "qcom,pcie-sc7280", .data = &cfg_1_9_0 },
++	{ .compatible = "qcom,pcie-qcs404", .data = &cfg_2_4_0 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_pcie_match);
 -- 
 2.35.1
 
