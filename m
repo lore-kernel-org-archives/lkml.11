@@ -2,150 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C407EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFEBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiF2Qvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
+        id S231370AbiF2Qwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiF2Qvp (ORCPT
+        with ESMTP id S230364AbiF2Qw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:51:45 -0400
+        Wed, 29 Jun 2022 12:52:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF8F6E;
-        Wed, 29 Jun 2022 09:51:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DB4140D3;
+        Wed, 29 Jun 2022 09:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FBF1B825DB;
-        Wed, 29 Jun 2022 16:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E81C34114;
-        Wed, 29 Jun 2022 16:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656521501;
-        bh=yuwIKZkchTheG5wn1GwB8qN2vRzMhjjoHKv0gTFvEto=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ew+1yvS2cQ9ZULkW4Qd3Ti7cr7WW+P60spoYnQEx4nTAK9RBK3ENSpDiXDZYoiB2j
-         EvvGthbW34eiwzIBD/KpqdyFO/2Da43fEsizQWUDD+/Gbbefiv2ZOFmLzJ4QcgzaWJ
-         MJnLFWRppAuvcoodC7da+6DCaOK0i1KkeAo4c8WE=
-Date:   Wed, 29 Jun 2022 18:51:38 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Doug Berger <opendmb@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2] serial: 8250_bcm7271: Save/restore RTS in
- suspend/resume
-Message-ID: <YryDGoIFTdNAzn72@kroah.com>
-References: <20220629160208.3167955-1-f.fainelli@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EEDBB825DB;
+        Wed, 29 Jun 2022 16:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E460CC341C8;
+        Wed, 29 Jun 2022 16:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656521546;
+        bh=XsA4u8GaKpwaBT1HA+WHx3qEMftdGr6f1nnBdtIFfoQ=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=M4MrnoyVYCt53k4YI5Yr5KTZTp8lRTsZRdtfGp27dZHd0zj/5k27unZR8X5Z+2yMQ
+         PZpkOdD8UWlGptlDm3mVweklZx0RuFzbv6xOBXZsOceI3Ex5TWB9/0GyfGfKDsSXZl
+         IPpaL21o/nf+DeAXV88faAon9Kk2OLKtrOEqxaG317ptT9vLBq2/9vwkEcjRC8vafC
+         l3DND+0PYlP87FIc7kQJfQp2IWdfNNCqbG1LKiV0y67mN7YdO7/4tdAqUyaF+OAQm5
+         3hUMWxAcS+zrFz7fa8UnLuHpweCYYuJzkmuveYV8xceoFQS2XZoX37vs5h16DplFvn
+         YQWl62KdRmYMg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 883745C0E5F; Wed, 29 Jun 2022 09:52:25 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 09:52:25 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     Uladzislau Rezki <urezki@gmail.com>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
+        neeraj.iitr10@gmail.com, frederic@kernel.org, rostedt@goodmis.org,
+        vineeth@bitbyteword.org
+Subject: Re: [PATCH v2 8/8] rcu/kfree: Fix kfree_rcu_shrink_count() return
+ value
+Message-ID: <20220629165225.GH1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220622225102.2112026-1-joel@joelfernandes.org>
+ <20220622225102.2112026-10-joel@joelfernandes.org>
+ <Yrn9a5pOvhvL/eZj@pc638.lan>
+ <20220627205907.GM1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YroelcGVNhQj91ab@google.com>
+ <20220627214359.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YrsyrmDbfnkpfDEP@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220629160208.3167955-1-f.fainelli@gmail.com>
+In-Reply-To: <YrsyrmDbfnkpfDEP@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 09:02:08AM -0700, Florian Fainelli wrote:
-> From: Doug Berger <opendmb@gmail.com>
+On Tue, Jun 28, 2022 at 04:56:14PM +0000, Joel Fernandes wrote:
+> On Mon, Jun 27, 2022 at 02:43:59PM -0700, Paul E. McKenney wrote:
+> > On Mon, Jun 27, 2022 at 09:18:13PM +0000, Joel Fernandes wrote:
+> > > On Mon, Jun 27, 2022 at 01:59:07PM -0700, Paul E. McKenney wrote:
+> > > > On Mon, Jun 27, 2022 at 08:56:43PM +0200, Uladzislau Rezki wrote:
+> > > > > > As per the comments in include/linux/shrinker.h, .count_objects callback
+> > > > > > should return the number of freeable items, but if there are no objects
+> > > > > > to free, SHRINK_EMPTY should be returned. The only time 0 is returned
+> > > > > > should be when we are unable to determine the number of objects, or the
+> > > > > > cache should be skipped for another reason.
+> > > > > > 
+> > > > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > > > > > ---
+> > > > > >  kernel/rcu/tree.c | 2 +-
+> > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > > 
+> > > > > > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > > > > > index 711679d10cbb..935788e8d2d7 100644
+> > > > > > --- a/kernel/rcu/tree.c
+> > > > > > +++ b/kernel/rcu/tree.c
+> > > > > > @@ -3722,7 +3722,7 @@ kfree_rcu_shrink_count(struct shrinker *shrink, struct shrink_control *sc)
+> > > > > >  		atomic_set(&krcp->backoff_page_cache_fill, 1);
+> > > > > >  	}
+> > > > > >  
+> > > > > > -	return count;
+> > > > > > +	return count == 0 ? SHRINK_EMPTY : count;
+> > > > > >  }
+> > > > > >  
+> > > > > >  static unsigned long
+> > > > > > -- 
+> > > > > > 2.37.0.rc0.104.g0611611a94-goog
+> > > > > > 
+> > > > > Looks good to me!
+> > > > > 
+> > > > > Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> > > > 
+> > > > Now that you mention it, this does look independent of the rest of
+> > > > the series.  I have pulled it in with Uladzislau's Reviewed-by.
+> > > 
+> > > Thanks Paul and Vlad!
+> > > 
+> > > Paul, apologies for being quiet. I have been working on the series and the
+> > > review comments carefully. I appreciate your help with this work.
+> > 
+> > Not a problem.  After all, this stuff is changing some of the trickier
+> > parts of RCU.  We must therefore assume that some significant time and
+> > effort will be required to get it right.
 > 
-> Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
-> from S2") prevented an early enabling of RTS during resume, but it did
-> not actively restore the RTS state after resume.
+> To your point about trickier parts of RCU, the v2 series though I tested it
+> before submitting is now giving me strange results with rcuscale. Sometimes
+> laziness does not seem to be in effect (as pointed out by rcuscale), other
+> times I am seeing stalls.
 > 
-> Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
->  1 file changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-> index 9b878d023dac..b9cea38c8aff 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
-> @@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
->  	struct brcmuart_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
->  	struct uart_port *port = &up->port;
-> -
-> -	serial8250_suspend_port(priv->line);
-> -	clk_disable_unprepare(priv->baud_mux_clk);
-> +	unsigned long flags;
->  
->  	/*
->  	 * This will prevent resume from enabling RTS before the
-> -	 *  baud rate has been resored.
-> +	 *  baud rate has been restored.
->  	 */
-> +	spin_lock_irqsave(&port->lock, flags);
->  	priv->saved_mctrl = port->mctrl;
-> -	port->mctrl = 0;
-> +	port->mctrl &= ~TIOCM_RTS;
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
-> +	serial8250_suspend_port(priv->line);
-> +	clk_disable_unprepare(priv->baud_mux_clk);
->  
->  	return 0;
->  }
-> @@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
->  	struct brcmuart_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
->  	struct uart_port *port = &up->port;
-> +	unsigned long flags;
->  	int ret;
->  
->  	ret = clk_prepare_enable(priv->baud_mux_clk);
-> @@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
->  		start_rx_dma(serial8250_get_port(priv->line));
->  	}
->  	serial8250_resume_port(priv->line);
-> -	port->mctrl = priv->saved_mctrl;
-> +
-> +	if (priv->saved_mctrl & TIOCM_RTS) {
-> +		/* Restore RTS */
-> +		spin_lock_irqsave(&port->lock, flags);
-> +		port->mctrl |= TIOCM_RTS;
-> +		spin_unlock_irqrestore(&port->lock, flags);
-> +		port->ops->set_mctrl(port, port->mctrl);
-> +	}
-> +
->  	return 0;
->  }
->  
-> -- 
-> 2.25.1
-> 
+> So I have to carefully look through all of this again. I am not sure why I
+> was not seeing these issues with the exact same code before (frustrated).
 
-Hi,
+This is one of the mechanisms behind that famous Brian Kerghnihan saying
+about code being three times harder to debug than to write.  You see,
+when you are writing the code, you only need to deal with that part of
+the state space that you are aware of.  When you are debugging code,
+the rest of the state space makes its presence known.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+That is, if you are lucky.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+If you are not so lucky, the rest of the state space waits to make
+its presence known until your code is running some critical workload
+in production.  ;-)
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+							Thanx, Paul
