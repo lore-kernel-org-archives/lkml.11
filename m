@@ -2,127 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 066DFCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A82C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbiF2JGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
+        id S231724AbiF2JHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiF2JGw (ORCPT
+        with ESMTP id S231217AbiF2JHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:06:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C49F27CF1
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656493610;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HvWzvzdAUmdish1ZjSGH2vHCDmFvOStbYvaW/KwyrXg=;
-        b=i9xJvqZ0dB8X4DW+xmyB6djIMiyLqJdQ8egMleHFIOMVYL41kvP517I+PaXJ9pohIhac7/
-        t5TA8uNgxwqqn89EB2+psmEy4yFTKAVrkGGs15rhUFbH90iivjoOHBQpOEOOofF5MQ+I0R
-        ZLkhY41FkiKIb8PbPfhaTzU+XcgNMOA=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-567-e5w7inMtN3iAWbWXOXg0vw-1; Wed, 29 Jun 2022 05:06:49 -0400
-X-MC-Unique: e5w7inMtN3iAWbWXOXg0vw-1
-Received: by mail-wm1-f69.google.com with SMTP id 6-20020a1c0206000000b003a02cd754d1so6321735wmc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:06:48 -0700 (PDT)
+        Wed, 29 Jun 2022 05:07:12 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F371F2AC49
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:07:05 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id t17-20020a1c7711000000b003a0434b0af7so6602512wmi.0
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FUi18BfABJfFdfrTy/zmZdsKXzzTHRjYZn6DAYr2OpM=;
+        b=SbqRZ2lGoBj4MFROYCQz/qjnA+OfVT1NoH4TCsIICdxIY3XDK0tLMdH6vOxYVAiKEg
+         t4f0CnvkczgFg+Y89hiBtWjI9lfG4lqTu0GHPFY8e1YHjSzOVDDNuvBcxYmNhv2pUVlt
+         VEeBCpZjEy5hW0ImOSRG6M44PUYsxVJGN44H/C8IpUY2tZryK98kM8XzzHxMXFIiPlB4
+         AxAULWW5UTYg7GaO0HtefCtiaqgRqE5ZPLjZBXK1fkJ3b711dfSYrZsmp+nlnfCr1nE1
+         vqIHo7RWSv0qL6t1aYoQjLgq71ZOe4JeDSpARgiYArkzZrQd11BY3Z579lFfAk/hNtxD
+         DKSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=HvWzvzdAUmdish1ZjSGH2vHCDmFvOStbYvaW/KwyrXg=;
-        b=K47LEbLk3dsbEf5QzedI1sgx3Bj2o5YDkjPnk/lxgfcGSmDmCarVdWDL3Mz9sUUHsH
-         W3U8RFvNOfblWld1vLGAoVnOM1YOG5V3e7P/lTg2TFGAZMvi6lKaAkpOdm3PSvREsX9Y
-         KCqfwjwJAk14X6UNK3sbk95zJVN4TN8wpLZx6PFT+phXdSNTohdtTGajOQN4ZlEyw+qp
-         inQRf+vW9Wu6k7xapELT+Xsz9SEHmEXi8B33sjZclKHzMROdtUHM448eXL7kjpv5vi5W
-         QAqPEbldAgkqAX2S/UTonhDKA7aVO3QF2tG0mJdSQKhBUQAdAFII9osoMBoKfwW+P0XL
-         YyLw==
-X-Gm-Message-State: AJIora/oldYP8ixwq2sDKK7GnEaRLeCpdu1BQWjCcqjR1uKENQtPLHWL
-        scxlWwhLjc0gF1xGmAmwwSrnpLuRLt9kIM6Wny5ToGZLH00PgP14qg/6wiRC2KaLKm/ghiFNBIs
-        o1eHb5//lPsp1YhHmzXhhxob86oUjM7ZKYLS9v79VEGu7n2DNeH6kborlP0Vw82MFfSKUpWdqkI
-        oT
-X-Received: by 2002:a5d:53ca:0:b0:21b:940f:8e29 with SMTP id a10-20020a5d53ca000000b0021b940f8e29mr2024209wrw.490.1656493607839;
-        Wed, 29 Jun 2022 02:06:47 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1slfgJ4CmLtTDf48t9U1mX1pHXjxoYEcJdwqwzZ9MajWVRs6KVcjT0ny0vB8KhBz1k0tami8A==
-X-Received: by 2002:a5d:53ca:0:b0:21b:940f:8e29 with SMTP id a10-20020a5d53ca000000b0021b940f8e29mr2024164wrw.490.1656493607451;
-        Wed, 29 Jun 2022 02:06:47 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id i206-20020a1c3bd7000000b003a03ae64f57sm2609957wma.8.2022.06.29.02.06.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FUi18BfABJfFdfrTy/zmZdsKXzzTHRjYZn6DAYr2OpM=;
+        b=6h/sBNFpXk3qfWeKn0O0UAXY6RcKpg83fEQovAW28Pv+Jw0IsvMsotIxFs0bdlYA6W
+         KALPZ4gjbsXgPQDhgZZzE0EeDKV9WtR3W4QAOQWZDoR64sA8H5IW7VVNuDTaLFRH7GjL
+         G0iiq/nwtr5BeuXZOsVoBH/XgsSXsoYvlBn98+HBg5qEKN3WDpc4IKJSLmzM+8coXvTJ
+         LkZ8WLwuvXg0au4D7rKAjCtxjwgTvbMgPzY/D64W934JTL/9l7TztI3mNyOUYAHQg9Tc
+         DI7JV2VV18dHW7Px0doKkEFy0X8n4D7oeMdlsVDAu8DEkWpzijEn1tSA55evdAudjjAl
+         W7IQ==
+X-Gm-Message-State: AJIora/9ronNRfupDbzicJpPUe/lnwuSlBZlPyV69u8N77cz6Uq9nvrz
+        FAQQHK7YLiEQ60oBpOONW4QC7Q==
+X-Google-Smtp-Source: AGRyM1tzLUjJTsjzxmN9nAUGOrChMCfCFRxIO+WCDnxX53yn2Of1UbeD0rdgyezMd7l2GLDtoswLaQ==
+X-Received: by 2002:a05:600c:4e8f:b0:39c:89dd:ae3b with SMTP id f15-20020a05600c4e8f00b0039c89ddae3bmr2472844wmq.200.1656493624411;
+        Wed, 29 Jun 2022 02:07:04 -0700 (PDT)
+Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id e12-20020a5d530c000000b002185d79dc7fsm15993341wrv.75.2022.06.29.02.07.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 02:06:46 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/14] KVM: nVMX: Use vmcs_config for setting up nested
- VMX MSRs
-In-Reply-To: <CALMp9eQ35g8GpwObYBJRxjuxZAC8P_HNMMaC0v0uZeC+pMeW_Q@mail.gmail.com>
-References: <20220627160440.31857-1-vkuznets@redhat.com>
- <CALMp9eQL2a+mStk-cLwVX6NVqwAso2UYxAO7UD=Xi2TSGwUM2A@mail.gmail.com>
- <87y1xgubot.fsf@redhat.com>
- <CALMp9eSBLcvuNDquvSfUnaF3S3f4ZkzqDRSsz-v93ZeX=xnssg@mail.gmail.com>
- <87letgu68x.fsf@redhat.com>
- <CALMp9eQ35g8GpwObYBJRxjuxZAC8P_HNMMaC0v0uZeC+pMeW_Q@mail.gmail.com>
-Date:   Wed, 29 Jun 2022 11:06:46 +0200
-Message-ID: <87czeru9cp.fsf@redhat.com>
+        Wed, 29 Jun 2022 02:07:03 -0700 (PDT)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 0/4] ASoC: codecs: add WSA883x support
+Date:   Wed, 29 Jun 2022 10:06:40 +0100
+Message-Id: <20220629090644.67982-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jim Mattson <jmattson@google.com> writes:
+This patchset adds support for WSA883x smart speaker amplifier codec
+connected via SoundWire. This codec also has a temperature sensor used
+for speaker protection, support for this is not added yet.
 
-> On Tue, Jun 28, 2022 at 9:01 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
->>
+Most of the code is derived from Qualcomm downstream msm-5.10 kernel.
+Thanks to Patrick Lai's Team.
 
-...
+This codec is tested on SM8450 MTP.
 
->
-> Read-only MSRs cannot be changed after their values may have been
-> observed by the guest.
->
->> Anirudh, the same concern applies to your 'intermediate' patch too.
->>
->> Smart ideas on what can be done are more than welcome)
->
-> You could define a bunch of "quirks," and userspace could use
-> KVM_CAP_DISABLE_QUIRKS2 to ask that the broken bits be cleared.
+Thanks,
+Srini
 
-This sounds correct, but awful :-) I, however, think we can avoid this.
+Srinivas Kandagatla (4):
+  ASoC: dt-bindings: Add WSA883x bindings
+  ASoC: codecs: add wsa883x amplifier support
+  ASoC: codecs: wsa883x: add control, dapm widgets and map
+  MAINTAINERS: add ASoC Qualcomm codecs
 
-For the KVM-on-eVMCS case:
-- When combined with "[PATCH 00/11] KVM: VMX: Support TscScaling and
-EnclsExitingBitmap whith eVMCS" series
-(https://lore.kernel.org/kvm/20220621155830.60115-1-vkuznets@redhat.com/),
-the filtering we do in setup_vmcs_config() is no longer needed. I need
-to check various available Hyper-V versions but my initial investigation
-shows that we were only filtering out TSC Scaling and 'Load
-IA32_PERF_GLOBAL_CTRL' vmexit/vmentry, the rest were never present in
-VMX control MSRs (as presented by Hyper-V) in the first place.
-
-For PERF_GLOBAL_CTRL errata:
-- We can move the filtering to vmx_vmexit_ctrl()/vmx_vmentry_ctrl()
-preserving the status quo: KVM doesn't use the feature but it is exposed
-to L1 hypervisor (and L1 hypervisor presumably has the same check and
-doesn't use the feature. FWIW, the workaround was added in 2011 and the
-erratas it references appeared in 2010, this means that the affected
-CPUs are quite old, modern proprietary hypervisors won't likely boot
-there).
-
-If we do the above, there's going to be no changes to VMX control MSRs
-generated by nested_vmx_setup_ctls_msrs(). I, however, need to work on
-a combined series.
+ .../bindings/sound/qcom,wsa883x.yaml          |   74 +
+ MAINTAINERS                                   |    4 +
+ sound/soc/codecs/Kconfig                      |   10 +
+ sound/soc/codecs/Makefile                     |    2 +
+ sound/soc/codecs/wsa883x.c                    | 1498 +++++++++++++++++
+ 5 files changed, 1588 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/qcom,wsa883x.yaml
+ create mode 100644 sound/soc/codecs/wsa883x.c
 
 -- 
-Vitaly
+2.25.1
 
