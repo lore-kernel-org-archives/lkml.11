@@ -2,129 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D79C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbiF2JAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
+        id S232518AbiF2JCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232777AbiF2JAE (ORCPT
+        with ESMTP id S232327AbiF2JCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:00:04 -0400
-Received: from eggs.gnu.org (eggs.gnu.org [IPv6:2001:470:142:3::10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F502559B;
-        Wed, 29 Jun 2022 02:00:02 -0700 (PDT)
-Received: from fencepost.gnu.org ([2001:470:142:3::e]:53108)
-        by eggs.gnu.org with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <jemarch@gnu.org>)
-        id 1o6TYF-0005Kw-9z; Wed, 29 Jun 2022 04:59:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=gnu.org;
-        s=fencepost-gnu-org; h=MIME-Version:In-Reply-To:Date:References:Subject:To:
-        From; bh=yWORYvO8IZ9m60ZBZWENFQneFKxqNCr4t6RwBfhrer8=; b=ZLZ9KuZCd2SDqrpxJkqG
-        +voaKIJHCJpC+q0cXtrUfhueCJsMy9b5IpuYNrBi1ZsisbdXzVeW8k198uXzUTQjRCqxtQApieX1R
-        MlzEblWkgl7NvdGKemQ/k3Y6sIsQ8pXgH0L9I9kRNsI8ahjLP/kmoVm8rd5IiMo9w43cFOfIxCJ0N
-        JrjZIw461zbNGHFQh2WX91YCN+NWzn5AuwvBzULSP6VED+1Z3PBxtWs+0U4riWxM4tdsFLXw6dpSx
-        c+4JxUsfnnUyIHNe7vsb93q8jyjp/aWhivj7IAs6xF58Gs0w5hd+8goOCdCYnMDHgMhurqlqUAA4C
-        t2mdmgcf0S2KPg==;
-Received: from dynamic-077-182-178-150.77.182.pool.telefonica.de ([77.182.178.150]:54142 helo=termi.gnu.org)
-        by fencepost.gnu.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <jemarch@gnu.org>)
-        id 1o6TYE-0002JL-IW; Wed, 29 Jun 2022 04:59:59 -0400
-From:   "Jose E. Marchesi" <jemarch@gnu.org>
-To:     Ruud van der Pas <ruud.vanderpas@oracle.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Vladimir Mezentsev <vladimir.mezentsev@oracle.com>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Wenlei He <wenlei@fb.com>, Hongtao Yu <hoy@fb.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        linux-toolchains@vger.kernel.org, elena.zannoni@oracle.com
-Subject: Re: plumbers session on profiling?
-References: <CAKwvOdkyY9rsH3eViMK-_4iz_W_usumz5nD+3AhbNCVQ3FRCjA@mail.gmail.com>
-        <CAKwvOdnsZekEM77axBf67MDqQVP0n6PTKH=njSyPSWTNiWAOiA@mail.gmail.com>
-        <87mtf7z0rt.fsf@gnu.org>
-        <6F9E9D93-3913-4022-9384-D809C8EF7715@oracle.com>
-        <CAKwvOdm=_YqBpuBzouqoWHYNe6MMUE10vqF0PUkU=hcOj+UqrQ@mail.gmail.com>
-        <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com>
-Date:   Tue, 28 Jun 2022 19:08:48 +0200
-In-Reply-To: <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com> (Ruud van der
-        Pas's message of "Thu, 23 Jun 2022 23:21:07 +0200")
-Message-ID: <878rpgpvfj.fsf@gnu.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Wed, 29 Jun 2022 05:02:54 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C1D2495E
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:02:52 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id q6so31119325eji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Aq4Lez9gHkzqnABxRDZ1hLRlEetQwaEfg0dHsywi6sM=;
+        b=D+A0Z0nfwwfGtZx8tGcm4/WBeNfHt+7zWYMMTBHGJOzj4TRfGjsZEYOVY/8vn3Vz3o
+         jA91WRgZKrXmVgySplb4YQQZX1ijQVkSUMWqbT0cFh+CnR7BXs0c80BpfpJBrwu7NfJs
+         AtYFV3R8LNfgszGtTeMNR9kEoWQR1vqIJ1OFryRzYOmPvom+jm5wR3NN7Wx1UCyjEMvN
+         lgH2U9xt81Y2VOxmJS3lPNcQuzysBGAmlOGOQpA8VdvSuWOr8Rg8pbEzsOA1M1yUw9Y/
+         s1bV1sHele3XtGhcxTG7oG7SBUlPHqL/5krz67DSWrN20aCw2zQXaZPDd9qYCvWV9PP7
+         i8qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Aq4Lez9gHkzqnABxRDZ1hLRlEetQwaEfg0dHsywi6sM=;
+        b=i05zWDONVcBrKZky1fuPxwn5EjECu90y+G0+sOLjNQfSkwcp8asoSZQyYXyhKeKjm7
+         RVxV8NJDA1RGNqR6/LTvYIyZZUhpYL0seX67CN13TOMcbSOSI6or9i5aFmelhkNu6kJu
+         3XszdZ3LE6ceGWhF5hHm16S8YmIKlr/mIwGJQrbnoZaIiqf6tme0CHEH1KHEp9hNf3zq
+         AMy0c5bgNyEcq5mBq9EYHtftjXFFd5FoTxGDg+sWysPUPI88MdrNeuLojpVcTT43+L1q
+         Y3NftZSDh9PE6k65do5BOdwbLggH3FF3zPtTrYEEUdClQnAf+/e6NlD34mVTq/t93BUN
+         5gzw==
+X-Gm-Message-State: AJIora8uoN6aj872cqk/efZEalLfaKNzgJm6u+EF610fYgo1cUoaKOOL
+        LWqmt2kjUAeAYwW0PllO0zSF51tHTISG6WMOrl/8
+X-Google-Smtp-Source: AGRyM1tBM1Cm/zj9t76+7Ewc+H/GPmxCAp+QVifCtXfA13Wy//rUlqSwojyFJtOnm0XtKcgoxbWXA/AnhlE9HWYrFPY=
+X-Received: by 2002:a17:907:6e03:b0:726:a6a3:7515 with SMTP id
+ sd3-20020a1709076e0300b00726a6a37515mr2273389ejc.676.1656493370536; Wed, 29
+ Jun 2022 02:02:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220629082541.118-1-xieyongji@bytedance.com> <20220629082541.118-7-xieyongji@bytedance.com>
+ <20220629042856-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220629042856-mutt-send-email-mst@kernel.org>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 29 Jun 2022 17:02:40 +0800
+Message-ID: <CACycT3sZXwunA_UOCriSv=f2VARMnPb1mNU2GAUd9BLCU-Hg8w@mail.gmail.com>
+Subject: Re: [PATCH 6/6] vduse: Update api version to 1
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Maxime Coquelin <maxime.coquelin@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jun 29, 2022 at 4:33 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Wed, Jun 29, 2022 at 04:25:41PM +0800, Xie Yongji wrote:
+> > Let's update api version to 1 since we introduced
+> > some new ioctls to support registering userspace
+> > memory for IOTLB.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>
+>
+> Adding new ioctls does not justify things like this.
+>
 
-[Added linux-toolchains@vger in CC]
+What I want to do here is make userspace know whether this feature is
+supported or not in the kernel. So do you think we need to add
+something like CHECK_EXTENSION ioctl here?
 
-It would be interesting to have some discussion in the Toolchains track
-on building the kernel with PGO/FDO.  I have seen a raise on interest on
-the topic in several companies, but it would make very little sense if
-no kernel hacker is interested in participating... anybody?
+> Besides, adding UAPI then changing it is not nice
+> since it makes git bisect behave incorrectly.
+>
+> > ---
+> >  drivers/vdpa/vdpa_user/vduse_dev.c | 12 ++++++++++++
+> >  include/uapi/linux/vduse.h         |  8 +++++++-
+> >  2 files changed, 19 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > index 7b2ea7612da9..2795785ca6a2 100644
+> > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+> > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > @@ -1206,6 +1206,10 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
+> >       case VDUSE_IOTLB_GET_INFO: {
+> >               struct vduse_iotlb_info iotlb;
+> >
+> > +             ret = -EPERM;
+>
+>
+> Almost for sure a wrong error code.
+>
+> > +             if (dev->api_version < 1)
+> > +                     break;
+> > +
+> >               iotlb.bounce_iova = 0;
+> >               iotlb.bounce_size = dev->domain->bounce_size;
+> >
+>
+>
+> Wait a second. so you are intentionally breaking any userspace
+> that called VDUSE_SET_API_VERSION with version 0?
+>
+> Please don't.
+>
 
-> Hi Nick,
->
-> Apologies for the delay. It's been a busy week with gprofng related work.
->
->> If you're still considering attending Linux Plumbers conf, please
->> submit a proposal:
->> https://lpc.events/event/16/abstracts/
->> Please make sure to select "Toolchains Track" as the "Track" after
->> clicking on "Submit new abstract."
->
-> Thanks for asking!
->
-> Our presence largely depends on a discussion on kernel profiling and
-> to see what we might be able to do with gprofng regarding this.
->
->>From our side, the main person will be Vladimir. He knows the code
-> inside and out, but I will also try to attend such a session.
->
-> Is there any news regarding such a session on kernel profiling?
->
-> Kind regards, Ruud
->
->> 
->>> 
->>> Kind regards, Ruud
->>> 
->>>> On 24 May 2022, at 12:24, Jose E. Marchesi <jemarch@gnu.org> wrote:
->>>> 
->>>> 
->>>> I am adding Ruud van der Pas in CC. He works in gprofng and would be
->>>> willing to participate in a discussion on kernel profiling.
->>>> 
->>>>> (Re-sending with Vladamir's email addr fixed; sorry for the noise)
->>>>> 
->>>>> On Fri, Apr 15, 2022 at 10:54 AM Nick Desaulniers
->>>>> <ndesaulniers@google.com> wrote:
->>>>>> 
->>>>>> Hi Sami, Bill, Jose, and Vladamir,
->>>>>> Jose and I are currently in the planning process to put together a
->>>>>> Kernel+Toolchain microconference track at Linux Plumbers Conference
->>>>>> this year (Sept 12-14) in Dublin, Ireland.
->>>>>> 
->>>>>> Would you all be interested in leading a session discussing various
->>>>>> profiling related topics such as:
->>>>>> * gprofng
->>>>>> * PGO
->>>>>> * AutoFDO
->>>>>> 
->>>>>> Would others find such a discussion useful?
->>>>>> --
->>>>>> Thanks,
->>>>>> ~Nick Desaulniers
->>> 
->> 
->> 
->> -- 
->> Thanks,
->> ~Nick Desaulniers
+Yes, I'd like to let userspace know we don't support this feature.
+
+Thanks.
+Yongji
