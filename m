@@ -2,76 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D07DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99541CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbiF2JoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
+        id S233087AbiF2Jpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiF2JoR (ORCPT
+        with ESMTP id S232954AbiF2Jpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:44:17 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC97F3BBF0;
-        Wed, 29 Jun 2022 02:44:16 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id C32D31E80D11;
-        Wed, 29 Jun 2022 17:43:04 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 0WurLbxwHkwr; Wed, 29 Jun 2022 17:43:02 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: jiaming@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 7E7951E80CDC;
-        Wed, 29 Jun 2022 17:43:01 +0800 (CST)
-From:   Zhang Jiaming <jiaming@nfschina.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, andy.shevchenko@gmail.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, renyu@nfschina.com,
-        Zhang Jiaming <jiaming@nfschina.com>
-Subject: [PATCH] serial: Fix spelling mistake
-Date:   Wed, 29 Jun 2022 17:44:11 +0800
-Message-Id: <20220629094411.39066-1-jiaming@nfschina.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 29 Jun 2022 05:45:33 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD363BBF0;
+        Wed, 29 Jun 2022 02:45:32 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 25T9SSim051155;
+        Wed, 29 Jun 2022 17:28:28 +0800 (GMT-8)
+        (envelope-from neal_liu@aspeedtech.com)
+Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 29 Jun
+ 2022 17:44:32 +0800
+From:   Neal Liu <neal_liu@aspeedtech.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        "Andrew Jeffery" <andrew@aj.id.au>,
+        Dhananjay Phadke <dhphadke@microsoft.com>,
+        "Johnny Huang" <johnny_huang@aspeedtech.com>
+CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v6 4/5] dt-bindings: crypto: add documentation for aspeed hace
+Date:   Wed, 29 Jun 2022 17:44:25 +0800
+Message-ID: <20220629094426.1930589-5-neal_liu@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220629094426.1930589-1-neal_liu@aspeedtech.com>
+References: <20220629094426.1930589-1-neal_liu@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.10.10]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 25T9SSim051155
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change 'timeing' to 'timing'.
-Change 'Characteres' to 'Characters'.
+Add device tree binding documentation for the Aspeed Hash
+and Crypto Engines (HACE) Controller.
 
-Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/crypto/aspeed,ast2500-hace.yaml  | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index fdf21de74e90..a7ed5012b90e 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 		if (!(lsr & UART_LSR_THRE))
- 			return;
- 		/*
--		 * To provide required timeing and allow FIFO transfer,
-+		 * To provide required timing and allow FIFO transfer,
- 		 * __stop_tx_rs485() must be called only when both FIFO and
- 		 * shift register are empty. The device driver should either
- 		 * enable interrupt on TEMT or set UART_CAP_NOTEMT that will
-@@ -2796,7 +2796,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		port->read_status_mask |= UART_LSR_BI;
- 
- 	/*
--	 * Characteres to ignore
-+	 * Characters to ignore
- 	 */
- 	port->ignore_status_mask = 0;
- 	if (termios->c_iflag & IGNPAR)
+diff --git a/Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml b/Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
+new file mode 100644
+index 000000000000..a772d232de09
+--- /dev/null
++++ b/Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/crypto/aspeed,ast2500-hace.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED HACE hash and crypto Hardware Accelerator Engines
++
++maintainers:
++  - Neal Liu <neal_liu@aspeedtech.com>
++
++description: |
++  The Hash and Crypto Engine (HACE) is designed to accelerate the throughput
++  of hash data digest, encryption, and decryption. Basically, HACE can be
++  divided into two independently engines - Hash Engine and Crypto Engine.
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2500-hace
++      - aspeed,ast2600-hace
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - interrupts
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/ast2600-clock.h>
++    hace: crypto@1e6d0000 {
++        compatible = "aspeed,ast2600-hace";
++        reg = <0x1e6d0000 0x200>;
++        interrupts = <4>;
++        clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
++        resets = <&syscon ASPEED_RESET_HACE>;
++    };
 -- 
-2.34.1
+2.25.1
 
