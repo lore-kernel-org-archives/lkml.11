@@ -2,170 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51262CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 00:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DF3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 00:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229460AbiF2Abw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 20:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55882 "EHLO
+        id S230009AbiF2Aew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 20:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiF2Abu (ORCPT
+        with ESMTP id S229489AbiF2Aeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 20:31:50 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2041.outbound.protection.outlook.com [40.107.95.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270EB2D1D2;
-        Tue, 28 Jun 2022 17:31:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LVdlirQZQwBWkME3K2MF4KSNQH9Ol8B3+6NfwyQwWaJZSpWcCJDArOxl4GI89wDLkLW2JSDYOmoZZ077KG8YH6cE3s08SbRnfdwsg4tyPduXOQP+QInO5WSCn/SAlBhmOkqP4pNAiGlDlwn8ezUg9Cbxm2cSsule65mDY/zuHbv4XfXMxgrTf39nCQgzDCFD9lSVPzMuCobgFG4GtxoEwBtHCsRurJxH4Iy0D7zTx2n3fIGdU8uqX05Y1mTMg51tiHjEMgM4V3SpfJqEA1bNg9X8JXLzamYSOQMsChAGO83ND2jfAS9S6Chg3U7c912SU+VkcJGRxkvM4iWLt4sKjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7Nn4MG9VPfk/6zgHTojHrhPiWWseUHED/vJSq1dNiik=;
- b=dY4W3z+GQOfEwEydRsRooLExgHuTF86y+GHNWzCgymN+vy6j5YHySyJMQpble07HrAjkkRy/p2wgQ6HgMwRglItQdtB/KJmdxQzV15kqp4GX/HPjhr9ew0Fh80JTukcTLzLzENUd5vJONpfZ7TfrZpGPsRM0A20VEJ2E/ACjhYagsrqnYWDf0S6bzO8TwXpy4yzTyOouuQ4lnfNVPEwUaDxt3qnAIkHzGN621pp5b+xexYIxuIwsMKfcVLgFDvCors495mAE9B7WmUw1JDtFh3p37BHnMrDod+80DyrkCMFwTZTT3JwR6Vn29Wh0ZXnplTd/NhzmyJbXpZASdlMJxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7Nn4MG9VPfk/6zgHTojHrhPiWWseUHED/vJSq1dNiik=;
- b=DQCZGEu5xnTvnY85HpWgB7T3RzgG8v6+bOtGhqV0ZvysBEY3CEHAo0O7tXyo4hRNRydcvOH8woq4kTbD5CIOMT5clpT9R3S+Dagjyz7la+mI41eCXEsTwTVQAykGVFFv1Hu+aGd7v3q8G4z/H+zoC9BYi0SwKQUQD9HVhI5LGEE2T+zvmHXfY45yjDrodotWBL9UbHSZKq8HnuxtxBaqO3cmIBLyhpH8DaG9AjYwWDmcUCFXwtG95Py6pgDn1Z46ivUtUINrIvt2exSdFrG8nE1BsZaLHiT9OX7JKSTkO+5HjI48wxdSuhDYYdY8t6nyILyGw7WK25XFcia4ySw47A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
- by BY5PR12MB4306.namprd12.prod.outlook.com (2603:10b6:a03:206::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Wed, 29 Jun
- 2022 00:31:46 +0000
-Received: from BY5PR12MB4130.namprd12.prod.outlook.com
- ([fe80::28d4:3575:5db:6910]) by BY5PR12MB4130.namprd12.prod.outlook.com
- ([fe80::28d4:3575:5db:6910%4]) with mapi id 15.20.5373.022; Wed, 29 Jun 2022
- 00:31:46 +0000
-Message-ID: <177284f9-416d-c142-a826-e9a497751fca@nvidia.com>
-Date:   Tue, 28 Jun 2022 17:31:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/4] mm/gup: Add FOLL_INTERRUPTIBLE
-Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>,
-        Sean Christopherson <seanjc@google.com>
-References: <20220622213656.81546-1-peterx@redhat.com>
- <20220622213656.81546-2-peterx@redhat.com>
- <c196a140-6ee4-850c-004a-9c9d1ff1faa6@nvidia.com>
- <YrtXGf20oa5eYgIU@xz-m1.local>
- <16c181d3-09ef-ace4-c910-0a13fc245e48@nvidia.com>
- <YruBzuJf9s/Nmr6W@xz-m1.local>
-From:   John Hubbard <jhubbard@nvidia.com>
-In-Reply-To: <YruBzuJf9s/Nmr6W@xz-m1.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR13CA0061.namprd13.prod.outlook.com
- (2603:10b6:a03:2c4::6) To BY5PR12MB4130.namprd12.prod.outlook.com
- (2603:10b6:a03:20b::16)
+        Tue, 28 Jun 2022 20:34:50 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D96B2FE71
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 17:34:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656462890; x=1687998890;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gu2ji86KwLEp3cWwdUufrgM6jQM+uMNiTRLYjZQ+/Ho=;
+  b=Y0/5bg+vWuvG/VHatUNqKiYkI0uPghuMGcIYyv5fAv3jwegE58LJDhPt
+   nvebq8jMx2DFH4J4/NmpxzTVegxF9By+L4ShcPph4LQe6zw221q6OVf/x
+   UsWY99Kk1Bt5WEHl4nnh4ocKK+2HiFkuAvEmeyv7y4ORT51BNTFM451yY
+   fR1clzN5iUkZm4LuJ1+rntLUZ7yUNtdHVlEuC/Wm4rciBk4v1/vp1qE2O
+   FF7wBTR0EHhHeSlGeV3qd1WzOOFjrRhAr2D/hDq8sHw9rz2kFX+KhBAMQ
+   gYxETna0rVMnQTqLHACSNfvuGXQKXXC5Zkl5CsE5Nhq69eRO1+gmCrHk4
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282977919"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="282977919"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 17:34:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="647145078"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 28 Jun 2022 17:34:46 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 3B9CACE; Wed, 29 Jun 2022 03:34:52 +0300 (EEST)
+Date:   Wed, 29 Jun 2022 03:34:52 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv3 4/8] x86/mm: Handle LAM on context switch
+Message-ID: <20220629003452.37yojljbcl7jjgu5@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-5-kirill.shutemov@linux.intel.com>
+ <9efc4129-e82b-740f-3d6d-67f1468879bb@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f8dc710c-7e6a-47cc-3294-08da5966bf7d
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4306:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9fyt31lGJYv1CNGvrv5SoGdRw8KPmHED0oT0HcJy0xYv7VbbCU3+CGWoZi5vovjybTydSKv1q+benb3asUj6TzdXk+pAuxcHtCfr2dMmei0wCShEY7fam2iW3sMgBVSjzuyKfcDmiba0HyoQEAEIqDHXZagKkA5b71BSD4UvOpSMwqA35mp5rSyvdyDJQ9fxXCzhc1RY4Rkqd/iKnxGmqg4+9WyPvD0teLt7vEkEHIIaQb8xo/VAeUx79HFHmx+/ScTil5XrVP38g15QWtCAE4jknf6Ffgnn2qTyinIGFomaLdxyl8XoRr4Ds+LrBDmxqw1Di98kczE79OadaxAhJ9hsZg6kjToXoP6pB2ELPiG+QNtSg47CDRA7WUwbcNZa6ihW9OHY3rgojCsHBDb4pcWbQFADlsUU3zFaUqwKgWs+2BvFHmYaVAPxHA4L0sme2G6xoOU8tJFgzitu4wHZi8z7v77XqZq9Iru73odL1Znq27SW795mCVl0bbojtcnoc5L5MyHmu0dds8Jt6U8ceTnN19Z1H1U+UjfpYg1ybUxFNjGU0rp9Bd4lsE79K44iaMYWr63yVRUdP7gvVoEaWU+PZG6r+dQ8hARSBHaj9wZU08nXJcf8X6mPH9tDWoJY0b6mHR+gbol75lM/Ugd8sI1BbfcOf8TLnaNJAqQSK4NvEE+zwaNMa2pn8Y2mLf1p9L5E8g9Kz4nbIzl0V8aGkxAAoN+1tkW/Pvdd8Y8Bvo54ACKE95MLOnN989NrbKJBLV1cXqMNbbt0S6Rp1mKwHLFm25EwHR7dP91fFiAxUAn5dwcheYg3Y8t2/kN/LmKkJvrwyCxnDs1J71p9V2Gf9g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(376002)(136003)(39860400002)(366004)(86362001)(41300700001)(53546011)(7416002)(5660300002)(316002)(66946007)(38100700002)(6666004)(6506007)(66556008)(2906002)(8676002)(31686004)(2616005)(36756003)(83380400001)(8936002)(186003)(66476007)(31696002)(4326008)(6512007)(478600001)(26005)(6486002)(54906003)(6916009)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OWFGS1llViswRGZOM2FPakdYYUw1dEVNdGxEc3o4NUpGeWVEdU14d0c0c2VZ?=
- =?utf-8?B?TmZLaGUwaWFCSng5dVV5WW0xRTZwdUdTWFE0a004ZVpwc1Q3TFBna1hPQVhH?=
- =?utf-8?B?c1UyMXFWZjJqYndrWXo4MU5yS1lQaERxK0ZWdlNHeTZnT0xxMWlFcmVBWVJC?=
- =?utf-8?B?c3UrT2JXQW1Xd3dRMjl1T24yeXZWT3A0YnlaL3BweTBVTk9ZbTNBTnZMdUxP?=
- =?utf-8?B?NitpQ1dLa2Y4NXhZUXdCVjdhcnVhdGNLMkZyV2FFOFFiUFdLNmc2WDNHcTVD?=
- =?utf-8?B?UEVGUjh0bC80YmY1ZzZqaCtFZ1A1WVphdkI0SzVqOTFSazN3NUg5WHZEcTJ3?=
- =?utf-8?B?R3pqY3JTT1hyVnM0a0MwV1RwWDJlN2tWbzlTYnptY2loYTNCVnhqU0pVcG1I?=
- =?utf-8?B?QmZsWWl4cjVKUDFlK3dCL01rV2ZINUJvRUVYN3ZaTE1TRlRzZFhhV0lLeldS?=
- =?utf-8?B?OUF2VUVDQUhwVnRBMkl2RGQzVW81YzB1c2drSEYwUWpiWWdxdWEyRHB3NCtK?=
- =?utf-8?B?VTZaQVdRQ3NQZlRPelA3ajRxNm1VRnpFcFd2Qi82MVVlbzUvdVVUQlIwK1hD?=
- =?utf-8?B?SmdOQ3lhVC9vTm5BbzQ3V1VPSm1KS2x3R25lSVo3bFFqTDZvNVcvYUdMU3ZM?=
- =?utf-8?B?TUdkYm5SMHM0L2hwb1JwcUcvSytJNENEMlI2WmFUSDNCTGwvSWVoSkVXeWZD?=
- =?utf-8?B?ajYyWFdJUHhqZ2VOd2J6WmwvRVFsM09kVEs3SVB5Nk9TUzU2VkpTLzY1b3pB?=
- =?utf-8?B?TnlIanJtdzRNU1ZKN2p5UDFaU0FIc21Na3Y3d1BOWUt6bWoxVmRER3FvWUtp?=
- =?utf-8?B?Z0FhUkhpN0xOa01UNlU0K08vVUl4NFZvREFLL1J3TlA2ZFcvTzdSQ05YSW5I?=
- =?utf-8?B?c2lQdDFUZG5aSUR5bDN2eVp6c2hjTHdwZnR0QlFYYXd3Z2tkNW12bDZQNkcx?=
- =?utf-8?B?Zm9Pbi9lbDB5bXJQeEMwcjZTdGczN2UwOUxXTm10S3VlTTV0YndXTUlZZDJ3?=
- =?utf-8?B?UEFoQUhyTFRGaXBsK2tFSXZucGFUMUxab3R1L1BPWVpqYm1SenhzMldFTGlW?=
- =?utf-8?B?cUpXa25mcDdwUldzSDM1MkZDZTd3RFZwUzRMOHRtakZuZmlMWUZZUlJLcUlC?=
- =?utf-8?B?d3A4eUFKWWVHNjBzMmUxbDIwMFF6cVlubm1VbEl6MzlpR3VUenFmeE1EWkhX?=
- =?utf-8?B?cUhNNjRKWDd1OHBZVWUvK0tEWXBFNGhCSDR1RFcrTDVqMkc3NjNGbktNaXhG?=
- =?utf-8?B?RHg5cFZkRTg0SkhFWU1RTHk3SWhqMWQ1dnROOUY5Q29VTjA0WFBPeTlDY1Zv?=
- =?utf-8?B?MmNqU0IwUENPSU5oLzN0dG1YVzU1aEI0L0swYTVmSkhqTFpMMjkvWDFhd2tY?=
- =?utf-8?B?UHpNaXIwZDR0czNsTVJEZ20vOWZBdHZGT0ZwS2ZqRndRYytETmdLalJuLzA0?=
- =?utf-8?B?MTl3cGxsOVpBNnNkcVNFelZTUW1JMS9IV2NNeW1sZ0dEWTNIUGM0RG9ZK1F6?=
- =?utf-8?B?RXd3WkZBL1RoRHVUS3daVUJGSDdmMkdOcUl1UFBUYjQzZmZoNVBhdXlIeGNN?=
- =?utf-8?B?WVBxRExyeVpFaHkzbk4wbUs0OEsxUVVQMStGS2J2U1lUQ2h5RUhYeWxuZVg5?=
- =?utf-8?B?ZktnUUx4ZllpZFdLckZXQm05cDc4STFsY0JWUGtkT2JWOVpXUlZHRUVxc3RI?=
- =?utf-8?B?cDI4Tmg0QWtESDBtempzV3ZIb2RXcVQzUlpqQlJ2S01YcTAzd1I3MUIxc01a?=
- =?utf-8?B?T1hLMDlYM25HRVpRQ0Nrb0M3a3hnUjRxYXFibndiZ3lkQXJuZ1VPR00xT0Y1?=
- =?utf-8?B?SFV0QjJoM2JmWGxKWUx4V2c2TEU4eWR2ZU03UkF1SHpWZkVHY2xKKzA5Smsr?=
- =?utf-8?B?SUlLM01BbmplaUgvUDFzRWJQNURma3JUK2IzMUpTVWFZNHN0UHAwN2s1Ry9K?=
- =?utf-8?B?SzJkajdhR3E3b2VNNEQ2emR3YXVGbG5Bc2Q1TXhaWW1SZ3ZTQWcrWFdpa2Nw?=
- =?utf-8?B?MDgybUJacWNsQTJKU1lLWS9VVElVK2VXb2FHOHA4YlBsbGFzeDJseEFqNi93?=
- =?utf-8?B?cnBvT3dmWHVFMG1abll3M2pCT0p4TUlhNDRhdjk2K3cxQzJ3U0RVUnF1K1Iy?=
- =?utf-8?Q?Cy2j8Woyd9JcXWdLTMZ/A3FaX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8dc710c-7e6a-47cc-3294-08da5966bf7d
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 00:31:46.1785
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CyXoGGJFqk5eAJP3lNCdtNIrq6TTBohFuDo6Bx6YCknoTNE1xXkJ8fADx9pviC+UbPiZNUzPZSZT22Xhq//h8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4306
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9efc4129-e82b-740f-3d6d-67f1468879bb@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/28/22 15:33, Peter Xu wrote:
->> The key point is the connection between "locked" and killable. If the comment
->> explained why "locked" means "killable", that would help clear this up. The
->> NOWAIT sentence is also confusing to me, and adding "mostly NOWAIT" does not
->> clear it up either... :)
+On Tue, Jun 28, 2022 at 04:33:21PM -0700, Andy Lutomirski wrote:
+> On 6/10/22 07:35, Kirill A. Shutemov wrote:
+> > Linear Address Masking mode for userspace pointers encoded in CR3 bits.
+> > The mode is selected per-thread. Add new thread features indicate that the
+> > thread has Linear Address Masking enabled.
+> > 
+> > switch_mm_irqs_off() now respects these flags and constructs CR3
+> > accordingly.
+> > 
+> > The active LAM mode gets recorded in the tlb_state.
+> > 
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> > ---
+> >   arch/x86/include/asm/mmu.h         |  1 +
+> >   arch/x86/include/asm/mmu_context.h | 24 ++++++++++++
+> >   arch/x86/include/asm/tlbflush.h    |  3 ++
+> >   arch/x86/mm/tlb.c                  | 62 ++++++++++++++++++++++--------
+> >   4 files changed, 75 insertions(+), 15 deletions(-)
+> > 
+> > diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
+> > index 5d7494631ea9..d150e92163b6 100644
+> > --- a/arch/x86/include/asm/mmu.h
+> > +++ b/arch/x86/include/asm/mmu.h
+> > @@ -40,6 +40,7 @@ typedef struct {
+> >   #ifdef CONFIG_X86_64
+> >   	unsigned short flags;
+> > +	u64 lam_cr3_mask;
+> >   #endif
+> >   	struct mutex lock;
+> > diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+> > index b8d40ddeab00..e6eac047c728 100644
+> > --- a/arch/x86/include/asm/mmu_context.h
+> > +++ b/arch/x86/include/asm/mmu_context.h
+> > @@ -91,6 +91,29 @@ static inline void switch_ldt(struct mm_struct *prev, struct mm_struct *next)
+> >   }
+> >   #endif
+> > +#ifdef CONFIG_X86_64
+> > +static inline u64 mm_cr3_lam_mask(struct mm_struct *mm)
+> > +{
+> > +	return mm->context.lam_cr3_mask;
+> > +}
+> > +
+> > +static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
+> > +{
+> > +	mm->context.lam_cr3_mask = oldmm->context.lam_cr3_mask;
+> > +}
+> > +
+> > +#else
+> > +
+> > +static inline u64 mm_cr3_lam_mask(struct mm_struct *mm)
+> > +{
+> > +	return 0;
+> > +}
+> > +
+> > +static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
+> > +{
+> > +}
+> > +#endif
 > 
-> Sorry to have a comment that makes it feels confusing.  I tried to
-> explicitly put the comment to be after setting FAULT_FLAG_KILLABLE but
-> obviously I didn't do my job well..
+> Do we really need the ifdeffery here?  I see no real harm in having the
+> field exist on 32-bit -- we don't care much about performance for 32-bit
+> kernels.
+
+The waste doesn't feel right to me. I would rather keep it.
+
+But sure I can do this if needed.
+
+> > -	if (real_prev == next) {
+> > +	if (real_prev == next && prev_lam == new_lam) {
+> >   		VM_WARN_ON(this_cpu_read(cpu_tlbstate.ctxs[prev_asid].ctx_id) !=
+> >   			   next->context.ctx_id);
 > 
-> Maybe that NOWAIT thing adds more complexity but not even necessary.
-> 
-> Would below one more acceptable?
-> 
-> 		/*
-> 		 * We'll only be able to respond to signals when "locked !=
-> 		 * NULL".  When with it, we'll always respond to SIGKILL
-> 		 * (as implied by FAULT_FLAG_KILLABLE above), and we'll
-> 		 * respond to non-fatal signals only if the GUP user has
-> 		 * specified FOLL_INTERRUPTIBLE.
-> 		 */
+> This looks wrong to me.  If we change threads within the same mm but lam
+> changes (which is certainly possible by a race if nothing else) then this
+> will go down the "we really are changing mms" path, not the "we're not
+> changing but we might need to flush something" path.
 
+If LAM gets enabled we must write CR3 with the new LAM mode. Without the
+change real_prev == next case will not do this for !was_lazy case.
 
-It looks like part of this comment is trying to document a pre-existing
-concept, which is that faultin_page() only ever sets FAULT_FLAG_KILLABLE
-if locked != NULL. The problem I am (personally) having is that I don't
-yet understand why or how those are connected: what is it about having
-locked non-NULL that means the process is killable? (Can you explain why
-that is?)
+Note that currently enabling LAM is done by setting LAM mode in the mmu
+context and doing switch_mm(current->mm, current->mm, current), so it is
+very important case.
 
-If that were clear, I think I could suggest a good comment wording.
-
-
-
-
-thanks,
 -- 
-John Hubbard
-NVIDIA
+ Kirill A. Shutemov
