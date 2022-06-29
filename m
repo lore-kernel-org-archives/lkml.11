@@ -2,247 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6EBCCA487
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233077AbiF2MPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
+        id S231685AbiF2MPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 08:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiF2MPE (ORCPT
+        with ESMTP id S232883AbiF2MPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 08:15:04 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A1217E1F;
-        Wed, 29 Jun 2022 05:15:02 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id q6so32103259eji.13;
-        Wed, 29 Jun 2022 05:15:02 -0700 (PDT)
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212351CB23;
+        Wed, 29 Jun 2022 05:15:03 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id l2so14337558pjf.1;
+        Wed, 29 Jun 2022 05:15:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=5r/KEXu3oOU25wHhmNXJIXLUeqHnhpIpl6aSaRMG3+Y=;
-        b=myUUuQ5j1xmOgloRaFglBCQYjGiVoYOn1Fcc4/xslN0UZdK7sYkKxoMpBPEQve/X5O
-         eL561JsuQmWXdrgIp8QbqTOq96/0b56/iu6BpDREU5iwyrMS1Z0fWKXH7p0LEM5qYUof
-         kJX1nc1GebpqwAP29WN5jVJ9S18fmS7cF5iMKR8rEH5a5yU5ste71FyH6o9RB3ozhztQ
-         gClA35syZBHapt1SNtuLS+z8cX8xL7NrfPIHJFBTCxDLQgI4K9iWfp00X2nuxU/tptnm
-         gbZX/XRaLDrt1yRYunMxKrDcaY/qeutV4hyLMuF4uh5Yac20vcVQ/9RYYBwCmFe2fno/
-         LevA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fIylpPsCi1ABfV76nWqOfFV4XRKIutPZz0K9Tp2LFOs=;
+        b=hEgZ7x9S/UmFFpJP6ILkWqIiAIijBVgh/17UnOdeP4h/8EVNVHwK6Sf5QwY9W07TfL
+         fc82dLWOLOerZOEdwY0Gn7oM0fCiArB35bcVUXgdN5JR6UHTPdK21RvIvLYRIV83VMJ5
+         Dbfqp22pSs2CAcDCHMuatIFTg2Al4tiijmqlixG9WEszg2LRbDKwI3wtkwwZ+uDPBzAw
+         21flIiBHL8BqfPwbZhZhsWhCinwakwDPQc1NMgPIvBacX2qcwiAWzj9XvtyEqYo68fV9
+         /GO3GKMrT3gYOuVxA4Y55Mp4TZCguAVE56rnAuwKi2tsvlQSH2J/UYAwIzAEWNdN4R3T
+         IHpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5r/KEXu3oOU25wHhmNXJIXLUeqHnhpIpl6aSaRMG3+Y=;
-        b=pv9WnRq58TQzGS0ozAOgRdbi9miViZrWHCzSlt31/4O7QO/9Jpkl0SDmyJlK0krvjt
-         uyuvHfJxJp1qlaCCxwHfH/dygTMJcBsRWAwbMcKwtXcr9+zvr2GJWkCtdiSRVGNWk6RV
-         IEtjQhRRG8gcXoJCCq1bbCuFIzvcPuAJQWKLc4bUyTabn2qV/Gvf6pGFN6DjCNWWHR/e
-         kWtf4rTrYWxBjxViqBJLlWG8vAme+UbGRSk1XGuhmnoIvKfmGdxfJfLfcRO8GngQDLmj
-         Q5C9kLnzlXH9SwB54qpGVxEIbggwdShuQyO2/LPvCJ2Pc62KypS3MNgLj2w6lNX8dJNt
-         gUqg==
-X-Gm-Message-State: AJIora/7gWfFT4h2uisFVfqsLSJRnR83Xr0GC04FEgT4b9kbbJ56D+Fp
-        ocpzGKM71ddSPlF2VRXkhps=
-X-Google-Smtp-Source: AGRyM1va/Fh9fc6YLFIDQwpk7EGXEv5PoTTKIVa7yFMniQnDHlOS0ygDvEbD+4KldZ7jJlx9qlDnNQ==
-X-Received: by 2002:a17:907:94c5:b0:726:b8a9:f9b9 with SMTP id dn5-20020a17090794c500b00726b8a9f9b9mr3052612ejc.123.1656504900622;
-        Wed, 29 Jun 2022 05:15:00 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id l23-20020aa7cad7000000b004356afc7009sm11224421edt.59.2022.06.29.05.14.59
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fIylpPsCi1ABfV76nWqOfFV4XRKIutPZz0K9Tp2LFOs=;
+        b=cDFGTAZNH3DNDF7zx6/RFVWzACHTCWhtlF8qhqT+lWO6OX3/auGtfL7RXmi5fJYIgO
+         InXbcyzsTaBACtGvggE9vQdW1BYaUDQYyppcT8DsrvouGRo2x3Qt7Fc+u2og6zZRIKV2
+         65m2na1L7E0LTIsPvX69vHvYZJjQoIxSek0L8rT6vp7ZIn4rXBlcxR52O7bqj9ON3/Q0
+         e8IfpSzTomHLbe8diMlS+r7Tq8uT7dw2ZmC0T3jFp4XRfz1l5ShW5lzSSMdh+7trsCdW
+         k1Lw16d42kZ0wGQu5ZblX2zLY3ki7NCWM1LjZr71ksCcG5erfnjr9iVaq5EVDJKRTZP8
+         3KoA==
+X-Gm-Message-State: AJIora/y+1ER6ABitW3jX2HXSttTN9E0CLnF1jCAcmo9Cx61jL82YMRp
+        0gp68zNLbGksSrm4CGVRvHc=
+X-Google-Smtp-Source: AGRyM1u6hbzWp4S+iMWlHW2RimxNvNSEmwFQFCSTNBB1DoA0RlhNEq+qsoUpMlMKYTptqX0hE37lOA==
+X-Received: by 2002:a17:90b:1b11:b0:1ed:37b0:be25 with SMTP id nu17-20020a17090b1b1100b001ed37b0be25mr3517713pjb.99.1656504902573;
+        Wed, 29 Jun 2022 05:15:02 -0700 (PDT)
+Received: from sebin-inspiron ([103.160.233.84])
+        by smtp.gmail.com with ESMTPSA id m14-20020a056a00080e00b00525b61f4792sm6365353pfk.109.2022.06.29.05.14.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 05:15:00 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v4 2/5] dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
-Date:   Wed, 29 Jun 2022 14:14:38 +0200
-Message-Id: <20220629121441.6552-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220629121441.6552-1-ansuelsmth@gmail.com>
-References: <20220629121441.6552-1-ansuelsmth@gmail.com>
+        Wed, 29 Jun 2022 05:15:01 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 17:44:55 +0530
+From:   Sebin Sebastian <mailmesebin00@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Felipe Balbi <balbi@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        linux-aspeed@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] usb: gadget: dereference before null check
+Message-ID: <YrxCP4EE2jhUm8e+@sebin-inspiron>
+References: <20220629080726.107297-1-mailmesebin00@gmail.com>
+ <YrwMJ+3mdFO2Lpm0@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrwMJ+3mdFO2Lpm0@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kpss-acc driver Documentation to yaml.
-The original Documentation was wrong all along. Fix it while we are
-converting it.
-The example was wrong as kpss-acc-v2 should only expose the regs but we
-don't have any driver that expose additional clocks. The kpss-acc driver
-is only specific to v1. For this exact reason, limit all the additional
-bindings (clocks, clock-names, clock-output-names and #clock-cells) to
-v1 and also flag that these bindings should NOT be used for v2.
+On Wed, Jun 29, 2022 at 10:24:07AM +0200, Greg Kroah-Hartman wrote:
+> On Wed, Jun 29, 2022 at 01:37:25PM +0530, SebinSebastian wrote:
+> > Fix coverity warning dereferencing before null check. _ep and desc is
+> > dereferenced on all paths until the check for null. Move the
+> > initializations after the check for null.
+> > Coverity issue: 1518209
+> > 
+> > Signed-off-by: SebinSebastian <mailmesebin00@gmail.com>
+> > ---
+> >  drivers/usb/gadget/udc/aspeed_udc.c | 9 +++++----
+> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/usb/gadget/udc/aspeed_udc.c b/drivers/usb/gadget/udc/aspeed_udc.c
+> > index d75a4e070bf7..96f8193fca15 100644
+> > --- a/drivers/usb/gadget/udc/aspeed_udc.c
+> > +++ b/drivers/usb/gadget/udc/aspeed_udc.c
+> > @@ -341,10 +341,6 @@ static void ast_udc_stop_activity(struct ast_udc_dev *udc)
+> >  static int ast_udc_ep_enable(struct usb_ep *_ep,
+> >  			     const struct usb_endpoint_descriptor *desc)
+> >  {
+> > -	u16 maxpacket = usb_endpoint_maxp(desc);
+> > -	struct ast_udc_ep *ep = to_ast_ep(_ep);
+> > -	struct ast_udc_dev *udc = ep->udc;
+> > -	u8 epnum = usb_endpoint_num(desc);
+> >  	unsigned long flags;
+> >  	u32 ep_conf = 0;
+> >  	u8 dir_in;
+> > @@ -356,6 +352,11 @@ static int ast_udc_ep_enable(struct usb_ep *_ep,
+> >  		return -EINVAL;
+> >  	}
+> > 
+> > +	u16 maxpacket = usb_endpoint_maxp(desc);
+> > +	struct ast_udc_ep *ep = to_ast_ep(_ep);
+> > +	struct ast_udc_dev *udc = ep->udc;
+> > +	u8 epnum = usb_endpoint_num(desc);
+> > +
+> >  	if (!udc->driver) {
+> >  		EP_DBG(ep, "bogus device state\n");
+> >  		return -ESHUTDOWN;
+> > --
+> > 2.34.1
+> > 
+> 
+> Hi,
+> 
+> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+> a patch that has triggered this response.  He used to manually respond
+> to these common problems, but in order to save his sanity (he kept
+> writing the same thing over and over, yet to different people), I was
+> created.  Hopefully you will not take offence and will fix the problem
+> in your patch and resubmit it so that it can be accepted into the Linux
+> kernel tree.
+> 
+> You are receiving this message because of the following common error(s)
+> as indicated below:
+> 
+> - Your patch breaks the build.
+> 
+> - Your patch contains warnings and/or errors noticed by the
+>   scripts/checkpatch.pl tool.
+> 
+> - This looks like a new version of a previously submitted patch, but you
+>   did not list below the --- line any changes from the previous version.
+>   Please read the section entitled "The canonical patch format" in the
+>   kernel file, Documentation/SubmittingPatches for what needs to be done
+>   here to properly describe this.
+> 
+> If you wish to discuss this problem further, or you have questions about
+> how to resolve this issue, please feel free to respond to this email and
+> Greg will reply once he has dug out from the pending patches received
+> from other developers.
+> 
+> thanks,
+> 
+> greg k-h's patch email bot
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 ----------
- .../bindings/arm/msm/qcom,kpss-acc.yaml       | 93 +++++++++++++++++++
- 2 files changed, 93 insertions(+), 49 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
-deleted file mode 100644
-index 7f696362a4a1..000000000000
---- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
-+++ /dev/null
-@@ -1,49 +0,0 @@
--Krait Processor Sub-system (KPSS) Application Clock Controller (ACC)
--
--The KPSS ACC provides clock, power domain, and reset control to a Krait CPU.
--There is one ACC register region per CPU within the KPSS remapped region as
--well as an alias register region that remaps accesses to the ACC associated
--with the CPU accessing the region.
--
--PROPERTIES
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: should be one of:
--			"qcom,kpss-acc-v1"
--			"qcom,kpss-acc-v2"
--
--- reg:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: the first element specifies the base address and size of
--		    the register region. An optional second element specifies
--		    the base address and size of the alias register region.
--
--- clocks:
--        Usage: required
--        Value type: <prop-encoded-array>
--        Definition: reference to the pll parents.
--
--- clock-names:
--        Usage: required
--        Value type: <stringlist>
--        Definition: must be "pll8_vote", "pxo".
--
--- clock-output-names:
--	Usage: optional
--	Value type: <string>
--	Definition: Name of the output clock. Typically acpuX_aux where X is a
--		    CPU number starting at 0.
--
--Example:
--
--	clock-controller@2088000 {
--		compatible = "qcom,kpss-acc-v2";
--		reg = <0x02088000 0x1000>,
--		      <0x02008000 0x1000>;
--		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
--		clock-names = "pll8_vote", "pxo";
--		clock-output-names = "acpu0_aux";
--	};
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-new file mode 100644
-index 000000000000..5e16121d9f0d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-@@ -0,0 +1,93 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-acc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Krait Processor Sub-system (KPSS) Application Clock Controller (ACC)
-+
-+maintainers:
-+  - Christian Marangi <ansuelsmth@gmail.com>
-+
-+description: |
-+  The KPSS ACC provides clock, power domain, and reset control to a Krait CPU.
-+  There is one ACC register region per CPU within the KPSS remapped region as
-+  well as an alias register region that remaps accesses to the ACC associated
-+  with the CPU accessing the region.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,kpss-acc-v1
-+      - qcom,kpss-acc-v2
-+
-+  reg:
-+    items:
-+      - description: Base address and size of the register region
-+      - description: Optional base address and size of the alias register region
-+
-+  clocks:
-+    items:
-+      - description: phandle to pll8_vote
-+      - description: phandle to pxo_board
-+
-+  clock-names:
-+    items:
-+      - const: pll8_vote
-+      - const: pxo
-+
-+  clock-output-names:
-+    description: Name of the aux clock. Krait can have at most 4 cpu.
-+    enum:
-+      - acpu0_aux
-+      - acpu1_aux
-+      - acpu2_aux
-+      - acpu3_aux
-+
-+  '#clock-cells':
-+    const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        const: qcom,kpss-acc-v1
-+then:
-+  required:
-+    - clocks
-+    - clock-names
-+    - clock-output-names
-+    - '#clock-cells'
-+else:
-+  properties:
-+    clocks: false
-+    clock-names: false
-+    clock-output-names: false
-+    '#clock-cells': false
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
-+
-+    clock-controller@2088000 {
-+      compatible = "qcom,kpss-acc-v1";
-+      reg = <0x02088000 0x1000>, <0x02008000 0x1000>;
-+      clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-+      clock-names = "pll8_vote", "pxo";
-+      clock-output-names = "acpu0_aux";
-+      #clock-cells = <0>;
-+    };
-+
-+  - |
-+    clock-controller@f9088000 {
-+      compatible = "qcom,kpss-acc-v2";
-+      reg = <0xf9088000 0x1000>,
-+            <0xf9008000 0x1000>;
-+    };
-+...
--- 
-2.36.1
+I am sorry to keep on bothering with this incorrect patches. I am
+running the checkpatch script everytime before I sent any patches. It is
+not showing any warnings or errors. Is it because of my name that my
+patches are getting rejected? I can see a space missing.
 
