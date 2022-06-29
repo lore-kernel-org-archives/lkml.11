@@ -2,102 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB872C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B2EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbiF2Nce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
+        id S233856AbiF2Nd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233838AbiF2Nca (ORCPT
+        with ESMTP id S232085AbiF2Nd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:32:30 -0400
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9133937034;
-        Wed, 29 Jun 2022 06:32:26 -0700 (PDT)
-Received: from [192.168.1.103] (31.173.80.151) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Wed, 29 Jun
- 2022 16:32:17 +0300
-Subject: Re: [PATCH] ata: pata_cs5535: Fix W=1 warnings
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        John Garry <john.garry@huawei.com>
-CC:     <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1656335540-50293-1-git-send-email-john.garry@huawei.com>
- <69ed5587-52fd-4171-b97f-091df8b377c6@opensource.wdc.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <9caef01c-b601-c19f-10eb-720e8d7b35dc@omp.ru>
-Date:   Wed, 29 Jun 2022 16:32:17 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 29 Jun 2022 09:33:26 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C085021E03;
+        Wed, 29 Jun 2022 06:33:25 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id c13so22204094eds.10;
+        Wed, 29 Jun 2022 06:33:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=HX8H/5X1AYfUWCH90rbwrqx1PKjGOWb2yIxjpKzybeA=;
+        b=qeZgDBijplrDWYpAEKdR/SiM5rpBNhifg1GErkSgVqrKkyT4qmExnNbUnOddmwpDBH
+         bPmITpGwsaiYPQM66R7IMvzJGmo1bD04yb1fjQOCgljxeaXD8KZn3Hs3TAJLzHJfUbED
+         zRs057U9pRO4D8HPc01++Gt1wazc06ufcye8IkfQh3+ltG4I3tTBwe/lhcpOG2n/bjXd
+         k2lWTFjGR/FayGftJ6Hg424As11UUWsXpE4UUBOGGd95KAawGHELO80wHaWstKEcvgKQ
+         qP4m1ylkVzhmXUvUZCzcgxE2Y7z4juIVwV9k3E6IIh47TJya1bwSpNMAyUbpwfB9Uc+4
+         TEkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=HX8H/5X1AYfUWCH90rbwrqx1PKjGOWb2yIxjpKzybeA=;
+        b=kKUfyv1ZpRiy1d2cIc4SG4tifxaMdv88dvw6E2lbdeC4mDKE6ZmF6XRP9e8RXLirg9
+         Xgqo16JeUhenxGgtzh0ukmQsBvkpFxoxudkysbGlpVi1A6XcUgM4gCETgcQHrghgbPJf
+         BcoxGXCLd4dscCpKJKQ9MdUOo3Q5aPROZeMidYeseY0nVDFiK4WkFp6zbs4SCMJZ8Apa
+         G4DLjdTP/ffEq6GhYQKIVKX6zIxAx5/V9IKuOezuVhVW8mB8B7BDLSdHg5w6Y0SDXhl2
+         nqi20JwOnWZdPFQpG0xlBFV/jbx4zDFK6E2m4mYQ6TH3Fe8xqKUW7HUjDa5R13VwM5dr
+         YMiA==
+X-Gm-Message-State: AJIora8PbmCX7caY1z6R7EKxbIrvLX0t2gHmR1EXqjDSJHt7ZM9H8zH/
+        B5r2eMwna6gMaVtED3OYn04=
+X-Google-Smtp-Source: AGRyM1skQZ2qnYsz4+K70WDhSHK67i2xGhaBOEwaG3LUhRyMnIL/2XD0Cn8CjOGt4wQUhlCwMRYRAg==
+X-Received: by 2002:a05:6402:2c4:b0:435:8ce0:aef8 with SMTP id b4-20020a05640202c400b004358ce0aef8mr4335159edx.140.1656509604394;
+        Wed, 29 Jun 2022 06:33:24 -0700 (PDT)
+Received: from localhost (92.40.169.111.threembb.co.uk. [92.40.169.111])
+        by smtp.gmail.com with ESMTPSA id i23-20020aa7c9d7000000b0042de3d661d2sm11285593edt.1.2022.06.29.06.33.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 06:33:23 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     cw00.choi@samsung.com
+Cc:     myungjoo.ham@samsung.com, linux-next@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: extcon-next: patch "extcon: max77843: Replace irqchip mask_invert
+ with unmask_base" should be reverted
+Date:   Wed, 29 Jun 2022 14:09:26 +0100
+Message-ID: <3AvtDmBqK77YBE1XGCycEcGxreGWRJSQ@localhost>
 MIME-Version: 1.0
-In-Reply-To: <69ed5587-52fd-4171-b97f-091df8b377c6@opensource.wdc.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [31.173.80.151]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/29/2022 13:15:36
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 171437 [Jun 29 2022]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 491 491 a718ef6dc942138335b0bcd7ab07f27b5c06005e
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_arrow_text}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.80.151 in (user)
- b.barracudacentral.org}
-X-KSE-AntiSpam-Info: omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.80.151
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/29/2022 13:19:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 6/29/2022 10:47:00 AM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/29/22 4:51 AM, Damien Le Moal wrote:
 
->> x86_64 allmodconfig build with W=1 gives these warnings:
->>
->> drivers/ata/pata_cs5535.c: In function ‘cs5535_set_piomode’:
->> drivers/ata/pata_cs5535.c:93:11: error: variable ‘dummy’ set but not used [-Werror=unused-but-set-variable]
->>   u32 reg, dummy;
->>            ^~~~~
->> drivers/ata/pata_cs5535.c: In function ‘cs5535_set_dmamode’:
->> drivers/ata/pata_cs5535.c:132:11: error: variable ‘dummy’ set but not used [-Werror=unused-but-set-variable]
->>   u32 reg, dummy;
->>            ^~~~~
->> cc1: all warnings being treated as errors
->>
->> Mark variables 'dummy' as "maybe unused" to satisfy when rdmsr() is
->> stubbed, which is the same as what we already do in pata_cs5536.c .
->>
->> Signed-off-by: John Garry <john.garry@huawei.com>
-> 
-> Applied to for-5.20. Thanks !
+Hi Chanwoo,
 
-   Why not to 5.19? The warnings are fatal as can be seen from the commit log...
+I just noticed that one of my patches wound up in extcon-next as
+commit a7d674db4612 ("extcon: max77843: Replace irqchip mask_invert
+with unmask_base").
 
-MBR, Sergey
+That patch has been applied too early and should be reverted/dropped,
+as it depends on changes made in my regmap-irq refactoring series[1].
+My commit message was overly broad and didn't communicate that fact,
+however. Unmask registers are in fact broken right now so the patch
+doesn't work as advertised and will break the driver.
 
+For avoidance of doubt my other two extcon patches you took,
+
+    extcon: sm5502: Drop useless mask_invert flag on irqchip
+    extcon: rt8973a: Drop useless mask_invert flag on irqchip
+
+are safe to take early and do not need to be reverted.
+
+[1]: https://lore.kernel.org/lkml/20220623211420.918875-1-aidanmacdonald.0x0@gmail.com/
+
+Best regards,
+Aidan
