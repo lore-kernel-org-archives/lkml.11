@@ -2,118 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 385ABC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 857C8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233222AbiF2P7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
+        id S233904AbiF2P7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbiF2P7K (ORCPT
+        with ESMTP id S229982AbiF2P7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:59:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670EE1BE8C
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:59:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBFA961892
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 15:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A471AC34114;
-        Wed, 29 Jun 2022 15:59:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656518348;
-        bh=vkCMRqaCWUx4F0m0dc0QUXqxBSA2sPUMQx/IJbseS2s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=toanYwsEgQT1GQBCfgkgpOloQvb0+sOkiUXC5hGJ9PXvaVxKVSIk/boRFelncp4cn
-         XxinNnjJS/1IDML3UkqDQ2/h+bssAeGimUdAtByN10tW+o9CJ6nHBfsvsfg19Jsf3a
-         nQf06malJlk2TZKpNtqWWiZ98OOxymBWHg/ajc3fOmmPsYQCyZ0rK4y9JyyRVjBwAr
-         +s/rwFP4uduBXrl2H/2ORHYoDOPaZp5EjVkZtm0aEPhB7C5BNwNU5EvScNj9Fyxerw
-         OSNkGvcxnALbfmPan+VVYgvYH0MGSSlnImRZOjg5cKUIDLLDVj1FJnnTktwRxL0HUe
-         TDuBDGc4JJcMg==
-Date:   Wed, 29 Jun 2022 16:59:03 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Ivan T. Ivanov" <iivanov@suse.de>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Madhavan T . Venkataraman" <madvenka@linux.microsoft.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] arm64: Add initial set of stack unwinder self tests
-Message-ID: <Yrx2xwbYMfcl8Qok@sirena.org.uk>
-References: <20220624141000.88120-1-iivanov@suse.de>
- <20220624141000.88120-2-iivanov@suse.de>
+        Wed, 29 Jun 2022 11:59:39 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF311BE93;
+        Wed, 29 Jun 2022 08:59:38 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so9025116wmp.3;
+        Wed, 29 Jun 2022 08:59:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YNly1dfG4RY5ld91Tin+FHgAbZbcnCeyfevD6nD1vfc=;
+        b=ZgK2yec9C4SmTv4WPvJao1de+26SSYJi9rBk2Rm5tsjBhm84Yai0AaWoHnwo8hxldR
+         9klx9J26g4poB1ilLULPFvjpYmbTXZgqjR5jBDuDaCXRnejPGxTL9FQWDJQjwvm9d62Z
+         wqrON8mV1zO7WtefS2+bi0tYsSsq+R3gxgRt3JZCnSWKxoiX/1wD1l/9G48Nyv48fyK1
+         esV/Tfz4nn6Zw1aHdKtTzQgu7Eaic0SxMRHB/Y9gbcJby4fgGAluUiP08MTXcISxD9qO
+         +x6hejlvzv8jO2GDoURMi9RpPIAHWVsYCRCbuzEwSmi6pn55/C/vppZqg/HNESGFxliO
+         oRiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YNly1dfG4RY5ld91Tin+FHgAbZbcnCeyfevD6nD1vfc=;
+        b=f2rjlWZ47pBRYQbTkjOh/qT2fvifGKbdrvaVyqdlGqnjPpXQVqwJXnk5rLvjhFCzLl
+         9ZJ45whtj2kvMhQ1Hote0xIh0FWbkAdZNKPznJlYMvbJVxdXWFe5XmlTZc3fL515oJOQ
+         tswuXfw6Gln204qvTcUW9AAsn8QEq6ubqyQGFDZk3VuzxMbyuArn1g+9MzzFsp3B8xDQ
+         MEFjSPhekHtm7BeBKj5aaUpR1MDa8LwWf7AF3J4m9UmMvxroEGr6uBgyGxd273mPioa8
+         rFRlyom3NmLwwAhjQMbvuXgjC7rWQ0APjra3Z8/Oy4dDlbYbD8OIN0OMXcIS94+4k48O
+         uygA==
+X-Gm-Message-State: AJIora/S6KoSvjmlF0k4tPuKYeojZnYZYuc4jbXdGJ03P+mSm7pw9LgH
+        DaLtLufVIa6WZzTFBmHd263e+H/z1gxjQ6Ktz2Y=
+X-Google-Smtp-Source: AGRyM1tAAlS4kM+nsw/NsoxnqWVB7y/vftH9UCWhq7jvEEfRS+sgsPnvHp0EazC+wGHRC5cFIqKQzo9Y/BNHvxxfINU=
+X-Received: by 2002:a05:600c:3516:b0:39c:8091:31b6 with SMTP id
+ h22-20020a05600c351600b0039c809131b6mr6732490wmq.164.1656518376833; Wed, 29
+ Jun 2022 08:59:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="OcGioRICVq9yfSBj"
-Content-Disposition: inline
-In-Reply-To: <20220624141000.88120-2-iivanov@suse.de>
-X-Cookie: Booths for two or more.
+References: <20220510132256.v2.1.Ibf12c1b99feecc4130f1e3130a3fc4ddd710a2e9@changeid>
+ <YrvVPiLQL6d4MrFV@builder.lan> <654c8819-5721-838e-4148-6fbdc5fc2dcd@quicinc.com>
+In-Reply-To: <654c8819-5721-838e-4148-6fbdc5fc2dcd@quicinc.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Wed, 29 Jun 2022 08:59:50 -0700
+Message-ID: <CAF6AEGuV=sF2sLfQ53AJ4pQYFCjMH3-ephwyGW_HQqnkKRm5MQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] drm/msm/a6xx: Add support for a new 7c3 sku
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
+        <devicetree@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Sean Paul <sean@poorly.run>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 28, 2022 at 10:32 PM Akhil P Oommen
+<quic_akhilpo@quicinc.com> wrote:
+>
+> On 6/29/2022 9:59 AM, Bjorn Andersson wrote:
+> > On Tue 10 May 02:53 CDT 2022, Akhil P Oommen wrote:
+> >
+> >> Add a new sku to the fuse map of 7c3 gpu.
+> >>
+> >> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+> > Is this series still needed/wanted? I've been waiting for patch 1 to be
+> > merged in the driver so that I can pick up the dts change.
 
---OcGioRICVq9yfSBj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It just missed the previous merge window by a couple of days.. I was
+planning to pick it up for the upcoming merge window
 
-On Fri, Jun 24, 2022 at 05:10:00PM +0300, Ivan T. Ivanov wrote:
-> Add kunit tests for obvious cases where stack unwind could be needed.
-> Like these:
->=20
->  * Unwind a separate task
->  * Unwind starting from caller
->  * Unwind from irq context
->  * Unwind from kprobe handler called via ftrace
->  * Unwind from ftrace handler
->  * Unwind through kretprobed function
->  * Unwind from kretprobe handler
->=20
-> Tests are completely based on code used in s390 unwinder tests.
-> Cases which where not relevant to aarch64 where removed and
-> some places where adjusted to address aarch64 specifics.
+but I don't think the dt bit should depend on the driver bit in this case
 
-I think this would be a bit easier to digest if it were a series which
-builds things up with the test cases in individual patches, or at least
-things like ftrace and kprobes split out a bit more, rather than every
-single test all at once.  I've got a few *very* superficial comments
-below, I think the code is fine but there's several moving pieces to
-check.
+> >
+> > Regards,
+> > Bjorn
+> Internally, this sku is on hold. So we can drop this series for now. I
+> will resend it if required in future.
 
-> +/*
-> + * Calls test_arch_stack_walk() which is handy wrapper of aarch64 unwind
-> + * functionality, and verifies that the result contains unwindme_func2
-> + *followed by unwindme_func1.
+ok, I'll hold off for now
 
-Missing space.
+BR,
+-R
 
-> +	ret =3D register_ftrace_function(fops);
-> +	if (!ret) {
-> +		ret =3D test_unwind_ftraced_func(u);
-> +		unregister_ftrace_function(fops);
-> +	} else {
-> +		kunit_err(current_test,
-> +			  "failed to register ftrace handler (%d)\n", ret);
-> +	}
-
-Shouldn't we return an error here?
-
---OcGioRICVq9yfSBj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK8dsYACgkQJNaLcl1U
-h9C6Egf9GSle5eDoCuHiH/eFkHYYrFpZpnWzgNctALXJSONbkHnpSlnIyL4T6hzX
-XoYDY3/6N0WdvTS2bJX5HY29zpxHMT+4GILMsW8z3pBcd5QskK0fP37/xR8F34Bf
-/YHcW0mBh868LtHg6mdhPpWGQDOemt+BgB7oR+Uy68XxCP4BBZj1dsJuZIzxpu/E
-GUhh6t4zWGrP3gr51ZxsqCpcnun4NjyGHrDlliNApLItPpr7wLWrQ3ZdUzbFMjLg
-I7C5sRk5yV+xgnYRrYW3ZFrLuOoXsEf+aR95yguthYa4UG4VU+lll4ZAXObQbqH/
-aZZZepN0KJE/dl/bd1Tx4N2GN7anNA==
-=XUtp
------END PGP SIGNATURE-----
-
---OcGioRICVq9yfSBj--
+> -Akhil.
+>
+> >
+> >> ---
+> >>
+> >> (no changes since v1)
+> >>
+> >>   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 ++
+> >>   1 file changed, 2 insertions(+)
+> >>
+> >> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >> index 841e47a..61bb21d 100644
+> >> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >> @@ -1771,6 +1771,8 @@ static u32 adreno_7c3_get_speed_bin(u32 fuse)
+> >>              return 0;
+> >>      else if (fuse == 190)
+> >>              return 1;
+> >> +    else if (fuse == 96)
+> >> +            return 2;
+> >>
+> >>      return UINT_MAX;
+> >>   }
+> >> --
+> >> 2.7.4
+> >>
+>
