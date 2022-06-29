@@ -2,106 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED189C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 01:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5392C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 01:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbiF2BPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 21:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52942 "EHLO
+        id S229619AbiF2BRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 21:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiF2BPe (ORCPT
+        with ESMTP id S229504AbiF2BRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 21:15:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8104A28E1A
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 18:15:33 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXk500rRXzkWvG;
-        Wed, 29 Jun 2022 09:14:12 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 29 Jun
- 2022 09:15:31 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <mhiramat@kernel.org>,
-        <rostedt@goodmis.org>, <liaochang1@huawei.com>
-CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] riscv/kprobes: allocate detour buffer from module area
-Date:   Wed, 29 Jun 2022 09:13:17 +0800
-Message-ID: <20220629011317.259986-1-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 28 Jun 2022 21:17:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A582CC86;
+        Tue, 28 Jun 2022 18:17:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0621861C47;
+        Wed, 29 Jun 2022 01:17:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60024C341CC;
+        Wed, 29 Jun 2022 01:17:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656465462;
+        bh=qwLxFYOuowxIe8KZeDT2ewzdtv2FMZ3tEfCQjPwD+r0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=EDAetCCmvnZHcxyz0H1XLFh0XtVkVcZUDpSkexY/oY3ava9yp5Y9OFaWYO/z7bC3t
+         goxVcYCawDgwDstnfUtkNRo0ZCKZNcSSD2YcLOoZ3PzVZAh8qA10coEWDEmipjlbMa
+         Ftlct2aG7fLfKxDGAXd+AEg03+fDA39hLgyeEaOfpJjY91lSJ7zX7zvecJf/DYivTb
+         0q42U1H4PL13VVSfvOk++cKE4iNXJTFKzA2yQCflUTODj6KySNelHBdnwQ7tKOprD/
+         nTse+T9QdSXfi0hArQgygf1rC5fabJud30KQTLjg8Nae/hwm2Mp4e7+F1DLL7gKZKf
+         KqPjafRUm1odA==
+Received: by mail-ua1-f51.google.com with SMTP id k19so5191535uap.7;
+        Tue, 28 Jun 2022 18:17:42 -0700 (PDT)
+X-Gm-Message-State: AJIora8VFaX025N90t8OuW/vSzT8tZyyc7NMSJ64WrDe1Jjq3t01H+mi
+        +VySTDm+TAS0L1gDHyJdNprCh+CTiJu8a3ungCY=
+X-Google-Smtp-Source: AGRyM1st40hCRJVtOkY/GgEh2hf0RL+nbenkSflSWZSZDWsDeubLW9YCT+HEpSzX2QJvuFM4OduPHYtkSBkJGtts9uQ=
+X-Received: by 2002:ab0:6704:0:b0:37c:c743:eebe with SMTP id
+ q4-20020ab06704000000b0037cc743eebemr257481uam.84.1656465461345; Tue, 28 Jun
+ 2022 18:17:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+References: <20220628081707.1997728-1-guoren@kernel.org> <20220628081707.1997728-5-guoren@kernel.org>
+ <09abc75e-2ffb-1ab5-d0fc-1c15c943948d@redhat.com>
+In-Reply-To: <09abc75e-2ffb-1ab5-d0fc-1c15c943948d@redhat.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Wed, 29 Jun 2022 09:17:30 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQZzOtOsq0DV48Gi76UtBSa+vdY7dLZmoPD_OFUZ0Wbrg@mail.gmail.com>
+Message-ID: <CAJF2gTQZzOtOsq0DV48Gi76UtBSa+vdY7dLZmoPD_OFUZ0Wbrg@mail.gmail.com>
+Subject: Re: [PATCH V7 4/5] asm-generic: spinlock: Add combo spinlock (ticket
+ & queued)
+To:     Waiman Long <longman@redhat.com>
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>,
+        Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To address the limitation of PC-relative branch instruction
-on riscv architecture, detour buffer slot is allocated from
-a area, the distance of which from kernel should be less than 4GB.
+On Wed, Jun 29, 2022 at 2:13 AM Waiman Long <longman@redhat.com> wrote:
+>
+> On 6/28/22 04:17, guoren@kernel.org wrote:
+> > From: Guo Ren <guoren@linux.alibaba.com>
+> >
+> > Some architecture has a flexible requirement on the type of spinlock.
+> > Some LL/SC architectures of ISA don't force micro-arch to give a strong
+> > forward guarantee. Thus different kinds of memory model micro-arch would
+> > come out in one ISA. The ticket lock is suitable for exclusive monitor
+> > designed LL/SC micro-arch with limited cores and "!NUMA". The
+> > queue-spinlock could deal with NUMA/large-scale scenarios with a strong
+> > forward guarantee designed LL/SC micro-arch.
+> >
+> > So, make the spinlock a combo with feature.
+> >
+> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> > Signed-off-by: Guo Ren <guoren@kernel.org>
+> > Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > Cc: Palmer Dabbelt <palmer@rivosinc.com>
+> > ---
+> >   include/asm-generic/spinlock.h | 43 ++++++++++++++++++++++++++++++++--
+> >   kernel/locking/qspinlock.c     |  2 ++
+> >   2 files changed, 43 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+> > index f41dc7c2b900..a9b43089bf99 100644
+> > --- a/include/asm-generic/spinlock.h
+> > +++ b/include/asm-generic/spinlock.h
+> > @@ -28,34 +28,73 @@
+> >   #define __ASM_GENERIC_SPINLOCK_H
+> >
+> >   #include <asm-generic/ticket_spinlock.h>
+> > +#ifdef CONFIG_ARCH_USE_QUEUED_SPINLOCKS
+> > +#include <linux/jump_label.h>
+> > +#include <asm-generic/qspinlock.h>
+> > +
+> > +DECLARE_STATIC_KEY_TRUE(use_qspinlock_key);
+> > +#endif
+> > +
+> > +#undef arch_spin_is_locked
+> > +#undef arch_spin_is_contended
+> > +#undef arch_spin_value_unlocked
+> > +#undef arch_spin_lock
+> > +#undef arch_spin_trylock
+> > +#undef arch_spin_unlock
+> >
+> >   static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
+> >   {
+> > -     ticket_spin_lock(lock);
+> > +#ifdef CONFIG_ARCH_USE_QUEUED_SPINLOCKS
+> > +     if (static_branch_likely(&use_qspinlock_key))
+> > +             queued_spin_lock(lock);
+> > +     else
+> > +#endif
+> > +             ticket_spin_lock(lock);
+> >   }
+>
+> Why do you use a static key to control whether to use qspinlock or
+> ticket lock? In the next patch, you have
+>
+> +#if !defined(CONFIG_NUMA) && defined(CONFIG_QUEUED_SPINLOCKS)
+> +       static_branch_disable(&use_qspinlock_key);
+> +#endif
+>
+> So the current config setting determines if qspinlock will be used, not
+> some boot time parameter that user needs to specify. This patch will
+> just add useless code to lock/unlock sites. I don't see any benefit of
+> doing that.
+This is a startup patch for riscv. next, we could let vendors make choices.
+I'm not sure they like cmdline or vendor-specific errata style.
 
-For the time being, Modules region always live before the kernel.
-But Vmalloc region reside far away from kernel, the distance is
-half of the kernel address space.
+Eventually, we would let one riscv Image support all machines, some
+use ticket-lock, and some use qspinlock.
 
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
----
- arch/riscv/kernel/probes/kprobes.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+>
+> Cheers,
+> Longman
+>
 
-diff --git a/arch/riscv/kernel/probes/kprobes.c b/arch/riscv/kernel/probes/kprobes.c
-index e6e950b7cf32..bc027a663b17 100644
---- a/arch/riscv/kernel/probes/kprobes.c
-+++ b/arch/riscv/kernel/probes/kprobes.c
-@@ -6,12 +6,14 @@
- #include <linux/extable.h>
- #include <linux/slab.h>
- #include <linux/stop_machine.h>
-+#include <linux/moduleloader.h>
- #include <asm/ptrace.h>
- #include <linux/uaccess.h>
- #include <asm/sections.h>
- #include <asm/cacheflush.h>
- #include <asm/bug.h>
- #include <asm/patch.h>
-+#include <asm/set_memory.h>
- 
- #include "decode-insn.h"
- 
-@@ -86,10 +88,28 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
- #ifdef CONFIG_MMU
- void *alloc_insn_page(void)
- {
-+#if defined(CONFIG_MODULES) && defined(CONFIG_64BIT)
-+	void *page;
-+
-+	page = module_alloc(PAGE_SIZE);
-+	if (!page)
-+		return NULL;
-+
-+	set_vm_flush_reset_perms(page);
-+	/*
-+	 * First make the page read-only, and only then make it executable to
-+	 * prevent it from being W+X in between.
-+	 */
-+	set_memory_ro((unsigned long)page, 1);
-+	set_memory_x((unsigned long)page, 1);
-+
-+	return page;
-+#else
- 	return  __vmalloc_node_range(PAGE_SIZE, 1, VMALLOC_START, VMALLOC_END,
- 				     GFP_KERNEL, PAGE_KERNEL_READ_EXEC,
- 				     VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
- 				     __builtin_return_address(0));
-+#endif
- }
- #endif
- 
--- 
-2.17.1
 
+
+--
+Best Regards
+ Guo Ren
+
+ML: https://lore.kernel.org/linux-csky/
