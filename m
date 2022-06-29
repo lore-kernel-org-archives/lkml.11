@@ -2,390 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE3EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233756AbiF2NNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
+        id S233770AbiF2NOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233594AbiF2NNX (ORCPT
+        with ESMTP id S233253AbiF2NN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:13:23 -0400
-Received: from sender11-op-o11.zoho.eu (sender11-op-o11.zoho.eu [31.186.226.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063A115A03
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:13:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1656507469; cv=none; 
-        d=zohomail.eu; s=zohoarc; 
-        b=gx1wTM/ATeqJNPaFBcWGMffgzbnCu241llIkg8zQbJkuqcYDeHji7ddzGwqYOT6Lo8AmYRZcUNQAyZMzTlz5ZJzPw5B6X+T0kpdu+LyS8oiwNyOiK/b4JRHn3lllBau1zDtLq147D16ZCRTPGgdsehph7pnBeuljjvY8jVk6hnU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-        t=1656507469; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Qm3Rh5y/q8c+81HrLMGaq/yQ8HATBahzYOkp615GaFE=; 
-        b=eDaXFsk0Tn4FvAN9LjdHmoVv30xgeG66MyyPWOlfBzwPxNcsrPOVglJGra68NFJW2enohbWHnETe+R/vaZ0TzVFq/8AKmLsmWZOweASeIv+DH26WjwYPzr5BoGShvufwdY9PTA5vTLc6IynqTXjWx7Mi2rzn2McFbnTP4sQzsbg=
-ARC-Authentication-Results: i=1; mx.zohomail.eu;
-        dkim=pass  header.i=kempniu.pl;
-        spf=pass  smtp.mailfrom=kernel@kempniu.pl;
-        dmarc=pass header.from=<kernel@kempniu.pl>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656507469;
-        s=zmail; d=kempniu.pl; i=kernel@kempniu.pl;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=Qm3Rh5y/q8c+81HrLMGaq/yQ8HATBahzYOkp615GaFE=;
-        b=gIpzOLhLdXLDqe2MMAqczyfstdMRLIzKXQwgFIYPeJn07V5RerxNALUUpUU9U05G
-        q4lalgB1oyZi1I8ibwWfCE+vk8vBoIeMmtw7/b6Z5M9Cq3XVwGROf+PRZ2MNjqRlXm9
-        BkAJowHU/9KPEMTUkucsBZKPhw6YdmwK3KZCscz4=
-Received: from larwa.hq.kempniu.pl (212.180.138.61 [212.180.138.61]) by mx.zoho.eu
-        with SMTPS id 1656507467671664.497666101054; Wed, 29 Jun 2022 14:57:47 +0200 (CEST)
-From:   =?UTF-8?q?Micha=C5=82=20K=C4=99pie=C5=84?= <kernel@kempniu.pl>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Boris Brezillon <boris.brezillon@collabora.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Message-ID: <20220629125737.14418-5-kernel@kempniu.pl>
-Subject: [PATCH v4 4/4] mtdchar: add MEMREAD ioctl
-Date:   Wed, 29 Jun 2022 14:57:37 +0200
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220629125737.14418-1-kernel@kempniu.pl>
-References: <20220629125737.14418-1-kernel@kempniu.pl>
-MIME-Version: 1.0
+        Wed, 29 Jun 2022 09:13:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E3E19C22
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:13:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3770B821C4
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 13:13:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A33C7C34114;
+        Wed, 29 Jun 2022 13:13:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656508435;
+        bh=uUbiNUjmsvlrQLS3bongCs5plDeE5Sm8soMJ2UiJ0pw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mq9EZzfGmwkHdMZtuG/cbSGlsb90DU56KsEugW4vviGxszgcGZPNAODEnAEdRmJan
+         xWSAKmkSQ3+8SBYBrmwVSKWUGDmwhP9hUDXmFxGjeuDKv1Eg+/EtsEvPgDDHUR1E+S
+         SPVDG2KUxVR8DZNg4nzwOWPn8y+AjFe91g7roanHezz+6gni8OmduNIHm0hHnKvVO6
+         qGDsriR06L5z65gfbQcqefFlVTlTLOEaU7KuVWUMNopVUFhczFOVX4cjP8ubTI2gQI
+         6zETsQtgg2XxY3/mxsb70r5kMyorYCn5AyBNm0mrtjFTDZpZrdUK2LUz1D/O++q/4m
+         CVarLoMak9u+Q==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o6XVx-0044fm-Ex;
+        Wed, 29 Jun 2022 14:13:53 +0100
+Date:   Wed, 29 Jun 2022 14:13:53 +0100
+Message-ID: <87tu831ujy.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V13 09/13] irqchip/loongson-liointc: Add ACPI init support
+In-Reply-To: <1656329997-20524-10-git-send-email-lvjianmin@loongson.cn>
+References: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
+        <1656329997-20524-10-git-send-email-lvjianmin@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-User-space applications making use of MTD devices via /dev/mtd*
-character devices currently have limited capabilities for reading data:
+On Mon, 27 Jun 2022 12:39:53 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>=20
+> From: Huacai Chen <chenhuacai@loongson.cn>
+>=20
+> We are preparing to add new Loongson (based on LoongArch, not compatible
+> with old MIPS-based Loongson) support. LoongArch use ACPI other than DT
+> as its boot protocol, so add ACPI init support.
+>=20
+> LIOINTC stands for "Legacy I/O Interrupts" that described in Section
+> 11.1 of "Loongson 3A5000 Processor Reference Manual". For more
+> information please refer Documentation/loongarch/irq-chip-model.rst.
 
-  - only deprecated methods of accessing OOB layout information exist,
+This is what happens with this series while compiling for MIPS:
 
-  - there is no way to explicitly specify MTD operation mode to use; it
-    is auto-selected based on the MTD file mode (MTD_FILE_MODE_*) set
-    for the character device; in particular, this prevents using
-    MTD_OPS_AUTO_OOB for reads,
+drivers/irqchip/irq-loongson-liointc.c: In function =E2=80=98liointc_domain=
+_xlate=E2=80=99:
+drivers/irqchip/irq-loongson-liointc.c:170:28: error: =E2=80=98GSI_MIN_CPU_=
+IRQ=E2=80=99 undeclared (first use in this function)
+  170 |  *out_hwirq =3D intspec[0] - GSI_MIN_CPU_IRQ;
+      |                            ^~~~~~~~~~~~~~~
 
-  - all existing user-space interfaces which cause mtd_read() or
-    mtd_read_oob() to be called (via mtdchar_read() and
-    mtdchar_read_oob(), respectively) return success even when those
-    functions return -EUCLEAN or -EBADMSG; this renders user-space
-    applications using these interfaces unaware of any corrected
-    bitflips or uncorrectable ECC errors detected during reads.
+I haven't bothered reviewing more patches, as this is a waste of my
+time.
 
-Note that the existing MEMWRITE ioctl allows the MTD operation mode to
-be explicitly set, allowing user-space applications to write page data
-and OOB data without requiring them to know anything about the OOB
-layout of the MTD device they are writing to (MTD_OPS_AUTO_OOB).  Also,
-the MEMWRITE ioctl does not mangle the return value of mtd_write_oob().
+	M.
 
-Add a new ioctl, MEMREAD, which addresses the above issues.  It is
-intended to be a read-side counterpart of the existing MEMWRITE ioctl.
-Similarly to the latter, the read operation is performed in a loop which
-processes at most mtd->erasesize bytes in each iteration.  This is done
-to prevent unbounded memory allocations caused by calling kmalloc() with
-the 'size' argument taken directly from the struct mtd_read_req provided
-by user space.  However, the new ioctl is implemented so that the values
-it returns match those that would have been returned if just a single
-mtd_read_oob() call was issued to handle the entire read operation in
-one go.
-
-Note that while just returning -EUCLEAN or -EBADMSG to user space would
-already be a valid and useful indication of the ECC algorithm detecting
-errors during a read operation, that signal would not be granular enough
-to cover all use cases.  For example, knowing the maximum number of
-bitflips detected in a single ECC step during a read operation performed
-on a given page may be useful when dealing with an MTD partition whose
-ECC layout varies across pages (e.g. a partition consisting of a
-bootloader area using a "custom" ECC layout followed by data pages using
-a "standard" ECC layout).  To address that, include ECC statistics in
-the structure returned to user space by the new MEMREAD ioctl.
-
-Link: https://www.infradead.org/pipermail/linux-mtd/2016-April/067085.html
-
-Suggested-by: Boris Brezillon <boris.brezillon@collabora.com>
-Signed-off-by: Micha=C5=82 K=C4=99pie=C5=84 <kernel@kempniu.pl>
----
- drivers/mtd/mtdchar.c      | 139 +++++++++++++++++++++++++++++++++++++
- include/uapi/mtd/mtd-abi.h |  64 +++++++++++++++--
- 2 files changed, 198 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/mtd/mtdchar.c b/drivers/mtd/mtdchar.c
-index 05860288a7af..01f1c6792df9 100644
---- a/drivers/mtd/mtdchar.c
-+++ b/drivers/mtd/mtdchar.c
-@@ -688,6 +688,137 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
- =09return ret;
- }
-=20
-+static int mtdchar_read_ioctl(struct mtd_info *mtd,
-+=09=09struct mtd_read_req __user *argp)
-+{
-+=09struct mtd_info *master =3D mtd_get_master(mtd);
-+=09struct mtd_read_req req;
-+=09void __user *usr_data, *usr_oob;
-+=09uint8_t *datbuf =3D NULL, *oobbuf =3D NULL;
-+=09size_t datbuf_len, oobbuf_len;
-+=09size_t orig_len, orig_ooblen;
-+=09int ret =3D 0;
-+
-+=09if (copy_from_user(&req, argp, sizeof(req)))
-+=09=09return -EFAULT;
-+
-+=09orig_len =3D req.len;
-+=09orig_ooblen =3D req.ooblen;
-+
-+=09usr_data =3D (void __user *)(uintptr_t)req.usr_data;
-+=09usr_oob =3D (void __user *)(uintptr_t)req.usr_oob;
-+
-+=09if (!master->_read_oob)
-+=09=09return -EOPNOTSUPP;
-+
-+=09if (!usr_data)
-+=09=09req.len =3D 0;
-+
-+=09if (!usr_oob)
-+=09=09req.ooblen =3D 0;
-+
-+=09req.ecc_stats.uncorrectable_errors =3D 0;
-+=09req.ecc_stats.corrected_bitflips =3D 0;
-+=09req.ecc_stats.max_bitflips =3D 0;
-+
-+=09req.len &=3D 0xffffffff;
-+=09req.ooblen &=3D 0xffffffff;
-+
-+=09if (req.start + req.len > mtd->size) {
-+=09=09ret =3D -EINVAL;
-+=09=09goto out;
-+=09}
-+
-+=09datbuf_len =3D min_t(size_t, req.len, mtd->erasesize);
-+=09if (datbuf_len > 0) {
-+=09=09datbuf =3D kvmalloc(datbuf_len, GFP_KERNEL);
-+=09=09if (!datbuf) {
-+=09=09=09ret =3D -ENOMEM;
-+=09=09=09goto out;
-+=09=09}
-+=09}
-+
-+=09oobbuf_len =3D min_t(size_t, req.ooblen, mtd->erasesize);
-+=09if (oobbuf_len > 0) {
-+=09=09oobbuf =3D kvmalloc(oobbuf_len, GFP_KERNEL);
-+=09=09if (!oobbuf) {
-+=09=09=09ret =3D -ENOMEM;
-+=09=09=09goto out;
-+=09=09}
-+=09}
-+
-+=09while (req.len > 0 || (!usr_data && req.ooblen > 0)) {
-+=09=09struct mtd_req_stats stats;
-+=09=09struct mtd_oob_ops ops =3D {
-+=09=09=09.mode =3D req.mode,
-+=09=09=09.len =3D min_t(size_t, req.len, datbuf_len),
-+=09=09=09.ooblen =3D min_t(size_t, req.ooblen, oobbuf_len),
-+=09=09=09.datbuf =3D datbuf,
-+=09=09=09.oobbuf =3D oobbuf,
-+=09=09=09.stats =3D &stats,
-+=09=09};
-+
-+=09=09/*
-+=09=09 * Shorten non-page-aligned, eraseblock-sized reads so that the
-+=09=09 * read ends on an eraseblock boundary.  This is necessary in
-+=09=09 * order to prevent OOB data for some pages from being
-+=09=09 * duplicated in the output of non-page-aligned reads requiring
-+=09=09 * multiple mtd_read_oob() calls to be completed.
-+=09=09 */
-+=09=09if (ops.len =3D=3D mtd->erasesize)
-+=09=09=09ops.len -=3D mtd_mod_by_ws(req.start + ops.len, mtd);
-+
-+=09=09ret =3D mtd_read_oob(mtd, (loff_t)req.start, &ops);
-+
-+=09=09req.ecc_stats.uncorrectable_errors +=3D
-+=09=09=09stats.uncorrectable_errors;
-+=09=09req.ecc_stats.corrected_bitflips +=3D stats.corrected_bitflips;
-+=09=09req.ecc_stats.max_bitflips =3D
-+=09=09=09max(req.ecc_stats.max_bitflips, stats.max_bitflips);
-+
-+=09=09if (ret && !mtd_is_bitflip_or_eccerr(ret))
-+=09=09=09break;
-+
-+=09=09if (copy_to_user(usr_data, ops.datbuf, ops.retlen) ||
-+=09=09    copy_to_user(usr_oob, ops.oobbuf, ops.oobretlen)) {
-+=09=09=09ret =3D -EFAULT;
-+=09=09=09break;
-+=09=09}
-+
-+=09=09req.start +=3D ops.retlen;
-+=09=09req.len -=3D ops.retlen;
-+=09=09usr_data +=3D ops.retlen;
-+
-+=09=09req.ooblen -=3D ops.oobretlen;
-+=09=09usr_oob +=3D ops.oobretlen;
-+=09}
-+
-+=09/*
-+=09 * As multiple iterations of the above loop (and therefore multiple
-+=09 * mtd_read_oob() calls) may be necessary to complete the read request,
-+=09 * adjust the final return code to ensure it accounts for all detected
-+=09 * ECC errors.
-+=09 */
-+=09if (!ret || mtd_is_bitflip(ret)) {
-+=09=09if (req.ecc_stats.uncorrectable_errors > 0)
-+=09=09=09ret =3D -EBADMSG;
-+=09=09else if (req.ecc_stats.corrected_bitflips > 0)
-+=09=09=09ret =3D -EUCLEAN;
-+=09}
-+
-+out:
-+=09req.len =3D orig_len - req.len;
-+=09req.ooblen =3D orig_ooblen - req.ooblen;
-+
-+=09if (copy_to_user(argp, &req, sizeof(req)))
-+=09=09ret =3D -EFAULT;
-+
-+=09kvfree(datbuf);
-+=09kvfree(oobbuf);
-+
-+=09return ret;
-+}
-+
- static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
- {
- =09struct mtd_file_info *mfi =3D file->private_data;
-@@ -710,6 +841,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, =
-u_long arg)
- =09case MEMGETINFO:
- =09case MEMREADOOB:
- =09case MEMREADOOB64:
-+=09case MEMREAD:
- =09case MEMISLOCKED:
- =09case MEMGETOOBSEL:
- =09case MEMGETBADBLOCK:
-@@ -884,6 +1016,13 @@ static int mtdchar_ioctl(struct file *file, u_int cmd=
-, u_long arg)
- =09=09break;
- =09}
-=20
-+=09case MEMREAD:
-+=09{
-+=09=09ret =3D mtdchar_read_ioctl(mtd,
-+=09=09      (struct mtd_read_req __user *)arg);
-+=09=09break;
-+=09}
-+
- =09case MEMLOCK:
- =09{
- =09=09struct erase_info_user einfo;
-diff --git a/include/uapi/mtd/mtd-abi.h b/include/uapi/mtd/mtd-abi.h
-index 890d9e5b76d7..714d55b49d2a 100644
---- a/include/uapi/mtd/mtd-abi.h
-+++ b/include/uapi/mtd/mtd-abi.h
-@@ -55,9 +55,9 @@ struct mtd_oob_buf64 {
-  * @MTD_OPS_RAW:=09data are transferred as-is, with no error correction;
-  *=09=09=09this mode implies %MTD_OPS_PLACE_OOB
-  *
-- * These modes can be passed to ioctl(MEMWRITE) and are also used internal=
-ly.
-- * See notes on "MTD file modes" for discussion on %MTD_OPS_RAW vs.
-- * %MTD_FILE_MODE_RAW.
-+ * These modes can be passed to ioctl(MEMWRITE) and ioctl(MEMREAD); they a=
-re
-+ * also used internally. See notes on "MTD file modes" for discussion on
-+ * %MTD_OPS_RAW vs. %MTD_FILE_MODE_RAW.
-  */
- enum {
- =09MTD_OPS_PLACE_OOB =3D 0,
-@@ -91,6 +91,53 @@ struct mtd_write_req {
- =09__u8 padding[7];
- };
-=20
-+/**
-+ * struct mtd_read_req_ecc_stats - ECC statistics for a read operation
-+ *
-+ * @uncorrectable_errors: the number of uncorrectable errors that happened
-+ *=09=09=09  during the read operation
-+ * @corrected_bitflips: the number of bitflips corrected during the read
-+ *=09=09=09operation
-+ * @max_bitflips: the maximum number of bitflips detected in any single EC=
-C
-+ *=09=09  step for the data read during the operation; this information
-+ *=09=09  can be used to decide whether the data stored in a specific
-+ *=09=09  region of the MTD device should be moved somewhere else to
-+ *=09=09  avoid data loss.
-+ */
-+struct mtd_read_req_ecc_stats {
-+=09__u32 uncorrectable_errors;
-+=09__u32 corrected_bitflips;
-+=09__u32 max_bitflips;
-+};
-+
-+/**
-+ * struct mtd_read_req - data structure for requesting a read operation
-+ *
-+ * @start:=09start address
-+ * @len:=09length of data buffer (only lower 32 bits are used)
-+ * @ooblen:=09length of OOB buffer (only lower 32 bits are used)
-+ * @usr_data:=09user-provided data buffer
-+ * @usr_oob:=09user-provided OOB buffer
-+ * @mode:=09MTD mode (see "MTD operation modes")
-+ * @padding:=09reserved, must be set to 0
-+ * @ecc_stats:=09ECC statistics for the read operation
-+ *
-+ * This structure supports ioctl(MEMREAD) operations, allowing data and/or=
- OOB
-+ * reads in various modes. To read from OOB-only, set @usr_data =3D=3D NUL=
-L, and to
-+ * read data-only, set @usr_oob =3D=3D NULL. However, setting both @usr_da=
-ta and
-+ * @usr_oob to NULL is not allowed.
-+ */
-+struct mtd_read_req {
-+=09__u64 start;
-+=09__u64 len;
-+=09__u64 ooblen;
-+=09__u64 usr_data;
-+=09__u64 usr_oob;
-+=09__u8 mode;
-+=09__u8 padding[7];
-+=09struct mtd_read_req_ecc_stats ecc_stats;
-+};
-+
- #define MTD_ABSENT=09=090
- #define MTD_RAM=09=09=091
- #define MTD_ROM=09=09=092
-@@ -207,6 +254,12 @@ struct otp_info {
- #define MEMWRITE=09=09_IOWR('M', 24, struct mtd_write_req)
- /* Erase a given range of user data (must be in mode %MTD_FILE_MODE_OTP_US=
-ER) */
- #define OTPERASE=09=09_IOW('M', 25, struct otp_info)
-+/*
-+ * Most generic read interface; can read in-band and/or out-of-band in var=
-ious
-+ * modes (see "struct mtd_read_req"). This ioctl is not supported for flas=
-hes
-+ * without OOB, e.g., NOR flash.
-+ */
-+#define MEMREAD=09=09=09_IOWR('M', 26, struct mtd_read_req)
-=20
- /*
-  * Obsolete legacy interface. Keep it in order not to break userspace
-@@ -270,8 +323,9 @@ struct mtd_ecc_stats {
-  * Note: %MTD_FILE_MODE_RAW provides the same functionality as %MTD_OPS_RA=
-W -
-  * raw access to the flash, without error correction or autoplacement sche=
-mes.
-  * Wherever possible, the MTD_OPS_* mode will override the MTD_FILE_MODE_*=
- mode
-- * (e.g., when using ioctl(MEMWRITE)), but in some cases, the MTD_FILE_MOD=
-E is
-- * used out of necessity (e.g., `write()', ioctl(MEMWRITEOOB64)).
-+ * (e.g., when using ioctl(MEMWRITE) or ioctl(MEMREAD)), but in some cases=
-, the
-+ * MTD_FILE_MODE is used out of necessity (e.g., `write()',
-+ * ioctl(MEMWRITEOOB64)).
-  */
- enum mtd_file_modes {
- =09MTD_FILE_MODE_NORMAL =3D MTD_OTP_OFF,
 --=20
-2.37.0
-
-
+Without deviation from the norm, progress is not possible.
