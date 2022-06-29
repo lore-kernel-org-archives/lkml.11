@@ -2,133 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64314C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7E4CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbiF2QB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S233015AbiF2QCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234058AbiF2QAm (ORCPT
+        with ESMTP id S234085AbiF2QCH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:00:42 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CE42C644;
-        Wed, 29 Jun 2022 09:00:33 -0700 (PDT)
-Received: from notapiano.myfiosgateway.com (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        Wed, 29 Jun 2022 12:02:07 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149D93D1F0;
+        Wed, 29 Jun 2022 09:01:38 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id ab44a7ba5fefe840; Wed, 29 Jun 2022 18:01:36 +0200
+Received: from kreacher.localnet (unknown [213.134.175.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 61E6E66019AC;
-        Wed, 29 Jun 2022 17:00:30 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656518431;
-        bh=fWpLVNkaRd2J8/GN0NiVTcm+/j+WzfBVE0/fxSI1x5A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DY92GFjN3oeuKinw8Ew49bJgJxgOWoEzUt8A8bZVJPRHE59LO3545axbqRbXd5QI6
-         NOvolx1mgJgf+roEOHSN7NuOJQ0r6maVhCTo9p/20oueU1YT8lQYaE3TusW4e13aqr
-         Wgu7phTuv8d70Zc6IPA7puSWOvI4bWE4Ja98bu7eOeSwM4CGQ9n6g4oCbh/YlShGuW
-         KJ69HN2yvBHPBnC+GdC/nehh+L3J4vxiQ25nRQYnVCiERoBvR/UOVrNpAmN9USsz9c
-         G6OHQ6n+q17lHnOZDCbgPHHs/6yvDDjHN52lMDHILXCKmiCK5/ReyFXGzmOYbOelxW
-         TGpBJe7lQUP0g==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v4 19/19] arm64: dts: mediatek: asurada: Add SPI NOR flash memory
-Date:   Wed, 29 Jun 2022 11:59:56 -0400
-Message-Id: <20220629155956.1138955-20-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220629155956.1138955-1-nfraprado@collabora.com>
-References: <20220629155956.1138955-1-nfraprado@collabora.com>
+        by v370.home.net.pl (Postfix) with ESMTPSA id E2A5A66C9F3;
+        Wed, 29 Jun 2022 18:01:35 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Peter Wang <peter.wang@mediatek.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] PM-runtime: Check supplier_preactivated before release supplier
+Date:   Wed, 29 Jun 2022 18:01:35 +0200
+Message-ID: <12028598.O9o76ZdvQC@kreacher>
+In-Reply-To: <CAJZ5v0gTpv2gt_Gm9rUd+8Jmp4=ij2=J20o7qO0sC-hm=w3=_A@mail.gmail.com>
+References: <20220613120755.14306-1-peter.wang@mediatek.com> <b55d5691-0b2d-56bb-26ff-dcac56770611@mediatek.com> <CAJZ5v0gTpv2gt_Gm9rUd+8Jmp4=ij2=J20o7qO0sC-hm=w3=_A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.175.150
+X-CLIENT-HOSTNAME: 213.134.175.150
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudegledgleehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrddujeehrdduhedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudejhedrudehtddphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohephedprhgtphhtthhopehpvghtvghrrdifrghnghesmhgvughirghtvghkrdgtohhmpdhrtghpthhtoheprhgrfhgrvghlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhig
+ qdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the SPI NOR flash memory present on the Asurada
-platform.
+[Add CCs to linix-pm, LKML and Greg]
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+On Wednesday, June 29, 2022 5:32:00 PM CEST Rafael J. Wysocki wrote:
+> On Wed, Jun 29, 2022 at 4:47 PM Peter Wang <peter.wang@mediatek.com> wrote:
+> >
+> >
+> > On 6/29/22 9:22 PM, Rafael J. Wysocki wrote:
+> > > On Wed, Jun 29, 2022 at 5:02 AM Peter Wang <peter.wang@mediatek.com> wrote:
+> > >>
+> > >> On 6/28/22 11:54 PM, Rafael J. Wysocki wrote:
+> > >>> On Tue, Jun 28, 2022 at 3:53 AM Peter Wang <peter.wang@mediatek.com> wrote:
+> > >>>> On 6/28/22 3:00 AM, Rafael J. Wysocki wrote:
+> > >>>>> On Mon, Jun 13, 2022 at 2:08 PM <peter.wang@mediatek.com> wrote:
+> > >>>>>> From: Peter Wang <peter.wang@mediatek.com>
+> > >>>>>>
+> > >>>>>> With divice link of DL_FLAG_PM_RUNTIME, if consumer call pm_runtime_get_suppliers
+> > >>>>>> to prevent supplier enter suspend, pm_runtime_release_supplier should
+> > >>>>>> check supplier_preactivated before let supplier enter suspend.
+> > >>>>> Why?
+> > >>>> because supplier_preactivated is true means supplier cannot enter
+> > >>>> suspend, right?
+> > >>> No, it doesn't mean that.
+> > >> Hi Rafael,
+> > >>
+> > >> if supplier_preactivated is true, means someone call
+> > >> pm_runtime_get_suppliers and
+> > >> before pm_runtime_put_suppliers right? This section suppliers should not
+> > >> enter suspend.
+> > > No, this is not how this is expected to work.
+> > >
+> > > First off, the only caller of pm_runtime_get_suppliers() and
+> > > pm_runtime_put_suppliers() is __driver_probe_device().  Really nobody
+> > > else has any business that would require calling them.
+> > Hi Rafael,
+> >
+> > Yes, you are right!
+> > __driver_probe_device the only one use and just because
+> > __driver_probe_device use
+> > pm_runtime_get_suppliers cause problem.
+> >
+> >
+> > > Second, the role of pm_runtime_get_suppliers() is to "preactivate" the
+> > > suppliers before running probe for a consumer device and the role of
+> >
+> > the role of pm_runtime_get_suppliers() is to "preactivate" the suppliers,
+> > but suppliers may suspend immediately after preactivate right?
+> > Here is just this case. this is first racing point.
+> > Thread A: pm_runtime_get_suppliers                -> __driver_probe_device
+> > Thread B: pm_runtime_release_supplier
+> > Thread A: Run with supplier not preactivate      -> __driver_probe_device
+> >
+> > > pm_runtime_put_suppliers() is to do the cleanup in case the device is
+> > > left in suspend after probing.
+> > >
+> > > IOW, pm_runtime_get_suppliers() is to ensure that the suppliers will
+> > > be active until the probe callback takes over and the rest depends on
+> > > that callback.
+> >
+> > The problem of this racing will finally let consumer is active but
+> > supplier is suspended.
+> 
+> So it would be better to send a bug report regarding this.
+> 
+> > The link relation is broken.
+> > I know you may curious how it happened? right?
+> > Honestly, I am not sure, but I think the second racing point
+> > is rpm_get_suppliers and pm_runtime_put_suppliers(release rpm_active).
+> 
+> I'm not sure what you mean by "the racing point".
+> 
+> Yes, these functions can run concurrently.
+> 
+> > So, I try to fix the first racing point and the problem is gone.
+> > It is full meet expect, and the pm runtime will work smoothly after
+> > __driver_probe_device done.
+> 
+> I'm almost sure that there is at least one scenario that would be
+> broken by this change.
+
+That said, the code in there may be a bit overdesigned.
+
+Does the patch below help?
 
 ---
+ drivers/base/power/runtime.c |   14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-Changes in v4:
-- Added this patch
-
- .../boot/dts/mediatek/mt8192-asurada.dtsi     | 40 +++++++++++++++++++
- 1 file changed, 40 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index a5625b3cb317..4b314435f8fd 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -241,6 +241,23 @@ &mt6359codec {
- 	mediatek,mic-type-2 = <2>; /* DMIC */
- };
+Index: linux-pm/drivers/base/power/runtime.c
+===================================================================
+--- linux-pm.orig/drivers/base/power/runtime.c
++++ linux-pm/drivers/base/power/runtime.c
+@@ -1768,7 +1768,6 @@ void pm_runtime_get_suppliers(struct dev
+ 		if (link->flags & DL_FLAG_PM_RUNTIME) {
+ 			link->supplier_preactivated = true;
+ 			pm_runtime_get_sync(link->supplier);
+-			refcount_inc(&link->rpm_active);
+ 		}
  
-+&nor_flash {
-+	status = "okay";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&nor_flash_pins>;
-+	assigned-clocks = <&topckgen CLK_TOP_SFLASH_SEL>;
-+	assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D6_D8>;
-+
-+	flash@0 {
-+		compatible = "winbond,w25q64jwm", "jedec,spi-nor";
-+		reg = <0>;
-+		spi-max-frequency = <52000000>;
-+		spi-rx-bus-width = <2>;
-+		spi-tx-bus-width = <2>;
-+	};
-+};
-+
- &pcie {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pcie_pins>;
-@@ -658,6 +675,29 @@ pins-clk {
- 		};
- 	};
+ 	device_links_read_unlock(idx);
+@@ -1788,19 +1787,8 @@ void pm_runtime_put_suppliers(struct dev
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+ 				device_links_read_lock_held())
+ 		if (link->supplier_preactivated) {
+-			bool put;
+-
+ 			link->supplier_preactivated = false;
+-
+-			spin_lock_irq(&dev->power.lock);
+-
+-			put = pm_runtime_status_suspended(dev) &&
+-			      refcount_dec_not_one(&link->rpm_active);
+-
+-			spin_unlock_irq(&dev->power.lock);
+-
+-			if (put)
+-				pm_runtime_put(link->supplier);
++			pm_runtime_put(link->supplier);
+ 		}
  
-+	nor_flash_pins: nor-flash-default-pins {
-+		pins-cs-io1 {
-+			pinmux = <PINMUX_GPIO24__FUNC_SPINOR_CS>,
-+				 <PINMUX_GPIO28__FUNC_SPINOR_IO1>;
-+			input-enable;
-+			bias-pull-up;
-+			drive-strength = <10>;
-+		};
-+
-+		pins-io0 {
-+			pinmux = <PINMUX_GPIO27__FUNC_SPINOR_IO0>;
-+			bias-pull-up;
-+			drive-strength = <10>;
-+		};
-+
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO25__FUNC_SPINOR_CK>;
-+			input-enable;
-+			bias-pull-up;
-+			drive-strength = <10>;
-+		};
-+	};
-+
- 	pcie_pins: pcie-default-pins {
- 		pins-pcie-wake {
- 			pinmux = <PINMUX_GPIO63__FUNC_PCIE_WAKE_N>;
--- 
-2.36.1
+ 	device_links_read_unlock(idx);
+
+
 
