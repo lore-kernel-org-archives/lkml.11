@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0614DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564B3CCA487
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232707AbiF2SHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        id S230173AbiF2SHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232503AbiF2SGl (ORCPT
+        with ESMTP id S232326AbiF2SGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:06:41 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90623FDAD
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:05:51 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id g26so34162254ejb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:05:51 -0700 (PDT)
+        Wed, 29 Jun 2022 14:06:51 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511FE403CE
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:06:13 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id q6so34089937eji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:06:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :references:from:in-reply-to:content-transfer-encoding;
-        bh=us3+4U/6NS+9bUTvamba37DRKpthQlGNNn2eGBCrdmM=;
-        b=vbuaaFUYqN1guX3EHj2/BmchL8/O601kaBMJ0zDDI6+sG4DLOkANm8JNnernJAONbn
-         UcgAZArlvEyfdDw8xg9VbPHyOM97a6LZp8E9RREWM5XoeuGB/KTfZJ9n0bjMew0vnDlz
-         0TJMVQo419wctcCnxgz/i+1x35gC2NhWNe47DPYG18HC4B68XRZDi2BsZNKLm6g9x3bp
-         SdJ/pxYX5ibbv7r3FHqaMpQy6AUKkij4SwdHtrT4jWHw31sN+v15qrI1BDfPGRIU1NxO
-         pdlvlGsboJo5pc9j3Lh1Sk7lqtmPVbNfAkXegBcYWpI6DUgg8WTY68eizLe87jJM8kil
-         dN8Q==
+        bh=V9eIqMH/UAN6dsljysjHWEU7rRIzDBGxrqT4v4OSvk4=;
+        b=ES4ssmwCCmCw6EL7JkRYAPpCK/yFcI1PudrO9RMhoo7tFJ7LEghI2hIL5CqsI3esSJ
+         OXhd6HIz7Do26OEh55AqkgywyvAf2aduNRuUFdhnBXXn4lkd6sON7wg5UBVvjykHgg9g
+         MtsToh2Ag7mixFs/XhBTRPfm0jfAjY2lowruxRQh3C+PIOBhPxXb37/QE5ciUOA3VeTS
+         tyyB1CBpvTcUaAeZu7KzjhcKKh63gXW4iU5uek811a/SX+/rZlys0jUyGvWpkR4HSeET
+         YaXYp/ulJOL7e0g9/uiyZMXwVYk00NXl9jd7xDJfir6Z56pMzC/ZweJ9y6bMvqWjz5R+
+         F0zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=us3+4U/6NS+9bUTvamba37DRKpthQlGNNn2eGBCrdmM=;
-        b=Sk+M7SpInBBkphjoC1cjfMFpPrL0TQiBOAKoStfdrARcVM6k95BBRgFS0ClBshwVZT
-         5oqqNZpbbtS2DYdc+2uW/sLsDsRTreyGBpANiPHgcJ2ONpOqx/Ax/O0DQE7nSP5Mq44m
-         002tA1zIcc0RE9V/USKH6nxj0PhnMFw1yqiO4Ev6Ome8FegQHvcBopZ8SiAGcDpslQer
-         fOro28mHCKpVVcbd7nInOCOqCT7rTA7ZQxHox7mgc+TSsBhcIaRoYczfAqpz16uK4Z4s
-         pbKWWv1irJv0kvq/i2dy2F8+8/aiyUMJvAOc4ky1HYxeGb2B1DUjSucKq87vz6VONqic
-         gtJQ==
-X-Gm-Message-State: AJIora8xWPLCRuq3L3Z5LeOF71oCRfMYnrLiJil59sl+C57sWVxkZAFs
-        5O2eVPz9rFNd3k8P7MQ/KCSAhg==
-X-Google-Smtp-Source: AGRyM1sWMDnn3S+Hc1i9wxDUNunPqB3FVeRluJtNmaPIT8itwCMTAUqzlXg0BsktQka3qSLa83AIJg==
-X-Received: by 2002:a17:906:7c0c:b0:6f9:1fc:ebf3 with SMTP id t12-20020a1709067c0c00b006f901fcebf3mr4455187ejo.403.1656525950438;
-        Wed, 29 Jun 2022 11:05:50 -0700 (PDT)
+        bh=V9eIqMH/UAN6dsljysjHWEU7rRIzDBGxrqT4v4OSvk4=;
+        b=ZRI9NPAhmBqfFLZPGch3kJJUM6eTpv8n+9SMaygqasUrxCG5VvnB285sNDAfvh9o/P
+         jJsjLlRy4dOM+zc5QsczlI9o8dM3FweKiNdVYB9eUcMvbYFZM02zNFRM6ptdczep5Au+
+         VKq3FMqm0qZQ3noFNKaTdbGjqDnGAcXNbHEzStq9wjZmCqO1aXAMZ3ijO/pqYuPNynRv
+         FUIKqFNzXsjh1JL89StZq4aIhi7F67FYuMq5p2DFXEFOHvg0UqivpUk6Y9NpfT0kS1v2
+         qeTkAyzYIicOIDKoVPdkUF8iTUmY/Iayqxxol9YZq5+cBhsccuc+2+Qn5wkKrOuytS2B
+         GhNg==
+X-Gm-Message-State: AJIora96eaurycCav8zTxLMVBMabsSXSEpAnliIOm7pnBMt1DoT+5aPi
+        vEYgen7OKYTy2x6dh09w/TLF5A==
+X-Google-Smtp-Source: AGRyM1tpg8rA6f2qYr5TKClCnZ3sCdM2Nz9dPuhEn1xfE3ExT0QWIsQj5Weetm1BRqAkYa/dcz5Rwg==
+X-Received: by 2002:a17:907:3d92:b0:726:39f9:4a33 with SMTP id he18-20020a1709073d9200b0072639f94a33mr4466093ejc.766.1656525972845;
+        Wed, 29 Jun 2022 11:06:12 -0700 (PDT)
 Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ml22-20020a170906cc1600b006febce7081bsm8018575ejb.163.2022.06.29.11.05.48
+        by smtp.gmail.com with ESMTPSA id o3-20020aa7c503000000b0042de8155fa1sm12012803edq.0.2022.06.29.11.06.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 11:05:49 -0700 (PDT)
-Message-ID: <1303740a-d975-54ec-1bfa-6f1f6a6dc391@linaro.org>
-Date:   Wed, 29 Jun 2022 20:05:48 +0200
+        Wed, 29 Jun 2022 11:06:12 -0700 (PDT)
+Message-ID: <1e484314-d7ea-a419-dc09-9f168122e1ec@linaro.org>
+Date:   Wed, 29 Jun 2022 20:06:10 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v6 12/14] arm64: dts: freescale: imx8qxp: Add fallback
- compatible for clock controller
+Subject: Re: [PATCH v6 13/14] arm64: dts: freescale: imx8qxp: Fix the keys
+ node name
 Content-Language: en-US
 To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -92,9 +92,9 @@ To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>,
         linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 References: <20220629164414.301813-1-viorel.suman@oss.nxp.com>
- <20220629164414.301813-13-viorel.suman@oss.nxp.com>
+ <20220629164414.301813-14-viorel.suman@oss.nxp.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220629164414.301813-13-viorel.suman@oss.nxp.com>
+In-Reply-To: <20220629164414.301813-14-viorel.suman@oss.nxp.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -104,13 +104,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 29/06/2022 18:44, Viorel Suman (OSS) wrote:
 > From: Abel Vesa <abel.vesa@nxp.com>
 > 
-> Both i.MX8QM and i.MX8DXL use the fallback fsl,scu-clk compatible.
-> They rely on the same driver generic part as the i.MX8QXP, so
-> lets add it to i.MX8QXP too, for consitency.
+> The proper name is 'keys', not 'scu-keys'.
 > 
 > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 > Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
-
 
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
