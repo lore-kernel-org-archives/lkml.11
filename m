@@ -2,95 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03758C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D3BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbiF2JVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        id S232716AbiF2JV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232556AbiF2JVr (ORCPT
+        with ESMTP id S232696AbiF2JVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:21:47 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140F8369CF;
-        Wed, 29 Jun 2022 02:21:47 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id p136so20650045ybg.4;
-        Wed, 29 Jun 2022 02:21:47 -0700 (PDT)
+        Wed, 29 Jun 2022 05:21:55 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665FE369D0;
+        Wed, 29 Jun 2022 02:21:52 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id n10so8124786qkn.10;
+        Wed, 29 Jun 2022 02:21:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Eh9/8QN0XyfFrvsob3PxLqr+FKeuVvmGbb+SLnFK1w8=;
-        b=PPWbglVheR1zvwyNWD8rSPW6EbKmdZgAavX9onplBeIgwxs723trIMU7z3LDmN9k29
-         uh3RckB+t6+3c4qyCYxaWFO/sR8VOrxJw8F2hGqyAcCiBwlElhON9/cAYSrHVAa9JPqL
-         7NkGvNUuSztlynTWjIzgrsY1a20qxeHk1H+AIV4ZkGAXGaXnulfCHsmxuxzDmhEZKTPS
-         y+WuFTLQdRwE3Q+So0fO0WmkJpJ48rFlC8moc57ZG0AJQ+wTfPN3dMANkMqDH81GsgiC
-         OkkXsg2EYLgPeoGGPx4MBqqhELE9UEK3Z1Y6KZaQkKSbbdruOXBMD3viMugUd/MArqaS
-         1puw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=xyKbiBGwe12VV4+hIYZhHutByUcZnqEu2BFeb6ToEVc=;
+        b=Ru4+mVFxOSkJ7OAFQ3tloi+JJTVyK6/e8NHNSXgkYVnfAnpZbGlH720kSMNkKOVNoP
+         3Nf4ML7iI3+jAkW8vmuq23ATUDiO3PWYg/Vh23hSlsSHBeWY6MhQACDOkYrFr/lOW8Qj
+         7YqBUk5cH6Ml4/AkHJLtDBakAc9A9jIap8JlgdNpZPDxnzdalgk2PN5Wie44gGvUj3dD
+         JhTuI+9FDaY/iuse7Xs07LBLHCDBSaFcvp5KhkqCJt/jwT1AhgO6PQ2oThQdwLEJN5ni
+         +vSUgmu1TF/OarZedRIndxHmBWYxfjqyr9fnJnmS/ugldZU2Vl1lwGhWAUVl8C1rFhg4
+         KX6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Eh9/8QN0XyfFrvsob3PxLqr+FKeuVvmGbb+SLnFK1w8=;
-        b=wxCVu1eUSFvkm12yBQlB7/h1wXCPCySEgMvjsLzbg1D0IkPKw1kG3Pq/rZ3yUsdURn
-         lYjTNHCMmY0088QmAgFf16Vhgh9xV+3xVeszv2K4e7Xft9CXUO3xtFzH5ixsVHwcHbz0
-         QauEx/wCaQncT+o+HA1KpzzEhMXj8YVJ6vIyhgnfzhCf21Q1XWsvKTOOazlw8HygsgmD
-         zXi7gDGgwmYiIsg9IrcHw78RlV6BM6MQsrufMUyyZhGa9p53Vm4PvVNf4xbfqQt/m1+a
-         XxuID4GcORALf0lOwez4s4Yix5dd0wHUlTNyB8/53suXG9npvU/C9UpG3+CQQ+h5IdKy
-         hDig==
-X-Gm-Message-State: AJIora+u2TKAtyVwhyMtWygxKC2dcclxo3qXAj739vYGJ53CUNGzO2Uf
-        rY+ynB46HmxicQXdSM9dV0Aj1rR2SnyrUziQI9hJALhKcVkdNw==
-X-Google-Smtp-Source: AGRyM1uS+cvIcNrFFvfdfOeCNdpGq8GX+n4BbHmYy6esu6LUeW4Sa8uIybAYqDBzFNJslfFaHj0xSak/OZIgcDW4t74=
-X-Received: by 2002:a25:b2a8:0:b0:66c:8110:3331 with SMTP id
- k40-20020a25b2a8000000b0066c81103331mr2388431ybj.460.1656494506281; Wed, 29
- Jun 2022 02:21:46 -0700 (PDT)
+         :message-id:subject:to;
+        bh=xyKbiBGwe12VV4+hIYZhHutByUcZnqEu2BFeb6ToEVc=;
+        b=piDf4eSaRELe9V51n0kAbVRfEHfr3X9KYN3W8IkDrOU5SzP9ENRzrHqc1BXj10Q0Gm
+         xITQ8wAWufpMfk+TubnZShMntDh14vm4cq3YFIRg8dEb2MgBEiudeUclCOQKSOvhd3MJ
+         GcXnSdAfjMv/AyyqlwDzqQ8DfA70Hh5ckwCX/+so13DGRjLrGyrHYINK+EG0I+QtEQuf
+         ji5A8AO/1fXY0a64RivKpkYXKxXZHhk/PYJX4XX7u5jtl35HDRKKN9nEYS7clRYLQkvx
+         ZEdiSHrYGs+dYLBExU+qz81gagWTbq1e+BgEncVdyrATsJCSlUUCB9DpHI7gjBMRLOhC
+         GYNg==
+X-Gm-Message-State: AJIora/DjjtyoENp4B7qhYqLela/4dAyceKaBI7Zl8xak7+valqLScb3
+        TwV4BUfMct2fO9H3sZWakipiI9Z92pDKpsS85m4=
+X-Google-Smtp-Source: AGRyM1uSJPl40kSPwFIPa9wBNkco+vAkh6Zme01ouImI9Tnrlo2A3m6pVGIB9ptmIFV7EyqMJf7DSjFQQ8WmaPi1MQ8=
+X-Received: by 2002:a05:620a:1a28:b0:6b1:4d4d:c7c3 with SMTP id
+ bk40-20020a05620a1a2800b006b14d4dc7c3mr435716qkb.522.1656494511367; Wed, 29
+ Jun 2022 02:21:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
- <Yrt6FVHilUuoPrnL@smile.fi.intel.com> <CAPUE2ut2+FwHHV=YxoqExet7m1R9Odji23DVB5zrGzCLgxzNdQ@mail.gmail.com>
-In-Reply-To: <CAPUE2ut2+FwHHV=YxoqExet7m1R9Odji23DVB5zrGzCLgxzNdQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 29 Jun 2022 11:21:07 +0200
-Message-ID: <CAHp75Ve1rLvjzmPjOxCjA61A1hjXUpVZi=42+SjARw+t58gDcg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] iio: proximity: sx_common: Don't use IIO device
- for properties
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
+References: <20220624104420.257368-1-robimarko@gmail.com>
+In-Reply-To: <20220624104420.257368-1-robimarko@gmail.com>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Wed, 29 Jun 2022 11:21:40 +0200
+Message-ID: <CAOX2RU5iou-N2N0N9bMD49AufXMe04U84DNARGfJzUX2CdFzrQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] PCI: qcom: Move IPQ8074 DBI register accesses
+ after phy_power_on()
+To:     Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        lpieralisi@kernel.org, Rob Herring <robh@kernel.org>, kw@linux.com,
+        Bjorn Helgaas <bhelgaas@google.com>, p.zabel@pengutronix.de,
+        jingoohan1@gmail.com, linux-pci@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        johan+linaro@kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 1:41 AM Gwendal Grignou <gwendal@chromium.org> wrote:
+On Fri, 24 Jun 2022 at 12:44, Robert Marko <robimarko@gmail.com> wrote:
 >
-> On Tue, Jun 28, 2022 at 3:01 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > On Wed, Jun 15, 2022 at 02:47:45PM +0300, Andy Shevchenko wrote:
-> > > It's not correct to use artificial device created by IIO core to
-> > > retrieve device properties. Even ->get_default_reg() callback
-> > > takes a simple struct device pointer which suggests it wants to
-> > > operate on the real device.
-> > >
-> > > Correct this by replacing pointer to IIO device by a real device
-> > > pointer in the caller of ->get_default_reg().
-> >
-> > Gwendal, any comments on this version?
-> We can also replace '&indio_dev->dev' with 'dev' when setting
-> ACPI_COMPANION_SET() in the probe routine.
+> Currently the Gen2 port in IPQ8074 will cause the system to hang as it
+> accesses DBI registers in qcom_pcie_init_2_3_3(), and those are only
+> accesible after phy_power_on().
+>
+> Move the DBI read/writes to a new qcom_pcie_post_init_2_3_3(), which is
+> executed after phy_power_on().
+>
+> Fixes: a0fd361db8e5 ("PCI: dwc: Move "dbi", "dbi2", and "addr_space" resource setup into common code")
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-It would make no sense, IIUC. In any case, the second patch in the
-series, which was the same in v1 removes that completely.
+Hi,
+Bjorn, is there something else I need to fixup?
 
-> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
-
-Thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
+Regards,
+Robert
+> ---
+> Changes in v4:
+> * Correct title and description
+>
+> Changes in v3:
+> * Make sure it applies onto 5.19-rc3
+> * Update the commit description to make it clear this only affects the
+> Gen2 port
+>
+> Changes in v2:
+> * Rebase onto next-20220621
+> ---
+>  drivers/pci/controller/dwc/pcie-qcom.c | 48 +++++++++++++++-----------
+>  1 file changed, 28 insertions(+), 20 deletions(-)
+>
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index a1f1aca2fb59..24708d5d817d 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -1061,9 +1061,7 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+>         struct qcom_pcie_resources_2_3_3 *res = &pcie->res.v2_3_3;
+>         struct dw_pcie *pci = pcie->pci;
+>         struct device *dev = pci->dev;
+> -       u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+>         int i, ret;
+> -       u32 val;
+>
+>         for (i = 0; i < ARRAY_SIZE(res->rst); i++) {
+>                 ret = reset_control_assert(res->rst[i]);
+> @@ -1120,6 +1118,33 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+>                 goto err_clk_aux;
+>         }
+>
+> +       return 0;
+> +
+> +err_clk_aux:
+> +       clk_disable_unprepare(res->ahb_clk);
+> +err_clk_ahb:
+> +       clk_disable_unprepare(res->axi_s_clk);
+> +err_clk_axi_s:
+> +       clk_disable_unprepare(res->axi_m_clk);
+> +err_clk_axi_m:
+> +       clk_disable_unprepare(res->iface);
+> +err_clk_iface:
+> +       /*
+> +        * Not checking for failure, will anyway return
+> +        * the original failure in 'ret'.
+> +        */
+> +       for (i = 0; i < ARRAY_SIZE(res->rst); i++)
+> +               reset_control_assert(res->rst[i]);
+> +
+> +       return ret;
+> +}
+> +
+> +static int qcom_pcie_post_init_2_3_3(struct qcom_pcie *pcie)
+> +{
+> +       struct dw_pcie *pci = pcie->pci;
+> +       u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+> +       u32 val;
+> +
+>         writel(SLV_ADDR_SPACE_SZ,
+>                 pcie->parf + PCIE20_v3_PARF_SLV_ADDR_SPACE_SIZE);
+>
+> @@ -1147,24 +1172,6 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+>                 PCI_EXP_DEVCTL2);
+>
+>         return 0;
+> -
+> -err_clk_aux:
+> -       clk_disable_unprepare(res->ahb_clk);
+> -err_clk_ahb:
+> -       clk_disable_unprepare(res->axi_s_clk);
+> -err_clk_axi_s:
+> -       clk_disable_unprepare(res->axi_m_clk);
+> -err_clk_axi_m:
+> -       clk_disable_unprepare(res->iface);
+> -err_clk_iface:
+> -       /*
+> -        * Not checking for failure, will anyway return
+> -        * the original failure in 'ret'.
+> -        */
+> -       for (i = 0; i < ARRAY_SIZE(res->rst); i++)
+> -               reset_control_assert(res->rst[i]);
+> -
+> -       return ret;
+>  }
+>
+>  static int qcom_pcie_get_resources_2_7_0(struct qcom_pcie *pcie)
+> @@ -1596,6 +1603,7 @@ static const struct qcom_pcie_ops ops_2_4_0 = {
+>  static const struct qcom_pcie_ops ops_2_3_3 = {
+>         .get_resources = qcom_pcie_get_resources_2_3_3,
+>         .init = qcom_pcie_init_2_3_3,
+> +       .post_init = qcom_pcie_post_init_2_3_3,
+>         .deinit = qcom_pcie_deinit_2_3_3,
+>         .ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
+>  };
+> --
+> 2.36.1
+>
