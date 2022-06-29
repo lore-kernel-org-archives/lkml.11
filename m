@@ -2,196 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F307CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC54EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbiF2Xk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 19:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S231881AbiF2Xuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 19:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbiF2Xk5 (ORCPT
+        with ESMTP id S231268AbiF2Xux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 19:40:57 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EAEDF11
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:40:55 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id c4so15488695plc.8
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:40:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=u+kTivI5j4VL0Glhx/QLH7bOjgxInGIflDMjRi1pPSo=;
-        b=QEFE2ZREw7PZn1EHum4nOwGJDD33Zno9d4oJAdexunO9n3X4ns8I0JiPd952564aGh
-         pUTkVJkMbnszCLWtgFppUOO0efR1/WSBye2xzGtE2Vo0MHMNqm1kDLz5nxGrwKtlnuVa
-         2K+3sl2GvDzAi34rgOeBq3XJ8BEzE8ThbSQKg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=u+kTivI5j4VL0Glhx/QLH7bOjgxInGIflDMjRi1pPSo=;
-        b=1ex3o/mOMKeEGEOKyzzDh8Vh1sk8fW6oEak+xpA/GMuhHkD1U3Yd1W/B8bgS9yq2av
-         sOc7X8T5gyYCYomLAjpcSxVe4W/aygQdMyK4+5paKXasWFBrtFN+IUpqR2OXXT8Kk0CS
-         I8mBXXgJ/m+Hl0OMtzHSb+RmnAg03/tZMHi2nt3JuHyGvPcPKeOqJvVoS13BG2Lz4kkb
-         ShlTlD9xUBstaImS4+aUN20X9sKfbDnRuOuC5A7gdCPfg8c/ADmz7cVJQOMy2urxHthw
-         ejtkunPFXQkGFGmXCl80BBkqFRc+ljiCxenFI8KEBWMHAaXsTYKXcEEHNWyX71Cp7e+S
-         PSRA==
-X-Gm-Message-State: AJIora9M4fn/XUDfuqFHyWc4yAtQI7a1bvywWTHnm3fzgBLO4+DtfpJf
-        sW+r1e/zHDh0Y3AWU6u4aXiNdva1fxYTrQ==
-X-Google-Smtp-Source: AGRyM1tMSOGpkv0MQnR98QputkS7ul89O7sMd6eMaC0iC1T1BtHrnytRuMeNSy6cQ+dAfGv3Hch2WA==
-X-Received: by 2002:a17:902:8b87:b0:169:5e5:43de with SMTP id ay7-20020a1709028b8700b0016905e543demr11698212plb.8.1656546055223;
-        Wed, 29 Jun 2022 16:40:55 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id rm1-20020a17090b3ec100b001ed27d132c1sm127305pjb.2.2022.06.29.16.40.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 16:40:54 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH 9/9] platform/chrome: cros_ec_typec: Get retimer handle
-Date:   Wed, 29 Jun 2022 23:32:27 +0000
-Message-Id: <20220629233314.3540377-10-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220629233314.3540377-1-pmalani@chromium.org>
-References: <20220629233314.3540377-1-pmalani@chromium.org>
+        Wed, 29 Jun 2022 19:50:53 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1A02127D;
+        Wed, 29 Jun 2022 16:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656546616;
+        bh=3fAg27+TCAw935xSDUf+S6VcS1ZLQuQxlwYS7A2za84=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=iSY0fJxeUoYgeraRF5pU84ACgeNNYEIdDyIVDzPYoSK+S04RySZMwDCee0Y1XZ3fO
+         QtGFsc4ok3UligJELeTtb7gdV1Ooop60fvJ3vEE7gf3MIzsptDYqrQakVR+O0yO19Q
+         NhWenWfpcGtMD9PmpNRwL6Q7YLMSWp40wldGZjXU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.69] ([46.223.3.23]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MlNpH-1nLVeX1rrB-00lmRo; Thu, 30
+ Jun 2022 01:50:16 +0200
+Message-ID: <c4186284-0e77-46b2-716b-1975255b8b34@gmx.de>
+Date:   Thu, 30 Jun 2022 01:50:15 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 5/8] dt_bindings: rs485: Correct delay values
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-6-LinoSanfilippo@gmx.de>
+ <YrSU4eL9hgISg3Y1@smile.fi.intel.com>
+ <6c50fdca-aac4-aaf5-ad34-18a60fcc0aa0@gmx.de>
+ <YrrR4hItCx56bpxI@smile.fi.intel.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <YrrR4hItCx56bpxI@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:0QiSyAhlTJ7TDzjUjKCzFvaXoizpF1kJducC6AZQT6WWrjML4TL
+ p27AQCym8UlP5l+kLh7vPVARmEuw10GVbP6LJL3fulDLklJj2EDsZI2ufG/XwJHB9QeAKO+
+ XtedCi+uGIyVg0I3/LB+Tymw+f15Y2IlHLZgWP29q/6rD4RTR+R6iKXzRlztKM/n84oNt4u
+ OlaT6AVb4VeiLIAzwmtLg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:6Z39mh5f+gc=:NRImakE+xh6ZMGO4g8mZIF
+ BQOmO9YwNeEohO618vMaD4rEIxoCeMORwkXq5SKz37KNV5vts/L8YvyU7vXKFTJXUk3gJQCpP
+ qx53u6ZX0fHHkk1Xo8LEh7kUWaoQ4XVxFf+XqsKk8/A9MdPZRyCsaV4jd3vQz1UzK6nme74GZ
+ LQfjfNN6DwjkFIrxuIxE+MG/LsHWzYO2+Hvw6dQse3Op+A9TPDtAsTNRxF5IOowsq5uYoxzq4
+ 07zfhFsvpAsHoxxdv6REQf7lr4IzK9yHybnu6CPbWne1WwzGA5WhssqWnoD1n83meTq9br0aP
+ /VtzrSwsL0bc52RIxbYra0yPvGyZ77b3t4fVvK9d/HR6UcgPXSm7GIvgVGAp1/ogJFGOC/CFx
+ 9fkKTnw2mZiarjIKkr4isPlXkObv+fIVGGoyWZSfdHI0i14k7vH3dDLeIH2C8iQDUB3xe2p15
+ ZguSys2lqwX5oo4rNj/68RGNwnnTQY82JXt04zJztaQsxGRXec9gz5vDLWYSzBq2TWYYmYhMc
+ LQv2gwBOJ/i5U/7nNrDD7JbO2uk2JHVMzOlXvzMDbBV24vlptPjfQSo8KGdY/DuM3blGvlg0v
+ gQnKRmkaMcl8J4W4iIDc1UVywekre+Y30+AW2xLlJh8kwwL4vcU1nqkEq/G1D+6XY2H1FgccM
+ sOesmdikXtS5KFc0Lt/RVsrvZA72bsXQDMNWmSG7SjmGxghQ+xAz8dG/fDpkpyvvr6Ie/SwQA
+ dFkgrDjYpd2PRhZb3pAWYqBzp8W9njY3CH7RL0liiXz+I4vCfbQJdiF1jO1nw5InYIF8OaH8w
+ /uJlgX7p/ppM8nseFGjJC7LYZRt1xbr6A3WKzwD73N33Hn0ll7ZXE1tgShBHZui7zHFnNmQDn
+ JMC1lamRVaseVyWUH/BvH5eGXkvlEItPymKZ0kQjm+z+Bwksvxu+0wD08nENjUTddv8lXVR7G
+ VIxeHkjkKQWcrfq/EnR3qlPu3NxaCfRn8+y0IwoQpwH8s6BebzX8ekipWRey7kbfNUHvp1ZcJ
+ fZt0dXCeHBvfRunjQNcszYT3cgpk3S0rT9Pamcs6iIb51vxvge+kKOQNBR0h4/pM0uMFg095p
+ IEhuOVK28tPlA4+HiHkAlqnKgDrPVm+THmRB9qlxhhUlSBcsyGR+ONRtQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Where available, obtain the handle to retimer switch specified via
-firmware, and update the mux configuration callsites to add retimer
-support for supported modes.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
- drivers/platform/chrome/cros_ec_typec.c | 44 +++++++++++++++++++++++--
- 1 file changed, 41 insertions(+), 3 deletions(-)
+On 28.06.22 12:03, Andy Shevchenko wrote:
+> On Thu, Jun 23, 2022 at 10:17:06PM +0200, Lino Sanfilippo wrote:
+>> On 23.06.22 at 18:29, Andy Shevchenko wrote:
+>>> On Wed, Jun 22, 2022 at 05:46:56PM +0200, Lino Sanfilippo wrote:
+>>>>
+>>>> The maximum allowed delay for RTS before and RTS after send is 100 ms=
+.
+>>>> Adjust the documentation accordingly.
+>>>
+>>> Is it only documentation issue? If the code allows this to be set high=
+er
+>>> than 100, we may not change the documentation since this an ABI (from
+>>> firmware <--> kernel perspective) we need to support old variants.
+>>
+>> Well currently the documentation claims that a maximum of 1000 msecs is=
+ allowed but
+>> nothing actually checks the values read from device tree/ACPI and so it=
+ is possible
+>> to set much higher values (note that the UART drivers dont check the de=
+lays read from
+>> DT/ACPI either, the only exception I found is max310x which clamps it t=
+o 15 ms).
+>>
+>> We already have a maximum of 100 ms defined for RTS delays set via TIOC=
+SRS485. To be
+>> consistent with TIOCSRS485 the same limit is used for DT/ACPI values in=
+ this patch.
+>>
+>> I am aware that this changes the firmware/kernel ABI. But we had a simi=
+lar situation when
+>> the sanity checks for TIOCSRS485 were introduced
+>> (see https://lore.kernel.org/all/20220410104642.32195-2-LinoSanfilippo@=
+gmx.de/)
+>> since before we did not have those limits for all drivers (some drivers=
+ clamped the
+>> values itself but many did not care).
+>> Furthermore 100 ms is already a very high value for RTS delays (which a=
+re usually rather
+>> in usecs range). So IMHO the risk is very low to break anything when va=
+lues are clamped
+>> that are higher than that.
+>
+> You need to elaborate all this in the commit message to justify the chan=
+ge.
+>
 
-diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-index 39e6fd4491a9..38c4ac754ea9 100644
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -20,6 +20,7 @@
- #include <linux/usb/typec_altmode.h>
- #include <linux/usb/typec_dp.h>
- #include <linux/usb/typec_mux.h>
-+#include <linux/usb/typec_retimer.h>
- #include <linux/usb/typec_tbt.h>
- #include <linux/usb/role.h>
- 
-@@ -53,6 +54,7 @@ struct cros_typec_port {
- 	struct usb_pd_identity c_identity;
- 	struct typec_switch *ori_sw;
- 	struct typec_mux *mux;
-+	struct typec_retimer *retimer;
- 	struct usb_role_switch *role_sw;
- 
- 	/* Variables keeping track of switch state. */
-@@ -142,6 +144,12 @@ static int cros_typec_get_switch_handles(struct cros_typec_port *port,
- 		goto mux_err;
- 	}
- 
-+	port->retimer = fwnode_typec_retimer_get(fwnode);
-+	if (IS_ERR(port->retimer)) {
-+		dev_dbg(dev, "Retimer handle not found.\n");
-+		goto retimer_sw_err;
-+	}
-+
- 	port->ori_sw = fwnode_typec_switch_get(fwnode);
- 	if (IS_ERR(port->ori_sw)) {
- 		dev_dbg(dev, "Orientation switch handle not found.\n");
-@@ -159,6 +167,8 @@ static int cros_typec_get_switch_handles(struct cros_typec_port *port,
- role_sw_err:
- 	typec_switch_put(port->ori_sw);
- ori_sw_err:
-+	typec_retimer_put(port->retimer);
-+retimer_sw_err:
- 	typec_mux_put(port->mux);
- mux_err:
- 	return -ENODEV;
-@@ -203,6 +213,21 @@ static void cros_typec_unregister_altmodes(struct cros_typec_data *typec, int po
- 	}
- }
- 
-+/*
-+ * Map the Type-C Mux state to retimer state and call the retimer set function. We need this
-+ * because we re-use the Type-C mux state for retimers.
-+ */
-+static int cros_typec_retimer_set(struct typec_retimer  *retimer, struct typec_mux_state state)
-+{
-+	struct typec_retimer_state rstate = {
-+		.alt = state.alt,
-+		.mode = state.mode,
-+		.data = state.data,
-+	};
-+
-+	return typec_retimer_set(retimer, &rstate);
-+}
-+
- static int cros_typec_usb_disconnect_state(struct cros_typec_port *port)
- {
- 	port->state.alt = NULL;
-@@ -211,6 +236,7 @@ static int cros_typec_usb_disconnect_state(struct cros_typec_port *port)
- 
- 	usb_role_switch_set_role(port->role_sw, USB_ROLE_NONE);
- 	typec_switch_set(port->ori_sw, TYPEC_ORIENTATION_NONE);
-+	cros_typec_retimer_set(port->retimer, port->state);
- 
- 	return typec_mux_set(port->mux, &port->state);
- }
-@@ -381,9 +407,14 @@ static int cros_typec_init_ports(struct cros_typec_data *typec)
- 
- static int cros_typec_usb_safe_state(struct cros_typec_port *port)
- {
-+	int ret;
- 	port->state.mode = TYPEC_STATE_SAFE;
- 
--	return typec_mux_set(port->mux, &port->state);
-+	ret = cros_typec_retimer_set(port->retimer, port->state);
-+	if (!ret)
-+		ret = typec_mux_set(port->mux, &port->state);
-+
-+	return ret;
- }
- 
- /*
-@@ -480,7 +511,11 @@ static int cros_typec_enable_dp(struct cros_typec_data *typec,
- 	port->state.data = &dp_data;
- 	port->state.mode = TYPEC_MODAL_STATE(ffs(pd_ctrl->dp_mode));
- 
--	return typec_mux_set(port->mux, &port->state);
-+	ret = cros_typec_retimer_set(port->retimer, port->state);
-+	if (!ret)
-+		ret = typec_mux_set(port->mux, &port->state);
-+
-+	return ret;
- }
- 
- static int cros_typec_enable_usb4(struct cros_typec_data *typec,
-@@ -569,7 +604,10 @@ static int cros_typec_configure_mux(struct cros_typec_data *typec, int port_num,
- 	} else if (port->mux_flags & USB_PD_MUX_USB_ENABLED) {
- 		port->state.alt = NULL;
- 		port->state.mode = TYPEC_STATE_USB;
--		ret = typec_mux_set(port->mux, &port->state);
-+
-+		ret = cros_typec_retimer_set(port->retimer, port->state);
-+		if (!ret)
-+			ret = typec_mux_set(port->mux, &port->state);
- 	} else {
- 		dev_dbg(typec->dev,
- 			"Unrecognized mode requested, mux flags: %x\n",
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+OK, I see. I will rewrite the commit message then to hopefully make the ra=
+tionale behind
+the time reduction more clear.
 
+Thanks,
+Lino
