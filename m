@@ -2,102 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66544CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbiF2Q45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
+        id S230079AbiF2Q7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbiF2Q4z (ORCPT
+        with ESMTP id S229564AbiF2Q7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:56:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4209D25588;
-        Wed, 29 Jun 2022 09:56:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9EB7DCE25C4;
-        Wed, 29 Jun 2022 16:56:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13837C341CB;
-        Wed, 29 Jun 2022 16:56:45 +0000 (UTC)
-Date:   Wed, 29 Jun 2022 12:56:43 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?UTF-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <20220629125643.393df70d@gandalf.local.home>
-In-Reply-To: <20220629164543.GA25672@lst.de>
-References: <20220629150102.1582425-1-hch@lst.de>
-        <20220629150102.1582425-2-hch@lst.de>
-        <Yrx5Lt7jrk5BiHXx@zx2c4.com>
-        <20220629161020.GA24891@lst.de>
-        <Yrx6EVHtroXeEZGp@zx2c4.com>
-        <20220629161527.GA24978@lst.de>
-        <Yrx8/Fyx15CTi2zq@zx2c4.com>
-        <20220629163007.GA25279@lst.de>
-        <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
-        <20220629164543.GA25672@lst.de>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 29 Jun 2022 12:59:40 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8430AB3C
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 09:59:39 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id w20so29112918lfa.11
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 09:59:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=534o96K+HtJxuaFavGV3IgmBObFgbJ+GOTeCO07YsEs=;
+        b=ktQ2IPhMiOrRUfEfnOZFDO2UHiqD5R9off5vo2NolrYg0wVVahY4fUkgFzgjYHE1nU
+         9OU0kHyuEFneCut9p/1MC4eZjZpdFHk86Kyh5M19BB4VdUwn8LhwNGOe0IygkjlSjp+o
+         UXfgvOHBDmo1HxChZjcABi/oGm8aMQreiW21Yvj0V4Oeby3hpvXiqZX8skzW6hGKLb+D
+         wD/HROhCVqP3dF5N7bX6OACJKM6Syhh7Cq2Hak7kGnabBgbXZGpg0joVnmWWAtHDZH7S
+         Jf9MeqjfjH6Kiq4j6Kak9SZWF0BSOqw3vz3Ooh53b8XOug/MLFJFo0p1Hu6TSWcm1Fhz
+         IBFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=534o96K+HtJxuaFavGV3IgmBObFgbJ+GOTeCO07YsEs=;
+        b=VsUdwYyutvA6j1tn2qmQGhgCX5JGBir3qN5PXemGH0S3HIVLwJlgF+r9UEY9f1oaiX
+         Tt2xeAIB4uVreLxZEEq6LXC9P1JrVJbmNlPSgM5PH8uweLZPcULHAU9a8vQ+/mFkanBn
+         3F+XiNYsxFaT04qXyty/lYTuvhzpowg5rDoxW3pNWaXNfVqYilcDmCNDN80EDxiH/yUM
+         Twa42W/BogDtCkFVAu9y/9xIJKYDq6+GQgZRCEpTywfTSo1zPwRmMCnee0mkyP+VVFEG
+         eugcv7MyoQBDx6EQJmciWh3USNSukqHi70tw4JEXQc+4ZNrvydIE/nMFPv2GZ6zrDhHa
+         UmKQ==
+X-Gm-Message-State: AJIora+ESjtkJQeJJNZVmPNNOc3sVy/BLVjOwUeZv5pgqZRudSwq5dt3
+        WmyzktnKaPNs0DdH35QrOHY+ViZxTfELAABfRn5olQ==
+X-Google-Smtp-Source: AGRyM1tEwXYmLhImHx4/hcXAfpxfegIwVjIMDc2lDGMK5VwpNQjWFlGcJaVWV3chEbEeKSZvcET9jArZasXRPasprsw=
+X-Received: by 2002:ac2:4d22:0:b0:47f:65b5:35ec with SMTP id
+ h2-20020ac24d22000000b0047f65b535ecmr2861553lfk.432.1656521977609; Wed, 29
+ Jun 2022 09:59:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220627111927.641837068@linuxfoundation.org> <20220627111929.368555413@linuxfoundation.org>
+ <6cd16364-f0cd-b3f3-248f-4b6d585d05ef@gmail.com> <CAKwvOdm8UiY8CsqNgyoq4MdC2TbBj-1+cRE+fWZ9+vVBxNZz_Q@mail.gmail.com>
+ <20220629053854.GA16297@lst.de>
+In-Reply-To: <20220629053854.GA16297@lst.de>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 29 Jun 2022 09:59:25 -0700
+Message-ID: <CAKwvOd=S05LN=bDXcWpkpz1NG+C=M4Hd0HW0xcP_hrSsf8Mb9Q@mail.gmail.com>
+Subject: Re: [PATCH 5.4 57/60] modpost: fix section mismatch check for
+ exported init/exit sections
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Jessica Yu <jeyu@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        dri-devel <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 28, 2022 at 10:38 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Tue, Jun 28, 2022 at 12:11:50PM -0700, Nick Desaulniers wrote:
+> > Maybe let's check with Christoph if it's ok to backport bf22c9ec39da
+> > to stable 5.10 and 5.4?
+>
+> I'd be fine with that, but in the end it is something for the relevant
+> maintainers to decide.
 
-[ Note, I'm not on the Android team and my response has nothing to do with
-  my employer. I would say the same thing with my previous employer. ]
+$ ./scripts/get_maintainer.pl -f drivers/gpu/drm/drm_crtc_helper_internal.h
+Maarten Lankhorst <maarten.lankhorst@linux.intel.com> (maintainer:DRM
+DRIVERS AND MISC GPU PATCHES)
+Maxime Ripard <mripard@kernel.org> (maintainer:DRM DRIVERS AND MISC GPU PATCHES)
+Thomas Zimmermann <tzimmermann@suse.de> (maintainer:DRM DRIVERS AND
+MISC GPU PATCHES)
+David Airlie <airlied@linux.ie> (maintainer:DRM DRIVERS)
+Daniel Vetter <daniel@ffwll.ch> (maintainer:DRM DRIVERS)
+dri-devel@lists.freedesktop.org (open list:DRM DRIVERS)
+linux-kernel@vger.kernel.org (open list)
 
-On Wed, 29 Jun 2022 18:45:43 +0200
-Christoph Hellwig <hch@lst.de> wrote:
-
-> On Wed, Jun 29, 2022 at 06:38:09PM +0200, Jason A. Donenfeld wrote:
-> > On the technical topic, an Android developer friend following this
-> > thread just pointed out to me that Android doesn't use PM_AUTOSLEEP and
-> > just has userspace causing suspend frequently. So by his rough
-> > estimation your patch actually *will* break Android devices. Zoinks.
-> > Maybe he's right, maybe he's not -- I don't know -- but you should
-> > probably look into this if you want this patch to land without breakage.  
-> 
-> And it will also "break" anyone else doing frequent suspends from
-> userspace, as that behavior is still in no way related to
-> CONFIG_ANDROID.
-
-Should there then be a CONFIG_FREQUENT_SUSPENDS ?
-
-That is, if you have system where you know that there will be a lot of
-frequent suspends coming from user space, then you would enable it.
-
-I agree, calling this ANDROID is not related to the functionality change.
-But if there was a config that was related, would that be acceptable?
-
-Then it would not just be Android that could enabled this change, but any
-other system that is doing frequent suspends?
-
--- Steve
+Maarten, Maxime, Thomas, David, or Daniel,
+Is it ok to backport
+commit bf22c9ec39da ("drm: remove drm_fb_helper_modinit")
+to 5.10.y and 5.4.y to fix the modpost warning reported by Florian in
+https://lore.kernel.org/stable/6cd16364-f0cd-b3f3-248f-4b6d585d05ef@gmail.com/ ?
+-- 
+Thanks,
+~Nick Desaulniers
