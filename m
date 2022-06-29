@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 098C2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 340EFCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiF2WAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 18:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
+        id S231143AbiF2WAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 18:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiF2WAP (ORCPT
+        with ESMTP id S230394AbiF2WAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 18:00:15 -0400
+        Wed, 29 Jun 2022 18:00:16 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B0E21E0C;
-        Wed, 29 Jun 2022 15:00:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C5A21E12;
+        Wed, 29 Jun 2022 15:00:15 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <heiko@sntech.de>)
-        id 1o6fiw-0006yD-JR; Wed, 29 Jun 2022 23:59:50 +0200
+        id 1o6fiy-0006yD-CA; Wed, 29 Jun 2022 23:59:52 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -29,9 +29,9 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
         drew@beagleboard.org, rdunlap@infradead.org,
         Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v5 1/4] of: also handle dma-noncoherent in of_dma_is_coherent()
-Date:   Wed, 29 Jun 2022 23:59:41 +0200
-Message-Id: <20220629215944.397952-2-heiko@sntech.de>
+Subject: [PATCH v5 4/4] riscv: implement cache-management errata for T-Head SoCs
+Date:   Wed, 29 Jun 2022 23:59:44 +0200
+Message-Id: <20220629215944.397952-5-heiko@sntech.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220629215944.397952-1-heiko@sntech.de>
 References: <20220629215944.397952-1-heiko@sntech.de>
@@ -41,66 +41,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_dma_is_coherent() currently expects the architecture to be
-non-coherent and some devices being coherent getting marked
-as such with the dma-coherent devicetree property.
+The T-Head C906 and C910 implement a scheme for handling
+cache operations different from the generic Zicbom extension.
 
-For PowerPC CONFIG_OF_DMA_DEFAULT_COHERENT was added which currently
-makes of_dma_is_coherent() always return true but doesn't handle
-the case of the architecture being coherent but some devices not.
-
-So modify the function to also check for dma-noncoherent and
-set a suitable default return value. If CONFIG_OF_DMA_DEFAULT_COHERENT
-is set the value starts with true and finding dma-noncoherent will
-set it to false and without CONFIG_OF_DMA_DEFAULT_COHERENT, the
-behaviour is reversed.
+Add an errata for it next to the generic dma coherency ops.
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Samuel Holland <samuel@sholland.org>
 ---
- drivers/of/address.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ arch/riscv/Kconfig.erratas           | 11 +++++++
+ arch/riscv/errata/thead/errata.c     | 20 ++++++++++++
+ arch/riscv/include/asm/errata_list.h | 48 +++++++++++++++++++++++++---
+ 3 files changed, 74 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 94f017d808c4..96f0a12e507c 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -1045,26 +1045,29 @@ phys_addr_t __init of_dma_get_max_cpu_address(struct device_node *np)
-  *
-  * It returns true if "dma-coherent" property was found
-  * for this device in the DT, or if DMA is coherent by
-- * default for OF devices on the current platform.
-+ * default for OF devices on the current platform and no
-+ * "dma-noncoherent" property was found for this device.
-  */
- bool of_dma_is_coherent(struct device_node *np)
- {
- 	struct device_node *node;
--
--	if (IS_ENABLED(CONFIG_OF_DMA_DEFAULT_COHERENT))
--		return true;
-+	bool is_coherent = IS_ENABLED(CONFIG_OF_DMA_DEFAULT_COHERENT);
+diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+index 457ac72c9b36..3223e533fd87 100644
+--- a/arch/riscv/Kconfig.erratas
++++ b/arch/riscv/Kconfig.erratas
+@@ -55,4 +55,15 @@ config ERRATA_THEAD_PBMT
  
- 	node = of_node_get(np);
+ 	  If you don't know what to do here, say "Y".
  
- 	while (node) {
- 		if (of_property_read_bool(node, "dma-coherent")) {
--			of_node_put(node);
--			return true;
-+			is_coherent = true;
-+			break;
-+		}
-+		if (of_property_read_bool(node, "dma-noncoherent")) {
-+			is_coherent = false;
-+			break;
- 		}
- 		node = of_get_next_dma_parent(node);
- 	}
- 	of_node_put(node);
--	return false;
-+	return is_coherent;
++config ERRATA_THEAD_CMO
++	bool "Apply T-Head cache management errata"
++	depends on ERRATA_THEAD
++	select RISCV_DMA_NONCOHERENT
++	default y
++	help
++	  This will apply the cache management errata to handle the
++	  non-standard handling on non-coherent operations on T-Head SoCs.
++
++	  If you don't know what to do here, say "Y".
++
+ endmenu
+diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/thead/errata.c
+index 852283460fb9..cf6bd44db656 100644
+--- a/arch/riscv/errata/thead/errata.c
++++ b/arch/riscv/errata/thead/errata.c
+@@ -29,6 +29,23 @@ static bool errata_probe_pbmt(unsigned int stage,
+ 	return false;
  }
- EXPORT_SYMBOL_GPL(of_dma_is_coherent);
  
++static bool errata_probe_cmo(unsigned int stage,
++			     unsigned long arch_id, unsigned long impid)
++{
++#ifdef CONFIG_ERRATA_THEAD_CMO
++	if (arch_id != 0 || impid != 0)
++		return false;
++
++	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
++		return false;
++
++	riscv_noncoherent_supported();
++	return true;
++#else
++	return false;
++#endif
++}
++
+ static u32 thead_errata_probe(unsigned int stage,
+ 			      unsigned long archid, unsigned long impid)
+ {
+@@ -37,6 +54,9 @@ static u32 thead_errata_probe(unsigned int stage,
+ 	if (errata_probe_pbmt(stage, archid, impid))
+ 		cpu_req_errata |= (1U << ERRATA_THEAD_PBMT);
+ 
++	if (errata_probe_cmo(stage, archid, impid))
++		cpu_req_errata |= (1U << ERRATA_THEAD_CMO);
++
+ 	return cpu_req_errata;
+ }
+ 
+diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
+index 79d89aeeaa6c..19a771085781 100644
+--- a/arch/riscv/include/asm/errata_list.h
++++ b/arch/riscv/include/asm/errata_list.h
+@@ -16,7 +16,8 @@
+ 
+ #ifdef CONFIG_ERRATA_THEAD
+ #define	ERRATA_THEAD_PBMT 0
+-#define	ERRATA_THEAD_NUMBER 1
++#define	ERRATA_THEAD_CMO 1
++#define	ERRATA_THEAD_NUMBER 2
+ #endif
+ 
+ #define	CPUFEATURE_SVPBMT 0
+@@ -88,17 +89,54 @@ asm volatile(ALTERNATIVE(						\
+ #define ALT_THEAD_PMA(_val)
+ #endif
+ 
++/*
++ * dcache.ipa rs1 (invalidate, physical address)
++ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
++ *   0000001    01010      rs1       000      00000  0001011
++ * dache.iva rs1 (invalida, virtual address)
++ *   0000001    00110      rs1       000      00000  0001011
++ *
++ * dcache.cpa rs1 (clean, physical address)
++ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
++ *   0000001    01001      rs1       000      00000  0001011
++ * dcache.cva rs1 (clean, virtual address)
++ *   0000001    00100      rs1       000      00000  0001011
++ *
++ * dcache.cipa rs1 (clean then invalidate, physical address)
++ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
++ *   0000001    01011      rs1       000      00000  0001011
++ * dcache.civa rs1 (... virtual address)
++ *   0000001    00111      rs1       000      00000  0001011
++ *
++ * sync.s (make sure all cache operations finished)
++ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
++ *   0000000    11001     00000      000      00000  0001011
++ */
++#define THEAD_inval_A0	".long 0x0265000b"
++#define THEAD_clean_A0	".long 0x0245000b"
++#define THEAD_flush_A0	".long 0x0275000b"
++#define THEAD_SYNC_S	".long 0x0190000b"
++
+ #define ALT_CMO_OP(_op, _start, _size, _cachesize)			\
+-asm volatile(ALTERNATIVE(						\
+-	__nops(5),							\
++asm volatile(ALTERNATIVE_2(						\
++	__nops(6),							\
+ 	"mv a0, %1\n\t"							\
+ 	"j 2f\n\t"							\
+ 	"3:\n\t"							\
+ 	"cbo." __stringify(_op) " (a0)\n\t"				\
+ 	"add a0, a0, %0\n\t"						\
+ 	"2:\n\t"							\
+-	"bltu a0, %2, 3b\n\t", 0,					\
+-		CPUFEATURE_ZICBOM, CONFIG_RISCV_ISA_ZICBOM)		\
++	"bltu a0, %2, 3b\n\t"						\
++	"nop", 0, CPUFEATURE_ZICBOM, CONFIG_RISCV_ISA_ZICBOM,		\
++	"mv a0, %1\n\t"							\
++	"j 2f\n\t"							\
++	"3:\n\t"							\
++	THEAD_##_op##_A0 "\n\t"						\
++	"add a0, a0, %0\n\t"						\
++	"2:\n\t"							\
++	"bltu a0, %2, 3b\n\t"						\
++	THEAD_SYNC_S, THEAD_VENDOR_ID,					\
++			ERRATA_THEAD_CMO, CONFIG_ERRATA_THEAD_CMO)	\
+ 	: : "r"(_cachesize),						\
+ 	    "r"((unsigned long)(_start) & ~((_cachesize) - 1UL)),	\
+ 	    "r"((unsigned long)(_start) + (_size))			\
 -- 
 2.35.1
 
