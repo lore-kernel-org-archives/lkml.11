@@ -2,121 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD05C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE2AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231770AbiF2Spb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56354 "EHLO
+        id S231143AbiF2Spj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbiF2SpH (ORCPT
+        with ESMTP id S231533AbiF2SpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:45:07 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580DF36310
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:45:02 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so170327wmp.3
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:45:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZPnaNl2N6OCS49bYwYg25LRRooD0U5t+6njnQfYqn3w=;
-        b=cun3Fr5kbB1kc8fHUe1Pp/5QcguZXRCH+7TrDGk+ZMirUtgQL36YLVbJCyhLZkOBJy
-         LhvI1GVPT1ZTiqmhJOU4Q4LLd5pGvHUxjtjZGRI3dGMdUZcBN86wcFBgUizT8kZoHfh+
-         rzleb2gxRvUVaOsxtxjzB3eOBv6fv6XHPIx7hcXbCi9kY8hS+dv7hGMpXyC9zsYxLjVV
-         OdIhzsTDSyIcq3kRndNjuRbrJ/XkT7HQi3aadRk0Mm5KKIz0aoZlheM2JjydatfBmbmE
-         b2/Cw63ViZ4v3295nkIXbKulmCKxxxTgoEJn+r+AuOx8BCV+qEspBTkmWddspDZSYqKX
-         yfng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZPnaNl2N6OCS49bYwYg25LRRooD0U5t+6njnQfYqn3w=;
-        b=yROmvc6JK8ZfixVBV/K5rSjBIPyyva4nlErYNQj0zMllvhWWfQkHgFq9WjfhYm+q1U
-         PT0H8MrA2uUoVY1AGAgw8EAnjBQoTvPbcIwAXRK6g5nsjEviwe6uAraZXAdk5f7+br5v
-         JAU7NHvrOBJTjM3sEhKrAiebYi1daT2IZRah2E9i3GdC/03RzjM57Ii3Vb4dFBgEaAGE
-         2Ee4nw1S1iZI6bjvJ8qPaxhhUsqSV0Os5z8dQuSpoNRLeDAaOdtKQF1hnoK5h9NTsIZV
-         V+vLQyd89hxwO4BxSAImmnUAqnKM5tIF7W2nxvhd53/z7NB14uiXkn2etnas3QosobC5
-         fWAQ==
-X-Gm-Message-State: AJIora+xxe3m2KVgFSIRvyqTgnBBaRk8/zBtPdR7DgXUh9B8g4I1J5tg
-        7FpilAHWQQzkWHc/33+a0sGpkw==
-X-Google-Smtp-Source: AGRyM1ssGrLiDWDuNuov06ew/GRkUp9AxME43xf1zuFe29c5Ad1nznXlVQLFaI/03jH4fxep5tbDyQ==
-X-Received: by 2002:a05:600c:886:b0:3a0:49d7:d8b9 with SMTP id l6-20020a05600c088600b003a049d7d8b9mr7557614wmp.115.1656528300967;
-        Wed, 29 Jun 2022 11:45:00 -0700 (PDT)
-Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id u23-20020a7bcb17000000b0039aef592ca0sm3834371wmj.35.2022.06.29.11.44.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 11:45:00 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
+        Wed, 29 Jun 2022 14:45:24 -0400
+X-Greylist: delayed 185 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 11:45:23 PDT
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B5424BE7;
+        Wed, 29 Jun 2022 11:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1656528135;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=4NqtGbDAxBLulsvaYxNMvmwnavVr0rNTo9Kj5OnQgwM=;
+    b=sxJJg8HHS0bfDv7UUqMwc/C9TaxRAv27nJuHr4gdZyJgrsHxKTpk4BFwh/1rJr9fC7
+    hcLxxp18nfuCBaAN/lA4daLVKImRQDRMTogSsxf5npmiH5d+EFmRKZJgzAn48EPPOi1c
+    z/Zbze1yOEi0CSK0Mxys+omQp7RDodBs7SbWU//T0oSsW7az2/Fo6q7R0QSZnzpE9QRZ
+    VrdDDiFTqoM3bGY+GOsOdZuQpkbKRDYoBnestKpTxTJXTinLatz1g7NcCIR37FqNBlkc
+    7ztADPNCp17ycbX/W7Qg8xpwOHbcZh1OYvv+4HrtjbuQFc2u8Y7Z8Rtb8Gw9zZUz39Hl
+    Ncig==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK8+86Y="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.46.1 AUTH)
+    with ESMTPSA id yfdd30y5TIgF0cZ
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 29 Jun 2022 20:42:15 +0200 (CEST)
+Date:   Wed, 29 Jun 2022 20:42:08 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v3 15/15] riscv: dts: canaan: build all devicetress if SOC_CANAAN
-Date:   Wed, 29 Jun 2022 19:43:44 +0100
-Message-Id: <20220629184343.3438856-16-mail@conchuod.ie>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220629184343.3438856-1-mail@conchuod.ie>
-References: <20220629184343.3438856-1-mail@conchuod.ie>
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v3 3/5] arm64: dts: qcom: add SC8280XP platform
+Message-ID: <Yryc8AUIPoWmeyB9@gerhold.net>
+References: <20220629041438.1352536-1-bjorn.andersson@linaro.org>
+ <20220629041438.1352536-4-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629041438.1352536-4-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Tue, Jun 28, 2022 at 09:14:36PM -0700, Bjorn Andersson wrote:
+> Introduce initial support for the Qualcomm SC8280XP platform, aka 8cx
+> Gen 3. This initial contribution supports SMP, CPUfreq, CPU cluster
+> idling, GCC, TLMM, SMMU, RPMh regulators, power-domains and clocks,
+> interconnects, some QUPs, UFS, remoteprocs, USB, watchdog, LLCC and
+> tsens.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
+> Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+> 
+> Changes since v2:
+> - Fixed include sort order
+> - Dropped a stray newline in &CPU0
+> - Renamed reserved-memory regions
+> - Dropped clock-frequency of the timers node
+> - Reduced #address-cells and #size-cells to 1 in timer node
+> 
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2142 ++++++++++++++++++++++++
+>  1 file changed, 2142 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> new file mode 100644
+> index 000000000000..c9d608ac87fa
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -0,0 +1,2142 @@
+[...]
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+> +		clock-frequency = <19200000>;
 
-Testing & checking the Canaan devicetrees is inconvenient as only the
-devicetree corresponding to SOC_CANAAN_K210_DTB_BUILTIN will be built.
-Change the Makefile so that all devicetrees are built by default if
-SOC_CANAAN but only the one specified by SOC_CANAAN_K210_DTB_BUILTIN
-gets built as an object.
+Please drop the "clock-frequency" here as well (if possible).
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/boot/dts/canaan/Makefile | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/arch/riscv/boot/dts/canaan/Makefile b/arch/riscv/boot/dts/canaan/Makefile
-index c61b08ac8554..befe4eb7527b 100644
---- a/arch/riscv/boot/dts/canaan/Makefile
-+++ b/arch/riscv/boot/dts/canaan/Makefile
-@@ -1,3 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0
--dtb-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .dtb, $(CONFIG_SOC_CANAAN_K210_DTB_SOURCE))
--obj-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .o, $(dtb-y))
-+dtb-$(CONFIG_SOC_CANAAN) += canaan_kd233.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += k210_generic.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_bit.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_dock.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_go.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maixduino.dtb
-+
-+obj-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .dtb.o, $(CONFIG_SOC_CANAAN_K210_DTB_SOURCE))
--- 
-2.36.1
-
+Thanks,
+Stephan
