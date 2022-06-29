@@ -2,82 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B533FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E15C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbiF2XO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 19:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
+        id S231363AbiF2XPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 19:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbiF2XOZ (ORCPT
+        with ESMTP id S229780AbiF2XPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 19:14:25 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84701F618;
-        Wed, 29 Jun 2022 16:14:24 -0700 (PDT)
-Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4E204660191F;
-        Thu, 30 Jun 2022 00:14:22 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656544463;
-        bh=nmzsVUux1m9g6XxD7KnJZV3F8xIZnxP4CbM5iyeqeiw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tk6LjNlHKFiwNrFi8LFTIPHSY2plMOmvlwxjt1A+roeA4w3oBH8059dHAz7GkJDfM
-         SfZlbvvsd5DzAuh5fvnT+is9SO3drCk+9cybWBddu4CfOjUAyw9c2e0tHLoPKJt5q6
-         NdZGIeqJzjtHZzOGvDFOZ/fz3jadlb4l5JFt5e8yEZQuDT+CWq4AAbMgqAUlb/9zQO
-         lIEQXjcXBBorWwDWcCdi4eRIEb93NxH63/cbqBDSTo9bWcgfdAJRoohocWmP9r2Hva
-         iDn31RJr4xbrI3ZisjgJLdkMtFOzlzQkcKh8OE+bKD4jB0M9VTUd9RtQh+tsHp3wCi
-         MVhZBpA46EKVQ==
-Date:   Wed, 29 Jun 2022 19:14:17 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH 2/5] arm64: dts: mt8192: Add mipi_tx node
-Message-ID: <20220629231417.or4s554u3u7wtbo3@notapiano>
-References: <20220629121358.19458-1-allen-kh.cheng@mediatek.com>
- <20220629121358.19458-3-allen-kh.cheng@mediatek.com>
+        Wed, 29 Jun 2022 19:15:43 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612052018F;
+        Wed, 29 Jun 2022 16:15:42 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id 128so16427979pfv.12;
+        Wed, 29 Jun 2022 16:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jVotzPpytA8mFUbLq0btjJ8pR9eOolx6C7Tp6rdwLQ4=;
+        b=eUvUoQ/sEyPdN2seynm4Rsh9zhG7yyKWM/KREv+BgTlN0goc7pZ3I8DRPHpcaXw9Dh
+         wNM1YzdKZC7lGe8yXMPMVdzCS5VYmVA2ffp6YyuJsCi2xyqcmNJVwEdL+ubUu50tVBHy
+         LaVnIJBI/61IVoQ72FwSPzKdSgiqddB55ol2oX1Jjn3akAonD+i8ifVJdyKlXkiAwamP
+         Otv1HXN31xqjbnyRpDXqKhh8+EkDtSm4AXHgG04eqa5wXGZDxw4Jgw5/aYRFKEuQWGAa
+         PbCaCvSmajL/WhP46LDVLjoFI82+2m8TOv2ViX+whNjdEmPgm9bsgLok0ut0ZaFBS1vB
+         CyxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jVotzPpytA8mFUbLq0btjJ8pR9eOolx6C7Tp6rdwLQ4=;
+        b=EFZO+KWmWEXkQdI5XyBmla+S0CeTNzA3bOmzDQr9ij8hW+ZBdzXlEunsUJiTWZNpzc
+         dKZj59pjF/KWejySUXYKRpq2R85nbHgsFUzygSL1pV0VsaZTgCoC7g2fwuqJ3IyNkAVv
+         MSgnxQLNvsg9KGqzm7p21zkGo8q/3gFUFqI4/BrY0YKPSluWj71J8sjroyxGA6u46bjD
+         AK99ibrZMl2+4HQ2Da6Cwjp+vKys+fUqlFVyb0zEZPzDt62OpToHYenuNLI1gkdQ/xoI
+         fupYlB1SuUn6FK2ijy6qraWazDuP5W61eOLLEMYWT5gbziKFKpYpZ4RBctgaIRXjmhtV
+         Xlyg==
+X-Gm-Message-State: AJIora8FPngwI3BYmGlVY3ZSpoJZm1mZxvG7E6JlCQDECaoAhGxxmooG
+        mWDfReILMV9MfqT7Gsvlgd4=
+X-Google-Smtp-Source: AGRyM1sBdAFjyOiQCPHkiIXF9rOdtSEiGuZBBTzNgwUK16indtQ1Dd6aKt+jyEA5TWsEFgovGo29Gw==
+X-Received: by 2002:a63:6d8b:0:b0:40d:a35:13ed with SMTP id i133-20020a636d8b000000b0040d0a3513edmr5030000pgc.615.1656544541837;
+        Wed, 29 Jun 2022 16:15:41 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id w185-20020a6262c2000000b0052523f7050bsm12049363pfb.118.2022.06.29.16.15.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 16:15:40 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <d4a85598-af50-541a-9632-8d0343e8082d@roeck-us.net>
+Date:   Wed, 29 Jun 2022 16:15:38 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220629121358.19458-3-allen-kh.cheng@mediatek.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 4.19 v1 1/2] hwmon: Introduce
+ hwmon_device_register_for_thermal
+Content-Language: en-US
+To:     Will McVicker <willmcvicker@google.com>, stable@vger.kernel.org,
+        Jean Delvare <jdelvare@suse.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     kernel-team@android.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+References: <20220629225843.332453-1-willmcvicker@google.com>
+ <20220629225843.332453-2-willmcvicker@google.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220629225843.332453-2-willmcvicker@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 08:13:55PM +0800, Allen-KH Cheng wrote:
-> Add mipi_tx node for mt8192 SoC.
+On 6/29/22 15:58, Will McVicker wrote:
+> From: Guenter Roeck <linux@roeck-us.net>
 > 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> [ upstream commit e5d21072054fbadf41cd56062a3a14e447e8c22b ]
+> 
+> The thermal subsystem registers a hwmon driver without providing
+> chip or sysfs group information. This is for legacy reasons and
+> would be difficult to change. At the same time, we want to enforce
+> that chip information is provided when registering a hwmon device
+> using hwmon_device_register_with_info(). To enable this, introduce
+> a special API for use only by the thermal subsystem.
+> 
+> Acked-by: Rafael J . Wysocki <rafael@kernel.org>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+
+NACK. The patch introducing the problem needs to be reverted.
+
+Guenter
+
 > ---
->  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+>   drivers/hwmon/hwmon.c | 25 +++++++++++++++++++++++++
+>   include/linux/hwmon.h |  3 +++
+>   2 files changed, 28 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 731bdc665b94..a07edc82d403 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -1095,6 +1095,16 @@
->  			};
->  		};
->  
-> +		mipi_tx0: dsi-dphy@11e50000 {
+> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+> index c4051a3e63c2..412a5e39fc14 100644
+> --- a/drivers/hwmon/hwmon.c
+> +++ b/drivers/hwmon/hwmon.c
+> @@ -725,6 +725,31 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
+>   }
+>   EXPORT_SYMBOL_GPL(hwmon_device_register_with_info);
+>   
+> +/**
+> + * hwmon_device_register_for_thermal - register hwmon device for thermal subsystem
+> + * @dev: the parent device
+> + * @name: hwmon name attribute
+> + * @drvdata: driver data to attach to created device
+> + *
+> + * The use of this function is restricted. It is provided for legacy reasons
+> + * and must only be called from the thermal subsystem.
+> + *
+> + * hwmon_device_unregister() must be called when the device is no
+> + * longer needed.
+> + *
+> + * Returns the pointer to the new device.
+> + */
+> +struct device *
+> +hwmon_device_register_for_thermal(struct device *dev, const char *name,
+> +				  void *drvdata)
+> +{
+> +	if (!name || !dev)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	return __hwmon_device_register(dev, name, drvdata, NULL, NULL);
+> +}
+> +EXPORT_SYMBOL_GPL(hwmon_device_register_for_thermal);
+> +
+>   /**
+>    * hwmon_device_register - register w/ hwmon
+>    * @dev: the device to register
+> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+> index 8fde789f2eff..5ff3db6eb9f1 100644
+> --- a/include/linux/hwmon.h
+> +++ b/include/linux/hwmon.h
+> @@ -390,6 +390,9 @@ hwmon_device_register_with_info(struct device *dev,
+>   				const struct hwmon_chip_info *info,
+>   				const struct attribute_group **extra_groups);
+>   struct device *
+> +hwmon_device_register_for_thermal(struct device *dev, const char *name,
+> +				  void *drvdata);
+> +struct device *
+>   devm_hwmon_device_register_with_info(struct device *dev,
+>   				const char *name, void *drvdata,
+>   				const struct hwmon_chip_info *info,
 
-Node name should be 'dsi-phy'.
-
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-
-Thanks,
-Nícolas
