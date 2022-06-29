@@ -2,76 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCABC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232499AbiF2QGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
+        id S233748AbiF2QGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232618AbiF2QGA (ORCPT
+        with ESMTP id S233193AbiF2QGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:06:00 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20B2F46;
-        Wed, 29 Jun 2022 09:05:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656518759; x=1688054759;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lbrc7F9sL6YCxOWkN0oDWBJ6MPHOZ5O2I+OeO5NRe3g=;
-  b=anSd0rmji61s5Z6ThD+aTOBOdZp75440Z6zDr3sVaF9//7z+14IKYo1o
-   s/s0Vzt7wKIiH4+WTiNx1z7hqZGuBEK/onZXgOvzCuNXkLZZdfsZP26r9
-   1OVP/EeBRC08+CzLLLZ7Sj26cuaQr6mLpTgNNYQk8uY/2FRbdFRrXUNbn
-   gm+ytAbXc+qefTMoRPbm0QGFBk+QvlwR9Tp2IzSwHvT9MH3WVvC2hMGn3
-   VWrP7148C73aIUhHaqGeQ5F9/iu8UUfzyaBhH7LaVkOEFhGJnryaYs3H7
-   UFefFH76FJ0cLKtg1w5lyy9wY15Yi2beB/4O7/4ZoXv4vbafDPYR21sSX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="307569225"
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="307569225"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 09:05:58 -0700
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="733232954"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 09:05:56 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o6aCP-000xsR-Hl;
-        Wed, 29 Jun 2022 19:05:53 +0300
-Date:   Wed, 29 Jun 2022 19:05:53 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Rob Herring <robh@kernel.org>,
-        Frank Rowand <frank.rowand@sony.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: Re: [PATCH v1 1/1] of: unittest: Switch to use fwnode instead of
- of_node
-Message-ID: <Yrx4YfwLfaucYx36@smile.fi.intel.com>
-References: <20220629113839.4604-1-andriy.shevchenko@linux.intel.com>
+        Wed, 29 Jun 2022 12:06:01 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BED5E6B
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 09:06:00 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id 65so15506812pfw.11
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 09:06:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TBAwmf3hnEIm7QQKkyiSy9nlUtJMyt9Dhl/BWJJycfc=;
+        b=buTrPCP9r/wJ5oPOB0f0DJpQ8V6tW7tfgOZx2uSKkWC/2vMmTvjE64AO/lHrRX+HQZ
+         kv/SgncYR3nlgqpLobh8CHATSg3+hman5T/V8BqdImV4gzzCxVSyKUVDF4ugwYM5V0rB
+         vsaHoCA+cobRTBtdrQ5roQiuTM4algBDblNEw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TBAwmf3hnEIm7QQKkyiSy9nlUtJMyt9Dhl/BWJJycfc=;
+        b=05KXpDEevd7b+eyAxPzY+yJ0uKLEAzM6RbvptUVTApmiw9yAbCG1P/qtm3UkI9KOCP
+         buBGWrsqWSgWHA0tb+MWZirDzloNpey6ob5DwfU7S4+rUFR/zdkynHVO4WWQES96f0CK
+         WaCadvGVpHK53/e0m4I8tGT9abF1cPqAQNNMtdJ7e/wCRvy2BwbK/41EmqQZyxNrvw02
+         ZljW6DskdMA7O/ObeaiXSgCcPRHVdNtaJEnGebzprEUDkPuZSvCXw5RaHVvNmJH1tCXh
+         ILLRQfwo2N+ERze3QDKvNtISdmSBIy+WhBmAkcqubRSifGM0y+3e5K7TXefhd4FCwlV7
+         0DDQ==
+X-Gm-Message-State: AJIora9Hz0NjXA4/4nolvtWil7aOmozG8V0H0sfY2Y8e80QXU8dgOAB9
+        3iMNkxVVd+TmV/dbB8W5EvPZSw==
+X-Google-Smtp-Source: AGRyM1vhnDIT9TahKVUJ4QdTOs1R1i/R1LLtMlUuU993m40WNKgeQ8IODX+weGpoOHAl3yYNfw7CIg==
+X-Received: by 2002:a05:6a00:23d2:b0:525:951a:edf1 with SMTP id g18-20020a056a0023d200b00525951aedf1mr10948462pfc.62.1656518759660;
+        Wed, 29 Jun 2022 09:05:59 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:9841:721:7d8b:4502])
+        by smtp.gmail.com with ESMTPSA id r19-20020a170902e3d300b00163f8ddf160sm11495350ple.161.2022.06.29.09.05.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 09:05:59 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Robert Foss <robert.foss@linaro.org>, Xin Ji <xji@analogixsemi.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] anx7625: Cleanup, fixes, and implement wait_hpd_asserted
+Date:   Thu, 30 Jun 2022 00:05:46 +0800
+Message-Id: <20220629160550.433980-1-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220629113839.4604-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 02:38:39PM +0300, Andy Shevchenko wrote:
-> GPIO library now accepts fwnode as a firmware node, so
-> switch the module to use it.
+This series contains:
+Cleanup:
+- Convert to use devm_i2c_new_dummy_device()
+- Use pm_runtime_force_suspend(resume)
+Fixes:
+- Fix NULL pointer crash when using edp-panel
+and Impelment wait_hpd_asserted() callback.
 
-Sorry for a spam, here is v3 of this series, this one shouldn't be considered.
+The patches are not related to each other, but they are all
+anx7625 patches so they are all stacked in this series.
+
+Hsin-Yi Wang (4):
+  drm/bridge: anx7625: Convert to devm_i2c_new_dummy_device()
+  drm/bridge: anx7625: Use pm_runtime_force_suspend(resume)
+  drm/bridge: anx7625: Fix NULL pointer crash when using edp-panel
+  drm/bridge: anx7625: Add wait_hpd_asserted() callback
+
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 179 ++++++++--------------
+ 1 file changed, 65 insertions(+), 114 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.37.0.rc0.161.g10f37bed90-goog
 
