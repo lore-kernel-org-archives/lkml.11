@@ -2,219 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 116CBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B83C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:55:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbiF2Wyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 18:54:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36316 "EHLO
+        id S231477AbiF2WzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 18:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbiF2WyN (ORCPT
+        with ESMTP id S231429AbiF2Wyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 18:54:13 -0400
-Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [IPv6:2001:4b7a:2000:18::166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B64339B81
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 15:53:55 -0700 (PDT)
-Received: from Marijn-Arch-PC.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 29 Jun 2022 18:54:37 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878873FDB3
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 15:54:05 -0700 (PDT)
+Received: from [192.168.1.90] (unknown [188.24.177.228])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 4DD373F7DC;
-        Thu, 30 Jun 2022 00:53:53 +0200 (CEST)
-From:   Marijn Suijten <marijn.suijten@somainline.org>
-To:     phone-devel@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rajeev Nandan <quic_rajeevny@quicinc.com>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Jonathan Marek <jonathan@marek.ca>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH v3 10/11] drm/msm/dsi_phy_10nm: Replace parent names with clk_hw pointers
-Date:   Thu, 30 Jun 2022 00:53:30 +0200
-Message-Id: <20220629225331.357308-11-marijn.suijten@somainline.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220629225331.357308-1-marijn.suijten@somainline.org>
-References: <20220629225331.357308-1-marijn.suijten@somainline.org>
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BBCD26601933;
+        Wed, 29 Jun 2022 23:54:02 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656543243;
+        bh=NPpKl2bppLzLhD0GjNYn7KYiv5/qMiG43eoBG7+S+ZI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YUltykbyQlXRz6QyDjVK4cKpJIBgOmnE2pzt9ruem/bO/Xv0nTfYjRKbqBXgz0Rpb
+         DOyVwslbRCYiRg//Au2SL27jD9qlaPxSrUQCzeufO8UWY2uJMNiW2kScSlOHObL6uQ
+         VDUnEvOjphdPrzOF7k6j6BVA8wklDZpBbuQi85qCY353f1mBJHXeEeDiNF0WNR0MIy
+         JtZusP9qddOmBK6T+SSYggkXNm+QrQVaJAPWicZIKP37Le9xui+V1RQDs2p/WldVBe
+         dzx0Ez8Ke7dL3kueutpJFn5o7/YuNHTy5A6dIQc5LQ/JOZyMKNMMzmt+EK1v0T1t8i
+         khPqrL3F50CuQ==
+Message-ID: <b1b5666a-67a7-469c-d6c7-e585cf59c632@collabora.com>
+Date:   Thu, 30 Jun 2022 01:54:00 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] scripts/tags.sh: Include tools directory in tags
+ generation
+Content-Language: en-US
+To:     Vipin Sharma <vipinsh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>, rkovhaev@gmail.com,
+        zackary.liu.pro@gmail.com, ripxorip@gmail.com,
+        masahiroy@kernel.org, xujialu@vimux.org,
+        "drjones@redhat.com" <drjones@redhat.com>
+Cc:     dmatlack@google.com, linux-kernel@vger.kernel.org
+References: <20220618005457.2379324-1-vipinsh@google.com>
+ <CAHVum0euKMV+rCLXMQ4NuDAqowyeCkO1LheSafR2tm=R4aUfJw@mail.gmail.com>
+ <YrqaKpdVDl8DBl4g@kroah.com>
+ <CAHVum0f=_7kh_OrOqiTH=UZuvr3ZbxNcZeUSbT66x5r0q2XEgQ@mail.gmail.com>
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+In-Reply-To: <CAHVum0f=_7kh_OrOqiTH=UZuvr3ZbxNcZeUSbT66x5r0q2XEgQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-parent_hw pointers are easier to manage and cheaper to use than
-repeatedly formatting the parent name and subsequently leaving the clk
-framework to perform lookups based on that name.
 
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c | 79 ++++++++++------------
- 1 file changed, 36 insertions(+), 43 deletions(-)
+On 6/30/22 01:18, Vipin Sharma wrote:
+> On Mon, Jun 27, 2022 at 11:05 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>>
+>> On Mon, Jun 27, 2022 at 10:47:35AM -0700, Vipin Sharma wrote:
+>>> On Fri, Jun 17, 2022 at 5:55 PM Vipin Sharma <vipinsh@google.com> wrote:
+>>>>
+>>>> Add tools directory in generating tags and quiet the "No such file or
+>>>> directory" warnings.
+>>>>
+>>>> It reverts the changes introduced in commit 162343a876f1
+>>>> ("scripts/tags.sh: exclude tools directory from tags generation") while
+>>>> maintainig the original intent of the patch to get rid of the warnings.
+>>>> This allows the root level cscope files to include tools source code
+>>>> besides kernel and a single place to browse the code for both.
+>>>>
+>>>> Signed-off-by: Vipin Sharma <vipinsh@google.com>
+>>>> ---
+>>>>
+>>>> I have found myself many times to browse tools and other part of the
+>>>> kernel code together. Excluding tools from the root level cscope makes
+>>>> it difficult to efficiently move between files and find user api
+>>>> definitions.
+>>>>
+>>>> Root cause of these warning is due to generated .cmd files which use
+>>>> relative paths in some files, I am not sure how to make them absolute
+>>>> file paths which can satisfy realpath warnings. Also, not sure if those
+>>>> warnings are helpful and should be kept. Passing "-q" to realpath seems
+>>>> easier solution. Please, let me know if there is a better alternative.
+>>>>
+>>>> Thanks
+>>>>
+>>>>   scripts/tags.sh | 9 +--------
+>>>>   1 file changed, 1 insertion(+), 8 deletions(-)
+>>>>
+>>>> diff --git a/scripts/tags.sh b/scripts/tags.sh
+>>>> index 01fab3d4f90b5..e137cf15aae9d 100755
+>>>> --- a/scripts/tags.sh
+>>>> +++ b/scripts/tags.sh
+>>>> @@ -25,13 +25,6 @@ else
+>>>>          tree=${srctree}/
+>>>>   fi
+>>>>
+>>>> -# ignore userspace tools
+>>>> -if [ -n "$COMPILED_SOURCE" ]; then
+>>>> -       ignore="$ignore ( -path ./tools ) -prune -o"
+>>>> -else
+>>>> -       ignore="$ignore ( -path ${tree}tools ) -prune -o"
+>>>> -fi
+>>>> -
+>>>>   # Detect if ALLSOURCE_ARCHS is set. If not, we assume SRCARCH
+>>>>   if [ "${ALLSOURCE_ARCHS}" = "" ]; then
+>>>>          ALLSOURCE_ARCHS=${SRCARCH}
+>>>> @@ -100,7 +93,7 @@ all_compiled_sources()
+>>>>                  find $ignore -name "*.cmd" -exec \
+>>>>                          grep -Poh '(?(?=^source_.* \K).*|(?=^  \K\S).*(?= \\))' {} \+ |
+>>>>                  awk '!a[$0]++'
+>>>> -       } | xargs realpath -es $([ -z "$KBUILD_ABS_SRCTREE" ] && echo --relative-to=.) |
+>>>> +       } | xargs realpath -esq $([ -z "$KBUILD_ABS_SRCTREE" ] && echo --relative-to=.) |
+>>>>          sort -u
+>>>>   }
+>>>>
+>>>> --
+>>>> 2.37.0.rc0.104.g0611611a94-goog
+>>>>
+>>>
+>>> Hi Greg,
+>>>
+>>> Any update on the patch?
+>>
+>> Nope!
+>>
+>> I don't really think we should add back in the tools to this, as if you
+>> want to search them, then can't you just generate the needed tags for
+>> the tools directory?
+>>
+> 
+> Some folders in the tools directory do provide cscope rules. However,
+> those tags can only be used when I open the vim in those directories.
+> For example, if I am writing a KVM selftest and I want to explore code
+> related to certain ioctl in kernel as well as some code in KVM
+> selftest library, I cannot use two cscope files (one in the kernel
+> root dir and another in tools/testing/selftests/kvm) in a single VIM
+> instance. It starts having issues with the file paths. If the root
+> level cscope file includes tools directory then all of the tags will
+> be at one place and makes it very easy to browse tools code along with
+> the rest of the kernel.
+> 
+>> But as I don't even use this script ever, it feels odd for me to be the
+>> one "owning" it, so it would be great if others could chime in who
+>> actually use it.
+>>
 
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-index 8bd7b97b1b9b..ae57f95edf63 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-@@ -574,24 +574,24 @@ static int dsi_10nm_set_usecase(struct msm_dsi_phy *phy)
-  */
- static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **provided_clocks)
- {
--	char clk_name[32], parent[32], vco_name[32];
--	char parent2[32], parent3[32], parent4[32];
-+	char clk_name[32];
- 	struct clk_init_data vco_init = {
- 		.parent_data = &(const struct clk_parent_data) {
- 			.fw_name = "ref",
- 		},
- 		.num_parents = 1,
--		.name = vco_name,
-+		.name = clk_name,
- 		.flags = CLK_IGNORE_UNUSED,
- 		.ops = &clk_ops_dsi_pll_10nm_vco,
- 	};
- 	struct device *dev = &pll_10nm->phy->pdev->dev;
--	struct clk_hw *hw;
-+	struct clk_hw *hw, *pll_out_div, *pll_bit, *pll_by_2_bit;
-+	struct clk_hw *pll_post_out_div, *pclk_mux;
- 	int ret;
- 
- 	DBG("DSI%d", pll_10nm->phy->id);
- 
--	snprintf(vco_name, sizeof(vco_name), "dsi%dvco_clk", pll_10nm->phy->id);
-+	snprintf(clk_name, sizeof(clk_name), "dsi%dvco_clk", pll_10nm->phy->id);
- 	pll_10nm->clk_hw.init = &vco_init;
- 
- 	ret = devm_clk_hw_register(dev, &pll_10nm->clk_hw);
-@@ -599,36 +599,34 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
- 		return ret;
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pll_out_div_clk", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%dvco_clk", pll_10nm->phy->id);
- 
--	hw = devm_clk_hw_register_divider(dev, clk_name, parent,
--			CLK_SET_RATE_PARENT, pll_10nm->phy->pll_base +
-+	pll_out_div = devm_clk_hw_register_divider_parent_hw(dev, clk_name,
-+			&pll_10nm->clk_hw, CLK_SET_RATE_PARENT,
-+			pll_10nm->phy->pll_base +
- 				REG_DSI_10nm_PHY_PLL_PLL_OUTDIV_RATE,
- 			0, 2, CLK_DIVIDER_POWER_OF_TWO, NULL);
--	if (IS_ERR(hw)) {
--		ret = PTR_ERR(hw);
-+	if (IS_ERR(pll_out_div)) {
-+		ret = PTR_ERR(pll_out_div);
- 		goto fail;
- 	}
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pll_bit_clk", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%d_pll_out_div_clk", pll_10nm->phy->id);
- 
- 	/* BIT CLK: DIV_CTRL_3_0 */
--	hw = devm_clk_hw_register_divider(dev, clk_name, parent,
--			CLK_SET_RATE_PARENT,
-+	pll_bit = devm_clk_hw_register_divider_parent_hw(dev, clk_name,
-+			pll_out_div, CLK_SET_RATE_PARENT,
- 			pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_CLK_CFG0,
- 			0, 4, CLK_DIVIDER_ONE_BASED, &pll_10nm->postdiv_lock);
--	if (IS_ERR(hw)) {
--		ret = PTR_ERR(hw);
-+	if (IS_ERR(pll_bit)) {
-+		ret = PTR_ERR(pll_bit);
- 		goto fail;
- 	}
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_phy_pll_out_byteclk", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%d_pll_bit_clk", pll_10nm->phy->id);
- 
- 	/* DSI Byte clock = VCO_CLK / OUT_DIV / BIT_DIV / 8 */
--	hw = devm_clk_hw_register_fixed_factor(dev, clk_name, parent,
--					       CLK_SET_RATE_PARENT, 1, 8);
-+	hw = devm_clk_hw_register_fixed_factor_parent_hw(dev, clk_name,
-+			pll_bit, CLK_SET_RATE_PARENT, 1, 8);
- 	if (IS_ERR(hw)) {
- 		ret = PTR_ERR(hw);
- 		goto fail;
-@@ -637,48 +635,43 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm, struct clk_hw **prov
- 	provided_clocks[DSI_BYTE_PLL_CLK] = hw;
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pll_by_2_bit_clk", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%d_pll_bit_clk", pll_10nm->phy->id);
- 
--	hw = devm_clk_hw_register_fixed_factor(dev, clk_name, parent,
--					       0, 1, 2);
--	if (IS_ERR(hw)) {
--		ret = PTR_ERR(hw);
-+	pll_by_2_bit = devm_clk_hw_register_fixed_factor_parent_hw(dev,
-+			clk_name, pll_bit, 0, 1, 2);
-+	if (IS_ERR(pll_by_2_bit)) {
-+		ret = PTR_ERR(pll_by_2_bit);
- 		goto fail;
- 	}
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pll_post_out_div_clk", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%d_pll_out_div_clk", pll_10nm->phy->id);
- 
--	hw = devm_clk_hw_register_fixed_factor(dev, clk_name, parent,
--					       0, 1, 4);
--	if (IS_ERR(hw)) {
--		ret = PTR_ERR(hw);
-+	pll_post_out_div = devm_clk_hw_register_fixed_factor_parent_hw(dev,
-+			clk_name, pll_out_div, 0, 1, 4);
-+	if (IS_ERR(pll_post_out_div)) {
-+		ret = PTR_ERR(pll_post_out_div);
- 		goto fail;
- 	}
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_pclk_mux", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%d_pll_bit_clk", pll_10nm->phy->id);
--	snprintf(parent2, sizeof(parent2), "dsi%d_pll_by_2_bit_clk", pll_10nm->phy->id);
--	snprintf(parent3, sizeof(parent3), "dsi%d_pll_out_div_clk", pll_10nm->phy->id);
--	snprintf(parent4, sizeof(parent4), "dsi%d_pll_post_out_div_clk", pll_10nm->phy->id);
--
--	hw = devm_clk_hw_register_mux(dev, clk_name,
--			((const char *[]){
--				parent, parent2, parent3, parent4,
-+
-+	pclk_mux = devm_clk_hw_register_mux_parent_hws(dev, clk_name,
-+			((const struct clk_hw *[]){
-+				pll_bit,
-+				pll_by_2_bit,
-+				pll_out_div,
-+				pll_post_out_div,
- 			}), 4, 0, pll_10nm->phy->base +
--				REG_DSI_10nm_PHY_CMN_CLK_CFG1,
--			0, 2, 0, NULL);
--	if (IS_ERR(hw)) {
--		ret = PTR_ERR(hw);
-+				REG_DSI_10nm_PHY_CMN_CLK_CFG1, 0, 2, 0, NULL);
-+	if (IS_ERR(pclk_mux)) {
-+		ret = PTR_ERR(pclk_mux);
- 		goto fail;
- 	}
- 
- 	snprintf(clk_name, sizeof(clk_name), "dsi%d_phy_pll_out_dsiclk", pll_10nm->phy->id);
--	snprintf(parent, sizeof(parent), "dsi%d_pclk_mux", pll_10nm->phy->id);
- 
- 	/* PIX CLK DIV : DIV_CTRL_7_4*/
--	hw = devm_clk_hw_register_divider(dev, clk_name, parent, 0,
--			pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_CLK_CFG0,
-+	hw = devm_clk_hw_register_divider_parent_hw(dev, clk_name, pclk_mux,
-+			0, pll_10nm->phy->base + REG_DSI_10nm_PHY_CMN_CLK_CFG0,
- 			4, 4, CLK_DIVIDER_ONE_BASED, &pll_10nm->postdiv_lock);
- 	if (IS_ERR(hw)) {
- 		ret = PTR_ERR(hw);
--- 
-2.37.0
+Since the tools directory has been excluded just to get rid of those 
+warnings, I think there is no obvious reason to not add it back - at 
+least the use case described above is perfectly valid.
 
+> I have added some folks in this email who have touched this script
+> file in the last couple of years or use cscope, hopefully they can
+> chime in.
+> 
+> Thanks
+> Vipin
