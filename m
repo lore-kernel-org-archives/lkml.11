@@ -2,146 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C910BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE147C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbiF2PH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
+        id S234098AbiF2PID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233904AbiF2PHG (ORCPT
+        with ESMTP id S233917AbiF2PHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:07:06 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682CA13CD3;
-        Wed, 29 Jun 2022 08:07:05 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id t24so28606620lfr.4;
-        Wed, 29 Jun 2022 08:07:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=X7kFcchBkGtAozFYIhhWmH8j7mV7PoFuQksuWlZQBWs=;
-        b=gcwdUlo7pR4Sdwvta8DpwPhDTEdgdaHa8EIn+saMIbSh2ycCmiO4WbTKo8jAB6Q6Gt
-         /EcSq94IabAAkXEwOvtejBNkzOqrIodwB3GpZM3GjiPB4Kwdp3tmAgtuIR0WshPMaF8V
-         2xotB2F9WWW+vKWvWzM9LWhudb/mzd5g0uhxIny89oUHRo4bN2tVuaxa6/EYmUXYqbzy
-         6UYD7AmDbGe7CtfNAjQ5WbV9JsWM9GZEbgP5zAV/mw2JCFMTwYv7FCaDLZImLueFNQII
-         r1+b9amQOxIA92SaVB1SRIojEQy+iVbuItTTClFgrOQ6Hfi6AddMKkPzkS3897xJeLiy
-         tcqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=X7kFcchBkGtAozFYIhhWmH8j7mV7PoFuQksuWlZQBWs=;
-        b=b4q9YWE0IEQK2FrdVCS+JC/ueQfKSlN9x1rBQ7ymkWYCTyOmYqa3qB9Si4j3IUhSws
-         +6mnkfDXnfoeTjIjqFE3YY/w46m5AEuQOQzCyvyjHgCVF+mzkT1FkvBFtQB+KU9wiShq
-         seciTlLlGKcq3gHFcCDG5xmYsNUQqBSuJxlg/sqQMS+rDgUv/sbya/fe+BzsUpEPbky8
-         5C4Vrina8lGKvzBABpAnZu5f9mvRhbAfm90Nr4HXNkoXPIyW1/46Q931mkhoc/BqDbo1
-         84foWMVKap7QOssVrseKVFdZKXL+DwFAcCNEz1Yd7SpIWu63aAXLZeXpEQU//nv8dAmI
-         ba+A==
-X-Gm-Message-State: AJIora+DiQwt8vdh+VIdV8OdoXtHHa7bgc5REEH+1ehjAK2op3zr4DDO
-        7XDlQ0FNInBbjiy/luLccjMJLxLxCaj1rQ==
-X-Google-Smtp-Source: AGRyM1vHzF2/5EFz2vUjTUeqp2yrAeLOohVUMI38ZRSxGCEjLojVPTa1SuYM5A260UPY40fcLooq1Q==
-X-Received: by 2002:ac2:4e4e:0:b0:47f:b3c0:2f3d with SMTP id f14-20020ac24e4e000000b0047fb3c02f3dmr2363445lfr.15.1656515222156;
-        Wed, 29 Jun 2022 08:07:02 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id d22-20020a2e3316000000b0025907141aa6sm2172108ljc.83.2022.06.29.08.07.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 08:07:01 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 18:06:59 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v5 1/8] reset: Fix devm bulk optional exclusive
- control getter
-Message-ID: <20220629150659.4mutbylylukmoduq@mobilestation>
-References: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
- <20220624141853.7417-2-Sergey.Semin@baikalelectronics.ru>
- <c6794e78b9425c84f090d3058b93319bbb17e10f.camel@pengutronix.de>
+        Wed, 29 Jun 2022 11:07:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FEFF27FF5
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656515226;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BOEwaG+9Jss6xm4ldxG7O7j+VQaKwTc8UnmVebaVyaw=;
+        b=fBGk6TgqNn/cz9seUxjM6J2uxrb0jUelAZIr/W7fsWIWP7LIlnlb6mZN9XE2h9bUev/Lzk
+        UnkshgSUtEvD5NcyfipJXZvBvVLpxqF51KeV0BaIos5CkwHoNyjZUxbhUpXz0SiHTWK50S
+        PbLLF+8AGkRdGTzkP3SLuUEWyXQyjH0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-pAY2Nv2WOomOcJtzXLEgEg-1; Wed, 29 Jun 2022 11:07:02 -0400
+X-MC-Unique: pAY2Nv2WOomOcJtzXLEgEg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0A1233810D5A;
+        Wed, 29 Jun 2022 15:06:59 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.126])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B5A740EC002;
+        Wed, 29 Jun 2022 15:06:57 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 13/28] KVM: VMX: Get rid of eVMCS specific VMX controls sanitization
+Date:   Wed, 29 Jun 2022 17:06:10 +0200
+Message-Id: <20220629150625.238286-14-vkuznets@redhat.com>
+In-Reply-To: <20220629150625.238286-1-vkuznets@redhat.com>
+References: <20220629150625.238286-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <c6794e78b9425c84f090d3058b93319bbb17e10f.camel@pengutronix.de>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 04:02:43PM +0200, Philipp Zabel wrote:
-> Hi Serge,
-> 
-> On Fr, 2022-06-24 at 17:18 +0300, Serge Semin wrote:
-> > Most likely due to copy-paste mistake the device managed version of the
-> > denoted reset control getter has been implemented with invalid semantic,
-> > which can be immediately spotted by having "WARN_ON(shared && acquired)"
-> > warning in the system log as soon as the method is called. Anyway let's
-> > fix it by altering the boolean arguments passed to the
-> > __devm_reset_control_bulk_get() method from
-> > - shared = true, optional = false, acquired = true
-> > to
-> > + shared = false, optional = true, acquired = true
-> > That's what they were supposed to be in the first place (see the non-devm
-> > version of the same method: reset_control_bulk_get_optional_exclusive()).
-> > 
-> > Fixes: 48d71395896d ("reset: Add reset_control_bulk API")
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > 
-> > ---
-> > 
-> > Changelog v4:
-> > - This is a new patch added on v4 lap of the series.
-> > ---
-> >  include/linux/reset.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/include/linux/reset.h b/include/linux/reset.h
-> > index 8a21b5756c3e..514ddf003efc 100644
-> > --- a/include/linux/reset.h
-> > +++ b/include/linux/reset.h
-> > @@ -731,7 +731,7 @@ static inline int __must_check
-> >  devm_reset_control_bulk_get_optional_exclusive(struct device *dev, int num_rstcs,
-> >  					       struct reset_control_bulk_data *rstcs)
-> >  {
-> > -	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, true, false, true);
-> > +	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, false, true, true);
-> >  }
-> 
+With the updated eVMCSv1 definition, there's no known 'problematic'
+controls which are exposed in VMX control MSRs but are not present in
+eVMCSv1. Get rid of the filtering.
 
-> You are right, thank you. I'll take this as a sign that the internal
-> functions should probably switch from collecting ever more boolean
-> arguments to a flags parameter, similar to enum gpiod_flags.
-> 
-> I'll pick this up separately into the reset/fixes branch.
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/vmx/evmcs.c | 13 -------------
+ arch/x86/kvm/vmx/evmcs.h |  1 -
+ arch/x86/kvm/vmx/vmx.c   |  5 -----
+ 3 files changed, 19 deletions(-)
 
-Ok. Thanks. Meanwhile could you please take a look at the rest of the
-reset-related patches of the series? They concern the reset-control
-functionality updates of the Baikal-T1 CCU common-clock driver.
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index 697590cf5b10..ed29bc9bc485 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -320,19 +320,6 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
+ };
+ const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
+-{
+-	vmcs_conf->cpu_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_EXEC_CTRL;
+-	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
+-	vmcs_conf->cpu_based_2nd_exec_ctrl &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
+-	vmcs_conf->cpu_based_3rd_exec_ctrl = 0;
+-
+-	vmcs_conf->vmexit_ctrl &= ~EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
+-	vmcs_conf->vmentry_ctrl &= ~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
+-}
+-#endif
+-
+ bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa)
+ {
+ 	struct hv_vp_assist_page assist_page;
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index c9090ac39740..36a311bb80a9 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -218,7 +218,6 @@ static inline void evmcs_load(u64 phys_addr)
+ 	vp_ap->enlighten_vmentry = 1;
+ }
+ 
+-__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf);
+ #else /* !IS_ENABLED(CONFIG_HYPERV) */
+ static __always_inline void evmcs_write64(unsigned long field, u64 value) {}
+ static inline void evmcs_write32(unsigned long field, u32 value) {}
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 99cd017cd3fe..83feb70d44a9 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2689,11 +2689,6 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 	vmcs_conf->vmexit_ctrl         = _vmexit_control;
+ 	vmcs_conf->vmentry_ctrl        = _vmentry_control;
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-	if (enlightened_vmcs)
+-		evmcs_sanitize_exec_ctrls(vmcs_conf);
+-#endif
+-
+ 	return 0;
+ }
+ 
+-- 
+2.35.3
 
-[PATCH RESEND v5 6/8] clk: baikal-t1: Move reset-controls code into a dedicated module
-Link: https://lore.kernel.org/linux-clk/20220624141853.7417-7-Sergey.Semin@baikalelectronics.ru/
-[PATCH RESEND v5 7/8] clk: baikal-t1: Add DDR/PCIe directly controlled resets support
-Link: https://lore.kernel.org/linux-clk/20220624141853.7417-8-Sergey.Semin@baikalelectronics.ru/
-
-The functionality has been placed in the clocks subsystem because the
-reset-control is tightly coupled with the clock-control part of CCU.
-It's a normal approach for the SoC CCU/RCU devices, which normally
-have both clocks and reset controls intermixed. Anyway the main goal
-of the series was to add the directly controlled resets of the
-DDR and PCIe SoC sub-domains provided in the framework of the patch
-7/8. Please see the patches log for details.
-
--Sergey
-
-> 
-> regards
-> Philipp
