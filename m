@@ -2,84 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1306BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6170C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiF2H3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
+        id S231939AbiF2HbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231931AbiF2H3h (ORCPT
+        with ESMTP id S229841AbiF2HbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:29:37 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6368F248C0
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:29:36 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-101b4f9e825so20318311fac.5
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:29:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=QZQW7+X7qAeWQ0JA11J+Y8+6HrDMvj4CxUzkjuBhZk4=;
-        b=cVHuYXoUBBcO77yyhDnn9dRsLS4jjH7jJT7wBlYKn1PkKTKNe3bZHOH6+8Iz3fG+1s
-         6qvW56SRXka8ShlfNVZhhy9EhuAwPIQBwY0aS6tcz4GMKflhio6xYYKNoesvFk6SOqqu
-         U91f8Mzs5sZidos4K4DovB9CapAukJ/QfoGS8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=QZQW7+X7qAeWQ0JA11J+Y8+6HrDMvj4CxUzkjuBhZk4=;
-        b=MIPYQm/a8NiFZTBPbAOd5XxpAAwKbfTyrW2n4uEbtpQlfS7EUf81YDVwB+fL4QyANH
-         ODnMFfDAhcxYd+OYkMPoV3Xiq0lJeHskrH2Kbed5AURiUN+yPM4m8KEvKUrctq2IAgOv
-         6wJZWDXaWEU8mdC48M2zg3G2HHJjmkPZIVAy2FVAU2o6gP7cOR2S+wP7Cj/4ed2p4J5W
-         ixrzqkwKbd8paLUlv/mIIQhO7YPDL1PiE+F3nNr8hMHIxZSdVJWXmjQ6PbnqOnBYOt0I
-         0jXRAZfSgRfqAvBedsMDviqbUPjuE+H6URf3k0m+5WAW89nWYon5sSm46xLOwhyySDFt
-         sP/A==
-X-Gm-Message-State: AJIora93lLYKmO5UJwhoJSeHcMXLF7qi2FQ0dh9Jil/z/QBd9vMysXMA
-        DBdvYDgvK51uVIE4vxTlJipEDdubKK2YGMv6q2QdtQ==
-X-Google-Smtp-Source: AGRyM1vaywAXGT5aAjMk6AmlxtgNGPiL57UiTFsOz2mBPdyZOB/WeFYD1oj5i+TmFEv+OrgHcLCr65PRFFZJmJ+4AQU=
-X-Received: by 2002:a05:6870:b381:b0:fe:2004:b3b5 with SMTP id
- w1-20020a056870b38100b000fe2004b3b5mr1151175oap.63.1656487775750; Wed, 29 Jun
- 2022 00:29:35 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 29 Jun 2022 02:29:35 -0500
+        Wed, 29 Jun 2022 03:31:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A946F1E3C0;
+        Wed, 29 Jun 2022 00:31:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 764FDB821C0;
+        Wed, 29 Jun 2022 07:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A273C341CC;
+        Wed, 29 Jun 2022 07:31:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656487871;
+        bh=oMeQKpTJ3BlHRwci50rWw9zWWSKNybDyV9xN21PWkBI=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=mU880ru7zaucB8jBICSqnu/jCaB0EgyVGWoiMZn5EwJERBGcPpm/gmUhzoL5zGmWN
+         /cOPLYPOkOkrqwCpZDc9S4WH7QaHVYXt0nL/uiHBENhsAuYRiaXcigrX49QmI40GT4
+         v88z3GP0iO7UIg1Fb2YunniT+KUFPHbsZcqJSaJZCL/guzPFnnaCQKipdTKntTApkh
+         v1P2n//9zJu22GgaGv0X/xXjPPpUm7246C44XeOUmnLliOZfBVPMAI/HPgPGHS3z8t
+         HkFx+DQ1tZIyAWDkZQWh7Bev3sX9BOad9pPLLY9Upxr/OKdCEg9osp+Bduz0dovoJL
+         OIJT6SQAI43Vw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220627215720.GA3004792-robh@kernel.org>
-References: <20220614195144.2794796-1-swboyd@chromium.org> <20220614195144.2794796-3-swboyd@chromium.org>
- <CAD=FV=UU-AENyChCvVAKH709E4hFtgo4Txa8zFDY=JM1UifA0g@mail.gmail.com> <20220627215720.GA3004792-robh@kernel.org>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 29 Jun 2022 02:29:35 -0500
-Message-ID: <CAE-0n53SJbnvyCXhgVWATSs0pKwGqNj9AeVLfNfUUvzR-UxRuA@mail.gmail.com>
-Subject: Re: [PATCH v6 2/2] dt-bindings: cros-ec: Add ChromeOS fingerprint binding
-To:     Doug Anderson <dianders@chromium.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
-        Guenter Roeck <groeck@chromium.org>,
-        Craig Hesling <hesling@chromium.org>,
-        Tom Hughes <tomhughes@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220628064301.v3.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
+References: <20220628064301.v3.1.Ie7b480cd99e2c13319220cbc108caf2bcd41286b@changeid>
+Subject: Re: [PATCH v3] soc: qcom: cmd-db: replace strscpy_pad() with strncpy()
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
         Matthias Kaehlcke <mka@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>
+Date:   Wed, 29 Jun 2022 00:31:09 -0700
+User-Agent: alot/0.10
+Message-Id: <20220629073111.3A273C341CC@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Rob Herring (2022-06-27 14:57:20)
->
-> If we were starting from scratch, I would say you should just drop
-> 'google,cros-ec-spi' from this binding. But I guess you want to preserve
-> compatibility here. In that case, I think all this should be added to
-> the existing doc with an if/then schema for conditional parts. That also
-> avoids defining the common properties twice or moving them to a common,
-> shared schema.
->
+Quoting Douglas Anderson (2022-06-28 06:43:13)
+> Commit ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with
+> strscpy_pad()") breaks booting on my sc7280-herobrine-herobrine
+> device. From printouts I see that at bootup the function is called
+> with an id of "lnbclka2" which is 8 bytes big.
+>=20
+> Previously all 8 bytes of this string were copied to the
+> destination. Now only 7 bytes will be copied since strscpy_pad() saves
+> a byte for '\0' termination.
+>=20
+> We don't need the '\0' termination in the destination. Let's go back
+> to strncpy(). According to the warning:
+>   If a caller is using non-NUL-terminated strings, strncpy() can still
+>   be used, but destinations should be marked with the __nonstring
+>   attribute to avoid future compiler warnings.
+> ...so we'll do that.
+>=20
+> While we're at it, let's change the query array to use
+> "sizeof(ent->id)" so it can't possibly go out of sync with our later
+> copy.
+>=20
+> Fixes: ac0126a01735 ("soc: qcom: cmd-db: replace strncpy() with strscpy_p=
+ad()")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
 
-I had it all combined in a previous version. Let me see if I can merge
-the two together (again) and fix the bugs.
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
