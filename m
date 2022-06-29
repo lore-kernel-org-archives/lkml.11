@@ -2,99 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2116C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:36:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 714BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbiF2Jgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
+        id S232905AbiF2Jib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:38:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiF2Jgp (ORCPT
+        with ESMTP id S229575AbiF2Jia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:36:45 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384033B3E5;
-        Wed, 29 Jun 2022 02:36:44 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LXxB96jkyz1L8dX;
-        Wed, 29 Jun 2022 17:34:25 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 17:36:42 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 29 Jun
- 2022 17:36:41 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>
-CC:     <a-govindraju@ti.com>, <balbi@kernel.org>,
-        <gregkh@linuxfoundation.org>
-Subject: [PATCH -next] usb: dwc3-am62: remove unnecesary clk_put()
-Date:   Wed, 29 Jun 2022 17:46:35 +0800
-Message-ID: <20220629094635.3116961-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 29 Jun 2022 05:38:30 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6805822289;
+        Wed, 29 Jun 2022 02:38:28 -0700 (PDT)
+Received: from relay5-d.mail.gandi.net (unknown [217.70.183.197])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id BBBEDCDF5A;
+        Wed, 29 Jun 2022 09:31:43 +0000 (UTC)
+Received: (Authenticated sender: sendmail@ipik.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id CFCC41C0014;
+        Wed, 29 Jun 2022 09:31:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ipik.org; s=gm1;
+        t=1656495081;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7n1ncJ+RgD1gQjuPUVKXfyucE9dYx9coqdYqvgdgAK0=;
+        b=P3QWpIZeiiT5pVVU4KpeJVjxhUQHN7vKWt3YAqFuZsc7gUMAonYfCRU1qVYSuhW5vBqtjC
+        Z3RBhJMgdx9vQLpFGwepPQw21JZiN/Pza/xKpbWrTkstckp9IemFDW3PJJpL/4eOeZ+jHa
+        gzE9F2GpgjRHEioVx8cxJjoFgQldgK8Nmx1SKJk8lni8OShO12hqY1UJTR4/jGBeyMzLgj
+        Q3H0oD1UnRdjqSBYsrEMocx9F8ckspxp4tYSb38a5dLQz/GqF5vItGXvK+ysLYJ5wY1cZ+
+        WrsJtGNOP9cKCq/DjuU8fhLxgi1WROrgmrp5vjPPm6jsu2lR1kHAFsOCaoNnuw==
+Message-ID: <ddc4f559-f03c-8d40-73a7-93d767b45bd6@ipik.org>
+Date:   Wed, 29 Jun 2022 11:31:16 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+To:     Jiri Kosina <jikos@jikos.cz>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        dmitry.torokhov@gmail.com
+Cc:     andrew.smirnov@gmail.com, enric.balletbo@collabora.com,
+        kirr@nexedi.com, linux-bluetooth@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        logang@deltatee.com, luiz.dentz@gmail.com, pali.rohar@gmail.com,
+        tglx@linutronix.de, abhishekpandit@chromium.org
+References: <20191127185139.65048-1-abhishekpandit@chromium.org>
+Subject: Re: [PATCH] Input: uinput - Add UI_SET_UNIQ ioctl handler
+Content-Language: en-GB
+From:   macmpi <spam@ipik.org>
+In-Reply-To: <20191127185139.65048-1-abhishekpandit@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The clk get by devm_clk_get() will be released in devres_release_all(),
-so there is no need explicitly call clk_put(), or it will cause UAF.
+Hi!
 
-Fixes: e8784c0aec03 ("drivers: usb: dwc3: Add AM62 USB wrapper driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/usb/dwc3/dwc3-am62.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Bug 216134 has been been submitted on this issue 
+https://bugzilla.kernel.org/show_bug.cgi?id=216134
 
-diff --git a/drivers/usb/dwc3/dwc3-am62.c b/drivers/usb/dwc3/dwc3-am62.c
-index fea7aca35dc8..173cf3579c55 100644
---- a/drivers/usb/dwc3/dwc3-am62.c
-+++ b/drivers/usb/dwc3/dwc3-am62.c
-@@ -195,8 +195,7 @@ static int dwc3_ti_probe(struct platform_device *pdev)
- 
- 	if (i == ARRAY_SIZE(dwc3_ti_rate_table)) {
- 		dev_err(dev, "unsupported usb2_refclk rate: %lu KHz\n", rate);
--		ret = -EINVAL;
--		goto err_clk_disable;
-+		return -EINVAL;
- 	}
- 
- 	data->rate_code = i;
-@@ -204,7 +203,7 @@ static int dwc3_ti_probe(struct platform_device *pdev)
- 	/* Read the syscon property and set the rate code */
- 	ret = phy_syscon_pll_refclk(data);
- 	if (ret)
--		goto err_clk_disable;
-+		return ret;
- 
- 	/* VBUS divider select */
- 	data->vbus_divider = device_property_read_bool(dev, "ti,vbus-divider");
-@@ -245,8 +244,6 @@ static int dwc3_ti_probe(struct platform_device *pdev)
- 	clk_disable_unprepare(data->usb2_refclk);
- 	pm_runtime_disable(dev);
- 	pm_runtime_set_suspended(dev);
--err_clk_disable:
--	clk_put(data->usb2_refclk);
- 	return ret;
- }
- 
-@@ -276,7 +273,6 @@ static int dwc3_ti_remove(struct platform_device *pdev)
- 	pm_runtime_disable(dev);
- 	pm_runtime_set_suspended(dev);
- 
--	clk_put(data->usb2_refclk);
- 	platform_set_drvdata(pdev, NULL);
- 	return 0;
- }
--- 
-2.25.1
-
+Thanks for consideration and feedback.
