@@ -2,78 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0CCFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB67CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiF2Snb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S230398AbiF2Sok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiF2Sna (ORCPT
+        with ESMTP id S230315AbiF2Soj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:43:30 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AC11248D4
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:43:30 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 492F11480;
-        Wed, 29 Jun 2022 11:43:30 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D24E43F5A1;
-        Wed, 29 Jun 2022 11:43:27 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 19:42:17 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Conor.Dooley@microchip.com
-Cc:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        atishp@atishpatra.org, atishp@rivosinc.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        wangqing@vivo.com, robh+dt@kernel.org, rafael@kernel.org,
-        ionela.voinescu@arm.com, pierre.gondois@arm.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, gshan@redhat.com,
-        Valentina.FernandezAlanis@microchip.com
-Subject: Re: [PATCH v5 09/19] arch_topology: Use the last level cache
- information from the cacheinfo
-Message-ID: <20220629184217.krzt6l7qadymbj6h@bogus>
-References: <20220627165047.336669-1-sudeep.holla@arm.com>
- <20220627165047.336669-10-sudeep.holla@arm.com>
- <bb124e47-f866-e39e-0f76-dc468ce384c6@microchip.com>
- <3656a067-cc3f-fd5b-e339-5925a856cce1@microchip.com>
+        Wed, 29 Jun 2022 14:44:39 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8354F2558E;
+        Wed, 29 Jun 2022 11:44:38 -0700 (PDT)
+Received: from [10.10.0.109] (unknown [186.189.224.65])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: adalessandro)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 77C356601924;
+        Wed, 29 Jun 2022 19:44:33 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656528276;
+        bh=JZJmmVefkY6Pjhld3W1zj0Pcgi0dRvhTO1IcFibOrfw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jPLBrRyB4RSTShwzvOZ4m6BmSMJQBIluDuqP1GyRQnvRh00x4lOkKPnHjDODBExxF
+         ep4iMQOxeBlTn+tQDssy1yn5mNQzo5VxhO4otVTrMRoHYhKxupemBxn1DqeuIWeAb4
+         AWVrINmTmuhv20PpwCCSA2T8qRnJnnKbl8nKglbG09ay0XGKdAWx6Qtpvx3/l85KP9
+         O0LrXzEeLrJb0sKy33uapGZrrqgJwr3BYuRNBL6Nvutz1UOoUQ4FkMAPWDy7i0Alho
+         pirWbv7R3dubjkLGtjnLyuCZk/rlq65YtJQaQl85CSuoAYcAr19oha0s5XOj5biPGj
+         CbpVrMss3ty0g==
+Message-ID: <5a2d2365-effb-2663-1ace-fddb59ee61b7@collabora.com>
+Date:   Wed, 29 Jun 2022 15:44:26 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3656a067-cc3f-fd5b-e339-5925a856cce1@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] ARM: dts: bcm2711-rpi: Use aliases to set custom MMC
+ device index
+Content-Language: en-US
+To:     Stefan Wahren <stefan.wahren@i2se.com>,
+        krzysztof.kozlowski+dt@linaro.org, nsaenz@kernel.org,
+        robh+dt@kernel.org
+Cc:     bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        pbrobinson@gmail.com, f.fainelli@gmail.com
+References: <20220614141208.15614-1-ariel.dalessandro@collabora.com>
+ <c3c62929-77ba-6bae-1e0c-4d4ece9c9b32@i2se.com>
+From:   Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+In-Reply-To: <c3c62929-77ba-6bae-1e0c-4d4ece9c9b32@i2se.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 06:18:25PM +0000, Conor.Dooley@microchip.com wrote:
+Hi Stefan,
+
+Sorry for the delay.
+
+On 6/14/22 17:47, Stefan Wahren wrote:
+> Hi Ariel,
 > 
-> No, no it doesn't. Not sure what I was thinking there.
-> Prob tested that on the the last commit that bisect tested
-> rather than the one it pointed out the problem was with.
+> Am 14.06.22 um 16:12 schrieb Ariel D'Alessandro:
+>> Add MMC aliases to ensure that the /dev/mmcblk ID for the first
+>> eMMC/SD card won't change depending on the probe order of the MMC
+>> drivers.
 > 
-> Either way, boot is broken in -next.
->
+> this changes the emmc2 from mmc1 to mmc0 in my case (RPi 4,
+> multi_v7_defconfig), which i consider as a regression / unexpected
+> change in userspace.
+> 
+> Could you please explain your actual motivation of your patch?
 
-Can you check if the below fixes the issue ? Assuming presenting L1 as
-LLC might be causing issue.
+That's a good point. The original reason comes from u-boot in fact, I
+just sent the patch here as u-boot is syncing the dts files from the kernel.
 
-Regards,
-Sudeep
+U-boot uses the same defconfig `configs/rpi_arm64_defconfig` for
+different RPi versions, which have different mmcblk ids numbering.
 
--->8
-diff --git i/drivers/base/cacheinfo.c w/drivers/base/cacheinfo.c
-index 167abfa6f37d..a691317f7fdd 100644
---- i/drivers/base/cacheinfo.c
-+++ w/drivers/base/cacheinfo.c
-@@ -60,7 +60,8 @@ bool last_level_cache_is_valid(unsigned int cpu)
+In order to use bootcount support in u-boot, the config option
+CONFIG_SYS_BOOTCOUNT_EXT_DEVPART needs to be filled with the fixed
+dev/part ids. In general I'd expect mmcblk0 to be eMMC/SD, which is not
+in this case, at least for RPi4.
 
-        llc = per_cpu_cacheinfo_idx(cpu, cache_leaves(cpu) - 1);
+Anyway, this is probably something to be discussed on the u-boot mailing
+list, not here.
 
--       return (llc->attributes & CACHE_ID) || !!llc->fw_token;
-+       return (llc->type == CACHE_TYPE_UNIFIED) &&
-+              ((llc->attributes & CACHE_ID) || !!llc->fw_token);
+Thanks,
+Ariel
 
- }
-
+> 
+>>
+>> Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+>> ---
+>>
+>> Changes in v2:
+>> * Moved alias from bcm2711-rpi-4-b.dts to bcm2711-rpi.dtsi
+>>
+>>   arch/arm/boot/dts/bcm2711-rpi.dtsi | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/arch/arm/boot/dts/bcm2711-rpi.dtsi
+>> b/arch/arm/boot/dts/bcm2711-rpi.dtsi
+>> index ca266c5d9f9b..a39b2f68e4cc 100644
+>> --- a/arch/arm/boot/dts/bcm2711-rpi.dtsi
+>> +++ b/arch/arm/boot/dts/bcm2711-rpi.dtsi
+>> @@ -13,6 +13,7 @@ memory@0 {
+>>       aliases {
+>>           emmc2bus = &emmc2bus;
+>>           ethernet0 = &genet;
+>> +        mmc0 = &emmc2;    /* mmcblk0 for eMMC/SD */
+>>           pcie0 = &pcie0;
+>>           blconfig = &blconfig;
+>>       };
