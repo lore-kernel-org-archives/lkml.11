@@ -2,106 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D16C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbiF2Dkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 23:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        id S230511AbiF2Dl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 23:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231187AbiF2Dkp (ORCPT
+        with ESMTP id S229545AbiF2Dl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 23:40:45 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30CD1F62F
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 20:40:38 -0700 (PDT)
-X-UUID: 1bb1e23ddc46451eb27756f03547cb43-20220629
-X-GW-Reason: 11109
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 74
-        audit/email.address 1
-        dict/notice 1
-        dict/time 1
-        meta/cnt.alert 1
-X-CPASD-INFO: dccd2544217d4dcf97ace11f98851172@rbOdhF9nYmReUXmwg6euoFlokZOVXVG
-        1e3JYZV9hY1KVgnxsTWBnX1OEgnBQYl5dZFZ3dG9RYmBgYlB_i4Jyj1RgXmCCVHSTgKadg5RgZQ==
-X-CLOUD-ID: dccd2544217d4dcf97ace11f98851172
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:182.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:143.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
-        5,AUF:1,DUF:127,ACD:2,DCD:2,SL:0,EISP:0,AG:0,CFC:0.576,CFSR:0.037,UAT:0,RAF:0
-        ,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EAF:
-        0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: 1bb1e23ddc46451eb27756f03547cb43-20220629
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1
-X-UUID: 1bb1e23ddc46451eb27756f03547cb43-20220629
-X-User: xiongxin@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <xiongxin@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 2032682121; Wed, 29 Jun 2022 08:34:17 +0800
-From:   xiongxin <xiongxin@kylinos.cn>
-To:     rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xiongxin@kylinos.cn
-Subject: [PATCH -next 1/2] PM: suspend: expand the assignment scope of the pm_suspend_target_state
-Date:   Wed, 29 Jun 2022 08:33:37 +0800
-Message-Id: <20220629003338.299195-2-xiongxin@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629003338.299195-1-xiongxin@kylinos.cn>
-References: <20220629003338.299195-1-xiongxin@kylinos.cn>
+        Tue, 28 Jun 2022 23:41:56 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57AF1A05D;
+        Tue, 28 Jun 2022 20:41:55 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id i15so25756525ybp.1;
+        Tue, 28 Jun 2022 20:41:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L6va5NDTwhJBkQ/f4NSo1vfSeL4VeLOONQBkSqjkrqQ=;
+        b=C0oG3HmJ1pdcmuByCMI6OoEAquSla/w5ibP3mlFqfDQ0x3lgh7/WXpBpJWO76k/ypr
+         LFwZxIAjbE3NeOXW8fgUNoDaWe6bOlw5Sw9WJly5zIMN/qHNTp2g3SZ3vPNy9q4TKa3V
+         1VLcyoozI+ypv2ps0WDvpZgkoUpA0Fr9MVSDeR/LfKLOguEreikiJCqCzqlbtiiFSoUq
+         tbDIz6MK0J7WbGAEDCvMozy2iIBMs01slrPaOugeYjfnYMj0zL/m1uJMAkV2gC4zNLAj
+         TBb0NC/jIjDsrYOLwTMfqcjo0VQxF14gvoroxTbNTcOeuIjGtwK0CfOoClYZZhNURYRP
+         N5Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L6va5NDTwhJBkQ/f4NSo1vfSeL4VeLOONQBkSqjkrqQ=;
+        b=ELMg5Yj6tIsL22h2Jd5ZQjpO9Qg5JCkkDLulMxlO6cvudGu4LtsMHrZHahNNIaw9qy
+         yKSkA0KCSsbV7y/ePFKwcs+J/OVdnTS9snntuQvWDzqESgQxad0iZdrtayIe8V0OsIjz
+         yhACY52qZEpwzWQ/sPr0BuJPEH8SOeGmXZOFzYfaZxyDp6biwdocZtyjE8UoWmzthnP3
+         rKDIVJsDCAuanUBIEY+EpWiHYUJKSj/AEWG8CPiLpuizfyu7ZbaJeyO6n3yzoxdSBHlB
+         stjEU0MHRXAnS+uzmC3N3828zO49qLgdMXukfaegBUyLGt89D/g3DcBqxFohIYAIvFZB
+         JqYw==
+X-Gm-Message-State: AJIora/7e//4gZithfwcT+QtOhflnwtaeWsaZom9ATEHkfWnkttn7R+4
+        vi0Pse3gJEYD4bIMIQqNGxVzAoeVKFiBc1Mqalk=
+X-Google-Smtp-Source: AGRyM1vntT7JV2vrSjSDqX+JKmsQG97Jg1jk7dN1GujAu5qh5R8UKZi3BnUXWIa9WvEOm4yIAH2YJ+T3w7zWcoilG6Y=
+X-Received: by 2002:a05:6902:1021:b0:66d:43a7:f79f with SMTP id
+ x1-20020a056902102100b0066d43a7f79fmr1122586ybt.564.1656474115111; Tue, 28
+ Jun 2022 20:41:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220628151840.867592-1-Jason@zx2c4.com>
+In-Reply-To: <20220628151840.867592-1-Jason@zx2c4.com>
+From:   Gregory Erwin <gregerwin256@gmail.com>
+Date:   Tue, 28 Jun 2022 20:41:44 -0700
+Message-ID: <CAO+Okf56VAqKt5a6OoGUnMAoMsbQoBd7V_tcLf9yuqheWKH1SA@mail.gmail.com>
+Subject: Re: [PATCH v7] ath9k: let sleep be interrupted when unregistering hwrng
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Rui Salvaterra <rsalvaterra@gmail.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pm_suspend_target_state variable can be used as a suspend state
-identifier and given to the specific device driver as a code judgment;
+Hmm, set_notify_signal() calls wake_up_state() in kernel/sched/core.c, which
+is not currently exported. Only by including EXPORT_SYMBOL(wake_up_state) and
+rebuilding vmlinux was I able to build rng-core.ko and load it successfully.
 
-Because the suspend_prepare() function is time-consuming for the
-operation of freezing processes, and this stage is actually in the suspend
-stage, it is necessary to expand the scope of the pm_suspend_target_state
-variable to be assigned to the suspend state at enter_state() function;
-
-Another reason is that the specific device driver can locate whether it is
-in the suspend state based on this variable, so as to determine the
-validity of its wake-up source.
-
-Signed-off-by: xiongxin <xiongxin@kylinos.cn>
----
- kernel/power/suspend.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index 827075944d28..c754b084ec03 100644
---- a/kernel/power/suspend.c
-+++ b/kernel/power/suspend.c
-@@ -564,6 +564,12 @@ static int enter_state(suspend_state_t state)
- 	if (state == PM_SUSPEND_TO_IDLE)
- 		s2idle_begin();
- 
-+	/*
-+	 * Expand the scope of suspend state for suspend operations
-+	 * performed from the /sys/power/state entry.
-+	 */
-+	pm_suspend_target_state = state;
-+
- 	if (sync_on_suspend_enabled) {
- 		trace_suspend_resume(TPS("sync_filesystems"), 0, true);
- 		ksys_sync_helper();
-@@ -590,6 +596,7 @@ static int enter_state(suspend_state_t state)
- 	pm_pr_dbg("Finishing wakeup.\n");
- 	suspend_finish();
-  Unlock:
-+	pm_suspend_target_state = PM_SUSPEND_ON;
- 	mutex_unlock(&system_transition_mutex);
- 	return error;
- }
--- 
-2.25.1
-
-
-No virus found
-		Checked by Hillstone Network AntiVirus
+That said, this patch allows 'ip link set wlan0 down' to wake a blocked process
+reading from /dev/hwrng, eliminating the delay as described. I'll give my
+sign-off with the EXPORT_SYMBOL sorted out.
