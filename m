@@ -2,65 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE6F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiF2D6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 23:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        id S231159AbiF2D63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 23:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbiF2D6K (ORCPT
+        with ESMTP id S230181AbiF2D6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 23:58:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CF6113A;
-        Tue, 28 Jun 2022 20:58:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D79D5B81E03;
-        Wed, 29 Jun 2022 03:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EB26C341C8;
-        Wed, 29 Jun 2022 03:58:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656475086;
-        bh=xlGxS8eUt1OwTO8mhrcABYeSBWBaRvP4l//S4lU2bl4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hrDTwX6hYGWX/wgcmW07d4J74gC6BeBtRFns102uUolRM4RhY87XGIMtBDXnwSuZo
-         zgikn6BHii6BDtqCWa0ZAt2uCIsUoUVUy5VcmPHP2qEWinJShYe25rpOQkjWM8Ta/f
-         Bid2Cycq6yAiVf5ydN0IE5ySyzVO3by6Y8asE2RMkpC/sIPc1qdysigyK8Lshr6sNj
-         vHlEA2nrTCPpzoKy8HGNgbVzca98fMuzeJIh5FhgYMdeIesIiYpfJqjbgutyJmy2KL
-         enCqF25Nsy6URxQ0hBhdpCtauUDvSEd3QhMUlEkuBT5xwET31rK+vYjrJmP1ZbvrqH
-         YZLBkpUxllcUg==
-Date:   Tue, 28 Jun 2022 20:58:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH RFC 0/5] Add MTU change with stmmac interface
- running
-Message-ID: <20220628205805.2e105b5a@kernel.org>
-In-Reply-To: <20220628013342.13581-1-ansuelsmth@gmail.com>
-References: <20220628013342.13581-1-ansuelsmth@gmail.com>
+        Tue, 28 Jun 2022 23:58:20 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFEDD97;
+        Tue, 28 Jun 2022 20:58:16 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LXngf2vm0zhYjh;
+        Wed, 29 Jun 2022 11:55:58 +0800 (CST)
+Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 11:58:14 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 11:58:14 +0800
+From:   Jie Hai <haijie1@huawei.com>
+To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
+CC:     <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 0/7]  dmaengine: hisilicon: Add support for hisi dma driver
+Date:   Wed, 29 Jun 2022 11:55:42 +0800
+Message-ID: <20220629035549.44181-1-haijie1@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220625074422.3479591-1-haijie1@huawei.com>
+References: <20220625074422.3479591-1-haijie1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600007.china.huawei.com (7.193.23.208)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 03:33:37 +0200 Christian Marangi wrote:
-> This series is to permit MTU change while the interface is running.
-> Major rework are needed to permit to allocate a new dma conf based on
-> the new MTU before applying it. This is to make sure there is enough
-> space to allocate all the DMA queue before releasing the stmmac driver.
+The HiSilicon IP08 and HiSilicon IP09 are DMA iEPs, they share the
+same pci device id but different pci revision and register layouts.
 
-=F0=9F=91=8D Looks good.
+The original version supports HiSilicon IP08 but not HiSilicon IP09.
+This series support DMA driver for HIP08 and HIP09:
+1. Fix bugs for HIP08 DMA driver
+	- Disable hardware channels when driver detached
+	- Update cq_head whenever accessed it
+	- Support multi-thread for one DMA channel
+2. Use macros instead of magic number
+3. Add support for HIP09 DMA driver
+4. Dump registers for HIP08 and HIP09 DMA driver with debugfs
+5. Add myself as maintainer of hisi_dma.c
+
+Changes since version 1:
+ - fix compile failure reported by kernel test robot
+ - fix reduldant "*" in comment
+ - fix reduldant blank line in commit log
+ - remove debugfs-hisi-dma doc and path in MAINTAINERS
+ - add more explanations in patch 3/7
+
+Jie Hai (7):
+  dmaengine: hisilicon: Disable channels when unregister hisi_dma
+  dmaengine: hisilicon: Fix CQ head update
+  dmaengine: hisilicon: Add multi-thread support for a DMA channel
+  dmaengine: hisilicon: Use macros instead of magic number
+  dmaengine: hisilicon: Adapt DMA driver to HiSilicon IP09
+  dmaengine: hisilicon: Add dfx feature for hisi dma driver
+  MAINTAINERS: Add myself as maintainer for hisi_dma
+
+ MAINTAINERS            |   1 +
+ drivers/dma/hisi_dma.c | 730 +++++++++++++++++++++++++++++++++++------
+ 2 files changed, 635 insertions(+), 96 deletions(-)
+
+-- 
+2.33.0
+
