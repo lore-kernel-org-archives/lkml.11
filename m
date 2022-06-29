@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4FCCCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CE1CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbiF2PHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        id S233883AbiF2PHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233797AbiF2PGw (ORCPT
+        with ESMTP id S233808AbiF2PGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 11:06:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 659BA2BB1A
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:06:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B5552CC81
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:06:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656515204;
+        s=mimecast20190719; t=1656515208;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zaxbY1rOITz+shpil2uKHRFDtCLUgY9k2BOgoea4vxs=;
-        b=SmhkhuyyYl0PXqJJggkyxmGyvl2kNs+qYVXVQ2hWTW9sV8oZH1b8GdTzukawnnguuWItSv
-        +SnDZSBt99j6f3+7TJs5BtMmohMdbCu90tnAdJfFKXaZ3Q3zjV72Arqw2cgp7ZrJb17eU9
-        cAD9KM3WvF6Y0BPry5trmSU5Rrw3TpI=
+        bh=af3tbdHJqconrpB17WMnQfKcE/QQnybpHp5Xq4ZFEQk=;
+        b=Epl1U7Crc2thi83WWJeiwICPyyhvyo5LPm4B33FIGw0V9QwPLHzaZeLVAh/9+MKDr1yUcR
+        prE3ZhMwXWZhMEP0Z1sjBXEtt6Zl5f6/Sua0Ddi7ynp66bbyssFPqLGRxsmtzJo2e5P9sb
+        t6BV/D1dBEPGF8lpydkoVmcDWdP7tEI=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-653-Za9qZNYgNwaZ1fDZ-OimCQ-1; Wed, 29 Jun 2022 11:06:40 -0400
-X-MC-Unique: Za9qZNYgNwaZ1fDZ-OimCQ-1
+ us-mta-35-hQPwlaRcOSqV6yH0hi6s7w-1; Wed, 29 Jun 2022 11:06:44 -0400
+X-MC-Unique: hQPwlaRcOSqV6yH0hi6s7w-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 77929811E7A;
-        Wed, 29 Jun 2022 15:06:39 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 616DB101A588;
+        Wed, 29 Jun 2022 15:06:44 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 85D3040EC002;
-        Wed, 29 Jun 2022 15:06:37 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6A40E40EC003;
+        Wed, 29 Jun 2022 15:06:42 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -46,9 +46,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 05/28] KVM: nVMX: Support several new fields in eVMCSv1
-Date:   Wed, 29 Jun 2022 17:06:02 +0200
-Message-Id: <20220629150625.238286-6-vkuznets@redhat.com>
+Subject: [PATCH v2 07/28] KVM: selftests: Switch to KVM_CAP_HYPERV_ENLIGHTENED_VMCS2
+Date:   Wed, 29 Jun 2022 17:06:04 +0200
+Message-Id: <20220629150625.238286-8-vkuznets@redhat.com>
 In-Reply-To: <20220629150625.238286-1-vkuznets@redhat.com>
 References: <20220629150625.238286-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,93 +59,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enlightened VMCS v1 definition was updated with new fields, add
-support for them for Hyper-V on KVM.
-
-Note: SSP, CET and Guest LBR features are not supported by KVM yet
-and 'struct vmcs12' has no corresponding fields.
+KVM_CAP_HYPERV_ENLIGHTENED_VMCS was obsoleted by
+KVM_CAP_HYPERV_ENLIGHTENED_VMCS2, use it in selftests.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/vmx/nested.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ tools/testing/selftests/kvm/include/kvm_util_base.h       | 8 ++++++++
+ tools/testing/selftests/kvm/include/x86_64/evmcs.h        | 1 +
+ tools/testing/selftests/kvm/lib/x86_64/vmx.c              | 5 +++--
+ tools/testing/selftests/kvm/x86_64/evmcs_test.c           | 2 +-
+ tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c         | 2 +-
+ .../selftests/kvm/x86_64/vmx_set_nested_state_test.c      | 2 +-
+ 6 files changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 778f82015f03..4fc84f0f5875 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -1603,6 +1603,10 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
- 		vmcs12->guest_rflags = evmcs->guest_rflags;
- 		vmcs12->guest_interruptibility_info =
- 			evmcs->guest_interruptibility_info;
-+		/*
-+		 * Not present in struct vmcs12:
-+		 * vmcs12->guest_ssp = evmcs->guest_ssp;
-+		 */
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index b78e3c7a2566..0870865c2429 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -406,6 +406,14 @@ static inline void vcpu_enable_cap(struct kvm_vcpu *vcpu, uint32_t cap,
+ 	vcpu_ioctl(vcpu, KVM_ENABLE_CAP, &enable_cap);
+ }
+ 
++static inline void vcpu_enable_cap2(struct kvm_vcpu *vcpu, uint32_t cap,
++				   uint64_t arg0, uint64_t arg1)
++{
++	struct kvm_enable_cap enable_cap = { .cap = cap, .args = { arg0, arg1 } };
++
++	vcpu_ioctl(vcpu, KVM_ENABLE_CAP, &enable_cap);
++}
++
+ static inline void vcpu_guest_debug_set(struct kvm_vcpu *vcpu,
+ 					struct kvm_guest_debug *debug)
+ {
+diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+index 3c9260f8e116..b6d6c73f68dc 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
++++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+@@ -17,6 +17,7 @@
+ #define u64 uint64_t
+ 
+ #define EVMCS_VERSION 1
++#define EVMCS_REVISION 1
+ 
+ extern bool enable_evmcs;
+ 
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+index 381432741df4..1a0b9334f8d4 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+@@ -42,12 +42,13 @@ struct eptPageTablePointer {
+ 	uint64_t address:40;
+ 	uint64_t reserved_63_52:12;
+ };
++
+ int vcpu_enable_evmcs(struct kvm_vcpu *vcpu)
+ {
+ 	uint16_t evmcs_ver;
+ 
+-	vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_ENLIGHTENED_VMCS,
+-			(unsigned long)&evmcs_ver);
++	vcpu_enable_cap2(vcpu, KVM_CAP_HYPERV_ENLIGHTENED_VMCS2,
++			 EVMCS_REVISION, (unsigned long)&evmcs_ver);
+ 
+ 	/* KVM should return supported EVMCS version range */
+ 	TEST_ASSERT(((evmcs_ver >> 8) >= (evmcs_ver & 0xff)) &&
+diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+index 8dda527cc080..a546d1cad146 100644
+--- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
+ 
+ 	TEST_REQUIRE(nested_vmx_supported());
+ 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
+-	TEST_REQUIRE(kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS));
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS2));
+ 
+ 	vcpu_set_hv_cpuid(vcpu);
+ 	vcpu_enable_evmcs(vcpu);
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+index cbd4a7d36189..f19859f1956e 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
+ 	free(hv_cpuid_entries);
+ 
+ 	if (!nested_vmx_supported() ||
+-	    !kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS)) {
++	    !kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS2)) {
+ 		print_skip("Enlightened VMCS is unsupported");
+ 		goto do_sys;
  	}
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
+index b564b86dfc1d..b624a08a5574 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
+@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
+ 	struct kvm_nested_state state;
+ 	struct kvm_vcpu *vcpu;
  
- 	if (unlikely(!(hv_clean_fields &
-@@ -1649,6 +1653,13 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
- 		vmcs12->host_fs_selector = evmcs->host_fs_selector;
- 		vmcs12->host_gs_selector = evmcs->host_gs_selector;
- 		vmcs12->host_tr_selector = evmcs->host_tr_selector;
-+		vmcs12->host_ia32_perf_global_ctrl = evmcs->host_ia32_perf_global_ctrl;
-+		/*
-+		 * Not present in struct vmcs12:
-+		 * vmcs12->host_ia32_s_cet = evmcs->host_ia32_s_cet;
-+		 * vmcs12->host_ssp = evmcs->host_ssp;
-+		 * vmcs12->host_ia32_int_ssp_table_addr = evmcs->host_ia32_int_ssp_table_addr;
-+		 */
- 	}
+-	have_evmcs = kvm_check_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS);
++	have_evmcs = kvm_check_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS2);
  
- 	if (unlikely(!(hv_clean_fields &
-@@ -1716,6 +1727,8 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
- 		vmcs12->tsc_offset = evmcs->tsc_offset;
- 		vmcs12->virtual_apic_page_addr = evmcs->virtual_apic_page_addr;
- 		vmcs12->xss_exit_bitmap = evmcs->xss_exit_bitmap;
-+		vmcs12->encls_exiting_bitmap = evmcs->encls_exiting_bitmap;
-+		vmcs12->tsc_multiplier = evmcs->tsc_multiplier;
- 	}
+ 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
  
- 	if (unlikely(!(hv_clean_fields &
-@@ -1763,6 +1776,13 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
- 		vmcs12->guest_bndcfgs = evmcs->guest_bndcfgs;
- 		vmcs12->guest_activity_state = evmcs->guest_activity_state;
- 		vmcs12->guest_sysenter_cs = evmcs->guest_sysenter_cs;
-+		vmcs12->guest_ia32_perf_global_ctrl = evmcs->guest_ia32_perf_global_ctrl;
-+		/*
-+		 * Not present in struct vmcs12:
-+		 * vmcs12->guest_ia32_s_cet = evmcs->guest_ia32_s_cet;
-+		 * vmcs12->guest_ia32_lbr_ctl = evmcs->guest_ia32_lbr_ctl;
-+		 * vmcs12->guest_ia32_int_ssp_table_addr = evmcs->guest_ia32_int_ssp_table_addr;
-+		 */
- 	}
- 
- 	/*
-@@ -1865,12 +1885,23 @@ static void copy_vmcs12_to_enlightened(struct vcpu_vmx *vmx)
- 	 * evmcs->vm_exit_msr_store_count = vmcs12->vm_exit_msr_store_count;
- 	 * evmcs->vm_exit_msr_load_count = vmcs12->vm_exit_msr_load_count;
- 	 * evmcs->vm_entry_msr_load_count = vmcs12->vm_entry_msr_load_count;
-+	 * evmcs->guest_ia32_perf_global_ctrl = vmcs12->guest_ia32_perf_global_ctrl;
-+	 * evmcs->host_ia32_perf_global_ctrl = vmcs12->host_ia32_perf_global_ctrl;
-+	 * evmcs->encls_exiting_bitmap = vmcs12->encls_exiting_bitmap;
-+	 * evmcs->tsc_multiplier = vmcs12->tsc_multiplier;
- 	 *
- 	 * Not present in struct vmcs12:
- 	 * evmcs->exit_io_instruction_ecx = vmcs12->exit_io_instruction_ecx;
- 	 * evmcs->exit_io_instruction_esi = vmcs12->exit_io_instruction_esi;
- 	 * evmcs->exit_io_instruction_edi = vmcs12->exit_io_instruction_edi;
- 	 * evmcs->exit_io_instruction_eip = vmcs12->exit_io_instruction_eip;
-+	 * evmcs->host_ia32_s_cet = vmcs12->host_ia32_s_cet;
-+	 * evmcs->host_ssp = vmcs12->host_ssp;
-+	 * evmcs->host_ia32_int_ssp_table_addr = vmcs12->host_ia32_int_ssp_table_addr;
-+	 * evmcs->guest_ia32_s_cet = vmcs12->guest_ia32_s_cet;
-+	 * evmcs->guest_ia32_lbr_ctl = vmcs12->guest_ia32_lbr_ctl;
-+	 * evmcs->guest_ia32_int_ssp_table_addr = vmcs12->guest_ia32_int_ssp_table_addr;
-+	 * evmcs->guest_ssp = vmcs12->guest_ssp;
- 	 */
- 
- 	evmcs->guest_es_selector = vmcs12->guest_es_selector;
 -- 
 2.35.3
 
