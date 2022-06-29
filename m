@@ -2,195 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7179AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232327AbiF2JFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        id S232141AbiF2JGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbiF2JFx (ORCPT
+        with ESMTP id S231329AbiF2JGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:05:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C84D722509;
-        Wed, 29 Jun 2022 02:05:50 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B53E41477;
-        Wed, 29 Jun 2022 02:05:50 -0700 (PDT)
-Received: from [10.57.85.71] (unknown [10.57.85.71])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA2B53F792;
-        Wed, 29 Jun 2022 02:05:45 -0700 (PDT)
-Message-ID: <b56d9b93-c59f-5764-e599-d9718edb42d3@arm.com>
-Date:   Wed, 29 Jun 2022 10:05:40 +0100
+        Wed, 29 Jun 2022 05:06:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FDE2654C;
+        Wed, 29 Jun 2022 02:06:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1A6661DE3;
+        Wed, 29 Jun 2022 09:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE516C34114;
+        Wed, 29 Jun 2022 09:06:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656493568;
+        bh=x2GCzecskcLtSCWQXoaVv3Na56ClXU+Y0k0Qh8E4oQ4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yvcAQrUYxKTNfIijL+ZbK08cAl5Ovfrl56tfBMJUV5aP+95TFNneNQFG2uM9frr6Q
+         f/NiB9B06ERHDYY4a7PtkKmS3mLJLn+PNDGHfgQqWK+WxYgwXx6SwcBDpVgVF65zJt
+         a013zE2RiSg82j4zz7P6Rse4H/JNl6MmT9ljsYzk=
+Date:   Wed, 29 Jun 2022 11:06:05 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     syzbot <syzbot+ce3408364c4a234dd90c@syzkaller.appspotmail.com>,
+        aldas60@gmail.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, nathan@kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING: locking bug in hfa384x_usbctlx_completion_task
+Message-ID: <YrwV/bQBFg3lTFky@kroah.com>
+References: <000000000000e3fc8905e2608d4f@google.com>
+ <20220627170838.y7kbvazgpd52xd6d@offworld>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v7 01/21] lib/scatterlist: add flag for indicating P2PDMA
- segments in an SGL
-Content-Language: en-GB
-To:     Logan Gunthorpe <logang@deltatee.com>,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc:     Stephen Bates <sbates@raithlin.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>
-References: <20220615161233.17527-1-logang@deltatee.com>
- <20220615161233.17527-2-logang@deltatee.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220615161233.17527-2-logang@deltatee.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627170838.y7kbvazgpd52xd6d@offworld>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-15 17:12, Logan Gunthorpe wrote:
-> Make use of the third free LSB in scatterlist's page_link on 64bit systems.
+On Mon, Jun 27, 2022 at 10:08:38AM -0700, Davidlohr Bueso wrote:
+> It's nice to see this sort of stuff actually tested :)
 > 
-> The extra bit will be used by dma_[un]map_sg_p2pdma() to determine when a
-> given SGL segments dma_address points to a PCI bus address.
-> dma_unmap_sg_p2pdma() will need to perform different cleanup when a
-> segment is marked as a bus address.
+> On Sun, 26 Jun 2022, syzbot wrote:
 > 
-> The new bit will only be used when CONFIG_PCI_P2PDMA is set; this means
-> PCI P2PDMA will require CONFIG_64BIT. This should be acceptable as the
-> majority of P2PDMA use cases are restricted to newer root complexes and
-> roughly require the extra address space for memory BARs used in the
-> transactions.
+> > ------------[ cut here ]------------
+> > DEBUG_LOCKS_WARN_ON(1)
+> > WARNING: CPU: 1 PID: 21 at kernel/locking/lockdep.c:231 hlock_class kernel/locking/lockdep.c:231 [inline]
+> > WARNING: CPU: 1 PID: 21 at kernel/locking/lockdep.c:231 hlock_class kernel/locking/lockdep.c:220 [inline]
+> > WARNING: CPU: 1 PID: 21 at kernel/locking/lockdep.c:231 check_wait_context kernel/locking/lockdep.c:4727 [inline]
+> > WARNING: CPU: 1 PID: 21 at kernel/locking/lockdep.c:231 __lock_acquire+0x1356/0x5660 kernel/locking/lockdep.c:5003
+> > Modules linked in:
+> > CPU: 1 PID: 21 Comm: kworker/1:0 Not tainted 5.19.0-rc3-syzkaller-00071-g105f3fd2f789 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Workqueue: events hfa384x_usbctlx_completion_task
 > 
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+> Sorry about that, the below should fix it. Thanks.
+> 
+> ---8<-------------------------------
+> From: Davidlohr Bueso <dave@stgolabs.net>
+> Subject: [PATCH] staging/wlan-ng: get the correct struct hfa384x in work callback
+> 
+> hfa384x_usbctlx_completion_task() is bogusly using the reaper BH when
+> in fact this is the completion_bh. This was reflected when trying
+> to acquire the hw->ctlxq.lock and getting a failed lockdep class
+> initialized to it.
+> 
+> Reported-by: syzbot+ce3408364c4a234dd90c@syzkaller.appspotmail.com
+> Fixes: 9442e81d7e7 (staging/wlan-ng, prism2usb: replace completion_bh tasklet with work)
+> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
 > ---
->   drivers/pci/Kconfig         |  5 +++++
->   include/linux/scatterlist.h | 44 ++++++++++++++++++++++++++++++++++++-
->   2 files changed, 48 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
-> index 133c73207782..5cc7cba1941f 100644
-> --- a/drivers/pci/Kconfig
-> +++ b/drivers/pci/Kconfig
-> @@ -164,6 +164,11 @@ config PCI_PASID
->   config PCI_P2PDMA
->   	bool "PCI peer-to-peer transfer support"
->   	depends on ZONE_DEVICE
-> +	#
-> +	# The need for the scatterlist DMA bus address flag means PCI P2PDMA
-> +	# requires 64bit
-> +	#
-> +	depends on 64BIT
->   	select GENERIC_ALLOCATOR
->   	help
->   	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
-> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
-> index 7ff9d6386c12..6561ca8aead8 100644
-> --- a/include/linux/scatterlist.h
-> +++ b/include/linux/scatterlist.h
-> @@ -64,12 +64,24 @@ struct sg_append_table {
->   #define SG_CHAIN	0x01UL
->   #define SG_END		0x02UL
->   
-> +/*
-> + * bit 2 is the third free bit in the page_link on 64bit systems which
-> + * is used by dma_unmap_sg() to determine if the dma_address is a
-> + * bus address when doing P2PDMA.
-> + */
-> +#ifdef CONFIG_PCI_P2PDMA
-> +#define SG_DMA_BUS_ADDRESS	0x04UL
-> +static_assert(__alignof__(struct page) >= 8);
-> +#else
-> +#define SG_DMA_BUS_ADDRESS	0x00UL
-> +#endif
-> +
->   /*
->    * We overload the LSB of the page pointer to indicate whether it's
->    * a valid sg entry, or whether it points to the start of a new scatterlist.
->    * Those low bits are there for everyone! (thanks mason :-)
->    */
-> -#define SG_PAGE_LINK_MASK (SG_CHAIN | SG_END)
-> +#define SG_PAGE_LINK_MASK (SG_CHAIN | SG_END | SG_DMA_BUS_ADDRESS)
->   
->   static inline unsigned int __sg_flags(struct scatterlist *sg)
->   {
-> @@ -91,6 +103,11 @@ static inline bool sg_is_last(struct scatterlist *sg)
->   	return __sg_flags(sg) & SG_END;
->   }
->   
-> +static inline bool sg_is_dma_bus_address(struct scatterlist *sg)
-> +{
-> +	return __sg_flags(sg) & SG_DMA_BUS_ADDRESS;
-> +}
-> +
->   /**
->    * sg_assign_page - Assign a given page to an SG entry
->    * @sg:		    SG entry
-> @@ -245,6 +262,31 @@ static inline void sg_unmark_end(struct scatterlist *sg)
->   	sg->page_link &= ~SG_END;
->   }
->   
-> +/**
-> + * sg_dma_mark_bus address - Mark the scatterlist entry as a bus address
-> + * @sg:		 SG entryScatterlist
+>  drivers/staging/wlan-ng/hfa384x_usb.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-entryScatterlist?
+Can you submit this properly so that I can accept it?
 
-> + *
-> + * Description:
-> + *   Marks the passed in sg entry to indicate that the dma_address is
-> + *   a bus address and doesn't need to be unmapped.
-> + **/
-> +static inline void sg_dma_mark_bus_address(struct scatterlist *sg)
-> +{
-> +	sg->page_link |= SG_DMA_BUS_ADDRESS;
-> +}
-> +
-> +/**
-> + * sg_unmark_pci_p2pdma - Unmark the scatterlist entry as a bus address
-> + * @sg:		 SG entryScatterlist
-> + *
-> + * Description:
-> + *   Clears the bus address mark.
-> + **/
-> +static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
-> +{
-> +	sg->page_link &= ~SG_DMA_BUS_ADDRESS;
-> +}
+thanks,
 
-Does this serve any useful purpose? If a page is determined to be device 
-memory, it's not going to suddenly stop being device memory, and if the 
-underlying sg is recycled to point elsewhere then sg_assign_page() will 
-still (correctly) clear this flag anyway. Trying to reason about this 
-beyond superficial API symmetry - i.e. why exactly would a caller need 
-to call it, and what would the implications be of failing to do so - 
-seems to lead straight to confusion.
-
-In fact I'd be inclined to have sg_assign_page() be responsible for 
-setting the flag automatically as well, and thus not need 
-sg_dma_mark_bus_address() either, however I can see the argument for 
-doing it this way round to not entangle the APIs too much, so I don't 
-have any great objection to that.
-
-Thanks,
-Robin.
-
-> +
->   /**
->    * sg_phys - Return physical address of an sg entry
->    * @sg:	     SG entry
+greg k-h
