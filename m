@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA57CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 02:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 869D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 02:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbiF2Cvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 22:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        id S230434AbiF2Cvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 22:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiF2Cvb (ORCPT
+        with ESMTP id S229613AbiF2Cvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 28 Jun 2022 22:51:31 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2846E22B12;
-        Tue, 28 Jun 2022 19:51:29 -0700 (PDT)
-X-UUID: dec8dfa0de7a416da9a8aa243eec2b53-20220629
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9AD22B0A;
+        Tue, 28 Jun 2022 19:51:26 -0700 (PDT)
+X-UUID: 40578519d1c245e685ccc05cdddee06c-20220629
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:999cf2b7-7187-440c-8dc6-3d120489eeba,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:100
-X-CID-INFO: VERSION:1.1.7,REQID:999cf2b7-7187-440c-8dc6-3d120489eeba,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:100
-X-CID-META: VersionHash:87442a2,CLOUDID:640f1ad6-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:de6b7c378676,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+X-CID-O-INFO: VERSION:1.1.7,REQID:00187d21-583c-415f-8c87-877f99aed881,OB:10,L
+        OB:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:100
+X-CID-INFO: VERSION:1.1.7,REQID:00187d21-583c-415f-8c87-877f99aed881,OB:10,LOB
+        :20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:100
+X-CID-META: VersionHash:87442a2,CLOUDID:a97b0a86-57f0-47ca-ba27-fe8c57fbf305,C
+        OID:466b10ec1250,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: dec8dfa0de7a416da9a8aa243eec2b53-20220629
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+X-UUID: 40578519d1c245e685ccc05cdddee06c-20220629
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 41037509; Wed, 29 Jun 2022 10:51:20 +0800
+        with ESMTP id 865716194; Wed, 29 Jun 2022 10:51:17 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 29 Jun 2022 10:51:19 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 29 Jun 2022 10:51:16 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 29 Jun 2022 10:51:18 +0800
+ Transport; Wed, 29 Jun 2022 10:51:14 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,11 +54,10 @@ CC:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         <linux-mediatek@lists.infradead.org>,
         Biao Huang <biao.huang@mediatek.com>,
         Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        "Rob Herring" <robh@kernel.org>
-Subject: [PATCH net-next v4 04/10] dt-bindings: net: mtk-star-emac: add support for MT8365
-Date:   Wed, 29 Jun 2022 10:51:03 +0800
-Message-ID: <20220629025109.21933-5-biao.huang@mediatek.com>
+        Macpaul Lin <macpaul.lin@mediatek.com>
+Subject: [PATCH net-next v4 02/10] net: ethernet: mtk-star-emac: modify IRQ trigger flags
+Date:   Wed, 29 Jun 2022 10:51:01 +0800
+Message-ID: <20220629025109.21933-3-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220629025109.21933-1-biao.huang@mediatek.com>
 References: <20220629025109.21933-1-biao.huang@mediatek.com>
@@ -70,27 +69,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding document for Ethernet on MT8365.
+If the flags in request_irq() is IRQF_TRIGGER_NONE, the trigger method
+is determined by "interrupt" property in dts.
+So, modify the flag from IRQF_TRIGGER_FALLING to IRQF_TRIGGER_NONE.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Signed-off-by: Yinghua Pan <ot_yinghua.pan@mediatek.com>
 Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/net/mediatek,star-emac.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-index def994c9cbb4..6b0769e831a6 100644
---- a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-@@ -23,6 +23,7 @@ properties:
-       - mediatek,mt8516-eth
-       - mediatek,mt8518-eth
-       - mediatek,mt8175-eth
-+      - mediatek,mt8365-eth
+diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+index 9c54043f7866..f161a55bd09a 100644
+--- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
++++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+@@ -958,7 +958,7 @@ static int mtk_star_enable(struct net_device *ndev)
  
-   reg:
-     maxItems: 1
+ 	/* Request the interrupt */
+ 	ret = request_irq(ndev->irq, mtk_star_handle_irq,
+-			  IRQF_TRIGGER_FALLING, ndev->name, ndev);
++			  IRQF_TRIGGER_NONE, ndev->name, ndev);
+ 	if (ret)
+ 		goto err_free_skbs;
+ 
 -- 
 2.25.1
 
