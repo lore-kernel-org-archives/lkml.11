@@ -2,129 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 857C8CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 888C1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233904AbiF2P7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
+        id S234149AbiF2QAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbiF2P7j (ORCPT
+        with ESMTP id S229982AbiF2QAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:59:39 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF311BE93;
-        Wed, 29 Jun 2022 08:59:38 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so9025116wmp.3;
-        Wed, 29 Jun 2022 08:59:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YNly1dfG4RY5ld91Tin+FHgAbZbcnCeyfevD6nD1vfc=;
-        b=ZgK2yec9C4SmTv4WPvJao1de+26SSYJi9rBk2Rm5tsjBhm84Yai0AaWoHnwo8hxldR
-         9klx9J26g4poB1ilLULPFvjpYmbTXZgqjR5jBDuDaCXRnejPGxTL9FQWDJQjwvm9d62Z
-         wqrON8mV1zO7WtefS2+bi0tYsSsq+R3gxgRt3JZCnSWKxoiX/1wD1l/9G48Nyv48fyK1
-         esV/Tfz4nn6Zw1aHdKtTzQgu7Eaic0SxMRHB/Y9gbcJby4fgGAluUiP08MTXcISxD9qO
-         +x6hejlvzv8jO2GDoURMi9RpPIAHWVsYCRCbuzEwSmi6pn55/C/vppZqg/HNESGFxliO
-         oRiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YNly1dfG4RY5ld91Tin+FHgAbZbcnCeyfevD6nD1vfc=;
-        b=f2rjlWZ47pBRYQbTkjOh/qT2fvifGKbdrvaVyqdlGqnjPpXQVqwJXnk5rLvjhFCzLl
-         9ZJ45whtj2kvMhQ1Hote0xIh0FWbkAdZNKPznJlYMvbJVxdXWFe5XmlTZc3fL515oJOQ
-         tswuXfw6Gln204qvTcUW9AAsn8QEq6ubqyQGFDZk3VuzxMbyuArn1g+9MzzFsp3B8xDQ
-         MEFjSPhekHtm7BeBKj5aaUpR1MDa8LwWf7AF3J4m9UmMvxroEGr6uBgyGxd273mPioa8
-         rFRlyom3NmLwwAhjQMbvuXgjC7rWQ0APjra3Z8/Oy4dDlbYbD8OIN0OMXcIS94+4k48O
-         uygA==
-X-Gm-Message-State: AJIora/S6KoSvjmlF0k4tPuKYeojZnYZYuc4jbXdGJ03P+mSm7pw9LgH
-        DaLtLufVIa6WZzTFBmHd263e+H/z1gxjQ6Ktz2Y=
-X-Google-Smtp-Source: AGRyM1tAAlS4kM+nsw/NsoxnqWVB7y/vftH9UCWhq7jvEEfRS+sgsPnvHp0EazC+wGHRC5cFIqKQzo9Y/BNHvxxfINU=
-X-Received: by 2002:a05:600c:3516:b0:39c:8091:31b6 with SMTP id
- h22-20020a05600c351600b0039c809131b6mr6732490wmq.164.1656518376833; Wed, 29
- Jun 2022 08:59:36 -0700 (PDT)
+        Wed, 29 Jun 2022 12:00:05 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115341BEA5;
+        Wed, 29 Jun 2022 09:00:04 -0700 (PDT)
+Received: from notapiano.myfiosgateway.com (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 88F06660191F;
+        Wed, 29 Jun 2022 17:00:00 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656518402;
+        bh=5jzvCGoUrHrL5/yJf6+vhjz74pv3DFTUx5ZwFy+A7lE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VOBtIa4ti0aCegzf39rysZ4fDCzi3EmDzqdPU9xjnlfjx99gJ81qXdysK3qxh+3pN
+         QnN//y85NmTQf455lS05Nn7IcXaHbaxPDD8sm4I+b2tPWA8NhDS6wW3l6dK/EIaXEA
+         dAzXaf8mqiy6czNH8y/Au/dJPnibIcI9T8sFvsSU2Py4vi3/bv1UpDuvcNIxxoqL7Q
+         npBsJixzWFH29p37i0gmdRKfyroLZwYvDVJp6kvzIhTeqsSbLb8SEwUl8OLQ1srHdy
+         55ewnKYjM1h6cEZOqiajM3ItlHLIVF5B8SL+O2rF60B5PM3RfIXysf5kZn7t/tPD8b
+         h8Z7HI0jab0sQ==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Luca Weiss <luca@z3ntu.xyz>, Maxim Kutnij <gtk3@inbox.ru>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Shih <sam.shih@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v4 00/19] Introduce support for MediaTek MT8192 Google Chromebooks
+Date:   Wed, 29 Jun 2022 11:59:37 -0400
+Message-Id: <20220629155956.1138955-1-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220510132256.v2.1.Ibf12c1b99feecc4130f1e3130a3fc4ddd710a2e9@changeid>
- <YrvVPiLQL6d4MrFV@builder.lan> <654c8819-5721-838e-4148-6fbdc5fc2dcd@quicinc.com>
-In-Reply-To: <654c8819-5721-838e-4148-6fbdc5fc2dcd@quicinc.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Wed, 29 Jun 2022 08:59:50 -0700
-Message-ID: <CAF6AEGuV=sF2sLfQ53AJ4pQYFCjMH3-ephwyGW_HQqnkKRm5MQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] drm/msm/a6xx: Add support for a new 7c3 sku
-To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Sean Paul <sean@poorly.run>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 10:32 PM Akhil P Oommen
-<quic_akhilpo@quicinc.com> wrote:
->
-> On 6/29/2022 9:59 AM, Bjorn Andersson wrote:
-> > On Tue 10 May 02:53 CDT 2022, Akhil P Oommen wrote:
-> >
-> >> Add a new sku to the fuse map of 7c3 gpu.
-> >>
-> >> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-> > Is this series still needed/wanted? I've been waiting for patch 1 to be
-> > merged in the driver so that I can pick up the dts change.
 
-It just missed the previous merge window by a couple of days.. I was
-planning to pick it up for the upcoming merge window
+This series introduces Devicetrees for the MT8192-based Asurada platform
+as well as Asurada Spherion and Asurada Hayato boards.
 
-but I don't think the dt bit should depend on the driver bit in this case
+Support for the boards is added to the extent that is currently enabled
+in the mt8192.dtsi, and using only properties already merged in the
+dt-bindings, as to not add any dependencies to this series.
 
-> >
-> > Regards,
-> > Bjorn
-> Internally, this sku is on hold. So we can drop this series for now. I
-> will resend it if required in future.
+This series was peer-reviewed internally before submission.
 
-ok, I'll hold off for now
+Series tested on next-20220629.
 
-BR,
--R
+v3: https://lore.kernel.org/all/20220512205602.158273-1-nfraprado@collabora.com/
+v2: https://lore.kernel.org/all/20220505194550.3094656-1-nfraprado@collabora.com/
+v1: https://lore.kernel.org/all/20220316151327.564214-1-nfraprado@collabora.com/
 
-> -Akhil.
->
-> >
-> >> ---
-> >>
-> >> (no changes since v1)
-> >>
-> >>   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 ++
-> >>   1 file changed, 2 insertions(+)
-> >>
-> >> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >> index 841e47a..61bb21d 100644
-> >> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >> @@ -1771,6 +1771,8 @@ static u32 adreno_7c3_get_speed_bin(u32 fuse)
-> >>              return 0;
-> >>      else if (fuse == 190)
-> >>              return 1;
-> >> +    else if (fuse == 96)
-> >> +            return 2;
-> >>
-> >>      return UINT_MAX;
-> >>   }
-> >> --
-> >> 2.7.4
-> >>
->
+Changes in v4:
+- Added patches 17-19 enabling MMC, SCP and SPI NOR flash
+- Switched mediatek,drive-strength-adv for drive-strength-microamp
+- Switched mediatek,pull-up-adv for bias-pull-up
+- Updated Vgpu minimum voltage to appropriate value
+
+Changes in v3:
+- Renamed regulator nodes to be generic
+- Fixed keyboard layout for Hayato
+
+Changes in v2:
+- Added patches 1-2 for Mediatek board dt-bindings
+- Added patches 13-16 enabling hardware for Asurada that has since been
+  enabled on mt8192.dtsi
+
+Nícolas F. R. A. Prado (19):
+  dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-spherion
+  dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-hayato
+  arm64: dts: mediatek: Introduce MT8192-based Asurada board family
+  arm64: dts: mediatek: asurada: Document GPIO names
+  arm64: dts: mediatek: asurada: Add system-wide power supplies
+  arm64: dts: mediatek: asurada: Enable and configure I2C and SPI busses
+  arm64: dts: mediatek: asurada: Add ChromeOS EC
+  arm64: dts: mediatek: asurada: Add keyboard mapping for the top row
+  arm64: dts: mediatek: asurada: Add Cr50 TPM
+  arm64: dts: mediatek: asurada: Add Elan eKTH3000 I2C trackpad
+  arm64: dts: mediatek: asurada: Add I2C touchscreen
+  arm64: dts: mediatek: spherion: Add keyboard backlight
+  arm64: dts: mediatek: asurada: Enable XHCI
+  arm64: dts: mediatek: asurada: Enable PCIe and add WiFi
+  arm64: dts: mediatek: asurada: Add MT6359 PMIC
+  arm64: dts: mediatek: asurada: Add SPMI regulators
+  arm64: dts: mediatek: asurada: Enable MMC
+  arm64: dts: mediatek: asurada: Enable SCP
+  arm64: dts: mediatek: asurada: Add SPI NOR flash memory
+
+ .../devicetree/bindings/arm/mediatek.yaml     |  13 +
+ arch/arm64/boot/dts/mediatek/Makefile         |   2 +
+ .../dts/mediatek/mt8192-asurada-hayato-r1.dts |  47 +
+ .../mediatek/mt8192-asurada-spherion-r0.dts   |  62 ++
+ .../boot/dts/mediatek/mt8192-asurada.dtsi     | 959 ++++++++++++++++++
+ 5 files changed, 1083 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
+
+-- 
+2.36.1
+
