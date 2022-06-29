@@ -2,126 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC88CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbiF2Xbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 19:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        id S231727AbiF2Xcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 19:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiF2Xbm (ORCPT
+        with ESMTP id S231706AbiF2Xck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 19:31:42 -0400
+        Wed, 29 Jun 2022 19:32:40 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B8625C;
-        Wed, 29 Jun 2022 16:31:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E52E10AB;
+        Wed, 29 Jun 2022 16:32:39 -0700 (PDT)
 Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 64A426601907;
-        Thu, 30 Jun 2022 00:31:38 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 15FBF6601907;
+        Thu, 30 Jun 2022 00:32:36 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656545499;
-        bh=X82AnTeS9ql4xEMo8Ss/zWO0HusDJV9VvepmEeYZ+J0=;
+        s=mail; t=1656545558;
+        bh=oVgoLvTdsd3vaxbfPQK9/lB07D3jznp/onCu5eG80IE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FZFVdXWUBZB399V8KEwYh6tIku1a4jBEO9WHmqe/hDQheX/9GYKCYeSIuvT9hMLve
-         Ie6JZ9z84WYFMRr+zJAmMA1jnBObYh9u3cy/0woI52gx455Bj1VYt+Al5R1ipAmSiV
-         bTiP//qTup/B2Z2p+WVuWHfrjYzAgJ8I8NyX8QxPXlyV64wXu5EzmrbvGGCpTInrOV
-         jHqgtW1FFWKCIGwkrcM3FQeO078a4e7/rbW89inh6DFIePPZUIl7EKvus9cSxKxiZ2
-         XWzHj3azdm/cea5pvTYt8fayc0UHP/STwO1vk1BFo7sJl7Fep5f9d5n1a/E5OJAR+f
-         H/YjOE0oqJOTw==
-Date:   Wed, 29 Jun 2022 19:31:34 -0400
+        b=DYZVTa/kWWCEzdcyPjtsQlw1LwuKtkD0cA6/9L6y/+nGcLOi0f5Y39k6bMiekFkxJ
+         tllDtSzjRfpkLgbBcUqOzzh07mw7maRlBggAZpCSxrQ1OxY80SCzM6lIQNbhSFz9Nu
+         dtcvEjO1VLsqpJpmPalVBEeTQTKSWdhM7kQNmaw1wGJ+TB9p2w87alNwjQ3njXGaA/
+         jPglypyCNmhveth26Otc10vnzbGfNpWHfTv3/fmqeddQzp9wkZx+COF2dmsNGZz4l/
+         VONMwpCVJSZNrGvcsNFjQyON+khcMPpYDEybH/X38JXJlSspqJZ7bkxmFge+i/pexi
+         KE//s4DwiSB9w==
+Date:   Wed, 29 Jun 2022 19:32:32 -0400
 From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
         <nfraprado@collabora.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Project_Global_Chrome_Upstream_Group@mediatek.com,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH 4/5] arm64: dts: mt8192: Add dsi node
-Message-ID: <20220629233134.zt5ua4v5itycjmlt@notapiano>
+Subject: Re: [PATCH 5/5] arm64: dts: mt8192: Add vcodec lat and core nodes
+Message-ID: <20220629233232.a3rz7vqu6qsq3gi6@notapiano>
 References: <20220629121358.19458-1-allen-kh.cheng@mediatek.com>
- <20220629121358.19458-5-allen-kh.cheng@mediatek.com>
- <730f334e-c10d-8f8b-94e6-b66a56e03320@collabora.com>
+ <20220629121358.19458-6-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <730f334e-c10d-8f8b-94e6-b66a56e03320@collabora.com>
+In-Reply-To: <20220629121358.19458-6-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 03:42:42PM +0200, AngeloGioacchino Del Regno wrote:
-> Il 29/06/22 14:13, Allen-KH Cheng ha scritto:
-> > Add dsi ndoe for mt8192 SoC.
-
-Typo: s/ndoe/node.
-
-> > 
-> > Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> > ---
-> >   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 18 ++++++++++++++++++
-> >   1 file changed, 18 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> > index 26d01544b4ea..72af328126de 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> > @@ -1334,6 +1334,24 @@
-> >   			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xe000 0x1000>;
-> >   		};
-> > +		dsi0: dsi@14010000 {
-> > +			compatible = "mediatek,mt8183-dsi";
-> > +			reg = <0 0x14010000 0 0x1000>;
-> > +			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH 0>;
-> > +			mediatek,syscon-dsi = <&mmsys 0x140>;
-
-Also drop this syscon-dsi property.
-
-> > +			clocks = <&mmsys CLK_MM_DSI0>,
-> > +				 <&mmsys CLK_MM_DSI_DSI0>,
-> > +				 <&mipi_tx0>;
-> > +			clock-names = "engine", "digital", "hs";
-> > +			phys = <&mipi_tx0>;
-> > +			phy-names = "dphy";
-
-It's also missing power-domains.
-
+On Wed, Jun 29, 2022 at 08:13:58PM +0800, Allen-KH Cheng wrote:
+> Add vcodec lat and core nodes for mt8192 SoC.
 > 
-> resets = <&mmsys MT8192_MMSYS_SW0_RST_B_DISP_DSI0>;
-> 
-> ^^^ This is missing, please add it and resend :-)
-
-Also, when this is added you'll need
-
-#include <dt-bindings/reset/mt8192-resets.h>
-
-With those addressed,
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
 Thanks,
 Nícolas
-
-> 
-> > +			status = "disabled";
-> > +
-> > +			port {
-> > +				dsi_out: endpoint { };
-> > +			};
-> > +		};
-> > +
-> >   		ovl_2l2: ovl@14014000 {
-> >   			compatible = "mediatek,mt8192-disp-ovl-2l";
-> >   			reg = <0 0x14014000 0 0x1000>;
-> 
-> 
-> 
