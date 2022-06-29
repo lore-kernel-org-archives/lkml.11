@@ -2,116 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 004E1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 07:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbiF2HWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        id S231865AbiF2HWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiF2HV7 (ORCPT
+        with ESMTP id S231559AbiF2HWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:21:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97EBB1A3AA
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656487317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7fI9ivlo9GVMwAi7+gjgOrAMG5lU56r9U/Z8Jc07VjA=;
-        b=LPDP3g7+5w9CxMxjncl/dSX4ZXEIayzaT+4dLcH+PvNIJvwQT50loUKgQK6TAJ9mFRexFO
-        MHk1WSLE0RtFy3MKre6HTfpRSZEIixwHtwkO33Tu2nd6+3OqLWSPguYmnhaUYLtS9rmElG
-        G9mitH5I73WlNfAnoXCVxqf5crYbK10=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-501-mQBD3f6LO3e1FDojxi7TPg-1; Wed, 29 Jun 2022 03:21:52 -0400
-X-MC-Unique: mQBD3f6LO3e1FDojxi7TPg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AFB1D1C0513F;
-        Wed, 29 Jun 2022 07:21:50 +0000 (UTC)
-Received: from starship (unknown [10.40.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EF5719D7F;
-        Wed, 29 Jun 2022 07:21:46 +0000 (UTC)
-Message-ID: <1e96776f5a8dc73e8354cda7697af8a60a1f91ac.camel@redhat.com>
-Subject: Re: [PATCH v2 00/11] SMM emulation and interrupt shadow fixes
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>, x86@kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>
-Date:   Wed, 29 Jun 2022 10:21:45 +0300
-In-Reply-To: <20220621150902.46126-1-mlevitsk@redhat.com>
-References: <20220621150902.46126-1-mlevitsk@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 29 Jun 2022 03:22:42 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C7833EA4
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:22:41 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id w193so20474920oie.5
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 00:22:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to;
+        bh=TvfrSXu4f0TU8sJk8nHVngOGB75STSEGTvK6rVGCRBo=;
+        b=KSYNVPp/M+aBIfHacFqj11Sm5k23Er/fz5hD79lvLg2qAdMiNwn7Ieu7YNV90mA70F
+         daalhEZkwB6Apo4Ai71cvL4evznxFuW7QZ/jnNWgrXANheLoBxRLyN5sSUQiVHgCv9HR
+         97v9IV3l+QYGVehGdIPIXHssVTk8Z6wn9878g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to;
+        bh=TvfrSXu4f0TU8sJk8nHVngOGB75STSEGTvK6rVGCRBo=;
+        b=t0wXehYAgsJE/H4NJuCc7Vd7uq2tFuEDuxHu7yqyKy3Izf0kZSZdXLDxoRqedpGCvJ
+         6klohcrNP8L3H5RB+tNVGXh3gM3BwVvysf2gf4qCFXiWc8MvA/ws6hbOfkhtXZYznZrN
+         Y2vE1qk0KKUty2w3Iln8xd1vubGMvIeT5hZm24cnXpSXE2cEJ6Cqw7Sppzwcb4JwCpig
+         xnmSkoZRJhol3TNZoXDE/vSdnlIuszvUc8GPuQ4WscH/4oy+qU/tWZVY6GMhkOO7Ipmx
+         BbgJbNVKGVR4fPLc3roWAM4UHNabVJvPQYtD399XmbX+eBj51crCOjP3lwpSWRXx3UJv
+         RqSg==
+X-Gm-Message-State: AJIora8tn6wpxnD5DcRz2b5qOuQlEMSktrMrAgr+UtT6Tc9bFEROAI66
+        YL5h2myHzx1HKkxnVaG6Gd8GU4PiUdkH/SDTrbbztg==
+X-Google-Smtp-Source: AGRyM1v4WSDbVO+K2+4kAKFrYZQtpAn74YXqFxA1mnEY/IT8bcyyhmbIZcF9WfGx+sYO6Yz4yLIx2Fc2KzL9daEEeyw=
+X-Received: by 2002:a05:6808:171c:b0:334:9342:63ef with SMTP id
+ bc28-20020a056808171c00b00334934263efmr1192888oib.63.1656487360982; Wed, 29
+ Jun 2022 00:22:40 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 29 Jun 2022 02:22:40 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <1656484485-23350-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1656484485-23350-1-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 29 Jun 2022 02:22:40 -0500
+Message-ID: <CAE-0n50XpUfe9LQ0UByRXeWVcHjzXTmSb+Lf5m87pJmhjA0wVg@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: qcom: sc7280: Fix compile bug
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, alsa-devel@alsa-project.org,
+        bgoswami@quicinc.com, bjorn.andersson@linaro.org,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        judyhsiao@chromium.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, perex@perex.cz,
+        quic_plai@quicinc.com, quic_rohkumar@quicinc.com,
+        robh+dt@kernel.org, srinivas.kandagatla@linaro.org, tiwai@suse.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-21 at 18:08 +0300, Maxim Levitsky wrote:
-> This patch series is a result of long debug work to find out why
-> sometimes guests with win11 secure boot
-> were failing during boot.
-> 
-> During writing a unit test I found another bug, turns out
-> that on rsm emulation, if the rsm instruction was done in real
-> or 32 bit mode, KVM would truncate the restored RIP to 32 bit.
-> 
-> I also refactored the way we write SMRAM so it is easier
-> now to understand what is going on.
-> 
-> The main bug in this series which I fixed is that we
-> allowed #SMI to happen during the STI interrupt shadow,
-> and we did nothing to both reset it on #SMI handler
-> entry and restore it on RSM.
-> 
-> Best regards,
-> 	Maxim Levitsky
-> 
-> Maxim Levitsky (11):
->   KVM: x86: emulator: em_sysexit should update ctxt->mode
->   KVM: x86: emulator: introduce update_emulation_mode
->   KVM: x86: emulator: remove assign_eip_near/far
->   KVM: x86: emulator: update the emulation mode after rsm
->   KVM: x86: emulator: update the emulation mode after CR0 write
->   KVM: x86: emulator/smm: number of GPRs in the SMRAM image depends on
->     the image format
->   KVM: x86: emulator/smm: add structs for KVM's smram layout
->   KVM: x86: emulator/smm: use smram struct for 32 bit smram load/restore
->   KVM: x86: emulator/smm: use smram struct for 64 bit smram load/restore
->   KVM: x86: SVM: use smram structs
->   KVM: x86: emulator/smm: preserve interrupt shadow in SMRAM
-> 
->  arch/x86/include/asm/kvm_host.h |   6 -
->  arch/x86/kvm/emulate.c          | 305 ++++++++++++++++----------------
->  arch/x86/kvm/kvm_emulate.h      | 146 +++++++++++++++
->  arch/x86/kvm/svm/svm.c          |  28 +--
->  arch/x86/kvm/x86.c              | 162 ++++++++---------
->  5 files changed, 394 insertions(+), 253 deletions(-)
-> 
-> -- 
-> 2.26.3
-> 
-> 
-A very gentle ping on the patch series.
+Quoting Srinivasa Rao Mandadapu (2022-06-28 23:34:45)
+> Fix the compilation error, caused by updtating constant variable.
 
-Best regards,
-	Maxim Levitsky
+s/updtating/updating/
 
+> Hence remove redundant constant variable, which is no more useful
+> as per new design.
+>
+> The issue is due to some unstaged changes. Fix it up.
+>
+> Fixes: 36fe26843d6d ("pinctrl: qcom: sc7280: Add clock optional check for ADSP bypass targets")
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> ---
+
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
