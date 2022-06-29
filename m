@@ -2,123 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A5CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232654AbiF2SEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S232693AbiF2SEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232533AbiF2SDt (ORCPT
+        with ESMTP id S232261AbiF2SEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:03:49 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB11437A22
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:03:21 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id d2so22426444ejy.1
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:03:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=EF+4vVSu0Ak1EZxpXNfRVufy8G3AP8/4t8MYyPUNltA=;
-        b=qNMlZFjto8WW4D+zIbCEQRp1WueqNb3qJL71sznhlSuk5jpwSgWjmvDD0kGh7UzKvP
-         KRPIYQ/bNOE2Pme8lPtKe5UdlMVFsoB6fADpqkY/Zq2yyQjN4HeZwaKleFSPP7LhdISh
-         q9Q+pv+euqXm6pMMJowrdAxJUB9P8Iwolkl0dxF/4cn2+GXjJICaMrwgkw5ccriOAGZF
-         p/QHmjJTvdWdcgyjNouAjp/+K8Ti6GImpz0LUZaVYh3OUkAixP6xYdoD4n4d8c7wpa1g
-         zxvD9t73cHnYCcWgU1TnGLZBeBb+pp67VMyy9lrDf27p2IaIeSslWNaeh4Y8xZ3j8OiG
-         7vqw==
+        Wed, 29 Jun 2022 14:04:11 -0400
+Received: from mail-oi1-x261.google.com (mail-oi1-x261.google.com [IPv6:2607:f8b0:4864:20::261])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120533DA64
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:03:25 -0700 (PDT)
+Received: by mail-oi1-x261.google.com with SMTP id be10so22687824oib.7
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:03:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EF+4vVSu0Ak1EZxpXNfRVufy8G3AP8/4t8MYyPUNltA=;
-        b=lngonNIo1SDexTbT0IbSj6YKAPvKnHCSQ/oJwRkRr8nGITMKNMqoeGzSYYd0gLO2Pg
-         G9J+B9pCoSlofEhqK6zDIYBph6EwjLcfMiKSLv4qpUR+bO3NoRdQrq7s/WxHmegAw25b
-         9qlGkYq1UUfmmv7yiz+0WylFr5A3n7Wyn+TxFeI/xoUVXXMplsVoKKcwMH/nbiHhjMlg
-         mSP6YpD74uoSyc/pKpprBSHH822EjjsSIhA68NYp3uc86reRMUhqfT+oUDOqBc21Ki3g
-         PJf1DSJW3ny5E/RNV4ErFFP2onPlg/tfWLA8LZfE3ltLm0eFSg9sBm/qgPiQTEoL7qmj
-         weKA==
-X-Gm-Message-State: AJIora/J3guaz1hq+Hp6w0WkAXIa35AN+wKqHso8Kz9UKhe4C1rzwg1c
-        GrvR7MwTrKbIAMm2hc2Ebfx/gw==
-X-Google-Smtp-Source: AGRyM1voypfDnC3goXLyoV1lstNYX1G0AB6nAChz47TdKqz6nnI934lH4zhYtOaEu8xtpGlXs4MNzw==
-X-Received: by 2002:a17:907:7f05:b0:726:9770:77d6 with SMTP id qf5-20020a1709077f0500b00726977077d6mr4580557ejc.464.1656525800225;
-        Wed, 29 Jun 2022 11:03:20 -0700 (PDT)
-Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b12-20020a05640202cc00b004335e08d6c9sm11781609edx.33.2022.06.29.11.03.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 11:03:19 -0700 (PDT)
-Message-ID: <85b3fcbf-abe4-56b7-323b-f303eb458592@linaro.org>
-Date:   Wed, 29 Jun 2022 20:03:17 +0200
+        h=x-gm-message-state:dkim-signature:mime-version:references
+         :in-reply-to:from:date:message-id:subject:to:cc;
+        bh=vWAvCTXesH+isNf+UwxdBMtz/4FeAjZHg/p3iLUXfgQ=;
+        b=woZWpO5Re+79NV1w17mvC8k7h+8QvCBWtj6GWaAr1QyDl8PYFk0JstSlnZrJz29eDp
+         5cMHrDO9Col1RYp6wcqx/plb7Sv5h66iWYh8nkACMf4cxvgMO1pCLAFD4zK8com153YV
+         EegEiJ9CX4KTn3zK41CapaAhl1z1ueC7OSm3sKnQtMx4Q6HVKaXsxAvYRM/CsRItPaRG
+         yfElydT6/BGujKoxmAywc0anCfiLSJ2b2gtsIaak2PrjGywPhIyHzd7e1L2hbSYY6wpF
+         tXOyi2EKSI4SMYX0fxtSEkg/cEZocDCxfpXkCgJOOLo/yaZHpVytaNz4UOtxo/F5z1xI
+         N+4Q==
+X-Gm-Message-State: AJIora+QH+1K6gy20qONi91XE2e3MmNHsw7AIkaxPcrYYapWpJytB0CL
+        6cEufnyjnvUtPK4c6gjsGUiES4TJB1K+MVNhnMP4u7iifcr22Q==
+X-Google-Smtp-Source: AGRyM1uf25w7rWHCZMCrXtFJaM29Vlkt8C+MjbJobAfyTk56ZEgSXmdP1wyhs7235fMBYXkt7mDcvz3jHRjH
+X-Received: by 2002:a05:6808:1385:b0:335:1ce5:4e15 with SMTP id c5-20020a056808138500b003351ce54e15mr10427oiw.264.1656525804342;
+        Wed, 29 Jun 2022 11:03:24 -0700 (PDT)
+Received: from riotgames.com ([163.116.128.204])
+        by smtp-relay.gmail.com with ESMTPS id f11-20020a056870210b00b001048618752esm2111241oae.49.2022.06.29.11.03.24
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 11:03:24 -0700 (PDT)
+X-Relaying-Domain: riotgames.com
+Received: by mail-pg1-f198.google.com with SMTP id t142-20020a635f94000000b0040d27168bf7so8538518pgb.20
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:03:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riotgames.com; s=riotgames;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vWAvCTXesH+isNf+UwxdBMtz/4FeAjZHg/p3iLUXfgQ=;
+        b=FXoN8kTInIqbo9CRQIb0XtiKLzn/NKB5O3+yfpRUBkI0xloe63Jdn91IOtRFGEnZtM
+         9Yejh2eo3zarDK+cWonwdxlQtKKemLbxP4QIPHOUpF04UJehhZoQYhlyOkq8WnsRxQqr
+         tw+0RNF7Lq04wtzRi//x+1sxIg8FFavqqLfAY=
+X-Received: by 2002:a05:6214:21ec:b0:470:3f54:e846 with SMTP id p12-20020a05621421ec00b004703f54e846mr7713523qvj.58.1656525387603;
+        Wed, 29 Jun 2022 10:56:27 -0700 (PDT)
+X-Received: by 2002:a05:6214:21ec:b0:470:3f54:e846 with SMTP id
+ p12-20020a05621421ec00b004703f54e846mr7713495qvj.58.1656525387268; Wed, 29
+ Jun 2022 10:56:27 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 14/14] dt-bindings: arm: freescale: Remove fsl,scu txt
- file
-Content-Language: en-US
-To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        Liu Ying <victor.liu@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Ming Qian <ming.qian@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220629164414.301813-1-viorel.suman@oss.nxp.com>
- <20220629164414.301813-15-viorel.suman@oss.nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220629164414.301813-15-viorel.suman@oss.nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com> <62bbedf07f44a_2181420830@john.notmuch>
+In-Reply-To: <62bbedf07f44a_2181420830@john.notmuch>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Wed, 29 Jun 2022 10:56:16 -0700
+Message-ID: <CAC1LvL0kTesx8bpL3GWe2Q60uT2WthO5dHX7h7bd-UOGOne_Zg@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
+ and use Generic Hints/metadata
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Toke Hoiland-Jorgensen <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+Content-Type: text/plain; charset="UTF-8"
+x-netskope-inspected: true
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/06/2022 18:44, Viorel Suman (OSS) wrote:
-> From: Abel Vesa <abel.vesa@nxp.com>
-> 
-> Now that all the child nodes have been properly documented in the
-> yaml files, within their proper subystems, we can drop the fsl,scu.txt.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
-> ---
->  .../bindings/arm/freescale/fsl,scu.txt        | 271 ------------------
->  1 file changed, 271 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
-> 
+On Tue, Jun 28, 2022 at 11:15 PM John Fastabend
+<john.fastabend@gmail.com> wrote:
+>
+> Alexander Lobakin wrote:
+> > This RFC is to give the whole picture. It will most likely be split
+> > onto several series, maybe even merge cycles. See the "table of
+> > contents" below.
+>
+> Even for RFC its a bit much. Probably improve the summary
+> message here as well I'm still not clear on the overall
+> architecture so not sure I want to dig into patches.
+>
+> >
+> > The series adds ability to pass different frame
+> > details/parameters/parameters used by most of NICs and the kernel
+> > stack (in skbs), not essential, but highly wanted, such as:
+> >
+> > * checksum value, status (Rx) or command (Tx);
+> > * hash value and type/level (Rx);
+> > * queue number (Rx);
+> > * timestamps;
+> > * and so on.
+> >
+> > As XDP structures used to represent frames are as small as possible
+> > and must stay like that, it is done by using the already existing
+> > concept of metadata, i.e. some space right before a frame where BPF
+> > programs can put arbitrary data.
+>
+> OK so you stick attributes in the metadata. You can do this without
+> touching anything but your driver today. Why not push a patch to
+> ice to start doing this? People could start using it today and put
+> it in some feature flag.
+>
+> I get everyone wants some grand theory around this but again one
+> patch would do it and your customers could start using it. Show
+> a benchmark with 20% speedup or whatever with small XDP prog
+> update and you win.
+>
+> >
+> > Now, a NIC driver, or even a SmartNIC itself, can put those params
+> > there in a well-defined format. The format is fixed, but can be of
+> > several different types represented by structures, which definitions
+> > are available to the kernel, BPF programs and the userland.
+>
+> I don't think in general the format needs to be fixed.
+>
+> > It is fixed due to it being almost a UAPI, and the exact format can
+> > be determined by reading the last 10 bytes of metadata. They contain
+> > a 2-byte magic ID to not confuse it with a non-compatible meta and
+> > a 8-byte combined BTF ID + type ID: the ID of the BTF where this
+> > structure is defined and the ID of that definition inside that BTF.
+> > Users can obtain BTF IDs by structure types using helpers available
+> > in the kernel, BPF (written by the CO-RE/verifier) and the userland
+> > (libbpf -> kernel call) and then rely on those ID when reading data
+> > to make sure whether they support it and what to do with it.
+> > Why separate magic and ID? The idea is to make different formats
+> > always contain the basic/"generic" structure embedded at the end.
+> > This way we can still benefit in purely generic consumers (like
+> > cpumap) while providing some "extra" data to those who support it.
+>
+> I don't follow this. If you have a struct in your driver name it
+> something obvious, ice_xdp_metadata. If I understand things
+> correctly just dump the BTF for the driver, extract the
+> struct and done you can use CO-RE reads. For the 'fixed' case
+> this looks easy. And I don't think you even need a patch for this.
+>
+> >
+> > The enablement of this feature is controlled on attaching/replacing
+> > XDP program on an interface with two new parameters: that combined
+> > BTF+type ID and metadata threshold.
+> > The threshold specifies the minimum frame size which a driver (or
+> > NIC) should start composing metadata from. It is introduced instead
+> > of just false/true flag due to that often it's not worth it to spend
+> > cycles to fetch all that data for such small frames: let's say, it
+> > can be even faster to just calculate checksums for them on CPU
+> > rather than touch non-coherent DMA zone. Simple XDP_DROP case loses
+> > 15 Mpps on 64 byte frames with enabled metadata, threshold can help
+> > mitigate that.
+>
+> I would put this in the bonus category. Can you do the simple thing
+> above without these extra bits and then add them later. Just
+> pick some overly conservative threshold to start with.
+>
+> >
+> > The RFC can be divided into 8 parts:
+>
+> I'm missing something why not do the simplest bit of work and
+> get this running in ice with a few smallish driver updates
+> so we can all see it. No need for so many patches.
+>
+> >
+> > 01-04: BTF ID hacking: here Larysa provides BPF programs with not
+> > only type ID, but the ID of the BTF as well by using the
+> > unused upper 32 bits.
+> > 05-10: this provides in-kernel mechanisms for taking ID and
+> > threshold from the userspace and passing it to the drivers.
+> > 11-18: provides libbpf API to be able to specify those params from
+> > the userspace, plus some small selftest to verify that both
+> > the kernel and the userspace parts work.
+> > 19-29: here the actual structure is defined, then the in-kernel
+> > helpers and finally here comes the first consumer: function
+> > used to convert &xdp_frame to &sk_buff now will be trying
+> > to parse metadata. The affected users are cpumap and veth.
+> > 30-36: here I try to benefit from the metadata in cpumap even more
+> > by switching it to GRO. Now that we have checksums from NIC
+> > available... but even with no meta it gives some fair
+> > improvements.
+> > 37-43: enabling building generic metadata on Generic/skb path. Since
+> > skbs already have all those fields, it's not a problem to do
+> > this in here, plus allows to benefit from it on interfaces
+> > not supporting meta yet.
+> > 44-47: ice driver part, including enabling prog hot-swap;
+> > 48-52: adds a complex selftest to verify everything works. Can be
+> > used as a sample as well, showing how to work with metadata
+> > in BPF programs and how to configure it from the userspace.
+> >
+> > Please refer to the actual commit messages where some precise
+> > implementation details might be explained.
+> > Nearly 20 of 52 are various cleanups and prereqs, as usually.
+> >
+> > Perf figures were taken on cpumap redirect from the ice interface
+> > (driver-side XDP), redirecting the traffic within the same node.
+> >
+> > Frame size / 64/42 128/20 256/8 512/4 1024/2 1532/1
+> > thread num
+>
+> You'll have to remind me whats the production use case for
+> cpu_map on a modern nic or even smart nic? Why are you not
+> just using a hardware queues and redirecting to the right
+> queues in hardware to start with?
+>
+> Also my understanding is if you do XDP_PASS up the stack
+> the skb is built with all the normal good stuff from hw
+> descriptor. Sorry going to need some extra context here
+> to understand.
+>
+> Could you do a benchmark for AF_XDP I thought this was
+> the troublesome use case where the user space ring lost
+> the hardware info e.g. timestamps and checksum values.
+>
+> >
+> > meta off 30022 31350 21993 12144 6374 3610
+> > meta on 33059 28502 21503 12146 6380 3610
+> > GRO meta off 30020 31822 21970 12145 6384 3610
+> > GRO meta on 34736 28848 21566 12144 6381 3610
+> >
+> > Yes, redirect between the nodes plays awfully with the metadata
+> > composed by the driver:
+>
+> Many production use case use XDP exactly for this. If it
+> slows this basic use case down its going to be very hard
+> to use in many environments. Likely it wont be used.
+>
+> >
+> > meta off 21449 18078 16897 11820 6383 3610
+> > meta on 16956 19004 14337 8228 5683 2822
+> > GRO meta off 22539 19129 16304 11659 6381 3592
+> > GRO meta on 17047 20366 15435 8878 5600 2753
+>
+> Do you have hardware that can write the data into the
+> metadata region so you don't do it in software? Seems
+> like it should be doable without much trouble and would
+> make this more viable.
+>
+> >
+> > Questions still open:
+> >
+> > * the actual generic structure: it must have all the fields used
+> > oftenly and by the majority of NICs. It can always be expanded
+> > later on (note that the structure grows to the left), but the
+> > less often UAPI is modified, the better (less compat pain);
+>
+> I don't believe a generic structure is needed.
+>
+> > * ability to specify the exact fields to fill by the driver, e.g.
+> > flags bitmap passed from the userspace. In theory it can be more
+> > optimal to not spend cycles on data we don't need, but at the
+> > same time increases the complexity of the whole concept (e.g. it
+> > will be more problematic to unify drivers' routines for collecting
+> > data from descriptors to metadata and to skbs);
+> > * there was an idea to be able to specify from the userspace the
+> > desired cacheline offset, so that [the wanted fields of] metadata
+> > and the packet headers would lay in the same CL. Can't be
+> > implemented in Generic/skb XDP and ice has some troubles with it
+> > too;
+> > * lacks AF_XDP/XSk perf numbers and different other scenarios in
+> > general, is the current implementation optimal for them?
+>
+> AF_XDP is the primary use case from my understanding.
+>
 
-This cannot be separate patch. Conversion is add+remove in one commit,
-so even if you remove everything in one patch, it should be then
-squashed into patch #9. Anyway, I think better approach is to remove
-gradually, so each piece is removed in each converted part.
+AF_XDP is a use case, and might be the primary, but we work with pure XDP and
+have been waiting for the ability to take advantage of the hardware checksums
+for years. It would be a very large performance boost for us (in theory) as
+we're currently having to verify the checksums ourselves in software, and
+recompute them on modifications (since we can't use hardware TX checksums).
 
-Best regards,
-Krzysztof
+Also, if I understand correctly, if the functionality is available to pure XDP,
+AF_XDP could benefit from it by having the XDP program that redirects to AF_XDP
+copy it into metadata where AF_XDP can find it because of the user defined
+contract between the XDP program and the userspace program? (Not as efficient,
+obviously, and duplicative, but would work, I think.)
+
+> > * metadata threshold and everything else present in this
+> > implementation.
+>
+> I really think your asking questions that are two or three
+> jumps away. Why not do the simplest bit first and kick
+> the driver with an on/off switch into this mode. But
+> I don't understand this cpumap use case so maybe explain
+> that first.
+>
+> And sorry didn't even look at your 50+ patches. Figure lets
+> get agreement on the goal first.
+>
+> .John
