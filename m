@@ -2,274 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE54BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5603DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbiF2PXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
+        id S233605AbiF2PYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiF2PXU (ORCPT
+        with ESMTP id S232753AbiF2PYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:23:20 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C6CA44C
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:23:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id v14so22989879wra.5
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:23:19 -0700 (PDT)
+        Wed, 29 Jun 2022 11:24:01 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894DE1DA52
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:24:00 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25TFEFcv008903;
+        Wed, 29 Jun 2022 15:23:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=corp-2021-07-09;
+ bh=4B1u+ZOzjpnuv4UcW0fo3RUxY4gWIe84cvgV8t+XeVc=;
+ b=w5xQsPCRvfzVa7LGA0gEbqT6ymaEV4FOx5SSu3ics0ASHW3Jq13dnhAGiAVdUXBqvehe
+ Zf2UcoIulUPo7f7hVOFyI8xK8bUzwR4IGmhRhWWBRKTw70mYEc4g0hzhoM68eKDPMf99
+ PuXPqkVY6X5McKlg1i2m2fEew4B3sTxXSDCy6/XRY53WUNcZynBXQ+kLHRi4jIauE/cc
+ S6E9xrT3Q3lYg86oCj8A1PfznNl5wmQSn1kb/0l4h+iC0PT4jIMGbOLRhVGYnG1wtRAj
+ +FVwftcpPSav1u69FBNBurmQb+n8TVquKoEgS9isKLSEhNXLXWMZk9L20wrYr8MvHcni iw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gwsyshfkk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Jun 2022 15:23:53 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25TFGsTN016936;
+        Wed, 29 Jun 2022 15:23:52 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2168.outbound.protection.outlook.com [104.47.55.168])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gwrt3duhd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Jun 2022 15:23:52 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KcYLc9jVdtWPRcyeTe6RomzE+jSD/WWFXgE8lFluxgA4WBi1Oe6zeRBUeEOopn8EDM5pEQJbaI+k9EpCyshsZroNYkj0YZ2Csy51LgdSLw2SAJ7fpbexqhyzJBXsP6hdX/Hk1Py2w13C1pNLokBFxnEwMLmKz4NJ3FPQIjyPXlLvIG7LcRdkTgutmMRXkf4yrKmFibMn4LdQ6nNmcKlTdtRLVzadrZGhnyJuC/I9xYhY8RHtMeDOBBGO/uxIdDtoYpT2XXwnNmrRCRgWeoSI0Q6iKwnZtxNIkrql/U3Ya3zJGE1QhTGbP38dtm34f/IzDyJNu4UZPHm37QyI4aoWzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4B1u+ZOzjpnuv4UcW0fo3RUxY4gWIe84cvgV8t+XeVc=;
+ b=obm2cwwUK7EUi60B/z4tect/zWWzmVhIlcC03AvMUaaqsVTZbPimzfajNNTcoowlJkDUnS80GBx5iU+g/X81WEpBWc0AOYgfN/15a7NSWVoygrTkC/Ak6wNgDq2gxtnoipV5vFL5tkW+iX/OSdhNt3T39T1oTvDEb63M47Ri8JiV4SRnvntci5SxtzPqU2JL0Y+tnXOU8TJjkUv3crUb0A8p91Blg7HJ0GwWnbQ74NbvuiX0CtntUPZq8g5Di5qL7zVXTgcYpgruZhZaczzoZr3jqAbqSytEQ3LZmcnCESJ1sF1yFNiNqS+VdbMnKXaekt7o8u3K1C86gzY3zjfz+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version:content-transfer-encoding;
-        bh=E8dLril/sPEIKP4uoSQRUctLF1kHauClBO1fRvFZs6M=;
-        b=S1sh9U6PVDe+Fmvx6KxW/5tkKg2vVShLUzbCF65HnaD0v14693sxNQCMZYtLfbTc15
-         zUm5vuapUjne3EvgB1GQk72B2/ZD1fRnzZdYKFt/g4gWsJwM+jfwYsYn1RMWEZZJq/Pk
-         pYnop5Jo4N7nKz7dQhNjloPCewcWSFCn8WJJXoXu7KyVYiPn/MRX+O0b4uaYxeImA+f+
-         W/deD+MRX9MgVl0O/eRQOhSvKW4bC8G9bSY/vgeW2k/+6alBvtuoFAM0Aj12Qk7JMKpC
-         eJ4es7WQwDbnKF7t1MzyRiO2sfJU6riDzo7GvTwYAonldmKb+R/FfixGLvg4Qh6ccOmj
-         B0JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version:content-transfer-encoding;
-        bh=E8dLril/sPEIKP4uoSQRUctLF1kHauClBO1fRvFZs6M=;
-        b=C7e20/+Ojz4/KFjrNpDU1r0ebPtE0qzBTW45Y2oFDDqNvziKYOI6A/VH9jHKwuiSWP
-         aL+LWKcmXkOHfqd71/XRvY1x8Uvvm6CXT+/wsH6/0o62TAbm3WhcXQ+CikrNM5JH8EX3
-         UK9b83oTREp7Dmrww7B78oQlqVf3jxGyC1Juw0jUXOdwvOMxtA6Z+XbqsAXRzZDmwzdQ
-         k8WyAyxnmE2nMRqf5K46rEzyp8H+FlpR3HMBb49WiVYb0XwrbkDd0dg8n5prNshr7E7t
-         YyhGASS1kliJQnPVygNfM7RuEwClP3xJnoPBJy+n0mfVO2I50w7HIxHmCwDoivxeaeos
-         Ml2w==
-X-Gm-Message-State: AJIora/J04O+OddazlsQAlKwoGA8r2wtu3SHLCoXOzJieGdQdeljL1LD
-        8Gjps6ogsUAWPqLfebESRXO9Nw==
-X-Google-Smtp-Source: AGRyM1vhi0GQF8IFjF2fgeTa5JS18xUprpYxhjeuK8Y92lrIegtSvJjuOeTARxIpIjG7hroKViZ1qg==
-X-Received: by 2002:a05:6000:144a:b0:21b:c9bc:ec87 with SMTP id v10-20020a056000144a00b0021bc9bcec87mr3916725wrx.178.1656516198020;
-        Wed, 29 Jun 2022 08:23:18 -0700 (PDT)
-Received: from zen.linaroharston ([51.148.130.216])
-        by smtp.gmail.com with ESMTPSA id bg11-20020a05600c3c8b00b003a04a9504b0sm4717677wmb.40.2022.06.29.08.23.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 08:23:15 -0700 (PDT)
-Received: from zen (localhost [127.0.0.1])
-        by zen.linaroharston (Postfix) with ESMTP id BE4491FFB7;
-        Wed, 29 Jun 2022 16:23:14 +0100 (BST)
-References: <20220426150616.3937571-24-Liam.Howlett@oracle.com>
- <20220428201947.GA1912192@roeck-us.net>
- <20220429003841.cx7uenepca22qbdl@revolver>
- <20220428181621.636487e753422ad0faf09bd6@linux-foundation.org>
- <20220502001358.s2azy37zcc27vgdb@revolver>
- <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
- <Ym+v4lfU5IyxkGc4@osiris> <20220502133050.kuy2kjkzv6msokeb@revolver>
- <YnAn3FI9aVCi/xKd@osiris> <YnGHJ7oroqF+v1u+@osiris>
- <20220503215520.qpaukvjq55o7qwu3@revolver>
- <60a3bc3f-5cd6-79ac-a7a8-4ecc3d7fd3db@linux.ibm.com>
- <15f5f8d6-dc92-d491-d455-dd6b22b34bc3@redhat.com>
- <yt9d5ykkhrvv.fsf_-_@linux.ibm.com> <87pmirj3aq.fsf@linaro.org>
- <yt9dbkubhhna.fsf@linux.ibm.com> <yt9d7d4zhddq.fsf@linux.ibm.com>
-User-agent: mu4e 1.7.27; emacs 28.1.50
-From:   Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4B1u+ZOzjpnuv4UcW0fo3RUxY4gWIe84cvgV8t+XeVc=;
+ b=ISgLo/OfOtXPvG0MzylU5WKAJKQ1JMrnD97EdscjxeYckzZHlXD/H2K6QRpdYaTfPbRiCt5zpn9dVlS4p+0O51e8RJ2d3e0zhSr8bNJlPmPbyArpwiTi6oqD5DXOrojItJrBCc8Yw2gqhVmrrS4m/OuLFz1vxr39YqGSN+UFoF8=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by MWHPR1001MB2382.namprd10.prod.outlook.com (2603:10b6:301:2f::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
+ 2022 15:23:50 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::f59a:175d:d24:949c]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::f59a:175d:d24:949c%7]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
+ 15:23:50 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Yu Zhao <yuzhao@google.com>, Juergen Gross <jgross@suse.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Andreas Krebbel <krebbel@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Thomas Huth <thuth@redhat.com>, richard.henderson@linaro.org,
-        qemu-devel@nongnu.org, qemu-s390x@nongnu.org
-Subject: Re: qemu-system-s390x hang in tcg
-Date:   Wed, 29 Jun 2022 15:52:17 +0100
-In-reply-to: <yt9d7d4zhddq.fsf@linux.ibm.com>
-Message-ID: <87v8sjh4t9.fsf@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Yu Zhao <yuzhao@google.com>
+Subject: [PATCH Fix 0/2] maple_tree: mas_spanning_rebalance() patches
+Thread-Topic: [PATCH Fix 0/2] maple_tree: mas_spanning_rebalance() patches
+Thread-Index: AQHYi8w7XECxXFjgTEaDxU3Vqbf3AQ==
+Date:   Wed, 29 Jun 2022 15:23:49 +0000
+Message-ID: <20220629152340.3451959-1-Liam.Howlett@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.35.1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 70062e31-67ca-4552-ea06-08da59e35e49
+x-ms-traffictypediagnostic: MWHPR1001MB2382:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: N8f88oG3A6u+eG7IXrCfrcKwblYAGAz16bqN4qYutpZmJzwa8zKdrfgQs06cdOoVOnRnV2NF+U7UzPHJ2tFTEv23Z/gCd5Gds+jNY/QNJNuSy5JUVoaRzCqvlTI5coi1ELxzMDTA3M9KudbVfuBbyMX97H35vgIu9UTVnz6uH/45b2yr066UV0hI+Nfcgy9I4wOvWbnXMBws1sMVpvM5nvZHwGDj/cveSoX2p4PN/bvmk317w3PI1rGQf5I9lkjyfwryktkEEr/gA1+HAh0Z66hju09U/nR7JEdQL2dSi/8oBuhZHcm4BjfgYtuK+6B+S3Rvx4j6kexxJkIWCNEX9czVM5+7rNMi5uqSqD1DPT2i+2W9cU3xK5xPsT0s9F/f/fyFYblA3ir8N/R1MenvlxD6p9ASPq1npSSiVxBnAydhSLNHSoLt8688yHdDVmnzYJkDjuTzung7w12H7Z9WVcRDpIv3jG2tDevTGRebswHWVgyC4PjjuC1sZk+z/4+F9S8dRQvwzi0KB/Aa9n4fk0rex9Wofwfof61gDDhyK40OsRfLaIMY3hGzOVjo/s1rTh1dD0E4ZgLoNZrvtvYsfqMiV2ttxvl7it8CdV+8tsBlnL/Mvo92k6HJt2LaDm/OsboQmum5isAW9bTgGic5gOcyryXhm8YD0mT8e8oF2ZuYrymSfllX1SNvQZAoorS8wUdVMWgLo72GuxRCVL+BmMy+yOs+ZHgnxs5BUhC4Rk2vDsUSsASb6NWXoba3jIXf+VaLsRGGc601cNVV5pP4Nyx+MDiT2oF0yzM0lLNKFjM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(366004)(39860400002)(396003)(136003)(6512007)(2616005)(186003)(26005)(1076003)(83380400001)(36756003)(38100700002)(6506007)(2906002)(41300700001)(38070700005)(110136005)(122000001)(44832011)(4744005)(5660300002)(8936002)(478600001)(64756008)(91956017)(71200400001)(6486002)(76116006)(4326008)(8676002)(66556008)(66446008)(66476007)(66946007)(316002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?0o46SMfOTcv0k9c2VpbzH/IbsxXjvniexm0gDF26HI3bAghLTk+4CCTzYg?=
+ =?iso-8859-1?Q?GV7kEZIfFz/2Ftuu6JEYodamN0ztdxMrIDADFc3p4hl5aqmTrtFnW4S6Az?=
+ =?iso-8859-1?Q?s+D09z1qrqx9v6XzhEAFr4XVFjq6KM2uMClcENB1v2hdG9drrjYzWI/2Si?=
+ =?iso-8859-1?Q?qML2SbOvXZxX9ox+UxKJcO1siofbTf6N5lQGMf2OYXEy7TRpJ3e3hXrEKQ?=
+ =?iso-8859-1?Q?7GrUrMefKJH9P110p3k+gprVT/DvDN6JQdlB3WaGRwI6Gft6dJeqZHpnfi?=
+ =?iso-8859-1?Q?VfZQIkUhERYrW+JS9cmg9zWLqu1GZ+02Kn9Hqu4LA07NYFUn8ZxPFbLPGN?=
+ =?iso-8859-1?Q?GMh4YUTPThx9gHAyGFenquY2R6aSU/WOyJ4ehMHYms6hco6GLsA7452zOX?=
+ =?iso-8859-1?Q?W1oLgiJfOIr4mfDDVUpYEAITw5S+vQNMZMDDPSL2qrmaJcmEmZb+7EXxp3?=
+ =?iso-8859-1?Q?VXg0EN0PxetzWPJV/0AK4NAsGKSOiGd93FbHZEgqlvCMFYGeFChb1jmxVz?=
+ =?iso-8859-1?Q?RH/04bSbOHx53ncA2Ib1uTbLZgHk8plDbdk9xJZr9MTMs9JV6W+90RZLF5?=
+ =?iso-8859-1?Q?PcSIhM42K/hDrTkTecEREvIuii3qn/89S9PibPxOg6g1CBmiD+GEmRt8ZO?=
+ =?iso-8859-1?Q?3ArcBQ0DpjDT/soXcHdOMB+zJjJb5xbUPucPP2p5BRvA9891kFMfCS0jUd?=
+ =?iso-8859-1?Q?WcF17+B6YM7VnxGrinPz2xg3utMsLHWGHxhv1hn2nDS9yFcE1s5O4zxwHU?=
+ =?iso-8859-1?Q?vW/E10Z0GYttmmcp2KCb+Jmkt1phxjs41hVfHkmSHjQiy2/QURmyl9j6VF?=
+ =?iso-8859-1?Q?mWH11UIrlRg8+5yEyFb3yA24jki3PAx2IgUJW7zhbLnrMIBllLAGhWom5+?=
+ =?iso-8859-1?Q?hajevhieiInON2mC9uH/88W+gE0VJVMNl7eWSp5FIs57OorcWBGWeiBSFf?=
+ =?iso-8859-1?Q?zQL/2MQsWYz+0lCKRNlifneCQQQjD5MHN8L3nv47T7n/pFXPgRFhetZpoq?=
+ =?iso-8859-1?Q?PONgzMen5gDIhBJhBQ67fyQzSW2cIVdwZQQRRd/WJNs3kjX/R//kLVQRuV?=
+ =?iso-8859-1?Q?QbDQwRxeKjreY40D8jecZoK0A8bIXtMM/LCtke37wf9iCRYIpLG447Na2u?=
+ =?iso-8859-1?Q?sHW6HBZ7lOA3Luxb51sPFQ11ibLQlD7wvGvvrzzHL6tsWT0HA0Iv9JghPA?=
+ =?iso-8859-1?Q?oFn2MyiyNEnYYSxcWPyAqPBHMXT7AJHgt2xWv/LlcdyJIB8rXxq/wn5tQH?=
+ =?iso-8859-1?Q?7897tTwdGG2Gk928CwY1gxyR+LvXhNzLo5kvHH2OYUKPpHuOY7HjHyzA0H?=
+ =?iso-8859-1?Q?sNGCU1YhI0ewnPuUPUmZx/LtaG304AwIjy/P+uSnwzcHMVaJL8BEZQzaM5?=
+ =?iso-8859-1?Q?23wucpNRJcxJplKAgK4q+wl+1B9iJ4cAZsmiEdgNMOcVkBtv1etl5HWNwX?=
+ =?iso-8859-1?Q?qcJpNXmEoFyQvI0JcmaX/A30eFctPou+Qhk6PdcCopCII2MHoTukmBBLw1?=
+ =?iso-8859-1?Q?NHwOXmOFv/z7masuZ9xzAItTca/LfGBGndYta7pDwuI5lkl389T8QsLtWM?=
+ =?iso-8859-1?Q?V1KCL5q8X7yBM8CQWKi2xWUYvPxdeTrEfawhXeZmgCdvG78OwBpl5J+7ml?=
+ =?iso-8859-1?Q?KdNl5KulOGSiZ7PHqeGHS36GG5QZ4MquTOYs4dGMyLAbFSJJTz3bFKDg?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70062e31-67ca-4552-ea06-08da59e35e49
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2022 15:23:50.0072
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lcsJ7qVFZK8Ztn1UY92n6rWgoiR+YCdWDam4kuKaGNDUAixpgz7RtrtYHSlL+0lTRJXFTWEtwSEu2gyj5XJ6MQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2382
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-06-29_17:2022-06-28,2022-06-29 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 spamscore=0
+ malwarescore=0 suspectscore=0 mlxlogscore=966 adultscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206290056
+X-Proofpoint-ORIG-GUID: rKo5GDSJFPpRBck3tdyYmZ5WoS0Z3fhJ
+X-Proofpoint-GUID: rKo5GDSJFPpRBck3tdyYmZ5WoS0Z3fhJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Andrew,
 
-Sven Schnelle <svens@linux.ibm.com> writes:
+Please apply these to the maple tree series after the indicated 'fixes'
+patches.  This fixes a soft lockup reported by Yu and adds a testcase to
+the test_maple_tree suite.
 
-> Sven Schnelle <svens@linux.ibm.com> writes:
->
->> Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
->>
->>> Sven Schnelle <svens@linux.ibm.com> writes:
->>>
->>>> Hi,
->>>>
->>>> David Hildenbrand <david@redhat.com> writes:
->>>>
->>>>> On 04.05.22 09:37, Janosch Frank wrote:
->>>>>> I had a short look yesterday and the boot usually hangs in the raid6=
-=20
->>>>>> code. Disabling vector instructions didn't make a difference but a f=
-ew=20
->>>>>> interruptions via GDB solve the problem for some reason.
->>>>>>=20
->>>>>> CCing David and Thomas for TCG
->>>>>>=20
->>>>>
->>>>> I somehow recall that KASAN was always disabled under TCG, I might be
->>>>> wrong (I thought we'd get a message early during boot that the HW
->>>>> doesn't support KASAN).
->>>>>
->>>>> I recall that raid code is a heavy user of vector instructions.
->>>>>
->>>>> How can I reproduce? Compile upstream (or -next?) with kasan support =
-and
->>>>> run it under TCG?
->>>>
->>>> I spent some time looking into this. It's usually hanging in
->>>> s390vx8_gen_syndrome(). My first thought was that it is a problem with
->>>> the VX instructions, but turned out that it hangs even if i remove all
->>>> the code from s390vx8_gen_syndrome().
->>>>
->>>> Tracing the execution of TB's, i see that the generated code is always
->>>> jumping between a few TB's, but never exiting the TB's to check for
->>>> interrupts (i.e. return to cpu_tb_exec(). I only see calls to
->>>> helper_lookup_tb_ptr to lookup the tb pointer for the next TB.
->>>>
->>>> The raid6 code is waiting for some time to expire by reading jiffies,
->>>> but interrupts are never processed and therefore jiffies doesn't chang=
-e.
->>>> So the raid6 code hangs forever.
->>>>
->>>> As a test, i made a quick change to test:
->>>>
->>>> diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
->>>> index c997c2e8e0..35819fd5a7 100644
->>>> --- a/accel/tcg/cpu-exec.c
->>>> +++ b/accel/tcg/cpu-exec.c
->>>> @@ -319,7 +319,8 @@ const void *HELPER(lookup_tb_ptr)(CPUArchState *en=
-v)
->>>>      cpu_get_tb_cpu_state(env, &pc, &cs_base, &flags);
->>>>
->>>>      cflags =3D curr_cflags(cpu);
->>>> -    if (check_for_breakpoints(cpu, pc, &cflags)) {
->>>> +    if (check_for_breakpoints(cpu, pc, &cflags) ||
->>>> +        unlikely(qatomic_read(&cpu->interrupt_request))) {
->>>>          cpu_loop_exit(cpu);
->>>>      }
->>>>
->>>> And that makes the problem go away. But i'm not familiar with the TCG
->>>> internals, so i can't say whether the generated code is incorrect or
->>>> something else is wrong. I have tcg log files of a failing + working r=
-un
->>>> if someone wants to take a look. They are rather large so i would have=
- to
->>>> upload them somewhere.
->>>
->>> Whatever is setting cpu->interrupt_request should be calling
->>> cpu_exit(cpu) which sets the exit flag which is checked at the start of
->>> every TB execution (see gen_tb_start).
->>
->> Thanks, that was very helpful. I added debugging and it turned out
->> that the TB is left because of a pending irq. The code then calls
->> s390_cpu_exec_interrupt:
->>
->> bool s390_cpu_exec_interrupt(CPUState *cs, int interrupt_request)
->> {
->>     if (interrupt_request & CPU_INTERRUPT_HARD) {
->>         S390CPU *cpu =3D S390_CPU(cs);
->>         CPUS390XState *env =3D &cpu->env;
->>
->>         if (env->ex_value) {
->>             /* Execution of the target insn is indivisible from
->>                the parent EXECUTE insn.  */
->>             return false;
->>         }
->>         if (s390_cpu_has_int(cpu)) {
->>             s390_cpu_do_interrupt(cs);
->>             return true;
->>         }
->>         if (env->psw.mask & PSW_MASK_WAIT) {
->>             /* Woken up because of a floating interrupt but it has alrea=
-dy
->>              * been delivered. Go back to sleep. */
->>             cpu_interrupt(CPU(cpu), CPU_INTERRUPT_HALT);
->>         }
->>     }
->>     return false;
->> }
->>
->> Note the 'if (env->ex_value) { }' check. It looks like this function
->> just returns false in case tcg is executing an EX instruction. After
->> that the information that the TB should be exited because of an
->> interrupt is gone. So the TB's are never exited again, although the
->> interrupt wasn't handled. At least that's my assumption now, if i'm
->> wrong please tell me.
->
-> Looking at the code i see CF_NOIRQ to prevent TB's from getting
-> interrupted. But i only see that used in the core tcg code. Would
-> that be a possibility, or is there something else/better?
+Thanks,
+Liam
 
-Yes CF_NOIRQ is exactly the compiler flag you would use to prevent a
-block from exiting early when you absolutely want to execute the next
-block. We currently only use it from core code to deal with icount
-related things but I can see it's use here. I would probably still wrap
-it in a common function in cpu-exec-common.c I'm unsure of the exact
-semantics for s390 so I will defer to Richard and others but something
-like (untested):
+Liam R. Howlett (2):
+  maple_tree: Fix mas_spanning_rebalance() corner case
+  test_maple_tree: Add test for spanning store to most of the tree
 
-/*
- * Ensure the next N instructions are not interrupted by IRQ checks.
- */
-void cpu_loop_exit_unint(CPUState *cpu, uintptr_t pc, int len)
-{
-    if (pc) {
-        cpu_restore_state(cpu, pc, true);
-    }
-    cpu->cflags_next_tb =3D len | CF_LAST_IO | CF_NOIRQ | curr_cflags(cpu);
-    cpu_loop_exit(cpu);
-}
-
-And then in HELPER(ex) you can end the helper with:
-
-void HELPER(ex)(CPUS390XState *env, uint32_t ilen, uint64_t r1, uint64_t ad=
-dr)
-{
-   ...
-
-    /*
-     * We must execute the next instruction exclusively so exit the loop
-     * and trigger a NOIRQ TB which won't check for an interrupt until
-     * it finishes executing.
-     */
-    cpu_loop_exit_unint(cpu, 0, 1);
-}
-
-Some notes:
-
- * Take care to ensure the CPU state is synchronised
-
-  Which means the helper cannot use the flags
-  TCG_CALL_NO_(READ_GLOBALS|WRITE_GLOBALS|SIDE_EFFECTS). And you you
-  will to make sure you write the current PC in the tcg gen code in
-  op_ex()
-
- * I think the env->ex_value can be removed after this
-
- * We will actually exit the execution loop (via a sigjmp) but the IRQ
-   check in cpu_handle_interrupt() will be skipped due to the custom
-   flags. When the next block is looked up (or generated) it will be
-   entered but then immediately exit
-
- * I think even a branch to self should work because the second
-   iteration will be interuptable
-
-> Sorry for the dumb questions, i'm not often working on qemu ;-)
-
-There are no dumb questions, just opportunities for better documentation ;-)
+ lib/maple_tree.c      |  5 +++--
+ lib/test_maple_tree.c | 10 +++++++++-
+ 2 files changed, 12 insertions(+), 3 deletions(-)
 
 --=20
-Alex Benn=C3=A9e
+2.35.1
