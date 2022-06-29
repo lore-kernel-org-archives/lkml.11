@@ -2,122 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14941C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE26C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232016AbiF2Qw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
+        id S232239AbiF2QxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiF2Qwc (ORCPT
+        with ESMTP id S231844AbiF2Qwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:52:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79ED4BF4B;
-        Wed, 29 Jun 2022 09:52:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D4628CE28AE;
+        Wed, 29 Jun 2022 12:52:36 -0400
+Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4244013F81;
+        Wed, 29 Jun 2022 09:52:33 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id A8CD6121B70;
         Wed, 29 Jun 2022 16:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC481C341CB;
-        Wed, 29 Jun 2022 16:52:27 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QiOL2Qug"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656521543;
+Received: from pdx1-sub0-mail-a288.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id E3364121691;
+        Wed, 29 Jun 2022 16:52:28 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1656521549; a=rsa-sha256;
+        cv=none;
+        b=463jQEBgMFV74iEN+TnjsqGLipT5PWEq525tmOOCXli2QbepPoKWvKoguaEQfzeijCtpMs
+        W0Y97rPbnNRm5r68xkw/uDqYRtflxSW4NoRTk6daRuCoMasw/okGBZzKsPuY2U446Pmfuk
+        Tw+3Ir/hZn0iLQjoetTKNhnkSG0/izN1BgwDhJVVxSqZsXG0qzKYONLsPTlNHhozGO9XH5
+        P40XbXUC0RgHfVa70kpC6k+O+dYjNKtw/5K4C7G5jRWfZPyPfD73wUggz8cOy9YswZxBf1
+        oNpEcjot3rpRasydqHE6CJZssYNhy+Q3oXSH+myVm++K71/uWbeT8ae6u5Vr9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1656521549;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s9yQuP8dZlIefMwCtE/LZH80/r0SB1Bpmqz3sW7F0As=;
-        b=QiOL2Quggjmg25RNTA9yJnjRwRJ0O0z8dtQzJbJUqtKUGjHEHa/zJ9CCLH+2WfUvOj6jfG
-        Vcm8SvC9bb+vafFcBkjec7m3BIzDDzANavS7zSSrCgfPrRi+YDGCBGBJgmWH77+vmY5b+A
-        Iyd2dbHNjNAdbq38fmK7CqCcdqKECVI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b655dbf0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 29 Jun 2022 16:52:22 +0000 (UTC)
-Received: by mail-io1-f46.google.com with SMTP id z191so16575027iof.6;
-        Wed, 29 Jun 2022 09:52:22 -0700 (PDT)
-X-Gm-Message-State: AJIora8BK0qQ/ILb/UFGJKOlttv1/zAJz/iJ3xaNuTVOhog5Ir8xTpo3
-        4Syspf1Vj3cq0umN205ayPs/njQGJVLud0UJaB0=
-X-Google-Smtp-Source: AGRyM1tEuvoeECCx/bx2m7scUVXWPupT5PUetPXh1d7o9fBuPNfa8DVhmIomMMIebUacCysCKoZGZxBEY4pNRnKB0hI=
-X-Received: by 2002:a02:9709:0:b0:339:ef87:c30b with SMTP id
- x9-20020a029709000000b00339ef87c30bmr2526540jai.214.1656521539436; Wed, 29
- Jun 2022 09:52:19 -0700 (PDT)
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=iOLcV9f/LV1oZPOPbY/80a03Bs1TUR8dCN1QpbUZqE4=;
+        b=dwekxzYpGBHTWMNG8EsSYmZe8KeQDDal4JrGNI/IFmUff19uLy00pgxROV5In2U1C/GEKG
+        vW/lDEU/6eBJy2J7FgVHjmliwPdedvin/wuWEmWcnVmmAS+TXARWXRWd1FScS2aQwWnqP5
+        bvM1oLVtJeJJBOAQA4TVTKAW94yEbWaUl2TI5Yd+z21iX2FzquRO8t5VCL9tLAooAeL/Il
+        iMztYVsJsVYVRlLPrVNog+PKnoSYORgu0BhF+Y/sTh3r8ZQz/cI4t42ToqLtNatIvi4w7M
+        RAVhEMYYzT1xaYDnMJebVqas9hj6AYLXPFmMpoIDUzVlzGUqU0NaVhIob0LZpA==
+ARC-Authentication-Results: i=1;
+        rspamd-674ffb986c-2d48t;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Callous-Imminent: 6e03671f47e34c0e_1656521549255_4186424639
+X-MC-Loop-Signature: 1656521549255:876281039
+X-MC-Ingress-Time: 1656521549255
+Received: from pdx1-sub0-mail-a288.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.105.211.156 (trex/6.7.1);
+        Wed, 29 Jun 2022 16:52:29 +0000
+Received: from offworld.. (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a288.dreamhost.com (Postfix) with ESMTPSA id 4LY6vb1v0Mz7x;
+        Wed, 29 Jun 2022 09:52:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1656521547;
+        bh=iOLcV9f/LV1oZPOPbY/80a03Bs1TUR8dCN1QpbUZqE4=;
+        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
+        b=Qs9PUCo0Ba8JnusPwvxhulDhgUiFOQeIQlDDOqOC0cHYanyxV8pF3NLeAJ6HkOmcM
+         NidJ1XacUTDGLg1uu5zHFr+1cA6/bmm3C50yjkhEabttoRpZw/NDyCrIbovX/kNEBz
+         1cD2irnktQAi+tqIfLWLd9Kat1Dc5pplWNPfsqG2IB5nvApM9+/4yafe4iK1ENWM9b
+         SesoAI85karEbRoWBM2R/WUxWA6L4GM0iefSj94ufexpxdimVcFcMfboYNG5XCO/Qb
+         lZ9MgJABkn1jtadlQwlLWOY+Uw8QeT8e8UwSRvFrSvG+ljbS3WymUMJWOn0dlCgjd7
+         +zOIrHsoJnqgA==
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     syzbot+ce3408364c4a234dd90c@syzkaller.appspotmail.com
+Cc:     aldas60@gmail.com, gregkh@linuxfoundation.org,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
+        nathan@kernel.org, syzkaller-bugs@googlegroups.com,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCH] staging/wlan-ng: get the correct struct hfa384x in work callback
+Date:   Wed, 29 Jun 2022 09:52:25 -0700
+Message-Id: <20220629165225.3436822-1-dave@stgolabs.net>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <000000000000e3fc8905e2608d4f@google.com>
+References: <000000000000e3fc8905e2608d4f@google.com>
 MIME-Version: 1.0
-References: <20220629150102.1582425-1-hch@lst.de> <20220629150102.1582425-2-hch@lst.de>
- <Yrx5Lt7jrk5BiHXx@zx2c4.com> <20220629161020.GA24891@lst.de>
- <Yrx6EVHtroXeEZGp@zx2c4.com> <20220629161527.GA24978@lst.de>
- <Yrx8/Fyx15CTi2zq@zx2c4.com> <20220629163007.GA25279@lst.de>
- <Yrx/8UOY+J8Ao3Bd@zx2c4.com> <20220629164543.GA25672@lst.de>
-In-Reply-To: <20220629164543.GA25672@lst.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 29 Jun 2022 18:52:08 +0200
-X-Gmail-Original-Message-ID: <CAHmME9rwKmEQcn84GfTrCPzaK3g6vh6rpQ=YcgyTo_PWpJ5VcA@mail.gmail.com>
-Message-ID: <CAHmME9rwKmEQcn84GfTrCPzaK3g6vh6rpQ=YcgyTo_PWpJ5VcA@mail.gmail.com>
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>, rcu@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 6:45 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Wed, Jun 29, 2022 at 06:38:09PM +0200, Jason A. Donenfeld wrote:
-> > On the technical topic, an Android developer friend following this
-> > thread just pointed out to me that Android doesn't use PM_AUTOSLEEP and
-> > just has userspace causing suspend frequently. So by his rough
-> > estimation your patch actually *will* break Android devices. Zoinks.
-> > Maybe he's right, maybe he's not -- I don't know -- but you should
-> > probably look into this if you want this patch to land without breakage.
->
-> And it will also "break" anyone else doing frequent suspends from
-> userspace, as that behavior is still in no way related to
-> CONFIG_ANDROID.
+hfa384x_usbctlx_completion_task() is bogusly using the reaper BH when
+in fact this is the completion_bh. This was reflected when trying
+to acquire the hw->ctlxq.lock and getting a failed lockdep class
+initialized to it.
 
-I don't know of any actual systems that do this for which
-CONFIG_PM_AUTOSLEEP and CONFIG_ANDROID are both disabled. At least
-that was what I concluded back in 2017-2018 when I looked at this
-last. And so far, no other-handset-users have reported bugs.
+Reported-by: syzbot+ce3408364c4a234dd90c@syzkaller.appspotmail.com
+Fixes: 9442e81d7e7 (staging/wlan-ng, prism2usb: replace completion_bh tasklet with work)
+Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+---
+ drivers/staging/wlan-ng/hfa384x_usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But of course I agree that this all could be improved with something
-more granular somehow, somewhere. I don't really have any developed
-opinions on what that looks like or what form that should take.
+diff --git a/drivers/staging/wlan-ng/hfa384x_usb.c b/drivers/staging/wlan-ng/hfa384x_usb.c
+index 33844526c797..02fdef7a16c8 100644
+--- a/drivers/staging/wlan-ng/hfa384x_usb.c
++++ b/drivers/staging/wlan-ng/hfa384x_usb.c
+@@ -2632,7 +2632,7 @@ static void hfa384x_usbctlx_reaper_task(struct work_struct *work)
+  */
+ static void hfa384x_usbctlx_completion_task(struct work_struct *work)
+ {
+-	struct hfa384x *hw = container_of(work, struct hfa384x, reaper_bh);
++	struct hfa384x *hw = container_of(work, struct hfa384x, completion_bh);
+ 	struct hfa384x_usbctlx *ctlx, *temp;
+ 	unsigned long flags;
+ 
+-- 
+2.36.1
 
-However, the thing I do have a strong opinion on is that the change
-you're proposing shouldn't break things. And that's what your patch
-currently might do (or not!).
-
-In other words, instead of making the current situation worse,
-justified by your observation that in theory the current mechanism is
-imperfect, please make the situation better. Or conclude that it
-doesn't make the situation worse, and put the reason why inside your
-commit message, which is the first thing I asked.
-
-Jason
