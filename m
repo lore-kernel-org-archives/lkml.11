@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0085AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C14CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233928AbiF2ONB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41452 "EHLO
+        id S233521AbiF2ONI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233971AbiF2OMd (ORCPT
+        with ESMTP id S233970AbiF2OMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 10:12:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F882E08E;
-        Wed, 29 Jun 2022 07:12:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02FD2F007;
+        Wed, 29 Jun 2022 07:12:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCF32B824B7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E07BB824B4;
         Wed, 29 Jun 2022 14:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE27C341CE;
-        Wed, 29 Jun 2022 14:12:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02DE6C385A9;
+        Wed, 29 Jun 2022 14:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656511949;
-        bh=v0eVaS3PBQTamh6cRAXZ5AqGfuYojlDjnveI93v18rE=;
+        bh=Ybk6ow1WhS4jPdMO+h86i8MGNxoNOL/Xh3nptBoiZjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jIPyXyanWiEFs6QCHay6xZzD5iRqofl69DvTGzoudch6PR3bEji/pv1rvqcpm6XvR
-         U44YDKBIdgVq2anWg2rlCoX9vZcgsTmXS6aC0MsmpNnb/2tTH6Qz57v1iyZF2QmlOw
-         k10EuB5YvWHKBWhwQJezY/93Tat8SxNk9fRLaQPz5/cuHtf1lFWrBmGwkHBfEju1AR
-         /RP/U8Q5sp7wvXrCR7274LpHkE8UpYESu+R6EueWYyjh9+Ni9ZdsVsvJ/PWdQvH+Zg
-         YFnKZ4x5PpHBwUqJJJjGxwuaYFFTUONX973x1zv2On3eiSpFNLD5aD0bkzK31Wdmpu
-         bphks+e7Rx7uA==
+        b=bweNzf1VKU9JMjx4NtzFvC2VdF2zfoWUkMNkRcOwI1WAZZ2BSiYRNXRVl/3FORamF
+         CjNg+0rwe7IvRU0F0pTufVLs7GnRPeJ9bsvQTxWr7kU7wJzcl9wvOhb4TYgX2ZwkPz
+         BiB/p6KLMw+AIX/b+xyGiBklWijB8eQWvgbCav4Ezoj1Pl4MZB93NgBOPmEASqjSmR
+         jlF6uHgYv3yekXZ5V97bH3xQkS68rxw3rrDT0CAYEioQKSTcaS1YvsS2JlPeewtng5
+         beCh0BNDYItDOCKcsKZnJHYJ024Mlidg4H6vi5LFk4GxehE6UtApSaQecjneTlzzry
+         TBRSyb4k+FYzA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o6YQe-0004lN-TX; Wed, 29 Jun 2022 16:12:28 +0200
+        id 1o6YQe-0004lE-Jt; Wed, 29 Jun 2022 16:12:28 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Lorenzo Pieralisi <lpieralisi@kernel.org>
@@ -48,9 +48,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 07/10] PCI: qcom: Add support for SA8540P
-Date:   Wed, 29 Jun 2022 16:09:57 +0200
-Message-Id: <20220629141000.18111-8-johan+linaro@kernel.org>
+Subject: [PATCH 04/10] dt-bindings: PCI: qcom: Add SC8280XP to binding
+Date:   Wed, 29 Jun 2022 16:09:54 +0200
+Message-Id: <20220629141000.18111-5-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220629141000.18111-1-johan+linaro@kernel.org>
 References: <20220629141000.18111-1-johan+linaro@kernel.org>
@@ -60,43 +60,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SA8540P platform has five PCIe controllers: two 4-lane, two 2-lane
-and one 1-lane.
+Add the SC8280XP platform to the binding.
 
-Add a new "qcom,pcie-sa8540p" compatible string and reuse the 1.9.0 ops.
-
-Note that like for SC8280XP, the SA8540 controllers need two or three
-interconnect clocks to be enabled.
+SC8280XP use four host interrupts for MSI routing so remove the obsolete
+comment referring to newer chipsets supporting one or eight interrupts
+(e.g. for backwards compatibility).
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ .../devicetree/bindings/pci/qcom,pcie.yaml    | 50 ++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index da3f1cdc4ba6..8ab88e5743da 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1461,6 +1461,11 @@ static const struct qcom_pcie_cfg ipq4019_cfg = {
- 	.ops = &ops_2_4_0,
- };
+diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+index 8560c65e6f0b..a039f6110322 100644
+--- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+@@ -27,6 +27,7 @@ properties:
+       - qcom,pcie-qcs404
+       - qcom,pcie-sc7280
+       - qcom,pcie-sc8180x
++      - qcom,pcie-sc8280xp
+       - qcom,pcie-sdm845
+       - qcom,pcie-sm8150
+       - qcom,pcie-sm8250
+@@ -181,6 +182,7 @@ allOf:
+             enum:
+               - qcom,pcie-sc7280
+               - qcom,pcie-sc8180x
++              - qcom,pcie-sc8280xp
+               - qcom,pcie-sm8250
+               - qcom,pcie-sm8450-pcie0
+               - qcom,pcie-sm8450-pcie1
+@@ -596,6 +598,35 @@ allOf:
+           items:
+             - const: pci # PCIe core reset
  
-+static const struct qcom_pcie_cfg sa8540p_cfg = {
-+	.ops = &ops_1_9_0,
-+	.has_ddrss_sf_tbu_clk = true,
-+};
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,pcie-sc8280xp
++    then:
++      properties:
++        clocks:
++          minItems: 8
++          maxItems: 9
++        clock-names:
++          minItems: 8
++          items:
++            - const: aux # Auxiliary clock
++            - const: cfg # Configuration clock
++            - const: bus_master # Master AXI clock
++            - const: bus_slave # Slave AXI clock
++            - const: slave_q2a # Slave Q2A clock
++            - const: ddrss_sf_tbu # PCIe SF TBU clock
++            - const: noc_aggr_4 # NoC aggregate 4 clock
++            - const: noc_aggr_south_sf # NoC aggregate South SF clock
++            - const: cnoc_qx # Configuration NoC QX clock
++        resets:
++          maxItems: 1
++        reset-names:
++          items:
++            - const: pci # PCIe core reset
 +
- static const struct qcom_pcie_cfg sc8280xp_cfg = {
- 	.ops = &ops_1_9_0,
- 	.has_ddrss_sf_tbu_clk = true,
-@@ -1626,6 +1631,7 @@ static const struct of_device_id qcom_pcie_match[] = {
- 	{ .compatible = "qcom,pcie-ipq8074", .data = &ipq8074_cfg },
- 	{ .compatible = "qcom,pcie-ipq4019", .data = &ipq4019_cfg },
- 	{ .compatible = "qcom,pcie-qcs404", .data = &ipq4019_cfg },
-+	{ .compatible = "qcom,pcie-sa8540p", .data = &sa8540p_cfg },
- 	{ .compatible = "qcom,pcie-sdm845", .data = &sdm845_cfg },
- 	{ .compatible = "qcom,pcie-sm8150", .data = &sm8150_cfg },
- 	{ .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
+   - if:
+       not:
+         properties:
+@@ -624,7 +655,6 @@ allOf:
+         - resets
+         - reset-names
+ 
+-    # On newer chipsets support either 1 or 8 msi interrupts
+   - if:
+       properties:
+         compatible:
+@@ -660,6 +690,24 @@ allOf:
+                 - const: msi6
+                 - const: msi7
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,pcie-sc8280xp
++    then:
++      properties:
++        interrupts:
++          minItems: 4
++          maxItems: 4
++        interrupt-names:
++          items:
++            - const: msi0
++            - const: msi1
++            - const: msi2
++            - const: msi3
++
+   - if:
+       properties:
+         compatible:
 -- 
 2.35.1
 
