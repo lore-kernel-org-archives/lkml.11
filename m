@@ -2,308 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A810BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793D4CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbiF2XPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 19:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54562 "EHLO
+        id S229966AbiF2XQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 19:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231368AbiF2XPt (ORCPT
+        with ESMTP id S231368AbiF2XQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 19:15:49 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B5D1FCF0
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:15:47 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id mf9so35637320ejb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:15:47 -0700 (PDT)
+        Wed, 29 Jun 2022 19:16:04 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830B1205ED;
+        Wed, 29 Jun 2022 16:16:03 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 9so16742689pgd.7;
+        Wed, 29 Jun 2022 16:16:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bG+DjagJnbdid/PBSdK+0prSzy07zYpuPGDlj0ayBSY=;
-        b=K4B8l2nlk+aCvUttsAs9sekZHHBiucWouZ+Un99URZidtr9zK2o4/nqzHUMfO4fqAp
-         vG00rJ/mjxwVM+2DHzxvWRLH+JfCOD9XDiTN87Nx13f49rTfhaiEaiWRLYtPBDDReAYz
-         WQBrCjWkzz9REeMZ1uYiPbYuG7VEqA1Il3ugw=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SQnYFQjwJYIEl+xmVMG7GmVkiL0GKXz8sy8vI6h9xQc=;
+        b=YDPaDYorwDjwK+0Q/6znQtITXkqfOtztjKmoi9lNknBahqketSXhJZDq6D/N7cp8yd
+         0aSTc0kt+hMY8m9ZJDOve6twZwKixSM3+7Zc+3ZZMbeoaOb3XcYpfOzxubgPEI0FlFXR
+         8OsCqzm+MgGqyuEw9OW/xn2kkdbiMzbhTCnBrxPpfkpmV0BYUDnil0+duqdNikk2blFy
+         ILaIX5r6GSmhew+h4mGomqoS/MlGl8S8VDiwcgUYeStYnnvxH6wZtCtwW8WV8vdbMQH5
+         l9guUUGOxtKSAnpqW3XHVNuPhlMpmePJhjX3kzzWC6LdsVO6gU15gjpvzTu8Nd2Iv1y8
+         a9fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bG+DjagJnbdid/PBSdK+0prSzy07zYpuPGDlj0ayBSY=;
-        b=DzNtp9yNrqg7sp2HFZItbczxfK9CYkaLow8FSz62FQcOrZaIs1QH1P+5MHh1oUfbzu
-         qFWNydDm1iAt80Tdt+HIyxLMTGp75de8iF+z67t7LfX6Zntkq1yz0Apks1ErBihdlC2x
-         Q7nEq2PXYCZ3oa3K2FFwi506PJyDntBEl1KTr4z/1MFCwNhoFO4aBYkPvUZVp+T2iNT3
-         jBwsfZ2gtQr1cPO3X79yMogx/mLjtRE7RS0jBwffBuHaLAlHvTmHDPN6RRl2XsKa9/Qw
-         elIbEvv07ugq+uXAOsu1GpduTt9KbqhOC5ppLLs3IebzkDKrGG5E23CikgRQjzie8+Oh
-         ToqA==
-X-Gm-Message-State: AJIora8WcYdrK8Q2HhCTbkAd+b2OccTa00Mk9iJm0RIv6j/kmBh3BEUl
-        Yq44ndxn8Z7aScJFUUUHGkiiudtiaiAMiD7thVg=
-X-Google-Smtp-Source: AGRyM1uarj5hNlyPBoZP00tRLnuO0uphgdW4qUnQsBS58vvmmm4l+SwyMRqCmCgYLisJQi3oZmGQww==
-X-Received: by 2002:a17:907:7b85:b0:711:e42d:4955 with SMTP id ne5-20020a1709077b8500b00711e42d4955mr5802133ejc.482.1656544545978;
-        Wed, 29 Jun 2022 16:15:45 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id g5-20020a17090613c500b00722fb3c99bcsm8253772ejc.203.2022.06.29.16.15.42
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SQnYFQjwJYIEl+xmVMG7GmVkiL0GKXz8sy8vI6h9xQc=;
+        b=BjagAlAAaXekmtQRqkxWLf2gj9eVQ71+tvvxm5+dr/5VnFcYdsFzeuGYq8RI/KyN2M
+         Qgc++rODSSZiv3rjbAWcUV5O5TUYAKOSJ9JLpiyOlujcR98gqTevoISNGCZm7jShLhMC
+         PB5s6kfcNA2ufaA3kt/IgP10Aivls5k47r1MFcv4TDo/YuO9f6rmVH3NYZvB+JxW+IdX
+         OMqEwLj0FhshUBb0QlrAOBC7mrWP1MHmwsv+ybqSS/vdy9ldSSt0445NYm42IEy69OZt
+         64tc+kaQPOxVZ2CuMgIGPXzOpWGdEBveL9kaNSbSw4CrHOVm43mHRmkZvBdO6ZrGLk98
+         B9Aw==
+X-Gm-Message-State: AJIora+ctPAnejXSZKWh3XhgTqKd2bYhd8b1s+1+hU5CFQHBfLMW1Hc+
+        naj44PwCeAeMGnfYHfcwV0E=
+X-Google-Smtp-Source: AGRyM1ueImHrcmSExyeyqq2h9H/NNcRlLErU/YQNxbCWQQ6QahsDQrX0zPVsPNDM5Ueg+lOaZem4aA==
+X-Received: by 2002:a63:1a0f:0:b0:3fe:4da7:1a38 with SMTP id a15-20020a631a0f000000b003fe4da71a38mr4931274pga.332.1656544562657;
+        Wed, 29 Jun 2022 16:16:02 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t4-20020a17090340c400b001616723b8ddsm11858838pld.45.2022.06.29.16.16.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 16:15:43 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id d17so18985948wrc.10
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:15:42 -0700 (PDT)
-X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
- c18-20020adffb12000000b0020c79b2a200mr5522968wrr.617.1656544542123; Wed, 29
- Jun 2022 16:15:42 -0700 (PDT)
+        Wed, 29 Jun 2022 16:16:01 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <7d4c685f-c791-071b-7677-b4fd2d0cf119@roeck-us.net>
+Date:   Wed, 29 Jun 2022 16:16:00 -0700
 MIME-Version: 1.0
-References: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
-In-Reply-To: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 29 Jun 2022 16:15:29 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UXP+dfYEHpsS_djnWYxNVUS__2Uu5Mmxt2G4T=vfSSQQ@mail.gmail.com>
-Message-ID: <CAD=FV=UXP+dfYEHpsS_djnWYxNVUS__2Uu5Mmxt2G4T=vfSSQQ@mail.gmail.com>
-Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 4.19 v1 2/2] thermal/drivers/thermal_hwmon: Use
+ hwmon_device_register_for_thermal()
+Content-Language: en-US
+To:     Will McVicker <willmcvicker@google.com>, stable@vger.kernel.org,
+        Jean Delvare <jdelvare@suse.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     kernel-team@android.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+References: <20220629225843.332453-1-willmcvicker@google.com>
+ <20220629225843.332453-3-willmcvicker@google.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220629225843.332453-3-willmcvicker@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 6/29/22 15:58, Will McVicker wrote:
+> From: Guenter Roeck <linux@roeck-us.net>
+> 
+> [ upstream commit 87743bcf08072b3e1952a0bf5524b2833e667b4c ]
+> 
+> The thermal subsystem registers a hwmon device without providing chip
+> information or sysfs attribute groups. While undesirable, it would be
+> difficult to change. On the other side, it abuses the
+> hwmon_device_register_with_info API by not providing that information.
+> Use new API specifically created for the thermal subsystem instead to
+> let us enforce the 'chip' parameter for other callers of
+> hwmon_device_register_with_info().
+> 
+> Acked-by: Rafael J . Wysocki <rafael@kernel.org>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 
-On Wed, Jun 29, 2022 at 3:01 AM Vijaya Krishna Nivarthi
-<quic_vnivarth@quicinc.com> wrote:
->
-> In the logic around call to clk_round_rate(), for some corner conditions,
-> get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
-> exact clock rate was not found lowest clock was being returned.
->
-> Search for suitable clock rate in 2 steps
-> a) exact match or within 2% tolerance
-> b) within 5% tolerance
-> This also takes care of corner conditions.
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+NACK. Same reason as 1/2.
+
+Guenter
+
 > ---
-> v2: removed minor optimisations to make more readable
-> v1: intial patch contained slightly complicated logic
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 122 +++++++++++++++++++++++++---------
->  1 file changed, 90 insertions(+), 32 deletions(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 2e23b65..d0696d1 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -943,52 +943,111 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
->         return 0;
->  }
->
-> -static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-> -                       unsigned int sampling_rate, unsigned int *clk_div)
-> +static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
-> +                       unsigned int *clk_div, unsigned int percent_tol, bool exact_match)
->  {
-> +       unsigned long freq;
-> +       unsigned long div, maxdiv, new_div;
-> +       u64 mult;
->         unsigned long ser_clk;
-> -       unsigned long desired_clk;
-> -       unsigned long freq, prev;
-> -       unsigned long div, maxdiv;
-> -       int64_t mult;
-> -
-> -       desired_clk = baud * sampling_rate;
-> -       if (!desired_clk) {
-> -               pr_err("%s: Invalid frequency\n", __func__);
-> -               return 0;
-> -       }
-> +       unsigned long test_freq, offset, new_freq;
->
-> +       ser_clk = 0;
->         maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
-> -       prev = 0;
-> +       div = 1;
->
-> -       for (div = 1; div <= maxdiv; div++) {
-> -               mult = div * desired_clk;
-> -               if (mult > ULONG_MAX)
-> +       while (div <= maxdiv) {
-> +               mult = (u64)div * desired_clk;
-> +               if (mult != (unsigned long)mult)
->                         break;
->
-> -               freq = clk_round_rate(clk, (unsigned long)mult);
-> +               /*
-> +                * Loop requesting a freq within tolerance and possibly exact freq.
-> +                *
-> +                * We'll keep track of the lowest freq inexact match we found
-> +                * but always try to find a perfect match. NOTE: this algorithm
-> +                * could miss a slightly better freq if there's more than one
-> +                * freq between (freq - offset) and (freq) but (freq) can't be made
-> +                * exactly, but that's OK.
-> +                *
-> +                * This absolutely relies on the fact that the Qualcomm clock
-> +                * driver always rounds up.
-> +                * We make use of exact_match as an I/O param.
-> +                */
-> +
-> +               /* look only for exact match if within tolerance is already found */
-> +               if (ser_clk)
-> +                       offset = 0;
-> +               else
-> +                       offset = div_u64(mult * percent_tol, 100);
-> +
-> +               test_freq = mult - offset;
-> +               freq = clk_round_rate(clk, test_freq);
-> +
-> +               /*
-> +                * A dead-on freq is an insta-win
-> +                */
->                 if (!(freq % desired_clk)) {
->                         ser_clk = freq;
-> -                       break;
-> +                       *clk_div = freq / desired_clk;
-> +                       return ser_clk;
->                 }
->
-> -               if (!prev)
-> -                       ser_clk = freq;
-> -               else if (prev == freq)
-> -                       break;
-> +               if (!ser_clk) {
-> +                       new_div = DIV_ROUND_CLOSEST(freq, desired_clk);
-> +                       new_freq = new_div * desired_clk;
-> +                       offset = (new_freq * percent_tol) / 100;
+>   drivers/thermal/thermal_hwmon.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/thermal/thermal_hwmon.c b/drivers/thermal/thermal_hwmon.c
+> index dd5d8ee37928..b3b229421936 100644
+> --- a/drivers/thermal/thermal_hwmon.c
+> +++ b/drivers/thermal/thermal_hwmon.c
+> @@ -147,8 +147,8 @@ int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
+>   	INIT_LIST_HEAD(&hwmon->tz_list);
+>   	strlcpy(hwmon->type, tz->type, THERMAL_NAME_LENGTH);
+>   	strreplace(hwmon->type, '-', '_');
+> -	hwmon->device = hwmon_device_register_with_info(&tz->device, hwmon->type,
+> -							hwmon, NULL, NULL);
+> +	hwmon->device = hwmon_device_register_for_thermal(&tz->device,
+> +							  hwmon->type, hwmon);
+>   	if (IS_ERR(hwmon->device)) {
+>   		result = PTR_ERR(hwmon->device);
+>   		goto free_mem;
 
-Can't you overflow in the above calculation? If "percent_tol" is 5
-then anything over ~859 MHz would overflow. I guess it's not likely,
-but since you take so much care elsewhere... Mabye this should be:
-
-offset = div_u64((u64)new_freq * percent_tol, 100)
-
-
-> +
-> +                       if (new_freq - offset <= freq && freq <= new_freq + offset) {
-
-This whole algorithm is predicated on clk_round_rate() only ever
-rounding up. ...so you don't need to check if the clock is too low,
-only if the clock is too high. Well, at least after you move the
-"break" condition below to right after the clk_round_rate().
-
-
-> +                               /* Save the first (lowest freq) within tolerance */
-> +                               ser_clk = freq;
-> +                               *clk_div = new_div;
-> +                               /* no more search for exact match required in 2nd run */
-> +                               if (!exact_match)
-> +                                       break;
-> +                       }
-> +               }
->
-> -               prev = freq;
-> +               div = freq / desired_clk + 1;
-
-Can't you infinite loop now?
-
-Start with:
-
-desired_clk = 10000
-div = 1
-percent_tol = 2
-
-
-Now:
-
-mult = 10000
-offset = 200
-test_freq = 9800
-freq = 9800
-div = 9800 / 10000 + 1 = 0 + 1 = 1
-
-...and then you'll loop again with "div = 1", won't you? ...or did I
-get something wrong in my analysis? This is the reason my proposed
-algorithm had two loops.
-
-
-> +               /*
-> +                * Only time clock framework doesn't round up is if
-> +                * we're past the max clock rate. We're done searching
-> +                * if that's the case.
-> +                */
-> +               if (freq < test_freq)
-> +                       break;
-
-Why did you move this test to the end? It should be right after the
-clk_round_rate(). If clk_round_rate() ever returns something lower
-than the clock you asked for (which is the minimum tolerance that
-we'll accept) then we can just bail out right away.
-
-
->         }
->
-> -       if (!ser_clk) {
-> -               pr_err("%s: Can't find matching DFS entry for baud %d\n",
-> -                                                               __func__, baud);
-> -               return ser_clk;
-> +       return ser_clk;
-> +}
-> +
-> +static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-> +                       unsigned int sampling_rate, unsigned int *clk_div)
-> +{
-> +       unsigned long ser_clk;
-> +       unsigned long desired_clk;
-> +
-> +       desired_clk = baud * sampling_rate;
-> +       if (!desired_clk) {
-> +               pr_err("%s: Invalid frequency\n", __func__);
-> +               return 0;
->         }
->
-> -       *clk_div = ser_clk / desired_clk;
-> -       if (!(*clk_div))
-> -               *clk_div = 1;
-> +       ser_clk = 0;
-
-Get rid of this init of ser_clk to 0. It doesn't do anything.
-
-
-> +       /*
-> +        * try to find exact clock rate or within 2% tolerance,
-> +        * then within 5% tolerance
-> +        */
-> +       ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2, true);
-> +       if (!ser_clk)
-> +               ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5, false);
-> +
-> +       if (!ser_clk)
-> +               pr_err("Couldn't find suitable clock rate for %d\n", desired_clk);
-> +       else
-> +               pr_debug("desired_clk-%d, ser_clk-%d, clk_div-%d\n",
-> +                       desired_clk, ser_clk, *clk_div);
->
->         return ser_clk;
->  }
-> @@ -1021,8 +1080,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->         if (ver >= QUP_SE_VERSION_2_5)
->                 sampling_rate /= 2;
->
-> -       clk_rate = get_clk_div_rate(port->se.clk, baud,
-> -               sampling_rate, &clk_div);
-> +       clk_rate = get_clk_div_rate(port->se.clk, baud, sampling_rate, &clk_div);
->         if (!clk_rate)
->                 goto out_restart_rx;
->
-> --
-> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
->
