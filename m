@@ -2,70 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA80C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2ABC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233227AbiF2NOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
+        id S233017AbiF2NPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233780AbiF2NOR (ORCPT
+        with ESMTP id S232215AbiF2NPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:14:17 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B1426541;
-        Wed, 29 Jun 2022 06:14:10 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1656508420tyf0raqj
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 29 Jun 2022 21:13:37 +0800 (CST)
-X-QQ-SSF: 0100000000200060C000C00A0000000
-X-QQ-FEAT: 02HFykG0jktbnPvtiDf42PmRotP77QBKZH3mQMCDt+sxKkQD1HhZLNwh/7Tnv
-        F8grmefunn+Mf2aK9yLuTJeKV+vndFDoe2rV3ee5gwsMKcMIDSwoELUgzHYm5RqBerPEHHG
-        4F2qLaOkXQ/XxLvK8TEI+TGSPeWsqICcdpWRZ+YKIscr2cCHyYXrbrLQLFeZ/qC3/QbSBaJ
-        aBYgPRzSyxkcljMQSfX2xVXs65PeDIxV1GbBpQzkJbKE+cZzeiFf2iRf5NAU0tI+NRtk26y
-        WxhEPiFAeq/o40OqO5FXgPWOCRuoZlg51CPGjPkcAr2cRlXL8c/9NDhiDDnytf1ewR6oznq
-        glC6ts0
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     shenjian15@huawei.com, lipeng321@huawei.com,
-        zhangjiaran@huawei.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] hisilicon/hns3/hns3vf:fix repeated words in comments
-Date:   Wed, 29 Jun 2022 21:13:30 +0800
-Message-Id: <20220629131330.16812-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+        Wed, 29 Jun 2022 09:15:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B43B26AD3
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:15:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46D9EB821C3
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 13:15:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5007C34114;
+        Wed, 29 Jun 2022 13:15:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656508504;
+        bh=KpEJT2MHZoldI60YEXL57k+yjrAEriOyk2skitURIqI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=M1hM7y2UvSWKhwqTYGHLbeVldBdD55Xqn1L3f49w1ndffxEWWld7cRDJstHbM8jLG
+         F9/bMYFfQyDlRFxCJ4ZwZXotrFTigXXjuvIij9Ejb9qiW5GicT8i0sGtk+YgBuRF5c
+         Hc3gKENWid9riLaHUyjXmiboGxyDYbJhLZhdmQ/tSYaZYXN+2Bl9WcIhwLZ0GQ3o/e
+         GirJ6U20jknrs94VfcTLMb8L9WV1lWQam3UtxOjmXgbAULv+eDurzYhlqlUU5rAnsa
+         /SgFhl+Z2Kb5QqXEbLRxBw+dLZP/8dCQ96eITf7NAt6SMzx7iNw8xExHI6A9n1RsUY
+         smZUR058JA2gw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o6XX3-0044hF-Os;
+        Wed, 29 Jun 2022 14:15:01 +0100
+Date:   Wed, 29 Jun 2022 14:15:01 +0100
+Message-ID: <87sfnn1ui2.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V13 07/13] irqchip/loongson-pch-msi: Add ACPI init support
+In-Reply-To: <1656329997-20524-8-git-send-email-lvjianmin@loongson.cn>
+References: <1656329997-20524-1-git-send-email-lvjianmin@loongson.cn>
+        <1656329997-20524-8-git-send-email-lvjianmin@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'new'.
+On Mon, 27 Jun 2022 12:39:51 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>=20
+> From: Huacai Chen <chenhuacai@loongson.cn>
+>=20
+> We are preparing to add new Loongson (based on LoongArch, not compatible
+> with old MIPS-based Loongson) support. LoongArch use ACPI other than DT
+> as its boot protocol, so add ACPI init support.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Same rant about the content-less paragraph, which I asked you to drop
+a few version ago.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 5eaf09ea4009..26f87330173e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -979,7 +979,7 @@ static int hclgevf_update_mac_list(struct hnae3_handle *handle,
- 
- 	/* if the mac addr is already in the mac list, no need to add a new
- 	 * one into it, just check the mac addr state, convert it to a new
--	 * new state, or just remove it, or do nothing.
-+	 * state, or just remove it, or do nothing.
- 	 */
- 	mac_node = hclgevf_find_mac_node(list, addr);
- 	if (mac_node) {
--- 
-2.36.1
+>=20
+> PCH-PIC/PCH-MSI stands for "Interrupt Controller" that described in
+> Section 5 of "Loongson 7A1000 Bridge User Manual". For more information
+> please refer Documentation/loongarch/irq-chip-model.rst.
+>=20
+> For systems with two chipsets, there are two related msi irqdomains,
+> each of which has the same node id as its parent irqdomain. So we
+> use a structure to mantain the relation of node and it's parent
+> irqdomain as pch irqdomin, and add a pci_segment field to it for
+> matching the pci segment of a pci device when setting msi irqdomain
+> for the device.
+>=20
+> struct acpi_vector_group {
+>         int node;
+>         int pci_segment;
+>         struct irq_domain *parent;
+> };
+>=20
+> The field 'pci_segment' and 'node' are initialized from MCFG, and
+> the parent irqdomain will set field 'parent' by matching same
+> 'node'.
+>=20
+> Co-developed-by: Jianmin Lv <lvjianmin@loongson.cn>
+> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+> ---
+>  arch/loongarch/include/asm/irq.h       |   7 +-
+>  arch/loongarch/kernel/irq.c            |  30 ++++++-
+>  drivers/irqchip/irq-loongson-pch-msi.c | 147 +++++++++++++++++++++++----=
+------
+>  3 files changed, 138 insertions(+), 46 deletions(-)
+>=20
+> diff --git a/arch/loongarch/include/asm/irq.h b/arch/loongarch/include/as=
+m/irq.h
+> index a444dc6..367aa44 100644
+> --- a/arch/loongarch/include/asm/irq.h
+> +++ b/arch/loongarch/include/asm/irq.h
+> @@ -50,9 +50,11 @@ static inline bool on_irq_stack(int cpu, unsigned long=
+ sp)
+> =20
+>  struct acpi_vector_group {
+>  	int node;
+> +	int pci_segment;
+>  	struct irq_domain *parent;
+>  };
+>  extern struct acpi_vector_group pch_group[MAX_IO_PICS];
+> +extern struct acpi_vector_group msi_group[MAX_IO_PICS];
+> =20
+>  #define CORES_PER_EIO_NODE	4
+> =20
+> @@ -112,9 +114,8 @@ struct irq_domain *htvec_acpi_init(struct irq_domain =
+*parent,
+>  					struct acpi_madt_ht_pic *acpi_htvec);
+>  int pch_lpc_acpi_init(struct irq_domain *parent,
+>  					struct acpi_madt_lpc_pic *acpi_pchlpc);
+> -struct irq_domain *pch_msi_acpi_init(struct irq_domain *parent,
+> -					struct acpi_madt_msi_pic *acpi_pchmsi);
+>  int find_pch_pic(u32 gsi);
+> +struct fwnode_handle *get_pch_msi_handle(int pci_segment);
+> =20
+>  extern struct acpi_madt_lio_pic *acpi_liointc;
+>  extern struct acpi_madt_eio_pic *acpi_eiointc[MAX_IO_PICS];
+> @@ -127,7 +128,7 @@ struct irq_domain *pch_msi_acpi_init(struct irq_domai=
+n *parent,
+>  extern struct irq_domain *cpu_domain;
+>  extern struct irq_domain *liointc_domain;
+>  extern struct fwnode_handle *pch_lpc_handle;
+> -extern struct irq_domain *pch_msi_domain[MAX_IO_PICS];
+> +extern struct fwnode_handle *pch_msi_handle[MAX_IO_PICS];
+>  extern struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
+> =20
+>  extern irqreturn_t loongson3_ipi_interrupt(int irq, void *dev);
+> diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
+> index f2115be..82bc6c7 100644
+> --- a/arch/loongarch/kernel/irq.c
+> +++ b/arch/loongarch/kernel/irq.c
+> @@ -27,8 +27,8 @@
+> =20
+>  struct irq_domain *cpu_domain;
+>  struct irq_domain *liointc_domain;
+> -struct irq_domain *pch_msi_domain[MAX_IO_PICS];
+>  struct acpi_vector_group pch_group[MAX_IO_PICS];
+> +struct acpi_vector_group msi_group[MAX_IO_PICS];
+> =20
+>  /*
+>   * 'what should we do if we get a hw irq event on an illegal vector'.
+> @@ -55,6 +55,33 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+>  	return 0;
+>  }
+> =20
+> +static int early_pci_mcfg_parse(struct acpi_table_header *header)
 
+Shouldn't this be __init as well?
+
+> +{
+> +	struct acpi_table_mcfg *mcfg;
+> +	struct acpi_mcfg_allocation *mptr;
+> +	int i, n;
+> +
+> +	if (header->length < sizeof(struct acpi_table_mcfg))
+> +		return -EINVAL;
+> +
+> +	n =3D (header->length - sizeof(struct acpi_table_mcfg)) /
+> +					sizeof(struct acpi_mcfg_allocation);
+> +	mcfg =3D (struct acpi_table_mcfg *)header;
+> +	mptr =3D (struct acpi_mcfg_allocation *) &mcfg[1];
+> +
+> +	for (i =3D 0; i < n; i++, mptr++) {
+> +		msi_group[i].pci_segment =3D mptr->pci_segment;
+> +		msi_group[i].node =3D (mptr->address >> 44) & 0xf;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +void __init init_msi_parent_group(void)
+> +{
+> +	acpi_table_parse(ACPI_SIG_MCFG, early_pci_mcfg_parse);
+> +}
+> +
+>  void __init init_IRQ(void)
+>  {
+>  	int i;
+> @@ -68,6 +95,7 @@ void __init init_IRQ(void)
+>  	clear_csr_ecfg(ECFG0_IM);
+>  	clear_csr_estat(ESTATF_IP);
+> =20
+> +	init_msi_parent_group();
+
+The changes in this file should be a separate patch, as it is
+completely independent.
+
+>  	irqchip_init();
+>  #ifdef CONFIG_SMP
+>  	ipi_irq =3D EXCCODE_IPI - EXCCODE_INT_START;
+> diff --git a/drivers/irqchip/irq-loongson-pch-msi.c b/drivers/irqchip/irq=
+-loongson-pch-msi.c
+> index e3801c4..5db4a68 100644
+> --- a/drivers/irqchip/irq-loongson-pch-msi.c
+> +++ b/drivers/irqchip/irq-loongson-pch-msi.c
+> @@ -15,14 +15,30 @@
+>  #include <linux/pci.h>
+>  #include <linux/slab.h>
+> =20
+> +static int nr_pics;
+> +
+>  struct pch_msi_data {
+>  	struct mutex	msi_map_lock;
+>  	phys_addr_t	doorbell;
+>  	u32		irq_first;	/* The vector number that MSIs starts */
+>  	u32		num_irqs;	/* The number of vectors for MSIs */
+>  	unsigned long	*msi_map;
+> +	struct fwnode_handle *domain_handle;
+>  };
+> =20
+> +static struct pch_msi_data *pch_msi_priv[2];
+
+What is this '2'?
+
+> +
+> +struct fwnode_handle *get_pch_msi_handle(int pci_segment)
+> +{
+> +	int i;
+> +
+> +	for (i =3D 0; i < MAX_IO_PICS; i++) {
+> +		if (msi_group[i].pci_segment =3D=3D pci_segment)
+
+AFAICT, this driver is supposed to compile on MIPS too. Clearly, you
+haven't bothered checking that it was still building:
+
+drivers/irqchip/irq-loongson-pch-msi.c: In function =E2=80=98get_pch_msi_ha=
+ndle=E2=80=99:
+drivers/irqchip/irq-loongson-pch-msi.c:35:18: error: =E2=80=98MAX_IO_PICS=
+=E2=80=99 undeclared (first use in this function)
+   35 |  for (i =3D 0; i < MAX_IO_PICS; i++) {
+      |                  ^~~~~~~~~~~
+drivers/irqchip/irq-loongson-pch-msi.c:35:18: note: each undeclared identif=
+ier is reported only once for each function it appears in
+drivers/irqchip/irq-loongson-pch-msi.c:36:7: error: =E2=80=98msi_group=E2=
+=80=99 undeclared (first use in this function); did you mean =E2=80=98task_=
+group=E2=80=99?
+   36 |   if (msi_group[i].pci_segment =3D=3D pci_segment)
+      |       ^~~~~~~~~
+      |       task_group
+
+I've stopped here.
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
