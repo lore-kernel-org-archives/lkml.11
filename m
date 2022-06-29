@@ -2,73 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C036ACCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4801C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233665AbiF2NEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36524 "EHLO
+        id S231687AbiF2NGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiF2NEc (ORCPT
+        with ESMTP id S233585AbiF2NGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:04:32 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A559A1D0E2;
-        Wed, 29 Jun 2022 06:04:31 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 7510C1C0BCD; Wed, 29 Jun 2022 15:04:30 +0200 (CEST)
-Date:   Wed, 29 Jun 2022 15:04:30 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Yihao Han <hanyihao@vivo.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH AUTOSEL 4.9 08/13] video: fbdev: simplefb: Check before
- clk_put() not needed
-Message-ID: <20220629130430.GD13395@duo.ucw.cz>
-References: <20220628022657.597208-1-sashal@kernel.org>
- <20220628022657.597208-8-sashal@kernel.org>
+        Wed, 29 Jun 2022 09:06:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82693206D
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:06:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7440BB82341
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 13:06:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FDCCC34114;
+        Wed, 29 Jun 2022 13:05:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656507961;
+        bh=G1RHu+MQpFit+ddCR7nyFYmDlIv0wOv1rNdxkGGY0uE=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=kUeRI/gV6BNLHSRypWDCSHu4puVrewJKBHcepAS55RmuxVBIe4AgMt8VnnJKY3gs2
+         MhxOc51Cb4YRW9iA10aqzPt6DY3QHiP7MfDxXtYlqv+HOyebdCIPfVM8k5d0gjYYqY
+         ZiDTwYk8wQg4ulw6gQeqKqvZZRNOLtGn914rTl5w182Hk+e32uwGl/zgItQKjioxGa
+         23ZEC4PUEiFGe3gNeKzH2XBhab4s1RhiXt8qc4LGyEkdY0qM9/TOPRVSGMFqiEEkaT
+         ezLUvyr0xpj7zYbXs4/9qHkmTYo4xzdl9TvjwpG/vzD8vVdPGKWcvu5pAWFZJm+h1A
+         +n8AzKbjiw8wA==
+From:   Mark Brown <broonie@kernel.org>
+To:     ckeepax@opensource.cirrus.com
+Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com,
+        linux-kernel@vger.kernel.org, patches@opensource.cirrus.com
+In-Reply-To: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
+References: <20220628153409.3266932-1-ckeepax@opensource.cirrus.com>
+Subject: Re: [PATCH 1/4] ASoC: wm5102: Fix event generation for output compensation
+Message-Id: <165650795982.1089020.5711367681769613096.b4-ty@kernel.org>
+Date:   Wed, 29 Jun 2022 14:05:59 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="osDK9TLjxFScVI/L"
-Content-Disposition: inline
-In-Reply-To: <20220628022657.597208-8-sashal@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 28 Jun 2022 16:34:06 +0100, Charles Keepax wrote:
+> The output compensation controls always returns zero regardless of if
+> the control value was updated. This results in missing notifications
+> to user-space of the control change. Update the handling to return 1
+> when the value is changed.
+> 
+> 
 
---osDK9TLjxFScVI/L
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied to
 
-Hi!
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-> [ Upstream commit 5491424d17bdeb7b7852a59367858251783f8398 ]
->=20
-> clk_put() already checks the clk ptr using !clk and IS_ERR()
-> so there is no need to check it again before calling it.
+Thanks!
 
-Nice cleanup, but not a bugfix; we don't need it in -stable.
+[1/4] ASoC: wm5102: Fix event generation for output compensation
+      commit: cb41d454b2478a98c831f14e656a34c21418e241
+[2/4] ASoC: wm8998: Fix event generation for input mux
+      commit: a83f511909217a1c2b971a509c992b6327bb18e7
+[3/4] ASoC: cs47l92: Fix event generation for OUT1 demux
+      commit: 2d81cca17329dece1c4f37d1de271bc967439327
+[4/4] ASoC: arizona: Update arizona_aif_cfg_changed to use RX_BCLK_RATE
+      commit: 6f04f1bfe9a4adf750c816f6094878222e496d0e
 
-Best regards,
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
---osDK9TLjxFScVI/L
-Content-Type: application/pgp-signature; name="signature.asc"
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
------BEGIN PGP SIGNATURE-----
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYrxN3gAKCRAw5/Bqldv6
-8l0vAJ4hi7VBDbsObGLei7MhiNZd1W/QkwCbBN5YwMYoM34CeEw8AVL19VF1JNk=
-=oYg7
------END PGP SIGNATURE-----
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
---osDK9TLjxFScVI/L--
+Thanks,
+Mark
