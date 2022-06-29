@@ -2,235 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E29C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24125C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbiF2MXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
+        id S232774AbiF2MX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 08:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbiF2MXp (ORCPT
+        with ESMTP id S232970AbiF2MXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 08:23:45 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFF931DDB
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:23:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1656504487; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=bua+jMImc+TrGG0k/DW7Zq89Q5FV+VyVHYSwXyKURgqVoSC0qaDuogK7LVxo78yA54N13uUsblx2Ut+N9SKkkvmdfU2NjVtmP1y3QZM2BfXyyFrRlKAUQ+m6CjRD22o/kt2cv3V9u7fdYOj+NpeR2qNouqDjjXLPOVrBe9XQqhI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1656504487; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=ukTu6MJ3bj33YMWpWKj7wdJBBihYnF+q/gqNaxzzG7Y=; 
-        b=MMNhmEY57rRPUGHyB/05wbKu1+gJbL33o4erNLvIPQDHvKaE8YycxN0vR5QFu6HVY3GKkJuJBNSyELEUHTkE3f+y9AV0ABmSjAmX9COQ3iqCPMSmUPWWEs7jfW9VrmuaTTs8qTph3KEF4bEmNfN7PmH9W0tvk2rhGpZ9uBKW1Ws=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656504487;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=ukTu6MJ3bj33YMWpWKj7wdJBBihYnF+q/gqNaxzzG7Y=;
-        b=ghUSA36wtapzBy8Ahob4QwwwNxMkjs5/rn9kxrFi/6Mqubh+NUZCvIkQ0Gf1kq7B
-        N4RRX9/wPr6mvTrhXSQO0jgRxIVdHIhvu3vJdrTvPbLiDLK34BOs41HOOelmcojyHJ3
-        MncuyWPK7yoNTLtDf7zfVRTpYAHsllnL5zvd3byE=
-Received: from [10.10.10.122] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1656504486014929.4381961201594; Wed, 29 Jun 2022 05:08:06 -0700 (PDT)
-Message-ID: <3394a6fa-dc55-bf5d-c06e-ddf70d95c26b@arinc9.com>
-Date:   Wed, 29 Jun 2022 15:08:01 +0300
+        Wed, 29 Jun 2022 08:23:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 077B231DCD
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656505431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EYDBXIB3xoIWC8aCI7RzeLW7qStzkUrLkNcQjH128XA=;
+        b=AjmeGh54ohC+B1d1Oaph0T5hVlPOXMM0wUoOuogkzluu6wRroIX6sCmtMsfBxSIrhO73A6
+        KG6XWRIZVRmGJWZAQygZGBypC7No8YfqZtQ8Kd4g/updeZUNcvOtAzE8a1qKceFR4EOqmd
+        ZMQDKIN1MLAd+pYOUtwY8hQPX7/tdsI=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-332-TquuEDWRPN2geFYlboZq9Q-1; Wed, 29 Jun 2022 08:23:50 -0400
+X-MC-Unique: TquuEDWRPN2geFYlboZq9Q-1
+Received: by mail-qk1-f197.google.com with SMTP id q184-20020a378ec1000000b006b14460be35so1286811qkd.22
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:23:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=EYDBXIB3xoIWC8aCI7RzeLW7qStzkUrLkNcQjH128XA=;
+        b=gyy3Kwsjnpbw5P0Ur99u4eLTlfxd+ohtXPB4gIaCivoiRnf0IlukFikY/z/nDa0mRp
+         jE7pBMasqAfLAJCwGKGw/dRcfvTEWD4TP44nUCCBLJP5f9vufi3hfUPf+4z8uKVqt2Mb
+         OCxU7NM6ippyPK1BPXvRbrcxAbFdFEGlsbL+XNaKl5dJrJk1diod3TJE5R2TDc+bIpA9
+         FLOLXY5eCf5f5LpbdfqKKsozTV6IRgDQYfq7GHLqpNpSZ3NJRRWukm3m8Xl8XIiDlQZN
+         wRiMDJPhxf8WAoJRAXYLX+5CbLxalBB0cxImIL9gHmYcXbBeKhxLcFPMQ8n9AA81Jqip
+         uwFw==
+X-Gm-Message-State: AJIora/P9Ib5BvYpDDEuUwo6p9QnsZnIQG1inS7gWg7Ex6FYh+MyiWPa
+        05ufZ0vwNbSQY8c5IMHgrRNDmqlihTbddeuW9NgXRq9PP1uPlGOWc8SUW+CFko7p1psNSSV+y0f
+        DhHYTmbFR6qJEHNLaoZ6SRXl1
+X-Received: by 2002:a05:6214:268d:b0:472:aaf1:5f27 with SMTP id gm13-20020a056214268d00b00472aaf15f27mr694645qvb.110.1656505429148;
+        Wed, 29 Jun 2022 05:23:49 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u3h0V3fdhVV+HucGS5oArvomDWB3I4qcdeLL7MDHAtkOnDR5VNPMUAvyAUfaXGCeU2LIejWA==
+X-Received: by 2002:a05:6214:268d:b0:472:aaf1:5f27 with SMTP id gm13-20020a056214268d00b00472aaf15f27mr694617qvb.110.1656505428790;
+        Wed, 29 Jun 2022 05:23:48 -0700 (PDT)
+Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
+        by smtp.gmail.com with ESMTPSA id v123-20020a379381000000b006a6c230f5e0sm4399269qkd.31.2022.06.29.05.23.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 05:23:48 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 08:23:45 -0400
+From:   Brian Foster <bfoster@redhat.com>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     Christian =?iso-8859-1?Q?K=F6nig?= 
+        <ckoenig.leichtzumerken@gmail.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        David.Laight@aculab.com, Ioannis Ilkos <ilkos@google.com>,
+        "T.J. Mercier" <tjmercier@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        DRI mailing list <dri-devel@lists.freedesktop.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>
+Subject: Re: [PATCH v2 1/2] procfs: Add 'size' to /proc/<pid>/fdinfo/
+Message-ID: <YrxEUbDkYLE6XF6x@bfoster>
+References: <20220623220613.3014268-1-kaleshsingh@google.com>
+ <20220623220613.3014268-2-kaleshsingh@google.com>
+ <Yrrrz7MxMu8OoEPU@bfoster>
+ <CAC_TJvejs5gbggC1hekyjUNctC_8+3FmVn0B7zAZox2+MkEjaA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] MIPS: dts: correct gpio-keys names and properties
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Paul Cercueil <paul@crapouillou.net>
-Cc:     Rahul Bedarkar <rahulbedarkar89@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220624170740.66271-1-krzysztof.kozlowski@linaro.org>
- <ZVVZDR.R2QT2GMTT9WS1@crapouillou.net>
- <89b6a40b-eb6b-eba5-78c3-6b5f35bed717@linaro.org>
- <EXU1ER.FH53VZXY9EYP3@crapouillou.net>
- <cc81b6ae-c1c1-78ec-b4e2-e165dcd5015b@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <cc81b6ae-c1c1-78ec-b4e2-e165dcd5015b@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+In-Reply-To: <CAC_TJvejs5gbggC1hekyjUNctC_8+3FmVn0B7zAZox2+MkEjaA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.06.2022 23:25, Krzysztof Kozlowski wrote:
-> On 25/06/2022 22:15, Paul Cercueil wrote:
->> Hi Krzysztof,
->>
->> Le sam., juin 25 2022 at 21:58:08 +0200, Krzysztof Kozlowski
->> <krzysztof.kozlowski@linaro.org> a écrit :
->>> On 24/06/2022 20:40, Paul Cercueil wrote:
->>>>   Hi Krzysztof,
->>>>
->>>>   Le ven., juin 24 2022 at 19:07:39 +0200, Krzysztof Kozlowski
->>>>   <krzysztof.kozlowski@linaro.org> a écrit :
->>>>>   gpio-keys children do not use unit addresses.
->>>>>
->>>>>   Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>>>>
->>>>>   ---
->>>>>
->>>>>   See:
->>>>>   
->>>>> https://lore.kernel.org/all/20220616005224.18391-1-krzysztof.kozlowski@linaro.org/
->>>>>   ---
->>>>>    arch/mips/boot/dts/img/pistachio_marduk.dts   |  4 +--
->>>>>    arch/mips/boot/dts/ingenic/gcw0.dts           | 31
->>>>>   +++++++++----------
->>>>>    arch/mips/boot/dts/ingenic/rs90.dts           | 18 +++++------
->>>>>    arch/mips/boot/dts/pic32/pic32mzda_sk.dts     |  9 ++----
->>>>>    .../boot/dts/qca/ar9132_tl_wr1043nd_v1.dts    |  6 ++--
->>>>>    arch/mips/boot/dts/qca/ar9331_dpt_module.dts  |  4 +--
->>>>>    .../mips/boot/dts/qca/ar9331_dragino_ms14.dts |  6 ++--
->>>>>    arch/mips/boot/dts/qca/ar9331_omega.dts       |  4 +--
->>>>>    .../qca/ar9331_openembed_som9331_board.dts    |  4 +--
->>>>>    arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts   |  8 ++---
->>>>>    10 files changed, 37 insertions(+), 57 deletions(-)
->>>>>
->>>>>   diff --git a/arch/mips/boot/dts/img/pistachio_marduk.dts
->>>>>   b/arch/mips/boot/dts/img/pistachio_marduk.dts
->>>>>   index a8708783f04b..a8da2f992b1a 100644
->>>>>   --- a/arch/mips/boot/dts/img/pistachio_marduk.dts
->>>>>   +++ b/arch/mips/boot/dts/img/pistachio_marduk.dts
->>>>>   @@ -59,12 +59,12 @@ led-1 {
->>>>>
->>>>>    	keys {
->>>>>    		compatible = "gpio-keys";
->>>>>   -		button@1 {
->>>>>   +		button-1 {
->>>>>    			label = "Button 1";
->>>>>    			linux,code = <0x101>; /* BTN_1 */
->>>>>    			gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
->>>>>    		};
->>>>>   -		button@2 {
->>>>>   +		button-2 {
->>>>>    			label = "Button 2";
->>>>>    			linux,code = <0x102>; /* BTN_2 */
->>>>>    			gpios = <&gpio2 14 GPIO_ACTIVE_LOW>;
->>>>>   diff --git a/arch/mips/boot/dts/ingenic/gcw0.dts
->>>>>   b/arch/mips/boot/dts/ingenic/gcw0.dts
->>>>>   index 4abb0318416c..5d33f26fd28c 100644
->>>>>   --- a/arch/mips/boot/dts/ingenic/gcw0.dts
->>>>>   +++ b/arch/mips/boot/dts/ingenic/gcw0.dts
->>>>>   @@ -130,89 +130,86 @@ backlight: backlight {
->>>>>
->>>>>    	gpio-keys {
->>>>>    		compatible = "gpio-keys";
->>>>>   -		#address-cells = <1>;
->>>>>   -		#size-cells = <0>;
->>>>
->>>>   Are you sure you can remove these?
->>>
->>> Yes, from DT spec point of view, DT bindings and Linux implementation.
->>> However this particular change was not tested, except building.
->>>
->>>>
->>>>   Looking at paragraph 2.3.5 of the DT spec, I would think they have
->>>> to
->>>>   stay (although with #address-cells = <0>).
->>>
->>> The paragraph 2.3.5 says nothing about regular properties (which can
->>> be
->>> also child nodes). It says about children of a bus, right? It's not
->>> related here, it's not a bus.
->>
->> I quote:
->> "A DTSpec-compliant boot program shall supply #address-cells and
->> #size-cells on all nodes that have children."
+On Tue, Jun 28, 2022 at 03:38:02PM -0700, Kalesh Singh wrote:
+> On Tue, Jun 28, 2022 at 4:54 AM Brian Foster <bfoster@redhat.com> wrote:
+> >
+> > On Thu, Jun 23, 2022 at 03:06:06PM -0700, Kalesh Singh wrote:
+> > > To be able to account the amount of memory a process is keeping pinned
+> > > by open file descriptors add a 'size' field to fdinfo output.
+> > >
+> > > dmabufs fds already expose a 'size' field for this reason, remove this
+> > > and make it a common field for all fds. This allows tracking of
+> > > other types of memory (e.g. memfd and ashmem in Android).
+> > >
+> > > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> > > Reviewed-by: Christian K�nig <christian.koenig@amd.com>
+> > > ---
+> > >
+> > > Changes in v2:
+> > >   - Add Christian's Reviewed-by
+> > >
+> > > Changes from rfc:
+> > >   - Split adding 'size' and 'path' into a separate patches, per Christian
+> > >   - Split fdinfo seq_printf into separate lines, per Christian
+> > >   - Fix indentation (use tabs) in documentaion, per Randy
+> > >
+> > >  Documentation/filesystems/proc.rst | 12 ++++++++++--
+> > >  drivers/dma-buf/dma-buf.c          |  1 -
+> > >  fs/proc/fd.c                       |  9 +++++----
+> > >  3 files changed, 15 insertions(+), 7 deletions(-)
+> > >
+...
+> >
+> > Also not sure if it matters that much for your use case, but something
+> > worth noting at least with shmem is that one can do something like:
+> >
+> > # cat /proc/meminfo | grep Shmem:
+> > Shmem:               764 kB
+> > # xfs_io -fc "falloc -k 0 10m" ./file
+> > # ls -alh file
+> > -rw-------. 1 root root 0 Jun 28 07:22 file
+> > # stat file
+> >   File: file
+> >   Size: 0               Blocks: 20480      IO Block: 4096   regular empty file
+> > # cat /proc/meminfo | grep Shmem:
+> > Shmem:             11004 kB
+> >
+> > ... where the resulting memory usage isn't reflected in i_size (but is
+> > is in i_blocks/bytes).
 > 
-> And paragraph 2.2.3 says:
-> "A unit address may be omitted if the full path to the node is unambiguous."
+> I tried a similar experiment a few times, but I don't see the same
+> results. In my case, there is not any change in shmem. IIUC the
+> fallocate is allocating the disk space not shared memory.
 > 
-> You have address/size cells for nodes with children having unit
-> addresses. If they don't unit addresses, you don't add address/size
-> cells (with some exceptions).
+
+Sorry, it was implied in my previous test was that I was running against
+tmpfs. So regardless of fs, the fallocate keep_size semantics shown in
+both cases is as expected: the underlying blocks are allocated and the
+inode size is unchanged.
+
+What wasn't totally clear to me when I read this patch was 1. whether
+tmpfs refers to Shmem and 2. whether tmpfs allowed this sort of
+operation. The test above seems to confirm both, however, right? E.g., a
+more detailed example:
+
+# mount | grep /tmp
+tmpfs on /tmp type tmpfs (rw,nosuid,nodev,seclabel,nr_inodes=1048576,inode64)
+# cat /proc/meminfo | grep Shmem:
+Shmem:              5300 kB
+# xfs_io -fc "falloc -k 0 1g" /tmp/file
+# stat /tmp/file 
+  File: /tmp/file
+  Size: 0               Blocks: 2097152    IO Block: 4096   regular empty file
+Device: 22h/34d Inode: 45          Links: 1
+Access: (0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)
+Context: unconfined_u:object_r:user_tmp_t:s0
+Access: 2022-06-29 08:04:01.301307154 -0400
+Modify: 2022-06-29 08:04:01.301307154 -0400
+Change: 2022-06-29 08:04:01.451312834 -0400
+ Birth: 2022-06-29 08:04:01.301307154 -0400
+# cat /proc/meminfo | grep Shmem:
+Shmem:           1053876 kB
+# rm -f /tmp/file 
+# cat /proc/meminfo | grep Shmem:
+Shmem:              5300 kB
+
+So clearly this impacts Shmem.. was your test run against tmpfs or some
+other (disk based) fs?
+
+FWIW, I don't have any objection to exposing inode size if it's commonly
+useful information. My feedback was more just an fyi that i_size doesn't
+necessarily reflect underlying space consumption (whether it's memory or
+disk space) in more generic cases, because it sounds like that is really
+what you're after here. The opposite example to the above would be
+something like an 'xfs_io -fc "truncate 1t" /tmp/file', which shows a
+1TB inode size with zero additional shmem usage.
+
+Brian
+
+> cat /proc/meminfo > meminfo.start
+> xfs_io -fc "falloc -k 0 50m" ./xfs_file
+> cat /proc/meminfo > meminfo.stop
+> tail -n +1 meminfo.st* | grep -i '==\|Shmem:'
 > 
-> The paragraph 2.3.5 mentions "child device nodes" and these properties
-> are not devices, although I agree that DT spec here is actually confusing.
+> ==> meminfo.start <==
+> Shmem:               484 kB
+> ==> meminfo.stop <==
+> Shmem:               484 kB
 > 
->>
->> The gpio-keys node has children nodes, therefore it should have
->> #address-cells and #size-cells, there's no room for interpretation here.
->>
->>> Second, why exactly this one gpio-keys node is different than all
->>> other
->>> gpio-keys everywhere and than bindings? Why this one has to be
->>> incompatible/wrong according to bindings (which do not allow
->>> address-cells and nodes with unit addresses)?
->>
->> Nothing is different. I'm just stating that your proposed fix is
->> invalid if we want to enforce compliance with the DT spec.
+> ls -lh xfs_file
+> -rw------- 1 root root 0 Jun 28 15:12 xfs_file
 > 
-> In such case, we rather enforce the compliance with the bindings.
+> stat xfs_file
+>   File: xfs_file
+>   Size: 0               Blocks: 102400     IO Block: 4096   regular empty file
 > 
-> Best regards,
-> Krzysztof
+> Thanks,
+> Kalesh
+> 
+> >
+> > Brian
+> >
+> > >
+> > >       /* show_fd_locks() never deferences files so a stale value is safe */
+> > >       show_fd_locks(m, file, files);
+> > > --
+> > > 2.37.0.rc0.161.g10f37bed90-goog
+> > >
+> >
+> 
 
-I recall them to be unnecessary as well. I have a patch of mine applied 
-identical to this:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=8c9f00d4b05134164e462f27b21c8295255ffa64
-
-Also, I don't see any warnings with this patch applied:
-
-$ ARCH=mips CROSS_COMPILE=mipsel-linux-gnu- make clean dtbs -j$(nproc)
-   SYNC    include/config/auto.conf.cmd
-   HOSTCC  scripts/basic/fixdep
-   HOSTCC  scripts/kconfig/conf.o
-   HOSTCC  scripts/kconfig/confdata.o
-   HOSTCC  scripts/kconfig/expr.o
-   LEX     scripts/kconfig/lexer.lex.c
-   YACC    scripts/kconfig/parser.tab.[ch]
-   HOSTCC  scripts/kconfig/menu.o
-   HOSTCC  scripts/kconfig/preprocess.o
-   HOSTCC  scripts/kconfig/symbol.o
-   HOSTCC  scripts/kconfig/util.o
-   HOSTCC  scripts/kconfig/lexer.lex.o
-   HOSTCC  scripts/kconfig/parser.tab.o
-   HOSTLD  scripts/kconfig/conf
-   HOSTCC  scripts/dtc/dtc.o
-   HOSTCC  scripts/dtc/flattree.o
-   HOSTCC  scripts/dtc/fstree.o
-   HOSTCC  scripts/dtc/data.o
-   HOSTCC  scripts/dtc/livetree.o
-   HOSTCC  scripts/dtc/treesource.o
-   HOSTCC  scripts/dtc/srcpos.o
-   HOSTCC  scripts/dtc/checks.o
-   HOSTCC  scripts/dtc/util.o
-   LEX     scripts/dtc/dtc-lexer.lex.c
-   YACC    scripts/dtc/dtc-parser.tab.[ch]
-   HOSTCC  scripts/dtc/libfdt/fdt.o
-   HOSTCC  scripts/dtc/libfdt/fdt_ro.o
-   HOSTCC  scripts/dtc/libfdt/fdt_wip.o
-   HOSTCC  scripts/dtc/libfdt/fdt_sw.o
-   HOSTCC  scripts/dtc/libfdt/fdt_rw.o
-   HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
-   HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
-   HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
-   HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
-   HOSTCC  scripts/dtc/fdtoverlay.o
-   HOSTCC  scripts/dtc/dtc-lexer.lex.o
-   HOSTCC  scripts/dtc/dtc-parser.tab.o
-   HOSTLD  scripts/dtc/fdtoverlay
-   HOSTLD  scripts/dtc/dtc
-   DTC     arch/mips/boot/dts/ingenic/gcw0.dtb
-
-Have my acked-by.
-
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-
-Arınç
