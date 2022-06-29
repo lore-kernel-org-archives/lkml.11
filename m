@@ -2,110 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F38C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 19:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9868C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 19:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231317AbiF2Tpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 15:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        id S231321AbiF2Tqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 15:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbiF2Tpa (ORCPT
+        with ESMTP id S230072AbiF2Tqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 15:45:30 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C1D25C46;
-        Wed, 29 Jun 2022 12:45:30 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id x138so13366158pfc.3;
-        Wed, 29 Jun 2022 12:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zX93b4uo7r2zzM20H0vNMZpGBveIXWgxPACeOg4RsOo=;
-        b=oi24oy8pB5I5ioF84ISCdNpuTo7TCnpI6ZmcooU6WiEr8PStnOU7pOwqXU/KD3DCvw
-         onhUjkKKusDKbSWuLaHrRe5QZv+lsQTR+rbd0O2w7eExewrDZQjg8WVpRvUXtUtwo8i0
-         NvrHU6UuipcewkCfCCZZEJiSuFgjDhxlduRkQ4Nzub9aZhjDdmPqVjgGqtWRKyAjj6ZG
-         MgdZzudjoS4/q+yUhfw6sRst7Hy3oiCKD9ifiZ2a6dLienB+uwlxubFG/IzfGbRKUMag
-         wa6ceJcYw/RLdZpbARhWKZWe6VnL06G6eJPcUqxmeYyMuQuF15mD4HKTkOdSVlN7wxhV
-         ZjhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zX93b4uo7r2zzM20H0vNMZpGBveIXWgxPACeOg4RsOo=;
-        b=r5WohLB1NZ2fwPPHrQGLwWpJFf9fYGo9lTHn6zyvleYpP/Gw0UhpeTbHpLltL27EsF
-         MqdewiSGqtsrOHvXGrLpShJonlw8ClnKEc1orh1ufTODTiK3DeGlwiD4pugBLdNz5LEY
-         5qCZeevXUIeWhzwbs+GHVOh3kl6yBl8ITYojwd3mlN8KKuZro8OP7t+UH+iNS0v1W8O5
-         GhD/fvcUQ0E9Tce5/L92odX41sBsTMQfZoJZzUA1HZgytgWaGUsTpE6BgaY+eCd6uw8W
-         J7BbsIf367DWw9IKRg/lv46Z60OtSH2nvswuiD9SNxWpHVE6ju3h112/zLFKWum6R4/x
-         FTuQ==
-X-Gm-Message-State: AJIora9YQeSNgEEKML3rUthYhEV8DClAFDDyOAcLKDHgmrRHw79rmyMM
-        oMJgPGPz66JnPhllIXCKdl0=
-X-Google-Smtp-Source: AGRyM1vhnun+Dx/Iat4x3HGNWqaZwBKHI4Xr3keeaJWM7+Gp+HWhYaNAyqHh7y97JFLA0sm9Wf6etg==
-X-Received: by 2002:a63:242:0:b0:401:b84a:6008 with SMTP id 63-20020a630242000000b00401b84a6008mr4183776pgc.100.1656531929988;
-        Wed, 29 Jun 2022 12:45:29 -0700 (PDT)
-Received: from [172.30.1.37] ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id c15-20020a170902c2cf00b0016a268563ecsm11867517pla.23.2022.06.29.12.45.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 12:45:29 -0700 (PDT)
-Message-ID: <2e9d3702-595d-20e3-9e8c-c9723384b3a9@gmail.com>
-Date:   Thu, 30 Jun 2022 04:45:24 +0900
+        Wed, 29 Jun 2022 15:46:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E882137A82;
+        Wed, 29 Jun 2022 12:46:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9DF7B826BE;
+        Wed, 29 Jun 2022 19:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D50A9C34114;
+        Wed, 29 Jun 2022 19:46:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656531993;
+        bh=I3rRA2ivIk2lSakF7rm0zAlvjPJfLVr51rUs2HmOnfE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NptgRT1U3j1lvqVyA+erDG4RqOSE/A+Y48K25gloXmSMky7zZ1Al1NCrCW363wG8P
+         X+1oYkgOfmD884iexn9uX9ee8a0QmNurTrWHOMrL1lcZfoQLbw93OhftHrEAtEVwtg
+         p7imWVOtTkoyjJaZwgJ0dRVIipRcBGR+pWvGa33OlTv1DL7LhdI1x6dOeTMlFU7aKx
+         QTl9x3IM0FRrB83YAOudUOpyfx1o3GQqzBhlVDVjZdDpZU7CZBq0q70/2AfPeyf7k3
+         Xaz8dx7rUaTV8mfO6A0qW3YAUeiozxwIMm0mQ80iuFf52D5KCT1KfMFm6pZ0cI6097
+         24pcD2i4MiTiQ==
+Date:   Wed, 29 Jun 2022 21:46:29 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Cc:     linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com,
+        andrew@sanpeople.com, mhoffman@lightlink.com, khali@linux-fr.org,
+        peda@axentia.se
+Subject: Re: [RESEND 0/3] i2c: at91: Fixes and updates
+Message-ID: <YrysFU0fP7X1wkBd@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com,
+        andrew@sanpeople.com, mhoffman@lightlink.com, khali@linux-fr.org,
+        peda@axentia.se
+References: <20220614101347.16910-1-codrin.ciubotariu@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] PM / devfreq: imx-bus: use NULL to pass a null pointer
- rather than zero
-Content-Language: en-US
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220623180054.79687-1-colin.i.king@gmail.com>
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-In-Reply-To: <20220623180054.79687-1-colin.i.king@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PO1fX2YbNUKV/P3U"
+Content-Disposition: inline
+In-Reply-To: <20220614101347.16910-1-codrin.ciubotariu@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22. 6. 24. 03:00, Colin Ian King wrote:
-> The 3rd argument to the function of_get_property is a pointer and it is
-> being passed using 0. Use NULL instead.
-> 
-> Cleans up sparse warning:
-> warning: Using plain integer as NULL pointer
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  drivers/devfreq/imx-bus.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/devfreq/imx-bus.c b/drivers/devfreq/imx-bus.c
-> index f3f6e25053ed..f87067fc574d 100644
-> --- a/drivers/devfreq/imx-bus.c
-> +++ b/drivers/devfreq/imx-bus.c
-> @@ -59,7 +59,7 @@ static int imx_bus_init_icc(struct device *dev)
->  	struct imx_bus *priv = dev_get_drvdata(dev);
->  	const char *icc_driver_name;
->  
-> -	if (!of_get_property(dev->of_node, "#interconnect-cells", 0))
-> +	if (!of_get_property(dev->of_node, "#interconnect-cells", NULL))
->  		return 0;
->  	if (!IS_ENABLED(CONFIG_INTERCONNECT_IMX)) {
->  		dev_warn(dev, "imx interconnect drivers disabled\n");
 
-Applied it. Thanks.
+--PO1fX2YbNUKV/P3U
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Best Regards,
-Samsung Electronics
-Chanwoo Choi
+On Tue, Jun 14, 2022 at 01:13:44PM +0300, Codrin Ciubotariu wrote:
+> Resend due to the fact that the i2c list no longer accepts replys on the
+> old patch-set. Comments not addressed yet.
+>=20
+> The first patch is mostly a prerequisite for the second one. It only
+> moves the i2c_recover_bus() out of the actual transfer function. This
+> helps the second patch disable the controller before using GPIO
+> recovery. The second patch will keep the controller enabled when a
+> transfer occurs. Before using GPIO recovery, the controller must be
+> disabled, to ignore potential glitches. However, the controller must be
+> enabled for HW recovery (bus CLEAR command). The third and last patch
+> adds advanced digital filtering support for SAMA5D4. The TWI IP found in
+> SAMA5D4 supports advanced digital filtering, even if, at the moment of
+> this patch, the SAMA5D4 datasheet does not mention it.
+
+So, can you guys read this mail? It should be possible somehow that I
+can read your remarks to my remarks, no?
+
+
+--PO1fX2YbNUKV/P3U
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmK8rBUACgkQFA3kzBSg
+Kba4jQ//ZOvHvEFqvfQQSpnokDAdiAwhM5eD3J2oFwTCIQb9iCt0lVxXranvIHpX
+wxX06lTnl1drrUQdKanseT2hylhqPeam0pJi6LHi9Q1l9n0EHaPpctJJ46ovtXEG
+frGuV8tIHdr9/H7G/nW+PtJpDcSxpOmOR0KsLSVSTn6el7LOA8EjhOHMRCMBeFfg
+UeHnmfGCI5GZrGcFqkxHRX/CwFFZCAsCyW3+1Kkk/WMVK1ims8IZpgRD01mvQERf
+X4LbSexcyC702lvgyGGKNsph83J/qT3EAUHQvzc2+LtkmQkYk12yFXqzzI67QQDu
+uDd8w7qKi0/r56hXP9DSSoPDvzt1edj9xlj3jdaFQL/9lxlx4+OYeeAsaUo2qOJT
+wko7aadFMPG49N5Qp5s/Je0vu+uCf7rLg1J6WB/nSpVMuon/4dZEtP/QsBm86bi1
+WG/NdwJgxPOg8T/PnbILEaRzcvYCM8yVCn3O6WBt8h2NBrjykIp0A+baHBzuN+sF
+VGxYzlR7hDzzZOXz7PZoVxtt3nozGwmnknQyttRHGEiz6OrNqkZezykuU3mlzXhT
+ncRpLwHXWEt4idvFPM0gkUk8StWC/6puUNF5Doy9wmVliS+7d7PQ5VE1v0/2cQn2
+6pXGHbda705qIxBTZ9n1yIWqKtw1OIijv+CNNwkCOd8iQIxYFBk=
+=Pigm
+-----END PGP SIGNATURE-----
+
+--PO1fX2YbNUKV/P3U--
