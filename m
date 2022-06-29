@@ -2,181 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF26CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232442AbiF2SDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43064 "EHLO
+        id S232340AbiF2SDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiF2SCo (ORCPT
+        with ESMTP id S232231AbiF2SCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 14:02:44 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3A53B3EF;
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E3D83A735;
         Wed, 29 Jun 2022 11:02:43 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id c4so14809031plc.8;
-        Wed, 29 Jun 2022 11:02:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OvfYSzHH0FdUe/oTxazh6rNQyrJ5xcz9nHHlbTm38zg=;
-        b=RyMTdPZyMpQxXc86CeQ7pGzQ3i4lGkYzVuwRg8xzMEbqrO1zw1UBoexSsrPAIYgzvv
-         GZOQ/8maAHQV4mZQ9Jsu7KDj9Pcov3A3IEzT4+vTgKCjGKL4csj3DNs9TA437ils6nlH
-         DQTRG24bThThvZ1xTlsx9cnE6CgOZDlTGS7WkA+5Vjk8Dj12sz8CYzj7hHj+/HI6Ghfp
-         rHCUuTii73QV8jOKOZKZ3kimVHoy9RDilVwh6P6fV1k5bOQx9DzmSvtOGHl3wb3Qtn6V
-         VAB40C9b1fb8DFyvKIc1bHVZLDz46raxNd4OTA26tr9t1nSw/RAvZ8z5TFoHfI+VUh8C
-         y9lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OvfYSzHH0FdUe/oTxazh6rNQyrJ5xcz9nHHlbTm38zg=;
-        b=TUWUnM5CyzB1dwtDNMUk6ECjfGBT89ns8hjZpv/ZXMTDb4KZZRFzzRRU20MI593uvv
-         jm7+Ty0jaYhXOVJ6HOike6ky3RJmkHYnK+N6tQdHB48Wk+cKvcGHXDhoC+WxuIxQWULi
-         0PU5aaEqK0CXb5AaDQX8/898Tidzw7XdBOrYe8hk3va0OF7E20ZAJtq+BvWA0py+0IaF
-         b1DVzrh2nz9u/mgg1joLxWrffFv982xGsjhTS3PK6kGTeFMwZEt0u0qHJDrg9bnrlgrr
-         VmMsdgUuOH620tP5g3qKn/pF+SUF5QfI/lrBcU6BALalISW13xoyCOoZvScu+YXsggh6
-         w0ug==
-X-Gm-Message-State: AJIora/STnuV0GmmPl3UCqktv1gyCOhzYEDmsnEV+hDp6dJw5JSCqIRx
-        7UKPSHAh98tKd6T9hWRZzywjNBf5nek=
-X-Google-Smtp-Source: AGRyM1uffzSD6CGS8+HI5BZQSR79OKJTeZpufF0SuV1l1IXEupH0+XE80+Sw6tooZMAVKxl0QQiQdw==
-X-Received: by 2002:a17:902:eec3:b0:16a:4f3b:a205 with SMTP id h3-20020a170902eec300b0016a4f3ba205mr11662070plb.39.1656525762315;
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E21051480;
         Wed, 29 Jun 2022 11:02:42 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s7-20020a17090302c700b00168e83eda56sm11736371plk.3.2022.06.29.11.02.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 11:02:41 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Stefan Agner <stefan@agner.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tony Lindgren <tony@atomide.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Jian Cai <caij2003@gmail.com>,
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
-        linux-kernel@vger.kernel.org (open list),
-        linux-crypto@vger.kernel.org (open list:CRYPTO API),
-        linux-omap@vger.kernel.org (open list:OMAP2+ SUPPORT),
-        clang-built-linux@googlegroups.com (open list:CLANG/LLVM BUILD SUPPORT),
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH stable 5.4 02/11] ARM: 8990/1: use VFP assembler mnemonics in register load/store macros
-Date:   Wed, 29 Jun 2022 11:02:18 -0700
-Message-Id: <20220629180227.3408104-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629180227.3408104-1-f.fainelli@gmail.com>
-References: <20220629180227.3408104-1-f.fainelli@gmail.com>
+Received: from [10.57.85.71] (unknown [10.57.85.71])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 050C53F5A1;
+        Wed, 29 Jun 2022 11:02:37 -0700 (PDT)
+Message-ID: <d84a0498-3b7f-3d38-2bfd-9a175db4002a@arm.com>
+Date:   Wed, 29 Jun 2022 19:02:33 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v7 01/21] lib/scatterlist: add flag for indicating P2PDMA
+ segments in an SGL
+Content-Language: en-GB
+To:     Logan Gunthorpe <logang@deltatee.com>,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc:     Stephen Bates <sbates@raithlin.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>
+References: <20220615161233.17527-1-logang@deltatee.com>
+ <20220615161233.17527-2-logang@deltatee.com>
+ <b56d9b93-c59f-5764-e599-d9718edb42d3@arm.com>
+ <c42b5ee3-5d4f-7e44-8885-26b8417208ae@deltatee.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <c42b5ee3-5d4f-7e44-8885-26b8417208ae@deltatee.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Agner <stefan@agner.ch>
+On 2022-06-29 16:39, Logan Gunthorpe wrote:
+> 
+> 
+> 
+> On 2022-06-29 03:05, Robin Murphy wrote:
+>> On 2022-06-15 17:12, Logan Gunthorpe wrote:
+>>> Make use of the third free LSB in scatterlist's page_link on 64bit
+>>> systems.
+>>>
+>>> The extra bit will be used by dma_[un]map_sg_p2pdma() to determine when a
+>>> given SGL segments dma_address points to a PCI bus address.
+>>> dma_unmap_sg_p2pdma() will need to perform different cleanup when a
+>>> segment is marked as a bus address.
+>>>
+>>> The new bit will only be used when CONFIG_PCI_P2PDMA is set; this means
+>>> PCI P2PDMA will require CONFIG_64BIT. This should be acceptable as the
+>>> majority of P2PDMA use cases are restricted to newer root complexes and
+>>> roughly require the extra address space for memory BARs used in the
+>>> transactions.
+>>>
+>>> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+>>> Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+>>> ---
+>>>    drivers/pci/Kconfig         |  5 +++++
+>>>    include/linux/scatterlist.h | 44 ++++++++++++++++++++++++++++++++++++-
+>>>    2 files changed, 48 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
+>>> index 133c73207782..5cc7cba1941f 100644
+>>> --- a/drivers/pci/Kconfig
+>>> +++ b/drivers/pci/Kconfig
+>>> @@ -164,6 +164,11 @@ config PCI_PASID
+>>>    config PCI_P2PDMA
+>>>        bool "PCI peer-to-peer transfer support"
+>>>        depends on ZONE_DEVICE
+>>> +    #
+>>> +    # The need for the scatterlist DMA bus address flag means PCI P2PDMA
+>>> +    # requires 64bit
+>>> +    #
+>>> +    depends on 64BIT
+>>>        select GENERIC_ALLOCATOR
+>>>        help
+>>>          Enableѕ drivers to do PCI peer-to-peer transactions to and from
+>>> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+>>> index 7ff9d6386c12..6561ca8aead8 100644
+>>> --- a/include/linux/scatterlist.h
+>>> +++ b/include/linux/scatterlist.h
+>>> @@ -64,12 +64,24 @@ struct sg_append_table {
+>>>    #define SG_CHAIN    0x01UL
+>>>    #define SG_END        0x02UL
+>>>    +/*
+>>> + * bit 2 is the third free bit in the page_link on 64bit systems which
+>>> + * is used by dma_unmap_sg() to determine if the dma_address is a
+>>> + * bus address when doing P2PDMA.
+>>> + */
+>>> +#ifdef CONFIG_PCI_P2PDMA
+>>> +#define SG_DMA_BUS_ADDRESS    0x04UL
+>>> +static_assert(__alignof__(struct page) >= 8);
+>>> +#else
+>>> +#define SG_DMA_BUS_ADDRESS    0x00UL
+>>> +#endif
+>>> +
+>>>    /*
+>>>     * We overload the LSB of the page pointer to indicate whether it's
+>>>     * a valid sg entry, or whether it points to the start of a new
+>>> scatterlist.
+>>>     * Those low bits are there for everyone! (thanks mason :-)
+>>>     */
+>>> -#define SG_PAGE_LINK_MASK (SG_CHAIN | SG_END)
+>>> +#define SG_PAGE_LINK_MASK (SG_CHAIN | SG_END | SG_DMA_BUS_ADDRESS)
+>>>      static inline unsigned int __sg_flags(struct scatterlist *sg)
+>>>    {
+>>> @@ -91,6 +103,11 @@ static inline bool sg_is_last(struct scatterlist *sg)
+>>>        return __sg_flags(sg) & SG_END;
+>>>    }
+>>>    +static inline bool sg_is_dma_bus_address(struct scatterlist *sg)
+>>> +{
+>>> +    return __sg_flags(sg) & SG_DMA_BUS_ADDRESS;
+>>> +}
+>>> +
+>>>    /**
+>>>     * sg_assign_page - Assign a given page to an SG entry
+>>>     * @sg:            SG entry
+>>> @@ -245,6 +262,31 @@ static inline void sg_unmark_end(struct
+>>> scatterlist *sg)
+>>>        sg->page_link &= ~SG_END;
+>>>    }
+>>>    +/**
+>>> + * sg_dma_mark_bus address - Mark the scatterlist entry as a bus address
+>>> + * @sg:         SG entryScatterlist
+>>
+>> entryScatterlist?
+>>
+>>> + *
+>>> + * Description:
+>>> + *   Marks the passed in sg entry to indicate that the dma_address is
+>>> + *   a bus address and doesn't need to be unmapped.
+>>> + **/
+>>> +static inline void sg_dma_mark_bus_address(struct scatterlist *sg)
+>>> +{
+>>> +    sg->page_link |= SG_DMA_BUS_ADDRESS;
+>>> +}
+>>> +
+>>> +/**
+>>> + * sg_unmark_pci_p2pdma - Unmark the scatterlist entry as a bus address
+>>> + * @sg:         SG entryScatterlist
+>>> + *
+>>> + * Description:
+>>> + *   Clears the bus address mark.
+>>> + **/
+>>> +static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
+>>> +{
+>>> +    sg->page_link &= ~SG_DMA_BUS_ADDRESS;
+>>> +}
+>>
+>> Does this serve any useful purpose? If a page is determined to be device
+>> memory, it's not going to suddenly stop being device memory, and if the
+>> underlying sg is recycled to point elsewhere then sg_assign_page() will
+>> still (correctly) clear this flag anyway. Trying to reason about this
+>> beyond superficial API symmetry - i.e. why exactly would a caller need
+>> to call it, and what would the implications be of failing to do so -
+>> seems to lead straight to confusion.
+>>
+>> In fact I'd be inclined to have sg_assign_page() be responsible for
+>> setting the flag automatically as well, and thus not need
+>> sg_dma_mark_bus_address() either, however I can see the argument for
+>> doing it this way round to not entangle the APIs too much, so I don't
+>> have any great objection to that.
+> 
+> Yes, I think you misunderstand what this is for. The SG_DMA_BUS_ADDDRESS
+> flag doesn't mark the segment for the page, but for the dma address. It
+> cannot be set in sg_assign_page() seeing it's not a property of the page
+> but a property of the dma_address in the sgl.
+> 
+> It's not meant for use by regular SG users, it's only meant for use
+> inside DMA mapping implementations. The purpose is to know whether a
+> given dma_address in the SGL is a bus address or regular memory because
+> the two different types must be unmapped differently. We can't rely on
+> the page because, as you know, many dma_map_sg() the dma_address entry
+> in the sgl does not map to the same memory as the page. Or to put it
+> another way: is_pci_p2pdma_page(sg->page) does not imply that
+> sg->dma_address points to a bus address.
+> 
+> Does that make sense?
 
-commit ee440336e5ef977c397afdb72cbf9c6b8effc8ea upstream
+Ah, you're quite right, in trying to take in the whole series at once 
+first thing in the morning I did fail to properly grasp that detail, so 
+indeed the sg_assign_page() thing couldn't possibly work, but as I said 
+that's fine anyway. I still think the lifecycle management is a bit off 
+though - equivalently, a bus address doesn't stop being a bus address, 
+so it would seem appropriate to update this flag appropriately whenever 
+sg_dma_address() is assigned to, and not when it isn't.
 
-The integrated assembler of Clang 10 and earlier do not allow to access
-the VFP registers through the coprocessor load/store instructions:
-<instantiation>:4:6: error: invalid operand for instruction
- LDC p11, cr0, [r10],#32*4 @ FLDMIAD r10!, {d0-d15}
-     ^
-
-This has been addressed with Clang 11 [0]. However, to support earlier
-versions of Clang and for better readability use of VFP assembler
-mnemonics still is preferred.
-
-Replace the coprocessor load/store instructions with explicit assembler
-mnemonics to accessing the floating point coprocessor registers. Use
-assembler directives to select the appropriate FPU version.
-
-This allows to build these macros with GNU assembler as well as with
-Clang's built-in assembler.
-
-[0] https://reviews.llvm.org/D59733
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/905
-
-Signed-off-by: Stefan Agner <stefan@agner.ch>
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- arch/arm/include/asm/vfpmacros.h | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
-
-diff --git a/arch/arm/include/asm/vfpmacros.h b/arch/arm/include/asm/vfpmacros.h
-index 628c336e8e3b..947ee5395e1f 100644
---- a/arch/arm/include/asm/vfpmacros.h
-+++ b/arch/arm/include/asm/vfpmacros.h
-@@ -19,23 +19,25 @@
- 
- 	@ read all the working registers back into the VFP
- 	.macro	VFPFLDMIA, base, tmp
-+	.fpu	vfpv2
- #if __LINUX_ARM_ARCH__ < 6
--	LDC	p11, cr0, [\base],#33*4		    @ FLDMIAX \base!, {d0-d15}
-+	fldmiax	\base!, {d0-d15}
- #else
--	LDC	p11, cr0, [\base],#32*4		    @ FLDMIAD \base!, {d0-d15}
-+	vldmia	\base!, {d0-d15}
- #endif
- #ifdef CONFIG_VFPv3
-+	.fpu	vfpv3
- #if __LINUX_ARM_ARCH__ <= 6
- 	ldr	\tmp, =elf_hwcap		    @ may not have MVFR regs
- 	ldr	\tmp, [\tmp, #0]
- 	tst	\tmp, #HWCAP_VFPD32
--	ldclne	p11, cr0, [\base],#32*4		    @ FLDMIAD \base!, {d16-d31}
-+	vldmiane \base!, {d16-d31}
- 	addeq	\base, \base, #32*4		    @ step over unused register space
- #else
- 	VFPFMRX	\tmp, MVFR0			    @ Media and VFP Feature Register 0
- 	and	\tmp, \tmp, #MVFR0_A_SIMD_MASK	    @ A_SIMD field
- 	cmp	\tmp, #2			    @ 32 x 64bit registers?
--	ldcleq	p11, cr0, [\base],#32*4		    @ FLDMIAD \base!, {d16-d31}
-+	vldmiaeq \base!, {d16-d31}
- 	addne	\base, \base, #32*4		    @ step over unused register space
- #endif
- #endif
-@@ -44,22 +46,23 @@
- 	@ write all the working registers out of the VFP
- 	.macro	VFPFSTMIA, base, tmp
- #if __LINUX_ARM_ARCH__ < 6
--	STC	p11, cr0, [\base],#33*4		    @ FSTMIAX \base!, {d0-d15}
-+	fstmiax	\base!, {d0-d15}
- #else
--	STC	p11, cr0, [\base],#32*4		    @ FSTMIAD \base!, {d0-d15}
-+	vstmia	\base!, {d0-d15}
- #endif
- #ifdef CONFIG_VFPv3
-+	.fpu	vfpv3
- #if __LINUX_ARM_ARCH__ <= 6
- 	ldr	\tmp, =elf_hwcap		    @ may not have MVFR regs
- 	ldr	\tmp, [\tmp, #0]
- 	tst	\tmp, #HWCAP_VFPD32
--	stclne	p11, cr0, [\base],#32*4		    @ FSTMIAD \base!, {d16-d31}
-+	vstmiane \base!, {d16-d31}
- 	addeq	\base, \base, #32*4		    @ step over unused register space
- #else
- 	VFPFMRX	\tmp, MVFR0			    @ Media and VFP Feature Register 0
- 	and	\tmp, \tmp, #MVFR0_A_SIMD_MASK	    @ A_SIMD field
- 	cmp	\tmp, #2			    @ 32 x 64bit registers?
--	stcleq	p11, cr0, [\base],#32*4		    @ FSTMIAD \base!, {d16-d31}
-+	vstmiaeq \base!, {d16-d31}
- 	addne	\base, \base, #32*4		    @ step over unused register space
- #endif
- #endif
--- 
-2.25.1
-
+Thanks,
+Robin.
