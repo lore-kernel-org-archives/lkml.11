@@ -2,143 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3E3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE42C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233685AbiF2NHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
+        id S233710AbiF2NHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233656AbiF2NG4 (ORCPT
+        with ESMTP id S233693AbiF2NHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:06:56 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B8C522508;
-        Wed, 29 Jun 2022 06:06:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 63BCB152B;
-        Wed, 29 Jun 2022 06:06:54 -0700 (PDT)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 62B703F792;
-        Wed, 29 Jun 2022 06:06:52 -0700 (PDT)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     sudeep.holla@arm.com, rafael@kernel.org
-Cc:     atishp@atishpatra.org, atishp@rivosinc.com,
-        dietmar.eggemann@arm.com, gregkh@linuxfoundation.org,
-        ionela.voinescu@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        pierre.gondois@arm.com, robh+dt@kernel.org,
-        vincent.guittot@linaro.org, wangqing@vivo.com,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH] ACPI: Remove the unused find_acpi_cpu_cache_topology()
-Date:   Wed, 29 Jun 2022 14:06:44 +0100
-Message-Id: <20220629130644.1258904-1-sudeep.holla@arm.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220627165047.336669-1-sudeep.holla@arm.com>
-References: <20220627165047.336669-1-sudeep.holla@arm.com>
+        Wed, 29 Jun 2022 09:07:09 -0400
+Received: from mail.xenproject.org (mail.xenproject.org [104.130.215.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874C62B1AB;
+        Wed, 29 Jun 2022 06:07:05 -0700 (PDT)
+Received: from xenbits.xenproject.org ([104.239.192.120])
+        by mail.xenproject.org with esmtp (Exim 4.92)
+        (envelope-from <pdurrant@amazon.com>)
+        id 1o6XOw-00033l-V4; Wed, 29 Jun 2022 13:06:38 +0000
+Received: from 54-240-197-231.amazon.com ([54.240.197.231] helo=debian.cbg12.amazon.com)
+        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <pdurrant@amazon.com>)
+        id 1o6XOw-0003LW-Ia; Wed, 29 Jun 2022 13:06:38 +0000
+From:   Paul Durrant <pdurrant@amazon.com>
+To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Paul Durrant <pdurrant@amazon.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH v5] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves, if present
+Date:   Wed, 29 Jun 2022 14:05:13 +0100
+Message-Id: <20220629130514.15780-1-pdurrant@amazon.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sole user of this find_acpi_cpu_cache_topology() was arm64 topology
-which is now consolidated into the generic arch_topology without the need
-of this function.
+The scaling information in subleaf 1 should match the values set by KVM in
+the 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info)
+which is shared with the guest, but is not directly available to the VMM.
+The offset values are not set since a TSC offset is already applied.
+The TSC frequency should also be set in sub-leaf 2.
 
-Drop the unused function find_acpi_cpu_cache_topology().
-
-Reported-by: Ionela Voinescu <ionela.voinescu@arm.com>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: linux-acpi@vger.kernel.org
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Paul Durrant <pdurrant@amazon.com>
 ---
- drivers/acpi/pptt.c  | 37 -------------------------------------
- include/linux/acpi.h |  5 -----
- 2 files changed, 42 deletions(-)
+Cc: David Woodhouse <dwmw2@infradead.org>
 
-Hi Rafael,
+v5:
+ - Drop the caching of the CPUID entry pointers and only update the
+   sub-leaves if the CPU frequency has actually changed
 
-This is another patch that I would like to be part of the series[1].
-Please ack the same if you are OK to route this via Greg. I am avoiding
-to repost the whole series just for this one additional patch for now.
+v4:
+ - Update commit comment
 
-Regards,
-Sudeep
+v3:
+ - Add leaf limit check in kvm_xen_set_cpuid()
 
-[1] https://lore.kernel.org/all/20220627165047.336669-1-sudeep.holla@arm.com/
+v2:
+ - Make sure sub-leaf pointers are NULLed if the time leaf is removed
+---
+ arch/x86/include/asm/kvm_host.h |  1 +
+ arch/x86/kvm/cpuid.c            |  2 ++
+ arch/x86/kvm/x86.c              |  1 +
+ arch/x86/kvm/xen.c              | 51 +++++++++++++++++++++++++++++++++
+ arch/x86/kvm/xen.h              | 10 +++++++
+ 5 files changed, 65 insertions(+)
 
-diff --git a/drivers/acpi/pptt.c b/drivers/acpi/pptt.c
-index 763f021d45e6..dd3222a15c9c 100644
---- a/drivers/acpi/pptt.c
-+++ b/drivers/acpi/pptt.c
-@@ -691,43 +691,6 @@ int find_acpi_cpu_topology(unsigned int cpu, int level)
- 	return find_acpi_cpu_topology_tag(cpu, level, 0);
- }
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 88a3026ee163..abb0a39f60eb 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -638,6 +638,7 @@ struct kvm_vcpu_xen {
+ 	struct hrtimer timer;
+ 	int poll_evtchn;
+ 	struct timer_list poll_timer;
++	u32 cpuid_tsc_info;
+ };
  
--/**
-- * find_acpi_cpu_cache_topology() - Determine a unique cache topology value
-- * @cpu: Kernel logical CPU number
-- * @level: The cache level for which we would like a unique ID
-- *
-- * Determine a unique ID for each unified cache in the system
-- *
-- * Return: -ENOENT if the PPTT doesn't exist, or the CPU cannot be found.
-- * Otherwise returns a value which represents a unique topological feature.
-- */
--int find_acpi_cpu_cache_topology(unsigned int cpu, int level)
--{
--	struct acpi_table_header *table;
--	struct acpi_pptt_cache *found_cache;
--	acpi_status status;
--	u32 acpi_cpu_id = get_acpi_id_for_cpu(cpu);
--	struct acpi_pptt_processor *cpu_node = NULL;
--	int ret = -1;
--
--	status = acpi_get_table(ACPI_SIG_PPTT, 0, &table);
--	if (ACPI_FAILURE(status)) {
--		acpi_pptt_warn_missing();
--		return -ENOENT;
--	}
--
--	found_cache = acpi_find_cache_node(table, acpi_cpu_id,
--					   CACHE_TYPE_UNIFIED,
--					   level,
--					   &cpu_node);
--	if (found_cache)
--		ret = ACPI_PTR_DIFF(cpu_node, table);
--
--	acpi_put_table(table);
--
--	return ret;
--}
--
- /**
-  * find_acpi_cpu_topology_package() - Determine a unique CPU package value
-  * @cpu: Kernel logical CPU number
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 4f82a5bc6d98..7b96a8bff6d2 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -1429,7 +1429,6 @@ int find_acpi_cpu_topology(unsigned int cpu, int level);
- int find_acpi_cpu_topology_cluster(unsigned int cpu);
- int find_acpi_cpu_topology_package(unsigned int cpu);
- int find_acpi_cpu_topology_hetero_id(unsigned int cpu);
--int find_acpi_cpu_cache_topology(unsigned int cpu, int level);
- #else
- static inline int acpi_pptt_cpu_is_thread(unsigned int cpu)
- {
-@@ -1451,10 +1450,6 @@ static inline int find_acpi_cpu_topology_hetero_id(unsigned int cpu)
- {
- 	return -EINVAL;
+ struct kvm_vcpu_arch {
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index d47222ab8e6e..544d0f823ee5 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -25,6 +25,7 @@
+ #include "mmu.h"
+ #include "trace.h"
+ #include "pmu.h"
++#include "xen.h"
+ 
+ /*
+  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
+@@ -310,6 +311,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 	    __cr4_reserved_bits(guest_cpuid_has, vcpu);
+ 
+ 	kvm_hv_set_cpuid(vcpu);
++	kvm_xen_after_set_cpuid(vcpu);
+ 
+ 	/* Invoke the vendor callback only after the above state is updated. */
+ 	static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 031678eff28e..29ed665c51db 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3110,6 +3110,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
+ 				   &vcpu->hv_clock.tsc_shift,
+ 				   &vcpu->hv_clock.tsc_to_system_mul);
+ 		vcpu->hw_tsc_khz = tgt_tsc_khz;
++		kvm_xen_setup_tsc_info(v);
+ 	}
+ 
+ 	vcpu->hv_clock.tsc_timestamp = tsc_timestamp;
+diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
+index 610beba35907..c84424d5c8b6 100644
+--- a/arch/x86/kvm/xen.c
++++ b/arch/x86/kvm/xen.c
+@@ -10,6 +10,9 @@
+ #include "xen.h"
+ #include "hyperv.h"
+ #include "lapic.h"
++#include "cpuid.h"
++
++#include <asm/xen/cpuid.h>
+ 
+ #include <linux/eventfd.h>
+ #include <linux/kvm_host.h>
+@@ -1855,3 +1858,51 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
+ 	if (kvm->arch.xen_hvm_config.msr)
+ 		static_branch_slow_dec_deferred(&kvm_xen_enabled);
  }
--static inline int find_acpi_cpu_cache_topology(unsigned int cpu, int level)
--{
--	return -EINVAL;
--}
++
++void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu)
++{
++	u32 base = 0;
++	u32 limit;
++	u32 function;
++
++	vcpu->arch.xen.cpuid_tsc_info = 0;
++
++	for_each_possible_hypervisor_cpuid_base(function) {
++		struct kvm_cpuid_entry2 *entry = kvm_find_cpuid_entry(vcpu, function, 0);
++
++		if (entry &&
++		    entry->ebx == XEN_CPUID_SIGNATURE_EBX &&
++		    entry->ecx == XEN_CPUID_SIGNATURE_ECX &&
++		    entry->edx == XEN_CPUID_SIGNATURE_EDX) {
++			base = function;
++			limit = entry->eax;
++			break;
++		}
++	}
++	if (!base)
++		return;
++
++	function = base | XEN_CPUID_LEAF(3);
++	if (function > limit)
++		return;
++
++	vcpu->arch.xen.cpuid_tsc_info = function;
++}
++
++void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
++{
++	struct kvm_cpuid_entry2 *entry;
++
++	if (!vcpu->arch.xen.cpuid_tsc_info)
++		return;
++
++	entry = kvm_find_cpuid_entry(vcpu, vcpu->arch.xen.cpuid_tsc_info, 1);
++	if (entry) {
++		entry->ecx = vcpu->arch.hv_clock.tsc_to_system_mul;
++		entry->edx = vcpu->arch.hv_clock.tsc_shift;
++	}
++
++	entry = kvm_find_cpuid_entry(vcpu, vcpu->arch.xen.cpuid_tsc_info, 2);
++	if (entry)
++		entry->eax = vcpu->arch.hw_tsc_khz;
++}
+diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
+index 532a535a9e99..b2ca434431d6 100644
+--- a/arch/x86/kvm/xen.h
++++ b/arch/x86/kvm/xen.h
+@@ -32,6 +32,8 @@ int kvm_xen_set_evtchn_fast(struct kvm_xen_evtchn *xe,
+ int kvm_xen_setup_evtchn(struct kvm *kvm,
+ 			 struct kvm_kernel_irq_routing_entry *e,
+ 			 const struct kvm_irq_routing_entry *ue);
++void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu);
++void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu);
+ 
+ static inline bool kvm_xen_msr_enabled(struct kvm *kvm)
+ {
+@@ -135,6 +137,14 @@ static inline bool kvm_xen_timer_enabled(struct kvm_vcpu *vcpu)
+ {
+ 	return false;
+ }
++
++static inline void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu)
++{
++}
++
++static inline void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
++{
++}
  #endif
  
- #ifdef CONFIG_ACPI_PCC
+ int kvm_xen_hypercall(struct kvm_vcpu *vcpu);
 -- 
-2.37.0
+2.20.1
 
