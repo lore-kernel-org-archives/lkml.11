@@ -2,253 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CB7CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE73AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232224AbiF2IE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
+        id S232362AbiF2IEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 04:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231553AbiF2IEY (ORCPT
+        with ESMTP id S231553AbiF2IEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 04:04:24 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A58029C90
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:04:22 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id o16so21186228wra.4
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:04:22 -0700 (PDT)
+        Wed, 29 Jun 2022 04:04:36 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9899A3B3F6
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:04:29 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id jh14so13391823plb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 01:04:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zRf5UwJSFwOKMWYCo+NYCtcvIlqTfbI8aBejevwXVI4=;
-        b=qGU014NppgnQ4NbDPye4XEUlwmw0vOqpih0l20x5Lyk+Wz4aDJ8DVlo9on/rJ9KU2l
-         h+7pRoY82L9tJXbAALnFHTmEmxkV1m6Av8BuOqJTndMfM/Gg/ZrvBJPPkY71wyB8CjL+
-         i+HmFQrI4WL7pXkhjMp0RPUB8BZChmeM/1Qf0X4yCN1QzeekMSLm15ybVmap+hDd/Qhb
-         7Y0uXcMiGGFjmgOpcGgeWuVsE9FFH7ALZIgsb97HLswmSLq4U9zn8iZkLmWEit9vhFcF
-         CGmhi56oBjLbI+944WQa22TdRrGeF8Mf6IQWDNvBqWkEopbF+UCKcRWLIOFwUS0MQCJ7
-         IkFg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tphUaJRWmGfbf+rcQQvvdTAaHw/IgKryhTSbMG303fk=;
+        b=kbp3SymyDcrr+av2CLzAaJ76U24aRBFW6qsAWMQJGR2htBnuWGvLCgalt6z/9/NmEc
+         NYAfdcJUNOfMQCpCkh4e9mKK6tdsIRgQA3MxiqiHyNqa8GjPRZJajLDPkoWHecHitd0N
+         Xx9kXZJ5tjyhVlfINrOFta2j0NZ+Epkj0WilE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zRf5UwJSFwOKMWYCo+NYCtcvIlqTfbI8aBejevwXVI4=;
-        b=iq6gv6Y+mP7aoAKiQZQoak1QlqnvemeqoJyI0dbtXlnFfUZt1wS70joj7IP1XBcVaA
-         AaeSgrFvqz9nN4VdPjwGNhWJTNDVtlzHWWP0t0Qk3+RcCHoO+rc0qAgXfJXGbTKmyvBr
-         sft5WAzh+0b2TlgiDF7NZA3SVQJmw69vGlPkO5vO7GMCWgXdUKbxk7YJFGVfQfTNbycP
-         PoJp7zVMWuQuPB4ituDzZhW1BB+IVzmXXK1bXIqeW6WCpLYY3qrgdKc1V7gkQ9lw0LzT
-         37GSAbKrKDTimu9FCvIboJjw4fMG0lJW+yc888W4gR6/t1hZl5KjL7kEgc/aFQffvA/n
-         HFGg==
-X-Gm-Message-State: AJIora9xC0O9IwjOmvd4JQlq/EoT7ca4twhu1fal+D9zLcfVFC1IYfzN
-        tjKvZrQDQ0wB+cH7Dfz2RE16PqwkZvp8i5spjrIYsw==
-X-Google-Smtp-Source: AGRyM1v6bUugJ8jSFfCOXoA4e3bcYceOswWINVSQzWixUcdobsHBwooNlJ0+5gY/xuIH4Q/UwhfhFiSlnzV4d+KAhlM=
-X-Received: by 2002:adf:f146:0:b0:21b:8c7d:7294 with SMTP id
- y6-20020adff146000000b0021b8c7d7294mr1698559wro.582.1656489860013; Wed, 29
- Jun 2022 01:04:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tphUaJRWmGfbf+rcQQvvdTAaHw/IgKryhTSbMG303fk=;
+        b=G2qbyuiVOCjMNtxz9ZExzukiPxDZYirNdxMl3VYsv0S9H4boej0J4g/IXa+HMr7PMw
+         URGXhbGzu3MANcuqK+rXVh5HkivF20lO7Qo7AX5fXmNXbjpoRQGrhY+Sv6jAK9vc+Six
+         U2WcqzjB5BcVfuzFo71yKDm+9SP0m9yUzku3crpQnqJaXB02jckq7uQ4xx/0R/9vKQ6i
+         7Y0psrxFK4AOlvt8RXPZShPvtx+gVdJmnUTFLOe5CFmWCyz3ZLIzv9AobVWDdu/S/nc7
+         n21O63rYCIHmtYyMvnZMadjCvQW1SCZ6L96h5o7ap2X8JD1sfwa92ftM4qYI3PuSu1DU
+         r3BQ==
+X-Gm-Message-State: AJIora/m/ApEERQ7iz+w8+oTMPCTd61hAyxxag2TBpj6o8a9S6MVQqY5
+        ewVocscfgvaQnmCUV8fsgA/k6LGswSrfbg==
+X-Google-Smtp-Source: AGRyM1vD7+R3YGDCxJmwjPFiWHdqVH/Qs7cs5QFTjqLhaftK9VZtL0He5C1/fsJNXhqqZ4K3pDox+A==
+X-Received: by 2002:a17:902:7481:b0:16b:7a53:3b4c with SMTP id h1-20020a170902748100b0016b7a533b4cmr8071158pll.54.1656489869151;
+        Wed, 29 Jun 2022 01:04:29 -0700 (PDT)
+Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
+        by smtp.gmail.com with ESMTPSA id 11-20020a63164b000000b0040d4c8e335csm10579256pgw.75.2022.06.29.01.04.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 01:04:28 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Chen-Yu Tsai <wenst@chromium.org>, alsa-devel@alsa-project.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Judy Hsiao <judyhsiao@chromium.org>
+Subject: [PATCH v1 1/2] ASoC: rockchip: i2s: Remove unwanted dma settings in rockchip_i2s_probe
+Date:   Wed, 29 Jun 2022 08:04:21 +0000
+Message-Id: <20220629080421.2427933-1-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
 MIME-Version: 1.0
-References: <20220610194435.2268290-1-yosryahmed@google.com>
- <20220610194435.2268290-9-yosryahmed@google.com> <00df1932-38fe-c6f8-49d0-3a44affb1268@fb.com>
- <CAJD7tkaNnx6ebFrMxWgkJbtx=Qoe+cEwnjtWeY5=EAaVktrenw@mail.gmail.com>
- <CAJD7tkbOztCEWgMzoCOdD+g3whMMQWW2e0gwo9p0tVK=3hqmcw@mail.gmail.com> <59376285-21bc-ff12-3d64-3ea7257becb2@fb.com>
-In-Reply-To: <59376285-21bc-ff12-3d64-3ea7257becb2@fb.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Wed, 29 Jun 2022 01:03:43 -0700
-Message-ID: <CAJD7tkZ50QanA=2nrg6hBEk3p5oanHtF-6L_x0UQQ7AcZpBKrA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 8/8] bpf: add a selftest for cgroup
- hierarchical stats collection
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 11:27 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 6/28/22 12:43 AM, Yosry Ahmed wrote:
-> > On Mon, Jun 27, 2022 at 11:47 PM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >>
-> >> On Mon, Jun 27, 2022 at 11:14 PM Yonghong Song <yhs@fb.com> wrote:
-> >>>
-> >>>
-> >>>
-> >>> On 6/10/22 12:44 PM, Yosry Ahmed wrote:
-> >>>> Add a selftest that tests the whole workflow for collecting,
-> >>>> aggregating (flushing), and displaying cgroup hierarchical stats.
-> >>>>
-> >>>> TL;DR:
-> >>>> - Whenever reclaim happens, vmscan_start and vmscan_end update
-> >>>>     per-cgroup percpu readings, and tell rstat which (cgroup, cpu) pairs
-> >>>>     have updates.
-> >>>> - When userspace tries to read the stats, vmscan_dump calls rstat to flush
-> >>>>     the stats, and outputs the stats in text format to userspace (similar
-> >>>>     to cgroupfs stats).
-> >>>> - rstat calls vmscan_flush once for every (cgroup, cpu) pair that has
-> >>>>     updates, vmscan_flush aggregates cpu readings and propagates updates
-> >>>>     to parents.
-> >>>>
-> >>>> Detailed explanation:
-> >>>> - The test loads tracing bpf programs, vmscan_start and vmscan_end, to
-> >>>>     measure the latency of cgroup reclaim. Per-cgroup ratings are stored in
-> >>>>     percpu maps for efficiency. When a cgroup reading is updated on a cpu,
-> >>>>     cgroup_rstat_updated(cgroup, cpu) is called to add the cgroup to the
-> >>>>     rstat updated tree on that cpu.
-> >>>>
-> >>>> - A cgroup_iter program, vmscan_dump, is loaded and pinned to a file, for
-> >>>>     each cgroup. Reading this file invokes the program, which calls
-> >>>>     cgroup_rstat_flush(cgroup) to ask rstat to propagate the updates for all
-> >>>>     cpus and cgroups that have updates in this cgroup's subtree. Afterwards,
-> >>>>     the stats are exposed to the user. vmscan_dump returns 1 to terminate
-> >>>>     iteration early, so that we only expose stats for one cgroup per read.
-> >>>>
-> >>>> - An ftrace program, vmscan_flush, is also loaded and attached to
-> >>>>     bpf_rstat_flush. When rstat flushing is ongoing, vmscan_flush is invoked
-> >>>>     once for each (cgroup, cpu) pair that has updates. cgroups are popped
-> >>>>     from the rstat tree in a bottom-up fashion, so calls will always be
-> >>>>     made for cgroups that have updates before their parents. The program
-> >>>>     aggregates percpu readings to a total per-cgroup reading, and also
-> >>>>     propagates them to the parent cgroup. After rstat flushing is over, all
-> >>>>     cgroups will have correct updated hierarchical readings (including all
-> >>>>     cpus and all their descendants).
-> >>>>
-> >>>> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> >>>
-> >>> There are a selftest failure with test:
-> >>>
-> >>> get_cgroup_vmscan_delay:PASS:output format 0 nsec
-> >>> get_cgroup_vmscan_delay:PASS:cgroup_id 0 nsec
-> >>> get_cgroup_vmscan_delay:PASS:vmscan_reading 0 nsec
-> >>> get_cgroup_vmscan_delay:PASS:read cgroup_iter 0 nsec
-> >>> get_cgroup_vmscan_delay:PASS:output format 0 nsec
-> >>> get_cgroup_vmscan_delay:PASS:cgroup_id 0 nsec
-> >>> get_cgroup_vmscan_delay:FAIL:vmscan_reading unexpected vmscan_reading:
-> >>> actual 0 <= expected 0
-> >>> check_vmscan_stats:FAIL:child1_vmscan unexpected child1_vmscan: actual
-> >>> 781874 != expected 382092
-> >>> check_vmscan_stats:FAIL:child2_vmscan unexpected child2_vmscan: actual
-> >>> -1 != expected -2
-> >>> check_vmscan_stats:FAIL:test_vmscan unexpected test_vmscan: actual
-> >>> 781874 != expected 781873
-> >>> check_vmscan_stats:FAIL:root_vmscan unexpected root_vmscan: actual 0 <
-> >>> expected 781874
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> >>> destroy_progs:PASS:remove cgroup_iter root pin 0 nsec
-> >>> cleanup_bpffs:PASS:rmdir /sys/fs/bpf/vmscan/ 0 nsec
-> >>> #33      cgroup_hierarchical_stats:FAIL
-> >>>
-> >>
-> >> The test is passing on my setup. I am trying to figure out if there is
-> >> something outside the setup done by the test that can cause the test
-> >> to fail.
-> >>
-> >>>
-> >>> Also an existing test also failed.
-> >>>
-> >>> btf_dump_data:PASS:find type id 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:failed/unexpected type_sz 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:FAIL:ensure expected/actual match unexpected ensure
-> >>> expected/actual match: actual '(union bpf_iter_link_info){.map =
-> >>> (struct){.map_fd = (__u32)1,},.cgroup '
-> >>> test_btf_dump_struct_data:PASS:find struct sk_buff 0 nsec
-> >>>
-> >>
-> >> Yeah I see what happened there. bpf_iter_link_info was changed by the
-> >> patch that introduced cgroup_iter, and this specific union is used by
-> >> the test to test the "union with nested struct" btf dumping. I will
-> >> add a patch in the next version that updates the btf_dump_data test
-> >> accordingly. Thanks.
-> >>
-> >
-> > So I actually tried the attached diff to updated the expected dump of
-> > bpf_iter_link_info in this test, but the test still failed:
-> >
-> > btf_dump_data:FAIL:ensure expected/actual match unexpected ensure
-> > expected/actual match: actual '(union bpf_iter_link_info){.map =
-> > (struct){.map_fd = (__u32)1,},.cgroup = (struct){.cgroup_fd =
-> > (__u32)1,},}'  != expected '(union bpf_iter_link_info){.map =
-> > (struct){.map_fd = (__u32)1,},.cgroup = (struct){.cgroup_fd =
-> > (__u32)1,.traversal_order = (__u32)1},}'
-> >
-> > It seems to me that the actual output in this case is not right, it is
-> > missing traversal_order. Did we accidentally find a bug in btf dumping
-> > of unions with nested structs, or am I missing something here?
->
-> Probably there is an issue in btf_dump_data() function in
-> tools/lib/bpf/btf_dump.c. Could you take a look at it?
+Remove the unwanted dma settings in rockchip_i2s_probe.
 
-I will try to take a look but after I figure out why the selftest
-added here is always passing for me and always failing for you :(
+Fixes: 44f362c2cc6d ("ASoC: rockchip: i2s: switch BCLK to GPIO")
+Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
+---
+ sound/soc/rockchip/rockchip_i2s.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
->
-> > Thanks!
-> >
-> >>>
-> >>> test_btf_dump_struct_data:PASS:unexpected return value dumping sk_buff 0
-> >>> nsec
-> >>>
-> >>> btf_dump_data:PASS:verify prefix match 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:find type id 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:failed to return -E2BIG 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:ensure expected/actual match 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:verify prefix match 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:find type id 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:failed to return -E2BIG 0 nsec
-> >>>
-> >>>
-> >>> btf_dump_data:PASS:ensure expected/actual match 0 nsec
-> >>>
-> >>>
-> >>> #21/14   btf_dump/btf_dump: struct_data:FAIL
-> >>>
-> >>> please take a look.
-> >>>
-> >>>> ---
-> >>>>    .../prog_tests/cgroup_hierarchical_stats.c    | 351 ++++++++++++++++++
-> >>>>    .../bpf/progs/cgroup_hierarchical_stats.c     | 234 ++++++++++++
-> >>>>    2 files changed, 585 insertions(+)
-> >>>>    create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> >>>>    create mode 100644 tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
-> >>>>
-> [...]
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index 0ed01624a2db..285b6455be28 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -817,14 +817,6 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 
+ 	i2s_pinctrl_select_bclk_off(i2s);
+ 
+-	i2s->playback_dma_data.addr = res->start + I2S_TXDR;
+-	i2s->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+-	i2s->playback_dma_data.maxburst = 4;
+-
+-	i2s->capture_dma_data.addr = res->start + I2S_RXDR;
+-	i2s->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+-	i2s->capture_dma_data.maxburst = 4;
+-
+ 	dev_set_drvdata(&pdev->dev, i2s);
+ 
+ 	pm_runtime_enable(&pdev->dev);
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
+
