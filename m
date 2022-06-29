@@ -2,137 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5424C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 02:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC340C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 02:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiF2CK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 22:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
+        id S230362AbiF2CMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 22:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiF2CKK (ORCPT
+        with ESMTP id S230016AbiF2CMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 22:10:10 -0400
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BC22ED46;
-        Tue, 28 Jun 2022 19:10:06 -0700 (PDT)
-Received: by mail-il1-f173.google.com with SMTP id 9so9375639ill.5;
-        Tue, 28 Jun 2022 19:10:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=akCaK7/6hiO9qiDqUC6BjphM3QTCscKxuIGksCMRv4Q=;
-        b=qw7QGmRtknT8SHk4/fjSpan3+R2RdbsAn3+a6UmKweoDKdHuU+8KLOy3Ot+hJ8w/iy
-         3zChQgqhWh3o+jWY4kPsmfTQ9+ys2BZBw7KHrVgMJgjeoFJqRVqUiDsaEx4zwaK2Hgek
-         JYyiNhdt/ok56z4G/T7ViDNxpJrvfj9z0HrSKcvXKVGyqIjSmSA6KUmIkyqrplDdwYeQ
-         /tsTRGN7UJBjgBOrGDUozmO1Th0rNFeFwVfVI+9to/jNKAFgk2vuLMge52gVEyiqFrD6
-         I2t/M4/o4Q6+QQvDIJ9kRxMX+3MhrkoRT28Q0AWBhxukXFmD1Cc7NOcWyEj01iS/CZpt
-         sOYQ==
-X-Gm-Message-State: AJIora8Zf+CRohPEPWe9EI7I5V7paPM2LwagUp0XrDX4FNIyu1g/GCAc
-        SlvgApfbOHHYcbIK59A2pg==
-X-Google-Smtp-Source: AGRyM1s+vAu0J3FAxJurSCzpU4DCe5h38yk8r+xC7m9WUBJ56dufRl4BRYIH390A+L4jw+4zToyPjA==
-X-Received: by 2002:a05:6e02:216b:b0:2da:c09b:179f with SMTP id s11-20020a056e02216b00b002dac09b179fmr659560ilv.0.1656468605851;
-        Tue, 28 Jun 2022 19:10:05 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id w18-20020a92c892000000b002d909e3d89esm6515075ilo.60.2022.06.28.19.10.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 19:10:05 -0700 (PDT)
-Received: (nullmailer pid 1403684 invoked by uid 1000);
-        Wed, 29 Jun 2022 02:09:39 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20220628221404.1444200-2-sean.anderson@seco.com>
-References: <20220628221404.1444200-1-sean.anderson@seco.com> <20220628221404.1444200-2-sean.anderson@seco.com>
-Subject: Re: [PATCH net-next v2 01/35] dt-bindings: phy: Add QorIQ SerDes binding
-Date:   Tue, 28 Jun 2022 20:09:39 -0600
-Message-Id: <1656468579.935954.1403683.nullmailer@robh.at.kernel.org>
+        Tue, 28 Jun 2022 22:12:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA26A2CE38;
+        Tue, 28 Jun 2022 19:12:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 555B461CF6;
+        Wed, 29 Jun 2022 02:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4246C341CF;
+        Wed, 29 Jun 2022 02:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656468751;
+        bh=kBeb5Uw/j5cdFGYwRHmMmUlZSMwzxwbpxsSpXCSep3M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LjRWHp6YutpgDlkEoNZbTlTjpLtq3ctkRx2/BPSkYoTyqPyf1vbeUkRYl7aVXaLFe
+         nkWK5TljCMJa6ImUJ1mG1/WmeUeaW/s/tRLT1FL5iYuedBygOX5fPBg+AzMAnBAG12
+         JVyQGg0Bvm+JvD4/sOfYmzZGdiUKi9JSh5eVPII9OKI9eLWFgVdfaFj3vuWsifYHy2
+         6vakrGMTWnYcu6Iv66KFV8qNGEpfG8OFb6v2iielwim9MEUxzmj2b5/hNEbuffPbOd
+         +KkqEsQWl+sa0AuPmlfnCyVtIIHoxeDZw5VqT44eybVBx0+t0OJ3NG+/kR1gIQ/J8C
+         Q0ySNX33MLQSw==
+Received: by mail-vk1-f172.google.com with SMTP id 15so6809250vko.13;
+        Tue, 28 Jun 2022 19:12:31 -0700 (PDT)
+X-Gm-Message-State: AJIora9fVa1wkGlU1cAD4HD9y3WB2percLKUTeKNTaf+PncQicUUIvPH
+        Kk0UiccDWQroqRty5eT+HkeeGTQMpGDiEtgv9XY=
+X-Google-Smtp-Source: AGRyM1sDRJWKc6dWVeHElvUlboqPwiwJz5m7zwHa5t+QSM5ZMx0nyhJAV632XFc2O2XkuEmomXUFDLniU28YR8W/XHg=
+X-Received: by 2002:ac5:cdcc:0:b0:36c:547d:d9c4 with SMTP id
+ u12-20020ac5cdcc000000b0036c547dd9c4mr3761818vkn.2.1656468750514; Tue, 28 Jun
+ 2022 19:12:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220628081707.1997728-1-guoren@kernel.org> <20220628081707.1997728-2-guoren@kernel.org>
+ <218522c9-97b9-7659-ce31-2dbc4b0c6a60@redhat.com>
+In-Reply-To: <218522c9-97b9-7659-ce31-2dbc4b0c6a60@redhat.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Wed, 29 Jun 2022 10:12:19 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTRBoAZzjWGJ0zAxv0eqBB-G=V3QHmp6+jXyznmuY6LhCQ@mail.gmail.com>
+Message-ID: <CAJF2gTRBoAZzjWGJ0zAxv0eqBB-G=V3QHmp6+jXyznmuY6LhCQ@mail.gmail.com>
+Subject: Re: [PATCH V7 1/5] asm-generic: ticket-lock: Remove unnecessary atomic_read
+To:     Waiman Long <longman@redhat.com>
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>,
+        Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 18:13:30 -0400, Sean Anderson wrote:
-> This adds a binding for the SerDes module found on QorIQ processors. The
-> phy reference has two cells, one for the first lane and one for the
-> last. This should allow for good support of multi-lane protocols when
-> (if) they are added. There is no protocol option, because the driver is
-> designed to be able to completely reconfigure lanes at runtime.
-> Generally, the phy consumer can select the appropriate protocol using
-> set_mode. For the most part there is only one protocol controller
-> (consumer) per lane/protocol combination. The exception to this is the
-> B4860 processor, which has some lanes which can be connected to
-> multiple MACs. For that processor, I anticipate the easiest way to
-> resolve this will be to add an additional cell with a "protocol
-> controller instance" property.
-> 
-> Each serdes has a unique set of supported protocols (and lanes). The
-> support matrix is stored in the driver and is selected based on the
-> compatible string. It is anticipated that a new compatible string will
-> need to be added for each serdes on each SoC that drivers support is
-> added for. There is no "generic" compatible string for this reason.
-> 
-> There are two PLLs, each of which can be used as the master clock for
-> each lane. Each PLL has its own reference. For the moment they are
-> required, because it simplifies the driver implementation. Absent
-> reference clocks can be modeled by a fixed-clock with a rate of 0.
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
-> Changes in v2:
-> - Add #clock-cells. This will allow using assigned-clocks* to configure
->   the PLLs.
-> - Allow a value of 1 for phy-cells. This allows for compatibility with
->   the similar (but according to Ioana Ciornei different enough) lynx-28g
->   binding.
-> - Document phy cells in the description
-> - Document the structure of the compatible strings
-> - Fix example binding having too many cells in regs
-> - Move compatible first
-> - Refer to the device in the documentation, rather than the binding
-> - Remove minItems
-> - Rename to fsl,lynx-10g.yaml
-> - Use list for clock-names
-> 
->  .../devicetree/bindings/phy/fsl,lynx-10g.yaml | 93 +++++++++++++++++++
->  1 file changed, 93 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/phy/fsl,lynx-10g.yaml
-> 
+On Wed, Jun 29, 2022 at 2:06 AM Waiman Long <longman@redhat.com> wrote:
+>
+> On 6/28/22 04:17, guoren@kernel.org wrote:
+> > From: Guo Ren <guoren@linux.alibaba.com>
+> >
+> > Remove unnecessary atomic_read in arch_spin_value_unlocked(lock),
+> > because the value has been in lock. This patch could prevent
+> > arch_spin_value_unlocked contend spin_lock data again.
+> >
+> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> > Signed-off-by: Guo Ren <guoren@kernel.org>
+> > Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > Cc: Palmer Dabbelt <palmer@rivosinc.com>
+> > ---
+> >   include/asm-generic/spinlock.h | 4 +++-
+> >   1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+> > index fdfebcb050f4..f1e4fa100f5a 100644
+> > --- a/include/asm-generic/spinlock.h
+> > +++ b/include/asm-generic/spinlock.h
+> > @@ -84,7 +84,9 @@ static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
+> >
+> >   static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+> >   {
+> > -     return !arch_spin_is_locked(&lock);
+> > +     u32 val = lock.counter;
+> > +
+> > +     return ((val >> 16) == (val & 0xffff));
+> >   }
+> >
+> >   #include <asm/qrwlock.h>
+>
+> lockref.c is the only current user of arch_spin_value_unlocked(). This
+> change is probably OK with this particular use case. Do you have any
+> performance data about the improvement due to this change?
+I don't have performance data and I just check the asm code, previous
+version has an additional unnecessary atomic_read.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+About this point, we've talked before, but I & palmer missed that
+point when we pick peter's patch again.
+https://lore.kernel.org/linux-riscv/YHbmXXvuG442ZDfN@hirez.programming.kicks-ass.net/
+----
+> > +static __always_inline int ticket_value_unlocked(arch_spinlock_t lock)
+> > +{
+> > +       return !ticket_is_locked(&lock);
+> Are you sure to let ticket_is_locked->atomic_read(lock) again, the
+> lock has contained all information?
+>
+> return lock.tickets.owner == lock.tickets.next;
 
-yamllint warnings/errors:
+Yeah, I wrote then the wrong way around. Couldn't be bothered to go back
+when I figured it out.
+---
+It's just a small typo.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml: patternProperties:^thermistor@:properties:adi,excitation-current-nanoamp: '$ref' should not be valid under {'const': '$ref'}
-	hint: Standard unit suffix properties don't need a type $ref
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml: ignoring, error in schema: patternProperties: ^thermistor@: properties: adi,excitation-current-nanoamp
-Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.example.dtb:0:0: /example-0/spi/ltc2983@0: failed to match any schema with compatible: ['adi,ltc2983']
 
-doc reference errors (make refcheckdocs):
+>
+> You may have to document that we have to revisit that if another use
+> case shows up.
+>
+> Cheers,
+> Longman
+>
 
-See https://patchwork.ozlabs.org/patch/
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+--
+Best Regards
+ Guo Ren
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+ML: https://lore.kernel.org/linux-csky/
