@@ -2,160 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F90C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 23:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231788AbiF2XhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 19:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
+        id S231451AbiF2Xh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 19:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232002AbiF2Xgn (ORCPT
+        with ESMTP id S232017AbiF2Xhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 19:36:43 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4444D9FD7
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:36:35 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id g7so12047963pjj.2
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 16:36:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0+vvOVFfU8uFzQawpdSqHer9f8bP2F/YEZu8I7Rg7Ys=;
-        b=Hsx4uyO6Tu8d1qkUz87tehFJnYFEFwfbLDWpyERC4QzZKwmDRdCaBNJT0XQai56BI2
-         XOIETp9qqPz0fiJPpbqaSnz5L0ChQCrUP61uGKamb28EkZ/TT/HNlZHEIBP8f/sfhzKb
-         QACpp1wGtG5FUkfqBDsnsTkWY3sLEjSLnGUn8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0+vvOVFfU8uFzQawpdSqHer9f8bP2F/YEZu8I7Rg7Ys=;
-        b=umg52B5zkCq/vBkGavgNHIjx4t829rEoT0htDIy1pV/w5nR+kLB//Lofxn6osJOUNP
-         6FZghMvswxkj6m924HoQP5lcsjvPikSkvzsSzUoEZjdY+kA1wGRc7wSYLHFGtLrSSKv+
-         C3zx8mK31885wnCMMFFYRywHjdSoy0GiYMWYoG6ce5EhQC/3AG94y0LjNQryBBBhVEpk
-         nrl40ZhWaAVqWtCvT/LAs7ED/daXf4KwDpirXTo5aEm77v6LgaXbWxSLdNiW1TNOmqkB
-         k7HSgmyciC1Di39Gr1xlsRs7gYBKqSiRlh55RxcchX6yxwo/pFa/V5LzeDKZRH7ZTHi8
-         2A2A==
-X-Gm-Message-State: AJIora9yuY8TG1Nh9d9VGz7NortF45z7SHBfSTX6PmK/ogjHZopPCg1l
-        MjosqndOxrMy2RLAea9ANrlQ7PWsUsy3Fw==
-X-Google-Smtp-Source: AGRyM1tMl81u3qj7l08Q5QHb4umX3T3yLJEnR7ouqJeY+P4T3j1/UV6EFuqv1Gvm5cQoy0RILlPVXg==
-X-Received: by 2002:a17:902:d583:b0:16a:29de:9dfb with SMTP id k3-20020a170902d58300b0016a29de9dfbmr11374975plh.44.1656545794430;
-        Wed, 29 Jun 2022 16:36:34 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id rm1-20020a17090b3ec100b001ed27d132c1sm127305pjb.2.2022.06.29.16.36.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 16:36:33 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH 5/9] platform/chrome: cros_typec_switch: Set EC retimer
-Date:   Wed, 29 Jun 2022 23:32:23 +0000
-Message-Id: <20220629233314.3540377-6-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220629233314.3540377-1-pmalani@chromium.org>
-References: <20220629233314.3540377-1-pmalani@chromium.org>
+        Wed, 29 Jun 2022 19:37:55 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E02B26D1;
+        Wed, 29 Jun 2022 16:37:53 -0700 (PDT)
+Received: from hillosipuli.retiisi.eu (89-27-103-169.bb.dnainternet.fi [89.27.103.169])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sailus)
+        by meesny.iki.fi (Postfix) with ESMTPSA id 86C622006F;
+        Thu, 30 Jun 2022 02:37:49 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1656545869;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/ZPcDubcZRZtSjPHiS3Ehon8rbBcOHGnS6yupHDAd+g=;
+        b=Ol0MQFGKXsgs0jRxDWkXWJBWFE19e3lfSpPbSI7YzjcF68fsswJu1vnZ44pbHElOwCwRI8
+        9G7JEXR8CyEl9DOUCOJYsMj1YBcwAUdl72/Z2XmGb96oSTBPadp1+iFmyByKw86LewnKTo
+        dG39dN2ULNHhnGeKRHNkwwVZ1r9e5kg=
+Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 31D12634C92;
+        Thu, 30 Jun 2022 02:37:49 +0300 (EEST)
+Date:   Thu, 30 Jun 2022 02:37:49 +0300
+From:   Sakari Ailus <sakari.ailus@iki.fi>
+To:     Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Joe Perches <joe@perches.com>
+Subject: Re: [PATCH v8 2/2] On Semi AR0521 sensor driver
+Message-ID: <YrziTabYLlZ2bX+1@valkosipuli.retiisi.eu>
+References: <m3pmn66pie.fsf@t19.piap.pl>
+ <m3h78i6p4t.fsf@t19.piap.pl>
+ <20220301093107.ihokyp4xptkzpbpc@uno.localdomain>
+ <m38rtt7sx7.fsf@t19.piap.pl>
+ <20220301143044.2l4vlwbnh5n3g5ng@uno.localdomain>
+ <m37d7ufrzx.fsf@t19.piap.pl>
+ <m3pmkryywn.fsf@t19.piap.pl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <m3pmkryywn.fsf@t19.piap.pl>
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1656545869;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/ZPcDubcZRZtSjPHiS3Ehon8rbBcOHGnS6yupHDAd+g=;
+        b=VYoKt6nuS8XsYbpRE397cvA/0SVwH/2vDNIQ+33LEyR+fOPz4YOPnDtugToUumUngrW2Dz
+        X2bk5k64J5cXWrhlQNgzUEMJ8g9Ikq4uXjpKtLq9vUaI7xG/BuvHpICMWb8wgo4bXqSQVI
+        s4eb5yddlrZGsLvoZbeTp5n2ZHV0JJ0=
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1656545869; a=rsa-sha256; cv=none;
+        b=PiHxDhpesbXzajxc3GiQnn3hHmN+RiT2UxicFPOv55yoFM3+xHb8lvVffz6nB8ggU8/BRx
+        VWbUIrpESvbVSLoxYX226MU1sFk2d4DNiIwyKonhkp5zHydtjhahGsnbQF8lynn/dKM0r5
+        E/muJHCpXbrNJP4KgPNUds+7vpmrJM8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Invoke Chrome EC host commands to set EC-controlled retimer switches to
-the state the Type-C framework instructs.
+Hi Krzysztof,
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
- drivers/platform/chrome/cros_typec_switch.c | 56 ++++++++++++++++++++-
- 1 file changed, 55 insertions(+), 1 deletion(-)
+On Fri, May 06, 2022 at 08:10:16AM +0200, Krzysztof Hałasa wrote:
+> Hi Mauro et al,
+> 
+> Mauro, you are the drivers/media maintainer. Is the AR0521 driver ready
+> to be merged, are there still unresolved issues, or the driver is not no
+> be merged at all? I understand everyone's so busy but a simple yes or no
+> isn't too much, is it?
 
-diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
-index 1a795f613543..9faa442dd81a 100644
---- a/drivers/platform/chrome/cros_typec_switch.c
-+++ b/drivers/platform/chrome/cros_typec_switch.c
-@@ -9,7 +9,10 @@
- #include <linux/acpi.h>
- #include <linux/module.h>
- #include <linux/platform_data/cros_ec_commands.h>
-+#include <linux/platform_data/cros_ec_proto.h>
- #include <linux/platform_device.h>
-+#include <linux/usb/typec_altmode.h>
-+#include <linux/usb/typec_dp.h>
- #include <linux/usb/typec_retimer.h>
+Apologies for the late reply.
+
+Please run checkpatch.pl --strict --max-line-length=80 on the patch in the
+future. Some of the output is often troublesome to address though. I've
+applied it with these changes:
+
+diff --git a/drivers/media/i2c/ar0521.c b/drivers/media/i2c/ar0521.c
+index 1cce512ff62b0..9c7a07d31ace6 100644
+--- a/drivers/media/i2c/ar0521.c
++++ b/drivers/media/i2c/ar0521.c
+@@ -347,8 +347,10 @@ static int ar0521_set_stream(struct ar0521_dev *sensor, bool on)
+ 		return ret;
  
- #define DRV_NAME "cros-typec-switch"
-@@ -28,10 +31,61 @@ struct cros_typec_switch_data {
- 	struct cros_typec_port *ports[EC_USB_PD_MAX_PORTS];
- };
+ 	} else {
+-		/* Reset gain, the sensor may produce all white pixels without
+-		   this */
++		/*
++		 * Reset gain, the sensor may produce all white pixels without
++		 * this
++		 */
+ 		ret = ar0521_write_reg(sensor, AR0521_REG_GLOBAL_GAIN, 0x2000);
+ 		if (ret)
+ 			return ret;
+@@ -1056,4 +1058,4 @@ module_i2c_driver(ar0521_i2c_driver);
  
-+static int cros_typec_cmd_mux_set(struct cros_typec_switch_data *sdata, int port_num, u8 index,
-+				  u8 state)
-+{
-+	struct typec_usb_mux_set params = {
-+		.mux_index = index,
-+		.mux_flags = state,
-+	};
-+
-+	struct ec_params_typec_control req = {
-+		.port = port_num,
-+		.command = TYPEC_CONTROL_COMMAND_USB_MUX_SET,
-+		.mux_params = params,
-+	};
-+
-+	return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
-+			       sizeof(req), NULL, 0);
-+}
-+
-+static int cros_typec_get_mux_state(unsigned long mode, struct typec_altmode *alt)
-+{
-+	int ret = -EOPNOTSUPP;
-+
-+	if (mode == TYPEC_STATE_SAFE)
-+		ret = USB_PD_MUX_SAFE_MODE;
-+	else if (mode == TYPEC_STATE_USB)
-+		ret = USB_PD_MUX_USB_ENABLED;
-+	else if (alt && alt->svid == USB_TYPEC_DP_SID)
-+		ret = USB_PD_MUX_DP_ENABLED;
-+
-+	return ret;
-+}
-+
-+/*
-+ * The Chrome EC treats both mode-switches and retimers as "muxes" for the purposes of the
-+ * host command API. This common function configures and verifies the retimer/mode-switch
-+ * according to the provided setting.
-+ */
-+static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int port_num, int index,
-+				    unsigned long mode, struct typec_altmode *alt)
-+{
-+	int ret = cros_typec_get_mux_state(mode, alt);
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return cros_typec_cmd_mux_set(sdata, port_num, index, (u8)ret);
-+}
-+
- static int
- cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
- {
--	return 0;
-+	struct cros_typec_port *port = typec_retimer_get_drvdata(retimer);
-+
-+	/* Retimers have index 1. */
-+	return cros_typec_configure_mux(port->sdata, port->port_num, 1, state->mode, state->alt);
- }
- 
- void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
+ MODULE_DESCRIPTION("AR0521 MIPI Camera subdev driver");
+ MODULE_AUTHOR("Krzysztof Hałasa <khalasa@piap.pl>");
+-MODULE_LICENSE("GPL v2");
++MODULE_LICENSE("GPL");
+
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+Kind regards,
 
+Sakari Ailus
