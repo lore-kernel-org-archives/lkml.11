@@ -2,263 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B452C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231770AbiF2RVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 13:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
+        id S231439AbiF2RYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 13:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231192AbiF2RVT (ORCPT
+        with ESMTP id S230362AbiF2RYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 13:21:19 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E0D3DA41
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 10:21:14 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id n1so23461336wrg.12
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 10:21:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nInAPILD3692be6/y628T5ZOhov3cRKSkyl8DeThGPY=;
-        b=UQi8uFO+M1aKaBOu8TKJXiIYUckj3dIU9ZpjE7hQDdAuLKvJAX/cKOWaCZYufPprH8
-         L28XegoX6Qc/t0G2kUvdWuVsTAfEkjiC/dndALnW27rwkPa9Kd0oYlgykIal6NiAnYFh
-         uWchij7wsEkKgEtN08lIEBkgG9N/5xV0X1ikiGLeRw65kycX4ukmDhfYW9U1xk/+byrp
-         C6LhLm1le7UZ10glgIvTYKuLtIg674v4z7JYQWINZpKxuusjuR0b1izmHUszMUX295qD
-         lH6ZG7ky8gt0r1zxQw17AyOMCe1i3R/Ph1wsvxdTZnlW2NqM7hFv565s/CtJ+ADoXW60
-         5/1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nInAPILD3692be6/y628T5ZOhov3cRKSkyl8DeThGPY=;
-        b=U33pRXgjvOOl0Cx0MsHJoSTFgrQJM+zYsrb/KT7PdsITVQ8QFVXFv0Kimx1JSsr7U9
-         lqDq3PIxiGIYtdFItgNR+QrvenplyQdZADsdMOe2RPYXj32tglCn6UkwdSaJpx8lt+SY
-         2/jMTkYKSJXuk5VNuHs8J5Ybeqxgpk0H1yFizCESe5KZvmpra308ErYt3Y4n7q4iBo2k
-         X5COvk2A+YJK3DFNSd5hjvMiMhts8mzMl+HekaF8+0yIXFxCcWQOd8ET/BiNhXL6hJLB
-         oeNgTo3+MvSBTjr0uFvm+b8UeLB47yWMijNUBV69V++AER1lSQNBlgLrumkV0jHuDdBv
-         1u8g==
-X-Gm-Message-State: AJIora/QbR0BDTwPkOTKjNDyx6NZbm3dVuWHNAKM3K6m+XHgsanbaGnM
-        Dx0ci1gUqCvo4TFp4QXChndb4eZbtEWxSdDNIMdZ
-X-Google-Smtp-Source: AGRyM1vXOyGFovBjiH3CIANoqUaTBKffwn4W6SbJ7Mcn1OAirKgPULZXM1izVfn/GLdRFThsAiV8fyBK21HG8tYQHPI=
-X-Received: by 2002:a5d:6645:0:b0:21d:17c3:e10e with SMTP id
- f5-20020a5d6645000000b0021d17c3e10emr4159151wrw.483.1656523272969; Wed, 29
- Jun 2022 10:21:12 -0700 (PDT)
+        Wed, 29 Jun 2022 13:24:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B461205E5
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 10:24:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656523459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zBKleFzNKM6P94gypumQ/Jelj9UOEfrCQ+88YTQ27Gw=;
+        b=Cv9PoQ9/sbmn/Vpvs+Pvyr4qjZ9dee74ira82mb136MUnDbpesFRnyMtNY0GQsPIl5xy36
+        bmLw27ESqSGF564Abo9zUHQJB1n4zWnGX0nABFXc38dLza1IQ/tOnjQ78Xim3jv1YkkO30
+        7uDAslyWSRYsOnTndZ/6os8S+dUB5PE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-316-VQXDiyqQOzWbcQWm4swSsQ-1; Wed, 29 Jun 2022 13:24:16 -0400
+X-MC-Unique: VQXDiyqQOzWbcQWm4swSsQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B2D06801233;
+        Wed, 29 Jun 2022 17:24:15 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.33.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B64440CFD05;
+        Wed, 29 Jun 2022 17:24:14 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id 9F37E220463; Wed, 29 Jun 2022 13:24:14 -0400 (EDT)
+Date:   Wed, 29 Jun 2022 13:24:14 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xieyongji@bytedance.com,
+        fam.zheng@bytedance.com, Miklos Szeredi <mszeredi@redhat.com>
+Subject: Re: [External] Re: [PATCH] fuse: writeback_cache consistency
+ enhancement (writeback_cache_v2)
+Message-ID: <YryKvjOGUNvJyC8n@redhat.com>
+References: <20220624055825.29183-1-zhangjiachen.jaycee@bytedance.com>
+ <YrYCa4nT0nX11nTO@redhat.com>
+ <CAFQAk7ijAB=6DJKh0R50N6K3Dju_nnX5c6K8n+cfCyA_5WsrnQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <00000000000065911f05e294e691@google.com>
-In-Reply-To: <00000000000065911f05e294e691@google.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 29 Jun 2022 13:21:02 -0400
-Message-ID: <CAHC9VhSDOhCz8L=sAR49RzHXWj0V3q5gDSLzp9AQwHWR+n8XtA@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in selinux_socket_recvmsg
-To:     syzbot <syzbot+04b20e641c99a5d99ac2@syzkaller.appspotmail.com>
-Cc:     andrii@kernel.org, anton@enomsg.org, ast@kernel.org,
-        bpf@vger.kernel.org, ccross@android.com, daniel@iogearbox.net,
-        eparis@parisplace.org, john.fastabend@gmail.com, kafai@fb.com,
-        keescook@chromium.org, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        selinux@vger.kernel.org, songliubraving@fb.com,
-        stephen.smalley.work@gmail.com, syzkaller-bugs@googlegroups.com,
-        tony.luck@intel.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFQAk7ijAB=6DJKh0R50N6K3Dju_nnX5c6K8n+cfCyA_5WsrnQ@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 8:00 AM syzbot
-<syzbot+04b20e641c99a5d99ac2@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    941e3e791269 Merge tag 'for_linus' of git://git.kernel.org..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=175b3f90080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3a010dbf6a7af480
-> dashboard link: https://syzkaller.appspot.com/bug?extid=04b20e641c99a5d99ac2
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+04b20e641c99a5d99ac2@syzkaller.appspotmail.com
->
-> ==================================================================
-> BUG: KASAN: use-after-free in sock_has_perm security/selinux/hooks.c:4535 [inline]
-> BUG: KASAN: use-after-free in selinux_socket_recvmsg+0x278/0x2b0 security/selinux/hooks.c:4899
-> Read of size 8 at addr ffff8880787ec480 by task syz-executor.3/5491
+On Tue, Jun 28, 2022 at 01:18:35PM +0800, Jiachen Zhang wrote:
+> On Sat, Jun 25, 2022 at 2:29 AM Vivek Goyal <vgoyal@redhat.com> wrote:
+> >
+> > On Fri, Jun 24, 2022 at 01:58:25PM +0800, Jiachen Zhang wrote:
+> > > Some users may want both the high performance of the writeback_cahe mode and
+> > > a little bit more consistency among FUSE mounts. In the current writeback
+> > > mode implementation, users of one FUSE mount can never see the file
+> > > expansion done by other FUSE mounts.
+> > >
+> > > Based on the suggested writeback V2 patch in the upstream mailing-list [1],
+> > > this commit allows the cmtime and size to be updated from server in
+> > > writeback mode. Compared with the writeback V2 patch in [1], this commit has
+> > > several differences:
+> > >
+> > >     1. Ensure c/mtime are not updated from kernel to server. IOW, the cmtime
+> > >     generated by kernel are just temporary values that are never flushed to
+> > >     server, and they can also be updated by the official server cmtime when
+> > >     the writeback cache is clean.
+> > >
+> > >     2. Skip mtime-based revalidation when fc->auto_inval_data is set with
+> > >     fc->writeback_cache_v2. Because the kernel-generated temporary cmtime
+> > >     are likely not equal to the offical server cmtime.
+> > >
+> > >     3. If any page is ever flushed to the server during FUSE_GETATTR
+> > >     handling on fuse server, even if the cache is clean when
+> > >     fuse_change_attributes() checks, we should not update the i_size. This
+> > >     is because the FUSE_GETATTR may get a staled size before the FUSE_WRITE
+> > >     request changes server inode size. This commit ensures this by
+> > >     increasing attr_version after writeback for writeback_cache_v2. In that
+> > >     case, we should also ensure the ordering of the attr_version updating
+> > >     and the fi->writepages RB-tree updating. So that if a fuse page
+> > >     writeback ever happens during fuse_change_attributes(), either the
+> > >     fi->writepages is not empty, or the attr_version is increased. So we
+> > >     never mistakenly update a stale file size from server to kernel.
+> > >
+> > > With this patch, writeback mode can consider the server c/mtime as the
+> > > official one. When inode attr is timeout or invalidated, kernel has chance
+> > > to see size and c/mtime modified by others.
+> > >
+> > > Together with another patch [2], a FUSE daemon is able to implement
+> > > close-to-open (CTO) consistency like what is done in NFS clients.
+> > >
+> > > [1] https://lore.kernel.org/linux-fsdevel/Ymfu8fGbfYi4FxQ4@miu.piliscsaba.redhat.com
+> > > [2] https://lore.kernel.org/linux-fsdevel/20220608104202.19461-1-zhangjiachen.jaycee@bytedance.com/
+> > >
+> > > Suggested-by: Miklos Szeredi <mszeredi@redhat.com>
+> > > Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+> > > ---
+> > >  fs/fuse/file.c            | 17 +++++++++++++++
+> > >  fs/fuse/fuse_i.h          |  3 +++
+> > >  fs/fuse/inode.c           | 44 +++++++++++++++++++++++++++++++++++++--
+> > >  include/uapi/linux/fuse.h |  5 +++++
+> > >  4 files changed, 67 insertions(+), 2 deletions(-)
+> >
+> > A quick comment without reading this patch, please do add some
+> > documentation which explains what's the existing behavior and what
+> > the new behavior.
+> >
+> > Probably Documentation/filesystem/fuse.rst is right place. We have
+> > so many fine knobs w.r.t attr caching and data caching and what kind
+> > of cache consistency to expect but there is no documentation. So
+> > very hard to figure out what to expect in different scenarios for
+> > a user.
+> >
+> > I think this patch series probably a good time to start some cache
+> > coherency related documentation in fuse and that will help users
+> > as well as will provide context for future changes.
+> >
+> > Thanks
+> > Vivek
+> 
+> Hi Vivek.
+> 
+> I found some good materials about fuse I/O and cache modes in
+> Documentation/filesystem/fuse-io.rst [1]. Maybe we could add more
+> information about cache coherence to that file?
 
-Despite the SELinux functions listed above, it looks like this may be
-an issue with the netrom code calling sock_put() too many times.  I
-know very little about netrom, but I wonder if the issue might be
-nr_heartbeat_expiry() calling nr_destroy_socket(), which could drop a
-reference to the sock, and then calling sock_put() at the end of
-nr_heartbeat_expiry() potentially resulting in the sock being released
-prematurely.
+Adding cache coherency information in fuse-io.rst sounds reasonable.
 
-> CPU: 0 PID: 5491 Comm: syz-executor.3 Not tainted 5.19.0-rc4-syzkaller-00014-g941e3e791269 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0xeb/0x467 mm/kasan/report.c:313
->  print_report mm/kasan/report.c:429 [inline]
->  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
->  sock_has_perm security/selinux/hooks.c:4535 [inline]
->  selinux_socket_recvmsg+0x278/0x2b0 security/selinux/hooks.c:4899
->  security_socket_recvmsg+0x5c/0xc0 security/security.c:2223
->  sock_recvmsg net/socket.c:1011 [inline]
->  ____sys_recvmsg+0x23b/0x600 net/socket.c:2711
->  ___sys_recvmsg+0x127/0x200 net/socket.c:2753
->  do_recvmmsg+0x254/0x6d0 net/socket.c:2847
->  __sys_recvmmsg net/socket.c:2926 [inline]
->  __do_sys_recvmmsg net/socket.c:2949 [inline]
->  __se_sys_recvmmsg net/socket.c:2942 [inline]
->  __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2942
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7fa488689109
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fa4875dd168 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-> RAX: ffffffffffffffda RBX: 00007fa48879c100 RCX: 00007fa488689109
-> RDX: 00000000000005dd RSI: 0000000020000540 RDI: 0000000000000004
-> RBP: 00007fa4886e305d R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000040012062 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffd8d55b81f R14: 00007fa4875dd300 R15: 0000000000022000
->  </TASK>
->
-> Allocated by task 5468:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:45 [inline]
->  set_alloc_info mm/kasan/common.c:436 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:515 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:474 [inline]
->  __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
->  kasan_kmalloc include/linux/kasan.h:234 [inline]
->  __do_kmalloc mm/slab.c:3696 [inline]
->  __kmalloc+0x209/0x4d0 mm/slab.c:3705
->  kmalloc include/linux/slab.h:605 [inline]
->  sk_prot_alloc+0x110/0x290 net/core/sock.c:1975
->  sk_alloc+0x36/0x770 net/core/sock.c:2028
->  nr_create+0xb2/0x5f0 net/netrom/af_netrom.c:433
->  __sock_create+0x353/0x790 net/socket.c:1515
->  sock_create net/socket.c:1566 [inline]
->  __sys_socket_create net/socket.c:1603 [inline]
->  __sys_socket_create net/socket.c:1588 [inline]
->  __sys_socket+0x12f/0x240 net/socket.c:1636
->  __do_sys_socket net/socket.c:1649 [inline]
->  __se_sys_socket net/socket.c:1647 [inline]
->  __x64_sys_socket+0x6f/0xb0 net/socket.c:1647
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->
-> Freed by task 15:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
->  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
->  ____kasan_slab_free mm/kasan/common.c:366 [inline]
->  ____kasan_slab_free+0x13d/0x180 mm/kasan/common.c:328
->  kasan_slab_free include/linux/kasan.h:200 [inline]
->  __cache_free mm/slab.c:3425 [inline]
->  kfree+0x113/0x310 mm/slab.c:3796
->  sk_prot_free net/core/sock.c:2011 [inline]
->  __sk_destruct+0x5e5/0x710 net/core/sock.c:2097
->  sk_destruct net/core/sock.c:2112 [inline]
->  __sk_free+0x1a4/0x4a0 net/core/sock.c:2123
->  sk_free+0x78/0xa0 net/core/sock.c:2134
->  sock_put include/net/sock.h:1927 [inline]
->  nr_heartbeat_expiry+0x2de/0x460 net/netrom/nr_timer.c:148
->  call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1474
->  expire_timers kernel/time/timer.c:1519 [inline]
->  __run_timers.part.0+0x679/0xa80 kernel/time/timer.c:1790
->  __run_timers kernel/time/timer.c:1768 [inline]
->  run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
->  __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
->
-> The buggy address belongs to the object at ffff8880787ec000
->  which belongs to the cache kmalloc-2k of size 2048
-> The buggy address is located 1152 bytes inside of
->  2048-byte region [ffff8880787ec000, ffff8880787ec800)
->
-> The buggy address belongs to the physical page:
-> page:ffffea0001e1fb00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x787ec
-> flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-> raw: 00fff00000000200 ffffea000099a248 ffffea0001e40888 ffff888011840800
-> raw: 0000000000000000 ffff8880787ec000 0000000100000001 0000000000000000
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x3420c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_COMP|__GFP_HARDWALL|__GFP_THISNODE), pid 5390, tgid 5382 (syz-executor.5), ts 476769442431, free_ts 475866169421
->  prep_new_page mm/page_alloc.c:2456 [inline]
->  get_page_from_freelist+0x1290/0x3b70 mm/page_alloc.c:4198
->  __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5426
->  __alloc_pages_node include/linux/gfp.h:587 [inline]
->  kmem_getpages mm/slab.c:1363 [inline]
->  cache_grow_begin+0x75/0x350 mm/slab.c:2569
->  cache_alloc_refill+0x27f/0x380 mm/slab.c:2942
->  ____cache_alloc mm/slab.c:3024 [inline]
->  ____cache_alloc mm/slab.c:3007 [inline]
->  __do_cache_alloc mm/slab.c:3253 [inline]
->  slab_alloc mm/slab.c:3295 [inline]
->  __do_kmalloc mm/slab.c:3694 [inline]
->  __kmalloc_track_caller+0x3b0/0x4d0 mm/slab.c:3711
->  __do_krealloc mm/slab_common.c:1185 [inline]
->  krealloc+0x87/0xf0 mm/slab_common.c:1218
->  krealloc_array include/linux/slab.h:660 [inline]
->  snd_pcm_hw_rule_add+0x41c/0x590 sound/core/pcm_lib.c:1133
->  snd_pcm_hw_constraints_init sound/core/pcm_native.c:2582 [inline]
->  snd_pcm_open_substream+0x958/0x1820 sound/core/pcm_native.c:2733
->  snd_pcm_oss_open_file sound/core/oss/pcm_oss.c:2454 [inline]
->  snd_pcm_oss_open.part.0+0x6dc/0x1320 sound/core/oss/pcm_oss.c:2535
->  snd_pcm_oss_open+0x3c/0x50 sound/core/oss/pcm_oss.c:2499
->  soundcore_open+0x44e/0x620 sound/sound_core.c:593
->  chrdev_open+0x266/0x770 fs/char_dev.c:414
->  do_dentry_open+0x4a1/0x11f0 fs/open.c:848
->  do_open fs/namei.c:3520 [inline]
->  path_openat+0x1c71/0x2910 fs/namei.c:3653
->  do_filp_open+0x1aa/0x400 fs/namei.c:3680
->  do_sys_openat2+0x16d/0x4c0 fs/open.c:1278
-> page last free stack trace:
->  reset_page_owner include/linux/page_owner.h:24 [inline]
->  free_pages_prepare mm/page_alloc.c:1371 [inline]
->  free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
->  free_unref_page_prepare mm/page_alloc.c:3343 [inline]
->  free_unref_page+0x19/0x6a0 mm/page_alloc.c:3438
->  kasan_depopulate_vmalloc_pte+0x5c/0x70 mm/kasan/shadow.c:359
->  apply_to_pte_range mm/memory.c:2625 [inline]
->  apply_to_pmd_range mm/memory.c:2669 [inline]
->  apply_to_pud_range mm/memory.c:2705 [inline]
->  apply_to_p4d_range mm/memory.c:2741 [inline]
->  __apply_to_page_range+0x686/0x1030 mm/memory.c:2775
->  kasan_release_vmalloc+0xa7/0xc0 mm/kasan/shadow.c:469
->  __purge_vmap_area_lazy+0x8f9/0x1c50 mm/vmalloc.c:1722
->  drain_vmap_area_work+0x52/0xe0 mm/vmalloc.c:1751
->  process_one_work+0x996/0x1610 kernel/workqueue.c:2289
->  worker_thread+0x665/0x1080 kernel/workqueue.c:2436
->  kthread+0x2e9/0x3a0 kernel/kthread.c:376
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
->
-> Memory state around the buggy address:
->  ffff8880787ec380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8880787ec400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >ffff8880787ec480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                    ^
->  ffff8880787ec500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8880787ec580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ==================================================================
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Vivek
 
--- 
-paul-moore.com
+> 
+> [1] https://www.kernel.org/doc/html/v5.17/filesystems/fuse-io.html
+> 
+> Thanks,
+> Jiachen
+> 
+> >
+> > >
+> > > diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+> > > index 9b64e2ff1c96..35bdc7af8468 100644
+> > > --- a/fs/fuse/file.c
+> > > +++ b/fs/fuse/file.c
+> > > @@ -1829,6 +1829,15 @@ static void fuse_writepage_end(struct fuse_mount *fm, struct fuse_args *args,
+> > >                */
+> > >               fuse_send_writepage(fm, next, inarg->offset + inarg->size);
+> > >       }
+> > > +
+> > > +     if (fc->writeback_cache_v2)
+> > > +             fi->attr_version = atomic64_inc_return(&fc->attr_version);
+> > > +     /*
+> > > +      * Ensure attr_version increases before the page is move out of the
+> > > +      * writepages rb-tree.
+> > > +      */
+> > > +     smp_mb();
+> > > +
+> > >       fi->writectr--;
+> > >       fuse_writepage_finish(fm, wpa);
+> > >       spin_unlock(&fi->lock);
+> > > @@ -1858,10 +1867,18 @@ static struct fuse_file *fuse_write_file_get(struct fuse_inode *fi)
+> > >
+> > >  int fuse_write_inode(struct inode *inode, struct writeback_control *wbc)
+> > >  {
+> > > +     struct fuse_conn *fc = get_fuse_conn(inode);
+> > >       struct fuse_inode *fi = get_fuse_inode(inode);
+> > >       struct fuse_file *ff;
+> > >       int err;
+> > >
+> > > +     /*
+> > > +      * Kernel c/mtime should not be updated to the server in the
+> > > +      * writeback_cache_v2 mode as server c/mtime are official.
+> > > +      */
+> > > +     if (fc->writeback_cache_v2)
+> > > +             return 0;
+> > > +
+> > >       /*
+> > >        * Inode is always written before the last reference is dropped and
+> > >        * hence this should not be reached from reclaim.
+> > > diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+> > > index 488b460e046f..47de36146fb8 100644
+> > > --- a/fs/fuse/fuse_i.h
+> > > +++ b/fs/fuse/fuse_i.h
+> > > @@ -654,6 +654,9 @@ struct fuse_conn {
+> > >       /* show legacy mount options */
+> > >       unsigned int legacy_opts_show:1;
+> > >
+> > > +     /* Improved writeback cache policy */
+> > > +     unsigned writeback_cache_v2:1;
+> > > +
+> > >       /*
+> > >        * fs kills suid/sgid/cap on write/chown/trunc. suid is killed on
+> > >        * write/trunc only if caller did not have CAP_FSETID.  sgid is killed
+> > > diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
+> > > index 8c0665c5dff8..2d5fa82b08b6 100644
+> > > --- a/fs/fuse/inode.c
+> > > +++ b/fs/fuse/inode.c
+> > > @@ -237,14 +237,41 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+> > >       u32 cache_mask;
+> > >       loff_t oldsize;
+> > >       struct timespec64 old_mtime;
+> > > +     bool try_wb_update = false;
+> > > +
+> > > +     if (fc->writeback_cache_v2 && S_ISREG(inode->i_mode)) {
+> > > +             inode_lock(inode);
+> > > +             try_wb_update = true;
+> > > +     }
+> > >
+> > >       spin_lock(&fi->lock);
+> > >       /*
+> > >        * In case of writeback_cache enabled, writes update mtime, ctime and
+> > >        * may update i_size.  In these cases trust the cached value in the
+> > >        * inode.
+> > > +      *
+> > > +      * In writeback_cache_v2 mode, if all the following conditions are met,
+> > > +      * then we allow the attributes to be refreshed:
+> > > +      *
+> > > +      * - inode is not in the process of being written (I_SYNC)
+> > > +      * - inode has no dirty pages (I_DIRTY_PAGES)
+> > > +      * - inode data-related attributes are clean (I_DIRTY_DATASYNC)
+> > > +      * - inode does not have any page writeback in progress
+> > > +      *
+> > > +      * Note: checking PAGECACHE_TAG_WRITEBACK is not sufficient in fuse,
+> > > +      * since inode can appear to have no PageWriteback pages, yet still have
+> > > +      * outstanding write request.
+> > >        */
+> > >       cache_mask = fuse_get_cache_mask(inode);
+> > > +     if (try_wb_update && !(inode->i_state & (I_DIRTY_PAGES | I_SYNC |
+> > > +         I_DIRTY_DATASYNC)) && RB_EMPTY_ROOT(&fi->writepages))
+> > > +             cache_mask &= ~(STATX_MTIME | STATX_CTIME | STATX_SIZE);
+> > > +     /*
+> > > +      * Ensure the ordering of cleanness checking and following attr_version
+> > > +      * comparison.
+> > > +      */
+> > > +     smp_mb();
+> > > +
+> > >       if (cache_mask & STATX_SIZE)
+> > >               attr->size = i_size_read(inode);
+> > >
+> > > @@ -283,7 +310,13 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+> > >                       truncate_pagecache(inode, attr->size);
+> > >                       if (!fc->explicit_inval_data)
+> > >                               inval = true;
+> > > -             } else if (fc->auto_inval_data) {
+> > > +             } else if (!fc->writeback_cache_v2 && fc->auto_inval_data) {
+> > > +                     /*
+> > > +                      * When fc->writeback_cache_v2 is set, the old_mtime
+> > > +                      * can be generated by kernel and must not equal to
+> > > +                      * new_mtime generated by server. So skip in such
+> > > +                      * case.
+> > > +                      */
+> > >                       struct timespec64 new_mtime = {
+> > >                               .tv_sec = attr->mtime,
+> > >                               .tv_nsec = attr->mtimensec,
+> > > @@ -303,6 +336,9 @@ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+> > >
+> > >       if (IS_ENABLED(CONFIG_FUSE_DAX))
+> > >               fuse_dax_dontcache(inode, attr->flags);
+> > > +
+> > > +     if (try_wb_update)
+> > > +             inode_unlock(inode);
+> > >  }
+> > >
+> > >  static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr)
+> > > @@ -1153,6 +1189,10 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
+> > >                               fc->async_dio = 1;
+> > >                       if (flags & FUSE_WRITEBACK_CACHE)
+> > >                               fc->writeback_cache = 1;
+> > > +                     if (flags & FUSE_WRITEBACK_CACHE_V2) {
+> > > +                             fc->writeback_cache = 1;
+> > > +                             fc->writeback_cache_v2 = 1;
+> > > +                     }
+> > >                       if (flags & FUSE_PARALLEL_DIROPS)
+> > >                               fc->parallel_dirops = 1;
+> > >                       if (flags & FUSE_HANDLE_KILLPRIV)
+> > > @@ -1234,7 +1274,7 @@ void fuse_send_init(struct fuse_mount *fm)
+> > >               FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
+> > >               FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
+> > >               FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_INIT_EXT |
+> > > -             FUSE_SECURITY_CTX;
+> > > +             FUSE_SECURITY_CTX | FUSE_WRITEBACK_CACHE_V2;
+> > >  #ifdef CONFIG_FUSE_DAX
+> > >       if (fm->fc->dax)
+> > >               flags |= FUSE_MAP_ALIGNMENT;
+> > > diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+> > > index d6ccee961891..b474763bcf59 100644
+> > > --- a/include/uapi/linux/fuse.h
+> > > +++ b/include/uapi/linux/fuse.h
+> > > @@ -194,6 +194,7 @@
+> > >   *  - add FUSE_SECURITY_CTX init flag
+> > >   *  - add security context to create, mkdir, symlink, and mknod requests
+> > >   *  - add FUSE_HAS_INODE_DAX, FUSE_ATTR_DAX
+> > > + *  - add FUSE_WRITEBACK_CACHE_V2 init flag
+> > >   */
+> > >
+> > >  #ifndef _LINUX_FUSE_H
+> > > @@ -353,6 +354,9 @@ struct fuse_file_lock {
+> > >   * FUSE_SECURITY_CTX:        add security context to create, mkdir, symlink, and
+> > >   *                   mknod
+> > >   * FUSE_HAS_INODE_DAX:  use per inode DAX
+> > > + * FUSE_WRITEBACK_CACHE_V2:
+> > > + *                   allow time/size to be refreshed if no pending write
+> > > + *                   c/mtime not updated from kernel to server
+> > >   */
+> > >  #define FUSE_ASYNC_READ              (1 << 0)
+> > >  #define FUSE_POSIX_LOCKS     (1 << 1)
+> > > @@ -389,6 +393,7 @@ struct fuse_file_lock {
+> > >  /* bits 32..63 get shifted down 32 bits into the flags2 field */
+> > >  #define FUSE_SECURITY_CTX    (1ULL << 32)
+> > >  #define FUSE_HAS_INODE_DAX   (1ULL << 33)
+> > > +#define FUSE_WRITEBACK_CACHE_V2      (1ULL << 34)
+> > >
+> > >  /**
+> > >   * CUSE INIT request/reply flags
+> > > --
+> > > 2.20.1
+> > >
+> >
+> 
+
