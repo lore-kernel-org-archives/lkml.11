@@ -2,190 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9E6CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AE8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbiF2OuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
+        id S233256AbiF2OyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231345AbiF2OuN (ORCPT
+        with ESMTP id S232318AbiF2OyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:50:13 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512821CFE6;
-        Wed, 29 Jun 2022 07:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=S3ju5Nr7hfd110iZmCLv9+gZbDbPEjWtum1B8GQGywA=; b=JG3jkP5Vv9Jim6Yb4RJlAq1uGD
-        3iBb15pzuTWKpyaU6yeJT0oBIMMv92MtP73oxfJcRyF5x1DsurCHy7GXVe57VO4/odKav7KKvOLyH
-        Dq/OdFTasqachW8KWVoy7njWx1JMoNeEFv18ogkZcZjyjNRgEpHRcd9qXIekW5OPnU789Ep2J/3c4
-        jo2PSV3Xg0CG376aUh2TsrOzr1X9l9mqYjjfgwUbUm8oBBn1lJZbqJzRd3yGTO0WhoDRVC2ioBDVp
-        KsJAfHmzSKVBEkujLqfY4NcU2sxad2hvYD0lqZ/DlGCnqRLeQg1t7k3/LGFG5YCUlTu99V1mAC4vR
-        IrzsOMnA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33102)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o6Z11-0003IC-E3; Wed, 29 Jun 2022 15:50:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o6Z0z-0005vu-EK; Wed, 29 Jun 2022 15:50:01 +0100
-Date:   Wed, 29 Jun 2022 15:50:01 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Eric Dumazet <edumazet@google.com>,
+        Wed, 29 Jun 2022 10:54:03 -0400
+Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1441F60F
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 07:54:01 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 14:53:49 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
+        s=protonmail2; t=1656514439; x=1656773639;
+        bh=jgx5qL+qt7rskFGOjzbeoMeHSUpyUNBp4rUtF20noHY=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=RvNY50jFfbWs6i3uWd6/n0DzDoh2xDnOYu0beLZt6sSTpsrB8MWCVVUgJTJom3Uwl
+         WZ7ChuCxhpQkJE7GZc7HXyRnMAFb79ayGeHojQ06SA6mjh/lHqBKxQIVTskjkus9O0
+         nCgyQ1erYSfQy6UbK0XNLy2X6BVi5XBJ1gBCxO8Qw8oYnkCKjY7WVcuj+g804g7Twq
+         kERswDzm7RZkCejmB7BhqCqq2QXFwnEuwWw3BVA6iWGbbYpYQ0l6mf7NwPKLagYmoR
+         qL+oHWowC28FhXSArbHOnULpcuaeTAGnQZLFb5mHrwM9rvLCCihxdaqgX8tN99TWYp
+         2XSKslO0Pmgng==
+To:     Dennis Tsiang <dennis.tsiang@arm.com>
+From:   Simon Ser <contact@emersion.fr>
+Cc:     Pekka Paalanen <ppaalanen@gmail.com>,
+        Normunds Rieksts <Normunds.Rieksts@arm.com>, airlied@linux.ie,
+        tzimmermann@suse.de, Liviu Dudau <Liviu.Dudau@arm.com>,
         linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 02/35] dt-bindings: net: Convert FMan MAC
- bindings to yaml
-Message-ID: <YrxmmSXdKb3pD/Nv@shell.armlinux.org.uk>
-References: <20220628221404.1444200-1-sean.anderson@seco.com>
- <20220628221404.1444200-3-sean.anderson@seco.com>
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        christian.koenig@amd.com, linaro-mm-sig@lists.linaro.org,
+        david.harvey-macaulay@arm.com, Lisa Wu <lisa.wu@arm.com>,
+        nd <nd@arm.com>, sumit.semwal@linaro.org,
+        linux-media@vger.kernel.org
+Reply-To: Simon Ser <contact@emersion.fr>
+Subject: Re: [PATCH 0/1] [RFC] drm/fourcc: Add new unsigned R16_UINT/RG1616_UINT formats
+Message-ID: <o1qcCo8e19pmmNe-YJbPkmu4SBrOQ_E3u7eqdrcXUzdBccLtFswL_ARTpbrX9C10tippuy5ieXAsqdf7H47JuT7Hqa1NlizAPqVuRM0kRt4=@emersion.fr>
+In-Reply-To: <05513f59-0bd9-77cd-36d4-41027bc339be@arm.com>
+References: <AS8PR08MB81117652E417826E741154B8F8B99@AS8PR08MB8111.eurprd08.prod.outlook.com> <20220627175026.6a5dd239@eldfell> <05513f59-0bd9-77cd-36d4-41027bc339be@arm.com>
+Feedback-ID: 1358184:user:proton
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628221404.1444200-3-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 06:13:31PM -0400, Sean Anderson wrote:
-> This converts the MAC portion of the FMan MAC bindings to yaml.
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
-> Changes in v2:
-> - New
-> 
->  .../bindings/net/fsl,fman-dtsec.yaml          | 144 ++++++++++++++++++
->  .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
->  2 files changed, 145 insertions(+), 127 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
-> new file mode 100644
-> index 000000000000..809df1589f20
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
-> @@ -0,0 +1,144 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/fsl,fman-dtsec.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: NXP FMan MAC
-> +
-> +maintainers:
-> +  - Madalin Bucur <madalin.bucur@nxp.com>
-> +
-> +description: |
-> +  Each FMan has several MACs, each implementing an Ethernet interface. Earlier
-> +  versions of FMan used the Datapath Three Speed Ethernet Controller (dTSEC) for
-> +  10/100/1000 MBit/s speeds, and the 10-Gigabit Ethernet Media Access Controller
-> +  (10GEC) for 10 Gbit/s speeds. Later versions of FMan use the Multirate
-> +  Ethernet Media Access Controller (mEMAC) to handle all speeds.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - fsl,fman-dtsec
-> +      - fsl,fman-xgec
-> +      - fsl,fman-memac
-> +
-> +  cell-index:
-> +    maximum: 64
-> +    description: |
-> +      FManV2:
-> +      register[bit]           MAC             cell-index
-> +      ============================================================
-> +      FM_EPI[16]              XGEC            8
-> +      FM_EPI[16+n]            dTSECn          n-1
-> +      FM_NPI[11+n]            dTSECn          n-1
-> +              n = 1,..,5
-> +
-> +      FManV3:
-> +      register[bit]           MAC             cell-index
-> +      ============================================================
-> +      FM_EPI[16+n]            mEMACn          n-1
-> +      FM_EPI[25]              mEMAC10         9
-> +
-> +      FM_NPI[11+n]            mEMACn          n-1
-> +      FM_NPI[10]              mEMAC10         9
-> +      FM_NPI[11]              mEMAC9          8
-> +              n = 1,..8
-> +
-> +      FM_EPI and FM_NPI are located in the FMan memory map.
-> +
-> +      2. SoC registers:
-> +
-> +      - P2041, P3041, P4080 P5020, P5040:
-> +      register[bit]           FMan            MAC             cell
-> +                              Unit                            index
-> +      ============================================================
-> +      DCFG_DEVDISR2[7]        1               XGEC            8
-> +      DCFG_DEVDISR2[7+n]      1               dTSECn          n-1
-> +      DCFG_DEVDISR2[15]       2               XGEC            8
-> +      DCFG_DEVDISR2[15+n]     2               dTSECn          n-1
-> +              n = 1,..5
-> +
-> +      - T1040, T2080, T4240, B4860:
-> +      register[bit]                   FMan    MAC             cell
-> +                                      Unit                    index
-> +      ============================================================
-> +      DCFG_CCSR_DEVDISR2[n-1]         1       mEMACn          n-1
-> +      DCFG_CCSR_DEVDISR2[11+n]        2       mEMACn          n-1
-> +              n = 1,..6,9,10
-> +
-> +      EVDISR, DCFG_DEVDISR2 and DCFG_CCSR_DEVDISR2 are located in
-> +      the specific SoC "Device Configuration/Pin Control" Memory
-> +      Map.
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  fsl,fman-ports:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    maxItems: 2
-> +    description: |
-> +      An array of two references: the first is the FMan RX port and the second
-> +      is the TX port used by this MAC.
-> +
-> +  ptp-timer:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: A reference to the IEEE1588 timer
-> +
-> +  pcsphy-handle:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: A reference to the PCS (typically found on the SerDes)
+On Wednesday, June 29th, 2022 at 16:46, Dennis Tsiang <dennis.tsiang@arm.co=
+m> wrote:
 
-This description includes ethernet-controller.yaml, which contains:
+> Thanks for your comments. This is not intended to be used for KMS, where
+> indeed there would be no difference. This proposal is for other Graphics
+> APIs such as Vulkan, which requires the application to be explicit
+> upfront about how they will interpret the data, whether that be UNORM,
+> UINT .etc. We want to be able to import dma_bufs which create a VkImage
+> with a "_UINT" VkFormat. However there is currently no explicit mapping
+> between the DRM fourccs + modifiers combos to "_UINT" VkFormats. One
+> solution is to encode that into the fourccs, which is what this RFC is
+> proposing.
 
-  pcs-handle:
-    $ref: /schemas/types.yaml#/definitions/phandle
-    description:
-      Specifies a reference to a node representing a PCS PHY device on a MDIO
-      bus to link with an external PHY (phy-handle) if exists.
-
-Is there a reason why a custom property is needed rather than using the
-pcs-handle property already provided by the ethernet-controller DT
-description?
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+As a general comment, I don't think it's reasonable to encode all of the
+VkFormat information inside DRM FourCC. For instance, VkFormat has SRGB/UNO=
+RM
+variants which describe whether pixel values are electrical or optical
+(IOW, EOTF-encoded or not). Moreover, other APIs may encode different
+information in their format enums.
