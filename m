@@ -2,213 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34D4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB64C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234038AbiF2QGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
+        id S229764AbiF2QGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232618AbiF2QGE (ORCPT
+        with ESMTP id S233829AbiF2QGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:06:04 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1015BF46
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 09:06:03 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 145so1631626pga.12
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 09:06:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=notPBC4MnqP3/2b0DoBP3luF+le6LrZ0so+pTM6prWs=;
-        b=NlCjvaxetubf24Z+sQZfc332yDLW4QSIKdokM9O2OcMgf3swcWTSFE70+NvWJG6RH6
-         5KUa8cDpnS2Hlxm/E0AcW2EQ44MaKor8CzE1Rr8OUrOHZuWX9ucpten1Ll5u54CY07Jf
-         iP/Ts5khXRN5mvLnEikY481Wpob2eMYx85b90=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=notPBC4MnqP3/2b0DoBP3luF+le6LrZ0so+pTM6prWs=;
-        b=jYA1WshXKoV3kYLxgOCzM4m6Jw1I2nevZyF70TBFDsfX9QpKQHpg9TRPphnRMHZWgc
-         rXjd2OrGZd12MuEsDL12KCD1dmcoAwX+nwy4AmBuIymZf2med7OaLYC4lc6fcrLQkO6n
-         Lcr7XW2NLNX/JCRjFxPk+hN2oivAtrCGBgx2UmeMt5Sp5gqal/LnETZ/9PC3d5pRK8l3
-         XM6Gcqv+Qd70sEmDh2arPXB3/MIwp4JPI/vGz+BGp0G1K4quwIby0bsbeF9h4paQyduB
-         n0MttvpN2Wczl2lYwrONUAEbzeOb8FMSrqQuct2slGhzrXYRJalDEI/BRbwY3dhCDSiQ
-         THng==
-X-Gm-Message-State: AJIora+uA88re382s8K5ru/VX0/3Zmy83J7zO/LVowyUP1Lj/OmFZthY
-        Z6nH3VHwRKaPnlTu+KUIswT8zA==
-X-Google-Smtp-Source: AGRyM1vg6eF7pHecOpH49930sygS1lu8vE8q9/o+9+HVT9Nz4uVBZw2Pt0NdQ0HZB4n2QPKkcQX5Og==
-X-Received: by 2002:a05:6a00:22cb:b0:525:ba83:559a with SMTP id f11-20020a056a0022cb00b00525ba83559amr10977364pfj.54.1656518762463;
-        Wed, 29 Jun 2022 09:06:02 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:9841:721:7d8b:4502])
-        by smtp.gmail.com with ESMTPSA id r19-20020a170902e3d300b00163f8ddf160sm11495350ple.161.2022.06.29.09.05.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 09:06:02 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Robert Foss <robert.foss@linaro.org>, Xin Ji <xji@analogixsemi.com>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <maxime@cerno.tech>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] drm/bridge: anx7625: Convert to devm_i2c_new_dummy_device()
-Date:   Thu, 30 Jun 2022 00:05:47 +0800
-Message-Id: <20220629160550.433980-2-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-In-Reply-To: <20220629160550.433980-1-hsinyi@chromium.org>
-References: <20220629160550.433980-1-hsinyi@chromium.org>
+        Wed, 29 Jun 2022 12:06:12 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F926396;
+        Wed, 29 Jun 2022 09:06:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=7Il3Zmz7S/H0NpQetmZjc06R/zh7uKcDBAajLC9gk7k=; b=nQI+rf6typETAhwsXDC03rqH1s
+        V164Y6PeH/wetb3LsK1Agsg11/TBxGJrqtz9PS3ZCkdd8xr4Tq3i6g50Fh8k7KpOVCJf71tRgxbIH
+        njTbD+6wn0OaEcJplIK7kNG6yhTWpzvNbrG4L/3iG+OAOYrLdNmjf+5QpEyqcx7jaj/nE8Z8TguZc
+        jVHgBb1v3Ga3S+jBuSfll3H9aSztuVx1Un8QlkO5yuAX5Saz9FlonIBzN4iJ0dd8BEbHTqvsVvRi1
+        T3g4LOg96bAhr2/nF2mMRWewmYCIhMV+dOlF5CozLQiN2Y1LRjq0qQmuCMGhP54hZ4GTTGSsVNp3Y
+        Ww9rCnag==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1o6aCX-002SQa-6C; Wed, 29 Jun 2022 10:06:02 -0600
+Message-ID: <7da06e08-7dd1-f37c-4382-bc59a1b1e819@deltatee.com>
+Date:   Wed, 29 Jun 2022 10:06:00 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-CA
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+        Stephen Bates <sbates@raithlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>
+References: <20220615161233.17527-1-logang@deltatee.com>
+ <20220615161233.17527-17-logang@deltatee.com> <20220629064629.GC17576@lst.de>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <20220629064629.GC17576@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: hch@lst.de, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, dan.j.williams@intel.com, jgg@ziepe.ca, christian.koenig@amd.com, jhubbard@nvidia.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, dave.b.minturn@intel.com, jason@jlekstrand.net, dave.hansen@linux.intel.com, jianxin.xiong@intel.com, helgaas@kernel.org, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, rcampbell@nvidia.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v7 16/21] block: add check when merging zone device pages
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify the resource management.
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
- drivers/gpu/drm/bridge/analogix/anx7625.c | 96 +++++++----------------
- 1 file changed, 27 insertions(+), 69 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 3710fa9ee0acd..f89e8151475f7 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -2436,82 +2436,44 @@ static const struct drm_bridge_funcs anx7625_bridge_funcs = {
- static int anx7625_register_i2c_dummy_clients(struct anx7625_data *ctx,
- 					      struct i2c_client *client)
- {
--	int err = 0;
-+	struct device *dev = &ctx->client->dev;
- 
--	ctx->i2c.tx_p0_client = i2c_new_dummy_device(client->adapter,
--						     TX_P0_ADDR >> 1);
-+	ctx->i2c.tx_p0_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						TX_P0_ADDR >> 1);
- 	if (IS_ERR(ctx->i2c.tx_p0_client))
- 		return PTR_ERR(ctx->i2c.tx_p0_client);
- 
--	ctx->i2c.tx_p1_client = i2c_new_dummy_device(client->adapter,
--						     TX_P1_ADDR >> 1);
--	if (IS_ERR(ctx->i2c.tx_p1_client)) {
--		err = PTR_ERR(ctx->i2c.tx_p1_client);
--		goto free_tx_p0;
--	}
-+	ctx->i2c.tx_p1_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						TX_P1_ADDR >> 1);
-+	if (IS_ERR(ctx->i2c.tx_p1_client))
-+		return PTR_ERR(ctx->i2c.tx_p1_client);
- 
--	ctx->i2c.tx_p2_client = i2c_new_dummy_device(client->adapter,
--						     TX_P2_ADDR >> 1);
--	if (IS_ERR(ctx->i2c.tx_p2_client)) {
--		err = PTR_ERR(ctx->i2c.tx_p2_client);
--		goto free_tx_p1;
--	}
-+	ctx->i2c.tx_p2_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						TX_P2_ADDR >> 1);
-+	if (IS_ERR(ctx->i2c.tx_p2_client))
-+		return PTR_ERR(ctx->i2c.tx_p2_client);
- 
--	ctx->i2c.rx_p0_client = i2c_new_dummy_device(client->adapter,
--						     RX_P0_ADDR >> 1);
--	if (IS_ERR(ctx->i2c.rx_p0_client)) {
--		err = PTR_ERR(ctx->i2c.rx_p0_client);
--		goto free_tx_p2;
--	}
-+	ctx->i2c.rx_p0_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						RX_P0_ADDR >> 1);
-+	if (IS_ERR(ctx->i2c.rx_p0_client))
-+		return PTR_ERR(ctx->i2c.rx_p0_client);
- 
--	ctx->i2c.rx_p1_client = i2c_new_dummy_device(client->adapter,
--						     RX_P1_ADDR >> 1);
--	if (IS_ERR(ctx->i2c.rx_p1_client)) {
--		err = PTR_ERR(ctx->i2c.rx_p1_client);
--		goto free_rx_p0;
--	}
-+	ctx->i2c.rx_p1_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						RX_P1_ADDR >> 1);
-+	if (IS_ERR(ctx->i2c.rx_p1_client))
-+		return PTR_ERR(ctx->i2c.rx_p1_client);
- 
--	ctx->i2c.rx_p2_client = i2c_new_dummy_device(client->adapter,
--						     RX_P2_ADDR >> 1);
--	if (IS_ERR(ctx->i2c.rx_p2_client)) {
--		err = PTR_ERR(ctx->i2c.rx_p2_client);
--		goto free_rx_p1;
--	}
-+	ctx->i2c.rx_p2_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						RX_P2_ADDR >> 1);
-+	if (IS_ERR(ctx->i2c.rx_p2_client))
-+		return PTR_ERR(ctx->i2c.rx_p2_client);
- 
--	ctx->i2c.tcpc_client = i2c_new_dummy_device(client->adapter,
--						    TCPC_INTERFACE_ADDR >> 1);
--	if (IS_ERR(ctx->i2c.tcpc_client)) {
--		err = PTR_ERR(ctx->i2c.tcpc_client);
--		goto free_rx_p2;
--	}
-+	ctx->i2c.tcpc_client = devm_i2c_new_dummy_device(dev, client->adapter,
-+						TCPC_INTERFACE_ADDR >> 1);
-+	if (IS_ERR(ctx->i2c.tcpc_client))
-+		return PTR_ERR(ctx->i2c.tcpc_client);
- 
- 	return 0;
--
--free_rx_p2:
--	i2c_unregister_device(ctx->i2c.rx_p2_client);
--free_rx_p1:
--	i2c_unregister_device(ctx->i2c.rx_p1_client);
--free_rx_p0:
--	i2c_unregister_device(ctx->i2c.rx_p0_client);
--free_tx_p2:
--	i2c_unregister_device(ctx->i2c.tx_p2_client);
--free_tx_p1:
--	i2c_unregister_device(ctx->i2c.tx_p1_client);
--free_tx_p0:
--	i2c_unregister_device(ctx->i2c.tx_p0_client);
--
--	return err;
--}
--
--static void anx7625_unregister_i2c_dummy_clients(struct anx7625_data *ctx)
--{
--	i2c_unregister_device(ctx->i2c.tx_p0_client);
--	i2c_unregister_device(ctx->i2c.tx_p1_client);
--	i2c_unregister_device(ctx->i2c.tx_p2_client);
--	i2c_unregister_device(ctx->i2c.rx_p0_client);
--	i2c_unregister_device(ctx->i2c.rx_p1_client);
--	i2c_unregister_device(ctx->i2c.rx_p2_client);
--	i2c_unregister_device(ctx->i2c.tcpc_client);
- }
- 
- static int __maybe_unused anx7625_runtime_pm_suspend(struct device *dev)
-@@ -2723,8 +2685,6 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 	if (!platform->pdata.low_power_mode)
- 		pm_runtime_put_sync_suspend(&client->dev);
- 
--	anx7625_unregister_i2c_dummy_clients(platform);
--
- free_wq:
- 	if (platform->workqueue)
- 		destroy_workqueue(platform->workqueue);
-@@ -2754,8 +2714,6 @@ static int anx7625_i2c_remove(struct i2c_client *client)
- 	if (!platform->pdata.low_power_mode)
- 		pm_runtime_put_sync_suspend(&client->dev);
- 
--	anx7625_unregister_i2c_dummy_clients(platform);
--
- 	if (platform->pdata.audio_en)
- 		anx7625_unregister_audio(platform);
- 
--- 
-2.37.0.rc0.161.g10f37bed90-goog
 
+On 2022-06-29 00:46, Christoph Hellwig wrote:
+> On Wed, Jun 15, 2022 at 10:12:28AM -0600, Logan Gunthorpe wrote:
+>> Consecutive zone device pages should not be merged into the same sgl
+>> or bvec segment with other types of pages or if they belong to different
+>> pgmaps. Otherwise getting the pgmap of a given segment is not possible
+>> without scanning the entire segment. This helper returns true either if
+>> both pages are not zone device pages or both pages are zone device
+>> pages with the same pgmap.
+>>
+>> Add a helper to determine if zone device pages are mergeable and use
+>> this helper in page_is_mergeable().
+> 
+> Any reason not to simply set REQ_NOMERGE for these requests?  We
+> can't merge for passthrough requests anyway, and genrally don't merge
+> for direct I/O either, so adding all this overhead seems a bit pointless.
+
+Hmm, I suppose we could also ensure that REQ_NOMERGE is set in a bio
+before setting FOLL_PCI_P2PDMA in bio_map_user_iov() and
+__bio_iov_iter_get_pages(). Assuming it's always set for any direct I/O.
+
+I'll look into it.
+
+Logan
