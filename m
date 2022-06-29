@@ -2,104 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65580C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 10:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C913FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 10:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiF2KV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 06:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        id S232648AbiF2KYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 06:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiF2KVY (ORCPT
+        with ESMTP id S230179AbiF2KYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 06:21:24 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C028B2CDEA
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 03:21:23 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id m184so9049960wme.1
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 03:21:23 -0700 (PDT)
+        Wed, 29 Jun 2022 06:24:04 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84E127B0E;
+        Wed, 29 Jun 2022 03:24:03 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 23so14887494pgc.8;
+        Wed, 29 Jun 2022 03:24:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LUI568KKXBWt/UbA1wIV56CczfgTe2ipRJvz8jOekL4=;
-        b=Dg+/K7lGSuLotSEUfjS3gnurmv3Ls9wWXf6+SkWUT8cGyAwt/fvEJr+1Ttq4qiye9Y
-         hdXUYGJ0HMbnWxRaZs6PA2J9hJ1QmKztIGxEVZBrNp0IAJO9fpBuhsBWdANK2Tpo4QvD
-         qcnWerCjZqxRV/tFdNll1My2DNgYExo3D1raK2FrREl9oEp9VBo1JlfI/xtFTpgjb9+Z
-         XX2iTKSC+tjZKqAll7tRdmBEb08QNDXYF2+8mF21DIUneW0qNkD/q1WemgocXxI8SShR
-         kz8hLD9uhFTE4E/MfabHQsewdcdUPmic23x2KnI7UsNFlKzbQs7bjwjTpR36z5tz4GaY
-         P9QQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=trw3LNoiFKTtUvjXEV/QGd2ZkU2tmLP2qFOADoks6lE=;
+        b=M9OWPVf47nuV8h5P3dcKIGBCbEt/qE7nMTjJlxWZpUbV0XCcziQYxQ3qi2lTLQFM8j
+         Jr0rHXzEsFFQqXH19FRNPsYru0tUjypAOKGFWVoH9LMxNiaZNHz3M0dF7EEStnB5TQYl
+         5diKfYn8sQGP8iULjg1i36LiLFSWWLhVtn3AlpklLwIRT2APk2oQRbKYoIQht9++c2Wt
+         jUeJJCMOc40ZumsfrEVbXq6d9y/E8GpHCkkopzbiqlVPKUZG+FOYUnk4iWL62b+ZR3wg
+         6k6L5+NRwx9L3cJ57I0H8B8yXikePaOa45phaGhpCXo4LPPd4KmqikLDoS+KbxCCEvub
+         Gg8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LUI568KKXBWt/UbA1wIV56CczfgTe2ipRJvz8jOekL4=;
-        b=L8n2PHhkYkvo5mISG1mwD9BJ6WcY8GvVeteKtfdNUvGK75aUkHJ8LPpWvjx0Su/7Vu
-         31UOvTr5PUCGN/zVHCEHytxtRa/bLkbsslhbtTNQX0qGSIm9d1m+aE6HNiZoF/WkDrwC
-         UKhoEoI624pzZSh2UrdYRl2JuiO7JIjqBgOgNFFgBTD/4SZmItHCnrVk5OtYDUVigZOh
-         ZP63XUC37OdaZeMPIlhW/jRQSk3zD3vlFDPr1QjQPm5isjrDPFO1GAAkTsu+tt1GszGI
-         MHd6OTj9bgKSQScC28PPzK76sNYOLuhQJBR4+H6+0czlH56YsolTt2CGLt4/tHzavilm
-         eKnw==
-X-Gm-Message-State: AJIora+Xf2hihBEnoFwoSR77Gwk+vC8b1GCP8x3CrSifhyAKNNwdfYwO
-        KkCu1Wy+RLjVFhqz4SV9gZ/hsQ==
-X-Google-Smtp-Source: AGRyM1t66misOvkWP/wDFaZ3DmxBe9/TdCWM/N12/+KveC7B17Rp6dA33RQzHq6OCHRATnzN0JeudQ==
-X-Received: by 2002:a7b:c196:0:b0:3a0:3d46:4620 with SMTP id y22-20020a7bc196000000b003a03d464620mr4808384wmi.26.1656498082205;
-        Wed, 29 Jun 2022 03:21:22 -0700 (PDT)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id m1-20020a7bcb81000000b003a05621dc53sm2562035wmi.29.2022.06.29.03.21.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 03:21:21 -0700 (PDT)
-Message-ID: <7d3fdfb5-ed03-671b-59d8-918cc0d60612@linaro.org>
-Date:   Wed, 29 Jun 2022 12:21:19 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=trw3LNoiFKTtUvjXEV/QGd2ZkU2tmLP2qFOADoks6lE=;
+        b=1EH+7Ukv3zYkXPRryQUrSRWAqkZ9X8DgQcYWA/Bdzq4dA4mq6HJWo90atfBqsp6069
+         nG9SwYuWLG1QWigdGiHAeNBu0AZPwEHfdyYvQSiwh4hg4LsBWaP9cHSnfnVargTGqSdl
+         6vwQU3CzTeqbapWWm7FXhiKuyxOMFydbMinnAmQJqYG0qLeZfzBHYIspD7g3Up5GDr1/
+         0btK6/pFsYRsoQ+yY+nMegBFFkgrQlwZlO6VJ5FaqKRcO3PbADHTtv5Zg14lJdJ1tHcS
+         pjWpxlriMdfmtjKr7j80CzghxcVQRrYRS9yc9osgVsEiu7vFTjtqLHw5+rg+aV16o2ZS
+         Ro2A==
+X-Gm-Message-State: AJIora/W3QESEfh7L/55Hlbe37ZjJhZRXCMuSARa/GKXFAElCPZTKNrw
+        nbVSFKuGc1TRyhkRVJ6LaTXP2O6BDAc=
+X-Google-Smtp-Source: AGRyM1tAkwBPmvH8pvdlzCxAnOewXeBxwn3kFhaN7DxdqJVmdMoP2AJ0cPh+1ShRcMbQmh678lLo8Q==
+X-Received: by 2002:a63:be41:0:b0:40c:b4a8:dee9 with SMTP id g1-20020a63be41000000b0040cb4a8dee9mr2366496pgo.107.1656498243314;
+        Wed, 29 Jun 2022 03:24:03 -0700 (PDT)
+Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
+        by smtp.gmail.com with ESMTPSA id c5-20020a17090abf0500b001ef0fed7046sm1705903pjs.15.2022.06.29.03.24.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 03:24:02 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 03:24:01 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Sagi Shahar <sagis@google.com>
+Cc:     "Yamahata, Isaku" <isaku.yamahata@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [RFC PATCH v6 095/104] KVM: TDX: Handle TDX PV rdmsr/wrmsr
+ hypercall
+Message-ID: <20220629102401.GC882746@ls.amr.corp.intel.com>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+ <9a45667060dd2f8634bf1ecba23b89567c7e46e7.1651774251.git.isaku.yamahata@intel.com>
+ <CAAhR5DE8FmzACXja1znjdR04HS_kOsJ4awWsU5AHm3__oqOx8g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 0/4] Energy Model power in micro-Watts and SCMI v3.1
- alignment
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Lukasz Luba <lukasz.luba@arm.com>
-Cc:     linux-pm@vger.kernel.org, amitk@kernel.org, rui.zhang@intel.com,
-        rafael@kernel.org, dietmar.eggemann@arm.com, nm@ti.com,
-        sboyd@kernel.org, sudeep.holla@arm.com, cristian.marussi@arm.com,
-        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220622145802.13032-1-lukasz.luba@arm.com>
- <be793e51-0d89-7afd-e122-ec929a1130e9@arm.com>
- <20220629095302.bi3xx6yicsnjeff7@vireshk-i7>
- <1072cb84-4097-0cbd-f980-a864ea851b0c@arm.com>
- <20220629100148.67kevfelqq7d23n5@vireshk-i7>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220629100148.67kevfelqq7d23n5@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAAhR5DE8FmzACXja1znjdR04HS_kOsJ4awWsU5AHm3__oqOx8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 10, 2022 at 02:04:49PM -0700,
+Sagi Shahar <sagis@google.com> wrote:
 
-Hi Lukasz,
-
-On 29/06/2022 12:01, Viresh Kumar wrote:
-> On 29-06-22, 11:00, Lukasz Luba wrote:
->> Thanks for fast response. It would be great.
->>
->> I have 2 ACKs from Sudeep for the SCMI part,
->> but I don't know the status e.g. of DTPM
->> current work which is using the EM milli-Watts
->> and does conversion to uW internally.
->> I hope, I won't make issues to Daniel's work with this
->> change.
+> On Thu, May 5, 2022 at 11:16 AM <isaku.yamahata@intel.com> wrote:
+> >
+> > From: Isaku Yamahata <isaku.yamahata@intel.com>
+> >
+> > Wire up TDX PV rdmsr/wrmsr hypercall to the KVM backend function.
+> >
+> > Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> > Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+> > ---
+> >  arch/x86/kvm/vmx/tdx.c | 37 +++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 37 insertions(+)
+> >
+> > diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+> > index f46825843a8b..1518a8c310d6 100644
+> > --- a/arch/x86/kvm/vmx/tdx.c
+> > +++ b/arch/x86/kvm/vmx/tdx.c
+> > @@ -1169,6 +1169,39 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
+> >         return 1;
+> >  }
+> >
+> > +static int tdx_emulate_rdmsr(struct kvm_vcpu *vcpu)
+> > +{
+> > +       u32 index = tdvmcall_a0_read(vcpu);
+> > +       u64 data;
+> > +
+> > +       if (kvm_get_msr(vcpu, index, &data)) {
 > 
-> Daniel, do you have any objections to this ?
+> kvm_get_msr and kvm_set_msr used to check the MSR permissions using
+> kvm_msr_allowed but that behaviour changed in "KVM: x86: Only do MSR
+> filtering when access MSR by rdmsr/wrmsr".
+> 
+> Now kvm_get_msr and kvm_set_msr skip these checks and will allow
+> access regardless of the permissions in the msr_filter.
+> 
+> These should be changed to kvm_get_msr_with_filter and
+> kvm_set_msr_with_filter or something similar that checks permissions
+> for MSR access.
 
-Sorry I had no time to review the series yet, give me a couple of days, 
-may be a bit more if possible
-
-
+Thanks for pointing it out. I fixed it as adding kvm_msr_allowed()
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Isaku Yamahata <isaku.yamahata@gmail.com>
