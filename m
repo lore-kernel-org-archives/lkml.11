@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3955ECCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A52D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233744AbiF2PGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
+        id S233792AbiF2PGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232912AbiF2PGh (ORCPT
+        with ESMTP id S233695AbiF2PGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:06:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D151412762
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:06:36 -0700 (PDT)
+        Wed, 29 Jun 2022 11:06:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 213F1192B3
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:06:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656515195;
+        s=mimecast20190719; t=1656515199;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fEdjnqcwdrP4ky6Ydkpn9hPwr/5/PhNfBhkdDi68CEI=;
-        b=WCqrNC84tiXVQ3P/bJiCXEzTv32hrlI6WGic6Bx4DhZBL6CK9UINlk4rmMp3u/joYw6nLF
-        LSfZMcBQlwCSS74mBLAFGv7po72aQqRUYVRFs72+TWn2RHrMq6daub249EKzzpSzHOZI51
-        WLoFGYFg6cT3o5mNpAV+eWaB2FtHEZ0=
+        bh=qqM0GdHyxcksDuwznBTEVlvia7GmEG1xLhXl8yuf6VA=;
+        b=Cwq4S6YZOEm3hJGfRcFaF5Wjgt7XZByp4BPbwjduvX8qZLlqItFljtcHXMMGvoFkiMtemS
+        HFjNh2VnSwBiAgQfyyDca7iUc57uoydL4fuAMZC88dtblhWS5gb7w6Jwl8SSOprwTbZmx+
+        gzaXQYHP+MiZ7E87xngj6ki6OmOZmJ8=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-389-dWWmk26GNRWnnmhfiAfS7Q-1; Wed, 29 Jun 2022 11:06:30 -0400
-X-MC-Unique: dWWmk26GNRWnnmhfiAfS7Q-1
+ us-mta-8-puuO6nhdPh-HvWaTwYyzSA-1; Wed, 29 Jun 2022 11:06:35 -0400
+X-MC-Unique: puuO6nhdPh-HvWaTwYyzSA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4BC3E3C025B2;
-        Wed, 29 Jun 2022 15:06:30 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA4683C10686;
+        Wed, 29 Jun 2022 15:06:34 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 93BC840EC002;
-        Wed, 29 Jun 2022 15:06:28 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DF0F540EC002;
+        Wed, 29 Jun 2022 15:06:32 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -46,9 +46,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 01/28] KVM: x86: hyper-v: Expose access to debug MSRs in the partition privilege flags
-Date:   Wed, 29 Jun 2022 17:05:58 +0200
-Message-Id: <20220629150625.238286-2-vkuznets@redhat.com>
+Subject: [PATCH v2 03/28] x86/hyperv: Update 'struct hv_enlightened_vmcs' definition
+Date:   Wed, 29 Jun 2022 17:06:00 +0200
+Message-Id: <20220629150625.238286-4-vkuznets@redhat.com>
 In-Reply-To: <20220629150625.238286-1-vkuznets@redhat.com>
 References: <20220629150625.238286-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,44 +59,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For some features, Hyper-V spec defines two separate CPUID bits: one
-listing whether the feature is supported or not and another one showing
-whether guest partition was granted access to the feature ("partition
-privilege mask"). 'Debug MSRs available' is one of such features. Add
-the missing 'access' bit.
+Updated Hyper-V Enlightened VMCS specification lists several new
+fields for the following features:
 
-Fixes: f97f5a56f597 ("x86/kvm/hyper-v: Add support for synthetic debugger interface")
+- PerfGlobalCtrl
+- EnclsExitingBitmap
+- Tsc Scaling
+- GuestLbrCtl
+- CET
+- SSP
+
+Update the definition.
+
+Note: The latest TLFS is available at
+https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/tlfs
+
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/hyperv.c             | 1 +
- include/asm-generic/hyperv-tlfs.h | 2 ++
- 2 files changed, 3 insertions(+)
+ arch/x86/include/asm/hyperv-tlfs.h | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index e2e95a6fccfd..e08189211d9a 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -2496,6 +2496,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 			ent->eax |= HV_MSR_RESET_AVAILABLE;
- 			ent->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
- 			ent->eax |= HV_ACCESS_FREQUENCY_MSRS;
-+			ent->eax |= HV_ACCESS_DEBUG_MSRS;
- 			ent->eax |= HV_ACCESS_REENLIGHTENMENT;
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 6f0acc45e67a..fd334e8defb7 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -559,9 +559,20 @@ struct hv_enlightened_vmcs {
+ 	u64 partition_assist_page;
+ 	u64 padding64_4[4];
+ 	u64 guest_bndcfgs;
+-	u64 padding64_5[7];
++	u64 guest_ia32_perf_global_ctrl;
++	u64 guest_ia32_s_cet;
++	u64 guest_ssp;
++	u64 guest_ia32_int_ssp_table_addr;
++	u64 guest_ia32_lbr_ctl;
++	u64 padding64_5[2];
+ 	u64 xss_exit_bitmap;
+-	u64 padding64_6[7];
++	u64 host_ia32_perf_global_ctrl;
++	u64 encls_exiting_bitmap;
++	u64 tsc_multiplier;
++	u64 host_ia32_s_cet;
++	u64 host_ssp;
++	u64 host_ia32_int_ssp_table_addr;
++	u64 padding64_6;
+ } __packed;
  
- 			ent->ebx |= HV_POST_MESSAGES;
-diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
-index fdce7a4cfc6f..1d99dd296a76 100644
---- a/include/asm-generic/hyperv-tlfs.h
-+++ b/include/asm-generic/hyperv-tlfs.h
-@@ -70,6 +70,8 @@
- #define HV_MSR_GUEST_IDLE_AVAILABLE		BIT(10)
- /* Partition local APIC and TSC frequency registers available */
- #define HV_ACCESS_FREQUENCY_MSRS		BIT(11)
-+/* Debug MSRs available */
-+#define HV_ACCESS_DEBUG_MSRS			BIT(12)
- /* AccessReenlightenmentControls privilege */
- #define HV_ACCESS_REENLIGHTENMENT		BIT(13)
- /* AccessTscInvariantControls privilege */
+ #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE			0
 -- 
 2.35.3
 
