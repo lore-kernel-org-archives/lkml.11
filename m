@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0E7CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C935C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232792AbiF2J1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39876 "EHLO
+        id S232807AbiF2J2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232749AbiF2J1E (ORCPT
+        with ESMTP id S231277AbiF2J2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:27:04 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC3839169
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:27:03 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXwzV4pMKzkWgs;
-        Wed, 29 Jun 2022 17:25:10 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 17:27:02 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 17:27:01 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v2] arm64: defconfig: Enable memory hotplug and hotremove config
-Date:   Wed, 29 Jun 2022 17:35:24 +0800
-Message-ID: <20220629093524.34801-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 29 Jun 2022 05:28:13 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48002BF;
+        Wed, 29 Jun 2022 02:28:11 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 03FBB240012;
+        Wed, 29 Jun 2022 09:28:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656494890;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6n3CIs9RxVSb+aOC/z04UOZ6/DtdTS73o2Frum+oK/A=;
+        b=aH1yGbnUXRqJ8259krN+JCkO6nhY0K7zbLcsxwc/NXGHrS++ob3xejpYmp9KuzZsCqvcYX
+        VVjZbIxbKdSnVurEXvqmWAwll9mFDBn4qsYL48PwuGPv/3wV7NVJisWL5KAIOoaUkqr+XD
+        y9RmiRfc20rJzRfW4FGXaFNRQyV3kaGaog3xzfZsGFV6IcjxXBzxOU30G5BgbI8eWdqMlL
+        ttTWrXxIWyFCbI0HLr2newo7M5UMuUGylJI1Hnzll7lSqGB7Ai3PdFxdnZc+QS+ZF6ffTP
+        y1jMlv1e6Q+6JjPXA1gSfblorwq9e/QpCV7SJMpoRijHouUauJ9R36rIT7zvGQ==
+Date:   Wed, 29 Jun 2022 11:27:20 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Peng Wu <wupeng58@huawei.com>
+Cc:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-renesas-soc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <liwei391@huawei.com>
+Subject: Re: [PATCH] net: dsa: rzn1-a5psw: fix a NULL vs IS_ERR() check in
+ a5psw_probe()
+Message-ID: <20220629112720.648619a8@fixe.home>
+In-Reply-To: <20220628130920.49493-1-wupeng58@huawei.com>
+References: <20220628130920.49493-1-wupeng58@huawei.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's enable ACPI_HMAT, ACPI_HOTPLUG_MEMORY, MEMORY_HOTPLUG
-and MEMORY_HOTREMOVE for more test coverage, also there are
-useful for heterogeneous memory scene.
+Le Tue, 28 Jun 2022 13:09:20 +0000,
+Peng Wu <wupeng58@huawei.com> a =C3=A9crit :
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
-v2: add ACPI_HMAT and update changelog too.
- arch/arm64/configs/defconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+> The devm_platform_ioremap_resource() function never returns NULL.
+> It returns error pointers.
+>=20
+> Signed-off-by: Peng Wu <wupeng58@huawei.com>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> ---
+>  drivers/net/dsa/rzn1_a5psw.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+> index 3e910da98ae2..5b14e2ba9b79 100644
+> --- a/drivers/net/dsa/rzn1_a5psw.c
+> +++ b/drivers/net/dsa/rzn1_a5psw.c
+> @@ -946,8 +946,8 @@ static int a5psw_probe(struct platform_device *pdev)
+>  	mutex_init(&a5psw->lk_lock);
+>  	spin_lock_init(&a5psw->reg_lock);
+>  	a5psw->base =3D devm_platform_ioremap_resource(pdev, 0);
+> -	if (!a5psw->base)
+> -		return -EINVAL;
+> +	if (IS_ERR(a5psw->base))
+> +		return PTR_ERR(a5psw->base);
+> =20
+>  	ret =3D a5psw_pcs_get(a5psw);
+>  	if (ret)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 7d1105343bc2..78add6eefa2b 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -101,6 +101,8 @@ CONFIG_ARM_TEGRA186_CPUFREQ=y
- CONFIG_ARM_MEDIATEK_CPUFREQ=y
- CONFIG_QORIQ_CPUFREQ=y
- CONFIG_ACPI=y
-+CONFIG_ACPI_HOTPLUG_MEMORY=y
-+CONFIG_ACPI_HMAT=y
- CONFIG_ACPI_APEI=y
- CONFIG_ACPI_APEI_GHES=y
- CONFIG_ACPI_APEI_PCIEAER=y
-@@ -125,6 +127,8 @@ CONFIG_SECCOMP=y
- CONFIG_MODULES=y
- CONFIG_MODULE_UNLOAD=y
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
-+CONFIG_MEMORY_HOTPLUG=y
-+CONFIG_MEMORY_HOTREMOVE=y
- CONFIG_KSM=y
- CONFIG_MEMORY_FAILURE=y
- CONFIG_TRANSPARENT_HUGEPAGE=y
--- 
-2.35.3
+Thanks,
 
+Reviewed-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
