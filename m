@@ -2,236 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91492C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C2DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233297AbiF2MAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S230140AbiF2MIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 08:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiF2MAd (ORCPT
+        with ESMTP id S229823AbiF2MII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 08:00:33 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3763F8B7
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:00:32 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id u25-20020a6b4919000000b006729aaa1b68so8709356iob.21
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:00:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=WDRWbThtfSIQ+NVMjf/9uTC6N33PQCiGK2DCZ90URgQ=;
-        b=EBgDS9J9hkyIp2J1ftTET10eEQdpbAxECrmOAk3L7uorfZM55yxAgm3Q+pqWgopoWv
-         l7toN2XmD9DYxW3bKjrM2aEmf7DKPH3TeHjuSkLVSmUG6d8mE7ZV4d5h4ytc1fW8d1FO
-         503L2yP/M/2atw/+IkfBbOo83taboOisSbWOTH1QW1RpZTNOE7B36fk5J8xPqmZl6lPm
-         IUIh8JBCZ5WhIMc5dAZtAF6rV22wvbkA9upNad9FuTdENptZns7TmuBklQNmphnc9qZz
-         NeisqlUx+HgXXBuziv82n9/HGo6M+PcB1qqUM+YXuVSe6BDujQLXwUaIEU/3UBfb4SC/
-         h1Gg==
-X-Gm-Message-State: AJIora8RRWQg45iaFT7lHLVNPum4oOgLdSCQIbK5EDIDP/HKVjHHYrBE
-        5pC6UAr6XSOIjj0PgQ0iOj2QCIP6E/eHBMB4+Wmb+QYlpt6a
-X-Google-Smtp-Source: AGRyM1t/NYtcYWZ0/NgaC5GXdqqiFjmGL+eyiHUJ8rJNant217kQxlYWz/WKOnntffBP4mhIpXcBqG/cBLII5sI3kV/9NyoUZpuk
+        Wed, 29 Jun 2022 08:08:08 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60122.outbound.protection.outlook.com [40.107.6.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A40EC47;
+        Wed, 29 Jun 2022 05:08:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ifWn/YazSc1d9tHn9eWj5uoscRAHRSxQpfr/Q8LGDgD0NceE8VqE/Lym/+I5/hbWqJ4euuqH6wWjZqRgkpmtiwEsHIkV9rkkPKeeeWAHGY1XTUVhYhRIfM8LqeqGpaj0tE17jHTVfjV6vjdxtYvuGV0FzxO6iTRn/+VWMT9GyFQp/mvDyaHwmZ/WpQLYl5HzmSrOBpcm1QCDcL05UHHlNXI/R8Sdf2bdoew9Rrm04xhEOE6PG9DTUFgkLLbcpVFGSVu73AsVclW22IAJWeuc/NZXGbB6SLsxUV5Q8K1bz0wRmUIq4t0bZYG3lQh2v+jt7pdx4dMnumMJV1Z5j6vD+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gTviOZgaJwdx+fR8uDMSgbjYqB3wGZaJg4EUbsVWbHw=;
+ b=c6QarNmZGhHfJXc5q+kDavS/T8eKiwLa4ebVyRDCZLfoKiHIpidq3recAoSv7aqxiZFhrA+tN4Cnym3/M86esWGcz4kbZ/J9jAN8M1WsTl16i3bJiXIjp65WbnB9sXaGIH/Sy3Yllv7mDvnvKe3j7iPDBNF6FkM31tNPpIM5Zf8PdtuXPjVD7kIsDekNyuJ45xVu0EctRtLbZm/BJl/xSnF2g3k87qJ1/Qp9xPUTP16dHGXHKFVLWXr7HAavUgPl5H4x5QJidyIDDfShsO29z2/iuKmXC16SLkjXIkAyiZMlhfm4D2SNXyAVamVtvD1oPdqj4GB2GSF454FmR5UuJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gTviOZgaJwdx+fR8uDMSgbjYqB3wGZaJg4EUbsVWbHw=;
+ b=tJjkrzwq7xfgEJyJY8abRz/b+ec+H/8xCjVyyfzw57gQwqfPfFutZOkoThVb29aoDdvL0nCzxdGCKJ7bLdob7Riq3M5F5QuAs4Qmqyesb+Z6OOLFp1VIMAvcEN21mtypRZ1Yq4SoO13EJzHmvA2R/u7N0SYvRyJLub4aRD++cJc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nokia.com;
+Received: from DU2PR07MB8110.eurprd07.prod.outlook.com (2603:10a6:10:239::15)
+ by VI1PR07MB5742.eurprd07.prod.outlook.com (2603:10a6:803:98::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
+ 2022 12:08:04 +0000
+Received: from DU2PR07MB8110.eurprd07.prod.outlook.com
+ ([fe80::8885:ac49:4a47:2293]) by DU2PR07MB8110.eurprd07.prod.outlook.com
+ ([fe80::8885:ac49:4a47:2293%9]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
+ 12:08:04 +0000
+Message-ID: <0c252770-f06f-0bd8-79b0-af637ef27cc4@nokia.com>
+Date:   Wed, 29 Jun 2022 14:07:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 02/10] i2c: xiic: Add standard mode support for > 255
+ byte read transfers
+Content-Language: en-US
+To:     Michal Simek <michal.simek@amd.com>,
+        Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Cc:     linux-i2c@vger.kernel.org, michal.simek@xilinx.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, marex@denx.de, joe@perches.com
+References: <20210626102806.15402-1-raviteja.narayanam@xilinx.com>
+ <20210626102806.15402-3-raviteja.narayanam@xilinx.com>
+ <c8d4faf1-5f0c-4adb-e52a-92d46179ffa4@nokia.com>
+ <27c88580-51bb-7813-c29f-b8a3faaaa294@amd.com>
+From:   Krzysztof Adamski <krzysztof.adamski@nokia.com>
+In-Reply-To: <27c88580-51bb-7813-c29f-b8a3faaaa294@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: HE1PR05CA0246.eurprd05.prod.outlook.com
+ (2603:10a6:3:fb::22) To DU2PR07MB8110.eurprd07.prod.outlook.com
+ (2603:10a6:10:239::15)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:410e:b0:33c:d3b8:a4bd with SMTP id
- ay14-20020a056638410e00b0033cd3b8a4bdmr970111jab.264.1656504032004; Wed, 29
- Jun 2022 05:00:32 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 05:00:31 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000065911f05e294e691@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in selinux_socket_recvmsg
-From:   syzbot <syzbot+04b20e641c99a5d99ac2@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, anton@enomsg.org, ast@kernel.org,
-        bpf@vger.kernel.org, ccross@android.com, daniel@iogearbox.net,
-        eparis@parisplace.org, john.fastabend@gmail.com, kafai@fb.com,
-        keescook@chromium.org, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        paul@paul-moore.com, selinux@vger.kernel.org,
-        songliubraving@fb.com, stephen.smalley.work@gmail.com,
-        syzkaller-bugs@googlegroups.com, tony.luck@intel.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cdf05492-7d4b-450c-2e43-08da59c804ce
+X-MS-TrafficTypeDiagnostic: VI1PR07MB5742:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0HxJrUSeC6iMbf7MlgRoxfj8jreZ1rL5GurtlHBXtgHutgqufmikB3xy9I4ZnU1vRXo9puYhr1+cJv1Kcs5mo/okxaMoAUXdRzh9fnf4JJbKK8yBCO58b7mguhm2YhlsV5MXcbAlRPND8W27JAuV336Kd2msz/Atksl4zJnEWk9fX75CeKY7Xp4F4OYumlHMmmTZSOFSC7QOAlFplQ1Tr/suoh42z8L1G4M6AwJiSuVAzP5/gvgHVWUzmwTd8vA1wZZjs7kyAa4K5qL3X+CVYA3IjHgcMlClwsA76ztMoYfhrIpjOxO/RfJiczbTeN6+UnaG3naIUKOeYIOtRJXEoYAnRJl8wRCzHQDvK7zAEblpIyNEmZY09GIIz6RN9z8m8ZshIgCUmL4QVphA4fbU4A0ZVPGoPpRbMWPivGVELUCkwuTuBtDNXVGv3ICe/Za+yoiLpr/s+ftOjkdgT3nav/qJIXPMwDXQc+C4nEPSUlYMnF/J44lEWRTm+VVbfl22xxHo/ZxW8uKXMTVeIq+VsZxwRpyN1mZV9fQL5YalJrosSnzOtzMQD82pGDPrpHzMEwBSbdcXm2Uu9kN9VpRjEFSawAvvqooaWuW3eyFO/8+tN3w4s9zswUQZzVnGW2jYUgoLPKlEgvzJlJsNda0r+ySR3Is2bqerLlpJINN8FlB0OIPlWtzESn0EJISBh9SrAJADzAQxHh/POFIACiIvy2/SrIem66ILQ5yCURyDVTllCJuxkqtlHgx8C8nvefMSzzfv5n5DN14THMwKgFq8WQiqi7hr9RLJjGZHuo+0OZ3tTzNF/Qe5ANON58hx1Dxl9RdW+2csIO+MMm9NPZHTDDJyKVbXSTgGA8JIJK/KyCA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR07MB8110.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(136003)(396003)(39860400002)(4744005)(44832011)(5660300002)(966005)(8936002)(82960400001)(478600001)(6486002)(186003)(83380400001)(2616005)(6506007)(6666004)(41300700001)(2906002)(26005)(6512007)(53546011)(86362001)(31696002)(36756003)(316002)(8676002)(66556008)(110136005)(66946007)(66476007)(38100700002)(31686004)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UTFPeUlDdWVJTGQybXBWUnZ3dE44NVl5blBGS3RVWnFJbm85YjdxTWY2cm9S?=
+ =?utf-8?B?MS8vK0VhejQvNi9Id3plQWQybmFicFR3QU1LVkNzYjFnN1JzRGRUTGZHTVFG?=
+ =?utf-8?B?b09RdWQwQWdzbEMyN3o1Slc1djBNZmRPOVEyVkRzSlJ0d3VVQ3B1aTVOUENq?=
+ =?utf-8?B?akR2TlM2RVZkSkVMalVoRGVLR0U5dmFyWWdtVTU2Ry9WR0hTbU4yK3NsOG1U?=
+ =?utf-8?B?UE5laWJjQk9nMVJBYkgwaTVpeUtvM0RHSm1kUXlYUW51bkNlN3REaFRjaE96?=
+ =?utf-8?B?U1F1K2w3ZnVzSWFhOHJrMFRjU1ZQbkhNTkxKZnZWbitJZlNQc2pPa2h3YUNH?=
+ =?utf-8?B?alNobHYrYS9seWpNR2VoSTd2TmY0UHF2QkpsWmo1MzREeW85aDdwWmhETDlj?=
+ =?utf-8?B?YWNwM2RCNVlscWFYY3JLVHV3dW1jZENDV2YxSHFTNmk1R1FwVHZaS2toelYv?=
+ =?utf-8?B?MTRqRm5DVm52aUwzd2lNK29DNnExR1BVbVlNUkxlT2FjQll3UWQ3ZmsvWTNz?=
+ =?utf-8?B?eXMzU1lOWlZKTEl5NGtoeHVQNC84cUdVbEF5c0pqVTZteXh3TmFvVnZjd0RI?=
+ =?utf-8?B?TnVsdU9TdzdZbGRzeGFESlhwbUpEb1hYV01TbWRBa3NkVzhneUNPeEpUekM0?=
+ =?utf-8?B?QzJkUXlXTHRVNW12UkJBQVJ5Y3BXN29aR3JkQUkwYzc3ZlMraVpiY3N5YUg2?=
+ =?utf-8?B?QUVudzMyenVvTmtaVVkzV09ISDZXQkhkMkc3SHVkcW9kc2RFZ2toU1pJSDZW?=
+ =?utf-8?B?dGwwc2dGVENkMGp6eXRmUTBIRE5LaDFHWHdabHJ6SWNlUGVRN2QvR0RBcXl1?=
+ =?utf-8?B?U3ZUeDdyR3BILzZwcUdGanZ6cFFSZVVIZ2drbmVYUnorN1EweThrVEdEblBF?=
+ =?utf-8?B?bDhtUWZDais1RVpBbTZBLzMzYXVwTDRPR1NRbTBLcVZJWUNseUZDSm5xYzlv?=
+ =?utf-8?B?QUdDVDBPVFZybEF2SDNoTzRCZkhFckNpUG9FM0wxZ3R1dHVyQlZFeTBIdmtV?=
+ =?utf-8?B?cUY3aWkrMndPKzdlbFduTHRYZldUTUtndExET2xDYTdJTnVYN2FoeWt2ckhk?=
+ =?utf-8?B?cS90YnlHYWl1R3gzclIyT2cyREFrb3M1VkYzcUVkUmQ3OXlKTS9VVHFwOHkx?=
+ =?utf-8?B?K0trTTZaU1k2Qm9kWEt6REJwamZKNXFVQmJOMUxSM3dTeCtWY2JpenRtV3Ji?=
+ =?utf-8?B?b1I5YmYwU3cxQnNuQVVsUWhYbFZNckRNZGpCdDNsNi8wRFNScUo2Z1dJNXdT?=
+ =?utf-8?B?SGwzbFRNeUkvSXpNOHkrQmpoYWlyL09ack1waHFjMHAzTHBsMVUwbzhCRkdR?=
+ =?utf-8?B?NW1LU05TMW4vNkdUeFFyQjFUczJMRks0VDgzVjBXa2dTTkFpa1NtLzJ1OEta?=
+ =?utf-8?B?aE5OdGluNVlJSHp3aG51QmtLamNnazJxQXpTQ1BZZ1o5MTlQZnRpOG84cEVJ?=
+ =?utf-8?B?MVdTRUFQbzFHUU1xWFBucmZkeVdMcEFZcVZBa3gwT2FKYUh3UlJMWkc0bnpw?=
+ =?utf-8?B?emxPTER4aGwyaCtSMU10ZnUxLzJXeHJKZWtOZ3JPa3ZNRGJsQUFIQ2FVSlFK?=
+ =?utf-8?B?dXp5cnNEaWxhMXB3NVA0UFYxK1orNGhUVm1iNHBZQ0ZONUlwVVFpZCtWTy9p?=
+ =?utf-8?B?eXVKcHc0c2lHdjlxSnJEVVpMNzVqdmhBYVJUNUNCQUxqQkFLZjFHbFFJL3FS?=
+ =?utf-8?B?bGREdEplVG1QeDVmbE8rd3NzVVpxZDU0V05pWXpIWk0xZmtDSkhsR3FzaXRV?=
+ =?utf-8?B?Rm4yNlJzQmdxdGlueTFFaFRjTVhWMGQwNUU4dUVhNHcvWG5teXdZRkg4Tkxo?=
+ =?utf-8?B?aFRBRmEzazR3OUVlbktKM2VBQ0p4NnlhQk9mREN6clBadmRwbFVUc01aVFlE?=
+ =?utf-8?B?Nkd5NS96MldqQlVQdjZGUmlpTkdobG8yckVQSDl5ZFh5UExhK0p3MDhoOXpn?=
+ =?utf-8?B?YWYxdW94N3FoMUxLYStNRVhabHllSkZTY2pTeVpQRzZZMjVNd284eEI3OEd0?=
+ =?utf-8?B?czdWcmw3QlNtbExOTnRxeUFvRmI1b1pWME9iVVIrRUhncjIvVVlEMVdPMXBM?=
+ =?utf-8?B?YmtSUTN1NGZvQXpRcTRBbXplQ0hEd3ZnWHUzSlRDc0VYeU14TURNZC84R2xm?=
+ =?utf-8?B?WGVCTTIvak5WcnlHUFRkRmN3NVR0VEV0S1grdktaMFVBSWVtbDFSTjlWWnhR?=
+ =?utf-8?B?dnc9PQ==?=
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cdf05492-7d4b-450c-2e43-08da59c804ce
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR07MB8110.eurprd07.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 12:08:04.1547
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: djAqJ857To9JbJMCzmJunkzFy2UqC6GlN81W4kBKX+FCM1TMoXHaZuiQHHH8RL14bMwDTTQpzLaFxWA43VnsMQPobHlb3wigA7ptW2ztOyk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB5742
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Michal,
 
-syzbot found the following issue on:
+I did not realize there is a v3 to that, sorry. I have tested those 
+patches untill the "Add smbus_block_read functionality" patch and it 
+seems to be working fine for me. I will move my comments to this thread 
+instead.
 
-HEAD commit:    941e3e791269 Merge tag 'for_linus' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=175b3f90080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3a010dbf6a7af480
-dashboard link: https://syzkaller.appspot.com/bug?extid=04b20e641c99a5d99ac2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Krzysztof
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+04b20e641c99a5d99ac2@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in sock_has_perm security/selinux/hooks.c:4535 [inline]
-BUG: KASAN: use-after-free in selinux_socket_recvmsg+0x278/0x2b0 security/selinux/hooks.c:4899
-Read of size 8 at addr ffff8880787ec480 by task syz-executor.3/5491
-
-CPU: 0 PID: 5491 Comm: syz-executor.3 Not tainted 5.19.0-rc4-syzkaller-00014-g941e3e791269 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xeb/0x467 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- sock_has_perm security/selinux/hooks.c:4535 [inline]
- selinux_socket_recvmsg+0x278/0x2b0 security/selinux/hooks.c:4899
- security_socket_recvmsg+0x5c/0xc0 security/security.c:2223
- sock_recvmsg net/socket.c:1011 [inline]
- ____sys_recvmsg+0x23b/0x600 net/socket.c:2711
- ___sys_recvmsg+0x127/0x200 net/socket.c:2753
- do_recvmmsg+0x254/0x6d0 net/socket.c:2847
- __sys_recvmmsg net/socket.c:2926 [inline]
- __do_sys_recvmmsg net/socket.c:2949 [inline]
- __se_sys_recvmmsg net/socket.c:2942 [inline]
- __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2942
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7fa488689109
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fa4875dd168 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-RAX: ffffffffffffffda RBX: 00007fa48879c100 RCX: 00007fa488689109
-RDX: 00000000000005dd RSI: 0000000020000540 RDI: 0000000000000004
-RBP: 00007fa4886e305d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000040012062 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffd8d55b81f R14: 00007fa4875dd300 R15: 0000000000022000
- </TASK>
-
-Allocated by task 5468:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
- kasan_kmalloc include/linux/kasan.h:234 [inline]
- __do_kmalloc mm/slab.c:3696 [inline]
- __kmalloc+0x209/0x4d0 mm/slab.c:3705
- kmalloc include/linux/slab.h:605 [inline]
- sk_prot_alloc+0x110/0x290 net/core/sock.c:1975
- sk_alloc+0x36/0x770 net/core/sock.c:2028
- nr_create+0xb2/0x5f0 net/netrom/af_netrom.c:433
- __sock_create+0x353/0x790 net/socket.c:1515
- sock_create net/socket.c:1566 [inline]
- __sys_socket_create net/socket.c:1603 [inline]
- __sys_socket_create net/socket.c:1588 [inline]
- __sys_socket+0x12f/0x240 net/socket.c:1636
- __do_sys_socket net/socket.c:1649 [inline]
- __se_sys_socket net/socket.c:1647 [inline]
- __x64_sys_socket+0x6f/0xb0 net/socket.c:1647
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Freed by task 15:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0x13d/0x180 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:200 [inline]
- __cache_free mm/slab.c:3425 [inline]
- kfree+0x113/0x310 mm/slab.c:3796
- sk_prot_free net/core/sock.c:2011 [inline]
- __sk_destruct+0x5e5/0x710 net/core/sock.c:2097
- sk_destruct net/core/sock.c:2112 [inline]
- __sk_free+0x1a4/0x4a0 net/core/sock.c:2123
- sk_free+0x78/0xa0 net/core/sock.c:2134
- sock_put include/net/sock.h:1927 [inline]
- nr_heartbeat_expiry+0x2de/0x460 net/netrom/nr_timer.c:148
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers.part.0+0x679/0xa80 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
-
-The buggy address belongs to the object at ffff8880787ec000
- which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 1152 bytes inside of
- 2048-byte region [ffff8880787ec000, ffff8880787ec800)
-
-The buggy address belongs to the physical page:
-page:ffffea0001e1fb00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x787ec
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 ffffea000099a248 ffffea0001e40888 ffff888011840800
-raw: 0000000000000000 ffff8880787ec000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x3420c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_COMP|__GFP_HARDWALL|__GFP_THISNODE), pid 5390, tgid 5382 (syz-executor.5), ts 476769442431, free_ts 475866169421
- prep_new_page mm/page_alloc.c:2456 [inline]
- get_page_from_freelist+0x1290/0x3b70 mm/page_alloc.c:4198
- __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5426
- __alloc_pages_node include/linux/gfp.h:587 [inline]
- kmem_getpages mm/slab.c:1363 [inline]
- cache_grow_begin+0x75/0x350 mm/slab.c:2569
- cache_alloc_refill+0x27f/0x380 mm/slab.c:2942
- ____cache_alloc mm/slab.c:3024 [inline]
- ____cache_alloc mm/slab.c:3007 [inline]
- __do_cache_alloc mm/slab.c:3253 [inline]
- slab_alloc mm/slab.c:3295 [inline]
- __do_kmalloc mm/slab.c:3694 [inline]
- __kmalloc_track_caller+0x3b0/0x4d0 mm/slab.c:3711
- __do_krealloc mm/slab_common.c:1185 [inline]
- krealloc+0x87/0xf0 mm/slab_common.c:1218
- krealloc_array include/linux/slab.h:660 [inline]
- snd_pcm_hw_rule_add+0x41c/0x590 sound/core/pcm_lib.c:1133
- snd_pcm_hw_constraints_init sound/core/pcm_native.c:2582 [inline]
- snd_pcm_open_substream+0x958/0x1820 sound/core/pcm_native.c:2733
- snd_pcm_oss_open_file sound/core/oss/pcm_oss.c:2454 [inline]
- snd_pcm_oss_open.part.0+0x6dc/0x1320 sound/core/oss/pcm_oss.c:2535
- snd_pcm_oss_open+0x3c/0x50 sound/core/oss/pcm_oss.c:2499
- soundcore_open+0x44e/0x620 sound/sound_core.c:593
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4a1/0x11f0 fs/open.c:848
- do_open fs/namei.c:3520 [inline]
- path_openat+0x1c71/0x2910 fs/namei.c:3653
- do_filp_open+0x1aa/0x400 fs/namei.c:3680
- do_sys_openat2+0x16d/0x4c0 fs/open.c:1278
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1371 [inline]
- free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
- free_unref_page_prepare mm/page_alloc.c:3343 [inline]
- free_unref_page+0x19/0x6a0 mm/page_alloc.c:3438
- kasan_depopulate_vmalloc_pte+0x5c/0x70 mm/kasan/shadow.c:359
- apply_to_pte_range mm/memory.c:2625 [inline]
- apply_to_pmd_range mm/memory.c:2669 [inline]
- apply_to_pud_range mm/memory.c:2705 [inline]
- apply_to_p4d_range mm/memory.c:2741 [inline]
- __apply_to_page_range+0x686/0x1030 mm/memory.c:2775
- kasan_release_vmalloc+0xa7/0xc0 mm/kasan/shadow.c:469
- __purge_vmap_area_lazy+0x8f9/0x1c50 mm/vmalloc.c:1722
- drain_vmap_area_work+0x52/0xe0 mm/vmalloc.c:1751
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-
-Memory state around the buggy address:
- ffff8880787ec380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880787ec400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880787ec480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff8880787ec500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880787ec580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+W dniu 29.06.2022 o 13:39, Michal Simek pisze:
+> Hi,
+>
+> On 6/29/22 13:02, Krzysztof Adamski wrote:
+>>
+>> Hi,
+>>
+>> I know this patch is quite old but we need the smbus_block_read
+>> functionality, which depends on this one, so I would really like this to
+>> be merged. See my comments below.
+>
+> Please try this series and let us know if it is working for you or not.
+>
+> https://lore.kernel.org/all/1656072327-13628-1-git-send-email-manikanta.guntupalli@xilinx.com/ 
+>
+>
+> Thanks,
+> Michal
