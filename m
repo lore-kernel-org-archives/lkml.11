@@ -2,106 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE2AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA9A8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbiF2Spj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
+        id S231872AbiF2Sqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiF2SpY (ORCPT
+        with ESMTP id S231966AbiF2SqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:45:24 -0400
-X-Greylist: delayed 185 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 11:45:23 PDT
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B5424BE7;
-        Wed, 29 Jun 2022 11:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1656528135;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=4NqtGbDAxBLulsvaYxNMvmwnavVr0rNTo9Kj5OnQgwM=;
-    b=sxJJg8HHS0bfDv7UUqMwc/C9TaxRAv27nJuHr4gdZyJgrsHxKTpk4BFwh/1rJr9fC7
-    hcLxxp18nfuCBaAN/lA4daLVKImRQDRMTogSsxf5npmiH5d+EFmRKZJgzAn48EPPOi1c
-    z/Zbze1yOEi0CSK0Mxys+omQp7RDodBs7SbWU//T0oSsW7az2/Fo6q7R0QSZnzpE9QRZ
-    VrdDDiFTqoM3bGY+GOsOdZuQpkbKRDYoBnestKpTxTJXTinLatz1g7NcCIR37FqNBlkc
-    7ztADPNCp17ycbX/W7Qg8xpwOHbcZh1OYvv+4HrtjbuQFc2u8Y7Z8Rtb8Gw9zZUz39Hl
-    Ncig==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK8+86Y="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.46.1 AUTH)
-    with ESMTPSA id yfdd30y5TIgF0cZ
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 29 Jun 2022 20:42:15 +0200 (CEST)
-Date:   Wed, 29 Jun 2022 20:42:08 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v3 3/5] arm64: dts: qcom: add SC8280XP platform
-Message-ID: <Yryc8AUIPoWmeyB9@gerhold.net>
-References: <20220629041438.1352536-1-bjorn.andersson@linaro.org>
- <20220629041438.1352536-4-bjorn.andersson@linaro.org>
+        Wed, 29 Jun 2022 14:46:23 -0400
+X-Greylist: delayed 1202 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 11:46:21 PDT
+Received: from 9.mo548.mail-out.ovh.net (9.mo548.mail-out.ovh.net [46.105.48.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77F2340C0
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:46:20 -0700 (PDT)
+Received: from mxplan5.mail.ovh.net (unknown [10.108.20.177])
+        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id A8D0B20747;
+        Wed, 29 Jun 2022 18:07:45 +0000 (UTC)
+Received: from kaod.org (37.59.142.96) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Wed, 29 Jun
+ 2022 20:07:44 +0200
+Authentication-Results: garm.ovh; auth=pass (GARM-96R00198260963-dde8-461b-8c1a-012665a8672e,
+                    DF7F9948BD89912A9BBE6A4903E17E70B6709CC1) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <d272ce4b-c338-c3ea-3770-6c85ddf60ec5@kaod.org>
+Date:   Wed, 29 Jun 2022 20:07:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220629041438.1352536-4-bjorn.andersson@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 2/2] spi: aspeed: Fix division by zero
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+CC:     <linux-spi@vger.kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, <openbmc@lists.ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Ian Woloschin <ian.woloschin@akamai.com>,
+        Ian Woloschin <iwolosch@akamai.com>
+References: <20220622161617.3719096-1-clg@kaod.org>
+ <20220622161617.3719096-3-clg@kaod.org> <YryHVsrqNlhdwKzq@sirena.org.uk>
+ <59b82730-f09f-f7e5-0e2f-4ad1765f0f6e@kaod.org>
+ <YryLj6iWVkqWowDg@sirena.org.uk>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <YryLj6iWVkqWowDg@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.96]
+X-ClientProxiedBy: DAG8EX1.mxp5.local (172.16.2.71) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 3fc20af5-91b9-41c4-b2e6-732ae46bea70
+X-Ovh-Tracer-Id: 10732359387039697912
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudegledguddvtdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepkeetjedtleekjedvveffudfhteetleeifeegfeffuefghfefkeehffeufeeludejnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrdelieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehifiholhhoshgthhesrghkrghmrghirdgtohhmpdfovfetjfhoshhtpehmohehgeek
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 09:14:36PM -0700, Bjorn Andersson wrote:
-> Introduce initial support for the Qualcomm SC8280XP platform, aka 8cx
-> Gen 3. This initial contribution supports SMP, CPUfreq, CPU cluster
-> idling, GCC, TLMM, SMMU, RPMh regulators, power-domains and clocks,
-> interconnects, some QUPs, UFS, remoteprocs, USB, watchdog, LLCC and
-> tsens.
+On 6/29/22 19:27, Mark Brown wrote:
+> On Wed, Jun 29, 2022 at 07:21:08PM +0200, Cédric Le Goater wrote:
+>> On 6/29/22 19:09, Mark Brown wrote:
+>>> On Wed, Jun 22, 2022 at 06:16:17PM +0200, Cédric Le Goater wrote:
+>>>
+>>>> Fixes: 54613fc6659b ("spi: aspeed: Add support for direct mapping")
+>>>
+>>> This commit isn't in mainline.
 > 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
+>> drat. It's the OpenBMC kernel. I will resend. Sorry about that.
 > 
-> Changes since v2:
-> - Fixed include sort order
-> - Dropped a stray newline in &CPU0
-> - Renamed reserved-memory regions
-> - Dropped clock-frequency of the timers node
-> - Reduced #address-cells and #size-cells to 1 in timer node
-> 
->  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2142 ++++++++++++++++++++++++
->  1 file changed, 2142 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> new file mode 100644
-> index 000000000000..c9d608ac87fa
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> @@ -0,0 +1,2142 @@
-[...]
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
-> +		clock-frequency = <19200000>;
+> It's OK, I fixed it up locally.
 
-Please drop the "clock-frequency" here as well (if possible).
 
 Thanks,
-Stephan
+
+C.
