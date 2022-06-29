@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340EFCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4ECBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbiF2WAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 18:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58838 "EHLO
+        id S231271AbiF2WA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 18:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbiF2WAQ (ORCPT
+        with ESMTP id S229798AbiF2WA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 18:00:16 -0400
+        Wed, 29 Jun 2022 18:00:26 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C5A21E12;
-        Wed, 29 Jun 2022 15:00:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E2521E0C;
+        Wed, 29 Jun 2022 15:00:25 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <heiko@sntech.de>)
-        id 1o6fiy-0006yD-CA; Wed, 29 Jun 2022 23:59:52 +0200
+        id 1o6fiw-0006yD-0G; Wed, 29 Jun 2022 23:59:50 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -29,163 +29,116 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
         drew@beagleboard.org, rdunlap@infradead.org,
         Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v5 4/4] riscv: implement cache-management errata for T-Head SoCs
-Date:   Wed, 29 Jun 2022 23:59:44 +0200
-Message-Id: <20220629215944.397952-5-heiko@sntech.de>
+Subject: [PATCH v5 0/4] riscv: implement Zicbom-based CMO instructions + the t-head variant
+Date:   Wed, 29 Jun 2022 23:59:40 +0200
+Message-Id: <20220629215944.397952-1-heiko@sntech.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220629215944.397952-1-heiko@sntech.de>
-References: <20220629215944.397952-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The T-Head C906 and C910 implement a scheme for handling
-cache operations different from the generic Zicbom extension.
+This series is based on the alternatives changes done in my svpbmt series
+and thus also depends on Atish's isa-extension parsing series.
 
-Add an errata for it next to the generic dma coherency ops.
+It implements using the cache-management instructions from the  Zicbom-
+extension to handle cache flush, etc actions on platforms needing them.
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Samuel Holland <samuel@sholland.org>
----
- arch/riscv/Kconfig.erratas           | 11 +++++++
- arch/riscv/errata/thead/errata.c     | 20 ++++++++++++
- arch/riscv/include/asm/errata_list.h | 48 +++++++++++++++++++++++++---
- 3 files changed, 74 insertions(+), 5 deletions(-)
+SoCs using cpu cores from T-Head like the Allwinne D1 implement a
+different set of cache instructions. But while they are different,
+instructions they provide the same functionality, so a variant can
+easly hook into the existing alternatives mechanism on those.
 
-diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
-index 457ac72c9b36..3223e533fd87 100644
---- a/arch/riscv/Kconfig.erratas
-+++ b/arch/riscv/Kconfig.erratas
-@@ -55,4 +55,15 @@ config ERRATA_THEAD_PBMT
- 
- 	  If you don't know what to do here, say "Y".
- 
-+config ERRATA_THEAD_CMO
-+	bool "Apply T-Head cache management errata"
-+	depends on ERRATA_THEAD
-+	select RISCV_DMA_NONCOHERENT
-+	default y
-+	help
-+	  This will apply the cache management errata to handle the
-+	  non-standard handling on non-coherent operations on T-Head SoCs.
-+
-+	  If you don't know what to do here, say "Y".
-+
- endmenu
-diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/thead/errata.c
-index 852283460fb9..cf6bd44db656 100644
---- a/arch/riscv/errata/thead/errata.c
-+++ b/arch/riscv/errata/thead/errata.c
-@@ -29,6 +29,23 @@ static bool errata_probe_pbmt(unsigned int stage,
- 	return false;
- }
- 
-+static bool errata_probe_cmo(unsigned int stage,
-+			     unsigned long arch_id, unsigned long impid)
-+{
-+#ifdef CONFIG_ERRATA_THEAD_CMO
-+	if (arch_id != 0 || impid != 0)
-+		return false;
-+
-+	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
-+		return false;
-+
-+	riscv_noncoherent_supported();
-+	return true;
-+#else
-+	return false;
-+#endif
-+}
-+
- static u32 thead_errata_probe(unsigned int stage,
- 			      unsigned long archid, unsigned long impid)
- {
-@@ -37,6 +54,9 @@ static u32 thead_errata_probe(unsigned int stage,
- 	if (errata_probe_pbmt(stage, archid, impid))
- 		cpu_req_errata |= (1U << ERRATA_THEAD_PBMT);
- 
-+	if (errata_probe_cmo(stage, archid, impid))
-+		cpu_req_errata |= (1U << ERRATA_THEAD_CMO);
-+
- 	return cpu_req_errata;
- }
- 
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index 79d89aeeaa6c..19a771085781 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -16,7 +16,8 @@
- 
- #ifdef CONFIG_ERRATA_THEAD
- #define	ERRATA_THEAD_PBMT 0
--#define	ERRATA_THEAD_NUMBER 1
-+#define	ERRATA_THEAD_CMO 1
-+#define	ERRATA_THEAD_NUMBER 2
- #endif
- 
- #define	CPUFEATURE_SVPBMT 0
-@@ -88,17 +89,54 @@ asm volatile(ALTERNATIVE(						\
- #define ALT_THEAD_PMA(_val)
- #endif
- 
-+/*
-+ * dcache.ipa rs1 (invalidate, physical address)
-+ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *   0000001    01010      rs1       000      00000  0001011
-+ * dache.iva rs1 (invalida, virtual address)
-+ *   0000001    00110      rs1       000      00000  0001011
-+ *
-+ * dcache.cpa rs1 (clean, physical address)
-+ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *   0000001    01001      rs1       000      00000  0001011
-+ * dcache.cva rs1 (clean, virtual address)
-+ *   0000001    00100      rs1       000      00000  0001011
-+ *
-+ * dcache.cipa rs1 (clean then invalidate, physical address)
-+ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *   0000001    01011      rs1       000      00000  0001011
-+ * dcache.civa rs1 (... virtual address)
-+ *   0000001    00111      rs1       000      00000  0001011
-+ *
-+ * sync.s (make sure all cache operations finished)
-+ * | 31 - 25 | 24 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *   0000000    11001     00000      000      00000  0001011
-+ */
-+#define THEAD_inval_A0	".long 0x0265000b"
-+#define THEAD_clean_A0	".long 0x0245000b"
-+#define THEAD_flush_A0	".long 0x0275000b"
-+#define THEAD_SYNC_S	".long 0x0190000b"
-+
- #define ALT_CMO_OP(_op, _start, _size, _cachesize)			\
--asm volatile(ALTERNATIVE(						\
--	__nops(5),							\
-+asm volatile(ALTERNATIVE_2(						\
-+	__nops(6),							\
- 	"mv a0, %1\n\t"							\
- 	"j 2f\n\t"							\
- 	"3:\n\t"							\
- 	"cbo." __stringify(_op) " (a0)\n\t"				\
- 	"add a0, a0, %0\n\t"						\
- 	"2:\n\t"							\
--	"bltu a0, %2, 3b\n\t", 0,					\
--		CPUFEATURE_ZICBOM, CONFIG_RISCV_ISA_ZICBOM)		\
-+	"bltu a0, %2, 3b\n\t"						\
-+	"nop", 0, CPUFEATURE_ZICBOM, CONFIG_RISCV_ISA_ZICBOM,		\
-+	"mv a0, %1\n\t"							\
-+	"j 2f\n\t"							\
-+	"3:\n\t"							\
-+	THEAD_##_op##_A0 "\n\t"						\
-+	"add a0, a0, %0\n\t"						\
-+	"2:\n\t"							\
-+	"bltu a0, %2, 3b\n\t"						\
-+	THEAD_SYNC_S, THEAD_VENDOR_ID,					\
-+			ERRATA_THEAD_CMO, CONFIG_ERRATA_THEAD_CMO)	\
- 	: : "r"(_cachesize),						\
- 	    "r"((unsigned long)(_start) & ~((_cachesize) - 1UL)),	\
- 	    "r"((unsigned long)(_start) + (_size))			\
+
+An ongoing discussion is about the currently used pre-coded
+instructions. Palmer's current thinking is that we should wait
+until the relevant instructions have landed in binutils.
+
+The main Zicbom instructions are in toolchains now and at least
+Debian also carries a binutils snapshot with it, but the T-Head
+variant still uses pre-coded instructions for now.
+
+The series sits on top of my svpbmt fixup series, which
+for example includes the conversion away from function pointers
+for the check-functions. And also uses my nops-series.
+
+
+A new dma-noncoherent property was added for the devicetree-specification
+and dt-schema in:
+- https://www.spinics.net/lists/devicetree-spec/msg01053.html
+- https://github.com/devicetree-org/dt-schema/pull/78
+
+
+changes in v5:
+- beautify of_dma_is_coherent as suggested by Christoph Hellwig
+- WARN_TAINT when ARCH_DMA_MINALIGN smaller than riscv,cbom-block-size
+  (similar to how arm64 does this)
+- add a function to track if non-coherent handling is available
+- WARN_TAINT if a device is non-coherent but no non-coherent handling
+- use clean instead of inval in arch_sync_dma_for_device:DMA_FROM_DEVICE
+  hopefully I understood
+    https://lore.kernel.org/linux-arm-kernel/20220610151228.4562-1-will@kernel.org/T/
+  correctly in this
+
+changes in v4:
+- modify of_dma_is_coherent() also handle coherent system
+  with maybe noncoherent devices
+- move Zicbom to use real instructions
+- split off the actual dma-noncoherent code from the Zicbom
+  extension
+- Don't assumes devices are non-coherent, instead default to
+  coherent and require the non-coherent ones to be marked
+- CPUFEATURE_ZICBOM instead of CPUFEATURE_CMO
+- fix used cache addresses
+- drop some unused headers from dma-noncoherent.c
+- move unsigned long cast when calling ALT_CMO_OP
+- remove unneeded memset-0
+- define ARCH_DMA_MINALIGN
+- use flush instead of inval in arch_sync_dma_for_cpu()
+- depend on !XIP_KERNEL
+- trim some line lengths
+- improve Kconfig description
+
+changes in v3:
+- rebase onto 5.19-rc1 + svpbmt-fixup-series
+- adapt wording for block-size binding
+- include asm/cacheflush.h into dma-noncoherent to fix the
+  no-prototype error clang seems to generate
+- use __nops macro for readability
+- add some received tags
+- add a0 to the clobber list
+
+changes in v2:
+- cbom-block-size is hardware-specific and comes from firmware
+- update Kconfig name to use the ISA extension name
+- select the ALTERNATIVES symbol when enabled
+- shorten the line lengths of the errata-assembly
+
+Heiko Stuebner (4):
+  of: also handle dma-noncoherent in of_dma_is_coherent()
+  dt-bindings: riscv: document cbom-block-size
+  riscv: Implement Zicbom-based cache management operations
+  riscv: implement cache-management errata for T-Head SoCs
+
+ .../devicetree/bindings/riscv/cpus.yaml       |   5 +
+ arch/riscv/Kconfig                            |  31 +++++
+ arch/riscv/Kconfig.erratas                    |  11 ++
+ arch/riscv/Makefile                           |   4 +
+ arch/riscv/errata/thead/errata.c              |  20 ++++
+ arch/riscv/include/asm/cache.h                |   4 +
+ arch/riscv/include/asm/cacheflush.h           |  10 ++
+ arch/riscv/include/asm/errata_list.h          |  59 ++++++++-
+ arch/riscv/include/asm/hwcap.h                |   1 +
+ arch/riscv/kernel/cpu.c                       |   1 +
+ arch/riscv/kernel/cpufeature.c                |  24 ++++
+ arch/riscv/kernel/setup.c                     |   2 +
+ arch/riscv/mm/Makefile                        |   1 +
+ arch/riscv/mm/dma-noncoherent.c               | 112 ++++++++++++++++++
+ drivers/of/address.c                          |  17 +--
+ 15 files changed, 293 insertions(+), 9 deletions(-)
+ create mode 100644 arch/riscv/mm/dma-noncoherent.c
+
 -- 
 2.35.1
 
