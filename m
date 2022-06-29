@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C605C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 20:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4268BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 20:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230197AbiF2UgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 16:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
+        id S230362AbiF2UgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 16:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiF2UgD (ORCPT
+        with ESMTP id S229492AbiF2UgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 16:36:03 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EC930F5D;
-        Wed, 29 Jun 2022 13:36:02 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id y16so6203499lfb.9;
-        Wed, 29 Jun 2022 13:36:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Cum4ZLY4F3hU5Y/mRP9v9xDUy4JzQcKCwxlvWrxymB0=;
-        b=WuyY7qW+HCSSzFSLtc4rFTG0WS48oHYVAOg/q4AUqASeq8+5XgZdnsDWmIn78ccwCk
-         d3o6Hb3AT6NclfBzcpV4eY+OWNR7z1Xy5ArMQI72dgTHZthr3NkhBGcNI1GxcS2CKhHw
-         B1GbFyUhawrrOIn3D+SgXYjc4nxXrm0ZEQa4Q4Qq3F5lGIyBbW/mOys6jNphE0C6YYBE
-         Voh2O/aPF1dmj4Ll6YWkPcJKRnr7nzzjcyzTFmvlstGNMDO+cpZ/06ghFugOnhV18yoV
-         Rr+8tWOXZWQa1+GOvj2TsIzP6LSUW0bA7s9p88gic3baUCpXQ4ww4IZZFhrSRLO8/D9m
-         05Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Cum4ZLY4F3hU5Y/mRP9v9xDUy4JzQcKCwxlvWrxymB0=;
-        b=2ouXX1iBCQlZHFY6Ly0EyDrAa9N20328IewQL8pxBC+4ipV3uKFQQcjIag1N+oQ4UN
-         Bpgyt450MouU0JjK+50HbxSZaH7ouAD8U9HzNWLSMUmVo+Yjb/vnzI/RhRR5fsvZcXya
-         EL/AOVtouMrUhlHlBUgzQNTZBpJsHYIxtFWqZB7UmSdKZqFN/vNtjKe3Tkh/pjvq8Y7B
-         bd3swoGQjO0DBC03II8y7eu89Q/fIBLa5AGg23Wr1xuDOFtWQ67NRku6KlNxxi9Qknmi
-         fhasfZYu0CW+7xwMJTrVrXOgrm32/tNXgsfG4grEHIA4T/EAm5d/DOBMgVZ9dG1RvmA1
-         wv3A==
-X-Gm-Message-State: AJIora9+PPHWIag0l8e2w+svVcGjs3qrf2M3rQesfDh2l2o/JlTQAQcz
-        6i1TWXSFLtwFKnbN2tv7EQS03tGfottc5w==
-X-Google-Smtp-Source: AGRyM1sjHdMc8r4kOAVvDSXun0/3hIPR8IttNr7lI5/QmNY+yF5MpxDORulTNwDHzBmTuJcWcQR9wA==
-X-Received: by 2002:a05:6512:402:b0:481:a86:5721 with SMTP id u2-20020a056512040200b004810a865721mr3227708lfk.525.1656534960424;
-        Wed, 29 Jun 2022 13:36:00 -0700 (PDT)
-Received: from localhost.localdomain (c-2ec2f5c4-74736162.cust.telenor.se. [46.194.245.196])
-        by smtp.gmail.com with ESMTPSA id p12-20020ac24ecc000000b0047f59336d6asm2738057lfr.179.2022.06.29.13.35.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 13:35:59 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marcus Folkesson <marcus.folkesson@gmail.com>
-Subject: [PATCH] iio: adc: ad778-1: do not explicity set INDIO_BUFFER_TRIGGERED mode
-Date:   Wed, 29 Jun 2022 22:38:47 +0200
-Message-Id: <20220629203847.4801-1-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 29 Jun 2022 16:36:08 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 733CA313BD;
+        Wed, 29 Jun 2022 13:36:06 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 25TKS467028346;
+        Wed, 29 Jun 2022 15:28:04 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 25TKS1wF028345;
+        Wed, 29 Jun 2022 15:28:01 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 29 Jun 2022 15:28:01 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Ash Logan <ash@heyquark.com>, krzysztof.kozlowski+dt@linaro.org,
+        paulus@samba.org, mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        robh+dt@kernel.org, benh@kernel.crashing.org,
+        devicetree@vger.kernel.org, linkmauve@linkmauve.fr,
+        linux-kernel@vger.kernel.org, rw-r-r-0644@protonmail.com,
+        joel@jms.id.au, linuxppc-dev@lists.ozlabs.org, j.ne@posteo.net
+Subject: Re: [PATCH v3 02/12] powerpc: wiiu: device tree
+Message-ID: <20220629202800.GJ25951@gate.crashing.org>
+References: <20220622131037.57604-1-ash@heyquark.com> <20220628133144.142185-1-ash@heyquark.com> <20220628133144.142185-3-ash@heyquark.com> <c760e444-57c3-0e1a-0e4d-f79d6ae9867a@linaro.org> <20220629161302.GG25951@gate.crashing.org> <908e7555-0090-84fe-4227-d6b349de1394@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <908e7555-0090-84fe-4227-d6b349de1394@linaro.org>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The core sets INDIO_BUFFER_TRIGGERED as part of
-devm_iio_triggered_buffer_setup().
+On Wed, Jun 29, 2022 at 08:13:13PM +0200, Krzysztof Kozlowski wrote:
+> On 29/06/2022 18:13, Segher Boessenkool wrote:
+> > On Wed, Jun 29, 2022 at 11:58:18AM +0200, Krzysztof Kozlowski wrote:
+> >>> +		/* TODO: Add SMP */
+> >>> +		PowerPC,espresso@0 {
+> >>
+> >> Node name should be generic, so "cpu". Unless something needs the
+> >> specific node name?
+> > 
+> > This is how most other PowerPC firmwares do it.  The PowerPC processor
+> > binding is older than the generic naming practice, so CPU nodes have
+> > device_type "cpu" instead.  
+> 
+> ePAPR 1.0 from 2008 explicitly asks for generic node names. So 4 years
+> before Nintento Wii U. Maybe earlier ePAPR-s were also asking for this,
+> no clue, don't have them.
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
- drivers/iio/adc/ad7768-1.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The majority of PowerPC 750 systems long predate that.  Many *current*
+systems implement the PowerPC Processor Binding, too (not the epapr
+thing, which is incompatible with the older standards!)
 
-diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-index aa42ba759fa1..f5e5df105e67 100644
---- a/drivers/iio/adc/ad7768-1.c
-+++ b/drivers/iio/adc/ad7768-1.c
-@@ -620,7 +620,7 @@ static int ad7768_probe(struct spi_device *spi)
- 	indio_dev->num_channels = ARRAY_SIZE(ad7768_channels);
- 	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->info = &ad7768_info;
--	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	ret = ad7768_setup(st);
- 	if (ret < 0) {
--- 
-2.36.1
+> > There is no added value in generic naming for CPU nodes anyway, since
+> > you just find them as the children of the "/cpus" node :-)
+> 
+> There is because you might have there caches. It also makes code easier
+> to read.
 
+In the processor binding the cache nodes were subnodes of cpu nodes or
+other cache nodes.  But in some server products you can have cache that
+is enabled while the corresponding core is disabled; and also, not all
+cache belongs to only one higher level anyway.  This was modelled pretty
+uncleanly, yup (cleaner would have been to have a /caches node as well
+as /cpus, for example).
+
+But on 750 you just have "l2-cache" subnodes, and all nodes in /cpus are
+CPUs :-)
+
+
+Segher
