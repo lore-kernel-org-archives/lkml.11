@@ -2,122 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0930EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E29C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 12:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233069AbiF2MXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 08:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        id S230209AbiF2MXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 08:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbiF2MXi (ORCPT
+        with ESMTP id S231313AbiF2MXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 08:23:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 982651EB
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656505415;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=D4xckCgJ4Bw0w9xbbVbINWepGBRVBzb5aJNwu4HG9GY=;
-        b=MUk4+8DZ9vaOOyJG99XLyLqnjld4/nDfTKuEyCLRTHP0VjM+huhaKtytZL3ysf5AXqRN2k
-        FnhiPjxCidfbmDi5ut1qst96dSyfvGQsQv1tW+iSRhD6pQD0Fuj4sdrRWfYXWBCfM2Mtrz
-        hxLyWVUwU+nUfVaIuAKNG+r2H59y+BA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-468-cCEXTSNGMhKkmNAUso5MSQ-1; Wed, 29 Jun 2022 08:23:27 -0400
-X-MC-Unique: cCEXTSNGMhKkmNAUso5MSQ-1
-Received: by mail-wr1-f69.google.com with SMTP id e5-20020adff345000000b0021b9f00e882so2358855wrp.6
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:23:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=D4xckCgJ4Bw0w9xbbVbINWepGBRVBzb5aJNwu4HG9GY=;
-        b=efwEq4f+XtJBdgHkEM5uNk8ohNXZO4K19QwaQbDeu7Oh8aGDJmA7nN170RkWerbQpK
-         yelgib6HCwPWuhjxqRXEvB2n6UyKxg06w/RMXEJzIsd1/y7PcFsrpLmBdL6g7qUgBpRy
-         d1MY692ck/IG8aVZW32SpULtXcA2LC1TllDkrb6IWU+E+HmNoarAkyaVTknWat2dQdZ3
-         jxn/8LnqHddG7b7g2Y3JAsACR5oQr5aLZ7Zbw5sv88vJcLrgp81pEu7ZpnCQLzpdse5b
-         HPWMIuFt6tBvgORLGvUnSOY1tCP3P0RdScXITth8XCFTCllAYEZM9K+Lu2UOHMkGgyy7
-         oqOw==
-X-Gm-Message-State: AJIora8B7/7HHYYj/ISELjX+sIjT+IrWFazAFJ6t0g33bOS+FOwmUFm0
-        SmnPuqRdb+1dhp9OrgBce8HNokRcF0L9dwQ/vcVunnyJsDfheGZmzo9ZRMF2O2oBx+dhRas3qFV
-        ywY1x19CRc8cR2LauFs5EocOd
-X-Received: by 2002:a05:6000:1281:b0:21b:9c01:df79 with SMTP id f1-20020a056000128100b0021b9c01df79mr2793340wrx.563.1656505405847;
-        Wed, 29 Jun 2022 05:23:25 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1v9pJO/EqSfuHhWYEuTzIM+Ml0Cf5xYU+IXYXEoEGJo5PASFAvTCOcpNz8z35DuzQpGGt5rXw==
-X-Received: by 2002:a05:6000:1281:b0:21b:9c01:df79 with SMTP id f1-20020a056000128100b0021b9c01df79mr2793306wrx.563.1656505405591;
-        Wed, 29 Jun 2022 05:23:25 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id o12-20020a1c750c000000b003a04b248896sm2888552wmc.35.2022.06.29.05.23.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 05:23:24 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
-        linux-rt-users@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <jlelli@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v2] panic, kexec: Make __crash_kexec() NMI safe
-In-Reply-To: <20220629115539.GB12720@pathway.suse.cz>
-References: <20220620111520.1039685-1-vschneid@redhat.com>
- <87r13c7jyp.fsf@email.froward.int.ebiederm.org>
- <xhsmhpmiu5lch.mognet@vschneid.remote.csb>
- <xhsmhmtdw66cr.mognet@vschneid.remote.csb>
- <20220629115539.GB12720@pathway.suse.cz>
-Date:   Wed, 29 Jun 2022 13:23:08 +0100
-Message-ID: <xhsmhk08z64lv.mognet@vschneid.remote.csb>
+        Wed, 29 Jun 2022 08:23:45 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFF931DDB
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 05:23:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1656504487; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=bua+jMImc+TrGG0k/DW7Zq89Q5FV+VyVHYSwXyKURgqVoSC0qaDuogK7LVxo78yA54N13uUsblx2Ut+N9SKkkvmdfU2NjVtmP1y3QZM2BfXyyFrRlKAUQ+m6CjRD22o/kt2cv3V9u7fdYOj+NpeR2qNouqDjjXLPOVrBe9XQqhI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1656504487; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=ukTu6MJ3bj33YMWpWKj7wdJBBihYnF+q/gqNaxzzG7Y=; 
+        b=MMNhmEY57rRPUGHyB/05wbKu1+gJbL33o4erNLvIPQDHvKaE8YycxN0vR5QFu6HVY3GKkJuJBNSyELEUHTkE3f+y9AV0ABmSjAmX9COQ3iqCPMSmUPWWEs7jfW9VrmuaTTs8qTph3KEF4bEmNfN7PmH9W0tvk2rhGpZ9uBKW1Ws=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656504487;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=ukTu6MJ3bj33YMWpWKj7wdJBBihYnF+q/gqNaxzzG7Y=;
+        b=ghUSA36wtapzBy8Ahob4QwwwNxMkjs5/rn9kxrFi/6Mqubh+NUZCvIkQ0Gf1kq7B
+        N4RRX9/wPr6mvTrhXSQO0jgRxIVdHIhvu3vJdrTvPbLiDLK34BOs41HOOelmcojyHJ3
+        MncuyWPK7yoNTLtDf7zfVRTpYAHsllnL5zvd3byE=
+Received: from [10.10.10.122] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1656504486014929.4381961201594; Wed, 29 Jun 2022 05:08:06 -0700 (PDT)
+Message-ID: <3394a6fa-dc55-bf5d-c06e-ddf70d95c26b@arinc9.com>
+Date:   Wed, 29 Jun 2022 15:08:01 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] MIPS: dts: correct gpio-keys names and properties
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>
+Cc:     Rahul Bedarkar <rahulbedarkar89@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220624170740.66271-1-krzysztof.kozlowski@linaro.org>
+ <ZVVZDR.R2QT2GMTT9WS1@crapouillou.net>
+ <89b6a40b-eb6b-eba5-78c3-6b5f35bed717@linaro.org>
+ <EXU1ER.FH53VZXY9EYP3@crapouillou.net>
+ <cc81b6ae-c1c1-78ec-b4e2-e165dcd5015b@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <cc81b6ae-c1c1-78ec-b4e2-e165dcd5015b@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/06/22 13:55, Petr Mladek wrote:
-> On Tue 2022-06-28 18:33:08, Valentin Schneider wrote:
+On 25.06.2022 23:25, Krzysztof Kozlowski wrote:
+> On 25/06/2022 22:15, Paul Cercueil wrote:
+>> Hi Krzysztof,
 >>
->> 8c5a1cf0ad3a ("kexec: use a mutex for locking rather than xchg()") was
->> straightforward enough because it turned
+>> Le sam., juin 25 2022 at 21:58:08 +0200, Krzysztof Kozlowski
+>> <krzysztof.kozlowski@linaro.org> a écrit :
+>>> On 24/06/2022 20:40, Paul Cercueil wrote:
+>>>>   Hi Krzysztof,
+>>>>
+>>>>   Le ven., juin 24 2022 at 19:07:39 +0200, Krzysztof Kozlowski
+>>>>   <krzysztof.kozlowski@linaro.org> a écrit :
+>>>>>   gpio-keys children do not use unit addresses.
+>>>>>
+>>>>>   Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>>>>
+>>>>>   ---
+>>>>>
+>>>>>   See:
+>>>>>   
+>>>>> https://lore.kernel.org/all/20220616005224.18391-1-krzysztof.kozlowski@linaro.org/
+>>>>>   ---
+>>>>>    arch/mips/boot/dts/img/pistachio_marduk.dts   |  4 +--
+>>>>>    arch/mips/boot/dts/ingenic/gcw0.dts           | 31
+>>>>>   +++++++++----------
+>>>>>    arch/mips/boot/dts/ingenic/rs90.dts           | 18 +++++------
+>>>>>    arch/mips/boot/dts/pic32/pic32mzda_sk.dts     |  9 ++----
+>>>>>    .../boot/dts/qca/ar9132_tl_wr1043nd_v1.dts    |  6 ++--
+>>>>>    arch/mips/boot/dts/qca/ar9331_dpt_module.dts  |  4 +--
+>>>>>    .../mips/boot/dts/qca/ar9331_dragino_ms14.dts |  6 ++--
+>>>>>    arch/mips/boot/dts/qca/ar9331_omega.dts       |  4 +--
+>>>>>    .../qca/ar9331_openembed_som9331_board.dts    |  4 +--
+>>>>>    arch/mips/boot/dts/qca/ar9331_tl_mr3020.dts   |  8 ++---
+>>>>>    10 files changed, 37 insertions(+), 57 deletions(-)
+>>>>>
+>>>>>   diff --git a/arch/mips/boot/dts/img/pistachio_marduk.dts
+>>>>>   b/arch/mips/boot/dts/img/pistachio_marduk.dts
+>>>>>   index a8708783f04b..a8da2f992b1a 100644
+>>>>>   --- a/arch/mips/boot/dts/img/pistachio_marduk.dts
+>>>>>   +++ b/arch/mips/boot/dts/img/pistachio_marduk.dts
+>>>>>   @@ -59,12 +59,12 @@ led-1 {
+>>>>>
+>>>>>    	keys {
+>>>>>    		compatible = "gpio-keys";
+>>>>>   -		button@1 {
+>>>>>   +		button-1 {
+>>>>>    			label = "Button 1";
+>>>>>    			linux,code = <0x101>; /* BTN_1 */
+>>>>>    			gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
+>>>>>    		};
+>>>>>   -		button@2 {
+>>>>>   +		button-2 {
+>>>>>    			label = "Button 2";
+>>>>>    			linux,code = <0x102>; /* BTN_2 */
+>>>>>    			gpios = <&gpio2 14 GPIO_ACTIVE_LOW>;
+>>>>>   diff --git a/arch/mips/boot/dts/ingenic/gcw0.dts
+>>>>>   b/arch/mips/boot/dts/ingenic/gcw0.dts
+>>>>>   index 4abb0318416c..5d33f26fd28c 100644
+>>>>>   --- a/arch/mips/boot/dts/ingenic/gcw0.dts
+>>>>>   +++ b/arch/mips/boot/dts/ingenic/gcw0.dts
+>>>>>   @@ -130,89 +130,86 @@ backlight: backlight {
+>>>>>
+>>>>>    	gpio-keys {
+>>>>>    		compatible = "gpio-keys";
+>>>>>   -		#address-cells = <1>;
+>>>>>   -		#size-cells = <0>;
+>>>>
+>>>>   Are you sure you can remove these?
+>>>
+>>> Yes, from DT spec point of view, DT bindings and Linux implementation.
+>>> However this particular change was not tested, except building.
+>>>
+>>>>
+>>>>   Looking at paragraph 2.3.5 of the DT spec, I would think they have
+>>>> to
+>>>>   stay (although with #address-cells = <0>).
+>>>
+>>> The paragraph 2.3.5 says nothing about regular properties (which can
+>>> be
+>>> also child nodes). It says about children of a bus, right? It's not
+>>> related here, it's not a bus.
 >>
->>         if (xchg(&lock, 1))
->>                 return -EBUSY;
+>> I quote:
+>> "A DTSpec-compliant boot program shall supply #address-cells and
+>> #size-cells on all nodes that have children."
+> 
+> And paragraph 2.2.3 says:
+> "A unit address may be omitted if the full path to the node is unambiguous."
+> 
+> You have address/size cells for nodes with children having unit
+> addresses. If they don't unit addresses, you don't add address/size
+> cells (with some exceptions).
+> 
+> The paragraph 2.3.5 mentions "child device nodes" and these properties
+> are not devices, although I agree that DT spec here is actually confusing.
+> 
 >>
->> into
+>> The gpio-keys node has children nodes, therefore it should have
+>> #address-cells and #size-cells, there's no room for interpretation here.
 >>
->>         if (!mutex_trylock(&lock))
->>                 return -EBUSY;
+>>> Second, why exactly this one gpio-keys node is different than all
+>>> other
+>>> gpio-keys everywhere and than bindings? Why this one has to be
+>>> incompatible/wrong according to bindings (which do not allow
+>>> address-cells and nodes with unit addresses)?
 >>
->> Now, most of the kexec_mutex uses are trylocks, except for:
->> - crash_get_memory_size()
->> - crash_shrink_memory()
->>
->> I really don't want to go down the route of turning those into cmpxchg
->> try-loops, would it be acceptable to make those use trylocks (i.e. return
->> -EBUSY if the cmpxchg fails)?
->
-> IMHO, -EBUSY is acceptable for both crash_get_memory_size()
-> and crash_shrink_memory(). They are used in the sysfs interface.
->
->> Otherwise, we keep the mutexes for functions like those which go nowhere
->> near an NMI.
->
-> If we go this way then I would hide the locking into some wrappers,
-> like crash_kexec_trylock()/unlock() that would do both mutex
-> and xchg. The xchg part might be hidden in a separate wrapper
-> __crash_kexec_trylock()/unlock() or
-> crash_kexec_atomic_trylock()/unlock().
->
+>> Nothing is different. I'm just stating that your proposed fix is
+>> invalid if we want to enforce compliance with the DT spec.
+> 
+> In such case, we rather enforce the compliance with the bindings.
+> 
+> Best regards,
+> Krzysztof
 
-Makes sense, thanks. I've started playing with the trylock/-EBUSY approach,
-I'll toss it out if I don't end up hating it.
+I recall them to be unnecessary as well. I have a patch of mine applied 
+identical to this:
 
-> Best Regards,
-> Petr
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=8c9f00d4b05134164e462f27b21c8295255ffa64
 
+Also, I don't see any warnings with this patch applied:
+
+$ ARCH=mips CROSS_COMPILE=mipsel-linux-gnu- make clean dtbs -j$(nproc)
+   SYNC    include/config/auto.conf.cmd
+   HOSTCC  scripts/basic/fixdep
+   HOSTCC  scripts/kconfig/conf.o
+   HOSTCC  scripts/kconfig/confdata.o
+   HOSTCC  scripts/kconfig/expr.o
+   LEX     scripts/kconfig/lexer.lex.c
+   YACC    scripts/kconfig/parser.tab.[ch]
+   HOSTCC  scripts/kconfig/menu.o
+   HOSTCC  scripts/kconfig/preprocess.o
+   HOSTCC  scripts/kconfig/symbol.o
+   HOSTCC  scripts/kconfig/util.o
+   HOSTCC  scripts/kconfig/lexer.lex.o
+   HOSTCC  scripts/kconfig/parser.tab.o
+   HOSTLD  scripts/kconfig/conf
+   HOSTCC  scripts/dtc/dtc.o
+   HOSTCC  scripts/dtc/flattree.o
+   HOSTCC  scripts/dtc/fstree.o
+   HOSTCC  scripts/dtc/data.o
+   HOSTCC  scripts/dtc/livetree.o
+   HOSTCC  scripts/dtc/treesource.o
+   HOSTCC  scripts/dtc/srcpos.o
+   HOSTCC  scripts/dtc/checks.o
+   HOSTCC  scripts/dtc/util.o
+   LEX     scripts/dtc/dtc-lexer.lex.c
+   YACC    scripts/dtc/dtc-parser.tab.[ch]
+   HOSTCC  scripts/dtc/libfdt/fdt.o
+   HOSTCC  scripts/dtc/libfdt/fdt_ro.o
+   HOSTCC  scripts/dtc/libfdt/fdt_wip.o
+   HOSTCC  scripts/dtc/libfdt/fdt_sw.o
+   HOSTCC  scripts/dtc/libfdt/fdt_rw.o
+   HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
+   HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
+   HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
+   HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
+   HOSTCC  scripts/dtc/fdtoverlay.o
+   HOSTCC  scripts/dtc/dtc-lexer.lex.o
+   HOSTCC  scripts/dtc/dtc-parser.tab.o
+   HOSTLD  scripts/dtc/fdtoverlay
+   HOSTLD  scripts/dtc/dtc
+   DTC     arch/mips/boot/dts/ingenic/gcw0.dtb
+
+Have my acked-by.
+
+Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Arınç
