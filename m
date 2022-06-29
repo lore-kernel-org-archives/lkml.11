@@ -2,90 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A237CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 06:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75423C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 06:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiF2Gey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 02:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
+        id S232138AbiF2GfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 02:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232163AbiF2Geq (ORCPT
+        with ESMTP id S232137AbiF2GfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 02:34:46 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A172C647;
-        Tue, 28 Jun 2022 23:34:45 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id c6-20020a17090abf0600b001eee794a478so7660026pjs.1;
-        Tue, 28 Jun 2022 23:34:45 -0700 (PDT)
+        Wed, 29 Jun 2022 02:35:10 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACC02C11E;
+        Tue, 28 Jun 2022 23:35:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hCkVZrfBdJMxphgyydQPbFuiNpNH3pg2QzvaiMz3gyo=;
-        b=OrkHDd2EIlgUz6HCFOg8GVnwht4HFRs36kaDpiWms5813RfX6H4RVpiMPumsmiEVOX
-         gNHUWjjqrAsXwqJcSRNL+4m5fDADBmQkKSRDPQcB6badyHrHkpHqzY+krxQ/C3huTjxV
-         Usx4xbvzjSnEibOuy/Z0TxGbcGc3YuUB7/DOzMr+5RgACgMp9oWx7vXCWndb4IF7GUlH
-         LaGvawZnk24VckYGFr4quJBCOwGcJyG+oBoTT+5mF/bzo9nD/KEeuIk1nk2svpkKuPyh
-         shBL19oE4ha8lG7fh2BZCTWG6cL1XQDPdyypjF+thUau6eAXokdw+hrw2+xZ0MdURksn
-         JiAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hCkVZrfBdJMxphgyydQPbFuiNpNH3pg2QzvaiMz3gyo=;
-        b=QQA5uCVmXlV1n2QKxMiSyN9ggBnDogFkpN3o+8IZS4TuheMwPEpGClNgOR/AqN6d31
-         3nk4hb58e1WzoJvhfzwvIu3/RYR3psvM5H5szyrxBgKJ8B8Q9n5YA76E7SgqdaEzsEUX
-         hTkstEN2YQIHfK52GdHtohgKuHjSXsoSVbWat50DrjYNV5ouhB+mDI9mm708p7zDI/hF
-         0M+iLvdfRIRbl7G11D49fvvgDQnGKfL/MGPlm2D8kxvFnHfkJ2HQlSpfDvlryqZiVg+7
-         5SKX20HB3mxAOpaLd1922A+78yI7JQySQdApS1nte8Ut5vp43RwDZn9R3z72qplo16wV
-         BpkQ==
-X-Gm-Message-State: AJIora88NTQUYSy1Dn4A06QKkS5VWzGgWiMJh0Mj6ZvEPYWSmmZwrSFO
-        5LHj8rH4tJpRoRbWgl8SBEc=
-X-Google-Smtp-Source: AGRyM1s2ppL2hSRpvIn9HTPu9f+TIBG1QARRAvFyT54nJdFqDxZ970cAi02OaEDEXehth9vXKqpifg==
-X-Received: by 2002:a17:902:900c:b0:16a:4521:10fd with SMTP id a12-20020a170902900c00b0016a452110fdmr9004623plp.75.1656484484406;
-        Tue, 28 Jun 2022 23:34:44 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id l12-20020a62be0c000000b005254344bf48sm10550981pff.5.2022.06.28.23.34.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 23:34:44 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        tung.q.nguyen@dektech.com.au
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH v2] net: tipc: fix possible refcount leak in tipc_sk_create()
-Date:   Wed, 29 Jun 2022 14:34:18 +0800
-Message-Id: <20220629063418.21620-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656484509; x=1688020509;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=v+gu24eR5X5gNDxb60UqmAtP1yQjJyAU6/mkcYmJQno=;
+  b=ymY2TuwwKv+WCXHoI0pSHDHiQ2LFBs9xcYLpgWwKDwrJq29OicmAfhcw
+   jBOXwfHCoMma5IOU7ZmxMHhKhwt/aZtTCp14LqXphnBcfQoM2uP+qtVJc
+   7c6J+HXfNtv1R0TfSuZ0BmBlBbJD/znSuhbTY0F7McJefmQLDuJ9CNnYJ
+   c=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 28 Jun 2022 23:35:09 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 23:35:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 28 Jun 2022 23:35:08 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 28 Jun 2022 23:35:01 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH] pinctrl: qcom: sc7280: Fix compile bug
+Date:   Wed, 29 Jun 2022 12:04:45 +0530
+Message-ID: <1656484485-23350-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Free sk in case tipc_sk_insert() fails.
+Fix the compilation error, caused by updtating constant variable.
+Hence remove redundant constant variable, which is no more useful
+as per new design.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+The issue is due to some unstaged changes. Fix it up.
+
+Fixes: 36fe26843d6d ("pinctrl: qcom: sc7280: Add clock optional check for ADSP bypass targets")
+
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 ---
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c | 5 +----
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.h | 1 -
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
-v2: use a succinct commit log.
-
- net/tipc/socket.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 17f8c523e33b..43509c7e90fc 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -502,6 +502,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
- 	sock_init_data(sock, sk);
- 	tipc_set_sk_state(sk, TIPC_OPEN);
- 	if (tipc_sk_insert(tsk)) {
-+		sk_free(sk);
- 		pr_warn("Socket create failed; port number exhausted\n");
- 		return -EINVAL;
- 	}
+diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+index b5d1b99..e97ce45 100644
+--- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
++++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+@@ -388,9 +388,6 @@ int lpi_pinctrl_probe(struct platform_device *pdev)
+ 	pctrl->data = data;
+ 	pctrl->dev = &pdev->dev;
+ 
+-	data->is_clk_optional = of_property_read_bool(dev->of_node,
+-						      "qcom,adsp-bypass-mode");
+-
+ 	pctrl->clks[0].id = "core";
+ 	pctrl->clks[1].id = "audio";
+ 
+@@ -404,7 +401,7 @@ int lpi_pinctrl_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, PTR_ERR(pctrl->slew_base),
+ 				     "Slew resource not provided\n");
+ 
+-	if (data->is_clk_optional)
++	if (of_property_read_bool(dev->of_node, "qcom,adsp-bypass-mode"))
+ 		ret = devm_clk_bulk_get_optional(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
+ 	else
+ 		ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
+diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+index 759d5d8..afbac2a 100644
+--- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
++++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+@@ -77,7 +77,6 @@ struct lpi_pinctrl_variant_data {
+ 	int ngroups;
+ 	const struct lpi_function *functions;
+ 	int nfunctions;
+-	bool is_clk_optional;
+ };
+ 
+ int lpi_pinctrl_probe(struct platform_device *pdev);
 -- 
-2.25.1
+2.7.4
 
