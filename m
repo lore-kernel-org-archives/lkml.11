@@ -2,305 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55034C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B2ACCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233802AbiF2NnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44998 "EHLO
+        id S233356AbiF2Nn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiF2NnF (ORCPT
+        with ESMTP id S233882AbiF2NnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:43:05 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2B62F399
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:43:03 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-101bb9275bcso21450901fac.8
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2yMeDvydOd8o9MQPRkESiRqVPPamowZNOPYRsnNSJKo=;
-        b=bZ+LdSwGTFg7v+ZiioGCfZ7Hh/6j4wC6erUzlz44lQ4NlzajXUlK1iXw4XwjKeRAXG
-         tivhYU0SHkfa904s+o4AyDtpGIoLknBzAszL5QyeONih1pSePrGohrxn8D9k8+viFLey
-         avSX/b1gbGNmNSCRt5ybF/xqc4S0xnEgYvIjW9F2zXwaZAZ0146Glf5FEmy+WyxZzCfO
-         3927zOm7fePhd+eW9zbd4MVqhCNksFEVTJ+jiQ1bzzJ3nC2oCPSsMOyOhD0cbX8VjdWx
-         CM/K5TMxx5y1HvZVRVrvuQz0VE1A/RasfuLzQ53GQY/FlZfq921xjJ+Cy0We2jd9oYRh
-         A4ag==
+        Wed, 29 Jun 2022 09:43:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B396CBE08
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:43:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656510191;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UW6EWWcDgP+o+MFt4vmMvtXMf9IPmqPd5CK2PWObuB8=;
+        b=MmnvNBt96+9Ox/SfWisSRjifq5VYQVdoJMhDISVi7AuePQoV+CPMo52aRfqdBdw2bhoQ4u
+        jeyAkkENHinXB91yGHpgaQFW8GG+GABbKFN6VEq+66kSblhh1wi0naiDZtDSar3Rb8v4h4
+        DPHMghm4JtD0AFj5HwcIMArF04nhTF4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-83-PQfGF3ECMuCNp9dVcQw_nw-1; Wed, 29 Jun 2022 09:43:10 -0400
+X-MC-Unique: PQfGF3ECMuCNp9dVcQw_nw-1
+Received: by mail-ed1-f72.google.com with SMTP id y18-20020a056402441200b0043564cdf765so12029826eda.11
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:43:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2yMeDvydOd8o9MQPRkESiRqVPPamowZNOPYRsnNSJKo=;
-        b=GloS4AtzXli2GQdUXAsZICe6xQs4cREJR+N+PMBfjoBkcVRl3vYWDvsgtaHeJSXUhH
-         Gn4A/RNyJvOnBof4k9hNREOhAKNdWUgnQDX1NXXa8rq6/wj9HwhsRDwbP5UlqZMioU48
-         EPQ8GrbpIiks36yPdB6AOl0NZ/PBkP4QHd89yC/TIGwjnL5mb11O8kuc6WW73Bi+gyaf
-         thxM3G/fZUaICv7YmelQgySgdIwNnWiM+mr1n9c19moMZmcpXHIArxpaS7cghKZFxsFG
-         0SdVIPsY9B2D8ebGAK2t70/gKle4baXcTFks4BYYwgJFi16fOWaSxZAVZuOiNiIJFmrz
-         fjJQ==
-X-Gm-Message-State: AJIora8UocKetObBGB0PtGhpYQ3I5RcqoLjFholvVI7tApXkqnwKJP69
-        F+iPg1VLB66QY8w+Eo9E8I9IS/asH8V2ZMg4oiqGsw==
-X-Google-Smtp-Source: AGRyM1vTsVOAFkyrE/6MzNa7xwMP0d+bgNSaf6jXHzIBwLUxEqBDW5sWwzrJqTNYJg/mito6qQ/VQgcwpzIQCOMPxpc=
-X-Received: by 2002:a05:6870:d3c7:b0:104:9120:8555 with SMTP id
- l7-20020a056870d3c700b0010491208555mr1887228oag.181.1656510182889; Wed, 29
- Jun 2022 06:43:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=UW6EWWcDgP+o+MFt4vmMvtXMf9IPmqPd5CK2PWObuB8=;
+        b=L6jKv0097t+Ckmn62mImYpPFp1duCKmYhBDAhlUCvB4YKjjJRk8iNyrtgj6Oiy/BWN
+         lKk8wD7/1uyw3DGfHz/Gnlktr9NVbR5WIviGX7lFDIaAz5Fkla4bfkZpLVDI5/0qbFpH
+         02PxbeMQJV9uqzf068O705pr/L4sEFK4WsskQiQY3Qa5pZ/dD413wKU+WXhIHoBvGHf6
+         Ni4eN8O1xYiGoF708pbnFOjc7BL97DxrVXkrzhia3joKdPw2+zJrp4zQdXuf4SJq1bVG
+         8FF5E7eIPxxmU0k9eubTZHJY5i4dnAGLlmRWnEeyxXA1Mm7CSRfqyELqKVPoy7ShhsqO
+         IVLQ==
+X-Gm-Message-State: AJIora85VagkAo8M9Y2aSyNEK7p7nCz+RZvoU5S20wC7fgubtcCZ8Je+
+        +rKl1GRSw/3f/BU9rrOedzCRQua/bZjBRwzys4fKOrpyMF2hvBVuDoZhkThRVe5+5QSrdrHd9Ej
+        cwpPNzMjT/tTydH6i1xItXrFg
+X-Received: by 2002:a17:906:7790:b0:722:e6cf:126 with SMTP id s16-20020a170906779000b00722e6cf0126mr3292402ejm.244.1656510188266;
+        Wed, 29 Jun 2022 06:43:08 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vYU5mFSCUdnqHAOrvLJwONCfM6OwKiQER0S5rAaKhWqFBhKQ46eiivE/FPbenKVMLh3jLbRw==
+X-Received: by 2002:a17:906:7790:b0:722:e6cf:126 with SMTP id s16-20020a170906779000b00722e6cf0126mr3292295ejm.244.1656510186810;
+        Wed, 29 Jun 2022 06:43:06 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y20-20020a17090629d400b00704cf66d415sm7768808eje.13.2022.06.29.06.43.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 06:43:05 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4C5A4477057; Wed, 29 Jun 2022 15:43:05 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
+ and use Generic Hints/metadata
+In-Reply-To: <62bbedf07f44a_2181420830@john.notmuch>
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+ <62bbedf07f44a_2181420830@john.notmuch>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 29 Jun 2022 15:43:05 +0200
+Message-ID: <87iloja8ly.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20220614204730.3359543-1-seanjc@google.com> <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
-In-Reply-To: <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Wed, 29 Jun 2022 06:42:51 -0700
-Message-ID: <CALMp9eSkdj=kwh=4WHPsWZ1mKr9+0VSB527D5CMEx+wpgEGjGw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 4:17 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
->
-> On Tue, 2022-06-14 at 20:47 +0000, Sean Christopherson wrote:
-> > The main goal of this series is to fix KVM's longstanding bug of not
-> > honoring L1's exception intercepts wants when handling an exception tha=
-t
-> > occurs during delivery of a different exception.  E.g. if L0 and L1 are
-> > using shadow paging, and L2 hits a #PF, and then hits another #PF while
-> > vectoring the first #PF due to _L1_ not having a shadow page for the ID=
-T,
-> > KVM needs to check L1's intercepts before morphing the #PF =3D> #PF =3D=
-> #DF
-> > so that the #PF is routed to L1, not injected into L2 as a #DF.
-> >
-> > nVMX has hacked around the bug for years by overriding the #PF injector
-> > for shadow paging to go straight to VM-Exit, and nSVM has started doing
-> > the same.  The hacks mostly work, but they're incomplete, confusing, an=
-d
-> > lead to other hacky code, e.g. bailing from the emulator because #PF
-> > injection forced a VM-Exit and suddenly KVM is back in L1.
-> >
-> > Everything leading up to that are related fixes and cleanups I encounte=
-red
-> > along the way; some through code inspection, some through tests.
-> >
-> > v2:
-> >   - Rebased to kvm/queue (commit 8baacf67c76c) + selftests CPUID
-> >     overhaul.
-> >     https://lore.kernel.org/all/20220614200707.3315957-1-seanjc@google.=
-com
-> >   - Treat KVM_REQ_TRIPLE_FAULT as a pending exception.
-> >
-> > v1: https://lore.kernel.org/all/20220311032801.3467418-1-seanjc@google.=
-com
-> >
-> > Sean Christopherson (21):
-> >   KVM: nVMX: Unconditionally purge queued/injected events on nested
-> >     "exit"
-> >   KVM: VMX: Drop bits 31:16 when shoving exception error code into VMCS
-> >   KVM: x86: Don't check for code breakpoints when emulating on exceptio=
-n
-> >   KVM: nVMX: Treat General Detect #DB (DR7.GD=3D1) as fault-like
-> >   KVM: nVMX: Prioritize TSS T-flag #DBs over Monitor Trap Flag
-> >   KVM: x86: Treat #DBs from the emulator as fault-like (code and
-> >     DR7.GD=3D1)
-> >   KVM: x86: Use DR7_GD macro instead of open coding check in emulator
-> >   KVM: nVMX: Ignore SIPI that arrives in L2 when vCPU is not in WFS
-> >   KVM: nVMX: Unconditionally clear mtf_pending on nested VM-Exit
-> >   KVM: VMX: Inject #PF on ENCLS as "emulated" #PF
-> >   KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
-> >   KVM: x86: Make kvm_queued_exception a properly named, visible struct
-> >   KVM: x86: Formalize blocking of nested pending exceptions
-> >   KVM: x86: Use kvm_queue_exception_e() to queue #DF
-> >   KVM: x86: Hoist nested event checks above event injection logic
-> >   KVM: x86: Evaluate ability to inject SMI/NMI/IRQ after potential
-> >     VM-Exit
-> >   KVM: x86: Morph pending exceptions to pending VM-Exits at queue time
-> >   KVM: x86: Treat pending TRIPLE_FAULT requests as pending exceptions
-> >   KVM: VMX: Update MTF and ICEBP comments to document KVM's subtle
-> >     behavior
-> >   KVM: selftests: Use uapi header to get VMX and SVM exit reasons/codes
-> >   KVM: selftests: Add an x86-only test to verify nested exception
-> >     queueing
-> >
-> >  arch/x86/include/asm/kvm-x86-ops.h            |   2 +-
-> >  arch/x86/include/asm/kvm_host.h               |  35 +-
-> >  arch/x86/kvm/emulate.c                        |   3 +-
-> >  arch/x86/kvm/svm/nested.c                     | 102 ++---
-> >  arch/x86/kvm/svm/svm.c                        |  18 +-
-> >  arch/x86/kvm/vmx/nested.c                     | 319 +++++++++-----
-> >  arch/x86/kvm/vmx/sgx.c                        |   2 +-
-> >  arch/x86/kvm/vmx/vmx.c                        |  53 ++-
-> >  arch/x86/kvm/x86.c                            | 404 +++++++++++-------
-> >  arch/x86/kvm/x86.h                            |  11 +-
-> >  tools/testing/selftests/kvm/.gitignore        |   1 +
-> >  tools/testing/selftests/kvm/Makefile          |   1 +
-> >  .../selftests/kvm/include/x86_64/svm_util.h   |   7 +-
-> >  .../selftests/kvm/include/x86_64/vmx.h        |  51 +--
-> >  .../kvm/x86_64/nested_exceptions_test.c       | 295 +++++++++++++
-> >  15 files changed, 886 insertions(+), 418 deletions(-)
-> >  create mode 100644 tools/testing/selftests/kvm/x86_64/nested_exception=
-s_test.c
-> >
-> >
-> > base-commit: 816967202161955f398ce379f9cbbedcb1eb03cb
->
-> Hi Sean and everyone!
->
->
-> Before I continue reviewing the patch series, I would like you to check i=
-f
-> I understand the monitor trap/pending debug exception/event injection
-> logic on VMX correctly. I was looking at the spec for several hours and I=
- still have more
-> questions that answers about it.
->
-> So let me state what I understand:
->
-> 1. Event injection (aka eventinj in SVM terms):
->
->   (VM_ENTRY_INTR_INFO_FIELD/VM_ENTRY_EXCEPTION_ERROR_CODE/VM_ENTRY_INSTRU=
-CTION_LEN)
->
->   If I understand correctly all event injections types just like on SVM j=
-ust inject,
->   and never create something pending, and/or drop the injection if event =
-is not allowed
->   (like if EFLAGS.IF is 0). VMX might have some checks that could fail VM=
- entry,
->   if for example you try to inject type 0 (hardware interrupt) and EFLAGS=
-.IF is 0,
->   I haven't checked this)
+John Fastabend <john.fastabend@gmail.com> writes:
 
-The event is never just "dropped." If it is illegal to deliver the
-event, VM-entry fails. See the second bullet under section 26.2.1.3:
-VM-Entry Control Fields, in the SDM, volume 3.
-
-
->   All event injections happen right away, don't deliver any payload (like=
- DR6), etc.
-
-Correct.
-
->   Injection types 4/5/6, do the same as injection types 0/2/3 but in addi=
-tion to that,
->   type 4/6 do a DPL check in IDT, and also these types can promote the RI=
-P prior
->   to pushing it to the exception stack using VM_ENTRY_INSTRUCTION_LEN to =
-be consistent
->   with cases when these trap like events are intercepted, where the inter=
-ception happens
->   on the start of the instruction despite exceptions being trap-like.
-
-Unlike the AMD "INTn intercept," these trap intercepts *do not* happen
-at the start of the instruction. In early Intel VT-x parts, one could
-not easily reinject an intercepted software interrupt or exception
-using event injection, because VM-entry required a non-zero
-instruction length, and the guest RIP had already advanced. On CPUs
-that support a non-zero instruction length, one can now reinject a
-software interrupt or exception, by setting the VM-entry instruction
-length to 0.
-
-> 2. #DB is the only trap like exception that can be pending for one more i=
-nstruction
->    if MOV SS shadow is on (any other cases?).
-
-I believe that's it. I'm not entirely sure about RTM,though.
-
->    (AMD just ignores the whole thing, rightfully)
-
-When you say "ignores," do you mean that AMD ignores a data breakpoint
-or single-step trap generated by MOV-SS, or it ignores the fact that
-delivering such a #DB trap between the MOV-SS and the subsequent
-MOV-ESP will create a stack frame in the wrong place?
-
->    That is why we have the GUEST_PENDING_DBG_EXCEPTIONS vmcs field.
->    I understand that it will be written by CPU in case we have VM exit at=
- the moment
->    where #DB is already pending but not yet delivered.
+> Alexander Lobakin wrote:
+>> This RFC is to give the whole picture. It will most likely be split
+>> onto several series, maybe even merge cycles. See the "table of
+>> contents" below.
 >
->    That field can also be (sadly) used to "inject" #DB to the guest, if t=
-he hypervisor sets it,
->    and this #DB will actually update DR6 and such, and might be delayed/l=
-ost.
+> Even for RFC its a bit much. Probably improve the summary
+> message here as well I'm still not clear on the overall
+> architecture so not sure I want to dig into patches.
 
-Injecting a #DB this way (if the hypervisor just emulated MOV-SS) is
-easier than emulating the next instruction or using MTF to step
-through the next instruction, and getting all of the deferred #DB
-delivery rules right. :-)
++1 on this, and piggybacking on your comment to chime in on the general
+architecture.
 
+>> Now, a NIC driver, or even a SmartNIC itself, can put those params
+>> there in a well-defined format. The format is fixed, but can be of
+>> several different types represented by structures, which definitions
+>> are available to the kernel, BPF programs and the userland.
 >
-> 3. Facts about MTF:
->
->    * MTF as a feature is basically 'single step the guest by generating M=
-TF VM exits after each executed
->      instruction', and is enabled in primary execution controls.
->
->    * MTF is also an 'event', and it can be injected separately by the hyp=
-ervisor with event type 7,
->      and that has no connection to the 'feature', although usually this i=
-njection will be useful
->      when the hypervisor does some kind of re-injection, triggered by the=
- actual MTF feature.
->
->    * MTF event can be lost, if higher priority VM exit happens, this is w=
-hy the SDM says about 'pending MTF',
->      which means that MTF vmexit should happen unless something else prev=
-ents it and/or higher priority VM exit
->      overrides it.
+> I don't think in general the format needs to be fixed.
 
-Hence, the facility for injecting a "pending MTF"--so that it won't be "los=
-t."
+No, that's the whole point of BTF: it's not supposed to be UAPI, we'll
+use CO-RE to enable dynamic formats...
 
->    * MTF event is raised (when the primary execution controls bit is enab=
-led) when:
->
->         - after an injected (vectored), aka eventinj/VM_ENTRY_INTR_INFO_F=
-IELD, done updating the guest state
->           (that is stack was switched, stuff was pushed to new exception =
-stack, RIP updated to the handler)
->           I am not 100% sure about this but this seems to be what PRM imp=
-lies:
->
->           "If the =E2=80=9Cmonitor trap flag=E2=80=9D VM-execution contro=
-l is 1 and VM entry is injecting a vectored event (see Section
->           26.6.1), an MTF VM exit is pending on the instruction boundary =
-before the first instruction following the
->           VM entry."
->
->         - If an interrupt and or #DB exception happens prior to executing=
- first instruction of the guest,
->           then once again MTF will happen on first instruction of the exc=
-eption/interrupt handler
->
->           "If the =E2=80=9Cmonitor trap flag=E2=80=9D VM-execution contro=
-l is 1, VM entry is not injecting an event, and a pending event
->           (e.g., debug exception or interrupt) is delivered before an ins=
-truction can execute, an MTF VM exit is pending
->           on the instruction boundary following delivery of the event (or=
- any nested exception)."
->
->           That means that #DB has higher priority that MTF, but not speci=
-fied if fault DB or trap DB
+[...]
 
-These are single-step, I/O and data breakpoint traps.
+>> It is fixed due to it being almost a UAPI, and the exact format can
+>> be determined by reading the last 10 bytes of metadata. They contain
+>> a 2-byte magic ID to not confuse it with a non-compatible meta and
+>> a 8-byte combined BTF ID + type ID: the ID of the BTF where this
+>> structure is defined and the ID of that definition inside that BTF.
+>> Users can obtain BTF IDs by structure types using helpers available
+>> in the kernel, BPF (written by the CO-RE/verifier) and the userland
+>> (libbpf -> kernel call) and then rely on those ID when reading data
+>> to make sure whether they support it and what to do with it.
+>> Why separate magic and ID? The idea is to make different formats
+>> always contain the basic/"generic" structure embedded at the end.
+>> This way we can still benefit in purely generic consumers (like
+>> cpumap) while providing some "extra" data to those who support it.
+>
+> I don't follow this. If you have a struct in your driver name it
+> something obvious, ice_xdp_metadata. If I understand things
+> correctly just dump the BTF for the driver, extract the
+> struct and done you can use CO-RE reads. For the 'fixed' case
+> this looks easy. And I don't think you even need a patch for this.
 
->         - If instruction causes exception, once again, on first instructi=
-on of the exception handler MTF will happen.
->
->         - Otherwise after an instruction (or REP iteration) retires.
->
->
-> If you have more facts about MTF and related stuff and/or if I made a mis=
-take in the above, I am all ears to listen!
+...however as we've discussed previously, we do need a bit of
+infrastructure around this. In particular, we need to embed the embed
+the BTF ID into the metadata itself so BPF can do runtime disambiguation
+between different formats (and add the right CO-RE primitives to make
+this easy). This is for two reasons:
 
-You might be interested in my augmented Table 6-2 (from volume 3 of
-the SDM): https://docs.google.com/spreadsheets/d/e/2PACX-1vR8TkbSl4TqXtD62a=
-gRUs1QY3SY-98mKtOh-s8vYDzaDmDOcdfyTvlAxF9aVnHWRu7uyGhRwvHUziXT/pubhtml
+- The metadata might be different per-packet (e.g., PTP packets with
+  timestamps interleaved with bulk data without them)
+
+- With redirects we may end up processing packets from different devices
+  in a single XDP program (in devmap or cpumap, or on a veth) so we need
+  to be able to disambiguate at runtime.
+
+So I think the part of the design that puts the BTF ID into the end of
+the metadata struct is sound; however, the actual format doesn't have to
+be fixed, we can use CO-RE to pick out the bits that a given BPF program
+needs; we just need a convention for how drivers report which format(s)
+they support. Which we should also agree on (and add core infrastructure
+around) so each driver doesn't go around inventing their own
+conventions.
+
+>> The enablement of this feature is controlled on attaching/replacing
+>> XDP program on an interface with two new parameters: that combined
+>> BTF+type ID and metadata threshold.
+>> The threshold specifies the minimum frame size which a driver (or
+>> NIC) should start composing metadata from. It is introduced instead
+>> of just false/true flag due to that often it's not worth it to spend
+>> cycles to fetch all that data for such small frames: let's say, it
+>> can be even faster to just calculate checksums for them on CPU
+>> rather than touch non-coherent DMA zone. Simple XDP_DROP case loses
+>> 15 Mpps on 64 byte frames with enabled metadata, threshold can help
+>> mitigate that.
+>
+> I would put this in the bonus category. Can you do the simple thing
+> above without these extra bits and then add them later. Just
+> pick some overly conservative threshold to start with.
+
+Yeah, I'd agree this kind of configuration is something that can be
+added later, and also it's sort of orthogonal to the consumption of the
+metadata itself.
+
+Also, tying this configuration into the loading of an XDP program is a
+terrible interface: these are hardware configuration options, let's just
+put them into ethtool or 'ip link' like any other piece of device
+configuration.
+
+>> The RFC can be divided into 8 parts:
+>
+> I'm missing something why not do the simplest bit of work and
+> get this running in ice with a few smallish driver updates
+> so we can all see it. No need for so many patches.
+
+Agreed. This incremental approach is basically what Jesper's
+simultaneous series makes a start on, AFAICT? Would be nice if y'all
+could converge the efforts :)
+
+[...]
+
+> I really think your asking questions that are two or three
+> jumps away. Why not do the simplest bit first and kick
+> the driver with an on/off switch into this mode. But
+> I don't understand this cpumap use case so maybe explain
+> that first.
+>
+> And sorry didn't even look at your 50+ patches. Figure lets
+> get agreement on the goal first.
+
++1 on both of these :)
+
+-Toke
+
