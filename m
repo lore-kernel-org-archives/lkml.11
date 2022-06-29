@@ -2,87 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD66C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE13C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 18:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbiF2SHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 14:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43112 "EHLO
+        id S230323AbiF2SJG convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 14:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231968AbiF2SGy (ORCPT
+        with ESMTP id S230073AbiF2SJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 14:06:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C2F13D59;
-        Wed, 29 Jun 2022 11:06:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C036B8263E;
-        Wed, 29 Jun 2022 18:06:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18D3C34114;
-        Wed, 29 Jun 2022 18:06:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656525976;
-        bh=/ORbMpAF9g//A1nrnM4wkmRc6v6TBleNFfmCLetRAZ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dqLWCK3hqF/qjXyw3lb1XZBUniogyCFkTUNKziIg8IItEAcFdeRcG5bD8fNbhSPLa
-         J8eVLKAK3nmo6Q7RFQM/Y+5/HxDmpylivSYsFm5DmY7cb/M1aLiY6zpMhm5xvPMuFJ
-         du7qaP3kj20LHaK70B/k18eIwL4u2BraalzKzaXYJOqnvJbAlWt8xO6qyEQQxaSiF9
-         /e5tdUEpfOb2FxRUwxYg57+q4Ssjchs8FoxPu8x4KwuFpnpP2KK6JIkM1UtrKOtpeD
-         9qE9fgKfQXt2Hmlif8sy/3+ZFEtvCk8SqEtMGBa91gCzYb0bfBFd8KpWgk6Ougax2W
-         355cBDPb5Kn6A==
-Date:   Wed, 29 Jun 2022 19:06:08 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kbuild@vger.kernel.org,
-        live-patching@vger.kernel.org, jpoimboe@kernel.org,
-        peterz@infradead.org, catalin.marinas@arm.com, will@kernel.org,
-        masahiroy@kernel.org, michal.lkml@markovi.net,
-        ndesaulniers@google.com, mark.rutland@arm.com,
-        pasha.tatashin@soleen.com, rmk+kernel@armlinux.org.uk,
-        madvenka@linux.microsoft.com, christophe.leroy@csgroup.eu,
-        daniel.thompson@linaro.org
-Subject: Re: [PATCH v6 24/33] arm64: proc: Mark constant as data
-Message-ID: <YryUkPktE4y91YT5@sirena.org.uk>
-References: <20220623014917.199563-1-chenzhongjin@huawei.com>
- <20220623014917.199563-25-chenzhongjin@huawei.com>
+        Wed, 29 Jun 2022 14:09:05 -0400
+Received: from relay5.hostedemail.com (smtprelay0013.hostedemail.com [216.40.44.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A1211A28
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 11:09:03 -0700 (PDT)
+Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay01.hostedemail.com (Postfix) with ESMTP id 826E060C93;
+        Wed, 29 Jun 2022 18:09:02 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id 5999F40;
+        Wed, 29 Jun 2022 18:09:01 +0000 (UTC)
+Message-ID: <2f2d8b6ddb4418bbe351d6c19d08e9241de20087.camel@perches.com>
+Subject: Re: [PATCH 1/7] Staging: rtl8192e: Added blank lines before/after
+ struct
+From:   Joe Perches <joe@perches.com>
+To:     Felix Schlepper <f3sch.git@outlook.com>
+Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, wjsota@gmail.com
+Date:   Wed, 29 Jun 2022 11:09:00 -0700
+In-Reply-To: <AM9P190MB129916C683B7D8B241EF85D0A5BB9@AM9P190MB1299.EURP190.PROD.OUTLOOK.COM>
+References: <cover.1656402464.git.f3sch.git@outlook.com>
+         <f23e5ad2839c238665956f0d552cacd9944b724d.1656402464.git.f3sch.git@outlook.com>
+         <f110442f5cceb0161f32c2b942ef7be6f5c5a63c.camel@perches.com>
+         <AM9P190MB129916C683B7D8B241EF85D0A5BB9@AM9P190MB1299.EURP190.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="P6MsKGTe3yXRB9Q9"
-Content-Disposition: inline
-In-Reply-To: <20220623014917.199563-25-chenzhongjin@huawei.com>
-X-Cookie: Booths for two or more.
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 5999F40
+X-Stat-Signature: cxpy4bhehp97he7ibrn6fwndwm5kmkk4
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+PFQLq9iP8uUoYJGt7spzt5iZz7rrAPH0=
+X-HE-Tag: 1656526141-482888
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-06-29 at 14:11 +0200, Felix Schlepper wrote:
+> On 28.06.2022 10:58, Joe Perches wrote:
+> > On Tue, 2022-06-28 at 10:30 +0200, Felix Schlepper wrote:
+> > > This addresses an issue raised by checkpatch.pl:
+> > > 
+> > >      $ ./scripts/checkpatch.pl --terse -f drivers/staging/rtl8192e/rtllib_wx.c
+> > >      CHECK: Please use a blank line after function/struct/union/enum
+> > >      declarations
+> > > 
+> > > The additional blank line above the struct/before the headers is
+> > > just cleaner.
+> > []
+> > > diff --git a/drivers/staging/rtl8192e/rtllib_wx.c b/drivers/staging/rtl8192e/rtllib_wx.c
+> > []
+> > > @@ -17,10 +17,12 @@
+> > >  #include <linux/module.h>
+> > >  #include <linux/etherdevice.h>
+> > >  #include "rtllib.h"
+> > > +
+> > >  struct modes_unit {
+> > >  	char *mode_string;
+> > >  	int mode_size;
+> > >  };
+> > > +
+> > >  static struct modes_unit rtllib_modes[] = {
+> > >  	{"a", 1},
+> > >  	{"b", 1},
+> > 
+> > Please always look deeper at the code and do not simply take
+> > any checkpatch suggestion as the "best" fix.
+> > 
+> > Using this struct style with an embedded length is error prone
+> > and would likely be better as a simple char * array.
+> > 
+> > Also, the existing sprintf use of mode_string and mode_size is
+> > nonsensical.  There is nothing to format in any of the mode_size.
+> > so the use of mode_size as an argument is silly.
+> First of all, thank you for your suggestions.
+> I did realize that there is nothing to format, but I did not dare to
+> make that change in case a format could be added.
+> However, looking at it now. This has not been touched in over 10 years.
+> So it is probably safe to change that.
+> > 
+> > Perhaps something like this would be better:
+> > ---
+> >  drivers/staging/rtl8192e/rtllib_wx.c | 21 +++++----------------
+> >  1 file changed, 5 insertions(+), 16 deletions(-)
+> > 
+> > diff --git a/drivers/staging/rtl8192e/rtllib_wx.c b/drivers/staging/rtl8192e/rtllib_wx.c
+> > index cf9a240924f20..90dcce152d80c 100644
+> > --- a/drivers/staging/rtl8192e/rtllib_wx.c
+> > +++ b/drivers/staging/rtl8192e/rtllib_wx.c
+> > @@ -17,17 +17,9 @@
+> >  #include <linux/module.h>
+> >  #include <linux/etherdevice.h>
+> >  #include "rtllib.h"
+> > -struct modes_unit {
+> > -	char *mode_string;
+> > -	int mode_size;
+> > -};
+> > -static struct modes_unit rtllib_modes[] = {
+> > -	{"a", 1},
+> > -	{"b", 1},
+> > -	{"g", 1},
+> > -	{"?", 1},
+> > -	{"N-24G", 5},
+> > -	{"N-5G", 4},
+> > +
+> > +static const char *rtllib_modes[] = {
+> > +	"a", "b", "g", "?", "N-24G", "N-5G",
+> >  };
+> >  
+> >  #define MAX_CUSTOM_LEN 64
+> > @@ -72,11 +64,8 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
+> >  	/* Add the protocol name */
+> >  	iwe.cmd = SIOCGIWNAME;
+> >  	for (i = 0; i < ARRAY_SIZE(rtllib_modes); i++) {
+> > -		if (network->mode&(1<<i)) {
+> > -			sprintf(pname, rtllib_modes[i].mode_string,
+> > -				rtllib_modes[i].mode_size);
+> > -			pname += rtllib_modes[i].mode_size;
+> > -		}
+> > +		if (network->mode & BIT(i))
+> > +			pname = stpcpy(pname, rtllib_modes[i]);
+> >  	}
+> >  	*pname = '\0';
+> Would this not be also redundant since stpcpy already returns a pointer to the new
+> NUL-terminating character?
+> >  	snprintf(iwe.u.name, IFNAMSIZ, "IEEE802.11%s", proto_name);
 
---P6MsKGTe3yXRB9Q9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Only if proto_name is initialized.  Is it?
 
-On Thu, Jun 23, 2022 at 09:49:08AM +0800, Chen Zhongjin wrote:
-> Label __idmap_kpti_flag represents the location of a constant.
-> Mark it as data symbol.
+Also I believe stpcpy is not a standard linux call, so maybe
+this needs to be strcpy or strncpy then strlen.
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
-
---P6MsKGTe3yXRB9Q9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK8lI8ACgkQJNaLcl1U
-h9B6PAf/aaMswfBfZqCl4lFNJ/9HZ08Oq69YuGWJbJRnkT0Nqg2IUosgF2RrqzyI
-MKMvedor+mqwhYIvVGSMMpEYIwrXDGF7sf1DUyuRQpxrcEP6CU3dVufjDULs2EmX
-Xo4l+IviwQ6uk7Q38SwgWLrRgd326jyEO/5VBvS3rP/+mR2+1iM57StFfUInhIaK
-YCS9f3wYoLbHlzb0dCeJ1Kea1MyJI7CKVnupqu0GN+ympo8zlBXG0CyCDSKasJtA
-Z279XpO6D18uveifHJXNM918owwsN3+T3X038R5X7MdLKJuHRivba+GAM0V4cPoX
-LZUUWFg36GFY5588P82JROwGuWI5LQ==
-=PRq0
------END PGP SIGNATURE-----
-
---P6MsKGTe3yXRB9Q9--
