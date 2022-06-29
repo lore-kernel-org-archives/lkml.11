@@ -2,99 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDFF7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F24FEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232717AbiF2JH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        id S230295AbiF2JJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232334AbiF2JHO (ORCPT
+        with ESMTP id S231184AbiF2JJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:07:14 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED262656E
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:07:10 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id i1so16908344wrb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 02:07:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XhVaynt23RZRT72OSOPmlLkNv8BfKDn8DPYKDlNl7mo=;
-        b=cN3diKYfDOCVK1xYzkybVDRxCRDWEl8dMbv3Yj2mH1/7LycshrX5t7yvg9Nqv4CvNw
-         Per/DCaLPXJGkIc2u4jt50Cx5s7SUGjt+PkMzsfhBidJHdxUPZDOKNI7GNvJgjq4RNFP
-         M8rrhHumc6+LjSFsEwlrtCMDyP2roUBPdF43EQK3nzS/7w7gomqtHFZd/4wbCG7hpSc/
-         BfpjJMUqCblNJYjMlrguPhEEALp1nt6BYwyBCCKAfqn+Gb2KLc8Sb9tuUEPtEvn7WWPY
-         GUsoBNUMqfZeknWhFNfZjCIFTQF+0wOQ8DYzez67V5chh/iJgZRmAazf1M9HfvdF1Lnl
-         fH6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XhVaynt23RZRT72OSOPmlLkNv8BfKDn8DPYKDlNl7mo=;
-        b=22JZ6OiVdNH754+HWEA2hyn2Y7TJHZC5oAEDFEvDSWoVdZgquDeGC0SpboRJ7xWKXq
-         ESShT1AmrMrCh4rxOoG2/jNrTy0QPrQXQGbZrwLNqkrTwgafW9QNTQrRRYfAeDx1Ej3/
-         STo8mt/fNMXkCapKv0R6yAn+5xdlAYmB1vg5LLG0RU+awdGRaCIk2d6c24cmOCQ0qR+f
-         EwxXw6uyr2+7WXj6U4hKwAMHKY4I/iokj93Pi5w5oDsuKfyv7VipHHM8tGbHCNvrRzJf
-         /zTgt+hoT6B6VKg+F7wm3DZYWGP/doULfIc6LizPVbyk6KMSkFTTAkUZvTeWJeVvVXBZ
-         Qz4Q==
-X-Gm-Message-State: AJIora8e12k+2qBxqR04egp737kj8HvcMBABa3b9d8MeWlnWKnT8UDRY
-        6IG7OGNYVwtlfG/17frtua3mWg==
-X-Google-Smtp-Source: AGRyM1t/1AaRCniJIXjV+UbMmrXdTt54J5swO771KzJyBE+o4ZTbf1SC9VwQ929xbiGztSbq+J2AWg==
-X-Received: by 2002:adf:fb46:0:b0:210:2316:dd02 with SMTP id c6-20020adffb46000000b002102316dd02mr2024995wrs.557.1656493629137;
-        Wed, 29 Jun 2022 02:07:09 -0700 (PDT)
-Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id e12-20020a5d530c000000b002185d79dc7fsm15993341wrv.75.2022.06.29.02.07.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 02:07:08 -0700 (PDT)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     broonie@kernel.org
-Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 4/4] MAINTAINERS: add ASoC Qualcomm codecs
-Date:   Wed, 29 Jun 2022 10:06:44 +0100
-Message-Id: <20220629090644.67982-5-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629090644.67982-1-srinivas.kandagatla@linaro.org>
-References: <20220629090644.67982-1-srinivas.kandagatla@linaro.org>
+        Wed, 29 Jun 2022 05:09:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995ADB3F;
+        Wed, 29 Jun 2022 02:09:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656493776; x=1688029776;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=vyNYt5Z2SEb+Bn2+zWB3lNIb65JbzeAfclhP43nRxyk=;
+  b=JUlgVF8Z3bX+xK8QRVJrlsAg2PhL4Xwf9abykevfSQVRjEwQ4jquHjlI
+   fbsGjFIpcSg88qfNHjjcP1xaufsveQoKbZfutaj9GKEhk3pq044OtG98S
+   FOgbFadp2vut89bNxsN//Piaj1ulN1ZEBypoj+kbIAXwc/VqSn4RXc5OM
+   7/SrAL9EWQIDQW/DGXSSJowbUEmGaPSe3gh1z28L8B81oVjTM7DS+hLjY
+   LpE4ge/NWdCtLK7rfGELalfBFsAlBd2SYU48VPpBwSCOTC27oqTN+ubd5
+   0NMiWX7NtaojNyQ8KQaEPX2K6+GB4/9FTFoiiD0JWdyisgSgqYkv0yN7O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="279524553"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="279524553"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:09:14 -0700
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="617510684"
+Received: from gregantx-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.119.76])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:09:08 -0700
+Message-ID: <c4dfa4166c219b3655248e3ae3af93675db51b49.camel@intel.com>
+Subject: Re: [PATCH v5 02/22] cc_platform: Add new attribute to prevent ACPI
+ CPU hotplug
+From:   Kai Huang <kai.huang@intel.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-acpi@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
+        dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, thomas.lendacky@amd.com,
+        Tianyu.Lan@microsoft.com, rdunlap@infradead.org, Jason@zx2c4.com,
+        juri.lelli@redhat.com, mark.rutland@arm.com, frederic@kernel.org,
+        yuehaibing@huawei.com, dongli.zhang@oracle.com
+Date:   Wed, 29 Jun 2022 21:09:06 +1200
+In-Reply-To: <YrvkK6794URE1Xod@infradead.org>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <f4bff93d83814ea1f54494f51ce3e5d954cf0f5b.1655894131.git.kai.huang@intel.com>
+         <YrvkK6794URE1Xod@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing Qualcomm codes to the list.
+On Tue, 2022-06-28 at 22:33 -0700, Christoph Hellwig wrote:
+> On Wed, Jun 22, 2022 at 11:15:43PM +1200, Kai Huang wrote:
+> > Platforms with confidential computing technology may not support ACPI
+> > CPU hotplug when such technology is enabled by the BIOS.  Examples
+> > include Intel platforms which support Intel Trust Domain Extensions
+> > (TDX).
+>=20
+> What does this have to to wit hthe cc_platform abstraction?  This is
+> just an intel implementation bug because they hastended so much into
+> implementing this.  So the quirks should not overload the cc_platform
+> abstraction.
+>=20
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- MAINTAINERS | 4 ++++
- 1 file changed, 4 insertions(+)
+Thanks for feedback.  I thought there might be similar technologies and it =
+would
+be better to have a common attribute.  I'll give up this approach and chang=
+e to
+use arch-specific check.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 171fa3160696..c4648e86dc14 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16250,6 +16250,8 @@ M:	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
- M:	Banajit Goswami <bgoswami@quicinc.com>
- L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
- S:	Supported
-+F:	sound/soc/codecs/lpass-rx-macro.*
-+F:	sound/soc/codecs/lpass-tx-macro.*
- F:	sound/soc/codecs/lpass-va-macro.c
- F:	sound/soc/codecs/lpass-wsa-macro.*
- F:	sound/soc/codecs/msm8916-wcd-analog.c
-@@ -16257,7 +16259,9 @@ F:	sound/soc/codecs/msm8916-wcd-digital.c
- F:	sound/soc/codecs/wcd9335.*
- F:	sound/soc/codecs/wcd934x.c
- F:	sound/soc/codecs/wcd-clsh-v2.*
-+F:	sound/soc/codecs/wcd-mbhc-v2.*
- F:	sound/soc/codecs/wsa881x.c
-+F:	sound/soc/codecs/wsa883x.c
- F:	sound/soc/qcom/
- 
- QCOM EMBEDDED USB DEBUGGER (EUD)
--- 
-2.25.1
+--=20
+Thanks,
+-Kai
+
 
