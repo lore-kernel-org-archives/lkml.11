@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C665CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 08:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232502AbiF2I6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 04:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        id S231953AbiF2I6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 04:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232173AbiF2I61 (ORCPT
+        with ESMTP id S232331AbiF2I6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 04:58:27 -0400
+        Wed, 29 Jun 2022 04:58:30 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708B2A441;
-        Wed, 29 Jun 2022 01:58:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E8FB4B2;
+        Wed, 29 Jun 2022 01:58:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656493106; x=1688029106;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=z38me1hxJbpP621/D8hR4lHQm+9F9xpLz5jNvZ8BQjM=;
-  b=AfwhNY+mQthMQzN1YVYLnoWmMmt5kHtSGEOiBl8Uyu6qy7V8C3c8ptvR
-   xLb+elbXIiqNORbHNMzLG8ctjKGcSbsENksASr55B+ldEch8z7FA6fjWe
-   SbVUbI3uOp4tRoV+8zGzrpQSmk1MMnVeOPinwQFT/v6F+2UQ7q2F/S5cw
-   F8uwXOcrNsd52VyHEfaO2FaD92hEn0I3/nF2sDNr7DxOLNCy6nnF0fqsu
-   1n1zszn9s26cFAeVBVIivS5mkkH/C6WmePmxSNniY3XfBonY/SejkqD7J
-   gvHXGAa9B1dLQlHGxrU1bSRO3EcI50XPoUo6fypfqKQOKjiw0RGOLd2YW
-   Q==;
+  t=1656493108; x=1688029108;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=Beq/F3djt8kqwPMZlUOzGpv6gng0bk4dp4axW3sNFkw=;
+  b=hcrDBWTIBipv1VCKLmzOBf5fJhmCoKs5Q1DU5fVR7zJo5Kzn+RTq4RC8
+   oXmhrsAV5fEKxfbiUJZ018FoHnWoHODew81oKH2wakDACOMOc+ojiaezf
+   gaY3laskD0mqJmMoBuX63xC4h6N/0jvKykezqgS7x8c8+R2wBkl6NJSh0
+   v1Ha5vHhMf79IDNrlpux6TYP8itE+UyPrqVyJ39NfwjxX626jUMvnbw9h
+   hoStwPLZbwWnpCcMMKxkYTmek/IHMkOhsjYjd4B4L7LJnmGz5R9qpasmD
+   VBZshr9TXKoWk5aCgboDC0BEHkdPTDNTzjy06kl9y/H2EjgJ8lFUqg+Dn
+   A==;
 X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="102242125"
+   d="scan'208";a="165594578"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jun 2022 01:58:10 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jun 2022 01:58:27 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 29 Jun 2022 01:58:09 -0700
+ 15.1.2375.17; Wed, 29 Jun 2022 01:58:26 -0700
 Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 29 Jun 2022 01:58:04 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 29 Jun 2022 01:58:21 -0700
 From:   Divya Koppera <Divya.Koppera@microchip.com>
 To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
         <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
@@ -45,29 +46,177 @@ To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
         <linux-kernel@vger.kernel.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>
-Subject: [PATCH v2 net-next 0/2] LED feature for LAN8814 PHY
-Date:   Wed, 29 Jun 2022 14:27:58 +0530
-Message-ID: <20220629085800.11600-1-Divya.Koppera@microchip.com>
+Subject: [PATCH v2 net-next 2/2] net: phy: micrel: Adding LED feature for LAN8814 PHY
+Date:   Wed, 29 Jun 2022 14:28:00 +0530
+Message-ID: <20220629085800.11600-3-Divya.Koppera@microchip.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220629085800.11600-1-Divya.Koppera@microchip.com>
+References: <20220629085800.11600-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable LED mode configuration for LAN8814 PHY
+LED support for extended mode where
+LED 1: Enhanced Mode 5 (10M/1000M/Activity)
+LED 2: Enhanced Mode 4 (100M/1000M/Activity)
 
+By default it supports KSZ9031 LED mode
+
+Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+---
 v1 -> v2:
-- Updated dt-bindings for micrel,led-mode in LAN8814 PHY
+- No changes
 
-Divya Koppera (2):
-  dt-bindings: net: Updated micrel,led-mode for LAN8814 PHY
-  net: phy: micrel: Adding LED feature for LAN8814 PHY
+ drivers/net/phy/micrel.c | 71 +++++++++++++++++++++++++++++++---------
+ 1 file changed, 56 insertions(+), 15 deletions(-)
 
- .../devicetree/bindings/net/micrel.txt        |  1 +
- drivers/net/phy/micrel.c                      | 71 +++++++++++++++----
- 2 files changed, 57 insertions(+), 15 deletions(-)
-
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 22139901f01c..297e58d49159 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -209,6 +209,9 @@
+ #define PTP_TSU_INT_STS_PTP_RX_TS_OVRFL_INT_	BIT(1)
+ #define PTP_TSU_INT_STS_PTP_RX_TS_EN_		BIT(0)
+ 
++#define LAN8814_LED_CTRL_1			0x0
++#define LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_	BIT(6)
++
+ /* PHY Control 1 */
+ #define MII_KSZPHY_CTRL_1			0x1e
+ #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
+@@ -308,6 +311,10 @@ struct kszphy_priv {
+ 	u64 stats[ARRAY_SIZE(kszphy_hw_stats)];
+ };
+ 
++static const struct kszphy_type lan8814_type = {
++	.led_mode_reg		= ~LAN8814_LED_CTRL_1,
++};
++
+ static const struct kszphy_type ksz8021_type = {
+ 	.led_mode_reg		= MII_KSZPHY_CTRL_2,
+ 	.has_broadcast_disable	= true,
+@@ -1688,6 +1695,30 @@ static int kszphy_suspend(struct phy_device *phydev)
+ 	return genphy_suspend(phydev);
+ }
+ 
++static void kszphy_parse_led_mode(struct phy_device *phydev)
++{
++	const struct kszphy_type *type = phydev->drv->driver_data;
++	const struct device_node *np = phydev->mdio.dev.of_node;
++	struct kszphy_priv *priv = phydev->priv;
++	int ret;
++
++	if (type && type->led_mode_reg) {
++		ret = of_property_read_u32(np, "micrel,led-mode",
++					   &priv->led_mode);
++
++		if (ret)
++			priv->led_mode = -1;
++
++		if (priv->led_mode > 3) {
++			phydev_err(phydev, "invalid led mode: 0x%02x\n",
++				   priv->led_mode);
++			priv->led_mode = -1;
++		}
++	} else {
++		priv->led_mode = -1;
++	}
++}
++
+ static int kszphy_resume(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -1720,7 +1751,6 @@ static int kszphy_probe(struct phy_device *phydev)
+ 	const struct device_node *np = phydev->mdio.dev.of_node;
+ 	struct kszphy_priv *priv;
+ 	struct clk *clk;
+-	int ret;
+ 
+ 	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -1730,20 +1760,7 @@ static int kszphy_probe(struct phy_device *phydev)
+ 
+ 	priv->type = type;
+ 
+-	if (type && type->led_mode_reg) {
+-		ret = of_property_read_u32(np, "micrel,led-mode",
+-				&priv->led_mode);
+-		if (ret)
+-			priv->led_mode = -1;
+-
+-		if (priv->led_mode > 3) {
+-			phydev_err(phydev, "invalid led mode: 0x%02x\n",
+-				   priv->led_mode);
+-			priv->led_mode = -1;
+-		}
+-	} else {
+-		priv->led_mode = -1;
+-	}
++	kszphy_parse_led_mode(phydev);
+ 
+ 	clk = devm_clk_get(&phydev->mdio.dev, "rmii-ref");
+ 	/* NOTE: clk may be NULL if building without CONFIG_HAVE_CLK */
+@@ -2815,8 +2832,23 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static void lan8814_setup_led(struct phy_device *phydev, int val)
++{
++	int temp;
++
++	temp = lan8814_read_page_reg(phydev, 5, LAN8814_LED_CTRL_1);
++
++	if (val)
++		temp |= LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_;
++	else
++		temp &= ~LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_;
++
++	lan8814_write_page_reg(phydev, 5, LAN8814_LED_CTRL_1, temp);
++}
++
+ static int lan8814_config_init(struct phy_device *phydev)
+ {
++	struct kszphy_priv *lan8814 = phydev->priv;
+ 	int val;
+ 
+ 	/* Reset the PHY */
+@@ -2850,11 +2882,15 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
+ 	gpiod_set_consumer_name(gpiod, "LAN8814 coma mode");
+ 	gpiod_set_value_cansleep(gpiod, 0);
+ 
++	if (lan8814->led_mode >= 0)
++		lan8814_setup_led(phydev, lan8814->led_mode);
++
+ 	return 0;
+ }
+ 
+ static int lan8814_probe(struct phy_device *phydev)
+ {
++	const struct kszphy_type *type = phydev->drv->driver_data;
+ 	struct kszphy_priv *priv;
+ 	u16 addr;
+ 	int err;
+@@ -2867,6 +2903,10 @@ static int lan8814_probe(struct phy_device *phydev)
+ 
+ 	phydev->priv = priv;
+ 
++	priv->type = type;
++
++	kszphy_parse_led_mode(phydev);
++
+ 	/* Strap-in value for PHY address, below register read gives starting
+ 	 * phy address value
+ 	 */
+@@ -3068,6 +3108,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ 	.name		= "Microchip INDY Gigabit Quad PHY",
+ 	.config_init	= lan8814_config_init,
++	.driver_data	= &lan8814_type,
+ 	.probe		= lan8814_probe,
+ 	.soft_reset	= genphy_soft_reset,
+ 	.read_status	= ksz9031_read_status,
 -- 
 2.17.1
 
