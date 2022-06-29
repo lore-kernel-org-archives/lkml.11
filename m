@@ -2,147 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 00:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E5FCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 00:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiF2ABo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 20:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
+        id S229975AbiF2ACp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 20:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiF2ABl (ORCPT
+        with ESMTP id S229573AbiF2ACn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 20:01:41 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE94531225;
-        Tue, 28 Jun 2022 17:01:40 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 68so13659604pgb.10;
-        Tue, 28 Jun 2022 17:01:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0kpjfuIly1nOW0q2ELB2CmN7oIQ7HX+3B2PaKKHsB78=;
-        b=D7i2NgedY/bHyI8emNN+y0jr/G9IOYRWkIjlIhVn6DbWgwRG2UARyfZk3UwO7T2V+D
-         ESqmy18MQo7RMsisYmEMOTQj203NqQOZVs7qiFGDUYY81Hru7Iv0ADFCQgagZlaKMdVq
-         xung15+Nlj1soULvCk9mS+bfRYyJ9ltpn9UcH1mz1cQDWfJ2ax2IcuBr2SQ3tsjHpoK1
-         NeL3oeSuqVVYbcSBohKZ73kauU8T3VpyxipPF6h/oJ8e2qxtdKJwYj9HlUbwfye7QPMt
-         PuFn7aX0KOb+qDfsVshvX0sC/38kqLR1JFdKMTuOuvGx8cb2fuTFMwQneoiKRpnAUU2m
-         4Xkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0kpjfuIly1nOW0q2ELB2CmN7oIQ7HX+3B2PaKKHsB78=;
-        b=4C5l0TQMlwumCsDZ4LSdd3QzskDu8GBG+vdBVd/2ZJ797l0ryCzqWCwKmYAcdUy7s4
-         oFki4t6oA6GTyDdLCN0gUoyroFuNDtXf9mGNhCENLg9c6xkFEwN6CKz8l4wStnCXtTC1
-         ylb+2z8ej7U8w0qjURaZt4Mt1wURzjPcfOPJ5IXGjwsNHtt8Nj4GDfkYUZeWMwH3wSaL
-         nq5Ep/kzBqE3lvG/ITc1uA0zWooFGvuqUGcIyf0mhSOQ6O4xCdK94Wtnca0V68ZFPyjs
-         kIonjPR/8V4gR6uYTi7FLLJbTCIsU+YzdOmLSdmAADNMTt2j7+dhmRwNQc8JiKIgFFHk
-         hx+A==
-X-Gm-Message-State: AJIora/DSerp7bCeD5uvhPIBa482Wnauw1HIJ/+abqXL7QX7ej1U4L2e
-        FMpFRnnAB4Ms46Sa3qauyu4=
-X-Google-Smtp-Source: AGRyM1uB9qD4Z15I0Lke4zy2AkjVbLhbeqqf5QXYDPBQAVzl/v0z9XhcHbOncWmuxVZyAGIQBi5g6Q==
-X-Received: by 2002:a63:2b16:0:b0:3fa:faf9:e6d7 with SMTP id r22-20020a632b16000000b003fafaf9e6d7mr446010pgr.325.1656460900460;
-        Tue, 28 Jun 2022 17:01:40 -0700 (PDT)
-Received: from ?IPV6:2001:df0:0:200c:75aa:d6ca:4354:6033? ([2001:df0:0:200c:75aa:d6ca:4354:6033])
-        by smtp.gmail.com with ESMTPSA id cd21-20020a056a00421500b0051b32c2a5a7sm9863096pfb.138.2022.06.28.17.01.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 17:01:39 -0700 (PDT)
-Message-ID: <859c2adc-d3cb-64e8-faba-06e1ac5eddaf@gmail.com>
-Date:   Wed, 29 Jun 2022 12:01:24 +1200
+        Tue, 28 Jun 2022 20:02:43 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F46137A1F;
+        Tue, 28 Jun 2022 17:02:42 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2EABA153B;
+        Tue, 28 Jun 2022 17:02:42 -0700 (PDT)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C8A173F792;
+        Tue, 28 Jun 2022 17:02:41 -0700 (PDT)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     linux-serial@vger.kernel.org
+Cc:     andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, miquel.raynal@bootlin.com,
+        phil.edworthy@renesas.com, kernel@esmil.dk,
+        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
+Subject: [PATCH 1/2] Revert "serial: 8250: dw: Move the USR register to pdata"
+Date:   Tue, 28 Jun 2022 19:02:31 -0500
+Message-Id: <20220629000232.3440704-2-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220629000232.3440704-1-jeremy.linton@arm.com>
+References: <20220629000232.3440704-1-jeremy.linton@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Content-Language: en-US
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        Khalid Aziz <khalid@gonehiking.org>,
-        "Maciej W . Rozycki" <macro@orcam.me.uk>,
-        Matt Wang <wwentao@vmware.com>,
-        Miquel van Smoorenburg <mikevs@xs4all.net>,
-        Mark Salyzyn <salyzyn@android.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Denis Efremov <efremov@linux.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-References: <20220617125750.728590-1-arnd@kernel.org>
- <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
- <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
- <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
- <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
- <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
- <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
- <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
- <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
- <fc47e8da-81d3-e563-0a17-4eb23db015cc@acm.org>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-In-Reply-To: <fc47e8da-81d3-e563-0a17-4eb23db015cc@acm.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bart,
+pdata is only setup by DT machines, leaving ACPI machines
+with null pdata. Since I don't know the exact mapping of
+ACPI ID's to dw 8250 variations I can't add pdata to them
+without possibly breaking something. As such the simplest
+fix here is probably just to revert this commit.
 
-On 29/06/22 11:50, Bart Van Assche wrote:
-> On 6/28/22 16:09, Michael Schmitz wrote:
->> On 29/06/22 09:50, Arnd Bergmann wrote:
->>> On Tue, Jun 28, 2022 at 11:03 PM Michael Schmitz 
->>> <schmitzmic@gmail.com> wrote:
->>>> On 28/06/22 19:03, Geert Uytterhoeven wrote:
->>>>>> The driver allocates bounce buffers using kmalloc if it hits an
->>>>>> unaligned data buffer - can such buffers still even happen these 
->>>>>> days?
->>>>> No idea.
->>>> Hmmm - I think I'll stick a WARN_ONCE() in there so we know whether 
->>>> this
->>>> code path is still being used.
->>> kmalloc() guarantees alignment to the next power-of-two size or
->>> KMALLOC_MIN_ALIGN, whichever is bigger. On m68k this means it
->>> is cacheline aligned.
->>
->> And all SCSI buffers are allocated using kmalloc? No way at all for 
->> user space to pass unaligned data?
->>
->> (SCSI is a weird beast - I have used a SCSI DAT tape driver many many 
->> years ago, which broke all sorts of assumptions about transfer block 
->> sizes ... but that might actually have been in the v0.99 days, many 
->> rewrites of SCSI midlevel ago).
->>
->> Just being cautious, as getting any of this tested will be a stretch.
->
-> An example of a user space application that passes an SG I/O data 
-> buffer to the kernel that is aligned to a four byte boundary but not 
-> to an eight byte boundary if the -s (scattered) command line option is 
-> used: 
-> https://github.com/osandov/blktests/blob/master/src/discontiguous-io.cpp
+This reverts commit ffd381445eac2aa624e49bab5a811451e8351008.
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+---
+ drivers/tty/serial/8250/8250_dw.c    | 9 +++------
+ drivers/tty/serial/8250/8250_dwlib.h | 2 +-
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-Thanks - four byte alignment actually wouldn't be an issue for me. It's 
-two byte or smaller that would trip up the SCSI DMA.
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index f57bbd32ef11..53e488beb8c2 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -275,7 +275,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 
+ 	if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+ 		/* Clear the USR */
+-		(void)p->serial_in(p, d->pdata->usr_reg);
++		(void)p->serial_in(p, d->usr_reg);
+ 
+ 		return 1;
+ 	}
+@@ -447,6 +447,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 			p->serial_out = dw8250_serial_outq;
+ 			p->flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
+ 			p->type = PORT_OCTEON;
++			data->usr_reg = OCTEON_UART_USR;
+ 			data->skip_autocfg = true;
+ 		}
+ #endif
+@@ -536,6 +537,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	data->data.dma.fn = dw8250_fallback_dma_filter;
++	data->usr_reg = DW_UART_USR;
+ 	data->pdata = device_get_match_data(p->dev);
+ 	p->private_data = &data->data;
+ 
+@@ -738,27 +740,22 @@ static const struct dev_pm_ops dw8250_pm_ops = {
+ };
+ 
+ static const struct dw8250_platform_data dw8250_dw_apb = {
+-	.usr_reg = DW_UART_USR,
+ };
+ 
+ static const struct dw8250_platform_data dw8250_octeon_3860_data = {
+-	.usr_reg = OCTEON_UART_USR,
+ 	.quirks = DW_UART_QUIRK_OCTEON,
+ };
+ 
+ static const struct dw8250_platform_data dw8250_armada_38x_data = {
+-	.usr_reg = DW_UART_USR,
+ 	.quirks = DW_UART_QUIRK_ARMADA_38X,
+ };
+ 
+ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
+-	.usr_reg = DW_UART_USR,
+ 	.cpr_val = 0x00012f32,
+ 	.quirks = DW_UART_QUIRK_IS_DMA_FC,
+ };
+ 
+ static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
+-	.usr_reg = DW_UART_USR,
+ 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+ };
+ 
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 055bfdc87985..9870ad0d54e4 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -26,7 +26,6 @@ struct dw8250_port_data {
+ };
+ 
+ struct dw8250_platform_data {
+-	u8 usr_reg;
+ 	u32 cpr_val;
+ 	unsigned int quirks;
+ };
+@@ -35,6 +34,7 @@ struct dw8250_data {
+ 	struct dw8250_port_data	data;
+ 	const struct dw8250_platform_data *pdata;
+ 
++	u8			usr_reg;
+ 	int			msr_mask_on;
+ 	int			msr_mask_off;
+ 	struct clk		*clk;
+-- 
+2.35.1
 
-While I'm sure such an even more pathological test case could be 
-written, I was rather worried about st.c and sr.c input ...
-
-Cheers,
-
-     Michael
-
->
-> Bart.
