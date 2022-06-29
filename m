@@ -2,280 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C89BAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 11:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13814C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 11:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233075AbiF2Lat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 07:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
+        id S232950AbiF2LbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 07:31:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiF2LaS (ORCPT
+        with ESMTP id S233193AbiF2La7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 07:30:18 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451633EAB8
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 04:30:14 -0700 (PDT)
+        Wed, 29 Jun 2022 07:30:59 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F123A3EF2F;
+        Wed, 29 Jun 2022 04:30:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656502214; x=1688038214;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CJZp0Ai058gciwAgk4vcNvOCE9MCURSm+pmkb2cRzrE=;
-  b=ASUjwbMlvlHCSZzxVY69zKLomXIw4GI7Rl260/rjSzq2wscgMnTde9t3
-   RFq008TPjCWFhueBoSIYsERm1o2rCD5ohsgitDhput/ReddR4PQEWn+Bn
-   dj8OJVwrIibREfuYYLJWV/37HjZhyPtTRgwiWJRY+bMaMOj9Q0pKvZmDY
-   XoWFmzqBGyksss//pFMfqeQLrRILethPmSU9VoSN83kGix9ecOv6QkW0G
-   +Oi5qlBY3MyK3Kb3DDmij0co3KhUeMBOwYjbnBXvVKYgGRSf8fjHjB2Uu
-   kiF9+yyJPgX2aeFtpszBC1tEDxZ1KaY+UOHEWo+kcFAN62TRPSqEz0iu4
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="368319379"
+  t=1656502254; x=1688038254;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SttLpnekTpHLqf0jeO2Z9mBo/959BLBoXWIJOeVu4ec=;
+  b=D0qT0yFyAwG8IprbcW6zvA/t5AQUSjB6D8VjtLddz36Gz2Bt433RvhfN
+   iQMOC5cmOhoEnErmshiZsmDXJ7Lo1nwlbpXnAzZD+H7caYzKbVcWM7VlA
+   5a/S2XsDRBpxNemG2ZBg9pNj5bU8bOcEm1dTdhKFqP5HCg6ZWbiU7QKAs
+   EncVAW+YAEo4tQ5p0ONAq/2/9xyGAUCv3moZW4GTvi8zA3xlgZ3IqTql5
+   Xokacc6eGgFVbwyCWcL72X9DpVOpAaM/n/kDXQtRAKSnQVtrAXLbCF3YT
+   ksbvVknOsaBaA6Z8BYXEPOiw82DfzrN1ZYWOc85HhMmjXWS/rUJXb3iFi
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="261807987"
 X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="368319379"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 04:30:14 -0700
+   d="scan'208";a="261807987"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 04:30:54 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="647353459"
-Received: from sannilnx.jer.intel.com ([10.12.26.157])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 04:30:10 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>
-Subject: [PATCH v4 14/14] drm/i915/gsc: allocate extended operational memory in LMEM
-Date:   Wed, 29 Jun 2022 14:29:13 +0300
-Message-Id: <20220629112913.1210933-15-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220629112913.1210933-1-alexander.usyskin@intel.com>
-References: <20220629112913.1210933-1-alexander.usyskin@intel.com>
+   d="scan'208";a="595204434"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 29 Jun 2022 04:30:53 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 482BAF1; Wed, 29 Jun 2022 14:30:59 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] gpiolib: of: Use device_match_of_node() helper
+Date:   Wed, 29 Jun 2022 14:30:58 +0300
+Message-Id: <20220629113058.79617-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Winkler <tomas.winkler@intel.com>
+Instead of open coding, use device_match_of_node() helper.
 
-GSC requires more operational memory than available on chip.
-Reserve 4M of LMEM for GSC operation. The memory is provided to the
-GSC as struct resource to the auxiliary data of the child device.
-
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Cc: Alan Previn <alan.previn.teres.alexis@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/gpu/drm/i915/gt/intel_gsc.c | 92 ++++++++++++++++++++++++++---
- drivers/gpu/drm/i915/gt/intel_gsc.h |  3 +
- 2 files changed, 88 insertions(+), 7 deletions(-)
+ drivers/gpio/gpiolib-of.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.c b/drivers/gpu/drm/i915/gt/intel_gsc.c
-index bfc307e49bf9..4d87519d5773 100644
---- a/drivers/gpu/drm/i915/gt/intel_gsc.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gsc.c
-@@ -7,6 +7,7 @@
- #include <linux/mei_aux.h>
- #include "i915_drv.h"
- #include "i915_reg.h"
-+#include "gem/i915_gem_region.h"
- #include "gt/intel_gsc.h"
- #include "gt/intel_gt.h"
+diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
+index 3d6c3ffd5576..23b8de98bf7c 100644
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -720,7 +720,7 @@ static void of_gpiochip_remove_hog(struct gpio_chip *chip,
  
-@@ -36,12 +37,68 @@ static int gsc_irq_init(int irq)
- 	return irq_set_chip_data(irq, NULL);
- }
- 
-+static int
-+gsc_ext_om_alloc(struct intel_gsc *gsc, struct intel_gsc_intf *intf, size_t size)
-+{
-+	struct intel_gt *gt = gsc_to_gt(gsc);
-+	struct drm_i915_gem_object *obj;
-+	void *vaddr;
-+	int err;
-+
-+	obj = i915_gem_object_create_lmem(gt->i915, size, I915_BO_ALLOC_CONTIGUOUS);
-+	if (IS_ERR(obj)) {
-+		drm_err(&gt->i915->drm, "Failed to allocate gsc memory\n");
-+		return PTR_ERR(obj);
-+	}
-+
-+	err = i915_gem_object_pin_pages_unlocked(obj);
-+	if (err) {
-+		drm_err(&gt->i915->drm, "Failed to pin pages for gsc memory\n");
-+		goto out_put;
-+	}
-+
-+	vaddr = i915_gem_object_pin_map_unlocked(obj, i915_coherent_map_type(gt->i915, obj, true));
-+	if (IS_ERR(vaddr)) {
-+		err = PTR_ERR(vaddr);
-+		drm_err(&gt->i915->drm, "Failed to map gsc memory\n");
-+		goto out_unpin;
-+	}
-+
-+	memset(vaddr, 0, obj->base.size);
-+
-+	i915_gem_object_unpin_map(obj);
-+
-+	intf->gem_obj = obj;
-+
-+	return 0;
-+
-+out_unpin:
-+	i915_gem_object_unpin_pages(obj);
-+out_put:
-+	i915_gem_object_put(obj);
-+	return err;
-+}
-+
-+static void gsc_ext_om_destroy(struct intel_gsc_intf *intf)
-+{
-+	struct drm_i915_gem_object *obj = fetch_and_zero(&intf->gem_obj);
-+
-+	if (!obj)
-+		return;
-+
-+	if (i915_gem_object_has_pinned_pages(obj))
-+		i915_gem_object_unpin_pages(obj);
-+
-+	i915_gem_object_put(obj);
-+}
-+
- struct gsc_def {
- 	const char *name;
- 	unsigned long bar;
- 	size_t bar_size;
- 	bool use_polling;
- 	bool slow_fw;
-+	size_t lmem_size;
- };
- 
- /* gsc resources and definitions (HECI1 and HECI2) */
-@@ -74,6 +131,7 @@ static const struct gsc_def gsc_def_dg2[] = {
- 		.name = "mei-gsc",
- 		.bar = DG2_GSC_HECI1_BASE,
- 		.bar_size = GSC_BAR_LENGTH,
-+		.lmem_size = SZ_4M,
- 	},
- 	{
- 		.name = "mei-gscfi",
-@@ -90,26 +148,33 @@ static void gsc_release_dev(struct device *dev)
- 	kfree(adev);
- }
- 
--static void gsc_destroy_one(struct intel_gsc_intf *intf)
-+static void gsc_destroy_one(struct drm_i915_private *i915,
-+				  struct intel_gsc *gsc, unsigned int intf_id)
+ static int of_gpiochip_match_node(struct gpio_chip *chip, void *data)
  {
-+	struct intel_gsc_intf *intf = &gsc->intf[intf_id];
-+
- 	if (intf->adev) {
- 		auxiliary_device_delete(&intf->adev->aux_dev);
- 		auxiliary_device_uninit(&intf->adev->aux_dev);
- 		intf->adev = NULL;
- 	}
-+
- 	if (intf->irq >= 0)
- 		irq_free_desc(intf->irq);
- 	intf->irq = -1;
-+
-+	gsc_ext_om_destroy(intf);
+-	return chip->gpiodev->dev.of_node == data;
++	return device_match_of_node(&chip->gpiodev->dev, data);
  }
  
- static void gsc_init_one(struct drm_i915_private *i915,
--			 struct intel_gsc_intf *intf,
--			 unsigned int intf_id)
-+			       struct intel_gsc *gsc,
-+			       unsigned int intf_id)
- {
- 	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
- 	struct mei_aux_device *adev;
- 	struct auxiliary_device *aux_dev;
- 	const struct gsc_def *def;
-+	struct intel_gsc_intf *intf = &gsc->intf[intf_id];
- 	int ret;
- 
- 	intf->irq = -1;
-@@ -141,7 +206,7 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 	intf->irq = irq_alloc_desc(0);
- 	if (intf->irq < 0) {
- 		drm_err(&i915->drm, "gsc irq error %d\n", intf->irq);
--		return;
-+		goto fail;
- 	}
- 
- 	ret = gsc_irq_init(intf->irq);
-@@ -155,6 +220,19 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 	if (!adev)
- 		goto fail;
- 
-+	if (def->lmem_size) {
-+		dev_dbg(&pdev->dev, "setting up GSC lmem\n");
-+
-+		if (gsc_ext_om_alloc(gsc, intf, def->lmem_size)) {
-+			dev_err(&pdev->dev, "setting up gsc extended operational memory failed\n");
-+			kfree(adev);
-+			goto fail;
-+		}
-+
-+		adev->ext_op_mem.start = i915_gem_object_get_dma_address(intf->gem_obj, 0);
-+		adev->ext_op_mem.end = adev->ext_op_mem.start + def->lmem_size;
-+	}
-+
- 	adev->irq = intf->irq;
- 	adev->bar.parent = &pdev->resource[0];
- 	adev->bar.start = def->bar + pdev->resource[0].start;
-@@ -188,7 +266,7 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 
- 	return;
- fail:
--	gsc_destroy_one(intf);
-+	gsc_destroy_one(i915, gsc, intf->id);
- }
- 
- static void gsc_irq_handler(struct intel_gt *gt, unsigned int intf_id)
-@@ -229,7 +307,7 @@ void intel_gsc_init(struct intel_gsc *gsc, struct drm_i915_private *i915)
- 		return;
- 
- 	for (i = 0; i < INTEL_GSC_NUM_INTERFACES; i++)
--		gsc_init_one(i915, &gsc->intf[i], i);
-+		gsc_init_one(i915, gsc, i);
- }
- 
- void intel_gsc_fini(struct intel_gsc *gsc)
-@@ -241,5 +319,5 @@ void intel_gsc_fini(struct intel_gsc *gsc)
- 		return;
- 
- 	for (i = 0; i < INTEL_GSC_NUM_INTERFACES; i++)
--		gsc_destroy_one(&gsc->intf[i]);
-+		gsc_destroy_one(gt->i915, gsc, i);
- }
-diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.h b/drivers/gpu/drm/i915/gt/intel_gsc.h
-index 68582f912b21..fcac1775e9c3 100644
---- a/drivers/gpu/drm/i915/gt/intel_gsc.h
-+++ b/drivers/gpu/drm/i915/gt/intel_gsc.h
-@@ -20,11 +20,14 @@ struct mei_aux_device;
- 
- /**
-  * struct intel_gsc - graphics security controller
-+ *
-+ * @gem_obj: scratch memory GSC operations
-  * @intf : gsc interface
-  */
- struct intel_gsc {
- 	struct intel_gsc_intf {
- 		struct mei_aux_device *adev;
-+		struct drm_i915_gem_object *gem_obj;
- 		int irq;
- 		unsigned int id;
- 	} intf[INTEL_GSC_NUM_INTERFACES];
+ static struct gpio_chip *of_find_gpiochip_by_node(struct device_node *np)
 -- 
-2.34.1
+2.35.1
 
