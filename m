@@ -2,175 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 692D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223CFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232903AbiF2JbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
+        id S232915AbiF2Jbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232812AbiF2JbM (ORCPT
+        with ESMTP id S232909AbiF2Jba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:31:12 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38E339825;
-        Wed, 29 Jun 2022 02:31:11 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id sb34so31270870ejc.11;
-        Wed, 29 Jun 2022 02:31:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1MQtKyGpLfxVaTXrtUo/eYc0t4KdNpNUjTXmOdTkSlg=;
-        b=q8HNG5xT4k5tqN0KcQ7F/ovA4ug+wyQHASp0zFULB9rYp681wgfyMdhDhTi4Lef2LR
-         IU51FH6k9uPtpIpD/rfRA6deez95BBiSD42tjIjDBrDCrtzsT5jVne9tga8K3pJmm/fK
-         KwTGF8C5KGokhCHmQChBWj0aIomx9BmUxJAGB0gEmtQAIEnHN0UXKpgMn98PhAWxRIfi
-         5JgOOpCm0wlg9xFMRzVTJ08zfkPXpirJktFvRCrsM0hLJmlpCMfY/4WnPZeHBx1rTem0
-         V4WoySDmh27Qb9x0UpLwi0HNP53DhB31pZZo+vR0TmyEhNpfKCsIvsSWT+PeiOGGMbi8
-         A1Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1MQtKyGpLfxVaTXrtUo/eYc0t4KdNpNUjTXmOdTkSlg=;
-        b=5TVq+vq0D8KdiLuyNLMFJqIFa6BPEVaNJVqoz4IC9ZSfNLXgJKzpzEtbdid8HV1Jb3
-         w3jsx2eASjCkrlG2Czy1VghC3Oxqql1mvY6fhMtU0mnz2LCtvTvZoHZrePNPyKCd24ny
-         Mzidpb7a8+Pdvik3J3hvZnc7LzQCZWdAa/h5rb5FguVtTQ57GfewQGjZSlChMHyFM2Ap
-         D+1EZkqbHns/vPbaZZnee3TSxrkAh4d05J8yDTaAVfbxTKIRU8N3OYJztvAJWJdhTHaC
-         SVNthCP6KKNz9spqppc6jMG8lBdjiA7MhwZmGuXSmJ+xxyDlcIZHjdt/i3l8wfvFBWbt
-         2DQQ==
-X-Gm-Message-State: AJIora+R1ylGo13mEgIf0vtzo3u5tbbnmfVw4TbcR84M8KMGwSBO1xjD
-        HHejV/GSugQdhh19UPvqkr4=
-X-Google-Smtp-Source: AGRyM1uSHVD3OrNA4yy2l4BhcVNH+1bC36C6joYvzWd41Pmu+x3ByjAsa0AVI7z0Pg6WTVr+PUa4ww==
-X-Received: by 2002:a17:907:7248:b0:726:30fc:e7fc with SMTP id ds8-20020a170907724800b0072630fce7fcmr2424523ejc.274.1656495070357;
-        Wed, 29 Jun 2022 02:31:10 -0700 (PDT)
-Received: from krava (net-109-116-206-47.cust.vodafonedsl.it. [109.116.206.47])
-        by smtp.gmail.com with ESMTPSA id a12-20020a170906670c00b006fe8c831632sm7437057ejp.73.2022.06.29.02.31.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 02:31:09 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Wed, 29 Jun 2022 11:31:07 +0200
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        German Gomez <german.gomez@arm.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 6/6] perf cpumap: Add range data encoding
-Message-ID: <Yrwb28xHsPCZzSw7@krava>
-References: <20220614143353.1559597-1-irogers@google.com>
- <20220614143353.1559597-7-irogers@google.com>
+        Wed, 29 Jun 2022 05:31:30 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674823A19F;
+        Wed, 29 Jun 2022 02:31:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656495089; x=1688031089;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=6XgOU8eRPAfaRBGVd2axJoVIivSpVH9so8YeDqxKLnU=;
+  b=mxn0bvKFVN+dp4UHWKausY+tUgEffng06T6tYSAboWOx1KcSMNzZGzYr
+   /TnqFoXjfH+LrsCOeKEdltsZpx03Pmtk3S/1lI4pT8T/R7pMJU/pxStL+
+   vOJULRYb5fvkzycCJDiE3eKfMnrLFG/xOZKGfkZ15fSBxXWzq8L61lGk/
+   jZ6AVjhR23bTHhZJALwT5nout0xmznm87U2VXArsUniRGqcufKjiFXVH9
+   OnUTUp5w86PHdSkdJKugCIgA7DcPyCCObR+SJvFGzpaOh6fzkX9iNxBwj
+   TruOupmHeMBgXrASDva/VXBAOlJwCqSTEZBVXMktO23oupESwR5t5P6Sv
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282019383"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="282019383"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:31:28 -0700
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="733117286"
+Received: from dsummer-mobl.ger.corp.intel.com ([10.252.38.121])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:31:27 -0700
+Date:   Wed, 29 Jun 2022 12:31:25 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250: Fix PM usage_count for console handover
+In-Reply-To: <YrwZkTcU9IyY2DhN@atomide.com>
+Message-ID: <5548afe5-20aa-9066-37e7-a3b2b26872e1@linux.intel.com>
+References: <20220628165834.63044-1-ilpo.jarvinen@linux.intel.com> <YrtvOSrrSLGX/coS@smile.fi.intel.com> <YrwZkTcU9IyY2DhN@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614143353.1559597-7-irogers@google.com>
+Content-Type: multipart/mixed; boundary="8323329-2038978736-1656495088=:1529"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 07:33:53AM -0700, Ian Rogers wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-SNIP
+--8323329-2038978736-1656495088=:1529
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 
-> -static size_t cpus_size(const struct perf_cpu_map *map)
-> +static void synthesize_range_cpus(struct synthesize_cpu_map_data *data)
->  {
-> -	return sizeof(struct cpu_map_entries) + perf_cpu_map__nr(map) * sizeof(u16);
-> +	data->data->type = PERF_CPU_MAP__RANGE_CPUS;
-> +	data->data->range_cpu_data.any_cpu = data->has_any_cpu;
-> +	data->data->range_cpu_data.start_cpu = data->min_cpu;
-> +	data->data->range_cpu_data.end_cpu = data->max_cpu;
->  }
->  
-> -static size_t mask_size(const struct perf_cpu_map *map, int *max)
-> -{
-> -	*max = perf_cpu_map__max(map).cpu;
-> -	return sizeof(struct perf_record_mask_cpu_map32) + BITS_TO_U32(*max) * sizeof(__u32);
-> -}
-> -
-> -static void *cpu_map_data__alloc(const struct perf_cpu_map *map, size_t *size,
-> -				 u16 *type, int *max)
-> +static void *cpu_map_data__alloc(struct synthesize_cpu_map_data *syn_data,
-> +				 size_t header_size)
->  {
->  	size_t size_cpus, size_mask;
-> -	bool is_dummy = perf_cpu_map__empty(map);
->  
-> -	/*
-> -	 * Both array and mask data have variable size based
-> -	 * on the number of cpus and their actual values.
-> -	 * The size of the 'struct perf_record_cpu_map_data' is:
-> -	 *
-> -	 *   array = size of 'struct cpu_map_entries' +
-> -	 *           number of cpus * sizeof(u64)
-> -	 *
-> -	 *   mask  = size of 'struct perf_record_record_cpu_map' +
-> -	 *           maximum cpu bit converted to size of longs
-> -	 *
-> -	 * and finally + the size of 'struct perf_record_cpu_map_data'.
-> -	 */
-> -	size_cpus = cpus_size(map);
-> -	size_mask = mask_size(map, max);
-> +	syn_data->nr = perf_cpu_map__nr(syn_data->map);
-> +	syn_data->has_any_cpu = (perf_cpu_map__cpu(syn_data->map, 0).cpu == -1) ? 1 : 0;
+On Wed, 29 Jun 2022, Tony Lindgren wrote:
 
-I'm bit lost in the logic in here.. should it be '.cpu != -1' ?
-has_any_cpu is named as bool but used as index below ;-)
+> * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [220628 21:09]:
+> > On Tue, Jun 28, 2022 at 07:58:34PM +0300, Ilpo Järvinen wrote:
+> > > When console is enabled, univ8250_console_setup() calls
+> > > serial8250_console_setup() before .dev is set to uart_port. Therefore,
+> > > it will not call pm_runtime_get_sync(). Later, when the actual driver
+> > > is going to take over univ8250_console_exit() is called. As .dev is
+> > > already set, serial8250_console_exit() makes pm_runtime_put_sync() call
+> > > with usage count being zero triggering PM usage count warning
+> > > (extra debug for univ8250_console_setup(), univ8250_console_exit(), and
+> > > serial8250_register_ports()):
+> 
+> Hmm so serial8250_console_setup() calls pm_runtime_get_sync() if dev
+> exists..
+> 
+> > > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> > > index 57e86133af4f..2e83e7367441 100644
+> > > --- a/drivers/tty/serial/8250/8250_core.c
+> > > +++ b/drivers/tty/serial/8250/8250_core.c
+> > > @@ -23,6 +23,7 @@
+> > >  #include <linux/sysrq.h>
+> > >  #include <linux/delay.h>
+> > >  #include <linux/platform_device.h>
+> > > +#include <linux/pm_runtime.h>
+> > >  #include <linux/tty.h>
+> > >  #include <linux/ratelimit.h>
+> > >  #include <linux/tty_flip.h>
+> > > @@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+> > >  
+> > >  		up->port.dev = dev;
+> > >  
+> > > +		if (uart_console_enabled(&up->port))
+> > > +			pm_runtime_get_sync(up->port.dev);
+> > > +
+> > >  		serial8250_apply_quirks(up);
+> > >  		uart_add_one_port(drv, &up->port);
+> > >  	}
+> 
+> ..and now we also call it here. Are there now cases where pm_runtime_get_sync()
+> gets called twice potentially or does uart_console_enabled() ensure that is
+> not the case already?
 
-could you please keep/update the comment above and explain
-the conditions when each cpu_map type is taken
+The code in serial8250_register_ports() right before that context block is 
+this:
 
-thanks,
-jirka
+		if (up->port.dev)
+			continue;
 
->  
-> -	if (is_dummy || (size_cpus < size_mask)) {
-> -		*size += size_cpus;
-> -		*type  = PERF_CPU_MAP__CPUS;
-> -	} else {
-> -		*size += size_mask;
-> -		*type  = PERF_CPU_MAP__MASK;
-> +	syn_data->min_cpu = perf_cpu_map__cpu(syn_data->map, syn_data->has_any_cpu).cpu;
-> +	syn_data->max_cpu = perf_cpu_map__max(syn_data->map).cpu;
-> +	if (syn_data->max_cpu - syn_data->min_cpu + 1 == syn_data->nr - syn_data->has_any_cpu) {
-> +		/* A consecutive range of CPUs can be encoded using a range. */
-> +		assert(sizeof(u16) + sizeof(struct perf_record_range_cpu_map) == sizeof(u64));
-> +		syn_data->type = PERF_CPU_MAP__RANGE_CPUS;
-> +		syn_data->size = header_size + sizeof(u64);
-> +		return zalloc(syn_data->size);
->  	}
->  
-> -	*size += sizeof(__u16); /* For perf_record_cpu_map_data.type. */
-> -	*size = PERF_ALIGN(*size, sizeof(u64));
-> -	return zalloc(*size);
-> +	size_cpus = sizeof(u16) + sizeof(struct cpu_map_entries) + syn_data->nr * sizeof(u16);
-> +	/* Due to padding, the 4bytes per entry mask variant is always smaller. */
-> +	size_mask = sizeof(u16) + sizeof(struct perf_record_mask_cpu_map32) +
-> +		BITS_TO_U32(syn_data->max_cpu) * sizeof(__u32);
-> +	if (syn_data->has_any_cpu || size_cpus < size_mask) {
-> +		/* Follow the CPU map encoding. */
-> +		syn_data->type = PERF_CPU_MAP__CPUS;
-> +		syn_data->size = header_size + PERF_ALIGN(size_cpus, sizeof(u64));
-> +		return zalloc(syn_data->size);
-> +	}
-> +	/* Encode using a bitmask. */
-> +	syn_data->type = PERF_CPU_MAP__MASK;
-> +	syn_data->size = header_size + PERF_ALIGN(size_mask, sizeof(u64));
-> +	return zalloc(syn_data->size);
+If serial8250_console_setup() already saw .dev != NULL, we take that 
+continue and pm_runtime_get_sync() will not get called again here.
 
-SNIP
+
+-- 
+ i.
+
+--8323329-2038978736-1656495088=:1529--
