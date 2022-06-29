@@ -2,143 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F505C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CEBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiF2WjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 18:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        id S229645AbiF2WkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 18:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiF2WhJ (ORCPT
+        with ESMTP id S230263AbiF2Wjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 18:37:09 -0400
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE221DA45;
-        Wed, 29 Jun 2022 15:37:07 -0700 (PDT)
-Received: by mail-io1-f48.google.com with SMTP id z191so17439763iof.6;
-        Wed, 29 Jun 2022 15:37:07 -0700 (PDT)
+        Wed, 29 Jun 2022 18:39:43 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5774A1EC75;
+        Wed, 29 Jun 2022 15:38:28 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id fd6so24145121edb.5;
+        Wed, 29 Jun 2022 15:38:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yXdOmJeXHtaZlahxIBSXtvIP/nraTJVi+AA0cztm3iQ=;
+        b=n14f71DGBmg1G3uvuy+2WWM6dDXlbGzVXqPOaaM2KA0u81twHq40wXsHaNmk6JPWQl
+         Cm8g9Y+pK6UuIVCeq6TKK94ZtbmNA4tqnX5ZSvOwG3xpC9uJ0MbN5WbwOpBPYRcokcA2
+         Qn/64T9ZTlWTTdVEu7GNWYT3B9bYDNcF938fVVEz9wXvSj5ptTbvaLc8yMd7xS64acz3
+         JRp5jxmCg4SucJEmIv54aEElhCw9GuNWiTgxRMETUfIWmsBWRBPzx7P4vAQ7C7x7gaR1
+         193FyvtYoWRDa1v2dfxjDV+nRCB48QSv+auxMsyL3xDZ90q8OkJ0RKTGmWRP9GCglwNb
+         GgSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=sLQ/4d3QFAtHYu+uCD8QMISazPHvyTrVmvteNeKvuaQ=;
-        b=oJ65tYdYb/RqGjj1/azJ7QR/N1GMOeY2BwxT6UkOFg4x3SUCu2BO8vbDq2giqMuGp+
-         9fiVEyocdz61rmgkJnUQL0Dp1hV0Y8I9i9VZ9ivonz5+cmkou+4rUXYH2QJUwbY3RpRD
-         yuZ3dW6Qy9PZKCS1uUN919x4KtFBZBXM/NY1tRQIQzc4Z5WwZXKoesVpx7BfRqOfprNK
-         WZwO30Ilqis9RGZkQmLEf7T1LsxWMTeWN076LuT2OTpR9+CnpBaivNArGgUmP1rhUNQX
-         BQ90tGTfBZIJAJeS3YpVdll/VzZ0YImzRzR332Jqjb7wUlTg5pGGL3xeM4j4iGX2eal2
-         rzhQ==
-X-Gm-Message-State: AJIora+u8/ZCiIF2O/NYWRwAqBKXKiR+TYYw38/U0qt21JFQxcCDjA1P
-        PxCxhmOEi2kcdoletJDsAA==
-X-Google-Smtp-Source: AGRyM1sghOTGd6KQzVVMS0L07/3dc/2oKvsyva/HwzKPzivIp90kjrJpUzWax9hkpqTcOZ7IJSoZtA==
-X-Received: by 2002:a05:6638:2385:b0:332:236c:3b98 with SMTP id q5-20020a056638238500b00332236c3b98mr3326022jat.160.1656542226764;
-        Wed, 29 Jun 2022 15:37:06 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id m47-20020a026a6f000000b00339d0617be1sm7750609jaf.35.2022.06.29.15.37.05
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yXdOmJeXHtaZlahxIBSXtvIP/nraTJVi+AA0cztm3iQ=;
+        b=AOTvkkPCpDImgDEAWc3O+pUsofft0jGeiRJdr9k4rw74oemacQhNg9xxkDpqIKTXFm
+         P8ixBrYcAQJwXVD3K94dsoVjjNU0DeISpLYhGLGWxlKKayAmqlTsKs+BQPOvLtqbt7b5
+         MZ1UXwkEnHL6Sjn4ms8NDMk3ly9fJTwXHr5NNdDDS4SPxWL7QOZZ1UkgrKUn2Adb+iMG
+         iMvtnFdN5eWgkFwERW+MRUfEhPsLaP8485nn3eMoLfrqeWqseBzDTUk/wQxH82tdpryQ
+         98Sm1DU6jyep2rI3nwvdJfwHa/9RBvP2qo7XUyt4f4eHaZS8saCshCf9TpaPawopn3M1
+         YWJg==
+X-Gm-Message-State: AJIora9oL37ndt9gn6uMpUlc9OYX3mnBtXq4eZ3ooC6ZJ1ZY8Cwvt41Q
+        VpPeDJYsRvKxwqq+yYZd1iE=
+X-Google-Smtp-Source: AGRyM1tuKp0bukz+WEUON3F84eO2LuBvaY1XhLAn/zV+EyA81FQBLL0gtFV1FaDkRTjcILR+VJIbRw==
+X-Received: by 2002:a05:6402:350a:b0:435:df44:30aa with SMTP id b10-20020a056402350a00b00435df4430aamr7056022edd.403.1656542306768;
+        Wed, 29 Jun 2022 15:38:26 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id y21-20020a170906559500b00726dbb16b8dsm2518982ejp.65.2022.06.29.15.38.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 15:37:06 -0700 (PDT)
-Received: (nullmailer pid 1042494 invoked by uid 1000);
-        Wed, 29 Jun 2022 22:36:59 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     devicetree@vger.kernel.org,
+        Wed, 29 Jun 2022 15:38:26 -0700 (PDT)
+Message-ID: <62bcd462.1c69fb81.c8b67.4c9f@mx.google.com>
+X-Google-Original-Message-ID: <YrzUYKmATOSq2Y9A@Ansuel-xps.>
+Date:   Thu, 30 Jun 2022 00:38:24 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220629121441.6552-4-ansuelsmth@gmail.com>
-References: <20220629121441.6552-1-ansuelsmth@gmail.com> <20220629121441.6552-4-ansuelsmth@gmail.com>
-Subject: Re: [PATCH v4 3/5] dt-bindings: arm: msm: Rework kpss-gcc driver Documentation to yaml
-Date:   Wed, 29 Jun 2022 16:36:59 -0600
-Message-Id: <1656542219.667164.1042488.nullmailer@robh.at.kernel.org>
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>
+Subject: Re: [PATCH v4 2/5] dt-bindings: arm: msm: Convert kpss-acc driver
+ Documentation to yaml
+References: <20220629121441.6552-1-ansuelsmth@gmail.com>
+ <20220629121441.6552-3-ansuelsmth@gmail.com>
+ <1656542219.655280.1042481.nullmailer@robh.at.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1656542219.655280.1042481.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 29 Jun 2022 14:14:39 +0200, Christian Marangi wrote:
-> Rework kpss-gcc driver Documentation to yaml Documentation.
-> The current kpss-gcc Documentation have major problems and can't be
-> converted directly. Introduce various changes to the original
-> Documentation.
+On Wed, Jun 29, 2022 at 04:36:59PM -0600, Rob Herring wrote:
+> On Wed, 29 Jun 2022 14:14:38 +0200, Christian Marangi wrote:
+> > Convert kpss-acc driver Documentation to yaml.
+> > The original Documentation was wrong all along. Fix it while we are
+> > converting it.
+> > The example was wrong as kpss-acc-v2 should only expose the regs but we
+> > don't have any driver that expose additional clocks. The kpss-acc driver
+> > is only specific to v1. For this exact reason, limit all the additional
+> > bindings (clocks, clock-names, clock-output-names and #clock-cells) to
+> > v1 and also flag that these bindings should NOT be used for v2.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> >  .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 ----------
+> >  .../bindings/arm/msm/qcom,kpss-acc.yaml       | 93 +++++++++++++++++++
+> >  2 files changed, 93 insertions(+), 49 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
+> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
+> > 
 > 
-> Add #clock-cells additional binding as this clock outputs a static clk
-> named acpu_l2_aux with supported compatible.
-> Only some compatible require and outputs a clock, for the others, set
-> only the reg as a required binding to correctly export the kpss-gcc
-> registers. As the reg is shared also add the required syscon compatible.
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
 > 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ---------
->  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 90 +++++++++++++++++++
->  2 files changed, 90 insertions(+), 44 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+> 
+> Full log is available here: https://patchwork.ozlabs.org/patch/
+> 
+> 
+> clock-controller@2088000: '#clock-cells' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2088000: 'clock-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2088000: 'clock-output-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2088000: 'clocks' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2098000: '#clock-cells' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2098000: 'clock-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2098000: 'clock-output-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@2098000: 'clocks' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> 	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+> 
+> clock-controller@20a8000: '#clock-cells' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20a8000: 'clock-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20a8000: 'clock-output-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20a8000: 'clocks' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20b8000: '#clock-cells' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20b8000: 'clock-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20b8000: 'clock-output-names' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
+> 
+> clock-controller@20b8000: 'clocks' is a required property
+> 	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+> 	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+(fixed in the last 2 commit of this series)
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-clock-controller@2011000: clock-names: False schema does not allow ['pll8_vote', 'pxo']
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-
-clock-controller@2011000: 'clock-output-names' does not match any of the regexes: 'pinctrl-[0-9]+'
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-
-clock-controller@2011000: compatible:0: 'qcom,kpss-gcc' is not one of ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc-apq8064', 'qcom,kpss-gcc-msm8974', 'qcom,kpss-gcc-msm8960', 'qcom,kpss-gcc-msm8660', 'qcom,kpss-gcc-mdm9615']
-	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
-	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
-	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
-	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
-	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
-
-clock-controller@2011000: compatible:1: 'qcom,kpss-gcc' was expected
-	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
-	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
-	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
-	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
-	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
-
-clock-controller@2011000: compatible: ['qcom,kpss-gcc', 'syscon'] is too short
-	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
-	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
-	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
-	arch/arm/boot/dts/qcom-apq8064-sony-xperia-lagan-yuga.dtb
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
-	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
-
-clock-controller@2082000: compatible:0: 'qcom,kpss-gcc' is not one of ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc-apq8064', 'qcom,kpss-gcc-msm8974', 'qcom,kpss-gcc-msm8960', 'qcom,kpss-gcc-msm8660', 'qcom,kpss-gcc-mdm9615']
-	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
-	arch/arm/boot/dts/qcom-msm8660-surf.dtb
-
-clock-controller@2082000: compatible:1: 'qcom,kpss-gcc' was expected
-	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
-	arch/arm/boot/dts/qcom-msm8660-surf.dtb
-
-clock-controller@2082000: compatible: ['qcom,kpss-gcc', 'syscon'] is too short
-	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
-	arch/arm/boot/dts/qcom-msm8660-surf.dtb
-
+-- 
+	Ansuel
