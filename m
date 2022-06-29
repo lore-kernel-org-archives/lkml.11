@@ -2,138 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FE5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 04:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67070C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 04:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbiF2EKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 00:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S231359AbiF2EL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 00:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbiF2EKu (ORCPT
+        with ESMTP id S230458AbiF2ELz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 00:10:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F11E3631A
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 21:10:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656475847;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bg6heNJXq50eL6WsFIMxRV6MiBd1t5LqWZMr8mmOcec=;
-        b=TCpZHVJ3ivj+IeKzkj7z6dLwyDYdKVZlzNdadB+WYozqswSUtzFHJ/F03HwVh2G70l776L
-        noCUqHaTWHPev4GirHSFxeyMO100ViHkNuYZ+9hla9Vj9iIhavilwu8uqBXYylNPCQGtyQ
-        O1i2RdeHqyDhaa5ykdvvzn033UfCVl8=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-sgAEGjAlMMORqk1g9Nzraw-1; Wed, 29 Jun 2022 00:10:45 -0400
-X-MC-Unique: sgAEGjAlMMORqk1g9Nzraw-1
-Received: by mail-lf1-f70.google.com with SMTP id o7-20020a056512230700b004810a865709so4832209lfu.3
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 21:10:45 -0700 (PDT)
+        Wed, 29 Jun 2022 00:11:55 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3272D35AAE
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 21:11:54 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id h65so19990411oia.11
+        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 21:11:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MdFPqd732DS30jFNC43fudujZD0ohWzK0v59dUm/e+g=;
+        b=uT8x4i4bwxUgQuVFU7XLfQLJyui3EMpoCgaPELdMwaGhPYQge7itji9XlRIS67E+/+
+         633Wxci6LnX9u4naBYcNVP04lZZio2krFvkpzFrkiyyTX3sz36vUvGhM9xhFRyhQCUXy
+         sRiaeN+ucbZBk5QFpkOrvwnG/exUlb7yDuQpdRDVnQxH9mqQF0J2WJ06ntca2G0CTkkA
+         my/XM4HBYrNaO77i0IEuuF81WYYFCD2Zl9HdHCTRPx9I+33t/nmNxIyO5YRF6H0hWnYG
+         k0oM30JywHcpX5m8pQzKEFA3HVZZyDZDYhzSnJuo54XhYi08CGCPSd+SoBKZVLXtDNc+
+         z2qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bg6heNJXq50eL6WsFIMxRV6MiBd1t5LqWZMr8mmOcec=;
-        b=kvf5LqQJzgD+F4I/XhphJv5kcGB8OAQUTLAITNUv60L5z9ZYApv32nEh4m4RgNNdzP
-         xWPo32lyhOCXxZl2S5thIRQloap4tChlzAJSSVjftrVHcEvBFUGpEtes1s8RvXHZeGo8
-         8c6qvgagePwXDKxucDsG5RSH9NPzXCcYZz5Q/C4kW9fEDXoHJLezHGzpLKAuFgfrr2N8
-         xKpsF+YRGyjjqpnca5yqGmmesE7G8ZNsa/gO2mEk4Rdk+W5siq27IaMavHIT/SIYW6D+
-         +8Rvudp5PXgF/daDUXbfLeruI2V+76vEuBG0vyN9krNKnHTsHp55GKKwslP/Y6jDsOce
-         6JGg==
-X-Gm-Message-State: AJIora9/Qdq+wgAQQIOqjUlSSuNcE0KLizTcyMYwIqxwiQhjvpP4usJ3
-        yieJYfr/gQWUlDNu/O5ClbYpt//3wxM0oFiI8tN6t9YkZvRXURght/o6zyU8odXu7nXN+p+Joa+
-        s1Gdd0RutVVHng5k2zwzNWOvkc2+7lJS+7KH7sR5C
-X-Received: by 2002:a05:651c:1610:b0:25a:75fa:f9cc with SMTP id f16-20020a05651c161000b0025a75faf9ccmr615145ljq.243.1656475843851;
-        Tue, 28 Jun 2022 21:10:43 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tsRfqKSJ5WREAe866tYR2Av6sXWiFQwf7Na0t+bQDdXFNQBHVv7PWUm2aQHXPC9OFidZUGp5C/19n3ZUbyfXY=
-X-Received: by 2002:a05:651c:1610:b0:25a:75fa:f9cc with SMTP id
- f16-20020a05651c161000b0025a75faf9ccmr615131ljq.243.1656475843670; Tue, 28
- Jun 2022 21:10:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MdFPqd732DS30jFNC43fudujZD0ohWzK0v59dUm/e+g=;
+        b=vLLzoToHIswzYvY+XxZ4i4vzOI3Pj1eGi3E0aVm3UoWrPtqa7TkjNr9K8oqDicoZOD
+         zSY448YVHR+OOyLPZ7mdR7KutbBYyGzRFcssOUqFC0Wzzrg7Xh3wHzXuPVO3zNl7uQqW
+         FprS+JJQ4DzovMQ5vklMXZ2PYW8QIniCihn3BOHkcx3mgqw3Jb8N36K15KDFvFyc+6br
+         wi0Oohs0fhGozz6hYhMwGMOgTcrxp/LqCx4QdpAeugYt0JXKEcAXO5Ldd3us+wADE/2b
+         2ZkhoulnlSqiOkg02Qi/H4Pf7JpwUfP+2jVUdkIDGNCNoYXN5L5ldQ8WnZDBEDuUNfkY
+         pQ4A==
+X-Gm-Message-State: AJIora9XnrMHj0V/NiEZpnupkwlOSyjoe/WyBW1OaU9cr/wEHNXqvobQ
+        bzROvPjsncsU42VKx7dZcBnlyg==
+X-Google-Smtp-Source: AGRyM1uVZfbtak6txUqQT6+yqXmqHE+bs9G3w8uy1R0KuBW7xTMCozDJGoHJI/sKL0l90zqysGDDRA==
+X-Received: by 2002:a05:6808:171c:b0:334:9342:63ef with SMTP id bc28-20020a056808171c00b00334934263efmr886955oib.63.1656475913546;
+        Tue, 28 Jun 2022 21:11:53 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id p12-20020a9d4e0c000000b00616ec82b29bsm1578692otf.35.2022.06.28.21.11.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 21:11:52 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/5] arm64: dts: qcom: Introduce SC8280XP
+Date:   Tue, 28 Jun 2022 21:14:33 -0700
+Message-Id: <20220629041438.1352536-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-2-eperezma@redhat.com>
-In-Reply-To: <20220623160738.632852-2-eperezma@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 29 Jun 2022 12:10:32 +0800
-Message-ID: <CACGkMEv+yFLCzo-K7eSaVPJqLCa5SxfVCmB=piQ3+6R3=oDz-w@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] vdpa: Add suspend operation
-To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Cindy Lu <lulu@redhat.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 12:07 AM Eugenio P=C3=A9rez <eperezma@redhat.com> w=
-rote:
->
-> This operation is optional: It it's not implemented, backend feature bit
-> will not be exposed.
+This series introduces the Qualcomm 8cx Gen 3 platform, with basic support for
+the CRD reference device and the SA8295P automotive development platform.
 
-A question, do we allow suspending a device without DRIVER_OK?
+The Lenovo Thinkpad X13s dts was part of this series, but Johan reposed a
+polished version at [1], which I intend to merge on top of this series.
 
-Thanks
+[1] https://lore.kernel.org/all/20220622132617.24604-1-johan+linaro@kernel.org/
 
->
-> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> ---
->  include/linux/vdpa.h | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index 7b4a13d3bd91..d282f464d2f1 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -218,6 +218,9 @@ struct vdpa_map_file {
->   * @reset:                     Reset device
->   *                             @vdev: vdpa device
->   *                             Returns integer: success (0) or error (< =
-0)
-> + * @suspend:                   Suspend or resume the device (optional)
-> + *                             @vdev: vdpa device
-> + *                             Returns integer: success (0) or error (< =
-0)
->   * @get_config_size:           Get the size of the configuration space i=
-ncludes
->   *                             fields that are conditional on feature bi=
-ts.
->   *                             @vdev: vdpa device
-> @@ -319,6 +322,7 @@ struct vdpa_config_ops {
->         u8 (*get_status)(struct vdpa_device *vdev);
->         void (*set_status)(struct vdpa_device *vdev, u8 status);
->         int (*reset)(struct vdpa_device *vdev);
-> +       int (*suspend)(struct vdpa_device *vdev);
->         size_t (*get_config_size)(struct vdpa_device *vdev);
->         void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
->                            void *buf, unsigned int len);
-> --
-> 2.31.1
->
+Bjorn Andersson (5):
+  dt-bindings: arm: qcom: Document additional sc8280xp devices
+  dt-bindings: mailbox: qcom-ipcc: Add NSP1 client
+  arm64: dts: qcom: add SC8280XP platform
+  arm64: dts: qcom: sc8280xp: Add reference device
+  arm64: dts: qcom: add SA8540P and ADP
+
+ .../devicetree/bindings/arm/qcom.yaml         |    2 +
+ arch/arm64/boot/dts/qcom/Makefile             |    2 +
+ arch/arm64/boot/dts/qcom/sa8295p-adp.dts      |  406 ++++
+ arch/arm64/boot/dts/qcom/sa8540p.dtsi         |  133 +
+ arch/arm64/boot/dts/qcom/sc8280xp-crd.dts     |  427 ++++
+ arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi  |  109 +
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi        | 2142 +++++++++++++++++
+ include/dt-bindings/mailbox/qcom-ipcc.h       |    1 +
+ 8 files changed, 3222 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8295p-adp.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8540p.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+
+-- 
+2.35.1
 
