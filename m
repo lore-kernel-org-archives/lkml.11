@@ -2,323 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C05C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF8ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 22:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbiF2W4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 18:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
+        id S231624AbiF2W5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 18:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbiF2Wz5 (ORCPT
+        with ESMTP id S231334AbiF2W4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 18:55:57 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D265841325;
-        Wed, 29 Jun 2022 15:55:14 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25TM4ain000903;
-        Wed, 29 Jun 2022 22:54:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references :
- content-transfer-encoding : content-type : mime-version;
- s=corp-2021-07-09; bh=w05FYHNlKNrWph18aS5RLxPDQ90bMPDdwIo7huXc+tk=;
- b=ICDvyNIiYYntUWkd3FULW3fwML0R8tgjmyJYREDpRhHOAPoF2jVipNvGeMBh3FJwOdWn
- csGdXCp/xitEQecxBOpIBO96E9D6l1MyH3JIeQcVMV/vHi7lvW1/Iz6rD9cqXSrkmFIu
- rr7y2GkI5BxfA8E5dH/cneHVY9rc0ycPVR/7yjqz7qAEoKjlz4c/CVrkyLlTzNUpkuXy
- 1xbQZcbnHcqcMeAWd8t8Oda1bqcbCDMk13gAhDLS1QuNPop/flgPksigkjluYhAgVgOI
- /ef+HnVDlLroE31salhXTKu6+GhfCd4BP+8XPyEK8db02VPAfyX0iV0rFHs0X6Cmap6N pw== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gwry0jnk9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Jun 2022 22:54:27 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25TMeS2v031827;
-        Wed, 29 Jun 2022 22:54:19 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2174.outbound.protection.outlook.com [104.47.55.174])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gwrt3h9rp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Jun 2022 22:54:19 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EWpL9iTGpVXwMVZLNEWdxiJkfmlwO3Aqv6lkI6JK/zvXmIkjK/5aReCTg2StcLGemPZrpr74uyxy21wR+thO2sFNkAgvJBPg+vHJPKXXwXFg4EY+mA6Zgj1qGiqTrTmqqa0zBfaxKIh79VzZ25ro2r0NQwpYwjdpjlPiD5zhycpXH1Z1sEvwbz59OJRywq24DR++mNnZ3EmxW2Cc5v1lXA+g1DtdsPhOMvo6KcdCknyDr8RjRjbAu2UgJwPPuJxkci12IDAicVjB10rJv/GYqDiLyhd0lQK7SA5YPMWhgJf9Klp/RiSOpPOVqMWWVdY3v1sDYEHZc7L01BOUz954UA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w05FYHNlKNrWph18aS5RLxPDQ90bMPDdwIo7huXc+tk=;
- b=AXuLY4BxwSvxt1vrT2QLpuu+MLKSd8rsZ0Fet+98lWOGkYUXwMKoEfFPoNSRkcCcHnn6djCaowwjc6ZwhqQ2uVzUFrIx3TjrWGUF+ziy2bmBi0cs8Cwa7BZyL99aOgw6mLlf/U2Q2/Th2roW3X9g35ouS1pinbOsgQkub7oJL8h2Y3as153exWeSeUVpbtM76tC/UbfwtYZOVTS07gf6dt3s7LbPTkNM0ZffEZphaWxE5pNmHGtf9ueCacoAcRIiF8PPIP58XfmTYg1LQ9TK9qDNlJDDebzEtR/OFy09+lpK3ril6ijh807pGb8lcJpLqDzU5OMN3TtSfR1nuO8ENA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Wed, 29 Jun 2022 18:56:02 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CAB40905
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 15:55:23 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id o19so24058377ybg.2
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 15:55:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w05FYHNlKNrWph18aS5RLxPDQ90bMPDdwIo7huXc+tk=;
- b=qL7sX2FnZEd9Vj1t3bqXVO3ghN+G4GbjYqu4r1y7Fvms9HicY7TsS2KD5Ze4SZIlnhZqkTQtuLnfcULxN2dIlssLJSz8TKq6yCszbxZ7FV2TUUfhQB4huomvaR/BCfigcckQKM4pdisyT4EUtI50xwVMrJ2bMHrCZxrtZxMVv5Y=
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
- by DM5PR10MB1834.namprd10.prod.outlook.com (2603:10b6:3:10b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
- 2022 22:54:18 +0000
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::28d2:e82b:afa1:bbc2]) by BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::28d2:e82b:afa1:bbc2%3]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
- 22:54:17 +0000
-From:   Khalid Aziz <khalid.aziz@oracle.com>
-To:     akpm@linux-foundation.org, willy@infradead.org
-Cc:     Khalid Aziz <khalid.aziz@oracle.com>, aneesh.kumar@linux.ibm.com,
-        arnd@arndb.de, 21cnbao@gmail.com, corbet@lwn.net,
-        dave.hansen@linux.intel.com, david@redhat.com,
-        ebiederm@xmission.com, hagen@jauu.net, jack@suse.cz,
-        keescook@chromium.org, kirill@shutemov.name, kucharsk@gmail.com,
-        linkinjeon@kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        longpeng2@huawei.com, luto@kernel.org, markhemm@googlemail.com,
-        pcc@google.com, rppt@kernel.org, sieberf@amazon.com,
-        sjpark@amazon.de, surenb@google.com, tst@schoebel-theuer.de,
-        yzaikin@google.com
-Subject: [PATCH v2 1/9] mm: Add msharefs filesystem
-Date:   Wed, 29 Jun 2022 16:53:52 -0600
-Message-Id: <de5566e71e038d95342d00364c6760c7078cb091.1656531090.git.khalid.aziz@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1656531090.git.khalid.aziz@oracle.com>
-References: <cover.1656531090.git.khalid.aziz@oracle.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SN7P222CA0021.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:124::6) To BN8PR10MB3220.namprd10.prod.outlook.com
- (2603:10b6:408:c8::18)
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y5ZTGoJWK8uoT//Ot+7y7C0qNgpOLHB415dUDB/bM2E=;
+        b=V3LS6TmSOlPaVFdCJ0BuXUrJbm9ByWprG9K7HC9tmT10nT8kfB2ueJ5fw4gRIIgxsi
+         hjQth58XT0ZxT0rxLmC8XnJOOZcs0sOOmkAhVhQjxsBBiXzh28ez6t7aGFLuC4jmRjdN
+         rqWdKH92Zyx+IbHkg8Og4+2IlarHko6eURmHQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y5ZTGoJWK8uoT//Ot+7y7C0qNgpOLHB415dUDB/bM2E=;
+        b=g1cScuYu079NXloboxo7utrWyUa50xSnUGvLBaR2Big33pLQTlsNob9VEimWPnv7ab
+         NOurGmftCnLH9uUWlQoc5WgvlASFnvoRydi6OMms6Zv/Xd2Np4P4uXux908Yaa4xGfI5
+         f1/AXrQ9IU8RcZUvGiEtk0MClzqSKFmL8CwmCXYa2e0BrZzXR5PJbfgjjFXz8AX810dc
+         XsVZN7HUhHUYtT8h+nW2OaKJky9Y1PQFpTPPkJVz1gxaYnQVJZqUAMZDdQ0p4r5WwbFE
+         E0n5z8Jnm/Yc758WCV2N0bhBAVL8YcRGHVfcGv6Rd0V6uKgNTx+qVidztOHMA4QU/Itm
+         hqgg==
+X-Gm-Message-State: AJIora/WbMSAgOoLJZtea1mxntOV7b9w43VAAcyiRIScYmc0RozMplHj
+        NLA1YJGDuiZeLdlkV8mj8Z1+fZI7Q8biQ6ICniy2Zg==
+X-Google-Smtp-Source: AGRyM1vYoOdLWULQbH68SDkQmn0KXQiOTLkNIVGkUaz44XEXYq1Av98xn5aI+4eBZ+6aEtA9QjkYgcCPn8rqByb70u4=
+X-Received: by 2002:a25:bcc:0:b0:66c:b80a:2d5 with SMTP id 195-20020a250bcc000000b0066cb80a02d5mr6437342ybl.196.1656543322872;
+ Wed, 29 Jun 2022 15:55:22 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ae2a4b2-e0f2-4184-8652-08da5a224be5
-X-MS-TrafficTypeDiagnostic: DM5PR10MB1834:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VxfIi/GrdJHnGL5Tdd9eQA6PNu0MHMk+Cl9HcA1H9MY0YJOoeZkQHJM1XJU/+VP+snIKaH7sH5NI8cZk4nfZB1c34ryLY1DRWzjV4Y0d/jQMr8aTqoorHaw5zFuv99RO1r4+iCugEiV1g/4wwCLwyFqQzGvGrLf6c5ybZQEyyOZEE0E0ok/cW5lNA3Z9c2mzd2GoazKOKvRmUUgjJ6G8RC8zvrcOy3OC55SmCY+o0OR5yAQXWFWGDamRJiQjYr6aPsHIot2YjN/Bfu2W/821Bcw3F3fDwuqhPUQHSO83cvbTXQGLHu1eBmrJzNQsnpsr4Rp1MIuZBCfFWEDfxUt1ivlNFzxRcJpKrLfGyGC8rdsPQZ6nZNC2M6OYAS45YGmcsRAbAdaKIMIrU/EEV9jbwSpDT1qiT5B7SwYbwPKpuNkdO+5luTV+8diRvbXiG5dJQg7odAJDk7RulkvWBetwNrxZ2TPDlCqppDb48w7by8QXkWDWZ1/a6VCf8EkinQAC9hrpNtV9+JryZesWfOa26u+Mfu52KIxjIPO1pST0+qGck2PeNP6WwuzivNhFTnF7ALjX4rI8iiKZafKxhTi1uEozsoSDbS04SKg/jyN9iP7uC/WU4nEHE1J9Nq4yjxmo0hHGSYgHFmDcYktNRvJiNytBTXvmiv523aXKSnrHPWZTUrsQAjHbpxDJ4xMuGZpMs8bIR/E1gLG9PSO8qVtNUHQhir2cpFQHSuvItNY+2yM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(136003)(39860400002)(366004)(396003)(6666004)(52116002)(41300700001)(186003)(6506007)(8676002)(66556008)(2616005)(6512007)(66476007)(38100700002)(83380400001)(44832011)(7416002)(8936002)(316002)(36756003)(2906002)(86362001)(66946007)(6486002)(5660300002)(478600001)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XsklGQ1jNXpnPtWr9IIVIHKgLe8vjWVSaB6AnB+hl6BeRrTtwMo3x6z14/70?=
- =?us-ascii?Q?ck/MTLXCsMqLuowarkgTd963Bj/3+DuhcLHxYyWDab+CkIbHydG8PxOQkLTC?=
- =?us-ascii?Q?fBoWmEONmqgy8Byiv6etm1Do1lq0iGK5qdBHQh/bFnulT2ohxZMsh2sqPWzQ?=
- =?us-ascii?Q?lbdQISQ/zdvlcT7gQiy/J0xMC1xBWsPF+QgzJxukRrauKm1TeSepmazdTkuk?=
- =?us-ascii?Q?EgGezLs4qWzF2MfDmoMVFG5DEVV6fkYgcKeOpGCLUYyLahgrZ3QLgYTChdov?=
- =?us-ascii?Q?FhEHetzJ/ztTKQiL796y5oLmuC9LD5Tjd+KtteD1OkCM9/2LLDq1gCt67Hnc?=
- =?us-ascii?Q?mZtI+DHT751NvFV/PPR+6a9xDZEQ6Zgr9fwy2bTIZA4sA/2r+ujRQJYYAuqw?=
- =?us-ascii?Q?ZP78RlmYAd13VrKfK8+B6Ujiloj92QqgwhsJCEqc9xZ+88nbWxgCRhOOL4Ez?=
- =?us-ascii?Q?Rg7gepDgCwSdkBjPqeOcrCTR19B/t5B72eZVSjnuDFr/2UiB/cynYN8b4eg2?=
- =?us-ascii?Q?Lh9eWsnGyI/3Bi2OPjPON/EsLrT81FJZzYQk4zgGj9wByot7nxclxbaB0kDG?=
- =?us-ascii?Q?wraUvJlLCTzSeQ9dIzXxQkOK1kYANSeqbJ042goY0WE4IAwBod8RBsI4S9ua?=
- =?us-ascii?Q?uOSlc0vU4qkgqV9q+ew/sgw2xrOKxgLEdYUdDhWvd+jeHPhbbl+ISqg+VXGK?=
- =?us-ascii?Q?XXKekHwHIXtGybgSKT/j5oTPdyyxPRe2Etw8Tu6TSOwWtxbn4xQ4ArIk8C7N?=
- =?us-ascii?Q?XapAxNwlu988iBqWwduFk66bEaMQVDO3RcWI+9qsMeNLMMNSk19rKAA8i5an?=
- =?us-ascii?Q?mOae/ZJGipfwOcn38gzQrM431qYGkpLrVh0H7/+43+Y2szSxUzJb5UAgph6M?=
- =?us-ascii?Q?nUVm2RYRk0o2/DmAoQPQnYl2WbLvKwBbqcuwgCAk1Lvhye7qEys/djSz01TY?=
- =?us-ascii?Q?NPTS0GfI+M1sdvqhPMpp673/oGehBWY9e8kT9BX+WMLHyjpr8PyrBAZh2JOt?=
- =?us-ascii?Q?rvld4FaTifCijASgCgvNNKOLtPivwSvk6Kpqsz/wuIKbJoEqauiZQYaccfr5?=
- =?us-ascii?Q?g5rQqnilBkG6AqQGq6zDEFoDb7kWkNhnpI9izaGpXvBkz9UQ+14sPSxOVBJn?=
- =?us-ascii?Q?UqR6ZKYGRVGAPGQHnvgstQx047NZdHs6iSSeIfmK0tBaQ9GK/eqKNytLLS4j?=
- =?us-ascii?Q?gqKZelfrm32PclHxdREWuKhcU1HznyAFvTIDM3dK73GZ6J7eDVRLq+80+3Z9?=
- =?us-ascii?Q?tuNmPntDVrD72NCJMNbKUHRk/DAlHI0ajfaNkkdaERLx65hcrYBtkGtuyFYC?=
- =?us-ascii?Q?qGrLdheRj4VMUbmvHLEtkrj2cR4L2wBxgF6LLPm50BmIgVrplvFwgBDCsIdU?=
- =?us-ascii?Q?emaQMNWzuTOlOob5Z16QZrPkqs/OxHjAwp2Vz3IbTSFEhtrL73cTr1M5QnnX?=
- =?us-ascii?Q?NY6wJGxxR9pt2IFsVAnQhfKWApVD/6U9w5v/T5QIHIaFgbmQOvxO6iJZQI5o?=
- =?us-ascii?Q?XOqm/4B/b9YvJ+CUdDpVmmWjYuIr/diwFEXVDUtqwGTvpkFTv3pPXIBJVPMp?=
- =?us-ascii?Q?daG5nSie+wCL035Fbu6v5PW1DSRrT3f3ruL/+avf67iIqhJZbiU5vWCW33oC?=
- =?us-ascii?Q?xBqzeIPpWGO+oerH5H5WGx/o0pfveBmNSMHATtKKMH6j?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ae2a4b2-e0f2-4184-8652-08da5a224be5
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3220.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 22:54:17.7567
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JWM58AzVeAoYEqqjkWEuLcfIu8AgbOtsDxTK4QvHDgINi/Fak1FnIudqrMPQrjgqrXuqFDJM/2PlqvJ2nr8lvQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1834
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-06-29_22:2022-06-28,2022-06-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 phishscore=0
- malwarescore=0 mlxlogscore=999 spamscore=0 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206290078
-X-Proofpoint-GUID: U_44Uyr39N6VLmhZKqP5bc78xPmdhb6r
-X-Proofpoint-ORIG-GUID: U_44Uyr39N6VLmhZKqP5bc78xPmdhb6r
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+ <20220622173605.1168416-2-pmalani@chromium.org> <20220627210407.GA2905757-robh@kernel.org>
+ <CACeCKackdbDZrk5fk7qyMwSdTdzyTS=m1vHPFnQOj672W=2nOA@mail.gmail.com>
+ <20220628182336.GA711518-robh@kernel.org> <CAEXTbpex9nxP-nyPWvSBchAW4j3C4MZfVHTb=5X0iSLY1bSAKg@mail.gmail.com>
+ <CAEXTbpf_jxK-R5aA81FCbpAH4bChA2B9+8qExZUbA7Y+Ort=Gg@mail.gmail.com>
+ <CAL_Jsq+C04RXLtm6Ac85Ru3EGwJbqV_UD3_dDWVrKvFSvdm7Ng@mail.gmail.com> <CAE-0n53ers881LOTCEmKDDxJQt+5vvXJSURs=o6TcOiR5m_EAw@mail.gmail.com>
+In-Reply-To: <CAE-0n53ers881LOTCEmKDDxJQt+5vvXJSURs=o6TcOiR5m_EAw@mail.gmail.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Wed, 29 Jun 2022 15:55:10 -0700
+Message-ID: <CACeCKacJnnk4_dXEX7XiboOWrYpfAcE=ukP63agVAYUxWR9Vbg@mail.gmail.com>
+Subject: Re: [PATCH v5 1/9] dt-bindings: usb: Add Type-C switch binding
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Pin-yen Lin <treapking@chromium.org>,
+        Rob Herring <robh@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a ram-based filesystem that contains page table sharing
-information and files that enables processes to share page tables.
-This patch adds the basic filesystem that can be mounted.
+On Wed, Jun 29, 2022 at 2:58 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> > What device controls the switching in this case? Again, block diagrams
+> > please if you want advice on what the binding should look like.
+>
+> My understanding is there are 4 DP lanes on it6505 and two lanes are
+> connected to one usb-c-connector and the other two lanes are connected
+> to a different usb-c-connector. The IT6505 driver will send DP out on
+> the associated two DP lanes depending on which usb-c-connector has DP
+> pins assigned by the typec manager.
+>
+>                                                      +-------+
+>                                                      |       |
+>           +--------+                            /----+ usb-c |
+>           | IT6505 |                           / /---+       |
+>           |        +------------ lane 0 ------/ /    |       |
+>           |        +------------ lane 1 -------/     +-------+
+>  DPI -----+        |
+>           |        |                                 +-------+
+>           |        |                                 |       |
+>           |        +------------ lane 2 -------------+ usb-c |
+>           |        +------------ lane 3 -------------+       |
+>           |        |                                 |       |
+>           +--------+                                 +-------+
+>
+> The bridge is a mux that steers DP to one or the other usb-c-connector
+> based on what the typec manager decides.
+>
+> I would expect this to be described with the existing port binding in
+> the it6505 node. The binding would need to be extended to describe the
+> output side.
+>
+>         bridge@5c {
+>             compatible = "ite,it6505";
 
-Signed-off-by: Khalid Aziz <khalid.aziz@oracle.com>
----
- Documentation/filesystems/msharefs.rst |  19 +++++
- include/uapi/linux/magic.h             |   1 +
- mm/Makefile                            |   2 +-
- mm/mshare.c                            | 103 +++++++++++++++++++++++++
- 4 files changed, 124 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/filesystems/msharefs.rst
- create mode 100644 mm/mshare.c
+We'll need a top level "mode-switch" property here.
+>             ...
+>
+>             ports {
+>                 #address-cells = <1>;
+>                 #size-cells = <0>;
+>
+>                 port@0 {
+>                     reg = <0>;
+>                     it6505_in: endpoint {
+>                         remote-endpoint = <&dpi_out>;
+>                     };
+>                 };
+>
+>                 port@1 {
+>                     #address-cells = <1>;
+>                     #size-cells = <0>;
+>                     reg = <1>;
+>
+>                     it6505_out_lanes_01: endpoint@0 {
+>                         reg = <0>
+>                         data-lanes = <0 1>;
+>                         remote-endpoint = <&typec0>;
+>                     };
+>
+>                     it6505_out_lanes_23: endpoint@1 {
+>                         reg = <1>
+>                         data-lanes = <2 3>;
+>                         remote-endpoint = <&typec1>;
+>                     };
+>                 };
+>             };
+>         };
+>
+>         usb-c-connector {
+>             compatible = "usb-c-connector";
+>             ....
+>             ports {
+>                 #address-cells = <1>;
+>                 #size-cells = <0>;
+>
+>                 port@1 {
+>                     reg = <1>;
+>                     typec0: endpoint {
+>                         remote-endpoint = <&it6505_out_lanes_01>;
+>                     };
+>                 };
+>             };
+>         };
 
-diff --git a/Documentation/filesystems/msharefs.rst b/Documentation/filesystems/msharefs.rst
-new file mode 100644
-index 000000000000..fd161f67045d
---- /dev/null
-+++ b/Documentation/filesystems/msharefs.rst
-@@ -0,0 +1,19 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=====================================================
-+msharefs - a filesystem to support shared page tables
-+=====================================================
-+
-+msharefs is a ram-based filesystem that allows multiple processes to
-+share page table entries for shared pages.
-+
-+msharefs is typically mounted like this::
-+
-+	mount -t msharefs none /sys/fs/mshare
-+
-+When a process calls mshare syscall with a name for the shared address
-+range, a file with the same name is created under msharefs with that
-+name. This file can be opened by another process, if permissions
-+allow, to query the addresses shared under this range. These files are
-+removed by mshare_unlink syscall and can not be deleted directly.
-+Hence these files are created as immutable files.
-diff --git a/include/uapi/linux/magic.h b/include/uapi/linux/magic.h
-index f724129c0425..2a57a6ec6f3e 100644
---- a/include/uapi/linux/magic.h
-+++ b/include/uapi/linux/magic.h
-@@ -105,5 +105,6 @@
- #define Z3FOLD_MAGIC		0x33
- #define PPC_CMM_MAGIC		0xc7571590
- #define SECRETMEM_MAGIC		0x5345434d	/* "SECM" */
-+#define MSHARE_MAGIC		0x4d534852	/* "MSHR" */
- 
- #endif /* __LINUX_MAGIC_H__ */
-diff --git a/mm/Makefile b/mm/Makefile
-index 6f9ffa968a1a..51a2ab9080d9 100644
---- a/mm/Makefile
-+++ b/mm/Makefile
-@@ -37,7 +37,7 @@ CFLAGS_init-mm.o += $(call cc-disable-warning, override-init)
- CFLAGS_init-mm.o += $(call cc-disable-warning, initializer-overrides)
- 
- mmu-y			:= nommu.o
--mmu-$(CONFIG_MMU)	:= highmem.o memory.o mincore.o \
-+mmu-$(CONFIG_MMU)	:= highmem.o memory.o mincore.o mshare.o \
- 			   mlock.o mmap.o mmu_gather.o mprotect.o mremap.o \
- 			   msync.o page_vma_mapped.o pagewalk.o \
- 			   pgtable-generic.o rmap.o vmalloc.o
-diff --git a/mm/mshare.c b/mm/mshare.c
-new file mode 100644
-index 000000000000..c8fab3869bab
---- /dev/null
-+++ b/mm/mshare.c
-@@ -0,0 +1,103 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Enable copperating processes to share page table between
-+ * them to reduce the extra memory consumed by multiple copies
-+ * of page tables.
-+ *
-+ * This code adds an in-memory filesystem - msharefs.
-+ * msharefs is used to manage page table sharing
-+ *
-+ *
-+ * Copyright (C) 2022 Oracle Corp. All rights reserved.
-+ * Author:	Khalid Aziz <khalid.aziz@oracle.com>
-+ *
-+ */
-+
-+#include <linux/fs.h>
-+#include <linux/mount.h>
-+#include <linux/syscalls.h>
-+#include <linux/uaccess.h>
-+#include <linux/pseudo_fs.h>
-+#include <linux/fileattr.h>
-+#include <uapi/linux/magic.h>
-+#include <uapi/linux/limits.h>
-+
-+static struct super_block *msharefs_sb;
-+
-+static const struct file_operations msharefs_file_operations = {
-+	.open	= simple_open,
-+	.llseek	= no_llseek,
-+};
-+
-+static int
-+msharefs_d_hash(const struct dentry *dentry, struct qstr *qstr)
-+{
-+	unsigned long hash = init_name_hash(dentry);
-+	const unsigned char *s = qstr->name;
-+	unsigned int len = qstr->len;
-+
-+	while (len--)
-+		hash = partial_name_hash(*s++, hash);
-+	qstr->hash = end_name_hash(hash);
-+	return 0;
-+}
-+
-+static const struct dentry_operations msharefs_d_ops = {
-+	.d_hash = msharefs_d_hash,
-+};
-+
-+static int
-+msharefs_fill_super(struct super_block *sb, struct fs_context *fc)
-+{
-+	static const struct tree_descr empty_descr = {""};
-+	int err;
-+
-+	sb->s_d_op = &msharefs_d_ops;
-+	err = simple_fill_super(sb, MSHARE_MAGIC, &empty_descr);
-+	if (err)
-+		return err;
-+
-+	msharefs_sb = sb;
-+	return 0;
-+}
-+
-+static int
-+msharefs_get_tree(struct fs_context *fc)
-+{
-+	return get_tree_single(fc, msharefs_fill_super);
-+}
-+
-+static const struct fs_context_operations msharefs_context_ops = {
-+	.get_tree	= msharefs_get_tree,
-+};
-+
-+static int
-+mshare_init_fs_context(struct fs_context *fc)
-+{
-+	fc->ops = &msharefs_context_ops;
-+	return 0;
-+}
-+
-+static struct file_system_type mshare_fs = {
-+	.name			= "msharefs",
-+	.init_fs_context	= mshare_init_fs_context,
-+	.kill_sb		= kill_litter_super,
-+};
-+
-+static int
-+mshare_init(void)
-+{
-+	int ret = 0;
-+
-+	ret = sysfs_create_mount_point(fs_kobj, "mshare");
-+	if (ret)
-+		return ret;
-+
-+	ret = register_filesystem(&mshare_fs);
-+	if (ret)
-+		sysfs_remove_mount_point(fs_kobj, "mshare");
-+
-+	return ret;
-+}
-+
-+fs_initcall(mshare_init);
--- 
-2.32.0
+We can adopt this binding, but from what I gathered in this thread, that
+shouldn't be done, because IT6505 isn't meant to be aware of Type-C
+connections at all.
 
+>
+> I don't see the benefit to making a genericish binding for typec
+> switches, even if the hardware has typec awareness like anx7625. It
+> looks like the graph binding can already handle what we need. By putting
+> it in the top-level ports node we have one way to describe the
+> input/output of the device instead of describing it in the top-level in
+> the display connector case and the child typec switch node in the usb c
+> connector case.
+
+Ack, I'll drop the generic binding for future revisions.
+
+>
+> I think the difficulty comes from the combinatorial explosion of
+> possible configurations. As evidenced here, hardware engineers can take
+> a DP bridge and use it as a DP mux as long as the bridge has lane
+> control. Or they can take a device like anx7625 and ignore the USB
+> aspect and use the internal crosspoint switch as a DP mux. The anx7625
+> part could be a MIPI-to-DP display bridge plus mux that is connected to
+> two dp-connectors, in which case typec isn't even involved, but we could
+> mux between two dp connectors.
+
+Each containing a single DP lane, right?
+I think that will not be a valid configuration, since there is only 1 HPD
+pin (so it's assuming both DP lanes go to the same DP sink).
+
+But yes, your larger point is valid: h/w engineers can repurpose these
+bridges in ways the datasheet doesn't originally anticipate.
+
+>
+> Also, the typec framework would like to simply walk the graph from the
+> usb-c-connector looking for nodes that have 'mode-switch' or
+> 'orientation-switch' properties and treat those devices as the typec
+> switches for the connector. This means that we have to add these typec
+> properties like 'mode-switch' to something like the IT6505 bridge
+> binding, which is a little awkward. I wonder if those properties aren't
+> really required. Would it be sufficient if the framework could walk the
+> graph and look for registered typec switches in the kernel that have a
+> matching of_node?
+
+My interpretation of the current mode-switch search code [1] is that
+a top level property of "mode-switch" is required.
+
+[1] https://elixir.bootlin.com/linux/v5.19-rc4/source/drivers/usb/typec/mux.c#L347
