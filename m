@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33103C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B45C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233889AbiF2OGN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
+        id S233919AbiF2OGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233822AbiF2OGG (ORCPT
+        with ESMTP id S233865AbiF2OGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:06:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AED32A25B;
-        Wed, 29 Jun 2022 07:05:58 -0700 (PDT)
+        Wed, 29 Jun 2022 10:06:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DC32A40E
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 07:06:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC20061EAF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A9261904
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 14:06:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5FBFC341CB;
         Wed, 29 Jun 2022 14:05:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9053C341C8;
-        Wed, 29 Jun 2022 14:05:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656511557;
-        bh=1LQiXmBKTuoLLVX2WnRC35eSF4hNdTcSZ5mG47kAXVI=;
+        s=k20201202; t=1656511559;
+        bh=ZdjWjB54cbHRycxjLjITQrOn43M908WL8or1/9HBUP4=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=QgK/lOflsccYXb2DJBBYJq/7Mf7JKwqYiQmoWe1I31oqon7gn4CZzZRX7yz2bdzwb
-         ezXucMoklN8+FlYHS7yTmoStl9c0pwLT0tSWEKF+/F2RuMRhmX64VcTIKw7/pr3SA3
-         1ADgB/CajiR/y6sC8dAXfQ69+ShA57b62pv5wCaYcb1E+71giUjBRcC00lRLBwoLli
-         O2QkbR71LCYwIdEC2Ih+b+O9NDpBl6AdpgDReTt9GQ3ZrD1BPx8SZdul65f4cuGNGQ
-         HOXL6/IW/YID0a1TFb596BKRZQIfilw3s+6GnaW6EptvB8yInPJNX2YPilmilC9RXn
-         yig/IWtz+Y7Kg==
+        b=fU2BuCn79mheeDdDSP3MX6LYQ+5ckPhDuYaqjp8b1HSv4cqiAXAJNAeTOa9TyAs6K
+         Q3iRARr/muciSSJsFU7N7vAOGSd/FgJB5CqSYLyV26WGaGpUJxPbz1L06vtQyqiCwv
+         TVQ3NNbgZM84meUWk09BU+U+4oH39ksuPITo7PGRDqG//Dk6hw/3dUXx7S1RhBhjLk
+         Mos9iiiXXADkMbS21xZIL3BCJyIRqkOeafCV6NfGDuC3kw4qzAyc7+hRq1ztBH9hEL
+         nhlZeS3sWm1R+6U8JgJXlLy3x6ZqG9/ZsBHhKBsbbAJGf3dqH9pZ/czKHtNKl66bSy
+         +ffyJlifgrTrw==
 From:   Mark Brown <broonie@kernel.org>
-To:     alsa-devel@alsa-project.org, lgirdwood@gmail.com,
-        krzysztof.kozlowski+dt@linaro.org, shengjiu.wang@nxp.com,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com
-In-Reply-To: <1656386005-29376-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1656386005-29376-1-git-send-email-shengjiu.wang@nxp.com>
-Subject: Re: [PATCH v3] ASoC: dt-bindings: fsl,micfil: Convert format to json-schema
-Message-Id: <165651155548.1437597.5728269652830788201.b4-ty@kernel.org>
-Date:   Wed, 29 Jun 2022 15:05:55 +0100
+To:     heiko@sntech.de, judyhsiao@chromium.org
+Cc:     alsa-devel@alsa-project.org, wenst@chromium.org,
+        Rob Herring <robh+dt@kernel.org>, briannorris@chromium.org,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Liam Girdwood <lgirdwood@gmail.com>
+In-Reply-To: <20220629080345.2427872-1-judyhsiao@chromium.org>
+References: <20220629080345.2427872-1-judyhsiao@chromium.org>
+Subject: Re: [PATCH v1] ASoC: rockchip: i2s: Fix the debug level on missing pinctrl
+Message-Id: <165651155754.1437597.8598340692080624115.b4-ty@kernel.org>
+Date:   Wed, 29 Jun 2022 15:05:57 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,8 +52,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 11:13:25 +0800, Shengjiu Wang wrote:
-> Convert the NXP MICFIL binding to DT schema format using json-schema.
+On Wed, 29 Jun 2022 08:03:45 +0000, Judy Hsiao wrote:
+> Use dev_dbg on missing i2s->pinctrl as the pinctrl property is optional.
 > 
 > 
 
@@ -61,8 +63,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: dt-bindings: fsl,micfil: Convert format to json-schema
-      commit: 02d91fe47100a29a79fcb8798e45c22591ca852d
+[1/1] ASoC: rockchip: i2s: Fix the debug level on missing pinctrl
+      commit: 48620f17e071060092197a09663a1c1fe6207829
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
