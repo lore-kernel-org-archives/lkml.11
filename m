@@ -2,107 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980F0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52183CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231722AbiF2RTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 13:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S231740AbiF2RVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 13:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbiF2RTr (ORCPT
+        with ESMTP id S230254AbiF2RVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 13:19:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4CA22289;
-        Wed, 29 Jun 2022 10:19:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4920FB82606;
-        Wed, 29 Jun 2022 17:19:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C585C34114;
-        Wed, 29 Jun 2022 17:19:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BrbSg1Vt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656523179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fsBwgNg1ukyy5sKsyWfNHxn8YCblfO3rC3IUjQX7AoE=;
-        b=BrbSg1VtIZauthhC7A4FpBWtPGMjymeSv7g8hWDginRCvLJ+RMLVDlJEcvsFYikaO4hrRJ
-        Rh29fbfAO7/WdP5XiA1k+76aR94FCcwH+yW1gLEWAgQM0A4Y7u36Bp8u/TAFICDGVuTRRI
-        Msyq4UJYlg3WGkRPkQZ0XTdLCNcFhLo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 68b5588d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 29 Jun 2022 17:19:39 +0000 (UTC)
-Date:   Wed, 29 Jun 2022 19:19:30 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <YryJotKWelr5KFPO@zx2c4.com>
-References: <20220629150102.1582425-2-hch@lst.de>
- <Yrx5Lt7jrk5BiHXx@zx2c4.com>
- <20220629161020.GA24891@lst.de>
- <Yrx6EVHtroXeEZGp@zx2c4.com>
- <20220629161527.GA24978@lst.de>
- <Yrx8/Fyx15CTi2zq@zx2c4.com>
- <20220629163007.GA25279@lst.de>
- <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
- <20220629164543.GA25672@lst.de>
- <20220629125643.393df70d@gandalf.local.home>
+        Wed, 29 Jun 2022 13:21:18 -0400
+Received: from smtpout1.mo529.mail-out.ovh.net (smtpout1.mo529.mail-out.ovh.net [178.32.125.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BF62E9E0
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 10:21:13 -0700 (PDT)
+Received: from mxplan5.mail.ovh.net (unknown [10.109.138.217])
+        by mo529.mail-out.ovh.net (Postfix) with ESMTPS id 4B278112AB939;
+        Wed, 29 Jun 2022 19:21:10 +0200 (CEST)
+Received: from kaod.org (37.59.142.109) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Wed, 29 Jun
+ 2022 19:21:09 +0200
+Authentication-Results: garm.ovh; auth=pass (GARM-109S003511e947e-9180-4c81-b57c-8a0fd849f407,
+                    74A1F81DE4F8936248B5873BB0AED4007818FEC6) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <59b82730-f09f-f7e5-0e2f-4ad1765f0f6e@kaod.org>
+Date:   Wed, 29 Jun 2022 19:21:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220629125643.393df70d@gandalf.local.home>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 2/2] spi: aspeed: Fix division by zero
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+CC:     <linux-spi@vger.kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, <openbmc@lists.ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Ian Woloschin <ian.woloschin@akamai.com>,
+        Ian Woloschin <iwolosch@akamai.com>
+References: <20220622161617.3719096-1-clg@kaod.org>
+ <20220622161617.3719096-3-clg@kaod.org> <YryHVsrqNlhdwKzq@sirena.org.uk>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <YryHVsrqNlhdwKzq@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.109]
+X-ClientProxiedBy: DAG9EX1.mxp5.local (172.16.2.81) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 36ecf0dd-83f2-4ad5-b70e-839565468a1b
+X-Ovh-Tracer-Id: 9945636828781054968
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudegledgudduudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepkeetjedtleekjedvveffudfhteetleeifeegfeffuefghfefkeehffeufeeludejnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutdelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtohepihifohhlohhstghhsegrkhgrmhgrihdrtghomhdpoffvtefjohhsthepmhhohedvle
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 12:56:43PM -0400, Steven Rostedt wrote:
-> > And it will also "break" anyone else doing frequent suspends from
-> > userspace, as that behavior is still in no way related to
-> > CONFIG_ANDROID.
+On 6/29/22 19:09, Mark Brown wrote:
+> On Wed, Jun 22, 2022 at 06:16:17PM +0200, Cédric Le Goater wrote:
 > 
-> Should there then be a CONFIG_FREQUENT_SUSPENDS ?
+>> Fixes: 54613fc6659b ("spi: aspeed: Add support for direct mapping")
+> 
+> This commit isn't in mainline.
 
-That'd be fine by me. It could be selected by PM_AUTOSLEEP as well.
+drat. It's the OpenBMC kernel. I will resend. Sorry about that.
 
-[ Bikeshed: maybe CONFIG_PM_CONTINUOUS_SUSPENDS would make more sense,
-  to really drive home how often these suspends are to make the option a
-  reasonable thing to turn on. ]
-
-I think Christoph had in mind a runtime switch instead (like a sysctl or
-something), but it doesn't make a difference to me whether it's runtime
-or compile time. If CONFIG_ANDROID is to go away, the code using it now
-needs *some* replacement that's taken up by the Android people. So
-whatever they agree to works for me, for what my concerns are.
-
-Maybe v2 of this patchset can propose such an option and the right
-Android people can be CC'd on it. (Who are they, by the way? There's no
-android-kernel@vger mailing list, right?)
-
-Jason
+C.
