@@ -2,161 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D140C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 267BAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 17:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiF2R5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 13:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35044 "EHLO
+        id S229636AbiF2R5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 13:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231856AbiF2R5B (ORCPT
+        with ESMTP id S231938AbiF2R5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 13:57:01 -0400
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0241330561;
-        Wed, 29 Jun 2022 10:57:00 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-3137316bb69so155521347b3.10;
-        Wed, 29 Jun 2022 10:56:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LH2Yp0O/98KyfDQYebyfrOTqhKJqAyqJfrsNaCmqdGc=;
-        b=7b3ZlqG6LY2d0waZKsXp66Bwq1U9A07QRgrMdEfxgb0dCcTNBIc+IDnPQ1l/A/3PEx
-         LvLTvIcjJPFiLkoh04P+5dtwfX8ZwvN72AxRfk9MH29ChWL5x8WQStvh/FzpwlzMoOQ6
-         QrMW7UWDWHCbFdLhyef9ENddkrogCMVZOc6GJ2OLzXykSi1sjsBHlCCM47RBsIwIJ+7a
-         TAesgFzfdK8N5Q93k9C/cMMPbIifEtcI9EpILRdNmBCvWfwsJpo+NjPvGZJ1/LGIfNP4
-         hIMECUK6EnQKdprxal5NI+lFAHpXVW47AYGe/2sUlRzpGQC1JuuOa0+YGNiPOB7EUmQR
-         0aqg==
-X-Gm-Message-State: AJIora93djCT0KWejQ54DVtX+9ry7fX2I8G+i+p4rsnX5EnSBlnfw5qU
-        BDJgs9DfZE+G3ApiCvEnsz9yXvxz8ln4aTacp0c=
-X-Google-Smtp-Source: AGRyM1ti5TBf5g1kWbCdir04ld9vdzUoLq18CT9Z9Qyw37ZvnKqPyfJzSGrwXyCc5ziK0uZMrO3OjD6BGFhSV499nSI=
-X-Received: by 2002:a0d:d811:0:b0:31b:ddc4:c0ac with SMTP id
- a17-20020a0dd811000000b0031bddc4c0acmr5350460ywe.149.1656525419226; Wed, 29
- Jun 2022 10:56:59 -0700 (PDT)
+        Wed, 29 Jun 2022 13:57:12 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE4A3981D
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 10:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656525428; x=1688061428;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8Z8d+vB+c+oayRdApzeWjdqIaMdxqCy+aayzn7wVe34=;
+  b=dxnB2NYDNhbmwwP6E5UNGvPrCGRUYJkU/U0NysusoWf6bTuQOb4f5hdD
+   cuOsagveOiX/mpDjTwX69DDbNZQt/SUPSgzeiBqPLMBGjn3wuQPQlB90V
+   9T6yNoENsJRSMt0CGUrRX+rZOZcHX46I3dP7sx9ZQnle6E0jsckTvnOk5
+   O2tyVkABAoSF1uv2fYkqz1SIUL9GvNipxcv/k+C7KTW0QeqdKwyIyaNWf
+   azKX0suePAz+AaEzA10sqp2kq0J5vBtI4XHVbXiKfE9yCL17XfsaMO4RK
+   TcyNmSwGpJA7syey0XN6U1saJ1dJOhUC7u/YJM0iuGdCYm9LzFGiHTgWu
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="265139674"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="265139674"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 10:57:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="917698336"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 29 Jun 2022 10:57:06 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o6bw1-000BOM-QL;
+        Wed, 29 Jun 2022 17:57:05 +0000
+Date:   Thu, 30 Jun 2022 01:56:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: drivers/gpu/drm/kmb/kmb_dsi.c:812:2: warning: unused function
+ 'set_test_mode_src_osc_freq_target_low_bits'
+Message-ID: <202206300147.qdDDrtfw-lkp@intel.com>
 MIME-Version: 1.0
-References: <YqpX9npa/wR7mafR@agluck-desk3.sc.intel.com> <20220622170906.33759-1-tony.luck@intel.com>
-In-Reply-To: <20220622170906.33759-1-tony.luck@intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 29 Jun 2022 19:56:48 +0200
-Message-ID: <CAJZ5v0jBN7-fkP_WB4CDg5UALn+GeY5i8gxM3FwrpKdM-m93rg@mail.gmail.com>
-Subject: Re: [PATCH] ACPI/APEI: Better fix to avoid spamming the console with
- old error logs
-To:     Tony Luck <tony.luck@intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Darren Hart <darren@os.amperecomputing.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Doug Rady <dcrady@os.amperecomputing.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 7:09 PM Tony Luck <tony.luck@intel.com> wrote:
->
-> The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
-> table data") does not work as intended on systems where the BIOS has a
-> fixed size block of memory for the BERT table, relying on s/w to quit
-> when it finds a record with estatus->block_status == 0. On these systems
-> all errors are suppressed because the check:
->
->         if (region_len < ACPI_BERT_PRINT_MAX_LEN)
->
-> always fails.
->
-> New scheme skips individual CPER records that are too large, and also
-> limits the total number of records that will be printed to 5.
->
-> Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Tony Luck <tony.luck@intel.com>
-> ---
->
-> Now in PATCH format with a real commit comment. This version fixes
-> the issues seen by Intel's validation team.
->
->  drivers/acpi/apei/bert.c | 31 +++++++++++++++++++++++--------
->  1 file changed, 23 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-> index 598fd19b65fa..45973aa6e06d 100644
-> --- a/drivers/acpi/apei/bert.c
-> +++ b/drivers/acpi/apei/bert.c
-> @@ -29,16 +29,26 @@
->
->  #undef pr_fmt
->  #define pr_fmt(fmt) "BERT: " fmt
-> +
-> +#define ACPI_BERT_PRINT_MAX_RECORDS 5
->  #define ACPI_BERT_PRINT_MAX_LEN 1024
->
->  static int bert_disable;
->
-> +/*
-> + * Print "all" the error records in the BERT table, but avoid huge spam to
-> + * the console if the BIOS included oversize records, or too many records.
-> + * Skipping some records here does not lose anything because the full
-> + * data is available to user tools in:
-> + *     /sys/firmware/acpi/tables/data/BERT
-> + */
->  static void __init bert_print_all(struct acpi_bert_region *region,
->                                   unsigned int region_len)
->  {
->         struct acpi_hest_generic_status *estatus =
->                 (struct acpi_hest_generic_status *)region;
->         int remain = region_len;
-> +       int printed = 0, skipped = 0;
->         u32 estatus_len;
->
->         while (remain >= sizeof(struct acpi_bert_region)) {
-> @@ -46,24 +56,26 @@ static void __init bert_print_all(struct acpi_bert_region *region,
->                 if (remain < estatus_len) {
->                         pr_err(FW_BUG "Truncated status block (length: %u).\n",
->                                estatus_len);
-> -                       return;
-> +                       break;
->                 }
->
->                 /* No more error records. */
->                 if (!estatus->block_status)
-> -                       return;
-> +                       break;
->
->                 if (cper_estatus_check(estatus)) {
->                         pr_err(FW_BUG "Invalid error record.\n");
-> -                       return;
-> +                       break;
->                 }
->
-> -               pr_info_once("Error records from previous boot:\n");
-> -               if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-> +               if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
-> +                   printed < ACPI_BERT_PRINT_MAX_RECORDS) {
-> +                       pr_info_once("Error records from previous boot:\n");
->                         cper_estatus_print(KERN_INFO HW_ERR, estatus);
-> -               else
-> -                       pr_info_once("Max print length exceeded, table data is available at:\n"
-> -                                    "/sys/firmware/acpi/tables/data/BERT");
-> +                       printed++;
-> +               } else {
-> +                       skipped++;
-> +               }
->
->                 /*
->                  * Because the boot error source is "one-time polled" type,
-> @@ -75,6 +87,9 @@ static void __init bert_print_all(struct acpi_bert_region *region,
->                 estatus = (void *)estatus + estatus_len;
->                 remain -= estatus_len;
->         }
-> +
-> +       if (skipped)
-> +               pr_info(HW_ERR "Skipped %d error records\n", skipped);
->  }
->
->  static int __init setup_bert_disable(char *str)
-> --
+Hi Geert,
 
-Applied as 5.20 material, thanks!
+First bad commit (maybe != root cause):
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d9b2ba67917c18822c6a09af41c32fa161f1606b
+commit: ade896460e4a62f5e4a892a98d254937f6f5b64c drm: DRM_KMB_DISPLAY should depend on ARCH_KEEMBAY
+date:   1 year, 8 months ago
+config: mips-randconfig-r016-20220629 (https://download.01.org/0day-ci/archive/20220630/202206300147.qdDDrtfw-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a774ba7f60d1fef403b5507b1b1a7475d3684d71)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mipsel-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ade896460e4a62f5e4a892a98d254937f6f5b64c
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout ade896460e4a62f5e4a892a98d254937f6f5b64c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/gpu/drm/kmb/ drivers/net/ethernet/mellanox/mlxsw/ drivers/scsi/ufs/ drivers/staging/ fs/xfs/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/gpu/drm/kmb/kmb_dsi.c:812:2: warning: unused function 'set_test_mode_src_osc_freq_target_low_bits'
+   set_test_mode_src_osc_freq_target_low_bits(struct kmb_dsi
+   ^
+>> drivers/gpu/drm/kmb/kmb_dsi.c:824:2: warning: unused function 'set_test_mode_src_osc_freq_target_hi_bits'
+   set_test_mode_src_osc_freq_target_hi_bits(struct kmb_dsi
+   ^
+   fatal error: error in backend: Nested variants found in inline asm string: '.if ( 0x00 ) != -1)) 0x00 ) != -1)) : ($( static struct ftrace_branch_data __attribute__((__aligned__(4))) __attribute__((__section__("_ftrace_branch"))) __if_trace = $( .func = __func__, .file = "arch/mips/include/asm/barrier.h", .line = 16, $); 0x00 ) != -1)) : $))) ) && ( (1 << 0) ); .set push; .set mips64r2; .rept 1; sync 0x00; .endr; .set pop; .else; ; .endif'
+   clang-15: error: clang frontend command failed with exit code 70 (use -v to see invocation)
+   clang version 15.0.0 (git://gitmirror/llvm_project a774ba7f60d1fef403b5507b1b1a7475d3684d71)
+   Target: mipsel-unknown-linux
+   Thread model: posix
+   InstalledDir: /opt/cross/clang-a774ba7f60/bin
+   clang-15: note: diagnostic msg:
+   Makefile arch drivers fs include kernel mm nr_bisected scripts source usr
+
+
+vim +/set_test_mode_src_osc_freq_target_low_bits +812 drivers/gpu/drm/kmb/kmb_dsi.c
+
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  810  
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  811  static inline void
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04 @812  	set_test_mode_src_osc_freq_target_low_bits(struct kmb_dsi *kmb_dsi,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  813  						   u32 dphy_no,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  814  						   u32 freq)
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  815  {
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  816  	/* Typical rise/fall time=166, refer Table 1207 databook,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  817  	 * sr_osc_freq_target[7:0]
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  818  	 */
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  819  	test_mode_send(kmb_dsi, dphy_no, TEST_CODE_SLEW_RATE_DDL_CYCLES,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  820  		       (freq & 0x7f));
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  821  }
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  822  
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  823  static inline void
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04 @824  	set_test_mode_src_osc_freq_target_hi_bits(struct kmb_dsi *kmb_dsi,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  825  						  u32 dphy_no,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  826  						  u32 freq)
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  827  {
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  828  	u32 data;
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  829  
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  830  	/* Flag this as high nibble */
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  831  	data = ((freq >> 6) & 0x1f) | (1 << 7);
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  832  
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  833  	/* Typical rise/fall time=166, refer Table 1207 databook,
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  834  	 * sr_osc_freq_target[11:7]
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  835  	 */
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  836  	test_mode_send(kmb_dsi, dphy_no, TEST_CODE_SLEW_RATE_DDL_CYCLES, data);
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  837  }
+98521f4d4b4cb2 Anitha Chrisanthus 2020-11-04  838  
+
+:::::: The code at line 812 was first introduced by commit
+:::::: 98521f4d4b4cb265374a4b1e13b41287a1960243 drm/kmb: Mipi DSI part of the display driver
+
+:::::: TO: Anitha Chrisanthus <anitha.chrisanthus@intel.com>
+:::::: CC: Sam Ravnborg <sam@ravnborg.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
