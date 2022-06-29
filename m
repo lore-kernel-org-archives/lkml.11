@@ -2,67 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8D0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF0BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 16:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiF2Qon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
+        id S230197AbiF2Qop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 12:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbiF2Qok (ORCPT
+        with ESMTP id S230370AbiF2Qom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:44:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D1A2CCAC;
-        Wed, 29 Jun 2022 09:44:40 -0700 (PDT)
+        Wed, 29 Jun 2022 12:44:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B5FDF;
+        Wed, 29 Jun 2022 09:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02C9EB825D3;
+        by sin.source.kernel.org (Postfix) with ESMTPS id C222ECE2859;
         Wed, 29 Jun 2022 16:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BE380C341C8;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E02DEC385A2;
         Wed, 29 Jun 2022 16:44:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656521077;
-        bh=m15YOLBCQzWiMbd2XCpklYoAw02Jy5jbBvqg6MsHPe4=;
+        bh=145iEFNr+1wndFzy/YO7HeoszVr7V6xV125JMJOC2BA=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=J1CmNhxIzOQxiKmcJfN5jFIrnd4iG905LqVA307jluRYPy8BA4Fo5B8EW16LIZyZ4
-         zGAYDABlv5Ezltpg4kzP6jfLX1cHqAECIEu+CunluJXmo4AUWkNCPtHAWNy8G/WmfL
-         beyT/xqkDdeyVsgQ8I/Cp6UxcfPv7GyX9+GEKJGj+JdaHqBac2dCLe9wXQ60zE3C7E
-         InJ3nVqOEz0/gfXA2Sx6kE9OgMTAeDYtWwqU+GNE7rI+9efn1Hqi5QR7kFnRrYgaDB
-         cdRmcP8HDLZqHGJgwawLUbl7sQYlEXAbLXe/2Lzr3R3h5OUag523IaF6Pl1qIowECx
-         M3ZeY0I11pKFA==
+        b=iTEEWW7gkf0KXLxUKPsSkMp6AA0JyrCS+u9apqlc0be5x/QEJBJ0x2rmDbttPF9lA
+         I0xoNNZgvJota+PI7lJMYufnee2Y5goxdo5cSBl1inOUJu2KLWIZBG4K9IAihuOdpP
+         jQsMOP4LBAxOZoelnUxYW8V4yfKDfrDoAbSNvVo4kONpF6EZs/2zvL52CRamdSGIRE
+         TrEQ0v1hpMs8GuMsMRDrtxQg7+8/JClFH8btuu82kH8djFZX1PqyQ/lxOG4OmJ626F
+         H1bwUvhNB6l9nycj2QqynbyweE6TDJc7juaxQkGjutp/HFT87sFyY79yx6yMSk0U3R
+         4EPk0iPQCOTNw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA5D2E49BBA;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C9A9AE49BB8;
         Wed, 29 Jun 2022 16:44:37 +0000 (UTC)
-Subject: Re: [GIT PULL] ksmbd server fixes
+Subject: Re: [GIT PULL] platform-drivers-x86 for 5.19-3
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAH2r5ms0EHq5zqwjE6PXVC_NCydY7d6+=NSnQcdjtNhbA6bf=A@mail.gmail.com>
-References: <CAH2r5ms0EHq5zqwjE6PXVC_NCydY7d6+=NSnQcdjtNhbA6bf=A@mail.gmail.com>
+In-Reply-To: <42646771-d1ea-0b05-7cb8-233d6e42ac1d@redhat.com>
+References: <42646771-d1ea-0b05-7cb8-233d6e42ac1d@redhat.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAH2r5ms0EHq5zqwjE6PXVC_NCydY7d6+=NSnQcdjtNhbA6bf=A@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.samba.org/ksmbd.git tags/5.19-rc4-ksmbd-server-fixes
-X-PR-Tracked-Commit-Id: 067baa9a37b32b95fdeabccde4b0cb6a2cf95f96
+X-PR-Tracked-Message-Id: <42646771-d1ea-0b05-7cb8-233d6e42ac1d@redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.19-3
+X-PR-Tracked-Commit-Id: 9ab762a84b8094540c18a170e5ddd6488632c456
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 732f30694325ab586a4d90412ace81e50dfe448e
-Message-Id: <165652107768.8432.1861360584555780047.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: d9b2ba67917c18822c6a09af41c32fa161f1606b
+Message-Id: <165652107782.8432.17451658153338765951.pr-tracker-bot@kernel.org>
 Date:   Wed, 29 Jun 2022 16:44:37 +0000
-To:     Steve French <smfrench@gmail.com>
+To:     Hans de Goede <hdegoede@redhat.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Namjae Jeon <linkinjeon@kernel.org>
+        Mark Gross <mgross@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 28 Jun 2022 17:07:09 -0500:
+The pull request you sent on Wed, 29 Jun 2022 13:01:42 +0200:
 
-> git://git.samba.org/ksmbd.git tags/5.19-rc4-ksmbd-server-fixes
+> git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.19-3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/732f30694325ab586a4d90412ace81e50dfe448e
+https://git.kernel.org/torvalds/c/d9b2ba67917c18822c6a09af41c32fa161f1606b
 
 Thank you!
 
