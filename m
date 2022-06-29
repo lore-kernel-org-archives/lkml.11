@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADABACCA481
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695A1CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234024AbiF2PHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        id S233950AbiF2PHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233884AbiF2PHF (ORCPT
+        with ESMTP id S233887AbiF2PHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:07:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D251E2CC90
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:07:03 -0700 (PDT)
+        Wed, 29 Jun 2022 11:07:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C43E2CCA2
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:07:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656515222;
+        s=mimecast20190719; t=1656515224;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vWAoYeve+DHGq+Zyx/g1X6Go+r9A6POZwpW+4oiNKhg=;
-        b=ZXLfyIAq99dyQ4Vz1AciloQnM4rfa/QuKpOGTMnwvvgkEnTnEIBEWRuYZB7+buYCtiDfAL
-        qDE2zm6l42dJ0K2kzfG9IoM5ZwZaZH1K2yWXDarYNf8+DksjE4inBoxPWo06fCIU3S5bkg
-        gd2W3wiFJ7A9lbvmHwgapZPqE2kz86Y=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Y7SQ65hZDyY+SZF8odkay7bu2Tt6DTwPJ1/3ECRmhxE=;
+        b=SiXlpsDXibv+LfNDK9P7EMaaapL1boDj7bZN+pYrhXuHK80hiZQOH8PnUv87tdpFVm46T/
+        SfgXCq+R1fu+8FAexOGe+OmrGJLOAt95NkyVmGsgXgk0L3sBZy8mVJG1VwaRli9lip4TJz
+        PQvuWZazqIzwt3uOQPDJcF56e5Ghpno=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-Lg5b-FSAMTCq-s7v3lwQ4A-1; Wed, 29 Jun 2022 11:06:59 -0400
-X-MC-Unique: Lg5b-FSAMTCq-s7v3lwQ4A-1
+ us-mta-672-CvYWBZiKNEComR-6qzVwwg-1; Wed, 29 Jun 2022 11:07:03 -0400
+X-MC-Unique: CvYWBZiKNEComR-6qzVwwg-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F363729AB41F;
-        Wed, 29 Jun 2022 15:06:56 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3ACC88339C1;
+        Wed, 29 Jun 2022 15:07:01 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DBD4740EC021;
-        Wed, 29 Jun 2022 15:06:54 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 456CB40EC002;
+        Wed, 29 Jun 2022 15:06:59 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -46,9 +46,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 12/28] KVM: VMX: Enable VM_{EXIT,ENTRY}_LOAD_IA32_PERF_GLOBAL_CTRL for KVM on Hyper-V
-Date:   Wed, 29 Jun 2022 17:06:09 +0200
-Message-Id: <20220629150625.238286-13-vkuznets@redhat.com>
+Subject: [PATCH v2 14/28] KVM: VMX: Check VM_ENTRY_IA32E_MODE in setup_vmcs_config()
+Date:   Wed, 29 Jun 2022 17:06:11 +0200
+Message-Id: <20220629150625.238286-15-vkuznets@redhat.com>
 In-Reply-To: <20220629150625.238286-1-vkuznets@redhat.com>
 References: <20220629150625.238286-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,59 +59,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The updated Enlightened VMCS v1 specification gained
-{guest,host}_ia32_perf_global_ctrl fields so there's no need to filter
-VM_{EXIT,ENTRY}_LOAD_IA32_PERF_GLOBAL_CTRL out. Unfortunately, enabling
-these controls for Hyper-V on KVM results in boot time crashes and the
-exact reason is not clear yet. It is, however, possible to enable the
-feature for KVM on Hyper-V as it seems to work.
+VM_ENTRY_IA32E_MODE control is toggled dynamically by vmx_set_efer()
+and setup_vmcs_config() doesn't check its existence. On the contrary,
+nested_vmx_setup_ctls_msrs() doesn set it on x86_64. Add the missing
+check and filter the bit out in vmx_vmentry_ctrl().
+
+No (real) functional change intended as all existing CPUs supporting
+long mode and VMX are supposed to have it.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/vmx/evmcs.c | 10 ++++++++--
- arch/x86/kvm/vmx/evmcs.h |  5 ++---
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index 4fe65b6a9a92..697590cf5b10 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -384,11 +384,17 @@ static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu,
- 	if (!evmcs_rev)
- 		return 0;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 83feb70d44a9..da8bbba38d0e 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2610,6 +2610,9 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 		_pin_based_exec_control &= ~PIN_BASED_POSTED_INTR;
  
+ 	min = VM_ENTRY_LOAD_DEBUG_CONTROLS;
++#ifdef CONFIG_X86_64
++	min |= VM_ENTRY_IA32E_MODE;
++#endif
+ 	opt = VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL |
+ 	      VM_ENTRY_LOAD_IA32_PAT |
+ 	      VM_ENTRY_LOAD_IA32_EFER |
+@@ -4242,9 +4245,15 @@ static u32 vmx_vmentry_ctrl(void)
+ 	if (vmx_pt_mode_is_system())
+ 		vmentry_ctrl &= ~(VM_ENTRY_PT_CONCEAL_PIP |
+ 				  VM_ENTRY_LOAD_IA32_RTIT_CTL);
+-	/* Loading of EFER and PERF_GLOBAL_CTRL are toggled dynamically */
+-	return vmentry_ctrl &
+-		~(VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL | VM_ENTRY_LOAD_IA32_EFER);
 +	/*
-+	 * While GUEST_IA32_PERF_GLOBAL_CTRL and HOST_IA32_PERF_GLOBAL_CTRL
-+	 * are present in eVMCSv1, Windows 11 still has issues booting when
-+	 * VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL/VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL
-+	 * are exposed to it, keep them filtered out.
++	 * Loading of EFER, VM_ENTRY_IA32E_MODE, and PERF_GLOBAL_CTRL
++	 * are toggled dynamically.
 +	 */
- 	switch (ctrl_type) {
- 	case EVMCS_EXIT_CTLS:
--		return EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-+		return EVMCS1_UNSUPPORTED_VMEXIT_CTRL | VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
- 	case EVMCS_ENTRY_CTLS:
--		return EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-+		return EVMCS1_UNSUPPORTED_VMENTRY_CTRL | VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
- 	case EVMCS_2NDEXEC:
- 		if (evmcs_rev == 1)
- 			return EVMCS1_UNSUPPORTED_2NDEXEC | SECONDARY_EXEC_TSC_SCALING;
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index 2992e29b81b7..c9090ac39740 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -68,9 +68,8 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
- 	 SECONDARY_EXEC_SHADOW_VMCS |					\
- 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
- #define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
--	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
--	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
--#define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
-+	(VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
-+#define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (0)
- #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
++	vmentry_ctrl &= ~(VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL |
++			  VM_ENTRY_LOAD_IA32_EFER |
++			  VM_ENTRY_IA32E_MODE);
++
++	return vmentry_ctrl;
+ }
  
- struct evmcs_field {
+ static u32 vmx_vmexit_ctrl(void)
 -- 
 2.35.3
 
