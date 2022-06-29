@@ -2,74 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F6AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C5FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiF2PjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51256 "EHLO
+        id S233787AbiF2Pjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232242AbiF2PjL (ORCPT
+        with ESMTP id S234102AbiF2Pja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:39:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAEA2C667;
-        Wed, 29 Jun 2022 08:39:10 -0700 (PDT)
+        Wed, 29 Jun 2022 11:39:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ABD37A28
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:39:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BF6BB82553;
-        Wed, 29 Jun 2022 15:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFF4C34114;
-        Wed, 29 Jun 2022 15:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656517148;
-        bh=sKpa3nSekXMC1dtLq0tyU6Qud/zL0leMfbAOmxPeT7s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tkAOtw9sMCZ52YMxzIiR2IZ33V6d9HSV2I2OW2zOO9DTKpuK4gFejS4+jrTB2x8lF
-         6iSG9TdNItbYLUSr0XhIEg9fOpz3zBr/s1SkDobyi0O+hE5rk3kVrfCrFufSzXdpjG
-         P8gE4e5fVo3tv+s4b/maQskXrnUmQZEl9WwNBrplDanyELnxDcY2DI2GKwrbLgD0j9
-         zq4mr/qZBTRL2wzjDhKLJfzE2QDLmJV/bwirfT9ygB0USRYgodD+r6SQE6WxCXmrbk
-         0VWw2C2fNuFRzN/hQQqYaLD4UGA9Pwd5iaLWIZysh9DVvlC0OKAg3CxRVD0YP3mPLp
-         7Jdu/DclpuQYA==
-Date:   Wed, 29 Jun 2022 08:39:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-Cc:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "git (AMD-Xilinx)" <git@amd.com>,
-        "Katakam, Harini" <harini.katakam@amd.com>
-Subject: Re: [PATCH net-next] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
-Message-ID: <20220629083906.45e7a023@kernel.org>
-In-Reply-To: <MN0PR12MB5953872B976C38C430166DECB7BB9@MN0PR12MB5953.namprd12.prod.outlook.com>
-References: <1656439734-632-1-git-send-email-radhey.shyam.pandey@amd.com>
-        <20220628220846.25025a22@kernel.org>
-        <MN0PR12MB5953872B976C38C430166DECB7BB9@MN0PR12MB5953.namprd12.prod.outlook.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29053B821D1
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 15:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E18D1C34114;
+        Wed, 29 Jun 2022 15:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656517164;
+        bh=DWY+ZOEqY30QW9jCDPiHYE3yU8+XoNeGqu5hV9ZWYP0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cc/YHcSYSpxQ2JCsCyGaAE6hCdHu/sHDk4XdvqmiUshpKCXTvgS/sDW8tZHyO7OOW
+         vnQF8V7QiHjXJd139/I7njZ7kgMRcBjxNpVVniW09CRBy0I8n+JoXLxK8pQ5ZASoUD
+         fv79CyZhyR+up5lCyVj2vnSkZ7PlARGChzbJAejE=
+Date:   Wed, 29 Jun 2022 17:39:17 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Alexander Usyskin <alexander.usyskin@intel.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 13/14] mei: debugfs: add pxp mode to devstate in
+ debugfs
+Message-ID: <YrxyJROfuLpVYDjF@kroah.com>
+References: <20220629112913.1210933-1-alexander.usyskin@intel.com>
+ <20220629112913.1210933-14-alexander.usyskin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629112913.1210933-14-alexander.usyskin@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 29 Jun 2022 15:24:55 +0000 Pandey, Radhey Shyam wrote:
-> Oh, I could also see this error when making it a module compilation.
-> I will fix it in v2. As an alternative to device_is_bound() i think we 
-> can check the presence of drvdata. Similar approach i see it in ongoing
-> onboard_usb_hub driver series[1]. Does it look ok?/any other suggestions?
+On Wed, Jun 29, 2022 at 02:29:12PM +0300, Alexander Usyskin wrote:
+> From: Tomas Winkler <tomas.winkler@intel.com>
 > 
-> -       if (mdio_pdev && !device_is_bound(&mdio_pdev->dev)) 
-> +       if (mdio_pdev && !dev_get_drvdata(&mdio_pdev->dev)) 
-> 
-> [1]: https://lore.kernel.org/all/20220622144857.v23.2.I7c9a1f1d6ced41dd8310e8a03da666a32364e790@changeid/
-> Listed in v21 changes.
+> Add pxp mode devstate to debugfs to monitor
+> pxp state machine progress. During debug
+> it is important to understand in what state
+> the pxp handshake is.
 
-Yeah, no real opinion here. The entire patch looks odd but I lost track
-of the devlink discussions. Could you CC Saravana, Greg, Rafael, etc
-on the next version? And the Ethernet PHY maintainers.
+You have 72 columns for changelog text, as your editor will tell you
+when you run git commit...
+
+Anyway, it's better than nothing, but really, do you think this is a
+good changelog description?  That last sentence means nothing.  I too
+think it is important to understand things...
+
+{sigh}
+
+Anyway, you all are pushing this hard for some crazy reason, and it's
+only a debugfs file, so it doesn't matter much, but it feels indicative
+of other patches from your employer for the past few years so I'll be a
+pain and ask for you to fix it up again.
+
+thanks,
+
+greg k-h
