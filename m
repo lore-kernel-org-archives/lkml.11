@@ -2,124 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E48A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 19:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3703AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 19:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbiF2TGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 15:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
+        id S230292AbiF2TJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 15:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbiF2TGN (ORCPT
+        with ESMTP id S229476AbiF2TJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 15:06:13 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F42D201A7
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 12:06:11 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id x8so11582411pgj.13
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 12:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4iLjVUVD01Ec5lhezzfL4b6+r3st8AOk4JH6YYFpua4=;
-        b=LjxdwGocB300LRlrR3clI8v8Q6E/VOBSmVpRm49ABnVrx64ZPtRJw6AYgvjQrC+zFP
-         fnXrQCrsYOVOEJ/GV5LF/hPis5i67QMn6Qq6P7Qkc8gaMByE2H0BaG8PUJq2fAsw5Cqh
-         io1ISaJDdagUxdEYmHYGp26m3cHHacY3Aa2M4=
+        Wed, 29 Jun 2022 15:09:13 -0400
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72472C658;
+        Wed, 29 Jun 2022 12:09:12 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id i15so29748614ybp.1;
+        Wed, 29 Jun 2022 12:09:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4iLjVUVD01Ec5lhezzfL4b6+r3st8AOk4JH6YYFpua4=;
-        b=RRyG9zsZlXFDpLSuNbuh2mN+GfqAlfMZIUgJdAr1oIIfgjMrY7nkfRhWSxYqYOGr6S
-         CEFee3llHkInxn8rO4JPq4JyY4/Is1iwW6InpTgvd4e/mfsIAbtU5hefy6KhjO++AK/Y
-         mC4UFMGj8cAvbiMyLcNMXvnfRtcs6Phvx8MjvbqLoiM6caaNEeFfa4JL8KcoqTUWwSZb
-         RdgOYF4HLfTfmKOG0aun6cFbw/RzNrV/RLocriGKZI9aLBfaB6Bb5CYkV9SRX2yL7rNz
-         zzlztZjOaBPK6TNtpPcp8RPMjrJFGBziTH7/SXy2PkZ6plHCjMq0/Iv645HjY9LFLUKv
-         3lyA==
-X-Gm-Message-State: AJIora989wXBiTlAmy7b/hlnYJ14uFBL3DJ1L7hzTyKh5S2vSTqLZtUA
-        S3Y+iHw8sQqHW23fF/bP06DrnA==
-X-Google-Smtp-Source: AGRyM1tdAZEaXsMXy4WDHw5pEvorBzaveQ/9uCKpadAq4lprCZEMl9Q/ZZY7m+ks6j6sgcZ+ER9EZw==
-X-Received: by 2002:a62:82cb:0:b0:525:79d9:ddc4 with SMTP id w194-20020a6282cb000000b0052579d9ddc4mr10478560pfd.48.1656529570846;
-        Wed, 29 Jun 2022 12:06:10 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:9841:721:7d8b:4502])
-        by smtp.gmail.com with ESMTPSA id y11-20020a63de4b000000b0040c644e82efsm11572917pgi.43.2022.06.29.12.06.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 12:06:10 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/mediatek: ensure bridge disable happends before suspend
-Date:   Thu, 30 Jun 2022 03:05:46 +0800
-Message-Id: <20220629190545.478113-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WIUOcjqbDRqwHoZr9SPqc9wp23o2wvFnWFd2gZt8KDA=;
+        b=LWnGs1tnDYOx83m2JuK1YE/Vgeewgfg5n3YOyLO64Oq5OZz+B5ntCWYkWamBi+li+l
+         4u6EiJc/MZvYyEw75KZe5VKSfQV+DYT14xE43XmW6SqwTx5Y/XKwechMdGCBPmZWe7+P
+         EeOE0kb9hu32+WYr4cksUXfQcRTL3uVHQlZbLDmpFkcRgZ4yMIlj4QasntX3e7FGx6ja
+         iGx9iZwWtYdjzmRm33BWgctCqr+MHkwAkQxN+eFwPNA3EorYOqBwNq3Z6P92IwGDWP9a
+         hJDpMIGuqYNO1d2Z2OcqKdGjPuirotQ3j5J1AwhP2PqCjsReMtS3S2WCKf34YgK42hGk
+         E0YA==
+X-Gm-Message-State: AJIora+BaCelcLv1jk9XRzmtyjWjUJjlnfNQpQgCtl8gAzahgSIl8ACp
+        Jc/0j7PviijIpRV659qpW41hMZMbW4TwGIUUIGhXtwZEQNU=
+X-Google-Smtp-Source: AGRyM1s4C3/6sJZHuyLqpS6iezs/ly5vUFd6ItASLD+BbmfGmMNmroBUjHtM15ShmS3+COg2i+4w3G6bUpDOabwzRHA=
+X-Received: by 2002:a25:664f:0:b0:66c:d0f4:36cc with SMTP id
+ z15-20020a25664f000000b0066cd0f436ccmr4909364ybm.482.1656529751871; Wed, 29
+ Jun 2022 12:09:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220627165832.10246-1-mario.limonciello@amd.com>
+ <CAJZ5v0g2qfA00=ukatTxSXPnoOaquwvn8tk0oNHaY-0F7ODZQw@mail.gmail.com> <MN0PR12MB6101BFCBAA33B98D438B25E8E2BB9@MN0PR12MB6101.namprd12.prod.outlook.com>
+In-Reply-To: <MN0PR12MB6101BFCBAA33B98D438B25E8E2BB9@MN0PR12MB6101.namprd12.prod.outlook.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 29 Jun 2022 21:09:00 +0200
+Message-ID: <CAJZ5v0g8e4pJoPSaCqPmgfvi8KYNLJyAHsXAcU_z-kU5bMJy=w@mail.gmail.com>
+Subject: Re: [PATCH] ACPI: CPPC: Don't require _OSC if X86_FEATURE_CPPC is supported
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Yuan, Perry" <Perry.Yuan@amd.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure bridge_disable will be called before suspend by calling
-drm_mode_config_helper_suspend() in .prepare callback.
+On Wed, Jun 29, 2022 at 8:49 PM Limonciello, Mario
+<Mario.Limonciello@amd.com> wrote:
+>
+> [Public]
+>
+>
+>
+> > -----Original Message-----
+> > From: Rafael J. Wysocki <rafael@kernel.org>
+> > Sent: Wednesday, June 29, 2022 13:42
+> > To: Limonciello, Mario <Mario.Limonciello@amd.com>
+> > Cc: Rafael J. Wysocki <rafael@kernel.org>; Len Brown <lenb@kernel.org>;
+> > Pierre Gondois <pierre.gondois@arm.com>; Sudeep Holla
+> > <sudeep.holla@arm.com>; Yuan, Perry <Perry.Yuan@amd.com>; ACPI Devel
+> > Maling List <linux-acpi@vger.kernel.org>; Linux Kernel Mailing List <linux-
+> > kernel@vger.kernel.org>
+> > Subject: Re: [PATCH] ACPI: CPPC: Don't require _OSC if X86_FEATURE_CPPC is
+> > supported
+> >
+> > On Mon, Jun 27, 2022 at 6:58 PM Mario Limonciello
+> > <mario.limonciello@amd.com> wrote:
+> > >
+> > > commit 72f2ecb7ece7 ("ACPI: bus: Set CPPC _OSC bits for all and
+> > > when CPPC_LIB is supported") added support for claiming to
+> > > support CPPC in _OSC on non-Intel platforms.
+> > >
+> > > This unfortunately caused a regression on a vartiety of AMD
+> > > platforms in the field because a number of AMD platforms don't set
+> > > the `_OSC` bit 5 or 6 to indicate CPPC or CPPC v2 support.
+> > >
+> > > As these AMD platforms already claim CPPC support via `X86_FEATURE_CPPC`,
+> > > use this enable this feature rather than requiring the `_OSC`.
+> > >
+> > > Fixes: 72f2ecb7ece7 ("Set CPPC _OSC bits for all and when CPPC_LIB is
+> > supported")
+> > > Reported-by: Perry Yuan <perry.yuan@amd.com>
+> > > Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> > > ---
+> > >  drivers/acpi/cppc_acpi.c | 12 +++++++++---
+> > >  1 file changed, 9 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
+> > > index 903528f7e187..5463e6309b9a 100644
+> > > --- a/drivers/acpi/cppc_acpi.c
+> > > +++ b/drivers/acpi/cppc_acpi.c
+> > > @@ -629,6 +629,15 @@ static bool is_cppc_supported(int revision, int
+> > num_ent)
+> > >                 return false;
+> > >         }
+> > >
+> > > +       if (osc_sb_cppc_not_supported) {
+> > > +               pr_debug("Firmware missing _OSC support\n");
+> > > +#ifdef CONFIG_X86
+> > > +               return boot_cpu_has(X86_FEATURE_CPPC);
+> > > +#else
+> > > +               return false;
+> > > +#endif
+> >
+> > What about doing
+> >
+> > if (osc_sb_cppc_not_supported) {
+> >         pr_debug("Firmware missing _OSC support\n");
+> >         return IS_ENABLED(CONFIG_X86) && boot_cpu_has(X86_FEATURE_CPPC);
+> > }
+> >
+> > instead for the sake of reducing #ifdeffery?
+>
+> I don't think that would compile on non-X86.  X86_FEATURE_CPPC comes as part of
+> arch/x86/include/asm/cpufeatures.h, which I wouldn't expect is included on !x86.
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
-The issue is found if suspend is called via VT2 in several MTK SoC (eg.
-MT8173, MT8183, MT8186) chromebook boards with eDP bridge:
-bridge disable is called through mtk-drm's suspend, and it needs to be
-called before bridge pm runtime suspend.
-So we move the hook to .prepare() and .complete().
----
- drivers/gpu/drm/mediatek/mtk_drm_drv.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+Good point.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 13a1bbe7ead7f..a42812e490007 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-@@ -828,8 +828,7 @@ static int mtk_drm_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
--static int mtk_drm_sys_suspend(struct device *dev)
-+static int mtk_drm_sys_prepare(struct device *dev)
- {
- 	struct mtk_drm_private *private = dev_get_drvdata(dev);
- 	struct drm_device *drm = private->drm;
-@@ -840,20 +839,21 @@ static int mtk_drm_sys_suspend(struct device *dev)
- 	return ret;
- }
- 
--static int mtk_drm_sys_resume(struct device *dev)
-+static void mtk_drm_sys_complete(struct device *dev)
- {
- 	struct mtk_drm_private *private = dev_get_drvdata(dev);
- 	struct drm_device *drm = private->drm;
- 	int ret;
- 
- 	ret = drm_mode_config_helper_resume(drm);
--
--	return ret;
-+	if (ret)
-+		dev_err(dev, "Failed to resume\n");
- }
--#endif
- 
--static SIMPLE_DEV_PM_OPS(mtk_drm_pm_ops, mtk_drm_sys_suspend,
--			 mtk_drm_sys_resume);
-+static const struct dev_pm_ops mtk_drm_pm_ops = {
-+	.prepare = mtk_drm_sys_prepare,
-+	.complete = mtk_drm_sys_complete,
-+};
- 
- static struct platform_driver mtk_drm_platform_driver = {
- 	.probe	= mtk_drm_probe,
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+Something like this would still look better though IMO:
 
+if (!osc_sb_cppc_not_supported)
+        return true;
+
+#ifdef CONFIG_X86
+        return boot_cpu_has(X86_FEATURE_CPPC);
+#else
+        return false;
+#endif
+}
+
+
+>
+> >
+> > Also, this is somewhat risky, because even if the given processor has
+> > X86_FEATURE_CPPC set, the platform may still not want to expose CPPC
+> > through ACPI.  How's that going to work after this change?
+> >
+>
+> Well actually doing that through _OSC wouldn't have worked before 72f2ecb7ece7 either.
+> If desirable - a platform could avoid populating _CPC objects in ACPI tables in this case.
+>
+> I do know of OEM platforms that the underlying APU supports CPPC but the OEM doesn't
+> populate _CPC.  Presumably for this exact reason.
+
+That is an option, but there is no requirement that _CPC must not be
+populated when CPPC is not supported.
+
+_OSC is the proper mechanism for negotiating CPPC support.
+
+Still, if you know for a fact that on AMD systems X86_FEATURE_CPPC
+always means that CPPC is supported, I can live with an extra vendor
+check in the code above.
