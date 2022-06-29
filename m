@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A3EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BBECCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 13:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233739AbiF2NN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 09:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
+        id S233750AbiF2NNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 09:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232255AbiF2NNW (ORCPT
+        with ESMTP id S233525AbiF2NNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 09:13:22 -0400
+        Wed, 29 Jun 2022 09:13:23 -0400
 Received: from sender11-op-o11.zoho.eu (sender11-op-o11.zoho.eu [31.186.226.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0641415A05
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019C795BC
         for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 06:13:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1656507468; cv=none; 
+ARC-Seal: i=1; a=rsa-sha256; t=1656507467; cv=none; 
         d=zohomail.eu; s=zohoarc; 
-        b=khdzA+apAbjE7ctC3OaZLQUkGLKdwMt1a1cc7FvfnlG/AhFz71iityM75XdouUXncfjJ9HpcllI0IWIPwvW57cesqDXCb+sU2FbKf8vnt8EIww/Jx5gSndu4GuFLZf5Vwltl38Y6u2GGRJMcwG/pqsANGEhF/PH7s/y4aTmd3dM=
+        b=bPEkODpH1BrWoLzj49AsqL2wDhtErpYfYCEC3rk/571uPh9DsExjBAV1AJegaCEX7QFwx0l20Yx+jDDhsdFZpzzHNf6lm3vLghA8zmF9hbGqCBe/pgs0/GCjEV7588Cn3vr20lVy6F9zdl/IYfXFEYzXPV9cF8pYyCGqPR6L/Xk=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-        t=1656507468; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=LD7PQCegOnl8aPefonBZBsOnRG+o8w5EZIYTSLjVePE=; 
-        b=AL9//TN6Sd/JtirJxNSY2esPlJRdvbjImVuu+k1T82B46zMZM9EuQdihSz6OUOaAo55MiGFNCqs7RKR1eSFOC6gqGJPK50F8J8rXEHJbm2fluRU0n6DOsn1eG15I0cOk9PY8K70q9P7Vk5Q4lMxzgupw60N6ypSYk2AegEcZpIw=
+        t=1656507467; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=dDOt+WPyVtaeSWilL0VTH0dNyV4Wzq9NV94huwKX8M4=; 
+        b=duuSXOPTCtwfaDuXawVdRim6hRvNpAhu8caNpME3a14Xgl3crmcd4bVHJ4CgAsCh82nqV8oVio7rCH/EtMrNQnt5KKGRty8qO5GSU7NMmEOtmDOn60mHA+bYi5FpP6bc9m+06T7cajO4EYTAhmj8h7AoW9e96uwcmfhpXEaPG0U=
 ARC-Authentication-Results: i=1; mx.zohomail.eu;
         dkim=pass  header.i=kempniu.pl;
         spf=pass  smtp.mailfrom=kernel@kempniu.pl;
         dmarc=pass header.from=<kernel@kempniu.pl>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656507468;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656507467;
         s=zmail; d=kempniu.pl; i=kernel@kempniu.pl;
         h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=LD7PQCegOnl8aPefonBZBsOnRG+o8w5EZIYTSLjVePE=;
-        b=OmYmD1WkSTStOBqj9Tx6K+F31538yKiFYrJ131zZLuxfc7M5rCfOv5f8JlqJr7+e
-        pZyfMGTfkh/nyodxVf06CRP9MBU7CkWPXaAvfno6Ju2pD5b9UhjsFtkc7L0Z/gmsk8p
-        DG2jpj1CHHDGkWyw+4j72n7cGWDDN9fy0TTDV1b4=
+        bh=dDOt+WPyVtaeSWilL0VTH0dNyV4Wzq9NV94huwKX8M4=;
+        b=bqY3W2KZn3mLzgc5vPFx02+p91frXe4AxfU3RPvg5CsFacoKiwhv7J/zpdCW3DPo
+        uv5w9O7UTIu6gkn6iHQdQr8B+HNQHZ1OJQ0QisWhIcef42Z7hf+0/wQw14UlklhvPqI
+        cId4iVO5VqoKCwR7zt+vI6xmbLefvb3DJ4kzvUv4=
 Received: from larwa.hq.kempniu.pl (212.180.138.61 [212.180.138.61]) by mx.zoho.eu
-        with SMTPS id 1656507467209677.4938477840163; Wed, 29 Jun 2022 14:57:47 +0200 (CEST)
+        with SMTPS id 1656507466084174.89340666810722; Wed, 29 Jun 2022 14:57:46 +0200 (CEST)
 From:   =?UTF-8?q?Micha=C5=82=20K=C4=99pie=C5=84?= <kernel@kempniu.pl>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>
 Cc:     Boris Brezillon <boris.brezillon@collabora.com>,
         linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Message-ID: <20220629125737.14418-4-kernel@kempniu.pl>
-Subject: [PATCH v4 3/4] mtd: add ECC error accounting for each read request
-Date:   Wed, 29 Jun 2022 14:57:36 +0200
+Message-ID: <20220629125737.14418-2-kernel@kempniu.pl>
+Subject: [PATCH v4 1/4] mtd: track maximum number of bitflips for each read request
+Date:   Wed, 29 Jun 2022 14:57:34 +0200
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220629125737.14418-1-kernel@kempniu.pl>
 References: <20220629125737.14418-1-kernel@kempniu.pl>
@@ -55,190 +55,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend struct mtd_req_stats with two new fields holding the number of
-corrected bitflips and uncorrectable errors detected during a read
-operation.  This is a prerequisite for ultimately passing those counters
-to user space, where they can be useful to applications for making
-better-informed choices about moving data around.
+mtd_read_oob() callers are currently oblivious to the details of ECC
+errors detected during the read operation - they only learn (through the
+return value) whether any corrected bitflips or uncorrectable errors
+occurred.  More detailed ECC information can be useful to user-space
+applications for making better-informed choices about moving data
+around.
 
-Unlike 'max_bitflips' (which is set - in a common code path - to the
-return value of a function called while the MTD device's mutex is held),
-these counters have to be maintained in each MTD driver which defines
-the '_read_oob' callback because the statistics need to be calculated
-while the MTD device's mutex is held.
+Extend struct mtd_oob_ops with a pointer to a newly-introduced struct
+mtd_req_stats and set its 'max_bitflips' field to the maximum number of
+bitflips found in a single ECC step during the read operation performed
+by mtd_read_oob().  This is a prerequisite for ultimately passing that
+value back to user space.
 
 Suggested-by: Boris Brezillon <boris.brezillon@collabora.com>
 Signed-off-by: Micha=C5=82 K=C4=99pie=C5=84 <kernel@kempniu.pl>
 ---
- drivers/mtd/devices/docg3.c             |  8 ++++++++
- drivers/mtd/nand/onenand/onenand_base.c | 12 ++++++++++++
- drivers/mtd/nand/raw/nand_base.c        | 10 ++++++++++
- drivers/mtd/nand/spi/core.c             | 10 ++++++++++
- include/linux/mtd/mtd.h                 |  2 ++
- 5 files changed, 42 insertions(+)
+ drivers/mtd/mtdcore.c   | 5 +++++
+ include/linux/mtd/mtd.h | 5 +++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/mtd/devices/docg3.c b/drivers/mtd/devices/docg3.c
-index 5b0ae5ddad74..3783ae5c6d23 100644
---- a/drivers/mtd/devices/docg3.c
-+++ b/drivers/mtd/devices/docg3.c
-@@ -871,6 +871,7 @@ static int doc_read_oob(struct mtd_info *mtd, loff_t fr=
-om,
- =09u8 *buf =3D ops->datbuf;
- =09size_t len, ooblen, nbdata, nboob;
- =09u8 hwecc[DOC_ECC_BCH_SIZE], eccconf1;
-+=09struct mtd_ecc_stats old_stats;
- =09int max_bitflips =3D 0;
+diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+index 6fafea80fd98..80c98e546d72 100644
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -1622,6 +1622,9 @@ int mtd_read_oob(struct mtd_info *mtd, loff_t from, s=
+truct mtd_oob_ops *ops)
+ =09if (!master->_read_oob && (!master->_read || ops->oobbuf))
+ =09=09return -EOPNOTSUPP;
 =20
- =09if (buf)
-@@ -895,6 +896,7 @@ static int doc_read_oob(struct mtd_info *mtd, loff_t fr=
-om,
- =09ret =3D 0;
- =09skip =3D from % DOC_LAYOUT_PAGE_SIZE;
- =09mutex_lock(&docg3->cascade->lock);
-+=09old_stats =3D mtd->ecc_stats;
- =09while (ret >=3D 0 && (len > 0 || ooblen > 0)) {
- =09=09calc_block_sector(from - skip, &block0, &block1, &page, &ofs,
- =09=09=09docg3->reliable);
-@@ -966,6 +968,12 @@ static int doc_read_oob(struct mtd_info *mtd, loff_t f=
-rom,
- =09}
-=20
- out:
-+=09if (ops->stats) {
-+=09=09ops->stats->uncorrectable_errors +=3D
-+=09=09=09mtd->ecc_stats.failed - old_stats.failed;
-+=09=09ops->stats->corrected_bitflips +=3D
-+=09=09=09mtd->ecc_stats.corrected - old_stats.corrected;
-+=09}
- =09mutex_unlock(&docg3->cascade->lock);
- =09return ret;
- err_in_read:
-diff --git a/drivers/mtd/nand/onenand/onenand_base.c b/drivers/mtd/nand/one=
-nand/onenand_base.c
-index 5810104420a2..f66385faf631 100644
---- a/drivers/mtd/nand/onenand/onenand_base.c
-+++ b/drivers/mtd/nand/onenand/onenand_base.c
-@@ -1440,6 +1440,7 @@ static int onenand_read_oob(struct mtd_info *mtd, lof=
-f_t from,
- =09=09=09    struct mtd_oob_ops *ops)
- {
- =09struct onenand_chip *this =3D mtd->priv;
-+=09struct mtd_ecc_stats old_stats;
- =09int ret;
-=20
- =09switch (ops->mode) {
-@@ -1453,12 +1454,23 @@ static int onenand_read_oob(struct mtd_info *mtd, l=
-off_t from,
- =09}
-=20
- =09onenand_get_device(mtd, FL_READING);
++=09if (ops->stats)
++=09=09memset(ops->stats, 0, sizeof(*ops->stats));
 +
-+=09old_stats =3D mtd->ecc_stats;
-+
- =09if (ops->datbuf)
- =09=09ret =3D ONENAND_IS_4KB_PAGE(this) ?
- =09=09=09onenand_mlc_read_ops_nolock(mtd, from, ops) :
- =09=09=09onenand_read_ops_nolock(mtd, from, ops);
+ =09if (mtd->flags & MTD_SLC_ON_MLC_EMULATION)
+ =09=09ret_code =3D mtd_io_emulated_slc(mtd, from, true, ops);
  =09else
- =09=09ret =3D onenand_read_oob_nolock(mtd, from, ops);
-+
-+=09if (ops->stats) {
-+=09=09ops->stats->uncorrectable_errors +=3D
-+=09=09=09mtd->ecc_stats.failed - old_stats.failed;
-+=09=09ops->stats->corrected_bitflips +=3D
-+=09=09=09mtd->ecc_stats.corrected - old_stats.corrected;
-+=09}
-+
- =09onenand_release_device(mtd);
-=20
- =09return ret;
-diff --git a/drivers/mtd/nand/raw/nand_base.c b/drivers/mtd/nand/raw/nand_b=
-ase.c
-index 6b67b7dfe7ce..3e20de1e145c 100644
---- a/drivers/mtd/nand/raw/nand_base.c
-+++ b/drivers/mtd/nand/raw/nand_base.c
-@@ -3818,6 +3818,7 @@ static int nand_read_oob(struct mtd_info *mtd, loff_t=
- from,
- =09=09=09 struct mtd_oob_ops *ops)
- {
- =09struct nand_chip *chip =3D mtd_to_nand(mtd);
-+=09struct mtd_ecc_stats old_stats;
- =09int ret;
-=20
- =09ops->retlen =3D 0;
-@@ -3829,11 +3830,20 @@ static int nand_read_oob(struct mtd_info *mtd, loff=
-_t from,
-=20
- =09nand_get_device(chip);
-=20
-+=09old_stats =3D mtd->ecc_stats;
-+
- =09if (!ops->datbuf)
- =09=09ret =3D nand_do_read_oob(chip, from, ops);
- =09else
- =09=09ret =3D nand_do_read_ops(chip, from, ops);
-=20
-+=09if (ops->stats) {
-+=09=09ops->stats->uncorrectable_errors +=3D
-+=09=09=09mtd->ecc_stats.failed - old_stats.failed;
-+=09=09ops->stats->corrected_bitflips +=3D
-+=09=09=09mtd->ecc_stats.corrected - old_stats.corrected;
-+=09}
-+
- =09nand_release_device(chip);
- =09return ret;
+@@ -1639,6 +1642,8 @@ int mtd_read_oob(struct mtd_info *mtd, loff_t from, s=
+truct mtd_oob_ops *ops)
+ =09=09return ret_code;
+ =09if (mtd->ecc_strength =3D=3D 0)
+ =09=09return 0;=09/* device lacks ecc */
++=09if (ops->stats)
++=09=09ops->stats->max_bitflips =3D ret_code;
+ =09return ret_code >=3D mtd->bitflip_threshold ? -EUCLEAN : 0;
  }
-diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
-index d5b685d1605e..90d8a88c9326 100644
---- a/drivers/mtd/nand/spi/core.c
-+++ b/drivers/mtd/nand/spi/core.c
-@@ -635,6 +635,7 @@ static int spinand_mtd_read(struct mtd_info *mtd, loff_=
-t from,
- {
- =09struct spinand_device *spinand =3D mtd_to_spinand(mtd);
- =09struct nand_device *nand =3D mtd_to_nanddev(mtd);
-+=09struct mtd_ecc_stats old_stats;
- =09unsigned int max_bitflips =3D 0;
- =09struct nand_io_iter iter;
- =09bool disable_ecc =3D false;
-@@ -646,6 +647,8 @@ static int spinand_mtd_read(struct mtd_info *mtd, loff_=
-t from,
-=20
- =09mutex_lock(&spinand->lock);
-=20
-+=09old_stats =3D mtd->ecc_stats;
-+
- =09nanddev_io_for_each_page(nand, NAND_PAGE_READ, from, ops, &iter) {
- =09=09if (disable_ecc)
- =09=09=09iter.req.mode =3D MTD_OPS_RAW;
-@@ -668,6 +671,13 @@ static int spinand_mtd_read(struct mtd_info *mtd, loff=
-_t from,
- =09=09ops->oobretlen +=3D iter.req.ooblen;
- =09}
-=20
-+=09if (ops->stats) {
-+=09=09ops->stats->uncorrectable_errors +=3D
-+=09=09=09mtd->ecc_stats.failed - old_stats.failed;
-+=09=09ops->stats->corrected_bitflips +=3D
-+=09=09=09mtd->ecc_stats.corrected - old_stats.corrected;
-+=09}
-+
- =09mutex_unlock(&spinand->lock);
-=20
- =09if (ecc_failed && !ret)
+ EXPORT_SYMBOL_GPL(mtd_read_oob);
 diff --git a/include/linux/mtd/mtd.h b/include/linux/mtd/mtd.h
-index fccad1766458..c12a5930f32c 100644
+index 955aee14b0f7..fccad1766458 100644
 --- a/include/linux/mtd/mtd.h
 +++ b/include/linux/mtd/mtd.h
-@@ -41,6 +41,8 @@ struct mtd_erase_region_info {
+@@ -40,6 +40,10 @@ struct mtd_erase_region_info {
+ =09unsigned long *lockmap;=09=09/* If keeping bitmap of locks */
  };
 =20
- struct mtd_req_stats {
-+=09unsigned int uncorrectable_errors;
-+=09unsigned int corrected_bitflips;
- =09unsigned int max_bitflips;
++struct mtd_req_stats {
++=09unsigned int max_bitflips;
++};
++
+ /**
+  * struct mtd_oob_ops - oob operation operands
+  * @mode:=09operation mode
+@@ -70,6 +74,7 @@ struct mtd_oob_ops {
+ =09uint32_t=09ooboffs;
+ =09uint8_t=09=09*datbuf;
+ =09uint8_t=09=09*oobbuf;
++=09struct mtd_req_stats *stats;
  };
 =20
+ /**
 --=20
 2.37.0
 
