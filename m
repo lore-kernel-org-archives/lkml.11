@@ -2,165 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12141C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B71CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 09:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233111AbiF2Jsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        id S233150AbiF2JuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233027AbiF2Jsq (ORCPT
+        with ESMTP id S233149AbiF2Jti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:48:46 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AD03D1D7;
-        Wed, 29 Jun 2022 02:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656496125; x=1688032125;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kR520z9Moq5dCNqgaHhzTffg8JxRytrsfPcAIOtwgTE=;
-  b=iuy2Oc59R3Z5Thts1yxX9y/5DH0xiWyLPRX9nQHI+cM1cJM9O88loWYP
-   l6a28CwwKBowY2tbY0N98EuGJ0a6u0XoWdVA2hbUI0s3jE6OSz8zK1p4T
-   pAiQZ87uEtbDfzNJByTttNWb0MV7UKf5iUpjgEwHvW1TYLSqFZrsthDwg
-   tAswB5PEksuOFljFDqE+BTdmgyeq0BhtlCm6ZIKE8idsNwyvlXXE1qjCF
-   uQegklAY4DRk7YkHp7ZhmCfBZIVll9FZvEvGgD9qLCSYR/D96bfDpvMec
-   9+j+ab0aHXxozUN83B+qdvSsseBH0IzPAhvL4Tq9CVJwD58zKdXIgyGMU
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="262395191"
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="262395191"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:48:45 -0700
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="647322406"
-Received: from dsummer-mobl.ger.corp.intel.com ([10.252.38.121])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:48:43 -0700
-Date:   Wed, 29 Jun 2022 12:48:41 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] serial: 8250: Fix PM usage_count for console handover
-Message-ID: <b4f428e9-491f-daf2-2232-819928dc276e@linux.intel.com>
+        Wed, 29 Jun 2022 05:49:38 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5C933D1F4;
+        Wed, 29 Jun 2022 02:49:37 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C684F152B;
+        Wed, 29 Jun 2022 02:49:37 -0700 (PDT)
+Received: from [192.168.33.8] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C25B3F792;
+        Wed, 29 Jun 2022 02:49:35 -0700 (PDT)
+Message-ID: <be793e51-0d89-7afd-e122-ec929a1130e9@arm.com>
+Date:   Wed, 29 Jun 2022 10:49:26 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1304406510-1656496125=:1529"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 0/4] Energy Model power in micro-Watts and SCMI v3.1
+ alignment
+Content-Language: en-US
+To:     linux-pm@vger.kernel.org
+Cc:     daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
+        viresh.kumar@linaro.org, rafael@kernel.org,
+        dietmar.eggemann@arm.com, nm@ti.com, sboyd@kernel.org,
+        sudeep.holla@arm.com, cristian.marussi@arm.com,
+        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220622145802.13032-1-lukasz.luba@arm.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220622145802.13032-1-lukasz.luba@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi guys,
 
---8323329-1304406510-1656496125=:1529
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Are there any objections to these patches?
 
-When console is enabled, univ8250_console_setup() calls
-serial8250_console_setup() before .dev is set to uart_port. Therefore,
-it will not call pm_runtime_get_sync(). Later, when the actual driver
-is going to take over univ8250_console_exit() is called. As .dev is
-already set, serial8250_console_exit() makes pm_runtime_put_sync() call
-with usage count being zero triggering PM usage count warning
-(extra debug for univ8250_console_setup(), univ8250_console_exit(), and
-serial8250_register_ports()):
 
-[    0.068987] univ8250_console_setup ttyS0 nodev
-[    0.499670] printk: console [ttyS0] enabled
-[    0.717955] printk: console [ttyS0] printing thread started
-[    1.960163] serial8250_register_ports assigned dev for ttyS0
-[    1.976830] printk: console [ttyS0] disabled
-[    1.976888] printk: console [ttyS0] printing thread stopped
-[    1.977073] univ8250_console_exit ttyS0 usage:0
-[    1.977075] serial8250 serial8250: Runtime PM usage count underflow!
-[    1.977429] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
-[    1.977812] univ8250_console_setup ttyS0 usage:2
-[    1.978167] printk: console [ttyS0] printing thread started
-[    1.978203] printk: console [ttyS0] enabled
+On 6/22/22 15:57, Lukasz Luba wrote:
+> Hi all,
+> 
+> This is a patch set which changes Energy Model power values scale to
+> micro-Watts. It also upgrades the SCMI performance layer + scmi-cpufreq
+> driver to leverage the SCMI v3.1 spec and process micro-Watts power values
+> coming from FW. The higher precision in EM power field solves an issue
+> of a rounding error, which then can be misinterpreted as 'inefficient OPP'.
+> An example rounding issue calculation is present in patch 1/4 description.
+> 
+> Regards,
+> Lukasz Luba
+> 
+> Lukasz Luba (4):
+>    PM: EM: convert power field to micro-Watts precision and align drivers
+>    Documentation: EM: Switch to micro-Watts scale
+>    firmware: arm_scmi: Get detailed power scale from perf
+>    cpufreq: scmi: Support the power scale in micro-Watts in SCMI v3.1
+> 
+>   Documentation/power/energy-model.rst  | 14 +++---
+>   drivers/cpufreq/mediatek-cpufreq-hw.c |  7 +--
+>   drivers/cpufreq/scmi-cpufreq.c        | 15 ++++++-
+>   drivers/firmware/arm_scmi/perf.c      | 18 +++++---
+>   drivers/opp/of.c                      | 15 ++++---
+>   drivers/powercap/dtpm_cpu.c           |  5 +--
+>   drivers/thermal/cpufreq_cooling.c     | 13 +++++-
+>   drivers/thermal/devfreq_cooling.c     | 19 ++++++--
+>   include/linux/energy_model.h          | 63 ++++++++++++++++++++-------
+>   include/linux/scmi_protocol.h         |  8 +++-
+>   kernel/power/energy_model.c           | 31 ++++++++-----
+>   11 files changed, 146 insertions(+), 62 deletions(-)
+> 
 
-To fix the issue, call pm_runtime_get_sync() in
-serial8250_register_ports() as soon as .dev is set for an uart_port
-if it has console enabled.
 
-This problem became apparent only recently because 82586a721595 ("PM:
-runtime: Avoid device usage count underflows") added the warning
-printout. I confirmed this problem also occurs with v5.18 (w/o the
-warning printout, obviously).
+I would like to move forward with the micro-Watts in
+the Energy Model. We have feedback from our partners
+that this is a limitation. Also, as you can see
+this uW is part of the new SCMI spec, which we
+have support on our roadmap.
 
-Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
----
-v2:
-- Remove reference to reverted printk kthreads from the changelog
-- Collect rev/tested-bys
-
- drivers/tty/serial/8250/8250_core.c | 4 ++++
- drivers/tty/serial/serial_core.c    | 5 -----
- include/linux/serial_core.h         | 5 +++++
- 3 files changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 57e86133af4f..2e83e7367441 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -23,6 +23,7 @@
- #include <linux/sysrq.h>
- #include <linux/delay.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/tty.h>
- #include <linux/ratelimit.h>
- #include <linux/tty_flip.h>
-@@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 
- 		up->port.dev = dev;
- 
-+		if (uart_console_enabled(&up->port))
-+			pm_runtime_get_sync(up->port.dev);
-+
- 		serial8250_apply_quirks(up);
- 		uart_add_one_port(drv, &up->port);
- 	}
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 85ef7ef00b82..3161445504bc 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2024,11 +2024,6 @@ static int uart_proc_show(struct seq_file *m, void *v)
- }
- #endif
- 
--static inline bool uart_console_enabled(struct uart_port *port)
--{
--	return uart_console(port) && (port->cons->flags & CON_ENABLED);
--}
--
- static void uart_port_spin_lock_init(struct uart_port *port)
- {
- 	spin_lock_init(&port->lock);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index b7b86ee3cb12..9d8aa139b175 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -404,6 +404,11 @@ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
- static inline int setup_earlycon(char *buf) { return 0; }
- #endif
- 
-+static inline bool uart_console_enabled(struct uart_port *port)
-+{
-+	return uart_console(port) && (port->cons->flags & CON_ENABLED);
-+}
-+
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
- int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
-
--- 
-tg: (f287f971e256..) fix/console-usage_count (depends on: tty-next)
---8323329-1304406510-1656496125=:1529--
+Regards,
+Lukasz
