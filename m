@@ -2,85 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860BFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A420C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 14:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbiF2OGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
+        id S233954AbiF2OGb convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233883AbiF2OGN (ORCPT
+        with ESMTP id S233819AbiF2OGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:06:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F5A2B185
+        Wed, 29 Jun 2022 10:06:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF5F2B18F
         for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 07:06:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E513FB82426
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 14:06:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FFDC341CC;
-        Wed, 29 Jun 2022 14:06:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656511562;
-        bh=hQ4GAhXdMgF49WKm+/UqfK/ikb/wVg3umyPPuTJc5B4=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=hiVpqZ5ooSG23Egrz8t0eRL5wRs4x59r5mR3X6pG1Biqem7zx+KjCFGD5aj3bnSLE
-         evU6B9jOfOUqR6VyXKFqDfwxWniVsJmlTh5z7C/TsrAa5j5VwuMv/4xs22e0Uq+N6e
-         bs35PYcgw2+ZnlKf/gPY0IxBi2CVBlIXc0D6fdslkM5VvmIt+eb4PqRCqCb+pEaKBT
-         LJlpyWa0XjiPAF31i9So3nKSCyiLOfMzxUZ6N8awFxNi6529aFAecYXIvtOdbH8gAl
-         hH6UQKeineRn3/Om8AnmpfmZSQwFg3VVcI6LqRDi65zz9k9vZDktcL39E172GJWUiK
-         OQiZcKk7860WA==
-From:   Mark Brown <broonie@kernel.org>
-To:     heiko@sntech.de, judyhsiao@chromium.org
-Cc:     alsa-devel@alsa-project.org, wenst@chromium.org,
-        Rob Herring <robh+dt@kernel.org>, briannorris@chromium.org,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jaroslav Kysela <perex@perex.cz>,
-        Liam Girdwood <lgirdwood@gmail.com>
-In-Reply-To: <20220629080421.2427933-1-judyhsiao@chromium.org>
-References: <20220629080421.2427933-1-judyhsiao@chromium.org>
-Subject: Re: [PATCH v1 1/2] ASoC: rockchip: i2s: Remove unwanted dma settings in rockchip_i2s_probe
-Message-Id: <165651156008.1437597.7188024938057495855.b4-ty@kernel.org>
-Date:   Wed, 29 Jun 2022 15:06:00 +0100
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1o6YKP-0003Ah-2N; Wed, 29 Jun 2022 16:06:01 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1o6YKH-003Pob-GV; Wed, 29 Jun 2022 16:05:57 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1o6YKK-0009xY-Fi; Wed, 29 Jun 2022 16:05:56 +0200
+Message-ID: <b2a6aa583e4e523ebf52fe7dc82bc1d2bbbc2f10.camel@pengutronix.de>
+Subject: Re: [PATCH] MAINTAINERS: rectify entry for SYNOPSYS AXS10x RESET
+ CONTROLLER DRIVER
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 29 Jun 2022 16:05:56 +0200
+In-Reply-To: <20220601082239.12009-1-lukas.bulwahn@gmail.com>
+References: <20220601082239.12009-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 29 Jun 2022 08:04:21 +0000, Judy Hsiao wrote:
-> Remove the unwanted dma settings in rockchip_i2s_probe.
+On Mi, 2022-06-01 at 10:22 +0200, Lukas Bulwahn wrote:
+> Commit 820f722c05dd ("dt-bindings: reset: snps,axs10x-reset: Convert to
+> yaml") converts snps,axs10x-reset.txt to yaml, but misses to adjust its
+> reference in MAINTAINERS.
 > 
+> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+> broken reference.
 > 
+> Repair this file reference in SYNOPSYS AXS10x RESET CONTROLLER DRIVER.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-Applied to
+Thank you, applied to reset/fixes.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-
-Thanks!
-
-[1/2] ASoC: rockchip: i2s: Remove unwanted dma settings in rockchip_i2s_probe
-      commit: d6910eaa6fc71c0307e16b310a07cdb347d26d7d
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+regards
+Philipp
