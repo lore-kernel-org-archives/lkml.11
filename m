@@ -2,134 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D388C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D99C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 03:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiF2DkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 28 Jun 2022 23:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
+        id S229494AbiF2Dkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 28 Jun 2022 23:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbiF2DkU (ORCPT
+        with ESMTP id S229733AbiF2Dka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 28 Jun 2022 23:40:20 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BAA183B4
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 20:40:19 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31bf3674d86so37798117b3.5
-        for <linux-kernel@vger.kernel.org>; Tue, 28 Jun 2022 20:40:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=8RjJYdBEhWa5aatIqYt/+XHoNzjc8NbJULBjsluYrVE=;
-        b=jLGZbFhMtG722wzXR5XwfWchvwR72cPKTIpobAg8wvD70E5RqeB3lvA6SatbU7elpm
-         vt+MQ/ZhkpIcW7UVc/hstqVf8mFkPB/fg+GY0qPCwcvb7ofuJSxt9qJlQ2R7j3xV3bPY
-         16gVFGNQg1q6fxUo1T41huOihcyeh+17WtTNVCMFjC4YZHCDHisyRfR/Oil2zK73k1HJ
-         QIA85R2Ox9X0Jp3eHrZUkY3cNSzh/1Ea64UFWETJowKxFVGfvQkMkDGk1CNtNckoauVn
-         FGeyaghBfNu9x65AzTFHcbhTXVSyMeY4ywtEXWXp9YLjG0L83aSjlGaUwa6P8kqjesKY
-         SYtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=8RjJYdBEhWa5aatIqYt/+XHoNzjc8NbJULBjsluYrVE=;
-        b=J/Dia0bJtU5lMU0Q89N1/1F3wQAQFMoV374CJ485EaMlnSsBdMdIJChJWmMRmqefQn
-         FsaQPdywc508Gz4/wFSxdByFsb0JH1+4VxRWTcPazqa5xJy8FtOZA4NPHVUbaygeUa3A
-         3+XfVe+0LSR40wr1+61sCdHJk4q9Y4vSDmo84sY+u4KS4I2k+T3qxmzUAf3SEKqZgwch
-         RE1C0JUprLSveDDjuBhsaLsDFNcAHFbmbMpCRg0WDNz5mIkqNAOge/p+c8YiWxN63WC4
-         qgck5HvDCpQxG2SoEpz24MCpZyuBHcdlV4xGNZnD20qVk8XZ7tmUC9t0ycgIMxMcM0YJ
-         GcTQ==
-X-Gm-Message-State: AJIora9fWpfYQ2UDR1BvnrNyDbUgNgej0PfKw4s4ah478rEQWt4Il8lF
-        WjqTh1Vc0EUHcT9OcbGz8EpyaPp5kHqX
-X-Google-Smtp-Source: AGRyM1vF1/Ms3NeGo8pVqEI3ypqHRU7b3dURRNAvivVmfK2Vf/5cSVDGylX6xTncJcRD1uf3YUIFQkYp9Rno
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:f5a1:84fb:df7d:bd89])
- (user=irogers job=sendgmr) by 2002:a05:690c:110:b0:2ec:2d79:eee1 with SMTP id
- bd16-20020a05690c011000b002ec2d79eee1mr1732489ywb.21.1656474018652; Tue, 28
- Jun 2022 20:40:18 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 20:40:07 -0700
-Message-Id: <20220629034007.332804-1-irogers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH] perf test: Skip for paranoid 3
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Claire Jensen <cjense@google.com>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 28 Jun 2022 23:40:30 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870E6183B4;
+        Tue, 28 Jun 2022 20:40:29 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:34038)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o6OYz-005Xi0-LX; Tue, 28 Jun 2022 21:40:25 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57912 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o6OYy-0010GF-O0; Tue, 28 Jun 2022 21:40:25 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <20220505182645.497868-12-ebiederm@xmission.com>
+        <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        <877d5ajesi.fsf@email.froward.int.ebiederm.org>
+        <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        <87y1xk8zx5.fsf@email.froward.int.ebiederm.org>
+        <YrtKReO2vIiX8VVU@tuxmaker.boeblingen.de.ibm.com>
+        <87czess94h.fsf@email.froward.int.ebiederm.org>
+        <20220628184850.05f60d1e@gandalf.local.home>
+Date:   Tue, 28 Jun 2022 22:39:59 -0500
+In-Reply-To: <20220628184850.05f60d1e@gandalf.local.home> (Steven Rostedt's
+        message of "Tue, 28 Jun 2022 18:48:50 -0400")
+Message-ID: <87pmisqgs0.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-XM-SPF: eid=1o6OYy-0010GF-O0;;;mid=<87pmisqgs0.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18oP8UqrTa/BKAZUBBA+/xHj8a9vCOtJn8=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
+ TASK_STOPPED state
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add skip tests for paranoid level being 3.
-Rather than skipping lines starting "Failed", skip lines containing
-"failed" - making the behavior consistent with the previous python
-version.
+Steven Rostedt <rostedt@goodmis.org> writes:
 
-Fixes: ec906102e5b7 ("perf test: Fix "perf stat CSV output linter" test on s390")
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/tests/shell/stat+csv_output.sh | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+> On Tue, 28 Jun 2022 17:42:22 -0500
+> "Eric W. Biederman" <ebiederm@xmission.com> wrote:
+>
+>> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+>> index 156a99283b11..cb85bcf84640 100644
+>> --- a/kernel/ptrace.c
+>> +++ b/kernel/ptrace.c
+>> @@ -202,6 +202,7 @@ static bool ptrace_freeze_traced(struct task_struct *task)
+>>  	spin_lock_irq(&task->sighand->siglock);
+>>  	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
+>>  	    !__fatal_signal_pending(task)) {
+>> +		smp_rmb();
+>>  		task->jobctl |= JOBCTL_PTRACE_FROZEN;
+>>  		ret = true;
+>>  	}
+>> diff --git a/kernel/signal.c b/kernel/signal.c
+>> index edb1dc9b00dc..bcd576e9de66 100644
+>> --- a/kernel/signal.c
+>> +++ b/kernel/signal.c
+>> @@ -2233,6 +2233,7 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
+>>  		return exit_code;
+>>  
+>>  	set_special_state(TASK_TRACED);
+>> +	smp_wmb();
+>>  	current->jobctl |= JOBCTL_TRACED;
+>>  
+>
+> Are not these both done under the sighand->siglock spinlock?
+>
+> That is, the two paths should already be synchronized, and the memory
+> barriers will not help anything inside the locks. The locking should (and
+> must) handle all that.
 
-diff --git a/tools/perf/tests/shell/stat+csv_output.sh b/tools/perf/tests/shell/stat+csv_output.sh
-index 38c26f3ef4c1..b165c81fccb4 100755
---- a/tools/perf/tests/shell/stat+csv_output.sh
-+++ b/tools/perf/tests/shell/stat+csv_output.sh
-@@ -26,9 +26,8 @@ function commachecker()
- 
- 	while read line
- 	do
--		# Check for lines beginning with Failed
--		x=${line:0:6}
--		[ "$x" = "Failed" ] && continue
-+		# Skip lines containing failed.
-+		(echo "$line" | grep -q "failed") && continue
- 
- 		# Count the number of commas
- 		x=$(echo $line | tr -d -c ',')
-@@ -51,6 +50,11 @@ function ParanoidAndNotRoot()
- check_no_args()
- {
- 	echo -n "Checking CSV output: no args "
-+	if ParanoidAndNotRoot 2
-+	then
-+		echo "[Skip] paranoid and not root"
-+		return
-+	fi
- 	perf stat -x, true 2>&1 | commachecker --no-args
- 	echo "[Success]"
- }
-@@ -83,6 +87,11 @@ check_system_wide_no_aggr()
- check_interval()
- {
- 	echo -n "Checking CSV output: interval "
-+	if ParanoidAndNotRoot 2
-+	then
-+		echo "[Skip] paranoid and not root"
-+		return
-+	fi
- 	perf stat -x, -I 1000 true 2>&1 | commachecker --interval
- 	echo "[Success]"
- }
-@@ -91,6 +100,11 @@ check_interval()
- check_event()
- {
- 	echo -n "Checking CSV output: event "
-+	if ParanoidAndNotRoot 2
-+	then
-+		echo "[Skip] paranoid and not root"
-+		return
-+	fi
- 	perf stat -x, -e cpu-clock true 2>&1 | commachecker --event
- 	echo "[Success]"
- }
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+I would presume so to.  However the READ_ONCE that is going astray
+does not look like it is honoring that.
 
+So perhaps there is a bug in the s390 spin_lock barriers?  Perhaps there
+is a subtle detail in the barriers that spin locks provide that we are
+overlooking?
+
+I just know the observed behavior is:
+
+- reading tsk->jobctl and seeing  JOBCTL_TRACED set.
+- reading tsk->__state and seeing TASK_RUNNING.
+
+So unless PREEMPT_RT is enabled on s390.  It looks like there is a
+barrier problem.
+
+Alexander do you have PREEMPT_RT enabled on s390?  I have been assuming
+you don't but I figure I should ask and make certain as PREEMPT_RT can
+cause this kind of failure.
+
+Eric
