@@ -2,368 +2,337 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA856C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D51E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233798AbiF2PSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        id S233733AbiF2PTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233751AbiF2PSH (ORCPT
+        with ESMTP id S233203AbiF2PS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:18:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0135F1090
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:18:05 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1o6ZRy-0004xL-3C; Wed, 29 Jun 2022 17:17:54 +0200
-Message-ID: <7158eb7c000c1698d36fe2b32d8f6d040462a6f1.camel@pengutronix.de>
-Subject: Re: [PATCH V2 9/9] interconnect: imx: Add platform driver for imx8mp
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, djakov@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        abel.vesa@nxp.com, abailon@baylibre.com,
-        laurent.pinchart@ideasonboard.com, marex@denx.de,
-        paul.elder@ideasonboard.com, Markus.Niebel@ew.tq-group.com,
-        aford173@gmail.com
-Cc:     kernel@pengutronix.de, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        abelvesa@kernel.org, Peng Fan <peng.fan@nxp.com>
-Date:   Wed, 29 Jun 2022 17:17:52 +0200
-In-Reply-To: <20220616073320.2203000-10-peng.fan@oss.nxp.com>
-References: <20220616073320.2203000-1-peng.fan@oss.nxp.com>
-         <20220616073320.2203000-10-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 29 Jun 2022 11:18:59 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140E71E3C9
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:18:57 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id o16so23014982wra.4
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:18:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=fJse5KqWbuwn/VUV30Dz9BsnTu+EGVmWVk0nyUJPd4Y=;
+        b=pQFMWIQxFijTRDhNTLyt6M5Ynl5a5kc7eksrhhYFTJ5iNgFuEyKx5sTECS9FEruDKR
+         /60GWxtK6ZUhA/VsDoN/r6VRUrYclO2EtETysP0gxplua6x4zc5U7O9vBFs42KguJoAN
+         G+jmdsGaM09nmAY8n1Le3Ge6IrL6pNKaNGkuMH9EpniEe+ou3LC91p0vW/KFaTB0MUgx
+         T+6ymUn6lIEz6bNuURaMuBTODs3/0uhLT3//Z9XwImw/fYoNlFA3MluGI36Z0CL82L4b
+         wgip8VCk5ZIqvFzUrK6AgjmczTloZfBSJssWkK9IQpCvzILcSbBW5nD5cEMuMtAqvYSC
+         9Zsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=fJse5KqWbuwn/VUV30Dz9BsnTu+EGVmWVk0nyUJPd4Y=;
+        b=J0iXvV5MbaT2CgmcTWYv/xrXfZtVBvMTmOnTuycY0iZ5vgI6GOtSFK1FTnp10E72yF
+         bxfAwEQ3ZPmFTnUW5zAJe1XdraKS7pI+JIeZgBA3wdb0Lo1fYfk3m3pz685d6CTliEOS
+         N6pB+Ta/XfC7kFAcAsC/fhqFR7K4qmqMi/3DjvcFdcOR3ZV4sFu3HdDFuBM1PH1Passq
+         Bc9qHlUO+HHMIGLxW+fupqq0OHctVs3oP6YjaoSZmQothCbhjyThDxExUJsbUAQETXbn
+         9G6G0+nY0MijheRUmm6tU05DtI0O0W6fajQmQEDy4vaj8ucxqoBa7pEsiLhTPP2cvS59
+         lG9g==
+X-Gm-Message-State: AJIora9fX6zAnITaEVhj93x6am3dyJ/za6Mmj7aGTJdvek0qQGgOyqIB
+        JYYFKnzXAcY70i3xWN28A3pnmA==
+X-Google-Smtp-Source: AGRyM1tPrpet2wuMOAX02yV5opT1/st2/CMdjOr0+R5Ix0YJ8uh5qJeYJS3L6N2h2vg2AaDNhC+Yzw==
+X-Received: by 2002:a5d:5601:0:b0:21b:8f5f:9712 with SMTP id l1-20020a5d5601000000b0021b8f5f9712mr3520188wrv.548.1656515935510;
+        Wed, 29 Jun 2022 08:18:55 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id q5-20020adff945000000b0021b9585276dsm16536366wrr.101.2022.06.29.08.18.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 08:18:55 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 16:18:53 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Subject: Re: [PATCH V15 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
+Message-ID: <YrxtXdOsIZ5LKhdV@google.com>
+References: <1655200111-18357-7-git-send-email-quic_c_skakit@quicinc.com>
+ <YquZRcuRCrdF+Q1z@google.com>
+ <eccbb030-97f7-3a6c-958e-05adcdca6210@quicinc.com>
+ <YrAt6dq6ty9p8d05@google.com>
+ <a11732d6-a9b1-7ead-e89a-564a57a7192b@quicinc.com>
+ <503f1a8b-eadb-d3a6-6e24-d60437f778b6@quicinc.com>
+ <YrlfF+DMlGFsVBdk@google.com>
+ <a1c6e3c9-962d-411e-7fbf-9e760e9dc8c0@quicinc.com>
+ <Yrqw1YRyCGG+d4GL@google.com>
+ <4112b5af-15de-007c-fcc2-c31ce9f9e426@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4112b5af-15de-007c-fcc2-c31ce9f9e426@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, dem 16.06.2022 um 15:33 +0800 schrieb Peng Fan (OSS):
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Add a platform driver for the i.MX8MP SoC describing bus topology, based
-> on internal documentation.
-
-This series is missing the compatible addition in drivers/devfreq/imx-
-bus.c to make the platform driver probe.
-
-Other than that, looks good.
-
-Regards,
-Lucas
+On Wed, 29 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
 
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/interconnect/imx/Kconfig  |   4 +
->  drivers/interconnect/imx/Makefile |   2 +
->  drivers/interconnect/imx/imx8mp.c | 259 ++++++++++++++++++++++++++++++
->  3 files changed, 265 insertions(+)
->  create mode 100644 drivers/interconnect/imx/imx8mp.c
+> On 6/28/2022 1:12 PM, Lee Jones wrote:
+> > On Tue, 28 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
+> > 
+> > > On 6/27/2022 1:11 PM, Lee Jones wrote:
+> > > > On Mon, 27 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
+> > > > 
+> > > > > Hi Lee,
+> > > > > 
+> > > > > 
+> > > > > On 6/20/2022 4:37 PM, Satya Priya Kakitapalli (Temp) wrote:
+> > > > > > On 6/20/2022 1:50 PM, Lee Jones wrote:
+> > > > > > > On Mon, 20 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
+> > > > > > > 
+> > > > > > > > On 6/17/2022 2:27 AM, Lee Jones wrote:
+> > > > > > > > > On Tue, 14 Jun 2022, Satya Priya wrote:
+> > > > > > > > > 
+> > > > > > > > > > Use i2c_new_dummy_device() to register pm8008-regulator
+> > > > > > > > > > client present at a different address space, instead of
+> > > > > > > > > > defining a separate DT node. This avoids calling the probe
+> > > > > > > > > > twice for the same chip, once for each client pm8008-infra
+> > > > > > > > > > and pm8008-regulator.
+> > > > > > > > > > 
+> > > > > > > > > > As a part of this define pm8008_regmap_init() to do regmap
+> > > > > > > > > > init for both the clients and define pm8008_get_regmap() to
+> > > > > > > > > > pass the regmap to the regulator driver.
+> > > > > > > > > > 
+> > > > > > > > > > Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> > > > > > > > > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > > > > > > > > > ---
+> > > > > > > > > > Changes in V15:
+> > > > > > > > > >      - None.
+> > > > > > > > > > 
+> > > > > > > > > > Changes in V14:
+> > > > > > > > > >      - None.
+> > > > > > > > > > 
+> > > > > > > > > > Changes in V13:
+> > > > > > > > > >      - None.
+> > > > > > > > > > 
+> > > > > > > > > >      drivers/mfd/qcom-pm8008.c       | 34
+> > > > > > > > > > ++++++++++++++++++++++++++++++++--
+> > > > > > > > > >      include/linux/mfd/qcom_pm8008.h |  9 +++++++++
+> > > > > > > > > >      2 files changed, 41 insertions(+), 2 deletions(-)
+> > > > > > > > > >      create mode 100644 include/linux/mfd/qcom_pm8008.h
+> > > > > > > > > > 
+> > > > > > > > > > diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+> > > > > > > > > > index 569ffd50..55e2a8e 100644
+> > > > > > > > > > --- a/drivers/mfd/qcom-pm8008.c
+> > > > > > > > > > +++ b/drivers/mfd/qcom-pm8008.c
+> > > > > > > > > > @@ -9,6 +9,7 @@
+> > > > > > > > > >      #include <linux/interrupt.h>
+> > > > > > > > > >      #include <linux/irq.h>
+> > > > > > > > > >      #include <linux/irqdomain.h>
+> > > > > > > > > > +#include <linux/mfd/qcom_pm8008.h>
+> > > > > > > > > >      #include <linux/module.h>
+> > > > > > > > > >      #include <linux/of_device.h>
+> > > > > > > > > >      #include <linux/of_platform.h>
+> > > > > > > > > > @@ -57,6 +58,7 @@ enum {
+> > > > > > > > > >      struct pm8008_data {
+> > > > > > > > > >          struct device *dev;
+> > > > > > > > > > +    struct regmap *regulators_regmap;
+> > > > > > > > > >          int irq;
+> > > > > > > > > >          struct regmap_irq_chip_data *irq_data;
+> > > > > > > > > >      };
+> > > > > > > > > > @@ -150,6 +152,12 @@ static struct regmap_config
+> > > > > > > > > > qcom_mfd_regmap_cfg = {
+> > > > > > > > > >          .max_register    = 0xFFFF,
+> > > > > > > > > >      };
+> > > > > > > > > > +struct regmap *pm8008_get_regmap(const struct pm8008_data *chip)
+> > > > > > > > > > +{
+> > > > > > > > > > +    return chip->regulators_regmap;
+> > > > > > > > > > +}
+> > > > > > > > > > +EXPORT_SYMBOL_GPL(pm8008_get_regmap);
+> > > > > > > > > Seems like abstraction for the sake of abstraction.
+> > > > > > > > > 
+> > > > > > > > > Why not do the dereference inside the regulator driver?
+> > > > > > > > To derefer this in the regulator driver, we need to have the
+> > > > > > > > pm8008_data
+> > > > > > > > struct definition in the qcom_pm8008 header file.
+> > > > > > > > 
+> > > > > > > > I think it doesn't look great to have only that structure in
+> > > > > > > > header and all
+> > > > > > > > other structs and enum in the mfd driver.
+> > > > > > > Then why pass 'pm8008_data' at all?
+> > > > > > There is one more option, instead of passing the pm8008_data, we could
+> > > > > > pass the pdev->dev.parent and get the pm8008 chip data directly in the
+> > > > > > pm8008_get_regmap() like below
+> > > > > > 
+> > > > > > 
+> > > > > > struct regmap *pm8008_get_regmap(const struct device *dev)
+> > > > > >    {
+> > > > > >        const struct pm8008_data *chip = dev_get_drvdata(dev);
+> > > > > > 
+> > > > > >        return chip->regulators_regmap;
+> > > > > > }
+> > > > > > EXPORT_SYMBOL_GPL(pm8008_get_regmap);
+> > > > > > 
+> > > > > > 
+> > > > > > By doing this we can avoid having declaration of pm8008_data also in the
+> > > > > > header. Please let me know if this looks good.
+> > > > > > 
+> > > > > Could you please confirm on this?
+> > > > > 
+> > > > > > > What's preventing you from passing 'regmap'?
+> > > > > > I didn't get what you meant here, could you please elaborate a bit?
+> > > > Ah yes.  I authored you a patch, but became distracted. Here:
+> > > > 
+> > > > -----8<--------------------8<-------
+> > > > 
+> > > > From: Lee Jones <lee.jones@linaro.org>
+> > > > 
+> > > > mfd: pm8008: Remove driver data structure pm8008_data
+> > > > Maintaining a local driver data structure that is never shared
+> > > > outside of the core device is an unnecessary complexity.  Half of the
+> > > > attributes were not used outside of a single function, one of which
+> > > > was not used at all.  The remaining 2 are generic and can be passed
+> > > > around as required.
+> > > 
+> > > Okay, but we still need to store the regulators_regmap, which is required in
+> > > the pm8008 regulator driver. Could we use a global variable for it?
+> > Look down ...
+> > 
+> > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > ---
+> > > >    drivers/mfd/qcom-pm8008.c | 53 ++++++++++++++++++-----------------------------
+> > > >    1 file changed, 20 insertions(+), 33 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+> > > > index c472d7f8103c4..4b8ff947762f2 100644
+> > > > --- a/drivers/mfd/qcom-pm8008.c
+> > > > +++ b/drivers/mfd/qcom-pm8008.c
+> > > > @@ -54,13 +54,6 @@ enum {
+> > > >    #define PM8008_PERIPH_OFFSET(paddr)	(paddr - PM8008_PERIPH_0_BASE)
+> > > > -struct pm8008_data {
+> > > > -	struct device *dev;
+> > > > -	struct regmap *regmap;
+> > > > -	int irq;
+> > > > -	struct regmap_irq_chip_data *irq_data;
+> > > > -};
+> > > > -
+> > > >    static unsigned int p0_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_0_BASE)};
+> > > >    static unsigned int p1_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_1_BASE)};
+> > > >    static unsigned int p2_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_2_BASE)};
+> > > > @@ -150,7 +143,7 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
+> > > >    	.max_register	= 0xFFFF,
+> > > >    };
+> > > > -static int pm8008_init(struct pm8008_data *chip)
+> > > > +static int pm8008_init(struct regmap *regmap)
+> > > >    {
+> > > >    	int rc;
+> > > > @@ -160,34 +153,31 @@ static int pm8008_init(struct pm8008_data *chip)
+> > > >    	 * This is required to enable the writing of TYPE registers in
+> > > >    	 * regmap_irq_sync_unlock().
+> > > >    	 */
+> > > > -	rc = regmap_write(chip->regmap,
+> > > > -			 (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET),
+> > > > -			 BIT(0));
+> > > > +	rc = regmap_write(regmap, (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+> > > >    	if (rc)
+> > > >    		return rc;
+> > > >    	/* Do the same for GPIO1 and GPIO2 peripherals */
+> > > > -	rc = regmap_write(chip->regmap,
+> > > > -			 (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+> > > > +	rc = regmap_write(regmap, (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+> > > >    	if (rc)
+> > > >    		return rc;
+> > > > -	rc = regmap_write(chip->regmap,
+> > > > -			 (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+> > > > +	rc = regmap_write(regmap, (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
+> > > >    	return rc;
+> > > >    }
+> > > > -static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
+> > > > +static int pm8008_probe_irq_peripherals(struct device *dev,
+> > > > +					struct regmap *regmap,
+> > > >    					int client_irq)
+> > > >    {
+> > > >    	int rc, i;
+> > > >    	struct regmap_irq_type *type;
+> > > >    	struct regmap_irq_chip_data *irq_data;
+> > > > -	rc = pm8008_init(chip);
+> > > > +	rc = pm8008_init(regmap);
+> > > >    	if (rc) {
+> > > > -		dev_err(chip->dev, "Init failed: %d\n", rc);
+> > > > +		dev_err(dev, "Init failed: %d\n", rc);
+> > > >    		return rc;
+> > > >    	}
+> > > > @@ -207,10 +197,10 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
+> > > >    				IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW);
+> > > >    	}
+> > > > -	rc = devm_regmap_add_irq_chip(chip->dev, chip->regmap, client_irq,
+> > > > +	rc = devm_regmap_add_irq_chip(dev, regmap, client_irq,
+> > > >    			IRQF_SHARED, 0, &pm8008_irq_chip, &irq_data);
+> > > >    	if (rc) {
+> > > > -		dev_err(chip->dev, "Failed to add IRQ chip: %d\n", rc);
+> > > > +		dev_err(dev, "Failed to add IRQ chip: %d\n", rc);
+> > > >    		return rc;
+> > > >    	}
+> > > > @@ -220,26 +210,23 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
+> > > >    static int pm8008_probe(struct i2c_client *client)
+> > > >    {
+> > > >    	int rc;
+> > > > -	struct pm8008_data *chip;
+> > > > -
+> > > > -	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+> > > > -	if (!chip)
+> > > > -		return -ENOMEM;
+> > > > +	struct device *dev;
+> > > > +	struct regmap *regmap;
+> > > > -	chip->dev = &client->dev;
+> > > > -	chip->regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
+> > > > -	if (!chip->regmap)
+> > > > +	dev = &client->dev;
+> > > > +	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
+> > > > +	if (!regmap)
+> > > >    		return -ENODEV;
+> > > > -	i2c_set_clientdata(client, chip);
+> > > > +	i2c_set_clientdata(client, regmap);
+> > Here ^
 > 
-> diff --git a/drivers/interconnect/imx/Kconfig b/drivers/interconnect/imx/Kconfig
-> index be2928362bb7..c772552431f5 100644
-> --- a/drivers/interconnect/imx/Kconfig
-> +++ b/drivers/interconnect/imx/Kconfig
-> @@ -15,3 +15,7 @@ config INTERCONNECT_IMX8MN
->  config INTERCONNECT_IMX8MQ
->  	tristate "i.MX8MQ interconnect driver"
->  	depends on INTERCONNECT_IMX
+> 
+> I have added a dummy device and set the client data by passing regmap, see
+> below:
+> 
+> +       regulators_client = i2c_new_dummy_device(client->adapter,
+> client->addr + 1);
+> +       if (IS_ERR(regulators_client)) {
+> +               dev_err(dev, "can't attach client\n");
+> +               return PTR_ERR(regulators_client);
+> +       }
 > +
-> +config INTERCONNECT_IMX8MP
-> +	tristate "i.MX8MP interconnect driver"
-> +	depends on INTERCONNECT_IMX
-> diff --git a/drivers/interconnect/imx/Makefile b/drivers/interconnect/imx/Makefile
-> index 21fd5233754f..16d256cdeab4 100644
-> --- a/drivers/interconnect/imx/Makefile
-> +++ b/drivers/interconnect/imx/Makefile
-> @@ -2,8 +2,10 @@ imx-interconnect-objs			:= imx.o
->  imx8mm-interconnect-objs       		:= imx8mm.o
->  imx8mq-interconnect-objs       		:= imx8mq.o
->  imx8mn-interconnect-objs       		:= imx8mn.o
-> +imx8mp-interconnect-objs       		:= imx8mp.o
->  
->  obj-$(CONFIG_INTERCONNECT_IMX)		+= imx-interconnect.o
->  obj-$(CONFIG_INTERCONNECT_IMX8MM)	+= imx8mm-interconnect.o
->  obj-$(CONFIG_INTERCONNECT_IMX8MQ)	+= imx8mq-interconnect.o
->  obj-$(CONFIG_INTERCONNECT_IMX8MN)	+= imx8mn-interconnect.o
-> +obj-$(CONFIG_INTERCONNECT_IMX8MP)	+= imx8mp-interconnect.o
-> diff --git a/drivers/interconnect/imx/imx8mp.c b/drivers/interconnect/imx/imx8mp.c
-> new file mode 100644
-> index 000000000000..2be2e9e2974e
-> --- /dev/null
-> +++ b/drivers/interconnect/imx/imx8mp.c
-> @@ -0,0 +1,259 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Interconnect framework driver for i.MX8MP SoC
-> + *
-> + * Copyright 2022 NXP
-> + * Peng Fan <peng.fan@nxp.com>
-> + */
+> +       regulators_regmap = devm_regmap_init_i2c(regulators_client,
+> &qcom_mfd_regmap_cfg[1]);
+> +       if (!regmap)
+> +               return -ENODEV;
 > +
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <dt-bindings/interconnect/fsl,imx8mp.h>
-> +
-> +#include "imx.h"
-> +
-> +static const struct imx_icc_node_adj_desc imx8mp_noc_adj = {
-> +	.bw_mul = 1,
-> +	.bw_div = 16,
-> +	.main_noc = true,
-> +};
-> +
-> +static struct imx_icc_noc_setting noc_setting_nodes[] = {
-> +	[IMX8MP_ICM_MLMIX] = {
-> +		.reg = 0x180,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_DSP] = {
-> +		.reg = 0x200,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_SDMA2PER] = {
-> +		.reg = 0x280,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 4,
-> +	},
-> +	[IMX8MP_ICM_SDMA2BURST] = {
-> +		.reg = 0x300,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 4,
-> +	},
-> +	[IMX8MP_ICM_SDMA3PER] = {
-> +		.reg = 0x380,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 4,
-> +	},
-> +	[IMX8MP_ICM_SDMA3BURST] = {
-> +		.reg = 0x400,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 4,
-> +	},
-> +	[IMX8MP_ICM_EDMA] = {
-> +		.reg = 0x480,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 4,
-> +	},
-> +	[IMX8MP_ICM_GPU3D] = {
-> +		.reg = 0x500,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_GPU2D] = {
-> +		.reg = 0x580,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_HRV] = {
-> +		.reg = 0x600,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_LCDIF_HDMI] = {
-> +		.reg = 0x680,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_HDCP] = {
-> +		.reg = 0x700,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 5,
-> +	},
-> +	[IMX8MP_ICM_NOC_PCIE] = {
-> +		.reg = 0x780,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_USB1] = {
-> +		.reg = 0x800,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_USB2] = {
-> +		.reg = 0x880,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_PCIE] = {
-> +		.reg = 0x900,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_LCDIF_RD] = {
-> +		.reg = 0x980,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_LCDIF_WR] = {
-> +		.reg = 0xa00,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_ISI0] = {
-> +		.reg = 0xa80,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_ISI1] = {
-> +		.reg = 0xb00,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_ISI2] = {
-> +		.reg = 0xb80,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 2,
-> +		.ext_control = 1,
-> +	},
-> +	[IMX8MP_ICM_ISP0] = {
-> +		.reg = 0xc00,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 7,
-> +	},
-> +	[IMX8MP_ICM_ISP1] = {
-> +		.reg = 0xc80,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 7,
-> +	},
-> +	[IMX8MP_ICM_DWE] = {
-> +		.reg = 0xd00,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 7,
-> +	},
-> +	[IMX8MP_ICM_VPU_G1] = {
-> +		.reg = 0xd80,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_VPU_G2] = {
-> +		.reg = 0xe00,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICM_VPU_H1] = {
-> +		.reg = 0xe80,
-> +		.mode = IMX_NOC_MODE_FIXED,
-> +		.prio_level = 3,
-> +	},
-> +	[IMX8MP_ICN_MEDIA] = {
-> +		.ignore = true,
-> +	},
-> +	[IMX8MP_ICN_VIDEO] = {
-> +		.ignore = true,
-> +	},
-> +	[IMX8MP_ICN_AUDIO] = {
-> +		.ignore = true,
-> +	},
-> +	[IMX8MP_ICN_HDMI] = {
-> +		.ignore = true,
-> +	},
-> +	[IMX8MP_ICN_GPU] = {
-> +		.ignore = true,
-> +	},
-> +	[IMX8MP_ICN_HSIO] = {
-> +		.ignore = true,
-> +	},
-> +};
-> +
-> +/* Describe bus masters, slaves and connections between them */
-> +static struct imx_icc_node_desc nodes[] = {
-> +	DEFINE_BUS_INTERCONNECT("NOC", IMX8MP_ICN_NOC, &imx8mp_noc_adj,
-> +				IMX8MP_ICS_DRAM, IMX8MP_ICN_MAIN),
-> +
-> +	DEFINE_BUS_SLAVE("OCRAM", IMX8MP_ICS_OCRAM, NULL),
-> +	DEFINE_BUS_SLAVE("DRAM", IMX8MP_ICS_DRAM, NULL),
-> +	DEFINE_BUS_MASTER("A53", IMX8MP_ICM_A53, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("SUPERMIX", IMX8MP_ICM_SUPERMIX, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("GIC", IMX8MP_ICM_GIC, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("MLMIX", IMX8MP_ICM_MLMIX, IMX8MP_ICN_NOC),
-> +
-> +	DEFINE_BUS_INTERCONNECT("NOC_AUDIO", IMX8MP_ICN_AUDIO, NULL, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("DSP", IMX8MP_ICM_DSP, IMX8MP_ICN_AUDIO),
-> +	DEFINE_BUS_MASTER("SDMA2PER", IMX8MP_ICM_SDMA2PER, IMX8MP_ICN_AUDIO),
-> +	DEFINE_BUS_MASTER("SDMA2BURST", IMX8MP_ICM_SDMA2BURST, IMX8MP_ICN_AUDIO),
-> +	DEFINE_BUS_MASTER("SDMA3PER", IMX8MP_ICM_SDMA3PER, IMX8MP_ICN_AUDIO),
-> +	DEFINE_BUS_MASTER("SDMA3BURST", IMX8MP_ICM_SDMA3BURST, IMX8MP_ICN_AUDIO),
-> +	DEFINE_BUS_MASTER("EDMA", IMX8MP_ICM_EDMA, IMX8MP_ICN_AUDIO),
-> +
-> +	DEFINE_BUS_INTERCONNECT("NOC_GPU", IMX8MP_ICN_GPU, NULL, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("GPU 2D", IMX8MP_ICM_GPU2D, IMX8MP_ICN_GPU),
-> +	DEFINE_BUS_MASTER("GPU 3D", IMX8MP_ICM_GPU3D, IMX8MP_ICN_GPU),
-> +
-> +	DEFINE_BUS_INTERCONNECT("NOC_HDMI", IMX8MP_ICN_HDMI, NULL, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("HRV", IMX8MP_ICM_HRV, IMX8MP_ICN_HDMI),
-> +	DEFINE_BUS_MASTER("LCDIF_HDMI", IMX8MP_ICM_LCDIF_HDMI, IMX8MP_ICN_HDMI),
-> +	DEFINE_BUS_MASTER("HDCP", IMX8MP_ICM_HDCP, IMX8MP_ICN_HDMI),
-> +
-> +	DEFINE_BUS_INTERCONNECT("NOC_HSIO", IMX8MP_ICN_HSIO, NULL, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("NOC_PCIE", IMX8MP_ICM_NOC_PCIE, IMX8MP_ICN_HSIO),
-> +	DEFINE_BUS_MASTER("USB1", IMX8MP_ICM_USB1, IMX8MP_ICN_HSIO),
-> +	DEFINE_BUS_MASTER("USB2", IMX8MP_ICM_USB2, IMX8MP_ICN_HSIO),
-> +	DEFINE_BUS_MASTER("PCIE", IMX8MP_ICM_PCIE, IMX8MP_ICN_HSIO),
-> +
-> +	DEFINE_BUS_INTERCONNECT("NOC_MEDIA", IMX8MP_ICN_MEDIA, NULL, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("LCDIF_RD", IMX8MP_ICM_LCDIF_RD, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("LCDIF_WR", IMX8MP_ICM_LCDIF_WR, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("ISI0", IMX8MP_ICM_ISI0, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("ISI1", IMX8MP_ICM_ISI1, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("ISI2", IMX8MP_ICM_ISI2, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("ISP0", IMX8MP_ICM_ISP0, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("ISP1", IMX8MP_ICM_ISP1, IMX8MP_ICN_MEDIA),
-> +	DEFINE_BUS_MASTER("DWE", IMX8MP_ICM_DWE, IMX8MP_ICN_MEDIA),
-> +
-> +	DEFINE_BUS_INTERCONNECT("NOC_VIDEO", IMX8MP_ICN_VIDEO, NULL, IMX8MP_ICN_NOC),
-> +	DEFINE_BUS_MASTER("VPU G1", IMX8MP_ICM_VPU_G1, IMX8MP_ICN_VIDEO),
-> +	DEFINE_BUS_MASTER("VPU G2", IMX8MP_ICM_VPU_G2, IMX8MP_ICN_VIDEO),
-> +	DEFINE_BUS_MASTER("VPU H1", IMX8MP_ICM_VPU_H1, IMX8MP_ICN_VIDEO),
-> +	DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MP_ICN_MAIN, NULL,
-> +				IMX8MP_ICN_NOC, IMX8MP_ICS_OCRAM),
-> +};
-> +
-> +static int imx8mp_icc_probe(struct platform_device *pdev)
-> +{
-> +	return imx_icc_register(pdev, nodes, ARRAY_SIZE(nodes), noc_setting_nodes);
-> +}
-> +
-> +static int imx8mp_icc_remove(struct platform_device *pdev)
-> +{
-> +	return imx_icc_unregister(pdev);
-> +}
-> +
-> +static struct platform_driver imx8mp_icc_driver = {
-> +	.probe = imx8mp_icc_probe,
-> +	.remove = imx8mp_icc_remove,
-> +	.driver = {
-> +		.name = "imx8mp-interconnect",
-> +	},
-> +};
-> +
-> +module_platform_driver(imx8mp_icc_driver);
-> +MODULE_AUTHOR("Peng Fan <peng.fan@nxp.com>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_ALIAS("platform:imx8mp-interconnect");
+> +       i2c_set_clientdata(client, regulators_regmap);
+> 
+> Now if i try to get this regmap from regulator driver by doing
+> 
+> struct regmap *regmap = dev_get_drvdata(pdev->dev.parent);
+> 
+> it still gets me the regmap of pm8008@8 device and not the regulator device
+> regmap (0x9). Not sure if I'm missing something here.
 
+So you need to pass 2 regmap pointers?
 
+If you need to pass more than one item to the child devices, you do
+need to use a struct for that.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
