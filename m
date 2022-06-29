@@ -2,99 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CFDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D708CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 29 Jun 2022 15:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234344AbiF2Pmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 11:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
+        id S234022AbiF2Prh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 11:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233095AbiF2Pm1 (ORCPT
+        with ESMTP id S232131AbiF2Prf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 11:42:27 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8447935A8F
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:42:26 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id r3so28691282ybr.6
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:42:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kFXDBwOzenoR/IvZm8NoEQWhPAwy/n8DtCUua6hWSQI=;
-        b=dL4T+j9wg41AYrbrmU+2vsi4CS08fGzl//oLQcwepOgztP2mC/OeDrD35dw5HnXEm+
-         W7NWG6l3Gsa6KOwy4ipocMxwWntMmFMDlDGf5bj5aaA1CbDyMBoKBG3fCkGdm5xLIy+l
-         vvx1xDqsPB4naNOADmtJWSaF+x3YJnI+0EAxqSOImkU14pDwC/nTPSOmJ4SkHN0+8z9e
-         MVTRNyJUnF98vsSb/AhWmU7wccVYxQZWIuqC/tG5W9T1KG1g/CGGFtoVw7G6p5/1Djnu
-         HEW7Qv4HsBeSejvV9MMxxAuqCadMs2tPZXJTWoyc1+R5ZkWKETyd9mh4aS9+S4FepZqs
-         xGrQ==
+        Wed, 29 Jun 2022 11:47:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 112A1AE63
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:47:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656517654;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U8Ds3TbgTN/BrvT8Bwf0Lryi8VbFB5ioWWlf5jjfYQo=;
+        b=D8c8PakH6L0C4svJ1dKfkTLCpxDoimpziNrXoY5P/0+TpdArUkUT8Q2VW3nepErlQfSuQP
+        eorQRih/AMrwUr8yDjNycqLxamzQqS/ZfNmu8pRYFmFZ/yWUfSjt3n4cnBbUwQVp67SvNr
+        zO3463NmHnTmHv6NBr1rBa+EEc/LQTg=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-250-6nKNKTbhPcyIm0slaLu9TQ-1; Wed, 29 Jun 2022 11:47:32 -0400
+X-MC-Unique: 6nKNKTbhPcyIm0slaLu9TQ-1
+Received: by mail-il1-f198.google.com with SMTP id i8-20020a056e020d8800b002d931252904so9237510ilj.23
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 08:47:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kFXDBwOzenoR/IvZm8NoEQWhPAwy/n8DtCUua6hWSQI=;
-        b=epwuxdi/VbUi6tI1/8gEsOqHyRV/qZxgV7XaSdQqKCQol48CP23Yn6Nu2Ebdmcqwqy
-         KdfOs8kb/dJuxzjEB6WKTNPVsK1Vo23Lv3Btu458ItjNGkPf1MuqylRSvsdvA0cyY+ib
-         6fIR2wlfLLKUSdZdquwgiqOfhV3awMIiZlDvfvow1RZ7j9Z5p9N7yVddfIEj+gqjjV9f
-         VWAPxNdgKVQxZFELSYRYVrKJHfqAz8Xo2ur2wHCy5bmcAqgCb5AwHYucd4gHOiyf44f7
-         oiYluY9PBzRhbt0cDPb7bIlGPz+vm1/LiIujgRA6SByNL6MWJzf1zN28hA5b75bANnkp
-         XHVg==
-X-Gm-Message-State: AJIora9/Y1ofuubgvGFqJXPuS74JTRevNnoH/xAvjpk1yn9HS2NH8YLj
-        r/tUjg1sGG2qInJ4e024r/jsAYMJvlYjqvTbgCw=
-X-Google-Smtp-Source: AGRyM1t0QblZa9tMy8MYzkhVn8kCamFMKcyTupNGw+ifnip6aZhp/Ymvt4qwZdaPBeOaGXQN8yfOwkvpw3tMa3SVZhA=
-X-Received: by 2002:a25:ca0a:0:b0:66b:4e6c:e094 with SMTP id
- a10-20020a25ca0a000000b0066b4e6ce094mr4358516ybg.296.1656517345645; Wed, 29
- Jun 2022 08:42:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U8Ds3TbgTN/BrvT8Bwf0Lryi8VbFB5ioWWlf5jjfYQo=;
+        b=rPp2c7/2Uh5tT5gEP5A1mhRkGlrI1B9pL0VMF9FNswIlRjT57ttjMJP8DOw2/WByZh
+         NFAm+/8MU8ipL+Q/iI5KOMbUPvmLuMFXWxYtdcXJs5Xg8oRdmGmf5uqj3Ewc+BnF130U
+         07bZGwpURW9YVnQqMN/YBKGEohdCXbKFOPB9ZTchB01Ee8KDKqV9J3Dxe+SVoP3rcnCZ
+         kxkbGuxbTzuISsKsDFzPdwoEbfnb2gm3+DCylLDyBUbVuIM3TxMGwrBR4yBfH8Y2AKfH
+         ZGZA4KOYiYXYljuAO75EpWsWMSd6BWmaUPG5USwCH9guRLFMjA8kyIw/FLNCpf44r7Ez
+         NJFg==
+X-Gm-Message-State: AJIora/s0V7Up2Bo3Dl/MgHU4ULZpjGKMeB6o1198VclGUpbwT+Fmf50
+        NXGWsXBkaeSdig0IzSHQtKxrlOBPA8ZX+6kvwLbzjbBzXZtkotpI6XhRRUYrWLtaoTuNl7MTQTs
+        UFKQE1VjivjBrjdL0Pe/klhT6
+X-Received: by 2002:a05:6602:2cce:b0:675:544e:da0b with SMTP id j14-20020a0566022cce00b00675544eda0bmr1865125iow.123.1656517652112;
+        Wed, 29 Jun 2022 08:47:32 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uu/XLV/wT9doTP58QoaWMZhzxtKJWV9+WuLdJ85w0ChD+SfmtkCnXBya/7EZkV1EBDilbTMQ==
+X-Received: by 2002:a05:6602:2cce:b0:675:544e:da0b with SMTP id j14-20020a0566022cce00b00675544eda0bmr1865111iow.123.1656517651766;
+        Wed, 29 Jun 2022 08:47:31 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id a22-20020a027356000000b00331cfbce17csm7439570jae.100.2022.06.29.08.47.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 08:47:30 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 11:47:29 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Linux MM Mailing List <linux-mm@kvack.org>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH 1/4] mm/gup: Add FOLL_INTERRUPTIBLE
+Message-ID: <Yrx0ETyb2kk4fO4M@xz-m1.local>
+References: <20220622213656.81546-1-peterx@redhat.com>
+ <20220622213656.81546-2-peterx@redhat.com>
+ <c196a140-6ee4-850c-004a-9c9d1ff1faa6@nvidia.com>
+ <YrtXGf20oa5eYgIU@xz-m1.local>
+ <16c181d3-09ef-ace4-c910-0a13fc245e48@nvidia.com>
+ <YruBzuJf9s/Nmr6W@xz-m1.local>
+ <177284f9-416d-c142-a826-e9a497751fca@nvidia.com>
 MIME-Version: 1.0
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <Yrmr175fsQi6ToEY@google.com> <YrrO0CQVv6hj1AB0@smile.fi.intel.com> <YrxjTD0sJXh8cgVP@google.com>
-In-Reply-To: <YrxjTD0sJXh8cgVP@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 29 Jun 2022 17:41:48 +0200
-Message-ID: <CAHp75VdHpqAxS3jmFi-1Sw6wB1CP3wQVM_+5OP0C_yFFG336LA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/9] mfd: intel_soc_pmic_crc: Merge Intel PMIC core to crc
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <177284f9-416d-c142-a826-e9a497751fca@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 4:36 PM Lee Jones <lee.jones@linaro.org> wrote:
-> On Tue, 28 Jun 2022, Andy Shevchenko wrote:> > On Mon, Jun 27, 2022 at 02:08:39PM +0100, Lee Jones wrote:
-> > > On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+On Tue, Jun 28, 2022 at 05:31:43PM -0700, John Hubbard wrote:
+> On 6/28/22 15:33, Peter Xu wrote:
+> > > The key point is the connection between "locked" and killable. If the comment
+> > > explained why "locked" means "killable", that would help clear this up. The
+> > > NOWAIT sentence is also confusing to me, and adding "mostly NOWAIT" does not
+> > > clear it up either... :)
+> > 
+> > Sorry to have a comment that makes it feels confusing.  I tried to
+> > explicitly put the comment to be after setting FAULT_FLAG_KILLABLE but
+> > obviously I didn't do my job well..
+> > 
+> > Maybe that NOWAIT thing adds more complexity but not even necessary.
+> > 
+> > Would below one more acceptable?
+> > 
+> > 		/*
+> > 		 * We'll only be able to respond to signals when "locked !=
+> > 		 * NULL".  When with it, we'll always respond to SIGKILL
+> > 		 * (as implied by FAULT_FLAG_KILLABLE above), and we'll
+> > 		 * respond to non-fatal signals only if the GUP user has
+> > 		 * specified FOLL_INTERRUPTIBLE.
+> > 		 */
+> 
+> 
+> It looks like part of this comment is trying to document a pre-existing
+> concept, which is that faultin_page() only ever sets FAULT_FLAG_KILLABLE
+> if locked != NULL.
 
-...
+I'd say that's not what I wanted to comment.. I wanted to express that
+INTERRUPTIBLE should rely on KILLABLE, that's also why I put the comment to
+be after KILLABLE, not before.  IMHO it makes sense already to have
+"interruptible" only if "killable", no matter what's the pre-requisite for
+KILLABLE (in this case it's having "locked" being non-null).
 
-> > > >  drivers/mfd/intel_soc_pmic_core.c | 160 -----------------------------
-> > > >  drivers/mfd/intel_soc_pmic_core.h |  25 -----
-> > > >  drivers/mfd/intel_soc_pmic_crc.c  | 162 ++++++++++++++++++++++++++++--
-> > > >  4 files changed, 157 insertions(+), 193 deletions(-)
-> > > >  delete mode 100644 drivers/mfd/intel_soc_pmic_core.c
-> > > >  delete mode 100644 drivers/mfd/intel_soc_pmic_core.h
-> > >
-> > > Can you submit this again with the -M flag please.
-> >
-> > This is done with this flag. Basically for the last several years I do my
-> > submissions with that flag.
->
-> Odd.  I thought -M only showed diff for the changes.
+> The problem I am (personally) having is that I don't yet understand why
+> or how those are connected: what is it about having locked non-NULL that
+> means the process is killable? (Can you explain why that is?)
 
-It's exactly what happens here in this patch. What did I miss?
+Firstly RETRY_KILLABLE relies on ALLOW_RETRY, because if we don't allow
+retry at all it means we'll never wait in handle_mm_fault() anyway, then no
+need to worry on being interrupted by any kind of signal (fatal or not).
 
-Note here is not renaming, but merging contents of one file (actually
-two files) into another. What you are talking about is probably -D,
-but AFAIR Git (at least that time) can't catch up deleted files from
-the mbox format. That's why I do not use -D for submissions.
+Then if we allow retry, we need some way to know "whether mmap_sem is
+released or not" during the process for the caller (because the caller
+cannot see VM_FAULT_RETRY).  That's why we added "locked" parameter, so
+that we can set *locked=false to tell the caller we have released mmap_sem.
 
-> > Anything else I can do?
-> >
-> > > Trying to figure out what exactly changed is proving challenging.
+I think that's why we have "locked" defined as "we allow this page fault
+request to retry and wait, during wait we can always allow fatal signals".
+I think that's defined throughout the gup call interfaces too, and
+faultin_page() is the last step to talk to handle_mm_fault().
 
+To make this whole picture complete, NOWAIT is another thing that relies on
+ALLOW_RETRY but just to tell "oh please never release the mmap_sem at all".
+For example, when we want to make sure no vma will be released after
+faultin_page() returned.
+
+> 
+> If that were clear, I think I could suggest a good comment wording.
+
+IMHO it's a little bit weird to explain "locked" here, especially after
+KILLABLE is set, that's why I didn't try to mention "locked" in my 2nd
+attempt.  There are some comments for "locked" above the definition of
+faultin_page(), I think that'll be a nicer place to enrich explanations for
+"locked", and it seems even more suitable as a separate patch?
+
+Thanks,
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Peter Xu
+
