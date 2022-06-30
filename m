@@ -2,142 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 22:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A12DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 22:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiF3WyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 18:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
+        id S231166AbiF3Wyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 18:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiF3WyA (ORCPT
+        with ESMTP id S230476AbiF3Wyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 18:54:00 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0E451B0E;
-        Thu, 30 Jun 2022 15:54:00 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id g7so887350pjj.2;
-        Thu, 30 Jun 2022 15:54:00 -0700 (PDT)
+        Thu, 30 Jun 2022 18:54:45 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA1751B17
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 15:54:44 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-fb6b4da1dfso1276634fac.4
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 15:54:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ywGXGSeAdHaxOG0hHw1tcJMSEkflmye5hh+2B4JWTp0=;
-        b=mNLr4nkPZCDYuI2fSYGchP6gg6SX6mc4w6ytuuvcRaoApa6emQ7mzzj6Thc0PX2xjP
-         5T20a8tNMdamJX78/HhIM+zs5fa6Sf4Z3eSCkhjArJSzl6mCGuicVAyrUpiIxC3WXyla
-         HRNIlPRXxR1PaF6qZe2t4b/ZgygdqNI/KLflZGCJFfRCZnVIXU+74OCV19a4/JeCs8AF
-         uWx7283rnfiPKAB/NTQLC0CPPqMpQ6uQSHJH/TCadJV/frfEIidBAI/UqsA5oRhHb8et
-         R/8g3HAEmIz0tlGqHjiFSQxNcyvAgyO9T0QcwI+OTs0N8iGMSFt58HKXjRM6EDmaepP0
-         0hVg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3lD40KEKT7Wukxn/u0ptGeCLnmqn7Gkmr+m0V0CGjeY=;
+        b=fpKGXcr5qxRb10nUtk+wuHOvdGilTP8D4uYumm8KQHqsnuqSEUS5R0iB6KqnVEaNW7
+         ePPJ5YhsNGuhWSM8eo/v1sb9f5TuWfJ6ZVJyYSAYbqCD8FCYEyTiXcMPtkFl3pMSe8KP
+         6ePd/Zoo2t08Gs7UG26B+/N59o+6EGkdS9jt8jkNbYWYdrkHQg2wAH3aewgf2d6nZhD+
+         Zp7bo9GW5Hgc08yDoBF/Dd3ovovM6EjSHQ3FTSEyLcMxW2/7J3ffSZo4sZh+VqxhPawg
+         YcuceHdiniXa+pMJzRgZgqcfPmcOYxNxDIqg38B/CrkMQsxo8foEFYrmZyOjFFR8c3c/
+         GYnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=ywGXGSeAdHaxOG0hHw1tcJMSEkflmye5hh+2B4JWTp0=;
-        b=LWpo20NQ4u8HJjhqsNX/m8BCFOhT7fc7fAwI5PaGZSQ+Uh8EGdsGqpDI63Brms9q2I
-         q8fh/S6jE85Cw0cf+uV1MrTFDVJXLI3FwGXvRSpDsI9oNMr/UPUvNXXX4gd4DivQL5vI
-         HVOfCHTXeMZ4A25QbzLSMjLE2nh1WDDIByXRUYBXDNQYCmXeC+ex/z8HZsEuFKigyYdc
-         kNdVceB4dXqxbQjrdKjbKz5pTeAF8za6baGzp3RxikTvXZsTtyCPi3+nqZoA0dmC/ZJJ
-         8VvbVOFC9uh4bUCf021k/vbXL8/40zxJmTv1lVZMmF3cBnAHNxrIdx3j3pJdM6BZ76Zh
-         mAug==
-X-Gm-Message-State: AJIora8mRIUbchF1oKXLuSwYLjAnoY+lJZjFf/H+fX1m/z/3y8Rl1SW8
-        +4aH3NHOap3nGlfbHbLIKyA=
-X-Google-Smtp-Source: AGRyM1vTcdnL+mv4xgwGoljun+ricETJIRKKHlIxUwZckSI+Q7oNOn3fqJfsc769rfCzEoAYnKiIRw==
-X-Received: by 2002:a17:902:da87:b0:16a:54e1:3426 with SMTP id j7-20020a170902da8700b0016a54e13426mr16388696plx.157.1656629639274;
-        Thu, 30 Jun 2022 15:53:59 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:4f4a])
-        by smtp.gmail.com with ESMTPSA id 11-20020a63164b000000b0040d4c8e335csm13848116pgw.75.2022.06.30.15.53.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3lD40KEKT7Wukxn/u0ptGeCLnmqn7Gkmr+m0V0CGjeY=;
+        b=O3PXwyFivVcV3b3x9h3SxHhU/rVI8SgUH0oZCUFTQHNva/B04HwjMc6N27TC5618RH
+         ryzsbwpiGzgDmuH02lRlmFvNtzz0gawZp1L0C7UTmgOevFvKevw8rik87hfmumlpU6YO
+         Wsq7LihL1dkhsOX3AiEP5ySJMoXnW1LJtbCxjlNRXTj6EKNiaDbUun60tSVBMAdDyvRE
+         i2xxCqRScgxLM0hV8t28Pbn6gKcKNW8tCCXZCwVty+JgZ0tGorvKBDC+c2WH9AN100y0
+         26kLys91Zcosom+chz7gfz2GDfzGSy9ipD7PhMz/PvL3g7Bx8O8h8YOGE1GR8v5yj7kU
+         T5hg==
+X-Gm-Message-State: AJIora8Oo9jf/I5EFXdBdp+EI1UWyUzTWYDXyWYewJQvjryKRQP6o48F
+        bzgN0cD9OgJi5ZQSIvCZbiyM5Q==
+X-Google-Smtp-Source: AGRyM1vMdyp5BIQ2KSmnDC8VRNhl4y7m9dXHjm2FHsaLfpyBPIT04hamOmY7uBnt/j2kuX4JVPWufw==
+X-Received: by 2002:a05:6870:f2a3:b0:fe:51a2:cc61 with SMTP id u35-20020a056870f2a300b000fe51a2cc61mr6755357oap.3.1656629683578;
+        Thu, 30 Jun 2022 15:54:43 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id g14-20020a056870340e00b00101afc7b263sm13611952oah.9.2022.06.30.15.54.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 15:53:58 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 1 Jul 2022 07:53:55 +0900
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [PATCH v11 7/8] cgroup/cpuset: Update description of
- cpuset.cpus.partition in cgroup-v2.rst
-Message-ID: <Yr4pgxUTmg+UN35F@mtj.duckdns.org>
-References: <YqYnQ4U4t6j/3UaL@slm.duckdns.org>
- <404171dc-0da3-21f2-5003-9718f875e967@redhat.com>
- <YqarMyNo9oHxhZFh@slm.duckdns.org>
- <20220613142452.GB6910@blackbody.suse.cz>
- <YqdzuSQuAeiPXQvy@slm.duckdns.org>
- <20220613175548.GB21665@blackbody.suse.cz>
- <Yqd7WMFj6AEyV3Cy@slm.duckdns.org>
- <20220614115345.GA6771@blackbody.suse.cz>
- <YroApRMPV/6zO5I8@mtj.duckdns.org>
- <20220630143211.GA22105@blackbody.suse.cz>
+        Thu, 30 Jun 2022 15:54:42 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 17:54:41 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, robh@kernel.org
+Subject: Re: [PATCH v2 6/6] arm64: dts: qcom: ipq8074: Fix 'max-frequency'
+ value for sdhci node
+Message-ID: <Yr4psYiCCbi15RMe@builder.lan>
+References: <20220514215424.1007718-1-bhupesh.sharma@linaro.org>
+ <20220514215424.1007718-7-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220630143211.GA22105@blackbody.suse.cz>
+In-Reply-To: <20220514215424.1007718-7-bhupesh.sharma@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Sat 14 May 16:54 CDT 2022, Bhupesh Sharma wrote:
 
-On Thu, Jun 30, 2022 at 04:32:11PM +0200, Michal Koutný wrote:
-> file				owner
-> parent/				user (mkdir)
-> `- cpuset.cpus			root
-> `- cpuset.cpus.partition	root	(P)
-> `- child_1/			user
->   ` cpuset.cpus			user	(*)
-> `- child_2/			user
->   ` cpuset.cpus			user	(*)
+> Since the Qualcomm sdhci-msm device-tree binding has been converted
+> to yaml format, 'make dtbs_check' reports issues with
+> 'max-frequency' value for ipq8074 sdhci node:
 > 
-> The writes to child cpuset.cpus may/may not invalidate parent's (P)
-> partition validity (whether a cpu is left to it to host possible tasks).
-> child_1 vs child_2 overlap affects only whether the children cgroups are
-> a valid partition.
+>  arch/arm64/boot/dts/qcom/ipq8074-hk01.dtb: mmc@7824900:
+>   max-frequency:0:0: 384000000 is greater than the maximum of 200000000
 > 
-> I think you mean: writes to children cpuset.cpus should be allowed,
-> possible exclusivity violation should be reported in
-> parent/cpuset.cpus.partition.
-
-I see.
-
-> What I thought was OK: prevent (fail) writes to children cpuset.cpus
-> that'd violate the exclusivity (or would take the last cpu from parent
-> if it's necessary to host a task).
-> IMO, it's similar to failed writes to parent/cgroup.subtree_control in a
-> delegated subtree if the parent still has some tasks (that'd violate
-> internal node constraint).
+> Fix the same.
 > 
-> What I think might still be OK: allow writes to children cpuset.cpus
-> that violate exclusivity and report that in children's
-> cpuset.cpus.partition. Writes that'd take last cpu from parent should
-> still fail (similar to the failing subtree_control writes above).
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Rob Herring <robh@kernel.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+> index ab2a1e7955b5..b2d71af9b419 100644
+> --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+> @@ -388,7 +388,7 @@ sdhc_1: mmc@7824900 {
+>  				 <&gcc GCC_SDCC1_APPS_CLK>,
+>  				 <&xo>;
+>  			clock-names = "iface", "core", "xo";
+> -			max-frequency = <384000000>;
+> +			max-frequency = <200000000>;
 
-Yeah, this one.
+This might match the binding, but someone put 384000000 there for a
+reason. Perhaps the binding needs to be updated instead?
 
-So, here, one important question is who owns cpuset.cpus.partition
-file - is it a konb which is owned by the parent like other resource
-control knobs including cpuset.cpus or is it a knob which is owned by
-the cgroup itself for selecting its own operation like cgroup.procs or
-cgroup.subtree_control.
+Regards,
+Bjorn
 
-In the former case, the parent being able to say that "my children
-can't overlap" makes sense although I'm not a big fan of the current
-interface (again, who owns that knob?). In the latter case, it doesn't
-really make sense cuz it'd be declaring "I can't make my children
-overlap" - well, then, don't.
-
-Thanks.
-
--- 
-tejun
+>  			mmc-ddr-1_8v;
+>  			mmc-hs200-1_8v;
+>  			mmc-hs400-1_8v;
+> -- 
+> 2.35.3
+> 
