@@ -2,113 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AE4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06262CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233987AbiF3KzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S234095AbiF3K4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233793AbiF3KzV (ORCPT
+        with ESMTP id S234013AbiF3K4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:55:21 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD844133B;
-        Thu, 30 Jun 2022 03:55:21 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U84bcH015732;
-        Thu, 30 Jun 2022 03:55:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=2i29PaMcywSIHClBciOD80TrQpVS0dYcB/9AP/KqRl0=;
- b=hkjsntywwyYz5ikHnkgr6ed68Pshot4MbsNV5pQtycLRxQGJVPI7HJtguOpgIQzLMB1V
- DvtSCjrPOueRM4shoGkyiVFoHoGmtB4J4UWOEjhB3Y5dXFasE3d0QHQqjlUmGFGRfkiq
- dDvHgH7wiXH/3i6QctTJFeDIs2f5FUO5xsA+n8RUW02tEc63NHPCPM3iojewleLmx/KE
- liWqoevTiDlQ2X5DzcpnuRzsQyDeq+UZ9tRcrHzAPsx9Pc71Wa8XlroQPkZhoNlxtwrn
- BlC0qt3tzs5Z2PVY2jDkdBtEn6FI4/v/l2UvyrJEKDuMnw+zYbqQ0v8E45umb52OtorB SA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h0f85ecvu-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 03:55:01 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 30 Jun
- 2022 03:55:00 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 30 Jun 2022 03:55:00 -0700
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id 649D83F7066;
-        Thu, 30 Jun 2022 03:54:55 -0700 (PDT)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>
-CC:     Shijith Thotton <sthotton@marvell.com>,
-        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "open list:MARVELL OCTEONTX2 RVU ADMIN FUNCTION DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] octeontx2-af: fix operand size in bitwise operation
-Date:   Thu, 30 Jun 2022 16:24:31 +0530
-Message-ID: <f4fba33fe4f89b420b4da11d51255e7cc6ea1dbf.1656586269.git.sthotton@marvell.com>
+        Thu, 30 Jun 2022 06:56:07 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904BE427CC;
+        Thu, 30 Jun 2022 03:56:02 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LYZvg6FD2zkWdV;
+        Thu, 30 Jun 2022 18:54:07 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 30 Jun 2022 18:56:00 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
+ 2022 18:56:00 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH stable 4.9,4.14] swiotlb: skip swiotlb_bounce when orig_addr is zero
+Date:   Thu, 30 Jun 2022 19:32:25 +0800
+Message-ID: <20220630113225.1544802-1-liushixin2@huawei.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <6baefc0e5cddb99df98b6a96a15fbd0328b12bda.1653637964.git.sthotton@marvell.com>
-References: <6baefc0e5cddb99df98b6a96a15fbd0328b12bda.1653637964.git.sthotton@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: wgDpD4ZzcycQxyPavz-aElEakR0df5l8
-X-Proofpoint-ORIG-GUID: wgDpD4ZzcycQxyPavz-aElEakR0df5l8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Made size of operands same in bitwise operations.
+After patch ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE"),
+swiotlb_bounce will be called in swiotlb_tbl_map_single unconditionally.
+This requires that the physical address must be valid, which is not always
+true on stable-4.19 or earlier version.
+On stable-4.19, swiotlb_alloc_buffer will call swiotlb_tbl_map_single with
+orig_addr equal to zero, which cause such a panic:
 
-The patch fixes the klocwork issue, operands in a bitwise operation have
-different size at line 375 and 483.
+Unable to handle kernel paging request at virtual address ffffb77a40000000
+...
+pc : __memcpy+0x100/0x180
+lr : swiotlb_bounce+0x74/0x88
+...
+Call trace:
+ __memcpy+0x100/0x180
+ swiotlb_tbl_map_single+0x2c8/0x338
+ swiotlb_alloc+0xb4/0x198
+ __dma_alloc+0x84/0x1d8
+ ...
 
-Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+On stable-4.9 and stable-4.14, swiotlb_alloc_coherent wille call map_single
+with orig_addr equal to zero, which can cause same panic.
+
+Fix this by skipping swiotlb_bounce when orig_addr is zero.
+
+Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 ---
-v2:
-* Rebased.
+ lib/swiotlb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index a9da85e418a4..38bbae5d9ae0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -17,7 +17,7 @@
- #define	PCI_DEVID_OTX2_CPT10K_PF 0xA0F2
- 
- /* Length of initial context fetch in 128 byte words */
--#define CPT_CTX_ILEN    2
-+#define CPT_CTX_ILEN    2ULL
- 
- #define cpt_get_eng_sts(e_min, e_max, rsp, etype)                   \
- ({                                                                  \
-@@ -480,7 +480,7 @@ static int cpt_inline_ipsec_cfg_inbound(struct rvu *rvu, int blkaddr, u8 cptlf,
+diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+index bdc2b89870e3..e162cb464ee4 100644
+--- a/lib/swiotlb.c
++++ b/lib/swiotlb.c
+@@ -607,7 +607,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+ 	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+ 	 * kernel memory) to user-space.
  	 */
- 	if (!is_rvu_otx2(rvu)) {
- 		val = (ilog2(NIX_CHAN_CPT_X2P_MASK + 1) << 16);
--		val |= rvu->hw->cpt_chan_base;
-+		val |= (u64)rvu->hw->cpt_chan_base;
- 
- 		rvu_write64(rvu, blkaddr, CPT_AF_X2PX_LINK_CFG(0), val);
- 		rvu_write64(rvu, blkaddr, CPT_AF_X2PX_LINK_CFG(1), val);
+-	swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
++	if (orig_addr)
++		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+ 	return tlb_addr;
+ }
+ EXPORT_SYMBOL_GPL(swiotlb_tbl_map_single);
 -- 
 2.25.1
 
