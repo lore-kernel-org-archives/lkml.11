@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB1BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B9CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236965AbiF3OOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41586 "EHLO
+        id S235109AbiF3OOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237065AbiF3ONz (ORCPT
+        with ESMTP id S237068AbiF3ONz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 10:13:55 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50316419A9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0273C419BA
         for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:59:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1656597589;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+GZL7A1rDCS9BWoMyYGxRSSo338VZcyjs0gmjggSCak=;
-        b=Etzmo4O4pwCY8kO0u8ilNHRSzcs1R3wYE5wYEOmNMB+WdoDbyqX3Mn/kj+hWDYUi8P2yP4
-        dchEWFAV86p6miPxxfWz4U9OZxk4En3BeJVnxZOZfpvTTpo6o5KIq4YIH0wjCh9h1yW3Ke
-        kVI7GTKLrHGFNbNK/0lekWO/Q6W/JeY=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=LxaOFylJkQ/MdwV5aA3pa1YtRMsbn1Q4ucnowsYMktM=;
+        b=DRAhkEY0dSatwJD6dgJpwAtsd8jnPseTOO92u/SXfSOzMOb+LZeWsYPT2LqwhNqDsCYtWY
+        OiKz9F5FMkrrYJV3c7i3FaxFMdlNuvgjdVfMbA3CIVIcx6GSqPUxpb2kjji7nYiQ0zb0Kg
+        0GC+cKjekqEH0RiyrDWNIYRIqRo72ig=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-357-YLw-229DPCCjkNgIoXGUaA-1; Thu, 30 Jun 2022 09:59:46 -0400
-X-MC-Unique: YLw-229DPCCjkNgIoXGUaA-1
+ us-mta-271-m3lxOeKDO0qqQtyjyl8G3A-1; Thu, 30 Jun 2022 09:59:45 -0400
+X-MC-Unique: m3lxOeKDO0qqQtyjyl8G3A-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 49F7189C7DC;
-        Thu, 30 Jun 2022 13:59:45 +0000 (UTC)
-Received: from fs-i40c-03.fs.lab.eng.bos.redhat.com (fs-i40c-03.fs.lab.eng.bos.redhat.com [10.16.224.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EC25C815B;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8982F1019C83;
         Thu, 30 Jun 2022 13:59:44 +0000 (UTC)
+Received: from fs-i40c-03.fs.lab.eng.bos.redhat.com (fs-i40c-03.fs.lab.eng.bos.redhat.com [10.16.224.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D18018EAD;
+        Thu, 30 Jun 2022 13:59:43 +0000 (UTC)
 From:   Alexander Aring <aahringo@redhat.com>
 To:     will@kernel.org
 Cc:     peterz@infradead.org, boqun.feng@gmail.com, mark.rutland@arm.com,
@@ -46,11 +45,9 @@ Cc:     peterz@infradead.org, boqun.feng@gmail.com, mark.rutland@arm.com,
         cluster-devel@redhat.com, luc.vanoostenryck@gmail.com,
         torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
         aahringo@redhat.com
-Subject: [RFC 2/2] kref: move kref_put_lock() callback to caller
-Date:   Thu, 30 Jun 2022 09:59:34 -0400
-Message-Id: <20220630135934.1799248-3-aahringo@redhat.com>
-In-Reply-To: <20220630135934.1799248-1-aahringo@redhat.com>
-References: <20220630135934.1799248-1-aahringo@redhat.com>
+Subject: [RFC 0/2] refcount: attempt to avoid imbalance warnings
+Date:   Thu, 30 Jun 2022 09:59:32 -0400
+Message-Id: <20220630135934.1799248-1-aahringo@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
@@ -58,73 +55,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch moves the release callback call to the caller of kref_put_lock()
-functionality. Since refcount_dec_and_lock() uses __cond_lock() we get
-the following warning for e.g. net/sunrpc/svcauth.c:
+Hi,
 
-warning: context imbalance in 'auth_domain_put' - wrong count at exit
+This patch tries to avoid some sparse warnings related to
+refcount_dec_and_lock() and kref_put_lock().
 
-The warning occurs now because it seems that before __cond_lock() change
-sparse was able to detect the correct locking behaviour. Now it thinks
-there is an additional lock acquire. However the __cond_lock()
-instrumentation in refcount_dec_and_lock() was making it possible to
-avoid sparse warnings by evaluating the return value and unlock the lock
-if conditional necessary.
+I send this patch series as RFC because it was necessary to do a kref
+change after adding __cond_lock() to refcount_dec_and_lock()
+functionality.
 
-This patch solves the problem by just do the passed release callback
-call based by the return value of kref_put_lock() and not inside of
-kref_put_lock() and evaluating the return value of
-refcount_dec_and_lock() that surprisingly sparse can recognize.
+For me it looks like we do a lot of acrobatics to avoid sparse warnings
+here and I really don't know if it's worth the offer. However this is
+what I have now...
 
-It seems it's only possible to have the one way or the other. This patch
-changes the kref_put_lock() in way that it works like
-refcount_dec_and_lock() way with __cond_lock().
+- Alex
 
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
----
- include/linux/kref.h | 24 ++++++++----------------
- 1 file changed, 8 insertions(+), 16 deletions(-)
+Alexander Aring (2):
+  refcount: add __cond_lock() for conditional lock refcount API
+  kref: move kref_put_lock() callback to caller
 
-diff --git a/include/linux/kref.h b/include/linux/kref.h
-index d32e21a2538c..a70d45940d55 100644
---- a/include/linux/kref.h
-+++ b/include/linux/kref.h
-@@ -68,27 +68,19 @@ static inline int kref_put(struct kref *kref, void (*release)(struct kref *kref)
- 	return 0;
- }
- 
--static inline int kref_put_mutex(struct kref *kref,
--				 void (*release)(struct kref *kref),
--				 struct mutex *lock)
-+static inline bool raw_kref_put_mutex(struct kref *kref, struct mutex *lock)
- {
--	if (refcount_dec_and_mutex_lock(&kref->refcount, lock)) {
--		release(kref);
--		return 1;
--	}
--	return 0;
-+	return refcount_dec_and_mutex_lock(&kref->refcount, lock);
- }
-+#define kref_put_mutex(kref, release, lock) \
-+	((raw_kref_put_mutex(kref, lock)) ? ({ release(kref); 1; }) : 0)
- 
--static inline int kref_put_lock(struct kref *kref,
--				void (*release)(struct kref *kref),
--				spinlock_t *lock)
-+static inline bool raw_kref_put_lock(struct kref *kref, spinlock_t *lock)
- {
--	if (refcount_dec_and_lock(&kref->refcount, lock)) {
--		release(kref);
--		return 1;
--	}
--	return 0;
-+	return refcount_dec_and_lock(&kref->refcount, lock);
- }
-+#define kref_put_lock(kref, release, lock) \
-+	((raw_kref_put_lock(kref, lock)) ? ({ release(kref); 1; }) : 0)
- 
- /**
-  * kref_get_unless_zero - Increment refcount for object unless it is zero.
+ include/linux/kref.h     | 24 ++++++++----------------
+ include/linux/refcount.h | 21 ++++++++++++++++-----
+ lib/refcount.c           | 23 ++++++++++++-----------
+ 3 files changed, 36 insertions(+), 32 deletions(-)
+
 -- 
 2.31.1
 
