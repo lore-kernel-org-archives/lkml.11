@@ -2,139 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A591C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234927AbiF3QVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 12:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
+        id S234403AbiF3QX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 12:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235314AbiF3QVJ (ORCPT
+        with ESMTP id S229756AbiF3QX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 12:21:09 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0591631908;
-        Thu, 30 Jun 2022 09:21:07 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4B5E51BF20C;
-        Thu, 30 Jun 2022 16:21:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656606066;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jDaxbIWGSo+t7JTdTA4oSBuCwOAMzbzayTCjAMcuvJU=;
-        b=kJfPfMbDvnsiRLnJPjz7yWSGEv6WOUu+3PvDvXVrKX//ZKg+TMnTo+G714yIlkspCgZt+x
-        mdE9GZjhR28nilJjpy2UfuBKlm8vdknCZzyIZZGU+qo+leIIpx3V0dilRpaE4L1T4EppjD
-        egQkyyPL+Bt3ra5DSdGvvG6gFn0QEHQr56lJSq9ZgzUEAYSmufEoXu6xFstp8Bl6hoax1t
-        9XnvvBKOgXYkfNOrSoFDcBGsD42YiyGqjFZG29+gdK6fTbhXW8yMTig83jjAxwT6OkB/jx
-        e6wRYJvqqStlo2pooZc4pqvuBJfwLGYCq3eakENN/NOYN4cjyeEsRFiBVJPrbA==
-Date:   Thu, 30 Jun 2022 18:20:15 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>
-Subject: Re: [PATCH net-next] dt-bindings: net: dsa: renesas,rzn1-a5psw: add
- interrupts description
-Message-ID: <20220630182015.67f61f87@fixe.home>
-In-Reply-To: <20220629091305.125291-1-clement.leger@bootlin.com>
-References: <20220629091305.125291-1-clement.leger@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        Thu, 30 Jun 2022 12:23:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AFE2EA19
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:23:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C82861FF9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA2DC34115;
+        Thu, 30 Jun 2022 16:23:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656606205;
+        bh=/wIBdp+oiWjbA0nGQcK+9VOFJYvNFoz6aGVh1eVQH1I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jWKF7Wa7cMz+Kx72y/2aMd7nmgeQoVG8ZAee0gJulRMYq3hsvEXe5rUeHe0rIYOhC
+         +uwuG7cqqBHm6sVDp5uWxdJtZ8dlz+2R6hgSr+NaeA8b60phd2b6OZ/aFEJ1ansi6C
+         X5xWGE+xDHZGb6Gg8q3UDFcdl0IDjRQ3MhXZt3MubyH2fsb+hT4mDGWKhuFjA54uEI
+         lWLBb2C8n5HZJd0+khfAy4UDaWL6UQPOuzPnbrbi7seq71ItgtpNkEcnavHknFs0me
+         s8O09VAp5TVb1VGoK1On4ywkykYMJP79ox6tKXwQ454z911FFs1OP+11AF9Gxei7nC
+         3QARVhcbJ1/rw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o6wwt-004OZO-DN;
+        Thu, 30 Jun 2022 17:23:23 +0100
+Date:   Thu, 30 Jun 2022 17:23:23 +0100
+Message-ID: <87mtdu15ok.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: arm64: Fix 64 bit mmio handle
+In-Reply-To: <20220630161220.53449-1-schspa@gmail.com>
+References: <20220630161220.53449-1-schspa@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: schspa@gmail.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, 29 Jun 2022 11:13:04 +0200,
-Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> a =C3=A9crit :
+On Thu, 30 Jun 2022 17:12:20 +0100,
+Schspa Shi <schspa@gmail.com> wrote:
+> 
+> If the len is 8 bytes, we can't get the correct sign extend for
+> be system.
 
-> Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
-> are connected to the GIC.
->=20
-> Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+I'm afraid you'll have to give me a bit more details.
+
+> 
+> Fix the mask type len and the comparison of length.
+> 
+> Signed-off-by: Schspa Shi <schspa@gmail.com>
 > ---
->  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
->  1 file changed, 23 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw=
-.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> index 103b1ef5af1b..51f274c16ed1 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> @@ -26,6 +26,22 @@ properties:
->    reg:
->      maxItems: 1
-> =20
-> +  interrupts:
-> +    items:
-> +      - description: DLR interrupt
-> +      - description: Switch interrupt
-> +      - description: PRP interrupt
-> +      - description: Integrated HUB module interrupt
-> +      - description: RX Pattern interrupt
-> +
-> +  interrupts-names:
-> +    items:
-> +      - const: dlr
-> +      - const: switch
-> +      - const: prp
-> +      - const: hub
-> +      - const: ptrn
-> +
->    power-domains:
->      maxItems: 1
-> =20
-> @@ -76,6 +92,7 @@ examples:
->    - |
->      #include <dt-bindings/gpio/gpio.h>
->      #include <dt-bindings/clock/r9a06g032-sysctrl.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> =20
->      switch@44050000 {
->          compatible =3D "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-> @@ -83,6 +100,12 @@ examples:
->          clocks =3D <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032=
-_CLK_SWITCH>;
->          clock-names =3D "hclk", "clk";
->          power-domains =3D <&sysctrl>;
-> +        interrupts =3D <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
-> +        interrupts-name =3D "dlr", "switch", "prp", "hub", "ptrn";
+>  arch/arm64/kvm/mmio.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/mmio.c b/arch/arm64/kvm/mmio.c
+> index 3dd38a151d2a6..0692f8b18f35c 100644
+> --- a/arch/arm64/kvm/mmio.c
+> +++ b/arch/arm64/kvm/mmio.c
+> @@ -81,8 +81,8 @@ unsigned long kvm_mmio_read_buf(const void *buf, unsigned int len)
+>  int kvm_handle_mmio_return(struct kvm_vcpu *vcpu)
+>  {
+>  	unsigned long data;
+> +	unsigned long mask;
+>  	unsigned int len;
+> -	int mask;
+>  
+>  	/* Detect an already handled MMIO return */
+>  	if (unlikely(!vcpu->mmio_needed))
+> @@ -97,7 +97,7 @@ int kvm_handle_mmio_return(struct kvm_vcpu *vcpu)
+>  		data = kvm_mmio_read_buf(run->mmio.data, len);
+>  
+>  		if (kvm_vcpu_dabt_issext(vcpu) &&
+> -		    len < sizeof(unsigned long)) {
+> +		    len <= sizeof(unsigned long)) {
 
-Wait, there is actually a typo both here and in the property
-description, should be "interrupt-names". Was not catched by
-dt_binding_check though but probably due to the fact additionnal
-properties are allowed.
+If you're reading an 8 byte quantity, what is there to sign-extend?
+Sign extension only makes sense if what you're reading is *smaller*
+than the size of the register you are targeting.
 
-> =20
->          dsa,member =3D <0 0>;
-> =20
+I must be missing something. And how is that related to running BE? BE
+in the host? The guest?
 
+Please convince me.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
