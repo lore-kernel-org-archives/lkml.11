@@ -2,236 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D03C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233717AbiF3IZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
+        id S233912AbiF3I0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233484AbiF3IYo (ORCPT
+        with ESMTP id S233674AbiF3IZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:24:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9122D186E6
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656577480;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hqIzgmR5tuOUBDBCfoAqKMfRDeawIdE7bmJ0sAWUGNs=;
-        b=e1+CpfvJ3iKaS02Jc4SMYgoCVk+Ko2wIpyQ7kSGVG1lJbk0RgCEk4gJMoC6YprN9WQm8Dd
-        Z2ZCYKVptfVSXNJOSMWDsWayiZr/fB0SkBUEL1PBkjR7czEfToPJ91l9sZZAFmgUMM78di
-        hbUzUYLF5gIatXIHEXh0q4M/DAq0FP4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-249-1U9-LxXeOyGGoyxZ1ALiTA-1; Thu, 30 Jun 2022 04:24:37 -0400
-X-MC-Unique: 1U9-LxXeOyGGoyxZ1ALiTA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E05B93C1174C;
-        Thu, 30 Jun 2022 08:24:36 +0000 (UTC)
-Received: from starship (unknown [10.40.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 932F4112131B;
-        Thu, 30 Jun 2022 08:24:34 +0000 (UTC)
-Message-ID: <e04341912abfa1590edd4ee7c33efde6e227b93f.camel@redhat.com>
-Subject: Re: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Date:   Thu, 30 Jun 2022 11:24:33 +0300
-In-Reply-To: <CALMp9eQQROfYW7tNPaYCL5umjDr5ntsXuQ3BmorD8BWQiUGjdw@mail.gmail.com>
-References: <20220614204730.3359543-1-seanjc@google.com>
-         <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
-         <CALMp9eQQROfYW7tNPaYCL5umjDr5ntsXuQ3BmorD8BWQiUGjdw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Thu, 30 Jun 2022 04:25:52 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2068.outbound.protection.outlook.com [40.107.113.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0F2419AE
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:25:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z7mGmwzIcFnbql2vwDwA8JKgqoSDGp0j6iRbCrULu5pp3TiMU10rX+E72wyX1Tx6NGo1X9yJkFXNs4YFvPStwJHOZzZWBj83I+aoTBW65I5uiCshJDgLWrplPyCM5oNG35V+X63fCY2CWBhQHcy7MsqGVKMEJwlluBYjutY7aiCTLWbmG74JJsaoJnRrvSuc2lNsnTvFhnMFM+dl5vJQgOIi585xadKm0xRzN0wP5MIG4wI75TyKMAAowydFLCNBmyejnBuE1HJ1oiKRwNXhL0t54LlO9kjldFwLGOElGOSQFE76FfzfhvMof+dqDIWI/aLlN0c4NhH0KRty972uQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1okWrt3YooC/h7MEEv+DdogAXuOB/uDD8SOA7CITW5s=;
+ b=SLzsCVxtibEPO6Fl4QiVcrP4OVCkKirfL31D0yXXxF3UdHeFWpVdKnyyDNaJ8G1XrfN3KxQPkJK+wLbEZIEDYWnaAMQP011vbp6zVXnqT9Xxf/CGNBwoioioA1Qb4fyIHmkTj27/UmPwad8dGKESvJ64hdeC59pO1GBsbwree37EsAnHd7TydlPYh8PzLDkMrz6Q9eGi/FYrNB4WHLWmricJ4xuulE2coVD329Wn9zeXbo7szEn9AQgE/InwEQVNnEwRDqlXpqE3m+e7l9OZeEdM9StTYjdngv5fCMlewTYMuML1igFKGx7ulQ6sLTk0HBdwHR+vEzWsmvyit/ZbTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
+ header.d=nec.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1okWrt3YooC/h7MEEv+DdogAXuOB/uDD8SOA7CITW5s=;
+ b=ZG+FLbWVCT+Ckl3/Guh6cwhvk5GyRxXZpQzY6t6h0Rid5JHlPHUb+bn9cykPWfhMZU34uZuH5DENP+3LuYKH+mC1hbv2kElmk1AA2TPMQUYzlgnzR5VEnl3OhpPI6tWEGuBjTDog3ONuvNqmJWbA4VXFvTFGkrcF3T3kpXtwVzs=
+Received: from TYCPR01MB6948.jpnprd01.prod.outlook.com (2603:1096:400:bb::13)
+ by OSAPR01MB4721.jpnprd01.prod.outlook.com (2603:1096:604:6b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Thu, 30 Jun
+ 2022 08:25:30 +0000
+Received: from TYCPR01MB6948.jpnprd01.prod.outlook.com
+ ([fe80::41c1:d812:3e8b:87f9]) by TYCPR01MB6948.jpnprd01.prod.outlook.com
+ ([fe80::41c1:d812:3e8b:87f9%6]) with mapi id 15.20.5395.014; Thu, 30 Jun 2022
+ 08:25:30 +0000
+From:   =?utf-8?B?Tk9NVVJBIEpVTklDSEko6YeO5p2R44CA5rez5LiAKQ==?= 
+        <junichi.nomura@nec.com>
+To:     Michael Roth <michael.roth@amd.com>
+CC:     LKML <linux-kernel@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>, "bp@suse.de" <bp@suse.de>
+Subject: RE: [Regression v5.19-rc1] crash kexec fails to boot the 2nd kernel
+ (Re: [PATCH v12 38/46] x86/sev: Add SEV-SNP feature detection/setup)
+Thread-Topic: [Regression v5.19-rc1] crash kexec fails to boot the 2nd kernel
+ (Re: [PATCH v12 38/46] x86/sev: Add SEV-SNP feature detection/setup)
+Thread-Index: AdiHYUeDOBniciIDTZqhkiEHijhZ1gD76gIAAAS1nTAAFwBigAAYcfSA
+Date:   Thu, 30 Jun 2022 08:25:30 +0000
+Message-ID: <TYCPR01MB6948A8E606A31E8C8BD6BBC683BA9@TYCPR01MB6948.jpnprd01.prod.outlook.com>
+References: <TYCPR01MB694815CD815E98945F63C99183B49@TYCPR01MB6948.jpnprd01.prod.outlook.com>
+ <20220629004114.zn5rurrmqdkiceun@amd.com>
+ <OSZPR01MB6953EEF3F8E63330547E031183BB9@OSZPR01MB6953.jpnprd01.prod.outlook.com>
+ <20220629135441.7w4ptweifvfyw5rc@amd.com>
+In-Reply-To: <20220629135441.7w4ptweifvfyw5rc@amd.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nec.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 383347dd-f6fc-49a6-3f7a-08da5a72182e
+x-ms-traffictypediagnostic: OSAPR01MB4721:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: n0Txlf1WQk36QhuT7Yu0M1GkgxrjjrdBODsmuenvTF9Yp0siriNcTIXl8aNEeyQXs6cwTI0Kx6go0FHVX1AqbOC+npo6s6XS8lQJllTvfFLRroSVQyH3snrM6BzZiMKvdwt/mX3nDlwTHfJZA/nVjjdpH/onRcr4PF+SBTpQ+hOaVUv7fteaFoRSrXBTe1Gyh972+PpZugSXI8eiEw4rkQBM/wyUx+HBkj62pITNLzOqRbsYFnE+vdjHCq1m4f3IkHpyzSyAYinMtXdYgd3QMuCgTWHMEuE7hKJBDfWJ0sEUazHIrZ0xpNOa7on55w4p40G4PIGUfesmedZeWrd2soxrQdjrRx20W5kJC5CdNUKYMYHVOjRfmxo6ldLARY3/AGrVCX+lCAE484S4j6jN64V/+ERwr3euf6jcI+qDsWO9hcghua1IFafpEDDa9mKhFsk5yc0lSCb8lBG/lZQBCNEVz0lpt7zCZ9w9hN8qBh7UiaWRapzrmhmbyihP5xiztdoOtTsqvcg96BwHvuSE6psNXK2QV6gNPefe8mBr3W17ow+fY2pieUK/mIOZ5xgRWCWlRtsg7oXVrdDbRubcIVN+BRRgvQWuHZKges1p2L5znFSI4gUK0EWKhzBbnLiIs3lbVLLq8GtP8oQuWzPW4BO8Ss8+kPaRuEsnFWJ/jZYujw9OGWdYkbab4LZk+ojadWtrXrslljIyrAYA74gvz48r7Ztc3g78f3svD9Zq9n9mYnKbWVojFPYIpG94pm6bLUxW/K+ZhIS2f7Szd503TE25ptdI73Rz+F6r93iirpXYoxeKA5zRoAp57HZo2+4Y9F2e7hZg3U0IOIB9P7Oc6Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB6948.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(376002)(396003)(346002)(136003)(26005)(9686003)(6506007)(54906003)(7696005)(55236004)(122000001)(86362001)(38070700005)(8676002)(41300700001)(2906002)(85182001)(6916009)(76116006)(66556008)(38100700002)(66946007)(66476007)(4326008)(66446008)(316002)(64756008)(33656002)(99936003)(4744005)(71200400001)(55016003)(83380400001)(186003)(52536014)(8936002)(478600001)(82960400001)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MTIyRStVTXNXUk9xdVZhWGMvS0Znek5qWUJZa3dVNEpGMk00R2RFRmRtK3JC?=
+ =?utf-8?B?RTlIdGJRY2hxR3RjdXREbldkSWZRNmZucVRRRU1kREZBRjhIK09IeCtzdGJC?=
+ =?utf-8?B?Sk1QR0tiem5Cdlp5WjcvVnRzbzNjbzF2dCsza1JXN21HbnIxQXQ2NGpkVTBG?=
+ =?utf-8?B?QkhzUitqQ0JBVm9JUzhQbFhuYm5PT2pMNDlvQ2NTZVFCQnp2eFVRYzRHcXdY?=
+ =?utf-8?B?Q0p6STc2QWJRZEx6dnNwclUxOEd2aDYrdkpwb0NZUUwraDBheTNOb01sSWZV?=
+ =?utf-8?B?UnZTS1AvVmVaOWNIL2pCU0IzRGZ3NUwzTUZOTnl5T2ZicHYzOGhrbng1dHpC?=
+ =?utf-8?B?bmJ2aURuRXFlV2Y1cE5TdTRSdjNnRFo1T1VKa0IxdlI0VitVQVQrMUtIVU5j?=
+ =?utf-8?B?OU9QNXlsc3pFS01TQ2pDQ1YwUVU2ZndZejBtcWFxZFJERSszem40Z2Z6Zzl2?=
+ =?utf-8?B?V2R6dmpRNmdVbWtmckZmeFRjTlBZYTRXL0xiM2JoNTBWdHo4ZGgrcysxZDlG?=
+ =?utf-8?B?QUxqRStSY0xENG1NQ2tMR1FsajEydTJISUNhOXc2VTdGVERNUUFSN09pSFhx?=
+ =?utf-8?B?Mjk2Vi9qWklkc3JUUkhkajZ6ZTljdnczK1pMWmFoRkx1VVFrSGpyY0lVVy9s?=
+ =?utf-8?B?dkxTcVlPWUN0eVVuL3JLY25ydTNhTDh4ZitQd3QvbDhCaUNVVFMyQ3FwSnor?=
+ =?utf-8?B?MGViVG9Ud2RHdVJSaUpYVFUvcVlMTDdZU2xTUEtiR2g2S3VmVUdaUDBHUnZZ?=
+ =?utf-8?B?KzBTL2ZsL3MyU3VVaEhsYTRPT3lWdTM4eTZNRkRiVjZqTk14U1lCL1IxMVA3?=
+ =?utf-8?B?NGl2N0N1TXFQMmt4b2VnbEFjVHZEY0hHMFYwRDdkc3dtWXQ5cTgzSHZUNlU4?=
+ =?utf-8?B?MW96V2VCeE9nOWw3dUFBQzlWZWh1TjVIV3Y0VjZTTW9tMXdKMFYyd2l3WEF2?=
+ =?utf-8?B?UHRZSVlSZk94eGhwaEJKY3UycTNjT3NxemFhTVlzVUJicm5SUGF5eVR4QzFy?=
+ =?utf-8?B?LytmQkhOUUx0VGNhajVYNDdWSUV3dEd5UGtlV3BjL2JGdk5Ja2luQWFNTmVS?=
+ =?utf-8?B?bTc4b2NlMzVUL0dkMllBRFJVcEgvdkdXWkc2Z3pGaHppSHFVbkZwYlNyUW1Y?=
+ =?utf-8?B?dXo4TnJYaG1GQVIwdk9GUE4vN1ZzbUFadTdHbll4dklTSFYyZmk4NTdCYjhn?=
+ =?utf-8?B?elVtRFhWcEFIWll5b1JiUnM0ZWEzczRjN3Y2WVRlOW55V2xKUGlLazNXS2pp?=
+ =?utf-8?B?S1EwdENtL2pJRnRVUnpUSzR0c25EeE1WYlRKVG5pUHBWOGJGSUo2L0tyVEdk?=
+ =?utf-8?B?SU96bm93K2ZhQS9kdUgrL2NHc3g5TWdnblRYRGtlOGZQY3BsSXFldzhMTkVR?=
+ =?utf-8?B?RDNLSGNpS1ZWLysxMHZycERJSE5DTEJBam5XV3hKOWF0d0RkMDMxRVJzL3ho?=
+ =?utf-8?B?UG4zYWhtRGNib0cxS0ZjTGxZbE1lRy82ZG5hTWpjejZVK2x0d1dzVDVwUGNN?=
+ =?utf-8?B?a1Z3MDh6eExsMGxmM2V6MWpVVDU2Y01Hc3Q0ckRsZThZM3Y0YUpPbFpWbFB3?=
+ =?utf-8?B?amhNQlNqaXRhTVU4UmRTdjB0c25PWk5uUE5zbkVWVm5sMXBsMnR2djNCdDNX?=
+ =?utf-8?B?MTBIMkdRNUNjZkRacEFnb1lxTllnWjJ5RjJyZGNGeWQ1U3VqM2F2YkN0cHd5?=
+ =?utf-8?B?TGdsMW8wbXJoM3QvWEpvSkZoSmpLRkVraFZ3NW5vRlM4L1hNUjJNcEFQbVhw?=
+ =?utf-8?B?WGxwcitBYXVwbU45UGRZdEZwWGZiQmVqZUxGanQ4WmdkYWJmbTcwOW01RGxO?=
+ =?utf-8?B?NmR1YXdubytRbEE0VTI3SURBZjhKeGJ4alJZdlZINkE5VjVkUmJjVFM3UkZG?=
+ =?utf-8?B?YzVxY2dNS3JjN0NMZFdhTndYL21nNi9VczFJbG1sUGwwN3ZYb01jbkJsRVht?=
+ =?utf-8?B?Vk9UNWdYWU9VYWUyc0NwTUZnMzN1UFlBU2J4dEhPRGROcm9qYW44TXZTcUhO?=
+ =?utf-8?B?Qkp4N0E3U01IcHhMaGN6dmxSWFJzNVY3NGg4SUtBVDZ1R1BJdHBvWlorQ1Y4?=
+ =?utf-8?B?UnlOcytHdjB0WkY3VExsUUZjOXkxQ2ZQUTYxU0pjaVMyTWcxcEdCVjhzem9R?=
+ =?utf-8?Q?MN58Gd3JIDBR++LB0EOzouTpx?=
+Content-Type: multipart/signed;
+        protocol="application/x-pkcs7-signature";
+        micalg=SHA1;
+        boundary="----=_NextPart_000_025F_01D88CA6.644DF500"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-OriginatorOrg: nec.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB6948.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 383347dd-f6fc-49a6-3f7a-08da5a72182e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2022 08:25:30.4489
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tHiL3NY6k/IpU2pzOZ0j4kBMMgF4CZVym6945oYubshqEF1AJcQTvqEIiaOH0H1NQDVYoXYUZvGacenyF+Wvfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4721
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-29 at 08:53 -0700, Jim Mattson wrote:
-> On Wed, Jun 29, 2022 at 4:17 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > On Tue, 2022-06-14 at 20:47 +0000, Sean Christopherson wrote:
-> > > The main goal of this series is to fix KVM's longstanding bug of not
-> > > honoring L1's exception intercepts wants when handling an exception that
-> > > occurs during delivery of a different exception.  E.g. if L0 and L1 are
-> > > using shadow paging, and L2 hits a #PF, and then hits another #PF while
-> > > vectoring the first #PF due to _L1_ not having a shadow page for the IDT,
-> > > KVM needs to check L1's intercepts before morphing the #PF => #PF => #DF
-> > > so that the #PF is routed to L1, not injected into L2 as a #DF.
-> > > 
-> > > nVMX has hacked around the bug for years by overriding the #PF injector
-> > > for shadow paging to go straight to VM-Exit, and nSVM has started doing
-> > > the same.  The hacks mostly work, but they're incomplete, confusing, and
-> > > lead to other hacky code, e.g. bailing from the emulator because #PF
-> > > injection forced a VM-Exit and suddenly KVM is back in L1.
-> > > 
-> > > Everything leading up to that are related fixes and cleanups I encountered
-> > > along the way; some through code inspection, some through tests.
-> > > 
-> > > v2:
-> > >   - Rebased to kvm/queue (commit 8baacf67c76c) + selftests CPUID
-> > >     overhaul.
-> > >     https://lore.kernel.org/all/20220614200707.3315957-1-seanjc@google.com
-> > >   - Treat KVM_REQ_TRIPLE_FAULT as a pending exception.
-> > > 
-> > > v1: https://lore.kernel.org/all/20220311032801.3467418-1-seanjc@google.com
-> > > 
-> > > Sean Christopherson (21):
-> > >   KVM: nVMX: Unconditionally purge queued/injected events on nested
-> > >     "exit"
-> > >   KVM: VMX: Drop bits 31:16 when shoving exception error code into VMCS
-> > >   KVM: x86: Don't check for code breakpoints when emulating on exception
-> > >   KVM: nVMX: Treat General Detect #DB (DR7.GD=1) as fault-like
-> > >   KVM: nVMX: Prioritize TSS T-flag #DBs over Monitor Trap Flag
-> > >   KVM: x86: Treat #DBs from the emulator as fault-like (code and
-> > >     DR7.GD=1)
-> > >   KVM: x86: Use DR7_GD macro instead of open coding check in emulator
-> > >   KVM: nVMX: Ignore SIPI that arrives in L2 when vCPU is not in WFS
-> > >   KVM: nVMX: Unconditionally clear mtf_pending on nested VM-Exit
-> > >   KVM: VMX: Inject #PF on ENCLS as "emulated" #PF
-> > >   KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
-> > >   KVM: x86: Make kvm_queued_exception a properly named, visible struct
-> > >   KVM: x86: Formalize blocking of nested pending exceptions
-> > >   KVM: x86: Use kvm_queue_exception_e() to queue #DF
-> > >   KVM: x86: Hoist nested event checks above event injection logic
-> > >   KVM: x86: Evaluate ability to inject SMI/NMI/IRQ after potential
-> > >     VM-Exit
-> > >   KVM: x86: Morph pending exceptions to pending VM-Exits at queue time
-> > >   KVM: x86: Treat pending TRIPLE_FAULT requests as pending exceptions
-> > >   KVM: VMX: Update MTF and ICEBP comments to document KVM's subtle
-> > >     behavior
-> > >   KVM: selftests: Use uapi header to get VMX and SVM exit reasons/codes
-> > >   KVM: selftests: Add an x86-only test to verify nested exception
-> > >     queueing
-> > > 
-> > >  arch/x86/include/asm/kvm-x86-ops.h            |   2 +-
-> > >  arch/x86/include/asm/kvm_host.h               |  35 +-
-> > >  arch/x86/kvm/emulate.c                        |   3 +-
-> > >  arch/x86/kvm/svm/nested.c                     | 102 ++---
-> > >  arch/x86/kvm/svm/svm.c                        |  18 +-
-> > >  arch/x86/kvm/vmx/nested.c                     | 319 +++++++++-----
-> > >  arch/x86/kvm/vmx/sgx.c                        |   2 +-
-> > >  arch/x86/kvm/vmx/vmx.c                        |  53 ++-
-> > >  arch/x86/kvm/x86.c                            | 404 +++++++++++-------
-> > >  arch/x86/kvm/x86.h                            |  11 +-
-> > >  tools/testing/selftests/kvm/.gitignore        |   1 +
-> > >  tools/testing/selftests/kvm/Makefile          |   1 +
-> > >  .../selftests/kvm/include/x86_64/svm_util.h   |   7 +-
-> > >  .../selftests/kvm/include/x86_64/vmx.h        |  51 +--
-> > >  .../kvm/x86_64/nested_exceptions_test.c       | 295 +++++++++++++
-> > >  15 files changed, 886 insertions(+), 418 deletions(-)
-> > >  create mode 100644 tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
-> > > 
-> > > 
-> > > base-commit: 816967202161955f398ce379f9cbbedcb1eb03cb
-> > 
-> > Hi Sean and everyone!
-> > 
-> > 
-> > Before I continue reviewing the patch series, I would like you to check if
-> > I understand the monitor trap/pending debug exception/event injection
-> > logic on VMX correctly. I was looking at the spec for several hours and I still have more
-> > questions that answers about it.
-> > 
-> > So let me state what I understand:
-> > 
-> > 1. Event injection (aka eventinj in SVM terms):
-> > 
-> >   (VM_ENTRY_INTR_INFO_FIELD/VM_ENTRY_EXCEPTION_ERROR_CODE/VM_ENTRY_INSTRUCTION_LEN)
-> > 
-> >   If I understand correctly all event injections types just like on SVM just inject,
-> >   and never create something pending, and/or drop the injection if event is not allowed
-> >   (like if EFLAGS.IF is 0). VMX might have some checks that could fail VM entry,
-> >   if for example you try to inject type 0 (hardware interrupt) and EFLAGS.IF is 0,
-> >   I haven't checked this)
-> > 
-> >   All event injections happen right away, don't deliver any payload (like DR6), etc.
-> > 
-> >   Injection types 4/5/6, do the same as injection types 0/2/3 but in addition to that,
-> >   type 4/6 do a DPL check in IDT, and also these types can promote the RIP prior
-> >   to pushing it to the exception stack using VM_ENTRY_INSTRUCTION_LEN to be consistent
-> >   with cases when these trap like events are intercepted, where the interception happens
-> >   on the start of the instruction despite exceptions being trap-like.
-> > 
-> > 
-> > 2. #DB is the only trap like exception that can be pending for one more instruction
-> >    if MOV SS shadow is on (any other cases?).
-> >    (AMD just ignores the whole thing, rightfully)
-> > 
-> >    That is why we have the GUEST_PENDING_DBG_EXCEPTIONS vmcs field.
-> >    I understand that it will be written by CPU in case we have VM exit at the moment
-> >    where #DB is already pending but not yet delivered.
-> > 
-> >    That field can also be (sadly) used to "inject" #DB to the guest, if the hypervisor sets it,
-> >    and this #DB will actually update DR6 and such, and might be delayed/lost.
-> > 
-> > 
-> > 3. Facts about MTF:
-> > 
-> >    * MTF as a feature is basically 'single step the guest by generating MTF VM exits after each executed
-> >      instruction', and is enabled in primary execution controls.
-> > 
-> >    * MTF is also an 'event', and it can be injected separately by the hypervisor with event type 7,
-> >      and that has no connection to the 'feature', although usually this injection will be useful
-> >      when the hypervisor does some kind of re-injection, triggered by the actual MTF feature.
-> > 
-> >    * MTF event can be lost, if higher priority VM exit happens, this is why the SDM says about 'pending MTF',
-> >      which means that MTF vmexit should happen unless something else prevents it and/or higher priority VM exit
-> >      overrides it.
-> > 
-> >    * MTF event is raised (when the primary execution controls bit is enabled) when:
-> > 
-> >         - after an injected (vectored), aka eventinj/VM_ENTRY_INTR_INFO_FIELD, done updating the guest state
-> >           (that is stack was switched, stuff was pushed to new exception stack, RIP updated to the handler)
-> >           I am not 100% sure about this but this seems to be what PRM implies:
-> > 
-> >           "If the “monitor trap flag” VM-execution control is 1 and VM entry is injecting a vectored event (see Section
-> >           26.6.1), an MTF VM exit is pending on the instruction boundary before the first instruction following the
-> >           VM entry."
-> > 
-> >         - If an interrupt and or #DB exception happens prior to executing first instruction of the guest,
-> >           then once again MTF will happen on first instruction of the exception/interrupt handler
-> > 
-> >           "If the “monitor trap flag” VM-execution control is 1, VM entry is not injecting an event, and a pending event
-> >           (e.g., debug exception or interrupt) is delivered before an instruction can execute, an MTF VM exit is pending
-> >           on the instruction boundary following delivery of the event (or any nested exception)."
-> > 
-> >           That means that #DB has higher priority that MTF, but not specified if fault DB or trap DB
-> > 
-> >         - If instruction causes exception, once again, on first instruction of the exception handler MTF will happen.
-> > 
-> >         - Otherwise after an instruction (or REP iteration) retires.
-> > 
-> > 
-> > If you have more facts about MTF and related stuff and/or if I made a mistake in the above, I am all ears to listen!
-> 
-> Here's a comprehensive spreadsheet on virtualizing MTF, compiled by
-> Peter Shier. (Just in case anyone is interested in *truly*
-> virtualizing the feature under KVM, rather than just setting a
-> VM-execution control bit in vmcs02 and calling it done.)
-> 
-> https://docs.google.com/spreadsheets/d/e/2PACX-1vQYP3PgY_JT42zQaR8uMp4U5LCey0qSlvMb80MLwjw-kkgfr31HqLSqAOGtdZ56aU2YdVTvfkruhuon/pubhtml
+------=_NextPart_000_025F_01D88CA6.644DF500
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-Neither can I access this document sadly :(
+From: Michael Roth <michael.roth@amd.com>
+> Sorry, I just noticed I had a typo in that patch which made it a no-op
+> effectively. Can you give this a shot?
 
-Best regards,
-	Maxim Levitsky
+Ah, thank you, that works!
 
-> 
+> +   kernel_add_identity_map((unsigned long)sd, (unsigned long)(sd + sizeof(*sd) + sd->len));
 
+But I think the cast should be like this and it works for me, too:
 
+     kernel_add_identity_map((unsigned long)sd, (unsigned long)sd + sizeof(*sd) + sd->len);
+
+-- 
+Jun'ichi Nomura, NEC Corporation / NEC Solution Innovators, Ltd.
+
+------=_NextPart_000_025F_01D88CA6.644DF500
+Content-Type: application/pkcs7-signature;
+	name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxTCCA3Uw
+ggJdoAMCAQICCwQAAAAAARVLWsOUMA0GCSqGSIb3DQEBBQUAMFcxCzAJBgNVBAYTAkJFMRkwFwYD
+VQQKExBHbG9iYWxTaWduIG52LXNhMRAwDgYDVQQLEwdSb290IENBMRswGQYDVQQDExJHbG9iYWxT
+aWduIFJvb3QgQ0EwHhcNOTgwOTAxMTIwMDAwWhcNMjgwMTI4MTIwMDAwWjBXMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEQMA4GA1UECxMHUm9vdCBDQTEbMBkGA1UEAxMS
+R2xvYmFsU2lnbiBSb290IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2g7mmY3O
+o+NPin778YuDJWvqSB/xKrC5lREEvfBj0eJnZs8c3c8bSCvujYmOmq8pgGWr6cctEsurHExwB6E9
+CjDNFY1P+N3UjFAVHO9Q7sQu9/zpUvKRfeBt1TUwjl5Dc/JB6dVq47KJOlY5OG8GPIhpWypNxadU
+uGyJzJv5PMrl/Yn1EjySeJbW3HRuk0Rh0Y3HRrJ1DoboGYrVbWzVeBaVounICjjr8iQTT3NUkxOF
+Ohu8HjS1iwWMuXeLsdsfIJGrCVNukM57N3S5cEeRIlFjFnmusa5BJgjIGSvRRqpI1mQq14M0/ywq
+wWwZQ0oHhefTfPYhaO/q8lKff5OQzwIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/
+BAUwAwEB/zAdBgNVHQ4EFgQUYHtmGkUNl8qJUC99BM00qP/8/UswDQYJKoZIhvcNAQEFBQADggEB
+ANZz53xPdtCNv+y6or40xSgytXz8bJwsK70JnlO/a16qEUi25Qijs8o9YU3TRgmzPsOg42NVG/K6
+76054UO5OKPmL4omO++gUFb5xgr9OM3EC3BRlJeYBN/DX5TVFckUQZzEXXVkFQ3/VTDsho//De8s
+uWNG9qr837xp/S4SSGSa4JXwpu8pjwGxFbUMHaX+aSxpJHges6cccWLuysiXrBddisL4R4ZuKsRW
+MZXQZ4mFK/lspl1GnQyqguSZUd1wt9tWPWHkauFc1vb+Pd5BzAeuY1K/U1P0K+nH/bb3gl+F0kEY
+24GzBBzFH6SAbxUgyd4MiAod1mZV4vxIySkmaeAwggROMIIDNqADAgECAg0B7l8Wnf+XNStkZdZq
+MA0GCSqGSIb3DQEBCwUAMFcxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNh
+MRAwDgYDVQQLEwdSb290IENBMRswGQYDVQQDExJHbG9iYWxTaWduIFJvb3QgQ0EwHhcNMTgwOTE5
+MDAwMDAwWhcNMjgwMTI4MTIwMDAwWjBMMSAwHgYDVQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBS
+MzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UEAxMKR2xvYmFsU2lnbjCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMwldpB5BngiFvXAg7aEyiie/QV2EcWtiHL8RgJDx7KKnQRfJMsu
+S+FggkbhUqsMgUdwbN1k0ev1LKMPgj0MK66X17YUhhB5uzsTgHeMCOFJ0mpiLx9e+pZo34knlTif
+Btc+ycsmWQ1z3rDI6SYOgxXG71uL0gRgykmmKPZpO/bLyCiR5Z2KYVc3rHQU3HTgOu5yLy6c+9C7
+v/U9AOEGM+iCK65TpjoWc4zdQQ4gOsC0p6Hpsk+QLjJg6VfLuQSSaGjlOCZgdbKfd/+RFO+uIEn8
+rUAVSNECMWEZXriX7613t2Saer9fwRPvm2L7DWzgVGkWqQPabumDk3F2xmmFghcCAwEAAaOCASIw
+ggEeMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDAfBgNVHSMEGDAWgBRge2YaRQ2XyolQL30EzTSo//z9SzA9BggrBgEFBQcBAQQx
+MC8wLQYIKwYBBQUHMAGGIWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL3Jvb3RyMTAzBgNVHR8E
+LDAqMCigJqAkhiJodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL3Jvb3QuY3JsMEcGA1UdIARAMD4w
+PAYEVR0gADA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0
+b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAI3Dpz+K+9VmulEJvxEMzqs0/OrlkF/JiBktI8UCIBheh
+/qvRXzzGM/Lzjt0fHT7MGmCZggusx/x+mocqpX0PplfurDtqhdbevUBj+K2myIiwEvz2Qd8PCZce
+OOpTn74F9D7q059QEna+CYvCC0h9Hi5R9o1T06sfQBuKju19+095VnBfDNOOG7OncA03K5eVq9rg
+EmscQM7Fx37twmJY7HftcyLCivWGQ4it6hNu/dj+Qi+5fV6tGO+UkMo9J6smlJl1x8vTe/fKTNOv
+USGSW4R9K58VP3TLUeiegw4WbxvnRs4jvfnkoovSOWuqeRyRLOJhJC2OKkhwkMQexejgcDCCBQ0w
+ggP1oAMCAQICEHhKqRA/pb++3nUIsTSTHQAwDQYJKoZIhvcNAQELBQAwTDEgMB4GA1UECxMXR2xv
+YmFsU2lnbiBSb290IENBIC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2Jh
+bFNpZ24wHhcNMjAwOTE2MDAwMDAwWhcNMjgwOTE2MDAwMDAwWjBbMQswCQYDVQQGEwJCRTEZMBcG
+A1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29u
+YWxTaWduIDIgQ0EgMjAyMDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL2wplwnLG2f
+2tH0SEDAcaeICZ58np3hWKRLTcna2WfhnikjHR4g4Fw9VJ0UiLnSqPpqEOmJQjruLa1VjvxIl32J
+yu83qKduq8tUaSraIAe/ztdec7pbQM+uMnUGC3vmtXv3M5AC4N7IE3DjnBWU15N/HmqrF7IqaF9b
+7Dbq6j7Zwtu01rAO6ZOLil7HBY5HlBPCWbvQQymrMGcoMQTjwUAcKwOfttFsZZOpNXuhCmmjWjWV
+Mt9KtwKxH99GQ6V8nwrYl57qY0ivFlNnCuKrBLY9PSUuPpoYtAkwqwp1wM7pt7YHB3B0YNKa3Es8
+xFA0FqBccrqsIsIR7t7D0DZhTjMCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQEAwIBhjBgBgNVHSUE
+WTBXBggrBgEFBQcDAgYIKwYBBQUHAwQGCisGAQQBgjcUAgIGCisGAQQBgjcKAwQGCSsGAQQBgjcV
+BgYKKwYBBAGCNwoDDAYIKwYBBQUHAwcGCCsGAQUFBwMRMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYD
+VR0OBBYEFJYz0eZYF1s0dYqBVmTVvkjeoY/PMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i
+3Ru8MHoGCCsGAQUFBwEBBG4wbDAtBggrBgEFBQcwAYYhaHR0cDovL29jc3AuZ2xvYmFsc2lnbi5j
+b20vcm9vdHIzMDsGCCsGAQUFBzAChi9odHRwOi8vc2VjdXJlLmdsb2JhbHNpZ24uY29tL2NhY2Vy
+dC9yb290LXIzLmNydDA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29t
+L3Jvb3QtcjMuY3JsMFoGA1UdIARTMFEwCwYJKwYBBAGgMgEoMEIGCisGAQQBoDIBKAowNDAyBggr
+BgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wDQYJKoZIhvcN
+AQELBQADggEBAHQF5P1wpw3gDnfZzRFL1j8W5TkP+aP6ujiHk2L6BL1FItqh1DrW34wRnU6bRbF1
+3uEYI1RfW+g7os4GH8vnCC5r4uYX5NyKvDAGbILVvgP6LULCbytsEWrSxOtUW85F/PfzlxGdc0+7
+f6tkYias6b1fDQocSI/j+1k7XqT5vQCI9CnrnvoEtqr8wGQGN+GWXkR4AO4OTuEzyf6E3fuK4IlP
+vsCw5XGWHf7JRZGk98YOKlg3qRDI0+E9ahTkCC/oo1AK2EuKMKT4PTSEkymtaqiliYxaMprNHdBs
+Dp4iCGwb4SNjCewUmPTGLVlU+YyTt7bFR8I+HKfdgkhbhsLpxTMwggXlMIIEzaADAgECAgwO+efB
+Kgmslz77fEQwDQYJKoZIhvcNAQELBQAwWzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNp
+Z24gbnYtc2ExMTAvBgNVBAMTKEdsb2JhbFNpZ24gR0NDIFIzIFBlcnNvbmFsU2lnbiAyIENBIDIw
+MjAwHhcNMjExMjA2MDUxNzI2WhcNMjIxMjA3MDUxNzI2WjCB7DELMAkGA1UEBhMCSlAxDTALBgNV
+BEETBDExMEExGTAXBgNVBAwTEE5FQyBHcm91cCBNZW1iZXIxDjAMBgNVBAgTBVRva3lvMQ8wDQYD
+VQQHEwZNaW5hdG8xGDAWBgNVBAoTD05FQyBDb3Jwb3JhdGlvbjEnMCUGA1UECxMeTkVDIEdyb3Vw
+IFN0YW5kYXJkIENlcnRpZmljYXRlMSgwJgYDVQQDEx9DQy0yMTQ5MVAzMjEyMzAsIE5PTVVSQSBK
+VU5JQ0hJMSUwIwYJKoZIhvcNAQkBFhZqdW5pY2hpLm5vbXVyYUBuZWMuY29tMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4Xk01AQsJLT0nBNqyIrzkwP2bWrpCq74yoIHLzvyqQrgEU2C
+VYazZwQR2dRDP6tLhz83LrgJpIke1INa49/BLUJp9FAfPVTCZb0j4kftbCj5R3O/JHFpDy//9Cx4
+9osgejC+Y0HmP5onVmEe4tKxG3hBFoVhLyUU+LhusvQ7SRrjYU4Bj4qjv1rhUZLzAas69+B73ehF
+dA0c+fBZ3V+eAWQILmGSkbWc3uXZWK5pR0cB2ZJxC2eLlMCMdWNVyZxbt+aTC2R4Sw0FQ/iuf/4F
+Ar8qFoBevR4qmyZq11asIidufyscWOhplGshENi7+rzYTd1HioynChC67q+rL0K86QIDAQABo4IC
+FTCCAhEwDgYDVR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0
+cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIw
+MjAuY3J0MEEGCCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVy
+c29uYWxzaWduMmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYm
+aHR0cHM6Ly93d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8E
+QjBAMD6gPKA6hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwLmNybDBJBgNVHREEQjBAgRZqdW5pY2hpLm5vbXVyYUBuZWMuY29toCYGCisGAQQBgjcU
+AgOgGAwWanVuaWNoaS5ub211cmFAbmVjLmNvbTApBgNVHSUEIjAgBggrBgEFBQcDAgYIKwYBBQUH
+AwQGCisGAQQBgjcUAgIwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYE
+FLri8sCe/FVMIHLIr512r1mpmJmEMA0GCSqGSIb3DQEBCwUAA4IBAQCMiqvivcAx1ZHBbcdmA7/z
+ZBddJ+hSWAmZE26ZTWksq+WvzX1get6KGMu+6f/KqrBcxCukH+ajNIkaFcJFh0uoJEkbhXzvyqY0
+RbFVAF7OF6bC7kySTjLQUB3c1AzfAgl8/JyYf5s2kjNVqP3FqDUkW0zGa5+LOzXhfy9NBLy1ZciL
+JAFB1rSkRfRiIBUZaQS0P7qwRSMu/8NckySUoGbE1Yi20dCdKRyUgAoGnhr3mVJ0MNSHwr9FTDPv
+eaL3cOR0P6Qr9lE2qmHvfRJQWxW3ufPiaTeC9o0NWDW7tcLDVTrYjavXMMR0yaIr9R7XJka/hMCp
+puI9qbISANymP36AMYIDgzCCA38CAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFs
+U2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0Eg
+MjAyMAIMDvnnwSoJrJc++3xEMAkGBSsOAwIaBQCgggHtMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0B
+BwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDYzMDA4MjUyOFowIwYJKoZIhvcNAQkEMRYEFBz7gy24H13Z
+rvOMJsIfZncNKdZYMHoGCSsGAQQBgjcQBDFtMGswWzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEds
+b2JhbFNpZ24gbnYtc2ExMTAvBgNVBAMTKEdsb2JhbFNpZ24gR0NDIFIzIFBlcnNvbmFsU2lnbiAy
+IENBIDIwMjACDA7558EqCayXPvt8RDB8BgsqhkiG9w0BCRACCzFtoGswWzELMAkGA1UEBhMCQkUx
+GTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNVBAMTKEdsb2JhbFNpZ24gR0NDIFIzIFBl
+cnNvbmFsU2lnbiAyIENBIDIwMjACDA7558EqCayXPvt8RDCBkwYJKoZIhvcNAQkPMYGFMIGCMAsG
+CWCGSAFlAwQBKjALBglghkgBZQMEARYwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAECMA4GCCqGSIb3
+DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCGjALBglghkgBZQMEAgMwCwYJYIZIAWUDBAIC
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDhI1uaaS5k4Gn9Rc9sz5GaAeUINATmtraY
+xKiNweCKstw6kbF8CPefYtNLSXGdyL+f0TVKcX3OAS+f7hDR77G0QJ+Eo9BSjl9lNhVd6qRWqIof
+YWEIsJXkFAjWgf4EATckrMquyXJ9WTx8z4COKn/dwv/CiFrMjpFXT6jFKu8AiD38q028kHvNeYS5
+K9Z0Cn7ieLGvj4HBy/k0DhIsSHnKmeZzc9fVfe5+tMyldxk1/Pw0O/skpDM+M3lSCWKPwNYdPJRD
+EEgLvbQv1nKI+5PZWJ0Bj9vSkPUMXjA/vRcIEakqopNA4ZWrofmaOsPK0zRrkj0ZLfZJKpma4DTO
+Nkz1AAAAAAAA
+
+------=_NextPart_000_025F_01D88CA6.644DF500--
