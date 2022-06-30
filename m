@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D60CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D6ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235279AbiF3N5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
+        id S235739AbiF3N7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235973AbiF3N4f (ORCPT
+        with ESMTP id S236658AbiF3N7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:56:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6613F13B44A;
-        Thu, 30 Jun 2022 06:50:58 -0700 (PDT)
+        Thu, 30 Jun 2022 09:59:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF92142A19;
+        Thu, 30 Jun 2022 06:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9912B82AEF;
-        Thu, 30 Jun 2022 13:50:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AC9C34115;
-        Thu, 30 Jun 2022 13:50:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61AB262054;
+        Thu, 30 Jun 2022 13:52:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0F5C3411E;
+        Thu, 30 Jun 2022 13:52:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597050;
-        bh=h1N85u9a3APp1yw2woC9p/8mzkK2TLZrhyjIps8M9WU=;
+        s=korg; t=1656597127;
+        bh=trcPkf+EXPWSnihqZu36c4JcAydRwY2vhM6nuMOJUUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2aUKgXUZIvKoSK3E9Uwo8xtAfobOIz7Bg4aftZZmf54QCtzEs6dKH4q1Zh6WCG2vn
-         NLMgE0dTPvpyoceMrgU20YNwkfjegIZkFb2ie6MVKlYqh9qDlFiyvTTahoSI9+ihUx
-         aZwK0X65ZB498eenuRbXKqwV0WkXgOdxaJH16QX8=
+        b=A5XTOClgrPlHytZ4W/Xd9fKeQPMWSRzbAtAI8WSdKWt5X3SewoTWsJJZtJ68ymZEY
+         y7xPVAlNzpdakth63JLZ3xD2dy9ATqhdF1pf7Q8U+2hrYXXtWe9k4NdziZUKgIGWal
+         d56rRot0izLXoDc0kxszO8J1BRH2fUhPYJFnypio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 02/49] random: schedule mix_interrupt_randomness() less often
-Date:   Thu, 30 Jun 2022 15:46:15 +0200
-Message-Id: <20220630133233.982703219@linuxfoundation.org>
+        stable@vger.kernel.org, Yonglin Tan <yonglin.tan@outlook.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 10/49] USB: serial: option: add Quectel EM05-G modem
+Date:   Thu, 30 Jun 2022 15:46:23 +0200
+Message-Id: <20220630133234.209101806@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -50,56 +48,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Yonglin Tan <yonglin.tan@outlook.com>
 
-commit 534d2eaf1970274150596fdd2bf552721e65d6b2 upstream.
+commit 33b29dbb39bcbd0a96e440646396bbf670b914fa upstream.
 
-It used to be that mix_interrupt_randomness() would credit 1 bit each
-time it ran, and so add_interrupt_randomness() would schedule mix() to
-run every 64 interrupts, a fairly arbitrary number, but nonetheless
-considered to be a decent enough conservative estimate.
+The EM05-G modem has 2 USB configurations that are configurable via the AT
+command AT+QCFG="usbnet",[ 0 | 2 ] which make the modem enumerate with
+the following interfaces, respectively:
 
-Since e3e33fc2ea7f ("random: do not use input pool from hard IRQs"),
-mix() is now able to credit multiple bits, depending on the number of
-calls to add(). This was done for reasons separate from this commit, but
-it has the nice side effect of enabling this patch to schedule mix()
-less often.
+"RMNET"	: AT + DIAG + NMEA + Modem + QMI
+"MBIM"	: MBIM + AT + DIAG + NMEA + Modem
 
-Currently the rules are:
-a) Credit 1 bit for every 64 calls to add().
-b) Schedule mix() once a second that add() is called.
-c) Schedule mix() once every 64 calls to add().
+The detailed description of the USB configuration for each mode as follows:
 
-Rules (a) and (c) no longer need to be coupled. It's still important to
-have _some_ value in (c), so that we don't "over-saturate" the fast
-pool, but the once per second we get from rule (b) is a plenty enough
-baseline. So, by increasing the 64 in rule (c) to something larger, we
-avoid calling queue_work_on() as frequently during irq storms.
+RMNET Mode
+--------------
+T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#= 21 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=030a Rev= 3.18
+S:  Manufacturer=Quectel
+S:  Product=Quectel EM05-G
+C:* #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+E:  Ad=89(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-This commit changes that 64 in rule (c) to be 1024, which means we
-schedule mix() 16 times less often. And it does *not* need to change the
-64 in rule (a).
+MBIM Mode
+--------------
+T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#= 16 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=030a Rev= 3.18
+S:  Manufacturer=Quectel
+S:  Product=Quectel EM05-G
+C:* #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
+A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=0e Prot=00
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=0e Prot=00 Driver=cdc_mbim
+E:  Ad=89(I) Atr=03(Int.) MxPS=  64 Ivl=32ms
+I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
+Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
 Cc: stable@vger.kernel.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/option.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -996,7 +996,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
-+	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
- 	if (unlikely(!fast_pool->mix.func))
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -252,6 +252,7 @@ static void option_instat_callback(struc
+ #define QUECTEL_PRODUCT_EG95			0x0195
+ #define QUECTEL_PRODUCT_BG96			0x0296
+ #define QUECTEL_PRODUCT_EP06			0x0306
++#define QUECTEL_PRODUCT_EM05G			0x030a
+ #define QUECTEL_PRODUCT_EM12			0x0512
+ #define QUECTEL_PRODUCT_RM500Q			0x0800
+ #define QUECTEL_PRODUCT_EC200S_CN		0x6002
+@@ -1134,6 +1135,8 @@ static const struct usb_device_id option
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EP06, 0xff, 0xff, 0xff),
+ 	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EP06, 0xff, 0, 0) },
++	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM05G, 0xff),
++	  .driver_info = RSVD(6) | ZLP },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0xff, 0xff),
+ 	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0, 0) },
 
 
