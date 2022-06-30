@@ -2,111 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44243CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC95C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbiF3IIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
+        id S233762AbiF3IIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233713AbiF3IID (ORCPT
+        with ESMTP id S233744AbiF3IID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 04:08:03 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F76F41983
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:07:57 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-31772f8495fso171214717b3.4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:07:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zuRamS1SI178ACtkzbHW3gIWo/2dAhClIsQUxKXvzRs=;
-        b=Edf66koZAAgQCYihpt0wmHQX6cb6a2viEGA/XonD1DFhQ7tW7d6/1pnwl7ehwqvFuh
-         7kskIcwxCvy8j6Aci++h9ogYMBNFZbaLyt1PGoxQXT6IYP5snaKoC0RREM7ONVBFFede
-         +sPnFexJRpw1ZM/T8F1wtt3meKdmDPgUe6CWIiWVIKZOKXkdpBOHLJshKkhbLiPM2cAI
-         E5JTFINt7qWWLrn65iEQzu6Bq0wrlDvLeRXqC8kg2mhcYnwaRhD4fe2vdNYGL5hmIP+X
-         k49N+HVLVdj0or5ORocwXlLIODE+aE2bWwao/QP5XVBFJU7sQts2Q3KHn1frFPNp1XbM
-         KJJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zuRamS1SI178ACtkzbHW3gIWo/2dAhClIsQUxKXvzRs=;
-        b=GJvuOlV6C0caMmwxIIM9ML2HRIwEj9hpyF+FRDg6CHuVcOUBJg9ljCUFykoiQ/F+65
-         18Fr42eYgJHV3zflYpCARENFE/ip1h7Ypjy8cI6zAYOqN3zDSphN08OaY/YtZ4de9ec9
-         fxSE4dEJg3ZJktoy34hNUZEImvBY08KcNzyNlteY5ARQJtDe945RLO1hLnWwL52Alwj1
-         ivQtFMnA8bao9a9vDNFj32wv/PJ7qYQQoQge/l8bDCHorWY8Ox5A/xxAoD/oY4LB2pgy
-         bllRrfwpamC/Bsvt2eYdq+jV5xE0/YWEZsJhlp9VA6wJe9G+YJHj8FdHwZ21jJrGWMlw
-         GUBA==
-X-Gm-Message-State: AJIora9SSpRLLELfEE6jMJ0w37mbZ2+H/+5WqzDqGJR2651tKponKjNl
-        daeQGCRZvemftwVPuN53aQfHGYuO7mALKWAg8bwJtKMSMquAkA==
-X-Google-Smtp-Source: AGRyM1sNPRnc973+6t3nks2nAafHckGcGd4C/7mNr4lu6Glls8Mg6oYYXEji3JtUPPaZaILJEUFAHfZvP2Uf5d0JK8M=
-X-Received: by 2002:a81:1889:0:b0:317:987b:8e82 with SMTP id
- 131-20020a811889000000b00317987b8e82mr8749982ywy.185.1656576476373; Thu, 30
- Jun 2022 01:07:56 -0700 (PDT)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D6F41985;
+        Thu, 30 Jun 2022 01:07:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656576477; x=1688112477;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vbBZBVb8B22VRpxKb/0dz1k5O/GgdpM5EBwjjdArU6w=;
+  b=q+tqjryGI0UN6eN3MHtK3phxa1+owx9XoUok4gcVmowNRs6DBAu//tP+
+   TIhq9EMOJrjqMy8qFeWBjweL1sdR0NEWz/kB5s9iGbmVmHJ9pgVZiOtdt
+   ceMxCpCn/i/Gy3PDyngeFStpKPuBVwtcNkox/zXmPp3ipO1pBqBANyvRv
+   Z4JvVe1ODHetJ+sqpvT+rEVFxFw4XrZGr/B8wAooHgqQUVnVOdPnzRxNW
+   zkuqYij4QNTjCaDyVUmENId/tVrup+gGaJ8Cf4CztbMJKBTgo8CNqhlgc
+   bl677Eq3mST424LNk2SLo9yzpWq72+NmmZ3z0UlkY890BSwEB4XPOUAcp
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="170217523"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 01:07:57 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 30 Jun 2022 01:07:55 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 30 Jun 2022 01:07:51 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Daire McNamara" <daire.mcnamara@microchip.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+Subject: [PATCH v1 07/14] riscv: dts: microchip: add mpfs specific macb reset support
+Date:   Thu, 30 Jun 2022 09:05:26 +0100
+Message-ID: <20220630080532.323731-8-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220630080532.323731-1-conor.dooley@microchip.com>
+References: <20220630080532.323731-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
- <Yrmr175fsQi6ToEY@google.com> <YrrO0CQVv6hj1AB0@smile.fi.intel.com>
- <YrxjTD0sJXh8cgVP@google.com> <CAHp75VdHpqAxS3jmFi-1Sw6wB1CP3wQVM_+5OP0C_yFFG336LA@mail.gmail.com>
- <Yr1YXHb3GqwZncFK@google.com>
-In-Reply-To: <Yr1YXHb3GqwZncFK@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 30 Jun 2022 10:07:18 +0200
-Message-ID: <CAHp75Vf1UK9Z2P1D9v_j9rsdKoDXWSvb=wJgmkvACYgwofWrxA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/9] mfd: intel_soc_pmic_crc: Merge Intel PMIC core to crc
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 10:01 AM Lee Jones <lee.jones@linaro.org> wrote:
-> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
-> > On Wed, Jun 29, 2022 at 4:36 PM Lee Jones <lee.jones@linaro.org> wrote:
-> > > On Tue, 28 Jun 2022, Andy Shevchenko wrote:> > On Mon, Jun 27, 2022 at 02:08:39PM +0100, Lee Jones wrote:
-> > > > > On Thu, 16 Jun 2022, Andy Shevchenko wrote:
+The macb on PolarFire SoC has reset support which the generic compatible
+does not use. Add the newly introduced MPFS specific compatible as the
+primary compatible to avail of this support & wire up the reset to the
+clock controllers devicetree entry.
 
-...
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ arch/riscv/boot/dts/microchip/mpfs.dtsi | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> > > > > >  drivers/mfd/intel_soc_pmic_core.c | 160 -----------------------------
-> > > > > >  drivers/mfd/intel_soc_pmic_core.h |  25 -----
-> > > > > >  drivers/mfd/intel_soc_pmic_crc.c  | 162 ++++++++++++++++++++++++++++--
-> > > > > >  4 files changed, 157 insertions(+), 193 deletions(-)
-> > > > > >  delete mode 100644 drivers/mfd/intel_soc_pmic_core.c
-> > > > > >  delete mode 100644 drivers/mfd/intel_soc_pmic_core.h
-> > > > >
-> > > > > Can you submit this again with the -M flag please.
-> > > >
-> > > > This is done with this flag. Basically for the last several years I do my
-> > > > submissions with that flag.
-> > >
-> > > Odd.  I thought -M only showed diff for the changes.
-> >
-> > It's exactly what happens here in this patch. What did I miss?
-> >
-> > Note here is not renaming, but merging contents of one file (actually
-> > two files) into another. What you are talking about is probably -D,
-> > but AFAIR Git (at least that time) can't catch up deleted files from
-> > the mbox format. That's why I do not use -D for submissions.
->
-> Ah yes, that's probably it then.
->
-> From a quick look at the diff (I missed the 2 "--" at the end), it
-> looked like this was a rename.  In which case -M won't do anything
-> useful here.  I'll have to brain grep the differences instead.
-
-Please do, it will be good to have this double checked.
-
-As I pointed out in the commit message the main difference in the code
-(after massaging the header inclusion block) is the static const.
-Without static we will have warning from the compiler, const is the
-new thingy, besides the merge of the Copyright line.
-
+diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+index 8c3259134194..5a33cbf9467a 100644
+--- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+@@ -197,6 +197,7 @@ clkcfg: clkcfg@20002000 {
+ 			reg = <0x0 0x20002000 0x0 0x1000>, <0x0 0x3E001000 0x0 0x1000>;
+ 			clocks = <&refclk>;
+ 			#clock-cells = <1>;
++			#reset-cells = <1>;
+ 		};
+ 
+ 		mmuart0: serial@20000000 {
+@@ -331,7 +332,7 @@ i2c1: i2c@2010b000 {
+ 		};
+ 
+ 		mac0: ethernet@20110000 {
+-			compatible = "cdns,macb";
++			compatible = "microchip,mpfs-macb", "cdns,macb";
+ 			reg = <0x0 0x20110000 0x0 0x2000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -340,11 +341,12 @@ mac0: ethernet@20110000 {
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC0>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
++			resets = <&clkcfg CLK_MAC0>;
+ 			status = "disabled";
+ 		};
+ 
+ 		mac1: ethernet@20112000 {
+-			compatible = "cdns,macb";
++			compatible = "microchip,mpfs-macb", "cdns,macb";
+ 			reg = <0x0 0x20112000 0x0 0x2000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -353,6 +355,7 @@ mac1: ethernet@20112000 {
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC1>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
++			resets = <&clkcfg CLK_MAC1>;
+ 			status = "disabled";
+ 		};
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.36.1
+
