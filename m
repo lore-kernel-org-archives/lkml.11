@@ -2,100 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6476C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236016AbiF3QhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 12:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        id S235570AbiF3QhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 12:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236026AbiF3QhA (ORCPT
+        with ESMTP id S235814AbiF3QhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 12:37:00 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5953B55F;
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6941F3B559;
         Thu, 30 Jun 2022 09:36:59 -0700 (PDT)
-Received: from meer.lwn.net (unknown [IPv6:2601:281:8300:73::5f6])
-        by ms.lwn.net (Postfix) with ESMTPA id 82ADE2BD;
-        Thu, 30 Jun 2022 16:36:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 82ADE2BD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1656607019; bh=iUgBxaMFogHblUjqh3+L/kIHthcIN9dVA3xUYz0iqas=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=psgMGBO74DasMyPGIUlPkemb+ZFWEqiUsKUtazCQZy+BbRa0iJb/3+Hy1Qjo0zoAM
-         jQf3ga0moFUJOILhDt2K2KZKnd8tpjAs5a8jMum5IRqHS0KIluCgQSyViGjvo06Vb6
-         3qwexoMVJrKBjGi182S3u4tV792NmPOno127BzPXq4IO5abhj7qFbywuFyanbvPK0A
-         oQyJzsTRAS1sS2/fgSzC9RtI+wrdtsyU624JDrMMt6WG3EwGXaNQ7ayNU7PiEOHCAQ
-         igiDahmQRmFfYRNK20wZ18UqOiP1JLLgKvHmhQqAdwDn7XL4gXV3ys2WkCg1BrKHB7
-         cZjwIwj9dJZTQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <n@nfraprado.net>, Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 1/2] docs: automarkup: track failed cross-reference attempts
-Date:   Thu, 30 Jun 2022 10:36:29 -0600
-Message-Id: <20220630163630.714673-2-corbet@lwn.net>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220630163630.714673-1-corbet@lwn.net>
-References: <20220630163630.714673-1-corbet@lwn.net>
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UDw2pc015110;
+        Thu, 30 Jun 2022 18:36:50 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=PPK7NJXmodZO2xtaWKpT2ki8JN6en9ktaebVlvJYU0M=;
+ b=tElMf53uO4MQd5obAVU2EXwhBYahEIvAisQM0Jlz1WtsxJBdK8k8qZDjfaDPugJPUMcg
+ rCY0TP934ffw3jfgUIYvehxRwjm0j4/svm9Kcukj2it2QtF2rxLUNRl1ZwKNZoEeJh5R
+ 1Tm1KSP2R20ADF77XYtEWtyH1GSxpX4lqs6M+wwLbzFDJwXur5XCTY58pl7cGZ4MjXXR
+ BRPVPlp9pjJKaa/UoRROkPMHrpQr89gsDKf03kq8DvjAJ6tgac4KL1Byo9fmeYerhe8t
+ BwWF6i1qaYPOTEEXctjvkAK5id7fWZF4HLJJv+8l34q7kjvHof2IzOaXxLPOLfceEWTz tA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h1d648y1w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 18:36:50 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 05CC610002A;
+        Thu, 30 Jun 2022 18:36:49 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 012DC226FC5;
+        Thu, 30 Jun 2022 18:36:49 +0200 (CEST)
+Received: from [10.252.24.34] (10.75.127.44) by SHFDAG1NODE2.st.com
+ (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 30 Jun
+ 2022 18:36:45 +0200
+Message-ID: <7881ee36-89f6-3ba9-f4ac-7c4e614728dd@foss.st.com>
+Date:   Thu, 30 Jun 2022 18:36:45 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] remoteproc: core: Introduce rproc_del_carveout
+Content-Language: en-US
+To:     Chris Lew <quic_clew@quicinc.com>, <bjorn.andersson@linaro.org>,
+        <mathieu.poirier@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1654888985-3846-1-git-send-email-quic_clew@quicinc.com>
+ <1654888985-3846-2-git-send-email-quic_clew@quicinc.com>
+From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
+In-Reply-To: <1654888985-3846-2-git-send-email-quic_clew@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_12,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The automarkup code tries to create a lot of cross-references that don't
-exist.  Cross-reference lookups are expensive, especially in later versions
-of Sphinx, so there is value in avoiding unnecessary ones.  Remember
-attempts that failed and do not retry them.
+Hi,
 
-This improves the htmldocs build time by 5-10% depending on the phase of
-the moon and other factors.
+On 6/10/22 21:23, Chris Lew wrote:
+> To mirror the exported rproc_add_carveout(), add a rproc_del_carveout()
+> so memory carveout resources added by devices outside of remoteproc can
+> manage the resource lifetime more accurately.
+> 
+> Signed-off-by: Chris Lew <quic_clew@quicinc.com>
+> ---
+>  drivers/remoteproc/remoteproc_core.c | 20 ++++++++++++++++++++
+>  include/linux/remoteproc.h           |  1 +
+>  2 files changed, 21 insertions(+)
+> 
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index 02a04ab34a23..ee71fccae970 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -1001,6 +1001,26 @@ void rproc_add_carveout(struct rproc *rproc, struct rproc_mem_entry *mem)
+>  EXPORT_SYMBOL(rproc_add_carveout);
+>  
+>  /**
+> + * rproc_del_carveout() - remove an allocated carveout region
+> + * @rproc: rproc handle
+> + * @mem: memory entry to register
+> + *
+> + * This function removes specified memory entry in @rproc carveouts list.
+> + */
+> +void rproc_del_carveout(struct rproc *rproc, struct rproc_mem_entry *mem)
+> +{
+> +	struct rproc_mem_entry *entry, *tmp;
+> +
+> +	list_for_each_entry_safe(entry, tmp, &rproc->carveouts, node) {
+> +		if (entry == mem) {
+> +			list_del(&mem->node);
+> +			return;
+> +		}
+> +	}
+> +}
+> +EXPORT_SYMBOL(rproc_del_carveout);
 
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
----
- Documentation/sphinx/automarkup.py | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+This API seems to me quite dangerous because it can be called while carveouts are in use.
+At least some checks should be added...
 
-diff --git a/Documentation/sphinx/automarkup.py b/Documentation/sphinx/automarkup.py
-index cc348b219fca..5b1f83e6192f 100644
---- a/Documentation/sphinx/automarkup.py
-+++ b/Documentation/sphinx/automarkup.py
-@@ -120,6 +120,16 @@ def markup_refs(docname, app, node):
-         repl.append(nodes.Text(t[done:]))
-     return repl
- 
-+#
-+# Keep track of cross-reference lookups that failed so we don't have to
-+# do them again.
-+#
-+failed_lookups = { }
-+def failure_seen(target, reftype):
-+    return (target + '::' + reftype) in failed_lookups
-+def note_failure(target, reftype):
-+    failed_lookups[target + '::' + reftype] = True
-+
- #
- # In sphinx3 we can cross-reference to C macro and function, each one with its
- # own C role, but both match the same regex, so we try both.
-@@ -145,6 +155,8 @@ def markup_func_ref_sphinx3(docname, app, match):
-         for target in possible_targets:
-             if target not in Skipfuncs:
-                 for class_s, reftype_s in zip(class_str, reftype_str):
-+                    if failure_seen(target, reftype_s):
-+                        continue
-                     lit_text = nodes.literal(classes=['xref', 'c', class_s])
-                     lit_text += target_text
-                     pxref = addnodes.pending_xref('', refdomain = 'c',
-@@ -164,6 +176,7 @@ def markup_func_ref_sphinx3(docname, app, match):
- 
-                     if xref:
-                         return xref
-+                    note_failure(target, reftype_s)
- 
-     return target_text
- 
--- 
-2.36.1
+What about using rproc_resource_cleanup instead?
 
+Regards,
+Arnaud
+
+> +
+> +/**
+>   * rproc_mem_entry_init() - allocate and initialize rproc_mem_entry struct
+>   * @dev: pointer on device struct
+>   * @va: virtual address
+> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+> index 7c943f0a2fc4..43112aa78ffe 100644
+> --- a/include/linux/remoteproc.h
+> +++ b/include/linux/remoteproc.h
+> @@ -658,6 +658,7 @@ struct rproc *devm_rproc_alloc(struct device *dev, const char *name,
+>  int devm_rproc_add(struct device *dev, struct rproc *rproc);
+>  
+>  void rproc_add_carveout(struct rproc *rproc, struct rproc_mem_entry *mem);
+> +void rproc_del_carveout(struct rproc *rproc, struct rproc_mem_entry *mem);
+>  
+>  struct rproc_mem_entry *
+>  rproc_mem_entry_init(struct device *dev,
