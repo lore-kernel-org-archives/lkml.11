@@ -2,101 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861F8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 15:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52B3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 15:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235254AbiF3PcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 11:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        id S235853AbiF3Pcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 11:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235809AbiF3PcF (ORCPT
+        with ESMTP id S235422AbiF3Pcd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 11:32:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75693A738
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 08:32:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 736BF61904
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 15:32:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49DB7C341CC;
-        Thu, 30 Jun 2022 15:32:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656603123;
-        bh=DMoXyBY8anTUJp0z5XM+bV0yDDpw0G7731nqB1esFYQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZcYHX7j34PqL86ygQiByoktv5ZxOg5p0qqwuvZlD2xxc/DIBosQtSMBLlmsm6rs4p
-         +SW6b8jtsrCQTkWx0KqMnuCk7j1i64FNAutDF+0HGtcNsxoIiU7U+RyhivqP8ZVB1q
-         lkiXBA4JarrAhhHIKqoWeQAjlnjXFt5wvzol+ranak6I/76jO6ywEH3B5ruZxsWabd
-         9m0wooGnOlGftVn4MP8w+Ugx2gAtRgsUPIx8qnR7wm+gOKpWw6mS2Jr2ld+rQ8vKQY
-         TogUk4QCyagiIMj75KLzTiXDos5nk34v3jp9I4F8LSrNPcvnNQzKyZqRE3dEms6g8U
-         be0lYglwtp1BA==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Joey Gouly <joey.gouly@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linudx.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 2/2] arm64: vdso32: Add DWARF_DEBUG
-Date:   Thu, 30 Jun 2022 08:31:21 -0700
-Message-Id: <20220630153121.1317045-3-nathan@kernel.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630153121.1317045-1-nathan@kernel.org>
-References: <20220630153121.1317045-1-nathan@kernel.org>
+        Thu, 30 Jun 2022 11:32:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1DC43DDDB
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 08:32:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656603151;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rRre2mmiUkpHj1mcdypLppTGL5vL6JLZXVbGfJnDALg=;
+        b=OQ4u4Nh0FDZDABTecc6CHcgtW+jyslG3ctatVGBLz9NZT2Dlh1iefhCduo9m8evMbxLdMh
+        mGkiTXtV4FrbW7T4Ho5GKXLC7aTz2l0YL7YmeDR/5Dg52Idm9v8yVJAZA/MUyQb2CpnHNP
+        uRZBUNNRYR3/PVT0eTwS9wNFmglYHLM=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-360-9sevPzYQMLOayiV0NYkCng-1; Thu, 30 Jun 2022 11:32:29 -0400
+X-MC-Unique: 9sevPzYQMLOayiV0NYkCng-1
+Received: by mail-qv1-f70.google.com with SMTP id e10-20020a0ce3ca000000b004702b8819beso18719456qvl.4
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 08:32:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rRre2mmiUkpHj1mcdypLppTGL5vL6JLZXVbGfJnDALg=;
+        b=kcOpQDlePHAJIBtEb9s/F2pxOKkr3kBV1gEVIzvbIM5gotyzlQ28T1nlJW+NkAU1tL
+         e7uzaMSnuRqCXV34SW1UnpZmoU5Pj/eSTfr8CAOlH6kAevSVox2bIe1D6n8Vzs20sxog
+         ymye3HkiuZQbjjxPq18HONcpHAsMHC+IU6YReL/j2L7ZbYC7ip1bm5OpFa6P9oUQvqX3
+         MqpMbovsEk95P2S7ZW83npx7J4KShTeFG4upmSYoYJQ7VKE39n5iMGxJzNVQbzKkclSx
+         wVdcskxJ2jKYidAs0DHA5tnXD5g69HMMAsl2Agtu1hiCcWJWIBwFOy2OlubwgPRVugs0
+         SSQw==
+X-Gm-Message-State: AJIora/4fXQMJ3q3RTHDAmXf4kluc2/TaHGabikVZ2NEUFPBynqD2z6l
+        DDCX42+AmL2e3ssSY/Nc52CDvDvLUYNk6pZ5issCWPBb04Jod9NMLHqIR7lOhP9FOYek58YkjMB
+        ToCCJjWKekNy64I1LOj7vtOBm
+X-Received: by 2002:a05:620a:40cf:b0:6b1:41dd:9710 with SMTP id g15-20020a05620a40cf00b006b141dd9710mr6329771qko.727.1656603149351;
+        Thu, 30 Jun 2022 08:32:29 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tAcFYzWpyw+b6fujbaqZt6VZhUiFDHom86OOiiyoqB6cQlPZGEL6VrqMoaZqdOzN2T9zXkXA==
+X-Received: by 2002:a05:620a:40cf:b0:6b1:41dd:9710 with SMTP id g15-20020a05620a40cf00b006b141dd9710mr6329749qko.727.1656603149110;
+        Thu, 30 Jun 2022 08:32:29 -0700 (PDT)
+Received: from step1.redhat.com (host-87-11-6-149.retail.telecomitalia.it. [87.11.6.149])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05620a44d400b006af0639f7casm16089325qkp.12.2022.06.30.08.32.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 08:32:28 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v2 1/3] vdpa_sim_blk: use dev_dbg() to print errors
+Date:   Thu, 30 Jun 2022 17:32:19 +0200
+Message-Id: <20220630153221.83371-2-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220630153221.83371-1-sgarzare@redhat.com>
+References: <20220630153221.83371-1-sgarzare@redhat.com>
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building the 32-bit vDSO with LLVM 15 and CONFIG_DEBUG_INFO, there
-are the following orphan section warnings:
+Use dev_dbg() instead of dev_err()/dev_warn() to avoid flooding the
+host with prints, when the guest driver is misbehaving.
+In this way, prints can be dynamically enabled when the vDPA block
+simulator is used to validate a driver.
 
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_abbrev) is being placed in '.debug_abbrev'
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_info) is being placed in '.debug_info'
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_str_offsets) is being placed in '.debug_str_offsets'
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_str) is being placed in '.debug_str'
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_addr) is being placed in '.debug_addr'
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_line) is being placed in '.debug_line'
-  ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_line_str) is being placed in '.debug_line_str'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_loclists) is being placed in '.debug_loclists'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_abbrev) is being placed in '.debug_abbrev'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_info) is being placed in '.debug_info'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_rnglists) is being placed in '.debug_rnglists'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_str_offsets) is being placed in '.debug_str_offsets'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_str) is being placed in '.debug_str'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_addr) is being placed in '.debug_addr'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_frame) is being placed in '.debug_frame'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_line) is being placed in '.debug_line'
-  ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_line_str) is being placed in '.debug_line_str'
-
-These are DWARF5 sections, as that is the implicit default version for
-clang-14 and newer when just '-g' is used. All DWARF sections are
-handled by the DWARF_DEBUG macro from include/asm-generic/vmlinux.lds.h
-so use that macro here to fix the warnings regardless of DWARF version.
-
-Fixes: 9d4775b332e1 ("arm64: vdso32: enable orphan handling for VDSO")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Suggested-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- arch/arm64/kernel/vdso32/vdso.lds.S | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm64/kernel/vdso32/vdso.lds.S b/arch/arm64/kernel/vdso32/vdso.lds.S
-index c25bed8e6df1..8d95d7d35057 100644
---- a/arch/arm64/kernel/vdso32/vdso.lds.S
-+++ b/arch/arm64/kernel/vdso32/vdso.lds.S
-@@ -57,6 +57,7 @@ SECTIONS
- 	.rel.dyn	: { *(.rel*) }
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+index 42d401d43911..a83a5c76f620 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+@@ -76,13 +76,13 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 		return false;
  
- 	.ARM.exidx : { *(.ARM.exidx*) }
-+	DWARF_DEBUG
- 	ELF_DETAILS
- 	.ARM.attributes 0 : { *(.ARM.attributes) }
+ 	if (vq->out_iov.used < 1 || vq->in_iov.used < 1) {
+-		dev_err(&vdpasim->vdpa.dev, "missing headers - out_iov: %u in_iov %u\n",
++		dev_dbg(&vdpasim->vdpa.dev, "missing headers - out_iov: %u in_iov %u\n",
+ 			vq->out_iov.used, vq->in_iov.used);
+ 		return false;
+ 	}
  
+ 	if (vq->in_iov.iov[vq->in_iov.used - 1].iov_len < 1) {
+-		dev_err(&vdpasim->vdpa.dev, "request in header too short\n");
++		dev_dbg(&vdpasim->vdpa.dev, "request in header too short\n");
+ 		return false;
+ 	}
+ 
+@@ -96,7 +96,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 	bytes = vringh_iov_pull_iotlb(&vq->vring, &vq->out_iov, &hdr,
+ 				      sizeof(hdr));
+ 	if (bytes != sizeof(hdr)) {
+-		dev_err(&vdpasim->vdpa.dev, "request out header too short\n");
++		dev_dbg(&vdpasim->vdpa.dev, "request out header too short\n");
+ 		return false;
+ 	}
+ 
+@@ -110,7 +110,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 	switch (type) {
+ 	case VIRTIO_BLK_T_IN:
+ 		if (!vdpasim_blk_check_range(sector, to_push)) {
+-			dev_err(&vdpasim->vdpa.dev,
++			dev_dbg(&vdpasim->vdpa.dev,
+ 				"reading over the capacity - offset: 0x%llx len: 0x%zx\n",
+ 				offset, to_push);
+ 			status = VIRTIO_BLK_S_IOERR;
+@@ -121,7 +121,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 					      vdpasim->buffer + offset,
+ 					      to_push);
+ 		if (bytes < 0) {
+-			dev_err(&vdpasim->vdpa.dev,
++			dev_dbg(&vdpasim->vdpa.dev,
+ 				"vringh_iov_push_iotlb() error: %zd offset: 0x%llx len: 0x%zx\n",
+ 				bytes, offset, to_push);
+ 			status = VIRTIO_BLK_S_IOERR;
+@@ -133,7 +133,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 
+ 	case VIRTIO_BLK_T_OUT:
+ 		if (!vdpasim_blk_check_range(sector, to_pull)) {
+-			dev_err(&vdpasim->vdpa.dev,
++			dev_dbg(&vdpasim->vdpa.dev,
+ 				"writing over the capacity - offset: 0x%llx len: 0x%zx\n",
+ 				offset, to_pull);
+ 			status = VIRTIO_BLK_S_IOERR;
+@@ -144,7 +144,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 					      vdpasim->buffer + offset,
+ 					      to_pull);
+ 		if (bytes < 0) {
+-			dev_err(&vdpasim->vdpa.dev,
++			dev_dbg(&vdpasim->vdpa.dev,
+ 				"vringh_iov_pull_iotlb() error: %zd offset: 0x%llx len: 0x%zx\n",
+ 				bytes, offset, to_pull);
+ 			status = VIRTIO_BLK_S_IOERR;
+@@ -157,7 +157,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 					      vdpasim_blk_id,
+ 					      VIRTIO_BLK_ID_BYTES);
+ 		if (bytes < 0) {
+-			dev_err(&vdpasim->vdpa.dev,
++			dev_dbg(&vdpasim->vdpa.dev,
+ 				"vringh_iov_push_iotlb() error: %zd\n", bytes);
+ 			status = VIRTIO_BLK_S_IOERR;
+ 			break;
+@@ -167,8 +167,8 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 		break;
+ 
+ 	default:
+-		dev_warn(&vdpasim->vdpa.dev,
+-			 "Unsupported request type %d\n", type);
++		dev_dbg(&vdpasim->vdpa.dev,
++			"Unsupported request type %d\n", type);
+ 		status = VIRTIO_BLK_S_IOERR;
+ 		break;
+ 	}
 -- 
-2.37.0
+2.36.1
 
