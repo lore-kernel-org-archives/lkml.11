@@ -2,132 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81401C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234111AbiF3JfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
+        id S234178AbiF3Jgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiF3JfU (ORCPT
+        with ESMTP id S232959AbiF3Jgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:35:20 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FFE42EDC
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:35:19 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2351332pjl.5
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:35:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rL6DMGGhflB32+5gUnVeD0pR8+KsqaqZLuRBQF3G2Qk=;
-        b=VhbiN6QyzOQOkJswgUidFDK6rgIO8t1TbbGxo8RhSWrIlgiw94sKfZ7VHhRWHe7kA/
-         up/kzUI+aGzDT+fMJN4pYKiasBt3t/DhEym5ofBiVTpWGbpsWck6fgQMQKesrjPRHsta
-         yL9TTe4GX6xuY0mQQTWABxl+gm8iTK42AlA8dQItHMauru98jQ4ipRnLQf0Toi8RE15J
-         o7YuidgsIiK0UnZ0A09zsRuThzXo8qNqJVy1ndNDfpbDh43CuMDHERpStCTKI8L1DQ8g
-         L+mdWBHA/D607l17RSiuztqOynugC0YErU74JeuP+KcBaG7BsyyBlwD1ug67r7/ETZDU
-         t29Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rL6DMGGhflB32+5gUnVeD0pR8+KsqaqZLuRBQF3G2Qk=;
-        b=Y91tC20hM09sH4STuPQODbbZzZCMDQC0CPlaQbWPhcPtNSsuCJcA8s3y7NKzunJOGp
-         UtwFjPgYZej+L40+BsUleDUTvHn6WwRzIUyDP0WTHfEZVHbGzEnVDrOTPmnp+lMvS5YA
-         pm0nzdD4gRbrmiynRau9X1qaxIlYkBFnyhnCgIGOd10NML29wEhtjU9e+6Ob+ybf5kqS
-         aR9lsj9Jamz+8vMro8awiu7US6qgQ8bZeTzUkCEJ5khtRQNcReCCTGajQ46NKw7TJz3L
-         oXfdQcdkwmLcmfDNatuvpURGnaYfsJPHxvNR8+vrStUjHdaYcLFXaIY/ndhVy48VT1CB
-         MZ/A==
-X-Gm-Message-State: AJIora+EWgUa7K3Fcyn0kwrp04NYzbb2BgrgHUpLU4To37Y0MzIVJ17Y
-        AcO3Gy7UhXu0iG/lw4Hagrz29A==
-X-Google-Smtp-Source: AGRyM1upCGl6d90CWWZX08Fxj8CQnHyQl0xE9J+whD56/1jigDVzXVNjFr3eYykIwCabp+TWn5PvxA==
-X-Received: by 2002:a17:90b:4b48:b0:1ec:fc87:691c with SMTP id mi8-20020a17090b4b4800b001ecfc87691cmr11029817pjb.120.1656581718926;
-        Thu, 30 Jun 2022 02:35:18 -0700 (PDT)
-Received: from localhost ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id b14-20020a17090a550e00b001e31f4cc977sm3860054pji.56.2022.06.30.02.35.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 02:35:18 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 17:35:14 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     James Houghton <jthoughton@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Jue Wang <juew@google.com>,
-        Manish Mishra <manish.mishra@nutanix.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 04/26] hugetlb: make huge_pte_lockptr take an
- explicit shift argument.
-Message-ID: <Yr1uUmfA/iWO740v@FVFYT0MHHV2J.usts.net>
-References: <20220624173656.2033256-1-jthoughton@google.com>
- <20220624173656.2033256-5-jthoughton@google.com>
- <YroYaWVvNZJvtqsH@monkey>
- <Yrvsn66c+UI8ZQlO@FVFYT0MHHV2J.usts.net>
- <Yry+PPHSat2uN+aG@monkey>
- <CADrL8HX9OkuWzpODBzHx-6-7_SLJ1YCCe5HxXdPa4ibqeQZu3A@mail.gmail.com>
- <YrzRLVQaYtYAYsEa@monkey>
+        Thu, 30 Jun 2022 05:36:32 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5B342EDF
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:36:31 -0700 (PDT)
+X-UUID: 91504978c4f14f459b6699b60db35cb8-20220630
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:b54d77d8-e192-46cc-8eb2-4bf84182d200,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:87442a2,CLOUDID:28e00d63-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 91504978c4f14f459b6699b60db35cb8-20220630
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 896558495; Thu, 30 Jun 2022 17:36:26 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 30 Jun 2022 17:36:25 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 30 Jun 2022 17:36:24 +0800
+From:   <yf.wang@mediatek.com>
+To:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel" <joro@8bytes.org>, Yong Wu <Yong.Wu@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <ning.li@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v12 0/2] iommu/mediatek: TTBR up to 35bit support
+Date:   Thu, 30 Jun 2022 17:29:24 +0800
+Message-ID: <20220630092927.24925-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrzRLVQaYtYAYsEa@monkey>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 03:24:45PM -0700, Mike Kravetz wrote:
-> On 06/29/22 14:39, James Houghton wrote:
-> > On Wed, Jun 29, 2022 at 2:04 PM Mike Kravetz <mike.kravetz@oracle.com> wrote:
-> > >
-> > > On 06/29/22 14:09, Muchun Song wrote:
-> > > > On Mon, Jun 27, 2022 at 01:51:53PM -0700, Mike Kravetz wrote:
-> > > > > On 06/24/22 17:36, James Houghton wrote:
-> > > > > > This is needed to handle PTL locking with high-granularity mapping. We
-> > > > > > won't always be using the PMD-level PTL even if we're using the 2M
-> > > > > > hugepage hstate. It's possible that we're dealing with 4K PTEs, in which
-> > > > > > case, we need to lock the PTL for the 4K PTE.
-> > > > >
-> > > > > I'm not really sure why this would be required.
-> > > > > Why not use the PMD level lock for 4K PTEs?  Seems that would scale better
-> > > > > with less contention than using the more coarse mm lock.
-> > > > >
-> > > >
-> > > > Your words make me thing of another question unrelated to this patch.
-> > > > We __know__ that arm64 supports continues PTE HugeTLB. huge_pte_lockptr()
-> > > > did not consider this case, in this case, those HugeTLB pages are contended
-> > > > with mm lock. Seems we should optimize this case. Something like:
-> > > >
-> > > > diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-> > > > index 0d790fa3f297..68a1e071bfc0 100644
-> > > > --- a/include/linux/hugetlb.h
-> > > > +++ b/include/linux/hugetlb.h
-> > > > @@ -893,7 +893,7 @@ static inline gfp_t htlb_modify_alloc_mask(struct hstate *h, gfp_t gfp_mask)
-> > > >  static inline spinlock_t *huge_pte_lockptr(struct hstate *h,
-> > > >                                            struct mm_struct *mm, pte_t *pte)
-> > > >  {
-> > > > -       if (huge_page_size(h) == PMD_SIZE)
-> > > > +       if (huge_page_size(h) <= PMD_SIZE)
-> > > >                 return pmd_lockptr(mm, (pmd_t *) pte);
-> > > >         VM_BUG_ON(huge_page_size(h) == PAGE_SIZE);
-> > > >         return &mm->page_table_lock;
-> > > >
-> > > > I did not check if elsewhere needs to be changed as well. Just a primary
-> > > > thought.
-> > 
-> > I'm not sure if this works. If hugetlb_pte_size(hpte) is PAGE_SIZE,
-> > then `hpte.ptep` will be a pte_t, not a pmd_t -- I assume that breaks
-> > things. So I think, when doing a HugeTLB PT walk down to PAGE_SIZE, we
-> > need to separately keep track of the location of the PMD so that we
-> > can use it to get the PMD lock.
-> 
-> I assume Muchun was talking about changing this in current code (before
-> your changes) where huge_page_size(h) can not be PAGE_SIZE.
->
+This patchset adds MediaTek TTBR up to 35bit support for single normal zone.
 
-Yes, that's what I meant.
+Changes in v12:
+- Update [PATCH 1/2]: remove GENMASK(31, 7)
+- Update [PATCH 2/2]: remove MMU_PT_ADDR_MASK definition.
 
-Thanks. 
+Changes in v11:
+https://lore.kernel.org/linux-mediatek/20220630062508.23512-1-yf.wang@mediatek.com/
+- According to Yong's suggestion in [PATCH v10] to update patch
+  - [PATCH 1/2]: Because keep ttbr u32, so the special logic of encoded PA
+    bits[34:32] to ttbr lower bits will apply to all the MediaTek cases,
+    not only for the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT, so remove
+    quirk check.
+  - [PATCH 2/2]: Because no need calculate the special ttbr, so remove ttbr
+    from mtk_iommu_domain and remove MMU_PT_ADDR_MASK calculate.
+
+Changes in v10:
+https://lore.kernel.org/linux-mediatek/20220616120713.12728-1-yf.wang@mediatek.com/
+- According to Robin's suggestion in [PATCH v9] to update patch
+  - Recovery ttbr to u32, encoded PA bits[34:32] to ttbr lower bits.
+  - Remove PATCH: Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR.
+
+Changes in v9:
+https://lore.kernel.org/linux-mediatek/20220615161224.6923-1-yf.wang@mediatek.com/
+- According to Will's suggestion in [PATCH v8 1/3] update [PATCH 1/3]
+  - Rename function to_iopte_mtk to to_mtk_iopte.
+  - Modify gfp_l1 and slab_flag and add comment explaining.
+  - Add checking that the address is within 35 bits use cfg->oas.
+  - PATCH 1/3 & PATCH 2/3 no change.
+
+Changes in v8:
+https://lore.kernel.org/linux-mediatek/20220611102656.10954-1-yf.wang@mediatek.com/
+- Add and update patch
+  - Add [2/3] patch update MTK_IOMMU_ADDR to calculate the special ttbr.
+  - Save the special ttbr to mtk_iommu_domain avoid calculate it again.
+
+Changes in v7:
+https://lore.kernel.org/linux-mediatek/20220530080432.29123-1-yf.wang@mediatek.com/
+- Update patch and commit message
+  - Extend arm_v7s_cfg.ttbr to u64.
+  - Move the special ttbr logical into mtk_iommu.c.
+  - Update commit message for single normal zone.
+
+Changes in v6:
+- Update patch: gfp_l1 = GFP_KERNEL | __GFP_ZERO;
+- Update commit message for single normal zone.
+
+Changes in v5:
+- Only update message-ID.
+
+Changes in v4:
+- Fix build test WARNING: use GENMASK_ULL replace GENMASK.
+
+Changes in v3:
+- Add version changes description, there is No new code change in V3.
+
+Changes in v2:
+- Update patch and commit message
+  - Add Level 1 pgtable PA up to 35bit.
+  - This is new feature, remove stable@vger.kernel.org
+  - Update commit message.
+
+Ning Li (2):
+  iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
+  iommu/mediatek: Allow page table PA up to 35bit
+
+ drivers/iommu/io-pgtable-arm-v7s.c | 75 ++++++++++++++++++++++--------
+ drivers/iommu/mtk_iommu.c          | 13 +++--
+ include/linux/io-pgtable.h         | 15 ++++--
+ 3 files changed, 73 insertions(+), 30 deletions(-)
+
+
