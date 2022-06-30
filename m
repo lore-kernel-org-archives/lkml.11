@@ -2,133 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A35F1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3646C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232805AbiF3Gcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
+        id S232599AbiF3Gda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232774AbiF3Gc3 (ORCPT
+        with ESMTP id S232110AbiF3Gd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:32:29 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C0B20F7A
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:32:25 -0700 (PDT)
-X-UUID: 40cdd1f37a5b4274a4f72b96307f0ac2-20220630
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:9d4943e1-3aa3-4fa5-a94c-ba678fbb88cf,OB:10,L
-        OB:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:100
-X-CID-INFO: VERSION:1.1.7,REQID:9d4943e1-3aa3-4fa5-a94c-ba678fbb88cf,OB:10,LOB
-        :0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:100
-X-CID-META: VersionHash:87442a2,CLOUDID:c0ea2a86-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:cbb5de3b3390,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 40cdd1f37a5b4274a4f72b96307f0ac2-20220630
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 242405869; Thu, 30 Jun 2022 14:32:19 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 30 Jun 2022 14:32:17 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 30 Jun 2022 14:32:16 +0800
-From:   <yf.wang@mediatek.com>
-To:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel" <joro@8bytes.org>, Yong Wu <Yong.Wu@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Yong Wu <yong.wu@mediatek.com>,
-        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
-        "moderated list:MEDIATEK IOMMU DRIVER" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v11 2/2] iommu/mediatek: Allow page table PA up to 35bit
-Date:   Thu, 30 Jun 2022 14:25:07 +0800
-Message-ID: <20220630062508.23512-3-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220630062508.23512-1-yf.wang@mediatek.com>
-References: <20220630062508.23512-1-yf.wang@mediatek.com>
+        Thu, 30 Jun 2022 02:33:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFE51D31D;
+        Wed, 29 Jun 2022 23:33:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B63A3621E3;
+        Thu, 30 Jun 2022 06:33:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFCCC341C8;
+        Thu, 30 Jun 2022 06:33:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656570807;
+        bh=nPEFPrPtdVh2QLJJmOrwjSXNzitArnEp1EbX64wR4Jc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kN7mLsawPOzmKuEVqFES3B4pP/gB9GaJbuPRvDquP0ryJLs/Gi3I9vWhMNQOiPDtG
+         5N+H6ckUZahTt2vgE/xnVG8rPON9mfgWJzMjII0pdhShiTHaEUZnQYngiaUKVUzott
+         r3qZePmujv0GG/HU1zdODlk+o5ejWrYbNLZcNugU=
+Date:   Thu, 30 Jun 2022 08:33:24 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Zheng Yejian <zhengyejian1@huawei.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, tom.zanussi@linux.intel.com,
+        trix@redhat.com, stable@vger.kernel.org, zhangjinhao2@huawei.com
+Subject: Re: [PATCH] tracing/histograms: Simplify create_hist_fields()
+Message-ID: <Yr1DtC4Gvg00SVfr@kroah.com>
+References: <20220630013152.164871-1-zhengyejian1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630013152.164871-1-zhengyejian1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+On Thu, Jun 30, 2022 at 09:31:52AM +0800, Zheng Yejian wrote:
+> When I look into implements of create_hist_fields(), I think there can be
+> following two simplifications:
+>   1. If something wrong happened in parse_var_defs(), free_var_defs() would
+>      have been called in it, so no need goto free again after calling it;
+>   2. After calling create_key_fields(), regardless of the value of 'ret', it
+>      then always runs into 'out: ', so the judge of 'ret' is redundant.
+> 
+> No functional changes.
+> 
+> Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
+> ---
+>  kernel/trace/trace_events_hist.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+> index 2784951e0fc8..832c4ccf41ab 100644
+> --- a/kernel/trace/trace_events_hist.c
+> +++ b/kernel/trace/trace_events_hist.c
+> @@ -4454,7 +4454,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
+>  
+>  	ret = parse_var_defs(hist_data);
+>  	if (ret)
+> -		goto out;
+> +		return ret;
+>  
+>  	ret = create_val_fields(hist_data, file);
+>  	if (ret)
+> @@ -4465,8 +4465,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
+>  		goto out;
+>  
+>  	ret = create_key_fields(hist_data, file);
+> -	if (ret)
+> -		goto out;
+> +
+>   out:
+>  	free_var_defs(hist_data);
+>  
+> -- 
+> 2.32.0
+> 
 
-Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So add
-the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and level 2
-pgtable support at most 35bit PA.
+<formletter>
 
-Signed-off-by: Ning Li <ning.li@mediatek.com>
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index bb9dd92c9898..168b2bbf5e2b 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -138,6 +138,7 @@
- /* PM and clock always on. e.g. infra iommu */
- #define PM_CLK_AO			BIT(15)
- #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
-+#define PGTABLE_PA_35_EN		BIT(17)
- 
- #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
- 				((((pdata)->flags) & (mask)) == (_x))
-@@ -596,6 +597,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 		.iommu_dev = data->dev,
- 	};
- 
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-+
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
- 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
- 	else
-@@ -684,8 +688,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 			goto err_unlock;
- 		}
- 		bank->m4u_dom = dom;
--		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       bank->base + REG_MMU_PT_BASE_ADDR);
-+		writel(dom->cfg.arm_v7s_cfg.ttbr, bank->base + REG_MMU_PT_BASE_ADDR);
- 
- 		pm_runtime_put(m4udev);
- 	}
-@@ -1366,8 +1369,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 		writel_relaxed(reg->int_control[i], base + REG_MMU_INT_CONTROL0);
- 		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
- 		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
--		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       base + REG_MMU_PT_BASE_ADDR);
-+		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr, base + REG_MMU_PT_BASE_ADDR);
- 	} while (++i < data->plat_data->banks_num);
- 
- 	/*
-@@ -1401,7 +1403,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat      = M4U_MT6779,
- 	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
--			 MTK_IOMMU_TYPE_MM,
-+			 MTK_IOMMU_TYPE_MM | PGTABLE_PA_35_EN,
- 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
- 	.banks_num    = 1,
- 	.banks_enable = {true},
--- 
-2.18.0
-
+</formletter>
