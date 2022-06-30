@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70F3CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2857C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236854AbiF3OK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
+        id S236595AbiF3OKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236795AbiF3OJd (ORCPT
+        with ESMTP id S236538AbiF3OKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:09:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6FC73911;
-        Thu, 30 Jun 2022 06:55:18 -0700 (PDT)
+        Thu, 30 Jun 2022 10:10:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7396973933;
+        Thu, 30 Jun 2022 06:55:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A863461F5F;
-        Thu, 30 Jun 2022 13:55:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27D5C34115;
-        Thu, 30 Jun 2022 13:55:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8D9EB82AF4;
+        Thu, 30 Jun 2022 13:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15524C34115;
+        Thu, 30 Jun 2022 13:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597309;
-        bh=WaG1nHyRp9gM42Yl11WvQkmWsXZ9kxeW+GdjIh4gZQ4=;
+        s=korg; t=1656597317;
+        bh=LHDZBHb1Ju9Gni/2nZSD3+bfE3hqybPTDwnADGAhS1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gy+HLNQQUJbel1W12NXfp/BXDWF3SVmlcFSCQ7/aNDP2mFD1AsV6+N87pHA79nCHW
-         kCLUL6M1oCAHfkh83a+QHv9bVObWM9fTk/QYimj/aR3CYfJ+Yl5SPxPJFs9qPCEduO
-         bnsuVeW6k5S1ZtxIrRh2nTa36Kp1MXFsos8/Ir3M=
+        b=I9HT6rEJIwljjrWI8IVyDKyEfFPomR4fztabl3ohlsqe83j7u18Z7G/zOj+/eJEGL
+         kzKXrQL/Kn+9ib2dbF33M8EADYIPFBz30BNNheNP9vZnXIq5hDjsNhmExli9glJIyU
+         na6VClQX+s9E6ZDxp2t4aSJWSRigTUbWj1Hq1vXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>
-Subject: [PATCH 5.15 24/28] fs: account for group membership
-Date:   Thu, 30 Jun 2022 15:47:20 +0200
-Message-Id: <20220630133233.642494810@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH 5.15 27/28] net: mscc: ocelot: allow unregistered IP multicast flooding to CPU
+Date:   Thu, 30 Jun 2022 15:47:23 +0200
+Message-Id: <20220630133233.728720736@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -52,110 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 168f912893407a5acb798a4a58613b5f1f98c717 upstream.
+Since commit 4cf35a2b627a ("net: mscc: ocelot: fix broken IP multicast
+flooding") from v5.12, unregistered IP multicast flooding is
+configurable in the ocelot driver for bridged ports. However, by writing
+0 to the PGID_MCIPV4 and PGID_MCIPV6 port masks at initialization time,
+the CPU port module, for which ocelot_port_set_mcast_flood() is not
+called, will have unknown IP multicast flooding disabled.
 
-When calling setattr_prepare() to determine the validity of the
-attributes the ia_{g,u}id fields contain the value that will be written
-to inode->i_{g,u}id. This is exactly the same for idmapped and
-non-idmapped mounts and allows callers to pass in the values they want
-to see written to inode->i_{g,u}id.
+This makes it impossible for an application such as smcroute to work
+properly, since all IP multicast traffic received on a standalone port
+is treated as unregistered (and dropped).
 
-When group ownership is changed a caller whose fsuid owns the inode can
-change the group of the inode to any group they are a member of. When
-searching through the caller's groups we need to use the gid mapped
-according to the idmapped mount otherwise we will fail to change
-ownership for unprivileged users.
+Starting with commit 7569459a52c9 ("net: dsa: manage flooding on the CPU
+ports"), the limitation above has been lifted, because when standalone
+ports become IFF_PROMISC or IFF_ALLMULTI, ocelot_port_set_mcast_flood()
+would be called on the CPU port module, so unregistered multicast is
+flooded to the CPU on an as-needed basis.
 
-Consider a caller running with fsuid and fsgid 1000 using an idmapped
-mount that maps id 65534 to 1000 and 65535 to 1001. Consequently, a file
-owned by 65534:65535 in the filesystem will be owned by 1000:1001 in the
-idmapped mount.
+But between v5.12 and v5.18, IP multicast flooding to the CPU has
+remained broken, promiscuous or not.
 
-The caller now requests the gid of the file to be changed to 1000 going
-through the idmapped mount. In the vfs we will immediately map the
-requested gid to the value that will need to be written to inode->i_gid
-and place it in attr->ia_gid. Since this idmapped mount maps 65534 to
-1000 we place 65534 in attr->ia_gid.
+Delete the inexplicable premature optimization of clearing PGID_MCIPV4
+and PGID_MCIPV6 as part of the init sequence, and allow unregistered IP
+multicast to be flooded freely to the CPU port module.
 
-When we check whether the caller is allowed to change group ownership we
-first validate that their fsuid matches the inode's uid. The
-inode->i_uid is 65534 which is mapped to uid 1000 in the idmapped mount.
-Since the caller's fsuid is 1000 we pass the check.
-
-We now check whether the caller is allowed to change inode->i_gid to the
-requested gid by calling in_group_p(). This will compare the passed in
-gid to the caller's fsgid and search the caller's additional groups.
-
-Since we're dealing with an idmapped mount we need to pass in the gid
-mapped according to the idmapped mount. This is akin to checking whether
-a caller is privileged over the future group the inode is owned by. And
-that needs to take the idmapped mount into account. Note, all helpers
-are nops without idmapped mounts.
-
-New regression test sent to xfstests.
-
-Link: https://github.com/lxc/lxd/issues/10537
-Link: https://lore.kernel.org/r/20220613111517.2186646-1-brauner@kernel.org
-Fixes: 2f221d6f7b88 ("attr: handle idmapped mounts")
-Cc: Seth Forshee <sforshee@digitalocean.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Aleksa Sarai <cyphar@cyphar.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: stable@vger.kernel.org # 5.15+
-CC: linux-fsdevel@vger.kernel.org
-Reviewed-by: Seth Forshee <sforshee@digitalocean.com>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
+Cc: stable@kernel.org
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/attr.c |   26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/attr.c
-+++ b/fs/attr.c
-@@ -61,9 +61,15 @@ static bool chgrp_ok(struct user_namespa
- 		     const struct inode *inode, kgid_t gid)
- {
- 	kgid_t kgid = i_gid_into_mnt(mnt_userns, inode);
--	if (uid_eq(current_fsuid(), i_uid_into_mnt(mnt_userns, inode)) &&
--	    (in_group_p(gid) || gid_eq(gid, inode->i_gid)))
--		return true;
-+	if (uid_eq(current_fsuid(), i_uid_into_mnt(mnt_userns, inode))) {
-+		kgid_t mapped_gid;
-+
-+		if (gid_eq(gid, inode->i_gid))
-+			return true;
-+		mapped_gid = mapped_kgid_fs(mnt_userns, i_user_ns(inode), gid);
-+		if (in_group_p(mapped_gid))
-+			return true;
-+	}
- 	if (capable_wrt_inode_uidgid(mnt_userns, inode, CAP_CHOWN))
- 		return true;
- 	if (gid_eq(kgid, INVALID_GID) &&
-@@ -123,12 +129,20 @@ int setattr_prepare(struct user_namespac
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2208,9 +2208,13 @@ int ocelot_init(struct ocelot *ocelot)
+ 		       ANA_PGID_PGID, PGID_MC);
+ 	ocelot_rmw_rix(ocelot, ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
+ 		       ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
++		       ANA_PGID_PGID, PGID_MCIPV4);
++	ocelot_rmw_rix(ocelot, ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
++		       ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
++		       ANA_PGID_PGID, PGID_MCIPV6);
++	ocelot_rmw_rix(ocelot, ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
++		       ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
+ 		       ANA_PGID_PGID, PGID_BC);
+-	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
+-	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
  
- 	/* Make sure a caller can chmod. */
- 	if (ia_valid & ATTR_MODE) {
-+		kgid_t mapped_gid;
-+
- 		if (!inode_owner_or_capable(mnt_userns, inode))
- 			return -EPERM;
-+
-+		if (ia_valid & ATTR_GID)
-+			mapped_gid = mapped_kgid_fs(mnt_userns,
-+						i_user_ns(inode), attr->ia_gid);
-+		else
-+			mapped_gid = i_gid_into_mnt(mnt_userns, inode);
-+
- 		/* Also check the setgid bit! */
--               if (!in_group_p((ia_valid & ATTR_GID) ? attr->ia_gid :
--                                i_gid_into_mnt(mnt_userns, inode)) &&
--                    !capable_wrt_inode_uidgid(mnt_userns, inode, CAP_FSETID))
-+		if (!in_group_p(mapped_gid) &&
-+		    !capable_wrt_inode_uidgid(mnt_userns, inode, CAP_FSETID))
- 			attr->ia_mode &= ~S_ISGID;
- 	}
- 
+ 	/* Allow manual injection via DEVCPU_QS registers, and byte swap these
+ 	 * registers endianness.
 
 
