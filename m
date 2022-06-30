@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 823C9CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C78BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236204AbiF3OAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        id S236211AbiF3OAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236593AbiF3N7N (ORCPT
+        with ESMTP id S236016AbiF3N5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9E95C9DC;
-        Thu, 30 Jun 2022 06:52:01 -0700 (PDT)
+        Thu, 30 Jun 2022 09:57:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2993BA5A;
+        Thu, 30 Jun 2022 06:51:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C17DCB82AF0;
-        Thu, 30 Jun 2022 13:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B49C34115;
-        Thu, 30 Jun 2022 13:51:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA34462009;
+        Thu, 30 Jun 2022 13:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B01C34115;
+        Thu, 30 Jun 2022 13:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597094;
-        bh=9pFnt4Tljffl4natwPHL1q2QboxEpLx0K3ObN0lkqLA=;
+        s=korg; t=1656597067;
+        bh=r/AUmqVNZ/rqk8TyaWRYjSqZNwcpqBfVSV8e106GGsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQhcLbdN3KM33Gij4sNWE+v4p/pVImZSOfVVlFF8rp15ZRoT+I19qtfXEuxAoQF8t
-         zoZ1Dy53oqgVGjr7/RAo0H1/CYZ7Mnj7RohuLInER2kEhi91BuWdra/H5R49LgJFAX
-         rOrkDsx/01a9XqrIgZFgF9qCA6y1BGF1KQRp383U=
+        b=JnNNdf4nPiV2cRo/T2ZJpsFLciygewS4D2Ywml/8EVlepVPRk/+YgBhF0ewBuxvbS
+         S86V2bC507DtjzDphudwO024sBZMEDNbPkXXHpop4BMwNqqHc6ikyFaf88L+IXBnDs
+         VabrB9GvXi232XMXsQ7BoLPB1D2V3FjIGIiwx2qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Hans de Goede <hdegoede@redhat.com>, Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.19 26/49] iio: accel: mma8452: ignore the return value of reset operation
-Date:   Thu, 30 Jun 2022 15:46:39 +0200
-Message-Id: <20220630133234.668762216@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Ron Economos <re@w6rz.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 08/49] random: quiet urandom warning ratelimit suppression message
+Date:   Thu, 30 Jun 2022 15:46:21 +0200
+Message-Id: <20220630133234.153473945@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -49,44 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit bf745142cc0a3e1723f9207fb0c073c88464b7b4 upstream.
+commit c01d4d0a82b71857be7449380338bc53dde2da92 upstream.
 
-On fxls8471, after set the reset bit, the device will reset immediately,
-will not give ACK. So ignore the return value of this reset operation,
-let the following code logic to check whether the reset operation works.
+random.c ratelimits how much it warns about uninitialized urandom reads
+using __ratelimit(). When the RNG is finally initialized, it prints the
+number of missed messages due to ratelimiting.
 
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Fixes: ecabae713196 ("iio: mma8452: Initialise before activating")
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/1655292718-14287-1-git-send-email-haibo.chen@nxp.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+It has been this way since that functionality was introduced back in
+2018. Recently, cc1e127bfa95 ("random: remove ratelimiting for in-kernel
+unseeded randomness") put a bit more stress on the urandom ratelimiting,
+which teased out a bug in the implementation.
+
+Specifically, when under pressure, __ratelimit() will print its own
+message and reset the count back to 0, making the final message at the
+end less useful. Secondly, it does so as a pr_warn(), which apparently
+is undesirable for people's CI.
+
+Fortunately, __ratelimit() has the RATELIMIT_MSG_ON_RELEASE flag exactly
+for this purpose, so we set the flag.
+
+Fixes: 4e00b339e264 ("random: rate limit unseeded randomness warnings")
+Cc: stable@vger.kernel.org
+Reported-by: Jon Hunter <jonathanh@nvidia.com>
+Reported-by: Ron Economos <re@w6rz.net>
+Tested-by: Ron Economos <re@w6rz.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/mma8452.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/char/random.c     |    2 +-
+ include/linux/ratelimit.h |   12 ++++++++----
+ 2 files changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1486,10 +1486,14 @@ static int mma8452_reset(struct i2c_clie
- 	int i;
- 	int ret;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -88,7 +88,7 @@ static RAW_NOTIFIER_HEAD(random_ready_ch
  
--	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-+	/*
-+	 * Find on fxls8471, after config reset bit, it reset immediately,
-+	 * and will not give ACK, so here do not check the return value.
-+	 * The following code will read the reset register, and check whether
-+	 * this reset works.
-+	 */
-+	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
- 					MMA8452_CTRL_REG2_RST);
--	if (ret < 0)
--		return ret;
+ /* Control how we warn userspace. */
+ static struct ratelimit_state urandom_warning =
+-	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
++	RATELIMIT_STATE_INIT_FLAGS("urandom_warning", HZ, 3, RATELIMIT_MSG_ON_RELEASE);
+ static int ratelimit_disable __read_mostly =
+ 	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
+ module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
+--- a/include/linux/ratelimit.h
++++ b/include/linux/ratelimit.h
+@@ -23,12 +23,16 @@ struct ratelimit_state {
+ 	unsigned long	flags;
+ };
  
- 	for (i = 0; i < 10; i++) {
- 		usleep_range(100, 200);
+-#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) {		\
+-		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),	\
+-		.interval	= interval_init,			\
+-		.burst		= burst_init,				\
++#define RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, flags_init) { \
++		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		  \
++		.interval	= interval_init,				  \
++		.burst		= burst_init,					  \
++		.flags		= flags_init,					  \
+ 	}
+ 
++#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) \
++	RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, 0)
++
+ #define RATELIMIT_STATE_INIT_DISABLED					\
+ 	RATELIMIT_STATE_INIT(ratelimit_state, 0, DEFAULT_RATELIMIT_BURST)
+ 
 
 
