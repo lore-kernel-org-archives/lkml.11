@@ -2,111 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E285C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CEDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233594AbiF3IEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
+        id S233648AbiF3IFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233552AbiF3IEu (ORCPT
+        with ESMTP id S233673AbiF3IFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:04:50 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3CCF40A32
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:04:48 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-214-9jXG4kaVPcae5B0FitiCbQ-1; Thu, 30 Jun 2022 09:04:45 +0100
-X-MC-Unique: 9jXG4kaVPcae5B0FitiCbQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Thu, 30 Jun 2022 09:04:43 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Thu, 30 Jun 2022 09:04:43 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Michael Schmitz' <schmitzmic@gmail.com>,
-        Arnd Bergmann <arnd@kernel.org>
-CC:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        Khalid Aziz <khalid@gonehiking.org>,
-        "Maciej W . Rozycki" <macro@orcam.me.uk>,
-        Matt Wang <wwentao@vmware.com>,
-        Miquel van Smoorenburg <mikevs@xs4all.net>,
-        Mark Salyzyn <salyzyn@android.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Denis Efremov <efremov@linux.com>,
-        "Michael Ellerman" <mpe@ellerman.id.au>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Subject: RE: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Thread-Topic: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Thread-Index: AQHYi0Qnhtr21GMXN0qgKN5inTL9yK1nmAnQ
-Date:   Thu, 30 Jun 2022 08:04:43 +0000
-Message-ID: <26852797d822462abc1c9f96def7fa42@AcuMS.aculab.com>
-References: <20220617125750.728590-1-arnd@kernel.org>
- <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
- <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
- <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
- <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
- <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
- <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
- <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
- <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
-In-Reply-To: <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 30 Jun 2022 04:05:24 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E254130D
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:05:20 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id h23so37319917ejj.12
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:05:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ik6FUsCzNZiu9EfbLO72KDalLuo/xuLvHalvhOV/dIo=;
+        b=icYGEKccYdgHInp7tFB1pnhXjU18hV9rabV4eo63UYUr7kbNWe1Luob0Q56hhZny06
+         CSnX1+qqxWY3m8x7As3Ku17HEike7DGNmxm96b5JEL2+7WjblF05FuxhIE0kjIpxmPTW
+         Hu4mNfW87bJgt2ybaCZv0yQNAwlku6Ev2P4hWQYaL7T0QrepVa6RKhxQ4mdAlPSMfIYu
+         PA3aGI7TAL/2RGawYGzzKvjKVRWrVN/D9fqfWM77OIi+Q35d9JN8pi3++frjmhMo4UAq
+         4PJs9GyK5MW38RIGt1r/oKuMhW5+Xj8qYZ33dSi0yPdqxi8D2rs/UB4v8ywVrk42J9d5
+         BHkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ik6FUsCzNZiu9EfbLO72KDalLuo/xuLvHalvhOV/dIo=;
+        b=71R/pZ7WAtNfZIc2d3MLuc4hneIWlhb364xQS+olES9biqQGmMasy4iyw+ZBYFHv+d
+         QAv+lj5Rf7R/0za2FTmcqK1RfkNhq/mDBl95jjq1twbR1an/RikuTXVdNig15BuAWUzL
+         FI2TWWRws+hn3a2O6oHjVtI4kci0Zuc+ifNnymK2P3mrCysv0PFnJxh0uue524zRayxf
+         /mY7imaEDQSLOuUD41jyqK9wOQUm4i5H5fzom04XqiCFmO7UkDkPMPZvrwbtsDM+5u+D
+         yTnYluJIMuI2kFbhuLduKRy7b4dYCrdH8Nz4KKcetn4Djsu1XjSOYxeSAZIkqVhCfy9H
+         uNng==
+X-Gm-Message-State: AJIora9RkftI2ShISrPYNkXkRKRc9N4XUz9H7Yj8AYN0Ca9w4wzXNhFs
+        iM51IvhcjmA82ZiKt6CM+mdy6Q==
+X-Google-Smtp-Source: AGRyM1tP/qfGO00LL1laS/lsR3dmHQ5UYROZqBJGZ2LruhAHU+Vv5k0qyGUeWXitMSWJcKXmzVS7Qg==
+X-Received: by 2002:a17:906:7482:b0:722:edf9:e72f with SMTP id e2-20020a170906748200b00722edf9e72fmr7608726ejl.92.1656576319111;
+        Thu, 30 Jun 2022 01:05:19 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id bg6-20020a170906a04600b00722e31fcf42sm8747619ejb.184.2022.06.30.01.05.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 01:05:18 -0700 (PDT)
+Message-ID: <8f51aed8-956b-ac09-3baf-2b4572db1352@linaro.org>
+Date:   Thu, 30 Jun 2022 10:05:17 +0200
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC] Correct memory layout reporting for "jedec,lpddr2" and
+ related bindings
 Content-Language: en-US
+To:     Julius Werner <jwerner@chromium.org>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jian-Jia Su <jjsu@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Nikola Milosavljevic <mnidza@outlook.com>
+References: <CAODwPW9E8wWwxbYKyf4_-JFb4F-JSmLR3qOF_iudjX0f9ndF0A@mail.gmail.com>
+ <CAODwPW8fiFSNehZbZDdR9kjHxohLGiyE7edU=Opy0xV_P8JbEQ@mail.gmail.com>
+ <3bb0ffa0-8091-0848-66af-180a41a68bf7@linaro.org>
+ <CAODwPW89xZQZiZdQNt6+CcRjz=nbEAAFH0h_dBFSE5v3aFU4rQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAODwPW89xZQZiZdQNt6+CcRjz=nbEAAFH0h_dBFSE5v3aFU4rQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogTWljaGFlbCBTY2htaXR6DQo+IFNlbnQ6IDI5IEp1bmUgMjAyMiAwMDowOQ0KPiANCj4g
-SGkgQXJuZCwNCj4gDQo+IE9uIDI5LzA2LzIyIDA5OjUwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOg0K
-PiA+IE9uIFR1ZSwgSnVuIDI4LCAyMDIyIGF0IDExOjAzIFBNIE1pY2hhZWwgU2NobWl0eiA8c2No
-bWl0em1pY0BnbWFpbC5jb20+IHdyb3RlOg0KPiA+PiBPbiAyOC8wNi8yMiAxOTowMywgR2VlcnQg
-VXl0dGVyaG9ldmVuIHdyb3RlOg0KPiA+Pj4+IFRoZSBkcml2ZXIgYWxsb2NhdGVzIGJvdW5jZSBi
-dWZmZXJzIHVzaW5nIGttYWxsb2MgaWYgaXQgaGl0cyBhbg0KPiA+Pj4+IHVuYWxpZ25lZCBkYXRh
-IGJ1ZmZlciAtIGNhbiBzdWNoIGJ1ZmZlcnMgc3RpbGwgZXZlbiBoYXBwZW4gdGhlc2UgZGF5cz8N
-Cj4gPj4+IE5vIGlkZWEuDQo+ID4+IEhtbW0gLSBJIHRoaW5rIEknbGwgc3RpY2sgYSBXQVJOX09O
-Q0UoKSBpbiB0aGVyZSBzbyB3ZSBrbm93IHdoZXRoZXIgdGhpcw0KPiA+PiBjb2RlIHBhdGggaXMg
-c3RpbGwgYmVpbmcgdXNlZC4NCj4gPiBrbWFsbG9jKCkgZ3VhcmFudGVlcyBhbGlnbm1lbnQgdG8g
-dGhlIG5leHQgcG93ZXItb2YtdHdvIHNpemUgb3INCj4gPiBLTUFMTE9DX01JTl9BTElHTiwgd2hp
-Y2hldmVyIGlzIGJpZ2dlci4gT24gbTY4ayB0aGlzIG1lYW5zIGl0DQo+ID4gaXMgY2FjaGVsaW5l
-IGFsaWduZWQuDQo+IA0KPiBBbmQgYWxsIFNDU0kgYnVmZmVycyBhcmUgYWxsb2NhdGVkIHVzaW5n
-IGttYWxsb2M/IE5vIHdheSBhdCBhbGwgZm9yIHVzZXINCj4gc3BhY2UgdG8gcGFzcyB1bmFsaWdu
-ZWQgZGF0YT8NCg0KSSBkaWRuJ3QgdGhpbmsga21hbGxvYygpIGdhdmUgYW55IHN1Y2ggZ3VhcmFu
-dGVlIGFib3V0IGFsaWdubWVudC4NClRoZXJlIGFyZSBjYWNoZS1saW5lIGFsaWdubWVudCByZXF1
-aXJlbWVudHMgb24gc3lzdGVtcyB3aXRoIG5vbi1jb2hlcmVudA0KZG1hLCBidXQgb3RoZXJ3aXNl
-IHRoZSBhbGlnbm1lbnQgY2FuIGJlIG11Y2ggc21hbGxlci4NCg0KT25lIG9mIHRoZSBhbGxvY2F0
-b3JzIGFkZHMgYSBoZWFkZXIgdG8gZWFjaCBpdGVtLCBJSVJDIHRoYXQgY2FuDQpsZWFkIHRvICd1
-bmV4cGVjdGVkJyBhbGlnbm1lbnRzIC0gZXNwZWNpYWxseSBvbiBtNjhrLg0KDQpkbWFfYWxsb2Nf
-Y29oZXJlbnQoKSBkb2VzIGFsaWduIHRvIG5leHQgJ3Bvd2VyIG9mIDInLg0KQW5kIHNvbWV0aW1l
-cyB5b3UgbmVlZCAoZWcpIDE2ayBhbGxvY2F0ZXMgdGhhdCBhcmUgMTZrIGFsaWduZWQuDQoNCglE
-YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
-bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
-NzM4NiAoV2FsZXMpDQo=
+On 30/06/2022 03:03, Julius Werner wrote:
+>>> For the latter, I would suggest adding a new property "channel-io-width" which
+>>
+>> No, because io-width is a standard property, so it should be used
+>> instead. It could be defined in channel node.
+> 
+> What exactly do you mean by "standard property" -- do you mean in an
+> LPDDR context, or for device tree bindings in general? In other device
+> tree bindings, the only thing I can find is `reg-io-width`,
 
+I had impression I saw io-width outside of LPPDR bindings, but
+apparently it's only reg-io-width
+
+>  so that's
+> not quite the same (and wouldn't seem to preclude calling a field here
+> `channel-io-width`, since the width that's talking about is not the
+> width of a register).
+
+reg-io-width is not only about register width, but width of access size
+or width of IO.
+
+
+> In LPDDR context, the term "IO width" mostly
+> appears specifically for the bit field in Mode Register 8 that
+> describes the amount of DQ pins going into one individual LPDDR chip.
+> The field that I need to encode for the channel here is explicitly
+> *not* that, it's the amount of DQ pins coming *out* of the LPDDR
+> controller, and as explained in my original email those two numbers
+> need not necessarily be the same when multiple LPDDR chips are hooked
+> up in parallel. So, yes, I could call both of these properties
+> `io-width` with one in the rank node and one in the channel node...
+> but I think giving the latter one a different name (e.g.
+> `channel-io-width`) would be better to avoid confusion and provide a
+> hint that there's an important difference between these numbers.
+
+Send the bindings, we'll see what the DT binding maintainers will say. :)
+
+> 
+>> You also need a timings node. I don't think it would be different for
+>> each of ranks, would it?
+> 
+> I think it might be? I'm honestly not a memory expert so I'm not
+> really sure (Jian-Jia in CC might know this?), but since different
+> ranks can be asymmetric (even when they're on the same part), I could
+> imagine that, say, the larger rank might need slightly longer
+> precharge time or something like that. They at least all implement a
+> separate set of mode registers, so they could theoretically be
+> configured with different latency settings through those.
+
+This feels weird... although maybe one or few parameters of timings
+could be different.
+
+How the asymmetric SDRAMs report density? This is a field with
+fixed/enum values, so does it mean two-rank-asymmetric module has two
+registers, one per each rank and choice of register depends on chip select?
+
+> 
+>>>> (Also, btw, would it make sense to use this opportunity to combine the
+>>>> "jedec,lpddr2" and "jedec,lpddr3" bindings into a single document?
+>>
+>> These bindings are quite different, so combining would result in big
+>> allOf. I am not sure if there is benefit in that.
+> 
+> They should basically be 100% identical outside of the timings. I can
+> see that jedec,lpddr2 is currently missing the manufacturer-id
+> property, that's probably an oversight -- Mode Register 5 with that ID
+> exists for LPDDR2 just as well as for LPDDR3, and we're already
+> passing the revision IDs which is kinda useless without also passing
+> the manufacturer ID as well (because the revision IDs are
+> vendor-specific).
+
+Manufacturer ID is taken from compatible. LPDDR3 has it deprecated.
+
+> So merging the bindings would fix that. 
+
+Nothing to fix, it was by choice.
+
+> The only
+> other difference I can see are the deprecated
+> `revision-id1`/`revision-id2` fields for jedec,lpddr2 -- if I use a
+> property inclusion mechanism like Doug suggested, those could stay
+> separate in jedec,lpddr2 only (since they're deprecated anyway and
+> replaced by `revision-id` in the combined bindings).
+> 
+> For the timings, I'm okay with keeping them separate.
+
+
+Best regards,
+Krzysztof
