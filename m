@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CACDCCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236034AbiF3N76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S236079AbiF3OAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235866AbiF3N50 (ORCPT
+        with ESMTP id S236635AbiF3N7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:57:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97CC3CFC3;
-        Thu, 30 Jun 2022 06:51:11 -0700 (PDT)
+        Thu, 30 Jun 2022 09:59:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D0E5C9F5;
+        Thu, 30 Jun 2022 06:52:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 876AE62054;
-        Thu, 30 Jun 2022 13:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95049C34115;
-        Thu, 30 Jun 2022 13:51:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC30F6204B;
+        Thu, 30 Jun 2022 13:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC10C341CB;
+        Thu, 30 Jun 2022 13:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597070;
-        bh=Dsa/Z1VsFlsCRUCvm4FluOgKrVq4XLsK2geXmUahF4s=;
+        s=korg; t=1656597100;
+        bh=d1Eti8jqM8ERROJNaBYHwNplh+J+0sEmfbW8/ADoM90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BU2bKBVLNLAeyllMACbZzjZBSBPDsSA7vjH5d1YHbI9zRMAj4KzezD7eqNHvYelMb
-         B5QhAzRIKDPyRVsro/NjeCC6YVRkOxG/4fsgFB3/AhM8mUSUzWc/lorNqaX1dzcwu6
-         wQKZ8xjnrm3j1NzBmVFItrbTUpAJsU/SqG5uBR6Y=
+        b=Lz60JmxCzhi2aW7VC9HNWle2bTOHoEJrShFi7y2AR6m5jNruRl8mweYhtuOsxDCSG
+         MjenoEm4bGGfJWVSpuNqJcGDbtwTXFGH8O/2mA1qavW499NOgkminYAB/8r9YoCfSH
+         SzOfc29o5oWIbDI2/86B4S+wjrA1TKS02NKQffJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 17/49] afs: Fix dynamic root getattr
-Date:   Thu, 30 Jun 2022 15:46:30 +0200
-Message-Id: <20220630133234.412009833@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.19 27/49] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
+Date:   Thu, 30 Jun 2022 15:46:40 +0200
+Message-Id: <20220630133234.697437645@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -51,59 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit cb78d1b5efffe4cf97e16766329dd7358aed3deb ]
+commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
 
-The recent patch to make afs_getattr consult the server didn't account
-for the pseudo-inodes employed by the dynamic root-type afs superblock
-not having a volume or a server to access, and thus an oops occurs if
-such a directory is stat'd.
+The driver should disable regulators when fails at regmap_update_bits().
 
-Fix this by checking to see if the vnode->volume pointer actually points
-anywhere before following it in afs_getattr().
-
-This can be tested by stat'ing a directory in /afs.  It may be
-sufficient just to do "ls /afs" and the oops looks something like:
-
-        BUG: kernel NULL pointer dereference, address: 0000000000000020
-        ...
-        RIP: 0010:afs_getattr+0x8b/0x14b
-        ...
-        Call Trace:
-         <TASK>
-         vfs_statx+0x79/0xf5
-         vfs_fstatat+0x49/0x62
-
-Fixes: 2aeb8c86d499 ("afs: Fix afs_getattr() to refetch file status if callback break occurred")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lore.kernel.org/r/165408450783.1031787.7941404776393751186.stgit@warthog.procyon.org.uk/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: <Stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/afs/inode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/gyro/mpu3050-core.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index a12ae3ef8fb4..0983d7e859c8 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -473,7 +473,8 @@ int afs_getattr(const struct path *path, struct kstat *stat,
- 
- 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
- 
--	if (!(query_flags & AT_STATX_DONT_SYNC) &&
-+	if (vnode->volume &&
-+	    !(query_flags & AT_STATX_DONT_SYNC) &&
- 	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
- 		key = afs_request_key(vnode->volume->cell);
- 		if (IS_ERR(key))
--- 
-2.35.1
-
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -873,6 +873,7 @@ static int mpu3050_power_up(struct mpu30
+ 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
+ 				 MPU3050_PWR_MGM_SLEEP, 0);
+ 	if (ret) {
++		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
+ 		dev_err(mpu3050->dev, "error setting power mode\n");
+ 		return ret;
+ 	}
 
 
