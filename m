@@ -2,302 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8089CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FCA0CCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbiF3JNB convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
+        id S233947AbiF3JNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233779AbiF3JM4 (ORCPT
+        with ESMTP id S232852AbiF3JNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:12:56 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C12192AE
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:12:55 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o6qDn-0002b6-SL; Thu, 30 Jun 2022 11:12:23 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o6qDh-003YyD-6B; Thu, 30 Jun 2022 11:12:20 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o6qDk-0003Cl-3a; Thu, 30 Jun 2022 11:12:20 +0200
-Message-ID: <813a3b51f82a11a86bd3af2c3299c344e08e8963.camel@pengutronix.de>
-Subject: Re: [PATCH v1 04/14] reset: add polarfire soc reset support
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org
-Date:   Thu, 30 Jun 2022 11:12:20 +0200
-In-Reply-To: <20220630080532.323731-5-conor.dooley@microchip.com>
-References: <20220630080532.323731-1-conor.dooley@microchip.com>
-         <20220630080532.323731-5-conor.dooley@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Thu, 30 Jun 2022 05:13:17 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5691ABD6;
+        Thu, 30 Jun 2022 02:13:15 -0700 (PDT)
+Received: from [192.168.2.145] (unknown [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 93AC9660194B;
+        Thu, 30 Jun 2022 10:13:12 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656580393;
+        bh=XKL8+xkZSiICKivdUfCYqxq8X2Aebnt8te/3pqzmNSs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aQYgufgmhl54KmqTSf7Igvnj4S7OwTsTkYrevuyUc4JFoUDbN1e6a7l46MXBwiJmI
+         9ukIbdJavpxrldGtnN6KH5f28ccdo6hSkj29mcMPnvk9u23qxPILiSdvkA9xSGKbaD
+         e6mV00CflqARHJc8VPTA3mO5vIRPZOuvPFYC7ZZN7YPEckUr6jt/h05fnKNcfOh6wu
+         egrUkecxcoDF5GjbZ79/URCT4KE6eyAG/thG2llF+UAnHWJ+6MlkhOXH7ri2dBNI+J
+         477YhnswZ+O9IAXco6mzYJMqDnCPdsFL+dH8BCBC7xQ1PBQJqwgQRqpXpNokPqudYL
+         3+gODHVo1+hHQ==
+Message-ID: <8367c38b-8cd3-cde1-5833-874769ef3350@collabora.com>
+Date:   Thu, 30 Jun 2022 12:13:09 +0300
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 5/8] OPP: Allow multiple clocks for a device
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+References: <cover.1654849214.git.viresh.kumar@linaro.org>
+ <8b29fa207024dc295639f9ba52c28e45782e3baa.1654849214.git.viresh.kumar@linaro.org>
+ <55623c12-dda3-613f-5bc9-80b3b6fec5f9@nvidia.com>
+ <20220622141511.yzg5itkdwirpavfj@vireshk-i7>
+ <40e616eb-22f9-19c2-8d77-20cd3c7c518b@nvidia.com>
+ <c6f100e4-8a35-ebf0-f833-06ff0d8a2fb6@collabora.com>
+ <20220630005028.fddtcbkoksbygwc5@vireshk-i7>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <20220630005028.fddtcbkoksbygwc5@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+On 6/30/22 03:50, Viresh Kumar wrote:
+> On 29-06-22, 21:33, Dmitry Osipenko wrote:
+>> Today I noticed that tegra30-devfreq driver now fails to probe because
+>> dev_pm_opp_find_freq_ceil() fails with -ERANGE. This patch is guilty for
+>> that. Could you please take a look?
+> 
+> I remember this corner case now [1] and it was easy to miss this. So
+> you want the OPP core to still parse the DT to read opp-hz, but don't
+> want dev_pm_opp_set_opp() to update the clock rate for it.
+> 
+> What was the reason for this again ?
+> 
+> I have a couple of solutions in mind, but one may be other than second
+> and so want to know the real issue at hand first.
+> 
 
-On Do, 2022-06-30 at 09:05 +0100, Conor Dooley wrote:
-Add support for the resets on Microchip's PolarFire SoC (MPFS).
-Reset control is a single register, wedged in between registers for
-clock control. To fit with existed DT etc, the reset controller is
+We added memory interconnect support to Tegra and since that time only
+the memory controller can drive the clock rate. All other drivers,
+including the devfreq, now issue memory bandwidth requests using ICC.
 
-existing                     ^
+In case of the devfreq driver, it's the OPP core that makes the bw
+request using ICC.
 
-created using the aux device framework & set up in the clock driver.
+But it's the set_freq_table() that fails [2], I see
+dev_pm_opp_get_opp_count() returns 17, which is correct, and then
+dev_pm_opp_find_freq_ceil(freq=0) returns freq=1, which shall be
+freq=12750000.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/reset/Kconfig      |   9 +++
- drivers/reset/Makefile     |   2 +-
- drivers/reset/reset-mpfs.c | 145 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 155 insertions(+), 1 deletion(-)
- create mode 100644 drivers/reset/reset-mpfs.c
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/drivers/?id=16e8b2a7cb886bcc3dd89ad28948d374a2319bbc
 
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index 93c8d07ee328..edf48951f763 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -122,6 +122,15 @@ config RESET_MCHP_SPARX5
- 	help
- 	  This driver supports switch core reset for the Microchip Sparx5 SoC.
- 
+[2]
+https://elixir.bootlin.com/linux/v5.19-rc4/source/drivers/devfreq/devfreq.c#L179
 
-+config RESET_POLARFIRE_SOC
-+	bool "Microchip PolarFire SoC (MPFS) Reset Driver"
-+	depends on AUXILIARY_BUS && MCHP_CLK_MPFS
-+	default MCHP_CLK_MPFS
-+	help
-+	  This driver supports peripheral reset for the Microchip PolarFire SoC
-+
-+	  CONFIG_RESET_MPFS
-
-This doesn't look intentional.
-
-+
- config RESET_MESON
- 	tristate "Meson Reset Driver"
- 	depends on ARCH_MESON || COMPILE_TEST
-diff --git a/drivers/reset/Makefile b/drivers/reset/Makefile
-index a80a9c4008a7..5fac3a753858 100644
---- a/drivers/reset/Makefile
-+++ b/drivers/reset/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_RESET_K210) += reset-k210.o
- obj-$(CONFIG_RESET_LANTIQ) += reset-lantiq.o
- obj-$(CONFIG_RESET_LPC18XX) += reset-lpc18xx.o
- obj-$(CONFIG_RESET_MCHP_SPARX5) += reset-microchip-sparx5.o
-+obj-$(CONFIG_RESET_POLARFIRE_SOC) += reset-mpfs.o
- obj-$(CONFIG_RESET_MESON) += reset-meson.o
- obj-$(CONFIG_RESET_MESON_AUDIO_ARB) += reset-meson-audio-arb.o
- obj-$(CONFIG_RESET_NPCM) += reset-npcm.o
-@@ -38,4 +39,3 @@ obj-$(CONFIG_RESET_UNIPHIER) += reset-uniphier.o
- obj-$(CONFIG_RESET_UNIPHIER_GLUE) += reset-uniphier-glue.o
- obj-$(CONFIG_RESET_ZYNQ) += reset-zynq.o
- obj-$(CONFIG_ARCH_ZYNQMP) += reset-zynqmp.o
--
-diff --git a/drivers/reset/reset-mpfs.c b/drivers/reset/reset-mpfs.c
-new file mode 100644
-index 000000000000..49c47a3e6c70
---- /dev/null
-+++ b/drivers/reset/reset-mpfs.c
-@@ -0,0 +1,145 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * PolarFire SoC (MPFS) Peripheral Clock Reset Controller
-+ *
-+ * Author: Conor Dooley <conor.dooley@microchip.com>
-+ * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
-+ *
-+ */
-+#include <linux/auxiliary_bus.h>
-+#include <linux/delay.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/reset-controller.h>
-+#include <dt-bindings/clock/microchip,mpfs-clock.h>
-+#include <soc/microchip/mpfs.h>
-+
-+/*
-+ * The ENVM reset is the lowest bit in the register & I am using the CLK_FOO
-+ * defines in the dt to make things easier to configure - so this is accounting
-+ * for the offset of 3 there.
-+ */
-+#define MPFS_PERIPH_OFFSET	CLK_ENVM
-+#define MPFS_NUM_RESETS		30u
-+#define MPFS_SLEEP_MIN_US	100
-+#define MPFS_SLEEP_MAX_US	200
-+
-+/*
-+ * Peripheral clock resets
-+ */
-+
-+static int mpfs_assert(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	u32 reg;
-+
-+	reg = mpfs_reset_read(rcdev->dev);
-+	reg |= (1u << id);
-+	mpfs_reset_write(rcdev->dev, reg);
-
-This is missing a spinlock to protect against concurrent read-modify-
-writes.
-
-+
-+	return 0;
-+}
-+
-+static int mpfs_deassert(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	u32 reg, val;
-+
-+	reg = mpfs_reset_read(rcdev->dev);
-+	val = reg & ~(1u << id);
-
-You could use BIT(id) instead of (1u << id).
-
-+	mpfs_reset_write(rcdev->dev, val);
-+
-+	return 0;
-+}
-+
-+static int mpfs_status(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	u32 reg = mpfs_reset_read(rcdev->dev);
-+
-+	return (reg & (1u << id));
-
-Side note, this works because MPFS_NUM_RESETS makes sure the sign bit
-is never hit.
-
-+}
-+
-+static int mpfs_reset(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	mpfs_assert(rcdev, id);
-+
-+	usleep_range(MPFS_SLEEP_MIN_US, MPFS_SLEEP_MAX_US);
-+
-+	mpfs_deassert(rcdev, id);
-+
-+	return 0;
-+}
-+
-+static const struct reset_control_ops mpfs_reset_ops = {
-+	.reset = mpfs_reset,
-+	.assert = mpfs_assert,
-+	.deassert = mpfs_deassert,
-+	.status = mpfs_status,
-+};
-+
-+static int mpfs_reset_xlate(struct reset_controller_dev *rcdev,
-+			    const struct of_phandle_args *reset_spec)
-+{
-+	unsigned int index = reset_spec->args[0];
-+
-+	/*
-+	 * CLK_RESERVED does not map to a clock, but it does map to a reset,
-+	 * so it has to be accounted for here. It is the reset for the fabric,
-+	 * so if this reset gets called - do not reset it.
-+	 */
-+	if (index == CLK_RESERVED) {
-+		dev_err(rcdev->dev, "Resetting the fabric is not supported\n");
-+		return -EINVAL;
-+	}
-+
-+	if (index < MPFS_PERIPH_OFFSET || index >= (MPFS_PERIPH_OFFSET + rcdev->nr_resets)) {
-+		dev_err(rcdev->dev, "Invalid reset index %u\n", reset_spec->args[0]);
-
-s/reset_spec->args[0]/index/
-
-+		return -EINVAL;
-+	}
-+
-+	return index - MPFS_PERIPH_OFFSET;
-+}
-+
-+static int mpfs_reset_probe(struct auxiliary_device *adev,
-+			    const struct auxiliary_device_id *id)
-+{
-+	struct device *dev = &adev->dev;
-+	struct reset_controller_dev *rcdev;
-+	int ret;
-+
-+	rcdev = devm_kzalloc(dev, sizeof(*rcdev), GFP_KERNEL);
-+	if (!rcdev)
-+		return -ENOMEM;
-+
-+	rcdev->dev = dev;
-+	rcdev->dev->parent = adev->dev.parent;
-
-s/adev->dev./dev->/
-
-+	rcdev->ops = &mpfs_reset_ops;
-+	rcdev->of_node = adev->dev.parent->of_node;
-
-s/adev->dev./dev->/
-
-+	rcdev->of_reset_n_cells = 1;
-+	rcdev->of_xlate = mpfs_reset_xlate;
-+	rcdev->nr_resets = MPFS_NUM_RESETS;
-+
-+	ret = devm_reset_controller_register(dev, rcdev);
-+	if (!ret)
-+		dev_info(dev, "Registered MPFS reset controller\n");
-
-Is this really useful information for most users?
-
-+
-+	return ret;
-+}
-+
-+static const struct auxiliary_device_id mpfs_reset_ids[] = {
-+	{
-+		.name = "clk_mpfs.reset-mpfs",
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(auxiliary, mpfs_reset_ids);
-+
-+static struct auxiliary_driver mpfs_reset_driver = {
-+	.probe		= mpfs_reset_probe,
-+	.id_table	= mpfs_reset_ids,
-+};
-+
-+module_auxiliary_driver(mpfs_reset_driver);
-+
-+MODULE_DESCRIPTION("Microchip PolarFire SoC Reset Driver");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(MCHP_CLK_MPFS);
-
-regards
-Philipp
+-- 
+Best regards,
+Dmitry
