@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE01C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DACC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236339AbiF3OCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
+        id S235884AbiF3OCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235730AbiF3N7m (ORCPT
+        with ESMTP id S236039AbiF3N76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F88960538;
-        Thu, 30 Jun 2022 06:52:25 -0700 (PDT)
+        Thu, 30 Jun 2022 09:59:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A13665D49;
+        Thu, 30 Jun 2022 06:52:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96185B82AEE;
-        Thu, 30 Jun 2022 13:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 024B5C34115;
-        Thu, 30 Jun 2022 13:52:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 885ACB82AF4;
+        Thu, 30 Jun 2022 13:52:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D0EC34115;
+        Thu, 30 Jun 2022 13:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597144;
-        bh=go2lGiJZxAsITFkOSCBapOO6AC5ZFnehK7/GBdedBLk=;
+        s=korg; t=1656597122;
+        bh=N2KF6MiSIVjGmwpGAP8+x5FzvRMdU0qA1++YyPQjJ5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oS2bX3IRiOUnIsLntVfymZ2Ciq+CAaOX/YdXepHr5Yz5vQjSw4Fa26JAqyi8EXAsc
-         57nhZ8g62OEc3un+irocuXXxIt61k42QziWQTRzBdn9S8w/ZEai/p64Er2jZw50+Hl
-         qqPRxOqMdlptvcIEATM3yTfV0yo28NSvaLm486ac=
+        b=eTFNtCGbYXZWo9v+IE12zGIb+RandM38lI1J8kaflMQC/7SpZvwgLNTsvjwmmNRTe
+         v3V1Y8EzSQon1pd4pjlXDLSwo9mnzg1iAKAcEndDo3YDODjgRxupjq1ZBv07nhgXgv
+         qjpTxUSFA4PXJhXZrBA0vKBMpuN0XuxPXJP04RtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 42/49] powerpc/pseries: wire up rng during setup_arch()
-Date:   Thu, 30 Jun 2022 15:46:55 +0200
-Message-Id: <20220630133235.116020431@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 4.19 35/49] ARM: dts: imx6qdl: correct PU regulator ramp delay
+Date:   Thu, 30 Jun 2022 15:46:48 +0200
+Message-Id: <20220630133234.919600633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -49,81 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit e561e472a3d441753bd012333b057f48fef1045b upstream.
+commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
 
-The platform's RNG must be available before random_init() in order to be
-useful for initial seeding, which in turn means that it needs to be
-called from setup_arch(), rather than from an init call. Fortunately,
-each platform already has a setup_arch function pointer, which means
-it's easy to wire this up. This commit also removes some noisy log
-messages that don't add much.
+Contrary to what was believed at the time, the ramp delay of 150us is not
+plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
+clock. Measurements have shown that after enabling the LDO the voltage on
+VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
+executes the normal ramp up as defined by the step size control.
 
-Fixes: a489043f4626 ("powerpc/pseries: Implement arch_get_random_long() based on H_RANDOM")
-Cc: stable@vger.kernel.org # v3.13+
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220611151015.548325-4-Jason@zx2c4.com
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+This means it takes the regulator between 360us and 370us to ramp up to
+the nominal 1.15V voltage for this power domain. With the old setting of
+the ramp delay the power up of the PU GPC domain would happen in the middle
+of the regulator ramp with the voltage being at around 900mV. Apparently
+this was enough for most units to properly power up the peripherals in the
+domain and execute the reset. Some units however, fail to power up properly,
+especially when the chip is at a low temperature. In that case any access
+to the GPU registers would yield an incorrect result with no way to recover
+from this situation.
+
+Change the ramp delay to 380us to cover the measured ramp up time with a
+bit of additional slack.
+
+Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/pseries/pseries.h |    2 ++
- arch/powerpc/platforms/pseries/rng.c     |   11 +++--------
- arch/powerpc/platforms/pseries/setup.c   |    1 +
- 3 files changed, 6 insertions(+), 8 deletions(-)
+ arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/platforms/pseries/pseries.h
-+++ b/arch/powerpc/platforms/pseries/pseries.h
-@@ -110,4 +110,6 @@ int dlpar_workqueue_init(void);
- 
- void pseries_setup_rfi_flush(void);
- 
-+void pseries_rng_init(void);
-+
- #endif /* _PSERIES_PSERIES_H */
---- a/arch/powerpc/platforms/pseries/rng.c
-+++ b/arch/powerpc/platforms/pseries/rng.c
-@@ -14,6 +14,7 @@
- #include <asm/archrandom.h>
- #include <asm/machdep.h>
- #include <asm/plpar_wrappers.h>
-+#include "pseries.h"
- 
- 
- static int pseries_get_random_long(unsigned long *v)
-@@ -28,19 +29,13 @@ static int pseries_get_random_long(unsig
- 	return 0;
- }
- 
--static __init int rng_init(void)
-+void __init pseries_rng_init(void)
- {
- 	struct device_node *dn;
- 
- 	dn = of_find_compatible_node(NULL, NULL, "ibm,random");
- 	if (!dn)
--		return -ENODEV;
--
--	pr_info("Registering arch random hook.\n");
--
-+		return;
- 	ppc_md.get_random_seed = pseries_get_random_long;
--
- 	of_node_put(dn);
--	return 0;
- }
--machine_subsys_initcall(pseries, rng_init);
---- a/arch/powerpc/platforms/pseries/setup.c
-+++ b/arch/powerpc/platforms/pseries/setup.c
-@@ -792,6 +792,7 @@ static void __init pSeries_setup_arch(vo
- 	}
- 
- 	ppc_md.pcibios_root_bridge_prepare = pseries_root_bridge_prepare;
-+	pseries_rng_init();
- }
- 
- static void pseries_panic(char *str)
+--- a/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -753,7 +753,7 @@
+ 					regulator-name = "vddpu";
+ 					regulator-min-microvolt = <725000>;
+ 					regulator-max-microvolt = <1450000>;
+-					regulator-enable-ramp-delay = <150>;
++					regulator-enable-ramp-delay = <380>;
+ 					anatop-reg-offset = <0x140>;
+ 					anatop-vol-bit-shift = <9>;
+ 					anatop-vol-bit-width = <5>;
 
 
