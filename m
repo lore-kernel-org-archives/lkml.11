@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B14C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01702C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235537AbiF3OBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
+        id S236189AbiF3OB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236383AbiF3N6i (ORCPT
+        with ESMTP id S236630AbiF3N7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:58:38 -0400
+        Thu, 30 Jun 2022 09:59:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC4F15714;
-        Thu, 30 Jun 2022 06:51:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E2C5C9F6;
+        Thu, 30 Jun 2022 06:52:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07F4B620EE;
-        Thu, 30 Jun 2022 13:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB30BC34115;
-        Thu, 30 Jun 2022 13:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 990C662007;
+        Thu, 30 Jun 2022 13:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1F0BC34115;
+        Thu, 30 Jun 2022 13:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597097;
-        bh=hGuOut/iB47OP+a8fIGR+FF0ZAQpLfuGm7US7TJUxkg=;
+        s=korg; t=1656597125;
+        bh=TU8BQPA7/329VByoIv13ubi7tNsc4zVc3tuGOr7Cd60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAjVOqaAWgx/2+nD0zE9LmGWk8VngKTNgU2kOjYxZLI9p56+ILfNa+TaYzjemGCio
-         W433WwoSvrVKsleZ8y0oPqi4R7dpBGQQ49YrGH0OooP5cwCx3KVOb0eJ5YIcPSJ14L
-         GcTW3GpzcOBS1d6buPj/DrTpS9ptNdf3LpWW7SLg=
+        b=dDFucCVwe2bF1FNkB9oC0Q+J6KzHA5Z5Qn6aPtEKUp+O5KNu4JcqX2pqFRMcnwtXl
+         WZS9VD2IMGNm2nPEPHd60GtMhfLX4fbR1Yg3iVXvsQqEM0x6P0YJu5QRKGAM7WkY6f
+         Yv2vE0UVlPnDDcLEcrRpaTNSXI2h7xmitZi3UXuM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        Carlo Lobrano <c.lobrano@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 09/49] USB: serial: option: add Telit LE910Cx 0x1250 composition
-Date:   Thu, 30 Jun 2022 15:46:22 +0200
-Message-Id: <20220630133234.181486599@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4.19 36/49] ARM: exynos: Fix refcount leak in exynos_map_pmu
+Date:   Thu, 30 Jun 2022 15:46:49 +0200
+Message-Id: <20220630133234.948903317@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -49,33 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlo Lobrano <c.lobrano@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 342fc0c3b345525da21112bd0478a0dc741598ea upstream.
+commit c4c79525042a4a7df96b73477feaf232fe44ae81 upstream.
 
-Add support for the following Telit LE910Cx composition:
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() checks null pointer.
 
-0x1250: rmnet, tty, tty, tty, tty
-
-Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
-Link: https://lore.kernel.org/r/20220614075623.2392607-1-c.lobrano@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: fce9e5bb2526 ("ARM: EXYNOS: Add support for mapping PMU base address via DT")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220523145513.12341-1-linmq006@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    1 +
+ arch/arm/mach-exynos/exynos.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1279,6 +1279,7 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1231, 0xff),	/* Telit LE910Cx (RNDIS) */
- 	  .driver_info = NCTRL(2) | RSVD(3) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(TELIT_VENDOR_ID, 0x1250, 0xff, 0x00, 0x00) },	/* Telit LE910Cx (rmnet) */
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1260),
- 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1261),
+--- a/arch/arm/mach-exynos/exynos.c
++++ b/arch/arm/mach-exynos/exynos.c
+@@ -131,6 +131,7 @@ static void exynos_map_pmu(void)
+ 	np = of_find_matching_node(NULL, exynos_dt_pmu_match);
+ 	if (np)
+ 		pmu_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ }
+ 
+ static void __init exynos_init_irq(void)
 
 
