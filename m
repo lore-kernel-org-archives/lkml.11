@@ -2,97 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3646C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D06ACC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232599AbiF3Gda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
+        id S232197AbiF3Gdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbiF3Gd3 (ORCPT
+        with ESMTP id S232110AbiF3Gdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:33:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFE51D31D;
-        Wed, 29 Jun 2022 23:33:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B63A3621E3;
-        Thu, 30 Jun 2022 06:33:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFCCC341C8;
-        Thu, 30 Jun 2022 06:33:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656570807;
-        bh=nPEFPrPtdVh2QLJJmOrwjSXNzitArnEp1EbX64wR4Jc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kN7mLsawPOzmKuEVqFES3B4pP/gB9GaJbuPRvDquP0ryJLs/Gi3I9vWhMNQOiPDtG
-         5N+H6ckUZahTt2vgE/xnVG8rPON9mfgWJzMjII0pdhShiTHaEUZnQYngiaUKVUzott
-         r3qZePmujv0GG/HU1zdODlk+o5ejWrYbNLZcNugU=
-Date:   Thu, 30 Jun 2022 08:33:24 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zheng Yejian <zhengyejian1@huawei.com>
-Cc:     rostedt@goodmis.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, tom.zanussi@linux.intel.com,
-        trix@redhat.com, stable@vger.kernel.org, zhangjinhao2@huawei.com
-Subject: Re: [PATCH] tracing/histograms: Simplify create_hist_fields()
-Message-ID: <Yr1DtC4Gvg00SVfr@kroah.com>
-References: <20220630013152.164871-1-zhengyejian1@huawei.com>
+        Thu, 30 Jun 2022 02:33:43 -0400
+X-Greylist: delayed 524 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 23:33:41 PDT
+Received: from mail-m118103.qiye.163.com (mail-m118103.qiye.163.com [115.236.118.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCDC2BB3F;
+        Wed, 29 Jun 2022 23:33:41 -0700 (PDT)
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by mail-m118103.qiye.163.com (Hmail) with ESMTPA id A404350014F;
+        Thu, 30 Jun 2022 14:24:55 +0800 (CST)
+From:   David Wu <david.wu@rock-chips.com>
+To:     joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Wu <david.wu@rock-chips.com>
+Subject: [PATCH RFC net-next] net: stmmac: Reduce the memory copy for rx data
+Date:   Thu, 30 Jun 2022 14:24:53 +0800
+Message-Id: <20220630062453.2530477-1-david.wu@rock-chips.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630013152.164871-1-zhengyejian1@huawei.com>
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZHx9JVh5LTh1NH0lNQ0gYT1UTARMWGhIXJB
+        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PyI6Lzo4CT01DjQuGCg5HhUp
+        DBUaCw9VSlVKTU5NTkxLSUJNSUpIVTMWGhIXVR8aDRIfVQwOOwkUGBBWGBMSCwhVGBQWRVlXWRIL
+        WUFZTkNVSUlVTFVKSk9ZV1kIAVlBSU1KTjcG
+X-HM-Tid: 0a81b348b61b2ebdkusna404350014f
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 09:31:52AM +0800, Zheng Yejian wrote:
-> When I look into implements of create_hist_fields(), I think there can be
-> following two simplifications:
->   1. If something wrong happened in parse_var_defs(), free_var_defs() would
->      have been called in it, so no need goto free again after calling it;
->   2. After calling create_key_fields(), regardless of the value of 'ret', it
->      then always runs into 'out: ', so the judge of 'ret' is redundant.
-> 
-> No functional changes.
-> 
-> Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
-> ---
->  kernel/trace/trace_events_hist.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-> index 2784951e0fc8..832c4ccf41ab 100644
-> --- a/kernel/trace/trace_events_hist.c
-> +++ b/kernel/trace/trace_events_hist.c
-> @@ -4454,7 +4454,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
->  
->  	ret = parse_var_defs(hist_data);
->  	if (ret)
-> -		goto out;
-> +		return ret;
->  
->  	ret = create_val_fields(hist_data, file);
->  	if (ret)
-> @@ -4465,8 +4465,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
->  		goto out;
->  
->  	ret = create_key_fields(hist_data, file);
-> -	if (ret)
-> -		goto out;
-> +
->   out:
->  	free_var_defs(hist_data);
->  
-> -- 
-> 2.32.0
-> 
+Use skb_add_rx_frag() to reduce the memory copy for rx data, only copy
+ethernet header.
 
-<formletter>
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d1a7cf4567bc..ac8d92ec35c0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5226,7 +5226,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			/* XDP program may expand or reduce tail */
+ 			buf1_len = xdp.data_end - xdp.data;
+ 
+-			skb = napi_alloc_skb(&ch->rx_napi, buf1_len);
++			skb = napi_alloc_skb(&ch->rx_napi, ETH_HLEN);
+ 			if (!skb) {
+ 				priv->dev->stats.rx_dropped++;
+ 				count++;
+@@ -5234,11 +5234,15 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			}
+ 
+ 			/* XDP program may adjust header */
+-			skb_copy_to_linear_data(skb, xdp.data, buf1_len);
+-			skb_put(skb, buf1_len);
++			memcpy(skb->data, xdp.data, ETH_HLEN);
++			skb_put(skb, ETH_HLEN);
++			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++					buf->page, buf->page_offset + ETH_HLEN,
++					buf1_len - ETH_HLEN,
++					priv->dma_buf_sz);
+ 
+-			/* Data payload copied into SKB, page ready for recycle */
+-			page_pool_recycle_direct(rx_q->page_pool, buf->page);
++			/* Data payload appended into SKB */
++			page_pool_release_page(rx_q->page_pool, buf->page);
+ 			buf->page = NULL;
+ 		} else if (buf1_len) {
+ 			dma_sync_single_for_cpu(priv->device, buf->addr,
+-- 
+2.25.1
 
-</formletter>
