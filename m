@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10665C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236515AbiF3OEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
+        id S236523AbiF3OFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236136AbiF3OEK (ORCPT
+        with ESMTP id S236335AbiF3OEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:04:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10A01C93E;
-        Thu, 30 Jun 2022 06:53:30 -0700 (PDT)
+        Thu, 30 Jun 2022 10:04:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53446B26D;
+        Thu, 30 Jun 2022 06:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8EF861FF6;
-        Thu, 30 Jun 2022 13:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6BBBC34115;
-        Thu, 30 Jun 2022 13:53:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E279862112;
+        Thu, 30 Jun 2022 13:53:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 006B4C34115;
+        Thu, 30 Jun 2022 13:53:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597210;
-        bh=gm3/40PraIRoPdikTNa1RPb+SBo7RcNx1xZ4whZxs6M=;
+        s=korg; t=1656597199;
+        bh=tLkCRnCXlJuTY66kXfl2X0I04cloy+nkv3LwOZUfMPo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f74Lpn2TFqp1G8P7mFigX9Ifwq8S+KxUeLqw3mNMuTSxsALkfoRcYmvX0ktCfq3Gb
-         slcKtLAjlfzC+beEQX4MTVVxEpOo7hg7yzm0/aYSjcN5Y5HDTF9VFqshfepk9OhEAC
-         BHeNeMpJkxZt6R2hCsrzrpFXhnnyQipvvgGFrhGY=
+        b=NUthLoQfPyXm00VZImGkMpvvj/gN/ZBfI4hHZSqaL465PWB3jUbbjtnv7nw/1nPRh
+         7clEUxPDv4mM7zcwvP2Sv5bYnffeQOjGaQjkz9rq112vmRQ+POQBnOD8jHbsK58DpM
+         mckfXjSX8VIMAuIzuFv+I4W8Vlx1WImixpRAwl0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.4 04/16] kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
-Date:   Thu, 30 Jun 2022 15:46:58 +0200
-Message-Id: <20220630133231.067624992@linuxfoundation.org>
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jian Cai <jiancai@google.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 5.4 14/16] ARM: 9029/1: Make iwmmxt.S support Clangs integrated assembler
+Date:   Thu, 30 Jun 2022 15:47:08 +0200
+Message-Id: <20220630133231.358610011@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
 References: <20220630133230.936488203@linuxfoundation.org>
@@ -50,192 +51,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Jian Cai <jiancai@google.com>
 
-commit 3e35142ef99fe6b4fe5d834ad43ee13cca10a2dc upstream.
+commit 3c9f5708b7aed6a963e2aefccbd1854802de163e upstream
 
-Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
-symbols") [1], binutils (v2.36+) started dropping section symbols that
-it thought were unused.  This isn't an issue in general, but with
-kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
-separate .text.unlikely section and the section symbol ".text.unlikely"
-is being dropped. Due to this, recordmcount is unable to find a non-weak
-symbol in .text.unlikely to generate a relocation record against.
+This patch replaces 6 IWMMXT instructions Clang's integrated assembler
+does not support in iwmmxt.S using macros, while making sure GNU
+assembler still emit the same instructions. This should be easier than
+providing full IWMMXT support in Clang.  This is one of the last bits of
+kernel code that could be compiled but not assembled with clang. Once
+all of it works with IAS, we no longer need to special-case 32-bit Arm
+in Kbuild, or turn off CONFIG_IWMMXT when build-testing.
 
-Address this by dropping the weak attribute from these functions.
-Instead, follow the existing pattern of having architectures #define the
-name of the function they want to override in their headers.
+"Intel Wireless MMX Technology - Developer Guide - August, 2002" should
+be referenced for the encoding schemes of these extensions.
 
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+Link: https://github.com/ClangBuiltLinux/linux/issues/975
 
-[akpm@linux-foundation.org: arch/s390/include/asm/kexec.h needs linux/module.h]
-Link: https://lkml.kernel.org/r/20220519091237.676736-1-naveen.n.rao@linux.vnet.ibm.com
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+Suggested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Jian Cai <jiancai@google.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/kexec.h |   10 +++++++++
- arch/x86/include/asm/kexec.h  |    9 ++++++++
- include/linux/kexec.h         |   46 ++++++++++++++++++++++++++++++++++--------
- kernel/kexec_file.c           |   34 -------------------------------
- 4 files changed, 57 insertions(+), 42 deletions(-)
+ arch/arm/kernel/iwmmxt.S |   89 +++++++++++++++++++++++------------------------
+ arch/arm/kernel/iwmmxt.h |   47 ++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+), 44 deletions(-)
+ create mode 100644 arch/arm/kernel/iwmmxt.h
 
---- a/arch/s390/include/asm/kexec.h
-+++ b/arch/s390/include/asm/kexec.h
-@@ -9,6 +9,8 @@
- #ifndef _S390_KEXEC_H
- #define _S390_KEXEC_H
+--- a/arch/arm/kernel/iwmmxt.S
++++ b/arch/arm/kernel/iwmmxt.S
+@@ -16,6 +16,7 @@
+ #include <asm/thread_info.h>
+ #include <asm/asm-offsets.h>
+ #include <asm/assembler.h>
++#include "iwmmxt.h"
  
-+#include <linux/module.h>
+ #if defined(CONFIG_CPU_PJ4) || defined(CONFIG_CPU_PJ4B)
+ #define PJ4(code...)		code
+@@ -113,33 +114,33 @@ concan_save:
+ 
+ concan_dump:
+ 
+-	wstrw	wCSSF, [r1, #MMX_WCSSF]
+-	wstrw	wCASF, [r1, #MMX_WCASF]
+-	wstrw	wCGR0, [r1, #MMX_WCGR0]
+-	wstrw	wCGR1, [r1, #MMX_WCGR1]
+-	wstrw	wCGR2, [r1, #MMX_WCGR2]
+-	wstrw	wCGR3, [r1, #MMX_WCGR3]
++	wstrw	wCSSF, r1, MMX_WCSSF
++	wstrw	wCASF, r1, MMX_WCASF
++	wstrw	wCGR0, r1, MMX_WCGR0
++	wstrw	wCGR1, r1, MMX_WCGR1
++	wstrw	wCGR2, r1, MMX_WCGR2
++	wstrw	wCGR3, r1, MMX_WCGR3
+ 
+ 1:	@ MUP? wRn
+ 	tst	r2, #0x2
+ 	beq	2f
+ 
+-	wstrd	wR0,  [r1, #MMX_WR0]
+-	wstrd	wR1,  [r1, #MMX_WR1]
+-	wstrd	wR2,  [r1, #MMX_WR2]
+-	wstrd	wR3,  [r1, #MMX_WR3]
+-	wstrd	wR4,  [r1, #MMX_WR4]
+-	wstrd	wR5,  [r1, #MMX_WR5]
+-	wstrd	wR6,  [r1, #MMX_WR6]
+-	wstrd	wR7,  [r1, #MMX_WR7]
+-	wstrd	wR8,  [r1, #MMX_WR8]
+-	wstrd	wR9,  [r1, #MMX_WR9]
+-	wstrd	wR10, [r1, #MMX_WR10]
+-	wstrd	wR11, [r1, #MMX_WR11]
+-	wstrd	wR12, [r1, #MMX_WR12]
+-	wstrd	wR13, [r1, #MMX_WR13]
+-	wstrd	wR14, [r1, #MMX_WR14]
+-	wstrd	wR15, [r1, #MMX_WR15]
++	wstrd	wR0,  r1, MMX_WR0
++	wstrd	wR1,  r1, MMX_WR1
++	wstrd	wR2,  r1, MMX_WR2
++	wstrd	wR3,  r1, MMX_WR3
++	wstrd	wR4,  r1, MMX_WR4
++	wstrd	wR5,  r1, MMX_WR5
++	wstrd	wR6,  r1, MMX_WR6
++	wstrd	wR7,  r1, MMX_WR7
++	wstrd	wR8,  r1, MMX_WR8
++	wstrd	wR9,  r1, MMX_WR9
++	wstrd	wR10, r1, MMX_WR10
++	wstrd	wR11, r1, MMX_WR11
++	wstrd	wR12, r1, MMX_WR12
++	wstrd	wR13, r1, MMX_WR13
++	wstrd	wR14, r1, MMX_WR14
++	wstrd	wR15, r1, MMX_WR15
+ 
+ 2:	teq	r0, #0				@ anything to load?
+ 	reteq	lr				@ if not, return
+@@ -147,30 +148,30 @@ concan_dump:
+ concan_load:
+ 
+ 	@ Load wRn
+-	wldrd	wR0,  [r0, #MMX_WR0]
+-	wldrd	wR1,  [r0, #MMX_WR1]
+-	wldrd	wR2,  [r0, #MMX_WR2]
+-	wldrd	wR3,  [r0, #MMX_WR3]
+-	wldrd	wR4,  [r0, #MMX_WR4]
+-	wldrd	wR5,  [r0, #MMX_WR5]
+-	wldrd	wR6,  [r0, #MMX_WR6]
+-	wldrd	wR7,  [r0, #MMX_WR7]
+-	wldrd	wR8,  [r0, #MMX_WR8]
+-	wldrd	wR9,  [r0, #MMX_WR9]
+-	wldrd	wR10, [r0, #MMX_WR10]
+-	wldrd	wR11, [r0, #MMX_WR11]
+-	wldrd	wR12, [r0, #MMX_WR12]
+-	wldrd	wR13, [r0, #MMX_WR13]
+-	wldrd	wR14, [r0, #MMX_WR14]
+-	wldrd	wR15, [r0, #MMX_WR15]
++	wldrd	wR0,  r0, MMX_WR0
++	wldrd	wR1,  r0, MMX_WR1
++	wldrd	wR2,  r0, MMX_WR2
++	wldrd	wR3,  r0, MMX_WR3
++	wldrd	wR4,  r0, MMX_WR4
++	wldrd	wR5,  r0, MMX_WR5
++	wldrd	wR6,  r0, MMX_WR6
++	wldrd	wR7,  r0, MMX_WR7
++	wldrd	wR8,  r0, MMX_WR8
++	wldrd	wR9,  r0, MMX_WR9
++	wldrd	wR10, r0, MMX_WR10
++	wldrd	wR11, r0, MMX_WR11
++	wldrd	wR12, r0, MMX_WR12
++	wldrd	wR13, r0, MMX_WR13
++	wldrd	wR14, r0, MMX_WR14
++	wldrd	wR15, r0, MMX_WR15
+ 
+ 	@ Load wCx
+-	wldrw	wCSSF, [r0, #MMX_WCSSF]
+-	wldrw	wCASF, [r0, #MMX_WCASF]
+-	wldrw	wCGR0, [r0, #MMX_WCGR0]
+-	wldrw	wCGR1, [r0, #MMX_WCGR1]
+-	wldrw	wCGR2, [r0, #MMX_WCGR2]
+-	wldrw	wCGR3, [r0, #MMX_WCGR3]
++	wldrw	wCSSF, r0, MMX_WCSSF
++	wldrw	wCASF, r0, MMX_WCASF
++	wldrw	wCGR0, r0, MMX_WCGR0
++	wldrw	wCGR1, r0, MMX_WCGR1
++	wldrw	wCGR2, r0, MMX_WCGR2
++	wldrw	wCGR3, r0, MMX_WCGR3
+ 
+ 	@ clear CUP/MUP (only if r1 != 0)
+ 	teq	r1, #0
+--- /dev/null
++++ b/arch/arm/kernel/iwmmxt.h
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +
- #include <asm/processor.h>
- #include <asm/page.h>
- #include <asm/setup.h>
-@@ -83,4 +85,12 @@ struct kimage_arch {
- extern const struct kexec_file_ops s390_kexec_image_ops;
- extern const struct kexec_file_ops s390_kexec_elf_ops;
- 
-+#ifdef CONFIG_KEXEC_FILE
-+struct purgatory_info;
-+int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-+				     Elf_Shdr *section,
-+				     const Elf_Shdr *relsec,
-+				     const Elf_Shdr *symtab);
-+#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
-+#endif
- #endif /*_S390_KEXEC_H */
---- a/arch/x86/include/asm/kexec.h
-+++ b/arch/x86/include/asm/kexec.h
-@@ -22,6 +22,7 @@
- 
- #include <linux/string.h>
- #include <linux/kernel.h>
-+#include <linux/module.h>
- 
- #include <asm/page.h>
- #include <asm/ptrace.h>
-@@ -201,6 +202,14 @@ extern int arch_kexec_post_alloc_pages(v
- extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
- #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
- 
-+#ifdef CONFIG_KEXEC_FILE
-+struct purgatory_info;
-+int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-+				     Elf_Shdr *section,
-+				     const Elf_Shdr *relsec,
-+				     const Elf_Shdr *symtab);
-+#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
-+#endif
- #endif
- 
- typedef void crash_vmclear_fn(void);
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -186,14 +186,6 @@ void *kexec_purgatory_get_symbol_addr(st
- int __weak arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
- 					 unsigned long buf_len);
- void * __weak arch_kexec_kernel_image_load(struct kimage *image);
--int __weak arch_kexec_apply_relocations_add(struct purgatory_info *pi,
--					    Elf_Shdr *section,
--					    const Elf_Shdr *relsec,
--					    const Elf_Shdr *symtab);
--int __weak arch_kexec_apply_relocations(struct purgatory_info *pi,
--					Elf_Shdr *section,
--					const Elf_Shdr *relsec,
--					const Elf_Shdr *symtab);
- 
- extern int kexec_add_buffer(struct kexec_buf *kbuf);
- int kexec_locate_mem_hole(struct kexec_buf *kbuf);
-@@ -216,6 +208,44 @@ extern int crash_exclude_mem_range(struc
- 				   unsigned long long mend);
- extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
- 				       void **addr, unsigned long *sz);
++#ifndef __IWMMXT_H__
++#define __IWMMXT_H__
 +
-+#ifndef arch_kexec_apply_relocations_add
-+/*
-+ * arch_kexec_apply_relocations_add - apply relocations of type RELA
-+ * @pi:		Purgatory to be relocated.
-+ * @section:	Section relocations applying to.
-+ * @relsec:	Section containing RELAs.
-+ * @symtab:	Corresponding symtab.
-+ *
-+ * Return: 0 on success, negative errno on error.
-+ */
-+static inline int
-+arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
-+				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
-+{
-+	pr_err("RELA relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
++.irp b, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
++.set .LwR\b, \b
++.set .Lr\b, \b
++.endr
++
++.set .LwCSSF, 0x2
++.set .LwCASF, 0x3
++.set .LwCGR0, 0x8
++.set .LwCGR1, 0x9
++.set .LwCGR2, 0xa
++.set .LwCGR3, 0xb
++
++.macro wldrd, reg:req, base:req, offset:req
++.inst 0xedd00100 | (.L\reg << 12) | (.L\base << 16) | (\offset >> 2)
++.endm
++
++.macro wldrw, reg:req, base:req, offset:req
++.inst 0xfd900100 | (.L\reg << 12) | (.L\base << 16) | (\offset >> 2)
++.endm
++
++.macro wstrd, reg:req, base:req, offset:req
++.inst 0xedc00100 | (.L\reg << 12) | (.L\base << 16) | (\offset >> 2)
++.endm
++
++.macro wstrw, reg:req, base:req, offset:req
++.inst 0xfd800100 | (.L\reg << 12) | (.L\base << 16) | (\offset >> 2)
++.endm
++
++#ifdef __clang__
++
++#define wCon c1
++
++.macro tmrc, dest:req, control:req
++mrc p1, 0, \dest, \control, c0, 0
++.endm
++
++.macro tmcr, control:req, src:req
++mcr p1, 0, \src, \control, c0, 0
++.endm
 +#endif
 +
-+#ifndef arch_kexec_apply_relocations
-+/*
-+ * arch_kexec_apply_relocations - apply relocations of type REL
-+ * @pi:		Purgatory to be relocated.
-+ * @section:	Section relocations applying to.
-+ * @relsec:	Section containing RELs.
-+ * @symtab:	Corresponding symtab.
-+ *
-+ * Return: 0 on success, negative errno on error.
-+ */
-+static inline int
-+arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
-+			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
-+{
-+	pr_err("REL relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
 +#endif
- #endif /* CONFIG_KEXEC_FILE */
- 
- #ifdef CONFIG_KEXEC_ELF
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -108,40 +108,6 @@ int __weak arch_kexec_kernel_verify_sig(
- #endif
- 
- /*
-- * arch_kexec_apply_relocations_add - apply relocations of type RELA
-- * @pi:		Purgatory to be relocated.
-- * @section:	Section relocations applying to.
-- * @relsec:	Section containing RELAs.
-- * @symtab:	Corresponding symtab.
-- *
-- * Return: 0 on success, negative errno on error.
-- */
--int __weak
--arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
--				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
--{
--	pr_err("RELA relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
--/*
-- * arch_kexec_apply_relocations - apply relocations of type REL
-- * @pi:		Purgatory to be relocated.
-- * @section:	Section relocations applying to.
-- * @relsec:	Section containing RELs.
-- * @symtab:	Corresponding symtab.
-- *
-- * Return: 0 on success, negative errno on error.
-- */
--int __weak
--arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
--			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
--{
--	pr_err("REL relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
--/*
-  * Free up memory used by kernel, initrd, and command line. This is temporary
-  * memory allocation which is not needed any more after these buffers have
-  * been loaded into separate segments and have been copied elsewhere.
 
 
