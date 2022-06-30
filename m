@@ -2,112 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9B8CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFAACCA48D
 	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiF3IH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33056 "EHLO
+        id S233707AbiF3IID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233730AbiF3IHc (ORCPT
+        with ESMTP id S233647AbiF3IHY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:07:32 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678EB41311;
-        Thu, 30 Jun 2022 01:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656576451; x=1688112451;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NmlQ89jVF7aTtDCwBiYFJc6St825IpsKlpCn23IYam0=;
-  b=rgTw36v4esyHJpRhaYtsXOX+1XdZxrHMbqb6sFGLqX17Ld+h13//jHXB
-   sNrVVY7pNTCG6DfLjoBGSDMQq4b+QYH4v3/Zp2jNG7sqLH+NmQ/sKdoUd
-   Paf4ujAdfL7er5tMF7x0rImLgYHq9rXHvCvmtzRF0WYbO9kFk9pCCBPuu
-   zfrQxqeuFoL39oDgehE5zKJzMASmlufhvegozziBVnJFEu1GvlOubPbMK
-   HJYrJGiaehO5NF8VqSCuCC0qD3WRy82utGu4RBoRzCcIYgqM0KVdfAcck
-   rWbCXA0pMTXBkmtjKluUsNMpXhFUp3s+WnDUXg3oAI/MCiBCHjVv9BG4V
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="170217484"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 01:07:31 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 01:07:29 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 01:07:25 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Thu, 30 Jun 2022 04:07:24 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E57F4161C
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:07:22 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id r18so17598374edb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SX35NYBl18cFyXPhs0piBZ6V9yukiQBwYl3DBSAgvYo=;
+        b=zf/eWGICuhybaZpy1CYnjb96uihegSq1Tm0FONQB4g6jCYFYZ4evOOd9zFLURUeg4D
+         KF0vMmPJF8UfVJOZogLmaTd8EpPM/izgNr5TYWsjDyAMvNWfyl0ZIjn72zYHr3gxuB+o
+         Sx64LlvAuzXC8uFkkPNIJMEoNGvuXXmaKLzn9/rE9XQH7HDi1yo35v1Wzf2ywcYQF3gu
+         pL11d7T5o/I5yjSzlOq5DWSILePGOXbMhWtD5vqY6phtmXogvaCePXiuF23rBqeT6PWO
+         t4OoL52dphH5uZ19j42T/sJVOca+nCyrqFWMvP4H1W4SCi51pYN/mUemOOaburGdOGUM
+         +Mrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SX35NYBl18cFyXPhs0piBZ6V9yukiQBwYl3DBSAgvYo=;
+        b=H9v4/URxwjAfdcpTTU4IneCvXaRbZmN+MXP55QzKosvSiwnKKdOC3lCOs2YF0LSHzk
+         z9eu0+FOaRAyGgQ8BZZnnk0/4k20cohLhMoUyUuu0MuJIJ/tR7VNHDaiawAI1gspX5CV
+         YKszH2I4v6yYTIjxUM0x9FUSGPFRioAn5OY/6mW7kKBFpkvSR4rVvgy+0CpDyq7bDn74
+         yEBrgB4Jj+qtha3gfhwQJdhh2u0tvPK27vCcAsXbZKzz9a6mN90BJ7QNMWp5JdQdeSgF
+         PiYbpe6VDzHoHBSO3jAtgXg/9eUqCEXx67SZvFdJW1J9Lln+FO3FTQydhNtXBim5cDR+
+         gLGg==
+X-Gm-Message-State: AJIora83DYnBV8GeteOuaE1FrQoiaen392J6wSpH/z2DYEyFUBu7tnOW
+        /HUWUiK94nzGGIx3aqW1XTBlDQ==
+X-Google-Smtp-Source: AGRyM1vZqX5lmlghOj96ey25H6ZkmHIbZtFnwEa5ZWItru/2ZEgAy7KZZwC7Ej81Ewk34r6HMc6fhQ==
+X-Received: by 2002:a05:6402:847:b0:437:62bd:bbc0 with SMTP id b7-20020a056402084700b0043762bdbbc0mr9706897edz.285.1656576440937;
+        Thu, 30 Jun 2022 01:07:20 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n4-20020aa7c784000000b00437e08d319csm1529439eds.61.2022.06.30.01.07.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 01:07:20 -0700 (PDT)
+Message-ID: <167f09c1-795d-1471-20f7-9f4df29355ed@linaro.org>
+Date:   Thu, 30 Jun 2022 10:07:19 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 5/6] media: dt-bindings: ov5693: document YAML binding
+Content-Language: en-US
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
+        quentin.schulz@theobroma-systems.com,
+        Sakari Ailus <sakari.ailus@iki.fi>,
+        Daniel Scally <djrscally@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Daire McNamara" <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v1 01/14] dt-bindings: clk: microchip: mpfs: add reset controller support
-Date:   Thu, 30 Jun 2022 09:05:20 +0100
-Message-ID: <20220630080532.323731-2-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220630080532.323731-1-conor.dooley@microchip.com>
-References: <20220630080532.323731-1-conor.dooley@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220630074525.481790-1-tommaso.merciai@amarulasolutions.com>
+ <20220630074525.481790-6-tommaso.merciai@amarulasolutions.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220630074525.481790-6-tommaso.merciai@amarulasolutions.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "peripheral" devices on PolarFire SoC can be put into reset, so
-update the device tree binding to reflect the presence of a reset
-controller.
+On 30/06/2022 09:45, Tommaso Merciai wrote:
+> Add documentation of device tree in YAML schema for the OV5693
+> CMOS image sensor from Omnivision
+> 
+> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Sakari Ailus <sakari.ailus@iki.fi>
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../bindings/clock/microchip,mpfs.yaml          | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+How Sakari's tag appeared here? There was no email from him.
 
-diff --git a/Documentation/devicetree/bindings/clock/microchip,mpfs.yaml b/Documentation/devicetree/bindings/clock/microchip,mpfs.yaml
-index 016a4f378b9b..1d0b6a4fda42 100644
---- a/Documentation/devicetree/bindings/clock/microchip,mpfs.yaml
-+++ b/Documentation/devicetree/bindings/clock/microchip,mpfs.yaml
-@@ -40,8 +40,21 @@ properties:
-     const: 1
-     description: |
-       The clock consumer should specify the desired clock by having the clock
--      ID in its "clocks" phandle cell. See include/dt-bindings/clock/microchip,mpfs-clock.h
--      for the full list of PolarFire clock IDs.
-+      ID in its "clocks" phandle cell.
-+      See include/dt-bindings/clock/microchip,mpfs-clock.h for the full list of
-+      PolarFire clock IDs.
-+
-+  resets:
-+    maxItems: 1
-+
-+  '#reset-cells':
-+    description:
-+      The AHB/AXI peripherals on the PolarFire SoC have reset support, so from
-+      CLK_ENVM to CLK_CFM. The reset consumer should specify the desired
-+      peripheral via the clock ID in its "resets" phandle cell.
-+      See include/dt-bindings/clock/microchip,mpfs-clock.h for the full list of
-+      PolarFire clock IDs.
-+    const: 1
- 
- required:
-   - compatible
--- 
-2.36.1
-
+Best regards,
+Krzysztof
