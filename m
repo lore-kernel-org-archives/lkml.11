@@ -2,165 +2,355 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9549C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA18C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231430AbiF3X2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
+        id S231316AbiF3X3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiF3X22 (ORCPT
+        with ESMTP id S229531AbiF3X3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:28:28 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13C26251;
-        Thu, 30 Jun 2022 16:28:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656631697; x=1688167697;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RM88QkoXYJlc9UBUy307/BtPhtlC+Z2vGnV2YkjHYkI=;
-  b=XbNJCVghKX82ZZE6BJYL+thL/5UXrtBQZXwoGiUybuR7O7YVqylBUto+
-   7qI09CUVzO5/tB2h2CrSAahq6Ruf7ybjgU6umMHY1m3k3weH6Plr14xXF
-   PUZBAc0zWGKqcwPfGt5of2Egjq7YdoxWJC5s2bYD5acZvhVZoMzaAvbMG
-   2hl+PjXSTIw4J/PYqotNHTxR+nWT2eNTKYzU7CLO+MtsIS34qFNkK37LK
-   AAgGsr0pUnPR40igiud8HnyRnsOv/qpRIjuY6dAlPVux4IVnH8K/X6ua1
-   RIK1daCWtTqDMd4Bu8Ci5o1zhWKc6LT/E6Pb/0xh0WWae5Q3O00OtiqUl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="368811212"
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="368811212"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 16:28:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="837807180"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 30 Jun 2022 16:28:15 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o73a2-000DIm-RL;
-        Thu, 30 Jun 2022 23:28:14 +0000
-Date:   Fri, 1 Jul 2022 07:28:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        acpi4asus-user@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Corentin Chary <corentin.chary@gmail.com>,
-        =?iso-8859-1?Q?Jo=E3o?= Paulo Rechi Vita <jprvita@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-Subject: Re: [PATCH v1 1/1] platform/x86: asus-wireless: Replace open coded
- acpi_match_device()
-Message-ID: <202207010744.ugH4lnF8-lkp@intel.com>
-References: <20220630193234.3499-1-andriy.shevchenko@linux.intel.com>
+        Thu, 30 Jun 2022 19:29:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D5F44A26;
+        Thu, 30 Jun 2022 16:29:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA1861976;
+        Thu, 30 Jun 2022 23:29:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA59C341C8;
+        Thu, 30 Jun 2022 23:29:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656631787;
+        bh=8zDDjljtuKH3a9AgBRxpKjei6gBVIIFR7+gDI3NefmA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kE8+B/IVSYN+lmjrK1jVUxKOa2NnjWCmwEJsjs3jP1IMl1x7l5mLHXw91DcBfAf6q
+         VlmkHnXdnwJr4bIzhgv/+z1Nc3+8t7tFx/NlVbsxCNKX7/mG+EgvNIkYav0KOu07Fe
+         MIuQ32T0/zSjbSHKA5Ja1LvcD6i6hiUDA8h74llQhdq0TZffxelSqpV2ZqKu8NEeaY
+         YWmHJNU2kKd/QcxLpGU4GWSR0XACUbdqx5XAwDJCkrNcMD14lYc2BPSlMzvZt27Pat
+         Wwa9y3xj0SpKbZEhqkxVMgh3k1ZDiIXjeKKX2d4OX/X+UMqs9vwS1teSpII6PRdnuv
+         HKdJfDn0wIM9g==
+Date:   Fri, 1 Jul 2022 02:29:44 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v7 07/10] tmp, tmp_tis: Implement usage counter for
+ locality
+Message-ID: <Yr4x6KRSvzlXNdH2@kernel.org>
+References: <20220629232653.1306735-1-LinoSanfilippo@gmx.de>
+ <20220629232653.1306735-8-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220630193234.3499-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220629232653.1306735-8-LinoSanfilippo@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Thu, Jun 30, 2022 at 01:26:50AM +0200, Lino Sanfilippo wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> 
+> Implement a usage counter for the (default) locality used by the TPM TIS
+> driver:
+> Request the locality from the TPM if it has not been claimed yet, otherwise
+> only increment the counter. Also release the locality if the counter is 0
+> otherwise only decrement the counter. Ensure thread-safety by protecting
+> the counter with a mutex.
+> 
+> This allows to request and release the locality from a thread and the
+> interrupt handler at the same time without the danger to interfere with
+> each other.
+> 
+> By doing this refactor the names of the amended functions to use the proper
+> prefix.
+> 
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> Tested-by: Michael Niew??hner <linux@mniewoehner.de>
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 75 ++++++++++++++++++++++-----------
+>  drivers/char/tpm/tpm_tis_core.h |  2 +
+>  2 files changed, 53 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index bd4eeb0b2192..e50a2c78de9f 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -165,16 +165,27 @@ static bool check_locality(struct tpm_chip *chip, int l)
+>  	return false;
+>  }
+>  
+> -static int release_locality(struct tpm_chip *chip, int l)
+> +static int tpm_tis_release_locality_locked(struct tpm_tis_data *priv, int l)
+> +{
+> +	tpm_tis_write8(priv, TPM_ACCESS(l), TPM_ACCESS_ACTIVE_LOCALITY);
+> +
+> +	return 0;
+> +}
+> +
+> +static int tpm_tis_release_locality(struct tpm_chip *chip, int l)
+>  {
+>  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+>  
+> -	tpm_tis_write8(priv, TPM_ACCESS(l), TPM_ACCESS_ACTIVE_LOCALITY);
+> +	mutex_lock(&priv->locality_count_mutex);
+> +	priv->locality_count--;
+> +	if (priv->locality_count == 0)
+> +		tpm_tis_release_locality_locked(priv, l);
+> +	mutex_unlock(&priv->locality_count_mutex);
+>  
+>  	return 0;
+>  }
+>  
+> -static int request_locality(struct tpm_chip *chip, int l)
+> +static int tpm_tis_request_locality_locked(struct tpm_chip *chip, int l)
+>  {
+>  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+>  	unsigned long stop, timeout;
+> @@ -215,6 +226,20 @@ static int request_locality(struct tpm_chip *chip, int l)
+>  	return -1;
+>  }
+>  
+> +static int tpm_tis_request_locality(struct tpm_chip *chip, int l)
+> +{
+> +	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+> +	int ret = 0;
+> +
+> +	mutex_lock(&priv->locality_count_mutex);
+> +	if (priv->locality_count == 0)
+> +		ret = tpm_tis_request_locality_locked(chip, l);
+> +	if (!ret)
+> +		priv->locality_count++;
+> +	mutex_unlock(&priv->locality_count_mutex);
+> +	return ret;
+> +}
+> +
+>  static u8 tpm_tis_status(struct tpm_chip *chip)
+>  {
+>  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+> @@ -668,7 +693,7 @@ static int probe_itpm(struct tpm_chip *chip)
+>  	if (vendor != TPM_VID_INTEL)
+>  		return 0;
+>  
+> -	if (request_locality(chip, 0) != 0)
+> +	if (tpm_tis_request_locality(chip, 0) != 0)
+>  		return -EBUSY;
+>  
+>  	rc = tpm_tis_send_data(chip, cmd_getticks, len);
+> @@ -689,7 +714,7 @@ static int probe_itpm(struct tpm_chip *chip)
+>  
+>  out:
+>  	tpm_tis_ready(chip);
+> -	release_locality(chip, priv->locality);
+> +	tpm_tis_release_locality(chip, priv->locality);
+>  
+>  	return rc;
+>  }
+> @@ -751,7 +776,7 @@ static int tpm_tis_gen_interrupt(struct tpm_chip *chip)
+>  	cap_t cap;
+>  	int ret;
+>  
+> -	ret = request_locality(chip, 0);
+> +	ret = tpm_tis_request_locality(chip, 0);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -760,7 +785,7 @@ static int tpm_tis_gen_interrupt(struct tpm_chip *chip)
+>  	else
+>  		ret = tpm1_getcap(chip, TPM_CAP_PROP_TIS_TIMEOUT, &cap, desc, 0);
+>  
+> -	release_locality(chip, 0);
+> +	tpm_tis_release_locality(chip, 0);
+>  
+>  	return ret;
+>  }
+> @@ -785,33 +810,33 @@ static int tpm_tis_probe_irq_single(struct tpm_chip *chip, u32 intmask,
+>  	}
+>  	priv->irq = irq;
+>  
+> -	rc = request_locality(chip, 0);
+> +	rc = tpm_tis_request_locality(chip, 0);
+>  	if (rc < 0)
+>  		return rc;
+>  
+>  	rc = tpm_tis_read8(priv, TPM_INT_VECTOR(priv->locality),
+>  			   &original_int_vec);
+>  	if (rc < 0) {
+> -		release_locality(chip, priv->locality);
+> +		tpm_tis_release_locality(chip, priv->locality);
+>  		return rc;
+>  	}
+>  
+>  	rc = tpm_tis_write8(priv, TPM_INT_VECTOR(priv->locality), irq);
+>  	if (rc < 0) {
+> -		release_locality(chip, priv->locality);
+> +		tpm_tis_release_locality(chip, priv->locality);
+>  		return rc;
+>  	}
+>  
+>  	rc = tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &int_status);
+>  	if (rc < 0) {
+> -		release_locality(chip, priv->locality);
+> +		tpm_tis_release_locality(chip, priv->locality);
+>  		return rc;
+>  	}
+>  
+>  	/* Clear all existing */
+>  	rc = tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), int_status);
+>  	if (rc < 0) {
+> -		release_locality(chip, priv->locality);
+> +		tpm_tis_release_locality(chip, priv->locality);
+>  		return rc;
+>  	}
+>  
+> @@ -819,11 +844,11 @@ static int tpm_tis_probe_irq_single(struct tpm_chip *chip, u32 intmask,
+>  	rc = tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality),
+>  			     intmask | TPM_GLOBAL_INT_ENABLE);
+>  	if (rc < 0) {
+> -		release_locality(chip, priv->locality);
+> +		tpm_tis_release_locality(chip, priv->locality);
+>  		return rc;
+>  	}
+>  
+> -	release_locality(chip, priv->locality);
+> +	tpm_tis_release_locality(chip, priv->locality);
+>  	clear_bit(TPM_TIS_IRQ_TESTED, &priv->flags);
+>  
+>  	/* Generate an interrupt by having the core call through to
+> @@ -959,8 +984,8 @@ static const struct tpm_class_ops tpm_tis = {
+>  	.req_complete_mask = TPM_STS_DATA_AVAIL | TPM_STS_VALID,
+>  	.req_complete_val = TPM_STS_DATA_AVAIL | TPM_STS_VALID,
+>  	.req_canceled = tpm_tis_req_canceled,
+> -	.request_locality = request_locality,
+> -	.relinquish_locality = release_locality,
+> +	.request_locality = tpm_tis_request_locality,
+> +	.relinquish_locality = tpm_tis_release_locality,
+>  	.clk_enable = tpm_tis_clkrun_enable,
+>  };
+>  
+> @@ -994,6 +1019,8 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  	priv->timeout_min = TPM_TIMEOUT_USECS_MIN;
+>  	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
+>  	priv->phy_ops = phy_ops;
+> +	priv->locality_count = 0;
+> +	mutex_init(&priv->locality_count_mutex);
+>  
+>  	dev_set_drvdata(&chip->dev, priv);
+>  
+> @@ -1071,14 +1098,14 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  
+>  	intmask &= ~TPM_GLOBAL_INT_ENABLE;
+>  
+> -	rc = request_locality(chip, 0);
+> +	rc = tpm_tis_request_locality(chip, 0);
+>  	if (rc < 0) {
+>  		rc = -ENODEV;
+>  		goto out_err;
+>  	}
+>  
+>  	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
+> -	release_locality(chip, 0);
+> +	tpm_tis_release_locality(chip, 0);
+>  
+>  	rc = tpm_chip_start(chip);
+>  	if (rc)
+> @@ -1112,13 +1139,13 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  		 * proper timeouts for the driver.
+>  		 */
+>  
+> -		rc = request_locality(chip, 0);
+> +		rc = tpm_tis_request_locality(chip, 0);
+>  		if (rc < 0)
+>  			goto out_err;
+>  
+>  		rc = tpm_get_timeouts(chip);
+>  
+> -		release_locality(chip, 0);
+> +		tpm_tis_release_locality(chip, 0);
+>  
+>  		if (rc) {
+>  			dev_err(dev, "Could not get TPM timeouts and durations\n");
+> @@ -1138,11 +1165,11 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  			dev_err(&chip->dev, FW_BUG
+>  					"TPM interrupt not working, polling instead\n");
+>  
+> -			rc = request_locality(chip, 0);
+> +			rc = tpm_tis_request_locality(chip, 0);
+>  			if (rc < 0)
+>  				goto out_err;
+>  			disable_interrupts(chip);
+> -			release_locality(chip, 0);
+> +			tpm_tis_release_locality(chip, 0);
+>  		}
+>  	}
+>  
+> @@ -1209,13 +1236,13 @@ int tpm_tis_resume(struct device *dev)
+>  	 * an error code but for unknown reason it isn't handled.
+>  	 */
+>  	if (!(chip->flags & TPM_CHIP_FLAG_TPM2)) {
+> -		ret = request_locality(chip, 0);
+> +		ret = tpm_tis_request_locality(chip, 0);
+>  		if (ret < 0)
+>  			return ret;
+>  
+>  		tpm1_do_selftest(chip);
+>  
+> -		release_locality(chip, 0);
+> +		tpm_tis_release_locality(chip, 0);
+>  	}
+>  
+>  	return 0;
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+> index e005eb99480e..7c6c14707e31 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -91,6 +91,8 @@ enum tpm_tis_flags {
+>  
+>  struct tpm_tis_data {
+>  	u16 manufacturer_id;
+> +	struct mutex locality_count_mutex;
+> +	unsigned int locality_count;
+>  	int locality;
+>  	int irq;
+>  	unsigned int int_mask;
+> -- 
+> 2.25.1
+> 
 
-I love your patch! Yet something to improve:
+I'm kind of thinking that should tpm_tis_data have a lock for its
+contents?
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.19-rc4 next-20220630]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I kind of doubt that we would ever need more than one lock for it,
+and it would give some more ensurance to not be race, especially
+when re-enabling interrupts this feels important to be "extra safe".
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/platform-x86-asus-wireless-Replace-open-coded-acpi_match_device/20220701-033501
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 1a0e93df1e107dc766fdf86ae88076efd9f376e6
-config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220701/202207010744.ugH4lnF8-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a774ba7f60d1fef403b5507b1b1a7475d3684d71)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6aca63018deba5520de593749517efd03f7289c7
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/platform-x86-asus-wireless-Replace-open-coded-acpi_match_device/20220701-033501
-        git checkout 6aca63018deba5520de593749517efd03f7289c7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/platform/x86/
+I looked at this commit, and did not see anything that would prevent
+using a spin lock instead of mutex. With a spin lock priv can be
+accessed also in the interrupt context.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+So instead prepend this patch with a patch that adds:
 
-All errors (new ones prefixed by >>):
+        struct spin_lock lock;
 
->> drivers/platform/x86/asus-wireless.c:151:25: error: incompatible pointer types passing 'struct acpi_device *' to parameter of type 'const struct acpi_device_id *' [-Werror,-Wincompatible-pointer-types]
-           id = acpi_match_device(adev, device_ids);
-                                  ^~~~
-   include/linux/acpi.h:713:77: note: passing argument to parameter 'ids' here
-   const struct acpi_device_id *acpi_match_device(const struct acpi_device_id *ids,
-                                                                               ^
->> drivers/platform/x86/asus-wireless.c:151:31: error: incompatible pointer types passing 'const struct acpi_device_id[3]' to parameter of type 'const struct device *' [-Werror,-Wincompatible-pointer-types]
-           id = acpi_match_device(adev, device_ids);
-                                        ^~~~~~~~~~
-   include/linux/acpi.h:714:34: note: passing argument to parameter 'dev' here
-                                                  const struct device *dev);
-                                                                       ^
-   2 errors generated.
+And something like:
 
+        static inline struct tpm_tis_data *tpm_tis_priv_get(struct tpm_chip *chip)
+        {
+                struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
 
-vim +151 drivers/platform/x86/asus-wireless.c
+                spin_lock(&priv->lock); 
+                return priv; 
+        }
 
-   125	
-   126	static int asus_wireless_add(struct acpi_device *adev)
-   127	{
-   128		struct asus_wireless_data *data;
-   129		const struct acpi_device_id *id;
-   130		int err;
-   131	
-   132		data = devm_kzalloc(&adev->dev, sizeof(*data), GFP_KERNEL);
-   133		if (!data)
-   134			return -ENOMEM;
-   135		adev->driver_data = data;
-   136		data->adev = adev;
-   137	
-   138		data->idev = devm_input_allocate_device(&adev->dev);
-   139		if (!data->idev)
-   140			return -ENOMEM;
-   141		data->idev->name = "Asus Wireless Radio Control";
-   142		data->idev->phys = "asus-wireless/input0";
-   143		data->idev->id.bustype = BUS_HOST;
-   144		data->idev->id.vendor = PCI_VENDOR_ID_ASUSTEK;
-   145		set_bit(EV_KEY, data->idev->evbit);
-   146		set_bit(KEY_RFKILL, data->idev->keybit);
-   147		err = input_register_device(data->idev);
-   148		if (err)
-   149			return err;
-   150	
- > 151		id = acpi_match_device(adev, device_ids);
-   152		if (id)
-   153			data->hswc_params = (const struct hswc_params *)id->driver_data;
-   154		if (!data->hswc_params)
-   155			return 0;
-   156	
-   157		data->wq = create_singlethread_workqueue("asus_wireless_workqueue");
-   158		if (!data->wq)
-   159			return -ENOMEM;
-   160		INIT_WORK(&data->led_work, led_state_update);
-   161		data->led.name = "asus-wireless::airplane";
-   162		data->led.brightness_set = led_state_set;
-   163		data->led.brightness_get = led_state_get;
-   164		data->led.flags = LED_CORE_SUSPENDRESUME;
-   165		data->led.max_brightness = 1;
-   166		data->led.default_trigger = "rfkill-none";
-   167		err = devm_led_classdev_register(&adev->dev, &data->led);
-   168		if (err)
-   169			destroy_workqueue(data->wq);
-   170	
-   171		return err;
-   172	}
-   173	
+        static inline void tpm_tis_priv_put(struct tpm_tis_data *priv)
+        {
+                spin_unlock(&priv->lock);
+        }
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+And change the sites where priv is used to acquire the instance with this.
+
+BR, Jarkko
