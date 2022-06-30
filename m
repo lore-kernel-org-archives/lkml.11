@@ -2,136 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AFACCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 676BFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235092AbiF3KZG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:25:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
+        id S232500AbiF3K0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234937AbiF3KYY (ORCPT
+        with ESMTP id S234930AbiF3K0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:24:24 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF03F13B471;
-        Thu, 30 Jun 2022 03:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656584624; x=1688120624;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XFBVO6SXrO3FNt7nyhFxNsDwduLPRRwR8Ddld4oarBA=;
-  b=ZBbRy7ldPT9gwEobfOLYDO8cmKZFL64LZvhrVfHkYn0nDbc4m0RqStKA
-   8wdvm101VKnIdr407dXOMMMtWF8tJH5CaZn1BUheSnv9P55bMRREFOoG8
-   Gk8CV23X3+wOtcatTdgouHx77hSCaDaq/zDT0rbLgmdC1dFCGKJPPP6K+
-   xnQV0+20zHJJ3PKGuOqLG/gDTFtdcySWEBi1Wzo0LML/P+Ngn/J2y+w2J
-   Twtk6LldwRc5k1agp4XcJwrRqH2ZDluPDiFiPS30PGuD1bBdBJrkZ94kW
-   bNLmr78yMqz186gaiGGlviq7Be4jin/KxtjHRoGl9bEOTK1qMSlivMNdV
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="162744778"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:23:42 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 03:23:40 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:23:32 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v14 13/13] net: dsa: microchip: add LAN937x in the ksz spi probe
-Date:   Thu, 30 Jun 2022 15:50:41 +0530
-Message-ID: <20220630102041.25555-14-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220630102041.25555-1-arun.ramadoss@microchip.com>
-References: <20220630102041.25555-1-arun.ramadoss@microchip.com>
+        Thu, 30 Jun 2022 06:26:04 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EA97E031;
+        Thu, 30 Jun 2022 03:24:54 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id o4so22638645wrh.3;
+        Thu, 30 Jun 2022 03:24:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l6AzkA8havxcJ97cev8Fn2QmW59hqm7h1z8/O75RMTU=;
+        b=aoylw+Bm3d7bRynQXm1EtMpfdeC3Ct+tlDTFFxO9i2qmx573vK4ardA3U9kXEdcQET
+         1sFm6BKkYBZwjRU/xFlfrScK6BBIJ0hYPo8E2gMIYjh7XPtJzFf3+/S+0a37sFw+/V6b
+         qQFzBCNh01mzHMtxlwUPES3E5L9bND1WZtmrCpG038w+4ZD1lSsBxwz8jKkt+BrdwqfN
+         HGnYehdN508RV+jJJt+Os77+bsQLKUceNEUdjNlJybNFpAV8E5BU4wIj6wxMtmjvsesE
+         TDYKi7kGWznsxOxHTWRUTlaATFrdlkU4zwvRW+8HRZW/22rB8s1l7pmkVGONx5NUI7mv
+         Y5xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l6AzkA8havxcJ97cev8Fn2QmW59hqm7h1z8/O75RMTU=;
+        b=Mu2MR8/kiMCC1WaP/wyApqnpid9IGOxyH5yxoZTXT+A+VEK8eTcKDM4qmIzlpFKz2w
+         VnmNZxzC7w53LYFxpYsMPM2hHq5Xc9McidoJmz8I7cE3K/PVtCrW68qGOZhsxj5LKdrW
+         Gw118QTRQaPcLN2uhwShzKlR0170AmrXCpksAXev29bA0/a2cb5cq+ZQhY0IweF9kHvZ
+         IjKvlYvRkDB8f2JrV3Empht30Uskmg8EJFIwTOz41HuI+1Ef8p3KZNvgpZG9d03bfAuU
+         u2qtL2j7F1hDaZlYj0MXH1BuQ8bfbRRWgqgwc9eO0kaYbo6ZwLrBlTHRmhpJFXu/kHXG
+         dXBQ==
+X-Gm-Message-State: AJIora+aMEtbdMuSPB07+6zcTARwpuXIGYKmT+8NZ2/6tRtGRcQnEVBp
+        9MkUGTNgMXkKI2cLK/XwCMMzbMT8oIeMpQ==
+X-Google-Smtp-Source: AGRyM1sjWvYm+qQ4BW2cd3W6CjjSosbZ8CrO2mQYHT8N8FG4tQSn/tZEdcqpOsHusA0PlUD+TEqBiQ==
+X-Received: by 2002:a5d:48ce:0:b0:21b:9f34:f297 with SMTP id p14-20020a5d48ce000000b0021b9f34f297mr7654918wrs.351.1656584693134;
+        Thu, 30 Jun 2022 03:24:53 -0700 (PDT)
+Received: from localhost.localdomain ([41.232.197.17])
+        by smtp.gmail.com with ESMTPSA id g1-20020adffc81000000b00213ba3384aesm19536954wrr.35.2022.06.30.03.24.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 03:24:52 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next v3] selftests: net: fib_rule_tests: fix support for running individual tests
+Date:   Thu, 30 Jun 2022 12:24:49 +0200
+Message-Id: <20220630102449.9539-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add the LAN937x part support in the existing ksz_spi_probe.
+parsing and usage of -t got missed in the previous patch.
+this patch fixes it
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Fixes: 816cda9ae531 ("selftests: net: fib_rule_tests: add support to
+select a test to run")
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz_spi.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+changes in v2:
+	edit commit subject and message.
+---
+changes in v3:
+	add Fixes tag
+---
+ tools/testing/selftests/net/fib_rule_tests.sh | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 69fabb190f26..4844830dca72 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -166,6 +166,26 @@ static const struct of_device_id ksz_dt_ids[] = {
- 		.compatible = "microchip,ksz9567",
- 		.data = &ksz_switch_chips[KSZ9567]
- 	},
-+	{
-+		.compatible = "microchip,lan9370",
-+		.data = &ksz_switch_chips[LAN9370]
-+	},
-+	{
-+		.compatible = "microchip,lan9371",
-+		.data = &ksz_switch_chips[LAN9371]
-+	},
-+	{
-+		.compatible = "microchip,lan9372",
-+		.data = &ksz_switch_chips[LAN9372]
-+	},
-+	{
-+		.compatible = "microchip,lan9373",
-+		.data = &ksz_switch_chips[LAN9373]
-+	},
-+	{
-+		.compatible = "microchip,lan9374",
-+		.data = &ksz_switch_chips[LAN9374]
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ksz_dt_ids);
-@@ -182,6 +202,11 @@ static const struct spi_device_id ksz_spi_ids[] = {
- 	{ "ksz9563" },
- 	{ "ksz8563" },
- 	{ "ksz9567" },
-+	{ "lan9370" },
-+	{ "lan9371" },
-+	{ "lan9372" },
-+	{ "lan9373" },
-+	{ "lan9374" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(spi, ksz_spi_ids);
-@@ -206,6 +231,7 @@ MODULE_ALIAS("spi:ksz9893");
- MODULE_ALIAS("spi:ksz9563");
- MODULE_ALIAS("spi:ksz8563");
- MODULE_ALIAS("spi:ksz9567");
-+MODULE_ALIAS("spi:lan937x");
- MODULE_AUTHOR("Tristram Ha <Tristram.Ha@microchip.com>");
- MODULE_DESCRIPTION("Microchip ksz Series Switch SPI Driver");
- MODULE_LICENSE("GPL");
+diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
+index bbe3b379927a..c245476fa29d 100755
+--- a/tools/testing/selftests/net/fib_rule_tests.sh
++++ b/tools/testing/selftests/net/fib_rule_tests.sh
+@@ -303,6 +303,29 @@ run_fibrule_tests()
+ 	log_section "IPv6 fib rule"
+ 	fib_rule6_test
+ }
++################################################################################
++# usage
++
++usage()
++{
++	cat <<EOF
++usage: ${0##*/} OPTS
++
++        -t <test>   Test(s) to run (default: all)
++                    (options: $TESTS)
++EOF
++}
++
++################################################################################
++# main
++
++while getopts ":t:h" opt; do
++	case $opt in
++		t) TESTS=$OPTARG;;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
+ 
+ if [ "$(id -u)" -ne 0 ];then
+ 	echo "SKIP: Need root privileges"
 -- 
-2.36.1
+2.25.1
 
