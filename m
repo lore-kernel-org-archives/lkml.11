@@ -2,115 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A4BCCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233979AbiF3Jdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
+        id S233488AbiF3JeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbiF3Jdv (ORCPT
+        with ESMTP id S229977AbiF3Jdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:33:51 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AAB2BB35;
-        Thu, 30 Jun 2022 02:33:50 -0700 (PDT)
+        Thu, 30 Jun 2022 05:33:53 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F027031383
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:33:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656581630; x=1688117630;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=T1ylInVtE0EmcDSIAmU/Rw3OQAzUbZ0+fwUP1lx/0S4=;
-  b=UzFKMIUOwCJcJ32QQ84+1hv9hU69kzXtoPA/pCWoLncKp6oKgYnP+FrZ
-   okV73pp18cn2XnNmZ2d/rDAjqmvbTmSvBJZDzTGtFMRf5Y2bxcYmf6n++
-   Q9jPHTFxY8Ms/HeODxGOa4lG0sdZ3/QIe2GKOx4BI1wH5uppk69ybjT5K
-   B4+xakyxppQ815M+0bbeDtWpTX8TUhLFf6AxOHMPaIT9hCrNzq1WrakEl
-   XRi3bMdwcp7yjSFiNpIL7Dc9Zs04nEUNtErdJ0n8bX8Id5xwI6vppj4ls
-   wvJLh3EqC3wppGPAHcQIDaHn937eUaBw6zA0OkZM9NMch2sLXrF+jsAoX
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="307806105"
+  t=1656581631; x=1688117631;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PgPzLl4LLLWiWoEp5qpCglqPZ3JOM/ueCvqywhPsDcA=;
+  b=nh//DLk73Sk/qA8Rf/5Eww21OalrxA2Ct46ybSFx+IObf8Lsw3Ie+6Gt
+   FaM9FOtlQeG3M/dAkLKWANN1TeyLlp2f0MdGUg1tpG0RXzI6gBFi077r4
+   Ocn4cSI3/VyQ9lfK8vGXW2jO4yPig2h/lMTzLMxH1kgXi7EZDrpHLMkCj
+   /YEct4D/Hewbs1F2pPkRwViaOqs6ZsO25wFgoNcWy+moJfh21G97/2fpg
+   0sgD1VRZaLPrzk1KqvRBqCcsXRDVEuh4l4K8u5hIcMAUdi4aDrC/+l6ng
+   Wo+vkQ3rTiXGkGxAoYkx7qzCPDNpMCfYEp5Y5UlCOUQyR79/he9wPX3Bk
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="343988461"
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="307806105"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:33:50 -0700
+   d="scan'208";a="343988461"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:33:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="588696876"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 02:33:48 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 203E611E; Thu, 30 Jun 2022 12:33:53 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v2 1/1] serial: 8250_dw: Drop PM ifdeffery
-Date:   Thu, 30 Jun 2022 12:33:51 +0300
-Message-Id: <20220630093351.27926-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+   d="scan'208";a="693983715"
+Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
+  by fmsmga002.fm.intel.com with ESMTP; 30 Jun 2022 02:33:47 -0700
+Date:   Thu, 30 Jun 2022 17:33:46 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Lameter <cl@linux.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
+Message-ID: <20220630093346.GD4668@shbuild999.sh.intel.com>
+References: <20220630073304.26945-1-feng.tang@intel.com>
+ <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm_ops
-to use new PM macros. Since we are using runtime PM, wrap dw8250_pm_ops into
-pm_ptr().
+Hi Robin,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: wrapped dw8250_pm_ops into pm_ptr() macro (Paul)
- drivers/tty/serial/8250/8250_dw.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+On Thu, Jun 30, 2022 at 10:02:00AM +0100, Robin Murphy wrote:
+> On 2022-06-30 08:33, Feng Tang wrote:
+> > kmalloc will round up the request size to power of 2, and current
+> > iova_magazine's size is 1032 (1024+8) bytes, so each instance
+> > allocated will get 2048 bytes from kmalloc, causing around 1KB
+> > waste.
+> > 
+> > And in some exstreme case, the memory wasted can trigger OOM as
+> > reported in 2019 on a crash kernel with 256 MB memory [1].
+> 
+> I don't think it really needs pointing out that excessive memory consumption
+> can cause OOM. Especially not in the particularly silly context of a system
+> with only 2MB of RAM per CPU - that's pretty much guaranteed to be doomed
+> one way or another.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 921ac5c8cb38..927a4a85367a 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -743,7 +743,6 @@ static int dw8250_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int dw8250_suspend(struct device *dev)
- {
- 	struct dw8250_data *data = dev_get_drvdata(dev);
-@@ -775,9 +774,7 @@ static int dw8250_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM_SLEEP */
- 
--#ifdef CONFIG_PM
- static int dw8250_runtime_suspend(struct device *dev)
- {
- 	struct dw8250_data *data = dev_get_drvdata(dev);
-@@ -808,11 +805,10 @@ static int dw8250_runtime_resume(struct device *dev)
- 	/* TODO: Check if it needs more than it's done in serial8250_console_restore() */
- 	return 0;
- }
--#endif
- 
- static const struct dev_pm_ops dw8250_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
--	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
-+	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
-+	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
- };
- 
- static const struct dw8250_platform_data dw8250_dw_apb = {
-@@ -870,7 +866,7 @@ MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
- static struct platform_driver dw8250_platform_driver = {
- 	.driver = {
- 		.name		= "dw-apb-uart",
--		.pm		= &dw8250_pm_ops,
-+		.pm		= pm_ptr(&dw8250_pm_ops),
- 		.of_match_table	= dw8250_of_match,
- 		.acpi_match_table = dw8250_acpi_match,
- 	},
--- 
-2.35.1
+Yes, the 256MB for 128 CPU is kind of extreme, will remove this.
 
+> >    [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
+> >    [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
+> >    [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
+> >    [    4.338946] swapper/0 invoked oom-killer: gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null), order=0, oom_score_adj=0
+> >    [    4.350251] swapper/0 cpuset=/ mems_allowed=0
+> >    [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.57.mx64.282 #1
+> >    [    4.355612] Hardware name: Dell Inc. PowerEdge R7425/08V001, BIOS 1.9.3 06/25/2019
+> >    [    4.355612] Call Trace:
+> >    [    4.355612]  dump_stack+0x46/0x5b
+> >    [    4.355612]  dump_header+0x6b/0x289
+> >    [    4.355612]  out_of_memory+0x470/0x4c0
+> >    [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
+> >    [    4.355612]  cache_grow_begin+0x7d/0x520
+> >    [    4.355612]  fallback_alloc+0x148/0x200
+> >    [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
+> >    [    4.355612]  init_iova_domain+0x112/0x170
+> >    [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
+> >    [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
+> >    [    4.355612]  amd_iommu_add_device+0x13a/0x610
+> >    [    4.355612]  add_iommu_group+0x20/0x30
+> >    [    4.355612]  bus_for_each_dev+0x76/0xc0
+> >    [    4.355612]  bus_set_iommu+0xb6/0xf0
+> >    [    4.355612]  amd_iommu_init_api+0x112/0x132
+> >    [    4.355612]  state_next+0xfb1/0x1165
+> >    [    4.355612]  amd_iommu_init+0x1f/0x67
+> >    [    4.355612]  pci_iommu_init+0x16/0x3f
+> >    ...
+> >    [    4.670295] Unreclaimable slab info:
+> >    ...
+> >    [    4.857565] kmalloc-2048           59164KB      59164KB
+> > 
+> > Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
+> > 1024 bytes so that no memory will be wasted.
+> > 
+> > [1]. https://lkml.org/lkml/2019/8/12/266
+> > 
+> > Signed-off-by: Feng Tang <feng.tang@intel.com>
+> > ---
+> >   drivers/iommu/iova.c | 7 ++++++-
+> >   1 file changed, 6 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> > index db77aa675145b..27634ddd9b904 100644
+> > --- a/drivers/iommu/iova.c
+> > +++ b/drivers/iommu/iova.c
+> > @@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+> >    * dynamic size tuning described in the paper.
+> >    */
+> > -#define IOVA_MAG_SIZE 128
+> > +/*
+> > + * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
+> > + * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
+> 
+> Typo: iova_magazine
+
+will fix.
+
+> > + * will be wasted.
+> > + */
+> > +#define IOVA_MAG_SIZE 127
+> 
+> The change itself seems perfectly reasonable, though.
+> 
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+ 
+Thanks for the review!
+
+- Feng
+
+> >   #define MAX_GLOBAL_MAGS 32	/* magazines per bin */
+> >   struct iova_magazine {
