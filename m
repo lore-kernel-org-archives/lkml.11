@@ -2,106 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3033FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCD2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233932AbiF3IL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36402 "EHLO
+        id S233710AbiF3IML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233258AbiF3IKe (ORCPT
+        with ESMTP id S233661AbiF3ILX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:10:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38A342A38;
-        Thu, 30 Jun 2022 01:09:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 30 Jun 2022 04:11:23 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBB21A826
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:09:41 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F20661DBD;
-        Thu, 30 Jun 2022 08:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29881C34115;
-        Thu, 30 Jun 2022 08:09:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656576555;
-        bh=4oTlWkxVAMIWDl62630iJPW4grJUqfntfjQlLB+ZkwM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LcbLDH8abfsYkL+KSdH/EKdGrADa5Y+T+9Yr0PwG9k80y5eyRSZOelEYMddtQuQ8z
-         nax5NitsvscRmZEWa1pDAB6W1Ac1Pq60FFjiNiVQyUTGGFteGwgaj07P7aW1CSr4bs
-         qcmCWlgjGbQP3T5tzmwO1Sf2o3hAtNf3jtw5ZOrX3dUi+vMEj09W61fddy9Ft1shQD
-         bmI36/Ep4MBODiQAUrEC34cKVJPJ0Km5wYIImjhrV1o9kg1PEFLinGsC/IkIfrU/92
-         rFeWnqL48nzOwOiMN4yrlvSEBiiqa56YSGih3sZgCuNugEp0Tbmj+vNEgRyDlRjub2
-         dd3ElJUUdesCw==
-Date:   Thu, 30 Jun 2022 10:09:12 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, andrew@sanpeople.com,
-        mhoffman@lightlink.com, khali@linux-fr.org, peda@axentia.se,
-        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
-        Cristian Birsan <Cristian.Birsan@microchip.com>
-Subject: Re: [RESEND 0/3] i2c: at91: Fixes and updates
-Message-ID: <Yr1aKJs5MYIINhlc@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, andrew@sanpeople.com,
-        mhoffman@lightlink.com, khali@linux-fr.org, peda@axentia.se,
-        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
-        Cristian Birsan <Cristian.Birsan@microchip.com>
-References: <20220614101347.16910-1-codrin.ciubotariu@microchip.com>
- <YrysFU0fP7X1wkBd@shikoro>
- <176099e2-cbff-1987-f59a-2ca618a9c92a@microchip.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8D74721C97;
+        Thu, 30 Jun 2022 08:09:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656576580; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gSJC+aj+BfNql4oU2JcGgOEE5XeUn40IH1rlwgZea4s=;
+        b=X3GjqDbnVuh6BBl2wjlm4icDKQ5igyudH0AprJMQaGGeIDCbo5gWJp9fOH5T3q9Fb0YL4A
+        3eUccMozS8f1EJ1ONjN66sZ/MxGnz3ibWhPTHdEVi3WzzCI58o9XQJXFxQ1sHg5dg6Thqw
+        XLsbCA5fVJ0wYmkfo5RBBxBRDYK3SSg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5712E13A5C;
+        Thu, 30 Jun 2022 08:09:40 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id AN/ZE0RavWLZQAAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 30 Jun 2022 08:09:40 +0000
+Message-ID: <9e2205f6-3d7d-fcdd-26ed-a8f7c9f1c814@suse.com>
+Date:   Thu, 30 Jun 2022 10:09:39 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="JKSchcY7C2IiYKYc"
-Content-Disposition: inline
-In-Reply-To: <176099e2-cbff-1987-f59a-2ca618a9c92a@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] xen: Fix spelling mistake
+Content-Language: en-US
+To:     Zhang Jiaming <jiaming@nfschina.com>, sstabellini@kernel.org,
+        oleksandr_tyshchenko@epam.com
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com
+References: <20220630075027.68833-1-jiaming@nfschina.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <20220630075027.68833-1-jiaming@nfschina.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------fNCBxfoPNxIBxv4WQdbzuGpD"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------fNCBxfoPNxIBxv4WQdbzuGpD
+Content-Type: multipart/mixed; boundary="------------8QciTfUEMB4lsjlv1xBOvLsO";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Zhang Jiaming <jiaming@nfschina.com>, sstabellini@kernel.org,
+ oleksandr_tyshchenko@epam.com
+Cc: xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+ liqiong@nfschina.com, renyu@nfschina.com
+Message-ID: <9e2205f6-3d7d-fcdd-26ed-a8f7c9f1c814@suse.com>
+Subject: Re: [PATCH] xen: Fix spelling mistake
+References: <20220630075027.68833-1-jiaming@nfschina.com>
+In-Reply-To: <20220630075027.68833-1-jiaming@nfschina.com>
 
---JKSchcY7C2IiYKYc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--------------8QciTfUEMB4lsjlv1xBOvLsO
+Content-Type: multipart/mixed; boundary="------------vkyqrtAevLXUTiJzuBfVX8AP"
 
-Hi Nicolas,
+--------------vkyqrtAevLXUTiJzuBfVX8AP
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-> Codrin is not with Microchip anymore and we have to re-distribute the
-> maintenance of this driver internally. His email address will probably
-> "bounce" soon.
+T24gMzAuMDYuMjIgMDk6NTAsIFpoYW5nIEppYW1pbmcgd3JvdGU6DQo+IENoYW5nZSAnbWFw
+ZWQnIHRvICdtYXBwZWQnLg0KPiBDaGFuZ2UgJ3VubWFwZWQnIHRvICd1bm1hcHBlZCcuDQo+
+IA0KPiBTaWduZWQtb2ZmLWJ5OiBaaGFuZyBKaWFtaW5nIDxqaWFtaW5nQG5mc2NoaW5hLmNv
+bT4NCg0KUmV2aWV3ZWQtYnk6IEp1ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT4NCg0K
+DQpKdWVyZ2VuDQo=
+--------------vkyqrtAevLXUTiJzuBfVX8AP
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-Ah, very unfortunate that we couldn't move this series forward
-because of the mysterious mail problems.
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-All the best,
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
-   Wolfram
+--------------vkyqrtAevLXUTiJzuBfVX8AP--
 
+--------------8QciTfUEMB4lsjlv1xBOvLsO--
 
---JKSchcY7C2IiYKYc
-Content-Type: application/pgp-signature; name="signature.asc"
+--------------fNCBxfoPNxIBxv4WQdbzuGpD
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmK9WicACgkQFA3kzBSg
-KbYeBQ/+LdGfNG/Hx0HMxAksuZ20RbTm+2Ymoj0D7yLdwyyqETHPe8xQkgr8PtC2
-xuwbSuvVwnfrtaNiFmOlcpy+igjasuE6NDLHo1LRU+0mSlqmNR02+dxFrY4Qjz3V
-RjSjSFBmpl43TChvuNNqkzyA6d8ce0x7inEucap4G57G1l4tt13Hemv2hFrRC+Fx
-PjlWVKiOASe53ISwG8luH68GwJtr2/D59wP4d+DE6YCWX6qDtLXf38OfwT/cZBHQ
-DxoOnhPKcOlqWlATtZZG36kqE5Cf0q1ImXJPnvQSIvc83LQNSYbldBXV97LWIhMx
-3v1xE4J8kY3FFdGIzRkwPgmA5gpaeO5CMD3ZQ8DhgMKmHdSYSWRrC6XWC610BaDJ
-L4gfLnofsjpPyrKkGBFC/4FS5M2WXXSFYhapgH8UknU4bobGVjQhdAFdI+QtMapn
-CjWTHRCtrtO/APDz4T6Eq7yeiQ9TDBdiAYhrQimQzqx1qMby/HjpK/r4zjabv2ga
-10UDwfawCcsIAm+WvMcBEJYCafpmLZmFOuO3sJIRxpB0O5W+lQWcvjU26+bsS78G
-j/9Ua2w0Ifow1Br9r6IeyA1u0XO01D0SXr9EDUw4Fwg2QuaEkqK6v1LA2tp4Bsk7
-gIernz2iKlqnQe5P2k84l3BaNxQVyE+wadfoTr6sVZDPPXj6H1U=
-=MNMK
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmK9WkMFAwAAAAAACgkQsN6d1ii/Ey99
+dQf/cPF94WiMiaR5qS+vQEg+DHt5IjHajB+kRTARuHdYhhTDiS4ZkDn/oR1xtnJzMW0HqzPjcmQa
+aHB+N2cdEcH1PFyhxTJUPTEObGH3sZksqRzxltq99N/aZ9sNifoTjHkDx1FFwFPs0b+CM6UX+5HN
+4rXt8Rxf2Hdnw6N5jsLI3ZjpoGZ7tCA720ntqJ8AMiDfqxZX/Uizi3yNCJLduum9gu58xKx1ams2
+ugzMLZBIIPg82Nh4pGSL2GnNztIUNkLJD63Z7upSqeZCUAjlnM9hwLIHK4V8v7ljXYWxjCZLz6Aq
+WYEqwhm3eO1QLs14H3iVj8YXm4Vn5NDVh4lxbmo0Zg==
+=d3MF
 -----END PGP SIGNATURE-----
 
---JKSchcY7C2IiYKYc--
+--------------fNCBxfoPNxIBxv4WQdbzuGpD--
