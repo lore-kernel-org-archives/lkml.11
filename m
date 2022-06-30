@@ -2,246 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C17BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AC5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235321AbiF3OqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
+        id S235334AbiF3OsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiF3OqA (ORCPT
+        with ESMTP id S232881AbiF3OsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:46:00 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2088B1A835;
-        Thu, 30 Jun 2022 07:45:59 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UEfBvp037543;
-        Thu, 30 Jun 2022 14:45:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=bVRAqFqxas/+eql8YkiW8QnBAmPd4iM27hO1S1rVvF0=;
- b=l41518QLo4u6n987JN9ZWVwxrGoYMVPBVIFrfvBafMUz0oFArhBPIFZSQ3n5e7ViGP+i
- Df03rgAEzdgMA0pQwdjofG4pXYhLc6JUqKa41hz2qZBx00osXGuP2Vxnqq5li+FmSIyU
- EFyEPcG/6ijWeERIvrjh3WJo6OrdgwbxSEYx4bKKXMGOBKlOMibj4nxOMEvlbfXd1h5z
- JcMymp4DxZOB3AhEm6k6lfDVcdHrZsHPcUMdmThz9uwO0beptGh7yeHRQrxBjHCrZh6W
- Oec4Oj2AI+g1a3vCzIVs3487fm2/VAUYe0nJ2DxCXhBUYWZub0rxegTD/fVgOk7ln1T0 NQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1dj00p0s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 14:45:56 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25UEgHWN014243;
-        Thu, 30 Jun 2022 14:45:55 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1dj00nyu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 14:45:55 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UELLvK001956;
-        Thu, 30 Jun 2022 14:45:53 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gwsmj8byv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 14:45:52 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UEjn6l19595528
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Jun 2022 14:45:49 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 62C9A52050;
-        Thu, 30 Jun 2022 14:45:49 +0000 (GMT)
-Received: from [9.171.69.2] (unknown [9.171.69.2])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 07AFB5204E;
-        Thu, 30 Jun 2022 14:45:48 +0000 (GMT)
-Message-ID: <03fff591-63e1-2dab-06d5-1fac242c248f@linux.ibm.com>
-Date:   Thu, 30 Jun 2022 16:50:18 +0200
+        Thu, 30 Jun 2022 10:48:08 -0400
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4028AD78;
+        Thu, 30 Jun 2022 07:48:07 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-31bf3656517so90721917b3.12;
+        Thu, 30 Jun 2022 07:48:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+qCSLXLpvZWhA8w54PN+yxH0ih122e6D4lPNgfVMEk8=;
+        b=gOLuUA56LveIk4khjUgs7/laAbEK4DLHG/zomJQMK0rQVfTafwXv+C+TI5vOxRpQhy
+         X8zCHje9VfffquyCPTJZ4VU85KbZroivSXILGAXii+r5BawoMidurZ2cfC8K9+SjJZJ7
+         XRiK87Ni0Pe3eVCudWpLoCQQt5AxdZUI7KGEsXQwjGJZ9MnRiKugKvqn102vUDGv8oy6
+         I+wbegWnJeYhzd8ZHyIY3jBNCXemPlVJi1xypOfPZva8UgfCthhisgJDgdHAzJ22hVRN
+         kxaJe/lu+on3VdX5QvQasvuw2d45ZqyR/VqnoJt68xwXxq6wVUTWYR0KqvgnLJkXzo+b
+         D0Ng==
+X-Gm-Message-State: AJIora85i0cBiHEvDuLt0sJ/t9jQioJ9AmGOcgGEbImh6qzJiDgPi/cs
+        56rf+3C4NKVyB791kYbdVKTxX76KbNXgoMzfhNrEj4Pg7ew=
+X-Google-Smtp-Source: AGRyM1vbXZPXCJEI/TXz4b9n6Rap9xzho44Fu1+ZkkX+tZch2UYULtFcCmECp0qJIJHAScn3GPJy4uUioz3LXfV7EWw=
+X-Received: by 2002:a0d:d086:0:b0:31b:d0b2:e11f with SMTP id
+ s128-20020a0dd086000000b0031bd0b2e11fmr10645242ywd.515.1656600486367; Thu, 30
+ Jun 2022 07:48:06 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v6 1/5] PCI: Clean up pci_scan_slot()
-Content-Language: en-US
-To:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220628143100.3228092-1-schnelle@linux.ibm.com>
- <20220628143100.3228092-2-schnelle@linux.ibm.com>
- <17c30662-7285-0e1a-91fb-071fa2cfc733@linux.ibm.com>
- <7741c617519b786750fbe04029fbb6295c8d6c85.camel@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <7741c617519b786750fbe04029fbb6295c8d6c85.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: uzFNaawNg303gaMLjQF4qkwg89nNNtjf
-X-Proofpoint-ORIG-GUID: GPI8DY7uDQv7WelYfyAChgLCkkvJ0ki2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_09,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 impostorscore=0 mlxscore=0 phishscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 spamscore=0 clxscore=1015 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206300057
+References: <20220613120755.14306-1-peter.wang@mediatek.com>
+ <b55d5691-0b2d-56bb-26ff-dcac56770611@mediatek.com> <CAJZ5v0gTpv2gt_Gm9rUd+8Jmp4=ij2=J20o7qO0sC-hm=w3=_A@mail.gmail.com>
+ <12028598.O9o76ZdvQC@kreacher> <90b5f619-2dd6-817b-fe2d-f895be0b5b98@mediatek.com>
+In-Reply-To: <90b5f619-2dd6-817b-fe2d-f895be0b5b98@mediatek.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 30 Jun 2022 16:47:55 +0200
+Message-ID: <CAJZ5v0h8xNCV+1YwRA5wob6Vnvz8JFikv3pYMR_mUrXxzfc=tQ@mail.gmail.com>
+Subject: Re: [PATCH v1] PM-runtime: Check supplier_preactivated before release supplier
+To:     Peter Wang <peter.wang@mediatek.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jun 30, 2022 at 4:26 PM Peter Wang <peter.wang@mediatek.com> wrote:
+>
+>
+> On 6/30/22 12:01 AM, Rafael J. Wysocki wrote:
+> > [Add CCs to linix-pm, LKML and Greg]
+> >
+> > On Wednesday, June 29, 2022 5:32:00 PM CEST Rafael J. Wysocki wrote:
+> >> On Wed, Jun 29, 2022 at 4:47 PM Peter Wang <peter.wang@mediatek.com> wrote:
+> >>>
+> >>> On 6/29/22 9:22 PM, Rafael J. Wysocki wrote:
+> >>>> On Wed, Jun 29, 2022 at 5:02 AM Peter Wang <peter.wang@mediatek.com> wrote:
+> >>>>> On 6/28/22 11:54 PM, Rafael J. Wysocki wrote:
+> >>>>>> On Tue, Jun 28, 2022 at 3:53 AM Peter Wang <peter.wang@mediatek.com> wrote:
+> >>>>>>> On 6/28/22 3:00 AM, Rafael J. Wysocki wrote:
+> >>>>>>>> On Mon, Jun 13, 2022 at 2:08 PM <peter.wang@mediatek.com> wrote:
+> >>>>>>>>> From: Peter Wang <peter.wang@mediatek.com>
+> >>>>>>>>>
+> >>>>>>>>> With divice link of DL_FLAG_PM_RUNTIME, if consumer call pm_runtime_get_suppliers
+> >>>>>>>>> to prevent supplier enter suspend, pm_runtime_release_supplier should
+> >>>>>>>>> check supplier_preactivated before let supplier enter suspend.
+> >>>>>>>> Why?
+> >>>>>>> because supplier_preactivated is true means supplier cannot enter
+> >>>>>>> suspend, right?
+> >>>>>> No, it doesn't mean that.
+> >>>>> Hi Rafael,
+> >>>>>
+> >>>>> if supplier_preactivated is true, means someone call
+> >>>>> pm_runtime_get_suppliers and
+> >>>>> before pm_runtime_put_suppliers right? This section suppliers should not
+> >>>>> enter suspend.
+> >>>> No, this is not how this is expected to work.
+> >>>>
+> >>>> First off, the only caller of pm_runtime_get_suppliers() and
+> >>>> pm_runtime_put_suppliers() is __driver_probe_device().  Really nobody
+> >>>> else has any business that would require calling them.
+> >>> Hi Rafael,
+> >>>
+> >>> Yes, you are right!
+> >>> __driver_probe_device the only one use and just because
+> >>> __driver_probe_device use
+> >>> pm_runtime_get_suppliers cause problem.
+> >>>
+> >>>
+> >>>> Second, the role of pm_runtime_get_suppliers() is to "preactivate" the
+> >>>> suppliers before running probe for a consumer device and the role of
+> >>> the role of pm_runtime_get_suppliers() is to "preactivate" the suppliers,
+> >>> but suppliers may suspend immediately after preactivate right?
+> >>> Here is just this case. this is first racing point.
+> >>> Thread A: pm_runtime_get_suppliers                -> __driver_probe_device
+> >>> Thread B: pm_runtime_release_supplier
+> >>> Thread A: Run with supplier not preactivate      -> __driver_probe_device
+> >>>
+> >>>> pm_runtime_put_suppliers() is to do the cleanup in case the device is
+> >>>> left in suspend after probing.
+> >>>>
+> >>>> IOW, pm_runtime_get_suppliers() is to ensure that the suppliers will
+> >>>> be active until the probe callback takes over and the rest depends on
+> >>>> that callback.
+> >>> The problem of this racing will finally let consumer is active but
+> >>> supplier is suspended.
+> >> So it would be better to send a bug report regarding this.
+> >>
+> >>> The link relation is broken.
+> >>> I know you may curious how it happened? right?
+> >>> Honestly, I am not sure, but I think the second racing point
+> >>> is rpm_get_suppliers and pm_runtime_put_suppliers(release rpm_active).
+> >> I'm not sure what you mean by "the racing point".
+> >>
+> >> Yes, these functions can run concurrently.
+> >>
+> >>> So, I try to fix the first racing point and the problem is gone.
+> >>> It is full meet expect, and the pm runtime will work smoothly after
+> >>> __driver_probe_device done.
+> >> I'm almost sure that there is at least one scenario that would be
+> >> broken by this change.
+> > That said, the code in there may be a bit overdesigned.
+> >
+> > Does the patch below help?
+> >
+> > ---
+> >   drivers/base/power/runtime.c |   14 +-------------
+> >   1 file changed, 1 insertion(+), 13 deletions(-)
+> >
+> > Index: linux-pm/drivers/base/power/runtime.c
+> > ===================================================================
+> > --- linux-pm.orig/drivers/base/power/runtime.c
+> > +++ linux-pm/drivers/base/power/runtime.c
+> > @@ -1768,7 +1768,6 @@ void pm_runtime_get_suppliers(struct dev
+> >               if (link->flags & DL_FLAG_PM_RUNTIME) {
+> >                       link->supplier_preactivated = true;
+> >                       pm_runtime_get_sync(link->supplier);
+> > -                     refcount_inc(&link->rpm_active);
+> >               }
+> >
+> >       device_links_read_unlock(idx);
+> > @@ -1788,19 +1787,8 @@ void pm_runtime_put_suppliers(struct dev
+> >       list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+> >                               device_links_read_lock_held())
+> >               if (link->supplier_preactivated) {
+> > -                     bool put;
+> > -
+> >                       link->supplier_preactivated = false;
+> > -
+> > -                     spin_lock_irq(&dev->power.lock);
+> > -
+> > -                     put = pm_runtime_status_suspended(dev) &&
+> > -                           refcount_dec_not_one(&link->rpm_active);
+> > -
+> > -                     spin_unlock_irq(&dev->power.lock);
+> > -
+> > -                     if (put)
+> > -                             pm_runtime_put(link->supplier);
+> > +                     pm_runtime_put(link->supplier);
+> >               }
+> >
+> >       device_links_read_unlock(idx);
+>
+>
+> Hi Rafael,
+>
+> I think this patch solve the rpm_active racing problem.
+> But it still have problem that
+> pm_runtime_get_suppliers call pm_runtime_get_sync(link->supplier)
+> and supplier could suspend immediately by other thread who call
+> pm_runtime_release_supplier.
 
-
-On 6/30/22 15:48, Niklas Schnelle wrote:
-> On Thu, 2022-06-30 at 14:40 +0200, Pierre Morel wrote:
->>
->> On 6/28/22 16:30, Niklas Schnelle wrote:
->>> While determining the next PCI function is factored out of
->>> pci_scan_slot() into next_fn() the former still handles the first
->>> function as a special case. This duplicates the code from the scan loop.
->>>
->>> Furthermore the non ARI branch of next_fn() is generally hard to
->>> understand and especially the check for multifunction devices is hidden
->>> in the handling of NULL devices for non-contiguous multifunction. It
->>> also signals that no further functions need to be scanned by returning
->>> 0 via wraparound and this is a valid function number.
->>>
->>> Improve upon this by transforming the conditions in next_fn() to be
->>> easier to understand.
->>>
->>> By changing next_fn() to return -ENODEV instead of 0 when there is no
->>> next function we can then handle the initial function inside the loop
->>> and deduplicate the shared handling. This also makes it more explicit
->>> that only function 0 must exist.
->>>
->>> No functional change is intended.
->>>
->>> Cc: Jan Kiszka <jan.kiszka@siemens.com>
->>> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
->>> ---
->>>    drivers/pci/probe.c | 38 +++++++++++++++++++-------------------
->>>    1 file changed, 19 insertions(+), 19 deletions(-)
->>>
->>> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->>> index 17a969942d37..b05d0ed83a24 100644
->>> --- a/drivers/pci/probe.c
->>> +++ b/drivers/pci/probe.c
->>> @@ -2579,8 +2579,7 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
->>>    }
->>>    EXPORT_SYMBOL(pci_scan_single_device);
->>>    
->>> -static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
->>> -			    unsigned int fn)
->>> +static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
->>>    {
->>>    	int pos;
->>>    	u16 cap = 0;
->>> @@ -2588,24 +2587,26 @@ static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
->>>    
->>>    	if (pci_ari_enabled(bus)) {
->>>    		if (!dev)
->>> -			return 0;
->>> +			return -ENODEV;
->>>    		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
->>>    		if (!pos)
->>> -			return 0;
->>> +			return -ENODEV;
->>>    
->>>    		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
->>>    		next_fn = PCI_ARI_CAP_NFN(cap);
->>>    		if (next_fn <= fn)
->>> -			return 0;	/* protect against malformed list */
->>> +			return -ENODEV;	/* protect against malformed list */
->>>    
->>>    		return next_fn;
->>>    	}
->>>    
->>> -	/* dev may be NULL for non-contiguous multifunction devices */
->>> -	if (!dev || dev->multifunction)
->>> -		return (fn + 1) % 8;
->>> +	if (fn >= 7)
->>> +		return -ENODEV;
->>> +	/* only multifunction devices may have more functions */
->>> +	if (dev && !dev->multifunction)
->>> +		return -ENODEV;
->>>    
->>> -	return 0;
->>> +	return fn + 1;
->>
->> No more % 8 ?
->> Even it disapear later shouldn't we keep it ?
-> 
-> The "% 8" became unnecessary due to the explicit "if (fn >= 7)"
-> above.
-> The original "% 8" did what I referred to in the commit message with
-> "It [the function] also signals that no further functions need to be
-> scanned by returning 0 via wraparound and this is a valid function
-> number.". Instead we now explicitly return -ENODEV in this case.
-
-Yes it goes with it.
-With this code next_fn returns -ENODEV for fn = 8 instead of previously 
-returning 1. (If I am right)
-
-With the previous code, did we assume that next_fn is never called with 
-fn > 7?
-I guess yes as we test pci_ari_enabled first and without ARI we do not 
-have more than 7 more functions. is it right?
-
-For what I think this new code seems better as it does not make the 
-assumption that it get called with fn < 8.
-
-> 
->>
->>
->>
->>>    }
->>>    
->>>    static int only_one_child(struct pci_bus *bus)
->>> @@ -2643,26 +2644,25 @@ static int only_one_child(struct pci_bus *bus)
->>>     */
->>>    int pci_scan_slot(struct pci_bus *bus, int devfn)
->>>    {
->>> -	unsigned int fn, nr = 0;
->>>    	struct pci_dev *dev;
->>> +	int fn = 0, nr = 0;
->>>    
->>>    	if (only_one_child(bus) && (devfn > 0))
->>>    		return 0; /* Already scanned the entire slot */
->>>    
->>> -	dev = pci_scan_single_device(bus, devfn);
->>> -	if (!dev)
->>> -		return 0;
->>> -	if (!pci_dev_is_added(dev))
->>> -		nr++;
->>> -
->>> -	for (fn = next_fn(bus, dev, 0); fn > 0; fn = next_fn(bus, dev, fn)) {
->>> +	do {
->>>    		dev = pci_scan_single_device(bus, devfn + fn);
->>>    		if (dev) {
->>>    			if (!pci_dev_is_added(dev))
->>>    				nr++;
->>> -			dev->multifunction = 1;
->>> +			if (fn > 0)
->>> +				dev->multifunction = 1;
->>> +		} else if (fn == 0) {
->>> +			/* function 0 is required */
->>> +			break;
->>>    		}
->>> -	}
->>> +		fn = next_fn(bus, dev, fn);
->>> +	} while (fn >= 0);
->>>    
->>>    	/* Only one slot has PCIe device */
->>>    	if (bus->self && nr)
->>>
->>
->> Otherwise LGTM
->>
-> 
-> Thanks for taking a look!
-> 
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
+No, it won't, because pm_runtime_release_supplier() won't drop the
+reference on the supplier taken by pm_runtime_get_suppliers(0 after
+the patch.
