@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9886C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08806C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235635AbiF3NyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        id S235696AbiF3NyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235919AbiF3Nwx (ORCPT
+        with ESMTP id S235581AbiF3Nwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:52:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C196031506;
-        Thu, 30 Jun 2022 06:50:00 -0700 (PDT)
+        Thu, 30 Jun 2022 09:52:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0141E344F4;
+        Thu, 30 Jun 2022 06:50:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2DB89CE2DD1;
-        Thu, 30 Jun 2022 13:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C526C34115;
-        Thu, 30 Jun 2022 13:49:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5A9E62007;
+        Thu, 30 Jun 2022 13:50:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD548C34115;
+        Thu, 30 Jun 2022 13:50:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596997;
-        bh=ubEP0kYFRH/uBrefTE8f7YvfEDMdThulOwFMVSz2ylw=;
+        s=korg; t=1656597003;
+        bh=SIMiUVob+dd9u0/AVhftthNtqULRglDZgMH8b1w4/Ug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1gSJnIIusGHBxfIEahkv70a+ImIcx5n/98giFgX/ckek0/izeVE671/iKiVuBYsb
-         n8UkgalFi0NnS9UvfSwXH3AiZgh4l/3qlRQpAW6I6NC2hNE6p31kwyOSDtfTW7EP7O
-         FrhDkAKw43lMIZKJv/4Ba3pBg/OVGzi1vgyuwRZA=
+        b=lFF+vpWhQ8oSgNSd7N6jO4XJFMxf/Gnxj7TQEjfw68YBLydOT5ymr9kWN9YAvl3gj
+         U1DVLQPSX9JTWc6cs9rdxBUMCTO4SBn7pvqZl8Iwc1LvlAMEg67qMRwhwRUMhZ7EQ1
+         hEYxlK5XaALJeZcYYB89ikFhZvoAqwE/gngA7M5U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 4.14 26/35] ARM: exynos: Fix refcount leak in exynos_map_pmu
-Date:   Thu, 30 Jun 2022 15:46:37 +0200
-Message-Id: <20220630133233.208278314@linuxfoundation.org>
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 4.14 28/35] ARM: cns3xxx: Fix refcount leak in cns3xxx_init
+Date:   Thu, 30 Jun 2022 15:46:39 +0200
+Message-Id: <20220630133233.266285647@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -50,31 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-commit c4c79525042a4a7df96b73477feaf232fe44ae81 upstream.
+commit 1ba904b6b16e08de5aed7c1349838d9cd0d178c5 upstream.
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 Add missing of_node_put() to avoid refcount leak.
-of_node_put() checks null pointer.
 
-Fixes: fce9e5bb2526 ("ARM: EXYNOS: Add support for mapping PMU base address via DT")
+Fixes: 415f59142d9d ("ARM: cns3xxx: initial DT support")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220523145513.12341-1-linmq006@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Krzysztof Halasa <khalasa@piap.pl>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-exynos/exynos.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-cns3xxx/core.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/arm/mach-exynos/exynos.c
-+++ b/arch/arm/mach-exynos/exynos.c
-@@ -167,6 +167,7 @@ static void exynos_map_pmu(void)
- 	np = of_find_matching_node(NULL, exynos_dt_pmu_match);
- 	if (np)
- 		pmu_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
- }
+--- a/arch/arm/mach-cns3xxx/core.c
++++ b/arch/arm/mach-cns3xxx/core.c
+@@ -379,6 +379,7 @@ static void __init cns3xxx_init(void)
+ 		/* De-Asscer SATA Reset */
+ 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SATA));
+ 	}
++	of_node_put(dn);
  
- static void __init exynos_init_irq(void)
+ 	dn = of_find_compatible_node(NULL, NULL, "cavium,cns3420-sdhci");
+ 	if (of_device_is_available(dn)) {
+@@ -392,6 +393,7 @@ static void __init cns3xxx_init(void)
+ 		cns3xxx_pwr_clk_en(CNS3XXX_PWR_CLK_EN(SDIO));
+ 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SDIO));
+ 	}
++	of_node_put(dn);
+ 
+ 	pm_power_off = cns3xxx_power_off;
+ 
 
 
