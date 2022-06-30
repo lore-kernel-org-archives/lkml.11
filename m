@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD93C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A76BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236243AbiF3ODD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
+        id S236214AbiF3ODM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236092AbiF3OBK (ORCPT
+        with ESMTP id S236295AbiF3OBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:01:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD6F44A19;
-        Thu, 30 Jun 2022 06:52:44 -0700 (PDT)
+        Thu, 30 Jun 2022 10:01:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9C844A2C;
+        Thu, 30 Jun 2022 06:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16BFEB82AD8;
-        Thu, 30 Jun 2022 13:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9DBC34115;
-        Thu, 30 Jun 2022 13:52:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B0466204B;
+        Thu, 30 Jun 2022 13:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3741FC34115;
+        Thu, 30 Jun 2022 13:52:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597160;
-        bh=u1ywSzVSilu7GMLPyEDimJOTV+WvCymWm8pFnXBhA68=;
+        s=korg; t=1656597163;
+        bh=3idDa8ATqAbwQApJrzgq1aI3YN9/sb++FYb3ppCmv3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LZ31oP4YzTk6XFPFbofkQtmCUQulbnJCxYabQ7zaKQsYCq7nYE2YTGpIw7YP9Ir6A
-         pl3A498sO4QLPo4f75mS43X5Pyl3Id6bJs+nhp4d2mkTO6bQNfGqkOQaHPALxxb6WE
-         ulUMIzHAb4N7QSDVdq2d2nM4ieyO1nh9A3c1Kfpc=
+        b=bo7bD4vq2zF/IK/txFbyz4gAXgK3Ri52mUaeCMjGAc39xOdDKJeIPeUFiF7Cbwg+x
+         MfelusT0ZDPSjaAGXRD85vblQGLisF5eSyVXK1v6Sfhs+dxb7AVoRBnCfKSu7uZoAp
+         HtyJThkByAx7MzbbyNmPy0uPC41xh0vMwo9UR8sk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH 4.19 47/49] net: mscc: ocelot: allow unregistered IP multicast flooding
-Date:   Thu, 30 Jun 2022 15:47:00 +0200
-Message-Id: <20220630133235.258443194@linuxfoundation.org>
+        Thorsten Glaser <tg@mirbsd.de>,
+        Diederik de Haas <didi.debian@cknow.org>
+Subject: [PATCH 4.19 48/49] net/sched: move NULL ptr check to qdisc_put() too
+Date:   Thu, 30 Jun 2022 15:47:01 +0200
+Message-Id: <20220630133235.289157437@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -48,61 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Diederik de Haas <didi.debian@cknow.org>
 
-Flooding of unregistered IP multicast has been broken (both to other
-switch ports and to the CPU) since the ocelot driver introduction, and
-up until commit 4cf35a2b627a ("net: mscc: ocelot: fix broken IP
-multicast flooding"), a bug fix for commit 421741ea5672 ("net: mscc:
-ocelot: offload bridge port flags to device") from v5.12.
+In commit 92833e8b5db6c209e9311ac8c6a44d3bf1856659 titled
+"net: sched: rename qdisc_destroy() to qdisc_put()" part of the
+functionality of qdisc_destroy() was moved into a (for linux-4.19.y)
+new function qdisk_put(), and the previous calls to qdisc_destroy()
+were changed to qdisk_put().
+This made it similar to f.e. 5.10.y and current master.
 
-The driver used to set PGID_MCIPV4 and PGID_MCIPV6 to the empty port
-mask (0), which made unregistered IPv4/IPv6 multicast go nowhere, and
-without ever modifying that port mask at runtime.
+There was one part of qdisc_destroy() not moved over to qdisc_put() and
+that was the check for a NULL pointer, causing oopses.
+(See upstream commit: 6efb971ba8edfbd80b666f29de12882852f095ae)
+This patch fixes that.
 
-The expectation is that such packets are treated as broadcast, and
-flooded according to the forwarding domain (to the CPU if the port is
-standalone, or to the CPU and other bridged ports, if under a bridge).
-
-Since the aforementioned commit, the limitation has been lifted by
-responding to SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS events emitted by the
-bridge. As for host flooding, DSA synthesizes another call to
-ocelot_port_bridge_flags() on the NPI port which ensures that the CPU
-gets the unregistered multicast traffic it might need, for example for
-smcroute to work between standalone ports.
-
-But between v4.18 and v5.12, IP multicast flooding has remained unfixed.
-
-Delete the inexplicable premature optimization of clearing PGID_MCIPV4
-and PGID_MCIPV6 as part of the init sequence, and allow unregistered IP
-multicast to be flooded freely according to the forwarding domain
-established by PGID_SRC, by explicitly programming PGID_MCIPV4 and
-PGID_MCIPV6 towards all physical ports plus the CPU port module.
-
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Cc: stable@kernel.org
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Fixes: 92833e8b5db6c209e9311ac8c6a44d3bf1856659
+Reported-by: Thorsten Glaser <tg@mirbsd.de>
+Link: https://bugs.debian.org/1013299
+Signed-off-by: Diederik de Haas <didi.debian@cknow.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/sched/sch_generic.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1733,8 +1733,12 @@ int ocelot_init(struct ocelot *ocelot)
- 	ocelot_write_rix(ocelot,
- 			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
- 			 ANA_PGID_PGID, PGID_MC);
--	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
--	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
-+	ocelot_write_rix(ocelot,
-+			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
-+			 ANA_PGID_PGID, PGID_MCIPV4);
-+	ocelot_write_rix(ocelot,
-+			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
-+			 ANA_PGID_PGID, PGID_MCIPV6);
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -970,8 +970,6 @@ static void qdisc_destroy(struct Qdisc *
+ 	const struct Qdisc_ops *ops;
+ 	struct sk_buff *skb, *tmp;
  
- 	/* CPU port Injection/Extraction configuration */
- 	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
+-	if (!qdisc)
+-		return;
+ 	ops = qdisc->ops;
+ 
+ #ifdef CONFIG_NET_SCHED
+@@ -1003,6 +1001,9 @@ static void qdisc_destroy(struct Qdisc *
+ 
+ void qdisc_put(struct Qdisc *qdisc)
+ {
++	if (!qdisc)
++		return;
++
+ 	if (qdisc->flags & TCQ_F_BUILTIN ||
+ 	    !refcount_dec_and_test(&qdisc->refcnt))
+ 		return;
 
 
