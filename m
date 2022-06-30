@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C09C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F7CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236113AbiF3OAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
+        id S236133AbiF3OAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236123AbiF3N5n (ORCPT
+        with ESMTP id S236415AbiF3N6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:57:43 -0400
+        Thu, 30 Jun 2022 09:58:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B44553D02;
-        Thu, 30 Jun 2022 06:51:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AE94163B;
+        Thu, 30 Jun 2022 06:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F09DB82AD8;
-        Thu, 30 Jun 2022 13:50:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D368DC34115;
-        Thu, 30 Jun 2022 13:50:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2EBBB82AFA;
+        Thu, 30 Jun 2022 13:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3347C34115;
+        Thu, 30 Jun 2022 13:51:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597053;
-        bh=NbbeKQEkCqGH7eRSg2mh0Rg8B4WuQz46K8KLqlu+Qdo=;
+        s=korg; t=1656597078;
+        bh=Hv5XT+wihpAxWcKTmxWkBoWJWkQXIxwXbE/EI2bjpSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sjCZVfdku1dYc0E/Zd6KS1tNvHs0gSv9VDanG0wq6+XzT/Ha0shtMXCAY4UUMomiG
-         t+xXs2Db1O8+3IytBln/O+L+W6JWBqeSsjr4vssfrWFpvBgpPMFvxGLsFq8uXrJzh+
-         Z5A1/ROBfoARh9yKYwyfM9LdV7yXadf1vymdOJ94=
+        b=xhn6jJFAjAyJU1Tmh0ZTrIby0B5DlDF5klLeLKFQIgndg3J+pXG+uwfn+Awp1YDLG
+         wNfchk+RxRq7xONqD2lmaGWIf+hKW/RFhe08H6SJeTExO0x9AIy7zVOJctHqls/hBE
+         WkT5peYzPvaCHHARmdCrWQlRqVRy3Yf+sPrcGphQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 03/49] ALSA: hda/via: Fix missing beep setup
-Date:   Thu, 30 Jun 2022 15:46:16 +0200
-Message-Id: <20220630133234.010703384@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 20/49] gpio: winbond: Fix error code in winbond_gpio_get()
+Date:   Thu, 30 Jun 2022 15:46:33 +0200
+Message-Id: <20220630133234.501028667@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -47,41 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit c7807b27d510e5aa53c8a120cfc02c33c24ebb5f upstream.
+[ Upstream commit 9ca766eaea2e87b8b773bff04ee56c055cb76d4e ]
 
-Like the previous fix for Conexant codec, the beep_nid has to be set
-up before calling snd_hda_gen_parse_auto_config(); otherwise it'd miss
-the path setup.
+This error path returns 1, but it should instead propagate the negative
+error code from winbond_sio_enter().
 
-Fix the call order for addressing the missing beep setup.
-
-Fixes: 0e8f9862493a ("ALSA: hda/via - Simplify control management")
-Cc: <stable@vger.kernel.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
-Link: https://lore.kernel.org/r/20220620104008.1994-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a0d65009411c ("gpio: winbond: Add driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_via.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-winbond.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/sound/pci/hda/patch_via.c
-+++ b/sound/pci/hda/patch_via.c
-@@ -533,11 +533,11 @@ static int via_parse_auto_config(struct
- 	if (err < 0)
- 		return err;
+diff --git a/drivers/gpio/gpio-winbond.c b/drivers/gpio/gpio-winbond.c
+index 7f8f5b02e31d..4b61d975cc0e 100644
+--- a/drivers/gpio/gpio-winbond.c
++++ b/drivers/gpio/gpio-winbond.c
+@@ -385,12 +385,13 @@ static int winbond_gpio_get(struct gpio_chip *gc, unsigned int offset)
+ 	unsigned long *base = gpiochip_get_data(gc);
+ 	const struct winbond_gpio_info *info;
+ 	bool val;
++	int ret;
  
--	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
-+	err = auto_parse_beep(codec);
- 	if (err < 0)
- 		return err;
+ 	winbond_gpio_get_info(&offset, &info);
  
--	err = auto_parse_beep(codec);
-+	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
- 	if (err < 0)
- 		return err;
+-	val = winbond_sio_enter(*base);
+-	if (val)
+-		return val;
++	ret = winbond_sio_enter(*base);
++	if (ret)
++		return ret;
  
+ 	winbond_sio_select_logical(*base, info->dev);
+ 
+-- 
+2.35.1
+
 
 
