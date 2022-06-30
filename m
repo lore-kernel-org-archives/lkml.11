@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80274CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA28CCA487
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbiF3KWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60078 "EHLO
+        id S234597AbiF3KXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiF3KWC (ORCPT
+        with ESMTP id S235028AbiF3KWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:22:02 -0400
+        Thu, 30 Jun 2022 06:22:47 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B8D45790;
-        Thu, 30 Jun 2022 03:21:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF36645508;
+        Thu, 30 Jun 2022 03:22:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656584514; x=1688120514;
+  t=1656584562; x=1688120562;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sU1wfIJ6KZthjWFD/BPGKKlW/O0R84NGRs7FQ7RHS9s=;
-  b=PKODp6uVUwuTqqOPAzdIU6noppw+1xTHphbCaWxYmrpa8QvzaIfOO20V
-   4eqlpsJdaubRTGacPUEBtCC7nXMw2otUmgMRAPwPwMo3aWtM+dfKQsg4v
-   C/7m9TnuaLOVPssFWvgWglNeJH3f8EIHXY7YijCBH76bqhhNuBHHNmm+M
-   JgfV36trxP7FOotFOiAgc6jbuSPBrvXXDgoIzTCpU76Bs7H2rKJkd5xFv
-   tp2uFn6R3PDWFGLqF0P6Fjf2BowLrOH6jNaB+V+c4BpSVoFPKkUraZoXI
-   NwWteEjm6QmWAm7RMTbV3utDxkpm+mvMcp/pr853IQZuX2T7ddC3aqQvZ
-   w==;
+  bh=0ypvoj6TaFnqZOWdsIFH8+PMgqAVRN8fZIhAsaAGuO0=;
+  b=lORLN+xmR4JjN/z8sJvZJYaoBX4Y3aJjCT6robIZyfewDVb41C/etLsP
+   At1BTgFwUb6mHwBb7UVBdHKBkYxNcHg6JEplqz5icIPug8cnzMVMCI9sD
+   O6NnCclStQyMJ64TuFH/Y5tRbFDRrOfT6f/Zeqqgp6wboinVw/5Uvgbyf
+   QR/qO5su7V1G3KzI0y6Y5IU/6avBUyo1RIwOu7sDRzIGKR2d2NG9Av+T6
+   NY7aRas/UL/nk3a4OgXPAGIXGTzeTp3JrKo4zWRAyQngrPJ1T7x6hqbYi
+   cNvlHkBWX4ljDor6PP8b8fVK6R0Y47f4q/342grJcZgTFaCJRBNyuybM3
+   g==;
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="162744337"
+   d="scan'208";a="165805049"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:21:52 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:22:41 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 03:21:51 -0700
+ 15.1.2375.17; Thu, 30 Jun 2022 03:22:37 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:21:43 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:22:29 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
@@ -61,9 +61,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v14 03/13] net: dsa: tag_ksz: add tag handling for Microchip LAN937x
-Date:   Thu, 30 Jun 2022 15:50:31 +0530
-Message-ID: <20220630102041.25555-4-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v14 07/13] net: dsa: microchip: lan937x: add phy read and write support
+Date:   Thu, 30 Jun 2022 15:50:35 +0530
+Message-ID: <20220630102041.25555-8-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220630102041.25555-1-arun.ramadoss@microchip.com>
 References: <20220630102041.25555-1-arun.ramadoss@microchip.com>
@@ -74,133 +74,236 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+This patch add support for the writing and reading of the phy registers.
+LAN937x uses the Vphy indirect addressing method for accessing the phys.
 
-The Microchip LAN937X switches have a tagging protocol which is
-very similar to KSZ tagging. So that the implementation is added to
-tag_ksz.c and reused common APIs
-
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/net/dsa.h |  2 ++
- net/dsa/Kconfig   |  4 ++--
- net/dsa/tag_ksz.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 63 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c   |   2 +
+ drivers/net/dsa/microchip/lan937x.h      |   2 +
+ drivers/net/dsa/microchip/lan937x_main.c | 116 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h  |  36 +++++++
+ 4 files changed, 156 insertions(+)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index ea7bf007f34f..b902b31bebce 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -54,6 +54,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_RTL8_4_VALUE		24
- #define DSA_TAG_PROTO_RTL8_4T_VALUE		25
- #define DSA_TAG_PROTO_RZN1_A5PSW_VALUE		26
-+#define DSA_TAG_PROTO_LAN937X_VALUE		27
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 07b6f34a437e..67bb4bff4d9b 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -207,6 +207,8 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
+ 	.get_port_addr = ksz9477_get_port_addr,
+ 	.cfg_port_member = ksz9477_cfg_port_member,
+ 	.port_setup = lan937x_port_setup,
++	.r_phy = lan937x_r_phy,
++	.w_phy = lan937x_w_phy,
+ 	.r_mib_cnt = ksz9477_r_mib_cnt,
+ 	.r_mib_pkt = ksz9477_r_mib_pkt,
+ 	.r_mib_stat64 = ksz_r_mib_stats64,
+diff --git a/drivers/net/dsa/microchip/lan937x.h b/drivers/net/dsa/microchip/lan937x.h
+index 534f5a7a1129..370203406a05 100644
+--- a/drivers/net/dsa/microchip/lan937x.h
++++ b/drivers/net/dsa/microchip/lan937x.h
+@@ -12,4 +12,6 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port);
+ void lan937x_config_cpu_port(struct dsa_switch *ds);
+ int lan937x_switch_init(struct ksz_device *dev);
+ void lan937x_switch_exit(struct ksz_device *dev);
++void lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);
++void lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);
+ #endif
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index e167a0c1ff85..5a2e14fe3cf3 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -28,6 +28,114 @@ static int lan937x_port_cfg(struct ksz_device *dev, int port, int offset,
+ 				  bits, set ? bits : 0);
+ }
  
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -83,6 +84,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
- 	DSA_TAG_PROTO_RTL8_4T		= DSA_TAG_PROTO_RTL8_4T_VALUE,
- 	DSA_TAG_PROTO_RZN1_A5PSW	= DSA_TAG_PROTO_RZN1_A5PSW_VALUE,
-+	DSA_TAG_PROTO_LAN937X		= DSA_TAG_PROTO_LAN937X_VALUE,
- };
- 
- struct dsa_switch;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 63853fff4e2f..3eef72ce99a4 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -87,10 +87,10 @@ config NET_DSA_TAG_MTK
- 	  Mediatek switches.
- 
- config NET_DSA_TAG_KSZ
--	tristate "Tag driver for Microchip 8795/9477/9893 families of switches"
-+	tristate "Tag driver for Microchip 8795/937x/9477/9893 families of switches"
- 	help
- 	  Say Y if you want to enable support for tagging frames for the
--	  Microchip 8795/9477/9893 families of switches.
-+	  Microchip 8795/937x/9477/9893 families of switches.
- 
- config NET_DSA_TAG_OCELOT
- 	tristate "Tag driver for Ocelot family of switches, using NPI port"
-diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
-index 3509fc967ca9..38fa19c1e2d5 100644
---- a/net/dsa/tag_ksz.c
-+++ b/net/dsa/tag_ksz.c
-@@ -193,10 +193,69 @@ static const struct dsa_device_ops ksz9893_netdev_ops = {
- DSA_TAG_DRIVER(ksz9893_netdev_ops);
- MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893);
- 
-+/* For xmit, 2 bytes are added before FCS.
-+ * ---------------------------------------------------------------------------
-+ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|tag1(1byte)|FCS(4bytes)
-+ * ---------------------------------------------------------------------------
-+ * tag0 : represents tag override, lookup and valid
-+ * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
-+ *
-+ * For rcv, 1 byte is added before FCS.
-+ * ---------------------------------------------------------------------------
-+ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
-+ * ---------------------------------------------------------------------------
-+ * tag0 : zero-based value represents port
-+ *	  (eg, 0x00=port1, 0x02=port3, 0x07=port8)
-+ */
-+#define LAN937X_EGRESS_TAG_LEN		2
-+
-+#define LAN937X_TAIL_TAG_BLOCKING_OVERRIDE	BIT(11)
-+#define LAN937X_TAIL_TAG_LOOKUP			BIT(12)
-+#define LAN937X_TAIL_TAG_VALID			BIT(13)
-+#define LAN937X_TAIL_TAG_PORT_MASK		7
-+
-+static struct sk_buff *lan937x_xmit(struct sk_buff *skb,
-+				    struct net_device *dev)
++static int lan937x_enable_spi_indirect_access(struct ksz_device *dev)
 +{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	const struct ethhdr *hdr = eth_hdr(skb);
-+	__be16 *tag;
-+	u16 val;
++	u16 data16;
++	int ret;
 +
-+	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
-+		return NULL;
++	/* Enable Phy access through SPI */
++	ret = lan937x_cfg(dev, REG_GLOBAL_CTRL_0, SW_PHY_REG_BLOCK, false);
++	if (ret < 0)
++		return ret;
 +
-+	tag = skb_put(skb, LAN937X_EGRESS_TAG_LEN);
++	ret = ksz_read16(dev, REG_VPHY_SPECIAL_CTRL__2, &data16);
++	if (ret < 0)
++		return ret;
 +
-+	val = BIT(dp->index);
++	/* Allow SPI access */
++	data16 |= VPHY_SPI_INDIRECT_ENABLE;
 +
-+	if (is_link_local_ether_addr(hdr->h_dest))
-+		val |= LAN937X_TAIL_TAG_BLOCKING_OVERRIDE;
-+
-+	/* Tail tag valid bit - This bit should always be set by the CPU */
-+	val |= LAN937X_TAIL_TAG_VALID;
-+
-+	put_unaligned_be16(val, tag);
-+
-+	return skb;
++	return ksz_write16(dev, REG_VPHY_SPECIAL_CTRL__2, data16);
 +}
 +
-+static const struct dsa_device_ops lan937x_netdev_ops = {
-+	.name	= "lan937x",
-+	.proto	= DSA_TAG_PROTO_LAN937X,
-+	.xmit	= lan937x_xmit,
-+	.rcv	= ksz9477_rcv,
-+	.needed_tailroom = LAN937X_EGRESS_TAG_LEN,
-+};
++static int lan937x_vphy_ind_addr_wr(struct ksz_device *dev, int addr, int reg)
++{
++	u16 addr_base = REG_PORT_T1_PHY_CTRL_BASE;
++	u16 temp;
 +
-+DSA_TAG_DRIVER(lan937x_netdev_ops);
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_LAN937X);
++	/* get register address based on the logical port */
++	temp = PORT_CTRL_ADDR(addr, (addr_base + (reg << 2)));
 +
- static struct dsa_tag_driver *dsa_tag_driver_array[] = {
- 	&DSA_TAG_DRIVER_NAME(ksz8795_netdev_ops),
- 	&DSA_TAG_DRIVER_NAME(ksz9477_netdev_ops),
- 	&DSA_TAG_DRIVER_NAME(ksz9893_netdev_ops),
-+	&DSA_TAG_DRIVER_NAME(lan937x_netdev_ops),
- };
++	return ksz_write16(dev, REG_VPHY_IND_ADDR__2, temp);
++}
++
++static int lan937x_internal_phy_write(struct ksz_device *dev, int addr, int reg,
++				      u16 val)
++{
++	unsigned int value;
++	int ret;
++
++	/* Check for internal phy port */
++	if (!dev->info->internal_phy[addr])
++		return -EOPNOTSUPP;
++
++	ret = lan937x_vphy_ind_addr_wr(dev, addr, reg);
++	if (ret < 0)
++		return ret;
++
++	/* Write the data to be written to the VPHY reg */
++	ret = ksz_write16(dev, REG_VPHY_IND_DATA__2, val);
++	if (ret < 0)
++		return ret;
++
++	/* Write the Write En and Busy bit */
++	ret = ksz_write16(dev, REG_VPHY_IND_CTRL__2,
++			  (VPHY_IND_WRITE | VPHY_IND_BUSY));
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
++				       value, !(value & VPHY_IND_BUSY), 10,
++				       1000);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to write phy register\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
++				     u16 *val)
++{
++	unsigned int value;
++	int ret;
++
++	/* Check for internal phy port, return 0xffff for non-existent phy */
++	if (!dev->info->internal_phy[addr])
++		return 0xffff;
++
++	ret = lan937x_vphy_ind_addr_wr(dev, addr, reg);
++	if (ret < 0)
++		return ret;
++
++	/* Write Read and Busy bit to start the transaction */
++	ret = ksz_write16(dev, REG_VPHY_IND_CTRL__2, VPHY_IND_BUSY);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
++				       value, !(value & VPHY_IND_BUSY), 10,
++				       1000);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to read phy register\n");
++		return ret;
++	}
++
++	/* Read the VPHY register which has the PHY data */
++	return ksz_read16(dev, REG_VPHY_IND_DATA__2, val);
++}
++
++void lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
++{
++	lan937x_internal_phy_read(dev, addr, reg, data);
++}
++
++void lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
++{
++	lan937x_internal_phy_write(dev, addr, reg, val);
++}
++
+ int lan937x_reset_switch(struct ksz_device *dev)
+ {
+ 	u32 data32;
+@@ -111,6 +219,14 @@ void lan937x_config_cpu_port(struct dsa_switch *ds)
+ int lan937x_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
++	int ret;
++
++	/* enable Indirect Access from SPI to the VPHY registers */
++	ret = lan937x_enable_spi_indirect_access(dev);
++	if (ret < 0) {
++		dev_err(dev->dev, "failed to enable spi indirect access");
++		return ret;
++	}
  
- module_dsa_tag_drivers(dsa_tag_driver_array);
+ 	/* The VLAN aware is a global setting. Mixed vlan
+ 	 * filterings are not supported.
+diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
+index 5e27b2bd2d86..7a0fa2595950 100644
+--- a/drivers/net/dsa/microchip/lan937x_reg.h
++++ b/drivers/net/dsa/microchip/lan937x_reg.h
+@@ -8,6 +8,12 @@
+ #define PORT_CTRL_ADDR(port, addr)	((addr) | (((port) + 1)  << 12))
+ 
+ /* 0 - Operation */
++#define REG_GLOBAL_CTRL_0		0x0007
++
++#define SW_PHY_REG_BLOCK		BIT(7)
++#define SW_FAST_MODE			BIT(3)
++#define SW_FAST_MODE_OVERRIDE		BIT(2)
++
+ #define REG_SW_INT_STATUS__4		0x0010
+ #define REG_SW_INT_MASK__4		0x0014
+ 
+@@ -82,6 +88,33 @@
+ #define ALU_V_USE_FID			BIT(30)
+ #define ALU_V_PORT_MAP			0xFF
+ 
++/* 7 - VPhy */
++#define REG_VPHY_IND_ADDR__2		0x075C
++#define REG_VPHY_IND_DATA__2		0x0760
++
++#define REG_VPHY_IND_CTRL__2		0x0768
++
++#define VPHY_IND_WRITE			BIT(1)
++#define VPHY_IND_BUSY			BIT(0)
++
++#define REG_VPHY_SPECIAL_CTRL__2	0x077C
++#define VPHY_SMI_INDIRECT_ENABLE	BIT(15)
++#define VPHY_SW_LOOPBACK		BIT(14)
++#define VPHY_MDIO_INTERNAL_ENABLE	BIT(13)
++#define VPHY_SPI_INDIRECT_ENABLE	BIT(12)
++#define VPHY_PORT_MODE_M		0x3
++#define VPHY_PORT_MODE_S		8
++#define VPHY_MODE_RGMII			0
++#define VPHY_MODE_MII_PHY		1
++#define VPHY_MODE_SGMII			2
++#define VPHY_MODE_RMII_PHY		3
++#define VPHY_SW_COLLISION_TEST		BIT(7)
++#define VPHY_SPEED_DUPLEX_STAT_M	0x7
++#define VPHY_SPEED_DUPLEX_STAT_S	2
++#define VPHY_SPEED_1000			BIT(4)
++#define VPHY_SPEED_100			BIT(3)
++#define VPHY_FULL_DUPLEX		BIT(2)
++
+ /* Port Registers */
+ 
+ /* 0 - Operation */
+@@ -94,6 +127,9 @@
+ #define PORT_TAIL_TAG_ENABLE		BIT(2)
+ #define PORT_QUEUE_SPLIT_ENABLE		0x3
+ 
++/* 1 - Phy */
++#define REG_PORT_T1_PHY_CTRL_BASE	0x0100
++
+ /* 3 - xMII */
+ #define REG_PORT_XMII_CTRL_0		0x0300
+ #define PORT_SGMII_SEL			BIT(7)
 -- 
 2.36.1
 
