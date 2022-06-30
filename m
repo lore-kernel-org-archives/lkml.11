@@ -2,68 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 421F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A63A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234576AbiF3MkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 08:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
+        id S234479AbiF3Mkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 08:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230305AbiF3MkX (ORCPT
+        with ESMTP id S234582AbiF3Mke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 08:40:23 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C333EAA1;
-        Thu, 30 Jun 2022 05:40:17 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1656592779tu3n0dl2
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 30 Jun 2022 20:39:31 +0800 (CST)
-X-QQ-SSF: 0100000000200090C000C00A0000000
-X-QQ-FEAT: Gn2WL6ficKpFsIwOK/PwHqvIOvq88K3Ftl4lAAP0xOmT7FfgijX7y0Q+KU1N2
-        Psc9kCtNjvRK0I2FQl/S7Ms1z9MnFVeNsClQYQVK2WbR6blka363NITzv4VJhAwbY1+X7Oa
-        KhNpCbJF8v+nBUz0uxljS6pse/O9HSrF56xUyOPLJb6sqwoFo5yRgGxd+AoTZ/VTzQ1t8Na
-        f0cDi3LMvuZiVnKTZq7Li4WxOLuVdUWjnOnDYVHGtI5hqZVYPmez4UKkOKrt2kHXEwcI9V0
-        wBdrXzaz7uZt/9YyR8m4XYLeEaYEm/WhJZe/NB3MKeFiZJ2xRXE45cdPnQV1CtJgTRDTwQA
-        +87vhfpGZpui4CwPuCyJjq9UUB1xg==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     aelior@marvell.com, manishc@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] qlogic/qed: fix repeated words in comments
-Date:   Thu, 30 Jun 2022 20:39:24 +0800
-Message-Id: <20220630123924.7531-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 30 Jun 2022 08:40:34 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44574427E6;
+        Thu, 30 Jun 2022 05:40:32 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UCCOG7021427;
+        Thu, 30 Jun 2022 12:40:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=MGcmts/VcLOyCctQQ+8sNs5Oo2ke3WkHJIEB4BMXULs=;
+ b=ajroneAEBC5+pinKYj91ZsyDsdq30sT0GMXsXjQNJp7+odvctOHrF0PPstsPeCxuAsnF
+ uoUjD9489TP3uSnR+2LL+qXIL5TFSoZKDdpbqC+eshAMNwFS5mZh8dQoTSDqAqyyyR2U
+ Pyqkc0IX2m8TS3uu8QautHLyZ+qbYAVO7wu2ukLOFIMGg5wWkVB0upuX0zFeG0hGrm11
+ YUE+K3DSkP4DHYbt1C9BilVD9zDzafU1Me8jq2shVMAa460g5cDmAAI53T1nkFIQa1BR
+ wkr0K8igrxLA+RaTjhflQul2K6E1B1qISRNyfzzoXBNGgZvmAxcCZTTPFV6rfV8AzUOr Wg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1bmmrtp1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 12:40:29 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25UCDpPq024472;
+        Thu, 30 Jun 2022 12:40:29 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1bmmrtmp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 12:40:29 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UCaFLH022116;
+        Thu, 30 Jun 2022 12:40:26 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04fra.de.ibm.com with ESMTP id 3gwt0962h9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 12:40:26 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UCeNIF17694984
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Jun 2022 12:40:23 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 414F85204F;
+        Thu, 30 Jun 2022 12:40:23 +0000 (GMT)
+Received: from [9.171.69.2] (unknown [9.171.69.2])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id DA76152052;
+        Thu, 30 Jun 2022 12:40:22 +0000 (GMT)
+Message-ID: <e00373b9-0fa5-a47a-5abd-3fe6a1e97327@linux.ibm.com>
+Date:   Thu, 30 Jun 2022 14:44:52 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v6 2/5] PCI: Split out next_ari_fn() from next_fn()
+Content-Language: en-US
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220628143100.3228092-1-schnelle@linux.ibm.com>
+ <20220628143100.3228092-3-schnelle@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220628143100.3228092-3-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: uoxxMEcw43c0OJTEofonH_ztouIehK3s
+X-Proofpoint-ORIG-GUID: KqKsc2nO8z287lWQ6roeLDMCIFk1Z8jp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 malwarescore=0 adultscore=0 impostorscore=0
+ lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0 mlxlogscore=999
+ suspectscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206300050
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'a'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/qlogic/qed/qed_int.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index 82e74f62b677..d701ecd3ba00 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -1110,7 +1110,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
- 								 bit_len);
- 
- 					/* Some bits represent more than a
--					 * a single interrupt. Correctly print
-+					 * single interrupt. Correctly print
- 					 * their name.
- 					 */
- 					if (ATTENTION_LENGTH(flags) > 2 ||
+On 6/28/22 16:30, Niklas Schnelle wrote:
+> In commit b1bd58e448f2 ("PCI: Consolidate "next-function" functions")
+> the next_fn() function subsumed the traditional and ARI based next
+> function determination. This got rid of some needlessly complex function
+> pointer handling but also reduced the separation between these very
+> different methods of finding the next function. With the next_fn()
+> cleaned up a bit we can re-introduce this separation by moving out the
+> ARI handling while sticking with direct function calls.
+> 
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>   drivers/pci/probe.c | 30 +++++++++++++++++-------------
+>   1 file changed, 17 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index b05d0ed83a24..2c737dce757e 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -2579,26 +2579,30 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+>   }
+>   EXPORT_SYMBOL(pci_scan_single_device);
+>   
+> -static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+> +static int next_ari_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+>   {
+>   	int pos;
+>   	u16 cap = 0;
+>   	unsigned int next_fn;
+>   
+> -	if (pci_ari_enabled(bus)) {
+> -		if (!dev)
+> -			return -ENODEV;
+> -		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+> -		if (!pos)
+> -			return -ENODEV;
+> +	if (!dev)
+> +		return -ENODEV;
+> +	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+> +	if (!pos)
+> +		return -ENODEV;
+> +
+> +	pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+> +	next_fn = PCI_ARI_CAP_NFN(cap);
+> +	if (next_fn <= fn)
+> +		return -ENODEV;	/* protect against malformed list */
+>   
+> -		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+> -		next_fn = PCI_ARI_CAP_NFN(cap);
+> -		if (next_fn <= fn)
+> -			return -ENODEV;	/* protect against malformed list */
+> +	return next_fn;
+> +}
+>   
+> -		return next_fn;
+> -	}
+> +static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+> +{
+> +	if (pci_ari_enabled(bus))
+> +		return next_ari_fn(bus, dev, fn);
+>   
+>   	if (fn >= 7)
+>   		return -ENODEV;
+> 
+
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+
+
 -- 
-2.36.1
-
+Pierre Morel
+IBM Lab Boeblingen
