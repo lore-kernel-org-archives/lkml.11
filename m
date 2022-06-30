@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25F2CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CACDCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235995AbiF3N7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        id S236034AbiF3N76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236522AbiF3N7D (ORCPT
+        with ESMTP id S235866AbiF3N50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:03 -0400
+        Thu, 30 Jun 2022 09:57:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC280419BA;
-        Thu, 30 Jun 2022 06:51:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97CC3CFC3;
+        Thu, 30 Jun 2022 06:51:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 097F461FC0;
-        Thu, 30 Jun 2022 13:51:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18893C34115;
-        Thu, 30 Jun 2022 13:51:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 876AE62054;
+        Thu, 30 Jun 2022 13:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95049C34115;
+        Thu, 30 Jun 2022 13:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597108;
-        bh=//tNa/+oXvrh+YZZ1UklDkaYoawaeD35eJmeJbf1BKc=;
+        s=korg; t=1656597070;
+        bh=Dsa/Z1VsFlsCRUCvm4FluOgKrVq4XLsK2geXmUahF4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VktXvBq1SJMpwceGU1arx9CJ33p6TuKmv0mcqbCLMZC84C8MBJvANeSpjIValg27E
-         EWlDg4Je4o6CZlTcOgjI8jxXBB4M7aCilLGujZwaloAbLNZ3BKc21cg+r7XttHzVXI
-         Bv+Kc2uerb+oKXMnaBC7omV6u+JvfW3ofaVokJro=
+        b=BU2bKBVLNLAeyllMACbZzjZBSBPDsSA7vjH5d1YHbI9zRMAj4KzezD7eqNHvYelMb
+         B5QhAzRIKDPyRVsro/NjeCC6YVRkOxG/4fsgFB3/AhM8mUSUzWc/lorNqaX1dzcwu6
+         wQKZ8xjnrm3j1NzBmVFItrbTUpAJsU/SqG5uBR6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 4.19 30/49] xtensa: xtfpga: Fix refcount leak bug in setup
-Date:   Thu, 30 Jun 2022 15:46:43 +0200
-Message-Id: <20220630133234.780953142@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 17/49] afs: Fix dynamic root getattr
+Date:   Thu, 30 Jun 2022 15:46:30 +0200
+Message-Id: <20220630133234.412009833@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -48,32 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: David Howells <dhowells@redhat.com>
 
-commit 173940b3ae40114d4179c251a98ee039dc9cd5b3 upstream.
+[ Upstream commit cb78d1b5efffe4cf97e16766329dd7358aed3deb ]
 
-In machine_setup(), of_find_compatible_node() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+The recent patch to make afs_getattr consult the server didn't account
+for the pseudo-inodes employed by the dynamic root-type afs superblock
+not having a volume or a server to access, and thus an oops occurs if
+such a directory is stat'd.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617115323.4046905-1-windhl@126.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by checking to see if the vnode->volume pointer actually points
+anywhere before following it in afs_getattr().
+
+This can be tested by stat'ing a directory in /afs.  It may be
+sufficient just to do "ls /afs" and the oops looks something like:
+
+        BUG: kernel NULL pointer dereference, address: 0000000000000020
+        ...
+        RIP: 0010:afs_getattr+0x8b/0x14b
+        ...
+        Call Trace:
+         <TASK>
+         vfs_statx+0x79/0xf5
+         vfs_fstatat+0x49/0x62
+
+Fixes: 2aeb8c86d499 ("afs: Fix afs_getattr() to refetch file status if callback break occurred")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/165408450783.1031787.7941404776393751186.stgit@warthog.procyon.org.uk/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/platforms/xtfpga/setup.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/afs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/xtensa/platforms/xtfpga/setup.c
-+++ b/arch/xtensa/platforms/xtfpga/setup.c
-@@ -152,6 +152,7 @@ static int __init machine_setup(void)
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index a12ae3ef8fb4..0983d7e859c8 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -473,7 +473,8 @@ int afs_getattr(const struct path *path, struct kstat *stat,
  
- 	if ((eth = of_find_compatible_node(eth, NULL, "opencores,ethoc")))
- 		update_local_mac(eth);
-+	of_node_put(eth);
- 	return 0;
- }
- arch_initcall(machine_setup);
+ 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
+ 
+-	if (!(query_flags & AT_STATX_DONT_SYNC) &&
++	if (vnode->volume &&
++	    !(query_flags & AT_STATX_DONT_SYNC) &&
+ 	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
+ 		key = afs_request_key(vnode->volume->cell);
+ 		if (IS_ERR(key))
+-- 
+2.35.1
+
 
 
