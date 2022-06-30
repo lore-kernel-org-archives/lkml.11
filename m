@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77D0CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E70C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236693AbiF3OIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S236711AbiF3OIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235377AbiF3OHC (ORCPT
+        with ESMTP id S236679AbiF3OHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:07:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4DE4D163;
-        Thu, 30 Jun 2022 06:54:24 -0700 (PDT)
+        Thu, 30 Jun 2022 10:07:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E0872EEA;
+        Thu, 30 Jun 2022 06:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48813B82AF4;
-        Thu, 30 Jun 2022 13:54:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93668C34115;
-        Thu, 30 Jun 2022 13:54:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 132B061F5F;
+        Thu, 30 Jun 2022 13:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230BBC341CB;
+        Thu, 30 Jun 2022 13:54:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597257;
-        bh=y7RjIpPTJdsuZnRv738o0NqQH+oYqZEghea+VF06qW8=;
+        s=korg; t=1656597262;
+        bh=YSrChqLUMjIgAIyGJymSZd2Gm+5E0kMjXymR4Fw4Kz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I48QhDJ1kVd1ydGdQ6FmOnu4RIPBaprmOpbIRNFsEjuXlcth/LAZFAdJcpC/ubT4D
-         caZ9qL9y9Audzq5GOMUriv8jzIEDAhP99AfhPly10vQuKYrgjhV5lQwfl1IND2HOxv
-         5bT93Wa+wsTbPOI6rdduWyj/fRuitK2bbRQvM6/w=
+        b=Xqt4fvJg53Eeg/SOdmmFnQUl9P1ZMHpLGSO9Km5tDaNjKWlQsPYuDqXoS+WCVUfXn
+         I/aWZGobp6JBRU8UNCi5qGAfKzm1it0GvajzOGudUKSz2OSNux+kdKjsiGod+XRolL
+         MiFFn1PYeH66voNzXU6ktUpKuz9UE6iXTbyIrL/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        Chandan Babu R <chandan.babu@oracle.com>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 07/12] xfs: punch out data fork delalloc blocks on COW writeback failure
-Date:   Thu, 30 Jun 2022 15:47:12 +0200
-Message-Id: <20220630133230.906794591@linuxfoundation.org>
+Subject: [PATCH 5.10 09/12] xfs: remove all COW fork extents when remounting readonly
+Date:   Thu, 30 Jun 2022 15:47:14 +0200
+Message-Id: <20220630133230.967036087@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
 References: <20220630133230.676254336@linuxfoundation.org>
@@ -49,88 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Foster <bfoster@redhat.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-commit 5ca5916b6bc93577c360c06cb7cdf71adb9b5faf upstream.
+commit 089558bc7ba785c03815a49c89e28ad9b8de51f9 upstream.
 
-If writeback I/O to a COW extent fails, the COW fork blocks are
-punched out and the data fork blocks left alone. It is possible for
-COW fork blocks to overlap non-shared data fork blocks (due to
-cowextsz hint prealloc), however, and writeback unconditionally maps
-to the COW fork whenever blocks exist at the corresponding offset of
-the page undergoing writeback. This means it's quite possible for a
-COW fork extent to overlap delalloc data fork blocks, writeback to
-convert and map to the COW fork blocks, writeback to fail, and
-finally for ioend completion to cancel the COW fork blocks and leave
-stale data fork delalloc blocks around in the inode. The blocks are
-effectively stale because writeback failure also discards dirty page
-state.
+[backport xfs_icwalk -> xfs_eofblocks for 5.10.y]
 
-If this occurs, it is likely to trigger assert failures, free space
-accounting corruption and failures in unrelated file operations. For
-example, a subsequent reflink attempt of the affected file to a new
-target file will trip over the stale delalloc in the source file and
-fail. Several of these issues are occasionally reproduced by
-generic/648, but are reproducible on demand with the right sequence
-of operations and timely I/O error injection.
+As part of multiple customer escalations due to file data corruption
+after copy on write operations, I wrote some fstests that use fsstress
+to hammer on COW to shake things loose.  Regrettably, I caught some
+filesystem shutdowns due to incorrect rmap operations with the following
+loop:
 
-To fix this problem, update the ioend failure path to also punch out
-underlying data fork delalloc blocks on I/O error. This is analogous
-to the writeback submission failure path in xfs_discard_page() where
-we might fail to map data fork delalloc blocks and consistent with
-the successful COW writeback completion path, which is responsible
-for unmapping from the data fork and remapping in COW fork blocks.
+mount <filesystem>				# (0)
+fsstress <run only readonly ops> &		# (1)
+while true; do
+	fsstress <run all ops>
+	mount -o remount,ro			# (2)
+	fsstress <run only readonly ops>
+	mount -o remount,rw			# (3)
+done
 
-Fixes: 787eb485509f ("xfs: fix and streamline error handling in xfs_end_io")
-Signed-off-by: Brian Foster <bfoster@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+When (2) happens, notice that (1) is still running.  xfs_remount_ro will
+call xfs_blockgc_stop to walk the inode cache to free all the COW
+extents, but the blockgc mechanism races with (1)'s reader threads to
+take IOLOCKs and loses, which means that it doesn't clean them all out.
+Call such a file (A).
+
+When (3) happens, xfs_remount_rw calls xfs_reflink_recover_cow, which
+walks the ondisk refcount btree and frees any COW extent that it finds.
+This function does not check the inode cache, which means that incore
+COW forks of inode (A) is now inconsistent with the ondisk metadata.  If
+one of those former COW extents are allocated and mapped into another
+file (B) and someone triggers a COW to the stale reservation in (A), A's
+dirty data will be written into (B) and once that's done, those blocks
+will be transferred to (A)'s data fork without bumping the refcount.
+
+The results are catastrophic -- file (B) and the refcount btree are now
+corrupt.  Solve this race by forcing the xfs_blockgc_free_space to run
+synchronously, which causes xfs_icwalk to return to inodes that were
+skipped because the blockgc code couldn't take the IOLOCK.  This is safe
+to do here because the VFS has already prohibited new writer threads.
+
+Fixes: 10ddf64e420f ("xfs: remove leftover CoW reservations when remounting ro")
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Chandan Babu R <chandan.babu@oracle.com>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_aops.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ fs/xfs/xfs_super.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/fs/xfs/xfs_aops.c
-+++ b/fs/xfs/xfs_aops.c
-@@ -145,6 +145,7 @@ xfs_end_ioend(
- 	struct iomap_ioend	*ioend)
+--- a/fs/xfs/xfs_super.c
++++ b/fs/xfs/xfs_super.c
+@@ -1695,7 +1695,10 @@ static int
+ xfs_remount_ro(
+ 	struct xfs_mount	*mp)
  {
- 	struct xfs_inode	*ip = XFS_I(ioend->io_inode);
-+	struct xfs_mount	*mp = ip->i_mount;
- 	xfs_off_t		offset = ioend->io_offset;
- 	size_t			size = ioend->io_size;
- 	unsigned int		nofs_flag;
-@@ -160,18 +161,26 @@ xfs_end_ioend(
- 	/*
- 	 * Just clean up the in-memory strutures if the fs has been shut down.
- 	 */
--	if (XFS_FORCED_SHUTDOWN(ip->i_mount)) {
-+	if (XFS_FORCED_SHUTDOWN(mp)) {
- 		error = -EIO;
- 		goto done;
- 	}
+-	int error;
++	struct xfs_eofblocks	eofb = {
++		.eof_flags	= XFS_EOF_FLAGS_SYNC,
++	};
++	int			error;
  
  	/*
--	 * Clean up any COW blocks on an I/O error.
-+	 * Clean up all COW blocks and underlying data fork delalloc blocks on
-+	 * I/O error. The delalloc punch is required because this ioend was
-+	 * mapped to blocks in the COW fork and the associated pages are no
-+	 * longer dirty. If we don't remove delalloc blocks here, they become
-+	 * stale and can corrupt free space accounting on unmount.
+ 	 * Cancel background eofb scanning so it cannot race with the final
+@@ -1703,8 +1706,13 @@ xfs_remount_ro(
  	 */
- 	error = blk_status_to_errno(ioend->io_bio->bi_status);
- 	if (unlikely(error)) {
--		if (ioend->io_flags & IOMAP_F_SHARED)
-+		if (ioend->io_flags & IOMAP_F_SHARED) {
- 			xfs_reflink_cancel_cow_range(ip, offset, size, true);
-+			xfs_bmap_punch_delalloc_range(ip,
-+						      XFS_B_TO_FSBT(mp, offset),
-+						      XFS_B_TO_FSB(mp, size));
-+		}
- 		goto done;
- 	}
+ 	xfs_stop_block_reaping(mp);
  
+-	/* Get rid of any leftover CoW reservations... */
+-	error = xfs_icache_free_cowblocks(mp, NULL);
++	/*
++	 * Clear out all remaining COW staging extents and speculative post-EOF
++	 * preallocations so that we don't leave inodes requiring inactivation
++	 * cleanups during reclaim on a read-only mount.  We must process every
++	 * cached inode, so this requires a synchronous cache scan.
++	 */
++	error = xfs_icache_free_cowblocks(mp, &eofb);
+ 	if (error) {
+ 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
+ 		return error;
 
 
