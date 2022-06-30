@@ -2,128 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BD4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06709C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232853AbiF3Hd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        id S232913AbiF3Hf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232851AbiF3Hd1 (ORCPT
+        with ESMTP id S232787AbiF3Hf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:33:27 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2133334B
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656574406; x=1688110406;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yS4Suwf7GI6LhylNscWfzZ0ukkPLH++SXvgQgtpNGaQ=;
-  b=OlzD+6hY0HhiFHVXz3+edKtKH/6Ai6+DJiKdUKmeJ1QiwyH55DGWZwKg
-   7/UCM8akS0OMiHVmL9eUBNefmxOE6J4cFdzNZOCLv1mwbyCSz2J8VtoQd
-   Ci8G4dLZYdLF5O0M9lXiF2Z46bA4xVDby8nLfgzO+kZ1k6zA3huUBVSdm
-   kKIwZ/EaQSi6cD10RVvxBQ07mQODaZGNiVrJCNhETIgthS0R3zhHtdbmf
-   SIGTiNUr3KNXhyxusjSZ/l7l4pJry2NbVZn+X9wQsQoEZ/WTrdaRTIruM
-   WTX4NIjxfdw/0cY/+8tAcJdc/LneM7PbcEtx+EhhlZMqzUgD3d9Q/8hQY
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="343960417"
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="343960417"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 00:33:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="680866208"
-Received: from shbuild999.sh.intel.com ([10.239.146.138])
-  by FMSMGA003.fm.intel.com with ESMTP; 30 Jun 2022 00:33:05 -0700
-From:   Feng Tang <feng.tang@intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Lameter <cl@linux.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Cc:     linux-mm@kvack.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        linux-kernel@vger.kernel.org, Feng Tang <feng.tang@intel.com>
-Subject: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-Date:   Thu, 30 Jun 2022 15:33:04 +0800
-Message-Id: <20220630073304.26945-1-feng.tang@intel.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 30 Jun 2022 03:35:57 -0400
+X-Greylist: delayed 397 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 00:35:56 PDT
+Received: from gw2.atmark-techno.com (gw2.atmark-techno.com [35.74.137.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCDF7326E8
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:35:56 -0700 (PDT)
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+        by gw2.atmark-techno.com (Postfix) with ESMTPS id 0F07B20D5C
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:29:19 +0900 (JST)
+Received: by mail-pj1-f69.google.com with SMTP id em12-20020a17090b014c00b001ed493d4f0cso5249192pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:29:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZlpDtdwmWp2b5cqasTMpXtBnyv72jy1sATeseuyLyBc=;
+        b=cznR8oAII9+W3YDcruYYf0Wk5lFby+7UjaO8AQsC0CS8TOu3i0FPazXxRt97TTfbwu
+         V5B4F4LVl6i4m8mE0JnaaJ+5CMfSIdqdrFW6Cfgbx2h1MNaJSjmhCL0Hp0WORVHJ0oGW
+         JvK1oTuR/vvWtDwR6VKC/cUwSTCFXl3aYYO+lOGyCfODOfb+BDE1wH4DvzL4+Q6vDF6H
+         pVMOfenDT5aVIg4VDslrHLPtjHLNISiTspaoXrxmbaD9uurCC4Xn1nMKQHLgnyhXSvTl
+         CkkWXiGKi4uICXj4stkisdIvfRuRNyU/0hbzfUB7h0ivR942cUoYcE7DiqeJ3oIwG9I0
+         yacg==
+X-Gm-Message-State: AJIora+EVWBscK/XfJcB86YBLEaB5J6Gu/oGNfrz3GMh6GykFtVJA0v4
+        eqp/bvd+fIjAS25gs9uOBuuPsJVEjBA7kaSUVsBHvA9jTKnhug3TGPBNmFrn7guQO9pWTLwRGMp
+        fuW5chdSZYqChs7VsVCYx78mcBA==
+X-Received: by 2002:a17:902:e807:b0:16a:471b:a4cc with SMTP id u7-20020a170902e80700b0016a471ba4ccmr13385058plg.102.1656574158054;
+        Thu, 30 Jun 2022 00:29:18 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1unkGtBy8pj1LseJ12CPT9D2tB8s8CwrIAP721pTZJ67uSW54oYP5hdrssb9ch6i39KkfjNeg==
+X-Received: by 2002:a17:902:e807:b0:16a:471b:a4cc with SMTP id u7-20020a170902e80700b0016a471ba4ccmr13385043plg.102.1656574157789;
+        Thu, 30 Jun 2022 00:29:17 -0700 (PDT)
+Received: from pc-zest.atmarktech (126.88.200.35.bc.googleusercontent.com. [35.200.88.126])
+        by smtp.gmail.com with ESMTPSA id a3-20020a1709027e4300b0016bb24f5d19sm286102pln.209.2022.06.30.00.29.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 Jun 2022 00:29:17 -0700 (PDT)
+Received: from martinet by pc-zest.atmarktech with local (Exim 4.95)
+        (envelope-from <martinet@pc-zest>)
+        id 1o6obz-00BbWI-FR;
+        Thu, 30 Jun 2022 16:29:15 +0900
+Date:   Thu, 30 Jun 2022 16:29:05 +0900
+From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-btrfs@vger.kernel.org
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
+        Kent Overstreet <kent.overstreet@gmail.com>
+Subject: Major btrfs fiemap slowdown on file with many extents once in cache
+ (RCU stalls?) (Was: [PATCH 1/3] filemap: Correct the conditions for marking
+ a folio as accessed)
+Message-ID: <Yr1QwVW+sHWlAqKj@atmark-techno.com>
+References: <20220619151143.1054746-1-willy@infradead.org>
+ <20220619151143.1054746-2-willy@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220619151143.1054746-2-willy@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmalloc will round up the request size to power of 2, and current
-iova_magazine's size is 1032 (1024+8) bytes, so each instance
-allocated will get 2048 bytes from kmalloc, causing around 1KB
-waste.
+Hi Willy, linux-btrfs@vger,
 
-And in some exstreme case, the memory wasted can trigger OOM as
-reported in 2019 on a crash kernel with 256 MB memory [1].
+Matthew Wilcox (Oracle) wrote on Sun, Jun 19, 2022 at 04:11:41PM +0100:
+> We had an off-by-one error which meant that we never marked the first page
+> in a read as accessed.  This was visible as a slowdown when re-reading
+> a file as pages were being evicted from cache too soon.  In reviewing
+> this code, we noticed a second bug where a multi-page folio would be
+> marked as accessed multiple times when doing reads that were less than
+> the size of the folio.
 
-  [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
-  [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
-  [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
-  [    4.338946] swapper/0 invoked oom-killer: gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null), order=0, oom_score_adj=0
-  [    4.350251] swapper/0 cpuset=/ mems_allowed=0
-  [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.57.mx64.282 #1
-  [    4.355612] Hardware name: Dell Inc. PowerEdge R7425/08V001, BIOS 1.9.3 06/25/2019
-  [    4.355612] Call Trace:
-  [    4.355612]  dump_stack+0x46/0x5b
-  [    4.355612]  dump_header+0x6b/0x289
-  [    4.355612]  out_of_memory+0x470/0x4c0
-  [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
-  [    4.355612]  cache_grow_begin+0x7d/0x520
-  [    4.355612]  fallback_alloc+0x148/0x200
-  [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
-  [    4.355612]  init_iova_domain+0x112/0x170
-  [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
-  [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
-  [    4.355612]  amd_iommu_add_device+0x13a/0x610
-  [    4.355612]  add_iommu_group+0x20/0x30
-  [    4.355612]  bus_for_each_dev+0x76/0xc0
-  [    4.355612]  bus_set_iommu+0xb6/0xf0
-  [    4.355612]  amd_iommu_init_api+0x112/0x132
-  [    4.355612]  state_next+0xfb1/0x1165
-  [    4.355612]  amd_iommu_init+0x1f/0x67
-  [    4.355612]  pci_iommu_init+0x16/0x3f
-  ...
-  [    4.670295] Unreclaimable slab info:
-  ...
-  [    4.857565] kmalloc-2048           59164KB      59164KB
+when debugging an unrelated issue (short reads on btrfs with io_uring
+and O_DIRECT[1]), I noticed that my horrible big file copy speeds fell
+down from ~2GB/s (there's compression and lots of zeroes) to ~100MB/s
+the second time I was copying it with cp.
 
-Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
-1024 bytes so that no memory will be wasted.
+I've taken a moment to bisect this and came down to this patch.
 
-[1]. https://lkml.org/lkml/2019/8/12/266
+[1] https://lore.kernel.org/all/YrrFGO4A1jS0GI0G@atmark-techno.com/T/#u
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
+
+
+Dropping caches (echo 3 > /proc/sys/vm/drop_caches) restore the speed,
+so there appears to be some bad effect to having the file in cache for
+fiemap?
+To be fair that file is pretty horrible:
 ---
- drivers/iommu/iova.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+# compsize bigfile
+Processed 1 file, 194955 regular extents (199583 refs), 0 inline.
+Type       Perc     Disk Usage   Uncompressed Referenced  
+TOTAL       15%      3.7G          23G          23G       
+none       100%      477M         477M         514M       
+zstd        14%      3.2G          23G          23G       
+---
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index db77aa675145b..27634ddd9b904 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
-  * dynamic size tuning described in the paper.
-  */
- 
--#define IOVA_MAG_SIZE 128
-+/*
-+ * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
-+ * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
-+ * will be wasted.
-+ */
-+#define IOVA_MAG_SIZE 127
- #define MAX_GLOBAL_MAGS 32	/* magazines per bin */
- 
- struct iova_magazine {
+Here's what perf has to say about it on top of this patch when running
+`cp bigfile /dev/null` the first time:
+
+98.97%     0.00%  cp       [kernel.kallsyms]    [k]
+entry_SYSCALL_64_after_hwframe
+ entry_SYSCALL_64_after_hwframe
+ do_syscall_64
+  - 93.40% ksys_read
+     - 93.36% vfs_read
+        - 93.25% new_sync_read
+           - 93.20% filemap_read
+              - 83.38% filemap_get_pages
+                 - 82.76% page_cache_ra_unbounded
+                    + 59.72% folio_alloc
+                    + 13.43% read_pages
+                    + 8.75% filemap_add_folio
+                      0.64% xa_load
+                   0.52% filemap_get_read_batch
+              + 8.75% copy_page_to_iter
+  - 4.73% __x64_sys_ioctl
+     - 4.72% do_vfs_ioctl
+        - btrfs_fiemap
+           - 4.70% extent_fiemap
+              + 3.95% btrfs_check_shared
+              + 0.70% get_extent_skip_holes
+
+and second time:
+99.90%     0.00%  cp       [kernel.kallsyms]    [k]
+entry_SYSCALL_64_after_hwfram
+ entry_SYSCALL_64_after_hwframe
+ do_syscall_64
+  - 94.62% __x64_sys_ioctl
+       do_vfs_ioctl
+       btrfs_fiemap
+     - extent_fiemap
+        - 50.01% get_extent_skip_holes
+           - 50.00% btrfs_get_extent_fiemap
+              - 49.97% count_range_bits
+                   rb_next
+        + 28.72% lock_extent_bits
+        + 15.55% __clear_extent_bit
+  - 5.21% ksys_read
+     + 5.21% vfs_read
+
+(if this isn't readable, 95% of the time is spent on fiemap the second
+time around)
+
+
+
+
+I've also been observing RCU stalls on my laptop with the same workload
+(cp to /dev/null), but unfortunately I could not reproduce in qemu so I
+could not take traces to confirm they are caused by the same commit but
+given the workload I'd say that is it?
+I can rebuild a kernel for my laptop and confirm if you think it should
+be something else.
+
+
+I didn't look at the patch itself (yet) so have no suggestion at this
+point - it's plausible the patch fixed something and just exposed slow
+code that had been there all along so it might be better to look at the
+btrfs side first, I don't know.
+If you don't manage to reproduce I'll be happy to test anything thrown
+at me at the very least.
+
+
+Thanks,
 -- 
-2.27.0
-
+Dominique Martinet | Asmadeus
