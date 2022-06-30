@@ -2,128 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11117C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F67C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbiF3KSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
+        id S234462AbiF3KSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbiF3KSV (ORCPT
+        with ESMTP id S230341AbiF3KSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:18:21 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0947B26D4;
-        Thu, 30 Jun 2022 03:18:21 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id h187so30695814ybg.0;
-        Thu, 30 Jun 2022 03:18:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VoXYvf7J8M13YBxMTmTnsi6ikqoH1MwKYJUW6+sW6jA=;
-        b=l+xjvoyHkxKBWUaxeMnNN//yCLYeBo9MxaIEECt5B4IBxxkbX2xUJeO8rXd1jOOiV6
-         zZp/u54Az5A33Xq2t4TryIZuZyyHbWdJJ5Qc6dDzvH7ZoEG4OsMWwXGbLGnEqJC4xADk
-         xQof005r0QGNwBOTEqEPZxyn3WxQPScsyDlTINQBJk8coY8dvGyfba2xi87nrpIHjNLj
-         u5fXjh1ZMvkFTeMTOzB+lmIzV1IbytHQ6qFUTDyqmO6AkB5HnzGsB0re9ngzeTxf2rd6
-         U2ZrbFE29Gm8v/GmzvASh4GkffE/6egG3Ih9UYtEqowNmCWUlpmUFDI/hULRJ7JOmiyp
-         ersA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VoXYvf7J8M13YBxMTmTnsi6ikqoH1MwKYJUW6+sW6jA=;
-        b=0yVizlP5HYtYlWo2zLdT4FIFS4g0mAjrjKNufpSKt9H/NyNO8zimT/l08PHBi6upwp
-         7LRtruKreTbsUoqWMNexdYIWnwq9KJWmBR5pOjo2qp/ovreytspfP+QNV6tTZELjpSEm
-         UVwTAdFJJEaTnBKHf1oITxAmH8MScJiFkCGmMJJB6LuLna7datxj8oOspOdgOvgFVMY2
-         StJvb8kjqBSFFYvx6wZCAJpS3QN2EEgtA0ra20bt/0MnknoQet6VCJApRkfb4PNMJLqz
-         hKB5YsSp6GrDr19AEOu4V1Km/TaIS7czrjSJEQPxgq8mdf7C9iDML98FZLSh2KVu1sF/
-         v7PQ==
-X-Gm-Message-State: AJIora+b4NLN9QboZbxLkUst8L0Hr0meG51+YX/KOGHIra70c4kiLHvx
-        x3jY28EWpAt7E4mJ7fgzwkndbB8H1ckE1vzlqOOeDVMkdMqRpg==
-X-Google-Smtp-Source: AGRyM1sZ0/jyT8b9+neGVpNeFK9+ZnmDyE7FYipe2HjDbIQY6VUL6apvtKzzfZ8O8L6YNtv5hiZqINFnPWRX+iK0AO8=
-X-Received: by 2002:a25:dd83:0:b0:66c:8d8d:4f5f with SMTP id
- u125-20020a25dd83000000b0066c8d8d4f5fmr8492821ybg.79.1656584300103; Thu, 30
- Jun 2022 03:18:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220630100536.41329-1-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220630100536.41329-1-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 30 Jun 2022 12:17:42 +0200
-Message-ID: <CAHp75VcH9O6=Lk06w3Set==zBEFyseCSDN6OUE3n7g4ZnBM4Bg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] 8250_dwlib: Convert bitops to newer form
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thu, 30 Jun 2022 06:18:42 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C1A11473;
+        Thu, 30 Jun 2022 03:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656584321; x=1688120321;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kPmwEBc1KMTjojvqHZLvMTlSrK6OdbuwU9EWM04xHY4=;
+  b=W3daoP71+atQEBfLPS/6JWnzcCiDeTsDtduxGmwEQk3Gzx/wxJtZo0SK
+   unJVSGq3opZ6wnaMScZSgEY8p/Fyhh/6KRMxA7I4hJHevgbF2UJlyKCaL
+   SQIi4gFHm+g+vnmGGIHSE5V6KCbhmDkwI7ybLIOjSZjPFBrPdk+eie8Bb
+   K+IaNYBAHt2isFdW1qkFbMECiIKtXpvwsCgCkkAuWZkNww8xbqUN2XlSV
+   C1Z9oqUqrlcmEbPlaLmVeKqgcJSCXrog6ZZ7evUYH66dRRX/yb9LRBvuA
+   Ah2MtwL+QIJlKIQFDCCqpSqad+kgHDc2ilb43LBA1uunkNyIdiy0OChYz
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="279854332"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="279854332"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 03:18:41 -0700
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="541279538"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 03:18:36 -0700
+Received: by lahna (sSMTP sendmail emulation); Thu, 30 Jun 2022 13:18:33 +0300
+Date:   Thu, 30 Jun 2022 13:18:33 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev, bleung@chromium.org,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: Re: [PATCH 1/9] usb: typec: Add support for retimers
+Message-ID: <Yr14eZexhvvrWrOS@lahna>
+References: <20220629233314.3540377-1-pmalani@chromium.org>
+ <20220629233314.3540377-2-pmalani@chromium.org>
+ <Yr1cN1I14BR6rN3U@kuha.fi.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yr1cN1I14BR6rN3U@kuha.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 12:08 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> Instead of open-coding, use BIT(), GENMASK(), and FIELD_GET() helpers.
+On Thu, Jun 30, 2022 at 11:17:59AM +0300, Heikki Krogerus wrote:
+> On Wed, Jun 29, 2022 at 11:32:19PM +0000, Prashant Malani wrote:
+> > Introduce a retimer device class and associated functions that register
+> > and use retimer "switch" devices. These operate in a manner similar to
+> > the "mode-switch" and help configure retimers that exist between the
+> > Type-C connector and host controller(s).
+> > 
+> > Type C ports can be linked to retimers using firmware node device
+> > references (again, in a manner similar to "mode-switch").
+> > 
+> > Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> 
+> Cool! This looks really good to me.
+> 
+> I'll add Mika here, just to keep him in the loop. Thunderbolt/USB4 can
+> control the same physical retimers over the SBU line. Right now there
+> is no conflict, but I think we want to later be able to use these
+> devices to upgrade the retimer firmware, and that is something that
+> the Thunderbolt/USB4 already does. So let's keep an eye on this.
+> 
+> I wonder, would it make sense to later make the thunderbolt_retimer
+> devices also part of the device class that's introduced here? I think
+> that way it would be easier to later figure out which
+> thunderbolt_retimer and which retimer_switch represent the same
+> physical retimer. And perhaps it would also be more clear for the user
+> space to have a single device class for the retimers?
 
-FIELD_GET() requires bitfield.h to be included. Is this the case already?
-If so,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_dwlib.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/82=
-50/8250_dwlib.c
-> index da330ef46446..a8bbed74ea70 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -46,21 +46,21 @@
->  #define DW_UART_LCR_EXT_TRANSMIT_MODE  BIT(3)
->
->  /* Component Parameter Register bits */
-> -#define DW_UART_CPR_ABP_DATA_WIDTH     (3 << 0)
-> -#define DW_UART_CPR_AFCE_MODE          (1 << 4)
-> -#define DW_UART_CPR_THRE_MODE          (1 << 5)
-> -#define DW_UART_CPR_SIR_MODE           (1 << 6)
-> -#define DW_UART_CPR_SIR_LP_MODE                (1 << 7)
-> -#define DW_UART_CPR_ADDITIONAL_FEATURES        (1 << 8)
-> -#define DW_UART_CPR_FIFO_ACCESS                (1 << 9)
-> -#define DW_UART_CPR_FIFO_STAT          (1 << 10)
-> -#define DW_UART_CPR_SHADOW             (1 << 11)
-> -#define DW_UART_CPR_ENCODED_PARMS      (1 << 12)
-> -#define DW_UART_CPR_DMA_EXTRA          (1 << 13)
-> -#define DW_UART_CPR_FIFO_MODE          (0xff << 16)
-> +#define DW_UART_CPR_ABP_DATA_WIDTH     GENMASK(1, 0)
-> +#define DW_UART_CPR_AFCE_MODE          BIT(4)
-> +#define DW_UART_CPR_THRE_MODE          BIT(5)
-> +#define DW_UART_CPR_SIR_MODE           BIT(6)
-> +#define DW_UART_CPR_SIR_LP_MODE                BIT(7)
-> +#define DW_UART_CPR_ADDITIONAL_FEATURES        BIT(8)
-> +#define DW_UART_CPR_FIFO_ACCESS                BIT(9)
-> +#define DW_UART_CPR_FIFO_STAT          BIT(10)
-> +#define DW_UART_CPR_SHADOW             BIT(11)
-> +#define DW_UART_CPR_ENCODED_PARMS      BIT(12)
-> +#define DW_UART_CPR_DMA_EXTRA          BIT(13)
-> +#define DW_UART_CPR_FIFO_MODE          GENMASK(23, 16)
->
->  /* Helper for FIFO size calculation */
-> -#define DW_UART_CPR_FIFO_SIZE(a)       (((a >> 16) & 0xff) * 16)
-> +#define DW_UART_CPR_FIFO_SIZE(a)       (FIELD_GET(DW_UART_CPR_FIFO_MODE,=
- (a)) * 16)
->
->  /*
->   * divisor =3D div(I) + div(F)
-> --
-> 2.30.2
->
-
-
---=20
-With Best Regards,
-Andy Shevchenko
+I agree this makes sense.
