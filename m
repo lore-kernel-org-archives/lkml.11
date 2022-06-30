@@ -2,113 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A31C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B158DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234110AbiF3Kiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
+        id S233906AbiF3Kjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiF3Khr (ORCPT
+        with ESMTP id S230135AbiF3KjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:37:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF1C52393;
-        Thu, 30 Jun 2022 03:37:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 109F96224C;
-        Thu, 30 Jun 2022 10:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E296C341C8;
-        Thu, 30 Jun 2022 10:37:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656585449;
-        bh=iIKs3rpaYPtUZ0eaoQBogoq+V5pKpR1jkSxXnpou/3M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ke/h3lcPOMIcjmkXSDygaQX/fBnyA5e1eEEUNs8qdP9Dwt+FEhhFsyDc8q1vNT0Wi
-         ZIAz4B4huhN4ynq/IVmE8WlnX4UCtgS1koYpNof7PCbUhFM8wlBkAcGs/ex+wRYFRM
-         S92Z1bjJKrpgkGsSruKC+H++8Nm4+A5xlLWUnqFMDshpvkdFrdj8wqY1Lf0kJwYwFB
-         C3zKHGEVhlMmTkVPMtdbUdFuXQhh/6kNFUq5m0b8uTvTMmZfw96hg/3oUfCHHasld3
-         Ve3kCsGl/H4yqXC4WwkFjIVNwlEYa8smOf70ranpv+Vgr465CwFtphi5HVMHjQx4rM
-         eyCO2Y7pbAvcQ==
-Date:   Thu, 30 Jun 2022 11:37:23 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] ASoC: fsl_micfil: Add support for PLL switch at
- runtime
-Message-ID: <Yr1842e42P4piYnE@sirena.org.uk>
-References: <1656567554-32122-1-git-send-email-shengjiu.wang@nxp.com>
- <1656567554-32122-4-git-send-email-shengjiu.wang@nxp.com>
+        Thu, 30 Jun 2022 06:39:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56396A191
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656585492;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yGl6MUQ24ti5cfjlSOHRNrXBx6rhiFzn8XK6WULhaRw=;
+        b=ZKSQ+j0InlssRGOfxmvm9AgL9PJGI2G0kq1ff4801HP5fnpAQIEnk63EMttdOJqzDfYDbA
+        LcmIIqhia7wILFlTyG/G4w3qYl8z9kaye/WMLPt5/pAQf3PWPkwOtTmBhwoS52vFmkQBOn
+        uhF0bO2T/W/3S7P1RSKVFL+RAm7z+vA=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-509-WcTHJ-ptNbqFbH5FGytEag-1; Thu, 30 Jun 2022 06:38:11 -0400
+X-MC-Unique: WcTHJ-ptNbqFbH5FGytEag-1
+Received: by mail-qv1-f72.google.com with SMTP id s11-20020a0562140cab00b0046e7d2b24b3so18055359qvs.16
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:38:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=yGl6MUQ24ti5cfjlSOHRNrXBx6rhiFzn8XK6WULhaRw=;
+        b=C8yd2QR3FeCX0Y5WAFZpsA6lMk/trFNlKc6JJpTRU1y5wj85mUYpxzK4kERaEQjuqv
+         xjST1+BXnLZE1AjJ/t8x9ofSMrag2mTIrG5j9q94nSXig1/LDVio3Ulc/bL/LrJkthoG
+         WxCzfe6a6GxsBOTaq66B82+3gq21Qw/F86MQI3Q3ByDl4MeeloVyTsjVGiHjJvkrYbZ7
+         oFZnnfNAQXXocEjASTbc2OsgBIXCPFaR4LZnuwqzhmOzNcTXROPFzz8ms5RfPPyzLgtf
+         fQnU1B3HT/Ac2hbt79m3LM66QlT+Uy+FDcey7LxGcnw69qy1x5oVgnLBhC/8Xzdbku4s
+         am9A==
+X-Gm-Message-State: AJIora+/LXLpN/oXBJa1Ayd1rUG8qSDbSRakEaYYh9dDmC6C8wmUy/RF
+        733pn7LyXA+DPSIt5WQAlS/ud0wxmBevKJ/L0PzSA3u+Y59UyE4EVa9B8AyueXXoL2pIY/rdRJq
+        rZL+K5HX6mPjl9B02AkBfxRlZ
+X-Received: by 2002:ac8:4707:0:b0:2ed:b56:5531 with SMTP id f7-20020ac84707000000b002ed0b565531mr6699344qtp.148.1656585490627;
+        Thu, 30 Jun 2022 03:38:10 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tSbvakF3KGQJlbD0PZISb+ptjP7QeINr/DLGrn1TOlNMF4Yu/ygfSzgfHBU+L3NwagosVlnQ==
+X-Received: by 2002:ac8:4707:0:b0:2ed:b56:5531 with SMTP id f7-20020ac84707000000b002ed0b565531mr6699324qtp.148.1656585490359;
+        Thu, 30 Jun 2022 03:38:10 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
+        by smtp.gmail.com with ESMTPSA id bj16-20020a05620a191000b006a6ad90a117sm14963555qkb.105.2022.06.30.03.38.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 03:38:09 -0700 (PDT)
+Message-ID: <bd69267ef785ac17f62bd856cb9bb5d7dae8138a.camel@redhat.com>
+Subject: Re: [PATCH] cxgb4: clip_tbl: Fix spelling mistake
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Zhang Jiaming <jiaming@nfschina.com>, rajur@chelsio.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com
+Date:   Thu, 30 Jun 2022 12:38:06 +0200
+In-Reply-To: <20220629075516.28896-1-jiaming@nfschina.com>
+References: <20220629075516.28896-1-jiaming@nfschina.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="SDyGFineERFKDrrR"
-Content-Disposition: inline
-In-Reply-To: <1656567554-32122-4-git-send-email-shengjiu.wang@nxp.com>
-X-Cookie: Today is what happened to yesterday.
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-06-29 at 15:55 +0800, Zhang Jiaming wrote:
+> Change 'wont' to 'won't'.
+> 
+> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
 
---SDyGFineERFKDrrR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Please read the guidance from Jackub on this kind of changes:
 
-On Thu, Jun 30, 2022 at 01:39:11PM +0800, Shengjiu Wang wrote:
+https://lore.kernel.org/all/20220623092208.1abbd9dc@kernel.org/
 
-> +static int fsl_micfil_reparent_rootclk(struct fsl_micfil *micfil, unsigned int sample_rate)
-> +{
-> +	struct device *dev = &micfil->pdev->dev;
-> +	u64 ratio = sample_rate;
-> +	struct clk *clk;
-> +	int ret;
-> +
-> +	/* Reparent clock if required condition is true */
-> +	if (!micfil->pll8k_clk || !micfil->pll11k_clk)
-> +		return 0;
-> +
-> +	ratio = do_div(ratio, 8000) ? CLK_11K_FREQ : CLK_8K_FREQ;
-> +
-> +	/* Get root clock */
-> +	clk = micfil->mclk;
-> +	if (IS_ERR_OR_NULL(clk)) {
-> +		dev_err(dev, "no mclk clock in devicetree\n");
-> +		return PTR_ERR(clk);
-> +	}
-> +
-> +	/* Disable clock first, for it was enabled by pm_runtime */
-> +	clk_disable_unprepare(clk);
-> +	fsl_asoc_reparent_pll_clocks(dev, clk, micfil->pll8k_clk,
-> +				     micfil->pll11k_clk, ratio);
-> +	ret = clk_prepare_enable(clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-> +}
+Thanks,
 
-Seems like more of this logic could be factored out into the reparent
-function if the target sample rate is passed in?
+Paolo
 
---SDyGFineERFKDrrR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmK9fOIACgkQJNaLcl1U
-h9C68Qf/YX1eL795b+XK2iAIiNLwaLomwMbw0JjNUWxPZS3+wkMhyqOfDxWfq52s
-WZkSoJ7vyDPSIr7R5nCH7QFdwdgdLqck/2GSAaPUndpELFvuLqME+nElf2OlYx6l
-nq33cMqc0OZlIpM757VsPYN6IPPq87rPXI030XM4lmOxzhvV1gE0195pRFSiyiCl
-dWiddG47/R+cRgjm6LaGN0kkVTLWdj16f5E7zlz2VDse8I/CR5w7/U9hQ0yfE/Rr
-oJtQi+ybrw26ELGPHDP/2yljgWzaCuc/+BllHMwQeoTYgjuu+nxpX8m6B5ToffUT
-RpPmDmKDRpeFSTwxqqUVNwCPjHNjqQ==
-=Zj5G
------END PGP SIGNATURE-----
-
---SDyGFineERFKDrrR--
