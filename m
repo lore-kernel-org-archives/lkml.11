@@ -2,132 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DA0CCA47E
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13872C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233221AbiF3JN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42628 "EHLO
+        id S234061AbiF3JOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbiF3JNz (ORCPT
+        with ESMTP id S234016AbiF3JOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:13:55 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600C31F2E1;
-        Thu, 30 Jun 2022 02:13:54 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id o9so25644207edt.12;
-        Thu, 30 Jun 2022 02:13:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=D1MB0+cRdMUm4U5TtLDd9s96TysqWuUfBpSmSXVHdQQ=;
-        b=I7fTo6bvGkKGF/wh/EcfPMXOL1d145t8v+08B2hUaGGMUR24uHZARy+LcLfl/39Ukq
-         Fyv852+Oe/W+yWBUapnsOFNyFa+eVaG7/AivIV6qWy7qyP3/uH1nOoZFCTZpsclK0YYp
-         HWSSMU9xajH3tUj4XwTqro4EizsLIxJScupAqpeweCXv+EHP33m6d+XK40o5M9U4ElWw
-         y9M+MC3yJU/OiVijGF0d01Y1FoOwFHPrYyMospRLIAsgv28HKrtxyO/lJ9ft9He1C+m9
-         RqZHdWzMZFYhTy4VvGHSEHe+WhPX4YSr5pr0SKIPplEc3QbUJEzR7iKL984nIHg7kj26
-         KlHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=D1MB0+cRdMUm4U5TtLDd9s96TysqWuUfBpSmSXVHdQQ=;
-        b=b8kEbI2+SGTuwlEMVkZAANJxHFppVOTCIyr9HtmJhhzrRMs92ccMakrScemdfvIfNV
-         4SXBvuFZx/RYwHHYTuDWRrrsz8+gRQRv0YIc0hY0lpwufimkwl54lXyaMiqRtGhUXX6F
-         HdSScNvwgK5EkIv7Vxn6dZRuokJVLJ7ZyB766hOdMnVqcwbr38iVRdawWyJZ8MEgdl0z
-         vIa5NgzWLcdOUtakNNmhxpEoq8Szt8Qm7aRAGo1vyoA7ChzHfdA3cFGhsHBeJwB9cYDv
-         RvL1PRk4qJ9ycISgdV1nCyqMKZgi6gvCPQzxHCz9+dY1gXzqxWrvHctFd3OS2kKYFssh
-         W7wQ==
-X-Gm-Message-State: AJIora9bw8Ih7pa87ixBGJisL7+p8JOT6KjUr4ZTGpH9v1Ch1CSoh0Db
-        MXGa66DwxLRv5hZGm2/dr3Q=
-X-Google-Smtp-Source: AGRyM1vU2xhGxeW+z2ilaqgHJ72WOXIedRMja5eEhcS1HdkaZGmxC0GHJ9re59ox2MyGTV8VyLFv0g==
-X-Received: by 2002:aa7:d685:0:b0:435:7910:f110 with SMTP id d5-20020aa7d685000000b004357910f110mr9966549edr.247.1656580432766;
-        Thu, 30 Jun 2022 02:13:52 -0700 (PDT)
-Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id s3-20020a1709067b8300b0070efa110afcsm8768854ejo.83.2022.06.30.02.13.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 02:13:51 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 11:13:50 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>, Kartik <kkartik@nvidia.com>
-Cc:     daniel.lezcano@linaro.org, tglx@linutronix.de, krzk+dt@kernel.org,
-        jonathanh@nvidia.com, spujar@nvidia.com, akhilrajeev@nvidia.com,
-        rgumasta@nvidia.com, pshete@nvidia.com, vidyas@nvidia.com,
-        mperttunen@nvidia.com, mkumard@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] dt-bindings: timer: Add Tegra186 & Tegra234 Timer
-Message-ID: <Yr1pTlG+ncPb1gjO@orome>
-References: <1656527344-28861-1-git-send-email-kkartik@nvidia.com>
- <1656527344-28861-2-git-send-email-kkartik@nvidia.com>
+        Thu, 30 Jun 2022 05:14:16 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B429201A5
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:14:15 -0700 (PDT)
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U0LZjF012121
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:14:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=J3jHAef7pJ/WI/T7+2xR7U+5ImtGMBx6TbdEpajVzHg=;
+ b=NMx9NkwVKuV3649LLjRE8fnUAnvHhHw1Y2Hgym8VlCopAOrvEp39ubQ7kSlOkvC9W8/Z
+ qNiBsgrls9OUpIbLXbG9v9/UYnupOq10yvAdyBi2YFXNmGnm7mZPkPmfF1R/RxfTrhxQ
+ n9140gh9XpXoMsLZaufei5y7tdvtR++gPnw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h0rk5wwhx-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:14:14 -0700
+Received: from twshared14577.08.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 30 Jun 2022 02:14:13 -0700
+Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
+        id 88CD72599FCB; Thu, 30 Jun 2022 02:14:08 -0700 (PDT)
+From:   Dylan Yudaken <dylany@fb.com>
+To:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        <io-uring@vger.kernel.org>
+CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
+        Dylan Yudaken <dylany@fb.com>
+Subject: [PATCH v2 for-next 00/12] io_uring: multishot recv
+Date:   Thu, 30 Jun 2022 02:12:19 -0700
+Message-ID: <20220630091231.1456789-1-dylany@fb.com>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: kYBUq0lu5u269BPW6WjQaZExRQpWAcaY
+X-Proofpoint-GUID: kYBUq0lu5u269BPW6WjQaZExRQpWAcaY
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="vd7lLC28doTmyfX4"
-Content-Disposition: inline
-In-Reply-To: <1656527344-28861-2-git-send-email-kkartik@nvidia.com>
-User-Agent: Mutt/2.2.6 (2022-06-05)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_05,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This series adds support for multishot recv/recvmsg to io_uring.
 
---vd7lLC28doTmyfX4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The idea is that generally socket applications will be continually
+enqueuing a new recv() when the previous one completes. This can be
+improved on by allowing the application to queue a multishot receive,
+which will post completions as and when data is available. It uses the
+provided buffers feature to receive new data into a pool provided by
+the application.
 
-On Wed, Jun 29, 2022 at 11:58:59PM +0530, Kartik wrote:
-> The Tegra186 timer provides ten 29-bit timer counters and one 32-bit
-> timestamp counter. The Tegra234 timer provides sixteen 29-bit timer
-> counters and one 32-bit timestamp counter. Each NV timer selects its
-> timing reference signal from the 1 MHz reference generated by USEC,
-> TSC or either clk_m or OSC. Each TMR can be programmed to generate
-> one-shot, periodic, or watchdog interrupts.
->=20
-> Signed-off-by: Kartik <kkartik@nvidia.com>
-> ---
->  .../bindings/timer/nvidia,tegra186-timer.yaml | 111 ++++++++++++++++++
->  1 file changed, 111 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra1=
-86-timer.yaml
+This is more performant in a few ways:
+* Subsequent receives are queued up straight away without requiring the
+  application to finish a processing loop.
+* If there are more data in the socket (sat the provided buffer
+  size is smaller than the socket buffer) then the data is immediately
+  returned, improving batching.
+*  Poll is only armed once and reused, saving CPU cycles
 
-Rob, I've been wondering about patch application with these DT bindings.
-In the past I've preferred to apply these along with the driver changes
-that implement the bindings. I realize now that that's perhaps a bit
-naive because we've had cases where the driver doesn't fully implement
-everything in the binding as well as cases where the bindings are
-upstreamed without the driver necessarily being upstreamed at the same
-time.
+Running a small network benchmark [1] shows improved QPS of ~6-8% over a ra=
+nge of loads.
 
-So I'm thinking that it makes more sense to apply the DT bindings to the
-same tree as the DT changes that add corresponding DT nodes. This would
-also get rid of the (usually temporary) inconsistencies when running the
-DT validation (and even just something like checkpatch) on a DT tree
-that doesn't have corresponding DT bindings.
+[1]: https://github.com/DylanZA/netbench/tree/multishot_recv
 
-Do you have any strong preference on this?
+While building this I noticed a small problem in multishot poll which is a =
+really
+big problem for receive. If CQEs overflow, then they will be returned to th=
+e user
+out of order. This is annoying for the existing use cases of poll and accep=
+t but
+doesn't totally break the functionality. Both of these return results that =
+aren't
+strictly ordered except for the IORING_CQE_F_MORE flag. For receive this ob=
+viously
+is a critical requirement as otherwise data will be received out of order b=
+y the
+application.
 
-Thierry
+To fix this, when a multishot CQE hits overflow we remove multishot. The ap=
+plication
+should then clear CQEs until it sees that CQE, and noticing that IORING_CQE=
+_F_MORE is
+not set can re-issue the multishot request.
 
---vd7lLC28doTmyfX4
-Content-Type: application/pgp-signature; name="signature.asc"
+Patches:
+1-3: relax restrictions around provided buffers to allow 0 size lengths
+4: recycles more buffers on kernel side in error conditions
+5-6: clean up multishot poll API a bit allowing it to end with succesful
+error conditions
+7-8: fix existing problems with multishot poll on overflow
+9: is the multishot receive patch
+10-11: are small fixes to tracing of CQEs
 
------BEGIN PGP SIGNATURE-----
+v2:
+* Added patches 6,7,8 (fixing multishot poll bugs)
+* Added patches 10,11 (trace cleanups)
+* added io_recv_finish to reduce duplicate logic
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmK9aU4ACgkQ3SOs138+
-s6H5YA/+JP38fIDSYI7G6PH2+aHJjdG2V1dNqG/fVZBC13jryVWQ6IT8zFdHXxf4
-0TR4H0NwXANXxNNOUIm1/nW+r32ekkyu+BZI5Z+8iyDHEVWBDWP2OL9KA6dTi7BL
-IsxiQ+YrU57t7+C8cVA9hme2e3neVsYLbfB+OnYo+O7E6jh4cnTOSviJ7y6TwIbK
-ESNxtqxgpX41KL+xUiGejk67w/HwTwQ+Muh1cQCqbIF5GmEdmMgo6GUAUmdiDCAs
-YkoQwSq5IQqVIwl7Ap6neo3btmuZHTn3WfIBnlfSGNLLv1rnh23NkJ/ZxAO1P/uR
-wAuy2oSO8GblE71Hc5ZBkfCnp+3KAqiU/XOT4xfmr/mIGKcc47HSVtQAqx51HwPF
-N2Nzd4CvUsasVVx0XGk3QsjlbPdxsqV4HOTQ8s7LY/32u2iK1Azw1uHS4Sat9+m2
-BM/+qwwR0up2Gr4i1kicy2n/OO2F31s4fzliykF2ApPJp8auLynaKM2IEQNUWg9L
-g1nJ4AMELc6lgSkipk0qy8/uy0hOn7rHqI9hZFPbUGMIS2oz5k9kVRcBj4zL4wzq
-Ct2KQs3QjMqx12/LISaRmQLUoCQrfe/vTmhZr+om5M+RJprxLvW9DaT2HhrCBKvJ
-3hqkIw+CDHOyzVxw+LL6oJTUbmGNk3Ta1f5YCOqzbifM3ZnLEJo=
-=m1P7
------END PGP SIGNATURE-----
 
---vd7lLC28doTmyfX4--
+Dylan Yudaken (12):
+  io_uring: allow 0 length for buffer select
+  io_uring: restore bgid in io_put_kbuf
+  io_uring: allow iov_len =3D 0 for recvmsg and buffer select
+  io_uring: recycle buffers on error
+  io_uring: clean up io_poll_check_events return values
+  io_uring: add IOU_STOP_MULTISHOT return code
+  io_uring: add allow_overflow to io_post_aux_cqe
+  io_uring: fix multishot poll on overflow
+  io_uring: fix multishot accept ordering
+  io_uring: multishot recv
+  io_uring: fix io_uring_cqe_overflow trace format
+  io_uring: only trace one of complete or overflow
+
+ include/trace/events/io_uring.h |   2 +-
+ include/uapi/linux/io_uring.h   |   5 ++
+ io_uring/io_uring.c             |  17 ++--
+ io_uring/io_uring.h             |  20 +++--
+ io_uring/kbuf.c                 |   4 +-
+ io_uring/kbuf.h                 |   9 ++-
+ io_uring/msg_ring.c             |   4 +-
+ io_uring/net.c                  | 139 ++++++++++++++++++++++++++------
+ io_uring/poll.c                 |  44 ++++++----
+ io_uring/rsrc.c                 |   4 +-
+ 10 files changed, 190 insertions(+), 58 deletions(-)
+
+
+base-commit: 864a15ca4f196184e3f44d72efc1782a7017cbbd
+--=20
+2.30.2
+
