@@ -2,178 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 810D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B88FAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236898AbiF3ONo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S237133AbiF3OOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237442AbiF3ONP (ORCPT
+        with ESMTP id S236911AbiF3ONo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:13:15 -0400
-Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4E33B55F;
-        Thu, 30 Jun 2022 06:57:52 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=mqaio@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VHtbqM8_1656597453;
-Received: from 30.39.134.59(mailfrom:mqaio@linux.alibaba.com fp:SMTPD_---0VHtbqM8_1656597453)
-          by smtp.aliyun-inc.com;
-          Thu, 30 Jun 2022 21:57:34 +0800
-Message-ID: <8b012bbd-a175-5699-1f26-108dd52fc5b7@linux.alibaba.com>
-Date:   Thu, 30 Jun 2022 21:57:33 +0800
+        Thu, 30 Jun 2022 10:13:44 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29FB3BBEF;
+        Thu, 30 Jun 2022 06:59:31 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LYfyt48lDzhYq0;
+        Thu, 30 Jun 2022 21:57:10 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 30 Jun 2022 21:59:28 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
+ 2022 21:59:28 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <geert+renesas@glider.be>,
+        <peter@hurleysoftware.com>, <sjoerd.simons@collabora.co.uk>
+Subject: [PATCH 1/2] serial: sh-sci: fix missing sci_cleanup_single() in sci_probe_single()
+Date:   Thu, 30 Jun 2022 22:09:18 +0800
+Message-ID: <20220630140919.3857698-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH] net: hinic: avoid kernel hung in hinic_get_stats64()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, gustavoars@kernel.org,
-        cai.huoqing@linux.dev, Aviad Krawczyk <aviad.krawczyk@huawei.com>,
-        zhaochen6@huawei.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
- <CANn89iLpW4zFf2ABADbMNERPFr=OrAXEMm6ZgCxYA5VpcDpYTw@mail.gmail.com>
-From:   maqiao <mqaio@linux.alibaba.com>
-In-Reply-To: <CANn89iLpW4zFf2ABADbMNERPFr=OrAXEMm6ZgCxYA5VpcDpYTw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add missing sci_cleanup_single() in error case in sci_probe_single()
 
+Fixes: f907c9ea8835 ("serial: sh-sci: Add support for GPIO-controlled modem lines")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/tty/serial/sh-sci.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-在 2022/6/30 下午6:23, Eric Dumazet 写道:
-> On Wed, Jun 29, 2022 at 9:28 AM Qiao Ma <mqaio@linux.alibaba.com> wrote:
->>
->> When using hinic device as a bond slave device, and reading device stats of
->> master bond device, the kernel may hung.
->>
->> The kernel panic calltrace as follows:
->> Kernel panic - not syncing: softlockup: hung tasks
->> Call trace:
->>    native_queued_spin_lock_slowpath+0x1ec/0x31c
->>    dev_get_stats+0x60/0xcc
->>    dev_seq_printf_stats+0x40/0x120
->>    dev_seq_show+0x1c/0x40
->>    seq_read_iter+0x3c8/0x4dc
->>    seq_read+0xe0/0x130
->>    proc_reg_read+0xa8/0xe0
->>    vfs_read+0xb0/0x1d4
->>    ksys_read+0x70/0xfc
->>    __arm64_sys_read+0x20/0x30
->>    el0_svc_common+0x88/0x234
->>    do_el0_svc+0x2c/0x90
->>    el0_svc+0x1c/0x30
->>    el0_sync_handler+0xa8/0xb0
->>    el0_sync+0x148/0x180
->>
->> And the calltrace of task that actually caused kernel hungs as follows:
->>    __switch_to+124
->>    __schedule+548
->>    schedule+72
->>    schedule_timeout+348
->>    __down_common+188
->>    __down+24
->>    down+104
->>    hinic_get_stats64+44 [hinic]
->>    dev_get_stats+92
->>    bond_get_stats+172 [bonding]
->>    dev_get_stats+92
->>    dev_seq_printf_stats+60
->>    dev_seq_show+24
->>    seq_read_iter+964
->>    seq_read+220
->>    proc_reg_read+164
->>    vfs_read+172
->>    ksys_read+108
->>    __arm64_sys_read+28
->>    el0_svc_common+132
->>    do_el0_svc+40
->>    el0_svc+24
->>    el0_sync_handler+164
->>    el0_sync+324
->>
->> When getting device stats from bond, kernel will call bond_get_stats().
->> It first holds the spinlock bond->stats_lock, and then call
->> hinic_get_stats64() to collect hinic device's stats.
->> However, hinic_get_stats64() calls `down(&nic_dev->mgmt_lock)` to
->> protect its critical section, which may schedule current task out.
->> And if system is under high pressure, the task cannot be woken up
->> immediately, which eventually triggers kernel hung panic.
->>
->> Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
->> Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
->> ---
->>   drivers/net/ethernet/huawei/hinic/hinic_dev.h  | 1 +
->>   drivers/net/ethernet/huawei/hinic/hinic_main.c | 7 +++----
->>   2 files changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
->> index fb3e89141a0d..1fb343d03fd5 100644
->> --- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
->> +++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
->> @@ -97,6 +97,7 @@ struct hinic_dev {
->>
->>          struct hinic_txq_stats          tx_stats;
->>          struct hinic_rxq_stats          rx_stats;
->> +       spinlock_t                      stats_lock;
->>
->>          u8                              rss_tmpl_idx;
->>          u8                              rss_hash_engine;
->> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
->> index 56a89793f47d..32a3d700ad26 100644
->> --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
->> +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
->> @@ -125,11 +125,13 @@ static void update_nic_stats(struct hinic_dev *nic_dev)
->>   {
->>          int i, num_qps = hinic_hwdev_num_qps(nic_dev->hwdev);
->>
->> +       spin_lock(&nic_dev->stats_lock);
->>          for (i = 0; i < num_qps; i++)
->>                  update_rx_stats(nic_dev, &nic_dev->rxqs[i]);
->>
->>          for (i = 0; i < num_qps; i++)
->>                  update_tx_stats(nic_dev, &nic_dev->txqs[i]);
->> +       spin_unlock(&nic_dev->stats_lock);
->>   }
->>
->>   /**
->> @@ -859,13 +861,9 @@ static void hinic_get_stats64(struct net_device *netdev,
->>          nic_rx_stats = &nic_dev->rx_stats;
->>          nic_tx_stats = &nic_dev->tx_stats;
->>
->> -       down(&nic_dev->mgmt_lock);
->> -
->>          if (nic_dev->flags & HINIC_INTF_UP))
->>                  update_nic_stats(nic_dev);
->>
->> -       up(&nic_dev->mgmt_lock);
->> -
-> 
-> Note: The following is racy, because multiple threads can call
-> hinic_get_stats64() at the same time.
-> It needs a loop, see include/linux/u64_stats_sync.h for detail.Thanks for reminding, and I noticed that nic_tx_stats/nic_rx_stats has 
-been protected by u64_stats_sync in update_t/rx_stats(), it seems that 
-it's unnecessary to use spinlock in update_nic_stats().
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 0075a1420005..ca5a58f01aff 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3283,25 +3283,31 @@ static int sci_probe_single(struct platform_device *dev,
+ 		return ret;
+ 
+ 	sciport->gpios = mctrl_gpio_init(&sciport->port, 0);
+-	if (IS_ERR(sciport->gpios))
+-		return PTR_ERR(sciport->gpios);
++	if (IS_ERR(sciport->gpios)) {
++		ret = PTR_ERR(sciport->gpios);
++		goto err_cleanup_single;
++	}
+ 
+ 	if (sciport->has_rtscts) {
+ 		if (mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_CTS) ||
+ 		    mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_RTS)) {
+ 			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto err_cleanup_single;
+ 		}
+ 		sciport->port.flags |= UPF_HARD_FLOW;
+ 	}
+ 
+ 	ret = uart_add_one_port(&sci_uart_driver, &sciport->port);
+-	if (ret) {
+-		sci_cleanup_single(sciport);
+-		return ret;
+-	}
++	if (ret)
++		goto err_cleanup_single;
+ 
+ 	return 0;
++
++err_cleanup_single:
++	sci_cleanup_single(sciport);
++
++	return ret;
+ }
+ 
+ static int sci_probe(struct platform_device *dev)
+-- 
+2.25.1
 
-I will send v2 as soon as possible, thanks.
-> 
->>          stats->rx_bytes   = nic_rx_stats->bytes;
->>          stats->rx_packets = nic_rx_stats->pkts;
->>          stats->rx_errors  = nic_rx_stats->errors;
-> 
-> Same remark for nic_tx_stats->{bytes|pkts|errors}
-> 
->> @@ -1239,6 +1237,7 @@ static int nic_dev_init(struct pci_dev *pdev)
->>
->>          u64_stats_init(&tx_stats->syncp);
->>          u64_stats_init(&rx_stats->syncp);
->> +       spin_lock_init(&nic_dev->stats_lock);
->>
->>          nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
->>                                                    GFP_KERNEL);
->> --
->> 1.8.3.1
->>
