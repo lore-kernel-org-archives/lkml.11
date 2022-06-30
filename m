@@ -2,99 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B24C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2343C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbiF3Xqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        id S232222AbiF3Xug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbiF3Xqc (ORCPT
+        with ESMTP id S231470AbiF3Xu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:46:32 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BF15A2CA;
-        Thu, 30 Jun 2022 16:46:23 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id dw10-20020a17090b094a00b001ed00a16eb4so1005793pjb.2;
-        Thu, 30 Jun 2022 16:46:23 -0700 (PDT)
+        Thu, 30 Jun 2022 19:50:29 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617B1366B9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:50:22 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id q6so961933eji.13
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:50:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ksja30tHqQB+wliESoq3wQHUXNoN886Osza3Cvc7dwo=;
-        b=mBLsEJlhhDea1A5Ewv7xQP8wxFNNX3VXR64Z9ClPk25x2DVo7LZzC0wq4nxzrZgE8V
-         jArX2vIdYg+Qm3vIJndAgDlRaa5yYyoUDuEexYnSFWYDzlbK6mzH89K0yiBqeKmHL/6G
-         k4KrTxqzbL6QFbSRfEIxMei1Xj9xi7AEfA3VAR0SnIrHMxNL0gxrV40gwkI/IYAw+QMg
-         HbDKGhGxx0NjDVM7fAx6aZZ4DGqGW9724eW6bZtYuCPuM0d6V/kyVvMkloKi6gYubOzR
-         vF/1wK/iLx93mlemwnX41NiFsZ3kJ5C47zCDWrT1fpiH4P7fkzEzIU42mbr/IoQzOVIZ
-         BeTA==
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=Si6Vg1wa/7RogX1AusbI0XgUV6cLT3cMbVhFnYF9DAM=;
+        b=f1gh8kvL2CRI3T0JwQhmXBnHUIr6ajhEOmkd6OMB1ChlymB60XN/Exm5AeWTglJpax
+         EHMl1965t/hUJ8/nr6gw8bXAL48vchXVqwChEpEFWe5ozXSkt8AePjJBMm/Qe6u6LNyr
+         qJtY0KPJ9EeMlXOlN0kC/1gWq8OIuvB8bRkvcPsq1HmSbqX1Tga60Etj+a9sI/uaBlua
+         kS6W4jTlgsr2xfjeU6U5kefF3fk8rFI+2NOE/pZTcMGJ+7jkORiphuXSjXSaEG8H/lRl
+         dGhmO5BTJNKZtcnhvsLCVPDgo4zqJJqpINZm5tjQMxnNyJeVh7oLlQsJvW59j21cUmsq
+         AvqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ksja30tHqQB+wliESoq3wQHUXNoN886Osza3Cvc7dwo=;
-        b=KbyHi2qwxjuc+pq1mEotuFeMzxNm42OrL6hrOl5HXheopNtJsw2Uff2jGw6an3aXft
-         vvyXsUC1zgOVK3Ro+TxfM6vBL3653u9uzm6fTbMBGUhjulGhnfvRq08+O9YCM+i9ewRt
-         NVfu9CcAqzMULGVeXFkfs7MWVr/zOmrppS4Jz2MDGjR0xWCrPn6KBShVDfHXtBiz94Pz
-         EHevjbw6S0jcLKVa/GzJsWu2Q2jEt47nLcqgkZ53fbkh5+KgIgbNLVkgLJO7wv+PL1Wd
-         6FMorBcU1c9/6zDKQPj0g6596GEfk7QQvweZHhtHVWVCTNalOclJ8B8zOCPAZwfu7c/k
-         +8sA==
-X-Gm-Message-State: AJIora9rKKGIZ2qPuCQ1pvjsDqd9O7wNL4OwfCarp0mfYLA/9oswZCUO
-        6AtGeeGclhXekDv1A7MB6SQ=
-X-Google-Smtp-Source: AGRyM1s4N3Ywmbodo0vHw0DXmUO30u3oS67uOjxp799x8qp5bP3Cg4QiVaH9eaTZUD7QocbMYCUzhQ==
-X-Received: by 2002:a17:90b:4d84:b0:1ec:aa85:b8ea with SMTP id oj4-20020a17090b4d8400b001ecaa85b8eamr12916217pjb.194.1656632783072;
-        Thu, 30 Jun 2022 16:46:23 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id 15-20020a17090a0d4f00b001eca3c66f6asm2554079pju.43.2022.06.30.16.46.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jun 2022 16:46:22 -0700 (PDT)
-Message-ID: <d59a31c4-23f2-1233-b685-20967c8a0013@gmail.com>
-Date:   Thu, 30 Jun 2022 16:46:21 -0700
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Si6Vg1wa/7RogX1AusbI0XgUV6cLT3cMbVhFnYF9DAM=;
+        b=5uR1/Hx5b9iNt5H/8Kp/arhgd3N4qeo5weBaK5Ky1y2RmT6ZyrNtALnOCtb2xOuglT
+         z5yS3d4zZCuI3IncF6UQmHApzLCACI8nEC9tSuaGGugeiweyMUIe0NMDDGoGqIPo9mzS
+         J4WuOBd+O1G32wyQrVvoVy05B83Xh7tb0MPNoETTnUHh4vFfEyh3OT9vidGDXTc4kqXj
+         4QECp6KfH2IU3hxfqIDm1XZBt6W1Sg2YS0ucM+v8OV+8bqapivQ2V4K0+lAxq/iaDgaj
+         5U/p8eTAcef0ni87F2eJZba8tlcDnH3vbA8KLf2+J7wDaQLrHfhjJPCGnZ3921PkBTcJ
+         H0pA==
+X-Gm-Message-State: AJIora8l+nWEfeCZsfASIX8cRTJFgw7F1NoFc7V402KghWe2klvXnmEQ
+        fEr9igY8AZ5lArBJG7CMakwh4pxzAJQOc+tP33NhfXtjdys=
+X-Google-Smtp-Source: AGRyM1sctn6XzRu1QPPOwfXYniixV0BBVmW2j9hqKl/qHS2PbbU7KSjGrJwYX2Y2qdCPI3b7Zn3oXl0fEaTn9gG66WU=
+X-Received: by 2002:a17:906:149:b0:712:502:bc62 with SMTP id
+ 9-20020a170906014900b007120502bc62mr11535312ejh.720.1656633020792; Thu, 30
+ Jun 2022 16:50:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5.18 0/6] 5.18.9-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220630133230.239507521@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   Dave Airlie <airlied@gmail.com>
+Date:   Fri, 1 Jul 2022 09:50:09 +1000
+Message-ID: <CAPM=9twfRe7w=z0ZQwBw7u6QiDQUWbXi+AZO4wE=MCzNK+RByA@mail.gmail.com>
+Subject: [git pull] drm fixes for 5.19-rc5
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Linus,
 
+Bit quieter this week, the main thing is it pulls in the fixes for the
+sysfb resource issue you were seeing. these had been queued for next
+so should have had some decent testing.
 
-On 6/30/2022 6:47 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.9 release.
-> There are 6 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.9-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+Otherwise amdgpu, i915 and msm each have a few fixes, and vc4 has one.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Just to reiterate, I'm out next week (and Daniel is as well), so I'd
+expect rc7 might have a bit more, I'll likely send whatever lands in
+the queue early the next week.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Regards,
+Dave.
+
+drm-fixes-2022-07-01:
+drm fixes for 5.19-rc5
+
+fbdev:
+- sysfb fixes/conflicting fb fixes.
+
+amdgpu:
+- GPU recovery fix
+- Fix integer type usage in fourcc header for AMD modifiers
+- KFD TLB flush fix for gfx9 APUs
+- Display fix
+
+i915:
+- Fix ioctl argument error return
+- Fix d3cold disable to allow PCI upstream bridge D3 transition
+- Fix setting cache_dirty for dma-buf objects on discrete
+
+msm:
+- Fix to increment vsync_cnt before calling drm_crtc_handle_vblank so that
+  userspace sees the value *after* it is incremented if waiting for vblank
+  events
+- Fix to reset drm_dev to NULL in dp_display_unbind to avoid a crash in
+  probe/bind error paths
+- Fix to resolve the smatch error of de-referencing before NULL check in
+  dpu_encoder_phys_wb.c
+- Fix error return to userspace if fence-id allocation fails in submit
+  ioctl
+
+vc4:
+- NULL ptr dereference fix
+The following changes since commit 03c765b0e3b4cb5063276b086c76f7a612856a9a:
+
+  Linux 5.19-rc4 (2022-06-26 14:22:10 -0700)
+
+are available in the Git repository at:
+
+  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-07-01
+
+for you to fetch changes up to b8f0009bc9edf9186b20ae2a9e442ef0af93040e:
+
+  Merge tag 'drm-misc-fixes-2022-06-30' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes (2022-07-01
+09:27:55 +1000)
+
+----------------------------------------------------------------
+drm fixes for 5.19-rc5
+
+fbdev:
+- sysfb fixes/conflicting fb fixes.
+
+amdgpu:
+- GPU recovery fix
+- Fix integer type usage in fourcc header for AMD modifiers
+- KFD TLB flush fix for gfx9 APUs
+- Display fix
+
+i915:
+- Fix ioctl argument error return
+- Fix d3cold disable to allow PCI upstream bridge D3 transition
+- Fix setting cache_dirty for dma-buf objects on discrete
+
+msm:
+- Fix to increment vsync_cnt before calling drm_crtc_handle_vblank so that
+  userspace sees the value *after* it is incremented if waiting for vblank
+  events
+- Fix to reset drm_dev to NULL in dp_display_unbind to avoid a crash in
+  probe/bind error paths
+- Fix to resolve the smatch error of de-referencing before NULL check in
+  dpu_encoder_phys_wb.c
+- Fix error return to userspace if fence-id allocation fails in submit
+  ioctl
+
+vc4:
+- NULL ptr dereference fix
+
+----------------------------------------------------------------
+Alex Deucher (2):
+      drm/amdgpu: fix adev variable used in amdgpu_device_gpu_recover()
+      Revert "drm/amdgpu/display: set vblank_disable_immediate for DC"
+
+Anshuman Gupta (1):
+      drm/i915/dgfx: Disable d3cold at gfx root port
+
+Carlos Llamas (1):
+      drm/fourcc: fix integer type usage in uapi header
+
+Dave Airlie (4):
+      Merge tag 'drm-msm-fixes-2022-06-28' of
+https://gitlab.freedesktop.org/drm/msm into drm-fixes
+      Merge tag 'drm-intel-fixes-2022-06-29' of
+git://anongit.freedesktop.org/drm/drm-intel into drm-fixes
+      Merge tag 'amd-drm-fixes-5.19-2022-06-29' of
+https://gitlab.freedesktop.org/agd5f/linux into drm-fixes
+      Merge tag 'drm-misc-fixes-2022-06-30' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
+
+Javier Martinez Canillas (3):
+      firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
+      firmware: sysfb: Add sysfb_disable() helper function
+      fbdev: Disable sysfb device registration when removing conflicting FBs
+
+Kuogee Hsieh (1):
+      drm/msm/dp: reset drm_dev to NULL at dp_display_unbind()
+
+Matthew Auld (1):
+      drm/i915: tweak the ordering in cpu_write_needs_clflush
+
+Maxime Ripard (1):
+      drm/vc4: perfmon: Fix variable dereferenced before check
+
+Rob Clark (1):
+      drm/msm/gem: Fix error return on fence id alloc fail
+
+Ruili Ji (1):
+      drm/amdgpu: To flush tlb for MMHUB of RAVEN series
+
+Stephen Boyd (1):
+      drm/msm/dpu: Increment vsync_cnt before waking up userspace
+
+katrinzhou (1):
+      drm/i915/gem: add missing else
+
+sunliming (1):
+      drm/msm/dpu: Fix variable dereferenced before check
+
+ .../driver-api/firmware/other_interfaces.rst       |  6 +++
+ drivers/firmware/sysfb.c                           | 58 +++++++++++++++++++---
+ drivers/firmware/sysfb_simplefb.c                  | 16 +++---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c         |  3 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |  2 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c            |  1 +
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  |  3 --
+ drivers/gpu/drm/i915/gem/i915_gem_context.c        |  5 +-
+ drivers/gpu/drm/i915/gem/i915_gem_domain.c         |  6 +--
+ drivers/gpu/drm/i915/i915_driver.c                 | 34 ++++++-------
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c        |  3 +-
+ .../gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c    | 10 ++--
+ drivers/gpu/drm/msm/dp/dp_display.c                |  2 +
+ drivers/gpu/drm/msm/msm_gem_submit.c               |  2 +-
+ drivers/gpu/drm/vc4/vc4_perfmon.c                  |  9 ++--
+ drivers/video/fbdev/core/fbmem.c                   | 12 +++++
+ include/linux/sysfb.h                              | 22 ++++++--
+ include/uapi/drm/drm_fourcc.h                      |  4 +-
+ 18 files changed, 136 insertions(+), 62 deletions(-)
