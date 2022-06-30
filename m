@@ -2,310 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E903C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236780AbiF3OJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
+        id S236791AbiF3OJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236916AbiF3OHu (ORCPT
+        with ESMTP id S236714AbiF3OH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:07:50 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CC44881C
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:54:51 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id o19so27327974ybg.2
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:54:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/jxJKSEEZPwLWnGCYB3czxKxexehqWgULIniyW8Vusc=;
-        b=IvnKLOrpM7ZzFd+3S8iyTwTWK3oLRfRUh4NLGrpOhLbWRKdhwgtFBt6JU+iG8Pc/zm
-         alrs9JLmKKnlyyyCCjPLI2s1Qez5UvZ8fKBTaNb4ot3oJCscPSpvtEmMSF6XA5xUIyn1
-         XDCmd4O2Ln6YywpMsY1n2wgyRrYnP302RTOxEOSePQumvKA5N5kBpHMj7l/i/6M1jCzv
-         hK6RPb1nKvedu1KEW8GAy7S8ZEgxGpeYJYItdOBXStnBxM4KpTLx92jQNNJTFZLqWX4+
-         TSgdrG68hLa0yM0oACKCsrB4JWih4ZX11wGRicxQV0sjE1dOd0exP15juh0alFOKeAkA
-         KcAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/jxJKSEEZPwLWnGCYB3czxKxexehqWgULIniyW8Vusc=;
-        b=1pOaLx0gy47QoRGxhfN9gwsD+uKdChUaVjJ5jD+0M4gzLBOukfWsTzfrrFGrprlLs0
-         b+MEUPUPHJz3tF/ugxWA9F5Z7cno2SbKZGsZ9XSDbebulTw+m4b6gPOf1rGOm5EtVuxD
-         s+1/GqWbId+N3pXH7f+3pIZyNlNza21XJDoaTxi4Rz+9+k7GcL6Nn1lZ23CgTRcsQ6f6
-         ObOafh+SQx2c/R4xYZHgWG4w9GQgsr3GxD6TnFMblmxwosTGJE5TNWoef82kvP2zA1oe
-         z7DRPv/3Qk0AOyrK9B8nRqIVZdLyGuxFqLI0Lk9s0RKTD8WA7IT0a57JwCca7T/ikffz
-         cXoA==
-X-Gm-Message-State: AJIora82vfzCDqofTfu9PXunLzhwN5GFELW9bATuRk++g2GbCJRlmLem
-        2YsApiGrbWgLeSfXxt4iYMbewO6P9hejBBtNMU9IN6d9KDOGQQ==
-X-Google-Smtp-Source: AGRyM1sByVtJbc7VM6TcfEj2dxzmGpvDdobwJarP6Z2wkcthbUNMrgRR0ecLlvEEmZfLSOYPP7FB29tiDrjwnAXlYxI=
-X-Received: by 2002:a25:6641:0:b0:669:b4ae:a15f with SMTP id
- z1-20020a256641000000b00669b4aea15fmr9916992ybm.241.1656597290275; Thu, 30
- Jun 2022 06:54:50 -0700 (PDT)
+        Thu, 30 Jun 2022 10:07:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DF872EED;
+        Thu, 30 Jun 2022 06:54:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57BF7620E4;
+        Thu, 30 Jun 2022 13:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65CF2C34115;
+        Thu, 30 Jun 2022 13:54:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656597270;
+        bh=PZ9VJeZOxq4HUbWffUy8DOrYaCfG5iIlnIC9ySXIxtE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tZPDDkZ/XFg6rNZ18XQz+7rhD0F1Vz2Rel91/fBVY2JHRPe6H7TvVhHe4pJYeptH4
+         5Nlz3YkNrZXq5jai4saH2qjyhmHWwruZquj2j2Q1Di9y8YG2ydKFzRVcIHxEeJDjQp
+         LoeIf+pFyFN8rrWUFffr2J+0ZUSU0lu2AKV9Ydws=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 10/28] xfs: prevent UAF in xfs_log_item_in_current_chkpt
+Date:   Thu, 30 Jun 2022 15:47:06 +0200
+Message-Id: <20220630133233.230403453@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
+References: <20220630133232.926711493@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220609071956.5183-1-quic_neeraju@quicinc.com> <Yqdxz9lZo5qedTG4@e120937-lin>
-In-Reply-To: <Yqdxz9lZo5qedTG4@e120937-lin>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Thu, 30 Jun 2022 15:54:38 +0200
-Message-ID: <CAKfTPtDNmYiSy=WsSiDvtQXvB_bpS0f-Z4FwB=rbpTC-PjRPJg@mail.gmail.com>
-Subject: Re: [RFC 0/3] SCMI Vhost and Virtio backend implementation
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     Neeraj Upadhyay <quic_neeraju@quicinc.com>, mst@redhat.com,
-        jasowang@redhat.com, sudeep.holla@arm.com,
-        quic_sramana@quicinc.com, linux-arm-kernel@lists.infradead.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Souvik Chakravarty <Souvik.Chakravarty@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neeraj and Cristian,
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-On Mon, 13 Jun 2022 at 19:20, Cristian Marussi <cristian.marussi@arm.com> wrote:
->
-> +CC: Souvik
->
-> On Thu, Jun 09, 2022 at 12:49:53PM +0530, Neeraj Upadhyay wrote:
-> > This RFC series, provides ARM System Control and Management Interface (SCMI)
-> > protocol backend implementation for Virtio transport. The purpose of this
->
-> Hi Neeraj,
->
-> Thanks for this work, I only glanced through the series at first to
-> grasp a general understanding of it (without goind into much details for
-> now) and I'd have a few questions/concerns that I'll noted down below.
->
-> I focused mainly on the backend server aims/functionalities/issues ignoring
-> at first the vhost-scmi entry-point since the vost-scmi accelerator is just
-> a (more-or-less) standard means of configuring and grabbing SCMI traffic
-> from the VMs into the Host Kernel and so I found more interesting at first
-> to understand what we can do with such traffic at first.
-> (IOW the vhost-scmi layer is welcome but remain to see what to do with it...)
->
-> > feature is to provide para-virtualized interfaces to guest VMs, to various
-> > hardware blocks like clocks, regulators. This allows the guest VMs to
-> > communicate their resource needs to the host, in the absence of direct
-> > access to those resources.
+[ Upstream commit f8d92a66e810acbef6ddbc0bd0cbd9b117ce8acd ]
 
-IIUC, you want to leverage on the drivers already developed in the
-kernel for those resources instead of developing a dedicated SCMI
-server. The main concern is that this also provides full access to
-these resources from userspace without any control which is a concern
-also described by Cristian below. It would be good to describe how you
-want to manage resources availability and permission access.This is
-the main open point in your RFC so far
+While I was running with KASAN and lockdep enabled, I stumbled upon an
+KASAN report about a UAF to a freed CIL checkpoint.  Looking at the
+comment for xfs_log_item_in_current_chkpt, it seems pretty obvious to me
+that the original patch to xfs_defer_finish_noroll should have done
+something to lock the CIL to prevent it from switching the CIL contexts
+while the predicate runs.
 
->
-> In an SCMI stack the agents (like VMs) issue requests to an SCMI platform
-> backend that is in charge of policying and armonizing such requests
-> eventually denying some of these (possibly malicious) while allowing others
-> (possibly armonizing/merging such reqs); with your solution basically the
-> SCMI backend in Kernel marshals/conveys all of such SCMI requests to the
-> proper Linux Kernel subsystem that is usually in charge of it, using
-> dedicated protocol handlers that basically translates SCMI requests to
-> Linux APIs calls to the Host. (I may have oversimplified or missed
-> something...)
->
-> At the price of a bit of overhead and code-duplication introduced by
-> this SCMI Backend you can indeed leverage the existing mechanisms for
-> resource accounting and sharing included in such Linux subsystems (like
-> Clock framework), and that's nice and useful, BUT how do you policy/filter
-> (possibly dinamically as VMs come and go) what these VMs can see and do
-> with these resources ?
->
-> ... MORE importantly how do you protect the Host (or another VM) from
-> unacceptable (or possibly malicious) requests conveyed from one VM request
-> vqueue into the Linux subsystems (like clocks) ?
->
-> I saw you have added a good deal of DT bindings for the backend
-> describing protocols, so you could just expose only some protocols via
-> the backend (if I get it right) but you cannot anyway selectively expose
-> only a subset of resources to the different agents, so, if you expose the
-> clock protocol, that will be visible by any VMs and an agent could potentially
-> kill the Host or mount some clock related attack acting on the right clock.
-> (I mean you cannot describe in the Host DT a number X of clocks to be
-> supported by the Host Linux Clock framework BUT then expose selectively to
-> the SCMI agents only a subset Y < X to shield the Host from misbehaviour...
-> ...at least not in a dynamic way avoiding to bake a fixed policy into
-> the backend...or maybe I'm missing how you can do that, in such a case
-> please explain...)
->
-> Moreover, in a normal SCMI stack the server resides out of reach from the
-> OSPM agents since the server, wherever it sits, has the last word and can
-> deny and block unreasonable/malicious requests while armonizing others: this
-> means the typical SCMI platform fw is configured in such a way that clearly
-> defines a set of policies to be enforced between the access of the various
-> agents. (and it can reside in the trusted codebase given its 'reduced'
-> size...even though this policies are probably at the moment not so
-> dynamically modificable there either...)
->
-> With your approach of a Linux Kernel based SCMI platform backend you are
-> certainly using all the good and well proven mechanisms offered by the
-> Kernel to share and co-ordinate access to such resources, which is good
-> (.. even though Linux is not so small in term of codebase to be used as
-> a TCB to tell the truth :D), BUT I don't see the same level of policying
-> or filtering applied anywhere in the proposed RFCs, especially to protect
-> the Host which at the end is supposed to use the same Linux subsystems and
-> possibly share some of those resources for its own needs.
->
-> I saw the Base protocol basic implementation you provided to expose the
-> supported backend protocols to the VMs, it would be useful to see how
-> you plan to handle something like the Clock protocol you mention in the
-> example below. (if you have Clock protocol backend that as WIP already
-> would be interesting to see it...)
->
-> Another issue/criticality that comes to my mind is how do you gather in
-> general basic resources states/descriptors from the existing Linux subsystems
-> (even leaving out any policying concerns): as an example, how do you gather
-> from the Host Clock framework the list of available clocks and their rates
-> descriptors that you're going expose to a specific VMs once this latter will
-> issue the related SCMI commands to get to know which SCMI Clock domain are
-> available ?
-> (...and I mean in a dynamic way not using a builtin per-platform baked set of
->  resources known to be made available... I doubt that any sort of DT
->  description would be accepted in this regards ...)
->
-> >
-> > 1. Architecture overview
-> > ---------------------
-> >
-> > Below diagram shows the overall software architecture of SCMI communication
-> > between guest VM and the host software. In this diagram, guest is a linux
-> > VM; also, host uses KVM linux.
-> >
-> >          GUEST VM                   HOST
-> >  +--------------------+    +---------------------+    +--------------+
-> >  |   a. Device A      |    |   k. Device B       |    |      PLL     |
-> >  |  (Clock consumer)  |    |  (Clock consumer)   |    |              |
-> >  +--------------------+    +---------------------+    +--------------+
-> >           |                         |                         ^
-> >           v                         v                         |
-> >  +--------------------+    +---------------------+    +-----------------+
-> >  | b. Clock Framework |    | j. Clock Framework  | -->| l. Clock Driver |
-> >  +-- -----------------+    +---------------------+    +-----------------+
-> >           |                         ^
-> >           v                         |
-> >  +--------------------+    +------------------------+
-> >  |  c. SCMI Clock     |    | i. SCMI Virtio Backend |
-> >  +--------------------+    +------------------------+
-> >           |                         ^
-> >           v                         |
-> >  +--------------------+    +----------------------+
-> >  |  d. SCMI Virtio    |    |   h. SCMI Vhost      |<-----------+
-> >  +--------------------+    +----------------------+            |
-> >           |                         ^                          |
-> >           v                         |                          |
-> > +-------------------------------------------------+    +-----------------+
-> > |              e. Virtio Infra                    |    |    g. VMM       |
-> > +-------------------------------------------------+    +-----------------+
-> >           |                         ^                           ^
-> >           v                         |                           |
-> > +-------------------------------------------------+             |
-> > |                f. Hypervisor                    |-------------
-> > +-------------------------------------------------+
-> >
->
-> Looking at the above schema and thinking out loud where any dynamic
-> policying against the resources can fit (..and trying desperately NOT to push
-> that into the Kernel too :P...) ... I think that XEN was trying something similar
-> (with a real backend SCMI platform FW at the end of the pipe though I think...) and
-> in their case the per-VMs resource allocation was performed using SCMI
-> BASE_SET_DEVICE_PERMISSIONS commands issued by the Hypervisor/VMM itself
-> I think or by a Dom0 elected as a trusted agent and so allowed to configure
-> such resource partitioning ...
->
-> https://www.mail-archive.com/xen-devel@lists.xenproject.org/msg113868.html
->
-> ...maybe a similar approach, with some sort of SCMI Trusted Agent living within
-> the VMM and in charge of directing such resources' partitioning between
-> VMs by issuing BASE_SET_DEVICE_PERMISSIONS towards the Kernel SCMI Virtio
-> Backend, could help keeping at least the policy bits related to the VMs out of
-> the kernel/DTs and possibly dynamically configurable following VMs lifecycle.
->
-> Even though, in our case ALL the resource management by device ID would have to
-> happen in the Kernel SCMI backend at the end, given that is where the SCMI
-> platform resides indeed, BUT at least you could keep the effective policy out of
-> kernel space, doing something like:
->
-> 1. VMM/TrustedAgent query Kernel_SCMI_Virtio_backend for available resources
->
-> 2. VMM/TrustedAg decides resources allocation between VMs (and/or possibly the Host
->    based on some configured policy)
->
-> 3. VMM/TrustedAgent issues BASE_SET_DEVICE_PERMISSIONS/PROTOCOLS to the
->    Kernel_SCMI_Virtio_backend
->
-> 4. Kernel_SCMI_Virtio_backend enforces resource partioning and sharing
->    when processing subsequent VMs SCMI requests coming via Vhost-SCMI
->
-> ...where the TrustedAgent here could be (I guess) the VMM or the Host or
-> both with different level of privilege if you don't want the VMM to be able
-> to configure resources access for the whole Host.
->
-> > a. Device A             This is the client kernel driver in guest VM,
-> >                         for ex. diplay driver, which uses standard
-> >                         clock framework APIs to vote for a clock.
-> >
-> > b. Clock Framework      Underlying kernel clock framework on
-> >                         guest.
-> >
-> > c. SCMI Clock           SCMI interface based clock driver.
-> >
-> > d. SCMI Virtio          Underlying SCMI framework, using Virtio as
-> >                         transport driver.
-> >
-> > e. Virtio Infra         Virtio drivers on guest VM. These drivers
-> >                         initiate virtqueue requests over Virtio
-> >                         transport (MMIO/PCI), and forwards response
-> >                         to SCMI Virtio registered callbacks.
-> >
-> > f. Hypervisor           Hosted Hypervisor (KVM for ex.), which traps
-> >                         and forwards requests on virtqueue ring
-> >                         buffers to the VMM.
-> >
-> > g. VMM                  Virtual Machine Monitor, running on host userspace,
-> >                         which manages the lifecycle of guest VMs, and forwards
-> >                         guest initiated virtqueue requests as IOCTLs to the
-> >                         Vhost driver on host.
-> >
-> > h. SCMI Vhost           In kernel driver, which handles SCMI virtqueue
-> >                         requests from guest VMs. This driver forwards the
-> >                         requests to SCMI Virtio backend driver, and returns
-> >                         the response from backend, over the virtqueue ring
-> >                         buffers.
-> >
-> > i. SCMI Virtio Backend  SCMI backend, which handles the incoming SCMI messages
-> >                         from SCMI Vhost driver, and forwards them to the
-> >                         backend protocols like clock and voltage protocols.
-> >                         The backend protocols uses the host apis for those
-> >                         resources like clock APIs provided by clock framework,
-> >                         to vote/request for the resource. The response from
-> >                         the host api is parceled into a SCMI response message,
-> >                         and is returned to the SCMI Vhost driver. The SCMI
-> >                         Vhost driver in turn, returns the reponse over the
-> >                         Virtqueue reponse buffers.
-> >
->
-> Last but not least, this SCMI Virtio Backend layer in charge of
-> processing incoming SCMI packets, interfacing with the Linux subsystems
-> final backend and building SCMI replies from Linux will introduce a
-> certain level of code/funcs duplication given that this same SCMI basic
-> processing capabilities have been already baked in the SCMI stacks found in
-> SCP and in TF-A (.. and maybe a few other other proprietary backends)...
->
-> ... but this is something maybe to be addressed in general in a
-> different context not something that can be addressed by this series.
->
-> Sorry for the usual flood of words :P ... I'll have a more in deep
-> review of the series in the next days, for now I wanted just to share my
-> concerns and (maybe wrong) understanding and see what you or Sudeep and
-> Souvik think about.
->
-> Thanks,
-> Cristian
->
+For upper level code that needs to know if a given log item is new
+enough not to need relogging, add a new wrapper that takes the CIL
+context lock long enough to sample the current CIL context.  This is
+kind of racy in that the CIL can switch the contexts immediately after
+sampling, but that's ok because the consequence is that the defer ops
+code is a little slow to relog items.
+
+ ==================================================================
+ BUG: KASAN: use-after-free in xfs_log_item_in_current_chkpt+0x139/0x160 [xfs]
+ Read of size 8 at addr ffff88804ea5f608 by task fsstress/527999
+
+ CPU: 1 PID: 527999 Comm: fsstress Tainted: G      D      5.16.0-rc4-xfsx #rc4
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x45/0x59
+  print_address_description.constprop.0+0x1f/0x140
+  kasan_report.cold+0x83/0xdf
+  xfs_log_item_in_current_chkpt+0x139/0x160
+  xfs_defer_finish_noroll+0x3bb/0x1e30
+  __xfs_trans_commit+0x6c8/0xcf0
+  xfs_reflink_remap_extent+0x66f/0x10e0
+  xfs_reflink_remap_blocks+0x2dd/0xa90
+  xfs_file_remap_range+0x27b/0xc30
+  vfs_dedupe_file_range_one+0x368/0x420
+  vfs_dedupe_file_range+0x37c/0x5d0
+  do_vfs_ioctl+0x308/0x1260
+  __x64_sys_ioctl+0xa1/0x170
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f2c71a2950b
+ Code: 0f 1e fa 48 8b 05 85 39 0d 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff
+ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 8b 0d 55 39 0d 00 f7 d8 64 89 01 48
+ RSP: 002b:00007ffe8c0e03c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+ RAX: ffffffffffffffda RBX: 00005600862a8740 RCX: 00007f2c71a2950b
+ RDX: 00005600862a7be0 RSI: 00000000c0189436 RDI: 0000000000000004
+ RBP: 000000000000000b R08: 0000000000000027 R09: 0000000000000003
+ R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000005a
+ R13: 00005600862804a8 R14: 0000000000016000 R15: 00005600862a8a20
+  </TASK>
+
+ Allocated by task 464064:
+  kasan_save_stack+0x1e/0x50
+  __kasan_kmalloc+0x81/0xa0
+  kmem_alloc+0xcd/0x2c0 [xfs]
+  xlog_cil_ctx_alloc+0x17/0x1e0 [xfs]
+  xlog_cil_push_work+0x141/0x13d0 [xfs]
+  process_one_work+0x7f6/0x1380
+  worker_thread+0x59d/0x1040
+  kthread+0x3b0/0x490
+  ret_from_fork+0x1f/0x30
+
+ Freed by task 51:
+  kasan_save_stack+0x1e/0x50
+  kasan_set_track+0x21/0x30
+  kasan_set_free_info+0x20/0x30
+  __kasan_slab_free+0xed/0x130
+  slab_free_freelist_hook+0x7f/0x160
+  kfree+0xde/0x340
+  xlog_cil_committed+0xbfd/0xfe0 [xfs]
+  xlog_cil_process_committed+0x103/0x1c0 [xfs]
+  xlog_state_do_callback+0x45d/0xbd0 [xfs]
+  xlog_ioend_work+0x116/0x1c0 [xfs]
+  process_one_work+0x7f6/0x1380
+  worker_thread+0x59d/0x1040
+  kthread+0x3b0/0x490
+  ret_from_fork+0x1f/0x30
+
+ Last potentially related work creation:
+  kasan_save_stack+0x1e/0x50
+  __kasan_record_aux_stack+0xb7/0xc0
+  insert_work+0x48/0x2e0
+  __queue_work+0x4e7/0xda0
+  queue_work_on+0x69/0x80
+  xlog_cil_push_now.isra.0+0x16b/0x210 [xfs]
+  xlog_cil_force_seq+0x1b7/0x850 [xfs]
+  xfs_log_force_seq+0x1c7/0x670 [xfs]
+  xfs_file_fsync+0x7c1/0xa60 [xfs]
+  __x64_sys_fsync+0x52/0x80
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ The buggy address belongs to the object at ffff88804ea5f600
+  which belongs to the cache kmalloc-256 of size 256
+ The buggy address is located 8 bytes inside of
+  256-byte region [ffff88804ea5f600, ffff88804ea5f700)
+ The buggy address belongs to the page:
+ page:ffffea00013a9780 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88804ea5ea00 pfn:0x4ea5e
+ head:ffffea00013a9780 order:1 compound_mapcount:0
+ flags: 0x4fff80000010200(slab|head|node=1|zone=1|lastcpupid=0xfff)
+ raw: 04fff80000010200 ffffea0001245908 ffffea00011bd388 ffff888004c42b40
+ raw: ffff88804ea5ea00 0000000000100009 00000001ffffffff 0000000000000000
+ page dumped because: kasan: bad access detected
+
+ Memory state around the buggy address:
+  ffff88804ea5f500: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff88804ea5f580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ >ffff88804ea5f600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                       ^
+  ffff88804ea5f680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88804ea5f700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ==================================================================
+
+Fixes: 4e919af7827a ("xfs: periodically relog deferred intent items")
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/xfs/xfs_log_cil.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/fs/xfs/xfs_log_cil.c
++++ b/fs/xfs/xfs_log_cil.c
+@@ -1442,9 +1442,9 @@ out_shutdown:
+  */
+ bool
+ xfs_log_item_in_current_chkpt(
+-	struct xfs_log_item *lip)
++	struct xfs_log_item	*lip)
+ {
+-	struct xfs_cil_ctx *ctx = lip->li_mountp->m_log->l_cilp->xc_ctx;
++	struct xfs_cil		*cil = lip->li_mountp->m_log->l_cilp;
+ 
+ 	if (list_empty(&lip->li_cil))
+ 		return false;
+@@ -1454,7 +1454,7 @@ xfs_log_item_in_current_chkpt(
+ 	 * first checkpoint it is written to. Hence if it is different to the
+ 	 * current sequence, we're in a new checkpoint.
+ 	 */
+-	return lip->li_seq == ctx->sequence;
++	return lip->li_seq == READ_ONCE(cil->xc_current_sequence);
+ }
+ 
+ /*
+
+
