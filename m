@@ -2,89 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52962C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C162C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbiF3VnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 17:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
+        id S235133AbiF3Vnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiF3VnI (ORCPT
+        with ESMTP id S229691AbiF3Vnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 17:43:08 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0160AB3E
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:43:07 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-31780ad7535so6238957b3.8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:43:06 -0700 (PDT)
+        Thu, 30 Jun 2022 17:43:42 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9570453ED0;
+        Thu, 30 Jun 2022 14:43:41 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id s10so286213ljh.12;
+        Thu, 30 Jun 2022 14:43:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dMHt42bJ1YlW7qsjn88JwOKrZtD6Yx+xury8B4lI9tk=;
-        b=QZX9HPFJkD9+fzjjZWsSCiOlE2J/2LsSXswBgBMfa0v9fHzcoWvnjb3VEHfacRDxYt
-         p83HHAoDzMPStKdrx0jpo73c8H8L9bqEGASwti9PF8dOP3fCoFE5oH/ju2WQmAQFEEIu
-         2Xz2bGf3ke5KIZ7wLDOHukz6+UP1FeL/mHrTRw4YBe0bei7LrMaWHv9MK4+4nSVTMqqG
-         ymgvGNvQO0Nd0WelNyhtBiIiaOFrQcB9iNsxPXb3n1Ms9Cifpj/jY5RcFc0VRFuYaxzm
-         5n57zZG1SqXMuAv13Cm4jvQDrnSDsKNEgKpD6Nce8ZdKUymPJnZdqir5kYHPe0ea6UPb
-         aTTw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m2lAzkI1kyUA6X4SSjR8xwr1vZy0wQogLl8c1xpaHQU=;
+        b=lrWda6wWNqrPSJmZGSOm1ISr7wKduLFWi1rtfL/yScVS9rHmDVD4N/9zCj+VSJ1+Oa
+         FO9NZKuJMIQLUjdIYTiAb8HTBGYm+o9Ez2NIlum6kfuR5+fovJBM/7p+CV2LxVlJ3E6G
+         KbNf1TNhzph7T0TL/sDQ4Hw8iQagGqS9jY2lgDmk2pKIsLr0eEUC7CM3K/ir9SVbBuVr
+         mnIbczJybBGXfmK7KjkwqGLjfxGX15NKjz6h67HEK5siEgqdufHy9gcSjXVGAN/0WIOu
+         yx7sM7I+pjTlcSePBegIfy7IPhw66UH8cQ9c4cOTJEpeHnzk0zgK/utetinXxDnU/V10
+         Rp3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dMHt42bJ1YlW7qsjn88JwOKrZtD6Yx+xury8B4lI9tk=;
-        b=mzOD/MHWbDe94L0KnIbUB4RSOXttoAOmXnhZI8LKicT2eyoZFQohrWzUSVKq3bjNlj
-         RMDA+jbN8ZOBA1m7inKbuc2V0dvaqD3cKJbB+xdu7FBkeHUul/ltHRmiu3EmRHIO+nzh
-         8mFZazWgf9hRBBdooGQGuzwLzPiudfjTZrWRtQytgP985Bze2UViEEd/7Qm5TCJHmQg2
-         ek7CrgWmHFLeE+naV/Ff3CBwm7MBel9kj7HaLxSproIg+R0N6Hhn7G+/NpH6ONzfG1Zo
-         3jc4mzqn0ICdck3cqKygXHh3QWKAGT/ZhxVUn4fZVBRMRzC3a2EHMuBqYrJlhPLtVcad
-         eReQ==
-X-Gm-Message-State: AJIora9lTLG67uXfBtlHCYC/xtW+1a0OCXP+0sNeLus6BFAB8j352wz2
-        Uv3QGNpb1Gt+neZbOwlT4Qgo3g+9aOtpJ5V89NM=
-X-Google-Smtp-Source: AGRyM1t2UrK1hzV79ai9XXNCfm4iNtTsbANUmoYqfQmUHleEfY0pxh0cpqQXRU3xd7K+u5jePVWW1lw/QC+ZRlYpm3Q=
-X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
- j128-20020a812386000000b0031765868901mr12916894ywj.195.1656625386155; Thu, 30
- Jun 2022 14:43:06 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m2lAzkI1kyUA6X4SSjR8xwr1vZy0wQogLl8c1xpaHQU=;
+        b=k5fDSAuqcT2GPCs27EbAeTIShh9Vywl85GN/Os18d1EYLykxykL9fcxpVYX4b2QJeO
+         62H2cL2dSnWMHJDFruCcBC/91Sr6clQNh8qPCZ7M4GkbtgD4tEeT34VsJbOSjYvtRYHh
+         MekweoXEhVnWOaiKdW8AfGNJZQCRttB5gdoyUBER1XWw1ZREU8FnrrwbEbavxdYjiNvz
+         An3IpI6cxdMtrq+DGa6Vk3exw/IzTnQOvP0FbT7a4YiTns6Z1P6IXh9Zh6syHle7ED3j
+         QpllWLxpYnGTEOp34y/x1p2IHEw86ZrCg7+wJZalfivTYilGyBQDI+Iu8L0N37jFNCKS
+         FgJQ==
+X-Gm-Message-State: AJIora9TQv9SBp/5v/12RMeXsp7TNNMXROfIlIB+au45rGeWTC1iEXjb
+        nefFflRReizELTHq8l74LT4=
+X-Google-Smtp-Source: AGRyM1tiXOSoDewIDtJQjZ6heJh2v6Etx9okcGhLJIyxUHhTxknHodjEWzqlCQs2mLldDoYhOHP8Ow==
+X-Received: by 2002:a2e:a793:0:b0:25a:74f4:b377 with SMTP id c19-20020a2ea793000000b0025a74f4b377mr6429372ljf.177.1656625419868;
+        Thu, 30 Jun 2022 14:43:39 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id v22-20020ac258f6000000b00478f739f1fdsm3296894lfo.103.2022.06.30.14.43.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 14:43:39 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 00:43:36 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Conor Dooley <mail@conchuod.ie>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Dillon Min <dillon.minfei@gmail.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v3 04/15] spi: dt-bindings: dw-apb-ssi: update
+ spi-{r,t}x-bus-width
+Message-ID: <20220630214336.tyhll4ldrgdibnjv@mobilestation>
+References: <20220629184343.3438856-1-mail@conchuod.ie>
+ <20220629184343.3438856-5-mail@conchuod.ie>
 MIME-Version: 1.0
-References: <20220629235326.480858-1-justinstitt@google.com> <20220630195738.904505-1-justinstitt@google.com>
-In-Reply-To: <20220630195738.904505-1-justinstitt@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 30 Jun 2022 23:42:28 +0200
-Message-ID: <CAHp75VfYPfvcySRJboSO8YsXTfO61j7QM=mYrDDPJquRAwzw0A@mail.gmail.com>
-Subject: Re: [PATCH v2] lib/test_printf.c: fix clang -Wformat warnings
-To:     Justin Stitt <justinstitt@google.com>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev, Andy Shevchenko <andy@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629184343.3438856-5-mail@conchuod.ie>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 9:59 PM Justin Stitt <justinstitt@google.com> wrote:
->
-> changes from v1:
-> * moved NOWARN macro definition to a more appropriate location
-> * using __diag_ignore_all (thanks Nathan)
-> * using local scoping for code blocks instead of __VA_ARGS__ (thanks Nick)
-> * indented affected test cases (thanks Andy)
->
-> Suggested-by: Andy Shevchenko <andy@kernel.org>
-> Suggested-by: Nathan Chancellor <nathan@kernel.org>
-> Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: Justin Stitt <justinstitt@google.com>
+On Wed, Jun 29, 2022 at 07:43:33PM +0100, Conor Dooley wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
+> 
+> Most users of dw-apb-ssi use spi-{r,t}x-bus-width of 1, however the
+> Canaan k210 is wired up for a width of 4.
+> Quoting Serge:
+> The modern DW APB SSI controllers of v.4.* and newer also support the
+> enhanced SPI Modes too (Dual, Quad and Octal). Since the IP-core
+> version is auto-detected at run-time there is no way to create a
+> DT-schema correctly constraining the Rx/Tx SPI bus widths.
+> /endquote
+> 
+> As such, drop the restriction on only supporting a bus width of 1.
 
-Somehow you replaced the commit message with a changelog. On top of
-that, I didn't suggest anything important here, so to me it is
-considered as a credit in the changelog (see previous sentence as
-well).
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
 
--- 
-With Best Regards,
-Andy Shevchenko
+-Sergey
+
+> 
+> Link: https://lore.kernel.org/all/20220620205654.g7fyipwytbww5757@mobilestation/
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+> index e25d44c218f2..0a43d6e0ef91 100644
+> --- a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+> +++ b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+> @@ -143,12 +143,6 @@ patternProperties:
+>          minimum: 0
+>          maximum: 3
+>  
+> -      spi-rx-bus-width:
+> -        const: 1
+> -
+> -      spi-tx-bus-width:
+> -        const: 1
+> -
+>  unevaluatedProperties: false
+>  
+>  required:
+> -- 
+> 2.36.1
+> 
