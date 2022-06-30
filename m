@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA42C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 818B6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235949AbiF3OAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
+        id S236260AbiF3OAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236310AbiF3N6a (ORCPT
+        with ESMTP id S236677AbiF3N7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:58:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251EB53D11;
-        Thu, 30 Jun 2022 06:51:34 -0700 (PDT)
+        Thu, 30 Jun 2022 09:59:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B52A43ACA;
+        Thu, 30 Jun 2022 06:52:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C52C62007;
-        Thu, 30 Jun 2022 13:51:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 177CDC34115;
-        Thu, 30 Jun 2022 13:51:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC2ADB82AEE;
+        Thu, 30 Jun 2022 13:52:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2688CC34115;
+        Thu, 30 Jun 2022 13:52:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597075;
-        bh=4Vv60tBOAMha/ZVrRLQhs4TgCQHcnlTaoRylK8s+OYA=;
+        s=korg; t=1656597130;
+        bh=lynNmqUTALptzUVLbax4AmHyXm0rYgSU4JJpNKNimgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=usgGzKDX+a3IcMLD1CdnaJ7LGdrzhVkfM5TU6ZeFbkELiWjb8jaBFqGOqmK8m/wIR
-         iHgrrCYLS2ScyW98uexZkcwkVuBiq6nxBZMg00vHKqGgPylTbUWtQasFsIEwRZxIiF
-         o2agVttgemrKCEuIcvnrRccav9h16KnxdKTNoKGQ=
+        b=ndBbnvj2cVCChHzOmgaEjesBlIw1YurLNACL4LWSlGvgNC+MW1KVyrIVhPMl6vbF7
+         PBn4hJj3Zg6/EJk5lGpx31cdUTNTAMnn0ZRLgWOU+buVkfbAoDShPpFX7NDOBLaq5Z
+         YS/FlXC1/D0MuRKggQmECGBV6BTaHAp9eBWmfroM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 19/49] virtio_net: fix xdp_rxq_info bug after suspend/resume
-Date:   Thu, 30 Jun 2022 15:46:32 +0200
-Message-Id: <20220630133234.472747705@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 4.19 37/49] soc: bcm: brcmstb: pm: pm-arm: Fix refcount leak in brcmstb_pm_probe
+Date:   Thu, 30 Jun 2022 15:46:50 +0200
+Message-Id: <20220630133234.976737633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -52,115 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 8af52fe9fd3bf5e7478da99193c0632276e1dfce ]
+commit 37d838de369b07b596c19ff3662bf0293fdb09ee upstream.
 
-The following sequence currently causes a driver bug warning
-when using virtio_net:
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-  # ip link set eth0 up
-  # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
-  <resume>
-  # ip link set eth0 down
+In brcmstb_init_sram, it pass dn to of_address_to_resource(),
+of_address_to_resource() will call of_find_device_by_node() to take
+reference, so we should release the reference returned by
+of_find_matching_node().
 
-  Missing register, driver bug
-  WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
-  Call trace:
-   xdp_rxq_info_unreg+0x58/0x60
-   virtnet_close+0x58/0xac
-   __dev_close_many+0xac/0x140
-   __dev_change_flags+0xd8/0x210
-   dev_change_flags+0x24/0x64
-   do_setlink+0x230/0xdd0
-   ...
-
-This happens because virtnet_freeze() frees the receive_queue
-completely (including struct xdp_rxq_info) but does not call
-xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
-receive_queue again but does not call xdp_rxq_info_reg().
-
-Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
-are almost identical to virtnet_close() and virtnet_open(): only
-the calls to xdp_rxq_info_(un)reg() are missing. This means that
-we can fix this easily and avoid such problems in the future by
-just calling virtnet_close()/open() from the freeze/restore handlers.
-
-Aside from adding the missing xdp_rxq_info calls the only difference
-is that the refill work is only cancelled if netif_running(). However,
-this should not make any functional difference since the refill work
-should only be active if the network interface is actually up.
-
-Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220621114845.3650258-1-stephan.gerhold@kernkonzept.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0b741b8234c8 ("soc: bcm: brcmstb: Add support for S2/S3/S5 suspend states (ARM)")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/virtio_net.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+ drivers/soc/bcm/brcmstb/pm/pm-arm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 1a8fe5bacb19..415b26c80fe7 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2315,7 +2315,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
- static void virtnet_freeze_down(struct virtio_device *vdev)
- {
- 	struct virtnet_info *vi = vdev->priv;
--	int i;
- 
- 	/* Make sure no work handler is accessing the device */
- 	flush_work(&vi->config_work);
-@@ -2323,14 +2322,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
- 	netif_tx_lock_bh(vi->dev);
- 	netif_device_detach(vi->dev);
- 	netif_tx_unlock_bh(vi->dev);
--	cancel_delayed_work_sync(&vi->refill);
--
--	if (netif_running(vi->dev)) {
--		for (i = 0; i < vi->max_queue_pairs; i++) {
--			napi_disable(&vi->rq[i].napi);
--			virtnet_napi_tx_disable(&vi->sq[i].napi);
--		}
--	}
-+	if (netif_running(vi->dev))
-+		virtnet_close(vi->dev);
- }
- 
- static int init_vqs(struct virtnet_info *vi);
-@@ -2338,7 +2331,7 @@ static int init_vqs(struct virtnet_info *vi);
- static int virtnet_restore_up(struct virtio_device *vdev)
- {
- 	struct virtnet_info *vi = vdev->priv;
--	int err, i;
-+	int err;
- 
- 	err = init_vqs(vi);
- 	if (err)
-@@ -2347,15 +2340,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
- 	virtio_device_ready(vdev);
- 
- 	if (netif_running(vi->dev)) {
--		for (i = 0; i < vi->curr_queue_pairs; i++)
--			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
--				schedule_delayed_work(&vi->refill, 0);
--
--		for (i = 0; i < vi->max_queue_pairs; i++) {
--			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
--			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
--					       &vi->sq[i].napi);
--		}
-+		err = virtnet_open(vi->dev);
-+		if (err)
-+			return err;
+--- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
++++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+@@ -788,6 +788,7 @@ static int brcmstb_pm_probe(struct platf
  	}
  
- 	netif_tx_lock_bh(vi->dev);
--- 
-2.35.1
-
+ 	ret = brcmstb_init_sram(dn);
++	of_node_put(dn);
+ 	if (ret) {
+ 		pr_err("error setting up SRAM for PM\n");
+ 		return ret;
 
 
