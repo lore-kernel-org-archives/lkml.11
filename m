@@ -2,104 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D7BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237130AbiF3Ogb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39906 "EHLO
+        id S237099AbiF3Og5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiF3Of7 (ORCPT
+        with ESMTP id S237151AbiF3Ogl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:35:59 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1923FDAD
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 07:26:22 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-1048b8a38bbso25967022fac.12
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 07:26:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wsN5IUSis3Z9MkPYvhHUE1vLfPsFtgly3iXAQhTJWNs=;
-        b=K87adrRImCtI+NFBDR3YsxzkNDDTMpvENdbkPaLP+nxxuS72mCCtGz/XQCfE+A78sH
-         9JQbOp6wGbR1VYqR206soj2MfK2ZhIyEliPCHJhP76JTM1PrmW/9n2myfUJmpk6b8gCZ
-         GFymIXtYfm1ZUHYDTZho75chrqwc1rFc/+C/XUUuq9cpqCkGxQSwJOr2bJZOUGHdGd0l
-         hPAvA3P2/ZgjNt9bb1PoWoBuFRaBBbyO2MSOXpoVlCAZj+Ui+zsyoIDtpzY99S94hyCp
-         Bi7BAW5nQIpY+cgrB5YQriVP6UQGfqYjO83iW9GRXJtlXVoUNfdE38p7z41NenMPDg4z
-         QROw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wsN5IUSis3Z9MkPYvhHUE1vLfPsFtgly3iXAQhTJWNs=;
-        b=ZeCbhQYBNkzZkN1hfdzh16SV5UGBBrubVRsrlFTqEjMag1EmeaGCdgUR+ApvQEHPR4
-         u1gckq4hrBf2l5fmQMnUx74Ewxn5JEljlgODUZ1Sfvr8JPxxstL03l/Fv4cy2kXkMD2U
-         wPAfchmVNIooFbgwux9tV510V/NKxiueDPAQjCKuG6iMjwm8BF7IgIBjqncbNnBwZdfd
-         hGOMZ+VCEHNOCfpuKaF1pTfsGaWe/bZeTXP+80PeG/B/AkXZyl2N/nDib7BnMAyWG5ds
-         U6ds9hGHIpvxmHQyqnVNonpVwGUAz/PJMD1fYur5gkIZmPgqZB7LyqikkDLSSW8MNdh/
-         Ct5w==
-X-Gm-Message-State: AJIora+y4GMrUi0yvdmN5GrBjfw06HysecZrMGGbu58IjYdrAsdGewt2
-        Qt3szYtgZTTrgca6P2XXFR+E+w==
-X-Google-Smtp-Source: AGRyM1v2y5Xuo0LcBAt3msFqvHWw/E5JzfujPBz3bluqhmVvGK2L29ZVowaTFD6z/Y4p2A4LrnNO2A==
-X-Received: by 2002:a05:6870:b381:b0:fe:2004:b3b5 with SMTP id w1-20020a056870b38100b000fe2004b3b5mr5824807oap.63.1656599181559;
-        Thu, 30 Jun 2022 07:26:21 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id e12-20020a056870d10c00b0010490c6b552sm13054066oac.35.2022.06.30.07.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 07:26:20 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 09:26:19 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rajendra Nayak <quic_rjendra@quicinc.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v5 1/4] dt-bindings: interconnect:
- qcom,msm8998-cpu-bwmon: add BWMON device
-Message-ID: <Yr2yi+Zl6m+JD69j@builder.lan>
-References: <20220629075250.17610-1-krzysztof.kozlowski@linaro.org>
- <20220629075250.17610-2-krzysztof.kozlowski@linaro.org>
- <7d1fe567-6dd7-a6e0-08bf-225e8d515931@quicinc.com>
+        Thu, 30 Jun 2022 10:36:41 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFCD58FC1;
+        Thu, 30 Jun 2022 07:29:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656599392; x=1688135392;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wQpzAJXTo7Bhnhsk3imUJSwSv9/OyCu1er02rRF6zKA=;
+  b=OOdEHLEFZ5SJXDev514ghXyhkZpYLlHGYz24gYfPWtUVC4pINjPvVI3K
+   49jPUiiM+B3cQnvSiFlUGyJqBguYztEDhTdaAU7/ahzuiT0YJh8x5sD6Y
+   vs7wvxZ77oCCWKXEUpai0eRiDBQmKhgBFKQxexU/wbbm/CkUG+7MpDqyW
+   ZqvZKtWgQpJ9NTJmJkvFM1tFXOdxNT2eOaDOHGC3+jfx+XIb+xkUdKOxX
+   X4sQJfHqiQtsbzbd8gxpXR2T8iDczy1HqpIIomXQtpics7445R6JGAbBf
+   oDq++A9lv/U8S9Y8PKk/0UFpA947vDUJfffwkGyHVZSv3XtYWtwKDPSdz
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="281127819"
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="281127819"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 07:29:52 -0700
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="647912693"
+Received: from ahajda-mobl.ger.corp.intel.com (HELO [10.213.25.211]) ([10.213.25.211])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 07:29:44 -0700
+Message-ID: <95e834e2-bd6f-efd9-28d2-9e983f9de7ae@intel.com>
+Date:   Thu, 30 Jun 2022 16:29:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7d1fe567-6dd7-a6e0-08bf-225e8d515931@quicinc.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [Intel-gfx] [PATCH] drm/i915: Remove __dma_fence_is_chain()
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
+Cc:     Rob Clark <robdclark@chromium.org>,
+        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>
+References: <20220628233512.439555-1-robdclark@gmail.com>
+From:   Andrzej Hajda <andrzej.hajda@intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
+ Gdansk - KRS 101882 - NIP 957-07-52-316
+In-Reply-To: <20220628233512.439555-1-robdclark@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 29 Jun 06:21 CDT 2022, Rajendra Nayak wrote:
+On 29.06.2022 01:35, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> drive-by cleanup
+> 
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 
-> 
-> > This BWMON device sits between
-> > CPU and Last Level Cache Controller.
-> 
-> []...
-> 
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> > +      - items:
-> > +          - enum:
-> > +              - qcom,sdm845-cpu-bwmon
-> 
-> should this be qcom,sdm845-llcc-bwmon instead since it actually
-> tells us the llcc bw values?
-> That way perhaps the other one between llcc and DDR can be
-> qcom,sdm845-ddr-bwmon.
-> 
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
 
-My understanding is that this bwmon instance measures the data
-throughput on the CPU subsystem-ports and that the bwmon5 instance
-measures the traffic from the memnoc towards LLCC and DDR.
+Regards
+Andrzej
 
-Which matches the downstream naming of bwmon4 == cpu, bwmon5 == llcc.
+> ---
+>   drivers/gpu/drm/i915/gem/i915_gem_wait.c | 7 +------
+>   1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_wait.c b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+> index 319936f91ac5..667841780514 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+> @@ -73,11 +73,6 @@ static void fence_set_priority(struct dma_fence *fence,
+>   	rcu_read_unlock();
+>   }
+>   
+> -static inline bool __dma_fence_is_chain(const struct dma_fence *fence)
+> -{
+> -	return fence->ops == &dma_fence_chain_ops;
+> -}
+> -
+>   void i915_gem_fence_wait_priority(struct dma_fence *fence,
+>   				  const struct i915_sched_attr *attr)
+>   {
+> @@ -93,7 +88,7 @@ void i915_gem_fence_wait_priority(struct dma_fence *fence,
+>   
+>   		for (i = 0; i < array->num_fences; i++)
+>   			fence_set_priority(array->fences[i], attr);
+> -	} else if (__dma_fence_is_chain(fence)) {
+> +	} else if (dma_fence_is_chain(fence)) {
+>   		struct dma_fence *iter;
+>   
+>   		/* The chain is ordered; if we boost the last, we boost all */
 
-Regards,
-Bjorn
