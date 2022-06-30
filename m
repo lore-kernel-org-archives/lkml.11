@@ -2,89 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4159CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 05:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6E6CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 05:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiF3FvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 01:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
+        id S231529AbiF3FyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 01:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiF3FvM (ORCPT
+        with ESMTP id S229479AbiF3FyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 01:51:12 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4C228E3C;
-        Wed, 29 Jun 2022 22:51:10 -0700 (PDT)
-X-UUID: 36ac529d667f431184cbaed831aea1c2-20220630
-X-GW-Reason: 13103
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 71
-        dict/adv 1
-        dict/contack 1
-        dict/notice 2
-        dict/time 2
-        meta/cnt.alert 1
-X-CPASD-INFO: 185bdac36a0b4b8ea920b9b216776b2e@eohvgpGTkWNigXKug6WDn4FqYmCSZYK
-        Bc3BXZ2SSXoWVgnxsTWBnX1OEgnBQYl5dZFZ3dG9RYmBgYlB_i4Jyj1RgXmCCVHSTgHNyVZKSkQ==
-X-CLOUD-ID: 185bdac36a0b4b8ea920b9b216776b2e
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:187.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:87.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5.
-        0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-5
-        ,AUF:9,DUF:235,ACD:3,DCD:3,SL:0,EISP:0,AG:0,CFC:0.448,CFSR:0.072,UAT:0,RAF:0,
-        IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EAF:0
-        ,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: 36ac529d667f431184cbaed831aea1c2-20220630
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1
-X-UUID: 36ac529d667f431184cbaed831aea1c2-20220630
-X-User: xiongxin@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <xiongxin@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1347455063; Thu, 30 Jun 2022 08:57:51 +0800
-From:   xiongxin <xiongxin@kylinos.cn>
-To:     rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz,
-        xiongxin@kylinos.cn, luriwen@kylinos.cn
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 -next 0/2] PM: suspend: Optimized suspend is fail returned by wakeup
-Date:   Thu, 30 Jun 2022 08:57:16 +0800
-Message-Id: <20220630005718.309178-1-xiongxin@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 30 Jun 2022 01:54:16 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B143C2BB27;
+        Wed, 29 Jun 2022 22:54:14 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 013051A09D4;
+        Thu, 30 Jun 2022 07:54:13 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B84B71A06F8;
+        Thu, 30 Jun 2022 07:54:12 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id E7FC2180222C;
+        Thu, 30 Jun 2022 13:54:10 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/6] Add support of two Audio PLL source
+Date:   Thu, 30 Jun 2022 13:39:08 +0800
+Message-Id: <1656567554-32122-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v2:
-* fix a build test ERROR reported by kernel test robot.
-* Increase the initial value of the pm_suspend_target_state variable to
-  prevent the situation where it was not assigned before the call from
-  freeze_process().
+i.MX8MQ/MN/MM/MP platforms typically have 2 AUDIO PLLs being
+configured to handle 8kHz and 11kHz series audio rates.
 
-Cover letter from v1:
+The patches implement the functionality to select at runtime
+the appropriate AUDIO PLL for root clock, if there is no
+two PLL registered, then no action taken.
 
-When the suspend process is executed from the /sys/power/state entry,
-the pm_wakeup_clear() signal is cleared in advance, and the wakeup
-signal can be captured to fail the suspend process when the suspend
-process is notified by the notifier;
+Shengjiu Wang (6):
+  ASoC: fsl_utils: Add function to handle PLL clock source
+  ASoC: fsl_spdif: Add support for PLL switch at runtime.
+  ASoC: fsl_micfil: Add support for PLL switch at runtime
+  ASoC: fsl_sai: Add support for PLL switch at runtime
+  ASoC: dt-bindings: fsl_spdif: Add two PLL clock source
+  ASoC: dt-bindings: fsl-sai: Add two PLL clock source
 
-Expanding the scope of the pm_suspend_target_state variable also allows
-the device driver to know that the system has entered the suspend
-process earlier.
-
-xiongxin (2):
-  PM: suspend: expand the assignment scope of the
-    pm_suspend_target_state
-  PM: suspend: advanced pm_wakeup_clear() for normal suspend/hibernate
-
- kernel/power/process.c |  5 ++++-
- kernel/power/suspend.c | 15 ++++++++++++++-
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/sound/fsl,spdif.yaml  |  4 ++
+ .../devicetree/bindings/sound/fsl-sai.txt     |  3 +
+ sound/soc/fsl/Kconfig                         |  3 +
+ sound/soc/fsl/fsl_micfil.c                    | 41 +++++++++++
+ sound/soc/fsl/fsl_sai.c                       | 54 +++++++++++++++
+ sound/soc/fsl/fsl_sai.h                       |  2 +
+ sound/soc/fsl/fsl_spdif.c                     | 57 +++++++++++++--
+ sound/soc/fsl/fsl_utils.c                     | 69 +++++++++++++++++++
+ sound/soc/fsl/fsl_utils.h                     |  9 +++
+ 9 files changed, 237 insertions(+), 5 deletions(-)
 
 -- 
-2.25.1
+2.17.1
 
-
-No virus found
-		Checked by Hillstone Network AntiVirus
