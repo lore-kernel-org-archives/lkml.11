@@ -2,212 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A2CCCA473
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232008AbiF3XLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
+        id S232082AbiF3XLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231945AbiF3XLC (ORCPT
+        with ESMTP id S232030AbiF3XLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:11:02 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5508358FF2
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:11:00 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31780ad7535so7862377b3.8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:11:00 -0700 (PDT)
+        Thu, 30 Jun 2022 19:11:16 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A034259268
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:11:09 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id w2-20020a056830110200b00616ce0dfcb2so569254otq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:11:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S1BoFOa2LtA+D+cJfjxLFr8ByDI13+RV4RpERikla2g=;
-        b=j6G/dJbFKHnQExUqH76mXhgqPp9ZcqVNcEQ+TkrRQCB4vbElxQSuQLezKQlQ7xN+VC
-         CDDzmaQeHdxlOZOCBFq//logchR7RZDvSUc+pDl0prPBWCPWEX69BjWXjPSEp2UxoX7u
-         wDKATzphl9/JUAB/pAgWFj7XeUNfrTbYLZHtGGbwPBqb4efbEEjdJtWBbMaCbpb1rcIp
-         o6T1fs6ZC9OgDeTixalEeTj3kFaVH5X1sN++K92xWyut4jEM6I+OmHfvOw0Abh1REVAc
-         VPf1701wcHq3wjBOr+BDHBnKRAl9ol09c0TNkhO+FRlji0Jcx3/ON8sPMqhei3siga1C
-         tf6g==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/9jdD7+1+i1Lm60svXWsJgxbEFp2/Oeat9F5av8m7uY=;
+        b=ynbe5POgPeLGuOGH8qwfK+MAkOMQKMg/sOvFUIv2Lp8h7jwzaq3Iz9Q7XwCDuppnN2
+         tpYB14FFIzI4i6s90p8TCDyoGEdNHcKmwroQZQYEyC/AlK/+f8SClpsJe6Bxm28Jytn1
+         UgcHN5pqFnUtP44Pwk3l7LfPteUOYjgIjre4UZPNOKUBPhNEy4nKXNCcKvJP+oX9cUjR
+         DJYRWGwlKU8BIc0GGrWF9ztt+54fHSbBcIzeOkMwZBi2iCuWQB3jjMRflT2o/C4KIjDc
+         /1HwInPB+slMTrIH2zr9z9OwUwcr4uAhK7KcbuvvhgyysIkv7OGiPjgk6bKbpkR0ajEQ
+         TscA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S1BoFOa2LtA+D+cJfjxLFr8ByDI13+RV4RpERikla2g=;
-        b=iAI1SSuznN8EqjnT3pEyQhEguLZzNhiM4AXbXsqpa+gJBZsgQH45tewS1yIzgEcvVg
-         m67lluIO2xqU/ec8LkB1pdSmjVujtnR9ibV13VaYIzcr21NuY/eXXiOv2K6s3mPVQ4zN
-         +84qiLxSZbdxNAHp+dDFPnwrpTmc8UbllxAswgwNQwBLJYAHLE/v8DhcDx0hJL/GYxy7
-         AUKFihS6xUbO69jAvOAzI4+llWMUNh2Pc8+RWv4PSHkp6yKNsp1Esfe+/txLi20Y8qbD
-         8bV+hsD2w2rEIWN0M901vOeMRGaPdnZYAvIGaRZJEtnN0oaly+NtDazF9v8BrA0wjsjN
-         QvzA==
-X-Gm-Message-State: AJIora/dd8xZ+vrXmbMOzLsYQ4mEvIp4Gls8hy0DpGr5ONQ+qWYU0FyD
-        wZDXIA2zC0KnNC2HUXxsqxqJ8js/LqVIvqyesv1tvQ==
-X-Google-Smtp-Source: AGRyM1u13ZqWwVRME+f0vAv8E2QASlU+p6PTsPGGdH/NEQ/jIY6Gn1dbdhukUneaQ15EmMWjJGOMoC+FKq768Lix/J4=
-X-Received: by 2002:a81:a095:0:b0:317:d4ce:38b6 with SMTP id
- x143-20020a81a095000000b00317d4ce38b6mr13731218ywg.83.1656630659375; Thu, 30
- Jun 2022 16:10:59 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/9jdD7+1+i1Lm60svXWsJgxbEFp2/Oeat9F5av8m7uY=;
+        b=HkDllGfbGztdyn0zO2F5eabciNmn+zVOd5vhFLI7px0d+vj1mNJ2dtZWdBxwiUyRED
+         6j/lRCHsnb+2to1E2zfllQ8U1KlpL/UpWB6RP6jx+eZgoAD7idqiDdbMTGP+a9796GUQ
+         LCmO6NewnTI5Rl9HQRewV4Q13zHTZ7FcEbQ/2nqnpHCQ1ZBPANgIvGdtUOlbDwVTUILw
+         Q96LgSuw9O5IJEDNjtjpYIuvYJbg2o8RJvP8wVlnBmWz8d9iCtlk91lC7mwdesVDu+sH
+         Ytcj6kdMv5L2v0getaoNANIXbm1VSyDkzYyA438iybUm5/IyI49VGbxOro0i7Pv1DFh+
+         9Cnw==
+X-Gm-Message-State: AJIora8IcOe/Un2MT3bruE4QDnqd33HdkgV+Q6rPrWlFIwZ2uaeKsUOe
+        xM9LsfZ/KhdNQLcp5Nauy+Okbg==
+X-Google-Smtp-Source: AGRyM1vBfSGHeJKr39L7bBI0Wp641fmclQNLEE0MJMll9iNLLlO+JE+GUgn5SMqOlb0/rNJ9hdKpRw==
+X-Received: by 2002:a9d:754a:0:b0:616:bd96:a37e with SMTP id b10-20020a9d754a000000b00616bd96a37emr5265514otl.325.1656630668992;
+        Thu, 30 Jun 2022 16:11:08 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id n2-20020a4aa7c2000000b00420c4e021e8sm11439551oom.38.2022.06.30.16.11.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 16:11:08 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 18:11:06 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Caleb Connolly <caleb@connolly.tech>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        phone-devel@vger.kernel.org
+Subject: Re: [PATCH 1/3] input: add event codes for user programmable switch
+ events
+Message-ID: <Yr4timTL6mBlik0m@builder.lan>
+References: <20220516142158.1612109-1-caleb@connolly.tech>
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com> <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com>
-In-Reply-To: <Yrlz/P6Un2fACG98@atomide.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 30 Jun 2022 16:10:23 -0700
-Message-ID: <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516142158.1612109-1-caleb@connolly.tech>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
->
-> * Saravana Kannan <saravanak@google.com> [220623 08:17]:
-> > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
-> > >
-> > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > > > > This issue is no directly related fw_devlink. It is a side effect of
-> > > > > removing driver_deferred_probe_check_state(). We no longer return
-> > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> > > >
-> > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > > > was deleted because fw_devlink=on should have short circuited the
-> > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > > > probe function and hitting this -ENOENT failure. That's why I was
-> > > > asking the other questions.
-> > >
-> > > OK. So where is the -EPROBE_DEFER supposed to happen without
-> > > driver_deferred_probe_check_state() then?
-> >
-> > device_links_check_suppliers() call inside really_probe() would short
-> > circuit and return an -EPROBE_DEFER if the device links are created as
-> > expected.
->
-> OK
->
-> > > Hmm so I'm not seeing any supplier for the top level ocp device in
-> > > the booting case without your patches. I see the suppliers for the
-> > > ocp child device instances only.
-> >
-> > Hmmm... this is strange (that the device link isn't there), but this
-> > is what I suspected.
->
-> Yup, maybe it's because of the supplier being a device in the child
-> interconnect for the ocp.
+On Mon 16 May 09:22 CDT 2022, Caleb Connolly wrote:
 
-Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
-isn't being created.
+> Add SW_PROG{1,2,3,4} for device switches which are handled by userspace.
+> 
+> This can be used for devices with "generic" switches which are intended
+> to be user-programmable, for example OnePlus phones contain a tri-state
+> key which can be used for switching between mute/vibrate/ring, or
+> programmed by the user to perform any arbitrary actions.
+> 
+> These are analogous to the keys KEY_PROG{1,2,3,4} found on some
+> keyboards.
+> 
+> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
 
-So the aggregated view is something like (I had to set tabs = 4 space
-to fit it within 80 cols):
+This looks reasonable to me.
 
-    ocp: ocp {         <========================= Consumer
-        compatible = "simple-pm-bus";
-        power-domains = <&prm_per>; <=========== Supplier ref
+Dmitry, what do you think?
 
-                l4_wkup: interconnect@44c00000 {
-            compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
+Regards,
+Bjorn
 
-            segment@200000 {  /* 0x44e00000 */
-                compatible = "simple-pm-bus";
-
-                target-module@0 { /* 0x44e00000, ap 8 58.0 */
-                    compatible = "ti,sysc-omap4", "ti,sysc";
-
-                    prcm: prcm@0 {
-                        compatible = "ti,am3-prcm", "simple-bus";
-
-                        prm_per: prm@c00 { <========= Actual Supplier
-                            compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
-                        };
-                    };
-                };
-            };
-        };
-    };
-
-The power-domain supplier is the great-great-great-grand-child of the
-consumer. It's not clear to me how this is valid. What does it even
-mean?
-
-Rob, is this considered a valid DT?
-
-Geert, thoughts on whether this is a correct use of simple-pm-bus device?
-
-Also, how is the power domain attach/get working in this case? As far
-as I can tell, at least for "simple-pm-bus" devices, the pm domain
-attachment is happening under:
-really_probe() -> call_driver_probe -> platform_probe() ->
-dev_pm_domain_attach()
-
-So, how is the pm domain attach succeeding in the first place without
-my changes?
-
-> > Now we need to figure out why it's missing. There are only a few
-> > things that could cause this and I don't see any of those. I already
-> > checked to make sure the power domain in this instance had a proper
-> > driver with a probe() function -- if it didn't, then that's one thing
-> > that'd could have caused the missing device link. The device does seem
-> > to have a proper driver, so looks like I can rule that out.
-> >
-> > Can you point me to the dts file that corresponds to the specific
-> > board you are testing this one? I probably won't find anything, but I
-> > want to rule out some of the possibilities.
->
-> You can use the beaglebone black dts for example, that's
-> arch/arm/boot/dts/am335x-boneblack.dts and uses am33xx.dtsi for
-> ocp interconnect with simple-pm-bus.
->
-> > All the device link creation logic is inside drivers/base/core.c. So
-> > if you can look at the existing messages or add other stuff to figure
-> > out why the device link isn't getting created, that'd be handy. In
-> > either case, I'll continue staring at the DT and code to see what
-> > might be happening here.
->
-> In device_links_check_suppliers() I see these ocp suppliers:
->
-> platform ocp: device_links_check_suppliers: 1024: supplier 44e00d00.prm: link->status: 0 link->flags: 000001c0
-> platform ocp: device_links_check_suppliers: 1024: supplier 44e01000.prm: link->status: 0 link->flags: 000001c0
-> platform ocp: device_links_check_suppliers: 1024: supplier 44e00c00.prm: link->status: 0 link->flags: 000001c0
-> platform ocp: device_links_check_suppliers: 1024: supplier 44e00e00.prm: link->status: 0 link->flags: 000001c0
-> platform ocp: device_links_check_suppliers: 1024: supplier 44e01100.prm: link->status: 0 link->flags: 000001c0
-> platform ocp: device_links_check_suppliers: 1024: supplier fixedregulator0: link->status: 1 link->flags: 000001c0
->
-> No -EPROBE_DEFER is returned in device_links_check_suppliers() for
-> 44e00c00.prm supplier for beaglebone black for example, 0 gets
-> returned.
-
-Yeah, the "1c0" flags are SYNC_STATE_ONLY device links and aren't
-relevant to the issue we are seeing. Those links are being created as
-a proxy for other descendant devices of ocp that haven't been added
-yet, but are consumers of these *.prm devices. They are mainly meant
-for correctness of sync_state() callbacks of the supplier and don't
-affect probe order. For example: target-module@56000000 is a consumer
-of prm_gfx 44e01100.prm.
-
--Saravana
+> ---
+> See the next patch in this series for an example usecase.
+> ---
+>  include/linux/mod_devicetable.h        | 2 +-
+>  include/uapi/linux/input-event-codes.h | 6 +++++-
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+> index 5da5d990ff58..45364fbeaaf7 100644
+> --- a/include/linux/mod_devicetable.h
+> +++ b/include/linux/mod_devicetable.h
+> @@ -326,7 +326,7 @@ struct pcmcia_device_id {
+>  #define INPUT_DEVICE_ID_LED_MAX		0x0f
+>  #define INPUT_DEVICE_ID_SND_MAX		0x07
+>  #define INPUT_DEVICE_ID_FF_MAX		0x7f
+> -#define INPUT_DEVICE_ID_SW_MAX		0x10
+> +#define INPUT_DEVICE_ID_SW_MAX		0x14
+>  #define INPUT_DEVICE_ID_PROP_MAX	0x1f
+> 
+>  #define INPUT_DEVICE_ID_MATCH_BUS	1
+> diff --git a/include/uapi/linux/input-event-codes.h b/include/uapi/linux/input-event-codes.h
+> index dff8e7f17074..339153886a13 100644
+> --- a/include/uapi/linux/input-event-codes.h
+> +++ b/include/uapi/linux/input-event-codes.h
+> @@ -917,7 +917,11 @@
+>  #define SW_MUTE_DEVICE		0x0e  /* set = device disabled */
+>  #define SW_PEN_INSERTED		0x0f  /* set = pen inserted */
+>  #define SW_MACHINE_COVER	0x10  /* set = cover closed */
+> -#define SW_MAX			0x10
+> +#define SW_PROG1		0x11  /* set = program 1 (user defined) */
+> +#define SW_PROG2		0x12  /* set = program 2 (user defined) */
+> +#define SW_PROG3		0x13  /* set = program 3 (user defined) */
+> +#define SW_PROG4		0x14  /* set = program 4 (user defined) */
+> +#define SW_MAX			0x14
+>  #define SW_CNT			(SW_MAX+1)
+> 
+>  /*
+> --
+> 2.36.1
+> 
+> 
