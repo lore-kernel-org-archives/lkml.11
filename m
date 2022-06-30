@@ -2,89 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A12C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 18:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14014C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 18:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236683AbiF3SkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 14:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
+        id S236722AbiF3SmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 14:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236675AbiF3SkE (ORCPT
+        with ESMTP id S236684AbiF3Sl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 14:40:04 -0400
-X-Greylist: delayed 620 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 11:40:03 PDT
-Received: from smtp-out3.electric.net (smtp-out3.electric.net [208.70.128.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5513121E3F;
-        Thu, 30 Jun 2022 11:40:03 -0700 (PDT)
-Received: from 1o6yv7-0006sc-Vr by out3c.electric.net with emc1-ok (Exim 4.94.2)
-        (envelope-from <kris@embeddedTS.com>)
-        id 1o6yv9-0006u1-TV; Thu, 30 Jun 2022 11:29:43 -0700
-Received: by emcmailer; Thu, 30 Jun 2022 11:29:43 -0700
-Received: from [66.210.251.27] (helo=mail.embeddedts.com)
-        by out3c.electric.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <kris@embeddedTS.com>)
-        id 1o6yv7-0006sc-Vr; Thu, 30 Jun 2022 11:29:41 -0700
-Received: from tsdebian.Massive (97-120-89-198.ptld.qwest.net [97.120.89.198])
-        by mail.embeddedts.com (Postfix) with ESMTPSA id 252701AD06;
-        Thu, 30 Jun 2022 11:29:41 -0700 (MST)
-From:   Kris Bahnsen <kris@embeddedTS.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mark Featherston <mark@embeddedTS.com>,
-        Kris Bahnsen <kris@embeddedTS.com>
-Subject: [PATCH] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
-Date:   Thu, 30 Jun 2022 11:27:46 -0700
-Message-Id: <20220630182746.3813-1-kris@embeddedTS.com>
-X-Mailer: git-send-email 2.11.0
-X-Outbound-IP: 66.210.251.27
-X-Env-From: kris@embeddedTS.com
-X-Proto: esmtps
-X-Revdns: wsip-66-210-251-27.ph.ph.cox.net
-X-HELO: mail.embeddedts.com
-X-TLS:  TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256
-X-Authenticated_ID: 
-X-Virus-Status: Scanned by VirusSMART (c)
-X-Virus-Status: Scanned by VirusSMART (b)
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=embeddedTS.com; s=mailanyone20220121;h=Message-Id:Date:To:From; bh=HjwjPVTAYTLdyByvG9Mm1PRdcfdz+vFJodfS0eS9vzs=;b=Y6XXGMXVwIlYIaqIUxao0mvrJODOFKWRG2wPI6fYqjmymko9Fa/wCS5mVowGplHk6SBY92CrMrxT7bonPgz9UdUsSNSy7DOLFxw9OiS7v7dQ74kPwQnfSHhlEZvjcaZya5wDf+DdKGRgR4FHpeUPMa+ml2sxL35Qv9Sw76SOW6l8A1fKZJTIayEhurRD/JmYQQzn6pnb/Fm8/MgF8JNrmXTeMtbKX+tyUIFZrqzPmOspyKkmmdd0UeIJ+Kzfs6spgajGVrddQQR43xJ9KuV4FAu131C6BJVt2FCOoQwVnnU+1eZgBQzJlIiOpZRIoGbj2OI0hb+uGi4DJpXqVbatHg==;
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
+        Thu, 30 Jun 2022 14:41:59 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654623FDAF
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 11:41:58 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id ej4so30220edb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 11:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=r0BVI/sdd04/zhgmWH7aIaeeBm4+Vvke6BUCZyn3hyg=;
+        b=uQTmE1Um4nOuhHiHeoUXDpZUYNgOcZG0vZxcrqiB1QeU5sNRVVLaPdb2o1oZqUOXfF
+         A5sa7uthLkoOVgJDy+fMTIUpr6aOnUSjdNFaWhhriiLY4PiMOg3pIX8QBA4Uo4ssS/wV
+         qp9uGYpWrM0dQxdlb11sJihLToqdMiZwOYQO4ufTpOpWqdCkRv66MabVG6kXOORGcoUY
+         kvRRElmIve3QQM04NCRKPZh8sfP3QTPCwONY2feUHQZZVX01bwUxeWcEtrpYDlReQDz6
+         N+7T0ZVmAdDC0isxLUhFpOERJZp15rEytx4xmTeeMioSZYJg8KxWis5O9Md+XRBYEoHa
+         K5Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=r0BVI/sdd04/zhgmWH7aIaeeBm4+Vvke6BUCZyn3hyg=;
+        b=qVPzNw678l15AMhVXDhZdxOmMMcuV8DBn9AFiIgVQzuov+njozD0D1dTgSJJOm/f8B
+         bmF2qkuIBEak1DqboMnNNETKe1pYXrEYofMti/fg5K3fjhWd+EchqTSw7gLcC0AA1Jdf
+         5JzFfgqhXeX7fOm9rzfLCv+bWPOwJKIGFb9TyHV27mR69USgHT0ExFWhPGsCVYOMn3Sl
+         tN2TG3hQnhRgOCQE7R6AHQEnZ10IB2/UFED1psJSEg6AhEGXodofB8zUPQdsIX4+i8xo
+         +gPYN7ItuJSbkjCXml9u2XeE1kzBMYS0yI7L8iSyg0T8Lr0nXM1Q2+nImQG/BDOcx3xT
+         WNkA==
+X-Gm-Message-State: AJIora+SeuqWbeviQtVxCeWlZaDuofJeCyaisfbObdfmMR6/pkIxWAvJ
+        9kcN8nK9jLJcrqDZak+DA0zRug==
+X-Google-Smtp-Source: AGRyM1vkKMX06qz0erPeOdymXkH8eYsVt8dkgi/ckKf9JT6cSQDwknrl7psQLouE7nProJTlZBG24g==
+X-Received: by 2002:a05:6402:1c09:b0:435:6562:e70d with SMTP id ck9-20020a0564021c0900b004356562e70dmr13185356edb.203.1656614517044;
+        Thu, 30 Jun 2022 11:41:57 -0700 (PDT)
+Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id p9-20020a170906614900b006f3ef214dc3sm9302978ejl.41.2022.06.30.11.41.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 11:41:56 -0700 (PDT)
+Message-ID: <42b8bf2c-c343-8fd4-17fd-f22ed83d5d0d@linaro.org>
+Date:   Thu, 30 Jun 2022 20:41:54 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/2] dt-bindings: mediatek: Add assigned clock property
+ and axi clock in example
+Content-Language: en-US
+To:     Xiangsheng Hou <xiangsheng.hou@mediatek.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, bin.zhang@mediatek.com,
+        benliang.zhao@mediatek.com, linux-mediatek@lists.infradead.org
+References: <20220630090157.29486-1-xiangsheng.hou@mediatek.com>
+ <20220630090157.29486-3-xiangsheng.hou@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220630090157.29486-3-xiangsheng.hou@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Device-tree incorrectly used "ngpio" which caused the driver to
-fallback to 32 ngpios.
+On 30/06/2022 11:01, Xiangsheng Hou wrote:
+> For mt8173, it is needed to add the axi clock for dma mode.
+> And it is may needed to adjust default spi frequency.
+> 
+> Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
+> ---
+>  .../devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml  | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
+> index 41e60fe4b09f..7523d992a614 100644
+> --- a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
+> +++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
+> @@ -61,6 +61,12 @@ properties:
+>        - const: axi
+>        - const: axi_s
+>  
+> +  assigned-clocks:
+> +    maxItems: 1
+> +
+> +  assigned-clock-parents:
+> +    maxItems: 1
+> +
 
-This platform has 62 GPIO registers.
+There is usually no reason to put this in the bindings.
 
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
----
- arch/arm/boot/dts/imx6qdl-ts7970.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  required:
+>    - compatible
+>    - reg
+> @@ -82,8 +88,8 @@ examples:
+>          compatible = "mediatek,mt8173-nor";
+>          reg = <0 0x1100d000 0 0xe0>;
+>          interrupts = <1>;
+> -        clocks = <&pericfg CLK_PERI_SPI>, <&topckgen CLK_TOP_SPINFI_IFR_SEL>;
+> -        clock-names = "spi", "sf";
+> +        clocks = <&pericfg CLK_PERI_SPI>, <&topckgen CLK_TOP_SPINFI_IFR_SEL>, <&pericfg CLK_PERI_NFI>;
+> +        clock-names = "spi", "sf", "axi";
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+>  
 
-diff --git a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-index fded07f370b3..d6ba4b2a60f6 100644
---- a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-@@ -226,7 +226,7 @@
- 		reg = <0x28>;
- 		#gpio-cells = <2>;
- 		gpio-controller;
--		ngpio = <32>;
-+		ngpios = <62>;
- 	};
- 
- 	sgtl5000: codec@a {
 
-base-commit: 03c765b0e3b4cb5063276b086c76f7a612856a9a
--- 
-2.11.0
-
+Best regards,
+Krzysztof
