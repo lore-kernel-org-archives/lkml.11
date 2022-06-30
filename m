@@ -2,96 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C25ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D5FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbiF3H5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S233413AbiF3H6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbiF3H4w (ORCPT
+        with ESMTP id S233077AbiF3H61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:56:52 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC0C403F2;
-        Thu, 30 Jun 2022 00:56:51 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-31772f8495fso170968337b3.4;
-        Thu, 30 Jun 2022 00:56:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pEG1/5zis6fn9rNZ4cGko3gg4B1FcMMHyqkPX5BcdX8=;
-        b=lUC9kYaRwM0BjvSJzSRdKvwLFR+U74/hzLpRgkBkjOYr3XOjlj8CgqHmG2gaxHtuXW
-         1p75RyRI75cVj0hLo6CN4AvRSRqvF8919+hwoZ+eS6PhYrHH8dnELlYJpoDseAw7VhOo
-         YvtV6hmG/9VwnLXEUbU58K+8kqJhnUsZWZJUfHjM7H/QyIeUdrBB2NtsHrvGxBrWj8zn
-         yWrCYFkZpCdJ9Cv1Wykh5yWKbAOic2NH8/ekh+lNWvY30npihYkkuaKywkv1Mml0gnUR
-         ko0SCMOC/MoRxXjcrijqOJxmOCmK9mwWlNQoGhTEgsz9JYEy3Ek6VyKRMaW9lGQGlnBh
-         ZeJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pEG1/5zis6fn9rNZ4cGko3gg4B1FcMMHyqkPX5BcdX8=;
-        b=F3pUhr1e3yoggIiQXQN/2ZICZsMt8gSHkzD5FshbaeCT0/EzmIHmdK8u9b+TmkCZPW
-         22f6Wy7TRP1R7cHQajG1yMa184MKEfQ0gRpTiwP25iMvmzwT8rTwlNYVJAzblITq9sbP
-         LIH4Ogot65byst8OJWyHKCntZNs1Y9RHfUviArbsRn6G5b0TgBoSO0rZVVVD/HbRqkHM
-         zacfozMnKT3dpTg80gbZzSgKnGPqKHBByaXIWsc1IxfPUVfs0qWMQOnL61Iqn685T2m7
-         SVHENeLrYddwynI/6KGay9x3GAmD3L1s/Uuc126QKeS+joe5K8Oxxt+/rZM2Q1nAAf17
-         bWkw==
-X-Gm-Message-State: AJIora9CQ5FV9dTzXPmsMwrZrliptktsGwWkBeL7Qa5u4A081xXenXrd
-        7hFwlPrtyoF1ZBNFcA25H23Wcg+YIFr+cDCbYONzUJyoK4zmaQ==
-X-Google-Smtp-Source: AGRyM1so4U5iXRDnUOmFWKUYfH0VuZUgTl25P/lq+qTjChyyYigKaV1z5jimYDiiHWkd9cptmD5wDFJk6IJadT5Wtj0=
-X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
- j128-20020a812386000000b0031765868901mr8806187ywj.195.1656575810965; Thu, 30
- Jun 2022 00:56:50 -0700 (PDT)
+        Thu, 30 Jun 2022 03:58:27 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05AB17E02;
+        Thu, 30 Jun 2022 00:58:21 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1656575881tmsn8kr9
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 30 Jun 2022 15:57:58 +0800 (CST)
+X-QQ-SSF: 0100000000200070C000C00A0000000
+X-QQ-FEAT: /gZs+pYOe4QtKWcpUPh0RUNkILiDmKzOemLUmT8vQZAH1EvZkAs5EG62QC3fV
+        mRim4+TvzTUa+CTiRquV9X/5m0vO5obXUifoXV0ndxT28229uEaGcD6kGauwv16wnxwz6Jk
+        dYBP3C3+nLKbtQwjGZ1e7VZCWVNSfi60dUqQB94M6lMrQDUT2vnw25Thaqrb52CRX5+yQYt
+        J7UKwd+9gX5p36kmwsCnkO2MkRKSmVRxefyl9LmfFDQJrzO8hPz0VlqwCf+/+FLC4ZAEPFb
+        yeddFP0MtMxPGxpv4m5e6NFc0CJFTDh9M1Ng2uWUlxP9z4v2XoM74adXDJ46e6JS2j5+EAF
+        1o9FYp5YXKAfNVeH2A=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     jdmason@kudzu.us, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] ethernet/neterion: fix repeated words in comments
+Date:   Thu, 30 Jun 2022 15:57:51 +0800
+Message-Id: <20220630075751.21211-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com> <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
-In-Reply-To: <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 30 Jun 2022 09:56:11 +0200
-Message-ID: <CAHp75VfY_4CA36MHSi7=VtmcGdXi5kL9aB1HYy2WOJNqc-6L9g@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 9:42 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
->
-> > Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm=
-_ops
-> > to use new PM macros.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->
-> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->
-> Not directily related to the patch itself but do you have any idea why
-> 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
-> didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
-> because in SET_RUNTIME_PM_OPS() the callbacks are only created with
-> #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain that
-> behavior but it didn't? Was it just an oversight that should be fixed?
+Delete the redundant word 'the'.
+Delete the redundant word 'a'.
+Delete the redundant word 'frame'.
+Delete the redundant word 'is'.
+Delete the redundant word 'not'.
 
-I have had the same question, but I think it might be related to how
-PM runtime functions when there is no respective configuration option
-set.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/neterion/s2io.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-+Cc: Rafael.
+diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
+index 6dd451adc331..30f955efa830 100644
+--- a/drivers/net/ethernet/neterion/s2io.c
++++ b/drivers/net/ethernet/neterion/s2io.c
+@@ -2156,7 +2156,7 @@ static int verify_xena_quiescence(struct s2io_nic *sp)
+ 
+ 	/*
+ 	 * In PCI 33 mode, the P_PLL is not used, and therefore,
+-	 * the the P_PLL_LOCK bit in the adapter_status register will
++	 * the P_PLL_LOCK bit in the adapter_status register will
+ 	 * not be asserted.
+ 	 */
+ 	if (!(val64 & ADAPTER_STATUS_P_PLL_LOCK) &&
+@@ -3817,7 +3817,7 @@ static irqreturn_t s2io_test_intr(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-/* Test interrupt path by forcing a a software IRQ */
++/* Test interrupt path by forcing a software IRQ */
+ static int s2io_test_msi(struct s2io_nic *sp)
+ {
+ 	struct pci_dev *pdev = sp->pdev;
+@@ -5492,7 +5492,7 @@ s2io_ethtool_gringparam(struct net_device *dev,
+ }
+ 
+ /**
+- * s2io_ethtool_getpause_data -Pause frame frame generation and reception.
++ * s2io_ethtool_getpause_data -Pause frame generation and reception.
+  * @dev: pointer to netdev
+  * @ep : pointer to the structure with pause parameters given by ethtool.
+  * Description:
+@@ -7449,7 +7449,7 @@ static int rx_osm_handler(struct ring_info *ring_data, struct RxD_t * rxdp)
+  *  @link : inidicates whether link is UP/DOWN.
+  *  Description:
+  *  This function stops/starts the Tx queue depending on whether the link
+- *  status of the NIC is is down or up. This is called by the Alarm
++ *  status of the NIC is down or up. This is called by the Alarm
+  *  interrupt handler whenever a link change interrupt comes up.
+  *  Return value:
+  *  void.
+@@ -7732,7 +7732,7 @@ s2io_init_nic(struct pci_dev *pdev, const struct pci_device_id *pre)
+ 	 * Setting the device configuration parameters.
+ 	 * Most of these parameters can be specified by the user during
+ 	 * module insertion as they are module loadable parameters. If
+-	 * these parameters are not not specified during load time, they
++	 * these parameters are not specified during load time, they
+ 	 * are initialized with default values.
+ 	 */
+ 	config = &sp->config;
+-- 
+2.36.1
 
---=20
-With Best Regards,
-Andy Shevchenko
