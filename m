@@ -2,177 +2,534 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DDBCCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4738DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231334AbiF3CKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 22:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
+        id S231342AbiF3CMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 22:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiF3CKa (ORCPT
+        with ESMTP id S231396AbiF3CMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 22:10:30 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5ED3DA58;
-        Wed, 29 Jun 2022 19:10:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656555029; x=1688091029;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VkE1t8r/62tuKtjsziGoezRkG42VcXA8LP22e3VJDXo=;
-  b=fg8RlwN7v39//Kk4u5MhIQii1RE+/h8i9stUQ9ngF97YD5CUzjV4tAuo
-   mpzhqWRlM+mzIxp65h9jZOUTZZuUDC8+nCNkme/CPZwDeatFSyYk6XIPY
-   +wQjQRREkQdt4TlqWrDMwFEeGNAcsFWlz/5Cto9zADqTmooUxmPlaC5AX
-   g=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 29 Jun 2022 19:10:29 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 19:10:27 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 29 Jun 2022 19:10:27 -0700
-Received: from [10.38.245.159] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 29 Jun
- 2022 19:10:24 -0700
-Message-ID: <537e8e8b-03f7-9fc0-4416-3b69d375ba9b@quicinc.com>
-Date:   Wed, 29 Jun 2022 19:10:21 -0700
+        Wed, 29 Jun 2022 22:12:32 -0400
+Received: from email.cn (m218-171.88.com [110.43.218.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B202C3EABF;
+        Wed, 29 Jun 2022 19:12:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=email.cn;
+        s=dkim; h=Date:From:To; bh=B+bHNmva6MBTARzpEYWKTI+hwQcxSSoZHLTlW
+        Zvhz/E=; b=Ju1jj68oUe/jCSlT7DkDc6S9Vw2uu4ku8Gr0Rger10HgOc/WX/+IY
+        +Y08m3vYit6ax5u8Oc4+1jQl2n4YpVywJ4JkN9d305yDBkBWlDpA/Iv4hrPbrSzw
+        1Wa1hYpjMaje+FYdORQK65dMKi9ucpKFyMDrv7fG2gVsi43ecUzg5o=
+Received: from [127.0.0.1] (unknown [112.96.54.36])
+        by v_coremail2-frontend-1 (Coremail) with SMTP id LCKnCgD3p2R6Br1iFaoQAA--.43172S2;
+        Thu, 30 Jun 2022 10:12:11 +0800 (CST)
+Date:   Thu, 30 Jun 2022 10:11:27 +0800
+From:   Wu XiangCheng <bobwxc@email.cn>
+To:     YanTeng Si <siyanteng@loongson.cn>,
+        Guo Mengqi <guomengqi3@huawei.com>, alexs@kernel.org,
+        corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yizhou.tang@shopee.com,
+        Binbin Zhou <zhoubinbin@loongson.cn>
+CC:     xuqiang36@huawei.com
+Subject: Re: [PATCH -next] docs/zh_CN: add vm transhuge translation
+In-Reply-To: <6d2fc64c-afbf-5a26-6970-d880d8b32868@loongson.cn>
+References: <20220628133742.91966-1-guomengqi3@huawei.com> <6d2fc64c-afbf-5a26-6970-d880d8b32868@loongson.cn>
+Message-ID: <E3CC3DA5-7348-424F-BAAF-200F1ED7D6DA@email.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [Freedreno] [PATCH] drm/msm/dp: make eDP panel as the first
- connected connector
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>,
-        Doug Anderson <dianders@chromium.org>
-CC:     freedreno <freedreno@lists.freedesktop.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "Vinod Koul" <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sean Paul <sean@poorly.run>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1656429606-2765-1-git-send-email-quic_khsieh@quicinc.com>
- <F35C87BF-46A5-41D3-B8A5-B2AB4A24252D@linaro.org>
- <CAD=FV=X3cv=Q30pODyi__OyRY+LbFT14RfEELvm_DAeHafF70g@mail.gmail.com>
- <CAF6AEGvFYK3x_CmErkKsmYNEv9y8AksE9UB_sfp-Z7RieX=tVg@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAF6AEGvFYK3x_CmErkKsmYNEv9y8AksE9UB_sfp-Z7RieX=tVg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-CM-TRANSID: LCKnCgD3p2R6Br1iFaoQAA--.43172S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Kr1kuF4kAryUuw17Xr45Awb_yoWkuFWfpF
+        ykWFZ7K3WUAr90kw1Ska1UAF1rAr48Ga18try8Kas3JwnFy3yUKw4UKF1UWwn7WryjyrZ8
+        ZF409r93AFn0qrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUqSb7Iv0xC_Cr1lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
+        cIk0rVWrJVCq3wA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjx
+        v20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j6F4UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1le2I262IYc4
+        CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E74AGY7Cv6cx26F4U
+        Jr1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCF04k20xvY0x0EwIxGrwCF04
+        k20xvE74AGY7Cv6cx26F4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAF
+        wI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc4
+        0Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AK
+        xVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr
+        1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvj4RRbyZUUUU
+        U
+X-Originating-IP: [112.96.54.36]
+X-CM-SenderInfo: pere453f6hztlloou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 6/29/2022 6:57 PM, Rob Clark wrote:
-> On Wed, Jun 29, 2022 at 5:36 PM Doug Anderson <dianders@chromium.org> wrote:
->>
->> Hi,
->>
->> On Tue, Jun 28, 2022 at 1:14 PM Dmitry Baryshkov
->> <dmitry.baryshkov@linaro.org> wrote:
->>>
->>> On 28 June 2022 18:20:06 GMT+03:00, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->>>> Some userspace presumes that the first connected connector is the main
->>>> display, where it's supposed to display e.g. the login screen. For
->>>> laptops, this should be the main panel.
->>>>
->>>> This patch call drm_helper_move_panel_connectors_to_head() after
->>>> drm_bridge_connector_init() to make sure eDP stay at head of
->>>> connected connector list. This fixes unexpected corruption happen
->>>> at eDP panel if eDP is not placed at head of connected connector
->>>> list.
->>>
->>> The change itself is a good fix anyway. (And I'd ack it.) However I would like to understand why does it fix the corruption issue. What is we have eDP and DSI, with DSI ending up before the eDP? Would we see the issue?
->>> Also could you please describe the mind of corruption you are observing?
->>
->> I've spent a whole bunch of time poking at this and in the end my
->> conclusion is this:
->>
->> 1. The glitchyness seems to be a result of the Chrome OS userspace
->> somehow telling the kernel to do something wrong.
->>
->> 2. I believe (though I have no proof other than Kuogee's patch fixing
->> things) that the Chrome OS userspace is simply confused by the eDP
->> connector being second. This would imply that Kuogee's patch is
->> actually the right one.
->>
->> 3. It would be ideal if the Chrome OS userspace were fixed to handle
->> this, but it's an area of code that I've never looked at. It also
->> seems terribly low priority to fix since apparently other OSes have
->> similar problems (seems like this code was originally added by
->> RedHat?)
->>
->>
->> Specifically, I tested with a similar but "persistent" glitch that I
->> reproduced. The glitch Kuogee was digging into was a transitory glitch
->> on the eDP (internal) display when you plugged in a DP (external)
->> display. It would show up for a frame or two and then be fixed. I can
->> get a similar-looking glitch (vertical black and white bars) that
->> persists by doing these steps on a Chrome OS device (and Chrome OS
->> kernel):
->>
->> a) Observe screen looks good.
->> b) Observe DP not connected.
->> c) Plug in DP
->> d) See transitory glitch on screen, then it all looks fine.
->> e) set_power_policy --ac_screen_dim_delay=5 --ac_screen_off_delay=10
->> f) Wait for screen to turn off
->> g) Unplug DP
->> h) Hit key on keyboard to wake device.
->> i) See glitchy.
->> j) Within 5 seconds: set_power_policy --ac_screen_dim_delay=5000
->> --ac_screen_off_delay=10000
->>
->> Once I'm in the persistent glitch:
->>
->> * The "screenshot" command in Chrome OS shows corruption. Not exactly
->> black and white bars, but the image produced has distinct bands of
->> garbage.
->>
->> * I can actually toggle between VT2 and the main screen (VT1). Note
->> that VT1/VT2 are not quite the normal Linux managed solution--I
->> believe they're handled by frecon. In any case, when I switch to VT2
->> it looks normal (I can see the login prompt). Then back to VT1 and the
->> vertical bars glitch. Back to VT2 and it's normal. Back to VT1 and the
->> glitch again. This implies (especially with the extra evidence of
->> screenshot) that the display controller hardware is all fine and that
->> it's the underlying data that's somehow messed up.
-> 
-> fwiw, from looking at this a bit w/ Doug, I think the "glitch" is
-> simply just an un-renderered buffer being interpreted by the display
-> controller as UBWC (because userspace tells it to)
-> 
-> BR,
-> -R
+=E4=BA=8E 2022=E5=B9=B46=E6=9C=8829=E6=97=A5 GMT+08:00 =E4=B8=8A=E5=8D=881=
+1:50:11, YanTeng Si <siyanteng@loongson=2Ecn> =E5=86=99=E5=88=B0:
+>Hi Mengqi
+>
+>=E5=9C=A8 2022/6/28 21:37, Guo Mengqi =E5=86=99=E9=81=93:
+>> Translate =2E=2E=2E/vm/transhuge=2Erst into Chinese=2E
+>>=20
+>> Signed-off-by: Guo Mengqi <guomengqi3@huawei=2Ecom>
+>> ---
+>>   Documentation/translations/zh_CN/vm/index=2Erst |   2 +-
+>>   =2E=2E=2E/translations/zh_CN/vm/transhuge=2Erst       | 151 +++++++++=
++++++++++
+>>   2 files changed, 152 insertions(+), 1 deletion(-)
+>>   create mode 100644 Documentation/translations/zh_CN/vm/transhuge=2Ers=
+t
+>
+>When I apply your patch=EF=BC=88next-tree=EF=BC=89, git complains:
+>
+>Applying: docs/zh_CN: add vm transhuge translation
+>
+>error: Documentation/translations/zh_CN/vm/index=2Erst: does not exist in=
+ index
+>=2Egit/rebase-apply/patch:180: new blank line at EOF=2E
+>+
+>Patch failed at 0001 docs/zh_CN: add vm transhuge translation
 
-Acked and agree with the comments both of you have stated and looking at 
-the corrupted buffers in the snapshot.
 
-Hence,
+The /vm/ documentations (including translations) have been moved to /mm/ i=
+n linux-next tree=2E
 
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Not sure about docs-next, please check that=2E
 
-> 
->> When I pick Kuogee's patch then this "persistent" glitch goes away
->> just like the transitory one does.
->>
->> I'm going to go ahead and do:
->>
->> Reviewed-by: Douglas Anderson <dianders@chromium.org>
->> Tested-by: Douglas Anderson <dianders@chromium.org>
+
+>>=20
+>> diff --git a/Documentation/translations/zh_CN/vm/index=2Erst b/Document=
+ation/translations/zh_CN/vm/index=2Erst
+>> index c77a56553845=2E=2E2d82b15b272b 100644
+>> --- a/Documentation/translations/zh_CN/vm/index=2Erst
+>> +++ b/Documentation/translations/zh_CN/vm/index=2Erst
+>> @@ -59,11 +59,11 @@ Linux=E5=86=85=E5=AD=98=E7=AE=A1=E7=90=86=E6=96=87=
+=E6=A1=A3
+>>      vmalloced-kernel-stacks
+>>      z3fold
+>>      zsmalloc
+>> +   transhuge
+>>     TODOLIST:
+>>   * arch_pgtable_helpers
+>>   * free_page_reporting
+>>   * hugetlbfs_reserv
+>>   * slub
+>> -* transhuge
+>>   * unevictable-lru
+>> diff --git a/Documentation/translations/zh_CN/vm/transhuge=2Erst b/Docu=
+mentation/translations/zh_CN/vm/transhuge=2Erst
+>> new file mode 100644
+>> index 000000000000=2E=2Ea7bed8b13a47
+>> --- /dev/null
+>> +++ b/Documentation/translations/zh_CN/vm/transhuge=2Erst
+>> @@ -0,0 +1,151 @@
+>> +=2E=2E SPDX-License-Identifier: GPL-2=2E0
+>> +=2E=2E include:: =2E=2E/disclaimer-zh_CN=2Erst
+>> +
+>> +:Original: Documentation/vm/transhuge=2Erst
+>> +
+>> +:=E7=BF=BB=E8=AF=91:
+>> +
+>> + =E9=83=AD=E6=A2=A6=E7=90=AA Guo Mengqi <guomengqi3@huawei=2Ecom>
+>> +
+>> +:=E6=A0=A1=E8=AF=91:
+>> +
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E6=9C=BA=E5=88=B6
+>
+>huge =E5=B7=A8=E5=A4=A7
+>
+>large =E5=A4=A7
+>
+>
+>so =E5=A4=A7=E9=A1=B5 -> =E5=B7=A8=E9=A1=B5
+
+Here I think both is OK, and =E5=A4=A7=E9=A1=B5 seems more common?
+
+Thanks,
+Wu
+
+>
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +=E6=9C=AC=E6=96=87=E6=A1=A3=E6=8F=8F=E8=BF=B0=E9=80=8F=E6=98=8E=E5=A4=
+=A7=E9=A1=B5=EF=BC=88THP=EF=BC=89=E7=9A=84=E8=AE=BE=E8=AE=A1=E7=90=86=E5=BF=
+=B5=EF=BC=8C=E4=BB=A5=E5=8F=8A=E5=AE=83=E6=98=AF=E5=A6=82=E4=BD=95=E4=B8=8E=
+=E5=86=85=E5=AD=98=E7=AE=A1=E7=90=86=E7=B3=BB=E7=BB=9F=E5=85=B6=E4=BB=96=E9=
+=83=A8=E5=88=86=E4=BA=A4=E4=BA=92=E7=9A=84=E3=80=82
+>
+>=E4=BB=A5=E5=8F=8A=E5=AE=83=E6=98=AF=E5=A6=82=E4=BD=95=E4=B8=8E=E5=86=85=
+=E5=AD=98=E7=AE=A1=E7=90=86=E7=B3=BB=E7=BB=9F=E7=9A=84=E5=85=B6=E4=BB=96=E9=
+=83=A8=E5=88=86=E4=BA=A4=E4=BA=92=E7=9A=84
+>
+>> +
+>> +=E8=AE=BE=E8=AE=A1=E5=8E=9F=E5=88=99
+>> +=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +- =E2=80=9C=E4=BC=98=E9=9B=85fallback=E2=80=9D=EF=BC=9A=E6=9C=89=E4=BA=
+=9Bmm=E7=BB=84=E4=BB=B6=E4=B8=8D=E4=BA=86=E8=A7=A3=E9=80=8F=E6=98=8E=E5=A4=
+=A7=E9=A1=B5=E7=9A=84=E5=AD=98=E5=9C=A8=EF=BC=8C=E5=AE=83=E4=BB=AC=E7=9A=84=
+=E5=9B=9E=E9=80=80=E6=96=B9=E6=B3=95=E6=98=AF=E5=B0=86PMD=E9=A1=B5=E8=A1=A8=
+=E9=A1=B9
+>> +  =E6=8B=86=E5=88=86=E6=88=90PTE=E9=A1=B5=E8=A1=A8=E9=A1=B9=E3=80=82=
+=E5=BF=85=E8=A6=81=E6=97=B6=E8=BF=98=E9=9C=80=E8=A6=81=E6=8B=86=E5=88=86=E9=
+=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E3=80=82=E8=BF=99=E6=A0=B7=E5=B0=B1=E5=8F=
+=AF=E4=BB=A5=E5=9C=A8=E5=B8=B8=E8=A7=84=E5=A4=A7=E5=B0=8F=E7=9A=84=E9=A1=B5=
+=E6=88=96=E9=A1=B5=E8=A1=A8=E9=A1=B9=E4=B8=8A
+>> +  =E7=BB=A7=E7=BB=AD=E5=B7=A5=E4=BD=9C=E3=80=82
+>> +
+>> +- =E5=A6=82=E6=9E=9C=E5=86=85=E5=AD=98=E7=A2=8E=E7=89=87=E5=8C=96=E5=
+=AF=BC=E8=87=B4=E5=A4=A7=E9=A1=B5=E5=88=86=E9=85=8D=E5=A4=B1=E8=B4=A5=EF=BC=
+=8C=E5=88=99=E5=88=86=E9=85=8D=E5=B8=B8=E8=A7=84=E9=A1=B5=E4=BD=9C=E4=B8=BA=
+=E6=9B=BF=E4=BB=A3=E6=94=BE=E5=85=A5=E5=8E=9Fvma=E4=B8=AD=EF=BC=8C=E6=AD=A4=
+=E6=9C=9F=E9=97=B4=E4=B8=8D=E5=BA=94
+>> +  =E4=BA=A7=E7=94=9F=E4=BB=BB=E4=BD=95=E5=A4=B1=E8=B4=A5=E6=88=96=E6=
+=98=8E=E6=98=BE=E5=BB=B6=E8=BF=9F=EF=BC=8C=E4=B8=8D=E8=A6=81=E5=BC=95=E8=B5=
+=B7=E7=94=A8=E6=88=B7=E6=80=81=E7=9A=84=E6=B3=A8=E6=84=8F=E3=80=82
+>
+>How about
+>
+>=E6=AD=A4=E6=9C=9F=E9=97=B4=E4=B8=8D=E4=BC=9A=E4=BA=A7=E7=94=9F=E4=BB=BB=
+=E4=BD=95=E5=A4=B1=E8=B4=A5=E6=88=96=E6=98=8E=E6=98=BE=E5=BB=B6=E8=BF=9F=EF=
+=BC=8C=E4=B9=9F=E4=B8=8D=E4=BC=9A=E5=BC=95=E8=B5=B7=E7=94=A8=E6=88=B7=E6=80=
+=81=E7=9A=84=E6=B3=A8=E6=84=8F=E3=80=82
+>
+>> +
+>> +- =E5=A6=82=E6=9E=9C=E4=B8=80=E4=BA=9B=E8=BF=9B=E7=A8=8B=E9=80=80=E5=
+=87=BA=E5=90=8E=E9=87=8A=E6=94=BE=E4=BA=86=E7=A9=BA=E4=BD=99=E7=9A=84=E5=A4=
+=A7=E9=A1=B5=EF=BC=88=E4=B8=8D=E8=AE=BA=E5=9C=A8=E4=BC=99=E4=BC=B4=E7=B3=BB=
+=E7=BB=9F=E8=BF=98=E6=98=AF=E5=9C=A8VM=EF=BC=89=EF=BC=8C=E7=94=B1=E5=B8=B8=
+=E8=A7=84=E9=A1=B5=E6=94=AF=E6=8C=81=E7=9A=84
+>=E7=A9=BA=E4=BD=99 -> =E7=A9=BA=E9=97=B2 or =E5=8F=AF=E7=94=A8
+>> +  guest=E7=89=A9=E7=90=86=E5=86=85=E5=AD=98=E5=BA=94=E8=AF=A5=E8=87=AA=
+=E5=8A=A8=E9=87=8D=E6=96=B0=E7=94=B3=E8=AF=B7=E4=B8=BA=E5=A4=A7=E9=A1=B5=E3=
+=80=82(=E9=80=9A=E8=BF=87khugepaged=E8=BF=9B=E7=A8=8B)
+>> +
+>> +- =E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E4=B8=8D=E9=9C=80=E8=A6=81=E9=
+=A2=84=E7=95=99=E5=86=85=E5=AD=98=EF=BC=8C=E8=80=8C=E6=98=AF=E5=B0=BD=E5=8F=
+=AF=E8=83=BD=E4=BD=BF=E7=94=A8=E5=B7=B2=E7=BB=8F=E5=AD=98=E5=9C=A8=E7=9A=84=
+=E5=A4=A7=E9=A1=B5=E3=80=82=EF=BC=88=E5=94=AF=E4=B8=BA=E9=81=BF=E5=85=8D=E4=
+=B8=8D=E5=8F=AF=E7=A7=BB=E5=8A=A8=E7=9A=84=E9=A1=B5
+>del =E5=94=AF
+>> +  =E5=B0=86=E6=95=B4=E4=B8=AA=E5=86=85=E5=AD=98=E7=A2=8E=E7=89=87=E5=
+=8C=96=EF=BC=8C=E5=94=AF=E4=B8=80=E5=8F=AF=E8=83=BD=E7=9A=84=E9=A2=84=E7=95=
+=99=E6=98=AF=E5=9C=A8kernelcore=3D=E7=9A=84=E8=AE=BE=E7=BD=AE=E4=B8=AD=E3=
+=80=82=E4=B8=8D=E8=BF=87=E8=BF=99=E4=B8=AA=E8=B0=83=E6=95=B4=E5=B9=B6=E4=B8=
+=8D=E4=BB=85
+>> +  =E9=92=88=E5=AF=B9=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=EF=BC=8C=E8=
+=80=8C=E5=AF=B9=E5=86=85=E6=A0=B8=E4=B8=AD=E6=89=80=E6=9C=89=E5=8A=A8=E6=80=
+=81=E7=9A=84=E5=A4=9A=E7=BA=A7=E9=A1=B5=E9=9D=A2=E7=94=B3=E8=AF=B7=E9=83=BD=
+=E9=80=9A=E7=94=A8=E3=80=82=EF=BC=89
+>=E9=83=BD=E9=80=82=E7=94=A8 or =E5=AF=B9xxxxx=E9=A1=B5=E9=9D=A2=E7=94=B3=
+=E8=AF=B7=E9=80=9A=E7=94=A8=E3=80=82
+>> +
+>> +get_user_pages=E5=92=8Cfollow_page
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+>> +
+>> +=E4=B8=8D=E8=AE=BA=E5=AF=B9=E5=8D=95=E4=B8=AA=E5=A4=A7=E9=A1=B5=E8=BF=
+=98=E6=98=AFhugetlbfs=EF=BC=8C=E4=BD=BF=E7=94=A8get_user_pages=E5=92=8Cfoll=
+ow_page=E6=97=B6=EF=BC=8C=E8=BF=94=E5=9B=9E=E7=9A=84=E4=BC=9A=E6=98=AF=E9=
+=A6=96=E9=A1=B5=E6=88=96
+>
+>=E4=BD=BF=E7=94=A8get_user_pages(GUP)
+>
+>> +=E5=B0=BE=E9=A1=B5=E3=80=82=E5=A4=A7=E5=A4=9A=E6=95=B0=E6=83=85=E5=86=
+=B5=E4=B8=8B=E8=B0=83=E7=94=A8get_user_page=E5=8A=9F=E8=83=BD=E7=9A=84=E4=
+=BA=BA=E4=B8=8D=E5=85=B3=E5=BF=83=E9=A1=B5=E7=9A=84=E5=A4=A7=E5=B0=8F=EF=BC=
+=8C=E5=8F=AA=E5=85=B3=E5=BF=83=E9=A1=B5=E7=9A=84=E7=9C=9F=E5=AE=9E=E7=89=A9=
+=E7=90=86
+>
+>=E8=B0=83=E7=94=A8GUP=E5=8A=9F=E8=83=BD
+>
+>> +=E5=9C=B0=E5=9D=80=E4=BB=A5=E5=8F=8A=E6=9A=82=E6=97=B6=E7=9A=84pin=E9=
+=A1=B5=EF=BC=8C=E5=A5=BD=E5=9C=A8I/O=E7=BB=93=E6=9D=9F=E5=90=8E=E5=B0=86=E9=
+=A1=B5=E9=87=8A=E6=94=BE=E3=80=82=E4=BD=86=E5=9C=A8=E9=A9=B1=E5=8A=A8=E4=B8=
+=AD=EF=BC=8C=E5=9C=A8=E6=9F=90=E4=BA=9B=E6=83=85=E5=86=B5=E4=B8=8B=E6=9C=89=
+=E5=8F=AF=E8=83=BD=E8=AE=BF=E9=97=AE
+>> +=E5=B0=BE=E9=A1=B5=E7=9A=84page_struct=EF=BC=88=E5=A6=82=E6=A3=80=E6=
+=9F=A5page->mapping=E5=AD=97=E6=AE=B5=EF=BC=89=EF=BC=8C=E8=BF=99=E6=97=B6=
+=E5=BA=94=E8=AF=A5=E8=BD=AC=E8=80=8C=E6=A3=80=E6=9F=A5=E9=A6=96=E9=A1=B5=E3=
+=80=82=E4=B8=80=E6=97=A6=E9=A6=96=E9=A1=B5=E6=88=96=E8=80=85
+>> +=E5=B0=BE=E9=A1=B5=E8=A2=AB=E5=BC=95=E7=94=A8=EF=BC=8C=E5=A4=A7=E9=A1=
+=B5=E5=B0=B1=E4=B8=8D=E8=83=BD=E5=86=8D=E8=A2=AB=E6=8B=86=E5=88=86=E4=BA=86=
+=E3=80=82
+>> +
+>> +=2E=2E note::
+>> +   =E4=BB=A5=E4=B8=8A=E9=99=90=E5=88=B6=E4=B8=8D=E6=98=AF=E9=92=88=E5=
+=AF=B9GUP API=E6=96=B0=E5=A2=9E=EF=BC=8C=E8=80=8C=E6=98=AF=E4=B8=BA=E4=BA=
+=86=E4=B8=8E=E5=9C=A8hugetlbfs=E4=B8=AD=E4=BF=9D=E6=8C=81=E4=B8=80=E8=87=B4=
+=E3=80=82=E8=BF=99=E6=A0=B7=E5=A6=82=E6=9E=9C=E9=A9=B1=E5=8A=A8
+>> +   =E8=83=BD=E5=9C=A8hugetlbfs=E4=B8=AD=E4=BD=BF=E7=94=A8GUP=EF=BC=8C=
+=E5=B0=B1=E8=83=BD=E5=A4=9F=E5=88=87=E6=8D=A2=E5=88=B0=E9=80=8F=E6=98=8E=E5=
+=A4=A7=E9=A1=B5=E6=9C=BA=E5=88=B6=E6=94=AF=E6=8C=81=E7=9A=84GUP=E3=80=82
+>> +
+>> +=E4=BC=98=E9=9B=85fallback
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +=E4=B8=BA=E6=9F=A5=E9=A1=B5=E8=A1=A8=E6=B5=81=E7=A8=8B=E5=A2=9E=E5=8A=
+=A0=E5=A4=A7=E9=A1=B5=E6=94=AF=E6=8C=81=E5=8F=AA=E9=9C=80=E6=B7=BB=E5=8A=A0=
+split_huge_pmd(vma, pmd,
+>> +addr)=E5=8D=B3=E5=8F=AF=E3=80=82=E5=85=B6=E4=B8=ADpmd=E4=B8=BApmd_offs=
+et=E8=BF=94=E5=9B=9E=E5=80=BC=E3=80=82=E8=A6=81=E4=B8=BA=E4=BB=A3=E7=A0=81=
+=E6=B7=BB=E5=8A=A0=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E6=94=AF=E6=8C=81=E5=
+=BE=88=E7=AE=80=E5=8D=95=EF=BC=8C=E6=90=9C=E7=B4=A2
+>> +"pmd_offset"=E5=B9=B6=E5=B0=86split_huge_pmd=E6=B7=BB=E5=8A=A0=E5=88=
+=B0=E6=89=80=E6=9C=89=E8=BF=94=E5=9B=9E=E7=9A=84pmd=E5=90=8E=E9=9D=A2=E3=80=
+=82=E8=BF=99=E7=9F=AD=E7=9F=AD=E4=B8=80=E8=A1=8C=E7=9A=84fallback=E5=87=BD=
+=E6=95=B0
+>> +=E5=BE=88=E5=B7=A7=E5=A6=99=EF=BC=8C=E4=B8=BA=E6=88=91=E4=BB=AC=E7=9C=
+=81=E5=8E=BB=E4=BA=86=E9=A2=9D=E5=A4=96=E7=9A=84=E9=80=82=E9=85=8D=E4=BB=A3=
+=E7=A0=81=EF=BC=88=E9=80=9A=E5=B8=B8=E4=BC=9A=E5=BE=88=E9=95=BF=E6=88=96=E8=
+=80=85=E5=BE=88=E5=A4=8D=E6=9D=82=EF=BC=89=E3=80=82
+>> +
+>> +=E5=A6=82=E6=9E=9C=E4=BD=A0=E9=9C=80=E8=A6=81=E5=9C=A8=E6=B2=A1=E6=9C=
+=89=E9=A1=B5=E8=A1=A8=E7=9A=84=E6=83=85=E5=86=B5=E4=B8=8B=E5=A4=84=E7=90=86=
+=E4=B8=80=E4=B8=AA=E5=A4=A7=E9=A1=B5=EF=BC=8C=E5=8F=AF=E4=BB=A5=E4=BD=BF=E7=
+=94=A8split_huge_page(page)=E6=8A=8A=E5=AE=83=E6=8B=86=E5=88=86
+>> +=E6=88=90=E5=B0=8F=E9=A1=B5=E3=80=82linux VM=E5=B0=B1=E6=98=AF=E9=80=
+=9A=E8=BF=87=E8=BF=99=E7=A7=8D=E6=96=B9=E5=BC=8F=E5=B0=86=E5=A4=A7=E9=A1=B5=
+=E6=8D=A2=E5=87=BA=E3=80=82=E5=A6=82=E6=9E=9C=E9=A1=B5=E9=9D=A2=E8=A2=ABpin=
+=E4=BD=8F=E4=BA=86=EF=BC=8Csplit_huge_page
+>> +=E5=B0=B1=E4=BC=9A=E5=A4=B1=E8=B4=A5=E3=80=82
+>> +
+>> +=E4=BE=8B=E5=AD=90=EF=BC=9A=E6=B7=BB=E5=8A=A0=E4=B8=80=E8=A1=8C=E4=BB=
+=A3=E7=A0=81=E4=BD=BFmremap=2Ec=E6=94=AF=E6=8C=81=E9=80=8F=E6=98=8E=E5=A4=
+=A7=E9=A1=B5::
+>> +
+>> +        diff --git a/mm/mremap=2Ec b/mm/mremap=2Ec
+>> +        --- a/mm/mremap=2Ec
+>> +        +++ b/mm/mremap=2Ec
+>> +        @@ -41,6 +41,7 @@ static pmd_t *get_old_pmd(struct mm_stru
+>> +                return NULL;
+>> +
+>> +                pmd =3D pmd_offset(pud, addr);
+>> +        +       split_huge_pmd(vma, pmd, addr);
+>> +                if (pmd_none_or_clear_bad(pmd))
+>> +                    return NULL;
+>> +
+>> +=E5=A4=A7=E9=A1=B5=E6=94=AF=E6=8C=81=E4=B8=AD=E7=9A=84=E9=94=81=E4=BD=
+=BF=E7=94=A8
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +=E6=88=91=E4=BB=AC=E5=B8=8C=E6=9C=9B=E5=B0=BD=E5=8F=AF=E8=83=BD=E5=A4=
+=9A=E7=9A=84=E4=BB=A3=E7=A0=81=E8=83=BD=E5=8E=9F=E7=94=9F=E6=94=AF=E6=8C=81=
+=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=EF=BC=8C=E5=9B=A0=E4=B8=BA=E8=B0=83=E7=
+=94=A8split_huge_page()=E5=92=8C
+>> +split_huge_pmd()=E8=BF=98=E6=98=AF=E6=9C=89=E5=BC=80=E9=94=80=E7=9A=84=
+=E3=80=82
+>> +
+>> +=E8=A6=81=E8=AE=A9=E6=9F=A5=E9=A1=B5=E8=A1=A8=E6=93=8D=E4=BD=9C=E5=8F=
+=98=E5=BE=97=E8=83=BD=E5=A4=84=E7=90=86huge pmd=EF=BC=8C=E5=8F=AA=E9=9C=80=
+=E5=AF=B9pmd_offset=E8=BF=94=E5=9B=9E=E7=9A=84pmd=E8=B0=83=E7=94=A8
+>> +pmd_trans_huge()=E3=80=82=E4=B8=80=E5=AE=9A=E8=A6=81=E6=8C=81=E6=9C=89=
+mmap_lock=E8=AF=BB=E9=94=81=EF=BC=8C=E4=BB=A5=E9=81=BF=E5=85=8Dkhugepaged=
+=E5=9C=A8=E6=AD=A4=E6=9C=9F=E9=97=B4=E7=94=B3=E8=AF=B7=E6=96=B0=E7=9A=84
+>> +=E5=A4=A7=E9=A1=B5pmd=EF=BC=88khugepaged collapse_huge_page=E4=BC=9A=
+=E6=8C=81=E6=9C=89mmap_lock=E5=86=99=E9=94=81=E8=80=8C=E9=9D=9Eanon_vma loc=
+k=EF=BC=89=E3=80=82
+>> +=E5=A6=82=E6=9E=9Cpmd_trans_huge=E8=BF=94=E5=9B=9Efalse=EF=BC=8C=E9=82=
+=A3=E5=B0=B1=E5=9B=9E=E5=88=B0=E5=8E=9F=E6=9D=A5=E7=9A=84=E6=B5=81=E7=A8=8B=
+=E3=80=82=E5=A6=82=E6=9E=9Cpmd_trans_huge=E8=BF=94=E5=9B=9Etrue=EF=BC=8C
+>> +=E5=B0=B1=E9=9C=80=E8=A6=81=E5=85=88=E6=8C=81=E6=9C=89=E9=A1=B5=E8=A1=
+=A8=E9=94=81(pmd_lock())=EF=BC=8C=E7=84=B6=E5=90=8E=E5=86=8D=E8=B0=83=E4=B8=
+=80=E6=AC=A1pmd_trans_huge=2E =E6=8C=81=E9=A1=B5=E8=A1=A8=E9=94=81=E6=98=AF=
+=E4=B8=BA=E4=BA=86=E9=98=B2=E6=AD=A2
+>> +=E5=A4=A7=E9=A1=B5pmd=E8=A2=AB=E8=BD=AC=E6=8D=A2=E6=88=90=E5=B0=8F=E9=
+=A1=B5=EF=BC=88split_huge_pmd=E5=8F=AF=E4=BB=A5=E8=B7=9F=E6=9F=A5=E9=A1=B5=
+=E8=A1=A8=E6=93=8D=E4=BD=9C=E5=90=8C=E6=97=B6=E8=BF=9B=E8=A1=8C=EF=BC=89=E3=
+=80=82=E5=A6=82=E6=9E=9C=E7=AC=AC=E4=BA=8C=E6=AC=A1
+>> +pmd_trans_huge=E8=BF=94=E5=9B=9Efalse,=E9=82=A3=E5=B0=B1=E9=87=8A=E6=
+=94=BE=E9=A1=B5=E8=A1=A8=E9=94=81=EF=BC=8C=E4=BE=9D=E7=84=B6=E5=9B=9E=E5=88=
+=B0=E5=8E=9F=E6=9C=89=E6=B5=81=E7=A8=8B=E3=80=82=E5=A6=82=E6=9E=9C=E8=BF=94=
+=E5=9B=9Etrue=EF=BC=8C=E5=B0=B1=E5=8F=AF=E4=BB=A5
+>> +=E7=BB=A7=E7=BB=AD=E5=A4=84=E7=90=86huge pmd=E5=92=8Chugepage=E4=BA=86=
+=E3=80=82=E5=A4=84=E7=90=86=E5=AE=8C=E6=AF=95=EF=BC=8C=E5=86=8D=E9=87=8A=E6=
+=94=BE=E9=A1=B5=E8=A1=A8=E9=94=81=E3=80=82
+>> +
+>> +=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0=E5=92=8C=E9=80=8F=E6=98=8E=E5=A4=
+=A7=E9=A1=B5
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +THP=E7=9A=84=E8=AE=A1=E6=95=B0=E8=B7=9F=E5=85=B6=E4=BB=96=E5=A4=8D=E5=
+=90=88=E9=A1=B5=E7=9A=84=E8=AE=A1=E6=95=B0=E5=A4=A7=E8=87=B4=E7=9B=B8=E5=90=
+=8C=EF=BC=9A
+>> +
+>> + - get_page()/put_page()=E5=92=8CGUP=E9=83=BD=E5=9C=A8=E9=A6=96=E9=A1=
+=B5=E4=B8=8A=E8=BF=9B=E8=A1=8C=E8=AE=A1=E6=95=B0=EF=BC=88=E4=BF=AE=E6=94=B9=
+head page->_refcount=EF=BC=89
+>> +
+>> + - =E5=B0=BE=E9=A1=B5=E7=9A=84_refcount=E6=B0=B8=E8=BF=9C=E6=98=AF0=2E=
+ get_page_unless_zero()=E6=B0=B8=E8=BF=9C=E6=97=A0=E6=B3=95get=E5=88=B0=E5=
+=B0=BE=E9=A1=B5=E3=80=82
+>> +
+>> + - map/unmap=E7=89=B9=E5=AE=9APTE entry=E6=97=B6=EF=BC=8C=E5=A2=9E=E5=
+=87=8F=E7=9A=84=E6=98=AF=E5=A4=8D=E5=90=88=E9=A1=B5=E4=B8=AD=E7=9B=B8=E5=BA=
+=94=E5=AD=90=E9=A1=B5=E7=9A=84_mapcount=2E
+>> +
+>> + - map/unmap=E6=95=B4=E4=B8=AA=E5=A4=8D=E5=90=88=E9=A1=B5=E6=97=B6=EF=
+=BC=8C=E5=A2=9E=E5=87=8F=E7=9A=84=E6=98=AFcompound_mapcount=E5=B1=9E=E6=80=
+=A7=E3=80=82=E8=AF=A5=E5=B1=9E=E6=80=A7=E4=BF=9D=E5=AD=98=E5=9C=A8=E7=AC=AC=
+=E4=B8=80=E4=B8=AA
+>> +   =E5=B0=BE=E9=A1=B5=E4=B8=AD=E3=80=82=E5=AF=B9=E4=BA=8E=E6=96=87=E4=
+=BB=B6=E4=B8=AD=E7=9A=84=E5=A4=A7=E9=A1=B5=EF=BC=8C=E8=BF=98=E8=A6=81=E5=A2=
+=9E=E5=8A=A0=E6=89=80=E6=9C=89=E5=AD=90=E9=A1=B5=E4=B8=AD=E7=9A=84_mapcount=
+=EF=BC=8C=E8=BF=99=E6=A0=B7=E6=98=AF=E4=B8=BA=E4=BA=86=E5=9C=A8=E6=A3=80=E6=
+=B5=8B
+>> +   =E5=AD=90=E9=A1=B5=E7=9A=84=E8=A7=A3=E6=98=A0=E5=B0=84=E6=97=B6=E4=
+=B8=8D=E9=9C=80=E8=80=83=E8=99=91=E7=AB=9E=E4=BA=89=E9=97=AE=E9=A2=98=E3=80=
+=82
+>map/unmap=EF=BC=9A Either you don't translate, or you translate them all=
+=2E
+>> +
+>> +PageDoubleMap() =E8=A1=A8=E6=98=8E=E5=A4=A7=E9=A1=B5 *=E5=8F=AF=E8=83=
+=BD* =E8=A2=AB=E6=98=A0=E5=B0=84=E4=B8=BA=E4=BA=86PTE=2E
+>> +
+>> +=E5=AF=B9=E5=8C=BF=E5=90=8D=E9=A1=B5=EF=BC=8CPageDoubleMap()=E4=B9=9F=
+=E8=A1=A8=E7=A4=BA=E6=89=80=E6=9C=89=E5=AD=90=E9=A1=B5=E7=9A=84_mapcount=E9=
+=83=BD=E5=81=8F=E7=A7=BB=E4=BA=861=2E
+>> +=E5=9C=A8=E9=A1=B5=E8=A2=AB=E5=90=8C=E6=97=B6=E6=98=A0=E5=B0=84=E4=B8=
+=BA=E4=BA=86PMD=E5=92=8CPTE=E7=9A=84=E6=83=85=E5=86=B5=E4=B8=8B=EF=BC=8C=E8=
+=BF=99=E4=B8=AA=E9=A2=9D=E5=A4=96=E7=9A=84=E5=BC=95=E7=94=A8=E5=8F=AF=E4=BB=
+=A5=E9=81=BF=E5=85=8D=E5=AD=90=E9=A1=B5=E8=A7=A3=E6=98=A0=E5=B0=84=E6=97=B6=
+=E7=9A=84=E7=AB=9E=E4=BA=89=E3=80=82
+>> +
+>> +=E8=BF=99=E4=B8=AA=E4=BC=98=E5=8C=96=E4=B9=9F=E5=8F=AF=E4=BB=A5=E8=BF=
+=BD=E8=B8=AA=E6=AF=8F=E4=B8=AA=E5=AD=90=E9=A1=B5mapcount=E6=89=80=E5=B8=A6=
+=E6=9D=A5=E7=9A=84=E6=80=A7=E8=83=BD=E5=BC=80=E9=94=80=E3=80=82=E5=8F=A6=E4=
+=B8=80=E7=A7=8D=E8=A7=A3=E5=86=B3=E6=96=B9=E6=B3=95=E6=98=AF=E5=9C=A8=E6=AF=
+=8F=E6=AC=A1
+>> +map/unmap=E6=95=B4=E4=B8=AA=E5=A4=8D=E5=90=88=E9=A1=B5=E6=97=B6=E6=9B=
+=B4=E6=94=B9=E6=89=80=E6=9C=89=E5=AD=90=E9=A1=B5=E7=9A=84_mapcount=2E
+>> +
+>> +=E5=AF=B9=E4=BA=8E=E5=8C=BF=E5=90=8D=E9=A1=B5=EF=BC=8C=E5=A6=82=E6=9E=
+=9C=E9=A1=B5=E9=9D=A2=E7=9A=84PMD=E5=9C=A8=E9=A6=96=E6=AC=A1=E8=A2=AB=E6=8B=
+=86=E5=88=86=E6=97=B6=E5=90=8C=E6=97=B6=E8=BF=98=E5=85=B7=E6=9C=89PMD=E6=98=
+=A0=E5=B0=84=EF=BC=8C=E5=88=99=E8=AE=BE=E7=BD=AEPG_double_map;
+>> +=E5=BD=93compound_mapcount=E5=80=BC=E9=99=8D=E4=B8=BA0=E6=97=B6=EF=BC=
+=8C=E5=8F=96=E6=B6=88=E8=AE=BE=E7=BD=AE=E3=80=82
+>> +
+>> +=E5=AF=B9=E4=BA=8E=E6=98=A0=E5=B0=84=E5=88=B0=E6=96=87=E4=BB=B6=E7=9A=
+=84=E9=A1=B5=EF=BC=8C=E5=9C=A8=E5=85=B6=E9=A6=96=E6=AC=A1=E6=98=A0=E5=B0=84=
+PTE=E6=97=B6=EF=BC=8C=E8=AE=BE=E7=BD=AEPG_double_map; =E5=9C=A8=E9=A1=B5=E9=
+=9D=A2=E4=BB=8E=E9=A1=B5=E7=BC=93=E5=AD=98
+>> +page cache=E4=B8=AD=E7=A7=BB=E9=99=A4=E6=97=B6=EF=BC=8C=E5=8F=96=E6=B6=
+=88=E8=AE=BE=E7=BD=AE=E3=80=82
+>=E9=A1=B5=E7=BC=93=E5=AD=98 =3D=3D page cache
+>> +
+>> +split_huge_page=E4=B8=AD=EF=BC=8C=E5=9C=A8=E6=B8=85=E9=99=A4page struc=
+t=E4=B8=AD=E6=89=80=E6=9C=89PG_head/tail=E4=BD=8D=E4=B9=8B=E5=89=8D=EF=BC=
+=8C=E9=9C=80=E8=A6=81=E5=85=88=E5=B0=86=E9=A6=96=E9=A1=B5=E4=B8=AD=E7=9A=84
+>> +=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0refcount=E5=88=86=E5=8F=91=E5=88=
+=B0=E6=89=80=E6=9C=89=E5=85=B6=E4=BB=96=E5=B0=BE=E9=A1=B5=E4=B8=AD=E3=80=82=
+=E9=A1=B5=E8=A1=A8=E9=A1=B9PTE=E5=8D=A0=E7=94=A8=E7=9A=84=E5=BC=95=E7=94=A8=
+=E8=AE=A1=E6=95=B0=E5=BE=88=E5=A5=BD=E5=A4=84=E7=90=86=EF=BC=8C=E4=BD=86=E5=
+=89=A9=E4=B8=8B=E7=9A=84
+>> +=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0=E6=9D=A5=E6=BA=90=E9=9A=BE=E4=BB=
+=A5=E7=A1=AE=E5=AE=9A=EF=BC=88=E5=A6=82=E9=80=9A=E8=BF=87get_user_pages=E7=
+=9A=84pin=E9=A1=B5=EF=BC=89=E3=80=82=E5=A6=82=E6=9E=9C=E5=A4=A7=E9=A1=B5=E8=
+=A2=ABpin=E4=BD=8F=EF=BC=8C
+>> +split_huge_page()=E4=BC=9A=E5=A4=B1=E8=B4=A5=E3=80=82=E9=A1=B5=E7=9A=
+=84=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0=E5=BF=85=E9=A1=BB=E7=AD=89=E4=BA=8E=
+=E6=89=80=E6=9C=89=E5=AD=90=E9=A1=B5mapcount=E4=B9=8B=E5=92=8C=E5=86=8D=E5=
+=8A=A0=E4=B8=80=EF=BC=88=E5=9B=A0=E4=B8=BA
+>> +split_huge_page=E7=9A=84=E8=B0=83=E7=94=A8=E8=80=85=E4=B9=9F=E5=BF=85=
+=E9=A1=BB=E5=AF=B9=E9=A6=96=E9=A1=B5=E6=8C=81=E6=9C=89=E4=B8=80=E4=B8=AA=E5=
+=BC=95=E7=94=A8=EF=BC=89=E3=80=82
+>> +
+>> +=E5=AF=B9=E5=8C=BF=E5=90=8D=E9=A1=B5=EF=BC=8Csplit_huge_page=E7=94=A8=
+=E9=A1=B5=E8=A1=A8=E9=A1=B9=E8=BF=81=E7=A7=BB=EF=BC=88migration
+>> +entries=EF=BC=89=E4=BF=9D=E6=8C=81=E6=9D=A5page->_refcount=E5=92=8Cpag=
+e->_mapcount=E7=A8=B3=E5=AE=9A=E3=80=82=E5=AF=B9=E6=96=87=E4=BB=B6=E9=A1=B5=
+=EF=BC=8C=E7=9B=B4=E6=8E=A5=E8=A7=A3=E6=98=A0=E5=B0=84=E5=B0=B1=E5=A5=BD=E3=
+=80=82
+>
+>=E4=BF=9D=E6=8C=81=E6=9D=A5 -> =E6=9D=A5=E4=BF=9D=E6=8C=81
+>
+>> +
+>> +=E8=BF=99=E5=A5=97=E6=9C=BA=E5=88=B6=E5=AF=B9=E7=89=A9=E7=90=86=E5=86=
+=85=E5=AD=98=E6=89=AB=E6=8F=8F=EF=BC=88physical memory scanners=EF=BC=89=E4=
+=B9=9F=E5=AE=89=E5=85=A8=EF=BC=8Cscanner=E5=94=AF=E4=B8=80=E5=90=88=E6=B3=
+=95=E5=BC=95=E7=94=A8=E9=A1=B5
+>> +=E7=9A=84=E9=80=94=E5=BE=84=E5=B0=B1=E6=98=AFget_page_unless_zero()=2E
+>> +
+>> +=E6=B2=A1=E8=B0=83atomic_add()=E6=97=B6=EF=BC=8C=E6=89=80=E6=9C=89=E5=
+=B0=BE=E9=A1=B5=E7=9A=84_refcount=E9=83=BD=E4=B8=BA0=2E =E8=BF=99=E6=97=B6s=
+canner=E6=97=A0=E6=B3=95=E8=8E=B7=E5=8F=96=E5=B0=BE=E9=A1=B5=E7=9A=84=E5=BC=
+=95=E7=94=A8=E3=80=82
+>> +=E8=B0=83=E4=BA=86atomic_add()=E5=90=8E=EF=BC=8C=E6=88=91=E4=BB=AC=E4=
+=B9=9F=E4=B8=8D=E5=9C=A8=E4=B9=8E=E9=A1=B5=E7=9A=84_refcount=E6=98=AF=E5=A4=
+=9A=E5=B0=91=E4=BA=86=E3=80=82=E5=8F=AA=E8=A6=81=E7=9F=A5=E9=81=93=E5=BA=94=
+=E8=AF=A5=E4=BB=8E=E9=A6=96=E9=A1=B5=E7=9A=84=E5=BC=95=E7=94=A8
+>> +=E8=AE=A1=E6=95=B0=E5=87=8F=E5=8E=BB=E5=A4=9A=E5=B0=91=E5=8D=B3=E5=8F=
+=AF=E3=80=82
+>> +
+>> +=E5=AF=B9=E9=A6=96=E9=A1=B5=E8=BF=9B=E8=A1=8Cget_page_unless_zero()=E6=
+=98=AF=E5=8F=AF=E4=BB=A5=E6=88=90=E5=8A=9F=E7=9A=84=E3=80=82=E6=AD=A4=E6=97=
+=B6=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0=E7=9A=84=E5=86=8D=E5=88=86=E9=85=8D=
+=E9=9D=9E=E5=B8=B8=E6=98=8E=E4=BA=86=EF=BC=9A
+>> +=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0=E5=B0=86=E4=BC=9A=E7=95=99=E5=9C=
+=A8=E9=A6=96=E9=A1=B5=E4=B8=AD=E3=80=82
+>> +
+>> +split_huge_pmd()=E5=AF=B9=E5=BC=95=E7=94=A8=E8=AE=A1=E6=95=B0=E6=B2=A1=
+=E6=9C=89=E4=BB=BB=E4=BD=95=E9=99=90=E5=88=B6=EF=BC=8C=E5=9C=A8=E4=BB=BB=E4=
+=BD=95=E6=97=B6=E5=80=99=E9=83=BD=E5=8F=AF=E4=BB=A5=E6=8B=86=E5=88=86PMD=EF=
+=BC=8C=E8=80=8C=E4=B8=94=E6=B0=B8=E8=BF=9C=E4=B8=8D=E4=BC=9A
+>> +=E5=A4=B1=E8=B4=A5=E3=80=82
+>> +
+>> +=E5=B1=80=E9=83=A8unmap=E5=92=8Cdeferred_split_huge_page()=E5=87=BD=E6=
+=95=B0
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E9=80=9A=E8=BF=87munmap()=E6=88=
+=96=E5=85=B6=E4=BB=96=E6=96=B9=E5=BC=8F=E8=A7=A3=E6=98=A0=E5=B0=84=E6=97=B6=
+=EF=BC=8C=E5=B9=B6=E4=B8=8D=E4=BC=9A=E7=AB=8B=E5=8D=B3=E9=87=8A=E6=94=BE=E5=
+=86=85=E5=AD=98=E3=80=82=E5=9C=A8page_remove_rmap()
+>> +=E4=B8=AD=E6=A3=80=E6=9F=A5=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E7=9A=
+=84=E6=9F=90=E4=B8=AA=E5=AD=90=E9=A1=B5=E6=98=AF=E5=90=A6=E5=B7=B2=E7=BB=8F=
+=E8=BF=98=E5=9C=A8=E4=BD=BF=E7=94=A8=EF=BC=8C=E5=B9=B6=E5=B0=86=E9=80=8F=E6=
+=98=8E=E5=A4=A7=E9=A1=B5=E5=8A=A0=E5=85=A5=E4=B8=80=E4=B8=AA=E9=A2=84=E5=A4=
+=87=E9=98=9F=E5=88=97=EF=BC=8C=E5=BD=93=E5=86=85=E5=AD=98
+>> +=E4=BD=BF=E7=94=A8=E9=9C=80=E6=B1=82=E5=8F=98=E5=A4=A7=E6=97=B6=EF=BC=
+=8C=E6=8A=8A=E9=80=8F=E6=98=8E=E5=A4=A7=E9=A1=B5=E6=8B=86=E5=88=86=EF=BC=8C=
+=E9=87=8A=E6=94=BE=E5=B7=B2=E7=BB=8F=E4=B8=8D=E7=94=A8=E7=9A=84=E5=AD=90=E9=
+=A1=B5=E3=80=82
+>> +
+>> +=E5=A6=82=E6=9E=9C=E6=A3=80=E6=B5=8B=E5=88=B0=E5=B1=80=E9=83=A8unmap=
+=EF=BC=8C=E7=94=B1=E4=BA=8E=E5=A4=84=E5=9C=A8=E9=94=81=E4=B8=AD=EF=BC=8C=E6=
+=97=A0=E6=B3=95=E6=8B=86=E9=A1=B5=E3=80=82=E8=80=8C=E4=B8=94=E5=9C=A8=E5=BE=
+=88=E5=A4=9A=E6=83=85=E5=86=B5=E4=B8=8B=EF=BC=8C=E9=80=8F=E6=98=8E=E5=A4=A7=
+=E9=A1=B5=E4=BC=9A=E8=B7=A8VMA,
+>> +=E8=BF=99=E6=97=B6=E4=BC=9A=E5=9C=A8exit(2)=E4=B8=AD=E8=BF=9B=E8=A1=8C=
+=E5=B1=80=E9=83=A8unmap=EF=BC=8C=E8=BF=99=E6=97=B6=E6=8B=86=E9=A1=B5=E6=95=
+=88=E6=9E=9C=E9=80=82=E5=BE=97=E5=85=B6=E5=8F=8D=E3=80=82
+>
+>=E7=94=B1=E4=BA=8Exxxxx=E8=80=8C=E4=B8=94xxxxxx=E6=89=80=E4=BB=A5xxxxxxx
+>
+>=E8=BF=99=E6=97=B6 is used too much
+>
+>
+>> +
+>> +deferred_split_huge_page=E5=87=BD=E6=95=B0=E5=B0=B1=E6=98=AF=E7=94=A8=
+=E6=9D=A5=E8=BF=9B=E8=A1=8C=E4=B8=8A=E6=96=87=E6=89=80=E8=AF=B4=E7=9A=84=E5=
+=B0=86=E9=A1=B5=E6=8E=92=E9=98=9F=E4=BB=A5=E9=A2=84=E5=A4=87=E5=90=8E=E7=BB=
+=AD=E7=9A=84=E6=8B=86=E5=88=86=E3=80=82=E7=9C=9F=E6=AD=A3
+>> +=E7=9A=84=E6=8B=86=E9=A1=B5=E6=93=8D=E4=BD=9C=E6=98=AF=E9=80=9A=E8=BF=
+=87=E5=86=85=E5=AD=98=E5=8E=8B=E5=8A=9B=E5=AF=BC=E8=87=B4=E7=9A=84shrinker=
+=E5=87=BD=E6=95=B0=E6=9D=A5=E8=A7=A6=E5=8F=91=E3=80=82
+>
+>shrinker=E6=8E=A5=E5=8F=A3
+>
+>> +
+>
+>CC Yizhou
+>
+>CC Binbin
+>
+>
+>I like your way of translating docs, good job!
+>
+>
+>Thanks=EF=BC=8C
+>Yanteng
+
