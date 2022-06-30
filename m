@@ -2,199 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3573BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2727EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234489AbiF3JyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
+        id S234332AbiF3Jz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiF3JyO (ORCPT
+        with ESMTP id S234576AbiF3JzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:54:14 -0400
-X-Greylist: delayed 919 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 02:54:13 PDT
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325EC22BFB;
-        Thu, 30 Jun 2022 02:54:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
-        Content-Type; bh=eP1sj3XLEhD8H0WwbeboKYvAKhfYwTvFMo2H6hCECIY=; b=FvOXx8wCxRCi
-        G6aAQCyB2O0Rs+02kUuiNOhqdQjCy8aMvJ2S+xudaMcHf4dnMRFd50KgW6SAZzluXTcfg+3W1YX/u
-        LnhNuu495fVk3LwJtEclMd5vuiJ2BBv3i2/EwhcDjW6+sESMkSdiFZjMYyQO9MMF3A+kpxDWf1Smp
-        UoZdo=;
-Received: from [192.168.16.236] (helo=vzdev.sw.ru)
-        by relay.virtuozzo.com with esmtp (Exim 4.94.2)
-        (envelope-from <alexander.atanasov@virtuozzo.com>)
-        id 1o6qbC-007yyH-Lu; Thu, 30 Jun 2022 11:37:09 +0200
-From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kernel@openvz.org,
-        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/1] virtio: Restore semantics of vq->broken in virtqueues
-Date:   Thu, 30 Jun 2022 09:36:46 +0000
-Message-Id: <20220630093651.25981-1-alexander.atanasov@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 30 Jun 2022 05:55:22 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B4E43AC7
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:55:21 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id a11-20020a17090acb8b00b001eca0041455so2725890pju.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:55:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u7LUrk2PQT0QuXB1ls6VgilrLt2bHgnHDE3d6QTzFn0=;
+        b=c/DcgPgMH8qK2qxUIRsHd9NqftRr5oOqCKgNKsTYK9Ah3ft5fkyKKV4WRq6k/ioEnb
+         FDGp4U9eidt4JRmGu66TBiGZELG4YTrTtM0AxUEKNv6seRbXzzmIF7xJw7VYLZbYBa2S
+         crLMn6gMWb0pxVvN/I7kTzlOk3azNREd2eiIqUI1Y23twMHRptJwjDGpFApP1+kdXnsR
+         rFsmc4gFxhPnYKP9ln61ppIgsi/8qIClZILFDJikmUlT9XroMVDP1vAoOT4/99YZgymY
+         7imFj7AYTE6nyfF9DiIm8Erjf4uggZy1hwQT7TRjjiAlIQQ6cYDBsc8nBkDQS1zbU1TN
+         8HUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u7LUrk2PQT0QuXB1ls6VgilrLt2bHgnHDE3d6QTzFn0=;
+        b=Pm7KxsDHaMSuy8Jw1TYeC6q096bT8deplZ7NKPIMm+ce1n61NLu7TGiyhSXR4RUg2l
+         o+2PA8upn1TKvp4e/xzfpx8cIxynHMxMfa4wlR/DFkO5QqeT1oLvNV8HAynH1At4mNZm
+         DJafc9QDGY2gcg7oPHIfQDTgJcW8OIJMvtiuEm+9E7E3bzIDPwk5y96BXhv15/THwuoa
+         UoLThirYfkVSu+2PlHf8rQ9Llv5r1B1TZA2srROrv6mExC2krzC9765VGFR/VYJOWB3Q
+         cvlPjXyPGdGQW5spX7L1wXnZ/h9K6m4VVuuzeEgdL3gq6RbQC7bBaETNEsd1jMHRB4dA
+         2HyQ==
+X-Gm-Message-State: AJIora9gpsItXgvX0rCiCJK3KDaii1zzjTQ6j0cFvbWq3mfuPy8vbhkW
+        fCbUXalzPThOEh14F0ub38jgEw==
+X-Google-Smtp-Source: AGRyM1uvH6vnV3smGE+NjUvesmv27eoJ+j0uGzL/Bge/ktMXro/pYdvZBQiFwmnYgfr7zCKmlhbBdg==
+X-Received: by 2002:a17:90b:4c4d:b0:1ec:bb28:9819 with SMTP id np13-20020a17090b4c4d00b001ecbb289819mr9106630pjb.140.1656582920705;
+        Thu, 30 Jun 2022 02:55:20 -0700 (PDT)
+Received: from localhost ([122.172.201.58])
+        by smtp.gmail.com with ESMTPSA id f80-20020a623853000000b005252380a87bsm13040768pfa.59.2022.06.30.02.55.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 02:55:20 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 15:25:18 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: Re: [PATCH v3 2/7] dt-bindings: opp: accept array of frequencies
+Message-ID: <20220630095518.zhvocdbupqqkyps7@vireshk-i7>
+References: <20220513061347.46480-1-krzysztof.kozlowski@linaro.org>
+ <20220513061347.46480-3-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513061347.46480-3-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-virtio: harden vring IRQ (8b4ec69d7e09) changed the use
-of vq->broken. As result vring_interrupt handles IRQs for
-broken drivers as IRQ_NONE and not IRQ_HANDLED and made impossible
-to initiallize vqs before the driver is ready, i.e. in probe method.
-Balloon driver does this and it can not load because it fails in
-vqs_init with -EIO.
+On 13-05-22, 08:13, Krzysztof Kozlowski wrote:
+> Devices might need to control several clocks when scaling the frequency
+> and voltage.  Allow passing array of clock frequencies, similarly to the
+> voltages.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Acked-by: Rob Herring <robh@kernel.org>
+> 
+> ---
+> 
+> Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/opp/opp-v2-base.yaml | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+> index 76c8acd981b3..66d0ec763f0b 100644
+> --- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+> +++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+> @@ -50,6 +50,16 @@ patternProperties:
+>            property to uniquely identify the OPP nodes exists. Devices like power
+>            domains must have another (implementation dependent) property.
+>  
+> +          Entries for multiple clocks shall be provided in the same field, as
+> +          array of frequencies.  The OPP binding doesn't provide any provisions
+> +          to relate the values to their clocks or the order in which the clocks
+> +          need to be configured and that is left for the implementation
+> +          specific binding.
+> +        minItems: 1
+> +        maxItems: 16
+> +        items:
+> +          maxItems: 1
+> +
+>        opp-microvolt:
+>          description: |
+>            Voltage for the OPP
 
-So instead of changing the original intent ot the flag introduce
-a new flag vq->ready which servers the purpose to check of early IRQs
-and restore the behaviour of the vq->broken flag.
+Applied. Thanks.
 
-Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
----
- drivers/virtio/virtio_ring.c  | 20 ++++++++++++++------
- include/linux/virtio.h        |  2 +-
- include/linux/virtio_config.h | 10 +++++-----
- 3 files changed, 20 insertions(+), 12 deletions(-)
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Halil Pasic <pasic@linux.ibm.com>
-Cc: Cornelia Huck <cohuck@redhat.com>
-Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
-Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
-Cc: linux-s390@vger.kernel.org
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 13a7348cedff..dca3cc774584 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -100,6 +100,9 @@ struct vring_virtqueue {
- 	/* Other side has made a mess, don't try any more. */
- 	bool broken;
- 
-+	/* the queue is ready to handle interrupts  */
-+	bool ready;
-+
- 	/* Host supports indirect buffers */
- 	bool indirect;
- 
-@@ -1688,7 +1691,8 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	vq->we_own_ring = true;
- 	vq->notify = notify;
- 	vq->weak_barriers = weak_barriers;
--	vq->broken = true;
-+	vq->broken = false;
-+	vq->ready = false;
- 	vq->last_used_idx = 0;
- 	vq->event_triggered = false;
- 	vq->num_added = 0;
-@@ -2134,7 +2138,10 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
- 		return IRQ_NONE;
- 	}
- 
--	if (unlikely(vq->broken)) {
-+	if (unlikely(vq->broken))
-+		return IRQ_HANDLED;
-+
-+	if (unlikely(!vq->ready)) {
- 		dev_warn_once(&vq->vq.vdev->dev,
- 			      "virtio vring IRQ raised before DRIVER_OK");
- 		return IRQ_NONE;
-@@ -2180,7 +2187,8 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
- 	vq->we_own_ring = false;
- 	vq->notify = notify;
- 	vq->weak_barriers = weak_barriers;
--	vq->broken = true;
-+	vq->broken = false;
-+	vq->ready = false;
- 	vq->last_used_idx = 0;
- 	vq->event_triggered = false;
- 	vq->num_added = 0;
-@@ -2405,7 +2413,7 @@ EXPORT_SYMBOL_GPL(virtio_break_device);
-  * (probing and restoring). This function should only be called by the
-  * core, not directly by the driver.
-  */
--void __virtio_unbreak_device(struct virtio_device *dev)
-+void __virtio_device_ready(struct virtio_device *dev)
- {
- 	struct virtqueue *_vq;
- 
-@@ -2414,11 +2422,11 @@ void __virtio_unbreak_device(struct virtio_device *dev)
- 		struct vring_virtqueue *vq = to_vvq(_vq);
- 
- 		/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
--		WRITE_ONCE(vq->broken, false);
-+		WRITE_ONCE(vq->ready, true);
- 	}
- 	spin_unlock(&dev->vqs_list_lock);
- }
--EXPORT_SYMBOL_GPL(__virtio_unbreak_device);
-+EXPORT_SYMBOL_GPL(__virtio_device_ready);
- 
- dma_addr_t virtqueue_get_desc_addr(struct virtqueue *_vq)
- {
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index d8fdf170637c..538c5959949a 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -131,7 +131,7 @@ void unregister_virtio_device(struct virtio_device *dev);
- bool is_virtio_device(struct device *dev);
- 
- void virtio_break_device(struct virtio_device *dev);
--void __virtio_unbreak_device(struct virtio_device *dev);
-+void __virtio_device_ready(struct virtio_device *dev);
- 
- void virtio_config_changed(struct virtio_device *dev);
- #ifdef CONFIG_PM_SLEEP
-diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-index 49c7c32815f1..35cf1b26e05a 100644
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -259,21 +259,21 @@ void virtio_device_ready(struct virtio_device *dev)
- 
- 	/*
- 	 * The virtio_synchronize_cbs() makes sure vring_interrupt()
--	 * will see the driver specific setup if it sees vq->broken
-+	 * will see the driver specific setup if it sees vq->ready
- 	 * as false (even if the notifications come before DRIVER_OK).
- 	 */
- 	virtio_synchronize_cbs(dev);
--	__virtio_unbreak_device(dev);
-+	__virtio_device_ready(dev);
- 	/*
--	 * The transport should ensure the visibility of vq->broken
-+	 * The transport should ensure the visibility of vq->ready
- 	 * before setting DRIVER_OK. See the comments for the transport
- 	 * specific set_status() method.
- 	 *
- 	 * A well behaved device will only notify a virtqueue after
- 	 * DRIVER_OK, this means the device should "see" the coherenct
--	 * memory write that set vq->broken as false which is done by
-+	 * memory write that set vq->ready as true which is done by
- 	 * the driver when it sees DRIVER_OK, then the following
--	 * driver's vring_interrupt() will see vq->broken as false so
-+	 * driver's vring_interrupt() will see vq->true as true so
- 	 * we won't lose any notification.
- 	 */
- 	dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
 -- 
-2.25.1
-
+viresh
