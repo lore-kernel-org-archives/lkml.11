@@ -2,124 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2727EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23541C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234332AbiF3Jz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        id S234591AbiF3J4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234576AbiF3JzW (ORCPT
+        with ESMTP id S232776AbiF3J4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:55:22 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B4E43AC7
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:55:21 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id a11-20020a17090acb8b00b001eca0041455so2725890pju.1
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:55:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=u7LUrk2PQT0QuXB1ls6VgilrLt2bHgnHDE3d6QTzFn0=;
-        b=c/DcgPgMH8qK2qxUIRsHd9NqftRr5oOqCKgNKsTYK9Ah3ft5fkyKKV4WRq6k/ioEnb
-         FDGp4U9eidt4JRmGu66TBiGZELG4YTrTtM0AxUEKNv6seRbXzzmIF7xJw7VYLZbYBa2S
-         crLMn6gMWb0pxVvN/I7kTzlOk3azNREd2eiIqUI1Y23twMHRptJwjDGpFApP1+kdXnsR
-         rFsmc4gFxhPnYKP9ln61ppIgsi/8qIClZILFDJikmUlT9XroMVDP1vAoOT4/99YZgymY
-         7imFj7AYTE6nyfF9DiIm8Erjf4uggZy1hwQT7TRjjiAlIQQ6cYDBsc8nBkDQS1zbU1TN
-         8HUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u7LUrk2PQT0QuXB1ls6VgilrLt2bHgnHDE3d6QTzFn0=;
-        b=Pm7KxsDHaMSuy8Jw1TYeC6q096bT8deplZ7NKPIMm+ce1n61NLu7TGiyhSXR4RUg2l
-         o+2PA8upn1TKvp4e/xzfpx8cIxynHMxMfa4wlR/DFkO5QqeT1oLvNV8HAynH1At4mNZm
-         DJafc9QDGY2gcg7oPHIfQDTgJcW8OIJMvtiuEm+9E7E3bzIDPwk5y96BXhv15/THwuoa
-         UoLThirYfkVSu+2PlHf8rQ9Llv5r1B1TZA2srROrv6mExC2krzC9765VGFR/VYJOWB3Q
-         cvlPjXyPGdGQW5spX7L1wXnZ/h9K6m4VVuuzeEgdL3gq6RbQC7bBaETNEsd1jMHRB4dA
-         2HyQ==
-X-Gm-Message-State: AJIora9gpsItXgvX0rCiCJK3KDaii1zzjTQ6j0cFvbWq3mfuPy8vbhkW
-        fCbUXalzPThOEh14F0ub38jgEw==
-X-Google-Smtp-Source: AGRyM1uvH6vnV3smGE+NjUvesmv27eoJ+j0uGzL/Bge/ktMXro/pYdvZBQiFwmnYgfr7zCKmlhbBdg==
-X-Received: by 2002:a17:90b:4c4d:b0:1ec:bb28:9819 with SMTP id np13-20020a17090b4c4d00b001ecbb289819mr9106630pjb.140.1656582920705;
-        Thu, 30 Jun 2022 02:55:20 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id f80-20020a623853000000b005252380a87bsm13040768pfa.59.2022.06.30.02.55.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 02:55:20 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 15:25:18 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org,
-        Rob Herring <robh@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH v3 2/7] dt-bindings: opp: accept array of frequencies
-Message-ID: <20220630095518.zhvocdbupqqkyps7@vireshk-i7>
-References: <20220513061347.46480-1-krzysztof.kozlowski@linaro.org>
- <20220513061347.46480-3-krzysztof.kozlowski@linaro.org>
+        Thu, 30 Jun 2022 05:56:21 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23797366AC;
+        Thu, 30 Jun 2022 02:56:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656582981; x=1688118981;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=CHD3dptFN/arpsZ+SxMW13WySF1j6NyJGYBigahJd1I=;
+  b=RizkZqoD/wB9Xl7MJl9NIfpAZk9uz18R5I5Ubbl7Kpj6TN62WmDa+JIn
+   M7IHEi1je/lgPKwdTlImHzPiOE9CmzR24kgGcgzCautBj/BYVw3/pphmt
+   oSysC+xdctLlfllrh+LiIMv6MXL216/DDS2mTx5XCqeeNdxbWqK06g2lY
+   r8d+tf3RG5Luvbd0sX8pS5QcNdgJF+NFNsrrZfBB2a41+Qhv0rA0S4cf0
+   LV5mcJTpZtNMv1DRH8opNtFcUIPm11YCQH+FyuUrD/VPBHFvkBi16x5fu
+   hr+D1O/3MMZmJUkk/EUjjfXVGu4MwE2UYh9VBDgSaw+chnB2zGP4DTGLi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="368619627"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="368619627"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:56:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="837545374"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Jun 2022 02:56:19 -0700
+Message-ID: <bcf4d8db-317f-f0c9-0e9e-5edf25e0c7e8@linux.intel.com>
+Date:   Thu, 30 Jun 2022 12:57:51 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513061347.46480-3-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Content-Language: en-US
+To:     Jianglei Nie <niejianglei2021@163.com>, mathias.nyman@intel.com,
+        gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220630011008.2167298-1-niejianglei2021@163.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH] usb: host: xhci: Fix potential memory leak in
+ xhci_alloc_stream_info()
+In-Reply-To: <20220630011008.2167298-1-niejianglei2021@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13-05-22, 08:13, Krzysztof Kozlowski wrote:
-> Devices might need to control several clocks when scaling the frequency
-> and voltage.  Allow passing array of clock frequencies, similarly to the
-> voltages.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Acked-by: Rob Herring <robh@kernel.org>
-> 
-> ---
-> 
-> Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  Documentation/devicetree/bindings/opp/opp-v2-base.yaml | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
-> index 76c8acd981b3..66d0ec763f0b 100644
-> --- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
-> +++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
-> @@ -50,6 +50,16 @@ patternProperties:
->            property to uniquely identify the OPP nodes exists. Devices like power
->            domains must have another (implementation dependent) property.
->  
-> +          Entries for multiple clocks shall be provided in the same field, as
-> +          array of frequencies.  The OPP binding doesn't provide any provisions
-> +          to relate the values to their clocks or the order in which the clocks
-> +          need to be configured and that is left for the implementation
-> +          specific binding.
-> +        minItems: 1
-> +        maxItems: 16
-> +        items:
-> +          maxItems: 1
-> +
->        opp-microvolt:
->          description: |
->            Voltage for the OPP
+On 30.6.2022 4.10, Jianglei Nie wrote:
+> xhci_alloc_stream_info() allocates stream context array for stream_info
+> ->stream_ctx_array with xhci_alloc_stream_ctx(). When some error occurs,
+> stream_info->stream_ctx_array is not released, which will lead to a
+> memory leak.
 
-Applied. Thanks.
+Nice catch, thanks
 
--- 
-viresh
+> 
+> We can fix it by releasing the stream_info->stream_ctx_array with
+> xhci_free_stream_ctx() on the error path to avoid the potential memory
+> leak.
+> 
+
+Looks like the goto labels were a bit messed up from the beginning.
+There are a couple "goto cleanup_ctx" lines in the code, but
+cleanup_ctx never freed the ctx.
+
+> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> ---
+>   drivers/usb/host/xhci-mem.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+> index 8c19e151a945..a71d3a873467 100644
+> --- a/drivers/usb/host/xhci-mem.c
+> +++ b/drivers/usb/host/xhci-mem.c
+> @@ -648,8 +648,13 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
+>   	/* Allocate everything needed to free the stream rings later */
+>   	stream_info->free_streams_command =
+>   		xhci_alloc_command_with_ctx(xhci, true, mem_flags);
+> -	if (!stream_info->free_streams_command)
+> +	if (!stream_info->free_streams_command) {
+> +		xhci_free_stream_ctx(xhci,
+> +			stream_info->num_stream_ctxs,
+> +			stream_info->stream_ctx_array,
+> +			stream_info->ctx_array_dma);
+>   		goto cleanup_ctx;
+> +	}
+>   
+>   	INIT_RADIX_TREE(&stream_info->trb_address_map, GFP_ATOMIC);
+>   
+> @@ -700,6 +705,10 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
+>   			stream_info->stream_rings[cur_stream] = NULL;
+>   		}
+>   	}
+> +	xhci_free_stream_ctx(xhci,
+> +			stream_info->num_stream_ctxs,
+> +			stream_info->stream_ctx_array,
+> +			stream_info->ctx_array_dma);
+>   	xhci_free_command(xhci, stream_info->free_streams_command);
+>   cleanup_ctx:
+>   	kfree(stream_info->stream_rings);
+
+How about:
+
+diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+index 8c19e151a945..f7cac1af51c5 100644
+--- a/drivers/usb/host/xhci-mem.c
++++ b/drivers/usb/host/xhci-mem.c
+@@ -641,7 +641,7 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
+                         num_stream_ctxs, &stream_info->ctx_array_dma,
+                         mem_flags);
+         if (!stream_info->stream_ctx_array)
+-               goto cleanup_ctx;
++               goto cleanup_rings;
+         memset(stream_info->stream_ctx_array, 0,
+                         sizeof(struct xhci_stream_ctx)*num_stream_ctxs);
+  
+@@ -702,6 +702,10 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
+         }
+         xhci_free_command(xhci, stream_info->free_streams_command);
+  cleanup_ctx:
++       xhci_free_stream_ctx(xhci, stream_info->num_stream_ctxs,
++                            stream_info->stream_ctx_array,
++                            stream_info->ctx_array_dma);
++cleanup_rings:
+         kfree(stream_info->stream_rings);
+  cleanup_info:
