@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B50EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 20:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B76CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 20:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237031AbiF3U4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 16:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
+        id S234122AbiF3U4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 16:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232936AbiF3U4F (ORCPT
+        with ESMTP id S230503AbiF3U4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 16:56:05 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C77730543
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:56:04 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id t24so414004lfr.4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6ChOtKHwRJoKjAcC9z8ZRdCOei/XBaTbfevNHf17DEI=;
-        b=Q8WTSMc+YZr+5Ty2lAUT360shOXmmKLKvU6lqblmOJWs/JUZdiN4aLhzt9n5h6vj/G
-         rZKS+q0y5H+Mi22clQRVcI/cULX/vVZ4b9zlOY38QN1Kf4IgmBhS6j/IQW8KdU4ihyG0
-         rroxiTzhJV28QDlNsLyHpPwRNQasA7P6XZMzrzuZXAqeWzWqa/wuAis5B9Qri3c5zsJm
-         DIeejK+J3W4gLK4pd8xeF3MpVaaHBwCSrePvn0leurp6HjrgmqOMrRw9U5pmCiXdXKcU
-         10EUBMNxcn3lKgFAVOtJacFsFPx0y8y70Qkxt230WNkQJzUwg9C+G1iw2Md09g0RjqbT
-         9kmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6ChOtKHwRJoKjAcC9z8ZRdCOei/XBaTbfevNHf17DEI=;
-        b=7inVYPjiczfiQsfZFpfyxIlKhp5rYvHu5yaOX4qOFp2kS+2uWLTbiO0AtBCDncyUxC
-         mujXO/vpEdhq5lBiCqNvJEbbsLr88Qw+IMjLQpOxh5Kj5dgpra0VOuApWB6Iznr6XiQW
-         Q8etp1YUKADoSb7xTVut6yIk+6eew3TWkBrs+P1GXnlZU7nycVv/rqvEUhXc9G5/6o7a
-         g4Xs9JbKxIfsnEDc6Kvg/pT/MaVrqS/81A5pSn1jE7W7GYlge2O2FvkXhBqgCpBGRzUm
-         zs+GwGu4s3TqhlU9P+YaUvh8DUV45L0JFv1t0RzMd25ApllonppyfkkbUeseyXgIl2xs
-         6otw==
-X-Gm-Message-State: AJIora8rHMi0AearBT2hHiuyTCVyaBc7Q1/qHs4axLjE8Nj8rEXOj9mh
-        BQzDqU1Yvixpg2o7gVEqqhtz1pGJoSDAMJT9KbnBGg==
-X-Google-Smtp-Source: AGRyM1uEPehKhzCqbW4u7PMt0spuSRhI49qzB6qHixDXeQf5ZlFMYhntWhnpRytxXhdLWW5WI63u0TIuQyvwEee+Us0=
-X-Received: by 2002:a05:6512:118f:b0:47f:69ef:91b4 with SMTP id
- g15-20020a056512118f00b0047f69ef91b4mr6597075lfr.100.1656622562171; Thu, 30
- Jun 2022 13:56:02 -0700 (PDT)
+        Thu, 30 Jun 2022 16:56:35 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3933403E0;
+        Thu, 30 Jun 2022 13:56:33 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1CBF922236;
+        Thu, 30 Jun 2022 22:56:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1656622591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=82UJBr6ACNE0EKd6nPjOsmQDwDWzYJeTBz8Z22qFb7s=;
+        b=LPfRjyOguub3ig8hubkevjW8TfHe97qALfLiNNisD02rx0fodn12ZsD0BNjuTz4wo+xO0S
+        5hKfTk6XJjruMs1FmHjsG5z7val4CMh8HJoQrwKB9SxMCGR7nV6TM6C/3B6glXcPcbvycX
+        5bDt1VQUwHuAgTtOTl6h3P7X3twR/R8=
 MIME-Version: 1.0
-References: <20220630080935.316394-1-masahiroy@kernel.org>
-In-Reply-To: <20220630080935.316394-1-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 30 Jun 2022 13:55:50 -0700
-Message-ID: <CAKwvOdn7o3KFKiaq+Xbjw-RuFfuawZiKSHfzcAAFDHFOKn0zPQ@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: remove unused cmd_none in scripts/Makefile.modinst
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 30 Jun 2022 22:56:30 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] net: lan966x: hardcode port count
+In-Reply-To: <20220630204433.hg2a2ws2zk5p73ld@soft-dev3-1.localhost>
+References: <20220630140237.692986-1-michael@walle.cc>
+ <20220630204433.hg2a2ws2zk5p73ld@soft-dev3-1.localhost>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <0169b5865944d6522a752b02321a7f4b@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 1:10 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Commit 65ce9c38326e ("kbuild: move module strip/compression code into
-> scripts/Makefile.modinst") added this unused code.
->
-> Perhaps, I thought cmd_none was useful for CONFIG_MODULE_COMPRESS_NONE,
-> but I did not use it after all.
+Am 2022-06-30 22:44, schrieb Horatiu Vultur:
+> The 06/30/2022 16:02, Michael Walle wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
+>> the content is safe
+>> 
+>> Don't rely on the device tree to count the number of physical port. 
+>> Instead
+>> introduce a new compatible string which the driver can use to select 
+>> the
+>> correct port count.
+>> 
+>> This also hardcodes the generic compatible string to 8. The rationale 
+>> is
+>> that this compatible string was just used for the LAN9668 for now and 
+>> I'm
+>> not even sure the current driver would support the LAN9662.
+> 
+> It works also on LAN9662, but I didn't have time to send patches for
+> DTs. Then when I send patches for LAN9662, do I need to go in all dts
+> files to change the compatible string for the 'switch' node?
 
-LGTM
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+I'd assume there is one lan9662.dtsi and yes, there should then be
+   compatible = "microchip,lan9662-switch";
+or
+   compatible = "microchip,lan9662-switch", "microchip,lan966x-switch";
+depending on the outcome of the question Krzysztof raised.
 
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
->  scripts/Makefile.modinst | 3 ---
->  1 file changed, 3 deletions(-)
->
-> diff --git a/scripts/Makefile.modinst b/scripts/Makefile.modinst
-> index c2c43a0ecfe0..16a02e9237d3 100644
-> --- a/scripts/Makefile.modinst
-> +++ b/scripts/Makefile.modinst
-> @@ -28,9 +28,6 @@ modules := $(patsubst $(extmod_prefix)%, $(dst)/%$(suffix-y), $(modules))
->  __modinst: $(modules)
->         @:
->
-> -quiet_cmd_none =
-> -      cmd_none = :
-> -
->  #
->  # Installation
->  #
-> --
-> 2.32.0
->
+And of course adding the compatible string to the driver with a port
+count of 4 (?). I can't find anything about the lan9662, and you've
+mentioned it has 4 ports. Are there four external ports? I was
+under the impression the last digit of the SoC name stands for the
+number of ports.
 
-
--- 
-Thanks,
-~Nick Desaulniers
+-michael
