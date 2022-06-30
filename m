@@ -2,90 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F834CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236758AbiF3T3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 15:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60696 "EHLO
+        id S236832AbiF3Tb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 15:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235269AbiF3T3b (ORCPT
+        with ESMTP id S236786AbiF3Tb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 15:29:31 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2439433B7
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:29:30 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id t189so576283oie.8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:29:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fhTlI95dhMQbdEg/ufyk+UwC70ISSv1cQXARFGMlr9w=;
-        b=uNEpkb+duVeG68QoyxqUVOuYFKeM8jvvXhZpnf0CVl9+N7LvKt2TXIwLnNz4N2f/Hk
-         bODPNzb5TiFPtcVrYJv1DOSL/uI0KmLXaUOl91KwOzCWY1Q2J7BNlawzG3dtbPfX9Fj3
-         IsTSaVvG2Li1vLAYH0gW4YMV9XrCgosYWe++ejitpn+4sYldz+vMPh+tu1udWKRrfv9m
-         kQp4T3rv1pFQ8xGZRSZfjLvgBmq96R3lOd9xdE2s/pL6XRUDDqdwKMxUFqDPuaFR/NzV
-         GGISO9HAXQs7VOO/NnrFQMoKOsG/M8ItJ8ldiJwe+WhStMwe98Siak+zYD7ixqUqKlk8
-         kzvQ==
+        Thu, 30 Jun 2022 15:31:26 -0400
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FFB433B7;
+        Thu, 30 Jun 2022 12:31:25 -0700 (PDT)
+Received: by mail-qv1-f41.google.com with SMTP id y14so689101qvs.10;
+        Thu, 30 Jun 2022 12:31:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fhTlI95dhMQbdEg/ufyk+UwC70ISSv1cQXARFGMlr9w=;
-        b=Kqg/UyJI6FqIb0ymFVjRCep92/FXQkPFk6dO0k0/iNlZX0EGu5QVKfH2ZRlG/PmShU
-         A/GXxDRlSszz02z4sp0OooKbmp6VgPJEUvEtSCJkwDR46wW0bD5rJXyW+2iM3shwKssk
-         hLiCz4/0pdjIjreKceuteR9aQzv7h1NLDgnBZSgaSZwEfn0Bq+0E2ER6BTdPUnzjGAi+
-         v0hKPw8+zI9aEkuhccIfxLP2TST0J1IW+hYIzQ01ChgGOhwR2MWFoSs207OGyVhOipl4
-         k+N4By7fg+VDv+s1l8ZxK4ugSjg/3cMjszx7n1mE0Do4zsF+9Y0v+neEzUKsGy2Jhk8c
-         rSmw==
-X-Gm-Message-State: AJIora80vnia1ClEqpoJU8yTSuPaUN+5CUlFx0SgEUrcqtKXu9qz66jz
-        a8keB744JXlQCG/knGDDbdZlKQ==
-X-Google-Smtp-Source: AGRyM1vKCHlTcfruP18DhjDQDCsUTzTvsVJBE7ndA2a+KgvmK0GRID9hZwZWTKcgcJ0zFL6R2xWyRw==
-X-Received: by 2002:aca:a913:0:b0:335:1bd8:2d03 with SMTP id s19-20020acaa913000000b003351bd82d03mr6405481oie.56.1656617370187;
-        Thu, 30 Jun 2022 12:29:30 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id t2-20020a4ad0a2000000b0042599b92c21sm8721746oor.47.2022.06.30.12.29.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 12:29:29 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 14:29:27 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Sibi Sankar <quic_sibis@quicinc.com>
-Cc:     dmitry.baryshkov@linaro.org, agross@kernel.org,
-        mathieu.poirier@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] remoteproc: qcom: pas: Add decrypt shutdown support for
- modem
-Message-ID: <Yr35lyyX+u76m/Tu@builder.lan>
-References: <1653031684-14771-1-git-send-email-quic_sibis@quicinc.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZgxuFddNswMaFAXw3XokbvDGJHJxBrbwCZoDWZ01t3w=;
+        b=7UB47xqQUvaAzQj8y2rFP9U+E7hXGC/pl60UVOoK12w8O7IAp9VPnVBsTNPAYzGfXy
+         pK1Cy1QLEtk1TT51WOqZN0NmevGHFxGnF5J6SlLH2DHGVSeZIrcXa1ifiLb/ROIj5exY
+         nTgjREyIiphYHDnlaUMH0BM0F6bLA6jwICzRBYY8QoKnXEtXQbcCTFiCdanwCJpcHgZd
+         Ue4mJ20Pkv2OHxYwARUcCo0F0x9HDQJDwdkfjgSEBIegxkKtSPGR6gNq2BXOuKat9D3r
+         wItWcoNql5SgItqVbcEO0XKz0eqUja6Ni2om3ezdwUqv4TyduAylCQS0es9yg5UPZZ6Y
+         7kGg==
+X-Gm-Message-State: AJIora+rNN1je4sm/C8HbJPJ4f0PqcW2ziIUP8GlizDK2XaYjktLJYLz
+        lnzubtlKP+DbdbYAPP7h506Fw4YdYd0pMQ==
+X-Google-Smtp-Source: AGRyM1tjbYoi+H4sY8LKK6TBoRDRGWdbQpaib6CIbSslw/AYG4s8dkrCUfNqY+N5GOQBa/nT19cWNw==
+X-Received: by 2002:a05:6214:3001:b0:46e:762d:e53e with SMTP id ke1-20020a056214300100b0046e762de53emr13185836qvb.125.1656617483944;
+        Thu, 30 Jun 2022 12:31:23 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id o1-20020a05620a2a0100b006a6f68c8a87sm6849385qkp.126.2022.06.30.12.31.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 12:31:23 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-3178acf2a92so3260657b3.6;
+        Thu, 30 Jun 2022 12:31:22 -0700 (PDT)
+X-Received: by 2002:a81:a092:0:b0:318:5c89:a935 with SMTP id
+ x140-20020a81a092000000b003185c89a935mr12869945ywg.383.1656617482577; Thu, 30
+ Jun 2022 12:31:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1653031684-14771-1-git-send-email-quic_sibis@quicinc.com>
+References: <20220628022657.597208-1-sashal@kernel.org> <20220628022657.597208-8-sashal@kernel.org>
+In-Reply-To: <20220628022657.597208-8-sashal@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 30 Jun 2022 21:31:11 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV4xPPGv0U4QZkyA-AT07AjYVGGJdKjpQyZCtAH4hYKWQ@mail.gmail.com>
+Message-ID: <CAMuHMdV4xPPGv0U4QZkyA-AT07AjYVGGJdKjpQyZCtAH4hYKWQ@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 4.9 08/13] video: fbdev: simplefb: Check before
+ clk_put() not needed
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>, Yihao Han <hanyihao@vivo.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 20 May 02:28 CDT 2022, Sibi Sankar wrote:
-> +static int adsp_decrypt_shutdown(struct qcom_adsp *adsp)
+Hi Sasha,
 
-Forgot to write down one comment, how about naming this
-adsp_shutdown_poll_decrypt() to make it slightly more clear from the
-name what's going on here?
+On Tue, Jun 28, 2022 at 4:32 AM Sasha Levin <sashal@kernel.org> wrote:
+> From: Yihao Han <hanyihao@vivo.com>
+>
+> [ Upstream commit 5491424d17bdeb7b7852a59367858251783f8398 ]
+>
+> clk_put() already checks the clk ptr using !clk and IS_ERR()
 
-Thanks,
-Bjorn
+While I think that is true for all clock implementations in v5.19-rc4,
+it is not true for v4.9.320.
 
-> +{
-> +	int retry_num = 50;
-> +	int ret = -EINVAL;
-> +
-> +	while (retry_num && ret) {
-> +		msleep(ADSP_DECRYPT_SHUTDOWN_DELAY_MS);
-> +		ret = qcom_scm_pas_shutdown(adsp->pas_id);
-> +		retry_num--;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
+> so there is no need to check it again before calling it.
+>
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> Signed-off-by: Helge Deller <deller@gmx.de>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+> --- a/drivers/video/fbdev/simplefb.c
+> +++ b/drivers/video/fbdev/simplefb.c
+> @@ -231,8 +231,7 @@ static int simplefb_clocks_init(struct simplefb_par *par,
+>                 if (IS_ERR(clock)) {
+>                         if (PTR_ERR(clock) == -EPROBE_DEFER) {
+>                                 while (--i >= 0) {
+> -                                       if (par->clks[i])
+> -                                               clk_put(par->clks[i]);
+> +                                       clk_put(par->clks[i]);
+>                                 }
+>                                 kfree(par->clks);
+>                                 return -EPROBE_DEFER;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
