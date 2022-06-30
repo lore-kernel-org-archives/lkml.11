@@ -2,93 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E82CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 00:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67457C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 00:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiF3AsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 20:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
+        id S230274AbiF3As2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 20:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbiF3AsH (ORCPT
+        with ESMTP id S229788AbiF3As0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 20:48:07 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC13C2F;
-        Wed, 29 Jun 2022 17:48:06 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id w83so23975183oiw.1;
-        Wed, 29 Jun 2022 17:48:06 -0700 (PDT)
+        Wed, 29 Jun 2022 20:48:26 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B36B7F8
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 17:48:23 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id r82so15275716oig.2
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 17:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vlWcreAQDwZHu5EpZovJb8TbUi6QeIHo7octOq1kCoU=;
-        b=LhYU9+vEWIBDOh4wI2eS6Tte5bKZJ9g8UVOzlHqUhYNoR1TLprZkjdXNuHZP2+/gYC
-         TMmNU4N0tmT1DJ1Q0xihsWw7+rxirU4Ck97l6vzIJ9mM7+IntiZvmikdaFYSeBOk9IvM
-         VHYRcN6kBMvP2G1o1IOipbm6lWC/Z7hhrODdPpjJQZDqZzs/QdW9+ag4lheTG8baUtlk
-         RJSMI7P2RR4iUM9nxUPjofLWVAfz3G6i22W+KSA7AkwWajfQ7FhLZ/snegSi325PpzUo
-         b2jtLDvhVoRvAhyv1wrm9Re/JGOa1ew/TKgdZfQcjdxfEzs978Xl2cZ496jgtNWRyqAF
-         rkSQ==
+        d=usp.br; s=usp-google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mykVnHbeQW+l2iyfJ8F9xbjt9jbjgY1NaySMWjFVNdA=;
+        b=SYYqtfaV+J0RLCvkkk/a9fdo29MnKGSyuNNR2kuiUSmO9JijEQy0e5g9+7G+Hc02Rx
+         9sm8c+oXBsXlugFOXZbgsCd/QYwEi4KfvtjrBUzieSNegEMIhh5Qb2HQMLxKFhgRB7BR
+         W8nYqftgfUOMKm6asj/4LEwth5sUWG3UqRroiMATlYUnWGXz73psYxbpGhmPS7W5lcuO
+         csEEjtbN8wI/3KNpsKTw/V3FnDc0gyxuFVF+kgDpVybmwPO/3yA5dwYpU2N6H6flxDAv
+         BJNrOJI/yzlHFsAuSW4GhMs0z3sK0y+RPuqvUuar2n7ci60OGkNVZHEFKBTOQ1JoI8B6
+         kQEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vlWcreAQDwZHu5EpZovJb8TbUi6QeIHo7octOq1kCoU=;
-        b=xy1j8steTz8sjo1OoFS+RFpY/1M+ePO9/68NrfxhqRSgWuvOZ/KE4Dgcgio9fOWpn9
-         oiLsCnyZhr+TWoSpr3lRIYeQ997MtSSgsrrRdhwMMOpKCHBgxG3Uztxq97vdu4q9IfXx
-         LqQ+K0UfJYZhsRwCsps3MvSP/sIgVZ2yclIE8dxKjQkhc7zE1KJNGJ5BZS3b+bkgyJ1A
-         fs2sWnPFlZ+2ikdp21dj30YYU9loFS7A+aMovqdq5ghU5DaIpZ/qZBHv6TH9qT5h5aD1
-         boMUMV57RqYDZbYA2hjxIsyr+xVc6Z/hMs88PL3wcjxhIhky/8A7z8rb/BjdF/4aSlX8
-         lUHg==
-X-Gm-Message-State: AJIora+rjAOwPHt+i5UM7NZqUMKP8eOyvpozUC/8FIUQ3kT8TsQtJzw1
-        KVCZ3YXnDfLn9KEEnAic0e30uy/DVz7sbKcapyc=
-X-Google-Smtp-Source: AGRyM1vu3Cyb+ZseP9e3PFjRsT1FqHUJUZQnECa3Ip5zDwFOWqj3C7gSihUEZsLLgZzkpF/tR3ndrcZa5bNU1SpIo7k=
-X-Received: by 2002:aca:1113:0:b0:335:6d08:31a2 with SMTP id
- 19-20020aca1113000000b003356d0831a2mr3944081oir.258.1656550085532; Wed, 29
- Jun 2022 17:48:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mykVnHbeQW+l2iyfJ8F9xbjt9jbjgY1NaySMWjFVNdA=;
+        b=tg/LhtpoRV0M5Z85H1nR/DfTTCQ0x80RAwPUsR4YoiyOVj2vGDY0v4R68vdEq8ONvd
+         nU0xZaZhXoxPbiTGyHxsDwKmU9otr5ZUWf/+77edUzTvc6UpkBf4VtmUvv1JvF5nk61T
+         z0yVIzkBuL9VEM5OPDWPHfgHslshGOnatqI+CP1P3LT0sCffoLS+itfzMNyDkk5KtFO5
+         pbpLnxCyDZ9UDEPGIuM9C1FOTYSi3PbczjKsUTER1BTwEnxMY8N6+s1lJBSoSLHBSTIv
+         0SbD+mOaO4lJQEMvlIw5z0DJCQiXmO5ZmGBP9k7L+TUATR9t1iCb+Qr0xO0l+0Z2K0ZN
+         ITww==
+X-Gm-Message-State: AJIora872WfB60wFTm26jzgiMYpBH6cKUw62hf/K2F3ifBTvTbta8ivr
+        swLi3oSmOUw3wH8EjN/OmS81xg==
+X-Google-Smtp-Source: AGRyM1sibQLdY4N/mA26soxLDUODr85LQ5WOxUWO6HI0OSdsiYNA7dsU+++hKEvK8hkCSc3hv0boiw==
+X-Received: by 2002:aca:786:0:b0:32e:3005:813a with SMTP id 128-20020aca0786000000b0032e3005813amr3963536oih.135.1656550102903;
+        Wed, 29 Jun 2022 17:48:22 -0700 (PDT)
+Received: from fedora.. ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
+        by smtp.gmail.com with ESMTPSA id r10-20020a056808210a00b00325cda1ff8esm9432250oiw.13.2022.06.29.17.48.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 17:48:22 -0700 (PDT)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
+To:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        leandro.ribeiro@collabora.com, n@nfraprado.net,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        michal.winiarski@intel.com,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com
+Cc:     kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
+Subject: [PATCH v3 0/9] drm: selftest: Convert to KUnit
+Date:   Wed, 29 Jun 2022 21:46:02 -0300
+Message-Id: <20220630004611.114441-1-maira.canal@usp.br>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220629072932.27506-1-jiaming@nfschina.com>
-In-Reply-To: <20220629072932.27506-1-jiaming@nfschina.com>
-From:   Souptick Joarder <jrdr.linux@gmail.com>
-Date:   Thu, 30 Jun 2022 06:17:55 +0530
-Message-ID: <CAFqt6zZivU3XJmjwdCqhSJBAoNwWfJZeUipG4es4u+iaEnDGtw@mail.gmail.com>
-Subject: Re: [PATCH] exec: Fix a spelling mistake
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     ebiederm@xmission.com, Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        renyu@nfschina.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 1:07 PM Zhang Jiaming <jiaming@nfschina.com> wrote:
->
-> Change 'wont't' to 'won't'.
->
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+Hi everyone,
 
-Reviewed-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-> ---
->  fs/exec.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/fs/exec.c b/fs/exec.c
-> index 96b9847fca99..5f0656e10b5d 100644
-> --- a/fs/exec.c
-> +++ b/fs/exec.c
-> @@ -1156,7 +1156,7 @@ static int de_thread(struct task_struct *tsk)
->                 /*
->                  * We are going to release_task()->ptrace_unlink() silently,
->                  * the tracer can sleep in do_wait(). EXIT_DEAD guarantees
-> -                * the tracer wont't block again waiting for this thread.
-> +                * the tracer won't block again waiting for this thread.
->                  */
->                 if (unlikely(leader->ptrace))
->                         __wake_up_parent(leader, leader->parent);
-> --
-> 2.34.1
->
->
+Here is the v3 of the conversion of selftests to KUnit. Since the v2, there
+have been minor fixes. drm_format_test received the biggest change: the
+KUNIT_EXPECT_FALSE and KUNIT_EXPECT_TRUE macros were changed to KUNIT_EXPECT_EQ,
+as suggested by Daniel.
+
+Most of all, the patches were rebased on top of the recently applied patches
+for drm_format_helper tests (8f456104915f), in order to avoid conflicts when
+applying the tests.
+
+Thanks for your attention and any feedback is welcomed!
+
+Best Regards,
+- Maíra Canal
+
+v1 -> v2: https://lore.kernel.org/dri-devel/20220615135824.15522-1-maira.canal@usp.br/T/
+
+- The suites not longer end in _tests (David Gow).
+- Remove the TODO entry involving the conversion of selftests to KUnit (Javier
+Martinez Canillas).
+- Change the filenames to match the documentation: use *_test.c (Javier Martinez
+Canillas).
+- Add MODULE_LICENSE to all tests (kernel test robot).
+- Make use of a generic symbol to group all tests - DRM_KUNIT_TEST (Javier
+Martinez Canillas).
+- Add .kunitconfig on the first patch (it was on the second patch of the series).
+- Straightforward conversion of the drm_cmdline_parser tests without functional
+changes (Shuah Khan).
+- Add David's Tested-by tags.
+
+v2 -> v3: https://lore.kernel.org/dri-devel/20220621200926.257002-1-maira.canal@usp.br/
+
+- Rebase it on top of the drm-misc-next with drm_format_helper KUnit tests.
+- Change KUNIT_EXPECT_FALSE to KUNIT_EXPECT_EQ on drm_format_test (Daniel Latypov).
+- Add Daniel's Acked-by tag.
+
+Arthur Grillo (1):
+  drm: selftest: convert drm_mm selftest to KUnit
+
+Maíra Canal (8):
+  drm: selftest: convert drm_damage_helper selftest to KUnit
+  drm: selftest: convert drm_cmdline_parser selftest to KUnit
+  drm: selftest: convert drm_rect selftest to KUnit
+  drm: selftest: convert drm_format selftest to KUnit
+  drm: selftest: convert drm_plane_helper selftest to KUnit
+  drm: selftest: convert drm_dp_mst_helper selftest to KUnit
+  drm: selftest: convert drm_framebuffer selftest to KUnit
+  drm: selftest: convert drm_buddy selftest to KUnit
+
+ Documentation/gpu/todo.rst                    |   11 -
+ drivers/gpu/drm/Kconfig                       |   20 +-
+ drivers/gpu/drm/Makefile                      |    1 -
+ drivers/gpu/drm/selftests/Makefile            |    8 -
+ .../gpu/drm/selftests/drm_buddy_selftests.h   |   15 -
+ .../gpu/drm/selftests/drm_cmdline_selftests.h |   68 -
+ drivers/gpu/drm/selftests/drm_mm_selftests.h  |   28 -
+ .../gpu/drm/selftests/drm_modeset_selftests.h |   40 -
+ drivers/gpu/drm/selftests/drm_selftest.c      |  109 --
+ drivers/gpu/drm/selftests/drm_selftest.h      |   41 -
+ drivers/gpu/drm/selftests/test-drm_buddy.c    |  994 --------------
+ .../drm/selftests/test-drm_cmdline_parser.c   | 1141 -----------------
+ .../drm/selftests/test-drm_damage_helper.c    |  668 ----------
+ drivers/gpu/drm/selftests/test-drm_format.c   |  280 ----
+ .../drm/selftests/test-drm_modeset_common.c   |   32 -
+ .../drm/selftests/test-drm_modeset_common.h   |   52 -
+ drivers/gpu/drm/tests/Makefile                |    4 +-
+ drivers/gpu/drm/tests/drm_buddy_test.c        |  748 +++++++++++
+ .../gpu/drm/tests/drm_cmdline_parser_test.c   | 1078 ++++++++++++++++
+ .../gpu/drm/tests/drm_damage_helper_test.c    |  634 +++++++++
+ .../drm_dp_mst_helper_test.c}                 |   84 +-
+ drivers/gpu/drm/tests/drm_format_test.c       |  284 ++++
+ .../drm_framebuffer_test.c}                   |   25 +-
+ .../test-drm_mm.c => tests/drm_mm_test.c}     | 1135 +++++++---------
+ .../drm_plane_helper_test.c}                  |  103 +-
+ .../test-drm_rect.c => tests/drm_rect_test.c} |  124 +-
+ 26 files changed, 3385 insertions(+), 4342 deletions(-)
+ delete mode 100644 drivers/gpu/drm/selftests/Makefile
+ delete mode 100644 drivers/gpu/drm/selftests/drm_buddy_selftests.h
+ delete mode 100644 drivers/gpu/drm/selftests/drm_cmdline_selftests.h
+ delete mode 100644 drivers/gpu/drm/selftests/drm_mm_selftests.h
+ delete mode 100644 drivers/gpu/drm/selftests/drm_modeset_selftests.h
+ delete mode 100644 drivers/gpu/drm/selftests/drm_selftest.c
+ delete mode 100644 drivers/gpu/drm/selftests/drm_selftest.h
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_buddy.c
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_cmdline_parser.c
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_damage_helper.c
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_format.c
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_modeset_common.c
+ delete mode 100644 drivers/gpu/drm/selftests/test-drm_modeset_common.h
+ create mode 100644 drivers/gpu/drm/tests/drm_buddy_test.c
+ create mode 100644 drivers/gpu/drm/tests/drm_cmdline_parser_test.c
+ create mode 100644 drivers/gpu/drm/tests/drm_damage_helper_test.c
+ rename drivers/gpu/drm/{selftests/test-drm_dp_mst_helper.c => tests/drm_dp_mst_helper_test.c} (73%)
+ create mode 100644 drivers/gpu/drm/tests/drm_format_test.c
+ rename drivers/gpu/drm/{selftests/test-drm_framebuffer.c => tests/drm_framebuffer_test.c} (96%)
+ rename drivers/gpu/drm/{selftests/test-drm_mm.c => tests/drm_mm_test.c} (58%)
+ rename drivers/gpu/drm/{selftests/test-drm_plane_helper.c => tests/drm_plane_helper_test.c} (62%)
+ rename drivers/gpu/drm/{selftests/test-drm_rect.c => tests/drm_rect_test.c} (53%)
+
+-- 
+2.36.1
+
