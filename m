@@ -2,284 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC73C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA21C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233887AbiF3IPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43632 "EHLO
+        id S233855AbiF3IPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbiF3IO3 (ORCPT
+        with ESMTP id S233593AbiF3IPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:14:29 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7134505A
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:11:42 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U89KN6006373;
-        Thu, 30 Jun 2022 08:10:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : message-id : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=yEtqezDZbPfGWcbcHn8kTWhmCp1eMfHZ8CewXlyvgwU=;
- b=Nq4afHf3e5j0bFRvHSNKUNIEJ2GAMYbf3M8SKnJjUIgn6UWiiti6WjPvPCldh274pACg
- ZGejR9++viTFivh9Ff0F5v4aMjmgBZTMn7kEbb+U0jMOGWV/QB7FYIhWBkXLCUDMmmiq
- +AyAhlr/dWkl91NyuoagEexjBlNDbi+/Bydx6xxrql/uDNZHAqMjxRY9SfeJHuRsFPQt
- FkqdgBYSh4awC9r/JXEm18Kwp5s5ghrdpr5TT1nQlZoO/guc/IMDfkepUVHYXCQB+IL8
- j/5UwKw6/UAQE7LhKROPJ+E/287WlVHLoC/6xqLwST0aBCgXv4e8N6ysZSuSSJnYC5Pz 1g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h17rp0cu8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 08:10:58 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25U8AvpA011361;
-        Thu, 30 Jun 2022 08:10:57 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h17rp0bsd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 08:10:57 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25U7o6jA009212;
-        Thu, 30 Jun 2022 08:05:13 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 3gwt095sem-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 08:05:12 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25U85AXU17105272
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Jun 2022 08:05:10 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5A6F542045;
-        Thu, 30 Jun 2022 08:05:10 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DE43A42041;
-        Thu, 30 Jun 2022 08:05:09 +0000 (GMT)
-Received: from localhost (unknown [9.43.87.212])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 30 Jun 2022 08:05:09 +0000 (GMT)
-Date:   Thu, 30 Jun 2022 13:35:08 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        Sathvika Vasireddy <sv@linux.vnet.ibm.com>
-Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>
-References: <20220624183238.388144-1-sv@linux.ibm.com>
-        <20220624183238.388144-12-sv@linux.ibm.com>
-        <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
-        <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
-        <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
-In-Reply-To: <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1656572413.pbaqjnrrcl.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: bOQhnIeOkTwX0KzFohbnqCvDxF9f_wp9
-X-Proofpoint-GUID: 7JkAs9pqNeIiJt33LfOOdR43g2dYGJIO
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 30 Jun 2022 04:15:15 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF124551E
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:11:59 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id q9so26050151wrd.8
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 01:11:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OOTtRji8xWxni9yaz7W2gJeXuoycpc5ucnabq09T1bI=;
+        b=C/t7WScdZ/5eix0bLbi5ANYeY6fv//pLAEkNiNGTQlX2F/ffEsR+ecAoWsQRUZpi4j
+         d4nJ9pk1zyOyBZAky3saX2ye0R26VCTrlfnfnfbBzbop0L1f8E+raQ9k09JLPunbMvS9
+         4msYhRwSFUWyBiH/XpkUcLHUQvqqBJXJ5ikK1WDRBW9Yu9FD4lPoFHFF3vb8hoTkhVDB
+         M8NmmKi0v16q7gb8fffcAaZg6IVIzDbKzaEdkfn9or57m3HKOw2Lk/apcF/FqH2RVfcu
+         IixbL3aooVwh7ngriV8dFFzhW5+DOvydORAtoqqkQks5g3WES+aw7SBaj2YKrW8+a4wu
+         7QNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OOTtRji8xWxni9yaz7W2gJeXuoycpc5ucnabq09T1bI=;
+        b=oTBvW5nzn4zYqOzJFo8uR/BgjgAVbYODRB1CLlL94eDzRC7zF8Sc1+PFC0jut/RTSr
+         AxCH7aW1l8/flID7BcoTdpFNxfWPiYQ9F53hKZcMwammvnrieFHzrBrH1YpD+vBeiHjc
+         5QIk3fv0IcO20xCFyyrB1CDX1M8unC5yxZXj20mPBYwMrBB5ugIyjhc4GpqwMkLxowEd
+         KIutklBV61I3i1+j8ouraucks2+wFou61Coz5grENRRCoDN/na7TuPN089kbAUBkM9Qb
+         BB567SjxMGuNZAR/bAuVYKDu/5DJhVQD1C5CH04zIWhSwdkPxe/hvuMKYec5/hHsd4KK
+         TFHQ==
+X-Gm-Message-State: AJIora8KvVXflRIn2sKBqIwjMEt8tmZoRktUgUJDGyKZliLd76wyRY5U
+        8LI9QsOuqRUjPzHOXpo/p0qCnBiJfM1KjuFCKY/5Bw==
+X-Google-Smtp-Source: AGRyM1sRbLewf4sxnz4dB3dN5YFnj/nq45OZFcL5LF+PbryGz/OIGzLay9e+M5ljvDXSGtGyYeW84pDmWiENzpMBuFI=
+X-Received: by 2002:a05:6000:1542:b0:21d:28c0:eb43 with SMTP id
+ 2-20020a056000154200b0021d28c0eb43mr7083362wry.622.1656576718103; Thu, 30 Jun
+ 2022 01:11:58 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_04,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 adultscore=0 suspectscore=0
- mlxscore=0 spamscore=0 clxscore=1011 lowpriorityscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206300030
+References: <20220630074757.2739000-1-davidgow@google.com> <20220630074757.2739000-2-davidgow@google.com>
+In-Reply-To: <20220630074757.2739000-2-davidgow@google.com>
+From:   David Gow <davidgow@google.com>
+Date:   Thu, 30 Jun 2022 16:11:46 +0800
+Message-ID: <CABVgOS=0PmF5k8RcP2Q3JNkMXK4Pd6ZLVGgCT9Ff+t9Dt_wA=w@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] UML: add support for KASAN under x86_64
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Patricia Alfonso <trishalfonso@google.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc:     kasan-dev <kasan-dev@googlegroups.com>,
+        linux-um <linux-um@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Daniel Latypov <dlatypov@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        KUnit Development <kunit-dev@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy wrote:
-> Hi Sathvika,
->=20
-> Adding ARM people as they seem to face the same kind of problem (see=20
-> https://patchwork.kernel.org/project/linux-kbuild/patch/20220623014917.19=
-9563-33-chenzhongjin@huawei.com/)
->=20
-> Le 27/06/2022 =C3=A0 17:35, Sathvika Vasireddy a =C3=A9crit=C2=A0:
->>=20
->> On 25/06/22 12:16, Christophe Leroy wrote:
->>>
->>> Le 24/06/2022 =C3=A0 20:32, Sathvika Vasireddy a =C3=A9crit=C2=A0:
->>>> objtool is throwing *unannotated intra-function call*
->>>> warnings with a few instructions that are marked
->>>> unreachable. Remove unreachable() from WARN_ON()
->>>> to fix these warnings, as the codegen remains same
->>>> with and without unreachable() in WARN_ON().
->>> Did you try the two exemples described in commit 1e688dd2a3d6
->>> ("powerpc/bug: Provide better flexibility to WARN_ON/__WARN_FLAGS() with
->>> asm goto") ?
->>>
->>> Without your patch:
->>>
->>> 00000640 <test>:
->>> =C2=A0=C2=A0 640:=C2=A0=C2=A0=C2=A0 81 23 00 84=C2=A0=C2=A0=C2=A0=C2=A0=
- lwz=C2=A0=C2=A0=C2=A0=C2=A0 r9,132(r3)
->>> =C2=A0=C2=A0 644:=C2=A0=C2=A0=C2=A0 71 29 40 00=C2=A0=C2=A0=C2=A0=C2=A0=
- andi.=C2=A0=C2=A0 r9,r9,16384
->>> =C2=A0=C2=A0 648:=C2=A0=C2=A0=C2=A0 40 82 00 0c=C2=A0=C2=A0=C2=A0=C2=A0=
- bne=C2=A0=C2=A0=C2=A0=C2=A0 654 <test+0x14>
->>> =C2=A0=C2=A0 64c:=C2=A0=C2=A0=C2=A0 80 63 00 0c=C2=A0=C2=A0=C2=A0=C2=A0=
- lwz=C2=A0=C2=A0=C2=A0=C2=A0 r3,12(r3)
->>> =C2=A0=C2=A0 650:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr
->>> =C2=A0=C2=A0 654:=C2=A0=C2=A0=C2=A0 0f e0 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- twui=C2=A0=C2=A0=C2=A0 r0,0
->>>
->>> 00000658 <test9w>:
->>> =C2=A0=C2=A0 658:=C2=A0=C2=A0=C2=A0 2c 04 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- cmpwi=C2=A0=C2=A0 r4,0
->>> =C2=A0=C2=A0 65c:=C2=A0=C2=A0=C2=A0 41 82 00 0c=C2=A0=C2=A0=C2=A0=C2=A0=
- beq=C2=A0=C2=A0=C2=A0=C2=A0 668 <test9w+0x10>
->>> =C2=A0=C2=A0 660:=C2=A0=C2=A0=C2=A0 7c 63 23 96=C2=A0=C2=A0=C2=A0=C2=A0=
- divwu=C2=A0=C2=A0 r3,r3,r4
->>> =C2=A0=C2=A0 664:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr
->>> =C2=A0=C2=A0 668:=C2=A0=C2=A0=C2=A0 0f e0 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- twui=C2=A0=C2=A0=C2=A0 r0,0
->>> =C2=A0=C2=A0 66c:=C2=A0=C2=A0=C2=A0 38 60 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- li=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r3,0
->>> =C2=A0=C2=A0 670:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr
->>>
->>>
->>> With your patch:
->>>
->>> 00000640 <test>:
->>> =C2=A0=C2=A0 640:=C2=A0=C2=A0=C2=A0 81 23 00 84=C2=A0=C2=A0=C2=A0=C2=A0=
- lwz=C2=A0=C2=A0=C2=A0=C2=A0 r9,132(r3)
->>> =C2=A0=C2=A0 644:=C2=A0=C2=A0=C2=A0 71 29 40 00=C2=A0=C2=A0=C2=A0=C2=A0=
- andi.=C2=A0=C2=A0 r9,r9,16384
->>> =C2=A0=C2=A0 648:=C2=A0=C2=A0=C2=A0 40 82 00 0c=C2=A0=C2=A0=C2=A0=C2=A0=
- bne=C2=A0=C2=A0=C2=A0=C2=A0 654 <test+0x14>
->>> =C2=A0=C2=A0 64c:=C2=A0=C2=A0=C2=A0 80 63 00 0c=C2=A0=C2=A0=C2=A0=C2=A0=
- lwz=C2=A0=C2=A0=C2=A0=C2=A0 r3,12(r3)
->>> =C2=A0=C2=A0 650:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr
->>> =C2=A0=C2=A0 654:=C2=A0=C2=A0=C2=A0 0f e0 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- twui=C2=A0=C2=A0=C2=A0 r0,0
->>> =C2=A0=C2=A0 658:=C2=A0=C2=A0=C2=A0 4b ff ff f4=C2=A0=C2=A0=C2=A0=C2=A0=
- b=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 64c <test+0xc>=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 <=3D=3D
->>>
->>> 0000065c <test9w>:
->>> =C2=A0=C2=A0 65c:=C2=A0=C2=A0=C2=A0 2c 04 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- cmpwi=C2=A0=C2=A0 r4,0
->>> =C2=A0=C2=A0 660:=C2=A0=C2=A0=C2=A0 41 82 00 0c=C2=A0=C2=A0=C2=A0=C2=A0=
- beq=C2=A0=C2=A0=C2=A0=C2=A0 66c <test9w+0x10>
->>> =C2=A0=C2=A0 664:=C2=A0=C2=A0=C2=A0 7c 63 23 96=C2=A0=C2=A0=C2=A0=C2=A0=
- divwu=C2=A0=C2=A0 r3,r3,r4
->>> =C2=A0=C2=A0 668:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr
->>> =C2=A0=C2=A0 66c:=C2=A0=C2=A0=C2=A0 0f e0 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- twui=C2=A0=C2=A0=C2=A0 r0,0
->>> =C2=A0=C2=A0 670:=C2=A0=C2=A0=C2=A0 38 60 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- li=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r3,0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 <=3D=3D
->>> =C2=A0=C2=A0 674:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 <=3D=3D
->>> =C2=A0=C2=A0 678:=C2=A0=C2=A0=C2=A0 38 60 00 00=C2=A0=C2=A0=C2=A0=C2=A0=
- li=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r3,0
->>> =C2=A0=C2=A0 67c:=C2=A0=C2=A0=C2=A0 4e 80 00 20=C2=A0=C2=A0=C2=A0=C2=A0=
- blr
->>>
->> The builtin variant of unreachable (__builtin_unreachable()) works.
->>=20
->> How about using that instead of unreachable() ?
->>=20
->>=20
->=20
-> In fact the problem comes from the macro annotate_unreachable() which is=
-=20
-> called by unreachable() before calling __build_unreachable().
->=20
-> Seems like this macro adds (after the unconditional trap twui) a call to=
-=20
-> an empty function whose address is listed in section .discard.unreachable
->=20
->      1c78:       00 00 e0 0f     twui    r0,0
->      1c7c:       55 e7 ff 4b     bl      3d0=20
-> <qdisc_root_sleeping_lock.part.0>
->=20
->=20
-> RELOCATION RECORDS FOR [.discard.unreachable]:
-> OFFSET           TYPE              VALUE
-> 0000000000000000 R_PPC64_REL32     .text+0x00000000000003d0
->=20
-> The problem is that that function has size 0:
->=20
-> 00000000000003d0 l     F .text	0000000000000000=20
-> qdisc_root_sleeping_lock.part.0
->=20
->=20
-> And objtool is not prepared for a function with size 0.
+On Thu, Jun 30, 2022 at 3:48 PM David Gow <davidgow@google.com> wrote:
+>
+> From: Patricia Alfonso <trishalfonso@google.com>
+>
+> Make KASAN run on User Mode Linux on x86_64.
+>
+> The UML-specific KASAN initializer uses mmap to map the ~16TB of shadow
+> memory to the location defined by KASAN_SHADOW_OFFSET.  kasan_init()
+> utilizes constructors to initialize KASAN before main().
+>
+> The location of the KASAN shadow memory, starting at
+> KASAN_SHADOW_OFFSET, can be configured using the KASAN_SHADOW_OFFSET
+> option. The default location of this offset is 0x100000000000, which
+> keeps it out-of-the-way even on UML setups with more "physical" memory.
+>
+> For low-memory setups, 0x7fff8000 can be used instead, which fits in an
+> immediate and is therefore faster, as suggested by Dmitry Vyukov. There
+> is usually enough free space at this location; however, it is a config
+> option so that it can be easily changed if needed.
+>
+> Note that, unlike KASAN on other architectures, vmalloc allocations
+> still use the shadow memory allocated upfront, rather than allocating
+> and free-ing it per-vmalloc allocation.
+>
+> If another architecture chooses to go down the same path, we should
+> replace the checks for CONFIG_UML with something more generic, such
+> as:
+> - A CONFIG_KASAN_NO_SHADOW_ALLOC option, which architectures could set
+> - or, a way of having architecture-specific versions of these vmalloc
+>   and module shadow memory allocation options.
+>
+> Also note that, while UML supports both KASAN in inline mode
+> (CONFIG_KASAN_INLINE) and static linking (CONFIG_STATIC_LINK), it does
+> not support both at the same time.
+>
+> Signed-off-by: Patricia Alfonso <trishalfonso@google.com>
+> Co-developed-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> Signed-off-by: David Gow <davidgow@google.com>
+> Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+> ---
+> This is v3 of the KASAN/UML port. It should be ready to go.
+>
+> Note that this will fail to build if UML is linked statically due to:
+> https://lore.kernel.org/all/20220526185402.955870-1-davidgow@google.com/
+>
+>
+> Changes since v2:
+> https://lore.kernel.org/lkml/20220527185600.1236769-2-davidgow@google.com/
+> - Don't define CONFIG_KASAN in USER_CFLAGS, given we dont' use it.
+>   (Thanks Johannes)
+> - Update patch descriptions and comments given we allocate shadow memory based
+>   on the size of the virtual address space, not the "physical" memory
+>   used by UML.
+>   - This was changed between the original RFC and v1, with
+>     KASAN_SHADOW_SIZE's definition being updated.
+>   - References to UML using 18TB of space and the shadow memory taking
+>     2.25TB were updated. (Thanks Johannes)
+>   - A mention of physical memory in a comment was updated. (Thanks
+>     Andrey)
+> - Move some discussion of how the vmalloc() handling could be made more
+>   generic from a comment to the commit description. (Thanks Andrey)
+>
+> Changes since RFC v3:
+> https://lore.kernel.org/all/20220526010111.755166-1-davidgow@google.com/
+> - No longer print "KernelAddressSanitizer initialized" (Johannes)
+> - Document the reason for the CONFIG_UML checks in shadow.c (Dmitry)
+> - Support static builds via kasan_arch_is_ready() (Dmitry)
+> - Get rid of a redundant call to kasam_mem_to_shadow() (Dmitry)
+> - Use PAGE_ALIGN and the new PAGE_ALIGN_DOWN macros (Dmitry)
+> - Reinstate missing arch/um/include/asm/kasan.h file (Johannes)
+>
+> Changes since v1:
+> https://lore.kernel.org/all/20200226004608.8128-1-trishalfonso@google.com/
+> - Include several fixes from Vincent Whitchurch:
+> https://lore.kernel.org/all/20220525111756.GA15955@axis.com/
+> - Support for KASAN_VMALLOC, by changing the way
+>   kasan_{populate,release}_vmalloc work to update existing shadow
+>   memory, rather than allocating anything new.
+> - A similar fix for modules' shadow memory.
+> - Support for KASAN_STACK
+>   - This requires the bugfix here:
+> https://lore.kernel.org/lkml/20220523140403.2361040-1-vincent.whitchurch@axis.com/
+>   - Plus a couple of files excluded from KASAN.
+> - Revert the default shadow offset to 0x100000000000
+>   - This was breaking when mem=1G for me, at least.
+> - A few minor fixes to linker sections and scripts.
+>   - I've added one to dyn.lds.S on top of the ones Vincent added.
+>
+> ---
 
-annotate_unreachable() seems to have been introduced in commit=20
-649ea4d5a624f0 ("objtool: Assume unannotated UD2 instructions are dead=20
-ends").
+<... snip ...>
 
-Objtool considers 'ud2' instruction to be fatal, so BUG() has=20
-__builtin_unreachable(), rather than unreachable(). See commit=20
-bfb1a7c91fb775 ("x86/bug: Merge annotate_reachable() into _BUG_FLAGS()=20
-asm"). For the same reason, __WARN_FLAGS() is annotated with=20
-_ASM_REACHABLE so that objtool can differentiate warnings from a BUG().
+> diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
+> index a4f07de21771..7a7fc76e99a8 100644
+> --- a/mm/kasan/shadow.c
+> +++ b/mm/kasan/shadow.c
+> @@ -295,9 +295,22 @@ int kasan_populate_vmalloc(unsigned long addr, unsigned long size)
+>                 return 0;
+>
+>         shadow_start = (unsigned long)kasan_mem_to_shadow((void *)addr);
+> -       shadow_start = ALIGN_DOWN(shadow_start, PAGE_SIZE);
+>         shadow_end = (unsigned long)kasan_mem_to_shadow((void *)addr + size);
+> -       shadow_end = ALIGN(shadow_end, PAGE_SIZE);
+> +
+> +       /*
+> +        * User Mode Linux maps enough shadow memory for all of virtual memory
+> +        * at boot, so doesn't need to allocate more on vmalloc, just clear it.
+> +        *
+> +         * The remaining CONFIG_UML checks in this file exist for the same
+> +         * reason.
+> +        */
 
-On powerpc, we use trap variants for both and don't have a special=20
-instruction for a BUG(). As such, for _WARN_FLAGS(), using=20
-__builtin_unreachable() suffices to achieve optimal code generation from=20
-the compiler. Objtool would consider subsequent instructions to be=20
-reachable. For BUG(), we can continue to use unreachable() so that=20
-objtool can differentiate these from traps used in warnings.
+Whoops: these lines had tabs converted to spaces when I reformatted
+them. I've sent out v4 which actually passes checkpatch:
+https://lore.kernel.org/lkml/20220630080834.2742777-2-davidgow@google.com/
 
->=20
-> The following changes to objtool seem to fix the problem, most warning=20
-> are gone with that change.
->=20
-> diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-> index 63218f5799c2..37c0a268b7ea 100644
-> --- a/tools/objtool/elf.c
-> +++ b/tools/objtool/elf.c
-> @@ -77,6 +77,8 @@ static int symbol_by_offset(const void *key, const=20
-> struct rb_node *node)
->=20
->   	if (*o < s->offset)
->   		return -1;
-> +	if (*o =3D=3D s->offset && !s->len)
-> +		return 0;
->   	if (*o >=3D s->offset + s->len)
->   		return 1;
->=20
-> @@ -400,7 +402,7 @@ static void elf_add_symbol(struct elf *elf, struct=20
-> symbol *sym)
->   	 * Don't store empty STT_NOTYPE symbols in the rbtree.  They
->   	 * can exist within a function, confusing the sorting.
->   	 */
-> -	if (!sym->len)
-> +	if (sym->type =3D=3D STT_NOTYPE && !sym->len)
->   		rb_erase(&sym->node, &sym->sec->symbol_tree);
->   }
+Sorry for the spam!
 
-Is there a reason to do this, rather than change __WARN_FLAGS() to use=20
-__builtin_unreachable()? Or, are you seeing an issue with unreachable()=20
-elsewhere in the kernel?
-
-
-- Naveen
-
+-- David
