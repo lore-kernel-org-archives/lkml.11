@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F36DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72477C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236220AbiF3ODW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        id S236306AbiF3ODZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236380AbiF3OCM (ORCPT
+        with ESMTP id S236407AbiF3OCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:02:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749DA4506C;
-        Thu, 30 Jun 2022 06:52:50 -0700 (PDT)
+        Thu, 30 Jun 2022 10:02:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B9545066;
+        Thu, 30 Jun 2022 06:52:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85FC4B82AEE;
-        Thu, 30 Jun 2022 13:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E856BC34115;
-        Thu, 30 Jun 2022 13:52:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0416061FDB;
+        Thu, 30 Jun 2022 13:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E330C34115;
+        Thu, 30 Jun 2022 13:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597166;
-        bh=ROIp5lZCFo+ioynwx0XiisiwiQ8VO4TOq9K1OHbLQCE=;
+        s=korg; t=1656597155;
+        bh=YbxxBfyybWxHPh/uqH/Zu5/PetqwD8wTWzhWZxJVNFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uQZb4lJasOfaXieZNVnxX0nK172Ckzj4aU/V2H0yX0dkkIjby18ubyJrqEKsHkGM5
-         D5icYI7TrdjrgPaVdMpYtUEAO1MF+pZhUyvxlix2HP21QspeJt6N8+PfmLD/rptZbg
-         Vq1IDMOPSTijPy4e7vqzkbKWqfp3Mv3ulCj8/JIs=
+        b=aIvLmokX9ARWOqGiQJ79Rsoq5M0CZ9Dk5ZFSr9rWBQup+Zmq2vs4JYJFsPUeNAUr8
+         2prouwZJnYrKj8vJmNAzkvURGtSTgh4XyYcL4cRKGy9t2o4MXNIYXTjRRPhhzRtA5k
+         0oKKMca2b0hz755DAWqzDqB6SMq5Qx0ydqpjD/Qo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH 4.19 49/49] swiotlb: skip swiotlb_bounce when orig_addr is zero
-Date:   Thu, 30 Jun 2022 15:47:02 +0200
-Message-Id: <20220630133235.317860776@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 4.19 46/49] kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
+Date:   Thu, 30 Jun 2022 15:46:59 +0200
+Message-Id: <20220630133235.230013083@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -47,50 +50,192 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Shixin <liushixin2@huawei.com>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-After patch ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE"),
-swiotlb_bounce will be called in swiotlb_tbl_map_single unconditionally.
-This requires that the physical address must be valid, which is not always
-true on stable-4.19 or earlier version.
-On stable-4.19, swiotlb_alloc_buffer will call swiotlb_tbl_map_single with
-orig_addr equal to zero, which cause such a panic:
+commit 3e35142ef99fe6b4fe5d834ad43ee13cca10a2dc upstream.
 
-Unable to handle kernel paging request at virtual address ffffb77a40000000
-...
-pc : __memcpy+0x100/0x180
-lr : swiotlb_bounce+0x74/0x88
-...
-Call trace:
- __memcpy+0x100/0x180
- swiotlb_tbl_map_single+0x2c8/0x338
- swiotlb_alloc+0xb4/0x198
- __dma_alloc+0x84/0x1d8
- ...
+Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
+symbols") [1], binutils (v2.36+) started dropping section symbols that
+it thought were unused.  This isn't an issue in general, but with
+kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
+separate .text.unlikely section and the section symbol ".text.unlikely"
+is being dropped. Due to this, recordmcount is unable to find a non-weak
+symbol in .text.unlikely to generate a relocation record against.
 
-On stable-4.9 and stable-4.14, swiotlb_alloc_coherent wille call map_single
-with orig_addr equal to zero, which can cause same panic.
+Address this by dropping the weak attribute from these functions.
+Instead, follow the existing pattern of having architectures #define the
+name of the function they want to override in their headers.
 
-Fix this by skipping swiotlb_bounce when orig_addr is zero.
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
 
-Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+[akpm@linux-foundation.org: arch/s390/include/asm/kexec.h needs linux/module.h]
+Link: https://lkml.kernel.org/r/20220519091237.676736-1-naveen.n.rao@linux.vnet.ibm.com
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/dma/swiotlb.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/s390/include/asm/kexec.h |   10 +++++++++
+ arch/x86/include/asm/kexec.h  |    9 ++++++++
+ include/linux/kexec.h         |   46 ++++++++++++++++++++++++++++++++++--------
+ kernel/kexec_file.c           |   34 -------------------------------
+ 4 files changed, 57 insertions(+), 42 deletions(-)
 
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -594,7 +594,8 @@ found:
- 	 * unconditional bounce may prevent leaking swiotlb content (i.e.
- 	 * kernel memory) to user-space.
- 	 */
--	swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
-+	if (orig_addr)
-+		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
+--- a/arch/s390/include/asm/kexec.h
++++ b/arch/s390/include/asm/kexec.h
+@@ -9,6 +9,8 @@
+ #ifndef _S390_KEXEC_H
+ #define _S390_KEXEC_H
  
++#include <linux/module.h>
++
+ #include <asm/processor.h>
+ #include <asm/page.h>
+ /*
+@@ -69,4 +71,12 @@ int *kexec_file_update_kernel(struct kim
+ extern const struct kexec_file_ops s390_kexec_image_ops;
+ extern const struct kexec_file_ops s390_kexec_elf_ops;
+ 
++#ifdef CONFIG_KEXEC_FILE
++struct purgatory_info;
++int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
++				     Elf_Shdr *section,
++				     const Elf_Shdr *relsec,
++				     const Elf_Shdr *symtab);
++#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
++#endif
+ #endif /*_S390_KEXEC_H */
+--- a/arch/x86/include/asm/kexec.h
++++ b/arch/x86/include/asm/kexec.h
+@@ -21,6 +21,7 @@
+ #ifndef __ASSEMBLY__
+ 
+ #include <linux/string.h>
++#include <linux/module.h>
+ 
+ #include <asm/page.h>
+ #include <asm/ptrace.h>
+@@ -217,6 +218,14 @@ extern int arch_kexec_post_alloc_pages(v
+ extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
+ #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
+ 
++#ifdef CONFIG_KEXEC_FILE
++struct purgatory_info;
++int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
++				     Elf_Shdr *section,
++				     const Elf_Shdr *relsec,
++				     const Elf_Shdr *symtab);
++#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
++#endif
+ #endif
+ 
+ typedef void crash_vmclear_fn(void);
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -174,14 +174,6 @@ int kexec_purgatory_get_set_symbol(struc
+ 				   bool get_value);
+ void *kexec_purgatory_get_symbol_addr(struct kimage *image, const char *name);
+ 
+-int __weak arch_kexec_apply_relocations_add(struct purgatory_info *pi,
+-					    Elf_Shdr *section,
+-					    const Elf_Shdr *relsec,
+-					    const Elf_Shdr *symtab);
+-int __weak arch_kexec_apply_relocations(struct purgatory_info *pi,
+-					Elf_Shdr *section,
+-					const Elf_Shdr *relsec,
+-					const Elf_Shdr *symtab);
+ 
+ int __weak arch_kexec_walk_mem(struct kexec_buf *kbuf,
+ 			       int (*func)(struct resource *, void *));
+@@ -206,6 +198,44 @@ extern int crash_exclude_mem_range(struc
+ 				   unsigned long long mend);
+ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+ 				       void **addr, unsigned long *sz);
++
++#ifndef arch_kexec_apply_relocations_add
++/*
++ * arch_kexec_apply_relocations_add - apply relocations of type RELA
++ * @pi:		Purgatory to be relocated.
++ * @section:	Section relocations applying to.
++ * @relsec:	Section containing RELAs.
++ * @symtab:	Corresponding symtab.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static inline int
++arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
++				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
++{
++	pr_err("RELA relocation unsupported.\n");
++	return -ENOEXEC;
++}
++#endif
++
++#ifndef arch_kexec_apply_relocations
++/*
++ * arch_kexec_apply_relocations - apply relocations of type REL
++ * @pi:		Purgatory to be relocated.
++ * @section:	Section relocations applying to.
++ * @relsec:	Section containing RELs.
++ * @symtab:	Corresponding symtab.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static inline int
++arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
++			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
++{
++	pr_err("REL relocation unsupported.\n");
++	return -ENOEXEC;
++}
++#endif
+ #endif /* CONFIG_KEXEC_FILE */
+ 
+ struct kimage {
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -111,40 +111,6 @@ int __weak arch_kexec_kernel_verify_sig(
+ #endif
+ 
+ /*
+- * arch_kexec_apply_relocations_add - apply relocations of type RELA
+- * @pi:		Purgatory to be relocated.
+- * @section:	Section relocations applying to.
+- * @relsec:	Section containing RELAs.
+- * @symtab:	Corresponding symtab.
+- *
+- * Return: 0 on success, negative errno on error.
+- */
+-int __weak
+-arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
+-				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
+-{
+-	pr_err("RELA relocation unsupported.\n");
+-	return -ENOEXEC;
+-}
+-
+-/*
+- * arch_kexec_apply_relocations - apply relocations of type REL
+- * @pi:		Purgatory to be relocated.
+- * @section:	Section relocations applying to.
+- * @relsec:	Section containing RELs.
+- * @symtab:	Corresponding symtab.
+- *
+- * Return: 0 on success, negative errno on error.
+- */
+-int __weak
+-arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
+-			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
+-{
+-	pr_err("REL relocation unsupported.\n");
+-	return -ENOEXEC;
+-}
+-
+-/*
+  * Free up memory used by kernel, initrd, and command line. This is temporary
+  * memory allocation which is not needed any more after these buffers have
+  * been loaded into separate segments and have been copied elsewhere.
 
 
