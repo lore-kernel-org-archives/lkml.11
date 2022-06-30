@@ -2,108 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 652F7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 17:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD93C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 17:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236203AbiF3Ra1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 13:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
+        id S236315AbiF3Rbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 13:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235462AbiF3RaY (ORCPT
+        with ESMTP id S231747AbiF3Rbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 13:30:24 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD031EACC
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 10:30:23 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-101b4f9e825so155099fac.5
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 10:30:23 -0700 (PDT)
+        Thu, 30 Jun 2022 13:31:48 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0714120BD3
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 10:31:48 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id x3so34995556lfd.2
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 10:31:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eJY5MsxNfTnDTBWpRfYuGIpnJMS3h7qwIGokJXZf/SU=;
-        b=4qpE9Xqlh8LCVZjAhVL6VmJW8gFDr5tVr6AffUScIOD0NsVctK6XwJvGUEQbj1bggv
-         Zi0cl94d3kOceYChCHUi9cy7jPTzSvkjIuyReTX5OOfsDLigMNzFrWVth51sbRrvG8SV
-         8C0OlVewUuJSoOvXCplJX6YbhSnE9L6+rzL2q3xwpEAOA3L1cCy+RW4vruhvVxUSKEsZ
-         LlUg7Xn+IVTwD5Mageii8ELu3At8wUEi36cZ+YxZG/krL/dS65fGTsaZhMqvMI8ExxTV
-         QcPxhJebo5cepb+WQclHIKyfnLNpfbHDHoN23kwA9dQnpMqDWxhZw7MmjHFTN2OOMaUp
-         qdGA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bKovRKzTTq8kVAKncWkMW8HntSojKecvaV7C1Tiy6gA=;
+        b=KiMJPhP6xYYFUTWaCNcg8Z9VnzBD8Sm0oGGvMtn8MvEbc8PTHuawBiezi89pfsM7Qg
+         Weaotn/+nwWWMTsRSzSg3qRF0kqlRQQhIV56sfRjnhfJlsreFVjkQwOx56O2r6XGhDIE
+         5MwNLhFeUXTLv7GhRSR68Rj4yk3AT6dh4zwiNg6OLPp3JgFANNXzgIlgbjJGJVPQTKnx
+         MCEUiDTeM+atlaHz/soeTiQbt2NENBGmLKydg6UEQBFGBoYX7OfGhPE0X3Fm27YP4uzU
+         UqdaYdcuGBsxGYIcG7YALT7F6u1V1TWM2roEZKCy53hl8+dLM5hWEuupgxTAOg99+qcZ
+         o7Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eJY5MsxNfTnDTBWpRfYuGIpnJMS3h7qwIGokJXZf/SU=;
-        b=UD8AUWArlpHHHbWd9A774JG5PhBxJT7udKQBNAsOdU8dd3hAb8qKrOYmRrYNzO2jpy
-         NrIvfS7eTycW2sVAQ42H45kE4Wx5ZtJV+azAm3aJkyD/zOdF6HYEUxhwLZl4i64Wjlxl
-         bhBYFOUOVwJGMdLe6JO5VAOWgQmpqJ3Tbc3PMP4wY4wAdIqy2SLHbqVLSfcLfZ5aLkyF
-         s797eCd4nFaIBo7aeW+g0dji+J8Hju/2UmGS3C6dZnE567mMnY3nlWbROCkftlpHCjhV
-         0lgGAs7xLPjdF04H6vm4gWc1av4lM0ZmUnlHcpWrXZuSqBPlbcrHgpmi03YIKnI+guey
-         kXSw==
-X-Gm-Message-State: AJIora87slaEWWg3Vec1NiYSmTsbpTWbemSnAR+NnTGWxeW/eMKne4uf
-        KdflQa/h/QMMAolU6zTQQyMdhA==
-X-Google-Smtp-Source: AGRyM1t4nWwAndTq5PNsUK2pyU0AyCgAgapJSJwk+PMvmJlVrviN4+sLMJ1Qy/YsZCdRe9kj2u2IwQ==
-X-Received: by 2002:a05:6870:e2ce:b0:101:a7c3:49cb with SMTP id w14-20020a056870e2ce00b00101a7c349cbmr7105251oad.197.1656610221161;
-        Thu, 30 Jun 2022 10:30:21 -0700 (PDT)
-Received: from eze-laptop ([190.190.187.68])
-        by smtp.gmail.com with ESMTPSA id r10-20020a056808210a00b00325cda1ff8esm10445255oiw.13.2022.06.30.10.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 10:30:20 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 14:30:13 -0300
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     mchehab@kernel.org, hverkuil@xs4all.nl, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-Subject: Re: [PATCH 1/7] media: hantro: Store HEVC bit depth in context
-Message-ID: <Yr3dpT/hQHM56c8o@eze-laptop>
-References: <20220617115802.396442-1-benjamin.gaignard@collabora.com>
- <20220617115802.396442-2-benjamin.gaignard@collabora.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bKovRKzTTq8kVAKncWkMW8HntSojKecvaV7C1Tiy6gA=;
+        b=CH1ZXipCLXhnv3oLe5PgXhTWwughobSr6eyG0JsmhlGN4DGl/CoA1XZmWpMrQsbM9D
+         njQnFXfr+R8AygdpdP5LqLCS7qv03mMAgS3yaNvdqfHoqVeSLu3oX4A1ZCxkdFo8BQLp
+         fNibRy9lnS/Q2bmz1qRohjN/6ejAPjQ9wF7ae/aGH8keKgk3XVRbFoZMZd47KDo/lPJQ
+         pOO6aVmh6hRD7yGrucOiUNWMoisTFaHMDKPAAP2gK3pA3f2rg8R2VtXr0lG/iFBZszoV
+         +8IZALlnqdRctEmL/9oLTsihXq03PA5gb+KyT4a+WJjbezWq8S0iLb0YPZ4Ovriv2T+n
+         G5/Q==
+X-Gm-Message-State: AJIora/GmHq1NPtwo8ixtmrEmtW7lt78zyr9nUYYLDv/TpAIquqeekfi
+        Iq6jP9J7NDvgNf2NkVwjkh1LTuNbalzBb09D6Y63VA==
+X-Google-Smtp-Source: AGRyM1vC8qvT64BKHvXZRWx0+8khtoYbG2fNUSn6dQgJUNzOHR73qJQimcWU1Ouvt7DOWBH7/hK5HihBjOUZbkXXK/U=
+X-Received: by 2002:a05:6512:b8d:b0:47f:74f0:729b with SMTP id
+ b13-20020a0565120b8d00b0047f74f0729bmr6261421lfv.403.1656610306179; Thu, 30
+ Jun 2022 10:31:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617115802.396442-2-benjamin.gaignard@collabora.com>
+References: <20220629235326.480858-1-justinstitt@google.com> <CAHp75VdQws+Q8aoh0BZkq1K4Grw0ugo_=NZ1uYO0g38xFjT9Lw@mail.gmail.com>
+In-Reply-To: <CAHp75VdQws+Q8aoh0BZkq1K4Grw0ugo_=NZ1uYO0g38xFjT9Lw@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 30 Jun 2022 10:31:34 -0700
+Message-ID: <CAKwvOdmyXX=P4k_ymT=3EmzEuTZryozOTbe=F08bokw=axieUQ@mail.gmail.com>
+Subject: Re: [PATCH] lib/test_printf.c: fix clang -Wformat warnings
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benjamin,
+On Thu, Jun 30, 2022 at 1:14 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Thu, Jun 30, 2022 at 2:11 AM Justin Stitt <justinstitt@google.com> wrote:
+> >
+> > +       /* disable -Wformat for this chunk */
+> > +       NOWARN(-Wformat,
+> >         test("0|1|1|128|255", "%hhu|%hhu|%hhu|%hhu|%hhu", 0, 1, 257, 128, -1);
+> >         test("0|1|1|-128|-1", "%hhd|%hhd|%hhd|%hhd|%hhd", 0, 1, 257, 128, -1);
+> >         test("2015122420151225", "%ho%ho%#ho", 1037, 5282, -11627);
+>
+> Perhaps shift right the lines as well?
 
-Thanks for the patch.
+Along these lines, I think it would look nicer to pass a block
+statement (a group of statements) to the macro rather than use
+__VA_ARGS__.  Here's an example:
+https://godbolt.org/z/fsYcGGEMb
 
-On Fri, Jun 17, 2022 at 01:57:56PM +0200, Benjamin Gaignard wrote:
-> Store HEVC bit depth in context.
-> Bit depth is equal to hevc sps bit_depth_luma_minus8 + 8.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> ---
->  drivers/staging/media/hantro/hantro_hevc.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
-> index 5984c5fa6f83..dcb5c8703b6e 100644
-> --- a/drivers/staging/media/hantro/hantro_hevc.c
-> +++ b/drivers/staging/media/hantro/hantro_hevc.c
-> @@ -163,6 +163,8 @@ int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc
->  		/* Only 8-bit is supported */
->  		return -EINVAL;
->  
-> +	ctx->bit_depth = sps->bit_depth_luma_minus8 + 8;
-> +
+You have to be careful with control flow out of blocks like this
+sometimes, but for these simple localized cases it looks like that
+should be fine.
 
-This should set in hantro_hevc_s_ctrl.
-
-Thanks!
-Ezequiel
-
->  	/*
->  	 * for tile pixel format check if the width and height match
->  	 * hardware constraints
-> -- 
-> 2.32.0
-> 
+As Nathan mentions, you can probably re-use the existing infra in your
+definition of NOWARN.  I do prefer some macro to make it appear that
+the pragma is scoped to a block statement, rather than multiple lines
+for the diag push + pop inline.
+-- 
+Thanks,
+~Nick Desaulniers
