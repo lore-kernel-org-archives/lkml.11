@@ -2,145 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F948C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D0ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236998AbiF3OM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S236581AbiF3ONb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236538AbiF3OLP (ORCPT
+        with ESMTP id S236838AbiF3OLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:11:15 -0400
+        Thu, 30 Jun 2022 10:11:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB727C1B5;
-        Thu, 30 Jun 2022 06:55:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C037D1CB;
+        Thu, 30 Jun 2022 06:56:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD576204B;
-        Thu, 30 Jun 2022 13:55:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1327FC34115;
-        Thu, 30 Jun 2022 13:55:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 784AB61F60;
+        Thu, 30 Jun 2022 13:56:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56037C34115;
+        Thu, 30 Jun 2022 13:56:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597358;
-        bh=OaN9Xtb+HK3G1FPwqyeCfvjC3Ef/GbvvmjKvofkkCPA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hjIFpEor6tc5upuCQ0N0KiI1ABj89DrqIzvDIzh/ce2Ra158fl7rC77gS2ZAjYse5
-         80BGi6aGRJlfcXTl2E3oKGFfaiLMW9Hf50I1vLSn9+SFHbojASwny/cUdNWMxaODxm
-         XfPd2TI9cF7pXqmZ7nM6jkK8x+i4L0os+tpgw7C8=
+        s=korg; t=1656597363;
+        bh=4X01PIFBlWh05yi752/l9We6l3jDCblSCjcHtAHcj/s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cqL8VNsFLMMSqQpckKN8OVflZZ/VlpXT4OPDCy1Z8k/e76MD49YcMgNHZnEfafEeV
+         lnEvSLyGYLWcx88RAAAHX9tNQY/ksTQIyroEGYSfaMyk4wjiFJN/IheZzHVfffDgr5
+         JUVzirpVmaorHX6YvHwMcMGR8o3nX6wDQ6xg/ZEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 5/6] powerpc/ftrace: Remove ftrace init tramp once kernel init is complete
-Date:   Thu, 30 Jun 2022 15:47:31 +0200
-Message-Id: <20220630133230.402616375@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.18 0/6] 5.18.9-rc1 review
+Date:   Thu, 30 Jun 2022 15:47:26 +0200
+Message-Id: <20220630133230.239507521@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
-References: <20220630133230.239507521@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.9-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.18.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.18.9-rc1
+X-KernelTest-Deadline: 2022-07-02T13:32+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+This is the start of the stable review cycle for the 5.18.9 release.
+There are 6 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 84ade0a6655bee803d176525ef457175cbf4df22 upstream.
+Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+Anything received after that time might be too late.
 
-Stop using the ftrace trampoline for init section once kernel init is
-complete.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.9-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+and the diffstat can be found below.
 
-Fixes: 67361cf8071286 ("powerpc/ftrace: Handle large kernel configs")
-Cc: stable@vger.kernel.org # v4.20+
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220516071422.463738-1-naveen.n.rao@linux.vnet.ibm.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/powerpc/include/asm/ftrace.h  |    4 +++-
- arch/powerpc/kernel/trace/ftrace.c |   15 ++++++++++++---
- arch/powerpc/mm/mem.c              |    2 ++
- 3 files changed, 17 insertions(+), 4 deletions(-)
+thanks,
 
---- a/arch/powerpc/include/asm/ftrace.h
-+++ b/arch/powerpc/include/asm/ftrace.h
-@@ -86,7 +86,7 @@ static inline bool arch_syscall_match_sy
- #endif /* PPC64_ELF_ABI_v1 */
- #endif /* CONFIG_FTRACE_SYSCALLS */
- 
--#ifdef CONFIG_PPC64
-+#if defined(CONFIG_PPC64) && defined(CONFIG_FUNCTION_TRACER)
- #include <asm/paca.h>
- 
- static inline void this_cpu_disable_ftrace(void)
-@@ -110,11 +110,13 @@ static inline u8 this_cpu_get_ftrace_ena
- 	return get_paca()->ftrace_enabled;
- }
- 
-+void ftrace_free_init_tramp(void);
- #else /* CONFIG_PPC64 */
- static inline void this_cpu_disable_ftrace(void) { }
- static inline void this_cpu_enable_ftrace(void) { }
- static inline void this_cpu_set_ftrace_enabled(u8 ftrace_enabled) { }
- static inline u8 this_cpu_get_ftrace_enabled(void) { return 1; }
-+static inline void ftrace_free_init_tramp(void) { }
- #endif /* CONFIG_PPC64 */
- #endif /* !__ASSEMBLY__ */
- 
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -306,9 +306,7 @@ static int setup_mcount_compiler_tramp(u
- 
- 	/* Is this a known long jump tramp? */
- 	for (i = 0; i < NUM_FTRACE_TRAMPS; i++)
--		if (!ftrace_tramps[i])
--			break;
--		else if (ftrace_tramps[i] == tramp)
-+		if (ftrace_tramps[i] == tramp)
- 			return 0;
- 
- 	/* Is this a known plt tramp? */
-@@ -863,6 +861,17 @@ void arch_ftrace_update_code(int command
- 
- extern unsigned int ftrace_tramp_text[], ftrace_tramp_init[];
- 
-+void ftrace_free_init_tramp(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < NUM_FTRACE_TRAMPS && ftrace_tramps[i]; i++)
-+		if (ftrace_tramps[i] == (unsigned long)ftrace_tramp_init) {
-+			ftrace_tramps[i] = 0;
-+			return;
-+		}
-+}
-+
- int __init ftrace_dyn_arch_init(void)
- {
- 	int i;
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -22,6 +22,7 @@
- #include <asm/kasan.h>
- #include <asm/svm.h>
- #include <asm/mmzone.h>
-+#include <asm/ftrace.h>
- 
- #include <mm/mmu_decl.h>
- 
-@@ -312,6 +313,7 @@ void free_initmem(void)
- 	ppc_md.progress = ppc_printk_progress;
- 	mark_initmem_nx();
- 	free_initmem_default(POISON_FREE_INITMEM);
-+	ftrace_free_init_tramp();
- }
- 
- /*
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.18.9-rc1
+
+Pavel Begunkov <asml.silence@gmail.com>
+    io_uring: fix not locked access to fixed buf table
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    powerpc/ftrace: Remove ftrace init tramp once kernel init is complete
+
+Kees Cook <keescook@chromium.org>
+    hinic: Replace memcpy() with direct assignment
+
+Coly Li <colyli@suse.de>
+    bcache: memset on stack variables in bch_btree_check() and bch_sectors_dirty_init()
+
+Linus Walleij <linus.walleij@linaro.org>
+    clocksource/drivers/ixp4xx: Drop boardfile probe path
+
+Masahiro Yamada <masahiroy@kernel.org>
+    tick/nohz: unexport __init-annotated tick_nohz_full_setup()
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                          |  4 +--
+ arch/powerpc/include/asm/ftrace.h                 |  4 ++-
+ arch/powerpc/kernel/trace/ftrace.c                | 15 ++++++++--
+ arch/powerpc/mm/mem.c                             |  2 ++
+ drivers/clocksource/Kconfig                       |  2 +-
+ drivers/clocksource/timer-ixp4xx.c                | 25 -----------------
+ drivers/md/bcache/btree.c                         |  1 +
+ drivers/md/bcache/writeback.c                     |  1 +
+ drivers/net/ethernet/huawei/hinic/hinic_devlink.c |  4 +--
+ fs/io_uring.c                                     | 34 ++++++++++++-----------
+ include/linux/platform_data/timer-ixp4xx.h        | 11 --------
+ kernel/time/tick-sched.c                          |  1 -
+ 12 files changed, 41 insertions(+), 63 deletions(-)
 
 
