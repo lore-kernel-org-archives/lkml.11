@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8F0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236288AbiF3OA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
+        id S236302AbiF3OBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236567AbiF3N7L (ORCPT
+        with ESMTP id S235782AbiF3N5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BE942A16;
-        Thu, 30 Jun 2022 06:51:58 -0700 (PDT)
+        Thu, 30 Jun 2022 09:57:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9071287366;
+        Thu, 30 Jun 2022 06:51:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6276761FDB;
-        Thu, 30 Jun 2022 13:51:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A5DC34115;
-        Thu, 30 Jun 2022 13:51:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6144E61FF6;
+        Thu, 30 Jun 2022 13:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FFE0C34115;
+        Thu, 30 Jun 2022 13:50:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597116;
-        bh=yDKIfKcX24yBIYaS0ER4IhweXDKsRCSF3+Lp+lb3ado=;
+        s=korg; t=1656597047;
+        bh=fpJ63JmMOxIUum1CUhUDhphxPgbzLlx8/3Kj/cV7yWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wGaVUJ7qck4P2vNxXHfYszRsXzQ331PS5rq+CJtqLfXonWEsyLICMRDr0GQ6BLu3g
-         jvD4hpXfIcimU8/leZtP6jfxBlOcezoukIEhyjeK+CPmn8UeqDCYhTiVYmGBJ8mcVr
-         sdlsOEB3UfDRvyIlG8jsGPyUQAnkjq+7YBRZjca4=
+        b=quX7DT+PIeR9kP2KrU2rmD4HdxxVKEtb/ozL2J1Ozyn9+Jk7dzr34z6jPKeM9OKlI
+         L0QBXj19Dhv6y9R2lc00XPd28GErTMpAJnKNgpB9ii+rZlTnHt2Ra/dvQJvyuPEqOr
+         oPI1uRCPemzXKoR0J/I1ZfEQi/wnS84HKIBD69Pk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sathvika Vasireddy <sathvika@linux.ibm.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 33/49] powerpc/rtas: Allow ibm,platform-dump RTAS call with null buffer address
-Date:   Thu, 30 Jun 2022 15:46:46 +0200
-Message-Id: <20220630133234.862929190@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        guodaxing <guodaxing@huawei.com>
+Subject: [PATCH 4.19 01/49] vt: drop old FONT ioctls
+Date:   Thu, 30 Jun 2022 15:46:14 +0200
+Message-Id: <20220630133233.955081092@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,60 +50,304 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Donnellan <ajd@linux.ibm.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit 7bc08056a6dabc3a1442216daf527edf61ac24b6 upstream.
+commit ff2047fb755d4415ec3c70ac799889371151796d upstream.
 
-Add a special case to block_rtas_call() to allow the ibm,platform-dump RTAS
-call through the RTAS filter if the buffer address is 0.
+Drop support for these ioctls:
+* PIO_FONT, PIO_FONTX
+* GIO_FONT, GIO_FONTX
+* PIO_FONTRESET
 
-According to PAPR, ibm,platform-dump is called with a null buffer address
-to notify the platform firmware that processing of a particular dump is
-finished.
+As was demonstrated by commit 90bfdeef83f1 (tty: make FONTX ioctl use
+the tty pointer they were actually passed), these ioctls are not used
+from userspace, as:
+1) they used to be broken (set up font on current console, not the open
+   one) and racy (before the commit above)
+2) KDFONTOP ioctl is used for years instead
 
-Without this, on a pseries machine with CONFIG_PPC_RTAS_FILTER enabled, an
-application such as rtas_errd that is attempting to retrieve a dump will
-encounter an error at the end of the retrieval process.
+Note that PIO_FONTRESET is defunct on most systems as VGA_CONSOLE is set
+on them for ages. That turns on BROKEN_GRAPHICS_PROGRAMS which makes
+PIO_FONTRESET just return an error.
 
-Fixes: bd59380c5ba4 ("powerpc/rtas: Restrict RTAS requests from userspace")
-Cc: stable@vger.kernel.org
-Reported-by: Sathvika Vasireddy <sathvika@linux.ibm.com>
-Signed-off-by: Andrew Donnellan <ajd@linux.ibm.com>
-Reviewed-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Reviewed-by: Nathan Lynch <nathanl@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220614134952.156010-1-ajd@linux.ibm.com
+We are removing KD_FONT_FLAG_OLD here as it was used only by these
+removed ioctls. kd.h header exists both in kernel and uapi headers, so
+we can remove the kernel one completely. Everyone includeing kd.h will
+now automatically get the uapi one.
+
+There are now unused definitions of the ioctl numbers and "struct
+consolefontdesc" in kd.h, but as it is a uapi header, I am not touching
+these.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20210105120239.28031-8-jslaby@suse.cz
+Cc: guodaxing <guodaxing@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/rtas.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/tty/vt/vt.c       |   39 ------------
+ drivers/tty/vt/vt_ioctl.c |  149 ----------------------------------------------
+ include/linux/kd.h        |    8 --
+ 3 files changed, 3 insertions(+), 193 deletions(-)
+ delete mode 100644 include/linux/kd.h
 
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -1105,7 +1105,7 @@ static struct rtas_filter rtas_filters[]
- 	{ "get-time-of-day", -1, -1, -1, -1, -1 },
- 	{ "ibm,get-vpd", -1, 0, -1, 1, 2 },
- 	{ "ibm,lpar-perftools", -1, 2, 3, -1, -1 },
--	{ "ibm,platform-dump", -1, 4, 5, -1, -1 },
-+	{ "ibm,platform-dump", -1, 4, 5, -1, -1 },		/* Special cased */
- 	{ "ibm,read-slot-reset-state", -1, -1, -1, -1, -1 },
- 	{ "ibm,scan-log-dump", -1, 0, 1, -1, -1 },
- 	{ "ibm,set-dynamic-indicator", -1, 2, -1, -1, -1 },
-@@ -1152,6 +1152,15 @@ static bool block_rtas_call(int token, i
- 				size = 1;
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -4472,16 +4472,8 @@ static int con_font_get(struct vc_data *
  
- 			end = base + size - 1;
-+
-+			/*
-+			 * Special case for ibm,platform-dump - NULL buffer
-+			 * address is used to indicate end of dump processing
-+			 */
-+			if (!strcmp(f->name, "ibm,platform-dump") &&
-+			    base == 0)
-+				return false;
-+
- 			if (!in_rmo_buf(base, end))
- 				goto err;
- 		}
+ 	if (op->data && font.charcount > op->charcount)
+ 		rc = -ENOSPC;
+-	if (!(op->flags & KD_FONT_FLAG_OLD)) {
+-		if (font.width > op->width || font.height > op->height) 
+-			rc = -ENOSPC;
+-	} else {
+-		if (font.width != 8)
+-			rc = -EIO;
+-		else if ((op->height && font.height > op->height) ||
+-			 font.height > 32)
+-			rc = -ENOSPC;
+-	}
++	if (font.width > op->width || font.height > op->height)
++		rc = -ENOSPC;
+ 	if (rc)
+ 		goto out;
+ 
+@@ -4509,7 +4501,7 @@ static int con_font_set(struct vc_data *
+ 		return -EINVAL;
+ 	if (op->charcount > 512)
+ 		return -EINVAL;
+-	if (op->width <= 0 || op->width > 32 || op->height > 32)
++	if (op->width <= 0 || op->width > 32 || !op->height || op->height > 32)
+ 		return -EINVAL;
+ 	size = (op->width+7)/8 * 32 * op->charcount;
+ 	if (size > max_font_size)
+@@ -4519,31 +4511,6 @@ static int con_font_set(struct vc_data *
+ 	if (IS_ERR(font.data))
+ 		return PTR_ERR(font.data);
+ 
+-	if (!op->height) {		/* Need to guess font height [compat] */
+-		int h, i;
+-		u8 *charmap = font.data;
+-
+-		/*
+-		 * If from KDFONTOP ioctl, don't allow things which can be done
+-		 * in userland,so that we can get rid of this soon
+-		 */
+-		if (!(op->flags & KD_FONT_FLAG_OLD)) {
+-			kfree(font.data);
+-			return -EINVAL;
+-		}
+-
+-		for (h = 32; h > 0; h--)
+-			for (i = 0; i < op->charcount; i++)
+-				if (charmap[32*i+h-1])
+-					goto nonzero;
+-
+-		kfree(font.data);
+-		return -EINVAL;
+-
+-	nonzero:
+-		op->height = h;
+-	}
+-
+ 	font.charcount = op->charcount;
+ 	font.width = op->width;
+ 	font.height = op->height;
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -241,48 +241,6 @@ int vt_waitactive(int n)
+ #define GPLAST 0x3df
+ #define GPNUM (GPLAST - GPFIRST + 1)
+ 
+-
+-
+-static inline int 
+-do_fontx_ioctl(struct vc_data *vc, int cmd, struct consolefontdesc __user *user_cfd, int perm, struct console_font_op *op)
+-{
+-	struct consolefontdesc cfdarg;
+-	int i;
+-
+-	if (copy_from_user(&cfdarg, user_cfd, sizeof(struct consolefontdesc))) 
+-		return -EFAULT;
+- 	
+-	switch (cmd) {
+-	case PIO_FONTX:
+-		if (!perm)
+-			return -EPERM;
+-		op->op = KD_FONT_OP_SET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = cfdarg.chardata;
+-		return con_font_op(vc, op);
+-
+-	case GIO_FONTX:
+-		op->op = KD_FONT_OP_GET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = cfdarg.chardata;
+-		i = con_font_op(vc, op);
+-		if (i)
+-			return i;
+-		cfdarg.charheight = op->height;
+-		cfdarg.charcount = op->charcount;
+-		if (copy_to_user(user_cfd, &cfdarg, sizeof(struct consolefontdesc)))
+-			return -EFAULT;
+-		return 0;
+-	}
+-	return -EINVAL;
+-}
+-
+ static inline int 
+ do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud, int perm, struct vc_data *vc)
+ {
+@@ -919,30 +877,6 @@ int vt_ioctl(struct tty_struct *tty,
+ 		break;
+ 	}
+ 
+-	case PIO_FONT: {
+-		if (!perm)
+-			return -EPERM;
+-		op.op = KD_FONT_OP_SET;
+-		op.flags = KD_FONT_FLAG_OLD | KD_FONT_FLAG_DONT_RECALC;	/* Compatibility */
+-		op.width = 8;
+-		op.height = 0;
+-		op.charcount = 256;
+-		op.data = up;
+-		ret = con_font_op(vc, &op);
+-		break;
+-	}
+-
+-	case GIO_FONT: {
+-		op.op = KD_FONT_OP_GET;
+-		op.flags = KD_FONT_FLAG_OLD;
+-		op.width = 8;
+-		op.height = 32;
+-		op.charcount = 256;
+-		op.data = up;
+-		ret = con_font_op(vc, &op);
+-		break;
+-	}
+-
+ 	case PIO_CMAP:
+                 if (!perm)
+ 			ret = -EPERM;
+@@ -954,36 +888,6 @@ int vt_ioctl(struct tty_struct *tty,
+                 ret = con_get_cmap(up);
+ 		break;
+ 
+-	case PIO_FONTX:
+-	case GIO_FONTX:
+-		ret = do_fontx_ioctl(vc, cmd, up, perm, &op);
+-		break;
+-
+-	case PIO_FONTRESET:
+-	{
+-		if (!perm)
+-			return -EPERM;
+-
+-#ifdef BROKEN_GRAPHICS_PROGRAMS
+-		/* With BROKEN_GRAPHICS_PROGRAMS defined, the default
+-		   font is not saved. */
+-		ret = -ENOSYS;
+-		break;
+-#else
+-		{
+-		op.op = KD_FONT_OP_SET_DEFAULT;
+-		op.data = NULL;
+-		ret = con_font_op(vc, &op);
+-		if (ret)
+-			break;
+-		console_lock();
+-		con_set_default_unimap(vc);
+-		console_unlock();
+-		break;
+-		}
+-#endif
+-	}
+-
+ 	case KDFONTOP: {
+ 		if (copy_from_user(&op, up, sizeof(op))) {
+ 			ret = -EFAULT;
+@@ -1097,54 +1001,6 @@ void vc_SAK(struct work_struct *work)
+ 
+ #ifdef CONFIG_COMPAT
+ 
+-struct compat_consolefontdesc {
+-	unsigned short charcount;       /* characters in font (256 or 512) */
+-	unsigned short charheight;      /* scan lines per character (1-32) */
+-	compat_caddr_t chardata;	/* font data in expanded form */
+-};
+-
+-static inline int
+-compat_fontx_ioctl(struct vc_data *vc, int cmd,
+-		   struct compat_consolefontdesc __user *user_cfd,
+-		   int perm, struct console_font_op *op)
+-{
+-	struct compat_consolefontdesc cfdarg;
+-	int i;
+-
+-	if (copy_from_user(&cfdarg, user_cfd, sizeof(struct compat_consolefontdesc)))
+-		return -EFAULT;
+-
+-	switch (cmd) {
+-	case PIO_FONTX:
+-		if (!perm)
+-			return -EPERM;
+-		op->op = KD_FONT_OP_SET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = compat_ptr(cfdarg.chardata);
+-		return con_font_op(vc, op);
+-
+-	case GIO_FONTX:
+-		op->op = KD_FONT_OP_GET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = compat_ptr(cfdarg.chardata);
+-		i = con_font_op(vc, op);
+-		if (i)
+-			return i;
+-		cfdarg.charheight = op->height;
+-		cfdarg.charcount = op->charcount;
+-		if (copy_to_user(user_cfd, &cfdarg, sizeof(struct compat_consolefontdesc)))
+-			return -EFAULT;
+-		return 0;
+-	}
+-	return -EINVAL;
+-}
+-
+ struct compat_console_font_op {
+ 	compat_uint_t op;        /* operation code KD_FONT_OP_* */
+ 	compat_uint_t flags;     /* KD_FONT_FLAG_* */
+@@ -1222,11 +1078,6 @@ long vt_compat_ioctl(struct tty_struct *
+ 	/*
+ 	 * these need special handlers for incompatible data structures
+ 	 */
+-	case PIO_FONTX:
+-	case GIO_FONTX:
+-		ret = compat_fontx_ioctl(vc, cmd, up, perm, &op);
+-		break;
+-
+ 	case KDFONTOP:
+ 		ret = compat_kdfontop_ioctl(up, perm, &op, vc);
+ 		break;
+--- a/include/linux/kd.h
++++ /dev/null
+@@ -1,8 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _LINUX_KD_H
+-#define _LINUX_KD_H
+-
+-#include <uapi/linux/kd.h>
+-
+-#define KD_FONT_FLAG_OLD		0x80000000	/* Invoked via old interface [compat] */
+-#endif /* _LINUX_KD_H */
 
 
