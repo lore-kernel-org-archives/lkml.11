@@ -2,116 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1740BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13586C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbiF3LdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 07:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
+        id S234777AbiF3LfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 07:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233832AbiF3LdL (ORCPT
+        with ESMTP id S232927AbiF3LfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 07:33:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A6E12087
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:33:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8505DB82A30
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 11:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F06C34115;
-        Thu, 30 Jun 2022 11:33:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YhIALwNu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656588784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=v+Re/J7CDomnNGKEEalv3NlzbBAIQfyC1PELROLBY8Y=;
-        b=YhIALwNur1qkYjJu/VWPDuUmqWt0LFVP+/bvH7k0RymOhM3VmKGTdJd1tTUb2ybw+4shEI
-        UChvYc0MAD8xeHVXYBqGiiQMMZoiDcFxniK7ECbdE9N8whZsx2N4rKlXx84GjgoFW1bK12
-        Iqoct9TuCnR8yngeNstWfnbmtU5sOYw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0e0c30d7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 30 Jun 2022 11:33:04 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] x86/setup: Allow passing RNG seeds via e820 setup table
-Date:   Thu, 30 Jun 2022 13:33:00 +0200
-Message-Id: <20220630113300.1892799-1-Jason@zx2c4.com>
+        Thu, 30 Jun 2022 07:35:17 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F389A5A445;
+        Thu, 30 Jun 2022 04:35:15 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=ziyangzhang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VHsMSXI_1656588911;
+Received: from 30.97.57.27(mailfrom:ZiyangZhang@linux.alibaba.com fp:SMTPD_---0VHsMSXI_1656588911)
+          by smtp.aliyun-inc.com;
+          Thu, 30 Jun 2022 19:35:12 +0800
+Message-ID: <fdd06581-a8aa-5948-6043-fc7e3381eb2d@linux.alibaba.com>
+Date:   Thu, 30 Jun 2022 19:35:11 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH V3 1/1] ublk: add io_uring based userspace block driver
+Content-Language: en-US
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     linux-block@vger.kernel.org,
+        Harris James R <james.r.harris@intel.com>,
+        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>
+References: <20220628160807.148853-1-ming.lei@redhat.com>
+ <20220628160807.148853-2-ming.lei@redhat.com>
+From:   Ziyang Zhang <ZiyangZhang@linux.alibaba.com>
+In-Reply-To: <20220628160807.148853-2-ming.lei@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the only way x86 can get an early boot RNG seed is via EFI,
-which is generally always used now for physical machines, but is very
-rarely used in VMs, especially VMs that are optimized for starting
-"instantaneously", such as Firecracker's MicroVM. Here, we really want
-the ability for the firmware to pass a random seed, similar to what OF
-platforms do with the "rng-seed" property. It also would be nice for
-bootloaders to be able to append seeds to the kernel before launching.
+On 2022/6/29 00:08, Ming Lei wrote:
 
-This patch accomplishes that by adding SETUP_RNG_SEED, similar to the
-other 7 SETUP_* entries that are parsed from the e820 setup table. I've
-verified that this works well with QEMU.
+[...]
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- arch/x86/include/uapi/asm/bootparam.h | 1 +
- arch/x86/kernel/setup.c               | 8 +++++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+> +#define UBLK_MAX_PIN_PAGES	32
+> +
+> +static inline void ublk_release_pages(struct ublk_queue *ubq, struct page **pages,
+> +		int nr_pages)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < nr_pages; i++)
+> +		put_page(pages[i]);
+> +}
+> +
+> +static inline int ublk_pin_user_pages(struct ublk_queue *ubq, u64 start_vm,
+> +		unsigned int nr_pages, unsigned int gup_flags,
+> +		struct page **pages)
+> +{
+> +	return get_user_pages_fast(start_vm, nr_pages, gup_flags, pages);
+> +}
 
-diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
-index bea5cdcdf532..a60676b8d1d4 100644
---- a/arch/x86/include/uapi/asm/bootparam.h
-+++ b/arch/x86/include/uapi/asm/bootparam.h
-@@ -11,6 +11,7 @@
- #define SETUP_APPLE_PROPERTIES		5
- #define SETUP_JAILHOUSE			6
- #define SETUP_CC_BLOB			7
-+#define SETUP_RNG_SEED			8
- 
- #define SETUP_INDIRECT			(1<<31)
- 
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index bd6c6fd373ae..4135fa17a90e 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -23,6 +23,7 @@
- #include <linux/usb/xhci-dbgp.h>
- #include <linux/static_call.h>
- #include <linux/swiotlb.h>
-+#include <linux/random.h>
- 
- #include <uapi/linux/mount.h>
- 
-@@ -343,7 +344,8 @@ static void __init parse_setup_data(void)
- 		data_len = data->len + sizeof(struct setup_data);
- 		data_type = data->type;
- 		pa_next = data->next;
--		early_memunmap(data, sizeof(*data));
-+		if (data_type != SETUP_RNG_SEED)
-+			early_memunmap(data, sizeof(*data));
- 
- 		switch (data_type) {
- 		case SETUP_E820_EXT:
-@@ -355,6 +357,10 @@ static void __init parse_setup_data(void)
- 		case SETUP_EFI:
- 			parse_efi_setup(pa_data, data_len);
- 			break;
-+		case SETUP_RNG_SEED:
-+			add_bootloader_randomness(data + 1, data_len);
-+			early_memunmap(data, sizeof(*data));
-+			break;
- 		default:
- 			break;
- 		}
--- 
-2.35.1
+> +
+> +static inline unsigned ublk_copy_bv(struct bio_vec *bv, void **bv_addr,
+> +		void *pg_addr, unsigned int *pg_off,
+> +		unsigned int *pg_len, bool to_bv)
+> +{
+> +	unsigned len = min_t(unsigned, bv->bv_len, *pg_len);
+> +
+> +	if (*bv_addr == NULL)
+> +		*bv_addr = kmap_local_page(bv->bv_page);
+> +
+> +	if (to_bv)
+> +		memcpy(*bv_addr + bv->bv_offset, pg_addr + *pg_off, len);
+> +	else
+> +		memcpy(pg_addr + *pg_off, *bv_addr + bv->bv_offset, len);
+> +
+> +	bv->bv_offset += len;
+> +	bv->bv_len -= len;
+> +	*pg_off += len;
+> +	*pg_len -= len;
+> +
+> +	if (!bv->bv_len) {
+> +		kunmap_local(*bv_addr);
+> +		*bv_addr = NULL;
+> +	}
+> +
+> +	return len;
+> +}
+> +
+> +/* copy rq pages to ublksrv vm address pointed by io->addr */
+> +static int ublk_copy_pages(struct ublk_queue *ubq, struct request *rq, bool to_rq,
+> +		unsigned int max_bytes)
+> +{
+> +	unsigned int gup_flags = to_rq ? 0 : FOLL_WRITE;
+> +	struct ublk_io *io = &ubq->ios[rq->tag];
+> +	struct page *pgs[UBLK_MAX_PIN_PAGES];
+> +	struct req_iterator req_iter;
+> +	struct bio_vec bv;
+> +	const unsigned int rq_bytes = min(blk_rq_bytes(rq), max_bytes);
+> +	unsigned long start = io->addr, left = rq_bytes;
+> +	unsigned int idx = 0, pg_len = 0, pg_off = 0;
+> +	int nr_pin = 0;
+> +	void *pg_addr = NULL;
+> +	struct page *curr = NULL;
+> +
+> +	rq_for_each_segment(bv, rq, req_iter) {
+> +		unsigned len, bv_off = bv.bv_offset, bv_len = bv.bv_len;
+> +		void *bv_addr = NULL;
+> +
+> +refill:
+> +		if (pg_len == 0) {
+> +			unsigned int off = 0;
+> +
+> +			if (pg_addr) {
+> +				kunmap_local(pg_addr);
+> +				if (!to_rq)
+> +					set_page_dirty_lock(curr);
+> +				pg_addr = NULL;
+> +			}
+> +
+> +			/* refill pages */
+> +			if (idx >= nr_pin) {
+> +				unsigned int max_pages;
+> +
+> +				ublk_release_pages(ubq, pgs, nr_pin);
+> +
+> +				off = start & (PAGE_SIZE - 1);
+> +				max_pages = min_t(unsigned, (off + left +
+> +						PAGE_SIZE - 1) >> PAGE_SHIFT,
+> +						UBLK_MAX_PIN_PAGES);
+> +				nr_pin = ublk_pin_user_pages(ubq, start,
+> +						max_pages, gup_flags, pgs);
+> +				if (nr_pin < 0)
+> +					goto exit;
+> +				idx = 0;
+> +			}
+> +			pg_off = off;
+> +			pg_len = min(PAGE_SIZE - off, left);
+> +			off = 0;
+> +			curr = pgs[idx++];
+> +			pg_addr = kmap_local_page(curr);
+> +		}
+> +
+> +		len = ublk_copy_bv(&bv, &bv_addr, pg_addr, &pg_off, &pg_len,
+> +				to_rq);
+> +		/* either one of the two has been consumed */
+> +		WARN_ON_ONCE(bv.bv_len && pg_len);
+> +		start += len;
+> +		left -= len;
+> +
+> +		/* overflow */
+> +		WARN_ON_ONCE(left > rq_bytes);
+> +		WARN_ON_ONCE(bv.bv_len > bv_len);
+> +		if (bv.bv_len)
+> +			goto refill;
+> +
+> +		bv.bv_len = bv_len;
+> +		bv.bv_offset = bv_off;
+> +	}
+> +	if (pg_addr) {
+> +		kunmap_local(pg_addr);
+> +		if (!to_rq)
+> +			set_page_dirty_lock(curr);
+> +	}
+> +	ublk_release_pages(ubq, pgs, nr_pin);
+> +
+> +exit:
+> +	return rq_bytes - left;
+> +}
+> +
 
+Hi Ming, 
+
+I note that you pin the user buffer's pages, memcpy() and release them immediately.
+
+1) I think maybe copy_page_from_iter() is another choice for copying user buffer to biovecs
+   since copy_page_from_iter() do not pin pages(But it may raise page fault).
+
+2) Or will you design some mechanism such as LRU to manage these pinned pages? 
+   For example pin those pages frequently required for a long time and release
+   those pages not used for a long time.
+   I remember you have talked about this LRU on pinned pages?
+
+Which one do you think is better? copy_page_from_iter() or pin pages with LRU?
+Maybe it depends on the user's workload?
+
+Regards,
+Zhang
