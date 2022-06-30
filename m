@@ -2,88 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B45CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39281CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237194AbiF3OhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
+        id S237213AbiF3OhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235918AbiF3Ogx (ORCPT
+        with ESMTP id S235866AbiF3Ogx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 10:36:53 -0400
-X-Greylist: delayed 186 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 07:31:09 PDT
-Received: from gmmr-2.centrum.cz (gmmr-2.centrum.cz [IPv6:2a00:da80:1:502::7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D58F1020
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 07:31:08 -0700 (PDT)
-Received: from gmmr-2.centrum.cz (localhost [127.0.0.1])
-        by gmmr-2.centrum.cz (Postfix) with ESMTP id D721824E86AF;
-        Thu, 30 Jun 2022 16:27:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=atlas.cz; s=mail;
-        t=1656599278; bh=vlhxEe8srxoyYwFAEgaB16uc4WpIlbHnozTguOSAmvU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iviVYsyfKb5aj2ljdklUBpohpa22A0sJaXkPoiEmxwMnSlcuofSZGIUfdfoMF2q74
-         od/ZgayM0DveqBHFEbCBDZMFihvq6BIpnqk1Hq8tu7VFE2Ea4C2eRjrGWxs94scJmb
-         NkEO4oQ3JUlvrbPUaA/SjpmRi/Pxftvjz905JPBw=
-Received: from vm2.excello.cz (vm2.excello.cz [IPv6:2001:67c:15a0:4000::b])
-        by gmmr-2.centrum.cz (Postfix) with QMQP
-        id D636A2457DA2; Thu, 30 Jun 2022 16:27:58 +0200 (CEST)
-Received: from vm2.excello.cz by vm2.excello.cz
- (VF-Scanner: Clear:RC:0(2a00:da80:1:502::7):SC:0(-1.5/5.0):CC:0:;
- processed in 0.3 s); 30 Jun 2022 14:27:58 +0000
-X-VF-Scanner-ID: 20220630142758.530909.10951.vm2.excello.cz.0
-Received: from gmmr-2.centrum.cz (2a00:da80:1:502::7)
-  by out1.virusfree.cz with ESMTPS (TLSv1.3, TLS_AES_256_GCM_SHA384); 30 Jun 2022 16:27:58 +0200
-Received: from gm-smtp11.centrum.cz (unknown [10.255.254.25])
-        by gmmr-2.centrum.cz (Postfix) with ESMTP id 79E14238C8B6;
-        Thu, 30 Jun 2022 16:27:58 +0200 (CEST)
-Received: from localhost.localdomain (unknown [213.220.225.64])
-        by gm-smtp11.centrum.cz (Postfix) with ESMTPA id 57FE918054D46;
-        Thu, 30 Jun 2022 16:27:58 +0200 (CEST)
-From:   =?UTF-8?q?Petr=20Van=C4=9Bk?= <arkamar@atlas.cz>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67E8DFF5
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 07:31:21 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id AF95368AA6; Thu, 30 Jun 2022 16:31:16 +0200 (CEST)
+Date:   Thu, 30 Jun 2022 16:31:16 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Ren Zhijie <renzhijie2@huawei.com>
+Cc:     hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        mathieu.poirier@linaro.org, mark-pk.tsai@mediatek.com,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Petr=20Van=C4=9Bk?= <arkamar@atlas.cz>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH] xfrm: improve wording of comment above XFRM_OFFLOAD flags
-Date:   Thu, 30 Jun 2022 16:27:20 +0200
-Message-Id: <20220630142720.19137-1-arkamar@atlas.cz>
-X-Mailer: git-send-email 2.35.1
+Subject: Re: [PATCH -next] dma-mapping: Fix build error unused-value
+Message-ID: <20220630143116.GA6198@lst.de>
+References: <20220630123528.251181-1-renzhijie2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630123528.251181-1-renzhijie2@huawei.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have noticed a few minor wording issues in a comment recently added
-above XFRM_OFFLOAD flags in 7c76ecd9c99b ("xfrm: enforce validity of
-offload input flags").
+Thanks, this looks good with a minor nit below:
 
-Signed-off-by: Petr Vaněk <arkamar@atlas.cz>
----
- include/uapi/linux/xfrm.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index 65e13a099b1a..ee8862d4335e 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -511,9 +511,9 @@ struct xfrm_user_offload {
- 	int				ifindex;
- 	__u8				flags;
- };
--/* This flag was exposed without any kernel code that supporting it.
-- * Unfortunately, strongswan has the code that uses sets this flag,
-- * which makes impossible to reuse this bit.
-+/* This flag was exposed without any kernel code that supports it.
-+ * Unfortunately, strongswan has the code that sets this flag,
-+ * which makes it impossible to reuse this bit.
-  *
-  * So leave it here to make sure that it won't be reused by mistake.
-  */
--- 
-2.35.1
+Mathieu, can you pick this up through your tree as that is where the
+offending commit was merged through?
 
+> Fixes: e61c451476e6("dma-mapping: Add dma_release_coherent_memory to DMA API")
+
+missing space before the opening brace here.
