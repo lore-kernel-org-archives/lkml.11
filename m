@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98F4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D83C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236378AbiF3ODs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
+        id S236242AbiF3ODx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236612AbiF3OCr (ORCPT
+        with ESMTP id S236613AbiF3OCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 10:02:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DDAB48;
-        Thu, 30 Jun 2022 06:53:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B53068A2C;
+        Thu, 30 Jun 2022 06:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9928A620EB;
-        Thu, 30 Jun 2022 13:53:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7B2C34115;
-        Thu, 30 Jun 2022 13:53:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C8BEB82AD8;
+        Thu, 30 Jun 2022 13:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0374C34115;
+        Thu, 30 Jun 2022 13:52:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597183;
-        bh=mAlzY4+qXjdLojrOSA13Bsh+r1xYcbPlD1Afg/rBXqs=;
+        s=korg; t=1656597180;
+        bh=JOD3wDxT/JvV14ZI7sRweLRuU0c8/XY3206htf3O+v8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MzjpqAVSJCi2iP1tRKM1TJQ6Xz7ZdIwFeVLmKauJCsF+B/RzN1q+9cQ5Hx4o4Xhdz
-         NgXb5K7j+QmlarzT1R1rDTswRgHvFTAAZWpuu2Q81xEixR+ST9TYiI+ukBMLPT6gmd
-         PkiAFpKGj8omz9FXbIwsGDr3Gsmn1oATM8/MofkU=
+        b=iBrE/byeDCiCMIQ49FK8CbyNIWvgnKe7DgmZebqLBrdihG7TVDjE5UQJSSflkCQos
+         SJV6OjMlQwaKe0TzjFMy1L17YWqRfOCzimNGtEla+lYnHh25Kg7xExghK0ajB1zypy
+         rml3QosgNdaty1Gye42Luofn8JmuAkNlnu/TF1d4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikos Tsironis <ntsironis@arrikto.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.19 07/49] dm era: commit metadata in postsuspend after worker stops
-Date:   Thu, 30 Jun 2022 15:46:20 +0200
-Message-Id: <20220630133234.124223830@linuxfoundation.org>
+        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
+        huhai <huhai@kylinos.cn>,
+        Genjian Zhang <zhanggenjian@kylinos.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 16/49] MIPS: Remove repetitive increase irq_err_count
+Date:   Thu, 30 Jun 2022 15:46:29 +0200
+Message-Id: <20220630133234.384214777@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -48,91 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikos Tsironis <ntsironis@arrikto.com>
+From: huhai <huhai@kylinos.cn>
 
-commit 9ae6e8b1c9bbf6874163d1243e393137313762b7 upstream.
+[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
 
-During postsuspend dm-era does the following:
+commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
+a function irq_dispatch, and it'll increase irq_err_count when the get_irq
+callback returns a negative value, but increase irq_err_count in get_irq
+was not removed.
 
-1. Archives the current era
-2. Commits the metadata, as part of the RPC call for archiving the
-   current era
-3. Stops the worker
+And also, modpost complains once gpio-vr41xx drivers become modules.
+  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
 
-Until the worker stops, it might write to the metadata again. Moreover,
-these writes are not flushed to disk immediately, but are cached by the
-dm-bufio client, which writes them back asynchronously.
+So it would be a good idea to remove repetitive increase irq_err_count in
+get_irq callback.
 
-As a result, the committed metadata of a suspended dm-era device might
-not be consistent with the in-core metadata.
-
-In some cases, this can result in the corruption of the on-disk
-metadata. Suppose the following sequence of events:
-
-1. Load a new table, e.g. a snapshot-origin table, to a device with a
-   dm-era table
-2. Suspend the device
-3. dm-era commits its metadata, but the worker does a few more metadata
-   writes until it stops, as part of digesting an archived writeset
-4. These writes are cached by the dm-bufio client
-5. Load the dm-era table to another device.
-6. The new instance of the dm-era target loads the committed, on-disk
-   metadata, which don't include the extra writes done by the worker
-   after the metadata commit.
-7. Resume the new device
-8. The new dm-era target instance starts using the metadata
-9. Resume the original device
-10. The destructor of the old dm-era target instance is called and
-    destroys the dm-bufio client, which results in flushing the cached
-    writes to disk
-11. These writes might overwrite the writes done by the new dm-era
-    instance, hence corrupting its metadata.
-
-Fix this by committing the metadata after the worker stops running.
-
-stop_worker uses flush_workqueue to flush the current work. However, the
-work item may re-queue itself and flush_workqueue doesn't wait for
-re-queued works to finish.
-
-This could result in the worker changing the metadata after they have
-been committed, or writing to the metadata concurrently with the commit
-in the postsuspend thread.
-
-Use drain_workqueue instead, which waits until the work and all
-re-queued works finish.
-
-Fixes: eec40579d8487 ("dm: add era target")
-Cc: stable@vger.kernel.org # v3.15+
-Signed-off-by: Nikos Tsironis <ntsironis@arrikto.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
+Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: huhai <huhai@kylinos.cn>
+Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-era-target.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/mips/vr41xx/common/icu.c | 2 --
+ drivers/gpio/gpio-vr41xx.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
---- a/drivers/md/dm-era-target.c
-+++ b/drivers/md/dm-era-target.c
-@@ -1396,7 +1396,7 @@ static void start_worker(struct era *era
- static void stop_worker(struct era *era)
- {
- 	atomic_set(&era->suspended, 1);
--	flush_workqueue(era->wq);
-+	drain_workqueue(era->wq);
+diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
+index 745b7b436961..42f77b318974 100644
+--- a/arch/mips/vr41xx/common/icu.c
++++ b/arch/mips/vr41xx/common/icu.c
+@@ -653,8 +653,6 @@ static int icu_get_irq(unsigned int irq)
+ 
+ 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
+ 
+-	atomic_inc(&irq_err_count);
+-
+ 	return -1;
  }
  
- /*----------------------------------------------------------------
-@@ -1580,6 +1580,12 @@ static void era_postsuspend(struct dm_ta
- 	}
+diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
+index 027699cec911..217b077838af 100644
+--- a/drivers/gpio/gpio-vr41xx.c
++++ b/drivers/gpio/gpio-vr41xx.c
+@@ -230,8 +230,6 @@ static int giu_get_irq(unsigned int irq)
+ 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
+ 	       maskl, pendl, maskh, pendh);
  
- 	stop_worker(era);
-+
-+	r = metadata_commit(era->md);
-+	if (r) {
-+		DMERR("%s: metadata_commit failed", __func__);
-+		/* FIXME: fail mode */
-+	}
+-	atomic_inc(&irq_err_count);
+-
+ 	return -EINVAL;
  }
  
- static int era_preresume(struct dm_target *ti)
+-- 
+2.35.1
+
 
 
