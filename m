@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E40E7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3034BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236435AbiF3OHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S236622AbiF3OHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236593AbiF3OGJ (ORCPT
+        with ESMTP id S236603AbiF3OGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:06:09 -0400
+        Thu, 30 Jun 2022 10:06:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0B86EEA9;
-        Thu, 30 Jun 2022 06:54:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0484B6F34C;
+        Thu, 30 Jun 2022 06:54:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA176211C;
-        Thu, 30 Jun 2022 13:54:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48116C34115;
-        Thu, 30 Jun 2022 13:54:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0EDC61FC0;
+        Thu, 30 Jun 2022 13:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04B85C34115;
+        Thu, 30 Jun 2022 13:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597248;
-        bh=tUbC9P3+yubDDefe29H5IMHi8x/o38Uf9ZD+Vi3xwK8=;
+        s=korg; t=1656597251;
+        bh=38FD9szrywuOziQywvQPvGcPzan/Dfw4GrYnqgtmQ+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EUE8/8qagHcuvBzXf6NoH0yN3Jj4ZAmCTCIckudkX2FSUGcJsrySNKnk93i21osaB
-         wgRltucYMpbCATxhU+7SAUCLWs1HqhUERNukD0YpeJ4Rbi7mxBeOB5Ue0H9hqDzuwE
-         ujelhR/6ChSvkP0O7j6cNhP6f+92teAJralnhojI=
+        b=iDIju4ciZVfP4ktnj5MxmxGUzotkqX/AXCAY14ZTe1sG7S7vcWI3L7qZ3A5ImkOIs
+         24YQUSOmgrfOjCqpiNtNUOcmR60Yg5muY7XehLGE4kaEYMVW/lG4wH1Qi+zzc/8wha
+         vi2JdtpT7izU1s1+CCL2mqxmdK+XpRYJ0l31WCRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH 5.10 04/12] clocksource/drivers/ixp4xx: remove __init from ixp4xx_timer_setup()
-Date:   Thu, 30 Jun 2022 15:47:09 +0200
-Message-Id: <20220630133230.813883677@linuxfoundation.org>
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 05/12] bcache: memset on stack variables in bch_btree_check() and bch_sectors_dirty_init()
+Date:   Thu, 30 Jun 2022 15:47:10 +0200
+Message-Id: <20220630133230.843307110@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
 References: <20220630133230.676254336@linuxfoundation.org>
@@ -48,75 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Coly Li <colyli@suse.de>
 
-ixp4xx_timer_setup is exported, and so can not be an __init function.
-Remove the __init marking as the build system is rightfully claiming
-this is an error in older kernels.
+commit 7d6b902ea0e02b2a25c480edf471cbaa4ebe6b3c upstream.
 
-This is fixed "properly" in commit 41929c9f628b
-("clocksource/drivers/ixp4xx: Drop boardfile probe path") but that can
-not be backported to older kernels as the reworking of the IXP4xx
-codebase is not suitable for stable releases.
+The local variables check_state (in bch_btree_check()) and state (in
+bch_sectors_dirty_init()) should be fully filled by 0, because before
+allocating them on stack, they were dynamically allocated by kzalloc().
 
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Coly Li <colyli@suse.de>
+Link: https://lore.kernel.org/r/20220527152818.27545-2-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clocksource/mmio.c                 |    2 +-
- drivers/clocksource/timer-ixp4xx.c         |   10 ++++------
- include/linux/platform_data/timer-ixp4xx.h |    5 ++---
- 3 files changed, 7 insertions(+), 10 deletions(-)
+ drivers/md/bcache/btree.c     |    1 +
+ drivers/md/bcache/writeback.c |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/drivers/clocksource/mmio.c
-+++ b/drivers/clocksource/mmio.c
-@@ -46,7 +46,7 @@ u64 clocksource_mmio_readw_down(struct c
-  * @bits:	Number of valid bits
-  * @read:	One of clocksource_mmio_read*() above
-  */
--int __init clocksource_mmio_init(void __iomem *base, const char *name,
-+int clocksource_mmio_init(void __iomem *base, const char *name,
- 	unsigned long hz, int rating, unsigned bits,
- 	u64 (*read)(struct clocksource *))
- {
---- a/drivers/clocksource/timer-ixp4xx.c
-+++ b/drivers/clocksource/timer-ixp4xx.c
-@@ -170,9 +170,8 @@ static int ixp4xx_resume(struct clock_ev
-  * We use OS timer1 on the CPU for the timer tick and the timestamp
-  * counter as a source of real clock ticks to account for missed jiffies.
-  */
--static __init int ixp4xx_timer_register(void __iomem *base,
--					int timer_irq,
--					unsigned int timer_freq)
-+static int ixp4xx_timer_register(void __iomem *base, int timer_irq,
-+				 unsigned int timer_freq)
- {
- 	struct ixp4xx_timer *tmr;
- 	int ret;
-@@ -245,9 +244,8 @@ static __init int ixp4xx_timer_register(
-  * @timer_irq: Linux IRQ number for the timer
-  * @timer_freq: Fixed frequency of the timer
-  */
--void __init ixp4xx_timer_setup(resource_size_t timerbase,
--			       int timer_irq,
--			       unsigned int timer_freq)
-+void ixp4xx_timer_setup(resource_size_t timerbase, int timer_irq,
-+			unsigned int timer_freq)
- {
- 	void __iomem *base;
+--- a/drivers/md/bcache/btree.c
++++ b/drivers/md/bcache/btree.c
+@@ -2017,6 +2017,7 @@ int bch_btree_check(struct cache_set *c)
+ 	if (c->root->level == 0)
+ 		return 0;
  
---- a/include/linux/platform_data/timer-ixp4xx.h
-+++ b/include/linux/platform_data/timer-ixp4xx.h
-@@ -4,8 +4,7 @@
++	memset(&check_state, 0, sizeof(struct btree_check_state));
+ 	check_state.c = c;
+ 	check_state.total_threads = bch_btree_chkthread_nr();
+ 	check_state.key_idx = 0;
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -901,6 +901,7 @@ void bch_sectors_dirty_init(struct bcach
+ 		return;
+ 	}
  
- #include <linux/ioport.h>
- 
--void __init ixp4xx_timer_setup(resource_size_t timerbase,
--			       int timer_irq,
--			       unsigned int timer_freq);
-+void ixp4xx_timer_setup(resource_size_t timerbase, int timer_irq,
-+			unsigned int timer_freq);
- 
- #endif
++	memset(&state, 0, sizeof(struct bch_dirty_init_state));
+ 	state.c = c;
+ 	state.d = d;
+ 	state.total_threads = bch_btre_dirty_init_thread_nr();
 
 
