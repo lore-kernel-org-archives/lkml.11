@@ -2,187 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E34CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C18DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234566AbiF3LOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 07:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S234575AbiF3LRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 07:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbiF3LOi (ORCPT
+        with ESMTP id S232504AbiF3LRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 07:14:38 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F944579E;
-        Thu, 30 Jun 2022 04:14:37 -0700 (PDT)
+        Thu, 30 Jun 2022 07:17:49 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1954D4CD
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:17:47 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id pk21so38393641ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:17:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656587677; x=1688123677;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=NZB5eT/e1Inc1VOY7M0kCfqzfvY8zcHVSIKYNkjKTxI=;
-  b=rnJPqlCJdij/kgH+Svk2qFpfLarGyCSlBstebonEY6Xm6vuTfa+jkuKq
-   md0zHIeLyr7YdY4Ul1TQSA8kupTSFtAxLvqKHp3eD3qPPrcJwgL/sYeGi
-   zpEFDpUGrXruh4fZw2m+/ByPKteXXDAuWhJ0SPpUsfRxClDkxajVz6P9/
-   8=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 30 Jun 2022 04:14:36 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 04:14:35 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 30 Jun 2022 04:14:35 -0700
-Received: from [10.216.5.206] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 30 Jun
- 2022 04:14:30 -0700
-Message-ID: <55cf5a2f-7be2-bb65-09d6-d4d5af4d2f0f@quicinc.com>
-Date:   Thu, 30 Jun 2022 16:44:27 +0530
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xOuD0VayMLaVqMSm3qQEckL7M1TiFwHS72WWPKTLO58=;
+        b=f2mg5NQcZInRzApmj3Hn1BwfNl1pudDvuPud+y6bW5QTphTs0bXap0Uu2pOmCLjt67
+         13Xcr7cbtXO40QwP5BGR3/Lv14ByQi77QfcKQJTj7qwsgFHLYMfioS2b8xPcxClm0exN
+         02p3T+AEeSkzysS7nxVSBskiMedr+oMz8YB+IB49n+wlv6Xw5o6bFyjETvnBcjFtmfNy
+         WBv6ktj6+xlzz9y7+owgEUGG2ApUAOwv60wCPv8UVM8+o1cA2RPMvOR2txdT2PzZAaWo
+         ijfpniC2e0HaioZ1VUHPbiJEFo37djO+X7EQpbklN41PWDjuWEwEMCoqLhxfyPvQhrkc
+         8SRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xOuD0VayMLaVqMSm3qQEckL7M1TiFwHS72WWPKTLO58=;
+        b=v4zkia6owzcZcGdiyRK4tutOo2yT6/3Cw5H/PRvosBpFHExoIB5sZ8dwBhm9W4MXe3
+         o7W/cfIDCQP9K4FKeq0rC0GshO/DPZh6M1IhbI/Vy8qxq6JTg8EWa1vKx/4vZMVsckSr
+         Yy2O3g80vTMy2jkn2hensN339o2IyqpA58kMVRbPNCMBlSlX1hOPzGYyE3Tc5oJveQIv
+         Je49Cagb7OzFZhbnjbqm7gcJiaiFXHWWHpuSzz4s2n+C+jZRCr9OACyYblwfqhWGTU/1
+         OqvzxNW/+dtyVovsdPAGBX6jwwDjunR3YyZITsCiu4FDrrJMjckhDN+lz0Y5ravMg/27
+         sA6Q==
+X-Gm-Message-State: AJIora+loSvGVT7v2O1G2xzmanYHldOqUTfNedBKBhMylsgdTdU58sDe
+        S6a18TdLBDsaAq4PnYr3YTA0zA==
+X-Google-Smtp-Source: AGRyM1sTwlP8l8cSXnZAeirtFdsJCaUPo0dMEU/k0FpVqeYgtZw9UTyY9WN6rJ5Nib2hOc5JVBVPWQ==
+X-Received: by 2002:a17:906:149b:b0:726:2968:e32a with SMTP id x27-20020a170906149b00b007262968e32amr8420709ejc.71.1656587866001;
+        Thu, 30 Jun 2022 04:17:46 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id pv1-20020a170907208100b00726abf9cd8esm4697467ejb.125.2022.06.30.04.17.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 04:17:45 -0700 (PDT)
+Message-ID: <80d971ea-88b9-0d21-b6f4-93124ba6a678@blackwall.org>
+Date:   Thu, 30 Jun 2022 14:17:43 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v6 1/4] dt-bindings: interconnect: qcom,msm8998-cpu-bwmon:
- add BWMON device
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
+ traffic cannot unlock a locked port
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Georgi Djakov" <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Rob Herring <robh@kernel.org>
-References: <20220629140302.236715-1-krzysztof.kozlowski@linaro.org>
- <20220629140302.236715-2-krzysztof.kozlowski@linaro.org>
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-In-Reply-To: <20220629140302.236715-2-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Hans Schultz <hans@kapio-technology.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+References: <20220630111634.610320-1-hans@kapio-technology.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220630111634.610320-1-hans@kapio-technology.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 6/29/2022 7:32 PM, Krzysztof Kozlowski wrote:
-> Add bindings for the Qualcomm Bandwidth Monitor device providing
-> performance data on interconnects.  The bindings describe only BWMON CPU
-> (version 4), e.g. the instance which appeared for the first on Qualcomm
-> MSM8998 SoC and is also used on SDM845.  This BWMON device sits between
-> CPU and Last Level Cache Controller.
+On 30/06/2022 14:16, Hans Schultz wrote:
+> This patch is related to the patch set
+> "Add support for locked bridge ports (for 802.1X)"
+> Link: https://lore.kernel.org/netdev/20220223101650.1212814-1-schultz.hans+netdev@gmail.com/
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Acked-by: Georgi Djakov <djakov@kernel.org>
+> This patch makes the locked port feature work with learning turned on,
+> which is enabled with the command:
+> 
+> bridge link set dev DEV learning on
+> 
+> Without this patch, link local traffic (01:80:c2) like EAPOL packets will
+> create a fdb entry when ingressing on a locked port with learning turned
+> on, thus unintentionally opening up the port for traffic for the said MAC.
+> 
+> Some switchcore features like Mac-Auth and refreshing of FDB entries,
+> require learning enables on some switchcores, f.ex. the mv88e6xxx family.
+> Other features may apply too.
+> 
+> Since many switchcores trap or mirror various multicast packets to the
+> CPU, link local traffic will unintentionally unlock the port for the
+> SA mac in question unless prevented by this patch.
+> 
+> Signed-off-by: Hans Schultz <hans@kapio-technology.com>
 > ---
->   .../interconnect/qcom,msm8998-llcc-bwmon.yaml | 85 +++++++++++++++++++
->   1 file changed, 85 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/interconnect/qcom,msm8998-llcc-bwmon.yaml
+>  net/bridge/br_input.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-llcc-bwmon.yaml b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-llcc-bwmon.yaml
-> new file mode 100644
-> index 000000000000..76e09658d615
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-llcc-bwmon.yaml
-> @@ -0,0 +1,85 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/interconnect/qcom,msm8998-llcc-bwmon.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Interconnect Bandwidth Monitor
-> +
-> +maintainers:
-> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> +
-> +description: |
-> +  Bandwidth Monitor measures current throughput on buses between various NoC
-> +  fabrics and provides information when it crosses configured thresholds.
-> +
-> +  Certain SoCs might have more than one Bandwidth Monitors, for example on SDM845::
-> +   - Measuring the bandwidth between CPUs and Last Level Cache Controller -
-> +     called LLCC BWMON,
-> +   - Measuring the bandwidth between Last Level Cache Controller and memory (DDR).
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - qcom,sdm845-llcc-bwmon
-> +          - const: qcom,msm8998-llcc-bwmon
-> +      - const: qcom,msm8998-llcc-bwmon       # BWMON v4
-> +
-> +  interconnects:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  operating-points-v2: true
-> +  opp-table: true
-> +
-> +  reg:
-> +    # BWMON v4 (currently described) and BWMON v5 use one register address
-> +    # space.  BWMON v2 uses two register spaces - not yet described.
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - interconnects
-> +  - interrupts
-> +  - operating-points-v2
-> +  - opp-table
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interconnect/qcom,sdm845.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    pmu@1436400 {
-> +        compatible = "qcom,sdm845-llcc-bwmon", "qcom,msm8998-llcc-bwmon";
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index 68b3e850bcb9..a3ce0a151817 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -215,6 +215,7 @@ static void __br_handle_local_finish(struct sk_buff *skb)
+>  	if ((p->flags & BR_LEARNING) &&
+>  	    nbp_state_should_learn(p) &&
+>  	    !br_opt_get(p->br, BROPT_NO_LL_LEARN) &&
+> +	    !(p->flags & BR_PORT_LOCKED) &&
+>  	    br_should_learn(p, skb, &vid))
+>  		br_fdb_update(p->br, p, eth_hdr(skb)->h_source, vid, 0);
+>  }
 
-so with this compatible fallback scheme, I am trying to understand what
-do I need to do if I have to add support for another SoC for instance.
-
-I just update the binding with the new SoC compatible (lets say qcom,sc7280-llcc-bwmon)
-and in the device tree node use it as
-	compatible = "qcom,sc7280-llcc-bwmon", "qcom,sdm845-llcc-bwmon", "qcom,msm8998-llcc-bwmon";
-without any updates in the driver?
-
-> +        reg = <0x01436400 0x600>;
-> +        interrupts = <GIC_SPI 581 IRQ_TYPE_LEVEL_HIGH>;
-> +        interconnects = <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_LLCC 3>;
-> +
-> +        operating-points-v2 = <&llcc_bwmon_opp_table>;
-> +
-> +        llcc_bwmon_opp_table: opp-table {
-> +            compatible = "operating-points-v2";
-> +            opp-0 {
-> +                opp-peak-kBps = <4800000>;
-> +            };
-> +            opp-1 {
-> +                opp-peak-kBps = <9216000>;
-> +            };
-> +            opp-2 {
-> +                opp-peak-kBps = <15052800>;
-> +            };
-> +            opp-3 {
-> +                opp-peak-kBps = <20889600>;
-> +            };
-> +            opp-4 {
-> +                opp-peak-kBps = <25497600>;
-> +            };
-> +        };
-> +    };
+LGTM, thanks!
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
