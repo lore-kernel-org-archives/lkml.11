@@ -2,100 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F05C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234769AbiF3LZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 07:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        id S234790AbiF3LZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 07:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232953AbiF3LZI (ORCPT
+        with ESMTP id S232953AbiF3LZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 07:25:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA6E44743;
-        Thu, 30 Jun 2022 04:25:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB9360C92;
-        Thu, 30 Jun 2022 11:25:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD87C34115;
-        Thu, 30 Jun 2022 11:25:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656588305;
-        bh=fawBZEr6HMFRxz6tNO3J78M9ESjEtdUV/9X+xOp/wpU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uVPmKbLwIDXeaTG5aG2UF0IEzKft9Lc0Uyzqh2WJ6NWJ06v/H5NlrJmB8pMcVIT6b
-         x6iNgV2Qk5l4etTZ6bzijrx7uMZ8TNQ1EBk2DcuCtSXD+zocaqexZ6e816nD69wFGq
-         4Kb7+6gnkRSNy20lSO/rasdS/yE6gZJFHynTIZ5U=
-Date:   Thu, 30 Jun 2022 13:25:03 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     peterz@infradead.org, RAJESH DASARI <raajeshdasari@gmail.com>,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Reg: rseq selftests failed on 5.4.199
-Message-ID: <Yr2IDyuBr7DkgvdI@kroah.com>
-References: <CAPXMrf-_RGYBJNu51rq2mdzcpf7Sk_z3kRNL9pmLvf4xmUkmow@mail.gmail.com>
- <YrlbDgpIVFvh5L9O@kroah.com>
- <YrnKyKiNlsqkuI6k@localhost>
+        Thu, 30 Jun 2022 07:25:26 -0400
+X-Greylist: delayed 443 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 04:25:24 PDT
+Received: from mail1.systemli.org (mail1.systemli.org [IPv6:2a11:7980:3::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26BC44F653;
+        Thu, 30 Jun 2022 04:25:24 -0700 (PDT)
+From:   Nick Hainke <vincent@systemli.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
+        s=default; t=1656587878;
+        bh=OPUPtfw6pfWCiR1mZeXscth6kv6xBVcFjag/DYVBL48=;
+        h=From:To:Cc:Subject:Date:From;
+        b=+YxJ4+G0hePqtaNyGs7JHJJs4ZP3r7h0fmuyqN6Ay4vISE+ON4aL0THp0A4D3Grdh
+         ZvAZFqesoSjzk+112z1z2DWtAWQmdBvA7crbd49LvccUcHvY5AOls1G3BPnMwnC1rK
+         H/47i+3HpRnh82uL2dUd8pAk/rPVT896dFniOkg3HwkALOdURiN/fNd7boQqfJZOqT
+         WKDAu+wP3eP1b79Ds/wX9MXryytTjoBXSzBBq7Lu5DU3bvkt6vHXCNSeAou4zLUrDF
+         rq9nm6/gCqwB1HaSLJagyLcXtw66K0wE0Q94IMWCSh040V7NFeuqIrJEmIenGZ3+oN
+         PogK2koGz7ekw==
+To:     linux-mediatek@lists.infradead.org
+Cc:     Nick Hainke <vincent@systemli.org>,
+        INAGAKI Hiroshi <musashino.open@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: dts: mt7622: fix BPI-R64 WPS button
+Date:   Thu, 30 Jun 2022 13:16:57 +0200
+Message-Id: <20220630111746.4098-1-vincent@systemli.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrnKyKiNlsqkuI6k@localhost>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 11:20:40AM -0400, Mathieu Desnoyers wrote:
-> On 27-Jun-2022 09:23:58 AM, Greg KH wrote:
-> > On Sun, Jun 26, 2022 at 10:01:20PM +0300, RAJESH DASARI wrote:
-> > > Hi ,
-> > > 
-> > > We are running rseq selftests on 5.4.199 kernel with  glibc 2.34
-> > > version  and we see that tests are failing to compile with invalid
-> > > argument errors. When we took all the commits from
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/tools/testing/selftests/rseq
-> > >  related to rseq locally , test cases have passed. I see that there are
-> > > some adaptations to the latest glibc version done in those commits, is
-> > > there any plan to backport them to 5.4.x versions. Could you please
-> > > provide your inputs.
-> > 
-> > What commits specifically are you referring to please?  A list of them
-> > would be great, and if you have tested them and verified that they can
-> > be backported cleanly would also be very helpful.
-> 
-> Hi Greg,
-> 
-> Specifically related to rseq selftests, the following string of commits
-> would be relevant on top of v5.4.199. Those are not all strictly only
-> bugfixes, but they help applying the following commits without
-> conflicts. I have validated that this string of commits cherry-picks on
-> top of v5.4.199, and that the resulting selftests build fine.
-> 
-> ea366dd79c ("seq/selftests,x86_64: Add rseq_offset_deref_addv()")
-> 07ad4f7629 ("selftests/rseq: remove ARRAY_SIZE define from individual tests")
-> 5c105d55a9 ("selftests/rseq: introduce own copy of rseq uapi header")
-> 930378d056 ("selftests/rseq: Remove useless assignment to cpu variable")
-> 94b80a19eb ("selftests/rseq: Remove volatile from __rseq_abi")
-> e546cd48cc ("selftests/rseq: Introduce rseq_get_abi() helper")
-> 886ddfba93 ("selftests/rseq: Introduce thread pointer getters")
-> 233e667e1a ("selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35")
-> 24d1136a29 ("selftests/rseq: Fix ppc32: wrong rseq_cs 32-bit field pointer on big endian")
-> de6b52a214 ("selftests/rseq: Fix ppc32 missing instruction selection "u" and "x" for load/store")
-> 26dc8a6d8e ("selftests/rseq: Fix ppc32 offsets by using long rather than off_t")
-> d7ed99ade3 ("selftests/rseq: Fix warnings about #if checks of undefined tokens")
-> 94c5cf2a0e ("selftests/rseq: Remove arm/mips asm goto compiler work-around")
-> b53823fb2e ("selftests/rseq: Fix: work-around asm goto compiler bugs")
-> 4e15bb766b ("selftests/rseq: x86-64: use %fs segment selector for accessing rseq thread area")
-> 127b6429d2 ("selftests/rseq: x86-32: use %gs segment selector for accessing rseq thread area")
-> 889c5d60fb ("selftests/rseq: Change type of rseq_offset to ptrdiff_t")
+The bananapi R64 (BPI-R64) experiences wrong WPS button signals.
+In OpenWrt pushing the WPS button while powering on the device will set
+it to recovery mode. Currently, this also happens without any user
+interaction. In particular, the wrong signals appear while booting the
+device or restarting it, e.g. after doing a system upgrade. If the
+device is in recovery mode the user needs to manually power cycle or
+restart it.
 
-As many of these are newer than 5.10, can you provide a series of
-patches that should be applied to 5.4, 5.10, 5.15 and possibly 5.18 to
-resolve this issue.  We do not want anyone moving from 5.4 to a newer
-kernel and having regressions.
+The official BPI-R64 sources set the WPS button to GPIO_ACTIVE_LOW in
+the device tree. This setting seems to suppress the unwanted WPS button
+press signals. So this commit changes the button from GPIO_ACTIVE_HIGH to
+GPIO_ACTIVE_LOW.
 
-thanks,
+The official BPI-R64 sources can be found on
+https://github.com/BPI-SINOVOIP/BPI-R64-openwrt
 
-greg k-h
+Fixes: 0b6286dd96c0 ("arm64: dts: mt7622: add bananapi BPI-R64 board")
+
+Suggested-by: INAGAKI Hiroshi <musashino.open@gmail.com>
+Signed-off-by: Nick Hainke <vincent@systemli.org>
+---
+ arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+index 2b9bf8dd14ec..7538918c7a82 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+@@ -49,7 +49,7 @@ factory {
+ 		wps {
+ 			label = "wps";
+ 			linux,code = <KEY_WPS_BUTTON>;
+-			gpios = <&pio 102 GPIO_ACTIVE_HIGH>;
++			gpios = <&pio 102 GPIO_ACTIVE_LOW>;
+ 		};
+ 	};
+ 
+-- 
+2.37.0
+
