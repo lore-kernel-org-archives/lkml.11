@@ -2,145 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E745CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 01:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82458C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 01:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230452AbiF3BcF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 21:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
+        id S231374AbiF3BcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 21:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiF3BcC (ORCPT
+        with ESMTP id S231325AbiF3BcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 21:32:02 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D295F326E4;
-        Wed, 29 Jun 2022 18:31:59 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id 136so11583640pfy.10;
-        Wed, 29 Jun 2022 18:31:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cOCTVqFJoEKeuuX9iBUm+2/q/as6mV39rJ1R2rX6Sds=;
-        b=QD/2SmOVVZNXfiNHzWuQ9mURGcwngedIclCng+blqHMDdz1yM1w0E8Qe7ncS1+6h3I
-         sLkI9pwX8ped3lqinQLVbUNOop1aSxn6ebyPcSwbBBOP9xPNybwwex5W/O9f/rRnKH7H
-         RKcxRfUvDH8RbojMIKEVFki6ZlD9AAYDtctPFZq5/RiMNDRPwhqQAYRZBncCnSY+nKZ5
-         +yaoL0RQ+W2e8LA/AIifr/1YbQm6rIuJidskRk615K8dljauQnZPHbLsHFOX5XEktNvV
-         O997K4b/0PtpaMZvovvPNFDrsgQ4rSNZ9F2qOGr2Q0WpcR9NVqSMgp94SUzb9HlxiSPT
-         Y/GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cOCTVqFJoEKeuuX9iBUm+2/q/as6mV39rJ1R2rX6Sds=;
-        b=1/WNcfJR6b7l9/iNlHQlFGFv71gNXpJTILsdYQvQWMNMI12N/BlER6S9yGCKDQO7Sg
-         gFoX1qPk7vaCkBY/LXwAE96O4pNZvSfuy6y10O3KUSE47JDbPwN/L0Fn23LsKHcAR1C1
-         PvuFuFrTo2em2wcbeUom0ZkWtolYcl9joEhukt1MxMWYKLT1pmGJHQklAI+fhnkGMqAc
-         VtQFN93N30CPrwYfCpM4VWzq7FTi5TVK/2wlx9lSm+8JmpZ7hnd3gcGckwKopzfONFqi
-         iZmi8ljXiVAQ1SzhrSiACg1JHS7iErHBtm0HLKQwPIofkCPyL1Xbe9P4ZAkD1PLxRFzn
-         jMlw==
-X-Gm-Message-State: AJIora9QkfT4kN6N+mL4fb6ce0NjdVQV8fZtWX/V0eMaDABbdFyBLCcP
-        ZgkCP5t5JUJrkwuTQqqsNFlWUbJIuHbQHw==
-X-Google-Smtp-Source: AGRyM1sVhMBsRvuSQW+ElIZjRiceQijkhg4f+7koeZsfC2BoKJrGQYArHSTbrtsx4FtmOy3eQr6G2A==
-X-Received: by 2002:a63:5b26:0:b0:40d:9515:b5ac with SMTP id p38-20020a635b26000000b0040d9515b5acmr5514627pgb.51.1656552719220;
-        Wed, 29 Jun 2022 18:31:59 -0700 (PDT)
-Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
-        by smtp.gmail.com with ESMTPSA id 132-20020a62198a000000b0051bc5f4df1csm12124383pfz.154.2022.06.29.18.31.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 18:31:58 -0700 (PDT)
-From:   Chuanhong Guo <gch981213@gmail.com>
-To:     linux-acpi@vger.kernel.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>, stable@vger.kernel.org,
-        Tighe Donnelly <tighe.donnelly@protonmail.com>,
-        Kent Hou Man <knthmn0@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4] ACPI: skip IRQ1 override on 3 laptops
-Date:   Thu, 30 Jun 2022 09:31:23 +0800
-Message-Id: <20220630013123.9427-1-gch981213@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 29 Jun 2022 21:32:06 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F83340CA;
+        Wed, 29 Jun 2022 18:32:05 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LYLNS3gdwz1L8kC;
+        Thu, 30 Jun 2022 09:29:44 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 30 Jun 2022 09:32:01 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
+ 2022 09:32:01 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>
+CC:     <clement.leger@bootlin.com>, <olteanv@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>
+Subject: [PATCH -next v2] net: dsa: rzn1-a5psw: add missing of_node_put() in a5psw_pcs_get()
+Date:   Thu, 30 Jun 2022 09:41:53 +0800
+Message-ID: <20220630014153.1888811-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The IRQ1 of these laptops with Ryzen 6000 and Insyde UEFI are active
-low and defined in legacy format in ACPI DSDT. The kernel override
-makes the keyboard interrupt polarity inverted, resulting in
-non-functional keyboard.
+of_parse_phandle() will increase the refcount of 'pcs_node', so add
+of_node_put() before return from a5psw_pcs_get().
 
-Skip legacy IRQ override for:
-Lenovo ThinkBook 14G4+ ARA
-Redmi Book Pro 15 2022
-Asus Zenbook S 13 OLED UM5302
-
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Tighe Donnelly <tighe.donnelly@protonmail.com>
-Signed-off-by: Kent Hou Man <knthmn0@gmail.com>
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+Fixes: 888cdb892b61 ("net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
-Changes since v1:
- Match DMI_PRODUCT_NAME for ThinkBook because the board name
- is used for other completely different Lenovo laptops.
- Add a patch for RedmiBook
+v2:
+  call of_node_put() after miic_create()
+---
+ drivers/net/dsa/rzn1_a5psw.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changes since v2:
- Fix alphabetical order in skip_override_table
- Add a patch for Asus Zenbook
-
-Changes since v3:
- Merge patches as requested
- Fix another alphabetical ordering between two structs
-
- drivers/acpi/resource.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
-
-diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
-index c2d494784425..470722c50afb 100644
---- a/drivers/acpi/resource.c
-+++ b/drivers/acpi/resource.c
-@@ -381,6 +381,31 @@ unsigned int acpi_dev_get_irq_type(int triggering, int polarity)
- }
- EXPORT_SYMBOL_GPL(acpi_dev_get_irq_type);
+diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+index 3e910da98ae2..dece613ee881 100644
+--- a/drivers/net/dsa/rzn1_a5psw.c
++++ b/drivers/net/dsa/rzn1_a5psw.c
+@@ -917,12 +917,14 @@ static int a5psw_pcs_get(struct a5psw *a5psw)
+ 		}
  
-+static const struct dmi_system_id irq1_edge_low_shared[] = {
-+	{
-+		.ident = "Asus Zenbook S 13 OLED UM5302",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-+			DMI_MATCH(DMI_BOARD_NAME, "UM5302TA"),
-+		},
-+	},
-+	{
-+		.ident = "Lenovo ThinkBook 14 G4+ ARA",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "21D0"),
-+		},
-+	},
-+	{
-+		.ident = "Redmi Book Pro 15 2022",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "TIMI"),
-+			DMI_MATCH(DMI_BOARD_NAME, "TM2113"),
-+		},
-+	},
-+	{ }
-+};
-+
- static const struct dmi_system_id medion_laptop[] = {
- 	{
- 		.ident = "MEDION P15651",
-@@ -408,6 +433,7 @@ struct irq_override_cmp {
- };
+ 		a5psw->pcs[reg] = pcs;
++		of_node_put(pcs_node);
+ 	}
+ 	of_node_put(ports);
  
- static const struct irq_override_cmp skip_override_table[] = {
-+	{ irq1_edge_low_shared, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1 },
- 	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0 },
- };
+ 	return 0;
  
+ free_pcs:
++	of_node_put(pcs_node);
+ 	of_node_put(port);
+ 	of_node_put(ports);
+ 	a5psw_pcs_free(a5psw);
 -- 
-2.36.1
+2.25.1
 
