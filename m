@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0ADC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDAAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235909AbiF3Nyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
+        id S235859AbiF3Nyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235810AbiF3Nxw (ORCPT
+        with ESMTP id S235825AbiF3Nxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:53:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26A44F660;
+        Thu, 30 Jun 2022 09:53:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12D54D4CC;
         Thu, 30 Jun 2022 06:50:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8920761FF6;
-        Thu, 30 Jun 2022 13:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89464C34115;
-        Thu, 30 Jun 2022 13:50:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BDDEDCE2EC5;
+        Thu, 30 Jun 2022 13:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B15E0C3411E;
+        Thu, 30 Jun 2022 13:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597008;
-        bh=x7P22JytzPf6oNjq71S/evHGGCzh/+caYNfY3VnwaO0=;
+        s=korg; t=1656597006;
+        bh=1AdeRkjT1D9guRWJn8hKQdm2VdWHMDHQ56vEvC5zzyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SrtiuNWNJy1VglhD9/OgzD07Ofkt8dzKdjCRMpsBBlA3sWulgfZJ/pPfRyK4+v14C
-         JopkVWz5cv01V11hm7YYdFjTFpnEE+hm3Y3DiwEsG03b/EHAND8ua9ErkAFrGA4gB8
-         livB2iZGm4L5xNZTCUngsIUawUmjgXsYzWDoXygc=
+        b=jRuvWGvtYm1a68vP5MX7Bw0jPX6qUlEd4LvV61KeCQ1PcrazZcPZ6xIAIjr1j2tdL
+         yWmIgPaN8XvfIqsAMeuVDnN1X7xARvv8/QCj7pp4TEezpijq8Yf+Igvi0ti7Shm7B8
+         g/tv9CRHGYvTzUPPZtW3wOqWw+mkofZIq900pg9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edward Wu <edwardwu@realtek.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 4.14 03/35] ata: libata: add qc->flags in ata_qc_complete_template tracepoint
-Date:   Thu, 30 Jun 2022 15:46:14 +0200
-Message-Id: <20220630133232.540977324@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 4.14 29/35] modpost: fix section mismatch check for exported init/exit sections
+Date:   Thu, 30 Jun 2022 15:46:40 +0200
+Message-Id: <20220630133233.296570364@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -48,30 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Edward Wu <edwardwu@realtek.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit 540a92bfe6dab7310b9df2e488ba247d784d0163 upstream.
+commit 28438794aba47a27e922857d27b31b74e8559143 upstream.
 
-Add flags value to check the result of ata completion
+Since commit f02e8a6596b7 ("module: Sort exported symbols"),
+EXPORT_SYMBOL* is placed in the individual section ___ksymtab(_gpl)+<sym>
+(3 leading underscores instead of 2).
 
-Fixes: 255c03d15a29 ("libata: Add tracepoints")
-Cc: stable@vger.kernel.org
-Signed-off-by: Edward Wu <edwardwu@realtek.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Since then, modpost cannot detect the bad combination of EXPORT_SYMBOL
+and __init/__exit.
+
+Fix the .fromsec field.
+
+Fixes: f02e8a6596b7 ("module: Sort exported symbols")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/libata.h |    1 +
- 1 file changed, 1 insertion(+)
+ scripts/mod/modpost.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/trace/events/libata.h
-+++ b/include/trace/events/libata.h
-@@ -249,6 +249,7 @@ DECLARE_EVENT_CLASS(ata_qc_complete_temp
- 		__entry->hob_feature	= qc->result_tf.hob_feature;
- 		__entry->nsect		= qc->result_tf.nsect;
- 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
-+		__entry->flags		= qc->flags;
- 	),
- 
- 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1077,7 +1077,7 @@ static const struct sectioncheck section
+ },
+ /* Do not export init/exit functions or data */
+ {
+-	.fromsec = { "__ksymtab*", NULL },
++	.fromsec = { "___ksymtab*", NULL },
+ 	.bad_tosec = { INIT_SECTIONS, EXIT_SECTIONS, NULL },
+ 	.mismatch = EXPORT_TO_INIT_EXIT,
+ 	.symbol_white_list = { DEFAULT_SYMBOL_WHITE_LIST, NULL },
 
 
