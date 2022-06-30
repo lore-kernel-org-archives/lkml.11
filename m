@@ -2,112 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CBEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CF8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233353AbiF3Hz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        id S233362AbiF3H4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233227AbiF3Hzt (ORCPT
+        with ESMTP id S232808AbiF3H4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:55:49 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A163FDA8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:55:47 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id g26so37334917ejb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:55:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aF/vEDhaI5UVVLV88GtQNx4eslB+Jp6D1zXXDLVk0z0=;
-        b=SdAzaqx0a2HqVvHti2rhUsh4ejd+qNYnUrNZk75ymkYzwt1/6LoGUcBrepuEpk0tEf
-         NY60QN6MuAUGwQNI0pmmgTokJBXmKwOo3/dKRbMaRZAoWxngW0zgvzxzrAJPrAN1voiB
-         Nfbc1Q6DNzFRVi7zOCSyfVsTLyCKlnJgF0CQI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aF/vEDhaI5UVVLV88GtQNx4eslB+Jp6D1zXXDLVk0z0=;
-        b=A2n1vPXaO3rR7OJEFWu9oRdZmxYUhWcI0dZuB68kILElf89ozbc4Kurc54z7X6FbT2
-         PI8Heqo7Elr+JHVa/5xDOdt3O9XPBeeBwFf879aTzfV6rz0tbNkUMXmqiVIfigQXuSDv
-         GGjsRgU68PtIWlmlHfKtkmQd2JYEjh8TPaCN+yKclJTDLWKdcJVjgdpBrb5/D+m1PVNL
-         Zb0cyBpxGSyhfqQyMzgcRHTXxmgpDdikPV/7mNECaJH0cC+AibiG57AoaOgzMVqtpYtB
-         7hhD+8lnckDvuzEJFvzelqcvB0vzS3rwOQxbMyhqY7bTjW5iMmUstLsgPacuYA+/vCKo
-         2bSg==
-X-Gm-Message-State: AJIora/McZAmlAEZzLa5KI6PpyFx6lDdt+qUarVdd6eryOXamYQu6aaI
-        Ra0K9tRP0dgDBQG8qK9tXMeDfg==
-X-Google-Smtp-Source: AGRyM1sFxgnCxjRqgI34Ka4G2ur+BiufICOZE9Ek9zsmUXbnylVTyNwys7genpkhFF1IKXTYPS9oWg==
-X-Received: by 2002:a17:906:51cf:b0:722:e994:948e with SMTP id v15-20020a17090651cf00b00722e994948emr7380018ejk.656.1656575746195;
-        Thu, 30 Jun 2022 00:55:46 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-58-216.cust.vodafonedsl.it. [188.217.58.216])
-        by smtp.gmail.com with ESMTPSA id le23-20020a170906ae1700b006f3ef214dbesm8660122ejb.36.2022.06.30.00.55.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 00:55:45 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 09:55:43 +0200
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
-        quentin.schulz@theobroma-systems.com,
-        Daniel Scally <djrscally@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] media: dt-bindings: ov5693: document YAML binding
-Message-ID: <20220630075543.GA482517@tom-ThinkPad-T14s-Gen-2i>
-References: <20220629152933.422990-1-tommaso.merciai@amarulasolutions.com>
- <20220629152933.422990-6-tommaso.merciai@amarulasolutions.com>
- <673c2e59-d1c5-f6b8-df80-b5a46a7aa92e@linaro.org>
+        Thu, 30 Jun 2022 03:56:52 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AB23FDA8;
+        Thu, 30 Jun 2022 00:56:50 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1o6p2a-00Cxbn-FN; Thu, 30 Jun 2022 17:56:46 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 30 Jun 2022 15:56:44 +0800
+Date:   Thu, 30 Jun 2022 15:56:44 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: [GIT PULL] Crypto Fixes for 5.19
+Message-ID: <Yr1XPJsAH2l1cx3A@gondor.apana.org.au>
+References: <20210817013601.GA14148@gondor.apana.org.au>
+ <20210929023843.GA28594@gondor.apana.org.au>
+ <20211029041408.GA3192@gondor.apana.org.au>
+ <20211112104815.GA14105@gondor.apana.org.au>
+ <YcKz4wHYTe3qlW7L@gondor.apana.org.au>
+ <YgMn+1qQPQId50hO@gondor.apana.org.au>
+ <YjE5yThYIzih2kM6@gondor.apana.org.au>
+ <YkUdKiJflWqxBmx5@gondor.apana.org.au>
+ <YpC1/rWeVgMoA5X1@gondor.apana.org.au>
+ <Yqw7bf7ln6vtU/VH@gondor.apana.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <673c2e59-d1c5-f6b8-df80-b5a46a7aa92e@linaro.org>
+In-Reply-To: <Yqw7bf7ln6vtU/VH@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Hi Linus:
 
-On Wed, Jun 29, 2022 at 08:14:52PM +0200, Krzysztof Kozlowski wrote:
-> On 29/06/2022 17:29, Tommaso Merciai wrote:
-> > Add documentation of device tree in YAML schema for the OV5693
-> > CMOS image sensor from Omnivision
-> > 
-> > Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-> > ---
-> > Changes since v1:
-> >  - Fix allOf position as suggested by Krzysztof
-> >  - Remove port description as suggested by Krzysztof
-> >  - Fix EOF as suggested by Krzysztof
-> > 
-> > Changes since v2:
-> >  - Fix commit body as suggested by Krzysztof
-> 
-> You received a tag, so if you decided to send v3, you need to include it.
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The following changes since commit abfed87e2a12bd246047d78c01d81eb9529f1d06:
 
-Thanks for suggestion.
+  crypto: memneq - move into lib/ (2022-06-12 14:51:51 +0800)
 
-Regards,
-Tommaso
+are available in the Git repository at:
 
-> 
-> 
-> Best regards,
-> Krzysztof
+  git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git tags/v5.19-p3 
 
+for you to fetch changes up to 87d044096ea62f1f230e8c4679ee8abf03266f64:
+
+  crypto: ccp - Fix device IRQ counting by using platform_irq_count() (2022-06-24 17:09:01 +0800)
+
+----------------------------------------------------------------
+This push fixes a regression that breaks the ccp driver.
+----------------------------------------------------------------
+
+Tom Lendacky (1):
+      crypto: ccp - Fix device IRQ counting by using platform_irq_count()
+
+ drivers/crypto/ccp/sp-platform.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
+
+Thanks,
 -- 
-Tommaso Merciai
-Embedded Linux Engineer
-tommaso.merciai@amarulasolutions.com
-__________________________________
-
-Amarula Solutions SRL
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-T. +39 042 243 5310
-info@amarulasolutions.com
-www.amarulasolutions.com
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
