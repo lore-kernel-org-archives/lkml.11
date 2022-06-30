@@ -2,119 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A866ACCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236253AbiF3Q2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 12:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        id S236310AbiF3Q3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 12:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235445AbiF3Q2t (ORCPT
+        with ESMTP id S236296AbiF3Q3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 12:28:49 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480B7340F0
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:28:48 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id u199so2245oie.0
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DuU0Oc6sEw1/gSI0hNRo//d9uDydGl0aHe9l6WG2Fv0=;
-        b=OHv55hkJS4mGKcPWvgYa/NIZRvchN42QRzsIBMvgBRHeJTy+9oMiCGHykvLd2/cyAn
-         +VQ0nHlZyG+1vX1MgWtSan5/r8A7m+pIvx6sXHKr6Z9Is5Fo2/zW3pNuK67FY9EkkPQw
-         6l06MaNRVBFLLgU1mkxJuMCMs4ianACLY0dPiuYTql79zczbx9f9HLZq2woeI6blZnhW
-         pXpmhEB8qAk5oURPj1k3+9sYJJIgac/00eWdwvppUwp8gRlEHXfFvB+3cdZhv7EQECvA
-         kDi6keH741MiOGrPZsAcKTgCpKj0HLnAZIx5QYlxC4oGATMEeniAavK0i3ZkO++8poQ5
-         QS+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DuU0Oc6sEw1/gSI0hNRo//d9uDydGl0aHe9l6WG2Fv0=;
-        b=H/zqreoZdOSp7tjhjN57bE1F9xlwfMm8EMGz7wmNWtMtTEOs4KSbjuVGWnVaytUrOI
-         xDPW0itksZSoUgJXq5YrrIuNWMVbrY/n9htTgZ4AO1Fe7oQUctJ92oSsL3p3S0YOAbDf
-         GdCdi1ih73UP1lrkWY7n+CbtUcHgNPltzxk1Spa4h2jZd7gX49qoeBd2y9uoBqwzcpZx
-         UKzoybt5/2AYFzdX6fEB92mmkEnEFmKVNQivtkV5M6wlS7nIjR+/mr65gY7VsvmjCUhf
-         43A9zWYIp9cGDkqxbEPky6blzmMwD9iXuNN7sdPc1qBsaaI33ww9sRx+liDj43KTqHRb
-         AKTQ==
-X-Gm-Message-State: AJIora+u7pimUWw/pIYc+QOZxKHixpTgHIxQuG4vae3KaxJA+07rFv/n
-        HvVB7VuQa12RsVC4g/TpbVmT1VTzIQBYx7yW+BKMww==
-X-Google-Smtp-Source: AGRyM1vWLRRpGLxd1Gwz4jLwKOh5tvgeuqr2BlgmNuw6Pko4Iq0RPZuH85KFREDhdDvSMChjwLCWmwH3Gt0EO+9DvEI=
-X-Received: by 2002:a05:6808:3089:b0:32e:f7fd:627d with SMTP id
- bl9-20020a056808308900b0032ef7fd627dmr5742640oib.181.1656606527413; Thu, 30
- Jun 2022 09:28:47 -0700 (PDT)
+        Thu, 30 Jun 2022 12:29:14 -0400
+Received: from rusty.tulip.relay.mailchannels.net (rusty.tulip.relay.mailchannels.net [23.83.218.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5363527E;
+        Thu, 30 Jun 2022 09:29:10 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 8D92F76206E;
+        Thu, 30 Jun 2022 16:29:06 +0000 (UTC)
+Received: from pdx1-sub0-mail-a214.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id F25F0762210;
+        Thu, 30 Jun 2022 16:29:05 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1656606546; a=rsa-sha256;
+        cv=none;
+        b=g6Rc7cs96fVc7E/heQfoRsmXE48/YQgx+IYoIgE1dULt8rRt/C8mCu3jF4MDf5xg8fKB34
+        TSBp28fBVjebrXgnIld4dJXtV8GCzC0T0Hs7gE2GtLw2u4Ci663J133FCTYIFkR7ikRYM8
+        ES53mdUZ3uZyIHhMh3AJeM93nVnfme9/5se0EhM4uapDX7QkN3l/14Rg+6gsaJo6yg7s47
+        OttR2Q49gq86E8NSgBacT49br9O8znMxVYAefLOC/dgae7BTUmOAkN3z5bF5ORra7Z6jKU
+        YQIZP3VxIC71juX4V5h2H2ShTvhtWkXUkMN2NVattdQg5zcvM67aKvPSquEkgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1656606546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=9Sb1glpRpYA85hAE32jopfAa1TP5g8OZqmLv3plg0Zk=;
+        b=Rhm4I7d4tiaKM6BLiv441UkhMLkKOwJaYbYdApGB71ko2uG0fz5odW5Dt+JCD+uHel1/OW
+        xpwArZ6dMLSebBKoiU5upm3mza9q/XHPt9OJk7vu1L8RVEWX1WECO0ubbV7psYxQxk7HX2
+        MM60ziTD6BTvKkdCjSJscsaBBlWAYi9WhuhZ9XbBwqfZx8t8T1OfRjy1FwIdCJPCmc9kbx
+        6CwTzLCW02L1Kx8O3W0S2/L9LZM/+0BHQ6lgtdBJSl9239P0FV966t3Q9SzFuZDNY3eYwR
+        1HuqsyNLiKzYxRuSt/kgW11bjR+b5C8JfS6ur7Wahe+ZNk5jx8bbPF+5NZ0/ug==
+ARC-Authentication-Results: i=1;
+        rspamd-689699966c-7cjd8;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Army-Little: 2a18faf73aee121d_1656606546412_1698224174
+X-MC-Loop-Signature: 1656606546412:1314743472
+X-MC-Ingress-Time: 1656606546412
+Received: from pdx1-sub0-mail-a214.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.116.106.91 (trex/6.7.1);
+        Thu, 30 Jun 2022 16:29:06 +0000
+Received: from offworld (unknown [104.36.25.13])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a214.dreamhost.com (Postfix) with ESMTPSA id 4LYkL86Nrdz28;
+        Thu, 30 Jun 2022 09:29:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1656606545;
+        bh=9Sb1glpRpYA85hAE32jopfAa1TP5g8OZqmLv3plg0Zk=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=nnjlTuyuGFynXTWThk4sfTJ9a82f77dhLrXIaXH8hFYvhydWUv5cLlcfKNqwNZnbU
+         zeStXr6xJnKjhYUtYjczmItscESH7yIhSmm3/FPSlwmmi4ualjb9Xz3ZTcjgj1iJhd
+         2m1NHIV4dZSjL6OYOxa6vSnf2D5i9IVeEY7xz44NRHFA2Ajy4GA7nzTzZR74Qz57a/
+         2li1pDID/zNQAHcpy7ew3WY0t8BMaJRQS/VgVnYXcTvDXCkBoyWw3lpYiLeyRPt5HE
+         6d4FDewmA1OeTT2iGPyDw15I3qoiIcDCLLIjiZqffRdB+tHzzngRb1XajflB7CivLD
+         LBLpRwWvBTeBQ==
+Date:   Thu, 30 Jun 2022 09:14:06 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V12 4/9] cxl/pci: Create PCI DOE mailbox's for memory
+ devices
+Message-ID: <20220630161406.yglzoxn2va3bhts4@offworld>
+References: <20220628041527.742333-1-ira.weiny@intel.com>
+ <20220628041527.742333-5-ira.weiny@intel.com>
+ <20220628153317.00002e36@Huawei.com>
+ <Yr01iZhuG5YHThDg@iweiny-desk3>
+ <20220630163240.00003596@Huawei.com>
 MIME-Version: 1.0
-References: <20220614204730.3359543-1-seanjc@google.com> <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
- <CALMp9eSkdj=kwh=4WHPsWZ1mKr9+0VSB527D5CMEx+wpgEGjGw@mail.gmail.com> <f55889a50ba404381e3edc1a192770f2779d40f1.camel@redhat.com>
-In-Reply-To: <f55889a50ba404381e3edc1a192770f2779d40f1.camel@redhat.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Thu, 30 Jun 2022 09:28:36 -0700
-Message-ID: <CALMp9eSWkjHyer9CZL7UN4s8Ashc1svZsAnEgJDd2Q9voSz7HQ@mail.gmail.com>
-Subject: Re: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220630163240.00003596@Huawei.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 1:22 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+On Thu, 30 Jun 2022, Jonathan Cameron wrote:
+
+>On Wed, 29 Jun 2022 22:32:57 -0700 Ira Weiny <ira.weiny@intel.com> wrote:
+
+>> I _thought_ that we did not care if some mailboxes failed or not.
 >
-> On Wed, 2022-06-29 at 06:42 -0700, Jim Mattson wrote:
+>I have a different view to Dan on this.  In my view if your hardware is
+>not working in any way at all scream like mad don't carry on... Dan
+>is keen to try to muddle onwards.
 
-> > Unlike the AMD "INTn intercept," these trap intercepts *do not* happen
-> > at the start of the instruction.
+I am also of the idea of not carrying on upon any indication of failure.
+
+>>
+>> If CDAT is not supported on any of the mailboxes found then CDAT will not show
+>> up on sysfs (as per Dan's last comment).  If it was supported on a mailbox but
+>> no data is found the sysfs will show up but be 0 length.
+>>
+>> At this layer I thought we agreed to skip over these errors.  If a protocol is
+>> needed at a higher layer and it is not found on any of the mailboxes the errors
+>> should show up in that layer.  In this series CDAT is not 100% necessary as
+>> devices can work without it.  So the errors were mostly paper'ed over in favor
+>> of just printing error messages and muddle on.
+>>
+>> The xa_insert() deserves a pci_err() though.
 >
-> Are you sure about that?
+>That's probably the minimum we should do.  The xa_insert() failing is something
+>horrible going wrong in our software / host afterall.
 
-I had been sure when I wrote that, but now that I see your response, I
-have to question my memory. The SDM is definitely more authoritative
-than I am.
+Yes. And in addition, devm_cxl_pci_create_doe() should return any error status, and
+cxl_pci_probe() can choose to omit any errors, but it's still better to have it.
 
-> > When you say "ignores," do you mean that AMD ignores a data breakpoint
-> > or single-step trap generated by MOV-SS, or it ignores the fact that
-> > delivering such a #DB trap between the MOV-SS and the subsequent
-> > MOV-ESP will create a stack frame in the wrong place?
->
-> Two things which can be infered from the SVM spec.
->         - AMD doesn't distinguish between MOV SS and STI int shadow.
->         - AMD has no 'pending debug exception field' in the vmcb.
->
-> I don't know what AMD does for #DB that happens on MOV SS, nor if it
-> does distinguish these internally,
-> probably just drops the #DB or something.
-
-Without carrying pending debug exceptions, it seems that the only two
-choices are to deliver the #DB, with the exception frame in an
-unintended location or to drop the #DB. The latter seems preferable,
-but neither one seems good. What I don't understand is why you claim
-that AMD does this "rightfully." Are you saying that anyone with the
-audacity to run a debugger on legacy code deserves to be thrown in
-front of a moving train?
-
-> > Hence, the facility for injecting a "pending MTF"--so that it won't be "lost."
-> Yes, though that is would be mostly useful for nesting.
->
-> For not nesting hypervisor, if the hypervisor figured out that a higher priority event overrode
-> the MTF, it can just process the MTF - why to re-inject it?
-
-You're right. The facility is probably just there to make MTF
-virtualizable. Intel was paying much closer attention to
-virtualizability by the time MTF came along.
-
-> >
-> > These are single-step, I/O and data breakpoint traps.
->
-> I am not sure what you mean. single-step, IO, data breakpoints are indeed the trap #DB,
-> while "general detect", code breakpoint are fault #DB, and we also have the task switch #DB, but since the hardware doesn't
-> emulate the task switches, this has to be injected.
-
-Just enumerating. No more, no less.
+Thanks,
+Davidlohr
