@@ -2,82 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7043C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C837BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235212AbiF3MPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 08:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        id S233650AbiF3MR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 08:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234994AbiF3MOs (ORCPT
+        with ESMTP id S232842AbiF3MRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 08:14:48 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628841D0F7;
-        Thu, 30 Jun 2022 05:14:40 -0700 (PDT)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LYcdq12gKz6H7dh;
-        Thu, 30 Jun 2022 20:12:15 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 14:14:38 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 13:14:34 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
-        <will@kernel.org>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-        <iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>,
-        <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH v5 5/5] ata: libata-scsi: Cap ata_device->max_sectors according to shost->max_sectors
-Date:   Thu, 30 Jun 2022 20:08:12 +0800
-Message-ID: <1656590892-42307-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
-References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+        Thu, 30 Jun 2022 08:17:54 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FE4286C1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 05:17:54 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id r82so17062824oig.2
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 05:17:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u5tIsV8u+afIygl4LGgEyn31BQu6or2e1DFLWifTLb4=;
+        b=jkzg5f2lhbm9TiiTnMcXrVL0ddpAEo0ONr55x2LPbQ7RwoW7IC5NcmcPHxSOzEHAow
+         Ps2NxV7cVGZbfP5sdtkitqxI6vFndhWpt1/BzNLmL6h7wTK8qg4xT1+3ctkx/oxEOOlq
+         DXQ25fVLXxUYW6UGY/sIS2clU66jysClPKkREMY/pm5IVcedyqRMXDC7j65wMVnC6xLN
+         d7NbAmAofDZfK/XU6fkB89yvuhu/Xk/7+ukueh1sdIfCfWZ9b4Iyge88zeqMRnvkV7bJ
+         OZCstgXDwLxwDsDa8MjcYM/Wb/mAf2U7ILmTTCpeJgpxYN/b4THAmM7jIC9txi015/TG
+         sexg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u5tIsV8u+afIygl4LGgEyn31BQu6or2e1DFLWifTLb4=;
+        b=U5XmMSjgfmacfj9ffqFMDwtSX0gZxZIgg6h2utbr7J6V0nZdipa2MJ8CJbW0o7vYgr
+         Xr3a6rW7uQfV4Lv3wONaCjKp8rZsRX3+4rS8uS+ftRR4yMQTLosqqS9Ej0a4hZ4a05a3
+         qCLIMkV/Cg1gz5EzHBklxGL9faSCEOP9gn9OapXUN48XHDnYboHuw30dJ5sZGLPPBUj/
+         lGu4xWNuBM7IGfv/GCp/hi5+e2SLhZOZ2Ai/FxN+WJA9RAtbHAkoQIy0ofXz59aJEZ9N
+         YtkJtIexyh6ZyUVwLfYnEVBoLB8HIFvvqjN2FCNMBM9aPkKpP5qLQKYgERgQUv5YxBhf
+         EJsg==
+X-Gm-Message-State: AJIora8eJ38Q+R2XaOEXxcJKbuyhxd326rFICrER7gsUhmx4gWgHoUhm
+        4ijS8tY8FveVbrPEp37HleFTegvn4jRTE4UcCl2ObA==
+X-Google-Smtp-Source: AGRyM1ugUxFgtkvnaPkLMhDnfpFG/0QasMyvUj7YGbvR8PEB+1f1ON7P1y7gzi3xqGrRml6d/QTYQE9REm+Rf8+mCXY=
+X-Received: by 2002:a05:6808:3089:b0:32e:f7fd:627d with SMTP id
+ bl9-20020a056808308900b0032ef7fd627dmr4992399oib.181.1656591473130; Thu, 30
+ Jun 2022 05:17:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220614204730.3359543-1-seanjc@google.com> <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
+ <CALMp9eSkdj=kwh=4WHPsWZ1mKr9+0VSB527D5CMEx+wpgEGjGw@mail.gmail.com> <f55889a50ba404381e3edc1a192770f2779d40f1.camel@redhat.com>
+In-Reply-To: <f55889a50ba404381e3edc1a192770f2779d40f1.camel@redhat.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Thu, 30 Jun 2022 05:17:42 -0700
+Message-ID: <CALMp9eQkA-YeUFd=6Q+bRbtDT+UZO0jtPkEoZbqU1uDqMGp+xw@mail.gmail.com>
+Subject: Re: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ATA devices (struct ata_device) have a max_sectors field which is
-configured internally in libata. This is then used to (re)configure the
-associated sdev request queue max_sectors value from how it is earlier set
-in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-according to shost limits, which includes host DMA mapping limits.
+On Thu, Jun 30, 2022 at 1:22 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
 
-Cap the ata_device max_sectors according to shost->max_sectors to respect
-this shost limit.
+> I can't access this document for some reason (from my redhat account, which is gmail as well).
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
----
- drivers/ata/libata-scsi.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 86dbb1cdfabd..24a43d540d9f 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
- 		dev->flags |= ATA_DFLAG_NO_UNLOAD;
- 
- 	/* configure max sectors */
-+	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
- 	blk_queue_max_hw_sectors(q, dev->max_sectors);
- 
- 	if (dev->class == ATA_DEV_ATAPI) {
--- 
-2.35.3
-
+Try this one: https://docs.google.com/spreadsheets/d/13Yp7Cdg3ZyKoeZ3Qebp3uWi7urlPNmo5CQU5zFlayzs
