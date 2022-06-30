@@ -2,106 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B19C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7068CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236096AbiF3OBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
+        id S236050AbiF3OBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbiF3N7J (ORCPT
+        with ESMTP id S236219AbiF3N6T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:09 -0400
+        Thu, 30 Jun 2022 09:58:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA8B5C9CE;
-        Thu, 30 Jun 2022 06:51:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947073ED3D;
+        Thu, 30 Jun 2022 06:51:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA75B82AEF;
-        Thu, 30 Jun 2022 13:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3723C34115;
-        Thu, 30 Jun 2022 13:51:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9A75B82AF4;
+        Thu, 30 Jun 2022 13:51:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7BBAC34115;
+        Thu, 30 Jun 2022 13:51:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597114;
-        bh=R6WdYwE1kqgxCBVjkLKacSxk6KLR5lkUza5brTDpj4Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iCLy2Twuyxd4wGpJMvh+Aj2D0K6pty/EPhUCDCp7yv5iFbqaQLLls+hxOGFGr564D
-         o6EYEggaFpjAvn6E+Apl/IJxiS5Cp6AVK5O4qj/G8Kbk1r+BpDY3tBM6D8QPF5YBaw
-         Xa2mY5Xzxw0ml8NMRG9EbRtWSihm9ifBeWhP8OPI=
+        s=korg; t=1656597064;
+        bh=wSHE7bzcmB/HSjJDtx5vJ4W7q80GroIG+AQK6tdU4c8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JmQ/jDNcZfzw52kRI2lKOUKAHwX67522G+FjU0fbjqzQRYcYBuOfiQqU8i8T8Qe1f
+         VjDp7lek9OIAWGYUuzI4t1VOIgonaJT8UIypbP0Vy7uYDgd37bL4fREGnEC6yFVXtg
+         ysxZiYjo9j3iwoV7ZcIFzQZ03LOc0UYpgAmMwvr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Sumit Dubey2 <Sumit.Dubey2@ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 32/49] powerpc: Enable execve syscall exit tracepoint
-Date:   Thu, 30 Jun 2022 15:46:45 +0200
-Message-Id: <20220630133234.835442292@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.19 00/49] 4.19.250-rc1 review
+Date:   Thu, 30 Jun 2022 15:46:13 +0200
+Message-Id: <20220630133233.910803744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
-References: <20220630133233.910803744@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.250-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.19.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.19.250-rc1
+X-KernelTest-Deadline: 2022-07-02T13:32+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+This is the start of the stable review cycle for the 4.19.250 release.
+There are 49 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit ec6d0dde71d760aa60316f8d1c9a1b0d99213529 upstream.
+Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+Anything received after that time might be too late.
 
-On execve[at], we are zero'ing out most of the thread register state
-including gpr[0], which contains the syscall number. Due to this, we
-fail to trigger the syscall exit tracepoint properly. Fix this by
-retaining gpr[0] in the thread register state.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.250-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+and the diffstat can be found below.
 
-Before this patch:
-  # tail /sys/kernel/debug/tracing/trace
-	       cat-123     [000] .....    61.449351: sys_execve(filename:
-  7fffa6b23448, argv: 7fffa6b233e0, envp: 7fffa6b233f8)
-	       cat-124     [000] .....    62.428481: sys_execve(filename:
-  7fffa6b23448, argv: 7fffa6b233e0, envp: 7fffa6b233f8)
-	      echo-125     [000] .....    65.813702: sys_execve(filename:
-  7fffa6b23378, argv: 7fffa6b233a0, envp: 7fffa6b233b0)
-	      echo-125     [000] .....    65.822214: sys_execveat(fd: 0,
-  filename: 1009ac48, argv: 7ffff65d0c98, envp: 7ffff65d0ca8, flags: 0)
+thanks,
 
-After this patch:
-  # tail /sys/kernel/debug/tracing/trace
-	       cat-127     [000] .....   100.416262: sys_execve(filename:
-  7fffa41b3448, argv: 7fffa41b33e0, envp: 7fffa41b33f8)
-	       cat-127     [000] .....   100.418203: sys_execve -> 0x0
-	      echo-128     [000] .....   103.873968: sys_execve(filename:
-  7fffa41b3378, argv: 7fffa41b33a0, envp: 7fffa41b33b0)
-	      echo-128     [000] .....   103.875102: sys_execve -> 0x0
-	      echo-128     [000] .....   103.882097: sys_execveat(fd: 0,
-  filename: 1009ac48, argv: 7fffd10d2148, envp: 7fffd10d2158, flags: 0)
-	      echo-128     [000] .....   103.883225: sys_execveat -> 0x0
+greg k-h
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Tested-by: Sumit Dubey2 <Sumit.Dubey2@ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220609103328.41306-1-naveen.n.rao@linux.vnet.ibm.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/powerpc/kernel/process.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+-------------
+Pseudo-Shortlog of commits:
 
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -1731,7 +1731,7 @@ void start_thread(struct pt_regs *regs,
- 		tm_reclaim_current(0);
- #endif
- 
--	memset(regs->gpr, 0, sizeof(regs->gpr));
-+	memset(&regs->gpr[1], 0, sizeof(regs->gpr) - sizeof(regs->gpr[0]));
- 	regs->ctr = 0;
- 	regs->link = 0;
- 	regs->xer = 0;
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.19.250-rc1
+
+Liu Shixin <liushixin2@huawei.com>
+    swiotlb: skip swiotlb_bounce when orig_addr is zero
+
+Diederik de Haas <didi.debian@cknow.org>
+    net/sched: move NULL ptr check to qdisc_put() too
+
+Vladimir Oltean <vladimir.oltean@nxp.com>
+    net: mscc: ocelot: allow unregistered IP multicast flooding
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
+
+Hsin-Yi Wang <hsinyi@chromium.org>
+    fdt: Update CRC check for rng-seed
+
+Masahiro Yamada <masahiroy@kernel.org>
+    xen: unexport __init-annotated xen_xlate_map_ballooned_pages()
+
+Christoph Hellwig <hch@lst.de>
+    drm: remove drm_fb_helper_modinit
+
+Jason A. Donenfeld <Jason@zx2c4.com>
+    powerpc/pseries: wire up rng during setup_arch()
+
+Masahiro Yamada <masahiroy@kernel.org>
+    kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS (2nd attempt)
+
+Masahiro Yamada <masahiroy@kernel.org>
+    modpost: fix section mismatch check for exported init/exit sections
+
+Miaoqian Lin <linmq006@gmail.com>
+    ARM: cns3xxx: Fix refcount leak in cns3xxx_init
+
+Miaoqian Lin <linmq006@gmail.com>
+    ARM: Fix refcount leak in axxia_boot_secondary
+
+Miaoqian Lin <linmq006@gmail.com>
+    soc: bcm: brcmstb: pm: pm-arm: Fix refcount leak in brcmstb_pm_probe
+
+Miaoqian Lin <linmq006@gmail.com>
+    ARM: exynos: Fix refcount leak in exynos_map_pmu
+
+Lucas Stach <l.stach@pengutronix.de>
+    ARM: dts: imx6qdl: correct PU regulator ramp delay
+
+Jason A. Donenfeld <Jason@zx2c4.com>
+    powerpc/powernv: wire up rng during setup_arch
+
+Andrew Donnellan <ajd@linux.ibm.com>
+    powerpc/rtas: Allow ibm,platform-dump RTAS call with null buffer address
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    powerpc: Enable execve syscall exit tracepoint
+
+Liang He <windhl@126.com>
+    xtensa: Fix refcount leak bug in time.c
+
+Liang He <windhl@126.com>
+    xtensa: xtfpga: Fix refcount leak bug in setup
+
+Hans de Goede <hdegoede@redhat.com>
+    iio: adc: axp288: Override TS pin bias current for some models
+
+Vincent Whitchurch <vincent.whitchurch@axis.com>
+    iio: trigger: sysfs: fix use-after-free on remove
+
+Zheyu Ma <zheyuma97@gmail.com>
+    iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
+
+Haibo Chen <haibo.chen@nxp.com>
+    iio: accel: mma8452: ignore the return value of reset operation
+
+Dmitry Rokosov <DDRokosov@sberdevices.ru>
+    iio:accel:bma180: rearrange iio trigger get and register
+
+Dmitry Rokosov <DDRokosov@sberdevices.ru>
+    iio:chemical:ccs811: rearrange iio trigger get and register
+
+Xu Yang <xu.yang_2@nxp.com>
+    usb: chipidea: udc: check request status before setting device address
+
+Mathias Nyman <mathias.nyman@linux.intel.com>
+    xhci: turn off port power in shutdown
+
+Baruch Siach <baruch@tkos.co.il>
+    iio: adc: vf610: fix conversion mode sysfs node name
+
+Dan Carpenter <dan.carpenter@oracle.com>
+    gpio: winbond: Fix error code in winbond_gpio_get()
+
+Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+    virtio_net: fix xdp_rxq_info bug after suspend/resume
+
+Kai-Heng Feng <kai.heng.feng@canonical.com>
+    igb: Make DMA faster when CPU is active on the PCIe link
+
+David Howells <dhowells@redhat.com>
+    afs: Fix dynamic root getattr
+
+huhai <huhai@kylinos.cn>
+    MIPS: Remove repetitive increase irq_err_count
+
+Julien Grall <jgrall@amazon.com>
+    x86/xen: Remove undefined behavior in setup_features()
+
+Eric Dumazet <edumazet@google.com>
+    erspan: do not assume transport header is always set
+
+Peilin Ye <peilin.ye@bytedance.com>
+    net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms
+
+Jay Vosburgh <jay.vosburgh@canonical.com>
+    bonding: ARP monitor spams NETDEV_NOTIFY_PEERS notifiers
+
+Macpaul Lin <macpaul.lin@mediatek.com>
+    USB: serial: option: add Quectel RM500K module support
+
+Yonglin Tan <yonglin.tan@outlook.com>
+    USB: serial: option: add Quectel EM05-G modem
+
+Carlo Lobrano <c.lobrano@gmail.com>
+    USB: serial: option: add Telit LE910Cx 0x1250 composition
+
+Jason A. Donenfeld <Jason@zx2c4.com>
+    random: quiet urandom warning ratelimit suppression message
+
+Nikos Tsironis <ntsironis@arrikto.com>
+    dm era: commit metadata in postsuspend after worker stops
+
+Edward Wu <edwardwu@realtek.com>
+    ata: libata: add qc->flags in ata_qc_complete_template tracepoint
+
+Tim Crawford <tcrawford@system76.com>
+    ALSA: hda/realtek: Add quirk for Clevo PD70PNT
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: hda/conexant: Fix missing beep setup
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: hda/via: Fix missing beep setup
+
+Jason A. Donenfeld <Jason@zx2c4.com>
+    random: schedule mix_interrupt_randomness() less often
+
+Jiri Slaby <jslaby@suse.cz>
+    vt: drop old FONT ioctls
+
+
+-------------
+
+Diffstat:
+
+ Documentation/ABI/testing/sysfs-bus-iio-vf610 |   2 +-
+ Makefile                                      |   6 +-
+ arch/arm/boot/dts/imx6qdl.dtsi                |   2 +-
+ arch/arm/mach-axxia/platsmp.c                 |   1 +
+ arch/arm/mach-cns3xxx/core.c                  |   2 +
+ arch/arm/mach-exynos/exynos.c                 |   1 +
+ arch/mips/vr41xx/common/icu.c                 |   2 -
+ arch/powerpc/kernel/process.c                 |   2 +-
+ arch/powerpc/kernel/rtas.c                    |  11 +-
+ arch/powerpc/platforms/powernv/powernv.h      |   2 +
+ arch/powerpc/platforms/powernv/rng.c          |  52 ++++++---
+ arch/powerpc/platforms/powernv/setup.c        |   2 +
+ arch/powerpc/platforms/pseries/pseries.h      |   2 +
+ arch/powerpc/platforms/pseries/rng.c          |  11 +-
+ arch/powerpc/platforms/pseries/setup.c        |   1 +
+ arch/s390/include/asm/kexec.h                 |  10 ++
+ arch/x86/include/asm/kexec.h                  |   9 ++
+ arch/xtensa/kernel/time.c                     |   1 +
+ arch/xtensa/platforms/xtfpga/setup.c          |   1 +
+ drivers/char/random.c                         |   4 +-
+ drivers/gpio/gpio-vr41xx.c                    |   2 -
+ drivers/gpio/gpio-winbond.c                   |   7 +-
+ drivers/gpu/drm/drm_crtc_helper_internal.h    |  10 --
+ drivers/gpu/drm/drm_fb_helper.c               |  21 ----
+ drivers/gpu/drm/drm_kms_helper_common.c       |  25 +++--
+ drivers/iio/accel/bma180.c                    |   3 +-
+ drivers/iio/accel/mma8452.c                   |  10 +-
+ drivers/iio/adc/axp288_adc.c                  |   8 ++
+ drivers/iio/chemical/ccs811.c                 |   4 +-
+ drivers/iio/gyro/mpu3050-core.c               |   1 +
+ drivers/iio/trigger/iio-trig-sysfs.c          |   1 +
+ drivers/md/dm-era-target.c                    |   8 +-
+ drivers/net/bonding/bond_main.c               |   4 +-
+ drivers/net/ethernet/intel/igb/igb_main.c     |  12 +--
+ drivers/net/ethernet/mscc/ocelot.c            |   8 +-
+ drivers/net/virtio_net.c                      |  25 ++---
+ drivers/of/fdt.c                              |   8 +-
+ drivers/soc/bcm/brcmstb/pm/pm-arm.c           |   1 +
+ drivers/tty/vt/vt.c                           |  39 +------
+ drivers/tty/vt/vt_ioctl.c                     | 149 --------------------------
+ drivers/usb/chipidea/udc.c                    |   3 +
+ drivers/usb/host/xhci-hub.c                   |   2 +-
+ drivers/usb/host/xhci.c                       |  15 ++-
+ drivers/usb/host/xhci.h                       |   2 +
+ drivers/usb/serial/option.c                   |   6 ++
+ drivers/xen/features.c                        |   2 +-
+ drivers/xen/xlate_mmu.c                       |   1 -
+ fs/afs/inode.c                                |   3 +-
+ include/linux/kd.h                            |   8 --
+ include/linux/kexec.h                         |  46 ++++++--
+ include/linux/ratelimit.h                     |  12 ++-
+ include/trace/events/libata.h                 |   1 +
+ kernel/dma/swiotlb.c                          |   3 +-
+ kernel/kexec_file.c                           |  34 ------
+ net/ipv4/ip_gre.c                             |  15 ++-
+ net/ipv6/ip6_gre.c                            |  15 ++-
+ net/sched/sch_generic.c                       |   5 +-
+ net/sched/sch_netem.c                         |   4 +-
+ scripts/mod/modpost.c                         |   2 +-
+ sound/pci/hda/patch_conexant.c                |   4 +-
+ sound/pci/hda/patch_realtek.c                 |   1 +
+ sound/pci/hda/patch_via.c                     |   4 +-
+ 62 files changed, 271 insertions(+), 387 deletions(-)
 
 
