@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E279BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39AE4CCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234873AbiF3KXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60134 "EHLO
+        id S234912AbiF3KXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235058AbiF3KWw (ORCPT
+        with ESMTP id S234980AbiF3KWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:22:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E9545534;
-        Thu, 30 Jun 2022 03:22:50 -0700 (PDT)
+        Thu, 30 Jun 2022 06:22:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F79457A8;
+        Thu, 30 Jun 2022 03:22:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656584571; x=1688120571;
+  t=1656584551; x=1688120551;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MicE8fGK5svKumXmAptj8sQUzXdu2+kFAZVOBmDFZw8=;
-  b=KwIJ3L87lH438Wx+JKbkbwRNQxVcqRIQ8bIOzb2g2/y3e+HQQ1odlbHH
-   cohsdC5B44ShZZYqOyu27RjxzWeIZffjYgMuvoz5feCz7X8M+Si66jZoZ
-   TKpzBOMZmowB4npI70nTHrLYQMNFrkuo8MMblmZrEqqDC/YRxu3UegnJa
-   PenH6fpF9GSqTRomVPstEGWf06TVGiDX1TyNQsGQpWPetbAyice7QOcQj
-   vcv5gxwW7cO8+4keuu+I8xR0Oeg2MaEn+Hzfpgsxt5SHttDsVLCi0/fJ2
-   6t0cGye+rIkhsPBPhSqwyDM3Cj/BI8A+goaSwa17nkLCCtksBDHKXoo/a
-   w==;
+  bh=3p1haOctquxewPlqf+5TUBaW2f+6nbsODmUnBqHiBj8=;
+  b=czvmURcH2n4bMfcMUGETEp+7YBFfWI7zaPsBP2v5Ohn1mqL23XrsCtrt
+   We8sAmpN9OgkccNACm31apncjpV8Y8ikVpH+oTiSDkMrttId6tYWVEHkT
+   wWUNfyyi7blesgQBip+u7/s5RD0AqdsSOAqh43s7ZJT5Km9gHMnbzhHeq
+   Mgv1CxQnPIa5hPr868xI2xgT2NlK7UQlO5kG/eYehOkkFKNUKn9pzhYJ9
+   22QXJiRUJdvcmmLIcM3EE1/wo3F1LF+fp+y0ExcnKLEwa14FU8Z69T6Oy
+   AjeyUTXTm80tccdwvdpKu7u5yIqVOrBqSBUa/ABBJ2WfZOGPpzPU7V61g
+   g==;
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="165805067"
+   d="scan'208";a="180172499"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:22:50 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:22:30 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 03:22:47 -0700
+ 15.1.2375.17; Thu, 30 Jun 2022 03:22:23 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:22:39 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:22:15 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
@@ -61,9 +61,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v14 08/13] net: dsa: microchip: lan937x: register mdio-bus
-Date:   Thu, 30 Jun 2022 15:50:36 +0530
-Message-ID: <20220630102041.25555-9-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v14 06/13] net: dsa: microchip: lan937x: add dsa_tag_protocol
+Date:   Thu, 30 Jun 2022 15:50:34 +0530
+Message-ID: <20220630102041.25555-7-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220630102041.25555-1-arun.ramadoss@microchip.com>
 References: <20220630102041.25555-1-arun.ramadoss@microchip.com>
@@ -74,113 +74,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch register mdio-bus for the lan937x series switch. mdio read
-and write uses the vphy for accessing the phy register.
+This patch update the ksz_get_tag_protocol to return LAN937x specific
+tag if the chip id matches one of LAN937x series switch
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/lan937x_main.c | 74 ++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
+ drivers/net/dsa/microchip/ksz_common.c | 3 +++
+ drivers/net/dsa/microchip/ksz_common.h | 9 +++++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 5a2e14fe3cf3..7090947cf52c 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -7,6 +7,7 @@
- #include <linux/iopoll.h>
- #include <linux/phy.h>
- #include <linux/of_net.h>
-+#include <linux/of_mdio.h>
- #include <linux/if_bridge.h>
- #include <linux/math.h>
- #include <net/dsa.h>
-@@ -136,6 +137,73 @@ void lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
- 	lan937x_internal_phy_write(dev, addr, reg, val);
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 83e44598d00c..07b6f34a437e 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -1254,6 +1254,9 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
+ 	    dev->chip_id == KSZ9567_CHIP_ID)
+ 		proto = DSA_TAG_PROTO_KSZ9477;
+ 
++	if (is_lan937x(dev))
++		proto = DSA_TAG_PROTO_LAN937X_VALUE;
++
+ 	return proto;
  }
  
-+static int lan937x_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
-+{
-+	struct ksz_device *dev = bus->priv;
-+	u16 val;
-+	int ret;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	ret = lan937x_internal_phy_read(dev, addr, regnum, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return val;
-+}
-+
-+static int lan937x_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
-+				 u16 val)
-+{
-+	struct ksz_device *dev = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	return lan937x_internal_phy_write(dev, addr, regnum, val);
-+}
-+
-+static int lan937x_mdio_register(struct ksz_device *dev)
-+{
-+	struct dsa_switch *ds = dev->ds;
-+	struct device_node *mdio_np;
-+	struct mii_bus *bus;
-+	int ret;
-+
-+	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
-+	if (!mdio_np) {
-+		dev_err(ds->dev, "no MDIO bus node\n");
-+		return -ENODEV;
-+	}
-+
-+	bus = devm_mdiobus_alloc(ds->dev);
-+	if (!bus) {
-+		of_node_put(mdio_np);
-+		return -ENOMEM;
-+	}
-+
-+	bus->priv = dev;
-+	bus->read = lan937x_sw_mdio_read;
-+	bus->write = lan937x_sw_mdio_write;
-+	bus->name = "lan937x slave smi";
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "SMI-%d", ds->index);
-+	bus->parent = ds->dev;
-+	bus->phy_mask = ~ds->phys_mii_mask;
-+
-+	ds->slave_mii_bus = bus;
-+
-+	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
-+	if (ret) {
-+		dev_err(ds->dev, "unable to register MDIO bus %s\n",
-+			bus->id);
-+	}
-+
-+	of_node_put(mdio_np);
-+
-+	return ret;
-+}
-+
- int lan937x_reset_switch(struct ksz_device *dev)
- {
- 	u32 data32;
-@@ -228,6 +296,12 @@ int lan937x_setup(struct dsa_switch *ds)
- 		return ret;
- 	}
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 5f69dc872752..bf4f3f3922a5 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -403,6 +403,15 @@ static inline void ksz_regmap_unlock(void *__mtx)
+ 	mutex_unlock(mtx);
+ }
  
-+	ret = lan937x_mdio_register(dev);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "failed to register the mdio");
-+		return ret;
-+	}
++static inline int is_lan937x(struct ksz_device *dev)
++{
++	return dev->chip_id == LAN9370_CHIP_ID ||
++		dev->chip_id == LAN9371_CHIP_ID ||
++		dev->chip_id == LAN9372_CHIP_ID ||
++		dev->chip_id == LAN9373_CHIP_ID ||
++		dev->chip_id == LAN9374_CHIP_ID;
++}
 +
- 	/* The VLAN aware is a global setting. Mixed vlan
- 	 * filterings are not supported.
- 	 */
+ /* STP State Defines */
+ #define PORT_TX_ENABLE			BIT(2)
+ #define PORT_RX_ENABLE			BIT(1)
 -- 
 2.36.1
 
