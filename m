@@ -2,90 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D64FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86864C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236926AbiF3TgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 15:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        id S236911AbiF3Tnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 15:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236925AbiF3Tfv (ORCPT
+        with ESMTP id S236382AbiF3Tne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 15:35:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8FE43AE9;
-        Thu, 30 Jun 2022 12:35:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA608622B9;
-        Thu, 30 Jun 2022 19:35:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABCC5C341CA;
-        Thu, 30 Jun 2022 19:35:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656617746;
-        bh=bbakRj56jJp4BUYKvkapZrvIMgJUAVuoHeuRe/yqByA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M4660bwEifsjF9zzVycbVd4V2eKqZawU5YGB3ltnq6H2si1HvwX6JDs7lmGNZfdfM
-         xhXoxZYgTmpLdk/AxgvQDyHoFgl8JRKOPpCK4o1FlqyJccxdcPMEvnvf8apaZ9QXDu
-         9wHqBq2v2mst4rjAPQbUoW8uCwrc9fXtTJDObizKjfcPnOA1jrjj8KACnSmzpAbK27
-         IEpymzJA+6AYZY7boM5gr5VqE/K2uu1VDJExD3DTYTydCL+nuAJ/NM8j5vaNE/BoML
-         Hih9QwDlzpq4c/q9SQ9Zd30wLde6ejF9hMmZvcJ7aWUN9IRUc7VmAu1WdbSlovllpw
-         QKgxhUdRSKBRg==
-Date:   Thu, 30 Jun 2022 12:35:43 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Imran Khan <imran.f.khan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: Regression for duplicate (?) console parameters on next-20220630
-Message-ID: <Yr37D4P2Dmnbkb+M@dev-arch.thelio-3990X>
-References: <8460ecf2a963c85793cf325e16725044@walle.cc>
+        Thu, 30 Jun 2022 15:43:34 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFA624F25;
+        Thu, 30 Jun 2022 12:43:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656618213; x=1688154213;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pIgHqbTPvdZQRFyBm2TkG/rvzqkdS8PX64Z2/SY+C1U=;
+  b=Uo1P8pLV48AKE/EQkWEhnSKWtQcHDIxyDT9i9o7L6n+RE3rvC1AD0gdQ
+   IiFftra4m1AXsT8wCvw7nToD68CIg/X6toor9+DuwYDM+EDQYEQFjdzRJ
+   RM+wn5MzKTuVRoayNfzZHsZGYNwR3tgskKlUyb2BtQPBVpIdXUTcE2b7a
+   g9pVCDohc8bwy7Bgd6A7vbcTbx7h8QZFpkZrmZlUYykd8Nl3qzwr44bNd
+   oO6SfEbZx6yGlC+gBIf7C8L/6igUTcJwKIMPWjM9YG8QY86ijZI8BSX/L
+   AgsHv7qNPEPqcHpch+RuH5J6F4/Xtd/Jfa9YgqvpJP2/YDwR0Eul54bgN
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="282481179"
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="282481179"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 12:43:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="694196407"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 30 Jun 2022 12:43:32 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 337CC11E; Thu, 30 Jun 2022 22:43:37 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>
+Subject: [PATCH v1 1/1] platform/x86: xo15-ebook: Replace open coded acpi_match_device()
+Date:   Thu, 30 Jun 2022 22:43:35 +0300
+Message-Id: <20220630194335.3730-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8460ecf2a963c85793cf325e16725044@walle.cc>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 03:11:58PM +0200, Michael Walle wrote:
-> Hi,
-> 
-> I'm not sure it these are the correct recipients, feel free to CC others.
-> 
-> Since next-20220630 (or maybe also since next-20220629) I'm getting the
-> 
-> [    3.707900] WARNING: CPU: 0 PID: 38 at fs/kernfs/dir.c:531
-> kernfs_put.part.0+0x1a0/0x1d4
-> [    3.716313] kernfs_put: console/active: released with incorrect
-> active_ref 0
-> 
-> on both arm and arm64 boards. See for example:
-> https://linux.kernelci.org/test/case/id/62bd840b330c4851eaa39c16/
-> 
-> I have the console set in the device tree as well as on the commandline.
-> Up until recently that wasn't a problem and I guess that should be a valid
-> configuration. That being said, the warn() will go away if I remove the
-> console= parameter on the commandline.
-> 
-> I haven't had time to do a bisect yet. That will probably my next step;
-> or maybe kernelci will already do that for me, Guillaume? Unless someone
-> has some more insights/ideas.
+Replace open coded acpi_match_device() in ebook_switch_add().
 
-I noticed this as well when booting ARCH=um defconfig.
+Note, while it is a bit longer it is more robust in case more ID
+are coming.
 
-I ended up doing a bisect against next-20220630 and I landed on the
-driver-core merge (5732b42edfd18ee888e127fa13d425ed3ed1bef3). I did two
-more bisects to figure out that there is some sort of contextual
-contlict between commit 5831788afb17 ("Revert "printk: add kthread
-console printers"") and commit b8f35fa1188b ("kernfs: Change
-kernfs_notify_list to llist."), as it is only when those two changes are
-present that this issue occurs. I am happy to provide more information
-if necessary.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/platform/x86/xo15-ebook.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Cheers,
-Nathan
+diff --git a/drivers/platform/x86/xo15-ebook.c b/drivers/platform/x86/xo15-ebook.c
+index 97440462aa25..40b2dd4ae5ea 100644
+--- a/drivers/platform/x86/xo15-ebook.c
++++ b/drivers/platform/x86/xo15-ebook.c
+@@ -81,9 +81,9 @@ static SIMPLE_DEV_PM_OPS(ebook_switch_pm, NULL, ebook_switch_resume);
+ 
+ static int ebook_switch_add(struct acpi_device *device)
+ {
++	const struct acpi_device_id *id;
+ 	struct ebook_switch *button;
+ 	struct input_dev *input;
+-	const char *hid = acpi_device_hid(device);
+ 	char *name, *class;
+ 	int error;
+ 
+@@ -102,8 +102,9 @@ static int ebook_switch_add(struct acpi_device *device)
+ 	name = acpi_device_name(device);
+ 	class = acpi_device_class(device);
+ 
+-	if (strcmp(hid, XO15_EBOOK_HID)) {
+-		pr_err("Unsupported hid [%s]\n", hid);
++	id = acpi_match_device(device, ebook_device_ids);
++	if (!id) {
++		dev_err(&device->dev, "Unsupported hid\n");
+ 		error = -ENODEV;
+ 		goto err_free_input;
+ 	}
+@@ -111,7 +112,7 @@ static int ebook_switch_add(struct acpi_device *device)
+ 	strcpy(name, XO15_EBOOK_DEVICE_NAME);
+ 	sprintf(class, "%s/%s", XO15_EBOOK_CLASS, XO15_EBOOK_SUBCLASS);
+ 
+-	snprintf(button->phys, sizeof(button->phys), "%s/button/input0", hid);
++	snprintf(button->phys, sizeof(button->phys), "%s/button/input0", id->id);
+ 
+ 	input->name = name;
+ 	input->phys = button->phys;
+-- 
+2.35.1
+
