@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E37CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AC0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236941AbiF3OLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        id S236842AbiF3OLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236868AbiF3OKn (ORCPT
+        with ESMTP id S236704AbiF3OKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:10:43 -0400
+        Thu, 30 Jun 2022 10:10:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC567B37D;
-        Thu, 30 Jun 2022 06:55:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B157C19B;
+        Thu, 30 Jun 2022 06:55:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39DA3620F8;
-        Thu, 30 Jun 2022 13:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 488C5C34115;
-        Thu, 30 Jun 2022 13:55:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AFD7620E4;
+        Thu, 30 Jun 2022 13:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5B6C34115;
+        Thu, 30 Jun 2022 13:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597336;
-        bh=3WLcYukPkXG7NFO+D+klbHU8iLwKoIcsQ0dd21l1KOU=;
+        s=korg; t=1656597342;
+        bh=DPSnfVmUkjxjOVgrKP/yyu45qCKH1BtQKQNHohlDJmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xuTXCPDIuCujJMwn0QkfCUmE5eeZBGJ6MYaWL0AcD2fGaldHWeE9BvZ2cJ/JebBWL
-         FCSIWIZ/7ZKCRg8aW2qeyG2uRJGLzXlcmWfCpAWMzh/hyjje7bY3wiF0/hJAIXiLTT
-         KVrINRACbs/dxVNF3Uj6zGsT26DdthQoIl5roAsU=
+        b=PlazCD0tum4jgKRb7ngXMZw7cHlcT5kArH1CC71VgzJkc6EPatAmTCcl+7A72R3sW
+         MbQfBlgLzHTu2eKCSUNiDyLYrcJ0AiTzdMlRnosZGrQRHVSbYDJIJ8/87KSMBVsfje
+         wBzXHveYmd79sdCEChi3cPMm1K/PysIOHKfyNcKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>
-Subject: [PATCH 5.15 21/28] fs: add i_user_ns() helper
-Date:   Thu, 30 Jun 2022 15:47:17 +0200
-Message-Id: <20220630133233.552883181@linuxfoundation.org>
+        Christoph Hellwig <hch@lst.de>, regressions@lists.linux.dev,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 23/28] fs: fix acl translation
+Date:   Thu, 30 Jun 2022 15:47:19 +0200
+Message-Id: <20220630133233.613171266@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -52,70 +50,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <christian.brauner@ubuntu.com>
+From: Christian Brauner <brauner@kernel.org>
 
-commit a1ec9040a2a9122605ac26e5725c6de019184419 upstream.
+commit 705191b03d507744c7e097f78d583621c14988ac upstream.
 
-Since we'll be passing the filesystem's idmapping in even more places in
-the following patches and we do already dereference struct inode to get
-to the filesystem's idmapping multiple times add a tiny helper.
+Last cycle we extended the idmapped mounts infrastructure to support
+idmapped mounts of idmapped filesystems (No such filesystem yet exist.).
+Since then, the meaning of an idmapped mount is a mount whose idmapping
+is different from the filesystems idmapping.
 
-Link: https://lore.kernel.org/r/20211123114227.3124056-10-brauner@kernel.org (v1)
-Link: https://lore.kernel.org/r/20211130121032.3753852-10-brauner@kernel.org (v2)
-Link: https://lore.kernel.org/r/20211203111707.3901969-10-brauner@kernel.org
+While doing that work we missed to adapt the acl translation helpers.
+They still assume that checking for the identity mapping is enough.  But
+they need to use the no_idmapping() helper instead.
+
+Note, POSIX ACLs are always translated right at the userspace-kernel
+boundary using the caller's current idmapping and the initial idmapping.
+The order depends on whether we're coming from or going to userspace.
+The filesystem's idmapping doesn't matter at the border.
+
+Consequently, if a non-idmapped mount is passed we need to make sure to
+always pass the initial idmapping as the mount's idmapping and not the
+filesystem idmapping.  Since it's irrelevant here it would yield invalid
+ids and prevent setting acls for filesystems that are mountable in a
+userns and support posix acls (tmpfs and fuse).
+
+I verified the regression reported in [1] and verified that this patch
+fixes it.  A regression test will be added to xfstests in parallel.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215849 [1]
+Fixes: bd303368b776 ("fs: support mapped mounts of mapped filesystems")
 Cc: Seth Forshee <sforshee@digitalocean.com>
 Cc: Christoph Hellwig <hch@lst.de>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-CC: linux-fsdevel@vger.kernel.org
-Reviewed-by: Amir Goldstein <amir73il@gmail.com>
-Reviewed-by: Seth Forshee <sforshee@digitalocean.com>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+Cc: <stable@vger.kernel.org> # 5.15+
+Cc: <regressions@lists.linux.dev>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/fs.h |   13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ fs/posix_acl.c                  |   10 ++++++++++
+ fs/xattr.c                      |    6 ++++--
+ include/linux/posix_acl_xattr.h |    4 ++++
+ 3 files changed, 18 insertions(+), 2 deletions(-)
 
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -1602,6 +1602,11 @@ struct super_block {
- 	struct list_head	s_inodes_wb;	/* writeback inodes */
- } __randomize_layout;
+--- a/fs/posix_acl.c
++++ b/fs/posix_acl.c
+@@ -760,9 +760,14 @@ static void posix_acl_fix_xattr_userns(
+ }
  
-+static inline struct user_namespace *i_user_ns(const struct inode *inode)
-+{
-+	return inode->i_sb->s_user_ns;
-+}
+ void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
++				   struct inode *inode,
+ 				   void *value, size_t size)
+ {
+ 	struct user_namespace *user_ns = current_user_ns();
 +
- /* Helper functions so that in most cases filesystems will
-  * not need to deal directly with kuid_t and kgid_t and can
-  * instead deal with the raw numeric values that are stored
-@@ -1609,22 +1614,22 @@ struct super_block {
-  */
- static inline uid_t i_uid_read(const struct inode *inode)
- {
--	return from_kuid(inode->i_sb->s_user_ns, inode->i_uid);
-+	return from_kuid(i_user_ns(inode), inode->i_uid);
++	/* Leave ids untouched on non-idmapped mounts. */
++	if (no_idmapping(mnt_userns, i_user_ns(inode)))
++		mnt_userns = &init_user_ns;
+ 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
+ 		return;
+ 	posix_acl_fix_xattr_userns(&init_user_ns, user_ns, mnt_userns, value,
+@@ -770,9 +775,14 @@ void posix_acl_fix_xattr_from_user(struc
  }
  
- static inline gid_t i_gid_read(const struct inode *inode)
+ void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
++				 struct inode *inode,
+ 				 void *value, size_t size)
  {
--	return from_kgid(inode->i_sb->s_user_ns, inode->i_gid);
-+	return from_kgid(i_user_ns(inode), inode->i_gid);
- }
+ 	struct user_namespace *user_ns = current_user_ns();
++
++	/* Leave ids untouched on non-idmapped mounts. */
++	if (no_idmapping(mnt_userns, i_user_ns(inode)))
++		mnt_userns = &init_user_ns;
+ 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
+ 		return;
+ 	posix_acl_fix_xattr_userns(user_ns, &init_user_ns, mnt_userns, value,
+--- a/fs/xattr.c
++++ b/fs/xattr.c
+@@ -569,7 +569,8 @@ setxattr(struct user_namespace *mnt_user
+ 		}
+ 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
+ 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
+-			posix_acl_fix_xattr_from_user(mnt_userns, kvalue, size);
++			posix_acl_fix_xattr_from_user(mnt_userns, d_inode(d),
++						      kvalue, size);
+ 	}
  
- static inline void i_uid_write(struct inode *inode, uid_t uid)
+ 	error = vfs_setxattr(mnt_userns, d, kname, kvalue, size, flags);
+@@ -667,7 +668,8 @@ getxattr(struct user_namespace *mnt_user
+ 	if (error > 0) {
+ 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
+ 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
+-			posix_acl_fix_xattr_to_user(mnt_userns, kvalue, error);
++			posix_acl_fix_xattr_to_user(mnt_userns, d_inode(d),
++						    kvalue, error);
+ 		if (size && copy_to_user(value, kvalue, error))
+ 			error = -EFAULT;
+ 	} else if (error == -ERANGE && size >= XATTR_SIZE_MAX) {
+--- a/include/linux/posix_acl_xattr.h
++++ b/include/linux/posix_acl_xattr.h
+@@ -34,15 +34,19 @@ posix_acl_xattr_count(size_t size)
+ 
+ #ifdef CONFIG_FS_POSIX_ACL
+ void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
++				   struct inode *inode,
+ 				   void *value, size_t size);
+ void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
++				   struct inode *inode,
+ 				 void *value, size_t size);
+ #else
+ static inline void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
++						 struct inode *inode,
+ 						 void *value, size_t size)
  {
--	inode->i_uid = make_kuid(inode->i_sb->s_user_ns, uid);
-+	inode->i_uid = make_kuid(i_user_ns(inode), uid);
  }
- 
- static inline void i_gid_write(struct inode *inode, gid_t gid)
+ static inline void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
++					       struct inode *inode,
+ 					       void *value, size_t size)
  {
--	inode->i_gid = make_kgid(inode->i_sb->s_user_ns, gid);
-+	inode->i_gid = make_kgid(i_user_ns(inode), gid);
  }
- 
- /**
 
 
