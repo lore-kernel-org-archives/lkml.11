@@ -2,110 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D83C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8B2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236242AbiF3ODx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
+        id S236443AbiF3OEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236613AbiF3OCr (ORCPT
+        with ESMTP id S236698AbiF3OCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:02:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B53068A2C;
-        Thu, 30 Jun 2022 06:53:02 -0700 (PDT)
+        Thu, 30 Jun 2022 10:02:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56431C13C;
+        Thu, 30 Jun 2022 06:53:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C8BEB82AD8;
-        Thu, 30 Jun 2022 13:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0374C34115;
-        Thu, 30 Jun 2022 13:52:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06CFBB82AEE;
+        Thu, 30 Jun 2022 13:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42893C34115;
+        Thu, 30 Jun 2022 13:53:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597180;
-        bh=JOD3wDxT/JvV14ZI7sRweLRuU0c8/XY3206htf3O+v8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iBrE/byeDCiCMIQ49FK8CbyNIWvgnKe7DgmZebqLBrdihG7TVDjE5UQJSSflkCQos
-         SJV6OjMlQwaKe0TzjFMy1L17YWqRfOCzimNGtEla+lYnHh25Kg7xExghK0ajB1zypy
-         rml3QosgNdaty1Gye42Luofn8JmuAkNlnu/TF1d4=
+        s=korg; t=1656597185;
+        bh=WeVqCnvj5Hml9xdmVwvKBV7gjQdrWu2Wb/j50XnN2mY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lgJ+Mwosz+UtECcmNRrLcnidBS/ZoqtbMftgk5SqDO87f4ABD99xADppmBxy/2Xo5
+         KLrBob5LV3wntY9JMt+JhTi24F4eXR6DqX2w0FM+mbTwklUrmrXZkVQetWFdDtizno
+         a2+eWwqcxxyDBScxeOyZjK72VRY+jX00joZrh/sk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
-        huhai <huhai@kylinos.cn>,
-        Genjian Zhang <zhanggenjian@kylinos.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 16/49] MIPS: Remove repetitive increase irq_err_count
-Date:   Thu, 30 Jun 2022 15:46:29 +0200
-Message-Id: <20220630133234.384214777@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.4 00/16] 5.4.203-rc1 review
+Date:   Thu, 30 Jun 2022 15:46:54 +0200
+Message-Id: <20220630133230.936488203@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
-References: <20220630133233.910803744@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.203-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.203-rc1
+X-KernelTest-Deadline: 2022-07-02T13:32+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+This is the start of the stable review cycle for the 5.4.203 release.
+There are 16 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit c81aba8fde2aee4f5778ebab3a1d51bd2ef48e4c ]
+Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+Anything received after that time might be too late.
 
-commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
-a function irq_dispatch, and it'll increase irq_err_count when the get_irq
-callback returns a negative value, but increase irq_err_count in get_irq
-was not removed.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.203-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-And also, modpost complains once gpio-vr41xx drivers become modules.
-  ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
+thanks,
 
-So it would be a good idea to remove repetitive increase irq_err_count in
-get_irq callback.
+greg k-h
 
-Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
-Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/mips/vr41xx/common/icu.c | 2 --
- drivers/gpio/gpio-vr41xx.c    | 2 --
- 2 files changed, 4 deletions(-)
+-------------
+Pseudo-Shortlog of commits:
 
-diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
-index 745b7b436961..42f77b318974 100644
---- a/arch/mips/vr41xx/common/icu.c
-+++ b/arch/mips/vr41xx/common/icu.c
-@@ -653,8 +653,6 @@ static int icu_get_irq(unsigned int irq)
- 
- 	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
- 
--	atomic_inc(&irq_err_count);
--
- 	return -1;
- }
- 
-diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
-index 027699cec911..217b077838af 100644
---- a/drivers/gpio/gpio-vr41xx.c
-+++ b/drivers/gpio/gpio-vr41xx.c
-@@ -230,8 +230,6 @@ static int giu_get_irq(unsigned int irq)
- 	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
- 	       maskl, pendl, maskh, pendh);
- 
--	atomic_inc(&irq_err_count);
--
- 	return -EINVAL;
- }
- 
--- 
-2.35.1
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.203-rc1
 
+Stefan Agner <stefan@agner.ch>
+    crypto: arm/ghash-ce - define fpu before fpu registers are referenced
+
+Ard Biesheuvel <ard.biesheuvel@linaro.org>
+    crypto: arm - use Kconfig based compiler checks for crypto opcodes
+
+Jian Cai <jiancai@google.com>
+    ARM: 9029/1: Make iwmmxt.S support Clang's integrated assembler
+
+Stefan Agner <stefan@agner.ch>
+    ARM: OMAP2+: drop unnecessary adrl
+
+Stefan Agner <stefan@agner.ch>
+    ARM: 8929/1: use APSR_nzcv instead of r15 as mrc operand
+
+Nick Desaulniers <ndesaulniers@google.com>
+    ARM: 8933/1: replace Sun/Solaris style flag on section directive
+
+Ard Biesheuvel <ardb@kernel.org>
+    crypto: arm/sha512-neon - avoid ADRL pseudo instruction
+
+Ard Biesheuvel <ardb@kernel.org>
+    crypto: arm/sha256-neon - avoid ADRL pseudo instruction
+
+Jian Cai <caij2003@gmail.com>
+    ARM: 8971/1: replace the sole use of a symbol with its definition
+
+Stefan Agner <stefan@agner.ch>
+    ARM: 8990/1: use VFP assembler mnemonics in register load/store macros
+
+Stefan Agner <stefan@agner.ch>
+    ARM: 8989/1: use .fpu assembler directives instead of assembler arguments
+
+Vladimir Oltean <vladimir.oltean@nxp.com>
+    net: mscc: ocelot: allow unregistered IP multicast flooding
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    powerpc/ftrace: Remove ftrace init tramp once kernel init is complete
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    clocksource/drivers/ixp4xx: remove __init from ixp4xx_timer_setup()
+
+Christoph Hellwig <hch@lst.de>
+    drm: remove drm_fb_helper_modinit
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                   |  4 +-
+ arch/arm/boot/bootp/init.S                 |  2 +-
+ arch/arm/boot/compressed/big-endian.S      |  2 +-
+ arch/arm/boot/compressed/head.S            |  4 +-
+ arch/arm/boot/compressed/piggy.S           |  2 +-
+ arch/arm/crypto/Kconfig                    | 14 +++--
+ arch/arm/crypto/Makefile                   | 32 ++---------
+ arch/arm/crypto/crct10dif-ce-core.S        |  2 +-
+ arch/arm/crypto/ghash-ce-core.S            |  4 +-
+ arch/arm/crypto/sha1-ce-core.S             |  1 +
+ arch/arm/crypto/sha2-ce-core.S             |  1 +
+ arch/arm/crypto/sha256-armv4.pl            |  4 +-
+ arch/arm/crypto/sha256-core.S_shipped      |  4 +-
+ arch/arm/crypto/sha512-armv4.pl            |  4 +-
+ arch/arm/crypto/sha512-core.S_shipped      |  4 +-
+ arch/arm/include/asm/assembler.h           |  3 +-
+ arch/arm/include/asm/vfpmacros.h           | 19 ++++---
+ arch/arm/kernel/iwmmxt.S                   | 89 +++++++++++++++---------------
+ arch/arm/kernel/iwmmxt.h                   | 47 ++++++++++++++++
+ arch/arm/mach-omap2/sleep34xx.S            |  2 +-
+ arch/arm/mm/proc-arm1020.S                 |  2 +-
+ arch/arm/mm/proc-arm1020e.S                |  2 +-
+ arch/arm/mm/proc-arm1022.S                 |  2 +-
+ arch/arm/mm/proc-arm1026.S                 |  6 +-
+ arch/arm/mm/proc-arm720.S                  |  2 +-
+ arch/arm/mm/proc-arm740.S                  |  2 +-
+ arch/arm/mm/proc-arm7tdmi.S                |  2 +-
+ arch/arm/mm/proc-arm920.S                  |  2 +-
+ arch/arm/mm/proc-arm922.S                  |  2 +-
+ arch/arm/mm/proc-arm925.S                  |  2 +-
+ arch/arm/mm/proc-arm926.S                  |  6 +-
+ arch/arm/mm/proc-arm940.S                  |  2 +-
+ arch/arm/mm/proc-arm946.S                  |  2 +-
+ arch/arm/mm/proc-arm9tdmi.S                |  2 +-
+ arch/arm/mm/proc-fa526.S                   |  2 +-
+ arch/arm/mm/proc-feroceon.S                |  2 +-
+ arch/arm/mm/proc-mohawk.S                  |  2 +-
+ arch/arm/mm/proc-sa110.S                   |  2 +-
+ arch/arm/mm/proc-sa1100.S                  |  2 +-
+ arch/arm/mm/proc-v6.S                      |  2 +-
+ arch/arm/mm/proc-v7.S                      |  2 +-
+ arch/arm/mm/proc-v7m.S                     |  4 +-
+ arch/arm/mm/proc-xsc3.S                    |  2 +-
+ arch/arm/mm/proc-xscale.S                  |  2 +-
+ arch/arm/vfp/Makefile                      |  2 -
+ arch/arm/vfp/vfphw.S                       | 30 ++++++----
+ arch/powerpc/include/asm/ftrace.h          |  5 +-
+ arch/powerpc/kernel/trace/ftrace.c         | 15 ++++-
+ arch/powerpc/mm/mem.c                      |  2 +
+ arch/s390/include/asm/kexec.h              | 10 ++++
+ arch/x86/include/asm/kexec.h               |  9 +++
+ drivers/clocksource/mmio.c                 |  2 +-
+ drivers/clocksource/timer-ixp4xx.c         | 10 ++--
+ drivers/gpu/drm/drm_crtc_helper_internal.h | 10 ----
+ drivers/gpu/drm/drm_fb_helper.c            | 21 -------
+ drivers/gpu/drm/drm_kms_helper_common.c    | 25 ++++-----
+ drivers/net/ethernet/mscc/ocelot.c         |  8 ++-
+ include/linux/kexec.h                      | 46 ++++++++++++---
+ include/linux/platform_data/timer-ixp4xx.h |  5 +-
+ kernel/kexec_file.c                        | 34 ------------
+ 60 files changed, 289 insertions(+), 247 deletions(-)
 
 
