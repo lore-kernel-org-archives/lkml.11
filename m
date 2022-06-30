@@ -2,69 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A66C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236966AbiF3Twn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 15:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50340 "EHLO
+        id S236979AbiF3Twq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 15:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236820AbiF3Twi (ORCPT
+        with ESMTP id S236930AbiF3Twk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 15:52:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73A2444755
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:37 -0700 (PDT)
+        Thu, 30 Jun 2022 15:52:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18B54443D3
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656618756;
+        s=mimecast20190719; t=1656618759;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YuG2y2ZB4QP84uKg4ters0wFa448pqv2dml+Y1Tj1iM=;
-        b=bbGg14TriMozqQUBrki4ABjKf3xuzVUmUFtUEPLp7rhnsgHAmAMHQmhyyRzLQliNaeYwp2
-        TvolyWwNa5H9w9N1ZX/SpW5lKtIIb84WgvKNKAm3zWZn6Xd5MuPAHDkLuFQTxJFpBURjV+
-        XOGjOmfvVOCOBDKkC3oBTIVbQhwnm9Y=
+        bh=Y6xqv8hs+XRgwjFSDNBYvhusbDhaYngjQ59D9YVxo8g=;
+        b=bA2kSgjHSPTsc5ub1XnKsushvrd6jkycReQ9+rKpI+Ge65Bv3ADrlNjfLm2hlBDihQ5f0d
+        +pKQoGq47aO1ELdO01wVG/vU3FL2K7JUxkkUbWfM+8MDP78VI4zyc+1DFnA7QC0kq8VE+j
+        pIzNODGzdjNTAiRfKjMoCoOmZLlvLWo=
 Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
  [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-2CJRifC-N6q-r2b1erM0VQ-1; Thu, 30 Jun 2022 15:52:35 -0400
-X-MC-Unique: 2CJRifC-N6q-r2b1erM0VQ-1
-Received: by mail-il1-f197.google.com with SMTP id i2-20020a056e021b0200b002dadf6a0a0eso39640ilv.12
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:35 -0700 (PDT)
+ us-mta-596-NXJQJwhJMnOqFbtM61eodA-1; Thu, 30 Jun 2022 15:52:37 -0400
+X-MC-Unique: NXJQJwhJMnOqFbtM61eodA-1
+Received: by mail-il1-f197.google.com with SMTP id n16-20020a056e02141000b002dabb875f0aso43540ilo.10
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=YuG2y2ZB4QP84uKg4ters0wFa448pqv2dml+Y1Tj1iM=;
-        b=uVntxdQ9QpF9B3EcSYUmkw0tgFSE7Pu7OlF3rcapi1HrVMTiaTAGu8SP6wLcP9pcYe
-         HF3pbgUTg+gWGzOn7tjo2Z2FZse/M5lv08iwTCN6gsyEgi529eNzi6z8y2dZHJboOqt7
-         PGibLyPYy61qqO29Gj5bbC5li/GLQFJZpD5r8gPwPB1Rhf1c2khMwMze+udSq8S21zfD
-         UzgNaq1MZt0+rAU4ukgPMzddT9KzYAFNdf3H0b9iLz9ev9yQ55nMNZ+ZRZ7caMHP5Wr4
-         yF7bzZXT4yJp+tA6qinvPr3S4TUxyJSKEDvPeIT8S0mMUGjXQAAQ1yoyH1V/CttWbSdB
-         8e1A==
-X-Gm-Message-State: AJIora/ICFp8aF1bjwpAHeg3FQksd8L2466iGEvkMAQvNeE8zcB0fi2K
-        lbF31rQ1MIWzW5tf6chwoIlvdIyNqoI0tZb5s43ex9H8mRjun0sIaaFNcAusCfnwBgb3vqExBRT
-        WivC/hEMQCPAaF4rREL+8xNZY
-X-Received: by 2002:a05:6638:2104:b0:33c:be1e:8d67 with SMTP id n4-20020a056638210400b0033cbe1e8d67mr6449868jaj.196.1656618754205;
-        Thu, 30 Jun 2022 12:52:34 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vbucyqQv+gwXM0W06NeNVvHRpysJftS4fb0I3/j0Q3zn/CNWBBDNBOEgMD60z7AaBt5n5aTg==
-X-Received: by 2002:a05:6638:2104:b0:33c:be1e:8d67 with SMTP id n4-20020a056638210400b0033cbe1e8d67mr6449858jaj.196.1656618753954;
-        Thu, 30 Jun 2022 12:52:33 -0700 (PDT)
+        bh=Y6xqv8hs+XRgwjFSDNBYvhusbDhaYngjQ59D9YVxo8g=;
+        b=jZApNz0snq0YtYGSn7Vf1Q9aLRalgRZFm0GkZxortn3y50JB1tik/WLMxkmbLuQz2T
+         ArjvZ2vT4TlacuCXyWEimKjiwDDRh1nEtw8T+eDVqKuaej912CRirwiIyyTLv/NqoCHw
+         yLB2ry/x3MraSH9Q0xYta4s68YSQiJ003mKp7Irn0keWAdliPfFcLzS1ocfJwoChB8XS
+         o45QvLXKGlmHe8Iht60it6EI+TfEO48XN6Tbf/wFRUrvV3chI0z9MusE8R844LxPuCwd
+         SgM3WBdRhaZxLR5HjJfgKGSNnNQAMNZxIYEuDhpfChO+FKIMzrHER+77woWK2xZsL6JC
+         N3kA==
+X-Gm-Message-State: AJIora/kbNXhg7i0pD1DzWcvziwUl/ctUtHExho8HSa+yRY6x5lyulZn
+        FxCxgYyZvZD2K14JrJJvNYTumegZNd7WdTdGlbeuA0F2zzXCGvzabK6p5YnJv66+oVZNHAqamNG
+        nIlphaXczVVKTSf4nkbzs8x+v
+X-Received: by 2002:a05:6e02:1a68:b0:2da:9b52:28c5 with SMTP id w8-20020a056e021a6800b002da9b5228c5mr5618981ilv.253.1656618756969;
+        Thu, 30 Jun 2022 12:52:36 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vVE2mrAWAgc5A5eRbm90N2mWbOhnx1f03iIjBRSRBRlLiVaiEN67U+EQ/COzeFWjD9VC1efQ==
+X-Received: by 2002:a05:6e02:1a68:b0:2da:9b52:28c5 with SMTP id w8-20020a056e021a6800b002da9b5228c5mr5618968ilv.253.1656618756764;
+        Thu, 30 Jun 2022 12:52:36 -0700 (PDT)
 Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id x42-20020a0294ad000000b00330c5581c03sm8880286jah.1.2022.06.30.12.52.32
+        by smtp.gmail.com with ESMTPSA id x42-20020a0294ad000000b00330c5581c03sm8880286jah.1.2022.06.30.12.52.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 12:52:33 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 13:51:43 -0600
+        Thu, 30 Jun 2022 12:52:36 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 13:51:40 -0600
 From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Bo Liu <liubo03@inspur.com>
-Cc:     <cohuck@redhat.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/1] vfio: check vfio_register_iommu_driver() return
- value
-Message-ID: <20220630135143.585d3575.alex.williamson@redhat.com>
-In-Reply-To: <20220622045651.5416-1-liubo03@inspur.com>
-References: <20220622045651.5416-1-liubo03@inspur.com>
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     cohuck@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] vfio: Clear the caps->buf to NULL after free
+Message-ID: <20220630135140.2dd079c9.alex.williamson@redhat.com>
+In-Reply-To: <20220629022948.55608-1-schspa@gmail.com>
+References: <20220629022948.55608-1-schspa@gmail.com>
 Organization: Red Hat
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -73,48 +72,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 00:56:51 -0400
-Bo Liu <liubo03@inspur.com> wrote:
+On Wed, 29 Jun 2022 10:29:48 +0800
+Schspa Shi <schspa@gmail.com> wrote:
 
-> As vfio_register_iommu_driver() can fail, we should check the return value.
+> On buffer resize failure, vfio_info_cap_add() will free the buffer,
+> report zero for the size, and return -ENOMEM.  As additional
+> hardening, also clear the buffer pointer to prevent any chance of a
+> double free.
 > 
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->  Changes from v1:
->  -move the pr_info()
->  -move  #endif above the ret test
->  -remove #ifdefs above the err_driver_register
+> Signed-off-by: Schspa Shi <schspa@gmail.com>
 > 
->  drivers/vfio/vfio.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
 
 Applied to vfio next branch for v5.20.  Thanks,
 
 Alex
-
-> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> index 61e71c1154be..8f435c0d7748 100644
-> --- a/drivers/vfio/vfio.c
-> +++ b/drivers/vfio/vfio.c
-> @@ -2156,13 +2156,17 @@ static int __init vfio_init(void)
->  	if (ret)
->  		goto err_alloc_chrdev;
->  
-> -	pr_info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
-> -
->  #ifdef CONFIG_VFIO_NOIOMMU
-> -	vfio_register_iommu_driver(&vfio_noiommu_ops);
-> +	ret = vfio_register_iommu_driver(&vfio_noiommu_ops);
->  #endif
-> +	if (ret)
-> +		goto err_driver_register;
-> +
-> +	pr_info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
->  	return 0;
->  
-> +err_driver_register:
-> +	unregister_chrdev_region(vfio.group_devt, MINORMASK + 1);
->  err_alloc_chrdev:
->  	class_destroy(vfio.class);
->  	vfio.class = NULL;
 
