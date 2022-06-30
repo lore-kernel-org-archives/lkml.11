@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6283C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10665C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236506AbiF3OEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
+        id S236515AbiF3OEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236466AbiF3OEI (ORCPT
+        with ESMTP id S236136AbiF3OEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:04:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A436B805;
-        Thu, 30 Jun 2022 06:53:29 -0700 (PDT)
+        Thu, 30 Jun 2022 10:04:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10A01C93E;
+        Thu, 30 Jun 2022 06:53:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63F9A6210F;
-        Thu, 30 Jun 2022 13:53:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F075C34115;
-        Thu, 30 Jun 2022 13:53:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8EF861FF6;
+        Thu, 30 Jun 2022 13:53:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6BBBC34115;
+        Thu, 30 Jun 2022 13:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597204;
-        bh=B6o1vVJE8G5b1r5QxOa5AGOqbLfmPxyGA5Nfo4bviAk=;
+        s=korg; t=1656597210;
+        bh=gm3/40PraIRoPdikTNa1RPb+SBo7RcNx1xZ4whZxs6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l3PiiUwyCwYRsMx3/hAjCT5nTaL8eMJKzbJWicGNPkp4omWvzefOsSOVUQbu2yCY4
-         9tIo158o7YQ2Ve7bb5MPs6eQokI9wbJQi34+GyUsVY9mNrIqxiJLs1bmJgnuPFBbcJ
-         NUrZlBV9lqVufHkOmEwPkkkRFXRxc2nt0xUBze9E=
+        b=f74Lpn2TFqp1G8P7mFigX9Ifwq8S+KxUeLqw3mNMuTSxsALkfoRcYmvX0ktCfq3Gb
+         slcKtLAjlfzC+beEQX4MTVVxEpOo7hg7yzm0/aYSjcN5Y5HDTF9VFqshfepk9OhEAC
+         BHeNeMpJkxZt6R2hCsrzrpFXhnnyQipvvgGFrhGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.4 16/16] crypto: arm/ghash-ce - define fpu before fpu registers are referenced
-Date:   Thu, 30 Jun 2022 15:47:10 +0200
-Message-Id: <20220630133231.416143558@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.4 04/16] kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
+Date:   Thu, 30 Jun 2022 15:46:58 +0200
+Message-Id: <20220630133231.067624992@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
 References: <20220630133230.936488203@linuxfoundation.org>
@@ -51,51 +50,192 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Agner <stefan@agner.ch>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-commit 7548bf8c17d84607c106bd45d81834afd95a2edb upstream
+commit 3e35142ef99fe6b4fe5d834ad43ee13cca10a2dc upstream.
 
-Building ARMv7 with Clang's integrated assembler leads to errors such
-as:
-arch/arm/crypto/ghash-ce-core.S:34:11: error: register name expected
- t3l .req d16
-          ^
+Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
+symbols") [1], binutils (v2.36+) started dropping section symbols that
+it thought were unused.  This isn't an issue in general, but with
+kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
+separate .text.unlikely section and the section symbol ".text.unlikely"
+is being dropped. Due to this, recordmcount is unable to find a non-weak
+symbol in .text.unlikely to generate a relocation record against.
 
-Since no FPU has selected yet Clang considers d16 not a valid register.
-Moving the FPU directive on-top allows Clang to parse the registers and
-allows to successfully build this file with Clang's integrated assembler.
+Address this by dropping the weak attribute from these functions.
+Instead, follow the existing pattern of having architectures #define the
+name of the function they want to override in their headers.
 
-Signed-off-by: Stefan Agner <stefan@agner.ch>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Tested-by: Nick Desaulniers <ndesaulniers@google.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+
+[akpm@linux-foundation.org: arch/s390/include/asm/kexec.h needs linux/module.h]
+Link: https://lkml.kernel.org/r/20220519091237.676736-1-naveen.n.rao@linux.vnet.ibm.com
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/crypto/ghash-ce-core.S |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/s390/include/asm/kexec.h |   10 +++++++++
+ arch/x86/include/asm/kexec.h  |    9 ++++++++
+ include/linux/kexec.h         |   46 ++++++++++++++++++++++++++++++++++--------
+ kernel/kexec_file.c           |   34 -------------------------------
+ 4 files changed, 57 insertions(+), 42 deletions(-)
 
---- a/arch/arm/crypto/ghash-ce-core.S
-+++ b/arch/arm/crypto/ghash-ce-core.S
-@@ -8,6 +8,9 @@
- #include <linux/linkage.h>
- #include <asm/assembler.h>
+--- a/arch/s390/include/asm/kexec.h
++++ b/arch/s390/include/asm/kexec.h
+@@ -9,6 +9,8 @@
+ #ifndef _S390_KEXEC_H
+ #define _S390_KEXEC_H
  
-+	.arch		armv8-a
-+	.fpu		crypto-neon-fp-armv8
++#include <linux/module.h>
 +
- 	SHASH		.req	q0
- 	T1		.req	q1
- 	XL		.req	q2
-@@ -88,8 +91,6 @@
- 	T3_H		.req	d17
+ #include <asm/processor.h>
+ #include <asm/page.h>
+ #include <asm/setup.h>
+@@ -83,4 +85,12 @@ struct kimage_arch {
+ extern const struct kexec_file_ops s390_kexec_image_ops;
+ extern const struct kexec_file_ops s390_kexec_elf_ops;
  
- 	.text
--	.arch		armv8-a
--	.fpu		crypto-neon-fp-armv8
++#ifdef CONFIG_KEXEC_FILE
++struct purgatory_info;
++int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
++				     Elf_Shdr *section,
++				     const Elf_Shdr *relsec,
++				     const Elf_Shdr *symtab);
++#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
++#endif
+ #endif /*_S390_KEXEC_H */
+--- a/arch/x86/include/asm/kexec.h
++++ b/arch/x86/include/asm/kexec.h
+@@ -22,6 +22,7 @@
  
- 	.macro		__pmull_p64, rd, rn, rm, b1, b2, b3, b4
- 	vmull.p64	\rd, \rn, \rm
+ #include <linux/string.h>
+ #include <linux/kernel.h>
++#include <linux/module.h>
+ 
+ #include <asm/page.h>
+ #include <asm/ptrace.h>
+@@ -201,6 +202,14 @@ extern int arch_kexec_post_alloc_pages(v
+ extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
+ #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
+ 
++#ifdef CONFIG_KEXEC_FILE
++struct purgatory_info;
++int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
++				     Elf_Shdr *section,
++				     const Elf_Shdr *relsec,
++				     const Elf_Shdr *symtab);
++#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
++#endif
+ #endif
+ 
+ typedef void crash_vmclear_fn(void);
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -186,14 +186,6 @@ void *kexec_purgatory_get_symbol_addr(st
+ int __weak arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
+ 					 unsigned long buf_len);
+ void * __weak arch_kexec_kernel_image_load(struct kimage *image);
+-int __weak arch_kexec_apply_relocations_add(struct purgatory_info *pi,
+-					    Elf_Shdr *section,
+-					    const Elf_Shdr *relsec,
+-					    const Elf_Shdr *symtab);
+-int __weak arch_kexec_apply_relocations(struct purgatory_info *pi,
+-					Elf_Shdr *section,
+-					const Elf_Shdr *relsec,
+-					const Elf_Shdr *symtab);
+ 
+ extern int kexec_add_buffer(struct kexec_buf *kbuf);
+ int kexec_locate_mem_hole(struct kexec_buf *kbuf);
+@@ -216,6 +208,44 @@ extern int crash_exclude_mem_range(struc
+ 				   unsigned long long mend);
+ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+ 				       void **addr, unsigned long *sz);
++
++#ifndef arch_kexec_apply_relocations_add
++/*
++ * arch_kexec_apply_relocations_add - apply relocations of type RELA
++ * @pi:		Purgatory to be relocated.
++ * @section:	Section relocations applying to.
++ * @relsec:	Section containing RELAs.
++ * @symtab:	Corresponding symtab.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static inline int
++arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
++				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
++{
++	pr_err("RELA relocation unsupported.\n");
++	return -ENOEXEC;
++}
++#endif
++
++#ifndef arch_kexec_apply_relocations
++/*
++ * arch_kexec_apply_relocations - apply relocations of type REL
++ * @pi:		Purgatory to be relocated.
++ * @section:	Section relocations applying to.
++ * @relsec:	Section containing RELs.
++ * @symtab:	Corresponding symtab.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static inline int
++arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
++			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
++{
++	pr_err("REL relocation unsupported.\n");
++	return -ENOEXEC;
++}
++#endif
+ #endif /* CONFIG_KEXEC_FILE */
+ 
+ #ifdef CONFIG_KEXEC_ELF
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -108,40 +108,6 @@ int __weak arch_kexec_kernel_verify_sig(
+ #endif
+ 
+ /*
+- * arch_kexec_apply_relocations_add - apply relocations of type RELA
+- * @pi:		Purgatory to be relocated.
+- * @section:	Section relocations applying to.
+- * @relsec:	Section containing RELAs.
+- * @symtab:	Corresponding symtab.
+- *
+- * Return: 0 on success, negative errno on error.
+- */
+-int __weak
+-arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
+-				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
+-{
+-	pr_err("RELA relocation unsupported.\n");
+-	return -ENOEXEC;
+-}
+-
+-/*
+- * arch_kexec_apply_relocations - apply relocations of type REL
+- * @pi:		Purgatory to be relocated.
+- * @section:	Section relocations applying to.
+- * @relsec:	Section containing RELs.
+- * @symtab:	Corresponding symtab.
+- *
+- * Return: 0 on success, negative errno on error.
+- */
+-int __weak
+-arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
+-			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
+-{
+-	pr_err("REL relocation unsupported.\n");
+-	return -ENOEXEC;
+-}
+-
+-/*
+  * Free up memory used by kernel, initrd, and command line. This is temporary
+  * memory allocation which is not needed any more after these buffers have
+  * been loaded into separate segments and have been copied elsewhere.
 
 
