@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E70C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2785AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236711AbiF3OIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        id S236724AbiF3OIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236679AbiF3OHW (ORCPT
+        with ESMTP id S236557AbiF3OG4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:07:22 -0400
+        Thu, 30 Jun 2022 10:06:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E0872EEA;
-        Thu, 30 Jun 2022 06:54:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEC04F19E;
+        Thu, 30 Jun 2022 06:54:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 132B061F5F;
-        Thu, 30 Jun 2022 13:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230BBC341CB;
-        Thu, 30 Jun 2022 13:54:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C64E861FDB;
+        Thu, 30 Jun 2022 13:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03D8C34115;
+        Thu, 30 Jun 2022 13:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597262;
-        bh=YSrChqLUMjIgAIyGJymSZd2Gm+5E0kMjXymR4Fw4Kz8=;
+        s=korg; t=1656597254;
+        bh=SbgGPTyNglffG3TwFHx2LhmFF+pZS8w3mcJvxg7lWy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xqt4fvJg53Eeg/SOdmmFnQUl9P1ZMHpLGSO9Km5tDaNjKWlQsPYuDqXoS+WCVUfXn
-         I/aWZGobp6JBRU8UNCi5qGAfKzm1it0GvajzOGudUKSz2OSNux+kdKjsiGod+XRolL
-         MiFFn1PYeH66voNzXU6ktUpKuz9UE6iXTbyIrL/I=
+        b=LnI4t9mBjn969MrsJPPTV2tstg8WB2cTq8PDbhaGXQUu7DTlkpchgzrhXMp0UMvg/
+         wuNjyxufwqztoRPcM8wUugaPCA6CL+ZyvnarlnnA1Sy/Sq7mdLuu4OSTOMIMSZGFs0
+         eQ9iYKAgQKOfxajLww1Z4BXSurLTiGjSejliHLU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        Chandan Babu R <chandan.babu@oracle.com>,
+        stable@vger.kernel.org, Rustam Kovhaev <rkovhaev@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 09/12] xfs: remove all COW fork extents when remounting readonly
-Date:   Thu, 30 Jun 2022 15:47:14 +0200
-Message-Id: <20220630133230.967036087@linuxfoundation.org>
+Subject: [PATCH 5.10 06/12] xfs: use kmem_cache_free() for kmem_cache objects
+Date:   Thu, 30 Jun 2022 15:47:11 +0200
+Message-Id: <20220630133230.871663272@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
 References: <20220630133230.676254336@linuxfoundation.org>
@@ -50,88 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Rustam Kovhaev <rkovhaev@gmail.com>
 
-commit 089558bc7ba785c03815a49c89e28ad9b8de51f9 upstream.
+commit c30a0cbd07ecc0eec7b3cd568f7b1c7bb7913f93 upstream.
 
-[backport xfs_icwalk -> xfs_eofblocks for 5.10.y]
+For kmalloc() allocations SLOB prepends the blocks with a 4-byte header,
+and it puts the size of the allocated blocks in that header.
+Blocks allocated with kmem_cache_alloc() allocations do not have that
+header.
 
-As part of multiple customer escalations due to file data corruption
-after copy on write operations, I wrote some fstests that use fsstress
-to hammer on COW to shake things loose.  Regrettably, I caught some
-filesystem shutdowns due to incorrect rmap operations with the following
-loop:
+SLOB explodes when you allocate memory with kmem_cache_alloc() and then
+try to free it with kfree() instead of kmem_cache_free().
+SLOB will assume that there is a header when there is none, read some
+garbage to size variable and corrupt the adjacent objects, which
+eventually leads to hang or panic.
 
-mount <filesystem>				# (0)
-fsstress <run only readonly ops> &		# (1)
-while true; do
-	fsstress <run all ops>
-	mount -o remount,ro			# (2)
-	fsstress <run only readonly ops>
-	mount -o remount,rw			# (3)
-done
+Let's make XFS work with SLOB by using proper free function.
 
-When (2) happens, notice that (1) is still running.  xfs_remount_ro will
-call xfs_blockgc_stop to walk the inode cache to free all the COW
-extents, but the blockgc mechanism races with (1)'s reader threads to
-take IOLOCKs and loses, which means that it doesn't clean them all out.
-Call such a file (A).
-
-When (3) happens, xfs_remount_rw calls xfs_reflink_recover_cow, which
-walks the ondisk refcount btree and frees any COW extent that it finds.
-This function does not check the inode cache, which means that incore
-COW forks of inode (A) is now inconsistent with the ondisk metadata.  If
-one of those former COW extents are allocated and mapped into another
-file (B) and someone triggers a COW to the stale reservation in (A), A's
-dirty data will be written into (B) and once that's done, those blocks
-will be transferred to (A)'s data fork without bumping the refcount.
-
-The results are catastrophic -- file (B) and the refcount btree are now
-corrupt.  Solve this race by forcing the xfs_blockgc_free_space to run
-synchronously, which causes xfs_icwalk to return to inodes that were
-skipped because the blockgc code couldn't take the IOLOCK.  This is safe
-to do here because the VFS has already prohibited new writer threads.
-
-Fixes: 10ddf64e420f ("xfs: remove leftover CoW reservations when remounting ro")
+Fixes: 9749fee83f38 ("xfs: enable the xfs_defer mechanism to process extents to free")
+Signed-off-by: Rustam Kovhaev <rkovhaev@gmail.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Chandan Babu R <chandan.babu@oracle.com>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_super.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ fs/xfs/xfs_extfree_item.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/xfs/xfs_super.c
-+++ b/fs/xfs/xfs_super.c
-@@ -1695,7 +1695,10 @@ static int
- xfs_remount_ro(
- 	struct xfs_mount	*mp)
- {
--	int error;
-+	struct xfs_eofblocks	eofb = {
-+		.eof_flags	= XFS_EOF_FLAGS_SYNC,
-+	};
-+	int			error;
+--- a/fs/xfs/xfs_extfree_item.c
++++ b/fs/xfs/xfs_extfree_item.c
+@@ -482,7 +482,7 @@ xfs_extent_free_finish_item(
+ 			free->xefi_startblock,
+ 			free->xefi_blockcount,
+ 			&free->xefi_oinfo, free->xefi_skip_discard);
+-	kmem_free(free);
++	kmem_cache_free(xfs_bmap_free_item_zone, free);
+ 	return error;
+ }
  
- 	/*
- 	 * Cancel background eofb scanning so it cannot race with the final
-@@ -1703,8 +1706,13 @@ xfs_remount_ro(
- 	 */
- 	xfs_stop_block_reaping(mp);
+@@ -502,7 +502,7 @@ xfs_extent_free_cancel_item(
+ 	struct xfs_extent_free_item	*free;
  
--	/* Get rid of any leftover CoW reservations... */
--	error = xfs_icache_free_cowblocks(mp, NULL);
-+	/*
-+	 * Clear out all remaining COW staging extents and speculative post-EOF
-+	 * preallocations so that we don't leave inodes requiring inactivation
-+	 * cleanups during reclaim on a read-only mount.  We must process every
-+	 * cached inode, so this requires a synchronous cache scan.
-+	 */
-+	error = xfs_icache_free_cowblocks(mp, &eofb);
- 	if (error) {
- 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
- 		return error;
+ 	free = container_of(item, struct xfs_extent_free_item, xefi_list);
+-	kmem_free(free);
++	kmem_cache_free(xfs_bmap_free_item_zone, free);
+ }
+ 
+ const struct xfs_defer_op_type xfs_extent_free_defer_type = {
+@@ -564,7 +564,7 @@ xfs_agfl_free_finish_item(
+ 	extp->ext_len = free->xefi_blockcount;
+ 	efdp->efd_next_extent++;
+ 
+-	kmem_free(free);
++	kmem_cache_free(xfs_bmap_free_item_zone, free);
+ 	return error;
+ }
+ 
 
 
