@@ -2,134 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D7AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EA5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235783AbiF3Qy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 12:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55238 "EHLO
+        id S235889AbiF3Qzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 12:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232887AbiF3Qy5 (ORCPT
+        with ESMTP id S230223AbiF3Qzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 12:54:57 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDC4393DC
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:54:56 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id s17so19709512iob.7
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:54:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=3yzQoY2ucWrQqXREQTyNPjG4X86W8VdDP00R8nZTgn0=;
-        b=gKHIqcp0AXkJmHeV5RhLZd4icY5aYh4HmgWSU7ggoO73jfesxxLYVvV03O8gLsc2g5
-         +cOwbiWrWLrnxa5Ivba04k23sLZ/VzDqvVJGxIuNRO5EFyAaZT8XPV48zebXLz7r3zPE
-         nRM+1xIjvy9uFrtZkqNlL92HXCv2ysiQc2OBuTiijyC60csdeQWNQUric+SODQoFdcNO
-         +f5AT3XUhy8XYk6g7mLvG0i5OjWUMLHCs5JRBTmY/dYg2Bx0dAaSfEcVomqUN6GSSFmM
-         bFdS0Oweb2Xt6h1Wo2E36OtoM61U2v81mUipbJ64BoAnv3q3w5ZV7NEw6i9ETiEp66jF
-         dXsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=3yzQoY2ucWrQqXREQTyNPjG4X86W8VdDP00R8nZTgn0=;
-        b=0vN+jm288QKAzUMGr+qKkve/NAxQFBup1ryvC8wt3N+UXuB1Vbg9Y52R4QI+3XLy6z
-         olexXYUgb4uAPL9DN/ceGSxTUOaitovJI51w08tC9rIvmAjwZ47Iz0smgamvq1Thjunf
-         tfT2y7zM/cutoIH5CB6TGnWXTjQvQK+8SpFDBboue0Hrd8eCqGrU56RRF5ljmL75KOO9
-         //vdzlprB27f2VhaLLZeyOA0NQfPTXVgQAC+06gltaPMRJmKjkOaUrYOzLRrHM/eLdRE
-         pxM6Fztt0FlBEKqpqP42RGLTsG11d4Qt5/T+aishp6K55pGXjwuB4Faacxobs9LPHZqO
-         fXfw==
-X-Gm-Message-State: AJIora8o043UJzKUcuIMjGwTlF6Ed0q98GN7NWZpwwWMV1cvTCbDPmxK
-        iyh2UVWBK5pE4mvXZtOZ95c/8ufMKq4BCg==
-X-Google-Smtp-Source: AGRyM1t1lqGrk46YUgq5ZmtKS2YxO4+SXDt+L/ChvS1zfaHjZTfXt/gVL3fenni78YqCtJp7hGr+WQ==
-X-Received: by 2002:a05:6638:1a8d:b0:33c:9a98:ff2d with SMTP id ce13-20020a0566381a8d00b0033c9a98ff2dmr6243491jab.31.1656608095139;
-        Thu, 30 Jun 2022 09:54:55 -0700 (PDT)
-Received: from ArchLinux ([240e:390:a20:ece0:3ad5:47ff:feb5:73b2])
-        by smtp.gmail.com with ESMTPSA id p7-20020a02b007000000b00339dd3976absm8723936jah.110.2022.06.30.09.54.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 09:54:54 -0700 (PDT)
-References: <20220630161220.53449-1-schspa@gmail.com>
- <87mtdu15ok.wl-maz@kernel.org>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: arm64: Fix 64 bit mmio handle
-Date:   Fri, 01 Jul 2022 00:50:59 +0800
-In-reply-to: <87mtdu15ok.wl-maz@kernel.org>
-Message-ID: <m2bkua148a.fsf@gmail.com>
+        Thu, 30 Jun 2022 12:55:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4636393DC
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:55:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82D9EB82BD5
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:55:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE685C3411E;
+        Thu, 30 Jun 2022 16:55:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656608144;
+        bh=FxOr7jGqldlmPZhNQ+CVV3r/8IUAgqCNNc1MtsgY0EM=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=r4mfjcedqPKPtKQH2gcMD8xlZOUwGtEjp9vyUNphOWyFXGioqqvRE5LSM/tgm1uw6
+         /QfdM30uCJtkoxwfHF4795GUpiDd43MS5/2IZKM6fFjvucFW8Z2wjvKQHjc9N58p/F
+         r/Gs1JvPfrWCQUjNZDINiMw9mqTetoiI5tHJntxu46c7YWmCqJgQeKGrBZ7xJca/Mn
+         WRHBOaV0mgRDCC71nRGf0XUa+wPuRJbixdpXKyAWVcavpMnje/oTCzcJx7+kt6yqLI
+         7DU6xBPQqMlttY+Me4W0eIcr8FoQx382b7cygz5T3a7Ixfn6vJ/qD4hiabTJrR3Tc9
+         sq1QRPZMcVYVQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     srinivas.kandagatla@linaro.org
+Cc:     perex@perex.cz, linux-kernel@vger.kernel.org, tiwai@suse.com,
+        alsa-devel@alsa-project.org, lgirdwood@gmail.com,
+        pierre-louis.bossart@linux.intel.com
+In-Reply-To: <20220630130023.9308-1-srinivas.kandagatla@linaro.org>
+References: <20220630130023.9308-1-srinivas.kandagatla@linaro.org>
+Subject: Re: [PATCH 1/2] ASoC: codecs: wsa881x: handle timeouts in resume path
+Message-Id: <165660814249.771023.7178878929435843579.b4-ty@kernel.org>
+Date:   Thu, 30 Jun 2022 17:55:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 30 Jun 2022 14:00:22 +0100, Srinivas Kandagatla wrote:
+> Currently we do not check if SoundWire slave initialization timeout
+> expired before continuing to access its registers.
+> 
+> Its possible that the registers are not accessible if timeout is
+> expired. Handle this by returning timeout in resume path.
+> 
+> 
+> [...]
 
-Marc Zyngier <maz@kernel.org> writes:
+Applied to
 
-> On Thu, 30 Jun 2022 17:12:20 +0100,
-> Schspa Shi <schspa@gmail.com> wrote:
->> 
->> If the len is 8 bytes, we can't get the correct sign extend for
->> be system.
->
-> I'm afraid you'll have to give me a bit more details.
->
->> 
->> Fix the mask type len and the comparison of length.
->> 
->> Signed-off-by: Schspa Shi <schspa@gmail.com>
->> ---
->>  arch/arm64/kvm/mmio.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->> 
->> diff --git a/arch/arm64/kvm/mmio.c b/arch/arm64/kvm/mmio.c
->> index 3dd38a151d2a6..0692f8b18f35c 100644
->> --- a/arch/arm64/kvm/mmio.c
->> +++ b/arch/arm64/kvm/mmio.c
->> @@ -81,8 +81,8 @@ unsigned long kvm_mmio_read_buf(const void 
->> *buf, unsigned int len)
->>  int kvm_handle_mmio_return(struct kvm_vcpu *vcpu)
->>  {
->>  	unsigned long data;
->> +	unsigned long mask;
->>  	unsigned int len;
->> -	int mask;
->>  
->>  	/* Detect an already handled MMIO return */
->>  	if (unlikely(!vcpu->mmio_needed))
->> @@ -97,7 +97,7 @@ int kvm_handle_mmio_return(struct kvm_vcpu 
->> *vcpu)
->>  		data = kvm_mmio_read_buf(run->mmio.data, len);
->>  
->>  		if (kvm_vcpu_dabt_issext(vcpu) &&
->> -		    len < sizeof(unsigned long)) {
->> +		    len <= sizeof(unsigned long)) {
->
-> If you're reading an 8 byte quantity, what is there to 
-> sign-extend?
-> Sign extension only makes sense if what you're reading is 
-> *smaller*
-> than the size of the register you are targeting.
->
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Yes, you are correct, sorry for my bad patch.
-Please ignore this patch.
+Thanks!
 
-> I must be missing something. And how is that related to running 
-> BE? BE
-> in the host? The guest?
+[1/2] ASoC: codecs: wsa881x: handle timeouts in resume path
+      commit: cf6af24b54903f9f70c29b3e5b19cb72cc862d60
+[2/2] ASoC: codecs: wsa883x: handle timeouts in resume path
+      commit: 0df73e1a9f7b1152ace21b6406138f7487239128
 
-I mean BE is for guest running with BE mode.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
->
-> Please convince me.
->
-> 	M.
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
--- 
-BRs
-Schspa Shi
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
