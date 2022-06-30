@@ -2,132 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02494C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 687A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235629AbiF3NuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
+        id S235548AbiF3Nu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235398AbiF3Nta (ORCPT
+        with ESMTP id S235517AbiF3Ntb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:49:30 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688352CDF4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:48:46 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id k20so5239178edj.13
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ROC0BgtK/N+kzsuCvrmnTVmfs20tFROFRODZongU+to=;
-        b=NaoC0xFuRq2ObQvdXuPj82w4yVCM/A/ZMWn+W0zeWYsDUTYGGbQJdNxBJqYyAbTzCT
-         qcFAuggucFIZvrj9SpxMx/AS8vGpx1GzK/cA9mktGtrnKV4DV3CsYHfYhWHkavX5gAbx
-         U/Mtc6Q7FM9kqfsf1I9SsvzlZpEq/sgXxdi9k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ROC0BgtK/N+kzsuCvrmnTVmfs20tFROFRODZongU+to=;
-        b=PjoOhR1Fn0fBs6LOwoAhNXVM12lGARlazaFW4kM5d8SWx73ilcc8BP+h/hASzRk7wa
-         iw327P42us9d8NWZfXOP3i539Wm2eSJFdlZu/qZVpiZSmZ7YB3x0cOmQLmMvBE5eqvLP
-         cXDQaBkqFGlc4PyBjELBAQXeoKQCOk2IynYznupVb+thj6Z0PEfZ+Aq9Xw8TY9Z7omvQ
-         LmnSnMPGynYOm69uYMl0MgKLNvW1kSNe4CFnZ9asohhC0XyllPcWRhqpsSIM+oCU82Wz
-         IdEC4dZ3QQBq8U/WiMbRbiWNsg5nwgIcLhTc5tpANLbgODeSIIqhhugGv0eTH30Y4tEE
-         6kog==
-X-Gm-Message-State: AJIora+9mm5u+7xJYBTRd5d/PC5j48TOlWpftQa+z9svf+jKotkVeVPY
-        oonydawWNfJzcBp+tICAvMoq8w==
-X-Google-Smtp-Source: AGRyM1s9h/6dn4X3QmybTx+NQeRd1kfhotuKgCuC0FQY7rw9ZwgAgS9szjrVgzUwVvo9Sc+uvVDy0g==
-X-Received: by 2002:aa7:d294:0:b0:435:5d12:867f with SMTP id w20-20020aa7d294000000b004355d12867fmr11725808edq.147.1656596925203;
-        Thu, 30 Jun 2022 06:48:45 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-58-216.cust.vodafonedsl.it. [188.217.58.216])
-        by smtp.gmail.com with ESMTPSA id k5-20020a1709067ac500b006fee526ed72sm9130288ejo.217.2022.06.30.06.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 06:48:44 -0700 (PDT)
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     tommaso.merciai@amarulasolutions.com
-Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
-        quentin.schulz@theobroma-systems.com,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 4/6] media: ov5693: add support for acpi clock-frequency prop
-Date:   Thu, 30 Jun 2022 15:48:33 +0200
-Message-Id: <20220630134835.592521-5-tommaso.merciai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220630134835.592521-1-tommaso.merciai@amarulasolutions.com>
-References: <20220630134835.592521-1-tommaso.merciai@amarulasolutions.com>
+        Thu, 30 Jun 2022 09:49:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FED535DC2;
+        Thu, 30 Jun 2022 06:48:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B6D8B82AEF;
+        Thu, 30 Jun 2022 13:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B37DC34115;
+        Thu, 30 Jun 2022 13:48:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656596925;
+        bh=ywZziMVk2wfYtFzokSeboHmjaNlpZjzTO3IiG/2bGEk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Zr9lPWZjH1JMdulmVsUDTStZ6ubRJ9GkOLm71QlnFvH6ErGHmirYhOWv+43HIQFOO
+         0EhL19A2EEh8aWy9IwHEk8TcQp/oMZAB4GpuD8zUD2parhSy99jpPrnmzpgZQWo5t/
+         G3yJM6iFsftNf8O9HGcR724UlTUbuxltfdEjwQN4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Edward Wu <edwardwu@realtek.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.9 03/29] ata: libata: add qc->flags in ata_qc_complete_template tracepoint
+Date:   Thu, 30 Jun 2022 15:46:03 +0200
+Message-Id: <20220630133231.303958872@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220630133231.200642128@linuxfoundation.org>
+References: <20220630133231.200642128@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for ACPI-based platforms that specify the clock frequency by
-using the "clock-frequency" property instead of specifying a clock
-provider reference
+From: Edward Wu <edwardwu@realtek.com>
 
-Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+commit 540a92bfe6dab7310b9df2e488ba247d784d0163 upstream.
+
+Add flags value to check the result of ata completion
+
+Fixes: 255c03d15a29 ("libata: Add tracepoints")
+Cc: stable@vger.kernel.org
+Signed-off-by: Edward Wu <edwardwu@realtek.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Changes since v2:
- - Fix commit body as suggested by Sakari, Jacopo
- - Add details to commit body as suggested by Jacopo
- - Move ov5693_check_hwcfg into ov5693_hwcfg
- - Fix xvclk_rate position as suggested by Jacopo
- - Use devm_clk_get_optional instead of devm_clk_get as suggested Jacopo
+ include/trace/events/libata.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v3:
- - Fix commit body as suggested by Jacopo
- - Add reviewed-by tags, suggested by Jacopo, Krzysztof
-
-Changes since v4:
- - Remove wrong Sakari reviewed-by tag, suggested by Krzysztof, Sakari
- - Revert ov5693_check_hwcfg function changes. Keep clk init on probe function
-as suggested by Sakari
- - Fix commit body
- - Fix commit msg
-
- drivers/media/i2c/ov5693.c | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/media/i2c/ov5693.c b/drivers/media/i2c/ov5693.c
-index d2adc5513a21..701468267f20 100644
---- a/drivers/media/i2c/ov5693.c
-+++ b/drivers/media/i2c/ov5693.c
-@@ -1408,13 +1408,25 @@ static int ov5693_probe(struct i2c_client *client)
+--- a/include/trace/events/libata.h
++++ b/include/trace/events/libata.h
+@@ -248,6 +248,7 @@ DECLARE_EVENT_CLASS(ata_qc_complete_temp
+ 		__entry->hob_feature	= qc->result_tf.hob_feature;
+ 		__entry->nsect		= qc->result_tf.nsect;
+ 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
++		__entry->flags		= qc->flags;
+ 	),
  
- 	v4l2_i2c_subdev_init(&ov5693->sd, client, &ov5693_ops);
- 
--	ov5693->xvclk = devm_clk_get(&client->dev, "xvclk");
--	if (IS_ERR(ov5693->xvclk)) {
--		dev_err(&client->dev, "Error getting clock\n");
--		return PTR_ERR(ov5693->xvclk);
-+	ov5693->xvclk = devm_clk_get_optional(&client->dev, "xvclk");
-+	if (IS_ERR(ov5693->xvclk))
-+		return dev_err_probe(&client->dev, PTR_ERR(ov5693->xvclk),
-+				     "failed to get xvclk: %ld\n",
-+				     PTR_ERR(ov5693->xvclk));
-+
-+	if (ov5693->xvclk) {
-+		xvclk_rate = clk_get_rate(ov5693->xvclk);
-+	} else {
-+		ret = fwnode_property_read_u32(dev_fwnode(&client->dev),
-+				     "clock-frequency",
-+				     &xvclk_rate);
-+
-+		if (ret) {
-+			dev_err(&client->dev, "can't get clock frequency");
-+			return ret;
-+		}
- 	}
- 
--	xvclk_rate = clk_get_rate(ov5693->xvclk);
- 	if (xvclk_rate != OV5693_XVCLK_FREQ)
- 		dev_warn(&client->dev, "Found clk freq %u, expected %u\n",
- 			 xvclk_rate, OV5693_XVCLK_FREQ);
--- 
-2.25.1
+ 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
+
 
