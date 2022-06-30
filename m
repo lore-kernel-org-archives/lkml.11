@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E28BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FF5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235873AbiF3NzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
+        id S235945AbiF3Nzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235914AbiF3Nyo (ORCPT
+        with ESMTP id S235866AbiF3Nyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:54:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121F451B3C;
-        Thu, 30 Jun 2022 06:50:22 -0700 (PDT)
+        Thu, 30 Jun 2022 09:54:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DF935253;
+        Thu, 30 Jun 2022 06:50:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 223EEB82AEE;
-        Thu, 30 Jun 2022 13:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86172C34115;
-        Thu, 30 Jun 2022 13:50:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AFA86204B;
+        Thu, 30 Jun 2022 13:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544FEC34115;
+        Thu, 30 Jun 2022 13:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597019;
-        bh=LkGjcLM0HH0up5ztvdF1X5AAzcBGFDmqE0jYW4s03Zs=;
+        s=korg; t=1656597022;
+        bh=VPc362y2Xt8oeF1O2gzNh2F430ZnHbftdjgSOiSbxS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1gr3286hnc6MvlfImSDVT44gRCenEYmFAKRgF880cl4EQ+wqBrf0MzumuexXh/2tD
-         zs2l3n/Ugm7j8n+E7CJmRp+SwvImjoDO0a3kfH1kEqSdj4PxdoB+nNXg71ms9US2n9
-         CCcKurJXczyuzFqgnSxj/iY1Ir6ZQ9d3UJLp1QN8=
+        b=pAt1qgu6Acn6lWyQchIjN4dz70s1EwqenHwtY88Z3S+RgzjCReJne0xvgZug9ineT
+         +3m6RPBQ6xufweaHR6+XQhRKS2uJcLrQMli3t5QB2BjqiP7KAurUHpr9V9PDmKDOsp
+         2PT8vdx5nZx9+s3SRNRqzE+FlcZi7HgeR1xY3Gew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Will Deacon <will@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 4.14 33/35] fdt: Update CRC check for rng-seed
-Date:   Thu, 30 Jun 2022 15:46:44 +0200
-Message-Id: <20220630133233.413005017@linuxfoundation.org>
+        stable@vger.kernel.org, Nikos Tsironis <ntsironis@arrikto.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.14 04/35] dm era: commit metadata in postsuspend after worker stops
+Date:   Thu, 30 Jun 2022 15:46:15 +0200
+Message-Id: <20220630133232.570283588@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -51,61 +48,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Nikos Tsironis <ntsironis@arrikto.com>
 
-commit dd753d961c4844a39f947be115b3d81e10376ee5 upstream.
+commit 9ae6e8b1c9bbf6874163d1243e393137313762b7 upstream.
 
-Commit 428826f5358c ("fdt: add support for rng-seed") moves of_fdt_crc32
-from early_init_dt_verify() to early_init_dt_scan() since
-early_init_dt_scan_chosen() may modify fdt to erase rng-seed.
+During postsuspend dm-era does the following:
 
-However, arm and some other arch won't call early_init_dt_scan(), they
-call early_init_dt_verify() then early_init_dt_scan_nodes().
+1. Archives the current era
+2. Commits the metadata, as part of the RPC call for archiving the
+   current era
+3. Stops the worker
 
-Restore of_fdt_crc32 to early_init_dt_verify() then update it in
-early_init_dt_scan_chosen() if fdt if updated.
+Until the worker stops, it might write to the metadata again. Moreover,
+these writes are not flushed to disk immediately, but are cached by the
+dm-bufio client, which writes them back asynchronously.
 
-Fixes: 428826f5358c ("fdt: add support for rng-seed")
-Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+As a result, the committed metadata of a suspended dm-era device might
+not be consistent with the in-core metadata.
+
+In some cases, this can result in the corruption of the on-disk
+metadata. Suppose the following sequence of events:
+
+1. Load a new table, e.g. a snapshot-origin table, to a device with a
+   dm-era table
+2. Suspend the device
+3. dm-era commits its metadata, but the worker does a few more metadata
+   writes until it stops, as part of digesting an archived writeset
+4. These writes are cached by the dm-bufio client
+5. Load the dm-era table to another device.
+6. The new instance of the dm-era target loads the committed, on-disk
+   metadata, which don't include the extra writes done by the worker
+   after the metadata commit.
+7. Resume the new device
+8. The new dm-era target instance starts using the metadata
+9. Resume the original device
+10. The destructor of the old dm-era target instance is called and
+    destroys the dm-bufio client, which results in flushing the cached
+    writes to disk
+11. These writes might overwrite the writes done by the new dm-era
+    instance, hence corrupting its metadata.
+
+Fix this by committing the metadata after the worker stops running.
+
+stop_worker uses flush_workqueue to flush the current work. However, the
+work item may re-queue itself and flush_workqueue doesn't wait for
+re-queued works to finish.
+
+This could result in the worker changing the metadata after they have
+been committed, or writing to the metadata concurrently with the commit
+in the postsuspend thread.
+
+Use drain_workqueue instead, which waits until the work and all
+re-queued works finish.
+
+Fixes: eec40579d8487 ("dm: add era target")
+Cc: stable@vger.kernel.org # v3.15+
+Signed-off-by: Nikos Tsironis <ntsironis@arrikto.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/of/fdt.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/md/dm-era-target.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -1159,6 +1159,10 @@ int __init early_init_dt_scan_chosen(uns
+--- a/drivers/md/dm-era-target.c
++++ b/drivers/md/dm-era-target.c
+@@ -1396,7 +1396,7 @@ static void start_worker(struct era *era
+ static void stop_worker(struct era *era)
+ {
+ 	atomic_set(&era->suspended, 1);
+-	flush_workqueue(era->wq);
++	drain_workqueue(era->wq);
+ }
  
- 		/* try to clear seed so it won't be found. */
- 		fdt_nop_property(initial_boot_params, node, "rng-seed");
-+
-+		/* update CRC check value */
-+		of_fdt_crc32 = crc32_be(~0, initial_boot_params,
-+				fdt_totalsize(initial_boot_params));
+ /*----------------------------------------------------------------
+@@ -1581,6 +1581,12 @@ static void era_postsuspend(struct dm_ta
  	}
  
- 	/* break now */
-@@ -1272,6 +1276,8 @@ bool __init early_init_dt_verify(void *p
- 
- 	/* Setup flat device-tree pointer */
- 	initial_boot_params = params;
-+	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
-+				fdt_totalsize(initial_boot_params));
- 	return true;
+ 	stop_worker(era);
++
++	r = metadata_commit(era->md);
++	if (r) {
++		DMERR("%s: metadata_commit failed", __func__);
++		/* FIXME: fail mode */
++	}
  }
  
-@@ -1297,8 +1303,6 @@ bool __init early_init_dt_scan(void *par
- 		return false;
- 
- 	early_init_dt_scan_nodes();
--	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
--				fdt_totalsize(initial_boot_params));
- 	return true;
- }
- 
+ static int era_preresume(struct dm_target *ti)
 
 
