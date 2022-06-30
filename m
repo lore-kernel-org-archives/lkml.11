@@ -2,153 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8080C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 133BAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234858AbiF3KHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42766 "EHLO
+        id S233546AbiF3KHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234638AbiF3KGe (ORCPT
+        with ESMTP id S234796AbiF3KHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:06:34 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54B2F44A20
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:06:30 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 521B11042;
-        Thu, 30 Jun 2022 03:06:30 -0700 (PDT)
-Received: from [10.57.85.25] (unknown [10.57.85.25])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7C3C23F5A1;
-        Thu, 30 Jun 2022 03:06:27 -0700 (PDT)
-Message-ID: <117b31b5-8d06-0af4-7f1c-231d86becf1d@arm.com>
-Date:   Thu, 30 Jun 2022 11:06:23 +0100
+        Thu, 30 Jun 2022 06:07:22 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF504443D9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:07:05 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id r18so17989877edb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QiZFE3NY4GpzbWqcVyfbAnOQf74waO1WZQ6maNc0JPw=;
+        b=eo3tpQhml3zuLS6EMetDbiMihtcGUCI0LuemTL7CehN2ehr/usuoPH5bwJZgtW6Dbj
+         hHhi8hchNa20ttbPTb4C/agoXHVRFnA7C2mNoYAhVgG21xklwR39m3HaNLIAfVgp+O2B
+         HUhU73gt3m0oEw2UlAcQeRZWyEQyKhjMuEsQRoQzO8V+AZHuVzw5jZZs2JKTzFyPfBWe
+         KDqG9UiR+DK+rd7+9BY2eLJNLh/WFrS4F92IWbcyQM5DW5rklklTVjMfjkPo+ldsKte2
+         XNsnceeVIgLLnGybmTqhOP+2XwLkQmQCYsgTvB68lwEppERccpmnsZ/6zfeUWteWzbCG
+         5Hxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QiZFE3NY4GpzbWqcVyfbAnOQf74waO1WZQ6maNc0JPw=;
+        b=lCqvT4HG5WvoZxdaG8YWgXfMVXEIUqz8G594XSle2xaIKZJwZuLdaFQBcSQo/jK+r2
+         3uzsFkq6cl8ZNZ4kB/V6iM8pmQRo6Fuh3ueAGO7WpCJQvh0XmpNyfUyjL7igccA06OCA
+         yGDnG67V5R7pxpFBlz6pyMVNcywYeUw3KhGpqJqk+Iu1nXbvoTBIocIBWAZY29l+idUJ
+         kFlrToolUysNN6Rt6lwaE9kgKS0iud61DMJXP2RlGe+mRpSwDNV58wj36aA6umtA8B1w
+         5w9ksj1imxCiygW9mqkA57uX+N4RYFiGtc59SLeosvf27JIN3INSIBZ5t5H9vHjYKgM3
+         Wnyg==
+X-Gm-Message-State: AJIora+ZSoA3R+tz3FXtn3yDpicOuGUAx2AT0OFsM6ah74CJQYvtN2fp
+        PbeYvYPuDhYmV0Ofola+I1Kleg==
+X-Google-Smtp-Source: AGRyM1sRuht+AaZtKiV7wXncnzcPYsM4VrO1Sxs8tTbqxYOin4IohCnFH9E62zxQFeOe/1NdCdXk4w==
+X-Received: by 2002:aa7:d5c9:0:b0:435:8099:30e6 with SMTP id d9-20020aa7d5c9000000b00435809930e6mr10509066eds.384.1656583624201;
+        Thu, 30 Jun 2022 03:07:04 -0700 (PDT)
+Received: from [192.168.0.189] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jz18-20020a17090775f200b0070fd7da3e47sm8859460ejc.127.2022.06.30.03.07.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 03:07:03 -0700 (PDT)
+Message-ID: <6fafbed8-9c6d-ae1b-c613-44982b681276@linaro.org>
+Date:   Thu, 30 Jun 2022 12:07:02 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-Content-Language: en-GB
-To:     John Garry <john.garry@huawei.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Lameter <cl@linux.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Paul Menzel <pmenzel@molgen.mpg.de>
-References: <20220630073304.26945-1-feng.tang@intel.com>
- <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
- <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/4] dt-bindings: misc: tmr-manager: Add device-tree
+ binding for TMR Manager
+Content-Language: en-US
+To:     "Rao, Appana Durga Kedareswara" 
+        <appana.durga.kedareswara.rao@amd.com>,
+        "Simek, Michal" <michal.simek@amd.com>,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "derek.kiernan@xilinx.com" <derek.kiernan@xilinx.com>,
+        "dragan.cvetic@xilinx.com" <dragan.cvetic@xilinx.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Cc:     "git (AMD-Xilinx)" <git@amd.com>, "git@xilinx.com" <git@xilinx.com>
+References: <20220628054338.1631516-1-appana.durga.rao@xilinx.com>
+ <20220628054338.1631516-2-appana.durga.rao@xilinx.com>
+ <fc685f00-41e5-e64c-09b8-662b01a46f6c@linaro.org>
+ <6f5a1b1e-b484-3a15-00be-2c1ddc09468e@amd.com>
+ <e43bede7-2a0a-5114-e9ec-9e1449bf4e47@linaro.org>
+ <a653cb16-4aa9-693a-ac32-cc7b1b999b92@amd.com>
+ <dd709b5a-1cd8-0343-028a-5d134a9de81a@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <dd709b5a-1cd8-0343-028a-5d134a9de81a@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-30 10:37, John Garry wrote:
-> On 30/06/2022 10:02, Robin Murphy wrote:
->> On 2022-06-30 08:33, Feng Tang wrote:
->>> kmalloc will round up the request size to power of 2, and current
->>> iova_magazine's size is 1032 (1024+8) bytes, so each instance
->>> allocated will get 2048 bytes from kmalloc, causing around 1KB
->>> waste.
->>>
->>> And in some exstreme case, the memory wasted can trigger OOM as
->>> reported in 2019 on a crash kernel with 256 MB memory [1].
->>
->> I don't think it really needs pointing out that excessive memory 
->> consumption can cause OOM. Especially not in the particularly silly 
->> context of a system with only 2MB of RAM per CPU - that's pretty much 
->> guaranteed to be doomed one way or another.
->>
->>>    [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
->>>    [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
->>>    [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
->>>    [    4.338946] swapper/0 invoked oom-killer: 
->>> gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null), order=0, 
->>> oom_score_adj=0
->>>    [    4.350251] swapper/0 cpuset=/ mems_allowed=0
->>>    [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 
->>> 4.19.57.mx64.282 #1
->>>    [    4.355612] Hardware name: Dell Inc. PowerEdge R7425/08V001, 
->>> BIOS 1.9.3 06/25/2019
->>>    [    4.355612] Call Trace:
->>>    [    4.355612]  dump_stack+0x46/0x5b
->>>    [    4.355612]  dump_header+0x6b/0x289
->>>    [    4.355612]  out_of_memory+0x470/0x4c0
->>>    [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
->>>    [    4.355612]  cache_grow_begin+0x7d/0x520
->>>    [    4.355612]  fallback_alloc+0x148/0x200
->>>    [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
->>>    [    4.355612]  init_iova_domain+0x112/0x170
->>>    [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
->>>    [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
->>>    [    4.355612]  amd_iommu_add_device+0x13a/0x610
->>>    [    4.355612]  add_iommu_group+0x20/0x30
->>>    [    4.355612]  bus_for_each_dev+0x76/0xc0
->>>    [    4.355612]  bus_set_iommu+0xb6/0xf0
->>>    [    4.355612]  amd_iommu_init_api+0x112/0x132
->>>    [    4.355612]  state_next+0xfb1/0x1165
->>>    [    4.355612]  amd_iommu_init+0x1f/0x67
->>>    [    4.355612]  pci_iommu_init+0x16/0x3f
->>>    ...
->>>    [    4.670295] Unreclaimable slab info:
->>>    ...
->>>    [    4.857565] kmalloc-2048           59164KB      59164KB
->>>
->>> Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
->>> 1024 bytes so that no memory will be wasted.
->>>
->>> [1]. https://lkml.org/lkml/2019/8/12/266
->>>
->>> Signed-off-by: Feng Tang <feng.tang@intel.com>
->>> ---
->>>   drivers/iommu/iova.c | 7 ++++++-
->>>   1 file changed, 6 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>> index db77aa675145b..27634ddd9b904 100644
->>> --- a/drivers/iommu/iova.c
->>> +++ b/drivers/iommu/iova.c
->>> @@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->>>    * dynamic size tuning described in the paper.
->>>    */
->>> -#define IOVA_MAG_SIZE 128
->>> +/*
->>> + * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
->>> + * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
->>
->> Typo: iova_magazine
->>
->>> + * will be wasted.
->>> + */
->>> +#define IOVA_MAG_SIZE 127
+On 29/06/2022 14:37, Rao, Appana Durga Kedareswara wrote:
+> Hi,
 > 
-> I do wonder if we will see some strange new behaviour since IOVA_FQ_SIZE 
-> % IOVA_MAG_SIZE != 0 now...
-
-I doubt it - even if a flush queue does happen to be entirely full of 
-equal-sized IOVAs, a CPU's loaded magazines also both being perfectly 
-empty when it comes to dump a full fq seem further unlikely, so in 
-practice I don't see this making any appreciable change to the 
-likelihood of spilling back to the depot or not. In fact the smaller the 
-magazines get, the less time would be spent flushing the depot back to 
-the rbtree, where your interesting workload falls off the cliff and 
-never catches back up with the fq timer, so at some point it might even 
-improve (unless it's also already close to the point where smaller 
-caches would bottleneck allocation)... might be interesting to 
-experiment with a wider range of magazine sizes if you had the time and 
-inclination.
-
-Cheers,
-Robin.
-
 > 
+> On 29/06/22 5:29 pm, Michal Simek wrote:
 >>
->> The change itself seems perfectly reasonable, though.
 >>
->> Acked-by: Robin Murphy <robin.murphy@arm.com>
+>> On 6/29/22 13:45, Krzysztof Kozlowski wrote:
+>>> On 29/06/2022 13:23, Michal Simek wrote:
+>>>>
+>>>>
+>>>> On 6/29/22 12:07, Krzysztof Kozlowski wrote:
+>>>>> On 28/06/2022 07:43, Appana Durga Kedareswara rao wrote:
+>>>>>> This commit adds documentation for Triple Modular Redundancy(TMR) 
+>>>>>> Manager
+>>>>>> IP. The Triple Modular Redundancy(TMR) Manager is responsible for 
+>>>>>> handling
+>>>>>> the TMR subsystem state, including fault detection and error recovery
+>>>>>> provides soft error detection, correction and recovery features.
+>>>>>>
+>>>>>> Signed-off-by: Appana Durga Kedareswara rao 
+>>>>>> <appana.durga.rao@xilinx.com>
+>>>>>> ---
+>>>>>>    .../bindings/misc/xlnx,tmr-manager.yaml       | 48 
+>>>>>> +++++++++++++++++++
+>>>>>
+>>>>> This is not a misc device. Find appropriate subsystem for it. It's not
+>>>>> EDAC, right?
+>>>>
+>>>> We were thinking where to put it but it is not EDAC driver.
+>>>> If you have better suggestion for subsystem please let us know.
+>>>
+>>> I don't know what's the device about. The description does not help:
+>>>
+>>> "TMR Manager is responsible for TMR subsystem state..."
+>>
+>> ok. let's improve commit message in v2.
 > 
+> Sure will improve the commit message in v2.
+>>
+>> TMR - triple module redundancy.
+>>
+>> You design the system with one CPU which is default microblaze 
+>> configuration with interrupt controller, timer and other IPs.
+>>
+>> And then say I want to do it triple redundant with all that voting, etc.
+>> If you want to get all details you can take a look at this guide
+>>
+>> https://www.xilinx.com/content/dam/xilinx/support/documents/ip_documentation/tmr/v1_0/pg268-tmr.pdf 
+>>
+>>
+>> In short TMR manager is servicing all that 3 cores and making sure that 
+>> they are all running in sync. If not it has capability recover the 
+>> system. It means cpu gets to break handler (it is the part of microblaze 
+>> series) and it restarts all cpus.
+>>
+>> And TMR inject driver is module which is capable to inject error to 
+>> internal memory to cause the exception to exercise that recovery code.
+>>
+>> Kedar: Feel free to correct me or add more details.
+> 
+> Thanks Michal for the detailed explanation.
+> 
+> The Triple Modular Redundancy(TMR) subsystem has three Microblaze 
+> processor instances, If any one of the Microblaze processors goes to an 
+> unknown state due to fault injection break handler will get called, 
+> which in turn calls the tmr manager driver API to perform recovery.
+> like Michal said TMR inject driver is capable of inject error to
+> internal memory to cause fault in one the Microblaze processor
+> 
+> @Krzysztof : please let me know if more information required about
+> this TMR subsystem will provide.
+
+Some features sound like watchdog. If it was ARM, I would suggest to put
+it under "soc". Is a term System-on-Chip applicable to Microblaze? Other
+option is to store it under microblaze (although for ARM and RISC-V this
+is actually discouraged in favor of soc).
+
+Best regards,
+Krzysztof
