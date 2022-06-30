@@ -2,75 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F467C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 04:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA9CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 04:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiF3EAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 00:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S231393AbiF3EAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 00:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiF3EAQ (ORCPT
+        with ESMTP id S231131AbiF3EAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 00:00:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6FB27CC4;
+        Thu, 30 Jun 2022 00:00:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A1029CB8;
         Wed, 29 Jun 2022 21:00:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB423620B3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35146B8283C;
         Thu, 30 Jun 2022 04:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 78268C341D6;
-        Thu, 30 Jun 2022 04:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EDEC0C341D0;
+        Thu, 30 Jun 2022 04:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656561614;
-        bh=hcLWaRkJxY1Ey58GTAW64dYutAo+YabHm/Nn+JVelgk=;
+        bh=YQpWjizCBU1xfBzC7Z22FeM34H9iQzhmg7Khyd+0GoI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tly59KC0SBlB9ddDutluHLX17CCMqDsx7CSQUX/+t/maS138yfJVF5yE3FPD55R3Y
-         Xg4OMDH94wq7XU+eEI56pp8021sL2zWKlWX388hr5KY5H5Px2NfDd1Q6taOWdZF0RF
-         fsMTNvT1276cDjOnrrxcEGrsKSSBameHz0x37Par6kDu0J5/6mQmd1/lSiOqpScC4g
-         nKHxsjaOSEH+niT4joWFemCanUgaQq9lRhkBFT29rAhpncaC8WMxEL7ZhzBJ1iysg1
-         ljHfK0aAneA7KcV+sFAQXzF6Der4VNwm+gvnGxO9yZ1D5xNACtDxqnhwFURrW6svV1
-         qNnabsC4kLe7w==
+        b=L2Istz2Mjg1Z/LwOfWIS6971JJcb/ENJPP9qn7NosUwoWlZB71zhXmZknc8h7tzpb
+         3l1/b8a8ginD9iPeh7sXXa+6qjT912Kpm2dIpj4EKxp9SWqA/SYQI8z4ZTaSdbqvzh
+         MmUwANc+IFb5xys7a1Q0IL8hDstKbnCALo694SAC0xzpo72zpgrpBnXUzu2cwMMjuX
+         C6j7R1Fn0kwlAcWrA2ZWnsty/DCsKWPvNdvEwYPwqlgSOcESfp9/QYC7mRTidZgyD8
+         Bwm4lubYWwweF4Q/rRwO3VJNswcvCSHwrTLGp+Njj2YGdUbzhArkEECxPWSK91hB/6
+         wZuUz+63vt/0Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 61AAAE49BBA;
-        Thu, 30 Jun 2022 04:00:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C670CE49FA2;
+        Thu, 30 Jun 2022 04:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ipv6: remove redundant store to value after addition
+Subject: Re: [PATCH net v4] net: phy: Don't trigger state machine while in suspend
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165656161439.1686.17032985946330755868.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Jun 2022 04:00:14 +0000
-References: <20220628145406.183527-1-colin.i.king@gmail.com>
-In-Reply-To: <20220628145406.183527-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <165656161380.1686.7209297223304066004.git-patchwork-notify@kernel.org>
+Date:   Thu, 30 Jun 2022 04:00:13 +0000
+References: <b7f386d04e9b5b0e2738f0125743e30676f309ef.1656410895.git.lukas@wunner.de>
+In-Reply-To: <b7f386d04e9b5b0e2738f0125743e30676f309ef.1656410895.git.lukas@wunner.de>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, m.szyprowski@samsung.com,
+        tglx@linutronix.de, netdev@vger.kernel.org,
+        steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
+        oneukum@suse.com, andre.edich@microchip.com,
+        linux@rempel-privat.de, martyn.welch@collabora.com,
+        ghojda@yo2urs.ro, chf.fritz@googlemail.com, LinoSanfilippo@gmx.de,
+        p.rosenberger@kunbus.com, fntoth@gmail.com, krzk@kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, rafael@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 28 Jun 2022 15:54:06 +0100 you wrote:
-> There is no need to store the result of the addition back to variable count
-> after the addition. The store is redundant, replace += with just +
+On Tue, 28 Jun 2022 12:15:08 +0200 you wrote:
+> Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
+> but subsequent interrupts may retrigger it:
 > 
-> Cleans up clang scan build warning:
-> warning: Although the value stored to 'count' is used in the enclosing
-> expression, the value is never actually read from 'count'
+> They may have been left enabled to facilitate wakeup and are not
+> quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
+> hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
+> as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
 > 
 > [...]
 
 Here is the summary with links:
-  - ipv6: remove redundant store to value after addition
-    https://git.kernel.org/netdev/net-next/c/74fd304f2395
+  - [net,v4] net: phy: Don't trigger state machine while in suspend
+    https://git.kernel.org/netdev/net/c/1758bde2e4aa
 
 You are awesome, thank you!
 -- 
