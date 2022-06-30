@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E36C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 00:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C79C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 00:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbiF3AYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 20:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        id S230384AbiF3AYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 20:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiF3AYI (ORCPT
+        with ESMTP id S229698AbiF3AYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 20:24:08 -0400
+        Wed, 29 Jun 2022 20:24:09 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5373E1C12F
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 17:24:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2571D322
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 17:24:08 -0700 (PDT)
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25T7p0Op020678;
-        Wed, 29 Jun 2022 19:23:51 -0500
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25T7p0On020678;
+        Wed, 29 Jun 2022 19:23:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=EaSKBWu6Tg/+WGlIflBqTF7oArtp48mU5E/zOw2lv/0=;
- b=lt7rjxavc5TFe5N5Ebqlk47qH247A6ooJdkZepzcU14Q83reTbpMsBlSThhgOyVLuZ06
- CcGnNVyw5GolmwHdcJcGJqmTifuwpuJxvhCMyq2l3y8FVeFDOgZ7aq+Bi93odUnBI6lF
- /2qtVd6xq/lQtecVl+Xnq14Q4VluFCCb9kfZubu4N71qvu84f2m/0xRkB0f/MERsOC5b
- sZ5gSAqB//hIJWruPhgVo2SdPO1ShzQiOurTP4uM9gSPbaKUMUpo6s8jiIlJneLojJr8
- ZLx9QSIr6+AAKmbivgVkcoeUKo3OGl5QoBXTNFVU+QwjFxg5Nm1v9xhE/q+grQTvUNN0 GQ== 
+ bh=tdzjGtwbQlciU5YrVzibxVtVNC6aW8phx9+ElTmfxaM=;
+ b=NmUC064qok63LU9ggAdJPz+ggImTTq05LcPt53CYRnrWuQinq0NDQ1opzbWmB03eQ27l
+ UtVd/2as6j6hpQ0BnJ+53vqVcNjohPq77K94aDMbluaage7gDwUk2tbRRWBE0KL9V59O
+ oX6vw4ekN3eJunSmnNyk+Z96aCq31u//teUudvR+NeXwPsmKajECej9jWkvr2D2GzQWJ
+ 0Izu0QwbXxg1ey/RFaei5ySOo8X5MWR8GOANI3uLS5cVhqoDe2QxHHausFB46qB7C6ri
+ mcxP9bSEwS4IeDWJndFc330bzc2n2yOhinzyi6Sj3Zas58gwomc1vDVreB21xQQloyBn lg== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2p9gm-7
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2p9gm-5
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 29 Jun 2022 19:23:51 -0500
+        Wed, 29 Jun 2022 19:23:49 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 30 Jun
- 2022 01:23:48 +0100
+ 2022 01:23:47 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 30 Jun 2022 01:23:48 +0100
+ Transport; Thu, 30 Jun 2022 01:23:47 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.125])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 063252A9;
-        Thu, 30 Jun 2022 00:23:47 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 05A477C;
+        Thu, 30 Jun 2022 00:23:46 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
         Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v8 13/14] ALSA: hda: cs35l41: Support Firmware switching and reloading
-Date:   Thu, 30 Jun 2022 01:23:34 +0100
-Message-ID: <20220630002335.366545-14-vitalyr@opensource.cirrus.com>
+Subject: [PATCH v8 10/14] ALSA: hda: cs35l41: Read Speaker Calibration data from UEFI variables
+Date:   Thu, 30 Jun 2022 01:23:31 +0100
+Message-ID: <20220630002335.366545-11-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
 References: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: _hG1vXnWMWfV125dsGxYOaVXAOjlH2NO
-X-Proofpoint-GUID: _hG1vXnWMWfV125dsGxYOaVXAOjlH2NO
+X-Proofpoint-ORIG-GUID: qvubwdW3-UvB21CheL7-yFU4LaxxIT4o
+X-Proofpoint-GUID: qvubwdW3-UvB21CheL7-yFU4LaxxIT4o
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -65,339 +65,177 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-This is required to support CS35L41 calibration.
-
-By default, speaker protection firmware will be loaded, if
-available. However, different firmware is required to run
-the calibration sequence, so it is necessary to add support
-to be able to unload, switch and reload firmware.
-
-This patch adds 2 ALSA Controls for each amp:
-"DSP1 Firmware Load"
-"DSP1 Firmware Type"
-
-"DSP1 Firmware Load" can be used to unload and
-load the firmware.
-"DSP1 Firmware Type"  can be used to switch the
-target firmware to be loaded by "DSP1 Firmware Load"
-
-Since loading firmware can add new ALSA controls, it is
-necessary to ensure the firmware loading is run asynchronously
-from the ALSA control itself to prevent deadlocks.
-
-Note: When switching between firmwares, an ALSA control is
-only added if it has not previously existed. If it had existed
-previously, it will be re-enabled instead.
+Speaker Calibration data, specific to an individual speaker is
+stored inside UEFI variables during calibration, and can be
+used by the DSP.
 
 Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 182 ++++++++++++++++++++++++++++++++++--
- sound/pci/hda/cs35l41_hda.h |   6 ++
- 2 files changed, 178 insertions(+), 10 deletions(-)
+ sound/pci/hda/cs35l41_hda.c | 101 ++++++++++++++++++++++++++++++++++++
+ sound/pci/hda/cs35l41_hda.h |  15 ++++++
+ 2 files changed, 116 insertions(+)
 
 diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 27ed5cd0d8bb..5ae0b439d7e9 100644
+index 4f818229e62e..68f18463d829 100644
 --- a/sound/pci/hda/cs35l41_hda.c
 +++ b/sound/pci/hda/cs35l41_hda.c
-@@ -21,7 +21,6 @@
- 
- #define CS35L41_FIRMWARE_ROOT "cirrus/"
- #define CS35L41_PART "cs35l41"
--#define FW_NAME "CSPL"
- 
+@@ -26,6 +26,12 @@
  #define HALO_STATE_DSP_CTL_NAME		"HALO_STATE"
  #define HALO_STATE_DSP_CTL_TYPE		5
-@@ -92,7 +91,7 @@ static int cs35l41_control_add(struct cs_dsp_coeff_ctl *cs_ctl)
- 	struct hda_cs_dsp_ctl_info info;
+ #define HALO_STATE_DSP_CTL_ALG		262308
++#define CAL_R_DSP_CTL_NAME		"CAL_R"
++#define CAL_STATUS_DSP_CTL_NAME		"CAL_STATUS"
++#define CAL_CHECKSUM_DSP_CTL_NAME	"CAL_CHECKSUM"
++#define CAL_AMBIENT_DSP_CTL_NAME	"CAL_AMBIENT"
++#define CAL_DSP_CTL_TYPE		5
++#define CAL_DSP_CTL_ALG			205
  
- 	info.device_name = cs35l41->amp_name;
--	info.fw_type = HDA_CS_DSP_FW_SPK_PROT;
-+	info.fw_type = cs35l41->firmware_type;
- 	info.card = cs35l41->codec->card;
- 
- 	return hda_cs_dsp_control_add(cs_ctl, &info);
-@@ -114,20 +113,24 @@ static int cs35l41_request_firmware_file(struct cs35l41_hda *cs35l41,
- 
- 	if (spkid > -1 && ssid && amp_name)
- 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s-spkid%d-%s.%s", dir, CS35L41_PART,
--				      dsp_name, "spk-prot", ssid, spkid, amp_name, filetype);
-+				      dsp_name, hda_cs_dsp_fw_ids[cs35l41->firmware_type],
-+				      ssid, spkid, amp_name, filetype);
- 	else if (spkid > -1 && ssid)
- 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s-spkid%d.%s", dir, CS35L41_PART,
--				      dsp_name, "spk-prot", ssid, spkid, filetype);
-+				      dsp_name, hda_cs_dsp_fw_ids[cs35l41->firmware_type],
-+				      ssid, spkid, filetype);
- 	else if (ssid && amp_name)
- 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s-%s.%s", dir, CS35L41_PART,
--				      dsp_name, "spk-prot", ssid, amp_name,
--				      filetype);
-+				      dsp_name, hda_cs_dsp_fw_ids[cs35l41->firmware_type],
-+				      ssid, amp_name, filetype);
- 	else if (ssid)
- 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s.%s", dir, CS35L41_PART,
--				      dsp_name, "spk-prot", ssid, filetype);
-+				      dsp_name, hda_cs_dsp_fw_ids[cs35l41->firmware_type],
-+				      ssid, filetype);
- 	else
- 		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s.%s", dir, CS35L41_PART,
--				      dsp_name, "spk-prot", filetype);
-+				      dsp_name, hda_cs_dsp_fw_ids[cs35l41->firmware_type],
-+				      filetype);
- 
- 	if (*filename == NULL)
- 		return -ENOMEM;
-@@ -422,7 +425,7 @@ static int cs35l41_init_dsp(struct cs35l41_hda *cs35l41)
- 		dev_warn(cs35l41->dev, "No Coefficient File available.\n");
- 
- 	ret = cs_dsp_power_up(dsp, wmfw_firmware, wmfw_filename, coeff_firmware, coeff_filename,
--			      FW_NAME);
-+			      hda_cs_dsp_fw_ids[cs35l41->firmware_type]);
- 	if (ret)
- 		goto err_release;
- 
-@@ -451,6 +454,7 @@ static void cs35l41_remove_dsp(struct cs35l41_hda *cs35l41)
- {
- 	struct cs_dsp *dsp = &cs35l41->cs_dsp;
- 
-+	cancel_work_sync(&cs35l41->fw_load_work);
- 	cs35l41_shutdown_dsp(cs35l41);
- 	cs_dsp_remove(dsp);
- 	cs35l41->halo_initialized = false;
-@@ -481,6 +485,7 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 
- 	switch (action) {
- 	case HDA_GEN_PCM_ACT_OPEN:
-+		cs35l41->playback_started = true;
- 		if (cs35l41->firmware_running) {
- 			regmap_multi_reg_write(reg, cs35l41_hda_config_dsp,
- 					       ARRAY_SIZE(cs35l41_hda_config_dsp));
-@@ -518,6 +523,7 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 					   0 << CS35L41_VMON_EN_SHIFT | 0 << CS35L41_IMON_EN_SHIFT);
- 		}
- 		cs35l41_irq_release(cs35l41);
-+		cs35l41->playback_started = false;
- 		break;
- 	default:
- 		dev_warn(cs35l41->dev, "Playback action not supported: %d\n", action);
-@@ -664,10 +670,160 @@ static int cs35l41_smart_amp(struct cs35l41_hda *cs35l41)
+ static const struct reg_sequence cs35l41_hda_config[] = {
+ 	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3072000Hz, BCLK Input, PLL_REFCLK_EN = 1
+@@ -282,6 +288,96 @@ static int cs35l41_request_firmware_files(struct cs35l41_hda *cs35l41,
  	return ret;
  }
  
-+static void cs35l41_load_firmware(struct cs35l41_hda *cs35l41, bool load)
++#if IS_ENABLED(CONFIG_EFI)
++static int cs35l41_apply_calibration(struct cs35l41_hda *cs35l41, unsigned int ambient,
++				     unsigned int r0, unsigned int status, unsigned int checksum)
 +{
-+	pm_runtime_get_sync(cs35l41->dev);
-+
-+	if (cs35l41->firmware_running && !load) {
-+		dev_dbg(cs35l41->dev, "Unloading Firmware\n");
-+		cs35l41_shutdown_dsp(cs35l41);
-+	} else if (!cs35l41->firmware_running && load) {
-+		dev_dbg(cs35l41->dev, "Loading Firmware\n");
-+		cs35l41_smart_amp(cs35l41);
-+	} else {
-+		dev_dbg(cs35l41->dev, "Unable to Load firmware.\n");
-+	}
-+
-+	pm_runtime_mark_last_busy(cs35l41->dev);
-+	pm_runtime_put_autosuspend(cs35l41->dev);
-+}
-+
-+static int cs35l41_fw_load_ctl_get(struct snd_kcontrol *kcontrol,
-+				   struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct cs35l41_hda *cs35l41 = snd_kcontrol_chip(kcontrol);
-+
-+	ucontrol->value.integer.value[0] = cs35l41->request_fw_load;
-+	return 0;
-+}
-+
-+static void cs35l41_fw_load_work(struct work_struct *work)
-+{
-+	struct cs35l41_hda *cs35l41 = container_of(work, struct cs35l41_hda, fw_load_work);
-+
-+	mutex_lock(&cs35l41->fw_mutex);
-+
-+	/* Recheck if playback is ongoing, mutex will block playback during firmware loading */
-+	if (cs35l41->playback_started)
-+		dev_err(cs35l41->dev, "Cannot Load/Unload firmware during Playback\n");
-+	else
-+		cs35l41_load_firmware(cs35l41, cs35l41->request_fw_load);
-+
-+	cs35l41->fw_request_ongoing = false;
-+	mutex_unlock(&cs35l41->fw_mutex);
-+}
-+
-+static int cs35l41_fw_load_ctl_put(struct snd_kcontrol *kcontrol,
-+				   struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct cs35l41_hda *cs35l41 = snd_kcontrol_chip(kcontrol);
-+	unsigned int ret = 0;
-+
-+	mutex_lock(&cs35l41->fw_mutex);
-+
-+	if (cs35l41->request_fw_load == ucontrol->value.integer.value[0])
-+		goto err;
-+
-+	if (cs35l41->fw_request_ongoing) {
-+		dev_dbg(cs35l41->dev, "Existing request not complete\n");
-+		ret = -EBUSY;
-+		goto err;
-+	}
-+
-+	/* Check if playback is ongoing when initial request is made */
-+	if (cs35l41->playback_started) {
-+		dev_err(cs35l41->dev, "Cannot Load/Unload firmware during Playback\n");
-+		ret = -EBUSY;
-+		goto err;
-+	}
-+
-+	cs35l41->fw_request_ongoing = true;
-+	cs35l41->request_fw_load = ucontrol->value.integer.value[0];
-+	schedule_work(&cs35l41->fw_load_work);
-+
-+err:
-+	mutex_unlock(&cs35l41->fw_mutex);
-+
-+	return ret;
-+}
-+
-+static int cs35l41_fw_type_ctl_get(struct snd_kcontrol *kcontrol,
-+				   struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct cs35l41_hda *cs35l41 = snd_kcontrol_chip(kcontrol);
-+
-+	ucontrol->value.enumerated.item[0] = cs35l41->firmware_type;
-+
-+	return 0;
-+}
-+
-+static int cs35l41_fw_type_ctl_put(struct snd_kcontrol *kcontrol,
-+				   struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct cs35l41_hda *cs35l41 = snd_kcontrol_chip(kcontrol);
-+
-+	if (ucontrol->value.enumerated.item[0] < HDA_CS_DSP_NUM_FW) {
-+		cs35l41->firmware_type = ucontrol->value.enumerated.item[0];
-+		return 0;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int cs35l41_fw_type_ctl_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
-+{
-+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(hda_cs_dsp_fw_ids), hda_cs_dsp_fw_ids);
-+}
-+
-+static int cs35l41_create_controls(struct cs35l41_hda *cs35l41)
-+{
-+	char fw_type_ctl_name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
-+	char fw_load_ctl_name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
-+	struct snd_kcontrol_new fw_type_ctl = {
-+		.name = fw_type_ctl_name,
-+		.iface = SNDRV_CTL_ELEM_IFACE_CARD,
-+		.info = cs35l41_fw_type_ctl_info,
-+		.get = cs35l41_fw_type_ctl_get,
-+		.put = cs35l41_fw_type_ctl_put,
-+	};
-+	struct snd_kcontrol_new fw_load_ctl = {
-+		.name = fw_load_ctl_name,
-+		.iface = SNDRV_CTL_ELEM_IFACE_CARD,
-+		.info = snd_ctl_boolean_mono_info,
-+		.get = cs35l41_fw_load_ctl_get,
-+		.put = cs35l41_fw_load_ctl_put,
-+	};
 +	int ret;
 +
-+	scnprintf(fw_type_ctl_name, SNDRV_CTL_ELEM_ID_NAME_MAXLEN, "%s DSP1 Firmware Type",
-+		  cs35l41->amp_name);
-+	scnprintf(fw_load_ctl_name, SNDRV_CTL_ELEM_ID_NAME_MAXLEN, "%s DSP1 Firmware Load",
-+		  cs35l41->amp_name);
-+
-+	ret = snd_ctl_add(cs35l41->codec->card, snd_ctl_new1(&fw_type_ctl, cs35l41));
++	ret = hda_cs_dsp_write_ctl(&cs35l41->cs_dsp, CAL_AMBIENT_DSP_CTL_NAME, CAL_DSP_CTL_TYPE,
++				   CAL_DSP_CTL_ALG, &ambient, 4);
 +	if (ret) {
-+		dev_err(cs35l41->dev, "Failed to add KControl %s = %d\n", fw_type_ctl.name, ret);
++		dev_err(cs35l41->dev, "Cannot Write Control: %s - %d\n", CAL_AMBIENT_DSP_CTL_NAME,
++			ret);
 +		return ret;
 +	}
-+
-+	dev_dbg(cs35l41->dev, "Added Control %s\n", fw_type_ctl.name);
-+
-+	ret = snd_ctl_add(cs35l41->codec->card, snd_ctl_new1(&fw_load_ctl, cs35l41));
++	ret = hda_cs_dsp_write_ctl(&cs35l41->cs_dsp, CAL_R_DSP_CTL_NAME, CAL_DSP_CTL_TYPE,
++				   CAL_DSP_CTL_ALG, &r0, 4);
 +	if (ret) {
-+		dev_err(cs35l41->dev, "Failed to add KControl %s = %d\n", fw_load_ctl.name, ret);
++		dev_err(cs35l41->dev, "Cannot Write Control: %s - %d\n", CAL_R_DSP_CTL_NAME, ret);
 +		return ret;
 +	}
-+
-+	dev_dbg(cs35l41->dev, "Added Control %s\n", fw_load_ctl.name);
++	ret = hda_cs_dsp_write_ctl(&cs35l41->cs_dsp, CAL_STATUS_DSP_CTL_NAME, CAL_DSP_CTL_TYPE,
++				   CAL_DSP_CTL_ALG, &status, 4);
++	if (ret) {
++		dev_err(cs35l41->dev, "Cannot Write Control: %s - %d\n", CAL_STATUS_DSP_CTL_NAME,
++			ret);
++		return ret;
++	}
++	ret = hda_cs_dsp_write_ctl(&cs35l41->cs_dsp, CAL_CHECKSUM_DSP_CTL_NAME, CAL_DSP_CTL_TYPE,
++				   CAL_DSP_CTL_ALG, &checksum, 4);
++	if (ret) {
++		dev_err(cs35l41->dev, "Cannot Write Control: %s - %d\n", CAL_CHECKSUM_DSP_CTL_NAME,
++			ret);
++		return ret;
++	}
 +
 +	return 0;
 +}
 +
- static int cs35l41_hda_bind(struct device *dev, struct device *master, void *master_data)
- {
- 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
- 	struct hda_component *comps = master_data;
++static int cs35l41_save_calibration(struct cs35l41_hda *cs35l41)
++{
++	static efi_guid_t efi_guid = EFI_GUID(0x02f9af02, 0x7734, 0x4233, 0xb4, 0x3d, 0x93, 0xfe,
++					      0x5a, 0xa3, 0x5d, 0xb3);
++	static efi_char16_t efi_name[] = L"CirrusSmartAmpCalibrationData";
++	const struct cs35l41_amp_efi_data *efi_data;
++	const struct cs35l41_amp_cal_data *cl;
++	unsigned long data_size = 0;
++	efi_status_t status;
 +	int ret = 0;
- 
- 	if (!comps || cs35l41->index < 0 || cs35l41->index >= HDA_MAX_COMPONENTS)
- 		return -EINVAL;
-@@ -685,11 +841,16 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
- 	cs35l41->codec = comps->codec;
- 	strscpy(comps->name, dev_name(dev), sizeof(comps->name));
- 
-+	cs35l41->firmware_type = HDA_CS_DSP_FW_SPK_PROT;
++	u8 *data = NULL;
++	u32 attr;
 +
-+	cs35l41->request_fw_load = true;
- 	mutex_lock(&cs35l41->fw_mutex);
- 	if (cs35l41_smart_amp(cs35l41) < 0)
- 		dev_warn(cs35l41->dev, "Cannot Run Firmware, reverting to dsp bypass...\n");
- 	mutex_unlock(&cs35l41->fw_mutex);
- 
-+	ret = cs35l41_create_controls(cs35l41);
++	/* Get real size of UEFI variable */
++	status = efi.get_variable(efi_name, &efi_guid, &attr, &data_size, data);
++	if (status == EFI_BUFFER_TOO_SMALL) {
++		ret = -ENODEV;
++		/* Allocate data buffer of data_size bytes */
++		data = vmalloc(data_size);
++		if (!data)
++			return -ENOMEM;
++		/* Get variable contents into buffer */
++		status = efi.get_variable(efi_name, &efi_guid, &attr, &data_size, data);
++		if (status == EFI_SUCCESS) {
++			efi_data = (struct cs35l41_amp_efi_data *)data;
++			dev_dbg(cs35l41->dev, "Calibration: Size=%d, Amp Count=%d\n",
++				efi_data->size, efi_data->count);
++			if (efi_data->count > cs35l41->index) {
++				cl = &efi_data->data[cs35l41->index];
++				dev_dbg(cs35l41->dev,
++					"Calibration: Ambient=%02x, Status=%02x, R0=%d\n",
++					cl->calAmbient, cl->calStatus, cl->calR);
 +
- 	comps->playback_hook = cs35l41_hda_playback_hook;
- 	comps->suspend_hook = cs35l41_hda_suspend_hook;
- 	comps->resume_hook = cs35l41_hda_resume_hook;
-@@ -697,7 +858,7 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
- 	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
- 
--	return 0;
++				/* Calibration can only be applied whilst the DSP is not running */
++				ret = cs35l41_apply_calibration(cs35l41,
++								cpu_to_be32(cl->calAmbient),
++								cpu_to_be32(cl->calR),
++								cpu_to_be32(cl->calStatus),
++								cpu_to_be32(cl->calR + 1));
++			}
++		}
++		vfree(data);
++	}
 +	return ret;
- }
++}
++#else
++static int cs35l41_save_calibration(struct cs35l41_hda *cs35l41)
++{
++	dev_warn(cs35l41->dev, "Calibration not supported without EFI support.\n");
++	return 0;
++}
++#endif
++
+ static int cs35l41_init_dsp(struct cs35l41_hda *cs35l41)
+ {
+ 	const struct firmware *coeff_firmware = NULL;
+@@ -314,7 +410,12 @@ static int cs35l41_init_dsp(struct cs35l41_hda *cs35l41)
  
- static void cs35l41_hda_unbind(struct device *dev, struct device *master, void *master_data)
-@@ -1208,6 +1369,7 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 	if (ret)
- 		goto err;
+ 	ret = cs_dsp_power_up(dsp, wmfw_firmware, wmfw_filename, coeff_firmware, coeff_filename,
+ 			      FW_NAME);
++	if (ret)
++		goto err_release;
++
++	ret = cs35l41_save_calibration(cs35l41);
  
-+	INIT_WORK(&cs35l41->fw_load_work, cs35l41_fw_load_work);
- 	mutex_init(&cs35l41->fw_mutex);
- 
- 	pm_runtime_set_autosuspend_delay(cs35l41->dev, 3000);
++err_release:
+ 	release_firmware(wmfw_firmware);
+ 	release_firmware(coeff_firmware);
+ 	kfree(wmfw_filename);
 diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
-index 59a9461d0444..bdb35f3be68a 100644
+index 439c4b705328..59a9461d0444 100644
 --- a/sound/pci/hda/cs35l41_hda.h
 +++ b/sound/pci/hda/cs35l41_hda.h
-@@ -58,11 +58,17 @@ struct cs35l41_hda {
- 	unsigned volatile long irq_errors;
- 	const char *amp_name;
- 	const char *acpi_subsystem_id;
-+	int firmware_type;
- 	int speaker_id;
- 	struct mutex fw_mutex;
-+	struct work_struct fw_load_work;
-+
- 	struct regmap_irq_chip_data *irq_data;
- 	bool firmware_running;
-+	bool request_fw_load;
-+	bool fw_request_ongoing;
- 	bool halo_initialized;
-+	bool playback_started;
- 	struct cs_dsp cs_dsp;
- };
+@@ -10,6 +10,7 @@
+ #ifndef __CS35L41_HDA_H__
+ #define __CS35L41_HDA_H__
  
++#include <linux/efi.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/device.h>
+@@ -18,6 +19,20 @@
+ #include <linux/firmware/cirrus/cs_dsp.h>
+ #include <linux/firmware/cirrus/wmfw.h>
+ 
++struct cs35l41_amp_cal_data {
++	u32 calTarget[2];
++	u32 calTime[2];
++	s8 calAmbient;
++	u8 calStatus;
++	u16 calR;
++} __packed;
++
++struct cs35l41_amp_efi_data {
++	u32 size;
++	u32 count;
++	struct cs35l41_amp_cal_data data[];
++} __packed;
++
+ enum cs35l41_hda_spk_pos {
+ 	CS35l41_LEFT,
+ 	CS35l41_RIGHT,
 -- 
 2.34.1
 
