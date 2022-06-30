@@ -2,100 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEDFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB8FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:46:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232428AbiF3Nos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45556 "EHLO
+        id S234222AbiF3Nqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234660AbiF3Nog (ORCPT
+        with ESMTP id S230223AbiF3Nqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:44:36 -0400
-Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BB021E24;
-        Thu, 30 Jun 2022 06:44:35 -0700 (PDT)
-Received: by mail-il1-f170.google.com with SMTP id a7so7320413ilj.2;
-        Thu, 30 Jun 2022 06:44:35 -0700 (PDT)
+        Thu, 30 Jun 2022 09:46:35 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFC521274;
+        Thu, 30 Jun 2022 06:46:34 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id fw3so11472710ejc.10;
+        Thu, 30 Jun 2022 06:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WpUG/1Adlro4yhfIfUNT1zQ44D9g1crkrWmNqAskdRQ=;
+        b=XdyaQI4bpl3rJeGqJ7aKTdzqGPKYOk0JKqHMymVALHU8U40ZV/bQRSUEy4zPafkGSY
+         h3DQr2JOUJ/VYZqt6zgDPbLV4tlzjAokSYethVPC8lXnTqoX3h0V8NT9KIr1xBQGQhuc
+         +9/6Y+B9qoOrsAVI3vy/ZBxpKI5J/JwiZvWlxX52h6IbJicVx/coPBN8nveFtW3ouOMV
+         9/7y2UGv1dVMvoLELH9AmGmE6NnC4urs3ClM1rokPaNhmAUrxbBswwn2DOAXTiLfPpTn
+         0TXVc6JhvUUWKC+dv7e6+uAc0TBMlWc+YWe1OGV4/ezeNwhofTtTSJAji5gPMPfJkrkH
+         4pQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Z8mDVlSbha4NdYxU5YsfGzmYXWYXqbErOwEMSX5LHIo=;
-        b=Kt1YL+mHJf9hunzIk06S/vuOAaHV1oN1Relr6yOdAxDZAxWzg8vS6dQSum237ZZkw3
-         imGkYIlbJQZYxJdL7JC7Hw/zSHuKAy4w+F+vwDzTFKfqXgCyAXR41xw8MdV+ofqdv4NM
-         oMQVN8Sl02AOVjfKPfhhG6+g8iiRrtnfg0uTQs4CUaOqrsdO4WAiDmjshIB5UW846v6O
-         bQce6c4q2H/Tsr3fwQLH/C+qAQu3FegTf9N4+78A86SYKNssZxcFbuDiBBHbSVKEetvk
-         PF/SE64wS/ONeTue1n1zPbJYVNxsRg81MGHv6A8+sIoNqtvZe3ccQQEifpnNNxM3nje4
-         lthg==
-X-Gm-Message-State: AJIora+GyJd8oZyDz8zLFsdnB3cQY8CxSYVUrvRoBRkfoe/PauB2CHRk
-        QLsmAITtc31kD2Gr2VTt8rmhvdss1g==
-X-Google-Smtp-Source: AGRyM1tlQIGr5JGSVoI87FnOiPSjS4ia/0L+AMvFUefhs/Wa7Rl13mcyD5e+BKaQY8PCnBB7mUdC6g==
-X-Received: by 2002:a05:6e02:1b84:b0:2da:656a:ce11 with SMTP id h4-20020a056e021b8400b002da656ace11mr5403437ili.261.1656596674821;
-        Thu, 30 Jun 2022 06:44:34 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id r25-20020a02aa19000000b0032e71f31487sm8596290jam.31.2022.06.30.06.44.33
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WpUG/1Adlro4yhfIfUNT1zQ44D9g1crkrWmNqAskdRQ=;
+        b=HiM1eVaiQTRN548SRVOwVLVANC3sgDp6sT1vJ+e18zn5F9eK8P8rmTHJyHSyr+dvFn
+         uk1HsEOMokwo3W2KR6LzxpaDGkfXJRkf3cfjgPOGLmHyZg6E8uqO3FL5+YMLyclSyfTu
+         UHZfbAoT4Mh4G4UtIalKB4vUVcwKYXok9svwtWUeb0RnikyrR0wR7OVV228kooKtuDnn
+         yWUDP6KZ+M9+TBuyigEz2k1g0KE9lQQrm0+fmqxcxWKDW1NavqmWbE2/Nd6pM6icgZIP
+         HBwe9FPxVRkBQ7IoWlM0QhKTNXKX3lwiFDYhquE57MwOxTc9CLQHr8XMtazEocUBah+N
+         4WeQ==
+X-Gm-Message-State: AJIora/EuO+ySNXK7r7hjGfPgiLpJD9d22Cyx271BSXzCX08wa3qZqjF
+        IuLx0Kjxvnrd38bo80+jrzo=
+X-Google-Smtp-Source: AGRyM1v/saxokxA3Z1/0oWe8gdZOE0DUfGiMLl3Mrmq+LzIasuT/CYNL75AKaoF7LOGKSfDab6f9HQ==
+X-Received: by 2002:a17:907:968a:b0:722:e508:fc15 with SMTP id hd10-20020a170907968a00b00722e508fc15mr9385020ejc.188.1656596793056;
+        Thu, 30 Jun 2022 06:46:33 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id bk8-20020a170906b0c800b0071c6dc728b2sm9016615ejb.86.2022.06.30.06.46.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 06:44:34 -0700 (PDT)
-Received: (nullmailer pid 2569464 invoked by uid 1000);
-        Thu, 30 Jun 2022 13:44:25 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     linux-pm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220630055723.704605-2-leo.yan@linaro.org>
-References: <20220630055723.704605-1-leo.yan@linaro.org> <20220630055723.704605-2-leo.yan@linaro.org>
-Subject: Re: [PATCH v2 1/5] dt-bindings: interconnect: Update property for icc-rpm path tag
-Date:   Thu, 30 Jun 2022 07:44:25 -0600
-Message-Id: <1656596665.853599.2569463.nullmailer@robh.at.kernel.org>
+        Thu, 30 Jun 2022 06:46:32 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [net-next PATCH RFC] net: dsa: qca8k: move driver to qca dir
+Date:   Thu, 30 Jun 2022 15:46:06 +0200
+Message-Id: <20220630134606.25847-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 30 Jun 2022 13:57:18 +0800, Leo Yan wrote:
-> To support path tag in icc-rpm driver, the "#interconnect-cells"
-> property is updated as enumerate values: 1 or 2.  Setting to 1 means
-> it is compatible with old DT binding that interconnect path only
-> contains node id; if set to 2 for "#interconnect-cells" property, then
-> the second specifier is used as a tag (e.g. vote for which buckets).
-> 
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> ---
->  .../devicetree/bindings/interconnect/qcom,rpm.yaml          | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
+Move qca8k driver to qca dir in preparation for code split and
+introduction of ipq4019 switch based on qca8k.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml:49:11: [error] syntax error: expected <block end>, but found '<scalar>' (syntax)
+Posting this as a RFC to discuss the problems of such change.
 
-dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/interconnect/qcom,rpm.example.dts'
-Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml:49:11: did not find expected key
-make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/interconnect/qcom,rpm.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml:49:11: did not find expected key
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml: ignoring, error parsing file
-make: *** [Makefile:1404: dt_binding_check] Error 2
+This is needed as in the next future the qca8k driver will be split
+to a common code. This needs to be done as the ipq4019 is based on qca8k
+but will have some additional configuration thing and other phylink
+handling so it will require different setup function. Aside from these
+difference almost all the regs are the same of qca8k.
 
-doc reference errors (make refcheckdocs):
+For this reason keeping the driver in the generic dsa dir would create
+some caos and I think it would be better to move it the dedicated qca
+dir.
 
-See https://patchwork.ozlabs.org/patch/
+This will for sure creates some problems with backporting patch.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+So the question is... Is this change acceptable or we are cursed to
+keeping this driver in the generic dsa directory?
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+Additional bonus question, since the ethernet part still requires some
+time to get merged, wonder if it's possible to send the code split with
+qca8k as the only user (currently) and later just add the relevant
+ipq4019 changes.
 
-pip3 install dtschema --upgrade
+(this ideally is to prepare stuff and not send a big scary series when
+it's time to send ipq4019 changes)
 
-Please check and re-submit.
+ drivers/net/dsa/Kconfig           | 8 --------
+ drivers/net/dsa/Makefile          | 1 -
+ drivers/net/dsa/qca/Kconfig       | 8 ++++++++
+ drivers/net/dsa/qca/Makefile      | 1 +
+ drivers/net/dsa/{ => qca}/qca8k.c | 0
+ drivers/net/dsa/{ => qca}/qca8k.h | 0
+ 6 files changed, 9 insertions(+), 9 deletions(-)
+ rename drivers/net/dsa/{ => qca}/qca8k.c (100%)
+ rename drivers/net/dsa/{ => qca}/qca8k.h (100%)
+
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index 702d68ae435a..d8ae0e8af2a0 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -60,14 +60,6 @@ source "drivers/net/dsa/sja1105/Kconfig"
+ 
+ source "drivers/net/dsa/xrs700x/Kconfig"
+ 
+-config NET_DSA_QCA8K
+-	tristate "Qualcomm Atheros QCA8K Ethernet switch family support"
+-	select NET_DSA_TAG_QCA
+-	select REGMAP
+-	help
+-	  This enables support for the Qualcomm Atheros QCA8K Ethernet
+-	  switch chips.
+-
+ source "drivers/net/dsa/realtek/Kconfig"
+ 
+ config NET_DSA_RZN1_A5PSW
+diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+index b32907afa702..16eb879e0cb4 100644
+--- a/drivers/net/dsa/Makefile
++++ b/drivers/net/dsa/Makefile
+@@ -8,7 +8,6 @@ endif
+ obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
+ obj-$(CONFIG_NET_DSA_MT7530)	+= mt7530.o
+ obj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o
+-obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
+ obj-$(CONFIG_NET_DSA_RZN1_A5PSW) += rzn1_a5psw.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_I2C) += lan9303_i2c.o
+diff --git a/drivers/net/dsa/qca/Kconfig b/drivers/net/dsa/qca/Kconfig
+index 13b7e679b8b5..ba339747362c 100644
+--- a/drivers/net/dsa/qca/Kconfig
++++ b/drivers/net/dsa/qca/Kconfig
+@@ -7,3 +7,11 @@ config NET_DSA_AR9331
+ 	help
+ 	  This enables support for the Qualcomm Atheros AR9331 built-in Ethernet
+ 	  switch.
++
++config NET_DSA_QCA8K
++	tristate "Qualcomm Atheros QCA8K Ethernet switch family support"
++	select NET_DSA_TAG_QCA
++	select REGMAP
++	help
++	  This enables support for the Qualcomm Atheros QCA8K Ethernet
++	  switch chips.
+diff --git a/drivers/net/dsa/qca/Makefile b/drivers/net/dsa/qca/Makefile
+index 274022319066..40bb7c27285b 100644
+--- a/drivers/net/dsa/qca/Makefile
++++ b/drivers/net/dsa/qca/Makefile
+@@ -1,2 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_NET_DSA_AR9331)	+= ar9331.o
++obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+similarity index 100%
+rename from drivers/net/dsa/qca8k.c
+rename to drivers/net/dsa/qca/qca8k.c
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+similarity index 100%
+rename from drivers/net/dsa/qca8k.h
+rename to drivers/net/dsa/qca/qca8k.h
+-- 
+2.36.1
 
