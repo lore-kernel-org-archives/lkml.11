@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98922C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 509CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236618AbiF3OGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
+        id S236625AbiF3OGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236391AbiF3OFx (ORCPT
+        with ESMTP id S236534AbiF3OFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:05:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06DC4D16A;
-        Thu, 30 Jun 2022 06:54:01 -0700 (PDT)
+        Thu, 30 Jun 2022 10:05:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA784457AC;
+        Thu, 30 Jun 2022 06:53:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD68EB82AD8;
-        Thu, 30 Jun 2022 13:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32FCAC34115;
-        Thu, 30 Jun 2022 13:53:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 468F3CE2EC5;
+        Thu, 30 Jun 2022 13:53:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D991C34115;
+        Thu, 30 Jun 2022 13:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597237;
-        bh=5cYcswnD9bzIj7ja95kn+E7EGC6en3Fc8aGW1HQhA4I=;
+        s=korg; t=1656597229;
+        bh=zfTjdBUZp/vQ3G5ItACJotfiHku7nqyj9VseQDp+Dyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uE0IFEywkRw/ffiMCxGoJ5Iyy1YJprp7ZSZTYeFBA1wgO5R5vsLcOXrV6nn/gp2T6
-         hfMIrV3Zg/bSNd5KPFT5raAwQ8gQbBwDhwj4At9lh8Ve7ly5PoE66/MDsAXQYmQJ6G
-         BGECJjPw2lZF5XsYXgw2/ONfYW/gHPNS5AxaqKbA=
+        b=sD948q3tjvAxKmHkwYjxwiIG1c6xdhSTRmm5EbtT6q2O+8gu65WuqLBAUJVvlgWmx
+         EaK9Zd8h2Mky7AErKA+rSSIZvgXzlMvFo0ovnTlP6X5726SyHpo35DpW0AIqNuxfBF
+         CTbif/AwPadevbPawjOMgrwMu5Op3Gsrc5y970eg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 11/12] powerpc/ftrace: Remove ftrace init tramp once kernel init is complete
-Date:   Thu, 30 Jun 2022 15:47:16 +0200
-Message-Id: <20220630133231.025237779@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Christoph Hellwig <hch@lst.de>, Jessica Yu <jeyu@kernel.org>
+Subject: [PATCH 5.4 01/16] drm: remove drm_fb_helper_modinit
+Date:   Thu, 30 Jun 2022 15:46:55 +0200
+Message-Id: <20220630133230.981736423@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
-References: <20220630133230.676254336@linuxfoundation.org>
+In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
+References: <20220630133230.936488203@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,98 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 84ade0a6655bee803d176525ef457175cbf4df22 upstream.
+commit bf22c9ec39da90ce866d5f625d616f28bc733dc1 upstream.
 
-Stop using the ftrace trampoline for init section once kernel init is
-complete.
+drm_fb_helper_modinit has a lot of boilerplate for what is not very
+simple functionality.  Just open code it in the only caller using
+IS_ENABLED and IS_MODULE, and skip the find_module check as a
+request_module is harmless if the module is already loaded (and not
+other caller has this find_module check either).
 
-Fixes: 67361cf8071286 ("powerpc/ftrace: Handle large kernel configs")
-Cc: stable@vger.kernel.org # v4.20+
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220516071422.463738-1-naveen.n.rao@linux.vnet.ibm.com
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jessica Yu <jeyu@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/ftrace.h  |    4 +++-
- arch/powerpc/kernel/trace/ftrace.c |   15 ++++++++++++---
- arch/powerpc/mm/mem.c              |    2 ++
- 3 files changed, 17 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/drm_crtc_helper_internal.h |   10 ----------
+ drivers/gpu/drm/drm_fb_helper.c            |   21 ---------------------
+ drivers/gpu/drm/drm_kms_helper_common.c    |   23 +++++++++++------------
+ 3 files changed, 11 insertions(+), 43 deletions(-)
 
---- a/arch/powerpc/include/asm/ftrace.h
-+++ b/arch/powerpc/include/asm/ftrace.h
-@@ -96,7 +96,7 @@ static inline bool arch_syscall_match_sy
- #endif /* PPC64_ELF_ABI_v1 */
- #endif /* CONFIG_FTRACE_SYSCALLS */
+--- a/drivers/gpu/drm/drm_crtc_helper_internal.h
++++ b/drivers/gpu/drm/drm_crtc_helper_internal.h
+@@ -32,16 +32,6 @@
+ #include <drm/drm_encoder.h>
+ #include <drm/drm_modes.h>
  
--#ifdef CONFIG_PPC64
-+#if defined(CONFIG_PPC64) && defined(CONFIG_FUNCTION_TRACER)
- #include <asm/paca.h>
- 
- static inline void this_cpu_disable_ftrace(void)
-@@ -120,11 +120,13 @@ static inline u8 this_cpu_get_ftrace_ena
- 	return get_paca()->ftrace_enabled;
+-/* drm_fb_helper.c */
+-#ifdef CONFIG_DRM_FBDEV_EMULATION
+-int drm_fb_helper_modinit(void);
+-#else
+-static inline int drm_fb_helper_modinit(void)
+-{
+-	return 0;
+-}
+-#endif
+-
+ /* drm_dp_aux_dev.c */
+ #ifdef CONFIG_DRM_DP_AUX_CHARDEV
+ int drm_dp_aux_dev_init(void);
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -2415,24 +2415,3 @@ int drm_fbdev_generic_setup(struct drm_d
+ 	return 0;
  }
+ EXPORT_SYMBOL(drm_fbdev_generic_setup);
+-
+-/* The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
+- * but the module doesn't depend on any fb console symbols.  At least
+- * attempt to load fbcon to avoid leaving the system without a usable console.
+- */
+-int __init drm_fb_helper_modinit(void)
+-{
+-#if defined(CONFIG_FRAMEBUFFER_CONSOLE_MODULE) && !defined(CONFIG_EXPERT)
+-	const char name[] = "fbcon";
+-	struct module *fbcon;
+-
+-	mutex_lock(&module_mutex);
+-	fbcon = find_module(name);
+-	mutex_unlock(&module_mutex);
+-
+-	if (!fbcon)
+-		request_module_nowait(name);
+-#endif
+-	return 0;
+-}
+-EXPORT_SYMBOL(drm_fb_helper_modinit);
+--- a/drivers/gpu/drm/drm_kms_helper_common.c
++++ b/drivers/gpu/drm/drm_kms_helper_common.c
+@@ -64,19 +64,18 @@ MODULE_PARM_DESC(edid_firmware,
  
-+void ftrace_free_init_tramp(void);
- #else /* CONFIG_PPC64 */
- static inline void this_cpu_disable_ftrace(void) { }
- static inline void this_cpu_enable_ftrace(void) { }
- static inline void this_cpu_set_ftrace_enabled(u8 ftrace_enabled) { }
- static inline u8 this_cpu_get_ftrace_enabled(void) { return 1; }
-+static inline void ftrace_free_init_tramp(void) { }
- #endif /* CONFIG_PPC64 */
- #endif /* !__ASSEMBLY__ */
- 
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -336,9 +336,7 @@ static int setup_mcount_compiler_tramp(u
- 
- 	/* Is this a known long jump tramp? */
- 	for (i = 0; i < NUM_FTRACE_TRAMPS; i++)
--		if (!ftrace_tramps[i])
--			break;
--		else if (ftrace_tramps[i] == tramp)
-+		if (ftrace_tramps[i] == tramp)
- 			return 0;
- 
- 	/* Is this a known plt tramp? */
-@@ -882,6 +880,17 @@ void arch_ftrace_update_code(int command
- 
- extern unsigned int ftrace_tramp_text[], ftrace_tramp_init[];
- 
-+void ftrace_free_init_tramp(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < NUM_FTRACE_TRAMPS && ftrace_tramps[i]; i++)
-+		if (ftrace_tramps[i] == (unsigned long)ftrace_tramp_init) {
-+			ftrace_tramps[i] = 0;
-+			return;
-+		}
-+}
-+
- int __init ftrace_dyn_arch_init(void)
+ static int __init drm_kms_helper_init(void)
  {
- 	int i;
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -51,6 +51,7 @@
- #include <asm/kasan.h>
- #include <asm/svm.h>
- #include <asm/mmzone.h>
-+#include <asm/ftrace.h>
+-	int ret;
++	/*
++	 * The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
++	 * but the module doesn't depend on any fb console symbols.  At least
++	 * attempt to load fbcon to avoid leaving the system without a usable
++	 * console.
++	 */
++	if (IS_ENABLED(CONFIG_DRM_FBDEV_EMULATION) &&
++	    IS_MODULE(CONFIG_FRAMEBUFFER_CONSOLE) &&
++	    !IS_ENABLED(CONFIG_EXPERT))
++		request_module_nowait("fbcon");
  
- #include <mm/mmu_decl.h>
- 
-@@ -347,6 +348,7 @@ void free_initmem(void)
- 	mark_initmem_nx();
- 	init_mem_is_free = true;
- 	free_initmem_default(POISON_FREE_INITMEM);
-+	ftrace_free_init_tramp();
+-	/* Call init functions from specific kms helpers here */
+-	ret = drm_fb_helper_modinit();
+-	if (ret < 0)
+-		goto out;
+-
+-	ret = drm_dp_aux_dev_init();
+-	if (ret < 0)
+-		goto out;
+-
+-out:
+-	return ret;
++	return drm_dp_aux_dev_init();
  }
  
- /**
+ static void __exit drm_kms_helper_exit(void)
 
 
