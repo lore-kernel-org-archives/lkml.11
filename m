@@ -2,178 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39434C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbiF3GLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
+        id S232224AbiF3GOu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbiF3GLW (ORCPT
+        with ESMTP id S229891AbiF3GOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:11:22 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEB61D30F
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:11:21 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id bw12-20020a056602398c00b00675895c2e24so1635430iob.19
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:11:21 -0700 (PDT)
+        Thu, 30 Jun 2022 02:14:49 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BD817AB4
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:14:47 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id s14so21760755ljs.3
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:14:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:user-agent:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=jbstzoBmPE/qzRPXYkpjGy3Fre/2Wq0cgzIWxt2EKNo=;
+        b=dE0GPDPN7+EkPuTOwPyhVADLMDB1hwzTYV0wuVdAciotIjmHwpHFUiuiyU6iR4BBJK
+         TWk6z0ZGyMkTVmqqcw/T8vS0uyeXBk3nS5ecL1R6EU2esl3pS2+q659ZQUgLqBo8gHfF
+         9wg1/DbkNQotJYgQqIgxutn4RlP4WMo51sqmgGuCTDb33pE1LAexQ8mKC5ZSQvc9b83L
+         yfcB0C0SN1j/tFddJN/FmMJDYrahN7e6rfRymwMpVwtnupQyGeEUvNqJ8/wq74joajmc
+         vLp1WFy/in0t25ksRE3AVTqsIPcaDkTe1gyO7DZ45cbfESodowWLApu+MosvtlPAL0Xe
+         ZA2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=+iefHiW7JiAlBhCfS0cyGIXPBkF6lrfC+cvMl/HD+Bs=;
-        b=EbAmuFdnPjj8bi/lsjPgZ9uq7uwY4l7A7+JfdfiOsM6mVC6wib17i5ALZ/83okgwZ7
-         yih6amNJKhgpxzSewPSA5IzJ4iGAy7E4NGbdrgyIBqR3Wxkf5Zx6F0RbnwCxQMb1bsF2
-         W0XItjg/J4jVJ671pnyw3mIMiUlDobJ8RIBa01RZE9WdOBNnU4ubfy40xqLCm2lPBx72
-         kaBH8WAXxdMfAQ88gRxTabysvcvFt3jx2nQpO6RpmBR6OW6QzqAtO5PLzR+MUT0qehXF
-         N7H+5VRAhOGq87OoCKxfNNtR0I3qRr4WuFb0jYeKzc30SspMvb0klzApIr3aU9h4yq4T
-         Ym6Q==
-X-Gm-Message-State: AJIora/YzqoHx0JBeqZYvuNq3vPmjffaWWDYMKcvVanvZyG4x8fn3gKM
-        CqVYBwoc6iof0Q8/VjhOLAnNIryVkWzRM0Nyy6iHVHPe5H+u
-X-Google-Smtp-Source: AGRyM1vvyPO3qcIWWnijVH+aUNCCuS4h7sR3Uw29fCOUFN4e2+xbz9SALIElhJOsJOo7D3OfmCXZvtutkTsIaq6KYtpxpYqkse8s
+        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
+         :references:message-id:mime-version:content-transfer-encoding;
+        bh=jbstzoBmPE/qzRPXYkpjGy3Fre/2Wq0cgzIWxt2EKNo=;
+        b=PaimAop/ogBfTyL65TdmiN0RevPp/hEi7+Wg75dQbU/t6Us3TeHnJVfcxEob0ckNe9
+         TRcamg5BaULG0FbkoYKa0Ei8yZUrS/97D4aGM35Vgl0iKElQA/1QXZ041HRH4myQl6GN
+         dPx2biHC5itS7owHH0VToBSY/thE9Z3XwLpEbAFKvfdQGe/Gdcqy3UUbm+u03H+eAdr8
+         0YCp0tx6k6jE3Z233dyl6QqyRKk/SwCclFRTo0tdrFVaeaGDpDdTEDeUYAt5vSCOOTsP
+         h2FnIB96w6aWecc9ssG/sY8rnQFlb1S9XO/+TQjX4v5GCpjw2HXvofT5vbEBcpDIvyJQ
+         ORqg==
+X-Gm-Message-State: AJIora8iWYJ6lEFmMBiaZO2oHUSJXyB05WjOszTFN0DiHKd9640w9wzE
+        synHbhqa7g8KLbZU1vDL5fcXlQ==
+X-Google-Smtp-Source: AGRyM1uoKGxeIs1iPZivYLYdzao86KEYPW5LCYHjgLkBLtqQ45hCjY9py/ak/pnADXnQp+wzawYpAA==
+X-Received: by 2002:a2e:91c4:0:b0:25a:7256:a7aa with SMTP id u4-20020a2e91c4000000b0025a7256a7aamr3898468ljg.344.1656569686144;
+        Wed, 29 Jun 2022 23:14:46 -0700 (PDT)
+Received: from [127.0.0.1] ([94.25.229.210])
+        by smtp.gmail.com with ESMTPSA id x19-20020a056512079300b0047f785a3bd5sm2918295lfr.298.2022.06.29.23.14.44
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 Jun 2022 23:14:45 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 09:14:42 +0300
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Doug Anderson <dianders@chromium.org>
+CC:     Sean Paul <sean@poorly.run>, Stephen Boyd <swboyd@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH=5D_drm/msm/dp=3A_make_eDP_pa?= =?US-ASCII?Q?nel_as_the_first_connected_connector?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CAF6AEGvFYK3x_CmErkKsmYNEv9y8AksE9UB_sfp-Z7RieX=tVg@mail.gmail.com>
+References: <1656429606-2765-1-git-send-email-quic_khsieh@quicinc.com> <F35C87BF-46A5-41D3-B8A5-B2AB4A24252D@linaro.org> <CAD=FV=X3cv=Q30pODyi__OyRY+LbFT14RfEELvm_DAeHafF70g@mail.gmail.com> <CAF6AEGvFYK3x_CmErkKsmYNEv9y8AksE9UB_sfp-Z7RieX=tVg@mail.gmail.com>
+Message-ID: <E87F561E-22B4-46B6-AD9B-4995E92A8E29@linaro.org>
 MIME-Version: 1.0
-X-Received: by 2002:a92:cda5:0:b0:2d9:5bc5:6661 with SMTP id
- g5-20020a92cda5000000b002d95bc56661mr4347235ild.16.1656569481311; Wed, 29 Jun
- 2022 23:11:21 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 23:11:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007abef005e2a423e3@google.com>
-Subject: [syzbot] KASAN: out-of-bounds Read in ntfs_are_names_equal
-From:   syzbot <syzbot+d6c974f22abc4a2d3d1c@syzkaller.appspotmail.com>
-To:     anton@tuxera.com, linux-kernel@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    0840a7914caa Merge tag 'char-misc-5.19-rc4' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=137af970080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e771627480f67502
-dashboard link: https://syzkaller.appspot.com/bug?extid=d6c974f22abc4a2d3d1c
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=112fd917f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1201eae4080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d6c974f22abc4a2d3d1c@syzkaller.appspotmail.com
-
-ntfs: volume version 3.1.
-==================================================================
-BUG: KASAN: out-of-bounds in ntfs_ucsncmp fs/ntfs/unistr.c:142 [inline]
-BUG: KASAN: out-of-bounds in ntfs_are_names_equal+0x196/0x1a0 fs/ntfs/unistr.c:61
-Read of size 2 at addr ffff88802a193ee8 by task syz-executor231/3671
-
-CPU: 2 PID: 3671 Comm: syz-executor231 Not tainted 5.19.0-rc3-syzkaller-00336-g0840a7914caa #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xeb/0x467 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- ntfs_ucsncmp fs/ntfs/unistr.c:142 [inline]
- ntfs_are_names_equal+0x196/0x1a0 fs/ntfs/unistr.c:61
- ntfs_attr_find+0x3df/0xb20 fs/ntfs/attrib.c:614
- ntfs_attr_lookup+0x1051/0x2060 fs/ntfs/attrib.c:1189
- ntfs_read_locked_attr_inode fs/ntfs/inode.c:1239 [inline]
- ntfs_attr_iget+0x652/0x26f0 fs/ntfs/inode.c:238
- ntfs_read_locked_inode+0x2494/0x5ae0 fs/ntfs/inode.c:960
- ntfs_iget+0x12d/0x180 fs/ntfs/inode.c:177
- load_system_files fs/ntfs/super.c:1974 [inline]
- ntfs_fill_super+0x5634/0x9080 fs/ntfs/super.c:2891
- mount_bdev+0x34d/0x410 fs/super.c:1367
- legacy_get_tree+0x105/0x220 fs/fs_context.c:610
- vfs_get_tree+0x89/0x2f0 fs/super.c:1497
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1320/0x1fa0 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f982d4f84aa
-Code: 48 c7 c2 c0 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff eb d2 e8 a8 00 00 00 0f 1f 84 00 00 00 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe6c4048f8 EFLAGS: 00000286 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007ffe6c404950 RCX: 00007f982d4f84aa
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffe6c404910
-RBP: 00007ffe6c404910 R08: 00007ffe6c404950 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000286 R12: 0000000020001208
-R13: 0000000000000003 R14: 0000000000000004 R15: 00000000000000ab
- </TASK>
-
-The buggy address belongs to the physical page:
-page:ffffea0000a864c0 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x2a193
-flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000000 ffffea000093d4c8 ffffea000093c7c8 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as freed
-page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), pid 3672, tgid 3672 (dhcpcd), ts 55153784089, free_ts 55158770564
- prep_new_page mm/page_alloc.c:2456 [inline]
- get_page_from_freelist+0x1290/0x3b70 mm/page_alloc.c:4198
- __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5426
- __folio_alloc+0x12/0x40 mm/page_alloc.c:5457
- vma_alloc_folio+0xf9/0x840 mm/mempolicy.c:2233
- alloc_page_vma include/linux/gfp.h:634 [inline]
- wp_page_copy+0x1f6/0x1e20 mm/memory.c:3104
- do_wp_page+0x389/0x1b60 mm/memory.c:3471
- handle_pte_fault mm/memory.c:4921 [inline]
- __handle_mm_fault+0x2371/0x3f50 mm/memory.c:5042
- handle_mm_fault+0x1c8/0x790 mm/memory.c:5140
- do_user_addr_fault+0x489/0x11c0 arch/x86/mm/fault.c:1397
- handle_page_fault arch/x86/mm/fault.c:1484 [inline]
- exc_page_fault+0x9e/0x180 arch/x86/mm/fault.c:1540
- asm_exc_page_fault+0x27/0x30 arch/x86/include/asm/idtentry.h:570
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1371 [inline]
- free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
- free_unref_page_prepare mm/page_alloc.c:3343 [inline]
- free_unref_page_list+0x16f/0xf80 mm/page_alloc.c:3475
- release_pages+0xff1/0x2290 mm/swap.c:980
- tlb_batch_pages_flush+0xa8/0x1a0 mm/mmu_gather.c:58
- tlb_flush_mmu_free mm/mmu_gather.c:255 [inline]
- tlb_flush_mmu mm/mmu_gather.c:262 [inline]
- tlb_finish_mmu+0x147/0x7e0 mm/mmu_gather.c:353
- exit_mmap+0x1de/0x4a0 mm/mmap.c:3164
- __mmput+0x122/0x4b0 kernel/fork.c:1187
- mmput+0x56/0x60 kernel/fork.c:1208
- exit_mm kernel/exit.c:510 [inline]
- do_exit+0xa12/0x2a00 kernel/exit.c:782
- do_group_exit+0xd2/0x2f0 kernel/exit.c:925
- __do_sys_exit_group kernel/exit.c:936 [inline]
- __se_sys_exit_group kernel/exit.c:934 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Memory state around the buggy address:
- ffff88802a193d80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88802a193e00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff88802a193e80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                                             ^
- ffff88802a193f00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88802a193f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 30 June 2022 04:57:35 GMT+03:00, Rob Clark <robdclark@gmail=2Ecom> wrot=
+e:
+>On Wed, Jun 29, 2022 at 5:36 PM Doug Anderson <dianders@chromium=2Eorg> w=
+rote:
+>>
+>> Hi,
+>>
+>> On Tue, Jun 28, 2022 at 1:14 PM Dmitry Baryshkov
+>> <dmitry=2Ebaryshkov@linaro=2Eorg> wrote:
+>> >
+>> > On 28 June 2022 18:20:06 GMT+03:00, Kuogee Hsieh <quic_khsieh@quicinc=
+=2Ecom> wrote:
+>> > >Some userspace presumes that the first connected connector is the ma=
+in
+>> > >display, where it's supposed to display e=2Eg=2E the login screen=2E=
+ For
+>> > >laptops, this should be the main panel=2E
+>> > >
+>> > >This patch call drm_helper_move_panel_connectors_to_head() after
+>> > >drm_bridge_connector_init() to make sure eDP stay at head of
+>> > >connected connector list=2E This fixes unexpected corruption happen
+>> > >at eDP panel if eDP is not placed at head of connected connector
+>> > >list=2E
+>> >
+>> > The change itself is a good fix anyway=2E (And I'd ack it=2E) However=
+ I would like to understand why does it fix the corruption issue=2E What is=
+ we have eDP and DSI, with DSI ending up before the eDP? Would we see the i=
+ssue?
+>> > Also could you please describe the mind of corruption you are observi=
+ng?
+>>
+>> I've spent a whole bunch of time poking at this and in the end my
+>> conclusion is this:
+>>
+>> 1=2E The glitchyness seems to be a result of the Chrome OS userspace
+>> somehow telling the kernel to do something wrong=2E
+>>
+>> 2=2E I believe (though I have no proof other than Kuogee's patch fixing
+>> things) that the Chrome OS userspace is simply confused by the eDP
+>> connector being second=2E This would imply that Kuogee's patch is
+>> actually the right one=2E
+>>
+>> 3=2E It would be ideal if the Chrome OS userspace were fixed to handle
+>> this, but it's an area of code that I've never looked at=2E It also
+>> seems terribly low priority to fix since apparently other OSes have
+>> similar problems (seems like this code was originally added by
+>> RedHat?)
+>>
+>>
+>> Specifically, I tested with a similar but "persistent" glitch that I
+>> reproduced=2E The glitch Kuogee was digging into was a transitory glitc=
+h
+>> on the eDP (internal) display when you plugged in a DP (external)
+>> display=2E It would show up for a frame or two and then be fixed=2E I c=
+an
+>> get a similar-looking glitch (vertical black and white bars) that
+>> persists by doing these steps on a Chrome OS device (and Chrome OS
+>> kernel):
+>>
+>> a) Observe screen looks good=2E
+>> b) Observe DP not connected=2E
+>> c) Plug in DP
+>> d) See transitory glitch on screen, then it all looks fine=2E
+>> e) set_power_policy --ac_screen_dim_delay=3D5 --ac_screen_off_delay=3D1=
+0
+>> f) Wait for screen to turn off
+>> g) Unplug DP
+>> h) Hit key on keyboard to wake device=2E
+>> i) See glitchy=2E
+>> j) Within 5 seconds: set_power_policy --ac_screen_dim_delay=3D5000
+>> --ac_screen_off_delay=3D10000
+>>
+>> Once I'm in the persistent glitch:
+>>
+>> * The "screenshot" command in Chrome OS shows corruption=2E Not exactly
+>> black and white bars, but the image produced has distinct bands of
+>> garbage=2E
+>>
+>> * I can actually toggle between VT2 and the main screen (VT1)=2E Note
+>> that VT1/VT2 are not quite the normal Linux managed solution--I
+>> believe they're handled by frecon=2E In any case, when I switch to VT2
+>> it looks normal (I can see the login prompt)=2E Then back to VT1 and th=
+e
+>> vertical bars glitch=2E Back to VT2 and it's normal=2E Back to VT1 and =
+the
+>> glitch again=2E This implies (especially with the extra evidence of
+>> screenshot) that the display controller hardware is all fine and that
+>> it's the underlying data that's somehow messed up=2E
+>
+>fwiw, from looking at this a bit w/ Doug, I think the "glitch" is
+>simply just an un-renderered buffer being interpreted by the display
+>controller as UBWC (because userspace tells it to)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks for the description=2E I think the userspace code should be fixed t=
+oo, but this patch can go in on its own=2E
+
+Reviewed-by: Dmitry Baryshkov <dmitry=2Ebaryshkov@linaro=2Eorg>
+
+
+>
+>BR,
+>-R
+>
+>> When I pick Kuogee's patch then this "persistent" glitch goes away
+>> just like the transitory one does=2E
+>>
+>> I'm going to go ahead and do:
+>>
+>> Reviewed-by: Douglas Anderson <dianders@chromium=2Eorg>
+>> Tested-by: Douglas Anderson <dianders@chromium=2Eorg>
+
+--=20
+With best wishes
+Dmitry
