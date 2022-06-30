@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 361CDCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiF3XOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
+        id S232398AbiF3XPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232367AbiF3XOp (ORCPT
+        with ESMTP id S232328AbiF3XPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:14:45 -0400
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D287641F;
-        Thu, 30 Jun 2022 16:14:43 -0700 (PDT)
-Received: by mail-io1-f47.google.com with SMTP id u20so674846iob.8;
-        Thu, 30 Jun 2022 16:14:43 -0700 (PDT)
+        Thu, 30 Jun 2022 19:15:39 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4681723C
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:15:35 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id k7so361490ils.8
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UZIQOA2zru4TOJh6Rd1jEMj2rbMLZO4hPzwYYym7zfc=;
+        b=UKEX7PJwv3X336CoBm7Js/k0kC0bdwYtMCnwQR6hUWsNtK5r1+n1PGfpNRQNAZt76R
+         8aOotBOE0VMv7MHcLk+hdT3F2pY+BiGNBvFJPjwYi5xYxiHF/4AUHzLLr4fagI8o4j6e
+         nW6BMvXY+FKEbek6pBsKsx40kXXXkFqMQJduE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/GS4VqtaJdqJSvRiDmjqKEuDBsco5w/MSERegvSlNYo=;
-        b=MVsJjthYZa5Ax2q1nNnfJuEloOywNzTPG1CI66S4SR2xBnkfo+2lbq2oXdEjclYAPt
-         nYweabcuR+v2HACQ/RKcUwsL8C31/ds67yAx7ofaAq/69dD0MIqDoCRmJQVKHMMeyXxl
-         cngltVxr7u7Vjf9ky25mXQVDuR4vLju9qcrEPRPAI82zz+LR88OO1H8By3irQ7Dils23
-         fL5G+8md5MK966uDcVFsrmv1mi07QrMlEYWf3oRHebSF1AYhT/JLRrlqEXfl+m77y5cY
-         qzS/mfa9okg97aQ69tKhD3nibRjYt1TMXtvzIXBfU1fZLki2uDx8GKzpicIlSz61IBUx
-         Z5/A==
-X-Gm-Message-State: AJIora8Jw8+tjRGCpBe4Yzn94uuKydLhDCiAufEAn3jI0QKvrqvFdA9M
-        uLSpWrHiW9raIx58JVQbqA==
-X-Google-Smtp-Source: AGRyM1sJUPYBAoDl3kH4LmZNrZzwvpPud88QJXBsdw546xQxeoqVi/3TPmeC2oC5hXyxlJjn9x30Rg==
-X-Received: by 2002:a05:6638:339b:b0:33e:98e7:152e with SMTP id h27-20020a056638339b00b0033e98e7152emr1194416jav.93.1656630882498;
-        Thu, 30 Jun 2022 16:14:42 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id a17-20020a056e0208b100b002d955fab9dbsm8570417ilt.23.2022.06.30.16.14.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 16:14:42 -0700 (PDT)
-Received: (nullmailer pid 3510734 invoked by uid 1000);
-        Thu, 30 Jun 2022 23:14:40 -0000
-Date:   Thu, 30 Jun 2022 17:14:40 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-input@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v2 18/20] dt-bindings: mfd: update dlg,da9063.yaml
- reference
-Message-ID: <20220630231440.GA3510679-robh@kernel.org>
-References: <cover.1656234456.git.mchehab@kernel.org>
- <da459164d166d994b06f9ce8bf3a2108ccd0abd5.1656234456.git.mchehab@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UZIQOA2zru4TOJh6Rd1jEMj2rbMLZO4hPzwYYym7zfc=;
+        b=GaTHfooYzYcuIP/GuOK/hDaRmqZcsOsu6mGOtoZxW19wekHgDehFValBxTL9AlbqHo
+         ZZwlS2whcgF26dy2o4hcCXJWaGY4yDmepYAdW4Ijnzd1pzcqGN/Kl5CStC0vai0M31Z/
+         msa3mRC3BE8jQgSOrH513k+W5L1fvedN81apXbVMC4TcdNIX65Y8bJTYfWmY6a53Wns4
+         F4jz0u08DbepTaqCvQBHGSosrXlz2RanAMu+/AAtsAssj/1DsG6iwBBZSZ38/pqc+6uu
+         3KshAhN36YKhRL6uhU6xlqeSBR1N9l0y8w/ppeTrZ7tLM9S8WdDEx8Y1jHczFmgCrsJ6
+         weMA==
+X-Gm-Message-State: AJIora9+zAHtryUE5YSpUmLZaCSaVovRCD5WfihkHKgEm0glC6AuwM4g
+        Ra1rTiqm4FKHChKJ4OQwZXVTJg==
+X-Google-Smtp-Source: AGRyM1uxFHbzxPJY55IVREIVB+Zd32U+Zby5T/7n5HTKGJtCI/eeNqzyg1QzQuIvdOIs3gRjOx3bUw==
+X-Received: by 2002:a05:6e02:13d0:b0:2d9:4396:66ff with SMTP id v16-20020a056e0213d000b002d9439666ffmr6325418ilj.224.1656630934679;
+        Thu, 30 Jun 2022 16:15:34 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id s9-20020a92cc09000000b002d1c94b7143sm8352507ilp.39.2022.06.30.16.15.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 16:15:34 -0700 (PDT)
+Subject: Re: [PATCH 5.10 00/12] 5.10.128-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220630133230.676254336@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <623356e9-f636-583c-b42b-9dc8f02322c6@linuxfoundation.org>
+Date:   Thu, 30 Jun 2022 17:15:33 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <da459164d166d994b06f9ce8bf3a2108ccd0abd5.1656234456.git.mchehab@kernel.org>
+In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 26 Jun 2022 10:11:04 +0100, Mauro Carvalho Chehab wrote:
-> Changeset 441613662db7 ("dt-bindings: mfd: Convert da9063 to yaml")
-> renamed: Documentation/devicetree/bindings/mfd/da9063.txt
-> to: Documentation/devicetree/bindings/mfd/dlg,da9063.yaml.
+On 6/30/22 7:47 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.128 release.
+> There are 12 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Update its cross-reference accordingly.
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
 > 
-> Fixes: 441613662db7 ("dt-bindings: mfd: Convert da9063 to yaml")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.128-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
 > 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH v2 00/20] at: https://lore.kernel.org/all/cover.1656234456.git.mchehab@kernel.org/
+> thanks,
 > 
->  Documentation/devicetree/bindings/input/da9062-onkey.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> greg k-h
 > 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Compiled and booted on my test system. No dmesg regressions.
+
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
