@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 509CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236625AbiF3OGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        id S232844AbiF3OGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236534AbiF3OFy (ORCPT
+        with ESMTP id S236431AbiF3OF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:05:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA784457AC;
-        Thu, 30 Jun 2022 06:53:59 -0700 (PDT)
+        Thu, 30 Jun 2022 10:05:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461964D16F;
+        Thu, 30 Jun 2022 06:54:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 468F3CE2EC5;
-        Thu, 30 Jun 2022 13:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D991C34115;
-        Thu, 30 Jun 2022 13:53:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB27662005;
+        Thu, 30 Jun 2022 13:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E54B9C34115;
+        Thu, 30 Jun 2022 13:53:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597229;
-        bh=zfTjdBUZp/vQ3G5ItACJotfiHku7nqyj9VseQDp+Dyk=;
+        s=korg; t=1656597240;
+        bh=MN6iCT5yYY3Cx/dd3nAqdid5+V43uTKmGhUbJ6Qrbn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sD948q3tjvAxKmHkwYjxwiIG1c6xdhSTRmm5EbtT6q2O+8gu65WuqLBAUJVvlgWmx
-         EaK9Zd8h2Mky7AErKA+rSSIZvgXzlMvFo0ovnTlP6X5726SyHpo35DpW0AIqNuxfBF
-         CTbif/AwPadevbPawjOMgrwMu5Op3Gsrc5y970eg=
+        b=zwF57qaXk1gsuzauB093EG7eEifhX8CzKSIOHUcQUdQy84uOj5RUmevkdRxJM2VME
+         Xnc5BWw5ZiwxcIjsorpQGZK8jkoMK2RMn9EF2y+QElI1hRtYLPEZAcpksmumCML6+f
+         O6e2XEFLfh4+LAXF43Mzilm/alvMl+22ilbGpYYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Christoph Hellwig <hch@lst.de>, Jessica Yu <jeyu@kernel.org>
-Subject: [PATCH 5.4 01/16] drm: remove drm_fb_helper_modinit
-Date:   Thu, 30 Jun 2022 15:46:55 +0200
-Message-Id: <20220630133230.981736423@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH 5.10 12/12] net: mscc: ocelot: allow unregistered IP multicast flooding
+Date:   Thu, 30 Jun 2022 15:47:17 +0200
+Message-Id: <20220630133231.055686574@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
-References: <20220630133230.936488203@linuxfoundation.org>
+In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
+References: <20220630133230.676254336@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,104 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit bf22c9ec39da90ce866d5f625d616f28bc733dc1 upstream.
+Flooding of unregistered IP multicast has been broken (both to other
+switch ports and to the CPU) since the ocelot driver introduction, and
+up until commit 4cf35a2b627a ("net: mscc: ocelot: fix broken IP
+multicast flooding"), a bug fix for commit 421741ea5672 ("net: mscc:
+ocelot: offload bridge port flags to device") from v5.12.
 
-drm_fb_helper_modinit has a lot of boilerplate for what is not very
-simple functionality.  Just open code it in the only caller using
-IS_ENABLED and IS_MODULE, and skip the find_module check as a
-request_module is harmless if the module is already loaded (and not
-other caller has this find_module check either).
+The driver used to set PGID_MCIPV4 and PGID_MCIPV6 to the empty port
+mask (0), which made unregistered IPv4/IPv6 multicast go nowhere, and
+without ever modifying that port mask at runtime.
 
-Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jessica Yu <jeyu@kernel.org>
+The expectation is that such packets are treated as broadcast, and
+flooded according to the forwarding domain (to the CPU if the port is
+standalone, or to the CPU and other bridged ports, if under a bridge).
+
+Since the aforementioned commit, the limitation has been lifted by
+responding to SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS events emitted by the
+bridge. As for host flooding, DSA synthesizes another call to
+ocelot_port_bridge_flags() on the NPI port which ensures that the CPU
+gets the unregistered multicast traffic it might need, for example for
+smcroute to work between standalone ports.
+
+But between v4.18 and v5.12, IP multicast flooding has remained unfixed.
+
+Delete the inexplicable premature optimization of clearing PGID_MCIPV4
+and PGID_MCIPV6 as part of the init sequence, and allow unregistered IP
+multicast to be flooded freely according to the forwarding domain
+established by PGID_SRC, by explicitly programming PGID_MCIPV4 and
+PGID_MCIPV6 towards all physical ports plus the CPU port module.
+
+Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
+Cc: stable@kernel.org
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_crtc_helper_internal.h |   10 ----------
- drivers/gpu/drm/drm_fb_helper.c            |   21 ---------------------
- drivers/gpu/drm/drm_kms_helper_common.c    |   23 +++++++++++------------
- 3 files changed, 11 insertions(+), 43 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/drm_crtc_helper_internal.h
-+++ b/drivers/gpu/drm/drm_crtc_helper_internal.h
-@@ -32,16 +32,6 @@
- #include <drm/drm_encoder.h>
- #include <drm/drm_modes.h>
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1593,8 +1593,12 @@ int ocelot_init(struct ocelot *ocelot)
+ 	ocelot_write_rix(ocelot,
+ 			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
+ 			 ANA_PGID_PGID, PGID_MC);
+-	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
+-	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
++	ocelot_write_rix(ocelot,
++			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
++			 ANA_PGID_PGID, PGID_MCIPV4);
++	ocelot_write_rix(ocelot,
++			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
++			 ANA_PGID_PGID, PGID_MCIPV6);
  
--/* drm_fb_helper.c */
--#ifdef CONFIG_DRM_FBDEV_EMULATION
--int drm_fb_helper_modinit(void);
--#else
--static inline int drm_fb_helper_modinit(void)
--{
--	return 0;
--}
--#endif
--
- /* drm_dp_aux_dev.c */
- #ifdef CONFIG_DRM_DP_AUX_CHARDEV
- int drm_dp_aux_dev_init(void);
---- a/drivers/gpu/drm/drm_fb_helper.c
-+++ b/drivers/gpu/drm/drm_fb_helper.c
-@@ -2415,24 +2415,3 @@ int drm_fbdev_generic_setup(struct drm_d
- 	return 0;
- }
- EXPORT_SYMBOL(drm_fbdev_generic_setup);
--
--/* The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
-- * but the module doesn't depend on any fb console symbols.  At least
-- * attempt to load fbcon to avoid leaving the system without a usable console.
-- */
--int __init drm_fb_helper_modinit(void)
--{
--#if defined(CONFIG_FRAMEBUFFER_CONSOLE_MODULE) && !defined(CONFIG_EXPERT)
--	const char name[] = "fbcon";
--	struct module *fbcon;
--
--	mutex_lock(&module_mutex);
--	fbcon = find_module(name);
--	mutex_unlock(&module_mutex);
--
--	if (!fbcon)
--		request_module_nowait(name);
--#endif
--	return 0;
--}
--EXPORT_SYMBOL(drm_fb_helper_modinit);
---- a/drivers/gpu/drm/drm_kms_helper_common.c
-+++ b/drivers/gpu/drm/drm_kms_helper_common.c
-@@ -64,19 +64,18 @@ MODULE_PARM_DESC(edid_firmware,
- 
- static int __init drm_kms_helper_init(void)
- {
--	int ret;
-+	/*
-+	 * The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
-+	 * but the module doesn't depend on any fb console symbols.  At least
-+	 * attempt to load fbcon to avoid leaving the system without a usable
-+	 * console.
-+	 */
-+	if (IS_ENABLED(CONFIG_DRM_FBDEV_EMULATION) &&
-+	    IS_MODULE(CONFIG_FRAMEBUFFER_CONSOLE) &&
-+	    !IS_ENABLED(CONFIG_EXPERT))
-+		request_module_nowait("fbcon");
- 
--	/* Call init functions from specific kms helpers here */
--	ret = drm_fb_helper_modinit();
--	if (ret < 0)
--		goto out;
--
--	ret = drm_dp_aux_dev_init();
--	if (ret < 0)
--		goto out;
--
--out:
--	return ret;
-+	return drm_dp_aux_dev_init();
- }
- 
- static void __exit drm_kms_helper_exit(void)
+ 	/* Allow manual injection via DEVCPU_QS registers, and byte swap these
+ 	 * registers endianness.
 
 
