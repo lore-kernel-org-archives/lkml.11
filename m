@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 450BAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0ADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiF3Ny3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51140 "EHLO
+        id S235909AbiF3Nyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235532AbiF3NwJ (ORCPT
+        with ESMTP id S235810AbiF3Nxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:52:09 -0400
+        Thu, 30 Jun 2022 09:53:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5469E443F8;
-        Thu, 30 Jun 2022 06:49:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26A44F660;
+        Thu, 30 Jun 2022 06:50:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D1DE62051;
-        Thu, 30 Jun 2022 13:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C96C34115;
-        Thu, 30 Jun 2022 13:49:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8920761FF6;
+        Thu, 30 Jun 2022 13:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89464C34115;
+        Thu, 30 Jun 2022 13:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596969;
-        bh=CLKucOR1KV+hTdnmQuZOHWx60dJ5jfawBtDEBI3Okjc=;
+        s=korg; t=1656597008;
+        bh=x7P22JytzPf6oNjq71S/evHGGCzh/+caYNfY3VnwaO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=okJ1QGb+4WlBd+ZQe2iAsbz1PsHmvTQC60v/oPCKudCCQ8MfGKlsUd1d3AXgfl9qy
-         u7bIn8r3KzF6x455mNBHl4GwLgENpXFUO+wewvvQhS1e1iAWWG9t0gw0BH3eGN0A5c
-         E/nZAiNy13AVrRcx/EOETgqYEw+09gOZmCzjXXBQ=
+        b=SrtiuNWNJy1VglhD9/OgzD07Ofkt8dzKdjCRMpsBBlA3sWulgfZJ/pPfRyK4+v14C
+         JopkVWz5cv01V11hm7YYdFjTFpnEE+hm3Y3DiwEsG03b/EHAND8ua9ErkAFrGA4gB8
+         livB2iZGm4L5xNZTCUngsIUawUmjgXsYzWDoXygc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.14 17/35] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
-Date:   Thu, 30 Jun 2022 15:46:28 +0200
-Message-Id: <20220630133232.949544518@linuxfoundation.org>
+        stable@vger.kernel.org, Edward Wu <edwardwu@realtek.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.14 03/35] ata: libata: add qc->flags in ata_qc_complete_template tracepoint
+Date:   Thu, 30 Jun 2022 15:46:14 +0200
+Message-Id: <20220630133232.540977324@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -50,31 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Edward Wu <edwardwu@realtek.com>
 
-commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
+commit 540a92bfe6dab7310b9df2e488ba247d784d0163 upstream.
 
-The driver should disable regulators when fails at regmap_update_bits().
+Add flags value to check the result of ata completion
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: <Stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 255c03d15a29 ("libata: Add tracepoints")
+Cc: stable@vger.kernel.org
+Signed-off-by: Edward Wu <edwardwu@realtek.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/gyro/mpu3050-core.c |    1 +
+ include/trace/events/libata.h |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -874,6 +874,7 @@ static int mpu3050_power_up(struct mpu30
- 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
- 				 MPU3050_PWR_MGM_SLEEP, 0);
- 	if (ret) {
-+		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
- 		dev_err(mpu3050->dev, "error setting power mode\n");
- 		return ret;
- 	}
+--- a/include/trace/events/libata.h
++++ b/include/trace/events/libata.h
+@@ -249,6 +249,7 @@ DECLARE_EVENT_CLASS(ata_qc_complete_temp
+ 		__entry->hob_feature	= qc->result_tf.hob_feature;
+ 		__entry->nsect		= qc->result_tf.nsect;
+ 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
++		__entry->flags		= qc->flags;
+ 	),
+ 
+ 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
 
 
