@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6D0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C6CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236140AbiF3OBc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        id S236116AbiF3OBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236452AbiF3N6p (ORCPT
+        with ESMTP id S236496AbiF3N6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:58:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DB15726F;
-        Thu, 30 Jun 2022 06:51:47 -0700 (PDT)
+        Thu, 30 Jun 2022 09:58:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E9241999;
+        Thu, 30 Jun 2022 06:51:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED76620ED;
-        Thu, 30 Jun 2022 13:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B81C34115;
-        Thu, 30 Jun 2022 13:51:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A122620FB;
+        Thu, 30 Jun 2022 13:51:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FCEC34115;
+        Thu, 30 Jun 2022 13:51:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597083;
-        bh=Z/K9iGNGKjun6Pwhwsu8HaUDt3qlLF2xHSIBy2pz45M=;
+        s=korg; t=1656597105;
+        bh=Urwb/RjVq/tYoyuIqbJgp4bogvrF3sTNzc506eyjWfg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q7WNcxP1oKQRhcEuUwIeUXSa/Bu+vrd9ODpRYmaH8HlTb6BlrxzXzMmoZ8QW8vabc
-         Ia9YKlwijwiKLoGGu1BrzbBxNYq8MteHNMxk/GL+VzWLR11b2DTqJkj9gZ4cixfaFx
-         2oJRrZRIpJLZSMau4bAHLvb6div54s2rZvBHqzQg=
+        b=IIRykTfGKdUoVzn+qcu2K+mJtRvmFBc5DIpjTcnlKCkinLzKbswKqxrdZ1EaB2QcG
+         jjt0yfjU3IN/bvFur9nI3kTClZJMbVN5PDDrdzQ12zgtlfu3qPGbTp4W2WVIKwYQhc
+         AzP3a0fyHLYOHYRxm6g45LQkMkFrLZOvYmody9W4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 4.19 22/49] xhci: turn off port power in shutdown
-Date:   Thu, 30 Jun 2022 15:46:35 +0200
-Message-Id: <20220630133234.557073875@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.19 29/49] iio: adc: axp288: Override TS pin bias current for some models
+Date:   Thu, 30 Jun 2022 15:46:42 +0200
+Message-Id: <20220630133234.753206225@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -48,86 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 83810f84ecf11dfc5a9414a8b762c3501b328185 upstream.
+commit 048058399f19d43cf21de9f5d36cd8144337d004 upstream.
 
-If ports are not turned off in shutdown then runtime suspended
-self-powered USB devices may survive in U3 link state over S5.
+Since commit 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling") we
+preserve the bias current set by the firmware at boot. This fixes issues
+we were seeing on various models.
 
-During subsequent boot, if firmware sends an IPC command to program
-the port in DISCONNECT state, it will time out, causing significant
-delay in the boot time.
+Some models like the Nuvision Solo 10 Draw tablet actually need the
+old hardcoded 80ųA bias current for battery temperature monitoring
+to work properly.
 
-Turning off roothub port power is also recommended in xhci
-specification 4.19.4 "Port Power" in the additional note.
+Add a quirk entry for the Nuvision Solo 10 Draw to the DMI quirk table
+to restore setting the bias current to 80ųA on this model.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220623111945.1557702-3-mathias.nyman@linux.intel.com
+Fixes: 9bcf15f75cac ("iio: adc: axp288: Fix TS-pin handling")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215882
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220506095040.21008-1-hdegoede@redhat.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    2 +-
- drivers/usb/host/xhci.c     |   15 +++++++++++++--
- drivers/usb/host/xhci.h     |    2 ++
- 3 files changed, 16 insertions(+), 3 deletions(-)
+ drivers/iio/adc/axp288_adc.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -565,7 +565,7 @@ struct xhci_hub *xhci_get_rhub(struct us
-  * It will release and re-aquire the lock while calling ACPI
-  * method.
-  */
--static void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd,
-+void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd,
- 				u16 index, bool on, unsigned long *flags)
- {
- 	struct xhci_hub *rhub;
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -774,6 +774,8 @@ static void xhci_stop(struct usb_hcd *hc
- void xhci_shutdown(struct usb_hcd *hcd)
- {
- 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
-+	unsigned long flags;
-+	int i;
- 
- 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
- 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
-@@ -789,12 +791,21 @@ void xhci_shutdown(struct usb_hcd *hcd)
- 		del_timer_sync(&xhci->shared_hcd->rh_timer);
- 	}
- 
--	spin_lock_irq(&xhci->lock);
-+	spin_lock_irqsave(&xhci->lock, flags);
- 	xhci_halt(xhci);
-+
-+	/* Power off USB2 ports*/
-+	for (i = 0; i < xhci->usb2_rhub.num_ports; i++)
-+		xhci_set_port_power(xhci, xhci->main_hcd, i, false, &flags);
-+
-+	/* Power off USB3 ports*/
-+	for (i = 0; i < xhci->usb3_rhub.num_ports; i++)
-+		xhci_set_port_power(xhci, xhci->shared_hcd, i, false, &flags);
-+
- 	/* Workaround for spurious wakeups at shutdown with HSW */
- 	if (xhci->quirks & XHCI_SPURIOUS_WAKEUP)
- 		xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
--	spin_unlock_irq(&xhci->lock);
-+	spin_unlock_irqrestore(&xhci->lock, flags);
- 
- 	xhci_cleanup_msix(xhci);
- 
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -2145,6 +2145,8 @@ int xhci_hub_control(struct usb_hcd *hcd
- int xhci_hub_status_data(struct usb_hcd *hcd, char *buf);
- int xhci_find_raw_port_number(struct usb_hcd *hcd, int port1);
- struct xhci_hub *xhci_get_rhub(struct usb_hcd *hcd);
-+void xhci_set_port_power(struct xhci_hcd *xhci, struct usb_hcd *hcd, u16 index,
-+			 bool on, unsigned long *flags);
- 
- void xhci_hc_died(struct xhci_hcd *xhci);
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -205,6 +205,14 @@ static const struct dmi_system_id axp288
+ 		},
+ 		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
+ 	},
++	{
++		/* Nuvision Solo 10 Draw */
++		.matches = {
++		  DMI_MATCH(DMI_SYS_VENDOR, "TMAX"),
++		  DMI_MATCH(DMI_PRODUCT_NAME, "TM101W610L"),
++		},
++		.driver_data = (void *)(uintptr_t)AXP288_ADC_TS_BIAS_80UA,
++	},
+ 	{}
+ };
  
 
 
