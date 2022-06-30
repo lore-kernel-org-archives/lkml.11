@@ -2,107 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 486DFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 15:09:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39667CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 15:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235495AbiF3PJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 11:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        id S235506AbiF3PJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 11:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiF3PJB (ORCPT
+        with ESMTP id S232771AbiF3PJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 11:09:01 -0400
-Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8609E28E0F;
-        Thu, 30 Jun 2022 08:08:59 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 30 Jun 2022 23:08:41
- +0800 (GMT+08:00)
-X-Originating-IP: [221.192.178.120]
-Date:   Thu, 30 Jun 2022 23:08:41 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Eric Dumazet" <edumazet@google.com>
-Cc:     linux-hams@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "David Miller" <davem@davemloft.net>,
-        "Ralf Baechle" <ralf@linux-mips.org>
-Subject: Re: [PATCH net] net: rose: fix UAF bug caused by
- rose_t0timer_expiry
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <CANn89iLda2oxoPQaGd9r8frAaOu1LqxmWYm2O8W4HXaGRN8tcQ@mail.gmail.com>
-References: <20220630143842.24906-1-duoming@zju.edu.cn>
- <CANn89iLda2oxoPQaGd9r8frAaOu1LqxmWYm2O8W4HXaGRN8tcQ@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 30 Jun 2022 11:09:43 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B4B2A40D;
+        Thu, 30 Jun 2022 08:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656601783; x=1688137783;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dEIauEI3zkRv/Pfdo68/T9rL15iJxOA2RZaefQ/y2OU=;
+  b=DWJ4ZPxtk7Mz7hdXrAyTpg4PNkiijCBTlhg9/20qj4SMMcOkisf0kIJ0
+   nT9sGa8mAHtlcBiSXvAa8/plJin1ikNABxlRuAYZDG5wk9OTBSO02k5e5
+   5rdrO5L+OknUp6dlLR/u4cBvXRQIG0gimS/QARqG3jc5YXYEBzW+1ZqFB
+   X76m4wsg1EZxl3KfJqK9h77Y08VFhoFzsw9KP2uLc+DH9cc8sx38+OK/v
+   v3OCIKMFjO2A1d7rxiVJgNYlNCcBlHN2o0aJJgDVy/8VJrtFE+VoNBdtF
+   YFQPqTkKNPawZGKTp3C5IpQVF4UkYp+eE+N7+2Xa67SfCjoE9FLQsDj37
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="162789649"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 08:09:42 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 30 Jun 2022 08:09:41 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 08:09:39 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <mturquette@baylibre.com>, <sboyd@kernel.org>
+CC:     <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>
+Subject: [PATCH 2/2] clk: do not initialize ret
+Date:   Thu, 30 Jun 2022 18:12:05 +0300
+Message-ID: <20220630151205.3935560-2-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220630151205.3935560-1-claudiu.beznea@microchip.com>
+References: <20220630151205.3935560-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Message-ID: <bed69ee.1e8d9.181b528391c.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3COF6vL1iQgHiAg--.63195W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgARAVZdtaenFwABs6
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDMwIEp1biAyMDIyIDE2OjQ0OjI5ICswMjAwIEVyaWMgRHVtYXpldCB3
-cm90ZToKCj4gPiBUaGVyZSBhcmUgVUFGIGJ1Z3MgY2F1c2VkIGJ5IHJvc2VfdDB0aW1lcl9leHBp
-cnkoKS4gVGhlCj4gPiByb290IGNhdXNlIGlzIHRoYXQgZGVsX3RpbWVyKCkgY291bGQgbm90IHN0
-b3AgdGhlIHRpbWVyCj4gPiBoYW5kbGVyIHRoYXQgaXMgcnVubmluZyBhbmQgdGhlcmUgaXMgbm8g
-c3luY2hyb25pemF0aW9uLgo+ID4gT25lIG9mIHRoZSByYWNlIGNvbmRpdGlvbnMgaXMgc2hvd24g
-YmVsb3c6Cj4gPgo+ID4gICAgICh0aHJlYWQgMSkgICAgICAgICAgICAgfCAgICAgICAgKHRocmVh
-ZCAyKQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgfCByb3NlX2RldmljZV9ldmVudAo+
-ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIHJvc2VfcnRfZGV2aWNlX2Rvd24KPiA+
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgIHJvc2VfcmVtb3ZlX25laWdoCj4gPiBy
-b3NlX3QwdGltZXJfZXhwaXJ5ICAgICAgICB8ICAgICAgIHJvc2Vfc3RvcF90MHRpbWVyKHJvc2Vf
-bmVpZ2gpCj4gPiAgIC4uLiAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgZGVsX3RpbWVy
-KCZuZWlnaC0+dDB0aW1lcikKPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAg
-ICBrZnJlZShyb3NlX25laWdoKSAvL1sxXUZSRUUKPiA+ICAgbmVpZ2gtPmRjZV9tb2RlIC8vWzJd
-VVNFIHwKPiA+Cj4gPiBUaGUgcm9zZV9uZWlnaCBpcyBkZWFsbG9jYXRlZCBpbiBwb3NpdGlvbiBb
-MV0gYW5kIHVzZSBpbgo+ID4gcG9zaXRpb24gWzJdLgo+ID4KPiA+IFRoZSBjcmFzaCB0cmFjZSB0
-cmlnZ2VyZWQgYnkgUE9DIGlzIGxpa2UgYmVsb3c6Cj4gPgo+ID4gQlVHOiBLQVNBTjogdXNlLWFm
-dGVyLWZyZWUgaW4gZXhwaXJlX3RpbWVycysweDE0NC8weDMyMAo+ID4gV3JpdGUgb2Ygc2l6ZSA4
-IGF0IGFkZHIgZmZmZjg4ODAwOWIxOTY1OCBieSB0YXNrIHN3YXBwZXIvMC8wCj4gPiAuLi4KPiA+
-IENhbGwgVHJhY2U6Cj4gPiAgPElSUT4KPiA+ICBkdW1wX3N0YWNrX2x2bCsweGJmLzB4ZWUKPiA+
-ICBwcmludF9hZGRyZXNzX2Rlc2NyaXB0aW9uKzB4N2IvMHg0NDAKPiA+ICBwcmludF9yZXBvcnQr
-MHgxMDEvMHgyMzAKPiA+ICA/IGV4cGlyZV90aW1lcnMrMHgxNDQvMHgzMjAKPiA+ICBrYXNhbl9y
-ZXBvcnQrMHhlZC8weDEyMAo+ID4gID8gZXhwaXJlX3RpbWVycysweDE0NC8weDMyMAo+ID4gIGV4
-cGlyZV90aW1lcnMrMHgxNDQvMHgzMjAKPiA+ICBfX3J1bl90aW1lcnMrMHgzZmYvMHg0ZDAKPiA+
-ICBydW5fdGltZXJfc29mdGlycSsweDQxLzB4ODAKPiA+ICBfX2RvX3NvZnRpcnErMHgyMzMvMHg1
-NDQKPiA+ICAuLi4KPiA+Cj4gPiBUaGlzIHBhdGNoIGNoYW5nZXMgZGVsX3RpbWVyKCkgaW4gcm9z
-ZV9zdG9wX3QwdGltZXIoKSBhbmQKPiA+IHJvc2Vfc3RvcF9mdGltZXIoKSB0byBkZWxfdGltZXJf
-c3luYygpIGluIG9yZGVyIHRoYXQgdGhlCj4gPiB0aW1lciBoYW5kbGVyIGNvdWxkIGJlIGZpbmlz
-aGVkIGJlZm9yZSB0aGUgcmVzb3VyY2VzIHN1Y2ggYXMKPiA+IHJvc2VfbmVpZ2ggYW5kIHNvIG9u
-IGFyZSBkZWFsbG9jYXRlZC4gQXMgYSByZXN1bHQsIHRoZSBVQUYKPiA+IGJ1Z3MgY291bGQgYmUg
-bWl0aWdhdGVkLgo+ID4KPiA+IEZpeGVzOiAxZGExNzdlNGMzZjQgKCJMaW51eC0yLjYuMTItcmMy
-IikKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+
-ID4gLS0tCj4gPiAgbmV0L3Jvc2Uvcm9zZV9saW5rLmMgfCA0ICsrLS0KPiA+ICAxIGZpbGUgY2hh
-bmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+ID4KPiA+IGRpZmYgLS1naXQg
-YS9uZXQvcm9zZS9yb3NlX2xpbmsuYyBiL25ldC9yb3NlL3Jvc2VfbGluay5jCj4gPiBpbmRleCA4
-Yjk2YTU2ZDNhNC4uOTczNGQxMjY0ZGUgMTAwNjQ0Cj4gPiAtLS0gYS9uZXQvcm9zZS9yb3NlX2xp
-bmsuYwo+ID4gKysrIGIvbmV0L3Jvc2Uvcm9zZV9saW5rLmMKPiA+IEBAIC01NCwxMiArNTQsMTIg
-QEAgc3RhdGljIHZvaWQgcm9zZV9zdGFydF90MHRpbWVyKHN0cnVjdCByb3NlX25laWdoICpuZWln
-aCkKPiA+Cj4gPiAgdm9pZCByb3NlX3N0b3BfZnRpbWVyKHN0cnVjdCByb3NlX25laWdoICpuZWln
-aCkKPiA+ICB7Cj4gPiAtICAgICAgIGRlbF90aW1lcigmbmVpZ2gtPmZ0aW1lcik7Cj4gPiArICAg
-ICAgIGRlbF90aW1lcl9zeW5jKCZuZWlnaC0+ZnRpbWVyKTsKPiA+ICB9Cj4gCj4gQXJlIHlvdSBz
-dXJlIHRoaXMgaXMgc2FmZSA/Cj4gCj4gZGVsX3RpbWVyX3N5bmMoKSBjb3VsZCBoYW5nIGlmIHRo
-ZSBjYWxsZXIgaG9sZHMgYSBsb2NrIHRoYXQgdGhlIHRpbWVyCj4gZnVuY3Rpb24gd291bGQgbmVl
-ZCB0byBhY3F1aXJlLgoKSSB0aGluayB0aGlzIGlzIHNhZmUuIFRoZSByb3NlX2Z0aW1lcl9leHBp
-cnkoKSBpcyBhbiBlbXB0eSBmdW5jdGlvbiB0aGF0IGlzCnNob3duIGJlbG93OgoKc3RhdGljIHZv
-aWQgcm9zZV9mdGltZXJfZXhwaXJ5KHN0cnVjdCB0aW1lcl9saXN0ICp0KQp7Cn0KCj4gPgo+ID4g
-IHZvaWQgcm9zZV9zdG9wX3QwdGltZXIoc3RydWN0IHJvc2VfbmVpZ2ggKm5laWdoKQo+ID4gIHsK
-PiA+IC0gICAgICAgZGVsX3RpbWVyKCZuZWlnaC0+dDB0aW1lcik7Cj4gPiArICAgICAgIGRlbF90
-aW1lcl9zeW5jKCZuZWlnaC0+dDB0aW1lcik7Cj4gPiAgfQo+IAo+IFNhbWUgaGVyZSwgcGxlYXNl
-IGV4cGxhaW4gd2h5IGl0IGlzIHNhZmUuCgpUaGUgcm9zZV9zdG9wX3QwdGltZXIoKSBtYXkgaG9s
-ZCAicm9zZV9ub2RlX2xpc3RfbG9jayIgYW5kICJyb3NlX25laWdoX2xpc3RfbG9jayIsCmJ1dCB0
-aGUgdGltZXIgaGFuZGxlciByb3NlX3QwdGltZXJfZXhwaXJ5KCkgdGhhdCBpcyBzaG93biBiZWxv
-dyBkb2VzIG5vdCBuZWVkCnRoZXNlIHR3byBsb2Nrcy4KCnN0YXRpYyB2b2lkIHJvc2VfdDB0aW1l
-cl9leHBpcnkoc3RydWN0IHRpbWVyX2xpc3QgKnQpCnsKCXN0cnVjdCByb3NlX25laWdoICpuZWln
-aCA9IGZyb21fdGltZXIobmVpZ2gsIHQsIHQwdGltZXIpOwoKCXJvc2VfdHJhbnNtaXRfcmVzdGFy
-dF9yZXF1ZXN0KG5laWdoKTsKCgluZWlnaC0+ZGNlX21vZGUgPSAwOwoKCXJvc2Vfc3RhcnRfdDB0
-aW1lcihuZWlnaCk7Cn0KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91
+There is no need to initialize ret.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/clk/clk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 1cff79a7f8a4..af6f8b48a561 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -2189,7 +2189,7 @@ static int clk_core_set_rate_nolock(struct clk_core *core,
+ {
+ 	struct clk_core *top, *fail_clk;
+ 	unsigned long rate;
+-	int ret = 0;
++	int ret;
+ 
+ 	if (!core)
+ 		return 0;
+-- 
+2.34.1
+
