@@ -2,72 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19503C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3025CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237052AbiF3OTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        id S237110AbiF3OUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237772AbiF3OSx (ORCPT
+        with ESMTP id S237097AbiF3OT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:18:53 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4474D88F0E;
-        Thu, 30 Jun 2022 07:03:21 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LYg3J1xLmz1L8fD;
-        Thu, 30 Jun 2022 22:01:00 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 22:03:17 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
- 2022 22:03:17 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-clk@vger.kernel.org>
-CC:     <abelvesa@kernel.org>, <shawnguo@kernel.org>
-Subject: [PATCH -next] clk: imx: remove unnecessary NULL check of clk
-Date:   Thu, 30 Jun 2022 22:13:08 +0800
-Message-ID: <20220630141308.121526-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 30 Jun 2022 10:19:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7C689E69;
+        Thu, 30 Jun 2022 07:03:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EF87621A3;
+        Thu, 30 Jun 2022 14:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92FE1C3411E;
+        Thu, 30 Jun 2022 14:03:35 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WqqidDEG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656597813;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CDAtRv+i47lPZN+MeSRWN9u2g5rs4eBI6saO4iW7/wk=;
+        b=WqqidDEGQmq71lTdqGpK4AVjA71rXhDqIK18x0CMAmFzURDwMiQaU3hdv2oopmgEXFL1A3
+        M2/xT3DqlYVImGry8d+FqGmkiv3H8+fwfBghIov8bRd412rVoN1pnej2wdLfBOp8N24mv/
+        hcuvf6Wu8rwjOt/dIQtm9YLIocIenZY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e5e0acb7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 30 Jun 2022 14:03:33 +0000 (UTC)
+Date:   Thu, 30 Jun 2022 16:03:31 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        gregerwin256@gmail.com
+Cc:     Gregory Erwin <gregerwin256@gmail.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Rui Salvaterra <rsalvaterra@gmail.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v8] ath9k: let sleep be interrupted when unregistering
+ hwrng
+Message-ID: <Yr2tM4fX4YjOSQxh@zx2c4.com>
+References: <Yrw5f8GN2fh2orid@zx2c4.com>
+ <20220629114240.946411-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220629114240.946411-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It has NULL check in clk_prepare_enable(), so it no need
-to check the clk before calling it.
+Hey Gregory,
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/clk/imx/clk.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Wed, Jun 29, 2022 at 01:42:40PM +0200, Jason A. Donenfeld wrote:
+> There are two deadlock scenarios that need addressing, which cause
+> problems when the computer goes to sleep, the interface is set down, and
+> hwrng_unregister() is called. When the deadlock is hit, sleep is delayed
+> for tens of seconds, causing it to fail. These scenarios are:
+> 
+> 1) The hwrng kthread can't be stopped while it's sleeping, because it
+>    uses msleep_interruptible() instead of schedule_timeout_interruptible().
+>    The fix is a simple moving to the correct function. At the same time,
+>    we should cleanup a common and useless dmesg splat in the same area.
+> 
+> 2) A normal user thread can't be interrupted by hwrng_unregister() while
+>    it's sleeping, because hwrng_unregister() is called from elsewhere.
+>    The solution here is to keep track of which thread is currently
+>    reading, and asleep, and signal that thread when it's time to
+>    unregister. There's a bit of book keeping required to prevent
+>    lifetime issues on current.
+> 
+> Reported-by: Gregory Erwin <gregerwin256@gmail.com>
+> Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Rui Salvaterra <rsalvaterra@gmail.com>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: stable@vger.kernel.org
+> Fixes: fcd09c90c3c5 ("ath9k: use hw_random API instead of directly dumping into random.c")
+> Link: https://lore.kernel.org/all/CAO+Okf6ZJC5-nTE_EJUGQtd8JiCkiEHytGgDsFGTEjs0c00giw@mail.gmail.com/
+> Link: https://lore.kernel.org/lkml/CAO+Okf5k+C+SE6pMVfPf-d8MfVPVq4PO7EY8Hys_DVXtent3HA@mail.gmail.com/
+> Link: https://bugs.archlinux.org/task/75138
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-diff --git a/drivers/clk/imx/clk.c b/drivers/clk/imx/clk.c
-index 5582f18dd632..1c5d5b957c96 100644
---- a/drivers/clk/imx/clk.c
-+++ b/drivers/clk/imx/clk.c
-@@ -189,9 +189,7 @@ void imx_register_uart_clocks(unsigned int clk_count)
- 			if (IS_ERR(imx_uart_clocks[imx_enabled_uart_clocks]))
- 				return;
- 
--			/* Only enable the clock if it's not NULL */
--			if (imx_uart_clocks[imx_enabled_uart_clocks])
--				clk_prepare_enable(imx_uart_clocks[imx_enabled_uart_clocks++]);
-+			clk_prepare_enable(imx_uart_clocks[imx_enabled_uart_clocks++]);
- 		}
- 	}
- #endif
--- 
-2.25.1
+Hoping for your `Tested-by:` if this still works for you.
 
+Jason
