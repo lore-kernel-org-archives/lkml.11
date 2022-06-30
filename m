@@ -2,88 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E67CEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiF3XSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
+        id S232798AbiF3XSv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232635AbiF3XSX (ORCPT
+        with ESMTP id S232635AbiF3XSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:18:23 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEDDE0E
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:18:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656631097; x=1688167097;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Dfm7axZWAKkEl0Yg6555XwrTd6tTzwlKszTTyyKnpIQ=;
-  b=JWhK65Erumn/ez/a8GrFjpnCUJH3Kd1vcnTU/u6tkZTgz7A4c4hLxmSK
-   usptliAgEagLju8TH4Vf7B3mf0A4t+9LotCa+08qevwQFngOJ6x0NvwUS
-   B+0ornxazoTzBKfVi69dN9Nt33uxxGE9sZAwOO5g+7guoo0U7c+Ue4Uzs
-   zTfT+gj9oD1pj/A+CZx2AKeyzP1Ga6u99nvXdyHiTrN/hqjrGMHZXNUac
-   IOs7jrkvy5vXl8OeVzRV+tNzJWo9VjeLXmxcdkEhC9yL0fI7hkZVMNP+3
-   OeWQzmIHfvfrSLJBjR1fiFvQgOj7RgtLcMjzZZhq5UKDCiT/LvIA0kxa6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="283594277"
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="283594277"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 16:18:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="596012036"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 30 Jun 2022 16:18:15 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o73QM-000DIY-ND;
-        Thu, 30 Jun 2022 23:18:14 +0000
-Date:   Fri, 1 Jul 2022 07:17:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 31/56]
- ld.lld: error: undefined symbol: fscache_begin_cache_operation
-Message-ID: <202207010740.uNqYXgaP-lkp@intel.com>
+        Thu, 30 Jun 2022 19:18:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0933B1D;
+        Thu, 30 Jun 2022 16:18:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B083B82D20;
+        Thu, 30 Jun 2022 23:18:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7808C34115;
+        Thu, 30 Jun 2022 23:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656631125;
+        bh=Nr3CKmGZB57NzBUuiTYNFL4T5Qf4aowgFyby0BK2IJc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mvL3ra1E6zOFCz0vCFYOC1cqdlXPEV4+IlPdQHfHSv7NlIZXrklifGezzRJAYB6dr
+         fYT/69413+aon/O4NMD0K5izQs1i7c1QArWjfv6+e0NCw8d87cM/0T+hCayW/F21hX
+         YBE4peWDKa1RCW5zRzWkxvLrOTNIK0hACB74OZbYgJKEaU+8XgWNGxKJdUvHmhXR1y
+         gA3rCXE1LUfmlVdG4U+jGkhM06dHsbpOiXSOpX6WZIrT7Zq20kpXiyrL+NQcLWoA1+
+         OZUU5hegHNdWCgdfHz8Y7FJHo0sRQgHG1yWUXoY8Q4t+K/KMn2Gbny80yPQ9mU3gf0
+         r+4zmTzG/PyWQ==
+Date:   Fri, 1 Jul 2022 02:18:41 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v7 05/10] tpm, tpm_tis: Only handle supported interrupts
+Message-ID: <Yr4vUSrShAWntLeP@kernel.org>
+References: <20220629232653.1306735-1-LinoSanfilippo@gmx.de>
+ <20220629232653.1306735-6-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220629232653.1306735-6-LinoSanfilippo@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
-head:   acac17cdb0f9f6db9fc03eea371e399906146f96
-commit: 822bd57525b5cf3038ef9d8086398a8aecc95161 [31/56] fscache: Add a function to begin an cache op from a netfslib request
-config: arm64-randconfig-r001-20220629 (https://download.01.org/0day-ci/archive/20220701/202207010740.uNqYXgaP-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a774ba7f60d1fef403b5507b1b1a7475d3684d71)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/822bd57525b5cf3038ef9d8086398a8aecc95161
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
-        git checkout 822bd57525b5cf3038ef9d8086398a8aecc95161
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Thu, Jun 30, 2022 at 01:26:48AM +0200, Lino Sanfilippo wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> 
+> According to the TPM Interface Specification (TIS) support for "stsValid"
+> and "commandReady" interrupts is only optional.
+> This has to be taken into account when handling the interrupts in functions
+> like wait_for_tpm_stat(). To determine the supported interrupts use the
+> capability query.
+> 
+> Also adjust wait_for_tpm_stat() to only wait for interrupt reported status
+> changes. After that process all the remaining status changes by polling
+> the status register.
+> 
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> Tested-by: Michael Niew??hner <linux@mniewoehner.de>
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 119 +++++++++++++++++++-------------
+>  drivers/char/tpm/tpm_tis_core.h |   1 +
+>  2 files changed, 72 insertions(+), 48 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index 09d8f04cbc81..c13599e94ab6 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -53,41 +53,63 @@ static int wait_for_tpm_stat(struct tpm_chip *chip, u8 mask,
+>  	long rc;
+>  	u8 status;
+>  	bool canceled = false;
+> +	u8 sts_mask = 0;
+> +	int ret = 0;
+>  
+>  	/* check current status */
+>  	status = chip->ops->status(chip);
+>  	if ((status & mask) == mask)
+>  		return 0;
+>  
+> -	stop = jiffies + timeout;
+> +	/* check which status changes can be handled by irqs */
+> +	if (priv->int_mask & TPM_INTF_STS_VALID_INT)
+> +		sts_mask |= TPM_STS_VALID;
+>  
+> -	if (chip->flags & TPM_CHIP_FLAG_IRQ) {
+> +	if (priv->int_mask & TPM_INTF_DATA_AVAIL_INT)
+> +		sts_mask |= TPM_STS_DATA_AVAIL;
+> +
+> +	if (priv->int_mask & TPM_INTF_CMD_READY_INT)
+> +		sts_mask |= TPM_STS_COMMAND_READY;
+> +
+> +	sts_mask &= mask;
+> +
+> +	stop = jiffies + timeout;
+> +	/* process status changes with irq support */
+> +	if (sts_mask) {
+> +		ret = -ETIME;
+>  again:
+>  		timeout = stop - jiffies;
+>  		if ((long)timeout <= 0)
+>  			return -ETIME;
+>  		rc = wait_event_interruptible_timeout(*queue,
+> -			wait_for_tpm_stat_cond(chip, mask, check_cancel,
+> +			wait_for_tpm_stat_cond(chip, sts_mask, check_cancel,
+>  					       &canceled),
+>  			timeout);
+>  		if (rc > 0) {
+>  			if (canceled)
+>  				return -ECANCELED;
+> -			return 0;
+> +			ret = 0;
+>  		}
+>  		if (rc == -ERESTARTSYS && freezing(current)) {
+>  			clear_thread_flag(TIF_SIGPENDING);
+>  			goto again;
+>  		}
+> -	} else {
+> -		do {
+> -			usleep_range(priv->timeout_min,
+> -				     priv->timeout_max);
+> -			status = chip->ops->status(chip);
+> -			if ((status & mask) == mask)
+> -				return 0;
+> -		} while (time_before(jiffies, stop));
+>  	}
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	mask &= ~sts_mask;
+> +	if (!mask) /* all done */
+> +		return 0;
+> +	/* process status changes without irq support */
+> +	do {
+> +		status = chip->ops->status(chip);
+> +		if ((status & mask) == mask)
+> +			return 0;
+> +		usleep_range(priv->timeout_min,
+> +			     priv->timeout_max);
+> +	} while (time_before(jiffies, stop));
+>  	return -ETIME;
+>  }
+>  
+> @@ -1007,8 +1029,39 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  	if (rc < 0)
+>  		goto out_err;
+>  
+> -	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
+> -		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
+> +	/* Figure out the capabilities */
+> +	rc = tpm_tis_read32(priv, TPM_INTF_CAPS(priv->locality), &intfcaps);
+> +	if (rc < 0)
+> +		goto out_err;
+> +
+> +	dev_dbg(dev, "TPM interface capabilities (0x%x):\n",
+> +		intfcaps);
+> +	if (intfcaps & TPM_INTF_BURST_COUNT_STATIC)
+> +		dev_dbg(dev, "\tBurst Count Static\n");
+> +	if (intfcaps & TPM_INTF_CMD_READY_INT) {
+> +		intmask |= TPM_INTF_CMD_READY_INT;
+> +		dev_dbg(dev, "\tCommand Ready Int Support\n");
+> +	}
+> +	if (intfcaps & TPM_INTF_INT_EDGE_FALLING)
+> +		dev_dbg(dev, "\tInterrupt Edge Falling\n");
+> +	if (intfcaps & TPM_INTF_INT_EDGE_RISING)
+> +		dev_dbg(dev, "\tInterrupt Edge Rising\n");
+> +	if (intfcaps & TPM_INTF_INT_LEVEL_LOW)
+> +		dev_dbg(dev, "\tInterrupt Level Low\n");
+> +	if (intfcaps & TPM_INTF_INT_LEVEL_HIGH)
+> +		dev_dbg(dev, "\tInterrupt Level High\n");
+> +	if (intfcaps & TPM_INTF_LOCALITY_CHANGE_INT)
+> +		intmask |= TPM_INTF_LOCALITY_CHANGE_INT;
+> +		dev_dbg(dev, "\tLocality Change Int Support\n");
+> +	if (intfcaps & TPM_INTF_STS_VALID_INT) {
+> +		intmask |= TPM_INTF_STS_VALID_INT;
+> +		dev_dbg(dev, "\tSts Valid Int Support\n");
+> +	}
+> +	if (intfcaps & TPM_INTF_DATA_AVAIL_INT) {
+> +		intmask |= TPM_INTF_DATA_AVAIL_INT;
+> +		dev_dbg(dev, "\tData Avail Int Support\n");
+> +	}
+> +
+>  	intmask &= ~TPM_GLOBAL_INT_ENABLE;
+>  
+>  	rc = request_locality(chip, 0);
+> @@ -1042,32 +1095,6 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  		goto out_err;
+>  	}
+>  
+> -	/* Figure out the capabilities */
+> -	rc = tpm_tis_read32(priv, TPM_INTF_CAPS(priv->locality), &intfcaps);
+> -	if (rc < 0)
+> -		goto out_err;
+> -
+> -	dev_dbg(dev, "TPM interface capabilities (0x%x):\n",
+> -		intfcaps);
+> -	if (intfcaps & TPM_INTF_BURST_COUNT_STATIC)
+> -		dev_dbg(dev, "\tBurst Count Static\n");
+> -	if (intfcaps & TPM_INTF_CMD_READY_INT)
+> -		dev_dbg(dev, "\tCommand Ready Int Support\n");
+> -	if (intfcaps & TPM_INTF_INT_EDGE_FALLING)
+> -		dev_dbg(dev, "\tInterrupt Edge Falling\n");
+> -	if (intfcaps & TPM_INTF_INT_EDGE_RISING)
+> -		dev_dbg(dev, "\tInterrupt Edge Rising\n");
+> -	if (intfcaps & TPM_INTF_INT_LEVEL_LOW)
+> -		dev_dbg(dev, "\tInterrupt Level Low\n");
+> -	if (intfcaps & TPM_INTF_INT_LEVEL_HIGH)
+> -		dev_dbg(dev, "\tInterrupt Level High\n");
+> -	if (intfcaps & TPM_INTF_LOCALITY_CHANGE_INT)
+> -		dev_dbg(dev, "\tLocality Change Int Support\n");
+> -	if (intfcaps & TPM_INTF_STS_VALID_INT)
+> -		dev_dbg(dev, "\tSts Valid Int Support\n");
+> -	if (intfcaps & TPM_INTF_DATA_AVAIL_INT)
+> -		dev_dbg(dev, "\tData Avail Int Support\n");
+> -
+>  	/* INTERRUPT Setup */
+>  	init_waitqueue_head(&priv->read_queue);
+>  	init_waitqueue_head(&priv->int_queue);
+> @@ -1098,7 +1125,9 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  		else
+>  			tpm_tis_probe_irq(chip, intmask);
+>  
+> -		if (!(chip->flags & TPM_CHIP_FLAG_IRQ)) {
+> +		if (chip->flags & TPM_CHIP_FLAG_IRQ) {
+> +			priv->int_mask = intmask;
+> +		} else {
+>  			dev_err(&chip->dev, FW_BUG
+>  					"TPM interrupt not working, polling instead\n");
+>  
+> @@ -1145,13 +1174,7 @@ static void tpm_tis_reenable_interrupts(struct tpm_chip *chip)
+>  	if (rc < 0)
+>  		goto out;
+>  
+> -	rc = tpm_tis_read32(priv, TPM_INT_ENABLE(priv->locality), &intmask);
+> -	if (rc < 0)
+> -		goto out;
+> -
+> -	intmask |= TPM_INTF_CMD_READY_INT
+> -	    | TPM_INTF_LOCALITY_CHANGE_INT | TPM_INTF_DATA_AVAIL_INT
+> -	    | TPM_INTF_STS_VALID_INT | TPM_GLOBAL_INT_ENABLE;
+> +	intmask = priv->int_mask | TPM_GLOBAL_INT_ENABLE;
+>  
+>  	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
+>  
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+> index bf07379dea42..e005eb99480e 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -93,6 +93,7 @@ struct tpm_tis_data {
+>  	u16 manufacturer_id;
+>  	int locality;
+>  	int irq;
+> +	unsigned int int_mask;
+>  	unsigned long flags;
+>  	void __iomem *ilb_base_addr;
+>  	u16 clkrun_enabled;
+> -- 
+> 2.25.1
+> 
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
->> ld.lld: error: undefined symbol: fscache_begin_cache_operation
-   >>> referenced by addr.c
-   >>>               ceph/addr.o:(ceph_netfs_ops) in archive fs/built-in.a
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+BR, Jarkko
