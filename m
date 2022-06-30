@@ -2,144 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015B3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F0FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234621AbiF3KIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
+        id S234787AbiF3KIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235021AbiF3KHl (ORCPT
+        with ESMTP id S232829AbiF3KIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:07:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3595443CB
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656583657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iHHsVWq+17Tq1wbvtNYtaq26FE2gZ31r5CIj41Mi7No=;
-        b=fSc+oE5sECz1kTz27hQrusaWsaFXWBFM49bUr2DyUXIovyj4fC6jg9WB0zRctfnLXrgzHS
-        FqCtkRLTIVe3KZz0rXZgL49hGQ1kbStIHduY9mln4EJ5u1Qtgh6uSkd/QN+tNiBDDcfG3X
-        slVT1Ze33sFCUu56XsJD3ZCKLxP+MBc=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-36-tpbUSbbwMDi-hIVYqm2mIQ-1; Thu, 30 Jun 2022 06:07:36 -0400
-X-MC-Unique: tpbUSbbwMDi-hIVYqm2mIQ-1
-Received: by mail-qk1-f199.google.com with SMTP id bm2-20020a05620a198200b006a5dac37fa2so18918163qkb.16
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:07:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=iHHsVWq+17Tq1wbvtNYtaq26FE2gZ31r5CIj41Mi7No=;
-        b=hRAdw1vbK26f+xC2rj6kCWH4DgiLeYKflerAuknpHH0uYW1OlxyB4OygXPDiwm3aIk
-         Yi53UbrdKIKt7bmV3ueMlxCShPIYTsivw8J665EkPGRCLY/EUOywBK00HEr6CPxKejQN
-         1C6ijA3IDZO1T0ek85dKMwSJygzE8V7/bLKAO7EE6bIrcWLVR817ig6ybT4EW2MRrIXo
-         /rcGO91zSqUqpwhCYqR8vvVuyllx3M5+5AMuqvbOQi6/aDSBOclpHmStgJx/g/fXLJ43
-         3KgSq7DHr8yKXfsFDJ56yw43YvIdoCuewcA1x+OY4TynVIHnKhvPRHqK5ZdBN3tnwhyh
-         DouQ==
-X-Gm-Message-State: AJIora8T6+iab6doknqz3jzz194239ileSMKGnqg3nZQT12ZMsQ82JhG
-        b3Qg31WQusAtHvNJsOhiV42d7CLJwrNZPvwqrpgT6C+cZsIkRzd7zVDMhzJ8E/Cuqmui2HS8vG0
-        AYVP/is0ilWQvxnZN/QTwQ302
-X-Received: by 2002:ad4:5aee:0:b0:470:69fd:3242 with SMTP id c14-20020ad45aee000000b0047069fd3242mr10443067qvh.34.1656583655147;
-        Thu, 30 Jun 2022 03:07:35 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uPAFlkBurgmI1SylspEFkrFfb6VIvA01/OXvp4LAj2WXsdMeyJRR3PrP/j+i/+vdbZezmJjA==
-X-Received: by 2002:ad4:5aee:0:b0:470:69fd:3242 with SMTP id c14-20020ad45aee000000b0047069fd3242mr10443052qvh.34.1656583654927;
-        Thu, 30 Jun 2022 03:07:34 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
-        by smtp.gmail.com with ESMTPSA id ea23-20020a05620a489700b006af33e58b42sm7884602qkb.43.2022.06.30.03.07.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 03:07:34 -0700 (PDT)
-Message-ID: <def83ec35ee0b0d4ba3932c0251f067a07cb6ff5.camel@redhat.com>
-Subject: Re: [PATCH] net: hinic: avoid kernel hung in hinic_get_stats64()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Qiao Ma <mqaio@linux.alibaba.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, gustavoars@kernel.org,
-        cai.huoqing@linux.dev, aviad.krawczyk@huawei.com,
-        zhaochen6@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 30 Jun 2022 12:07:30 +0200
-In-Reply-To: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
-References: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 30 Jun 2022 06:08:31 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924A510551;
+        Thu, 30 Jun 2022 03:08:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656583710; x=1688119710;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WznRl6xaiipvfWJGGB8hMSubUdFubuJ4I3rc1anmHEo=;
+  b=ZGgAatgzxat+ZrsZmcLJW2j+prY15FR9VwynbdfYcLpLXGRG3CqXEitd
+   lnVsupoL1mQKCI3MLbxiJoPgdSO5jwpzHxsXFi+g3/iyQMVyyUN4CLfdG
+   k6Et13+awYZtJBu5lHIRVODvPz6Ve0YqX1y8w1iFD/5DQ53wIhrrUUEC6
+   t8VMpfgArhbJasTL+vVbIwj3YXBaBbztvJsAd3j8YE3BKGh5L16inJcao
+   eQbNXZrwLHoATwRfiTV9SsSvfNYGh887FhgEH45XqSi5mwuMFD9LMBRgz
+   MPw+qhifL12PjV8AIFPMOdcLhLIR9yhWcdvNCgLTL9r43UCyJKwYYUYbK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="283041434"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="283041434"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 03:08:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="837549037"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Jun 2022 03:08:10 -0700
+Message-ID: <c676e655-bdc8-5930-7516-86be21ae7320@linux.intel.com>
+Date:   Thu, 30 Jun 2022 13:09:42 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH] usb: host: xhci: Fix potential memory leak in
+ xhci_alloc_stream_info()
+Content-Language: en-US
+To:     Jianglei Nie <niejianglei2021@163.com>, mathias.nyman@intel.com,
+        gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220630011008.2167298-1-niejianglei2021@163.com>
+ <bcf4d8db-317f-f0c9-0e9e-5edf25e0c7e8@linux.intel.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+In-Reply-To: <bcf4d8db-317f-f0c9-0e9e-5edf25e0c7e8@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-29 at 15:28 +0800, Qiao Ma wrote:
-> When using hinic device as a bond slave device, and reading device stats of
-> master bond device, the kernel may hung.
 > 
-> The kernel panic calltrace as follows:
-> Kernel panic - not syncing: softlockup: hung tasks
-> Call trace:
->   native_queued_spin_lock_slowpath+0x1ec/0x31c
->   dev_get_stats+0x60/0xcc
->   dev_seq_printf_stats+0x40/0x120
->   dev_seq_show+0x1c/0x40
->   seq_read_iter+0x3c8/0x4dc
->   seq_read+0xe0/0x130
->   proc_reg_read+0xa8/0xe0
->   vfs_read+0xb0/0x1d4
->   ksys_read+0x70/0xfc
->   __arm64_sys_read+0x20/0x30
->   el0_svc_common+0x88/0x234
->   do_el0_svc+0x2c/0x90
->   el0_svc+0x1c/0x30
->   el0_sync_handler+0xa8/0xb0
->   el0_sync+0x148/0x180
+> How about:
 > 
-> And the calltrace of task that actually caused kernel hungs as follows:
->   __switch_to+124
->   __schedule+548
->   schedule+72
->   schedule_timeout+348
->   __down_common+188
->   __down+24
->   down+104
->   hinic_get_stats64+44 [hinic]
->   dev_get_stats+92
->   bond_get_stats+172 [bonding]
->   dev_get_stats+92
->   dev_seq_printf_stats+60
->   dev_seq_show+24
->   seq_read_iter+964
->   seq_read+220
->   proc_reg_read+164
->   vfs_read+172
->   ksys_read+108
->   __arm64_sys_read+28
->   el0_svc_common+132
->   do_el0_svc+40
->   el0_svc+24
->   el0_sync_handler+164
->   el0_sync+324
-> 
-> When getting device stats from bond, kernel will call bond_get_stats().
-> It first holds the spinlock bond->stats_lock, and then call
-> hinic_get_stats64() to collect hinic device's stats.
-> However, hinic_get_stats64() calls `down(&nic_dev->mgmt_lock)` to
-> protect its critical section, which may schedule current task out.
-> And if system is under high pressure, the task cannot be woken up
-> immediately, which eventually triggers kernel hung panic.
-> 
-> Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
-> Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+> diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+> index 8c19e151a945..f7cac1af51c5 100644
+> --- a/drivers/usb/host/xhci-mem.c
+> +++ b/drivers/usb/host/xhci-mem.c
+> @@ -641,7 +641,7 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
+>                          num_stream_ctxs, &stream_info->ctx_array_dma,
+>                          mem_flags);
+>          if (!stream_info->stream_ctx_array)
+> -               goto cleanup_ctx;
+> +               goto cleanup_rings;
 
-It does not apply cleanly to the net tree (but it does to net-next)
+Small sidenote, "cleanup_rings" label was already in use, so maybe something like
+"cleanup_ring_array" could be used
 
-This looks like -net material, please reabase the patch and re-post it
-explicitly targeting the net tree.
+Thanks
+-Mathias
 
-Thanks!
-
-Paolo
 
