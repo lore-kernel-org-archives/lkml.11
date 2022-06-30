@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A72A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235484AbiF3NtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
+        id S235490AbiF3NtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235333AbiF3NsZ (ORCPT
+        with ESMTP id S235344AbiF3Ns3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:48:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08167C16;
-        Thu, 30 Jun 2022 06:48:15 -0700 (PDT)
+        Thu, 30 Jun 2022 09:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253FFBB8;
+        Thu, 30 Jun 2022 06:48:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97785B82AF6;
-        Thu, 30 Jun 2022 13:48:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09124C341CD;
-        Thu, 30 Jun 2022 13:48:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 885DD61FD0;
+        Thu, 30 Jun 2022 13:48:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D91C341CB;
+        Thu, 30 Jun 2022 13:48:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596892;
-        bh=MvsflNv6NwLv+vgw/QvcMmCcutyJIy77M2byLbm5L3g=;
+        s=korg; t=1656596897;
+        bh=ubEP0kYFRH/uBrefTE8f7YvfEDMdThulOwFMVSz2ylw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffxAjrh5FYQtUtIFbRYQ25QulL8nKPhg+QwzKk/7KrzeGQzk4+j1ZoiA2Q9QiJXJm
-         qDSqQUiokK9Rck0jLLzRv1J9Bx68CYUiPSPEdXxLJBG/BJ6MIKBFpQ7ZG3tArlHIoe
-         jzTubQdYelzqKRgla4sBjtXSXTsP5YuMGLKLWtXg=
+        b=KauAgi2uxafgWI1lUY/GnmvmJwUAH+GZ0zjKDx4MZfQnVW7sotEj1VMkl6swKoLBO
+         cdGQuCsjSdYRunuCvTtOBtjJK2H7bwMXIOzJ6QZul+/ORuvdM1MJckRn/ZZazjF3p3
+         ev9ryJCDWAXF8+pit/i2jSJKQVLTPgLwCMpYn6rw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 4.9 19/29] ARM: dts: imx6qdl: correct PU regulator ramp delay
-Date:   Thu, 30 Jun 2022 15:46:19 +0200
-Message-Id: <20220630133231.768168276@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4.9 20/29] ARM: exynos: Fix refcount leak in exynos_map_pmu
+Date:   Thu, 30 Jun 2022 15:46:20 +0200
+Message-Id: <20220630133231.796628257@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133231.200642128@linuxfoundation.org>
 References: <20220630133231.200642128@linuxfoundation.org>
@@ -48,47 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 93a8ba2a619816d631bd69e9ce2172b4d7a481b8 upstream.
+commit c4c79525042a4a7df96b73477feaf232fe44ae81 upstream.
 
-Contrary to what was believed at the time, the ramp delay of 150us is not
-plenty for the PU LDO with the default step time of 512 pulses of the 24MHz
-clock. Measurements have shown that after enabling the LDO the voltage on
-VDDPU_CAP jumps to ~750mV in the first step and after that the regulator
-executes the normal ramp up as defined by the step size control.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() checks null pointer.
 
-This means it takes the regulator between 360us and 370us to ramp up to
-the nominal 1.15V voltage for this power domain. With the old setting of
-the ramp delay the power up of the PU GPC domain would happen in the middle
-of the regulator ramp with the voltage being at around 900mV. Apparently
-this was enough for most units to properly power up the peripherals in the
-domain and execute the reset. Some units however, fail to power up properly,
-especially when the chip is at a low temperature. In that case any access
-to the GPU registers would yield an incorrect result with no way to recover
-from this situation.
-
-Change the ramp delay to 380us to cover the measured ramp up time with a
-bit of additional slack.
-
-Fixes: 40130d327f72 ("ARM: dts: imx6qdl: Allow disabling the PU regulator, add a enable ramp delay")
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: fce9e5bb2526 ("ARM: EXYNOS: Add support for mapping PMU base address via DT")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220523145513.12341-1-linmq006@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6qdl.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-exynos/exynos.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm/boot/dts/imx6qdl.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl.dtsi
-@@ -686,7 +686,7 @@
- 					regulator-name = "vddpu";
- 					regulator-min-microvolt = <725000>;
- 					regulator-max-microvolt = <1450000>;
--					regulator-enable-ramp-delay = <150>;
-+					regulator-enable-ramp-delay = <380>;
- 					anatop-reg-offset = <0x140>;
- 					anatop-vol-bit-shift = <9>;
- 					anatop-vol-bit-width = <5>;
+--- a/arch/arm/mach-exynos/exynos.c
++++ b/arch/arm/mach-exynos/exynos.c
+@@ -167,6 +167,7 @@ static void exynos_map_pmu(void)
+ 	np = of_find_matching_node(NULL, exynos_dt_pmu_match);
+ 	if (np)
+ 		pmu_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ }
+ 
+ static void __init exynos_init_irq(void)
 
 
