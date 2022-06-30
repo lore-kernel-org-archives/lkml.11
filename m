@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06ACC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49397C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232197AbiF3Gdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
+        id S232807AbiF3Gek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbiF3Gdn (ORCPT
+        with ESMTP id S232110AbiF3Geh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:33:43 -0400
-X-Greylist: delayed 524 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Jun 2022 23:33:41 PDT
-Received: from mail-m118103.qiye.163.com (mail-m118103.qiye.163.com [115.236.118.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCDC2BB3F;
-        Wed, 29 Jun 2022 23:33:41 -0700 (PDT)
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m118103.qiye.163.com (Hmail) with ESMTPA id A404350014F;
-        Thu, 30 Jun 2022 14:24:55 +0800 (CST)
-From:   David Wu <david.wu@rock-chips.com>
-To:     joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Wu <david.wu@rock-chips.com>
-Subject: [PATCH RFC net-next] net: stmmac: Reduce the memory copy for rx data
-Date:   Thu, 30 Jun 2022 14:24:53 +0800
-Message-Id: <20220630062453.2530477-1-david.wu@rock-chips.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 30 Jun 2022 02:34:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691D42CDE8;
+        Wed, 29 Jun 2022 23:34:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 050CF621FA;
+        Thu, 30 Jun 2022 06:34:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D96E3C341C8;
+        Thu, 30 Jun 2022 06:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656570875;
+        bh=CVsB0I1jCfXqz/B/gLEyz+jbRI188O9nR4J+pt/8oTY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TzM5T7KgikPskMNBTrOcT7Vy4tIb2ppX3qkSeCvt09Ssp07yUTBrqpYLLRsBvgRDN
+         3dXTqjTIqRWZeJU+S2Y8U8XggZj209EABqRHAHM5TW5Z3rAB72PT7nbnvK7+Upu5Vp
+         PbwuHlrRC53W9b/GV7CSq+CCqQfPG8F5wQxhvZsQ=
+Date:   Thu, 30 Jun 2022 08:34:32 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     William McVicker <willmcvicker@google.com>, stable@vger.kernel.org,
+        Jean Delvare <jdelvare@suse.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        kernel-team@android.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH 4.19 v1 1/2] hwmon: Introduce
+ hwmon_device_register_for_thermal
+Message-ID: <Yr1D+BGiv3MXgpm/@kroah.com>
+References: <20220629225843.332453-1-willmcvicker@google.com>
+ <20220629225843.332453-2-willmcvicker@google.com>
+ <d4a85598-af50-541a-9632-8d0343e8082d@roeck-us.net>
+ <YrzdyUm/xlJPldwP@google.com>
+ <4bafbfe7-1a9e-651e-41c1-76a131c1a477@roeck-us.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZHx9JVh5LTh1NH0lNQ0gYT1UTARMWGhIXJB
-        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PyI6Lzo4CT01DjQuGCg5HhUp
-        DBUaCw9VSlVKTU5NTkxLSUJNSUpIVTMWGhIXVR8aDRIfVQwOOwkUGBBWGBMSCwhVGBQWRVlXWRIL
-        WUFZTkNVSUlVTFVKSk9ZV1kIAVlBSU1KTjcG
-X-HM-Tid: 0a81b348b61b2ebdkusna404350014f
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4bafbfe7-1a9e-651e-41c1-76a131c1a477@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use skb_add_rx_frag() to reduce the memory copy for rx data, only copy
-ethernet header.
+On Wed, Jun 29, 2022 at 07:31:10PM -0700, Guenter Roeck wrote:
+> On 6/29/22 16:18, William McVicker wrote:
+> > On 06/29/2022, Guenter Roeck wrote:
+> > > On 6/29/22 15:58, Will McVicker wrote:
+> > > > From: Guenter Roeck <linux@roeck-us.net>
+> > > > 
+> > > > [ upstream commit e5d21072054fbadf41cd56062a3a14e447e8c22b ]
+> > > > 
+> > > > The thermal subsystem registers a hwmon driver without providing
+> > > > chip or sysfs group information. This is for legacy reasons and
+> > > > would be difficult to change. At the same time, we want to enforce
+> > > > that chip information is provided when registering a hwmon device
+> > > > using hwmon_device_register_with_info(). To enable this, introduce
+> > > > a special API for use only by the thermal subsystem.
+> > > > 
+> > > > Acked-by: Rafael J . Wysocki <rafael@kernel.org>
+> > > > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > > 
+> > > NACK. The patch introducing the problem needs to be reverted.
+> > 
+> > I'm fine with that as well. I've already verified that fixes the issue. I'll go
+> > ahead and send the revert.
+> > 
+> 
+> My understanding is that it is already queued up.
 
-Signed-off-by: David Wu <david.wu@rock-chips.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+Yes it is, sorry for the delay, will try to push out -rc releases later
+today...
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d1a7cf4567bc..ac8d92ec35c0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5226,7 +5226,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			/* XDP program may expand or reduce tail */
- 			buf1_len = xdp.data_end - xdp.data;
- 
--			skb = napi_alloc_skb(&ch->rx_napi, buf1_len);
-+			skb = napi_alloc_skb(&ch->rx_napi, ETH_HLEN);
- 			if (!skb) {
- 				priv->dev->stats.rx_dropped++;
- 				count++;
-@@ -5234,11 +5234,15 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			}
- 
- 			/* XDP program may adjust header */
--			skb_copy_to_linear_data(skb, xdp.data, buf1_len);
--			skb_put(skb, buf1_len);
-+			memcpy(skb->data, xdp.data, ETH_HLEN);
-+			skb_put(skb, ETH_HLEN);
-+			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-+					buf->page, buf->page_offset + ETH_HLEN,
-+					buf1_len - ETH_HLEN,
-+					priv->dma_buf_sz);
- 
--			/* Data payload copied into SKB, page ready for recycle */
--			page_pool_recycle_direct(rx_q->page_pool, buf->page);
-+			/* Data payload appended into SKB */
-+			page_pool_release_page(rx_q->page_pool, buf->page);
- 			buf->page = NULL;
- 		} else if (buf1_len) {
- 			dma_sync_single_for_cpu(priv->device, buf->addr,
--- 
-2.25.1
-
+greg k-h
