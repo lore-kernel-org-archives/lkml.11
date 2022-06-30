@@ -2,110 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 915A4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 22:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 22:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbiF3WfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 18:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33554 "EHLO
+        id S230315AbiF3WhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 18:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbiF3WfP (ORCPT
+        with ESMTP id S229563AbiF3WhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 18:35:15 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA77D3617B;
-        Thu, 30 Jun 2022 15:35:13 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d17so720972pfq.9;
-        Thu, 30 Jun 2022 15:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Oq903PnHKKlk1Ub56OWJWTUqpJFgTB4U8dVesJCDYhY=;
-        b=XC/60iKkyB3VNU/plYph/3DIl8BGVWPGt7xmCH+b2/zLrFpZaLFlojk8RKVHz7FAmY
-         Y5F5kWKBpy4B3CWF5irWznclz1S3IqSeIfKN5uDagFCuoI1XPzH6M64cPHXo01AMFMiF
-         F4tcYhO4fROYXs5fQrrOsgCGQ4uwI2uUqc9TwAVau654PI2eLUlaegTZ+X6XJ3ZQ19+A
-         d+TerxuFa8qEyldo1alMwOH2CqS+4+gdZcCZlXZsW2Fa5lwhFwe+f/WiEH34BFwGuxGU
-         ZyUW+8JpiUuk7xpF3yxIWRdp/F3rEV9BadJhI23FSFrldwjt4ftS7HtTBc/Eh+eKbje3
-         5AYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Oq903PnHKKlk1Ub56OWJWTUqpJFgTB4U8dVesJCDYhY=;
-        b=iMInTnqxMnH1DIgjQMfR3e8tA5UIeVt1NAUOAA6UirFgsbxYlZ0y65jaBuhs+S3CFj
-         /zFTkzrw1fLuIZJUzy/rpHI9EV7rKJYUaIuBUosmyMLJSBQYH8l8ugC3OUFSXc/OHV5y
-         pXeAPdpBrhtARiL0f2lTtZ2eQ+5KuU7Ak6A/FaKOtgxHeG9cTXujaPfRPyMvpP+r5QM3
-         ASGs/ZxsmdonLgpUPhk7kaAkWdgwuIZs+mVoLB0+eSaUz5GKHQxFlbatQb1bXtKp+ZYd
-         L090R9/7406cAodno/STDAw/2538LTeE+HY6/JGsh+rzS7Bt7nN1/DJY/+lzlQfwW71Q
-         uz2g==
-X-Gm-Message-State: AJIora/vKZZV089fSr5eHhmaxtURhNCFstPeWR150HYCrlAaTd39OvNJ
-        7EfANYjFRwgaOvgZ9c2vLRrIAPqi2v5BKppdOqM=
-X-Google-Smtp-Source: AGRyM1vHY1TFeqvYFGhjyqbGjePgg/3axKeOkGQxbtUeN97+1ZkHd8B1vDjAI5RlIzm/phTxnFBF5wmwrmCqCS4UDHE=
-X-Received: by 2002:a05:6a00:13a5:b0:525:1da8:4af4 with SMTP id
- t37-20020a056a0013a500b005251da84af4mr17740573pfg.43.1656628513139; Thu, 30
- Jun 2022 15:35:13 -0700 (PDT)
+        Thu, 30 Jun 2022 18:37:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12D81EEF4
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 15:37:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BC0C62433
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 22:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A1DDC34115;
+        Thu, 30 Jun 2022 22:37:12 +0000 (UTC)
+Date:   Thu, 30 Jun 2022 18:37:04 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Satya Durga Srinivasu Prabhala <quic_satyap@quicinc.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched: fix rq lock recursion issue
+Message-ID: <Yr4lkBjU6Dy6Wb57@home.goodmis.org>
+References: <20220624074240.13108-1-quic_satyap@quicinc.com>
 MIME-Version: 1.0
-References: <20220630133230.239507521@linuxfoundation.org>
-In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
-From:   Zan Aziz <zanaziz313@gmail.com>
-Date:   Thu, 30 Jun 2022 16:35:01 -0600
-Message-ID: <CAFU3qoarEHyiqb+vaLLhsyaQeZ2k2P5crq+Hxar8AQfWd0k=gQ@mail.gmail.com>
-Subject: Re: [PATCH 5.18 0/6] 5.18.9-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624074240.13108-1-quic_satyap@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 9:17 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.18.9 release.
-> There are 6 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.9-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Fri, Jun 24, 2022 at 12:42:40AM -0700, Satya Durga Srinivasu Prabhala wrote:
+> Below recursion is observed in a rare scenario where __schedule()
+> takes rq lock, at around same time task's affinity is being changed,
+> bpf function for tracing sched_switch calls migrate_enabled(),
+> checks for affinity change (cpus_ptr != cpus_mask) lands into
+> __set_cpus_allowed_ptr which tries acquire rq lock and causing the
+> recursion bug.
+> 
+> Fix the issue by switching to preempt_enable/disable() for non-RT
+> Kernels.
+> 
+> -010 |spin_bug(lock = ???, msg = ???)
+> -011 |debug_spin_lock_before(inline)
+> -011 |do_raw_spin_lock(lock = 0xFFFFFF89323BB600)
+> -012 |_raw_spin_lock(inline)
+> -012 |raw_spin_rq_lock_nested(inline)
+> -012 |raw_spin_rq_lock(inline)
+> -012 |task_rq_lock(p = 0xFFFFFF88CFF1DA00, rf = 0xFFFFFFC03707BBE8)
+> -013 |__set_cpus_allowed_ptr(inline)
+> -013 |migrate_enable()
+> -014 |trace_call_bpf(call = ?, ctx = 0xFFFFFFFDEF954600)
+> -015 |perf_trace_run_bpf_submit(inline)
+> -015 |perf_trace_sched_switch(__data = 0xFFFFFFE82CF0BCB8, preempt = FALSE, prev = ?, next = ?)
+> -016 |__traceiter_sched_switch(inline)
+> -016 |trace_sched_switch(inline)
 
-Hi Greg,
+trace_sched_switch() disables preemption.
 
-Compiled and booted on my test system Lenovo P50s: Intel Core i7
-No emergency and critical messages in the dmesg
+So how is this a fix?
 
-./perf bench sched all
-# Running sched/messaging benchmark...
-# 20 sender and receiver processes per group
-# 10 groups == 400 processes run
+-- Steve
 
-     Total time: 0.427 [sec]
-
-# Running sched/pipe benchmark...
-# Executed 1000000 pipe operations between two processes
-
-     Total time: 10.046 [sec]
-
-      10.046035 usecs/op
-          99541 ops/sec
-
-Tested-by: Zan Aziz <zanaziz313@gmail.com>
-
-Thanks
--Zan
+> -016 |__schedule(sched_mode = ?)
+> -017 |schedule()
+> -018 |arch_local_save_flags(inline)
+> -018 |arch_irqs_disabled(inline)
+> -018 |__raw_spin_lock_irq(inline)
+> -018 |_raw_spin_lock_irq(inline)
+> -018 |worker_thread(__worker = 0xFFFFFF88CE251300)
+> -019 |kthread(_create = 0xFFFFFF88730A5A80)
+> -020 |ret_from_fork(asm)
+> 
+> Signed-off-by: Satya Durga Srinivasu Prabhala <quic_satyap@quicinc.com>
+> ---
+>  kernel/sched/core.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index bfa7452ca92e..e254e9227341 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -2223,6 +2223,7 @@ static void migrate_disable_switch(struct rq *rq, struct task_struct *p)
+>  
+>  void migrate_disable(void)
+>  {
+> +#ifdef CONFIG_PREEMPT_RT
+>  	struct task_struct *p = current;
+>  
+>  	if (p->migration_disabled) {
+> @@ -2234,11 +2235,15 @@ void migrate_disable(void)
+>  	this_rq()->nr_pinned++;
+>  	p->migration_disabled = 1;
+>  	preempt_enable();
+> +#else
+> +	preempt_disable();
+> +#endif
+>  }
+>  EXPORT_SYMBOL_GPL(migrate_disable);
+>  
+>  void migrate_enable(void)
+>  {
+> +#ifdef CONFIG_PREEMPT_RT
+>  	struct task_struct *p = current;
+>  
+>  	if (p->migration_disabled > 1) {
+> @@ -2265,6 +2270,9 @@ void migrate_enable(void)
+>  	p->migration_disabled = 0;
+>  	this_rq()->nr_pinned--;
+>  	preempt_enable();
+> +#else
+> +	preempt_enable();
+> +#endif
+>  }
+>  EXPORT_SYMBOL_GPL(migrate_enable);
+>  
+> -- 
+> 2.36.1
