@@ -2,239 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD04EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234945AbiF3Mdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 08:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        id S234430AbiF3MgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 08:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234855AbiF3Mdk (ORCPT
+        with ESMTP id S234394AbiF3MgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 08:33:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 580E73669E
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 05:33:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656592418;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cgnrW5cxLH48CnZyxRoYJ8gOY4LsyuFZedpGVmm6qFI=;
-        b=ISV256wu3UHopQNIseqAaactGucY9VhestlziSqtBRnaP0KULL0yVIS8K719+Zh3XKiwvl
-        k0pr4joGmb9plG1JNYX1oCvUYbZqeXVthCRJxgnTGEqjXInNQOOuy7JfabWKlt3TzTZYfN
-        TayB7UAMwwQumwBBPRIbi6m4bl3wzUU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-410-OqXdsN7APpq7dDidBfWA8Q-1; Thu, 30 Jun 2022 08:33:33 -0400
-X-MC-Unique: OqXdsN7APpq7dDidBfWA8Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9C3AE801233;
-        Thu, 30 Jun 2022 12:33:32 +0000 (UTC)
-Received: from T590 (ovpn-8-23.pek2.redhat.com [10.72.8.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4EC292026D64;
-        Thu, 30 Jun 2022 12:33:25 +0000 (UTC)
-Date:   Thu, 30 Jun 2022 20:33:20 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Ziyang Zhang <ZiyangZhang@linux.alibaba.com>
-Cc:     linux-block@vger.kernel.org,
-        Harris James R <james.r.harris@intel.com>,
-        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, ming.lei@redhat.com
-Subject: Re: [PATCH V3 1/1] ublk: add io_uring based userspace block driver
-Message-ID: <Yr2YEIoBPOLxq6NB@T590>
-References: <20220628160807.148853-1-ming.lei@redhat.com>
- <20220628160807.148853-2-ming.lei@redhat.com>
- <fdd06581-a8aa-5948-6043-fc7e3381eb2d@linux.alibaba.com>
+        Thu, 30 Jun 2022 08:36:15 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4DB3982F;
+        Thu, 30 Jun 2022 05:36:14 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UBfvMn024877;
+        Thu, 30 Jun 2022 12:36:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=myC12JeAdbFFP6SHJKO0hewDlMY5COimsUaxqcrVJW0=;
+ b=BCmIEaIwGrV/Zp807RjVz5IJdsGmgCYMJXmIRJw7dl8UPNJDw35acF36i5wHH3AOVV25
+ g9sZFp6yvDlD/l56dnXIZFxj/FkVXIm+l11GbGzjmZfROdPLUMx4crgQ7RmL2F9SsXAb
+ C4de4u3br2+pqdLkAJaTDXUSlk4uKlzES7lXG73HOkwrTIdz/GKoBNjOQyH/l45UGacn
+ 3k0ejJjc8e99CLsrq01EuTwEm9URRvtkaoh+AzXhncQV4v5zBKC+quSTPbAiJsrPFnc6
+ NOs9WrEy1K5U9OY8FzYGry9c6phkfD1gDY65GBdnT4CBJdUF5X7oylBDtBre7lbEkSkR +g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1b68sj17-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 12:36:11 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25UBheBX030245;
+        Thu, 30 Jun 2022 12:36:10 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1b68shyg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 12:36:10 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UCNfMK032270;
+        Thu, 30 Jun 2022 12:36:08 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06ams.nl.ibm.com with ESMTP id 3gwsmj84t6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jun 2022 12:36:07 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UCa5Uq9634214
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Jun 2022 12:36:05 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0140252050;
+        Thu, 30 Jun 2022 12:36:05 +0000 (GMT)
+Received: from [9.171.69.2] (unknown [9.171.69.2])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 971285204F;
+        Thu, 30 Jun 2022 12:36:04 +0000 (GMT)
+Message-ID: <17c30662-7285-0e1a-91fb-071fa2cfc733@linux.ibm.com>
+Date:   Thu, 30 Jun 2022 14:40:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fdd06581-a8aa-5948-6043-fc7e3381eb2d@linux.alibaba.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v6 1/5] PCI: Clean up pci_scan_slot()
+Content-Language: en-US
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220628143100.3228092-1-schnelle@linux.ibm.com>
+ <20220628143100.3228092-2-schnelle@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220628143100.3228092-2-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: PjATLTWkMNsNt4gmmQyQfAkjEM9ZIW5P
+X-Proofpoint-ORIG-GUID: P2-pxzrGaKPb1qPRa04AoCj0qnWoGRXy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
+ adultscore=0 spamscore=0 mlxscore=0 impostorscore=0 malwarescore=0
+ suspectscore=0 mlxlogscore=918 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206300050
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 07:35:11PM +0800, Ziyang Zhang wrote:
-> On 2022/6/29 00:08, Ming Lei wrote:
+
+
+On 6/28/22 16:30, Niklas Schnelle wrote:
+> While determining the next PCI function is factored out of
+> pci_scan_slot() into next_fn() the former still handles the first
+> function as a special case. This duplicates the code from the scan loop.
 > 
-> [...]
+> Furthermore the non ARI branch of next_fn() is generally hard to
+> understand and especially the check for multifunction devices is hidden
+> in the handling of NULL devices for non-contiguous multifunction. It
+> also signals that no further functions need to be scanned by returning
+> 0 via wraparound and this is a valid function number.
 > 
-> > +#define UBLK_MAX_PIN_PAGES	32
-> > +
-> > +static inline void ublk_release_pages(struct ublk_queue *ubq, struct page **pages,
-> > +		int nr_pages)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < nr_pages; i++)
-> > +		put_page(pages[i]);
-> > +}
-> > +
-> > +static inline int ublk_pin_user_pages(struct ublk_queue *ubq, u64 start_vm,
-> > +		unsigned int nr_pages, unsigned int gup_flags,
-> > +		struct page **pages)
-> > +{
-> > +	return get_user_pages_fast(start_vm, nr_pages, gup_flags, pages);
-> > +}
+> Improve upon this by transforming the conditions in next_fn() to be
+> easier to understand.
 > 
-> > +
-> > +static inline unsigned ublk_copy_bv(struct bio_vec *bv, void **bv_addr,
-> > +		void *pg_addr, unsigned int *pg_off,
-> > +		unsigned int *pg_len, bool to_bv)
-> > +{
-> > +	unsigned len = min_t(unsigned, bv->bv_len, *pg_len);
-> > +
-> > +	if (*bv_addr == NULL)
-> > +		*bv_addr = kmap_local_page(bv->bv_page);
-> > +
-> > +	if (to_bv)
-> > +		memcpy(*bv_addr + bv->bv_offset, pg_addr + *pg_off, len);
-> > +	else
-> > +		memcpy(pg_addr + *pg_off, *bv_addr + bv->bv_offset, len);
-> > +
-> > +	bv->bv_offset += len;
-> > +	bv->bv_len -= len;
-> > +	*pg_off += len;
-> > +	*pg_len -= len;
-> > +
-> > +	if (!bv->bv_len) {
-> > +		kunmap_local(*bv_addr);
-> > +		*bv_addr = NULL;
-> > +	}
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +/* copy rq pages to ublksrv vm address pointed by io->addr */
-> > +static int ublk_copy_pages(struct ublk_queue *ubq, struct request *rq, bool to_rq,
-> > +		unsigned int max_bytes)
-> > +{
-> > +	unsigned int gup_flags = to_rq ? 0 : FOLL_WRITE;
-> > +	struct ublk_io *io = &ubq->ios[rq->tag];
-> > +	struct page *pgs[UBLK_MAX_PIN_PAGES];
-> > +	struct req_iterator req_iter;
-> > +	struct bio_vec bv;
-> > +	const unsigned int rq_bytes = min(blk_rq_bytes(rq), max_bytes);
-> > +	unsigned long start = io->addr, left = rq_bytes;
-> > +	unsigned int idx = 0, pg_len = 0, pg_off = 0;
-> > +	int nr_pin = 0;
-> > +	void *pg_addr = NULL;
-> > +	struct page *curr = NULL;
-> > +
-> > +	rq_for_each_segment(bv, rq, req_iter) {
-> > +		unsigned len, bv_off = bv.bv_offset, bv_len = bv.bv_len;
-> > +		void *bv_addr = NULL;
-> > +
-> > +refill:
-> > +		if (pg_len == 0) {
-> > +			unsigned int off = 0;
-> > +
-> > +			if (pg_addr) {
-> > +				kunmap_local(pg_addr);
-> > +				if (!to_rq)
-> > +					set_page_dirty_lock(curr);
-> > +				pg_addr = NULL;
-> > +			}
-> > +
-> > +			/* refill pages */
-> > +			if (idx >= nr_pin) {
-> > +				unsigned int max_pages;
-> > +
-> > +				ublk_release_pages(ubq, pgs, nr_pin);
-> > +
-> > +				off = start & (PAGE_SIZE - 1);
-> > +				max_pages = min_t(unsigned, (off + left +
-> > +						PAGE_SIZE - 1) >> PAGE_SHIFT,
-> > +						UBLK_MAX_PIN_PAGES);
-> > +				nr_pin = ublk_pin_user_pages(ubq, start,
-> > +						max_pages, gup_flags, pgs);
-> > +				if (nr_pin < 0)
-> > +					goto exit;
-> > +				idx = 0;
-> > +			}
-> > +			pg_off = off;
-> > +			pg_len = min(PAGE_SIZE - off, left);
-> > +			off = 0;
-> > +			curr = pgs[idx++];
-> > +			pg_addr = kmap_local_page(curr);
-> > +		}
-> > +
-> > +		len = ublk_copy_bv(&bv, &bv_addr, pg_addr, &pg_off, &pg_len,
-> > +				to_rq);
-> > +		/* either one of the two has been consumed */
-> > +		WARN_ON_ONCE(bv.bv_len && pg_len);
-> > +		start += len;
-> > +		left -= len;
-> > +
-> > +		/* overflow */
-> > +		WARN_ON_ONCE(left > rq_bytes);
-> > +		WARN_ON_ONCE(bv.bv_len > bv_len);
-> > +		if (bv.bv_len)
-> > +			goto refill;
-> > +
-> > +		bv.bv_len = bv_len;
-> > +		bv.bv_offset = bv_off;
-> > +	}
-> > +	if (pg_addr) {
-> > +		kunmap_local(pg_addr);
-> > +		if (!to_rq)
-> > +			set_page_dirty_lock(curr);
-> > +	}
-> > +	ublk_release_pages(ubq, pgs, nr_pin);
-> > +
-> > +exit:
-> > +	return rq_bytes - left;
-> > +}
-> > +
+> By changing next_fn() to return -ENODEV instead of 0 when there is no
+> next function we can then handle the initial function inside the loop
+> and deduplicate the shared handling. This also makes it more explicit
+> that only function 0 must exist.
 > 
-> Hi Ming, 
+> No functional change is intended.
 > 
-> I note that you pin the user buffer's pages, memcpy() and release them immediately.
+> Cc: Jan Kiszka <jan.kiszka@siemens.com>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>   drivers/pci/probe.c | 38 +++++++++++++++++++-------------------
+>   1 file changed, 19 insertions(+), 19 deletions(-)
 > 
-> 1) I think maybe copy_page_from_iter() is another choice for copying user buffer to biovecs
->    since copy_page_from_iter() do not pin pages(But it may raise page fault).
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 17a969942d37..b05d0ed83a24 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -2579,8 +2579,7 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+>   }
+>   EXPORT_SYMBOL(pci_scan_single_device);
+>   
+> -static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+> -			    unsigned int fn)
+> +static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+>   {
+>   	int pos;
+>   	u16 cap = 0;
+> @@ -2588,24 +2587,26 @@ static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+>   
+>   	if (pci_ari_enabled(bus)) {
+>   		if (!dev)
+> -			return 0;
+> +			return -ENODEV;
+>   		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+>   		if (!pos)
+> -			return 0;
+> +			return -ENODEV;
+>   
+>   		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+>   		next_fn = PCI_ARI_CAP_NFN(cap);
+>   		if (next_fn <= fn)
+> -			return 0;	/* protect against malformed list */
+> +			return -ENODEV;	/* protect against malformed list */
+>   
+>   		return next_fn;
+>   	}
+>   
+> -	/* dev may be NULL for non-contiguous multifunction devices */
+> -	if (!dev || dev->multifunction)
+> -		return (fn + 1) % 8;
+> +	if (fn >= 7)
+> +		return -ENODEV;
+> +	/* only multifunction devices may have more functions */
+> +	if (dev && !dev->multifunction)
+> +		return -ENODEV;
+>   
+> -	return 0;
+> +	return fn + 1;
 
-copy_page_from_iter/copy_page_to_iter needs the userspage page,
-then copy between the userspace page and bvec_iter pages, what it does
-is just kmap/copy/kunmap.
+No more % 8 ?
+Even it disapear later shouldn't we keep it ?
 
-Not see it is useful here.
 
+
+>   }
+>   
+>   static int only_one_child(struct pci_bus *bus)
+> @@ -2643,26 +2644,25 @@ static int only_one_child(struct pci_bus *bus)
+>    */
+>   int pci_scan_slot(struct pci_bus *bus, int devfn)
+>   {
+> -	unsigned int fn, nr = 0;
+>   	struct pci_dev *dev;
+> +	int fn = 0, nr = 0;
+>   
+>   	if (only_one_child(bus) && (devfn > 0))
+>   		return 0; /* Already scanned the entire slot */
+>   
+> -	dev = pci_scan_single_device(bus, devfn);
+> -	if (!dev)
+> -		return 0;
+> -	if (!pci_dev_is_added(dev))
+> -		nr++;
+> -
+> -	for (fn = next_fn(bus, dev, 0); fn > 0; fn = next_fn(bus, dev, fn)) {
+> +	do {
+>   		dev = pci_scan_single_device(bus, devfn + fn);
+>   		if (dev) {
+>   			if (!pci_dev_is_added(dev))
+>   				nr++;
+> -			dev->multifunction = 1;
+> +			if (fn > 0)
+> +				dev->multifunction = 1;
+> +		} else if (fn == 0) {
+> +			/* function 0 is required */
+> +			break;
+>   		}
+> -	}
+> +		fn = next_fn(bus, dev, fn);
+> +	} while (fn >= 0);
+>   
+>   	/* Only one slot has PCIe device */
+>   	if (bus->self && nr)
 > 
-> 2) Or will you design some mechanism such as LRU to manage these pinned pages? 
->    For example pin those pages frequently required for a long time and release
->    those pages not used for a long time.
->    I remember you have talked about this LRU on pinned pages?
 
-I'd explain it a bit.
-
-When I worked on v1/v2, 'perf report' shows that get_user_pages_fast()
-as one of top samples. Turns out it is a bug, which is fixed in
-
-https://github.com/ming1/linux/commit/3c9fd476951759858cc548dee4cedc074194d0b0
-
-After the issue is fixed, not see get_user_pages_fast() being hot spot
-any more. I actually implemented one patch which pins all pages in
-the ubd device whole lifetime, but not see obvious improvement, so I gave
-up the idea.
-
-In the test VM on my laptop, single job ubd/null randwrite can reach 700K iops.
-
-> 
-> Which one do you think is better? copy_page_from_iter() or pin pages with LRU?
-> Maybe it depends on the user's workload?
-
-So far in the enablement stage, I think the current approach is just fine,
-but we still can improve it in future.
+Otherwise LGTM
 
 
-Thanks,
-Ming
-
+-- 
+Pierre Morel
+IBM Lab Boeblingen
