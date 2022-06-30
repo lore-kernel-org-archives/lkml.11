@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA12C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 00:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945E8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 00:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbiF3AYO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 20:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S229647AbiF3AYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 20:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbiF3AYJ (ORCPT
+        with ESMTP id S229893AbiF3AYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 20:24:09 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9AD1D320
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 17:24:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A0D1C12F
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 17:24:08 -0700 (PDT)
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25T7p0Oq020678;
-        Wed, 29 Jun 2022 19:23:52 -0500
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25T7p0Oj020678;
+        Wed, 29 Jun 2022 19:23:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=E+71Eh9SYDg5MyImEahaXx0zOcZBLdutmRTkhxlinfk=;
- b=MvYlCNp2HawwTFvItl/JaAwf5+sVepYd7pXfwyvCW7jcW0PivFU5FkF184KdHd+Krohs
- +bpYSlv8ri5MCPiGZ7+o5zIC/Zb9ro9Kx0buQFyiQabsV1Ps+YOEqDWVy42WEm0KmezB
- XcOgkGVuaOb1IqBQSCiPQ5S4dy2buMjO0uEcEbejz4n/YLrjBtBG6e9x6+uJuf0PL/YN
- alENaPs4qZT1sTcDqi9/JSJnzeaD/uSWG2hrve+CFiLGilmo2sQ7+wCcWsDH2uqSIOz8
- ea+HjNSMDBPcMTw0ngx/611qNQWnDeKRhlUZPQbnX3X+8FiUhO6sH1ZpE/t5qA0AcKVd RA== 
+ bh=mzSUpR/vJR3WPNyHO7+ElQfB5ImQyvJRoh8HokA0hkc=;
+ b=JXY6zTzTctN4xOofnFcpurhhMSJ7AyqYR9X+VzPmjhdLrAHpYL8OPVVFJlt24DmGfdd8
+ jCaToQqm4ocwjgLnwcrX6kyJ4F81nUzh5MbqIZXUzzZWyA3WXA2ntxQXbKZvO1aDo3Tj
+ m6zhhEj1TNRVOPcYLs5Z1MJ6sswwxTvj/lYPcAAguzCg9R7mw93okwLd3W5Nb8FlMkLR
+ dSB3oj0O37abfdI+2VMsiJgXee652VmREXXlAFfvu1qTfV/c7l66RUkftAL4ZHKTeo6x
+ K81PWNHb5nt9zdMgYUdSfMKjaQ3oXb+DrJ5Vw4qFVHc8mwZBPZW1xXEXq66jBC8bsvIW Ww== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2p9gm-8
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2p9gm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 29 Jun 2022 19:23:52 -0500
+        Wed, 29 Jun 2022 19:23:46 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 30 Jun
- 2022 01:23:48 +0100
+ 2022 01:23:44 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 30 Jun 2022 01:23:48 +0100
+ Transport; Thu, 30 Jun 2022 01:23:44 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.125])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 557A92D4;
-        Thu, 30 Jun 2022 00:23:48 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A41DE2D4;
+        Thu, 30 Jun 2022 00:23:42 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
         Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v8 14/14] ALSA: hda: cs35l41: Add module parameter to control firmware load
-Date:   Thu, 30 Jun 2022 01:23:35 +0100
-Message-ID: <20220630002335.366545-15-vitalyr@opensource.cirrus.com>
+Subject: [PATCH v8 02/14] ALSA: hda: hda_cs_dsp_ctl: Add apis to write the controls directly
+Date:   Thu, 30 Jun 2022 01:23:23 +0100
+Message-ID: <20220630002335.366545-3-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
 References: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: i8-od-14hHWXXRzqEL-6MdUzhRX38s5u
-X-Proofpoint-GUID: i8-od-14hHWXXRzqEL-6MdUzhRX38s5u
+X-Proofpoint-ORIG-GUID: 5V5fvP5MHRa_x1Zkie-ag8g0V5H5kcfB
+X-Proofpoint-GUID: 5V5fvP5MHRa_x1Zkie-ag8g0V5H5kcfB
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -65,62 +65,83 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-By default, the driver will automatically load DSP firmware
-for the amps, if available. Adding this option allows the
-autoload to be optional, which allows for different configurations.
+DSP controls are exposed as ALSA controls, however,
+some of these controls are required to be accessed by
+the driver. Add apis which allow read/write of these
+controls. The write api will also notify the ALSA control
+on value change.
 
 Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ sound/pci/hda/hda_cs_dsp_ctl.c | 39 ++++++++++++++++++++++++++++++++++
+ sound/pci/hda/hda_cs_dsp_ctl.h |  4 ++++
+ 2 files changed, 43 insertions(+)
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 5ae0b439d7e9..aa3d8fb3b2a2 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -8,6 +8,7 @@
+diff --git a/sound/pci/hda/hda_cs_dsp_ctl.c b/sound/pci/hda/hda_cs_dsp_ctl.c
+index 74e2c5bd1b08..2351476c9ee6 100644
+--- a/sound/pci/hda/hda_cs_dsp_ctl.c
++++ b/sound/pci/hda/hda_cs_dsp_ctl.c
+@@ -188,6 +188,45 @@ void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl)
+ }
+ EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_control_remove, SND_HDA_CS_DSP_CONTROLS);
  
- #include <linux/acpi.h>
- #include <linux/module.h>
-+#include <linux/moduleparam.h>
- #include <sound/hda_codec.h>
- #include <sound/soc.h>
- #include <linux/pm_runtime.h>
-@@ -32,6 +33,11 @@
- #define CAL_DSP_CTL_TYPE		5
- #define CAL_DSP_CTL_ALG			205
- 
-+static bool firmware_autostart = 1;
-+module_param(firmware_autostart, bool, 0444);
-+MODULE_PARM_DESC(firmware_autostart, "Allow automatic firmware download on boot"
-+			     "(0=Disable, 1=Enable) (default=1); ");
++int hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,
++			 unsigned int alg, const void *buf, size_t len)
++{
++	struct cs_dsp_coeff_ctl *cs_ctl;
++	struct hda_cs_dsp_coeff_ctl *ctl;
++	int ret;
 +
- static const struct reg_sequence cs35l41_hda_config[] = {
- 	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3072000Hz, BCLK Input, PLL_REFCLK_EN = 1
- 	{ CS35L41_DSP_CLK_CTRL,		0x00000003 }, // DSP CLK EN
-@@ -843,11 +849,16 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
++	cs_ctl = cs_dsp_get_ctl(dsp, name, type, alg);
++	if (!cs_ctl)
++		return -EINVAL;
++
++	ctl = cs_ctl->priv;
++
++	ret = cs_dsp_coeff_write_ctrl(cs_ctl, 0, buf, len);
++	if (ret)
++		return ret;
++
++	if (cs_ctl->flags & WMFW_CTL_FLAG_SYS)
++		return 0;
++
++	snd_ctl_notify(ctl->card, SNDRV_CTL_EVENT_MASK_VALUE, &ctl->kctl->id);
++
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_write_ctl, SND_HDA_CS_DSP_CONTROLS);
++
++int hda_cs_dsp_read_ctl(struct cs_dsp *dsp, const char *name, int type,
++			unsigned int alg, void *buf, size_t len)
++{
++	struct cs_dsp_coeff_ctl *cs_ctl;
++
++	cs_ctl = cs_dsp_get_ctl(dsp, name, type, alg);
++	if (!cs_ctl)
++		return -EINVAL;
++
++	return cs_dsp_coeff_read_ctrl(cs_ctl, 0, buf, len);
++}
++EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_read_ctl, SND_HDA_CS_DSP_CONTROLS);
++
+ MODULE_DESCRIPTION("CS_DSP ALSA Control HDA Library");
+ MODULE_AUTHOR("Stefan Binding, <sbinding@opensource.cirrus.com>");
+ MODULE_LICENSE("GPL");
+diff --git a/sound/pci/hda/hda_cs_dsp_ctl.h b/sound/pci/hda/hda_cs_dsp_ctl.h
+index 1c6d0fc9a2cc..c65bfd6878fd 100644
+--- a/sound/pci/hda/hda_cs_dsp_ctl.h
++++ b/sound/pci/hda/hda_cs_dsp_ctl.h
+@@ -29,5 +29,9 @@ struct hda_cs_dsp_ctl_info {
  
- 	cs35l41->firmware_type = HDA_CS_DSP_FW_SPK_PROT;
+ int hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl, struct hda_cs_dsp_ctl_info *info);
+ void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl);
++int hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,
++			 unsigned int alg, const void *buf, size_t len);
++int hda_cs_dsp_read_ctl(struct cs_dsp *dsp, const char *name, int type,
++			unsigned int alg, void *buf, size_t len);
  
--	cs35l41->request_fw_load = true;
--	mutex_lock(&cs35l41->fw_mutex);
--	if (cs35l41_smart_amp(cs35l41) < 0)
--		dev_warn(cs35l41->dev, "Cannot Run Firmware, reverting to dsp bypass...\n");
--	mutex_unlock(&cs35l41->fw_mutex);
-+	if (firmware_autostart) {
-+		dev_dbg(cs35l41->dev, "Firmware Autostart.\n");
-+		cs35l41->request_fw_load = true;
-+		mutex_lock(&cs35l41->fw_mutex);
-+		if (cs35l41_smart_amp(cs35l41) < 0)
-+			dev_warn(cs35l41->dev, "Cannot Run Firmware, reverting to dsp bypass...\n");
-+		mutex_unlock(&cs35l41->fw_mutex);
-+	} else {
-+		dev_dbg(cs35l41->dev, "Firmware Autostart is disabled.\n");
-+	}
- 
- 	ret = cs35l41_create_controls(cs35l41);
- 
+ #endif /*__HDA_CS_DSP_CTL_H__*/
 -- 
 2.34.1
 
