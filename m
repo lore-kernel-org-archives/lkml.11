@@ -2,69 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FDECCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B42C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235096AbiF3MrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 08:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        id S234098AbiF3MsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 08:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbiF3MrN (ORCPT
+        with ESMTP id S230288AbiF3MsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 08:47:13 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6F934B9B;
-        Thu, 30 Jun 2022 05:47:07 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1656593210tq69ru3p
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 30 Jun 2022 20:46:46 +0800 (CST)
-X-QQ-SSF: 0100000000200090C000C00A0000000
-X-QQ-FEAT: GWC1rZ6C6jyZqScscR1t9UZ6sKYkuskxucs3Kx+RdlFze4QnnpvWrXkHDrADm
-        NOKXIFa+9wEEghCs4NJhMTuGUJusiyEYQS+dE0iLLN7kNGD60LqZEpwU2WvPeiSa8sqNjCx
-        u599jb0F1GHA7Siawuhxt6ggwMVCqhHEpJCOMMhMdfY6zo0Bsuo5JrPzHPGq1EwxiQgGLBg
-        SyeTt9ZzXj6Hy2t8FBUvGDsPibPySX/tknqlCtZK/8IbgJES26SeTCYDHsVDZXbNaNmHEOm
-        NORAaL0pskSCS/ps8YY6uzz4WIzmB5VsgW4UuuCjT0ZwA6+sj2Fbyl4INsnf38nWOcJJ/9c
-        kqoRRv6ooWkRD5i+pQ=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     bh74.an@samsung.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] samsung/sxgbe: fix repeated words in comments
-Date:   Thu, 30 Jun 2022 20:46:39 +0800
-Message-Id: <20220630124639.11420-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 30 Jun 2022 08:48:18 -0400
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99ED8BC1D;
+        Thu, 30 Jun 2022 05:48:14 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id o19so26993857ybg.2;
+        Thu, 30 Jun 2022 05:48:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SwiP+hf2YNC8Lbe3gvH/02qMr4vvCVdAX/mAw68bS3Q=;
+        b=5Mu5tKayaoCPxNCDIOf8k4X/TaA1Dj67t6we7+D0A/n+HwjoshPiJXCI1VrPIYVu5J
+         2KlDGSYLQqbQzVoh/GCZWFEeyftn84f1WH7cdGgvE7H2/yqeF7+JsIXYTcuWU+O+CFEj
+         nHF6+A+B6QpFVcg/Q/GpDDl31cRPtgJltK+CsW8+XbJhXPGsr89D9sPtGQoiZyr+yL0b
+         Hh8QS9PczaHCtTyVBKg5Z7tfNLXDPUAt6DXX/IzVHF3Y5ZLM1ZcnLjTEILz8tBGRdsH0
+         QXk5xgYNSNelBOoNKnMMGqjJrcYGEc2FyYlS1sk8QyCSLWwzkV6O66WsTk/sVRKECZXZ
+         WZpA==
+X-Gm-Message-State: AJIora8y8pkN6Wssp/5cJIGA6n8VCECc3iXHXTAPIQtJzYUEJhUV+iJs
+        a6BcMxxPB1cEhNwpInBLKJODYApLG19azq90Lz0=
+X-Google-Smtp-Source: AGRyM1vfen4G0QN1GhcTeZzI9a2qKM2TeKsnTGcHqsA97qz3JsW/rfsEJzpmBur3Sl5CwFJPTMLWVuFfIapQ1lj2+qk=
+X-Received: by 2002:a25:664f:0:b0:66c:d0f4:36cc with SMTP id
+ z15-20020a25664f000000b0066cd0f436ccmr8951994ybm.482.1656593293788; Thu, 30
+ Jun 2022 05:48:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+References: <12026357.O9o76ZdvQC@kreacher> <2657553.mvXUDI8C0e@kreacher>
+In-Reply-To: <2657553.mvXUDI8C0e@kreacher>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 30 Jun 2022 14:48:02 +0200
+Message-ID: <CAJZ5v0jNOsAXSuX9dw9N3w12Y_nq62Z=OL4QQTwH=OnReGpQvA@mail.gmail.com>
+Subject: Re: [PATCH v2] hisi_lpc: Use acpi_dev_for_each_child()
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'are'.
+On Wed, Jun 29, 2022 at 3:47 PM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
+>
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> Instead of walking the list of children of an ACPI device directly,
+> use acpi_dev_for_each_child() to carry out an action for all of
+> the given ACPI device's children.
+>
+> This will help to eliminate the children list head from struct
+> acpi_device as it is redundant and it is used in questionable ways
+> in some places (in particular, locking is needed for walking the
+> list pointed to it safely, but it is often missing).
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I've overlooked another usage of the children list in hisi_lpc, in
+hisi_lpc_acpi_probe(), and eliminating that one is a bit more
+complicated.
 
-diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-index 407a1f8e3059..a1c10b61269b 100644
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-@@ -89,7 +89,7 @@ static void sxgbe_enable_eee_mode(const struct sxgbe_priv_data *priv)
- 
- void sxgbe_disable_eee_mode(struct sxgbe_priv_data * const priv)
- {
--	/* Exit and disable EEE in case of we are are in LPI state. */
-+	/* Exit and disable EEE in case of we are in LPI state. */
- 	priv->hw->mac->reset_eee_mode(priv->ioaddr);
- 	del_timer_sync(&priv->eee_ctrl_timer);
- 	priv->tx_path_in_lpi_mode = false;
--- 
-2.36.1
+So please scratch this one and I will send a v3 when 0-day tells me
+that it builds.
 
-
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> Acked-by: John Garry <john.garry@huawei.com>
+> ---
+>
+> -> v2:
+>    * Drop unused local variable (John).
+>    * Add ACK from John.
+>
+> ---
+>  drivers/bus/hisi_lpc.c |   14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+>
+> Index: linux-pm/drivers/bus/hisi_lpc.c
+> ===================================================================
+> --- linux-pm.orig/drivers/bus/hisi_lpc.c
+> +++ linux-pm/drivers/bus/hisi_lpc.c
+> @@ -471,6 +471,12 @@ static int hisi_lpc_acpi_remove_subdev(s
+>         return 0;
+>  }
+>
+> +static int hisi_lpc_acpi_clear_enumerated(struct acpi_device *adev, void *not_used)
+> +{
+> +       acpi_device_clear_enumerated(adev);
+> +       return 0;
+> +}
+> +
+>  struct hisi_lpc_acpi_cell {
+>         const char *hid;
+>         const char *name;
+> @@ -480,13 +486,9 @@ struct hisi_lpc_acpi_cell {
+>
+>  static void hisi_lpc_acpi_remove(struct device *hostdev)
+>  {
+> -       struct acpi_device *adev = ACPI_COMPANION(hostdev);
+> -       struct acpi_device *child;
+> -
+>         device_for_each_child(hostdev, NULL, hisi_lpc_acpi_remove_subdev);
+> -
+> -       list_for_each_entry(child, &adev->children, node)
+> -               acpi_device_clear_enumerated(child);
+> +       acpi_dev_for_each_child(ACPI_COMPANION(hostdev),
+> +                               hisi_lpc_acpi_clear_enumerated, NULL);
+>  }
+>
+>  /*
+>
+>
+>
