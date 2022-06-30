@@ -2,217 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 011B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 12:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234430AbiF3MgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 08:36:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        id S234451AbiF3Mgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 08:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234394AbiF3MgP (ORCPT
+        with ESMTP id S234582AbiF3Mgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 08:36:15 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4DB3982F;
-        Thu, 30 Jun 2022 05:36:14 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UBfvMn024877;
-        Thu, 30 Jun 2022 12:36:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=myC12JeAdbFFP6SHJKO0hewDlMY5COimsUaxqcrVJW0=;
- b=BCmIEaIwGrV/Zp807RjVz5IJdsGmgCYMJXmIRJw7dl8UPNJDw35acF36i5wHH3AOVV25
- g9sZFp6yvDlD/l56dnXIZFxj/FkVXIm+l11GbGzjmZfROdPLUMx4crgQ7RmL2F9SsXAb
- C4de4u3br2+pqdLkAJaTDXUSlk4uKlzES7lXG73HOkwrTIdz/GKoBNjOQyH/l45UGacn
- 3k0ejJjc8e99CLsrq01EuTwEm9URRvtkaoh+AzXhncQV4v5zBKC+quSTPbAiJsrPFnc6
- NOs9WrEy1K5U9OY8FzYGry9c6phkfD1gDY65GBdnT4CBJdUF5X7oylBDtBre7lbEkSkR +g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1b68sj17-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 12:36:11 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25UBheBX030245;
-        Thu, 30 Jun 2022 12:36:10 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1b68shyg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 12:36:10 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UCNfMK032270;
-        Thu, 30 Jun 2022 12:36:08 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gwsmj84t6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 12:36:07 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UCa5Uq9634214
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Jun 2022 12:36:05 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0140252050;
-        Thu, 30 Jun 2022 12:36:05 +0000 (GMT)
-Received: from [9.171.69.2] (unknown [9.171.69.2])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 971285204F;
-        Thu, 30 Jun 2022 12:36:04 +0000 (GMT)
-Message-ID: <17c30662-7285-0e1a-91fb-071fa2cfc733@linux.ibm.com>
-Date:   Thu, 30 Jun 2022 14:40:34 +0200
+        Thu, 30 Jun 2022 08:36:42 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52953B294
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 05:36:40 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id m6-20020a05600c3b0600b003a0489f412cso2157744wms.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 05:36:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nCSOjH1PuVz7ePXYoaMNJhxlzN8X+wOXCrrgiX6Y81E=;
+        b=MtYVdhYetN7Bd35GsZbA5nac6CSxeMCF5wY5tOcm+FKgAcrWM8HUeoYSPDNgC9jWOG
+         sLQkCl3wq8zXGkCIrlkeMTVAcRONm699mIRHlgnxyhdfezZKoKEdE7pNxtHWSL3VfbxP
+         6ujrCzvHO7OQzEDHGXPd+43AD39cScbJtLftOCk6ATNjZnKIKefRhz3faWtD2Wyri544
+         OuHoJJC08ZZnHtcHuRaNxrCzluvGQQ4HULdAPs/PR9wiFlQf2oh/UET4bwHsbjtyqIkf
+         ulZouAgJvJ9XMCLkSZAJ8Jr/FcQBukc/CXiI8tTwu3BQEcFydgOiFLcb2AaxALjXW7zc
+         huiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nCSOjH1PuVz7ePXYoaMNJhxlzN8X+wOXCrrgiX6Y81E=;
+        b=BTEKMNZLoYrmLZUO8AJApJmJJ3y7y/FdXG36UxHIOi/F6nS9cjh7yUAqpJf9Osd4VW
+         qF7Y9orlncrmDbSL/pmD/2/CvKIIbK5Q7t62J/QWWCdcSoDfyH48ahOd01Wiv+l8lBQV
+         HSoAKk7icBpEzc/M0/oAknkzUqdKyqf7sITkJlmZjsuUxeOTuYnhcW4omFu6CjFTBQcA
+         dA3YjU2rL5CNuRXMk+Pkn7m3H7MMR9cSuJGjsS84U0gFq3wBn3KeTKn8suT7feYkRwY7
+         z/k+sQHTSogBFUw9dcaFjjOEHsgoJd0fBRRJrS+tnYEBVzyQYujbQHTZsaxOGPl5rZ3m
+         E7Sg==
+X-Gm-Message-State: AJIora8IwMEUR39gOMJLZAx5xBX0L/rmJzfqYZCJltaJRFlhe9LybC06
+        j31rDgw9+tHCVVcuGSmptrMvcQ==
+X-Google-Smtp-Source: AGRyM1vnV+qyq94vbIlHHTuN9r1agP/6Tx4U8p9Gh8Ce0+IUEaZtDJH/LazctjXg9922LcB67IFT6Q==
+X-Received: by 2002:a7b:c155:0:b0:3a0:43a2:e1e1 with SMTP id z21-20020a7bc155000000b003a043a2e1e1mr12207682wmi.160.1656592599505;
+        Thu, 30 Jun 2022 05:36:39 -0700 (PDT)
+Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id n17-20020a05600c3b9100b0039ee391a024sm2477290wms.14.2022.06.30.05.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 05:36:38 -0700 (PDT)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH v3] ASoC: codecs: wsa883x: add control, dapm widgets and map
+Date:   Thu, 30 Jun 2022 13:36:33 +0100
+Message-Id: <20220630123633.8047-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v6 1/5] PCI: Clean up pci_scan_slot()
-Content-Language: en-US
-To:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220628143100.3228092-1-schnelle@linux.ibm.com>
- <20220628143100.3228092-2-schnelle@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220628143100.3228092-2-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: PjATLTWkMNsNt4gmmQyQfAkjEM9ZIW5P
-X-Proofpoint-ORIG-GUID: P2-pxzrGaKPb1qPRa04AoCj0qnWoGRXy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
- adultscore=0 spamscore=0 mlxscore=0 impostorscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=918 priorityscore=1501 lowpriorityscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206300050
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add controls, dapm widgets along with route.
 
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+---
+Changes since v2:
+	- updated dev mode text entries to start with Capital letter
 
-On 6/28/22 16:30, Niklas Schnelle wrote:
-> While determining the next PCI function is factored out of
-> pci_scan_slot() into next_fn() the former still handles the first
-> function as a special case. This duplicates the code from the scan loop.
-> 
-> Furthermore the non ARI branch of next_fn() is generally hard to
-> understand and especially the check for multifunction devices is hidden
-> in the handling of NULL devices for non-contiguous multifunction. It
-> also signals that no further functions need to be scanned by returning
-> 0 via wraparound and this is a valid function number.
-> 
-> Improve upon this by transforming the conditions in next_fn() to be
-> easier to understand.
-> 
-> By changing next_fn() to return -ENODEV instead of 0 when there is no
-> next function we can then handle the initial function inside the loop
-> and deduplicate the shared handling. This also makes it more explicit
-> that only function 0 must exist.
-> 
-> No functional change is intended.
-> 
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->   drivers/pci/probe.c | 38 +++++++++++++++++++-------------------
->   1 file changed, 19 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 17a969942d37..b05d0ed83a24 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -2579,8 +2579,7 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
->   }
->   EXPORT_SYMBOL(pci_scan_single_device);
->   
-> -static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
-> -			    unsigned int fn)
-> +static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
->   {
->   	int pos;
->   	u16 cap = 0;
-> @@ -2588,24 +2587,26 @@ static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
->   
->   	if (pci_ari_enabled(bus)) {
->   		if (!dev)
-> -			return 0;
-> +			return -ENODEV;
->   		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
->   		if (!pos)
-> -			return 0;
-> +			return -ENODEV;
->   
->   		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
->   		next_fn = PCI_ARI_CAP_NFN(cap);
->   		if (next_fn <= fn)
-> -			return 0;	/* protect against malformed list */
-> +			return -ENODEV;	/* protect against malformed list */
->   
->   		return next_fn;
->   	}
->   
-> -	/* dev may be NULL for non-contiguous multifunction devices */
-> -	if (!dev || dev->multifunction)
-> -		return (fn + 1) % 8;
-> +	if (fn >= 7)
-> +		return -ENODEV;
-> +	/* only multifunction devices may have more functions */
-> +	if (dev && !dev->multifunction)
-> +		return -ENODEV;
->   
-> -	return 0;
-> +	return fn + 1;
+ sound/soc/codecs/wsa883x.c | 200 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 200 insertions(+)
 
-No more % 8 ?
-Even it disapear later shouldn't we keep it ?
-
-
-
->   }
->   
->   static int only_one_child(struct pci_bus *bus)
-> @@ -2643,26 +2644,25 @@ static int only_one_child(struct pci_bus *bus)
->    */
->   int pci_scan_slot(struct pci_bus *bus, int devfn)
->   {
-> -	unsigned int fn, nr = 0;
->   	struct pci_dev *dev;
-> +	int fn = 0, nr = 0;
->   
->   	if (only_one_child(bus) && (devfn > 0))
->   		return 0; /* Already scanned the entire slot */
->   
-> -	dev = pci_scan_single_device(bus, devfn);
-> -	if (!dev)
-> -		return 0;
-> -	if (!pci_dev_is_added(dev))
-> -		nr++;
-> -
-> -	for (fn = next_fn(bus, dev, 0); fn > 0; fn = next_fn(bus, dev, fn)) {
-> +	do {
->   		dev = pci_scan_single_device(bus, devfn + fn);
->   		if (dev) {
->   			if (!pci_dev_is_added(dev))
->   				nr++;
-> -			dev->multifunction = 1;
-> +			if (fn > 0)
-> +				dev->multifunction = 1;
-> +		} else if (fn == 0) {
-> +			/* function 0 is required */
-> +			break;
->   		}
-> -	}
-> +		fn = next_fn(bus, dev, fn);
-> +	} while (fn >= 0);
->   
->   	/* Only one slot has PCIe device */
->   	if (bus->self && nr)
-> 
-
-Otherwise LGTM
-
-
+diff --git a/sound/soc/codecs/wsa883x.c b/sound/soc/codecs/wsa883x.c
+index 856709ec017e..e8f519e89213 100644
+--- a/sound/soc/codecs/wsa883x.c
++++ b/sound/soc/codecs/wsa883x.c
+@@ -473,6 +473,19 @@ enum wsa_port_ids {
+ 	WSA883X_PORT_VISENSE,
+ };
+ 
++static const char * const wsa_dev_mode_text[] = {
++	"Speaker", "Receiver", "Ultrasound"
++};
++
++enum {
++	SPEAKER,
++	RECEIVER,
++	ULTRASOUND,
++};
++
++static const struct soc_enum wsa_dev_mode_enum =
++	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(wsa_dev_mode_text), wsa_dev_mode_text);
++
+ /* 4 ports */
+ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA883X_MAX_SWR_PORTS] = {
+ 	{
+@@ -1066,6 +1079,94 @@ static struct sdw_slave_ops wsa883x_slave_ops = {
+ 	.port_prep = wsa883x_port_prep,
+ };
+ 
++static int wsa_dev_mode_get(struct snd_kcontrol *kcontrol,
++			    struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
++	struct wsa883x_priv *wsa883x = snd_soc_component_get_drvdata(component);
++
++	ucontrol->value.enumerated.item[0] = wsa883x->dev_mode;
++
++	return 0;
++}
++
++static int wsa_dev_mode_put(struct snd_kcontrol *kcontrol,
++			    struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
++	struct wsa883x_priv *wsa883x = snd_soc_component_get_drvdata(component);
++
++	if (wsa883x->dev_mode == ucontrol->value.enumerated.item[0])
++		return 0;
++
++	wsa883x->dev_mode = ucontrol->value.enumerated.item[0];
++
++	return 1;
++}
++
++static const DECLARE_TLV_DB_SCALE(pa_gain, -300, 150, -300);
++
++static int wsa883x_get_swr_port(struct snd_kcontrol *kcontrol,
++				struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *comp = snd_soc_kcontrol_component(kcontrol);
++	struct wsa883x_priv *data = snd_soc_component_get_drvdata(comp);
++	struct soc_mixer_control *mixer = (struct soc_mixer_control *)kcontrol->private_value;
++	int portidx = mixer->reg;
++
++	ucontrol->value.integer.value[0] = data->port_enable[portidx];
++
++	return 0;
++}
++
++static int wsa883x_set_swr_port(struct snd_kcontrol *kcontrol,
++				struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *comp = snd_soc_kcontrol_component(kcontrol);
++	struct wsa883x_priv *data = snd_soc_component_get_drvdata(comp);
++	struct soc_mixer_control *mixer = (struct soc_mixer_control *)kcontrol->private_value;
++	int portidx = mixer->reg;
++
++	if (ucontrol->value.integer.value[0]) {
++		if (data->port_enable[portidx])
++			return 0;
++
++		data->port_enable[portidx] = true;
++	} else {
++		if (!data->port_enable[portidx])
++			return 0;
++
++		data->port_enable[portidx] = false;
++	}
++
++	return 1;
++}
++
++static int wsa883x_get_comp_offset(struct snd_kcontrol *kcontrol,
++				   struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
++	struct wsa883x_priv *wsa883x = snd_soc_component_get_drvdata(component);
++
++	ucontrol->value.integer.value[0] = wsa883x->comp_offset;
++
++	return 0;
++}
++
++static int wsa883x_set_comp_offset(struct snd_kcontrol *kcontrol,
++				   struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
++	struct wsa883x_priv *wsa883x = snd_soc_component_get_drvdata(component);
++
++	if (wsa883x->comp_offset == ucontrol->value.integer.value[0])
++		return 0;
++
++	wsa883x->comp_offset = ucontrol->value.integer.value[0];
++
++	return 1;
++}
++
+ static int wsa883x_codec_probe(struct snd_soc_component *comp)
+ {
+ 	struct wsa883x_priv *wsa883x = snd_soc_component_get_drvdata(comp);
+@@ -1075,9 +1176,108 @@ static int wsa883x_codec_probe(struct snd_soc_component *comp)
+ 	return 0;
+ }
+ 
++static int wsa883x_spkr_event(struct snd_soc_dapm_widget *w,
++			      struct snd_kcontrol *kcontrol, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct wsa883x_priv *wsa883x = snd_soc_component_get_drvdata(component);
++
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMU:
++		switch (wsa883x->dev_mode) {
++		case RECEIVER:
++			snd_soc_component_write_field(component, WSA883X_CDC_PATH_MODE,
++						      WSA883X_RXD_MODE_MASK,
++						      WSA883X_RXD_MODE_HIFI);
++			snd_soc_component_write_field(component, WSA883X_SPKR_PWM_CLK_CTL,
++						      WSA883X_SPKR_PWM_FREQ_SEL_MASK,
++						      WSA883X_SPKR_PWM_FREQ_F600KHZ);
++			snd_soc_component_write_field(component, WSA883X_DRE_CTL_0,
++						       WSA883X_DRE_PROG_DELAY_MASK, 0x0);
++			break;
++		case SPEAKER:
++			snd_soc_component_write_field(component, WSA883X_CDC_PATH_MODE,
++						      WSA883X_RXD_MODE_MASK,
++						      WSA883X_RXD_MODE_NORMAL);
++			snd_soc_component_write_field(component, WSA883X_SPKR_PWM_CLK_CTL,
++						      WSA883X_SPKR_PWM_FREQ_SEL_MASK,
++						      WSA883X_SPKR_PWM_FREQ_F300KHZ);
++			snd_soc_component_write_field(component, WSA883X_DRE_CTL_0,
++						       WSA883X_DRE_PROG_DELAY_MASK, 0x9);
++		default:
++			break;
++		}
++
++		snd_soc_component_write_field(component, WSA883X_DRE_CTL_1,
++					      WSA883X_DRE_GAIN_EN_MASK,
++					      WSA883X_DRE_GAIN_FROM_CSR);
++		if (wsa883x->port_enable[WSA883X_PORT_COMP])
++			snd_soc_component_write_field(component, WSA883X_DRE_CTL_0,
++						      WSA883X_DRE_OFFSET_MASK,
++						      wsa883x->comp_offset);
++		snd_soc_component_write_field(component, WSA883X_VBAT_ADC_FLT_CTL,
++					      WSA883X_VBAT_ADC_COEF_SEL_MASK,
++					      WSA883X_VBAT_ADC_COEF_F_1DIV16);
++		snd_soc_component_write_field(component, WSA883X_VBAT_ADC_FLT_CTL,
++					      WSA883X_VBAT_ADC_FLT_EN_MASK, 0x1);
++		snd_soc_component_write_field(component, WSA883X_PDM_WD_CTL,
++					      WSA883X_PDM_EN_MASK,
++					      WSA883X_PDM_ENABLE);
++		snd_soc_component_write_field(component, WSA883X_PA_FSM_CTL,
++					      WSA883X_GLOBAL_PA_EN_MASK,
++					      WSA883X_GLOBAL_PA_ENABLE);
++
++		break;
++	case SND_SOC_DAPM_PRE_PMD:
++		snd_soc_component_write_field(component, WSA883X_VBAT_ADC_FLT_CTL,
++					      WSA883X_VBAT_ADC_FLT_EN_MASK, 0x0);
++		snd_soc_component_write_field(component, WSA883X_VBAT_ADC_FLT_CTL,
++					      WSA883X_VBAT_ADC_COEF_SEL_MASK,
++					      WSA883X_VBAT_ADC_COEF_F_1DIV2);
++		snd_soc_component_write_field(component, WSA883X_PA_FSM_CTL,
++					      WSA883X_GLOBAL_PA_EN_MASK, 0);
++		snd_soc_component_write_field(component, WSA883X_PDM_WD_CTL,
++					      WSA883X_PDM_EN_MASK, 0);
++		break;
++	}
++	return 0;
++}
++
++static const struct snd_soc_dapm_widget wsa883x_dapm_widgets[] = {
++	SND_SOC_DAPM_INPUT("IN"),
++	SND_SOC_DAPM_SPK("SPKR", wsa883x_spkr_event),
++};
++
++static const struct snd_kcontrol_new wsa883x_snd_controls[] = {
++	SOC_SINGLE_RANGE_TLV("PA Volume", WSA883X_DRE_CTL_1, 1,
++			     0x0, 0x1f, 1, pa_gain),
++	SOC_ENUM_EXT("WSA MODE", wsa_dev_mode_enum,
++		     wsa_dev_mode_get, wsa_dev_mode_put),
++	SOC_SINGLE_EXT("COMP Offset", SND_SOC_NOPM, 0, 4, 0,
++		       wsa883x_get_comp_offset, wsa883x_set_comp_offset),
++	SOC_SINGLE_EXT("DAC Switch", WSA883X_PORT_DAC, 0, 1, 0,
++		       wsa883x_get_swr_port, wsa883x_set_swr_port),
++	SOC_SINGLE_EXT("COMP Switch", WSA883X_PORT_COMP, 0, 1, 0,
++		       wsa883x_get_swr_port, wsa883x_set_swr_port),
++	SOC_SINGLE_EXT("BOOST Switch", WSA883X_PORT_BOOST, 0, 1, 0,
++		       wsa883x_get_swr_port, wsa883x_set_swr_port),
++	SOC_SINGLE_EXT("VISENSE Switch", WSA883X_PORT_VISENSE, 0, 1, 0,
++		       wsa883x_get_swr_port, wsa883x_set_swr_port),
++};
++
++static const struct snd_soc_dapm_route wsa883x_audio_map[] = {
++	{"SPKR", NULL, "IN"},
++};
++
+ static const struct snd_soc_component_driver wsa883x_component_drv = {
+ 	.name = "WSA883x",
+ 	.probe = wsa883x_codec_probe,
++	.controls = wsa883x_snd_controls,
++	.num_controls = ARRAY_SIZE(wsa883x_snd_controls),
++	.dapm_widgets = wsa883x_dapm_widgets,
++	.num_dapm_widgets = ARRAY_SIZE(wsa883x_dapm_widgets),
++	.dapm_routes = wsa883x_audio_map,
++	.num_dapm_routes = ARRAY_SIZE(wsa883x_audio_map),
+ };
+ 
+ static int wsa883x_hw_params(struct snd_pcm_substream *substream,
 -- 
-Pierre Morel
-IBM Lab Boeblingen
+2.25.1
+
