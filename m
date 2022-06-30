@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE58AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 688C8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236792AbiF3OJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
+        id S236796AbiF3OJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237019AbiF3OIF (ORCPT
+        with ESMTP id S236960AbiF3OIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:08:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B31476EB2;
-        Thu, 30 Jun 2022 06:55:00 -0700 (PDT)
+        Thu, 30 Jun 2022 10:08:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D461076E9F;
+        Thu, 30 Jun 2022 06:54:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD34C620F8;
-        Thu, 30 Jun 2022 13:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7BEEC34115;
-        Thu, 30 Jun 2022 13:54:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5557862124;
+        Thu, 30 Jun 2022 13:54:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB9BC34115;
+        Thu, 30 Jun 2022 13:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597287;
-        bh=QGJ+qIiXx7+zwSmR30+jI7MQIBBmK37LSTTM0Ila1B4=;
+        s=korg; t=1656597292;
+        bh=JQvFxHlyvg7oC1HqZzzyFGMHYaktl60NzjfZoKfqJ/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QDiZlK7KxD61VOuVBiqbfG2G2Kpp54zRquakDFey4Gm765xrhnthqeqW0r4MrMW1A
-         8Cn0a8loWltI0+opMAzE6+5eK56sKvwJmX25n5Rrh0qc0ZFSRIdCLs5+Hv1V8T4hZU
-         dYW9sx+uVuDUzfd9YUO0d+AmeEYimLSRVky0geZw=
+        b=RFj49F1EfDDffgsT/ymXpreYbWaeTjy4sgnCYC2DFRkRb9UwCuUIx4wcU12RVMhfa
+         0JzAtGzLQ/6V/6Gb3b8WtFFVCxdXvfjC57ZJ4G9NRe4VneJ6eXY7rUdu6+p0EDZYzD
+         FLU06q74344pnNLws+CeKxaIaAmR0RT30AokPFDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 04/28] bcache: memset on stack variables in bch_btree_check() and bch_sectors_dirty_init()
-Date:   Thu, 30 Jun 2022 15:47:00 +0200
-Message-Id: <20220630133233.056392574@linuxfoundation.org>
+        Brian Foster <bfoster@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 06/28] xfs: punch out data fork delalloc blocks on COW writeback failure
+Date:   Thu, 30 Jun 2022 15:47:02 +0200
+Message-Id: <20220630133233.113538634@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -48,42 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+From: Brian Foster <bfoster@redhat.com>
 
-commit 7d6b902ea0e02b2a25c480edf471cbaa4ebe6b3c upstream.
+[ Upstream commit 5ca5916b6bc93577c360c06cb7cdf71adb9b5faf ]
 
-The local variables check_state (in bch_btree_check()) and state (in
-bch_sectors_dirty_init()) should be fully filled by 0, because before
-allocating them on stack, they were dynamically allocated by kzalloc().
+If writeback I/O to a COW extent fails, the COW fork blocks are
+punched out and the data fork blocks left alone. It is possible for
+COW fork blocks to overlap non-shared data fork blocks (due to
+cowextsz hint prealloc), however, and writeback unconditionally maps
+to the COW fork whenever blocks exist at the corresponding offset of
+the page undergoing writeback. This means it's quite possible for a
+COW fork extent to overlap delalloc data fork blocks, writeback to
+convert and map to the COW fork blocks, writeback to fail, and
+finally for ioend completion to cancel the COW fork blocks and leave
+stale data fork delalloc blocks around in the inode. The blocks are
+effectively stale because writeback failure also discards dirty page
+state.
 
-Signed-off-by: Coly Li <colyli@suse.de>
-Link: https://lore.kernel.org/r/20220527152818.27545-2-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+If this occurs, it is likely to trigger assert failures, free space
+accounting corruption and failures in unrelated file operations. For
+example, a subsequent reflink attempt of the affected file to a new
+target file will trip over the stale delalloc in the source file and
+fail. Several of these issues are occasionally reproduced by
+generic/648, but are reproducible on demand with the right sequence
+of operations and timely I/O error injection.
+
+To fix this problem, update the ioend failure path to also punch out
+underlying data fork delalloc blocks on I/O error. This is analogous
+to the writeback submission failure path in xfs_discard_page() where
+we might fail to map data fork delalloc blocks and consistent with
+the successful COW writeback completion path, which is responsible
+for unmapping from the data fork and remapping in COW fork blocks.
+
+Fixes: 787eb485509f ("xfs: fix and streamline error handling in xfs_end_io")
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/btree.c     |    1 +
- drivers/md/bcache/writeback.c |    1 +
- 2 files changed, 2 insertions(+)
+ fs/xfs/xfs_aops.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/md/bcache/btree.c
-+++ b/drivers/md/bcache/btree.c
-@@ -2017,6 +2017,7 @@ int bch_btree_check(struct cache_set *c)
- 	if (c->root->level == 0)
- 		return 0;
- 
-+	memset(&check_state, 0, sizeof(struct btree_check_state));
- 	check_state.c = c;
- 	check_state.total_threads = bch_btree_chkthread_nr();
- 	check_state.key_idx = 0;
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -947,6 +947,7 @@ void bch_sectors_dirty_init(struct bcach
- 		return;
+--- a/fs/xfs/xfs_aops.c
++++ b/fs/xfs/xfs_aops.c
+@@ -82,6 +82,7 @@ xfs_end_ioend(
+ 	struct iomap_ioend	*ioend)
+ {
+ 	struct xfs_inode	*ip = XFS_I(ioend->io_inode);
++	struct xfs_mount	*mp = ip->i_mount;
+ 	xfs_off_t		offset = ioend->io_offset;
+ 	size_t			size = ioend->io_size;
+ 	unsigned int		nofs_flag;
+@@ -97,18 +98,26 @@ xfs_end_ioend(
+ 	/*
+ 	 * Just clean up the in-memory structures if the fs has been shut down.
+ 	 */
+-	if (xfs_is_shutdown(ip->i_mount)) {
++	if (xfs_is_shutdown(mp)) {
+ 		error = -EIO;
+ 		goto done;
  	}
  
-+	memset(&state, 0, sizeof(struct bch_dirty_init_state));
- 	state.c = c;
- 	state.d = d;
- 	state.total_threads = bch_btre_dirty_init_thread_nr();
+ 	/*
+-	 * Clean up any COW blocks on an I/O error.
++	 * Clean up all COW blocks and underlying data fork delalloc blocks on
++	 * I/O error. The delalloc punch is required because this ioend was
++	 * mapped to blocks in the COW fork and the associated pages are no
++	 * longer dirty. If we don't remove delalloc blocks here, they become
++	 * stale and can corrupt free space accounting on unmount.
+ 	 */
+ 	error = blk_status_to_errno(ioend->io_bio->bi_status);
+ 	if (unlikely(error)) {
+-		if (ioend->io_flags & IOMAP_F_SHARED)
++		if (ioend->io_flags & IOMAP_F_SHARED) {
+ 			xfs_reflink_cancel_cow_range(ip, offset, size, true);
++			xfs_bmap_punch_delalloc_range(ip,
++						      XFS_B_TO_FSBT(mp, offset),
++						      XFS_B_TO_FSB(mp, size));
++		}
+ 		goto done;
+ 	}
+ 
 
 
