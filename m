@@ -2,81 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33080C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A73C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234936AbiF3LaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 07:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        id S234972AbiF3LaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 07:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233709AbiF3LaP (ORCPT
+        with ESMTP id S233709AbiF3LaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 07:30:15 -0400
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE3451B24
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:30:12 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1656588607t477ilmz
-Received: from localhost.localdomain ( [113.57.152.160])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 30 Jun 2022 19:30:06 +0800 (CST)
-X-QQ-SSF: D140000000200030E000000A0100000
-X-QQ-FEAT: aP2oNmVYkM8sUCvPTo0LbC7fDuf56FZ3uAO5OAe5cfBDTxxb7RDtoPZQzzSFj
-        sRVurMKpDP1KIa0156h+PDTo1ETZTZQbGG50cFR0X/NpSKbsiAWNI0ENgvMy3Nh6BL3eICg
-        pl1GAsPEKgZp4xgLJG3YP+ZzIBcVnc4X+wKEkE/O9HJVxh39iOHMhzODE/pheudVt+ZkW+J
-        5HKXymip9pE2KW4RgEQ9uaIb1jSSpI5ix6uhEjGvbGcJUFcgjWUCPjTsbZJwjh+yu2AVTR9
-        isJZiDBbOX9mCk3u0MLI7jqoLaV7RbD/y/TNr0Af/9E8Dk321yL7qCm7t8hdfoVkryef69w
-        WaEET6rbc5GgEaIHGg=
-X-QQ-GoodBg: 1
-From:   hmy <huanglin@uniontech.com>
-To:     robh+dt@kernel.org
-Cc:     linux-kernel@vger.kernel.org, "3127791@qq.com" <3127791@qq.com>
-Subject: [PATCH] of/fdt:  extend cmdline is not avail when kernel grub config ends with "--"
-Date:   Thu, 30 Jun 2022 19:28:39 +0800
-Message-Id: <20220630112839.30941-1-huanglin@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 30 Jun 2022 07:30:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B8B51B28
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:30:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50E66B82A1A
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 11:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71319C34115;
+        Thu, 30 Jun 2022 11:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656588617;
+        bh=gzDOHcejGu4JioM05HpcNWxB/O66gnE2CvPqcNhcsQo=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=CimQvuX/++FtooBdfVaGQKFl2+Pb1O8v4oSpfSojUuL4n7lA57QcJAwfB/aX0vJ+7
+         531Q/lRTYXMloZ7tPASrqQ7jUfEb52YRf0uJCXSJoUsUcmnE1gqZ0gen6zjy4nkXO+
+         nWgogb8hfvONDEJXmxVhzXV5Ud8aUQ41GYWa+ozWeiOS/0C0bZBQCu4M4QCnAN315j
+         AOhGhyHOEnmZrLN2UzJMkrCc2Cb6Tu74bSAOPA54CCrX0VimfEp3dTTRZXJxM9xou/
+         qohZ92xNRQkwsRgB/cBiQ14Q93kXQKq8gPKy4dllGSCDZXIql1TDJYwu4Aczu1E4tq
+         BHhacON8Ac1Jg==
+From:   Mark Brown <broonie@kernel.org>
+To:     u0084500@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        chiaen_wu@richtek.com, cy_huang@richtek.com,
+        matthias.bgg@gmail.com, lgirdwood@gmail.com,
+        linux-mediatek@lists.infradead.org, alice_chen@richtek.com
+In-Reply-To: <1656466861-7737-1-git-send-email-u0084500@gmail.com>
+References: <1656466861-7737-1-git-send-email-u0084500@gmail.com>
+Subject: Re: [PATCH 1/2] regulator: mt6370: Use 'fwnode_gpiod_get_index' to fix gpio parsing
+Message-Id: <165658861401.321126.9625331227015919731.b4-ty@kernel.org>
+Date:   Thu, 30 Jun 2022 12:30:14 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "3127791@qq.com" <3127791@qq.com>
+On Wed, 29 Jun 2022 09:41:00 +0800, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> From the common binding, 'enable-gpio' or 'enable-gpios' are all well
+> for external 'enable' gpio.
+> 
+> 'gpiod_get_from_of_node' only parse the 'enable' property, it need to
+> add the gpio suffix. It's more convenient to use fwnode_gpiod_get_index.
+> Although fwnode parsing is not preferred, but 'of_parse_cb' already can
+> guarantee the callback will only be used by regulator of_node parsing.
+> 
+> [...]
 
-when boot_command_line = boot-command "--" CONFIG_CMDLINE,
-parse_args() will exit and without parsing the contents of CONFIG_CMDLINE
+Applied to
 
-Signed-off-by: 3127791@qq.com <3127791@qq.com>
----
- drivers/of/fdt.c | 4 ++++
- 1 file changed, 4 insertions(+)
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index a8f5b6532165..6f46dc94766d 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -1160,6 +1160,7 @@ int __init early_init_dt_scan_chosen(char *cmdline)
- {
- 	int l, node;
- 	const char *p;
-+	char *q;
- 	const void *rng_seed;
- 	const void *fdt = initial_boot_params;
- 
-@@ -1186,6 +1187,9 @@ int __init early_init_dt_scan_chosen(char *cmdline)
- 	 */
- #ifdef CONFIG_CMDLINE
- #if defined(CONFIG_CMDLINE_EXTEND)
-+	q = strstr(data, "--");
-+	if (q)
-+		*q = '\0';
- 	strlcat(cmdline, " ", COMMAND_LINE_SIZE);
- 	strlcat(cmdline, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
- #elif defined(CONFIG_CMDLINE_FORCE)
--- 
-2.25.1
+Thanks!
 
+[1/2] regulator: mt6370: Use 'fwnode_gpiod_get_index' to fix gpio parsing
+      commit: 4806c991bf4ff959acf921ea72f931a945a968ae
+[2/2] regulator: mt6370: Use the correct header for platform_device_id
+      commit: 46ae6fb58fd49c4cb2d1ca34e87d603b7c96ba97
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
