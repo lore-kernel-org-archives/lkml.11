@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BDCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98F4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236370AbiF3ODp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        id S236378AbiF3ODs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236584AbiF3OCp (ORCPT
+        with ESMTP id S236612AbiF3OCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:02:45 -0400
+        Thu, 30 Jun 2022 10:02:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A124C68A20;
-        Thu, 30 Jun 2022 06:53:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DDAB48;
+        Thu, 30 Jun 2022 06:53:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2342D61FF6;
-        Thu, 30 Jun 2022 13:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CBB0C341CB;
-        Thu, 30 Jun 2022 13:52:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9928A620EB;
+        Thu, 30 Jun 2022 13:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7B2C34115;
+        Thu, 30 Jun 2022 13:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597174;
-        bh=Kzc5BjeNdBNa0ILvLgVkTxFlC6vM3anfTkp0+EXm9kA=;
+        s=korg; t=1656597183;
+        bh=mAlzY4+qXjdLojrOSA13Bsh+r1xYcbPlD1Afg/rBXqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xOtx0ynyE9Gtxoz+lMkuj2xlGMthCykEda227VoE55G6lvPfh3qTyjRMCjSsxgAP1
-         VGvNjCSpOFHu8Z12wsWsEPvoyIEK3clCewTeT144w2oPruUJxUIyzmEm7dcnUOSqSi
-         tAokK8kcZawteXxs2TU+u6K6PBynKhr3kmt1qZXE=
+        b=MzjpqAVSJCi2iP1tRKM1TJQ6Xz7ZdIwFeVLmKauJCsF+B/RzN1q+9cQ5Hx4o4Xhdz
+         NgXb5K7j+QmlarzT1R1rDTswRgHvFTAAZWpuu2Q81xEixR+ST9TYiI+ukBMLPT6gmd
+         PkiAFpKGj8omz9FXbIwsGDr3Gsmn1oATM8/MofkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 14/49] erspan: do not assume transport header is always set
-Date:   Thu, 30 Jun 2022 15:46:27 +0200
-Message-Id: <20220630133234.328662135@linuxfoundation.org>
+        stable@vger.kernel.org, Nikos Tsironis <ntsironis@arrikto.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.19 07/49] dm era: commit metadata in postsuspend after worker stops
+Date:   Thu, 30 Jun 2022 15:46:20 +0200
+Message-Id: <20220630133234.124223830@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -51,127 +48,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Nikos Tsironis <ntsironis@arrikto.com>
 
-[ Upstream commit 301bd140ed0b24f0da660874c7e8a47dad8c8222 ]
+commit 9ae6e8b1c9bbf6874163d1243e393137313762b7 upstream.
 
-Rewrite tests in ip6erspan_tunnel_xmit() and
-erspan_fb_xmit() to not assume transport header is set.
+During postsuspend dm-era does the following:
 
-syzbot reported:
+1. Archives the current era
+2. Commits the metadata, as part of the RPC call for archiving the
+   current era
+3. Stops the worker
 
-WARNING: CPU: 0 PID: 1350 at include/linux/skbuff.h:2911 skb_transport_header include/linux/skbuff.h:2911 [inline]
-WARNING: CPU: 0 PID: 1350 at include/linux/skbuff.h:2911 ip6erspan_tunnel_xmit+0x15af/0x2eb0 net/ipv6/ip6_gre.c:963
-Modules linked in:
-CPU: 0 PID: 1350 Comm: aoe_tx0 Not tainted 5.19.0-rc2-syzkaller-00160-g274295c6e53f #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:skb_transport_header include/linux/skbuff.h:2911 [inline]
-RIP: 0010:ip6erspan_tunnel_xmit+0x15af/0x2eb0 net/ipv6/ip6_gre.c:963
-Code: 0f 47 f0 40 88 b5 7f fe ff ff e8 8c 16 4b f9 89 de bf ff ff ff ff e8 a0 12 4b f9 66 83 fb ff 0f 85 1d f1 ff ff e8 71 16 4b f9 <0f> 0b e9 43 f0 ff ff e8 65 16 4b f9 48 8d 85 30 ff ff ff ba 60 00
-RSP: 0018:ffffc90005daf910 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 000000000000ffff RCX: 0000000000000000
-RDX: ffff88801f032100 RSI: ffffffff882e8d3f RDI: 0000000000000003
-RBP: ffffc90005dafab8 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000000 R12: ffff888024f21d40
-R13: 000000000000a288 R14: 00000000000000b0 R15: ffff888025a2e000
-FS: 0000000000000000(0000) GS:ffff88802c800000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2e425000 CR3: 000000006d099000 CR4: 0000000000152ef0
-Call Trace:
-<TASK>
-__netdev_start_xmit include/linux/netdevice.h:4805 [inline]
-netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-xmit_one net/core/dev.c:3588 [inline]
-dev_hard_start_xmit+0x188/0x880 net/core/dev.c:3604
-sch_direct_xmit+0x19f/0xbe0 net/sched/sch_generic.c:342
-__dev_xmit_skb net/core/dev.c:3815 [inline]
-__dev_queue_xmit+0x14a1/0x3900 net/core/dev.c:4219
-dev_queue_xmit include/linux/netdevice.h:2994 [inline]
-tx+0x6a/0xc0 drivers/block/aoe/aoenet.c:63
-kthread+0x1e7/0x3b0 drivers/block/aoe/aoecmd.c:1229
-kthread+0x2e9/0x3a0 kernel/kthread.c:376
-ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-</TASK>
+Until the worker stops, it might write to the metadata again. Moreover,
+these writes are not flushed to disk immediately, but are cached by the
+dm-bufio client, which writes them back asynchronously.
 
-Fixes: d5db21a3e697 ("erspan: auto detect truncated ipv6 packets.")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+As a result, the committed metadata of a suspended dm-era device might
+not be consistent with the in-core metadata.
+
+In some cases, this can result in the corruption of the on-disk
+metadata. Suppose the following sequence of events:
+
+1. Load a new table, e.g. a snapshot-origin table, to a device with a
+   dm-era table
+2. Suspend the device
+3. dm-era commits its metadata, but the worker does a few more metadata
+   writes until it stops, as part of digesting an archived writeset
+4. These writes are cached by the dm-bufio client
+5. Load the dm-era table to another device.
+6. The new instance of the dm-era target loads the committed, on-disk
+   metadata, which don't include the extra writes done by the worker
+   after the metadata commit.
+7. Resume the new device
+8. The new dm-era target instance starts using the metadata
+9. Resume the original device
+10. The destructor of the old dm-era target instance is called and
+    destroys the dm-bufio client, which results in flushing the cached
+    writes to disk
+11. These writes might overwrite the writes done by the new dm-era
+    instance, hence corrupting its metadata.
+
+Fix this by committing the metadata after the worker stops running.
+
+stop_worker uses flush_workqueue to flush the current work. However, the
+work item may re-queue itself and flush_workqueue doesn't wait for
+re-queued works to finish.
+
+This could result in the worker changing the metadata after they have
+been committed, or writing to the metadata concurrently with the commit
+in the postsuspend thread.
+
+Use drain_workqueue instead, which waits until the work and all
+re-queued works finish.
+
+Fixes: eec40579d8487 ("dm: add era target")
+Cc: stable@vger.kernel.org # v3.15+
+Signed-off-by: Nikos Tsironis <ntsironis@arrikto.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_gre.c  | 15 ++++++++++-----
- net/ipv6/ip6_gre.c | 15 ++++++++++-----
- 2 files changed, 20 insertions(+), 10 deletions(-)
+ drivers/md/dm-era-target.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index cf60d0e07965..c72432ce9bf5 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -574,7 +574,6 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	int tunnel_hlen;
- 	int version;
- 	int nhoff;
--	int thoff;
+--- a/drivers/md/dm-era-target.c
++++ b/drivers/md/dm-era-target.c
+@@ -1396,7 +1396,7 @@ static void start_worker(struct era *era
+ static void stop_worker(struct era *era)
+ {
+ 	atomic_set(&era->suspended, 1);
+-	flush_workqueue(era->wq);
++	drain_workqueue(era->wq);
+ }
  
- 	tun_info = skb_tunnel_info(skb);
- 	if (unlikely(!tun_info || !(tun_info->mode & IP_TUNNEL_INFO_TX) ||
-@@ -609,10 +608,16 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	    (ntohs(ip_hdr(skb)->tot_len) > skb->len - nhoff))
- 		truncate = true;
+ /*----------------------------------------------------------------
+@@ -1580,6 +1580,12 @@ static void era_postsuspend(struct dm_ta
+ 	}
  
--	thoff = skb_transport_header(skb) - skb_mac_header(skb);
--	if (skb->protocol == htons(ETH_P_IPV6) &&
--	    (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff))
--		truncate = true;
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		int thoff;
+ 	stop_worker(era);
 +
-+		if (skb_transport_header_was_set(skb))
-+			thoff = skb_transport_header(skb) - skb_mac_header(skb);
-+		else
-+			thoff = nhoff + sizeof(struct ipv6hdr);
-+		if (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff)
-+			truncate = true;
++	r = metadata_commit(era->md);
++	if (r) {
++		DMERR("%s: metadata_commit failed", __func__);
++		/* FIXME: fail mode */
 +	}
+ }
  
- 	if (version == 1) {
- 		erspan_build_header(skb, ntohl(tunnel_id_to_key32(key->tun_id)),
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 4fd6c0929b14..e617a98f4df6 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -946,7 +946,6 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 	__be16 proto;
- 	__u32 mtu;
- 	int nhoff;
--	int thoff;
- 
- 	if (!pskb_inet_may_pull(skb))
- 		goto tx_err;
-@@ -967,10 +966,16 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 	    (ntohs(ip_hdr(skb)->tot_len) > skb->len - nhoff))
- 		truncate = true;
- 
--	thoff = skb_transport_header(skb) - skb_mac_header(skb);
--	if (skb->protocol == htons(ETH_P_IPV6) &&
--	    (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff))
--		truncate = true;
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		int thoff;
-+
-+		if (skb_transport_header_was_set(skb))
-+			thoff = skb_transport_header(skb) - skb_mac_header(skb);
-+		else
-+			thoff = nhoff + sizeof(struct ipv6hdr);
-+		if (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff)
-+			truncate = true;
-+	}
- 
- 	if (skb_cow_head(skb, dev->needed_headroom ?: t->hlen))
- 		goto tx_err;
--- 
-2.35.1
-
+ static int era_preresume(struct dm_target *ti)
 
 
