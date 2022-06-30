@@ -2,286 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B16FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbiF3GcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
+        id S232793AbiF3Gcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbiF3GcJ (ORCPT
+        with ESMTP id S232776AbiF3Gc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:32:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACE2720F7A
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:32:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656570725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JCFLB3gZtfT5O37DFv5kX6RHaI4wR9lTgo57exxBmSc=;
-        b=W5+fGtS6FlGDxqxEaZBliOhFWiEwvXXg1CdL5xCSsZ/QF2uzufHCBfQV/eBAOny1dleUCi
-        W/Jqua3fPAlEUbCqr9YO23HnzjPg3mhPOGPN0IE56DqkLJfqvrMUA8TmvS3Q6nIVheTzE2
-        DR2CDPLmJEjrEf9Sd2oweidF1CQXkkY=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-199-u77de4RoMZSXmIvaib2WDA-1; Thu, 30 Jun 2022 02:32:04 -0400
-X-MC-Unique: u77de4RoMZSXmIvaib2WDA-1
-Received: by mail-lj1-f200.google.com with SMTP id l5-20020a2e8345000000b0025bce6dcde0so1864768ljh.12
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:32:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JCFLB3gZtfT5O37DFv5kX6RHaI4wR9lTgo57exxBmSc=;
-        b=YAKqec78mrVB7N152Dp0bFLTR500VPTwpvayWtvcAMmP2ydGdfPuDVwD6ANfJ1FtLS
-         /gXrWAUq88+zqzMmAjanEDJtpP32LlEgz0zdIWS13se9EVosjXbYkWga8r9sYW7wF4Op
-         1edV9ZuWJdfbXH0yxMf9Lx5ty/XweyAxT/ApPORJMyQwiEczr8qd4p7pBYuipS8blpwZ
-         +E5XWVrEf2V0lvr2p3w+p4OgDQbVS0MYzhFbQQ0nGDFKjNsGjn4rXYHNrlWL1P8zDoRX
-         MU/vVTk/Y/0xGplDT2dAechkgKeb6RHv2YdL1HX4wet1kPWryZ4J47myFYNV3zRSllmy
-         tdGw==
-X-Gm-Message-State: AJIora8FLvg6Trrbr1rlbT5LF4sjXEZArpFcytrCuyLlwPaEdVnRIIj9
-        +UmE03UU8WFf7Gxb48pRHQ8uBWOagXrqrUfVsKXJ2zWyzo9llju3fsKkChL+LwHWO/NoE8DWI5b
-        s14BT0974fEUIpz7bNWBfvWfApmdjNLZ62XTVxedZ
-X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id p37-20020a05651213a500b0047dc1d9dea8mr4362244lfa.442.1656570721724;
-        Wed, 29 Jun 2022 23:32:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tce7yU1sJnXz77ARVxInNfPquob/R63ZeXhVpWoKTGT/+yZHlqbZssYwg4b69Y4LOXiaqvhMzHYERN/zHh6lE=
-X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id
- p37-20020a05651213a500b0047dc1d9dea8mr4362230lfa.442.1656570721449; Wed, 29
- Jun 2022 23:32:01 -0700 (PDT)
+        Thu, 30 Jun 2022 02:32:29 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D126C21800
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:32:20 -0700 (PDT)
+X-UUID: 5f4589e0671846519b5bfb62eae9cdcb-20220630
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:586acb0f-429a-43f2-880b-862604f9a34d,OB:0,LO
+        B:10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:100
+X-CID-INFO: VERSION:1.1.7,REQID:586acb0f-429a-43f2-880b-862604f9a34d,OB:0,LOB:
+        10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:100
+X-CID-META: VersionHash:87442a2,CLOUDID:22ea2a86-57f0-47ca-ba27-fe8c57fbf305,C
+        OID:473c34e895f2,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 5f4589e0671846519b5bfb62eae9cdcb-20220630
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1718522625; Thu, 30 Jun 2022 14:32:15 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 30 Jun 2022 14:32:14 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Thu, 30 Jun 2022 14:32:13 +0800
+From:   <yf.wang@mediatek.com>
+To:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel" <joro@8bytes.org>, Yong Wu <Yong.Wu@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <ning.li@mediatek.com>,
+        Yunfei Wang <yf.wang@mediatek.com>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        "moderated list:ARM SMMU DRIVERS" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v11 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
+Date:   Thu, 30 Jun 2022 14:25:06 +0800
+Message-ID: <20220630062508.23512-2-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220630062508.23512-1-yf.wang@mediatek.com>
+References: <20220630062508.23512-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-References: <20220630020805.74658-1-jasowang@redhat.com> <1656555045.7370687-2-xuanzhuo@linux.alibaba.com>
- <CACGkMEvMrxWRNY_NbujLsWff4zMVELr7C9CJ77k_m5OTFEe0dA@mail.gmail.com> <1656569481.3897407-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1656569481.3897407-1-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 30 Jun 2022 14:31:50 +0800
-Message-ID: <CACGkMEtYnAEJv3BQd9DEeTAqyOTU166mu8d8_uzrJLs9qj6Edw@mail.gmail.com>
-Subject: Re: [PATCH V2] virtio-net: fix the race between refill work and close
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     mst <mst@redhat.com>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 2:26 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> On Thu, 30 Jun 2022 14:07:52 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > On Thu, Jun 30, 2022 at 10:22 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > >
-> > > On Thu, 30 Jun 2022 10:08:04 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > > > We try using cancel_delayed_work_sync() to prevent the work from
-> > > > enabling NAPI. This is insufficient since we don't disable the source
-> > > > of the refill work scheduling. This means an NAPI poll callback after
-> > > > cancel_delayed_work_sync() can schedule the refill work then can
-> > > > re-enable the NAPI that leads to use-after-free [1].
-> > >
-> > >
-> > > Can you explain in more detail how this happened?
-> > >
-> > > napi_disable() is normally called after cancel_delayed_work_sync(). This ensures
-> > > that all napi callbacks will end, and the new napi_disable() will wait.
-> > > There will be no re-enable napi.
-> >
-> > An rx interrupt that may come between after the cancel_delayed_work()
-> > but before the napi_disable(). It schedules a refill_work that may run
-> > after the napi_disable() in virtnet_close().
->
-> Yes
->
->
-> >
-> > >
-> > > So I guess the use-after-free is caused by refill_work being called after
-> > > dev/vi/napi is released. In this way, we can just call
-> > > cancel_delayed_work_sync() after napi_disalbe().
-> >
-> > So the refill_work can re-enable the NAPI when it is run after
-> > napi_disable() in this case.
->
->
-> Since napi_disable() has been called in virtnet_close(), it will get stuck when
-> napi_disable() in refill_work().
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Right because e.g NAPIF_STATE_SCHED has been set by napi_disable() before.
+Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA and
+cause pgtable PA size larger than 32bit.
 
-> I think use-after-free is because vi/napi etc.
-> have been released, refill_work() going to access again causes an exception.
+Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+so add a quirk to allow the PA of pgtables support up to bit35.
 
-Yes, this is the use-after-free I mentioned above.
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 75 ++++++++++++++++++++++--------
+ include/linux/io-pgtable.h         | 15 ++++--
+ 2 files changed, 66 insertions(+), 24 deletions(-)
 
->
-> napi will not be re-enable.
->
-> I would like to call cancel_delayed_work_sync() after napi_disable()
-> to solve this problem. But this also has a problem, refill_work() can get stuck
-> on napi_disable() and cannot exit. In this way, we want napi_disable() to check
-> that the current state is disabled and exit directly.
-
-Not sure this is a good design and it doesn't fit for -stable.
-
-I think the design of NAPI is to pair napi_enable() and napi_disable()
-instead of allowing napi_disable() to be called twice.
-
-Thanks
-
->
-> Thanks.
->
->
-> >
-> > Thanks
-> >
-> >
-> > >
-> > > Thanks.
-> > >
-> > > >
-> > > > Since the work can enable NAPI, we can't simply disable NAPI before
-> > > > calling cancel_delayed_work_sync(). So fix this by introducing a
-> > > > dedicated boolean to control whether or not the work could be
-> > > > scheduled from NAPI.
-> > > >
-> > > > [1]
-> > > > ==================================================================
-> > > > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
-> > > > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
-> > > >
-> > > > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
-> > > > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> > > > Workqueue: events refill_work
-> > > > Call Trace:
-> > > >  <TASK>
-> > > >  dump_stack_lvl+0x34/0x44
-> > > >  print_report.cold+0xbb/0x6ac
-> > > >  ? _printk+0xad/0xde
-> > > >  ? refill_work+0x43/0xd4
-> > > >  kasan_report+0xa8/0x130
-> > > >  ? refill_work+0x43/0xd4
-> > > >  refill_work+0x43/0xd4
-> > > >  process_one_work+0x43d/0x780
-> > > >  worker_thread+0x2a0/0x6f0
-> > > >  ? process_one_work+0x780/0x780
-> > > >  kthread+0x167/0x1a0
-> > > >  ? kthread_exit+0x50/0x50
-> > > >  ret_from_fork+0x22/0x30
-> > > >  </TASK>
-> > > > ...
-> > > >
-> > > > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
-> > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > ---
-> > > >  drivers/net/virtio_net.c | 38 ++++++++++++++++++++++++++++++++++++--
-> > > >  1 file changed, 36 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index db05b5e930be..21bf1e5c81ef 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -251,6 +251,12 @@ struct virtnet_info {
-> > > >       /* Does the affinity hint is set for virtqueues? */
-> > > >       bool affinity_hint_set;
-> > > >
-> > > > +     /* Is refill work enabled? */
-> > > > +     bool refill_work_enabled;
-> > > > +
-> > > > +     /* The lock to synchronize the access to refill_work_enabled */
-> > > > +     spinlock_t refill_lock;
-> > > > +
-> > > >       /* CPU hotplug instances for online & dead */
-> > > >       struct hlist_node node;
-> > > >       struct hlist_node node_dead;
-> > > > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
-> > > >       return p;
-> > > >  }
-> > > >
-> > > > +static void enable_refill_work(struct virtnet_info *vi)
-> > > > +{
-> > > > +     spin_lock(&vi->refill_lock);
-> > > > +     vi->refill_work_enabled = true;
-> > > > +     spin_unlock(&vi->refill_lock);
-> > > > +}
-> > > > +
-> > > > +static void disable_refill_work(struct virtnet_info *vi)
-> > > > +{
-> > > > +     spin_lock(&vi->refill_lock);
-> > > > +     vi->refill_work_enabled = false;
-> > > > +     spin_unlock(&vi->refill_lock);
-> > > > +}
-> > > > +
-> > > >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> > > >                                   struct virtqueue *vq)
-> > > >  {
-> > > > @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
-> > > >       }
-> > > >
-> > > >       if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
-> > > > -             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
-> > > > -                     schedule_delayed_work(&vi->refill, 0);
-> > > > +             if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
-> > > > +                     spin_lock(&vi->refill_lock);
-> > > > +                     if (vi->refill_work_enabled)
-> > > > +                             schedule_delayed_work(&vi->refill, 0);
-> > > > +                     spin_unlock(&vi->refill_lock);
-> > > > +             }
-> > > >       }
-> > > >
-> > > >       u64_stats_update_begin(&rq->stats.syncp);
-> > > > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
-> > > >       struct virtnet_info *vi = netdev_priv(dev);
-> > > >       int i, err;
-> > > >
-> > > > +     enable_refill_work(vi);
-> > > > +
-> > > >       for (i = 0; i < vi->max_queue_pairs; i++) {
-> > > >               if (i < vi->curr_queue_pairs)
-> > > >                       /* Make sure we have some buffers: if oom use wq. */
-> > > > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
-> > > >       struct virtnet_info *vi = netdev_priv(dev);
-> > > >       int i;
-> > > >
-> > > > +     /* Make sure NAPI doesn't schedule refill work */
-> > > > +     disable_refill_work(vi);
-> > > >       /* Make sure refill_work doesn't re-enable napi! */
-> > > >       cancel_delayed_work_sync(&vi->refill);
-> > > >
-> > > > @@ -2776,6 +2804,9 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
-> > > >       netif_tx_lock_bh(vi->dev);
-> > > >       netif_device_detach(vi->dev);
-> > > >       netif_tx_unlock_bh(vi->dev);
-> > > > +     /* Make sure NAPI doesn't schedule refill work */
-> > > > +     disable_refill_work(vi);
-> > > > +     /* Make sure refill_work doesn't re-enable napi! */
-> > > >       cancel_delayed_work_sync(&vi->refill);
-> > > >
-> > > >       if (netif_running(vi->dev)) {
-> > > > @@ -2799,6 +2830,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> > > >
-> > > >       virtio_device_ready(vdev);
-> > > >
-> > > > +     enable_refill_work(vi);
-> > > > +
-> > > >       if (netif_running(vi->dev)) {
-> > > >               for (i = 0; i < vi->curr_queue_pairs; i++)
-> > > >                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
-> > > > @@ -3548,6 +3581,7 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > > >       vdev->priv = vi;
-> > > >
-> > > >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > > > +     spin_lock_init(&vi->refill_lock);
-> > > >
-> > > >       /* If we can receive ANY GSO packets, we must allocate large ones. */
-> > > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > > > --
-> > > > 2.25.1
-> > > >
-> > >
-> >
->
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index be066c1503d3..a4ed23f85d90 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -182,14 +182,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+ 		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
+ }
+ 
+-static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+-				    struct io_pgtable_cfg *cfg)
++static arm_v7s_iopte to_mtk_iopte(phys_addr_t paddr, arm_v7s_iopte pte)
+ {
+-	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+-
+-	if (!arm_v7s_is_mtk_enabled(cfg))
+-		return pte;
+-
+ 	if (paddr & BIT_ULL(32))
+ 		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+ 	if (paddr & BIT_ULL(33))
+@@ -199,6 +193,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+ 	return pte;
+ }
+ 
++static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
++				    struct io_pgtable_cfg *cfg)
++{
++	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
++
++	if (arm_v7s_is_mtk_enabled(cfg))
++		return to_mtk_iopte(paddr, pte);
++
++	return pte;
++}
++
+ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+ 				  struct io_pgtable_cfg *cfg)
+ {
+@@ -240,10 +245,17 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 	dma_addr_t dma;
+ 	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+ 	void *table = NULL;
++	gfp_t gfp_l1;
++
++	/*
++	 * ARM_MTK_TTBR_EXT extend the translation table base support larger
++	 * memory address.
++	 */
++	gfp_l1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
++		 GFP_KERNEL : ARM_V7S_TABLE_GFP_DMA;
+ 
+ 	if (lvl == 1)
+-		table = (void *)__get_free_pages(
+-			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
++		table = (void *)__get_free_pages(gfp_l1 | __GFP_ZERO, get_order(size));
+ 	else if (lvl == 2)
+ 		table = kmem_cache_zalloc(data->l2_tables, gfp);
+ 
+@@ -251,7 +263,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		return NULL;
+ 
+ 	phys = virt_to_phys(table);
+-	if (phys != (arm_v7s_iopte)phys) {
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
++	    phys >= (1ULL << cfg->oas) : phys != (arm_v7s_iopte)phys) {
+ 		/* Doesn't fit in PTE */
+ 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+ 		goto out_free;
+@@ -457,9 +470,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+ 					   arm_v7s_iopte curr,
+ 					   struct io_pgtable_cfg *cfg)
+ {
++	phys_addr_t phys = virt_to_phys(table);
+ 	arm_v7s_iopte old, new;
+ 
+-	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
++	new = phys | ARM_V7S_PTE_TYPE_TABLE;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		new = to_mtk_iopte(phys, new);
++
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_V7S_ATTR_NS_TABLE;
+ 
+@@ -779,6 +797,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 						void *cookie)
+ {
+ 	struct arm_v7s_io_pgtable *data;
++	slab_flags_t slab_flag;
++	phys_addr_t paddr;
+ 
+ 	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+ 		return NULL;
+@@ -788,7 +808,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
++			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
++			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+ 		return NULL;
+ 
+ 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+@@ -796,15 +817,27 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	    !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS))
+ 			return NULL;
+ 
++	if ((cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT) &&
++	    !arm_v7s_is_mtk_enabled(cfg))
++		return NULL;
++
+ 	data = kmalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return NULL;
+ 
+ 	spin_lock_init(&data->split_lock);
++
++	/*
++	 * ARM_MTK_TTBR_EXT extend the translation table base support larger
++	 * memory address.
++	 */
++	slab_flag = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
++		    0 : ARM_V7S_TABLE_SLAB_FLAGS;
++
+ 	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+-					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
++					    slab_flag, NULL);
+ 	if (!data->l2_tables)
+ 		goto out_free_data;
+ 
+@@ -850,12 +883,16 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	wmb();
+ 
+ 	/* TTBR */
+-	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
+-				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
+-				 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
+-				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
+-				(ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
+-				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
++	paddr = virt_to_phys(data->pgd);
++	if (arm_v7s_is_mtk_enabled(cfg))
++		cfg->arm_v7s_cfg.ttbr = (paddr & GENMASK(31, 7)) | upper_32_bits(paddr);
++	else
++		cfg->arm_v7s_cfg.ttbr = paddr | ARM_V7S_TTBR_S |
++					(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
++					 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
++					 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
++					(ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
++					 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
+ 	return &data->iop;
+ 
+ out_free_data:
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 86af6f0a00a2..ca98aeadcc80 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+ 	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+ 	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+ 	 *
++	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
++	 *	extend the translation table base support up to 35 bits PA, the
++	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
++	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
+ 	 */
+-	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+-	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+-	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+-	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+-	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
++	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
++	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
++	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
+-- 
+2.18.0
 
