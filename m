@@ -2,113 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993DDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65BCAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235912AbiF3N7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        id S235941AbiF3N7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235366AbiF3N5B (ORCPT
+        with ESMTP id S236552AbiF3N7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:57:01 -0400
+        Thu, 30 Jun 2022 09:59:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029BA3B294
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:51:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C28C5C9CF;
+        Thu, 30 Jun 2022 06:51:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C26AB82AED
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:50:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C4E0C341CB;
-        Thu, 30 Jun 2022 13:50:45 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="OtweVgIl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656597043;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=13SHuqpSu+R+MVUze8sTlmBDblqHyuwi7syy964nsTM=;
-        b=OtweVgIl+CVlL+n/AsPRQrFEgVWJhuPArt4HdYBW3W2n7IpAPAzXpeRpca9vdDRUfvI98l
-        qNEmmiRtDZEzIwpJFfxweK3CmeCMsrrDH6mZpsFG70tyMTbGIxApKFI2t5iQm5JgXg6B7N
-        O7Oe4fk0wqQJ4ijWwBvDvNgeYk5GDkc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 146c7382 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 30 Jun 2022 13:50:43 +0000 (UTC)
-Date:   Thu, 30 Jun 2022 15:50:41 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Nikolay Borisov <n.borisov.lkml@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
-Subject: Re: [PATCH v3 5/7] fs: remove no_llseek
-Message-ID: <Yr2qMekERjBU58DZ@zx2c4.com>
-References: <20220629130702.954310-1-Jason@zx2c4.com>
- <20220629130702.954310-6-Jason@zx2c4.com>
- <feb7d93c-76bc-a7fc-0714-ed71495a16b9@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7687B82AD8;
+        Thu, 30 Jun 2022 13:51:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45167C34115;
+        Thu, 30 Jun 2022 13:51:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656597091;
+        bh=m+oZP3M4O1sZq5LvxLAL/YIm1EYOLHelNECdJS3rDQQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ph+Iju+S/zD2vjtB7BE9MlLozfVwdDoORdfxxD4k+T6+OY+XeNzbURlqr9IaKizds
+         xXcBmEt3WrJFxsPQd5mhkKUyiwETyEvDLC5CRnSBDQvWCwe0LkSOePpeAF0H8WMWQx
+         ud8bedCW5quayj9jeHjjeGBzJdp42dzdixfW20sY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.19 25/49] iio:accel:bma180: rearrange iio trigger get and register
+Date:   Thu, 30 Jun 2022 15:46:38 +0200
+Message-Id: <20220630133234.640593622@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
+References: <20220630133233.910803744@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <feb7d93c-76bc-a7fc-0714-ed71495a16b9@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nikolay,
+From: Dmitry Rokosov <DDRokosov@sberdevices.ru>
 
-On Thu, Jun 30, 2022 at 09:45:04AM +0300, Nikolay Borisov wrote:
-> 
-> 
-> On 29.06.22 г. 16:07 ч., Jason A. Donenfeld wrote:
-> > Now that all callers of ->llseek are going through vfs_llseek(), we
-> > don't gain anything by keeping no_llseek around. Nothing compares it or
-> > calls it.
-> > 
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> >   fs/read_write.c    | 17 +++--------------
-> >   include/linux/fs.h |  1 -
-> >   2 files changed, 3 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/fs/read_write.c b/fs/read_write.c
-> > index b1b1cdfee9d3..69cd8d72d91e 100644
-> > --- a/fs/read_write.c
-> > +++ b/fs/read_write.c
-> > @@ -227,12 +227,6 @@ loff_t noop_llseek(struct file *file, loff_t offset, int whence)
-> >   }
-> >   EXPORT_SYMBOL(noop_llseek);
-> >   
-> > -loff_t no_llseek(struct file *file, loff_t offset, int whence)
-> > -{
-> > -	return -ESPIPE;
-> > -}
-> > -EXPORT_SYMBOL(no_llseek);
-> > -
-> >   loff_t default_llseek(struct file *file, loff_t offset, int whence)
-> >   {
-> >   	struct inode *inode = file_inode(file);
-> > @@ -290,14 +284,9 @@ EXPORT_SYMBOL(default_llseek);
-> >   
-> >   loff_t vfs_llseek(struct file *file, loff_t offset, int whence)
-> >   {
-> > -	loff_t (*fn)(struct file *, loff_t, int);
-> > -
-> > -	fn = no_llseek;
-> > -	if (file->f_mode & FMODE_LSEEK) {
-> > -		if (file->f_op->llseek)
-> > -			fn = file->f_op->llseek;
-> > -	}
-> > -	return fn(file, offset, whence);
-> > +	if (!(file->f_mode & FMODE_LSEEK) || !file->f_op->llseek)
-> 
-> Is it not sufficient here to just check for the presence of FMODE_LSEEK? 
-> NULL  llseek shall result in FMODE_LSEEK not being set when the file is 
-> opened?
+commit e5f3205b04d7f95a2ef43bce4b454a7f264d6923 upstream.
 
-Yes, that's probably fine. I did this out of an abundance of caution,
-but I have a feeling Al might agree with you that useless is useless. I
-can send a v4 changing that.
+IIO trigger interface function iio_trigger_get() should be called after
+iio_trigger_register() (or its devm analogue) strictly, because of
+iio_trigger_get() acquires module refcnt based on the trigger->owner
+pointer, which is initialized inside iio_trigger_register() to
+THIS_MODULE.
+If this call order is wrong, the next iio_trigger_put() (from sysfs
+callback or "delete module" path) will dereference "default" module
+refcnt, which is incorrect behaviour.
 
-Al, what do you think?
+Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220524181150.9240-2-ddrokosov@sberdevices.ru
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/iio/accel/bma180.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Jason
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -780,11 +780,12 @@ static int bma180_probe(struct i2c_clien
+ 		data->trig->dev.parent = &client->dev;
+ 		data->trig->ops = &bma180_trigger_ops;
+ 		iio_trigger_set_drvdata(data->trig, indio_dev);
+-		indio_dev->trig = iio_trigger_get(data->trig);
+ 
+ 		ret = iio_trigger_register(data->trig);
+ 		if (ret)
+ 			goto err_trigger_free;
++
++		indio_dev->trig = iio_trigger_get(data->trig);
+ 	}
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+
+
