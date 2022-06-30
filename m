@@ -2,116 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23698C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F82C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbiF3VRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 17:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        id S237440AbiF3VR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237306AbiF3VRM (ORCPT
+        with ESMTP id S237483AbiF3VR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 17:17:12 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A6532ED9;
-        Thu, 30 Jun 2022 14:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656623830; x=1688159830;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1fI+D6GLr2yAZoMGO3nm1zW5iOCDj2YaxSYiplf5QcY=;
-  b=HhSIQBYv3TeWbAmW6gPR3/4zq3w9rlrF3G1Nu7j0OvmISG9cQ3V37m7F
-   UrSjAV9qxPbxhcjY5gkDXaxyPtp5l68dxLq3A3red0sIZH3xiNtkA2EhS
-   1mHvDLxxrXMfkjl6FrPZ4407eIijvYSl5IANmZmQ/EtIGa4nR9C5yRa40
-   NSj/UwFHMxu9cdSBjx3aQjmXaoAQC2oTKN0IrhlUDCNAj6OzdTHkQ2i8+
-   vuheXuFPramZ2AfHkFMwjbWupowQYeZz8vpB94+sC+0s9YyfOqP7NN99+
-   6th/eWHy2JJy0MsCyEQ2wnzakuIwMDoBWgvVPxbe4KWu72efYFEtMkS+K
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="170593536"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 14:17:09 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 14:17:09 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 14:17:09 -0700
-Date:   Thu, 30 Jun 2022 23:21:03 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/4] net: lan966x: hardcode port count
-Message-ID: <20220630212103.cgp7tt3puzxejnjx@soft-dev3-1.localhost>
-References: <20220630140237.692986-1-michael@walle.cc>
- <20220630204433.hg2a2ws2zk5p73ld@soft-dev3-1.localhost>
- <0169b5865944d6522a752b02321a7f4b@walle.cc>
+        Thu, 30 Jun 2022 17:17:27 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E84133E32;
+        Thu, 30 Jun 2022 14:17:24 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id q18so467629pld.13;
+        Thu, 30 Jun 2022 14:17:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EnTvSgePrhZFZaFA+2vKdGcqExajag+7cCIQmnEgyew=;
+        b=bjk8OnY7U11eIZMBhp3vNNXPhem7A1k/Hi4MA2rhKBbqaNqBkk1iqFOneaRWc9q5/3
+         z9vLJXiU2lTROIarHTFAYWdH4wNAFvElaJFGhSgr1qSVVJNco8VX0dRnZiG7UObpAd+G
+         cIaXpDkPyV4T6UhGlL7zktFXFxov0HB+KdGA/AXR4UbGDpvbZSzVy4wEZRJB5F4TyxIk
+         U2DtiTfh/Ut1cw81B6H7VwzRw17+INs8BbR/hQ5/N7l+J7bZn0mpKCyfEuH0w/vSeUq7
+         CIynOo0cLiE2oMWpDyw6h5idtsaSvqjROoz60YTDF316pYKuN6pEwAcLRjWT0DazBo2M
+         tdHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EnTvSgePrhZFZaFA+2vKdGcqExajag+7cCIQmnEgyew=;
+        b=ClljQnOwjrthPGxc0FKq3gqX7CVRWsBZVul1SDVrAVNrhVDq+N5pBg0w6jUgE1AsOw
+         RSSFrhwDNGLRCgxUkNW7Stbkv87sSb9D/yfHUhwjA2dO0vdXGEpXFW6kiEHdpAxcGQMX
+         kWTgVpw8mZbx8pFCwkEEe4JJr8t0IjYb04W5qoJwWwFCJQkDXEuRO4gREUh05fiHyH+Z
+         MWIIcP6jHS2QkmSsEpjtdhRH3ya3MiNj6ZWdcC8PPLvKJ7uiOca2UR66Dwco82yX33nd
+         9TfqGCAjXMaxzKdGaQJTo4S3S8UF8x9otO5PrNm9rq9PDaUxoINneQ/CXqQrdHge7AQp
+         TU5Q==
+X-Gm-Message-State: AJIora8NMwDkj8XVmLKBxQ4+nGod3+DREjC1qMDDMnuUMbGDafOonDnU
+        y7S1HEfAbFYUdVrebJD31N4+InHjUmnQ++ttv2k=
+X-Google-Smtp-Source: AGRyM1vDBqhj2OxY6I/jEe7NDmicgN5u0qhJW6F86uSrh4ePqT8HV5n1Y4MixJh4nUoBdYYphPXooSKsm1LfMjPGOoQ=
+X-Received: by 2002:a17:903:328e:b0:16b:8745:bb77 with SMTP id
+ jh14-20020a170903328e00b0016b8745bb77mr17422936plb.70.1656623843711; Thu, 30
+ Jun 2022 14:17:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <0169b5865944d6522a752b02321a7f4b@walle.cc>
+References: <20220630210327.4645-1-kris@embeddedTS.com>
+In-Reply-To: <20220630210327.4645-1-kris@embeddedTS.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Thu, 30 Jun 2022 18:17:11 -0300
+Message-ID: <CAOMZO5DJBQxc9ewO7R_uoHy3_kKq9mGShQn-oJiGyNwWxobsEg@mail.gmail.com>
+Subject: Re: [PATCH v2] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
+To:     Kris Bahnsen <kris@embeddedts.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Mark Featherston <mark@embeddedts.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 06/30/2022 22:56, Michael Walle wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Am 2022-06-30 22:44, schrieb Horatiu Vultur:
-> > The 06/30/2022 16:02, Michael Walle wrote:
-> > > EXTERNAL EMAIL: Do not click links or open attachments unless you know
-> > > the content is safe
-> > > 
-> > > Don't rely on the device tree to count the number of physical port.
-> > > Instead
-> > > introduce a new compatible string which the driver can use to select
-> > > the
-> > > correct port count.
-> > > 
-> > > This also hardcodes the generic compatible string to 8. The rationale
-> > > is
-> > > that this compatible string was just used for the LAN9668 for now and
-> > > I'm
-> > > not even sure the current driver would support the LAN9662.
-> > 
-> > It works also on LAN9662, but I didn't have time to send patches for
-> > DTs. Then when I send patches for LAN9662, do I need to go in all dts
-> > files to change the compatible string for the 'switch' node?
-> 
-> I'd assume there is one lan9662.dtsi and yes, there should then be
->   compatible = "microchip,lan9662-switch";
-> or
->   compatible = "microchip,lan9662-switch", "microchip,lan966x-switch";
-> depending on the outcome of the question Krzysztof raised.
-> 
-> And of course adding the compatible string to the driver with a port
-> count of 4 (?). I can't find anything about the lan9662,
+Hi Kris,
 
-I am not sure why they have not upload yet the datasheet for lan9662.
+On Thu, Jun 30, 2022 at 6:03 PM Kris Bahnsen <kris@embeddedts.com> wrote:
+>
+> Device-tree incorrectly used "ngpio" which caused the driver to
+> fallback to 32 ngpios.
+>
+> This platform has 62 GPIO registers.
+>
+> Fixes: 9ff8e9fccef9 ("ARM: dts: TS-7970: add basic device tree")
+> Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
 
->and you've > mentioned it has 4 ports.  Are there four external ports? 
-
-You can have up to 4 ports.
-You can have 4 external ports or you can use the internal ones plus two
-external.
-
-> I was  under the impression the last digit of the SoC name stands for the
-> number of ports.
-
-That would make much more sense but I don't understand why they have
-name it like this.
-
-> 
-> -michael
-
--- 
-/Horatiu
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
