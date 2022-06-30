@@ -2,129 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD63C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE49BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:15:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233951AbiF3KPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52942 "EHLO
+        id S233621AbiF3KPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbiF3KPN (ORCPT
+        with ESMTP id S234026AbiF3KPS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:15:13 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A04F44A2F
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:15:12 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U40775015363;
-        Thu, 30 Jun 2022 05:15:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=0mmmeX8EpEPHD8XrcSw4Sp8UGBDafDLcok2SpdJ8el8=;
- b=TKuCNcQLOPT5xP8Or4anqrBJ4TvBnDDVu1A5rfkYgdOqs+3mtWsiaHWkmWkIeDjPgtCI
- jD5Lk3J5d1eDtxXqLnEzNwADohaWABZL4iabKF2eR3LPh6z9Dzh4t1AuuWE1bfnqn+5O
- bSuf8+U7OD6mkUfq8F9/gqh/2vOH64VFHhnyJ8dhAA7pzgtWsVjhiq1upudrBXb47vku
- 4NNMQ/Qepn/+FYEz7ZXHEIAqbJrGzvFj0WlgIUcNLVET8N28u4yGtWfgO3NdppApPsUH
- yi4cqIry9ZthrHa3yiPUpad++9e0h2yDQQi5wmCs3eESLjqlGsY8u02zzEMPj6eDQmEO 6A== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gwys2pv7g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 30 Jun 2022 05:15:01 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 30 Jun
- 2022 11:14:59 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 30 Jun 2022 11:14:59 +0100
-Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 24A6C2D4;
-        Thu, 30 Jun 2022 10:14:59 +0000 (UTC)
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ASoC: wm_adsp: Minor clean and redundant code removal
-Date:   Thu, 30 Jun 2022 11:14:59 +0100
-Message-ID: <20220630101459.3442327-1-ckeepax@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 30 Jun 2022 06:15:18 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2058A44A35
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:15:17 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id mf9so38128547ejb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:15:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GfQOH0uA5xHHsswoX4aED7xJvqSVhn+riV8wmLbA/wU=;
+        b=W/m+OiUoLB/gYrF8sevJdttv3vWPW0nBvK4z34ZNVrwEUzdBuD+6n9m4bkCJKoFs25
+         iEXnCyeMzF4kbMndUI78XuDxFQOWtIEKVxG/TjMHrJybQCza4s7XpClC2FtAGuueJI7Q
+         aCGfkrIIS6ZtH4FcmVjtFXPD95OLuC0pU+j7veKT7bB2y5qqBiM6upVPI59vJ1x/l6l8
+         6nax1SavKsX1h+kYwROfh6Aayz04wTolYHJZ5lqAHH0XovxoFxaBSRAxPVhPqfTXh5J0
+         Wf0zYTpQM2QFtcWnZGaF4nr3P1YxD44hTfYvyIkHXADdA59Out+Redb/KCnAutr+SHi7
+         9UtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GfQOH0uA5xHHsswoX4aED7xJvqSVhn+riV8wmLbA/wU=;
+        b=eRt64ay7nGyAEQh9whxACFNc9rrzrVCGAVF3BlA1Qs24nqHEchEzZhzudmd/vaobOq
+         icQq3m77EE7BJ4s+kAb8kBT+XYkBjway5WCO5tDgrNDi775TNlvGhPhsbql9wszGf7sc
+         2pNT9wMgjszS8AcmbjkHPAjKaHHX5q4Wb5TUdx7mDRYW9NDWxNQUnnd2CnS5f1dLf2Ul
+         F/rn5nurbyBsvT6f23G5DavY1MUMaO8MJ+8ScFbVQohDTez7+ZUNqxvykeAdWk31AMjN
+         28GivNDeyeYnx6P7AdB54LHBzgHeQJ6+sSHxarjDIEZ4A3/Pjujfpr1JN5qT6lz/Wgxm
+         bGjw==
+X-Gm-Message-State: AJIora8aEVv69LD6pQQn2teZAtFzBWuXTbXfgsIThNxS7IovSwOGwT0I
+        kzU3ehmiU3M6hqXvJIYx50ZS3Q==
+X-Google-Smtp-Source: AGRyM1sg+0Nq3WOsALianvu9zM0G9RgzakYuPbrOBeVD65q7iyC+efLIJ7cWOLWYrAsk28K2+m8efA==
+X-Received: by 2002:a17:907:3f28:b0:726:3149:8a99 with SMTP id hq40-20020a1709073f2800b0072631498a99mr8263797ejc.277.1656584115653;
+        Thu, 30 Jun 2022 03:15:15 -0700 (PDT)
+Received: from [192.168.0.189] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id d15-20020a170906c20f00b006feb875503fsm8922528ejz.78.2022.06.30.03.15.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 03:15:15 -0700 (PDT)
+Message-ID: <06c2d390-9444-49e5-fb21-4d4b6df0329f@linaro.org>
+Date:   Thu, 30 Jun 2022 12:15:14 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: QVdYrsh-ca0o5avYJJNBQYefF7y699T5
-X-Proofpoint-GUID: QVdYrsh-ca0o5avYJJNBQYefF7y699T5
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] arm64: dts: qcom: sdm845: Switch PSCI cpu idle states
+ from PC to OSI
+Content-Language: en-US
+To:     Abel Vesa <abel.vesa@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220630101403.1888541-1-abel.vesa@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220630101403.1888541-1-abel.vesa@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cs_dsp core will return an error if passed a NULL cs_dsp struct so
-there is no need for the wm_adsp_write|read_ctl functions to manually
-check that. The cs_dsp core will also check the data is within bounds of
-the control so the additional bounds check is redundant too. Simplify
-things a bit by removing said code.
+On 30/06/2022 12:14, Abel Vesa wrote:
+> Switch from the flat PC idle states of sdm845 to OSI hierarchical idle
+> states. The exceptions are the cheza plaftorms, which need to remain with
+> PC idle states. So in order allow all the other platforms to switch,
+> while cheza platforms to remain the same, replace the PC idle states with
+> the OSI ones in the main SDM845 dtsi, and then override the inherited OSI
+> states with PC ones, delete inherited psci cpus nodes, domain idle states
+> and power domain properties.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+> ---
+> 
+> Changes since v1:
+>  * fixed the commit message as suggested by Krzysztof
+>  * dropped blank line sdm845 dtsi
+>  * renamed sdm845 dtsi psci subnodes to power domain cpus and cluster
+>  * fixed indentation for idle states in cheza dtsi
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- sound/soc/codecs/wm_adsp.c | 25 +++++--------------------
- 1 file changed, 5 insertions(+), 20 deletions(-)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index a7784ac15dde6..cfaa45ede916a 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -675,21 +675,12 @@ static void wm_adsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl)
- int wm_adsp_write_ctl(struct wm_adsp *dsp, const char *name, int type,
- 		      unsigned int alg, void *buf, size_t len)
- {
--	struct cs_dsp_coeff_ctl *cs_ctl;
-+	struct cs_dsp_coeff_ctl *cs_ctl = cs_dsp_get_ctl(&dsp->cs_dsp, name, type, alg);
- 	struct wm_coeff_ctl *ctl;
- 	struct snd_kcontrol *kcontrol;
- 	char ctl_name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
- 	int ret;
- 
--	cs_ctl = cs_dsp_get_ctl(&dsp->cs_dsp, name, type, alg);
--	if (!cs_ctl)
--		return -EINVAL;
--
--	ctl = cs_ctl->priv;
--
--	if (len > cs_ctl->len)
--		return -EINVAL;
--
- 	ret = cs_dsp_coeff_write_ctrl(cs_ctl, 0, buf, len);
- 	if (ret)
- 		return ret;
-@@ -697,6 +688,8 @@ int wm_adsp_write_ctl(struct wm_adsp *dsp, const char *name, int type,
- 	if (cs_ctl->flags & WMFW_CTL_FLAG_SYS)
- 		return 0;
- 
-+	ctl = cs_ctl->priv;
-+
- 	if (dsp->component->name_prefix)
- 		snprintf(ctl_name, SNDRV_CTL_ELEM_ID_NAME_MAXLEN, "%s %s",
- 			 dsp->component->name_prefix, ctl->name);
-@@ -720,16 +713,8 @@ EXPORT_SYMBOL_GPL(wm_adsp_write_ctl);
- int wm_adsp_read_ctl(struct wm_adsp *dsp, const char *name, int type,
- 		     unsigned int alg, void *buf, size_t len)
- {
--	struct cs_dsp_coeff_ctl *cs_ctl;
--
--	cs_ctl = cs_dsp_get_ctl(&dsp->cs_dsp, name, type, alg);
--	if (!cs_ctl)
--		return -EINVAL;
--
--	if (len > cs_ctl->len)
--		return -EINVAL;
--
--	return cs_dsp_coeff_read_ctrl(cs_ctl, 0, buf, len);
-+	return cs_dsp_coeff_read_ctrl(cs_dsp_get_ctl(&dsp->cs_dsp, name, type, alg),
-+				      0, buf, len);
- }
- EXPORT_SYMBOL_GPL(wm_adsp_read_ctl);
- 
--- 
-2.30.2
 
+Best regards,
+Krzysztof
