@@ -2,55 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 992FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4971ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbiF3Hlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
+        id S233053AbiF3HmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232963AbiF3Hlu (ORCPT
+        with ESMTP id S232963AbiF3HmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:41:50 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4119E3A73A;
-        Thu, 30 Jun 2022 00:41:49 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1o6oo3-00CxEw-TB; Thu, 30 Jun 2022 17:41:45 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 30 Jun 2022 15:41:44 +0800
-Date:   Thu, 30 Jun 2022 15:41:44 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Lei He <helei.sig11@bytedance.com>
-Cc:     davem@davemloft.net, dhowells@redhat.com,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        berrange@redhat.com, pizhenwei@bytedance.com
-Subject: Re: [External] [PATCH v2 0/4] virtio-crypto: support ECDSA algorithm
-Message-ID: <Yr1TuPM8yvJUoV9r@gondor.apana.org.au>
-References: <20220623070550.82053-1-helei.sig11@bytedance.com>
- <Yr1JvG1aJUp4I/fP@gondor.apana.org.au>
- <C7191BC8-5BE0-47CB-A302-735BBD1CBED0@bytedance.com>
+        Thu, 30 Jun 2022 03:42:02 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5401D3A1A3;
+        Thu, 30 Jun 2022 00:41:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656574919; x=1688110919;
+  h=message-id:date:mime-version:subject:to:references:from:
+   cc:in-reply-to:content-transfer-encoding;
+  bh=4eqUmbRso9FmjT5MC/6HibjGIPMyb/Fplo8R3d0pYOc=;
+  b=Mmz/540rKNK52kiDJ+MrLntWivWMy9ddRQlTFRn3n7+00zWR3HcwAVM7
+   y90ePXQD6meI0shrSuaGQAJxR3Kxx6ZhA36+MPHScQ9Vo34BCynnr8HSw
+   CGBTkm8LOBKOSMVJmO4yyigNCqMaLQTvszbhLQIIM+RiE9Y9oAkfYIr+k
+   bqU1dIJT4VXJtPcGeD7jkvlCG0Ve9p6ylRodz2HSdM5abLbyvbatOpEdi
+   OGFRmHaLzfyCuA8ZPo7vHvQseLk2sRCGCw16nF0m+sjISSlsd9kaga8xf
+   0MmVxqxWCUb2EFgk5mcbCGiby7QWKW7KslwLeuJpoKWfXjh6DdmwvihkL
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="102422082"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 00:41:58 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 30 Jun 2022 00:41:57 -0700
+Received: from [10.159.205.135] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 30 Jun 2022 00:41:55 -0700
+Message-ID: <176099e2-cbff-1987-f59a-2ca618a9c92a@microchip.com>
+Date:   Thu, 30 Jun 2022 09:41:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <C7191BC8-5BE0-47CB-A302-735BBD1CBED0@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RESEND 0/3] i2c: at91: Fixes and updates
+Content-Language: en-US
+To:     Wolfram Sang <wsa@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        <linux-i2c@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>, <andrew@sanpeople.com>,
+        <mhoffman@lightlink.com>, <khali@linux-fr.org>, <peda@axentia.se>,
+        Claudiu Beznea <Claudiu.Beznea@microchip.com>
+References: <20220614101347.16910-1-codrin.ciubotariu@microchip.com>
+ <YrysFU0fP7X1wkBd@shikoro>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+CC:     Cristian Birsan <Cristian.Birsan@microchip.com>
+In-Reply-To: <YrysFU0fP7X1wkBd@shikoro>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 03:23:39PM +0800, Lei He wrote:
->
-> The main purpose of this patch is to offload ECDSA computations to virtio-crypto dev.
-> We can modify the backend of virtio-crypto to allow hardware like Intel QAT cards to 
-> perform the actual calculations, and user-space applications such as HTTPS server 
-> can access those backend in a unified way(eg, keyctl_pk_xx syscall).
+Hi Wolfram,
 
-The things is I don't see any driver support in the kernel for
-ECDSA.
+On 29/06/2022 at 21:46, Wolfram Sang wrote:
+> On Tue, Jun 14, 2022 at 01:13:44PM +0300, Codrin Ciubotariu wrote:
+>> Resend due to the fact that the i2c list no longer accepts replys on the
+>> old patch-set. Comments not addressed yet.
+>>
+>> The first patch is mostly a prerequisite for the second one. It only
+>> moves the i2c_recover_bus() out of the actual transfer function. This
+>> helps the second patch disable the controller before using GPIO
+>> recovery. The second patch will keep the controller enabled when a
+>> transfer occurs. Before using GPIO recovery, the controller must be
+>> disabled, to ignore potential glitches. However, the controller must be
+>> enabled for HW recovery (bus CLEAR command). The third and last patch
+>> adds advanced digital filtering support for SAMA5D4. The TWI IP found in
+>> SAMA5D4 supports advanced digital filtering, even if, at the moment of
+>> this patch, the SAMA5D4 datasheet does not mention it.
+ >
+> So, can you guys read this mail? It should be possible somehow that I
+> can read your remarks to my remarks, no?
 
-Cheers,
+Codrin is not with Microchip anymore and we have to re-distribute the 
+maintenance of this driver internally. His email address will probably 
+"bounce" soon.
+
+So, forgive us if there's a lack of response for some time ;-)
+
+Best regards,
+   Nicolas
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Nicolas Ferre
