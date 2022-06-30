@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0275CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8826C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236007AbiF3N5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38116 "EHLO
+        id S235998AbiF3N5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235987AbiF3N4Y (ORCPT
+        with ESMTP id S235896AbiF3N4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:56:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E58F3B026;
-        Thu, 30 Jun 2022 06:50:55 -0700 (PDT)
+        Thu, 30 Jun 2022 09:56:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001138736E;
+        Thu, 30 Jun 2022 06:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 642C1B82AEE;
-        Thu, 30 Jun 2022 13:50:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDBBEC34115;
-        Thu, 30 Jun 2022 13:50:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89C2462009;
+        Thu, 30 Jun 2022 13:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F16C34115;
+        Thu, 30 Jun 2022 13:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597045;
-        bh=JGWObjH0AjpoMYTLFfuxVJHH84oeCMnkgyGdD9U098M=;
+        s=korg; t=1656597056;
+        bh=2sFKLwZBKaUx5/6j1UGYHDXTcu1SDlI/GP1hp4ivWUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AFp7hAZR4WwoLPjZCprXs+4QAVGBBC3Vfdyt8d2ZQNDZwGiOnWpYztXkM1O5dsrWw
-         5AOyAhSvvrGWS3ZW/7Nyf7QGLDGxYw7ETaTh3gEF2NX0bW/xQ4Mt99D7fGnNt2FxbJ
-         oRjB4S/SwXbxR4b4kb/hfd5z579u/sFnA3WwmKjc=
+        b=iFcbvuOJ0K0cmE/TGIzCA/tlMhbVFgNKjRJoQvKe/e8v14bVQIe4YTXsCYn9GCNUJ
+         6gzSzr8CrBwiQfmbHqCJOEhveSYQqYFTuPmCjXyl8V2vugw8miA6XtCGZK2nPne/BK
+         D9oPZDDbxnOlZgagfbLpgkQmF3WqXtG8tXegepkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.14 34/35] kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
-Date:   Thu, 30 Jun 2022 15:46:45 +0200
-Message-Id: <20220630133233.443358893@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 04/49] ALSA: hda/conexant: Fix missing beep setup
+Date:   Thu, 30 Jun 2022 15:46:17 +0200
+Message-Id: <20220630133234.039219005@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
-References: <20220630133232.433955678@linuxfoundation.org>
+In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
+References: <20220630133233.910803744@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,128 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 3e35142ef99fe6b4fe5d834ad43ee13cca10a2dc upstream.
+commit 5faa0bc69102f3a4c605581564c367be5eb94dfa upstream.
 
-Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
-symbols") [1], binutils (v2.36+) started dropping section symbols that
-it thought were unused.  This isn't an issue in general, but with
-kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
-separate .text.unlikely section and the section symbol ".text.unlikely"
-is being dropped. Due to this, recordmcount is unable to find a non-weak
-symbol in .text.unlikely to generate a relocation record against.
+Currently the Conexant codec driver sets up the beep NID after calling
+snd_hda_gen_parse_auto_config().  It turned out that this results in
+the insufficient setup for the beep control, as the generic parser
+handles the fake path in snd_hda_gen_parse_auto_config() only if the
+beep_nid is set up beforehand.
 
-Address this by dropping the weak attribute from these functions.
-Instead, follow the existing pattern of having architectures #define the
-name of the function they want to override in their headers.
+For dealing with the beep widget properly, call cx_auto_parse_beep()
+before snd_hda_gen_parse_auto_config() call.
 
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
-
-[akpm@linux-foundation.org: arch/s390/include/asm/kexec.h needs linux/module.h]
-Link: https://lkml.kernel.org/r/20220519091237.676736-1-naveen.n.rao@linux.vnet.ibm.com
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 51e19ca5f755 ("ALSA: hda/conexant - Clean up beep code")
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
+Link: https://lore.kernel.org/r/20220620104008.1994-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kexec.h |    6 ++++++
- include/linux/kexec.h        |   26 ++++++++++++++++++++++----
- kernel/kexec_file.c          |   18 ------------------
- 3 files changed, 28 insertions(+), 22 deletions(-)
+ sound/pci/hda/patch_conexant.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/kexec.h
-+++ b/arch/x86/include/asm/kexec.h
-@@ -21,6 +21,7 @@
- #ifndef __ASSEMBLY__
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -1061,11 +1061,11 @@ static int patch_conexant_auto(struct hd
+ 	if (err < 0)
+ 		goto error;
  
- #include <linux/string.h>
-+#include <linux/module.h>
+-	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
++	err = cx_auto_parse_beep(codec);
+ 	if (err < 0)
+ 		goto error;
  
- #include <asm/page.h>
- #include <asm/ptrace.h>
-@@ -217,6 +218,11 @@ extern int arch_kexec_post_alloc_pages(v
- extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
- #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
+-	err = cx_auto_parse_beep(codec);
++	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
+ 	if (err < 0)
+ 		goto error;
  
-+#ifdef CONFIG_KEXEC_FILE
-+int arch_kexec_apply_relocations_add(const Elf_Ehdr *ehdr,
-+				     Elf_Shdr *sechdrs, unsigned int relsec);
-+#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
-+#endif
- #endif
- 
- typedef void crash_vmclear_fn(void);
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -163,6 +163,28 @@ int __weak arch_kexec_walk_mem(struct ke
- 			       int (*func)(u64, u64, void *));
- extern int kexec_add_buffer(struct kexec_buf *kbuf);
- int kexec_locate_mem_hole(struct kexec_buf *kbuf);
-+
-+#ifndef arch_kexec_apply_relocations_add
-+/* Apply relocations of type RELA */
-+static inline int
-+arch_kexec_apply_relocations_add(const Elf_Ehdr *ehdr,
-+				 Elf_Shdr *sechdrs, unsigned int relsec)
-+{
-+	pr_err("RELA relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
-+#endif
-+
-+#ifndef arch_kexec_apply_relocations
-+/* Apply relocations of type REL */
-+static inline int
-+arch_kexec_apply_relocations(const Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
-+			     unsigned int relsec)
-+{
-+	pr_err("REL relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
-+#endif
- #endif /* CONFIG_KEXEC_FILE */
- 
- struct kimage {
-@@ -288,10 +310,6 @@ void * __weak arch_kexec_kernel_image_lo
- int __weak arch_kimage_file_post_load_cleanup(struct kimage *image);
- int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
- 					unsigned long buf_len);
--int __weak arch_kexec_apply_relocations_add(const Elf_Ehdr *ehdr,
--					Elf_Shdr *sechdrs, unsigned int relsec);
--int __weak arch_kexec_apply_relocations(const Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
--					unsigned int relsec);
- void arch_kexec_protect_crashkres(void);
- void arch_kexec_unprotect_crashkres(void);
- 
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -53,24 +53,6 @@ int __weak arch_kexec_kernel_verify_sig(
- }
- #endif
- 
--/* Apply relocations of type RELA */
--int __weak
--arch_kexec_apply_relocations_add(const Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
--				 unsigned int relsec)
--{
--	pr_err("RELA relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
--/* Apply relocations of type REL */
--int __weak
--arch_kexec_apply_relocations(const Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
--			     unsigned int relsec)
--{
--	pr_err("REL relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
- /*
-  * Free up memory used by kernel, initrd, and command line. This is temporary
-  * memory allocation which is not needed any more after these buffers have
 
 
