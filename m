@@ -2,142 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41866C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 18:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A12C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 18:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236666AbiF3SfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 14:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50024 "EHLO
+        id S236683AbiF3SkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 14:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236082AbiF3SfI (ORCPT
+        with ESMTP id S236675AbiF3SkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 14:35:08 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152003CA54;
-        Thu, 30 Jun 2022 11:35:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656614107; x=1688150107;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=qfMvz34IQ1XlB/cxYb48cOD/Af4s6wGj7oK89k9bGoY=;
-  b=IQCfJNOiwSujioUwO6dAZTa3HzwU3m2EQpa2Vgk1y/JZA0RPK6eCJtJX
-   MhTPhj4crEj+5JkkLLCR9UqkS4iBQt6Uis2fqHLsb8mS8yvg9QVIWZ3s0
-   ZPeCOZ0KoCUyq/utwD9kLEAYiWmVsF3HTOO5BBioDXv21ygvlVF/LnMXM
-   9ZRKNSqI8lvuL7mb31UHyKK2LncO7ypDGVbrNRtK/Uk8S1pf+MxmUD1gb
-   dTgGysIlsEVNc74Ad5kqLPsb6WCDGmFplTSPXqUwFEMB10/w7MHGXlD4N
-   8r9/MXEbXkStXi7VAsmy2BTGXRm78pQM+SAYTLZP55lf130qNAeewe+ox
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262233449"
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="262233449"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 11:35:06 -0700
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="618071253"
-Received: from jhilliar-mobl.amr.corp.intel.com (HELO [10.212.10.157]) ([10.212.10.157])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 11:35:05 -0700
-Message-ID: <2cc37f6d-72a7-9064-cad2-c6c6d21ede61@linux.intel.com>
-Date:   Thu, 30 Jun 2022 13:35:05 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [PATCH v5 2/2] ASoC: cs35l41: Read System Name from ACPI _SUB to
- identify firmware
-Content-Language: en-US
-To:     Stefan Binding <sbinding@opensource.cirrus.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     linux-acpi@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, patches@opensource.cirrus.com
-References: <20220630150135.1799535-1-sbinding@opensource.cirrus.com>
- <20220630150135.1799535-3-sbinding@opensource.cirrus.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220630150135.1799535-3-sbinding@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 30 Jun 2022 14:40:04 -0400
+X-Greylist: delayed 620 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 11:40:03 PDT
+Received: from smtp-out3.electric.net (smtp-out3.electric.net [208.70.128.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5513121E3F;
+        Thu, 30 Jun 2022 11:40:03 -0700 (PDT)
+Received: from 1o6yv7-0006sc-Vr by out3c.electric.net with emc1-ok (Exim 4.94.2)
+        (envelope-from <kris@embeddedTS.com>)
+        id 1o6yv9-0006u1-TV; Thu, 30 Jun 2022 11:29:43 -0700
+Received: by emcmailer; Thu, 30 Jun 2022 11:29:43 -0700
+Received: from [66.210.251.27] (helo=mail.embeddedts.com)
+        by out3c.electric.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <kris@embeddedTS.com>)
+        id 1o6yv7-0006sc-Vr; Thu, 30 Jun 2022 11:29:41 -0700
+Received: from tsdebian.Massive (97-120-89-198.ptld.qwest.net [97.120.89.198])
+        by mail.embeddedts.com (Postfix) with ESMTPSA id 252701AD06;
+        Thu, 30 Jun 2022 11:29:41 -0700 (MST)
+From:   Kris Bahnsen <kris@embeddedTS.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mark Featherston <mark@embeddedTS.com>,
+        Kris Bahnsen <kris@embeddedTS.com>
+Subject: [PATCH] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
+Date:   Thu, 30 Jun 2022 11:27:46 -0700
+Message-Id: <20220630182746.3813-1-kris@embeddedTS.com>
+X-Mailer: git-send-email 2.11.0
+X-Outbound-IP: 66.210.251.27
+X-Env-From: kris@embeddedTS.com
+X-Proto: esmtps
+X-Revdns: wsip-66-210-251-27.ph.ph.cox.net
+X-HELO: mail.embeddedts.com
+X-TLS:  TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256
+X-Authenticated_ID: 
+X-Virus-Status: Scanned by VirusSMART (c)
+X-Virus-Status: Scanned by VirusSMART (b)
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=embeddedTS.com; s=mailanyone20220121;h=Message-Id:Date:To:From; bh=HjwjPVTAYTLdyByvG9Mm1PRdcfdz+vFJodfS0eS9vzs=;b=Y6XXGMXVwIlYIaqIUxao0mvrJODOFKWRG2wPI6fYqjmymko9Fa/wCS5mVowGplHk6SBY92CrMrxT7bonPgz9UdUsSNSy7DOLFxw9OiS7v7dQ74kPwQnfSHhlEZvjcaZya5wDf+DdKGRgR4FHpeUPMa+ml2sxL35Qv9Sw76SOW6l8A1fKZJTIayEhurRD/JmYQQzn6pnb/Fm8/MgF8JNrmXTeMtbKX+tyUIFZrqzPmOspyKkmmdd0UeIJ+Kzfs6spgajGVrddQQR43xJ9KuV4FAu131C6BJVt2FCOoQwVnnU+1eZgBQzJlIiOpZRIoGbj2OI0hb+uGi4DJpXqVbatHg==;
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Device-tree incorrectly used "ngpio" which caused the driver to
+fallback to 32 ngpios.
 
+This platform has 62 GPIO registers.
 
-On 6/30/22 10:01, Stefan Binding wrote:
-> When loading firmware, wm_adsp uses a number of parameters to
-> determine the path of the firmware and tuning files to load.
-> One of these parameters is system_name.
-> Add support in cs35l41 to read this system name from the ACPI
-> _SUB ID in order to uniquely identify the firmware and tuning
-> mapped to a particular system.
+Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+---
+ arch/arm/boot/dts/imx6qdl-ts7970.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-It's my understanding that the _SUB method is optional, not required. It
-may be wise to plan for a fallback, e.g to use DMI quirks or other
-identifiers, no?
+diff --git a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
+index fded07f370b3..d6ba4b2a60f6 100644
+--- a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
+@@ -226,7 +226,7 @@
+ 		reg = <0x28>;
+ 		#gpio-cells = <2>;
+ 		gpio-controller;
+-		ngpio = <32>;
++		ngpios = <62>;
+ 	};
+ 
+ 	sgtl5000: codec@a {
 
-If it's used quite widely, then it may be a good thing to add to
-'alsa-info'.
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> ---
->  sound/soc/codecs/cs35l41.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-> index 8766e19d85f1..d70469686699 100644
-> --- a/sound/soc/codecs/cs35l41.c
-> +++ b/sound/soc/codecs/cs35l41.c
-> @@ -6,6 +6,7 @@
->  //
->  // Author: David Rhodes <david.rhodes@cirrus.com>
->  
-> +#include <linux/acpi.h>
->  #include <linux/delay.h>
->  #include <linux/err.h>
->  #include <linux/init.h>
-> @@ -1142,6 +1143,24 @@ static int cs35l41_dsp_init(struct cs35l41_private *cs35l41)
->  	return ret;
->  }
->  
-> +static int cs35l41_acpi_get_name(struct cs35l41_private *cs35l41)
-> +{
-> +	acpi_handle handle = ACPI_HANDLE(cs35l41->dev);
-> +	const char *sub;
-> +
-> +	/* If there is no ACPI_HANDLE, there is no ACPI for this system, return 0 */
-> +	if (!handle)
-> +		return 0;
-> +
-> +	sub = acpi_get_subsystem_id(handle);
-> +	if (IS_ERR(sub))
-> +		return PTR_ERR(sub);
-> +
-> +	cs35l41->dsp.system_name = sub;
-> +	dev_dbg(cs35l41->dev, "Susystem ID: %s\n", cs35l41->dsp.system_name);
+base-commit: 03c765b0e3b4cb5063276b086c76f7a612856a9a
+-- 
+2.11.0
 
-Typo: Subsystem
-
-> +	return 0;
-> +}
-> +
->  int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *hw_cfg)
->  {
->  	u32 regid, reg_revid, i, mtl_revid, int_status, chipid_match;
-> @@ -1270,6 +1289,10 @@ int cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *
->  		goto err;
->  	}
->  
-> +	ret = cs35l41_acpi_get_name(cs35l41);
-> +	if (ret < 0)
-> +		goto err;
-> +
->  	ret = cs35l41_dsp_init(cs35l41);
->  	if (ret < 0)
->  		goto err;
-> @@ -1316,6 +1339,7 @@ void cs35l41_remove(struct cs35l41_private *cs35l41)
->  	pm_runtime_disable(cs35l41->dev);
->  
->  	regmap_write(cs35l41->regmap, CS35L41_IRQ1_MASK1, 0xFFFFFFFF);
-> +	kfree(cs35l41->dsp.system_name);
->  	wm_adsp2_remove(&cs35l41->dsp);
->  	cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type);
->  
