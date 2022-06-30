@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C09C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236079AbiF3OAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S236113AbiF3OAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236635AbiF3N7S (ORCPT
+        with ESMTP id S236123AbiF3N5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D0E5C9F5;
-        Thu, 30 Jun 2022 06:52:05 -0700 (PDT)
+        Thu, 30 Jun 2022 09:57:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B44553D02;
+        Thu, 30 Jun 2022 06:51:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC30F6204B;
-        Thu, 30 Jun 2022 13:51:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC10C341CB;
-        Thu, 30 Jun 2022 13:51:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F09DB82AD8;
+        Thu, 30 Jun 2022 13:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D368DC34115;
+        Thu, 30 Jun 2022 13:50:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597100;
-        bh=d1Eti8jqM8ERROJNaBYHwNplh+J+0sEmfbW8/ADoM90=;
+        s=korg; t=1656597053;
+        bh=NbbeKQEkCqGH7eRSg2mh0Rg8B4WuQz46K8KLqlu+Qdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lz60JmxCzhi2aW7VC9HNWle2bTOHoEJrShFi7y2AR6m5jNruRl8mweYhtuOsxDCSG
-         MjenoEm4bGGfJWVSpuNqJcGDbtwTXFGH8O/2mA1qavW499NOgkminYAB/8r9YoCfSH
-         SzOfc29o5oWIbDI2/86B4S+wjrA1TKS02NKQffJ4=
+        b=sjCZVfdku1dYc0E/Zd6KS1tNvHs0gSv9VDanG0wq6+XzT/Ha0shtMXCAY4UUMomiG
+         t+xXs2Db1O8+3IytBln/O+L+W6JWBqeSsjr4vssfrWFpvBgpPMFvxGLsFq8uXrJzh+
+         Z5A1/ROBfoARh9yKYwyfM9LdV7yXadf1vymdOJ94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.19 27/49] iio: gyro: mpu3050: Fix the error handling in mpu3050_power_up()
-Date:   Thu, 30 Jun 2022 15:46:40 +0200
-Message-Id: <20220630133234.697437645@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 03/49] ALSA: hda/via: Fix missing beep setup
+Date:   Thu, 30 Jun 2022 15:46:16 +0200
+Message-Id: <20220630133234.010703384@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -50,31 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit b2f5ad97645e1deb5ca9bcb7090084b92cae35d2 upstream.
+commit c7807b27d510e5aa53c8a120cfc02c33c24ebb5f upstream.
 
-The driver should disable regulators when fails at regmap_update_bits().
+Like the previous fix for Conexant codec, the beep_nid has to be set
+up before calling snd_hda_gen_parse_auto_config(); otherwise it'd miss
+the path setup.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: <Stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510092431.1711284-1-zheyuma97@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fix the call order for addressing the missing beep setup.
+
+Fixes: 0e8f9862493a ("ALSA: hda/via - Simplify control management")
+Cc: <stable@vger.kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216152
+Link: https://lore.kernel.org/r/20220620104008.1994-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/gyro/mpu3050-core.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/pci/hda/patch_via.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -873,6 +873,7 @@ static int mpu3050_power_up(struct mpu30
- 	ret = regmap_update_bits(mpu3050->map, MPU3050_PWR_MGM,
- 				 MPU3050_PWR_MGM_SLEEP, 0);
- 	if (ret) {
-+		regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
- 		dev_err(mpu3050->dev, "error setting power mode\n");
- 		return ret;
- 	}
+--- a/sound/pci/hda/patch_via.c
++++ b/sound/pci/hda/patch_via.c
+@@ -533,11 +533,11 @@ static int via_parse_auto_config(struct
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
++	err = auto_parse_beep(codec);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = auto_parse_beep(codec);
++	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
+ 	if (err < 0)
+ 		return err;
+ 
 
 
