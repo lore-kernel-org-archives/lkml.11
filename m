@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CD5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD71FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230258AbiF3CIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 22:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
+        id S231319AbiF3CIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 22:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiF3CIS (ORCPT
+        with ESMTP id S229623AbiF3CIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 29 Jun 2022 22:08:18 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2326E11C3E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D41E415FD3
         for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 19:08:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1656554896;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
+         content-transfer-encoding:content-transfer-encoding;
         bh=rdzs+ejxlay4oS8U29luxVEbd5hmptD+SpCokSpGfUE=;
-        b=WmXonxXRvnnBKFZBtiUryIDnYKu/iMz67kPy9gkhQ5ow4sqO2msV/ISjmqd6Hr5fLrZqbz
-        sXHAask3QUKDhGrZNxpUHoHLhemzAvSFjEe2b46nj6QW3cs/wU0Dowms70jwucU/I6IXTr
-        tl33o3ykBs9wSIAAOgemk6ga4BiyBEA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=Pd00K0YB1etdvwQJZ8zDQRaAWGji4ar2rKM8yIs3XmbYKY+tJqMDjramEJmAaZs+wlyFUz
+        o6oYCR2eTbrnAtqk5yQ9pz+EinkjWladb6tXPrdfPQDp4VmBYO79AHfexc5bETC9A6WSwC
+        q97O4lw+9T7sxofD3SVS90J49eP3fTw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-247-Tv97MKRaPRClFVcgWokWtw-1; Wed, 29 Jun 2022 22:08:15 -0400
-X-MC-Unique: Tv97MKRaPRClFVcgWokWtw-1
+ us-mta-363-_hjto7RuNAajHfm7IQHkQg-1; Wed, 29 Jun 2022 22:08:11 -0400
+X-MC-Unique: _hjto7RuNAajHfm7IQHkQg-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7D6153C01DA3;
-        Thu, 30 Jun 2022 02:08:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DD43D85A581;
+        Thu, 30 Jun 2022 02:08:10 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-12-189.pek2.redhat.com [10.72.12.189])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 83BE3492CA3;
-        Thu, 30 Jun 2022 02:08:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EEFEB492C3B;
+        Thu, 30 Jun 2022 02:08:07 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
         kuba@kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: [PATCH V2] virtio-net: fix the race between refill work and close
-Date:   Thu, 30 Jun 2022 10:08:05 +0800
-Message-Id: <20220630020805.74658-2-jasowang@redhat.com>
-In-Reply-To: <20220630020805.74658-1-jasowang@redhat.com>
-References: <20220630020805.74658-1-jasowang@redhat.com>
+Date:   Thu, 30 Jun 2022 10:08:04 +0800
+Message-Id: <20220630020805.74658-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
