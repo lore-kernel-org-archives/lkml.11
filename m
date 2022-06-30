@@ -2,138 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5613C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236310AbiF3Q3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 12:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
+        id S235445AbiF3Qdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 12:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236296AbiF3Q3O (ORCPT
+        with ESMTP id S235150AbiF3Qdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 12:29:14 -0400
-Received: from rusty.tulip.relay.mailchannels.net (rusty.tulip.relay.mailchannels.net [23.83.218.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5363527E;
-        Thu, 30 Jun 2022 09:29:10 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 8D92F76206E;
-        Thu, 30 Jun 2022 16:29:06 +0000 (UTC)
-Received: from pdx1-sub0-mail-a214.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id F25F0762210;
-        Thu, 30 Jun 2022 16:29:05 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1656606546; a=rsa-sha256;
-        cv=none;
-        b=g6Rc7cs96fVc7E/heQfoRsmXE48/YQgx+IYoIgE1dULt8rRt/C8mCu3jF4MDf5xg8fKB34
-        TSBp28fBVjebrXgnIld4dJXtV8GCzC0T0Hs7gE2GtLw2u4Ci663J133FCTYIFkR7ikRYM8
-        ES53mdUZ3uZyIHhMh3AJeM93nVnfme9/5se0EhM4uapDX7QkN3l/14Rg+6gsaJo6yg7s47
-        OttR2Q49gq86E8NSgBacT49br9O8znMxVYAefLOC/dgae7BTUmOAkN3z5bF5ORra7Z6jKU
-        YQIZP3VxIC71juX4V5h2H2ShTvhtWkXUkMN2NVattdQg5zcvM67aKvPSquEkgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1656606546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=9Sb1glpRpYA85hAE32jopfAa1TP5g8OZqmLv3plg0Zk=;
-        b=Rhm4I7d4tiaKM6BLiv441UkhMLkKOwJaYbYdApGB71ko2uG0fz5odW5Dt+JCD+uHel1/OW
-        xpwArZ6dMLSebBKoiU5upm3mza9q/XHPt9OJk7vu1L8RVEWX1WECO0ubbV7psYxQxk7HX2
-        MM60ziTD6BTvKkdCjSJscsaBBlWAYi9WhuhZ9XbBwqfZx8t8T1OfRjy1FwIdCJPCmc9kbx
-        6CwTzLCW02L1Kx8O3W0S2/L9LZM/+0BHQ6lgtdBJSl9239P0FV966t3Q9SzFuZDNY3eYwR
-        1HuqsyNLiKzYxRuSt/kgW11bjR+b5C8JfS6ur7Wahe+ZNk5jx8bbPF+5NZ0/ug==
-ARC-Authentication-Results: i=1;
-        rspamd-689699966c-7cjd8;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Army-Little: 2a18faf73aee121d_1656606546412_1698224174
-X-MC-Loop-Signature: 1656606546412:1314743472
-X-MC-Ingress-Time: 1656606546412
-Received: from pdx1-sub0-mail-a214.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.116.106.91 (trex/6.7.1);
-        Thu, 30 Jun 2022 16:29:06 +0000
-Received: from offworld (unknown [104.36.25.13])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a214.dreamhost.com (Postfix) with ESMTPSA id 4LYkL86Nrdz28;
-        Thu, 30 Jun 2022 09:29:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1656606545;
-        bh=9Sb1glpRpYA85hAE32jopfAa1TP5g8OZqmLv3plg0Zk=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=nnjlTuyuGFynXTWThk4sfTJ9a82f77dhLrXIaXH8hFYvhydWUv5cLlcfKNqwNZnbU
-         zeStXr6xJnKjhYUtYjczmItscESH7yIhSmm3/FPSlwmmi4ualjb9Xz3ZTcjgj1iJhd
-         2m1NHIV4dZSjL6OYOxa6vSnf2D5i9IVeEY7xz44NRHFA2Ajy4GA7nzTzZR74Qz57a/
-         2li1pDID/zNQAHcpy7ew3WY0t8BMaJRQS/VgVnYXcTvDXCkBoyWw3lpYiLeyRPt5HE
-         6d4FDewmA1OeTT2iGPyDw15I3qoiIcDCLLIjiZqffRdB+tHzzngRb1XajflB7CivLD
-         LBLpRwWvBTeBQ==
-Date:   Thu, 30 Jun 2022 09:14:06 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V12 4/9] cxl/pci: Create PCI DOE mailbox's for memory
- devices
-Message-ID: <20220630161406.yglzoxn2va3bhts4@offworld>
-References: <20220628041527.742333-1-ira.weiny@intel.com>
- <20220628041527.742333-5-ira.weiny@intel.com>
- <20220628153317.00002e36@Huawei.com>
- <Yr01iZhuG5YHThDg@iweiny-desk3>
- <20220630163240.00003596@Huawei.com>
+        Thu, 30 Jun 2022 12:33:41 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250753AA55;
+        Thu, 30 Jun 2022 09:33:40 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id j21so34726942lfe.1;
+        Thu, 30 Jun 2022 09:33:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mYu3wnU4VMLFIgoHCbBAkP3VZMsuvdsMzpnLVjK/d0s=;
+        b=GTBdcnWdOb3tbjwANa5tSyYVmT05/n+yOxJ86cMBR398q6W3YidHbxHKNr0A9AxI43
+         FgeyjwwYqfeTce01bE0JHt6g69xzudhbqu2rwYdkufJa+DgWvFnJcCgkvurOFSXTHjCf
+         F8/3mHrXIAjJDW6F9gBJCk3kgDIIKqAzYn0gL0PL8pfeedgtwu7veqM9IFVwDEJM6D7C
+         PcQjUdICCOMfLrf17GkzH03uKKUe1LCN9hAlzzbskk0iHnxVaoPWp4UdBDito166UTAC
+         TsTunBHKoTFcK9EEwwCOqAYOQ8jFJi7jG5DxglgOhqhZj/3Rnq8SS/jTi3Dv4DdHeqC+
+         dsoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mYu3wnU4VMLFIgoHCbBAkP3VZMsuvdsMzpnLVjK/d0s=;
+        b=KAaZK+15IJDXdAbMsj67jkMYppDEg9Y2ajQJcX9e9x6l2ofQ8URjilk1s+un+zYs4s
+         Dtpl47W7ZS+7d/1OX3jAO6BM2WbPY3XGH43rGQteLqqKfXFFB488Yc+HnlqJPJiUK21/
+         yoZLP4NtVSN2abLcAYNkLFgrEAPFXSb3UvoiyTdYXDOq4EuC6VW91V+6FlINBgB45aZ0
+         Gt8COmZm32qNPW0N2AeNF7VrgPRLf05wk6wcsbc8ZxMX3rqj5XglYsLnSNViag3FGcgP
+         r/M4/t5DZAYwLwHeYD2F8ufRhm0rrdMTO9dqefRQLNp6+tS80mHS72KSKHv9ziRlhNlf
+         3i0w==
+X-Gm-Message-State: AJIora+pR2DB4h2jsmFq+Ak70M80eWX7mIx51zg0gBT19TarKVjwOM/K
+        Q3qJBLvU2Wfy6fn3KN8GlmqfCcrI5AD9BA==
+X-Google-Smtp-Source: AGRyM1stLGr0cokXrCdM57VzEU/jSYUbbqPGUEnZSUYNuTODANVs6ZyJdRbwj43qs7K0Ec/1t7ewfw==
+X-Received: by 2002:a05:6512:33ca:b0:47f:acc5:6c8b with SMTP id d10-20020a05651233ca00b0047facc56c8bmr6755919lfg.612.1656606818283;
+        Thu, 30 Jun 2022 09:33:38 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id j14-20020a2e850e000000b0025a6e20abe9sm2728720lji.130.2022.06.30.09.33.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 09:33:37 -0700 (PDT)
+From:   "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Subject: [PATCH v4 1/1] rcu/kvfree: Update KFREE_DRAIN_JIFFIES interval
+Date:   Thu, 30 Jun 2022 18:33:35 +0200
+Message-Id: <20220630163335.3670-1-urezki@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220630163240.00003596@Huawei.com>
-User-Agent: NeoMutt/20220429
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 30 Jun 2022, Jonathan Cameron wrote:
+Currently the monitor work is scheduled with a fixed interval of HZ/20,
+which is roughly 50 milliseconds. The drawback of this approach is
+low utilization of the 512 page slots in scenarios with infrequence
+kvfree_rcu() calls.  For example on an Android system:
 
->On Wed, 29 Jun 2022 22:32:57 -0700 Ira Weiny <ira.weiny@intel.com> wrote:
+<snip>
+  kworker/3:3-507     [003] ....   470.286305: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000d0f0dde5 nr_records=6
+  kworker/6:1-76      [006] ....   470.416613: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000ea0d6556 nr_records=1
+  kworker/6:1-76      [006] ....   470.416625: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000003e025849 nr_records=9
+  kworker/3:3-507     [003] ....   471.390000: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000815a8713 nr_records=48
+  kworker/1:1-73      [001] ....   471.725785: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000fda9bf20 nr_records=3
+  kworker/1:1-73      [001] ....   471.725833: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000a425b67b nr_records=76
+  kworker/0:4-1411    [000] ....   472.085673: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000007996be9d nr_records=1
+  kworker/0:4-1411    [000] ....   472.085728: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000d0f0dde5 nr_records=5
+  kworker/6:1-76      [006] ....   472.260340: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000065630ee4 nr_records=102
+<snip>
 
->> I _thought_ that we did not care if some mailboxes failed or not.
->
->I have a different view to Dan on this.  In my view if your hardware is
->not working in any way at all scream like mad don't carry on... Dan
->is keen to try to muddle onwards.
+in many cases, out of 512 slots, fewer than 10 were actually used.
+In order to improve batching and make utilization more efficient this
+commit sets a drain interval to a fixed 5-seconds interval. Floods are
+detected when a page fills quickly, and in that case, the reclaim work
+is re-scheduled for the next scheduling-clock tick (jiffy).
 
-I am also of the idea of not carrying on upon any indication of failure.
+After this change:
 
->>
->> If CDAT is not supported on any of the mailboxes found then CDAT will not show
->> up on sysfs (as per Dan's last comment).  If it was supported on a mailbox but
->> no data is found the sysfs will show up but be 0 length.
->>
->> At this layer I thought we agreed to skip over these errors.  If a protocol is
->> needed at a higher layer and it is not found on any of the mailboxes the errors
->> should show up in that layer.  In this series CDAT is not 100% necessary as
->> devices can work without it.  So the errors were mostly paper'ed over in favor
->> of just printing error messages and muddle on.
->>
->> The xa_insert() deserves a pci_err() though.
->
->That's probably the minimum we should do.  The xa_insert() failing is something
->horrible going wrong in our software / host afterall.
+<snip>
+  kworker/7:1-371     [007] ....  5630.725708: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000005ab0ffb3 nr_records=121
+  kworker/7:1-371     [007] ....  5630.989702: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000060c84761 nr_records=47
+  kworker/7:1-371     [007] ....  5630.989714: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000000babf308 nr_records=510
+  kworker/7:1-371     [007] ....  5631.553790: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000bb7bd0ef nr_records=169
+  kworker/7:1-371     [007] ....  5631.553808: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044c78753 nr_records=510
+  kworker/5:6-9428    [005] ....  5631.746102: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000d98519aa nr_records=123
+  kworker/4:7-9434    [004] ....  5632.001758: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000526c9d44 nr_records=322
+  kworker/4:7-9434    [004] ....  5632.002073: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000002c6a8afa nr_records=185
+  kworker/7:1-371     [007] ....  5632.277515: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000007f4a962f nr_records=510
+<snip>
 
-Yes. And in addition, devm_cxl_pci_create_doe() should return any error status, and
-cxl_pci_probe() can choose to omit any errors, but it's still better to have it.
+Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+---
+ kernel/rcu/tree.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
-Thanks,
-Davidlohr
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index fd16c0b46d9e..a1b0a5736916 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -3249,7 +3249,7 @@ EXPORT_SYMBOL_GPL(call_rcu);
+ 
+ 
+ /* Maximum number of jiffies to wait before draining a batch. */
+-#define KFREE_DRAIN_JIFFIES (HZ / 50)
++#define KFREE_DRAIN_JIFFIES (5 * HZ)
+ #define KFREE_N_BATCHES 2
+ #define FREE_N_CHANNELS 2
+ 
+@@ -3510,6 +3510,25 @@ need_offload_krc(struct kfree_rcu_cpu *krcp)
+ 	return !!krcp->head;
+ }
+ 
++static void
++schedule_delayed_monitor_work(struct kfree_rcu_cpu *krcp)
++{
++	long delay, delay_left;
++
++	delay = READ_ONCE(krcp->count) >= KVFREE_BULK_MAX_ENTR ? 1:KFREE_DRAIN_JIFFIES;
++
++	if (delayed_work_pending(&krcp->monitor_work)) {
++		delay_left = krcp->monitor_work.timer.expires - jiffies;
++
++		if (delay < delay_left)
++			mod_delayed_work(system_wq, &krcp->monitor_work, delay);
++
++		return;
++	}
++
++	queue_delayed_work(system_wq, &krcp->monitor_work, delay);
++}
++
+ /*
+  * This function is invoked after the KFREE_DRAIN_JIFFIES timeout.
+  */
+@@ -3567,7 +3586,7 @@ static void kfree_rcu_monitor(struct work_struct *work)
+ 	// work to repeat an attempt. Because previous batches are
+ 	// still in progress.
+ 	if (need_offload_krc(krcp))
+-		schedule_delayed_work(&krcp->monitor_work, KFREE_DRAIN_JIFFIES);
++		schedule_delayed_monitor_work(krcp);
+ 
+ 	raw_spin_unlock_irqrestore(&krcp->lock, flags);
+ }
+@@ -3755,7 +3774,7 @@ void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
+ 
+ 	// Set timer to drain after KFREE_DRAIN_JIFFIES.
+ 	if (rcu_scheduler_active == RCU_SCHEDULER_RUNNING)
+-		schedule_delayed_work(&krcp->monitor_work, KFREE_DRAIN_JIFFIES);
++		schedule_delayed_monitor_work(krcp);
+ 
+ unlock_return:
+ 	krc_this_cpu_unlock(krcp, flags);
+@@ -3831,7 +3850,7 @@ void __init kfree_rcu_scheduler_running(void)
+ 
+ 		raw_spin_lock_irqsave(&krcp->lock, flags);
+ 		if (need_offload_krc(krcp))
+-			schedule_delayed_work_on(cpu, &krcp->monitor_work, KFREE_DRAIN_JIFFIES);
++			schedule_delayed_monitor_work(krcp);
+ 		raw_spin_unlock_irqrestore(&krcp->lock, flags);
+ 	}
+ }
+-- 
+2.30.2
+
