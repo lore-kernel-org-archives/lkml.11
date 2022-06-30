@@ -2,117 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 725ADC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E44CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235733AbiF3NxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51570 "EHLO
+        id S235749AbiF3Nxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235725AbiF3NwP (ORCPT
+        with ESMTP id S235798AbiF3Nwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:52:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4726844A34;
+        Thu, 30 Jun 2022 09:52:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B953B3057B
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:49:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656596979;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kAIsAO8/q3xt7t8QmRZnKGg22p7TRVULhh/Oocusryo=;
+        b=YfnsrSjAeJ44q5QhuCTU0dHtE3oLjGNW229Tn53xxhrJ53uOT1P9AyjVK3c2vT1SNrgfFO
+        ohyDG2Rj4b5Ur8sk9jM0VlQ1mV0ljuTQYS0sY92dWmog6Srb1jiY5x5GYuOEqHh91pX2k6
+        CoVU3LoLWZHzIWWNHaMbPYUlAFMyU6k=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-186-Jho_qfvQP9WlXjkJzwR0-Q-1; Thu, 30 Jun 2022 09:49:37 -0400
+X-MC-Unique: Jho_qfvQP9WlXjkJzwR0-Q-1
+Received: by mail-io1-f69.google.com with SMTP id o6-20020a5eda46000000b00674f9e7e8b4so10185570iop.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:49:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kAIsAO8/q3xt7t8QmRZnKGg22p7TRVULhh/Oocusryo=;
+        b=PsvIwv6yl2YAkW3tfpE9Cqy69eapg/s1yToSeioXkUjQXAF78rP4ja5lp9Rqq+JLzq
+         RCUQCDRgnvRJ9SXIGWrcScWudPD8uPGmJuHgJU0Nd1/uAHeP4hziumD1R+ODOQTIQ/zL
+         qj6BlrFLKWQiXLSbAwD/P9CGVhlerYuVcYsVMLkdN0prHp6gmt9eiV0qmO67922XAs17
+         evuQRjz2wsLmWXeGvbPQZciWhgQyJIkyqwFSROAQlf2HHNmdBGlfGJ0FFZS+Qdcuzk03
+         U8YHg/NBVI3npBrKq9Ld/od0ny2ZbbygxBA+ZrX4rsfsdXa+Lk7bLxPB8UsqXwN9Z2Pp
+         p1VQ==
+X-Gm-Message-State: AJIora9PqJT53FloTiS0pOFgG96FFPZrncdVYurFKGM38GAQA0oDxn/c
+        DBJxON5bjzVv7x6VQbvFIMd/B3xLzt7i0WGn+B2j3mf/Li0brVcLAVEz8TvNqLWKiFvdE/veTEl
+        ajG2QHE6wspmqkwYlUEaAksFs
+X-Received: by 2002:a05:6638:264d:b0:33c:ba2d:72e6 with SMTP id n13-20020a056638264d00b0033cba2d72e6mr5277443jat.173.1656596976986;
         Thu, 30 Jun 2022 06:49:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 090A2B82AED;
-        Thu, 30 Jun 2022 13:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42BA6C34115;
-        Thu, 30 Jun 2022 13:49:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596972;
-        bh=iHDelUGsW4GMdXhXCRonmDdd/G3/Yh0SQ4wX9e19R3Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zAWJfDhyXHLtRxwCAdJK2p5ALmgjaRx/CpjqbOZQ+YDtwMHz80Xux9rp1sDthZeGX
-         +rbGQk4VG70KhF2P5LvcBYnCBA2nUAP24tGdwf+hDbkGUh8dUsF7zdQhmk7MHrLFG1
-         0w2jAnbXGImTGH9uuC6IVHXOVF7WuT3EiKC0mjWs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Lars-Peter Clausen <lars@metafoo.de>, Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.14 18/35] iio: trigger: sysfs: fix use-after-free on remove
-Date:   Thu, 30 Jun 2022 15:46:29 +0200
-Message-Id: <20220630133232.978268816@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
-References: <20220630133232.433955678@linuxfoundation.org>
-User-Agent: quilt/0.66
+X-Google-Smtp-Source: AGRyM1tD4itwXAHEpqybOS05iyJ+cl7zul4Mwu95L2o5RF+XJkhqbNNhgR6ApJoHe/080Tk2rhwsPw==
+X-Received: by 2002:a05:6638:264d:b0:33c:ba2d:72e6 with SMTP id n13-20020a056638264d00b0033cba2d72e6mr5277419jat.173.1656596976660;
+        Thu, 30 Jun 2022 06:49:36 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id g18-20020a05663810f200b00339d5108b60sm8680220jae.17.2022.06.30.06.49.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 06:49:36 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 09:49:34 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Linux MM Mailing List <linux-mm@kvack.org>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH 1/4] mm/gup: Add FOLL_INTERRUPTIBLE
+Message-ID: <Yr2p7sR3IjiGTGd3@xz-m1.local>
+References: <20220622213656.81546-1-peterx@redhat.com>
+ <20220622213656.81546-2-peterx@redhat.com>
+ <c196a140-6ee4-850c-004a-9c9d1ff1faa6@nvidia.com>
+ <YrtXGf20oa5eYgIU@xz-m1.local>
+ <16c181d3-09ef-ace4-c910-0a13fc245e48@nvidia.com>
+ <YruBzuJf9s/Nmr6W@xz-m1.local>
+ <177284f9-416d-c142-a826-e9a497751fca@nvidia.com>
+ <Yrx0ETyb2kk4fO4M@xz-m1.local>
+ <17f9eae0-01bb-4793-201e-16ee267c07f2@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <17f9eae0-01bb-4793-201e-16ee267c07f2@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+On Wed, Jun 29, 2022 at 06:53:30PM -0700, John Hubbard wrote:
+> On 6/29/22 08:47, Peter Xu wrote:
+> > > It looks like part of this comment is trying to document a pre-existing
+> > > concept, which is that faultin_page() only ever sets FAULT_FLAG_KILLABLE
+> > > if locked != NULL.
+> > 
+> > I'd say that's not what I wanted to comment.. I wanted to express that
+> > INTERRUPTIBLE should rely on KILLABLE, that's also why I put the comment to
+> > be after KILLABLE, not before.  IMHO it makes sense already to have
+> > "interruptible" only if "killable", no matter what's the pre-requisite for
+> > KILLABLE (in this case it's having "locked" being non-null).
+> > 
+> 
+> OK, I think I finally understand both the intention of the comment,
+> and (thanks to your notes, below) the interaction between *locked and
+> _RETRY, _KILLABLE, and _INTERRUPTIBLE. Really appreciate your leading
+> me by the nose through that. The pre-existing code is abusing *locked
+> a bit, by treating it as a flag when really it is a side effect of
+> flags, but at least now that's clear to me.
 
-commit 78601726d4a59a291acc5a52da1d3a0a6831e4e8 upstream.
+I agree, alternatively we could have some other FOLL_ flags to represent
+"locked != NULL" and do sanity check to make sure when the flag is there
+locked is always set correctly.  Current code is a more "dense" way to do
+this, even though it could be slightly harder to follow.
 
-Ensure that the irq_work has completed before the trigger is freed.
+> 
+> Anyway...this leads to finally getting into the comment, which I now
+> think is not quite what we want: there is no need for a hierarchy of
+> "_INTERRUPTIBLE should depend upon _KILLABLE". That is: even though an
+> application allows a fatal signal to get through, it's not clear to me
+> that that implies that non-fatal signal handling should be prevented.
+> 
+> The code is only vaguely enforcing such a thing, because it just so
+> happens that both cases require the same basic prerequisites. So the
+> code looks good, but I don't see a need to claim a hierarchy in the
+> comments.
+> 
+> So I'd either delete the comment entirely, or go with something that is
+> doesn't try to talk about hierarchy nor locked/retry either. Does this
+> look reasonable to you:
+> 
+> 
+> 	/*
+> 	 * FAULT_FLAG_INTERRUPTIBLE is opt-in: kernel callers must set
+> 	 * FOLL_INTERRUPTIBLE. That's because some callers may not be
+> 	 * prepared to handle early exits caused by non-fatal signals.
+> 	 */
+> 
+> ?
 
- ==================================================================
- BUG: KASAN: use-after-free in irq_work_run_list
- Read of size 8 at addr 0000000064702248 by task python3/25
+Looks good to me, I'd tune a bit to make it less ambiguous on a few places:
 
- Call Trace:
-  irq_work_run_list
-  irq_work_tick
-  update_process_times
-  tick_sched_handle
-  tick_sched_timer
-  __hrtimer_run_queues
-  hrtimer_interrupt
+		/*
+		 * FAULT_FLAG_INTERRUPTIBLE is opt-in. GUP callers must set
+		 * FOLL_INTERRUPTIBLE to enable FAULT_FLAG_INTERRUPTIBLE.
+		 * That's because some callers may not be prepared to
+		 * handle early exits caused by non-fatal signals.
+		 */
 
- Allocated by task 25:
-  kmem_cache_alloc_trace
-  iio_sysfs_trig_add
-  dev_attr_store
-  sysfs_kf_write
-  kernfs_fop_write_iter
-  new_sync_write
-  vfs_write
-  ksys_write
-  sys_write
+Would that be okay to you?
 
- Freed by task 25:
-  kfree
-  iio_sysfs_trig_remove
-  dev_attr_store
-  sysfs_kf_write
-  kernfs_fop_write_iter
-  new_sync_write
-  vfs_write
-  ksys_write
-  sys_write
+> 
+> > > The problem I am (personally) having is that I don't yet understand why
+> > > or how those are connected: what is it about having locked non-NULL that
+> > > means the process is killable? (Can you explain why that is?)
+> > 
+> > Firstly RETRY_KILLABLE relies on ALLOW_RETRY, because if we don't allow
+> > retry at all it means we'll never wait in handle_mm_fault() anyway, then no
+> > need to worry on being interrupted by any kind of signal (fatal or not).
+> > 
+> > Then if we allow retry, we need some way to know "whether mmap_sem is
+> > released or not" during the process for the caller (because the caller
+> > cannot see VM_FAULT_RETRY).  That's why we added "locked" parameter, so
+> > that we can set *locked=false to tell the caller we have released mmap_sem.
+> > 
+> > I think that's why we have "locked" defined as "we allow this page fault
+> > request to retry and wait, during wait we can always allow fatal signals".
+> > I think that's defined throughout the gup call interfaces too, and
+> > faultin_page() is the last step to talk to handle_mm_fault().
+> > 
+> > To make this whole picture complete, NOWAIT is another thing that relies on
+> > ALLOW_RETRY but just to tell "oh please never release the mmap_sem at all".
+> > For example, when we want to make sure no vma will be released after
+> > faultin_page() returned.
+> > 
+> 
+> Again, thanks for taking the time to explain that for me. :)
 
- ==================================================================
+My thanks for reviewing!
 
-Fixes: f38bc926d022 ("staging:iio:sysfs-trigger: Use irq_work to properly active trigger")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20220519091925.1053897-1-vincent.whitchurch@axis.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iio/trigger/iio-trig-sysfs.c |    1 +
- 1 file changed, 1 insertion(+)
+> 
+> > > 
+> > > If that were clear, I think I could suggest a good comment wording.
+> > 
+> > IMHO it's a little bit weird to explain "locked" here, especially after
+> > KILLABLE is set, that's why I didn't try to mention "locked" in my 2nd
+> > attempt.  There are some comments for "locked" above the definition of
+> > faultin_page(), I think that'll be a nicer place to enrich explanations for
+> > "locked", and it seems even more suitable as a separate patch?
+> > 
+> 
+> Totally agreed. I didn't intend to ask for that kind of documentation
+> here.
+> 
+> For that, I'm thinking a combination of cleaning up *locked a little
+> bit, plus maybe some higher level notes like what you wrote above, added
+> to either pin_user_pages.rst or a new get_user_pages.rst or some .rst
+> anyway. Definitely a separately thing.
 
---- a/drivers/iio/trigger/iio-trig-sysfs.c
-+++ b/drivers/iio/trigger/iio-trig-sysfs.c
-@@ -199,6 +199,7 @@ static int iio_sysfs_trigger_remove(int
- 	}
- 
- 	iio_trigger_unregister(t->trig);
-+	irq_work_sync(&t->work);
- 	iio_trigger_free(t->trig);
- 
- 	list_del(&t->l);
+Sounds good.
 
+Thanks,
+
+-- 
+Peter Xu
 
