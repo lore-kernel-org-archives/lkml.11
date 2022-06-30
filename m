@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA81C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E40E7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236650AbiF3OHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
+        id S236435AbiF3OHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236584AbiF3OGJ (ORCPT
+        with ESMTP id S236593AbiF3OGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 10:06:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C3E4D17F;
-        Thu, 30 Jun 2022 06:54:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0B86EEA9;
+        Thu, 30 Jun 2022 06:54:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8379962110;
-        Thu, 30 Jun 2022 13:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90DF1C34115;
-        Thu, 30 Jun 2022 13:54:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA176211C;
+        Thu, 30 Jun 2022 13:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48116C34115;
+        Thu, 30 Jun 2022 13:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597245;
-        bh=LT6vxAJaxOlUkHNIIenFXTidkL0G26ejR08qb9ntrzU=;
+        s=korg; t=1656597248;
+        bh=tUbC9P3+yubDDefe29H5IMHi8x/o38Uf9ZD+Vi3xwK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agMCABdyHKP0pr/5/d4YlKvvndOrZ2ZeLRVxuWpkHmqno9cqydcvPPHpov1kdEi/c
-         dt40AsbyLTGvQPK+LgYVtsDSQ17EhKwv8aqj4YRZhzzYigd8QVCE95AyjL0knttesY
-         R/LvLaFpIXFKEfhFepF7EBv4UHJjMUUhBgbqjfQg=
+        b=EUE8/8qagHcuvBzXf6NoH0yN3Jj4ZAmCTCIckudkX2FSUGcJsrySNKnk93i21osaB
+         wgRltucYMpbCATxhU+7SAUCLWs1HqhUERNukD0YpeJ4Rbi7mxBeOB5Ue0H9hqDzuwE
+         ujelhR/6ChSvkP0O7j6cNhP6f+92teAJralnhojI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Thomas Backlund <tmb@tmb.nu>
-Subject: [PATCH 5.10 03/12] tick/nohz: unexport __init-annotated tick_nohz_full_setup()
-Date:   Thu, 30 Jun 2022 15:47:08 +0200
-Message-Id: <20220630133230.783719499@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: [PATCH 5.10 04/12] clocksource/drivers/ixp4xx: remove __init from ixp4xx_timer_setup()
+Date:   Thu, 30 Jun 2022 15:47:09 +0200
+Message-Id: <20220630133230.813883677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
 References: <20220630133230.676254336@linuxfoundation.org>
@@ -51,49 +48,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 2390095113e98fc52fffe35c5206d30d9efe3f78 upstream.
+ixp4xx_timer_setup is exported, and so can not be an __init function.
+Remove the __init marking as the build system is rightfully claiming
+this is an error in older kernels.
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+This is fixed "properly" in commit 41929c9f628b
+("clocksource/drivers/ixp4xx: Drop boardfile probe path") but that can
+not be backported to older kernels as the reworking of the IXP4xx
+codebase is not suitable for stable releases.
 
-modpost used to detect it, but it had been broken for a decade.
-
-Commit 28438794aba4 ("modpost: fix section mismatch check for exported
-init/exit sections") fixed it so modpost started to warn it again, then
-this showed up:
-
-    MODPOST vmlinux.symvers
-  WARNING: modpost: vmlinux.o(___ksymtab_gpl+tick_nohz_full_setup+0x0): Section mismatch in reference from the variable __ksymtab_tick_nohz_full_setup to the function .init.text:tick_nohz_full_setup()
-  The symbol tick_nohz_full_setup is exported and annotated __init
-  Fix this by removing the __init annotation of tick_nohz_full_setup or drop the export.
-
-Drop the export because tick_nohz_full_setup() is only called from the
-built-in code in kernel/sched/isolation.c.
-
-Fixes: ae9e557b5be2 ("time: Export tick start/stop functions for rcutorture")
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Tested-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Thomas Backlund <tmb@tmb.nu>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/tick-sched.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/clocksource/mmio.c                 |    2 +-
+ drivers/clocksource/timer-ixp4xx.c         |   10 ++++------
+ include/linux/platform_data/timer-ixp4xx.h |    5 ++---
+ 3 files changed, 7 insertions(+), 10 deletions(-)
 
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -425,7 +425,6 @@ void __init tick_nohz_full_setup(cpumask
- 	cpumask_copy(tick_nohz_full_mask, cpumask);
- 	tick_nohz_full_running = true;
- }
--EXPORT_SYMBOL_GPL(tick_nohz_full_setup);
- 
- static int tick_nohz_cpu_down(unsigned int cpu)
+--- a/drivers/clocksource/mmio.c
++++ b/drivers/clocksource/mmio.c
+@@ -46,7 +46,7 @@ u64 clocksource_mmio_readw_down(struct c
+  * @bits:	Number of valid bits
+  * @read:	One of clocksource_mmio_read*() above
+  */
+-int __init clocksource_mmio_init(void __iomem *base, const char *name,
++int clocksource_mmio_init(void __iomem *base, const char *name,
+ 	unsigned long hz, int rating, unsigned bits,
+ 	u64 (*read)(struct clocksource *))
  {
+--- a/drivers/clocksource/timer-ixp4xx.c
++++ b/drivers/clocksource/timer-ixp4xx.c
+@@ -170,9 +170,8 @@ static int ixp4xx_resume(struct clock_ev
+  * We use OS timer1 on the CPU for the timer tick and the timestamp
+  * counter as a source of real clock ticks to account for missed jiffies.
+  */
+-static __init int ixp4xx_timer_register(void __iomem *base,
+-					int timer_irq,
+-					unsigned int timer_freq)
++static int ixp4xx_timer_register(void __iomem *base, int timer_irq,
++				 unsigned int timer_freq)
+ {
+ 	struct ixp4xx_timer *tmr;
+ 	int ret;
+@@ -245,9 +244,8 @@ static __init int ixp4xx_timer_register(
+  * @timer_irq: Linux IRQ number for the timer
+  * @timer_freq: Fixed frequency of the timer
+  */
+-void __init ixp4xx_timer_setup(resource_size_t timerbase,
+-			       int timer_irq,
+-			       unsigned int timer_freq)
++void ixp4xx_timer_setup(resource_size_t timerbase, int timer_irq,
++			unsigned int timer_freq)
+ {
+ 	void __iomem *base;
+ 
+--- a/include/linux/platform_data/timer-ixp4xx.h
++++ b/include/linux/platform_data/timer-ixp4xx.h
+@@ -4,8 +4,7 @@
+ 
+ #include <linux/ioport.h>
+ 
+-void __init ixp4xx_timer_setup(resource_size_t timerbase,
+-			       int timer_irq,
+-			       unsigned int timer_freq);
++void ixp4xx_timer_setup(resource_size_t timerbase, int timer_irq,
++			unsigned int timer_freq);
+ 
+ #endif
 
 
