@@ -2,202 +2,385 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1627EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 22:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F98CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 22:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbiF3Wdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 18:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59698 "EHLO
+        id S230232AbiF3WfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 18:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbiF3Wdm (ORCPT
+        with ESMTP id S229563AbiF3WfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 18:33:42 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BCA57232;
-        Thu, 30 Jun 2022 15:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656628409; x=1688164409;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=pNPHgluDGYxnMMOavd0I9OlL6Y2f7+L0QgP8RoRBh30=;
-  b=fQTCCM5qrUg0szVIUM+4ZtCs/Fet8CDeBQfnapQetfiIfRDXvNRuK3/e
-   h9eG4iyRVP3iig8ncJ9B5XdIbmnlD6jNj25yaC16tFf8Bg50fAecad8qy
-   CYmcqlRyC8r8UAn3EXVcF2jG+uKBt8F73BeKT/lEenfVuYHbFP4PdkfhU
-   Z2tll5gBVCbp4jwUiVAFH12Laznyt3PS0BeX2sjIs85mPcvnRTYj5mJih
-   2OIDWYKFACzwn1U+mpirHPe04vJRtNNc0Ix8idIEV+Sp+B+f8bnomy4sr
-   RYvrI3DsrUkdGyGqPyTFJad1j0dxRB5jY0S+V/cqKCUUDo6AeAgqkIULd
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="344170940"
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="344170940"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 15:33:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="541502945"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by orsmga003.jf.intel.com with ESMTP; 30 Jun 2022 15:33:27 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 30 Jun 2022 15:33:27 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 30 Jun 2022 15:33:26 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 30 Jun 2022 15:33:26 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.48) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 30 Jun 2022 15:33:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Iju3SBgH0stkj+DrWB+X5nJsAmpF6AhM8JLm6tRW/jQH/nXtF0usjFW15AmOIiPVAFIjWZFCBWH6Pj6AC+LVPpipS32gNPsAY/YPWCXZAGfGx/PQ03rF/r52v5YMPn93JhPH1sHi3u466bGjtrbVDZd/jjYpdP8jLh0zawR/WfsQFrD5fNHPefHLHva/Vgee4eEAjB0TSYx9APrYqesHasxPzQJf4F5ZtiHk45ye0PNTFoFl7Lo0Kgjx81jumcgwceg7/VrOWfPqv3Wt7AuA3xnBDJQmWdCDQYuMvrUwjuvD4MXl8IhQwbox5zgi5VH0ndNWFvYVAqf2+fDcLboDkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DXSOJOTRjqEquX1xHCZrYCxrJztrwttzuKPcTQ64AR4=;
- b=T3HNYv2zpvXOusYPWup9S2uXou8o15/4NqIkIwZKzIV9jSEgGE/Cj8SfXIxsZ9GIfZS6TSq0CBzVzcsP7JRTmOyBBaUE/DGEpk/f1bZGNf0Z/18td16V+/7CARGGvDtgrXHww0zQD42XyO4vUpeNK3+BUlmakmLrLGyJO9mTTBtsZ8U4gOqEmHf5pIBDSoLvjywoXhZTzLI2qWaQPYYJlogOyEVXoL27jI7w0IrcyuxPO/t2025DgnbcXRnYJh8RW2tqCr5QDlGPweqONF47arqrcULpkUY2PGOjsjzD5U/FzFLO8nJFXgwYu4Habvr+GWipwTR9nO9baIHmf/5llw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CY5PR11MB6139.namprd11.prod.outlook.com (2603:10b6:930:29::17)
- by BL1PR11MB5270.namprd11.prod.outlook.com (2603:10b6:208:313::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Thu, 30 Jun
- 2022 22:33:25 +0000
-Received: from CY5PR11MB6139.namprd11.prod.outlook.com
- ([fe80::a012:82da:5edb:513]) by CY5PR11MB6139.namprd11.prod.outlook.com
- ([fe80::a012:82da:5edb:513%7]) with mapi id 15.20.5395.015; Thu, 30 Jun 2022
- 22:33:25 +0000
-Date:   Thu, 30 Jun 2022 15:33:23 -0700
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-CC:     linux-modules <linux-modules@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [ANNOUNCE] kmod 30
-Message-ID: <20220630223323.2hko2imx62embtsj@ldmartin-desk2>
-X-Patchwork-Hint: comment
-References: <20220630153621.3fggpqrbyvunhwfu@ldmartin-desk2>
- <Yr4fHBR08VAVbs2E@bombadil.infradead.org>
-Content-Type: text/plain; charset="us-ascii"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <Yr4fHBR08VAVbs2E@bombadil.infradead.org>
-X-ClientProxiedBy: MWHPR12CA0048.namprd12.prod.outlook.com
- (2603:10b6:301:2::34) To CY5PR11MB6139.namprd11.prod.outlook.com
- (2603:10b6:930:29::17)
+        Thu, 30 Jun 2022 18:35:06 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9012015738;
+        Thu, 30 Jun 2022 15:35:05 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id p128so620082iof.1;
+        Thu, 30 Jun 2022 15:35:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wRSL3BAQ9cSjBwLvX0MvUxotv8xygASGvhyglffqfJc=;
+        b=7n7tGOKAztZo7Y93SvoygTG/XW+2mIpV6jHYGCxEBK4s6mlEMbYkj9TFYQ45l8LG+q
+         adwnKIdNYN2nGIJQDAnblC8I0hicq4Yx/DlG+jDNaDq0OqLyAwAUE2WuCKqWhhdE6Ba2
+         wCiBniS0tFuLSDxoTQjJEy4+Fb3Cb2fY1tedQ/eHrHL8FVxU86XhdCpuQ64LrALniRzW
+         3jhGEF5v7A7XXG6ZcXE4/56/HQ9zHy0GbqWsHUqtq9ZnUKNaorz+xz52EvpSK/x9Kqdg
+         Pix+JmXBKvi1pJOgCpWhlgL2+DsUuc4bX8x9UhQ1ShSwMRA2Uz5KM8B4gNiPPlgdpMdT
+         qJlQ==
+X-Gm-Message-State: AJIora84sBjCKzG4xXEFNx11Sz0StQc02QOCkrVBbQ52P1rVjRekftoN
+        XtEn+kl/HUOYjNf7U9KVNA==
+X-Google-Smtp-Source: AGRyM1vKkEg24Nmwb6jdLv8Cvrl85bbF8RLOhw5kUucXtxVbfTH8KlYGXG9Wa9A2LmCH/w22yYvRxw==
+X-Received: by 2002:a02:a892:0:b0:33b:b69c:304b with SMTP id l18-20020a02a892000000b0033bb69c304bmr6862519jam.150.1656628504699;
+        Thu, 30 Jun 2022 15:35:04 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id k9-20020a92c9c9000000b002dacf37095esm1659883ilq.69.2022.06.30.15.35.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 15:35:04 -0700 (PDT)
+Received: (nullmailer pid 3449549 invoked by uid 1000);
+        Thu, 30 Jun 2022 22:35:02 -0000
+Date:   Thu, 30 Jun 2022 16:35:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v5 1/3] dt-bindings: arm: qcom: document qcom,msm-id and
+ qcom,board-id
+Message-ID: <20220630223502.GA3441000-robh@kernel.org>
+References: <20220624180036.102510-1-krzysztof.kozlowski@linaro.org>
+ <20220624180036.102510-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ea47546b-14ca-4d06-5949-08da5ae88bb3
-X-MS-TrafficTypeDiagnostic: BL1PR11MB5270:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 252LqAb9GQHK1ffGxKpkc/St0yZoS/7rnHi6K+/E019F1mpEFOmWKLtM5E509K9HMpORu3qe/CHQTZb96VcR/ZuzCogIKauK/kz2oihVPhi9NKmrXkIZxIImMfBETc73zIlu0K1+7NEUN1gn4XbuIAj8+DJIxUtBe0lOVy9q/KZP6lbg140rv8R9WqfWx1vnnvyJRVNXqVnRnnVuwQx25purQsmEG4AqcAGYh6uuXMFNaJIKgKy81Ny3S6BhOIGeLVdCM+2/lXNaLfPqMQkzedk7x9r9542bH56+mEG2HV2FhLKdxRIY5Pdy2yaiPBineLAMwemtr/k9wIz70tQSNFugGUQQvasRXy4JJL+JeU8ZcQ1aEyp0O/ucuZPSOErQ/FqeB8sOEzxmw3T9Pl41K4bDI2JuT1PEG1dFVFyFlcL0szTdqdA7iaQ3uHC66lcFvaXYrBveOspZwt1+GKhsqKzcVhWox2UshSE9y20Hy42jVDOtVNkfb6E5maX6pRGqmdMC40U7rOhYtL3n2DibObr7JUYkRvTkGE+TVuhTx2Gss/NXQbsQOAbo6EaN6AYltmiI3Y25L8+g3hl4bsWqc7hVAfp5q7d1uU036Ule+14fUFHXYIP8TIHyGUydBrtOnW80NtkMy/3hBsXcg/5PHzlI1+pW5N6a2N0bwanUNVU/pqTut+X8+snpjpQRxn/NpVZL7Xlbq6wMKmVMmm5ofCZT/P0Tj9nqtMyrbRYkbLEHjiosmMlcN4j0hsomIGOH
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6139.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(376002)(396003)(136003)(346002)(366004)(39860400002)(26005)(6512007)(9686003)(86362001)(5660300002)(1076003)(2906002)(41300700001)(6506007)(66556008)(38100700002)(54906003)(8676002)(66476007)(4326008)(316002)(66946007)(6916009)(33716001)(6486002)(83380400001)(8936002)(186003)(478600001)(82960400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zasfGHyEZ/W+HIliN1JQHRtCOyna3ShXrmbDK3QVbL/SIY7PqbCwXSYwi/jC?=
- =?us-ascii?Q?XzcIg89g/D3yoxNhiBBTkDmhfeZLRylDnraP8Y7TZZMIFa5mLqa5XXIWus8g?=
- =?us-ascii?Q?NjJVbkGp9IrD/zTZUHOiN/L4sFr7P6THXXoqjexlwJW5issuo4lrTHypZ3bu?=
- =?us-ascii?Q?boJdnC5PlDMQ/LuNigqG+vXJ3vxljfntuWSdwnC5bJ7WIRkSzVCkm1V7MGf2?=
- =?us-ascii?Q?ros1rIEp3nIw59KJU/MJQP5T9VQqf4BgTlc7s2qM40hEM5ErSjRSuuPvfX1E?=
- =?us-ascii?Q?6n60hxik8y0sRHHz3NdWKcu2PHkREnojQ6hhOTV+32L8vA1YruLzRyIWFHDJ?=
- =?us-ascii?Q?2xzEBUZ0jbxhA+N1XeewhZwbMwWgowa1nzrG0IiCHuG0seIK6vQAhkhEymwB?=
- =?us-ascii?Q?QscSV0FBuAp3lMQq1hdDPxW6th5X2lcvWCDsphj/aRbzpTQqFSGzyQaN5age?=
- =?us-ascii?Q?+J0Fkma2VN3op12Upr9iaeT4us7caBbnecv3AmkeQIv/MJVBEKuSqXw5xnxo?=
- =?us-ascii?Q?6ZXQQu/BJX0SKHFS5cXH9MvnK96CKFYo92tgX8/xLbt0Qt9nKR4nqwiEcOF2?=
- =?us-ascii?Q?EhL7a8621KXuXMakOyTJNOuRRX/7CVnD+9bzHLW9DG7YElxqCDQPPqkrH9Kx?=
- =?us-ascii?Q?gfiH2UsHKSDNW4jBLzwd3YlJbFpqEPkEN6OUx+FFGPxErYo2PUUQqJ0/+Nni?=
- =?us-ascii?Q?ug1As23Ok1tp7gwNpQTucPkr1BeIZ7dq9u2JtadmTQBD/frYf8LBb8l9HPG2?=
- =?us-ascii?Q?59SdU29gpT2BLAWBTGtfwoOa3wPm3bdQ8q+qrzVsrhilG3utF9cb+9meaBvv?=
- =?us-ascii?Q?RZex9QkJZMthii/zdgdusuo72IYqPNKwx2p9jnrhzE4m4rZFQLmcdpokZJMD?=
- =?us-ascii?Q?+G0XbPaOlOdBIKlhgdF2wrmiaAdApn6XK1Z/D0yljxXhCENDU73djK5XhttH?=
- =?us-ascii?Q?5hrJVaWLcHcXK+kRp7H/Y3qvJ1XdNhNRwL4VT57XP3/u0pMNXPiwWSmecfB/?=
- =?us-ascii?Q?EMJIX7kY9xorcwq+annyo0OMc5QAwGDUpIe5nEESiIZcwCGdFMlWZLmqiuVG?=
- =?us-ascii?Q?ZdfQBQTj7SdI+GDUoIkIBKwHac+OraVw6ymu0L7dfUmouPLIgkNMJ6L32yPZ?=
- =?us-ascii?Q?ew51Jamw/hYm7WRlh5RE1XCT2DP0Y5d6wh1Lb/swYO0q7udp5B/pUNhbIKUg?=
- =?us-ascii?Q?WBMY/YY97PKCmMHfECTy7qFs9iyefXeDq/WNCSqFn0vMvaZpQX7gpdMVy8Eq?=
- =?us-ascii?Q?wecfAVnUrlgskV/bzMa6LVzKeP+LksTCHqNUBkdj8hJjrpSIBM06gGammJiA?=
- =?us-ascii?Q?tBMoeS34CP1WCdYTmXnw18v2Ao7/oOfFNu/pe2WWQF9xFBipGlyAzPesC8Cy?=
- =?us-ascii?Q?IoReRmyT+yuA4YZ+us09gATafW7SjnNkNiks6X2b8wEr0MVcl3mwVU0vfRti?=
- =?us-ascii?Q?LceH0HsoAnbTFrrtgXGIIUH0S46X0OvGvlSv8+h6oPZY5BCRn3NUfzM35/yj?=
- =?us-ascii?Q?C50AukrPMwbZzAMOeTDTWGQPIC75r7II5PhRV7Sie7hsPWpVfRpXxJOWOGDt?=
- =?us-ascii?Q?OUGDtpxsDtP1TpfIJzpSVeWyA6m/jba7nrTNFfHxz6QvBYmJA1NAaJETLCeQ?=
- =?us-ascii?Q?Dg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea47546b-14ca-4d06-5949-08da5ae88bb3
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6139.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2022 22:33:25.0295
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tcW2heKFfxV3VFAXLsdVpytmF+cELq+c9/yPb+SgZgsKevxISboZxb9gR+jY8dYZqKoCgppcLN896KlQwOVVFXBponzs4SITCaW5HYzhoIQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5270
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624180036.102510-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 03:09:32PM -0700, Luis Chamberlain wrote:
->On Thu, Jun 30, 2022 at 08:36:21AM -0700, Lucas De Marchi wrote:
->>         - modprobe learned a --wait <MSEC> option to be used together with -r
->>           when removing a module. This allows modprobe to keep trying the
->>           removal if it fails because the module is still in use. An exponential backoff
->>           time is used for further retries.
->>
->>           The wait behavior provided by the kernel when not passing O_NONBLOCK
->>           to delete_module() was removed in v3.13 due to not be used and the
->>           consequences of having to support it in the kernel. However there may
->>           be some users, particularly on testsuites for individual susbsystems, that
->>           would want that. So provide a userspace implementation inside modprobe for
->>           such users. "rmmod" doesn't have a --wait as it remains a bare minimal over
->>           the API provided by the kernel. In future the --wait behavior can be added
->>           to libkmod for testsuites not exec'ing modprobe for module removal.
->
->Sorry for the super late review, I was swamped. OK so the only issue
->I can think of is that rmmod *used* to support the kernel wait support
->with $(rmmod --wait) so wouldn't this be odd?
+On Fri, Jun 24, 2022 at 08:00:34PM +0200, Krzysztof Kozlowski wrote:
+> The top level qcom,msm-id and qcom,board-id properties are utilized by
+> bootloaders on Qualcomm MSM platforms to determine which device tree
+> should be used and passed to the kernel.
+> 
+> The commit b32e592d3c28 ("devicetree: bindings: Document qcom board
+> compatible format") from 2015 was a consensus during discussion about
+> upstreaming qcom,msm-id and qcom,board-id fields.  There are however still
+> problems with that consensus:
+> 1. It was reached 7 years ago but it turned out its implementation did
+>    not reach all possible products.
+> 
+> 2. Initially additional tool (dtbTool) was needed for parsing these
+>    fields to create a QCDT image consisting of multiple DTBs, later the
+>    bootloaders were improved and they use these qcom,msm-id and
+>    qcom,board-id properties directly.
+> 
+> 3. Extracting relevant information from the board compatible requires
+>    this additional tool (dtbTool), which makes the build process more
+>    complicated and not easily reproducible (DTBs are modified after the
+>    kernel build).
+> 
+> 4. Some versions of Qualcomm bootloaders expect these properties even
+>    when booting with a single DTB.  The community is stuck with these
+>    bootloaders thus they require properties in the DTBs.
+> 
+> Since several upstreamed Qualcomm SoC-based boards require these
+> properties to properly boot and the properties are reportedly used by
+> bootloaders, document them.
+> 
+> Link: https://lore.kernel.org/r/a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org/
+> Co-developed-by: Kumar Gala <galak@codeaurora.org>
+> Signed-off-by: Kumar Gala <galak@codeaurora.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  .../devicetree/bindings/arm/qcom.yaml         | 120 ++++++++++++++
+>  include/dt-bindings/arm/qcom,ids.h            | 146 ++++++++++++++++++
+>  2 files changed, 266 insertions(+)
+>  create mode 100644 include/dt-bindings/arm/qcom,ids.h
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> index 6c38c1387afd..ea9055d41951 100644
+> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> @@ -403,6 +403,126 @@ properties:
+>                - qcom,sm8450-qrd
+>            - const: qcom,sm8450
+>  
+> +  # Board compatibles go above
+> +
+> +  qcom,msm-id:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +    minItems: 1
+> +    maxItems: 8
+> +    items:
+> +      items:
+> +        - description: |
+> +            MSM chipset ID - an exact match value consisting of two bitfields::
+> +             - bits 0-15  - The unique MSM chipset ID
+> +             - bits 16-31 - Reserved; should be 0
+> +        - description: |
+> +            Hardware revision ID - a chipset specific 32-bit ID representing
+> +            the version of the chipset.  It is best a match value - the
+> +            bootloader will look for the closest possible match.
+> +    deprecated: true
+> +    description:
+> +      The MSM chipset and hardware revision use by Qualcomm bootloaders.  It
+> +      can optionally be an array of these to indicate multiple hardware that
+> +      use the same device tree.  It is expected that the bootloader will use
+> +      this information at boot-up to decide which device tree to use when given
+> +      multiple device trees, some of which may not be compatible with the
+> +      actual hardware.  It is the bootloader's responsibility to pass the
+> +      correct device tree to the kernel.
+> +      The property is deprecated.
+> +
+> +  qcom,board-id:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +    minItems: 1
+> +    maxItems: 8
+> +    oneOf:
+> +      - items:
+> +          - items:
+> +              - description: |
+> +                  Board ID consisting of three bitfields::
+> +                    - bits 31-24 - Unused
+> +                    - bits 23-16 - Platform Version Major
+> +                    - bits 15-8  - Platform Version Minor
+> +                    - bits 7-0   - Platform Type
+> +                  Platform Type field is an exact match value.  The
+> +                  Platform Major/Minor field is a best match.  The bootloader will
+> +                  look for the closest possible match.
+> +              - description: |
+> +                  Subtype ID unique to a Platform Type/Chipset ID.  For a given
+> +                  Platform Type, there will typically only be a single board and the
+> +                  subtype_id will be 0.  However in some cases board variants may
+> +                  need to be distinguished by different subtype_id values.
+> +      - items:
+> +          # OnePlus uses a variant of board-id with four elements:
+> +          - items:
+> +              - const: 8
+> +              - const: 0
+> +              - description: OnePlus board ID
+> +              - description: OnePlus subtype ID
+> +    deprecated: true
+> +    description:
+> +      The board type and revision information.  It can optionally be an array
+> +      of these to indicate multiple boards that use the same device tree.  It
+> +      is expected that the bootloader will use this information at boot-up to
+> +      decide which device tree to use when given multiple device trees, some of
+> +      which may not be compatible with the actual hardware.  It is the
+> +      bootloader's responsibility to pass the correct device tree to the
+> +      kernel
+> +      The property is deprecated.
+> +
+> +allOf:
+> +  # Explicit allow-list for older SoCs. The legacy properties are not allowed
+> +  # on newer SoCs.
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - qcom,apq8026
+> +              - qcom,apq8094
+> +              - qcom,apq8096
+> +              - qcom,msm8992
+> +              - qcom,msm8994
+> +              - qcom,msm8996
+> +              - qcom,msm8998
+> +              - qcom,sdm630
+> +              - qcom,sdm632
+> +              - qcom,sdm845
+> +              - qcom,sdx55
+> +              - qcom,sdx65
+> +              - qcom,sm6125
+> +              - qcom,sm6350
+> +              - qcom,sm7225
+> +              - qcom,sm8150
+> +              - qcom,sm8250
+> +    then:
+> +      properties:
+> +        qcom,board-id: true
+> +        qcom,msm-id: true
+> +    else:
+> +      properties:
+> +        qcom,board-id: false
+> +        qcom,msm-id: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - oneplus,cheeseburger
+> +              - oneplus,dumpling
+> +              - oneplus,enchilada
+> +              - oneplus,fajita
+> +    then:
+> +      properties:
+> +        qcom,board-id:
+> +          items:
+> +            minItems: 4
+> +    else:
+> +      properties:
+> +        qcom,board-id:
+> +          items:
+> +            maxItems: 2
+> +
+>  additionalProperties: true
+>  
+>  ...
+> diff --git a/include/dt-bindings/arm/qcom,ids.h b/include/dt-bindings/arm/qcom,ids.h
+> new file mode 100644
+> index 000000000000..635d4ebba3fe
+> --- /dev/null
+> +++ b/include/dt-bindings/arm/qcom,ids.h
+> @@ -0,0 +1,146 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
 
-any reason not to use modprobe -r? Argument for rmmod supporting it in
-the past is that the wait was implemented on the kernel side and rmmod
-is the minimum wrapper around what the kernel provides.
+Sigh... Pretty sure relicensing this is okay.
 
-On the other side, user shouldn't need to know where that is
-implemented.
+> +/*
+> + * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2022 Linaro Ltd
+> + * Author: Krzysztof Kozlowski <krzk@kernel.org> based on previous work of Kumar Gala.
+> + */
+> +#ifndef _DT_BINDINGS_ARM_QCOM_IDS_H
+> +#define _DT_BINDINGS_ARM_QCOM_IDS_H
+> +
+> +/* qcom,msm-id */
+> +#define QCOM_ID_MSM8960			87
+> +#define QCOM_ID_APQ8064			109
+> +#define QCOM_ID_MSM8660A		122
+> +#define QCOM_ID_MSM8260A		123
+> +#define QCOM_ID_APQ8060A		124
+> +#define QCOM_ID_MSM8974			126
+> +#define QCOM_ID_MPQ8064			130
+> +#define QCOM_ID_MSM8960AB		138
+> +#define QCOM_ID_APQ8060AB		139
+> +#define QCOM_ID_MSM8260AB		140
+> +#define QCOM_ID_MSM8660AB		141
+> +#define QCOM_ID_MSM8626			145
+> +#define QCOM_ID_MSM8610			147
+> +#define QCOM_ID_APQ8064AB		153
+> +#define QCOM_ID_MSM8226			158
+> +#define QCOM_ID_MSM8526			159
+> +#define QCOM_ID_MSM8110			161
+> +#define QCOM_ID_MSM8210			162
+> +#define QCOM_ID_MSM8810			163
+> +#define QCOM_ID_MSM8212			164
+> +#define QCOM_ID_MSM8612			165
+> +#define QCOM_ID_MSM8112			166
+> +#define QCOM_ID_MSM8225Q		168
+> +#define QCOM_ID_MSM8625Q		169
+> +#define QCOM_ID_MSM8125Q		170
+> +#define QCOM_ID_APQ8064AA		172
+> +#define QCOM_ID_APQ8084			178
+> +#define QCOM_ID_APQ8074			184
+> +#define QCOM_ID_MSM8274			185
+> +#define QCOM_ID_MSM8674			186
+> +#define QCOM_ID_MSM8974PRO_AC		194
+> +#define QCOM_ID_MSM8126			198
+> +#define QCOM_ID_APQ8026			199
+> +#define QCOM_ID_MSM8926			200
+> +#define QCOM_ID_MSM8326			205
+> +#define QCOM_ID_MSM8916			206
+> +#define QCOM_ID_MSM8994			207
+> +#define QCOM_ID_APQ8074PRO_AA		208
+> +#define QCOM_ID_APQ8074PRO_AB		209
+> +#define QCOM_ID_APQ8074PRO_AC		210
+> +#define QCOM_ID_MSM8274PRO_AA		211
+> +#define QCOM_ID_MSM8274PRO_AB		212
+> +#define QCOM_ID_MSM8274PRO_AC		213
+> +#define QCOM_ID_MSM8674PRO_AA		214
+> +#define QCOM_ID_MSM8674PRO_AB		215
+> +#define QCOM_ID_MSM8674PRO_AC		216
+> +#define QCOM_ID_MSM8974PRO_AA		217
+> +#define QCOM_ID_MSM8974PRO_AB		218
+> +#define QCOM_ID_APQ8028			219
+> +#define QCOM_ID_MSM8128			220
+> +#define QCOM_ID_MSM8228			221
+> +#define QCOM_ID_MSM8528			222
+> +#define QCOM_ID_MSM8628			223
+> +#define QCOM_ID_MSM8928			224
+> +#define QCOM_ID_MSM8510			225
+> +#define QCOM_ID_MSM8512			226
+> +#define QCOM_ID_MSM8936			233
+> +#define QCOM_ID_MSM8939			239
+> +#define QCOM_ID_APQ8036			240
+> +#define QCOM_ID_APQ8039			241
+> +#define QCOM_ID_MSM8996			246
+> +#define QCOM_ID_APQ8016			247
+> +#define QCOM_ID_MSM8216			248
+> +#define QCOM_ID_MSM8116			249
+> +#define QCOM_ID_MSM8616			250
+> +#define QCOM_ID_MSM8992			251
+> +#define QCOM_ID_APQ8094			253
+> +#define QCOM_ID_MDM9607			290
+> +#define QCOM_ID_APQ8096			291
+> +#define QCOM_ID_MSM8998			292
+> +#define QCOM_ID_MSM8953			293
+> +#define QCOM_ID_MDM8207			296
+> +#define QCOM_ID_MDM9207			297
+> +#define QCOM_ID_MDM9307			298
+> +#define QCOM_ID_MDM9628			299
+> +#define QCOM_ID_APQ8053			304
+> +#define QCOM_ID_MSM8996SG		305
+> +#define QCOM_ID_MSM8996AU		310
+> +#define QCOM_ID_APQ8096AU		311
+> +#define QCOM_ID_APQ8096SG		312
+> +#define QCOM_ID_SDM660			317
+> +#define QCOM_ID_SDM630			318
+> +#define QCOM_ID_APQ8098			319
+> +#define QCOM_ID_SDM845			321
+> +#define QCOM_ID_MDM9206			322
+> +#define QCOM_ID_IPQ8074			323
+> +#define QCOM_ID_SDA660			324
+> +#define QCOM_ID_SDM658			325
+> +#define QCOM_ID_SDA658			326
+> +#define QCOM_ID_SDA630			327
+> +#define QCOM_ID_SDM450			338
+> +#define QCOM_ID_SDA845			341
+> +#define QCOM_ID_IPQ8072			342
+> +#define QCOM_ID_IPQ8076			343
+> +#define QCOM_ID_IPQ8078			344
+> +#define QCOM_ID_SDM636			345
+> +#define QCOM_ID_SDA636			346
+> +#define QCOM_ID_SDM632			349
+> +#define QCOM_ID_SDA632			350
+> +#define QCOM_ID_SDA450			351
+> +#define QCOM_ID_SM8250			356
+> +#define QCOM_ID_IPQ8070			375
+> +#define QCOM_ID_IPQ8071			376
+> +#define QCOM_ID_IPQ8072A		389
+> +#define QCOM_ID_IPQ8074A		390
+> +#define QCOM_ID_IPQ8076A		391
+> +#define QCOM_ID_IPQ8078A		392
+> +#define QCOM_ID_SM6125			394
+> +#define QCOM_ID_IPQ8070A		395
+> +#define QCOM_ID_IPQ8071A		396
+> +#define QCOM_ID_IPQ6018			402
+> +#define QCOM_ID_IPQ6028			403
+> +#define QCOM_ID_IPQ6000			421
+> +#define QCOM_ID_IPQ6010			422
+> +#define QCOM_ID_SC7180			425
+> +#define QCOM_ID_SM6350			434
+> +#define QCOM_ID_SM8350			439
+> +#define QCOM_ID_SC8280XP		449
+> +#define QCOM_ID_IPQ6005			453
+> +#define QCOM_ID_QRB5165			455
+> +#define QCOM_ID_SM8450			457
+> +#define QCOM_ID_SM7225			459
+> +#define QCOM_ID_SA8540P			460
+> +#define QCOM_ID_SM8450_2		480
+> +#define QCOM_ID_SM8450_3		482
 
-Over time libkmod grew much more to support loading/querying modules
-rather than removing. I think for next version I will move some of the
-module-removal support to libkmod rather than modprobe/rmmod. Then we
-can think again on supporting that flag there.
+> +#define QCOM_ID_SC7280			487
 
->
->It is why I had gone with:
->
-> -p | --remove-patiently   patiently removes the module
-> -t | --timeout            timeout in ms to remove the module
->
->You would know better though.
->
->Also just curious, is it really terrible to just support waiting
->forever?
+Not what I'd call an old SoC and not in the allowed list. Neither are a 
+bunch of others.
 
-is there a use case for that? If we are trying to cover some races, I
-imagine a small timeout would be sufficient. Also notice that if the
-timeout is too big, so will be the interval between the retries.  On
-your v2 I had suggested polling the refcnt so we would get notificed
-on changes, but as you also noticed, that didn't work very well.  So I
-went back to a time-based retry solution.
-
-if there is a use-case, should we cap the interval between retries?
-
-thanks
-Lucas De Marchi
-
->
->  Luis
+Rob
