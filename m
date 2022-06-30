@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A76BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC85C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236214AbiF3ODM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
+        id S236270AbiF3ODQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236295AbiF3OBk (ORCPT
+        with ESMTP id S235365AbiF3OB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:01:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9C844A2C;
-        Thu, 30 Jun 2022 06:52:46 -0700 (PDT)
+        Thu, 30 Jun 2022 10:01:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48ACD50718;
+        Thu, 30 Jun 2022 06:52:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B0466204B;
-        Thu, 30 Jun 2022 13:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3741FC34115;
-        Thu, 30 Jun 2022 13:52:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53A26B82AEF;
+        Thu, 30 Jun 2022 13:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A4FC34115;
+        Thu, 30 Jun 2022 13:52:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597163;
-        bh=3idDa8ATqAbwQApJrzgq1aI3YN9/sb++FYb3ppCmv3M=;
+        s=korg; t=1656597147;
+        bh=TBHOlCgI4P/ivcpcBjHQMwjrR2XUb2vJ4UkttqkCnUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bo7bD4vq2zF/IK/txFbyz4gAXgK3Ri52mUaeCMjGAc39xOdDKJeIPeUFiF7Cbwg+x
-         MfelusT0ZDPSjaAGXRD85vblQGLisF5eSyVXK1v6Sfhs+dxb7AVoRBnCfKSu7uZoAp
-         HtyJThkByAx7MzbbyNmPy0uPC41xh0vMwo9UR8sk=
+        b=1vsdSaxQeDSzi5+PqGbDap0NpkWqwlowOcI175KsbPu2BrqVyXXUlpLQECIrmC6kd
+         DxifrxN5GzonxHzBaOCw2SadpOA1tcVzlRhnPoxz3vIj6P2DIo6Xprb60MoxtbzANC
+         BoX6erQBF34sj8ULbsNDsSd0sCM7368xTFxj21Po=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thorsten Glaser <tg@mirbsd.de>,
-        Diederik de Haas <didi.debian@cknow.org>
-Subject: [PATCH 4.19 48/49] net/sched: move NULL ptr check to qdisc_put() too
-Date:   Thu, 30 Jun 2022 15:47:01 +0200
-Message-Id: <20220630133235.289157437@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Christoph Hellwig <hch@lst.de>, Jessica Yu <jeyu@kernel.org>
+Subject: [PATCH 4.19 43/49] drm: remove drm_fb_helper_modinit
+Date:   Thu, 30 Jun 2022 15:46:56 +0200
+Message-Id: <20220630133235.144699150@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -48,49 +48,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Diederik de Haas <didi.debian@cknow.org>
+From: Christoph Hellwig <hch@lst.de>
 
-In commit 92833e8b5db6c209e9311ac8c6a44d3bf1856659 titled
-"net: sched: rename qdisc_destroy() to qdisc_put()" part of the
-functionality of qdisc_destroy() was moved into a (for linux-4.19.y)
-new function qdisk_put(), and the previous calls to qdisc_destroy()
-were changed to qdisk_put().
-This made it similar to f.e. 5.10.y and current master.
+commit bf22c9ec39da90ce866d5f625d616f28bc733dc1 upstream.
 
-There was one part of qdisc_destroy() not moved over to qdisc_put() and
-that was the check for a NULL pointer, causing oopses.
-(See upstream commit: 6efb971ba8edfbd80b666f29de12882852f095ae)
-This patch fixes that.
+drm_fb_helper_modinit has a lot of boilerplate for what is not very
+simple functionality.  Just open code it in the only caller using
+IS_ENABLED and IS_MODULE, and skip the find_module check as a
+request_module is harmless if the module is already loaded (and not
+other caller has this find_module check either).
 
-Fixes: 92833e8b5db6c209e9311ac8c6a44d3bf1856659
-Reported-by: Thorsten Glaser <tg@mirbsd.de>
-Link: https://bugs.debian.org/1013299
-Signed-off-by: Diederik de Haas <didi.debian@cknow.org>
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jessica Yu <jeyu@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/sch_generic.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_crtc_helper_internal.h |   10 ----------
+ drivers/gpu/drm/drm_fb_helper.c            |   21 ---------------------
+ drivers/gpu/drm/drm_kms_helper_common.c    |   23 +++++++++++------------
+ 3 files changed, 11 insertions(+), 43 deletions(-)
 
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -970,8 +970,6 @@ static void qdisc_destroy(struct Qdisc *
- 	const struct Qdisc_ops *ops;
- 	struct sk_buff *skb, *tmp;
+--- a/drivers/gpu/drm/drm_crtc_helper_internal.h
++++ b/drivers/gpu/drm/drm_crtc_helper_internal.h
+@@ -32,16 +32,6 @@
+ #include <drm/drm_encoder.h>
+ #include <drm/drm_modes.h>
  
--	if (!qdisc)
--		return;
- 	ops = qdisc->ops;
+-/* drm_fb_helper.c */
+-#ifdef CONFIG_DRM_FBDEV_EMULATION
+-int drm_fb_helper_modinit(void);
+-#else
+-static inline int drm_fb_helper_modinit(void)
+-{
+-	return 0;
+-}
+-#endif
+-
+ /* drm_dp_aux_dev.c */
+ #ifdef CONFIG_DRM_DP_AUX_CHARDEV
+ int drm_dp_aux_dev_init(void);
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -3270,24 +3270,3 @@ int drm_fbdev_generic_setup(struct drm_d
+ 	return 0;
+ }
+ EXPORT_SYMBOL(drm_fbdev_generic_setup);
+-
+-/* The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
+- * but the module doesn't depend on any fb console symbols.  At least
+- * attempt to load fbcon to avoid leaving the system without a usable console.
+- */
+-int __init drm_fb_helper_modinit(void)
+-{
+-#if defined(CONFIG_FRAMEBUFFER_CONSOLE_MODULE) && !defined(CONFIG_EXPERT)
+-	const char name[] = "fbcon";
+-	struct module *fbcon;
+-
+-	mutex_lock(&module_mutex);
+-	fbcon = find_module(name);
+-	mutex_unlock(&module_mutex);
+-
+-	if (!fbcon)
+-		request_module_nowait(name);
+-#endif
+-	return 0;
+-}
+-EXPORT_SYMBOL(drm_fb_helper_modinit);
+--- a/drivers/gpu/drm/drm_kms_helper_common.c
++++ b/drivers/gpu/drm/drm_kms_helper_common.c
+@@ -63,19 +63,18 @@ MODULE_PARM_DESC(edid_firmware,
  
- #ifdef CONFIG_NET_SCHED
-@@ -1003,6 +1001,9 @@ static void qdisc_destroy(struct Qdisc *
- 
- void qdisc_put(struct Qdisc *qdisc)
+ static int __init drm_kms_helper_init(void)
  {
-+	if (!qdisc)
-+		return;
-+
- 	if (qdisc->flags & TCQ_F_BUILTIN ||
- 	    !refcount_dec_and_test(&qdisc->refcnt))
- 		return;
+-	int ret;
++	/*
++	 * The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
++	 * but the module doesn't depend on any fb console symbols.  At least
++	 * attempt to load fbcon to avoid leaving the system without a usable
++	 * console.
++	 */
++	if (IS_ENABLED(CONFIG_DRM_FBDEV_EMULATION) &&
++	    IS_MODULE(CONFIG_FRAMEBUFFER_CONSOLE) &&
++	    !IS_ENABLED(CONFIG_EXPERT))
++		request_module_nowait("fbcon");
+ 
+-	/* Call init functions from specific kms helpers here */
+-	ret = drm_fb_helper_modinit();
+-	if (ret < 0)
+-		goto out;
+-
+-	ret = drm_dp_aux_dev_init();
+-	if (ret < 0)
+-		goto out;
+-
+-out:
+-	return ret;
++	return drm_dp_aux_dev_init();
+ }
+ 
+ static void __exit drm_kms_helper_exit(void)
 
 
