@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 661DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD585C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235762AbiF3Nzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
+        id S235929AbiF3Nz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235896AbiF3Nyu (ORCPT
+        with ESMTP id S235801AbiF3Ny7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:54:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841A236B7D;
-        Thu, 30 Jun 2022 06:50:26 -0700 (PDT)
+        Thu, 30 Jun 2022 09:54:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82C65A46B;
+        Thu, 30 Jun 2022 06:50:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17CFA61FD8;
-        Thu, 30 Jun 2022 13:50:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D31C34115;
-        Thu, 30 Jun 2022 13:50:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDFEAB82AD8;
+        Thu, 30 Jun 2022 13:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3F11C3411E;
+        Thu, 30 Jun 2022 13:50:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597025;
-        bh=r/AUmqVNZ/rqk8TyaWRYjSqZNwcpqBfVSV8e106GGsk=;
+        s=korg; t=1656597028;
+        bh=vyo2qOmr7Aa0fK2HLMk9KQPHq4OLN6PaVvRBMTn4xfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NwpNXueBq+fbdIoyvMXfAqXvxUeXfMnMW+r67nPg//C+CqQrPPDjncB6z9XB5kaST
-         UFzAgOVXwftju2wMhh/v9DVhi40q+xF2VWFhG4bWuFYRs/az27lGLvmoKct1q0cI34
-         U/JyZIADN8A0nIJ3XmIQrIBYiljUgLUoaKFkeHxc=
+        b=mE6cwIJcS27e2VM3rXJd4hs3tAs8v8csgh4h0pCUAUGXNiggu3MCFSRk+FuoUJ6TB
+         92VBtf1Dlb10KjjAwjgieZyARJ05MS/jsUz+q2+qVz9KDkg+buYARqq0OM3I//60MX
+         LMphAzvyKKi2pzWAD3yqqZvrIyl3gCXCyQYEa+Ec=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Ron Economos <re@w6rz.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 05/35] random: quiet urandom warning ratelimit suppression message
-Date:   Thu, 30 Jun 2022 15:46:16 +0200
-Message-Id: <20220630133232.600336036@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        Carlo Lobrano <c.lobrano@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.14 06/35] USB: serial: option: add Telit LE910Cx 0x1250 composition
+Date:   Thu, 30 Jun 2022 15:46:17 +0200
+Message-Id: <20220630133232.629342153@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -49,72 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Carlo Lobrano <c.lobrano@gmail.com>
 
-commit c01d4d0a82b71857be7449380338bc53dde2da92 upstream.
+commit 342fc0c3b345525da21112bd0478a0dc741598ea upstream.
 
-random.c ratelimits how much it warns about uninitialized urandom reads
-using __ratelimit(). When the RNG is finally initialized, it prints the
-number of missed messages due to ratelimiting.
+Add support for the following Telit LE910Cx composition:
 
-It has been this way since that functionality was introduced back in
-2018. Recently, cc1e127bfa95 ("random: remove ratelimiting for in-kernel
-unseeded randomness") put a bit more stress on the urandom ratelimiting,
-which teased out a bug in the implementation.
+0x1250: rmnet, tty, tty, tty, tty
 
-Specifically, when under pressure, __ratelimit() will print its own
-message and reset the count back to 0, making the final message at the
-end less useful. Secondly, it does so as a pr_warn(), which apparently
-is undesirable for people's CI.
-
-Fortunately, __ratelimit() has the RATELIMIT_MSG_ON_RELEASE flag exactly
-for this purpose, so we set the flag.
-
-Fixes: 4e00b339e264 ("random: rate limit unseeded randomness warnings")
+Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
+Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
+Link: https://lore.kernel.org/r/20220614075623.2392607-1-c.lobrano@gmail.com
 Cc: stable@vger.kernel.org
-Reported-by: Jon Hunter <jonathanh@nvidia.com>
-Reported-by: Ron Economos <re@w6rz.net>
-Tested-by: Ron Economos <re@w6rz.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c     |    2 +-
- include/linux/ratelimit.h |   12 ++++++++----
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/usb/serial/option.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -88,7 +88,7 @@ static RAW_NOTIFIER_HEAD(random_ready_ch
- 
- /* Control how we warn userspace. */
- static struct ratelimit_state urandom_warning =
--	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
-+	RATELIMIT_STATE_INIT_FLAGS("urandom_warning", HZ, 3, RATELIMIT_MSG_ON_RELEASE);
- static int ratelimit_disable __read_mostly =
- 	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
---- a/include/linux/ratelimit.h
-+++ b/include/linux/ratelimit.h
-@@ -23,12 +23,16 @@ struct ratelimit_state {
- 	unsigned long	flags;
- };
- 
--#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) {		\
--		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),	\
--		.interval	= interval_init,			\
--		.burst		= burst_init,				\
-+#define RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, flags_init) { \
-+		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		  \
-+		.interval	= interval_init,				  \
-+		.burst		= burst_init,					  \
-+		.flags		= flags_init,					  \
- 	}
- 
-+#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) \
-+	RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, 0)
-+
- #define RATELIMIT_STATE_INIT_DISABLED					\
- 	RATELIMIT_STATE_INIT(ratelimit_state, 0, DEFAULT_RATELIMIT_BURST)
- 
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1282,6 +1282,7 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1231, 0xff),	/* Telit LE910Cx (RNDIS) */
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(TELIT_VENDOR_ID, 0x1250, 0xff, 0x00, 0x00) },	/* Telit LE910Cx (rmnet) */
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1260),
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x1261),
 
 
