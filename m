@@ -2,111 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C09C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0BB8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235443AbiF3Nuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:50:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        id S235579AbiF3Num (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235414AbiF3Ntk (ORCPT
+        with ESMTP id S235436AbiF3Ntk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 09:49:40 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525A737AB4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:48:51 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id fi2so39084226ejb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:48:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UyZCaF6+qRS4Tv5koTh8Q5qQEkydwOcaODvMQ6qR/MQ=;
-        b=e+d4Orc3w9dk00wlozE8gVY3xNuuARW9q+cHmyLq1PSkXNMae9wkooVTYoNLTXyQf+
-         PC5ps9jB7YSMaSjBP3tnC6OmiAxYPjQbQPwm2GcsyseAqHFWVDsAs09i8thDK07HfgvF
-         SqvzNpmKn4LX3fGYDP9dO0mrKQzGWA+M0t8dw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UyZCaF6+qRS4Tv5koTh8Q5qQEkydwOcaODvMQ6qR/MQ=;
-        b=0LqWycFY5HlTe/FsMyu/l33Qcwr9GrjRNHRBncX59ut2O2EII9063FmRngqiLNCE8+
-         nCDhXSUJ06ulrZ+u2ZVvmEKJ15oD3dZtJHS+yKwY+8TDvPr790DOH+3yDFJPM7pR6njX
-         kv6IMkXHeYQ88TQ6HEjQKe4Zl5QiEM2YxBZX4HfiAoHDHqKAiY/pf8zofoODvpqdA4gl
-         WFSglFXBjDElrVBg0hLwJC0/y4sXyESu6TPefZMw93/K1O6MyPiTejjE+rrd/xJ0MEDv
-         4XCfchBD9UYnYLFPpEtyz30GI2Q0z3zPPx0WAO7nAakWNgVnva0H+Qra8z3oborvAUWn
-         b0cw==
-X-Gm-Message-State: AJIora/cr8Il48OykOVs8FNnvql2XdqfK+Hm8RHB74GtWvEOewnzCBzm
-        ybHEQiyRmD7Op1dfw6/Ku8KPJg==
-X-Google-Smtp-Source: AGRyM1vfwOsKJqKBaA9zfwKUYoEU7G0JNUoJlfJ976EVKpA6FQR446obllP4hc3kQcE34zIsmcvIdA==
-X-Received: by 2002:a17:907:2d9e:b0:726:a03a:16c4 with SMTP id gt30-20020a1709072d9e00b00726a03a16c4mr8483121ejc.742.1656596929413;
-        Thu, 30 Jun 2022 06:48:49 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-58-216.cust.vodafonedsl.it. [188.217.58.216])
-        by smtp.gmail.com with ESMTPSA id k5-20020a1709067ac500b006fee526ed72sm9130288ejo.217.2022.06.30.06.48.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 06:48:49 -0700 (PDT)
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     tommaso.merciai@amarulasolutions.com
-Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
-        quentin.schulz@theobroma-systems.com,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 6/6] media: ov5693: add ov5693_of_match, dts support
-Date:   Thu, 30 Jun 2022 15:48:35 +0200
-Message-Id: <20220630134835.592521-7-tommaso.merciai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220630134835.592521-1-tommaso.merciai@amarulasolutions.com>
-References: <20220630134835.592521-1-tommaso.merciai@amarulasolutions.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8201E3819B;
+        Thu, 30 Jun 2022 06:48:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEABEB82AF0;
+        Thu, 30 Jun 2022 13:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FDAC34115;
+        Thu, 30 Jun 2022 13:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656596928;
+        bh=VyBoNb0MA5Em4XExPFLcsv/GBeNGStfKyGyf022I8qs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0Y8MG5Fc5tCMcgwPypK7uajMH4EWHGHRm/P/TMuIPmNUfslx01B8hM5WWTms2kRN1
+         i0WjaQKWKZYk5ZuwvI8acuTrZLTmMFFLwN1Vw0/airBk0xdw/aZjt8G21nCW141RIF
+         cJh5X1lzzBwLwgQ3qiqOGgRCrOCLsl7c2nHZpthw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nikos Tsironis <ntsironis@arrikto.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.9 04/29] dm era: commit metadata in postsuspend after worker stops
+Date:   Thu, 30 Jun 2022 15:46:04 +0200
+Message-Id: <20220630133231.333372335@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220630133231.200642128@linuxfoundation.org>
+References: <20220630133231.200642128@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ov5693_of_match. Device tree support
+From: Nikos Tsironis <ntsironis@arrikto.com>
 
-Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Reviewed-by: Daniel Scally <djrscally@gmail.com>
+commit 9ae6e8b1c9bbf6874163d1243e393137313762b7 upstream.
+
+During postsuspend dm-era does the following:
+
+1. Archives the current era
+2. Commits the metadata, as part of the RPC call for archiving the
+   current era
+3. Stops the worker
+
+Until the worker stops, it might write to the metadata again. Moreover,
+these writes are not flushed to disk immediately, but are cached by the
+dm-bufio client, which writes them back asynchronously.
+
+As a result, the committed metadata of a suspended dm-era device might
+not be consistent with the in-core metadata.
+
+In some cases, this can result in the corruption of the on-disk
+metadata. Suppose the following sequence of events:
+
+1. Load a new table, e.g. a snapshot-origin table, to a device with a
+   dm-era table
+2. Suspend the device
+3. dm-era commits its metadata, but the worker does a few more metadata
+   writes until it stops, as part of digesting an archived writeset
+4. These writes are cached by the dm-bufio client
+5. Load the dm-era table to another device.
+6. The new instance of the dm-era target loads the committed, on-disk
+   metadata, which don't include the extra writes done by the worker
+   after the metadata commit.
+7. Resume the new device
+8. The new dm-era target instance starts using the metadata
+9. Resume the original device
+10. The destructor of the old dm-era target instance is called and
+    destroys the dm-bufio client, which results in flushing the cached
+    writes to disk
+11. These writes might overwrite the writes done by the new dm-era
+    instance, hence corrupting its metadata.
+
+Fix this by committing the metadata after the worker stops running.
+
+stop_worker uses flush_workqueue to flush the current work. However, the
+work item may re-queue itself and flush_workqueue doesn't wait for
+re-queued works to finish.
+
+This could result in the worker changing the metadata after they have
+been committed, or writing to the metadata concurrently with the commit
+in the postsuspend thread.
+
+Use drain_workqueue instead, which waits until the work and all
+re-queued works finish.
+
+Fixes: eec40579d8487 ("dm: add era target")
+Cc: stable@vger.kernel.org # v3.15+
+Signed-off-by: Nikos Tsironis <ntsironis@arrikto.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Changes since v2:
- - Change patch order 7 -> 6 as suggested by Sakari
- - Add missing signed-off as suggested by Jacopo
+ drivers/md/dm-era-target.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Changes since v3:
- - Add reviewed-by tags, suggested by Jacopo, Krzysztof
-
-Changes since v4:
- - Remove wrong Sakari reviewed-by tag, suggested by Krzysztof, Sakari
- - Add Daniel reviewed-by tag
-
- drivers/media/i2c/ov5693.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/media/i2c/ov5693.c b/drivers/media/i2c/ov5693.c
-index 3c805a5a5181..5930207193c7 100644
---- a/drivers/media/i2c/ov5693.c
-+++ b/drivers/media/i2c/ov5693.c
-@@ -1532,10 +1532,17 @@ static const struct acpi_device_id ov5693_acpi_match[] = {
- };
- MODULE_DEVICE_TABLE(acpi, ov5693_acpi_match);
+--- a/drivers/md/dm-era-target.c
++++ b/drivers/md/dm-era-target.c
+@@ -1398,7 +1398,7 @@ static void start_worker(struct era *era
+ static void stop_worker(struct era *era)
+ {
+ 	atomic_set(&era->suspended, 1);
+-	flush_workqueue(era->wq);
++	drain_workqueue(era->wq);
+ }
  
-+static const struct of_device_id ov5693_of_match[] = {
-+	{ .compatible = "ovti,ov5693", },
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, ov5693_of_match);
+ /*----------------------------------------------------------------
+@@ -1583,6 +1583,12 @@ static void era_postsuspend(struct dm_ta
+ 	}
+ 
+ 	stop_worker(era);
 +
- static struct i2c_driver ov5693_driver = {
- 	.driver = {
- 		.name = "ov5693",
- 		.acpi_match_table = ov5693_acpi_match,
-+		.of_match_table = ov5693_of_match,
- 		.pm = &ov5693_pm_ops,
- 	},
- 	.probe_new = ov5693_probe,
--- 
-2.25.1
++	r = metadata_commit(era->md);
++	if (r) {
++		DMERR("%s: metadata_commit failed", __func__);
++		/* FIXME: fail mode */
++	}
+ }
+ 
+ static int era_preresume(struct dm_target *ti)
+
 
