@@ -2,81 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47112C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 15:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 894D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 15:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235844AbiF3PoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 11:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
+        id S236042AbiF3Ppm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 11:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235669AbiF3PoM (ORCPT
+        with ESMTP id S236033AbiF3Ppe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 11:44:12 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3557815A05;
-        Thu, 30 Jun 2022 08:44:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IcWzBGmd5zZp0WxQBYsneB6E8zWmcy5CxnK6uyIIvQI=; b=pL3s9qUXp11qJa4cplmb32XiOV
-        nHL1SXpsF1V39XAN4CQIo8fhSZZXisgoqg1CP7vvBIHUgWBysIfpRuL5QhGc3mAqm8orc/KNQKkTG
-        92lZIO2pFb2dPC3FG+t0E16IDHAxpO7GREK4k41LKHcSEw3Zzx3uroYksGFMzKCDbJ4prwi0cyDup
-        rGKvLO6rCqXqjbIQv+x1I9YYfzl4R4UlEV8EWtMMTvbBr0TfdyYp/GfWqsmigetu7yJEf4ZoOf4Fx
-        mksMGAhfifaC8Lyvs6/wOk0X7vXmEuLjJE0vMVpotT/vSMBS7cvmXD9g0cwaDkl8O1YIUe2uy1gw6
-        mRRpT3Pg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o6wKA-00FI8t-RT; Thu, 30 Jun 2022 15:43:31 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 435FB30027E;
-        Thu, 30 Jun 2022 17:43:20 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 21DCD285D6B9E; Thu, 30 Jun 2022 17:43:20 +0200 (CEST)
-Date:   Thu, 30 Jun 2022 17:43:20 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     will@kernel.org, boqun.feng@gmail.com, mark.rutland@arm.com,
-        thunder.leizhen@huawei.com, jacob.e.keller@intel.com,
-        akpm@linux-foundation.org, linux-sparse@vger.kernel.org,
-        cluster-devel@redhat.com, luc.vanoostenryck@gmail.com,
-        torvalds@linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC 1/2] refcount: add __cond_lock() for conditional lock
- refcount API
-Message-ID: <Yr3EmEcO1AMFRlLA@hirez.programming.kicks-ass.net>
-References: <20220630135934.1799248-1-aahringo@redhat.com>
- <20220630135934.1799248-2-aahringo@redhat.com>
+        Thu, 30 Jun 2022 11:45:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA463ED2C;
+        Thu, 30 Jun 2022 08:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656603933; x=1688139933;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vceBJPM7pAliuAdE9zz4lHO2gZf1DKKE+nYApMmwk5k=;
+  b=OX8gE8w+KxgE1fqh+YRvKfjcOSCBFxUKEf6TwAIr22I+QwqDQV3TnB09
+   vvO/svKlPaP5NWJs6xws722WqhAfqweMV00xFwKEAfUF67SvQy7mePtwe
+   /BT41yR1r8dIeHjKRg0Y46CtGDTpbG4E7vfxCMmjcRY3QTSqWfMdDWdzM
+   xYsl12xycspBlWG+nTkMfecEnjIYh3Z+4/6jySoy8144sWSjxUaXlLxcc
+   cGWB/HU/F6fYR1imuVWeIKchF++gg/LA8sjQFdHTD3H6UcAoUmQ4HqraE
+   vxR+zeTyRAu4n64jcs0CmxEVh74iC/Beu185xOH2ZiXWg978dFyxF0sOH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="279929607"
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="279929607"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 08:45:33 -0700
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="659042389"
+Received: from bhavanat-mobl.amr.corp.intel.com (HELO [10.209.17.179]) ([10.209.17.179])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 08:45:32 -0700
+Message-ID: <6abe32e1-51f8-a303-4ddb-2347dddcc960@intel.com>
+Date:   Thu, 30 Jun 2022 08:44:13 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630135934.1799248-2-aahringo@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 04/22] x86/virt/tdx: Prevent ACPI CPU hotplug and ACPI
+ memory hotplug
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, Chao Gao <chao.gao@intel.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, thomas.lendacky@amd.com,
+        Tianyu.Lan@microsoft.com
+References: <cover.1655894131.git.kai.huang@intel.com>
+ <3a1c9807d8c140bdd550cd5736664f86782cca64.1655894131.git.kai.huang@intel.com>
+ <20220624014112.GA15566@gao-cwp>
+ <951da5eeb4214521635602ce3564246ad49018f5.camel@intel.com>
+ <a2277c2f-91a1-871f-08f1-42950bca53b3@intel.com>
+ <292182cbe779aade47580ac23dc304856619c799.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <292182cbe779aade47580ac23dc304856619c799.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 09:59:33AM -0400, Alexander Aring wrote:
-> This patch adds the __cond_lock() macro to refcounts conditional lock
-> API. Currently sparse cannot detect the conditional lock handling of
-> refcount_dec_and_lock() functionality and prints a context imbalance
-> warning like:
+On 6/29/22 16:02, Kai Huang wrote:
+> On Wed, 2022-06-29 at 07:22 -0700, Dave Hansen wrote:
+>> On 6/24/22 04:21, Kai Huang wrote:
+>> What does that #ifdef get us?  I suspect you're back to trying to
+>> silence compiler warnings with #ifdefs.  The compiler *knows* that it's
+>> only used in this file.  It's also used all of once.  If you make it
+>> 'static inline', you'll likely get the same code generation, no
+>> warnings, and don't need an #ifdef.
 > 
-> warning: context imbalance in 'put_rsb' - unexpected unlock
+> The purpose is not to avoid warning, but to make intel_cc_platform_has(enum
+> cc_attr attr) simple that when neither TDX host and TDX guest code is turned on,
+> it can be simple:
 > 
-> with this patch and having the refcount_dec_and_lock() functionality
-> inside the if condition to decide whenever doing unlock or not the
-> warning disappears.
+> 	static bool  intel_cc_platform_has(enum cc_attr attr)
+> 	{
+> 		return false;
+> 	}
 > 
-> The patch follows a similar naming scheme like raw_spin_trylock() by
-> adding a "raw_" prefix to refcount_dec_and_lock() functionality and
-> introduce a macro for the replaced functions that uses __cond_lock()
-> to signal that an acquire depends on the return value of the passed
-> function.
-> 
-> A cast to bool seems to be necessary because __cond_lock() does return a
-> non-boolean scalar type.
+> So I don't need to depend on how internal functions are implemented in the
+> header files and I don't need to guess how does compiler generate code.
 
-I hate the __cond_lock() think with a passions. Please just fix sparse
-to not suck.
+I hate to break it to you, but you actually need to know how the
+compiler works for you to be able to write good code.  Ignoring all the
+great stuff that the compiler does for you makes your code worse.
+
+> And also because I personally believe it doesn't hurt readability. 
+
+Are you saying that you're ignoring long-established kernel coding style
+conventions because of your personal beliefs?  That seem, um, like an
+approach that's unlikely to help your code get accepted.
+
+>> The other option is to totally lean on the compiler to figure things
+>> out.  Compile this program, then disassemble it and see what main() does.
+>>
+>> static void func(void)
+>> {
+>> 	printf("I am func()\n");
+>> }
+>>
+>> void main(int argc, char **argv)
+>> {
+>> 	if (0)
+>> 		func();
+>> }
+>>
+>> Then, do:
+>>
+>> -	if (0)
+>> +	if (argc)
+>>
+>> and run it again.  What changed in the disassembly?
+> 
+> You mean compile it again?  I have to confess I never tried and don't know. 
+> I'll try when I got some spare time.  Thanks for the info.
+
+Yes, compile it again and run it again.
+
+But, seriously, it's a quick exercise.  I can help make you some spare
+time if you wish.  Just let me know.
