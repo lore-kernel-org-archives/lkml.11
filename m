@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 818B6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C43EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236260AbiF3OAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        id S236279AbiF3OAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236677AbiF3N7X (ORCPT
+        with ESMTP id S236418AbiF3N6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:59:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B52A43ACA;
-        Thu, 30 Jun 2022 06:52:12 -0700 (PDT)
+        Thu, 30 Jun 2022 09:58:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F11E5725C;
+        Thu, 30 Jun 2022 06:51:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC2ADB82AEE;
-        Thu, 30 Jun 2022 13:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2688CC34115;
-        Thu, 30 Jun 2022 13:52:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97E6961FF6;
+        Thu, 30 Jun 2022 13:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5E19C34115;
+        Thu, 30 Jun 2022 13:51:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597130;
-        bh=lynNmqUTALptzUVLbax4AmHyXm0rYgSU4JJpNKNimgU=;
+        s=korg; t=1656597081;
+        bh=y9i6OcD3+jttfol87JifqvXY8ddQ2O+EJsT5yNM2FLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ndBbnvj2cVCChHzOmgaEjesBlIw1YurLNACL4LWSlGvgNC+MW1KVyrIVhPMl6vbF7
-         PBn4hJj3Zg6/EJk5lGpx31cdUTNTAMnn0ZRLgWOU+buVkfbAoDShPpFX7NDOBLaq5Z
-         YS/FlXC1/D0MuRKggQmECGBV6BTaHAp9eBWmfroM=
+        b=TzTDdZyfWvtmvNAxf6IxLvPWFUQik4kUukMiaDFSFw+4TCYRVy9CEPlHO7OlESQDu
+         2T5WzH1Iyu8vjo85OY0PFCXwY4l3433Ad6r9CK7ZV3KYl6UOlu+vpLQHYRfYCpvzlY
+         zpiZtZUJm7bIcnquEB/kkgp8UiX9z5aWYGUWFCRI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 4.19 37/49] soc: bcm: brcmstb: pm: pm-arm: Fix refcount leak in brcmstb_pm_probe
-Date:   Thu, 30 Jun 2022 15:46:50 +0200
-Message-Id: <20220630133234.976737633@linuxfoundation.org>
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 21/49] iio: adc: vf610: fix conversion mode sysfs node name
+Date:   Thu, 30 Jun 2022 15:46:34 +0200
+Message-Id: <20220630133234.529375759@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -49,37 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-commit 37d838de369b07b596c19ff3662bf0293fdb09ee upstream.
+[ Upstream commit f1a633b15cd5371a2a83f02c513984e51132dd68 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The documentation missed the "in_" prefix for this IIO_SHARED_BY_DIR
+entry.
 
-In brcmstb_init_sram, it pass dn to of_address_to_resource(),
-of_address_to_resource() will call of_find_device_by_node() to take
-reference, so we should release the reference returned by
-of_find_matching_node().
-
-Fixes: 0b741b8234c8 ("soc: bcm: brcmstb: Add support for S2/S3/S5 suspend states (ARM)")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bf04c1a367e3 ("iio: adc: vf610: implement configurable conversion modes")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Acked-by: Haibo Chen <haibo.chen@nxp.com>
+Link: https://lore.kernel.org/r/560dc93fafe5ef7e9a409885fd20b6beac3973d8.1653900626.git.baruch@tkos.co.il
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/bcm/brcmstb/pm/pm-arm.c |    1 +
- 1 file changed, 1 insertion(+)
+ Documentation/ABI/testing/sysfs-bus-iio-vf610 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-+++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-@@ -788,6 +788,7 @@ static int brcmstb_pm_probe(struct platf
- 	}
- 
- 	ret = brcmstb_init_sram(dn);
-+	of_node_put(dn);
- 	if (ret) {
- 		pr_err("error setting up SRAM for PM\n");
- 		return ret;
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+index 308a6756d3bf..491ead804488 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
++++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+@@ -1,4 +1,4 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
++What:		/sys/bus/iio/devices/iio:deviceX/in_conversion_mode
+ KernelVersion:	4.2
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-- 
+2.35.1
+
 
 
