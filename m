@@ -2,140 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC7BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 04:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0283CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 04:16:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231384AbiF3EQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 00:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
+        id S231916AbiF3EQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 00:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiF3EQJ (ORCPT
+        with ESMTP id S231410AbiF3EQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 00:16:09 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738963206B
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 21:16:06 -0700 (PDT)
+        Thu, 30 Jun 2022 00:16:28 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85A238185
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 21:16:22 -0700 (PDT)
 Received: from epcas1p3.samsung.com (unknown [182.195.41.47])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220630041604epoutp0114ca6c4d83b9765fd5ab66ef7f2c7c36~9SuAaMHAw0716007160epoutp01o
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:16:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220630041604epoutp0114ca6c4d83b9765fd5ab66ef7f2c7c36~9SuAaMHAw0716007160epoutp01o
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220630041617epoutp02f4b9a3968e3295d0a6e0025df60af467~9SuM25Txe1755517555epoutp02w
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:16:17 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220630041617epoutp02f4b9a3968e3295d0a6e0025df60af467~9SuM25Txe1755517555epoutp02w
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1656562564;
-        bh=DZoUVfy5aUPNeZ5oLtZlbxhLYaJtK9AlkneUo9epumM=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=DUUZJlXPEfY0/sBya+VF/7YACKNHzzA3pX65kD5MJVuvP6bcdmKzkL1taGUH/obGZ
-         fAm8pu7hfTAXjOcQRtwmO32FEKoMF+AsP4+Xm0k7QR0HArwVAmoisR4Xbe7V0t7owF
-         4jkvzIpcA0NEuCVHOgdEIuy2BM/srPSzlQ4OyDKw=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
-        20220630041603epcas1p39c428f856066d6282b0f1d7ad886f7a9~9St-z80E32840228402epcas1p3U;
-        Thu, 30 Jun 2022 04:16:03 +0000 (GMT)
-Received: from epsmges1p3.samsung.com (unknown [182.195.36.227]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4LYQ4M4668z4x9Pw; Thu, 30 Jun
-        2022 04:16:03 +0000 (GMT)
+        s=mail20170921; t=1656562577;
+        bh=WYo+8++U2XG7rGkYKmdbzvrC7WI9k8fTzCRkX5FeOR8=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=RZlHy7Y3RgnXhaktEJeZTYJEACo5Npfj7cDGJSAcSo/BLwvC/pj5J3K2imVX0tkKH
+         GUCoQNo1GxlOExUzhIxee1LDT2+99C3IgXBxXASvSIwzppfkAg61ZfGJMtm1/y76Zt
+         W7BRmC/gImTvvm8kqUnd74xcaI6wJm6VwxuXAEoo=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220630041617epcas1p2e6c393b9dd489291a46448eb94d680cb~9SuMRhUi91655416554epcas1p23;
+        Thu, 30 Jun 2022 04:16:17 +0000 (GMT)
+Received: from epsmges1p4.samsung.com (unknown [182.195.38.237]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LYQ4c0Fkvz4x9Q3; Thu, 30 Jun
+        2022 04:16:16 +0000 (GMT)
 Received: from epcas1p4.samsung.com ( [182.195.41.48]) by
-        epsmges1p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A4.7E.09661.3832DB26; Thu, 30 Jun 2022 13:16:03 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas1p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220630041602epcas1p3f3427b4ceac68f8325d3f89bc8635603~9St-KPOyX2821528215epcas1p3M;
-        Thu, 30 Jun 2022 04:16:02 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220630041602epsmtrp2d00ad6178ab1c937dbd9bd0017e43d75~9St-JWdM32097120971epsmtrp2x;
-        Thu, 30 Jun 2022 04:16:02 +0000 (GMT)
-X-AuditID: b6c32a37-2cfff700000025bd-58-62bd23836131
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        92.B7.08905.2832DB26; Thu, 30 Jun 2022 13:16:02 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.253.101.71]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220630041602epsmtip1b467428961970a7dd5abfc55eaa4f3fd~9St_43dAT1966919669epsmtip1B;
-        Thu, 30 Jun 2022 04:16:02 +0000 (GMT)
-From:   Seunghui Lee <sh043.lee@samsung.com>
-To:     alim.akhtar@samsung.com, avri.altman@wdc.com, bvanassche@acm.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     grant.jung@samsung.com, jt77.jang@samsung.com,
-        dh0421.hwang@samsung.com, junwoo80.lee@samsung.com,
-        jangsub.yi@samsung.com, cw9316.lee@samsung.com,
-        sh8267.baek@samsung.com, wkon.kim@samsung.com,
-        Seunghui Lee <sh043.lee@samsung.com>
-Subject: [PATCH] scsi: ufs: no sw reset after last linkstartup fail
-Date:   Thu, 30 Jun 2022 13:48:04 +0900
-Message-Id: <20220630044804.6080-1-sh043.lee@samsung.com>
-X-Mailer: git-send-email 2.29.0
+        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        AA.26.10203.F832DB26; Thu, 30 Jun 2022 13:16:15 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220630041615epcas1p17a727ebc024297c2a5e6ed879abcef6d~9SuKz4mJP1022110221epcas1p1-;
+        Thu, 30 Jun 2022 04:16:15 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220630041615epsmtrp1c20ff3825e2619240e59b05ce64a628c~9SuKynX7W1942119421epsmtrp1r;
+        Thu, 30 Jun 2022 04:16:15 +0000 (GMT)
+X-AuditID: b6c32a38-597ff700000027db-c2-62bd238f7c17
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0A.B3.08802.F832DB26; Thu, 30 Jun 2022 13:16:15 +0900 (KST)
+Received: from inkidae001 (unknown [10.113.221.213]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220630041615epsmtip2daa72489fc999f2f6cee0e9f8bcaaf03~9SuKdaJQY0204302043epsmtip2k;
+        Thu, 30 Jun 2022 04:16:15 +0000 (GMT)
+From:   =?ks_c_5601-1987?B?tOvAzrHiL1RpemVuIFBsYXRmb3JtIExhYihTUikvu++8usD8wNo=?= 
+        <inki.dae@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
+        "'Seung-Woo Kim'" <sw0312.kim@samsung.com>,
+        "'Kyungmin Park'" <kyungmin.park@samsung.com>,
+        "'David Airlie'" <airlied@linux.ie>,
+        "'Daniel Vetter'" <daniel@ffwll.ch>,
+        "'Rob Herring'" <robh+dt@kernel.org>,
+        "'Krzysztof Kozlowski'" <krzysztof.kozlowski+dt@linaro.org>,
+        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
+        "'Kishon Vijay Abraham I'" <kishon@ti.com>,
+        "'Vinod Koul'" <vkoul@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>
+In-Reply-To: <20220626163320.6393-1-krzysztof.kozlowski@linaro.org>
+Subject: RE: [PATCH 1/2] drm/exynos: MAINTAINERS: move Joonyoung Shim to
+ credits
+Date:   Thu, 30 Jun 2022 13:16:14 +0900
+Message-ID: <0de401d88c38$23aeb8e0$6b0c2aa0$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrAJsWRmVeSWpSXmKPExsWy7bCmgW6z8t4kg+tz5CwezNvGZvHy51U2
-        i2kffjJbzDjVxmqx79pJdotff9ezW3RsncxksejGNiaLHc/PsFvs+tvMZHF51xw2i+7rO9gs
-        lh//x2TR9Gcfi8W1MydYLTZf+sbiIOBx+Yq3x4RFBxg9Pj69xeLRt2UVo8fnTXIe7Qe6mQLY
-        orJtMlITU1KLFFLzkvNTMvPSbZW8g+Od403NDAx1DS0tzJUU8hJzU22VXHwCdN0yc4DuVlIo
-        S8wpBQoFJBYXK+nb2RTll5akKmTkF5fYKqUWpOQUmBXoFSfmFpfmpevlpZZYGRoYGJkCFSZk
-        Zxx7Zlpwgr3i6uZHTA2MvWxdjJwcEgImEu/vzAWyuTiEBHYwSnyfc5QdwvnEKLGx8SwrhPON
-        UeLq04OsMC0nH51mArGFBPYyShxdZAdR9JlRYvnEFrAEm4CWxPRNW5hAEiICm4ASC2awgDjM
-        Ah8YJX71rQSrEhZwllizeRnYJSwCqhJXDu0GKuLg4BWwlJgxtRZim7zEn/s9zCA2r4CgxMmZ
-        T1hAbGagePPW2cwgMyUEZnJIrLs/Geo8F4mL889C2cISr45vYYewpSQ+v9sL9XWxRNu/f8wQ
-        doXEwb4vULaxxKfPnxlBbmAW0JRYv0sfIqwosfP3XEaIvXwS7772sIKUSAjwSnS0CUGUKEu8
-        fLSMCcKWlFjSfgtqoofEtlMXWSGBFStxdNk/lgmM8rOQfDMLyTezEBYvYGRexSiWWlCcm55a
-        bFhgDI/U5PzcTYzgpKtlvoNx2tsPeocYmTgYDzFKcDArifAuPLMzSYg3JbGyKrUoP76oNCe1
-        +BCjKTB4JzJLiSbnA9N+Xkm8oYmlgYmZkYmFsaWxmZI476pppxOFBNITS1KzU1MLUotg+pg4
-        OKUamNhF2oIqrbeGLQ+KEDQzrvna37Vr86Qqp5jagDOv698tjuHub23tK7oysaVy36Xly1W4
-        Nk4vVNznIMOyoLhEy9w1QqDjFtePvNotCQLbUhISpqTsmB0Q/3brzrCAKQqe3XsZDhy0zK18
-        OUdG8NWPVfyL+ookAw+dXtjwalmuKW9R9NxyOwPutI3XG9v5m2qKJffmqRUcUlf+XXinTHxB
-        wKJb6xkff7n5cH+4b+yBvt0u3pvCoxd/eDtl0zufKzq7f9+fvXvW6Rqx/b9CleKyuEQSXmk+
-        NVFYyK74sKp8y9KZlYsTI5aY/JNXeblH+ke27trjeuzTtkaz/PeYKKgn+DN//yo15VWCe7Rf
-        dAfqK7EUZyQaajEXFScCAL/Lj3RDBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrHLMWRmVeSWpSXmKPExsWy7bCSnG6T8t4kg6MrTCwezNvGZvHy51U2
-        i2kffjJbzDjVxmqx79pJdotff9ezW3RsncxksejGNiaLHc/PsFvs+tvMZHF51xw2i+7rO9gs
-        lh//x2TR9Gcfi8W1MydYLTZf+sbiIOBx+Yq3x4RFBxg9Pj69xeLRt2UVo8fnTXIe7Qe6mQLY
-        orhsUlJzMstSi/TtErgyjj0zLTjBXnF18yOmBsZeti5GTg4JAROJk49OM3UxcnEICexmlLjY
-        vJAdIiEpsfjRQ6AiDiBbWOLw4WKQsJDAR0aJlnnVIDabgJbE9E1bwHpFBHYxSsyY+JYRxGEW
-        +MUosWPqMrANwgLOEms2Q9gsAqoSVw7tZgEZyitgKTFjai3ELnmJP/d7mEFsXgFBiZMzn7CA
-        2MxA8eats5knMPLNQpKahSS1gJFpFaNkakFxbnpusWGBYV5quV5xYm5xaV66XnJ+7iZGcBRo
-        ae5g3L7qg94hRiYOxkOMEhzMSiK8C8/sTBLiTUmsrEotyo8vKs1JLT7EKM3BoiTOe6HrZLyQ
-        QHpiSWp2ampBahFMlomDU6qByXf3bmGHq5dNMs9WcVbuUU/MV7/h5CUm9u1Og3Pv6eTd/RLL
-        vk8+9T4k3PnVp0h+v9vfAtLu9rOUHtZ9M6VWpzBHOOf/ncybMpr74qWnf5//18b2UGgNb/RF
-        Ho29v2TE4plPd2stvvxktepbob1xHlPfNG/+cky9YM5TlhPcH32jjjJNbS9rWTp5QWvKp2SZ
-        syGKFrePO/RzBbh9/lQwf9L9m3/Lnn+0dFQ3mincayp7wi2+JuPRw5X7Jm5QvcSb4CY3zTfK
-        KyN63+MJ0pI+Of8lnX1bFn0wtv99tjqoMn93wVH22LPPJs+9+7XyjPnyK7WfrfOzI27vvmC8
-        1jFhReC9r1u9RELsXugpaM4oUWIpzkg01GIuKk4EAPi654TxAgAA
-X-CMS-MailID: 20220630041602epcas1p3f3427b4ceac68f8325d3f89bc8635603
+Content-Type: text/plain; charset="ks_c_5601-1987"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: ko
+Thread-Index: AQJghn6p1dSqDKoivxgEEVwDdxk9yAKXUcLlrEKoniA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFJsWRmVeSWpSXmKPExsWy7bCmgW6/8t4kg+U3rSx6z51ksngwbxub
+        xf9tE5kt5h85x2px5et7NosLT3vYLPpePGS22Pt6K7vF2aY37BabHl9jtbi8aw6bxYRV31gs
+        Zpzfx2TRuvcIu8WMyS/ZLHbeOcHsIOCx99sCFo9NqzrZPO5c28Pmsf3bA1aP+93HmTw2L6n3
+        6NuyitHj+I3tTB6fN8kFcEZl22SkJqakFimk5iXnp2TmpdsqeQfHO8ebmhkY6hpaWpgrKeQl
+        5qbaKrn4BOi6ZeYAvaGkUJaYUwoUCkgsLlbSt7Mpyi8tSVXIyC8usVVKLUjJKTAt0CtOzC0u
+        zUvXy0stsTI0MDAyBSpMyM44/u4fa8FhgYrri3ayNzA+4O1i5OSQEDCRuPPpAUsXIxeHkMAO
+        Ronl05cwQjifGCVOXT/OCuF8ZpSYOPk2K0zLvCsNUIldjBI3dx+Dcl4ySjRMecsIUsUmkCFx
+        t30xWIeIwHxWiUfPk0FsTgFnies3X7GD2MICQRLv/v0FWs7BwSKgKnFhvSlImFfAUqJ17SsW
+        CFtQ4uTMJ2A2s4CRxJLV85kgbHmJ7W/nMEMcpCDx8+kyVoi4iMTszjZmiLVWEmsWrQP7TULg
+        BYfEh//fWCAaXCTeNfyAahaWeHV8CzuELSXxsr+NHaJhMqPEnesroLpnMEoc/nmdEaLKWGL/
+        0slMELaixM7fcxkhVvNJvPvawwryjYQAr0RHmxBEiZLEsYs3oFolJC4smcgGUeIhcfBK7QRG
+        xVlI/pyF5M9ZSP6cheS3BYwsqxjFUguKc9NTiw0LTODxnZyfu4kRnMi1LHYwzn37Qe8QIxMH
+        4yFGCQ5mJRHehWd2JgnxpiRWVqUW5ccXleakFh9iNAWG/ERmKdHkfGAuySuJNzSxNDAxMzI2
+        sTA0M1QS5+2dejpRSCA9sSQ1OzW1ILUIpo+Jg1OqgSmix9NS5+S5+y0vTjyenDJlhkTs50fT
+        3V9fd21PNpCa4s/99fbH+GMiTO921co8DK79mfWIQ/PTdp0D9p7f0lRm7AyoZFZMm3He4Gqo
+        htyn7HeqRlrXKl6fS1n166cOz92Vs7puGbBaPXGzv3LM6c/Vld+2KuamBHC4cv/68qnx4SH+
+        9cvXrPomxTWJX5s90GiOapPWirTjzzz+8uy0V+w9OPmy5eXs1XwBFu+kk1hWPdn6eBZ/xfwP
+        b68KROpaNatP3vCk2EixRPmM0Ju6O2uLpVVvR4dX/VE90DZRef6kyYX96XxlKYvuW8m85NeZ
+        Wz9xVXq2Bvsm5rQnuhWeZmEypzftm5bGqh6yjHPtllAlluKMREMt5qLiRABvXwPAbQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGIsWRmVeSWpSXmKPExsWy7bCSvG6/8t4kg/svRC16z51ksngwbxub
+        xf9tE5kt5h85x2px5et7NosLT3vYLPpePGS22Pt6K7vF2aY37BabHl9jtbi8aw6bxYRV31gs
+        Zpzfx2TRuvcIu8WMyS/ZLHbeOcHsIOCx99sCFo9NqzrZPO5c28Pmsf3bA1aP+93HmTw2L6n3
+        6NuyitHj+I3tTB6fN8kFcEZx2aSk5mSWpRbp2yVwZRx/94+14LBAxfVFO9kbGB/wdjFyckgI
+        mEjMu9LA2sXIxSEksINRYu+RZvYuRg6ghITElq0cEKawxOHDxRAlzxklnsxezAbSyyaQJjFp
+        7n6wXhGB1awSV7asYoKomsIo8WHBEVaQKk4BZ4nrN1+xg9jCAgESO498BVvAIqAqcWG9KUiY
+        V8BSonXtKxYIW1Di5MwnYDYz0HGNh7uhbHmJ7W/nMEMcrSDx8+kyVoi4iMTszjawuIiAlcSa
+        RetYJjAKzUIyahaSUbOQjJqFpH0BI8sqRsnUguLc9NxiwwKjvNRyveLE3OLSvHS95PzcTYzg
+        qNXS2sG4Z9UHvUOMTByMhxglOJiVRHgXntmZJMSbklhZlVqUH19UmpNafIhRmoNFSZz3QtfJ
+        eCGB9MSS1OzU1ILUIpgsEwenVAPT+Z9b5M9Pf6bJEb7wvd/y3W5mjyJdbdN9ft+sV+1Z8nDi
+        oxeGpzvTJkZsvd3/Tf94X6Rft7R2eDnn9EPH+9lldFIseYL9Pyw90L5JKm2DgLPOOo5PizJe
+        3XNzLf2mGCl7ev0muwIB8aT4F5r9a28+Eo/sZtz/dIuNSwfnkuz6e5sY/vjtljfpPXTr876u
+        fycbl908m+OkkrSqw+aJvfmfSWos0gG8mx9O/jP5phCPu6+peIzeqobGc0ofMhViuubILex+
+        uDEmx7lOOfuJ+Ov9jD0Kj8//8Nl0ep5/7lKby81qLVfnSL6tYNR9GaDZ+ujsinuTmZpXTjR0
+        1Qt1n/qrmTN+xtTV6txHlLcE/qxWYinOSDTUYi4qTgQAKL4DqUkDAAA=
+X-CMS-MailID: 20220630041615epcas1p17a727ebc024297c2a5e6ed879abcef6d
 X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: SVC_REQ_APPROVE
 CMS-TYPE: 101P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220630041602epcas1p3f3427b4ceac68f8325d3f89bc8635603
-References: <CGME20220630041602epcas1p3f3427b4ceac68f8325d3f89bc8635603@epcas1p3.samsung.com>
+X-CMS-RootMailID: 20220626163558epcas1p3f525431b9fb237bd420ad1453daaf1ac
+References: <CGME20220626163558epcas1p3f525431b9fb237bd420ad1453daaf1ac@epcas1p3.samsung.com>
+        <20220626163320.6393-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Host driver resets the host(ufshcd_hba_enable) after last linkstartup
-command failed. All of the member or host dump after linkstartup fail are
-reset value because of sw reset.
 
-Signed-off-by: Junwoo Lee <junwoo80.lee@samsung.com>
-Signed-off-by: Seunghui Lee <sh043.lee@samsung.com>
----
- drivers/ufs/core/ufshcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index 7c1d7bb9c579..2cdc14675443 100644
---- a/drivers/ufs/core/ufshcd.c
-+++ b/drivers/ufs/core/ufshcd.c
-@@ -4753,7 +4753,7 @@ static int ufshcd_link_startup(struct ufs_hba *hba)
- 		 * but we can't be sure if the link is up until link startup
- 		 * succeeds. So reset the local Uni-Pro and try again.
- 		 */
--		if (ret && ufshcd_hba_enable(hba)) {
-+		if (ret && retries && ufshcd_hba_enable(hba)) {
- 			ufshcd_update_evt_hist(hba,
- 					       UFS_EVT_LINK_STARTUP_FAIL,
- 					       (u32)ret);
--- 
-2.29.0
+> -----Original Message-----
+> From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@linaro.org]
+> Sent: Monday, June 27, 2022 1:33 AM
+> To: Inki Dae <inki.dae@samsung.com>; Seung-Woo Kim
+> <sw0312.kim@samsung.com>; Kyungmin Park <kyungmin.park@samsung.com>; David
+> Airlie <airlied@linux.ie>; Daniel Vetter <daniel@ffwll.ch>; Rob Herring
+> <robh+dt@kernel.org>; Krzysztof Kozlowski
+> <krzysztof.kozlowski+dt@linaro.org>; Alim Akhtar
+<alim.akhtar@samsung.com>;
+> Kishon Vijay Abraham I <kishon@ti.com>; Vinod Koul <vkoul@kernel.org>;
+> linux-kernel@vger.kernel.org; dri-devel@lists.freedesktop.org;
+> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+> samsung-soc@vger.kernel.org; linux-phy@lists.infradead.org
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Subject: [PATCH 1/2] drm/exynos: MAINTAINERS: move Joonyoung Shim to
+> credits
+> 
+> Emails to Joonyoung Shim bounce ("550 5.1.1 Recipient address rejected:
+> User unknown"), so move him to credits file.
+> 
+
+Applied.
+
+Thanks,
+Inki Dae
+
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  CREDITS     | 4 ++++
+>  MAINTAINERS | 1 -
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/CREDITS b/CREDITS
+> index 7e85a53b6a88..91a564c17012 100644
+> --- a/CREDITS
+> +++ b/CREDITS
+> @@ -3491,6 +3491,10 @@ D: wd33c93 SCSI driver (linux-m68k)
+>  S: San Jose, California
+>  S: USA
+> 
+> +N: Joonyoung Shim
+> +E: y0922.shim@samsung.com
+> +D: Samsung Exynos DRM drivers
+> +
+>  N: Robert Siemer
+>  E: Robert.Siemer@gmx.de
+>  P: 2048/C99A4289 2F DC 17 2E 56 62 01 C8  3D F2 AC 09 F2 E5 DD EE
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 19875f60ebb1..d208bf3b6f11 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6695,7 +6695,6 @@ F:	drivers/gpu/drm/bridge/
+> 
+>  DRM DRIVERS FOR EXYNOS
+>  M:	Inki Dae <inki.dae@samsung.com>
+> -M:	Joonyoung Shim <jy0922.shim@samsung.com>
+>  M:	Seung-Woo Kim <sw0312.kim@samsung.com>
+>  M:	Kyungmin Park <kyungmin.park@samsung.com>
+>  L:	dri-devel@lists.freedesktop.org
+> --
+> 2.34.1
+
 
