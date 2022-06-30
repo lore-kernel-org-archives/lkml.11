@@ -2,389 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5346BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbiF3XVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
+        id S231704AbiF3XVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230274AbiF3XVC (ORCPT
+        with ESMTP id S231373AbiF3XVt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:21:02 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC3C41610
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:20:55 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id n8so892611eda.0
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:20:55 -0700 (PDT)
+        Thu, 30 Jun 2022 19:21:49 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9253C3C4BF
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:21:41 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id w2-20020a056830110200b00616ce0dfcb2so585784otq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:21:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=67eEBFbEdBxLq+SuT6crAOTXnL4x5bIQdSu9RdaqVYw=;
-        b=HcbUlIVBXvIEyWaGW7qlIdsjz16NrMeyn0ijZZf7FhJSXIhPi9JBKsO9g+3fUXZ8pS
-         aR6c08MAhTt59Q2T6/PpfCagnfc58JTuogEvpXfkkperYR+OGHg11EjYAr5+wlZI0JgY
-         stjsdhDMTGeaFPkLJYo0LCqV/R8+hBxCd7uKg=
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=kUR5Qxlkv2VG+1nVFyFj0M5xEGNTEOVvRQq3OJdVQgs=;
+        b=PSntTRcqPoByfC6Hz4lzpHn3LJzLyjZ6J9v2Gw/9CwqDwUG5K5pYjyGKE60IUpqemz
+         csOfaY/EhvtPQSCBjmwtt0xkC+vziMex47gWhtn8+LjQKq3z+dOARW9sQ4F9QC0LZsCz
+         vX8ShPn0VqsbDj01CzXSySigIXkRcShlNs8jk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=67eEBFbEdBxLq+SuT6crAOTXnL4x5bIQdSu9RdaqVYw=;
-        b=QBnZE65Ip0oGV7F33i25j5Y1bbo5HkgyPRQXfMgS6yMmgg2SRTWY/6175MJ0BGoRkF
-         qbmCz+wIXSI9EQhTlmZWDLhEg+e046Eezp2Ay1n8A6xoMCa1XubCDW83aJ3HNeaV/XMP
-         +ciYJQK+EkXwOTX258Py9l2cncwAQK+C6DFW3kqbVJfQvwrquTHV0bEDQ22z5hMeMClt
-         08+s1rhm/0HrWaOpe+j8B3991EFl7jBQF2YGOBxJAyTd+WNGUQhtvpiKnlloel56cRbm
-         SrdPemi+sIdN7E8/cKghS1vt1cDozby3/7E6vkzo/HkIfZsilHiQqxa9kt16HeHgp5xA
-         J+3Q==
-X-Gm-Message-State: AJIora+7toU4xzmrUlhNVpoFG2BKw95WXOlZSrC3SJWoCvPnN7eJ8nC2
-        H7VzLB9q9lIzxw/ii0607jAHvopPMVCIXf0kh3Y=
-X-Google-Smtp-Source: AGRyM1uXMZClml9oC0CkoQk5WdAy/hkm9F2qZoDj7ElNELF9rclCns+nLK3fI61iXuL54EoE0OwAxw==
-X-Received: by 2002:a05:6402:5384:b0:431:6d84:b451 with SMTP id ew4-20020a056402538400b004316d84b451mr14611697edb.46.1656631253481;
-        Thu, 30 Jun 2022 16:20:53 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id i10-20020a170906698a00b0071cbc7487e0sm9745928ejr.71.2022.06.30.16.20.53
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jun 2022 16:20:53 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so223003wme.0
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:20:53 -0700 (PDT)
-X-Received: by 2002:a7b:c14c:0:b0:3a0:4a8b:e2e5 with SMTP id
- z12-20020a7bc14c000000b003a04a8be2e5mr14212798wmi.188.1656630949206; Thu, 30
- Jun 2022 16:15:49 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=kUR5Qxlkv2VG+1nVFyFj0M5xEGNTEOVvRQq3OJdVQgs=;
+        b=8Ri+y18flD2yHGT10nToV36Le68HJGi/Safts3RAtzE2r4EXUa/Jgi8BivZVajgzUz
+         gzccR3C/VbuECg7pBSYZAJlKB+7R3B0Ki3lvFtPdZYHYLKTgK+bvMkhqh588YvMYT0n4
+         i/cfp+TPF5W7NCC8lIb0K7OSXVa3oBFbWGIGWZ0emrL30VI3nCXv3ZvgIyQlfdyTpDVK
+         NgLGPsh4Lc5NW+YjXK2zz5NMmiJVEl5MYo8dM/k39C4k7QRQAoiD+vG6/d19nfub1w+n
+         MaNka6NRMXUfTHhMyVQK53PmiAprj0EVk0NIkoR52Dl37qTzpQDTlHYOqPLBb7weAS3U
+         fSoA==
+X-Gm-Message-State: AJIora8mg5/7JB+2uYD5Sji7nZncbFsJFwfKl0mNx4odNaO/bcs+NF8/
+        Lj1iv//cOg72HLC/HcYQVxotY2IayUbGyuZSyuAwgg==
+X-Google-Smtp-Source: AGRyM1vqO13MJJ6cDRR/NbBgbmt0dA/vGMSsOaDTCVXU7xFDY+OyANJR8RR8KiHUFljvGHszFB+vN6QObK5feiOxPBY=
+X-Received: by 2002:a9d:6484:0:b0:60b:eb0b:4054 with SMTP id
+ g4-20020a9d6484000000b0060beb0b4054mr5246393otl.159.1656631300928; Thu, 30
+ Jun 2022 16:21:40 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 30 Jun 2022 16:21:40 -0700
 MIME-Version: 1.0
-References: <20220630193530.2608178-1-mka@chromium.org> <20220630123445.v24.3.I7c9a1f1d6ced41dd8310e8a03da666a32364e790@changeid>
-In-Reply-To: <20220630123445.v24.3.I7c9a1f1d6ced41dd8310e8a03da666a32364e790@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 30 Jun 2022 16:15:36 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U_dqs7Yan2YWqbud10SuTgV2twpGZ9QC9k7pLnBde7Ew@mail.gmail.com>
-Message-ID: <CAD=FV=U_dqs7Yan2YWqbud10SuTgV2twpGZ9QC9k7pLnBde7Ew@mail.gmail.com>
-Subject: Re: [PATCH v24 3/4] usb: misc: Add onboard_usb_hub driver
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
+In-Reply-To: <CACeCKafzB0wW_B2TOEWywLMyB+UhYCpXYDVBV=UbyxBiGnv1Rw@mail.gmail.com>
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+ <20220622173605.1168416-6-pmalani@chromium.org> <CAE-0n517BB8YbN5AZG6M3ZrZGOJDV=+t0R9d8wD+gVqO1aD1Xg@mail.gmail.com>
+ <CACeCKafR8hFke_tc2=1VGDNF-CFrZoAG1aUKuxGJG-6pd37hbg@mail.gmail.com>
+ <CAE-0n50XbO5Wu4-429Ao05A4QrbSXoi1wBjTpGFjKm3pZj1Ybg@mail.gmail.com> <CACeCKafzB0wW_B2TOEWywLMyB+UhYCpXYDVBV=UbyxBiGnv1Rw@mail.gmail.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 30 Jun 2022 16:21:40 -0700
+Message-ID: <CAE-0n50Akd8QikGhaAQgxLkJBhE-7KQf5aJ_P2ajOmCjLk555g@mail.gmail.com>
+Subject: Re: [PATCH v5 5/9] drm/bridge: anx7625: Add typec_mux_set callback function
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        Pin-Yen Lin <treapking@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Bastien Nocera <hadess@hadess.net>,
-        Peter Chen <peter.chen@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Quoting Prashant Malani (2022-06-28 13:56:22)
+> On Tue, Jun 28, 2022 at 1:40 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> >
+> > I suppose none of those things matter though as long as there is some
+> > typec switch registered here so that the driver can be informed of the
+> > pin assignment. Is it right that the "mode-switch" property is only
+> > required in DT if this device is going to control the mode of the
+> > connector, i.e. USB+DP, or just DP? Where this device can't do that
+> > because it doesn't support only DP.
+>
+> If the anx7625 is used just to route all lanes from 1 usb-c-connector (i.e
+> the USB+DP case), a mode-switch wouldn't be of much use, since one
+> would also route the CC lines to the built-in PD controller; so it will
+> already have knowledge of what mode the switch is in.
+>
+> The mode-switch is likely only relevant for this hardware configuration(
+> it's "DP only" in the sense that the USB pins to the SoC never go anywhere).
+> One only has 2 SS lanes each (from each usb-c-connector).
+>
+> Since there is no CC-line, the anx7625 needs to know which one has DP
+> enabled on it.
 
-On Thu, Jun 30, 2022 at 12:35 PM Matthias Kaehlcke <mka@chromium.org> wrote=
-:
->
-> The main issue this driver addresses is that a USB hub needs to be
-> powered before it can be discovered. For discrete onboard hubs (an
-> example for such a hub is the Realtek RTS5411) this is often solved
-> by supplying the hub with an 'always-on' regulator, which is kind
-> of a hack. Some onboard hubs may require further initialization
-> steps, like changing the state of a GPIO or enabling a clock, which
-> requires even more hacks. This driver creates a platform device
-> representing the hub which performs the necessary initialization.
-> Currently it only supports switching on a single regulator, support
-> for multiple regulators or other actions can be added as needed.
-> Different initialization sequences can be supported based on the
-> compatible string.
->
-> Besides performing the initialization the driver can be configured
-> to power the hub off during system suspend. This can help to extend
-> battery life on battery powered devices which have no requirements
-> to keep the hub powered during suspend. The driver can also be
-> configured to leave the hub powered when a wakeup capable USB device
-> is connected when suspending, and power it off otherwise.
->
-> Technically the driver consists of two drivers, the platform driver
-> described above and a very thin USB driver that subclasses the
-> generic driver. The purpose of this driver is to provide the platform
-> driver with the USB devices corresponding to the hub(s) (a hub
-> controller may provide multiple 'logical' hubs, e.g. one to support
-> USB 2.0 and another for USB 3.x).
->
-> Co-developed-by: Ravi Chandra Sadineni <ravisadineni@chromium.org>
-> Signed-off-by: Ravi Chandra Sadineni <ravisadineni@chromium.org>
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
->
-> Changes in v24:
-> - changed USB_ONBOARD_HUB from bool to tristate and fixed Makefile
->   entry
-> - renamed 'companion-hub' property to 'peer-hub'
-> - added comment to onboard_hub_create_pdevs() doc that explains the
->   somewhat convoluted logic of the function
-> - only cancel the driver attach work in onboard_hub_remove() if the
->   function wasn't called by the work itself
->
-> Changes in v23:
-> - refactored onboard_hub_create_pdevs()
->   - bail out before the loop for root hubs connected to
->     the secondary HCD
->   - check for exisiting pdev in the companion hub branch
->     instead of doing it afterwards
-> - added note about the role of the platform devices to
->   documentation of onboard_hub_create_pdevs()
-> - got rid of CONFIG_USB_ONBOARD_HUB_ACTUAL, it's not needed anymore
->   now that onboard_hub_create/destroy_pdevs() are linked into the USB
->   core
-> - added some more details to comment about the need to re-attach the
->   USB driver
->
-> Changes in v22:
-> - moved onboard_hub_create_pdevs(), onboard_hub_destroy_pdevs() and
->   of_is_onboard_usb_hub() into a separate file to allow them to be
->   linked into the USB core module (if CONFIG_USB=3Dm)
-> - Added extra checks to ensure only one platform device is created
->   for each physical hub. This is necessary because
->   onboard_hub_create_pdevs() is now called from hub_probe() instead
->   of usb_add_hcd(). As a result the function is called twice for
->   typical USB3 hub, once for the USB3 part of the hub, and once for
->   USB <=3D 2.x. Generally the parent hub downstream of the primary HCD
->   creates the onboard hub platform device.
-> - use kzalloc() instead of devm_kzalloc() to allocate list entries. Using
->   managed memory can cause issues since the managed memory is allocated
->   before the device is probed.
-> - use a workqueue to (re-)attach the USB driver during/after _probe().
->   This is necessary to avoid self-deadlocks on systems with nested
->   onboard hubs.
-> - don't initialize list_head in onboard_hub_create_pdevs(), this needs
->   to be done by the owner, to ensure that onboard_hub_destroy_pdevs()
->   is called with a struct that was properly initialized even when
->   onboard_hub_create_pdevs() is not called.
-> - moved 'onboard_hub_match' into an include, so it can be used
->   by both the the onboard hub driver and of_is_onboard_usb_hub()
-> - removed note from the commit message which said that currently only
->   onboard hubs connected to a root hub are supported. This isn't the
->   case anymore.
-> - updated kernel version and date in sysfs documentation
-> - removed tags from Doug and Alan since this version changes quite
->   a few things
->
-> Changes in v21:
-> - refactored _find_onboard_hub()
->   - check presence of drvdata instead of using device_is_bound()
->   - return -ENODEV if the platform device can't be found
->   - always check drvdata, not only when looking for the companion
->     hub
->   - added comment explaining probe deferral
-> - removed 'onboard_hub_dev' symlinks from USB devices
-> - updated documentation of 'always_powered_in_suspend' sysfs attribute
->
-> Changes in v20:
-> - s/nontrivial/non-trivial/ in Kconfig doc
-> - added include of 'export.h'
-> - initialize variable 'power_off' in onboard_hub_suspend() at
->   declaration time
-> - renamed set_udev_link_name() to get_udev_link_name()
-> - use kzalloc to allocate struct usbdev_node instead of devm_kzalloc()
-> - release the lock in onboard_hub_add_usbdev() before calling
->   get_udev_link_name()
-> - free struct usbdev_node in onboard_hub_remove_usbdev(), now that
->   it doesn't used managed memory
-> - make struct onboard_hub const in always_powered_in_suspend_show()
-> - call put_device() if pdev is not bound in _find_onboard_hub()
-> - get driver data before calling put_device() in _find_onboard_hub()
-> - log platform device name when sysfs link creation fails in
->   onboard_hub_usbdev_probe()
-> - added kernel doc for onboard_hub_create_pdevs() and
->   onboard_hub_destroy_pdevs()
-> - added 'Reviewed-by' tag from Doug
->
-> Changes in v19:
-> - added VID:PID pairs and compatible strings for RTS5414 hub
-> - updated comments with RTS5411 USB versions to reflect those
->   reported/supported by the hub
->
-> Changes in v18:
-> - introduced hidden Kconfig option to align module vs. builtin
->   choice with CONFIG_USB (thanks Doug!)
-> - refactored onboard_hub_create_pdevs()
->
-> Changes in v17:
-> - updated date and kernel version in ABI documentation for
->   'always_powered_in_suspend' attribute
-> - removed obsolete .yaml entry from MAINTAINERS file
-> - added entry for ABI documentation to MAINTAINERS file
-> - renamed struct 'udev_node' to 'usbdev_node'
-> - changed return logic in onboard_hub_suspend/resume() to
->   get rid of 'rc' variable
-> - added helper set_udev_link_name() to set link names for
->   onboard hub USB devices
-> - use of_parse_phandle() instead of of_property_read_u32() +
->   of_find_node_by_phandle() combo
-> - defer probing in _find_onboard_hub() if the platform device
->   isn't bound yet
-> - initialize list head passed as parameter to
->   onboard_hub_create_pdevs() instead of relying on the caller
->   to do so
-> - don't require the 'companion-hub' property to be specified.
->   This is needed to support hubs without companion hub
-> - use devm_kzalloc() to allocate platform device list entries
->   and stop freeing them explicitly
-> - remove unnecessary INIT_LIST_HEAD() of platform device list
->   entries
-> - use '%pOF' to print DT node name
-> - delete platform device list entries from the list of devices
->   in onboard_hub_destroy_pdevs(). It shouldn't be strictly
->   necessary, but better be on the safe side.
->
-> Changes in v16:
-> - none
->
-> Changes in v15:
-> - none
->
-> Changes in v14:
-> - none
->
-> Changes in v13:
-> - none
->
-> Changes in v12:
-> - use IS_ENABLED(CONFIG_USB_ONBOARD_HUB_MODULE) in onboard_hub.h to
->   also check for the driver built as module
-> - include onboard_hub.h again from the driver to make sure there are
->   prototype declarations for the public functions
-> - remove indentation from label in onboard_hub_create_pdevs()
->
-> Changes in v11:
-> - added onboard_hub_create/destroy_pdevs() helpers, to support multiple o=
-nboard
->   hubs connected to the same parent hub
-> - don't include =E2=80=98onboard_hub.h=E2=80=99 from the onboard hub driv=
-er
-> - updated commit message
-> - added =E2=80=98Acked-by' from Alan
->
-> Changes in v10:
-> - always use of_is_onboard_usb_hub() stub unless ONBOARD_USB_HUB=3Dy/m
->
-> Changes in v9:
-> - none
->
-> Changes in v8:
-> - none
->
-> Changes in v7:
-> - don't declare stub for of_is_onboard_usb_hub() when
->   CONFIG_COMPILE_TEST is defined
->
-> Changes in v6:
-> - use 'companion-hub' to locate the platform device, instead of
->   scanning through the nodes of the parent
-> - added ABI documentation for 'always_powered_in_suspend'
-> - sysfs_emit() instead of sprintf() in always_powered_in_suspend_show()
-> - register sysfs attribute through driver.dev_groups
-> - evaluate return value of driver_attach() in _probe()
-> - use dev_warn() instead of WARN_ON() in _probe()
-> - include 'onboard_hub.h'
->
-> Changes in v5:
-> - the platform device is now instantiated from the same DT node
->   as the 'primary' USB hub device
->   - use the USB compatible strings for the platform device
->   - refactored _find_onboard_hub() to search the parents child
->     nodes for a platform device with a matching compatible string
->   - added exported function of_is_onboard_usb_hub() to allow other
->     drivers (like xhci_plat) to check if one of their child DT nodes
->     is a supported hub
-> - use late suspend to make sure info about wakeup enabled descendants
->   is updated
-> - call driver_attach() for the USB driver in onboard_hub_probe() to
->   make sure the driver is re-attached after the device_release_driver()
->   calls in onboard_hub_remove()
-> - renamed sysfs attribute 'power_off_in_suspend' to
->   'always_powered_in_suspend'
-> - added sysfs symlinks between platform device and USB devices
-> - marked 'onboard_hub_pm_ops' as __maybe_unused
-> - removed 'realtek' compatible string which is not needed at this
->   point
-> - fix log for regulator_disable() failure
->
-> Changes in v4:
-> - updated Kconfig documentation
-> - changed the loop in onboard_hub_remove() to release the hub lock
->   before unbinding the USB device and make self deadlock prevention
->   less clunky
-> - fixed return value in onboard_hub_usbdev_probe()
-> - added entry to MAINTAINERS file
->
-> Changes in v3:
-> - updated the commit message
-> - updated description in Kconfig
-> - remove include of 'core/usb.h'
-> - use 'is_powered_on' flag instead of 'has_wakeup_capable_descendants'
-> - added 'going_away' flag to struct onboard_hub
->   - don't allow adding new USB devices when the platform device is going =
-away
->   - don't bother with deleting the list item in onboard_hub_remove_usbdev=
-()
->     when the platform device is going away
-> - don't assume in onboard_hub_suspend() that all USB hub devices are
->   connected to the same controller
-> - removed unnecessary devm_kfree() from onboard_hub_remove_usbdev()
-> - fixed error handling in onboard_hub_remove_usbdev()
-> - use kstrtobool() instead of strtobool() in power_off_in_suspend_store()
-> - unbind USB devices in onboard_hub_remove() to avoid dangling references
->   to the platform device
-> - moved put_device() for platform device to _find_onboard_hub()
-> - changed return value of onboard_hub_remove_usbdev() to void
-> - evaluate return value of onboard_hub_add_usbdev()
-> - register 'power_off_in_suspend' as managed device attribute
-> - use USB_DEVICE macro instead manual initialization
-> - add unwinding to onboard_hub_init()
-> - updated MODULE_DESCRIPTION
-> - use module_init() instead of device_initcall()
->
-> Changes in v2:
-> - check wakeup enabled state of the USB controller instead of
->   using 'wakeup-source' property
-> - use sysfs attribute instead of DT property to determine if
->   the hub should be powered off at all during system suspend
-> - added missing brace in onboard_hub_suspend()
-> - updated commit message
-> - use pm_ptr for pm_ops as suggested by Alan
->
-> Changes in v1:
-> - renamed the driver to 'onboard_usb_hub'
-> - single file for platform and USB driver
-> - USB hub devices register with the platform device
->   - the DT includes a phandle of the platform device
-> - the platform device now controls when power is turned off
-> - the USB driver became a very thin subclass of the generic USB
->   driver
-> - enabled autosuspend support
->
->  .../sysfs-bus-platform-onboard-usb-hub        |   8 +
->  MAINTAINERS                                   |   7 +
->  drivers/usb/core/Makefile                     |   4 +
->  drivers/usb/misc/Kconfig                      |  16 +
->  drivers/usb/misc/Makefile                     |   1 +
->  drivers/usb/misc/onboard_usb_hub.c            | 428 ++++++++++++++++++
->  drivers/usb/misc/onboard_usb_hub.h            |  17 +
->  drivers/usb/misc/onboard_usb_hub_pdevs.c      | 142 ++++++
->  include/linux/usb/onboard_hub.h               |  18 +
->  9 files changed, 641 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-platform-onboard-=
-usb-hub
->  create mode 100644 drivers/usb/misc/onboard_usb_hub.c
->  create mode 100644 drivers/usb/misc/onboard_usb_hub.h
->  create mode 100644 drivers/usb/misc/onboard_usb_hub_pdevs.c
->  create mode 100644 include/linux/usb/onboard_hub.h
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Can the CC line be "captured" and not actually sent to the anx7625? I
+imagine if that is possible, maybe the CC lines would go to some
+micro-controller or something that did more typec management things and
+then the anx7625 driver would need to do software control of the mode
+and orientation control.
