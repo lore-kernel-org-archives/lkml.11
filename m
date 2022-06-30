@@ -2,113 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A44C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbiF3NJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
+        id S235188AbiF3NLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbiF3NJ4 (ORCPT
+        with ESMTP id S235159AbiF3NLR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:09:56 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52062018E;
-        Thu, 30 Jun 2022 06:09:50 -0700 (PDT)
-X-QQ-mid: bizesmtp85t1656594566tf465dwr
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 30 Jun 2022 21:09:23 +0800 (CST)
-X-QQ-SSF: 0100000000200090C000B00A0000000
-X-QQ-FEAT: pqOtrSRu7rgUfzKv/youfEcgC7ibWgG5pXDp/heAIehzNCz6k4+ffbWqRLRit
-        49YVq2b4nyUuNP1rUrkC1ZTC7uARepKM68Fbd2OEbQEEJSeOxyz6O2El1pW4dMEYBm2bajv
-        Z/2U0EzcyuJeAUMI8sqPkNiefIv5rXRBTyDegvPyJcTo30LLL6Ar8utjlsB8XlsjMA8ePPd
-        0gGuicn+eN2XSfnylx8SaHm3u3OYV6x5PONsjFbFfq+Wm+B0ZBbRkVmQu3KzDnv4PbGnUmz
-        wQ5OltvUfj1VxhjZkiOx39Co6A2cOMANFNlEHkFJSqg/jb4SOQQ42XByBtLtC49GMSgHXlO
-        wlAYdZgjspItM+Ey+bSt2qy+pGivA==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] ethernet/sun: fix repeated words in comments
-Date:   Thu, 30 Jun 2022 21:09:16 +0800
-Message-Id: <20220630130916.21074-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 30 Jun 2022 09:11:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DD2922BCE
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:11:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656594666;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jV/u9DidSFdfO13oE75Yy4sdwZ39Z5PR0U85p6rtOgg=;
+        b=BV7+wyLuhrbFOx1xJeFFzqtgt7/Z3ifh1oEfqGSD2Ju/TVi76lxrKrCZZss2/+zX05eFcW
+        Mq2Zjpc5pVdAt5/d5hxj/yPYK5mXy6bPrVmwYWiyMn+C/2SKZ8cRaRCJXMCUQgd2du9qR+
+        SpQ6TirMA1TyxN8dUY7SjMl499+TIH4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-100-nDUhfL2wNSG3Sf4GqyTzVw-1; Thu, 30 Jun 2022 09:11:03 -0400
+X-MC-Unique: nDUhfL2wNSG3Sf4GqyTzVw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 997511C1BD22;
+        Thu, 30 Jun 2022 13:11:01 +0000 (UTC)
+Received: from starship (unknown [10.40.194.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1FA309D63;
+        Thu, 30 Jun 2022 13:10:58 +0000 (UTC)
+Message-ID: <b11b2a29824e69d57f6b9bb5675aa957e4c081ce.camel@redhat.com>
+Subject: Re: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Jim Mattson <jmattson@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Date:   Thu, 30 Jun 2022 16:10:58 +0300
+In-Reply-To: <CALMp9eQkA-YeUFd=6Q+bRbtDT+UZO0jtPkEoZbqU1uDqMGp+xw@mail.gmail.com>
+References: <20220614204730.3359543-1-seanjc@google.com>
+         <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
+         <CALMp9eSkdj=kwh=4WHPsWZ1mKr9+0VSB527D5CMEx+wpgEGjGw@mail.gmail.com>
+         <f55889a50ba404381e3edc1a192770f2779d40f1.camel@redhat.com>
+         <CALMp9eQkA-YeUFd=6Q+bRbtDT+UZO0jtPkEoZbqU1uDqMGp+xw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
-Delete the redundant word 'is'.
-Delete the redundant word 'start'.
-Delete the redundant word 'checking'.
+On Thu, 2022-06-30 at 05:17 -0700, Jim Mattson wrote:
+> On Thu, Jun 30, 2022 at 1:22 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+> 
+> > I can't access this document for some reason (from my redhat account, which is gmail as well).
+> 
+> Try this one: https://docs.google.com/spreadsheets/d/13Yp7Cdg3ZyKoeZ3Qebp3uWi7urlPNmo5CQU5zFlayzs
+> 
+Thanks, now I can access both documents.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/sun/cassini.c | 2 +-
- drivers/net/ethernet/sun/cassini.h | 2 +-
- drivers/net/ethernet/sun/ldmvsw.c  | 2 +-
- drivers/net/ethernet/sun/sungem.c  | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
-index 435dc00d04e5..0b08b0e085e8 100644
---- a/drivers/net/ethernet/sun/cassini.c
-+++ b/drivers/net/ethernet/sun/cassini.c
-@@ -29,7 +29,7 @@
-  *  -- on page reclamation, the driver swaps the page with a spare page.
-  *     if that page is still in use, it frees its reference to that page,
-  *     and allocates a new page for use. otherwise, it just recycles the
-- *     the page.
-+ *     page.
-  *
-  * NOTE: cassini can parse the header. however, it's not worth it
-  *       as long as the network stack requires a header copy.
-diff --git a/drivers/net/ethernet/sun/cassini.h b/drivers/net/ethernet/sun/cassini.h
-index ae5f05f03f88..2d91f4936d52 100644
---- a/drivers/net/ethernet/sun/cassini.h
-+++ b/drivers/net/ethernet/sun/cassini.h
-@@ -764,7 +764,7 @@
-  * PAUSE thresholds defined in terms of FIFO occupancy and may be translated
-  * into FIFO vacancy using RX_FIFO_SIZE. setting ON will trigger XON frames
-  * when FIFO reaches 0. OFF threshold should not be > size of RX FIFO. max
-- * value is is 0x6F.
-+ * value is 0x6F.
-  * DEFAULT: 0x00078
-  */
- #define  REG_RX_PAUSE_THRESH               0x4020  /* RX pause thresholds */
-diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/ldmvsw.c
-index 6b59b14e74b1..0cd8493b810f 100644
---- a/drivers/net/ethernet/sun/ldmvsw.c
-+++ b/drivers/net/ethernet/sun/ldmvsw.c
-@@ -335,7 +335,7 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
- 	port->tsolen = 0;
- 
- 	/* Mark the port as belonging to ldmvsw which directs the
--	 * the common code to use the net_device in the vnet_port
-+	 * common code to use the net_device in the vnet_port
- 	 * rather than the net_device in the vnet (which is used
- 	 * by sunvnet). This bit is used by the VNET_PORT_TO_NET_DEVICE
- 	 * macro.
-diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
-index 45bd89153de2..a14591b41acb 100644
---- a/drivers/net/ethernet/sun/sungem.c
-+++ b/drivers/net/ethernet/sun/sungem.c
-@@ -1088,7 +1088,7 @@ static netdev_tx_t gem_start_xmit(struct sk_buff *skb,
- 		netif_stop_queue(dev);
- 
- 		/* netif_stop_queue() must be done before checking
--		 * checking tx index in TX_BUFFS_AVAIL() below, because
-+		 * tx index in TX_BUFFS_AVAIL() below, because
- 		 * in gem_tx(), we update tx_old before checking for
- 		 * netif_queue_stopped().
- 		 */
--- 
-2.36.1
+Best regards,
+	Maxim Levitsky
 
