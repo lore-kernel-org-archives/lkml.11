@@ -2,135 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D02CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0095C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234938AbiF3Lyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 07:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
+        id S235093AbiF3Lzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 07:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234637AbiF3Lyx (ORCPT
+        with ESMTP id S234637AbiF3Lzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 07:54:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22AF851B05;
-        Thu, 30 Jun 2022 04:54:52 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UAd4ae023725;
-        Thu, 30 Jun 2022 11:54:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=y0ICbooO6ZnULmmiPkLxDZXQ7SEBVCNNquvW2a/RDpw=;
- b=dJyNjeYFHQBePCnbyOvglEPZBuD1cOI1+ciEJcPfWvdb4kX5SzEpg4ICiSja5aTYR3QB
- O8AZ5bdYEFwM5M7Trm6Ed9ugAmg/Cozvc8hTHEVY5BeG+wJLXzBv76Z1GgcnPJ24EyEd
- ksNL2FhDxEX/iQn0Q2XOzsGlmUd3d3vN2JhGayE1t14fpcqWmmvRJtOgL8k57obEd/Ya
- hBHbI+ihbG6XmtAcQOZiI+bLO7kYDT7W8RdL7qeWEuZWQ8jUo5loaTVc6C16tBC+Hj4W
- SKiUI+BkySrTMO5NehBsRwI55hcAAtyQkZ4+NkNG0h+sGPfbOg/sQBNh6BlUoyqKnX2U 4A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h19qnjj0v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 11:54:13 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25UBaJu4017926;
-        Thu, 30 Jun 2022 11:54:13 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h19qnjj06-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 11:54:13 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UBoo2w015598;
-        Thu, 30 Jun 2022 11:54:11 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3gwt0901uf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 11:54:10 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UBs8t921823828
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Jun 2022 11:54:08 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7D5434C040;
-        Thu, 30 Jun 2022 11:54:08 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EBBC44C044;
-        Thu, 30 Jun 2022 11:54:04 +0000 (GMT)
-Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com (unknown [9.211.82.30])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 30 Jun 2022 11:54:04 +0000 (GMT)
-Message-ID: <cec0d90e9d70719cf3dee203d5b975b9e420d27f.camel@linux.ibm.com>
-Subject: Re: [PATCH v7] x86/kexec: Carry forward IMA measurement log on kexec
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Jonathan McDowell <noodles@fb.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>, Baoquan He <bhe@redhat.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>
-Date:   Thu, 30 Jun 2022 07:54:02 -0400
-In-Reply-To: <Yr1geLyslnjKck86@noodles-fedora.dhcp.thefacebook.com>
-References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
-         <YmgjXZphkmDKgaOA@noodles-fedora-PC23Y6EG>
-         <YnuJCH75GrhVm0Tp@noodles-fedora.dhcp.thefacebook.com>
-         <Yn01Cfb3Divf49g7@noodles-fedora.dhcp.thefacebook.com>
-         <YqcRuQFq5fg1XhB/@noodles-fedora.dhcp.thefacebook.com>
-         <YqtMf9ivGR8Rkl8u@noodles-fedora.dhcp.thefacebook.com>
-         <Yr1geLyslnjKck86@noodles-fedora.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Gdetm-DrlqQvFJcIwmEVVE3eweFCrF-u
-X-Proofpoint-ORIG-GUID: NnhuNQTy9jYivibx86zBkACLu3kppZxv
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 30 Jun 2022 07:55:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F02851B0B;
+        Thu, 30 Jun 2022 04:55:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC04BB8291F;
+        Thu, 30 Jun 2022 11:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB89DC34115;
+        Thu, 30 Jun 2022 11:55:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656590139;
+        bh=vPWuxNJBYkbc1W6dGQfHh61XCux8abgMoO29pSWCpvA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rYpTALMGXAsA1FSYl6IYBoxGshd/GXdcap7vYa/Nm5AvIK+pUKU28KjldQniSuxGp
+         Ilp64ntmKO/8npn097lw9U7BlskdyjSLsF9y62t7kLD5RXBC4O9Kt94vTHFfbQa3N3
+         LFiWB8gr/vlF9ilRict3dRwSxQVCT2lF95+Kob/g=
+Date:   Thu, 30 Jun 2022 13:55:36 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ping-Ke Shih <pkshih@realtek.com>,
+        masterzorag <masterzorag@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: Re: [PATCH 5.15 2/2] rtw88: rtw8821c: enable rfe 6 devices
+Message-ID: <Yr2POPOQ7fYi08CL@kroah.com>
+References: <20220630114621.19688-1-tangmeng@uniontech.com>
+ <20220630114621.19688-2-tangmeng@uniontech.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- spamscore=0 mlxscore=0 clxscore=1015 lowpriorityscore=0 suspectscore=0
- phishscore=0 bulkscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206300045
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630114621.19688-2-tangmeng@uniontech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-30 at 08:36 +0000, Jonathan McDowell wrote:
-> On kexec file load, the Integrity Measurement Architecture (IMA)
-> subsystem may verify the IMA signature of the kernel and initramfs, and
-> measure it. The command line parameters passed to the kernel in the
-> kexec call may also be measured by IMA.
+On Thu, Jun 30, 2022 at 07:46:21PM +0800, Meng Tang wrote:
+> commit e109e3617e5d563b431a52e6e2f07f0fc65a93ae upstream.
 > 
-> A remote attestation service can verify a TPM quote based on the TPM
-> event log, the IMA measurement list and the TPM PCR data. This can
-> be achieved only if the IMA measurement log is carried over from the
-> current kernel to the next kernel across the kexec call.
+> Ping-Ke Shih answered[1] a question for a user about an rtl8821ce device that
+> reported RFE 6, which the driver did not support. Ping-Ke suggested a possible
+> fix, but the user never reported back.
 > 
-> PowerPC and ARM64 both achieve this using device tree with a
-> "linux,ima-kexec-buffer" node. x86 platforms generally don't make use of
-> device tree, so use the setup_data mechanism to pass the IMA buffer to
-> the new kernel.
+> A second user discovered the above thread and tested the proposed fix.
+> Accordingly, I am pushing this change, even though I am not the author.
 > 
-> (Mimi, Baoquan, I haven't included your reviewed-bys because this has
->  changed the section annotations to __init and Boris reasonably enough
->  wants to make sure IMA folk are happy before taking this update.)
-
-FYI, comments like this should be added before the patch changelog
-(after the '---' separator).
-
+> [1] https://lore.kernel.org/linux-wireless/3f5e2f6eac344316b5dd518ebfea2f95@realtek.com/
 > 
-> Signed-off-by: Jonathan McDowell <noodles@fb.com>
-> Link: https://lore.kernel.org/r/YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG
+> Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+> Reported-and-tested-by: masterzorag <masterzorag@gmail.com>
+> Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+> Signed-off-by: Kalle Valo <kvalo@kernel.org>
+> Link: https://lore.kernel.org/r/20220107024739.20967-1-Larry.Finger@lwfinger.net
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/rtw8821c.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> index 746f6f8967d8..897da3ed2f02 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> @@ -1513,6 +1513,7 @@ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+>  	[0] = RTW_DEF_RFE(8821c, 0, 0),
+>  	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+>  	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+> +	[6] = RTW_DEF_RFE(8821c, 0, 0),
+>  };
+>  
+>  static struct rtw_hw_reg rtw8821c_dig[] = {
+> -- 
+> 2.20.1
+> 
+> 
+> 
 
-Reviewed-by: Mimi Zohar <zohar@linux.ibm.com> # IMA function
-definitions
+Both now queued up, thanks.
 
+greg k-h
