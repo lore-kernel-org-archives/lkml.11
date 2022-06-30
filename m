@@ -2,105 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95457C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27467C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236301AbiF3OFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
+        id S236544AbiF3OFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236377AbiF3OE0 (ORCPT
+        with ESMTP id S236455AbiF3OEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:04:26 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A048A3153D
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:53:32 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id v9so11841761wrp.7
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:53:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rjfE+t9jkRlM72f0scHUCfkpuAlgD5li+PY05b98rR4=;
-        b=SUcOjYWdAUbK3PUmvOfPnuGQrySz8me2+gPGH8zBYw6JMnnp6/6EjP0QpJ+fDu0rVH
-         PGXF01YQ3PeQ0BOxnVLJT6rVNCIJVAJZMkHmATtLiMUJHNCeddVcFwDMswPOJHpoLCAC
-         XfEhV0arzxJlcv5NDL8KeM9VvLR84SKwkvqfcnEJh7WdvaddmeKPza2MjCKLC398YYTC
-         Bgkg5LdEr+DvGDO3G9jeLx8lUo028SVMW+oF+jObBgC4sqiOHC23Tn0WaTi81V1OWJiz
-         /pUi8H+ZHS5eD5sykwKiBe5Fvkvyx1oF6JSldMAp6Vlj4WLV6sU7TB7uu/x142mQZGBQ
-         feww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rjfE+t9jkRlM72f0scHUCfkpuAlgD5li+PY05b98rR4=;
-        b=E2t/HoNjVhuB7EFsKJo6U3t/8lW1lg8pAbM+rdYbp8k5/AttAxHLbaD/myCseUplNb
-         cGbGtxo1u+YqKn/95tSpji5xHaEvjc6VhXjs88gHY1VEL+tFvxYuW7YhRbtVXHc2a8LI
-         akleBVv5XctEMMb7dhZM/baaxgz8/cuOLarB0rLYNNiL0IoWsmUdfAol47U1PHseXCx7
-         j6RqLmcNgi6pohw4c4DSSqThVgKn8dmiNUDxEXjuQBur+/YP7mNvToZx5pacVJB9g/bZ
-         k2TSRREtXJe2ebpqPzk5jqRA7gjIjs8K4SLeXQLwmetrySuntTWxVcVSaNDHZ79lmuI1
-         knbw==
-X-Gm-Message-State: AJIora9hRncNMrKqf8YXwbTZPNDSuUhrJ521L4mWiN9lqbr4F+S6DjMU
-        M5Q/V/sL6E8QJQMlWiN+n871Z66jAzv06A==
-X-Google-Smtp-Source: AGRyM1sXoCUSDFAd2ZBXGMe4hTCD/ew3+1hPD1NM7OzuvrgkwjXj8PT/tePWw50cS1TevLQLVIzZMA==
-X-Received: by 2002:a05:6000:1889:b0:21d:28e8:b6a with SMTP id a9-20020a056000188900b0021d28e80b6amr8178653wri.14.1656597210148;
-        Thu, 30 Jun 2022 06:53:30 -0700 (PDT)
-Received: from ?IPV6:2a02:768:2307:40d6::f9e? ([2a02:768:2307:40d6::f9e])
-        by smtp.gmail.com with ESMTPSA id p15-20020a05600c204f00b0039c5cecf206sm6678987wmg.4.2022.06.30.06.53.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jun 2022 06:53:28 -0700 (PDT)
-Message-ID: <11474ae8-8f28-ad85-4abb-4da7fb3bd1ea@monstr.eu>
-Date:   Thu, 30 Jun 2022 15:53:27 +0200
+        Thu, 30 Jun 2022 10:04:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E1B6D555;
+        Thu, 30 Jun 2022 06:53:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 737526211E;
+        Thu, 30 Jun 2022 13:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEB2C36AED;
+        Thu, 30 Jun 2022 13:53:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656597212;
+        bh=ffpHr7ABlkI6Z45CH7Vc8Mv9rfjUscCFPhHmwiZa+wo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=l85+Hj3/IaoKAoT6AH+Zie4g5oryTKLZnAEPim2IIb2yLH2xcniQyJVUfUVGu72V3
+         xTR+nRHWTYqWu+db1S4+0ACVHveC1nsZ5N2Qf94o9U44tl14Qfmcs+d4EJsqWtp9xK
+         +GRDGT/u/ssJs3mMM7SAeW4kTySqHx/jaJx+DVD0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH 5.4 05/16] net: mscc: ocelot: allow unregistered IP multicast flooding
+Date:   Thu, 30 Jun 2022 15:46:59 +0200
+Message-Id: <20220630133231.096566009@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
+References: <20220630133230.936488203@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] arch: microblaze: Remove unused "select
- HANDLE_DOMAIN_IRQ"
-Content-Language: en-US
-To:     sunying@nj.iscas.ac.cn
-Cc:     linux-kernel@vger.kernel.org
-References: <20220629080652.28029-1-sunying@nj.iscas.ac.cn>
-From:   Michal Simek <monstr@monstr.eu>
-In-Reply-To: <20220629080652.28029-1-sunying@nj.iscas.ac.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+Flooding of unregistered IP multicast has been broken (both to other
+switch ports and to the CPU) since the ocelot driver introduction, and
+up until commit 4cf35a2b627a ("net: mscc: ocelot: fix broken IP
+multicast flooding"), a bug fix for commit 421741ea5672 ("net: mscc:
+ocelot: offload bridge port flags to device") from v5.12.
 
-On 6/29/22 10:06, sunying@nj.iscas.ac.cn wrote:
-> From: Ying Sun <sunying@nj.iscas.ac.cn>
-> 
-> The "CONFIG_HANDLE_DOMAIN_IRQ" item has not been used right now.
-> Remove the old unused selection in config MICROBLAZE.
-> 
-> Signed-off-by: Ying Sun <sunying@nj.iscas.ac.cn>
-> ---
->   arch/microblaze/Kconfig | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-> index 8cf429ad1c84..ed9ce6117263 100644
-> --- a/arch/microblaze/Kconfig
-> +++ b/arch/microblaze/Kconfig
-> @@ -45,7 +45,6 @@ config MICROBLAZE
->   	select ZONE_DMA
->   	select TRACE_IRQFLAGS_SUPPORT
->   	select GENERIC_IRQ_MULTI_HANDLER
-> -	select HANDLE_DOMAIN_IRQ
->   
->   # Endianness selection
->   choice
+The driver used to set PGID_MCIPV4 and PGID_MCIPV6 to the empty port
+mask (0), which made unregistered IPv4/IPv6 multicast go nowhere, and
+without ever modifying that port mask at runtime.
 
-Applied.
-M
+The expectation is that such packets are treated as broadcast, and
+flooded according to the forwarding domain (to the CPU if the port is
+standalone, or to the CPU and other bridged ports, if under a bridge).
 
--- 
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
+Since the aforementioned commit, the limitation has been lifted by
+responding to SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS events emitted by the
+bridge. As for host flooding, DSA synthesizes another call to
+ocelot_port_bridge_flags() on the NPI port which ensures that the CPU
+gets the unregistered multicast traffic it might need, for example for
+smcroute to work between standalone ports.
+
+But between v4.18 and v5.12, IP multicast flooding has remained unfixed.
+
+Delete the inexplicable premature optimization of clearing PGID_MCIPV4
+and PGID_MCIPV6 as part of the init sequence, and allow unregistered IP
+multicast to be flooded freely according to the forwarding domain
+established by PGID_SRC, by explicitly programming PGID_MCIPV4 and
+PGID_MCIPV6 towards all physical ports plus the CPU port module.
+
+Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
+Cc: stable@kernel.org
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/mscc/ocelot.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2153,8 +2153,12 @@ int ocelot_init(struct ocelot *ocelot)
+ 	ocelot_write_rix(ocelot,
+ 			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
+ 			 ANA_PGID_PGID, PGID_MC);
+-	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
+-	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
++	ocelot_write_rix(ocelot,
++			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
++			 ANA_PGID_PGID, PGID_MCIPV4);
++	ocelot_write_rix(ocelot,
++			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
++			 ANA_PGID_PGID, PGID_MCIPV6);
+ 
+ 	/* CPU port Injection/Extraction configuration */
+ 	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
+
 
