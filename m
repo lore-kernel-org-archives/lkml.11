@@ -2,207 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF946C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB5BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbiF3XKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
+        id S231937AbiF3XLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231678AbiF3XKe (ORCPT
+        with ESMTP id S231906AbiF3XLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:10:34 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3371058FEC;
-        Thu, 30 Jun 2022 16:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=PLnX+GdiFq0h5m7XxJGkEoRQcXwyc8nFGHPUn3RIA68=; b=DONAnasQ0yvPgsBJkOz9zo+fop
-        6HB95NCmxtbegAsvEMNEF/V90e76fDOkTxUK9lwlhAMa395kOpj33EYQqt3LVUiMdgebzjU8V3IfT
-        kZD469AenC21vxxaaes2+2vhbayHa2Fq6Yuh3V1rS6GO0QdOvYc/SsGHHrDMsfxsTEScwXTDD3Epj
-        rAL8mIesWjBOzYo5IF6JzwznaT4wqiNo0lRD3qYwYzrwUMiKLcOoc51vkCmo4sD2hteg7k9rqa3XI
-        l3V8DefBid9ZOHUMLCllhBcb7pAycMYEXUOb+Ll5xs1q1AoMwx5VXgoO9AO+wHNaBKZU42Y7BmQYT
-        dkdQB6rQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o73I3-006iv9-RN;
-        Thu, 30 Jun 2022 23:09:40 +0000
-Date:   Fri, 1 Jul 2022 00:09:39 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Khalid Aziz <khalid.aziz@oracle.com>
-Cc:     akpm@linux-foundation.org, willy@infradead.org,
-        aneesh.kumar@linux.ibm.com, arnd@arndb.de, 21cnbao@gmail.com,
-        corbet@lwn.net, dave.hansen@linux.intel.com, david@redhat.com,
-        ebiederm@xmission.com, hagen@jauu.net, jack@suse.cz,
-        keescook@chromium.org, kirill@shutemov.name, kucharsk@gmail.com,
-        linkinjeon@kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        longpeng2@huawei.com, luto@kernel.org, markhemm@googlemail.com,
-        pcc@google.com, rppt@kernel.org, sieberf@amazon.com,
-        sjpark@amazon.de, surenb@google.com, tst@schoebel-theuer.de,
-        yzaikin@google.com
-Subject: Re: [PATCH v2 3/9] mm/mshare: make msharefs writable and support
- directories
-Message-ID: <Yr4tM2oOF9rlwWdV@ZenIV>
-References: <cover.1656531090.git.khalid.aziz@oracle.com>
- <397ad80630444b90877625a1e94dd81392fc678e.1656531090.git.khalid.aziz@oracle.com>
+        Thu, 30 Jun 2022 19:11:00 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98182E9DF
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:10:55 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id r133so692039iod.3
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dIDh9igH0WqMYoPcwQ8EGzvnaGjeYWJFBEtd9j2Fyzs=;
+        b=SSIJrzT/S7ZASlrmwkoFJJcrWh/Dq4pARNQMXnoKF8Wa+ErUya32YLkV8SZ1MMS77j
+         Khajrplnj5Q4VEB8dFb847dgNr0lEcgczjAxjpH7IY0wnaAYQHRV2SSrEs5djH0PrmoK
+         N2FF3HcNqNh56Cbl12M+vbFHdYtKlj60rEKWk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dIDh9igH0WqMYoPcwQ8EGzvnaGjeYWJFBEtd9j2Fyzs=;
+        b=L36gbufTSNBQ2okgwD0UMTpCiWbKs2+57MOCWtpJLWU/4V3G/uLx6x2PjbzP+75X2L
+         Pt6cVN9x7ecvnJQuQYbj7C6FklbZRflA3n/cf39EEdYXq6+ttz5QpUUzmspkvcTgxwjZ
+         +MforcBs1dnCMuCw7VsTaFHQMDX64ZpeHCjp44FzDYIxDHz9tUFOCJXRuKujca5AGTap
+         DEQONEl4f0b2MMwQBRP6Ssq8acKfJ66EWyee2NLw2YLY1O24raKFfCVGsVXS/5iyKpTn
+         myKxt+1u1k6073S25heDQRQxHg/pZ8ITre1I4mkpRWBmHK/KAcRILm9DGJcEASuvqNlB
+         7TnA==
+X-Gm-Message-State: AJIora+cDnBqtlZzvBh5sC3n6pjBhbh9aXc/71D499uAfR0EruhFXKC4
+        lxztHwN3lB7i6bLxbdlTvbdw0g==
+X-Google-Smtp-Source: AGRyM1u00uLDy8eRhHKVoChkdeqL/K9JLx+6pobuXh9XaYLwq7oErcwj0v1wlFgkx7u8UBdT4AfxAQ==
+X-Received: by 2002:a5e:a70f:0:b0:675:6d6c:8e05 with SMTP id b15-20020a5ea70f000000b006756d6c8e05mr5929382iod.158.1656630655338;
+        Thu, 30 Jun 2022 16:10:55 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id m9-20020a02cdc9000000b00331fdc68ccesm8987851jap.140.2022.06.30.16.10.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 16:10:55 -0700 (PDT)
+Subject: Re: [PATCH 5.4 00/16] 5.4.203-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220630133230.936488203@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <65d8226d-f7db-7b6d-057f-11df9e14c092@linuxfoundation.org>
+Date:   Thu, 30 Jun 2022 17:10:54 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <397ad80630444b90877625a1e94dd81392fc678e.1656531090.git.khalid.aziz@oracle.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 04:53:54PM -0600, Khalid Aziz wrote:
+On 6/30/22 7:46 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.203 release.
+> There are 16 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.203-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-> +static int
-> +msharefs_open(struct inode *inode, struct file *file)
-> +{
-> +	return simple_open(inode, file);
-> +}
+Compiled and booted on my test system. No dmesg regressions.
 
-Again, whatever for?
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-> +static struct dentry
-> +*msharefs_alloc_dentry(struct dentry *parent, const char *name)
-> +{
-> +	struct dentry *d;
-> +	struct qstr q;
-> +	int err;
-> +
-> +	q.name = name;
-> +	q.len = strlen(name);
-> +
-> +	err = msharefs_d_hash(parent, &q);
-> +	if (err)
-> +		return ERR_PTR(err);
-> +
-> +	d = d_alloc(parent, &q);
-> +	if (d)
-> +		return d;
-> +
-> +	return ERR_PTR(-ENOMEM);
-> +}
-
-And it's different from d_alloc_name() how, exactly?
-
-> +		case S_IFLNK:
-> +			inode->i_op = &page_symlink_inode_operations;
-> +			break;
-
-Really?  You've got symlinks here?
-
-> +		default:
-> +			discard_new_inode(inode);
-> +			inode = NULL;
-
-That's an odd way to spell BUG()...
-
-> +static int
-> +msharefs_mknod(struct user_namespace *mnt_userns, struct inode *dir,
-> +		struct dentry *dentry, umode_t mode, dev_t dev)
-> +{
-> +	struct inode *inode;
-> +	int err = 0;
-> +
-> +	inode = msharefs_get_inode(dir->i_sb, dir, mode);
-> +	if (IS_ERR(inode))
-> +		return PTR_ERR(inode);
-> +
-> +	d_instantiate(dentry, inode);
-> +	dget(dentry);
-> +	dir->i_mtime = dir->i_ctime = current_time(dir);
-> +
-> +	return err;
-> +}
-
-BTW, what's the point of having device nodes on that thing?
-
-> +static int
-> +msharefs_create(struct user_namespace *mnt_userns, struct inode *dir,
-> +		struct dentry *dentry, umode_t mode, bool excl)
-> +{
-> +	return msharefs_mknod(&init_user_ns, dir, dentry, mode | S_IFREG, 0);
-> +}
-> +
-> +static int
-> +msharefs_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
-> +		struct dentry *dentry, umode_t mode)
-> +{
-> +	int ret = msharefs_mknod(&init_user_ns, dir, dentry, mode | S_IFDIR, 0);
-> +
-> +	if (!ret)
-> +		inc_nlink(dir);
-> +	return ret;
-> +}
-> +
-> +static const struct inode_operations msharefs_file_inode_ops = {
-> +	.setattr	= simple_setattr,
-> +	.getattr	= simple_getattr,
-> +};
-> +static const struct inode_operations msharefs_dir_inode_ops = {
-> +	.create		= msharefs_create,
-> +	.lookup		= simple_lookup,
-> +	.link		= simple_link,
-> +	.unlink		= simple_unlink,
-> +	.mkdir		= msharefs_mkdir,
-> +	.rmdir		= simple_rmdir,
-> +	.mknod		= msharefs_mknod,
-> +	.rename		= simple_rename,
-> +};
-> +
->  static void
->  mshare_evict_inode(struct inode *inode)
->  {
-> @@ -58,7 +175,7 @@ mshare_info_read(struct file *file, char __user *buf, size_t nbytes,
->  {
->  	char s[80];
->  
-> -	sprintf(s, "%ld", PGDIR_SIZE);
-> +	sprintf(s, "%ld\n", PGDIR_SIZE);
->  	return simple_read_from_buffer(buf, nbytes, ppos, s, strlen(s));
->  }
->  
-> @@ -72,6 +189,38 @@ static const struct super_operations mshare_s_ops = {
->  	.evict_inode = mshare_evict_inode,
->  };
->  
-> +static int
-> +prepopulate_files(struct super_block *s, struct inode *dir,
-> +			struct dentry *root, const struct tree_descr *files)
-> +{
-> +	int i;
-> +	struct inode *inode;
-> +	struct dentry *dentry;
-> +
-> +	for (i = 0; !files->name || files->name[0]; i++, files++) {
-> +		if (!files->name)
-> +			continue;
-> +
-> +		dentry = msharefs_alloc_dentry(root, files->name);
-> +		if (!dentry)
-> +			return -ENOMEM;
-> +
-> +		inode = msharefs_get_inode(s, dir, S_IFREG | files->mode);
-> +		if (!inode) {
-> +			dput(dentry);
-> +			return -ENOMEM;
-> +		}
-> +		inode->i_mode = S_IFREG | files->mode;
-> +		inode->i_atime = inode->i_mtime = inode->i_ctime
-> +			= current_time(inode);
-> +		inode->i_fop = files->ops;
-> +		inode->i_ino = i;
-> +		d_add(dentry, inode);
-> +	}
-> +
-> +	return 0;
-> +}
-
-Looks remarkably similar to something I've seen somewhere... fs/libfs.c,
-if I'm not mistaken...
-
-Sarcasm aside, what's wrong with using simple_fill_super()?
+thanks,
+-- Shuah
