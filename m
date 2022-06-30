@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7033DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9532FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236815AbiF3OJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
+        id S236822AbiF3OJv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237098AbiF3OIN (ORCPT
+        with ESMTP id S237179AbiF3OIW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:08:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75D3599D2;
-        Thu, 30 Jun 2022 06:55:05 -0700 (PDT)
+        Thu, 30 Jun 2022 10:08:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E42599FF;
+        Thu, 30 Jun 2022 06:55:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A36E9CE2EC5;
-        Thu, 30 Jun 2022 13:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 759F0C34115;
-        Thu, 30 Jun 2022 13:55:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FEBF61FDB;
+        Thu, 30 Jun 2022 13:55:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B37FC34115;
+        Thu, 30 Jun 2022 13:55:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597300;
-        bh=IlUuLaioXD4aLocQ1ckAcqmG2YPQSwNfIkXxiJQxQdw=;
+        s=korg; t=1656597311;
+        bh=D4HoO050c3aJJTK/c0qhVi+v3wZq7QnP8S3rtyT7FqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u6fLRcWm4GBnMO2CkLpZEnhAJUjabHvVjXzjVBGoSDeD/nfwhO7mwIC1ETZcImTSB
-         uioFSsHbtUqeSLntJHLpPxhUzg0UdnJ+ORkVlN3ygqbbJ+qWHkbN7UD6e5Bac11ahU
-         VuZfHaWoQVG5Jq2U3Qsm4O2p/TzUNkCL9wTUWnV0=
+        b=iyIgr8PDJs5rTqRW+VZSX8SYm9Owi4mh4yGT2Gu5vIz6dRVTM1XdSL4QNNODVavCp
+         6zrU0KnlASzH6hHAR+Vd/lep/VBOzToqB83osII0TMUEc+4e6IH9kXPXzjtlbOhFfX
+         saYE4Z+lkH/wj9m3TUHzXYJLQT1tWfNl0aoQgG54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Leah Rumancik <leah.rumancik@gmail.com>
-Subject: [PATCH 5.15 09/28] xfs: check sb_meta_uuid for dabuf buffer recovery
-Date:   Thu, 30 Jun 2022 15:47:05 +0200
-Message-Id: <20220630133233.201165379@linuxfoundation.org>
+        stable@vger.kernel.org, Guo-Feng Fan <vincent_fann@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 5.15 25/28] rtw88: 8821c: support RFE type4 wifi NIC
+Date:   Thu, 30 Jun 2022 15:47:21 +0200
+Message-Id: <20220630133233.672607668@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -49,82 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Chinner <dchinner@redhat.com>
+From: Guo-Feng Fan <vincent_fann@realtek.com>
 
-[ Upstream commit 09654ed8a18cfd45027a67d6cbca45c9ea54feab ]
+commit b789e3fe7047296be0ccdbb7ceb0b58856053572 upstream.
 
-Got a report that a repeated crash test of a container host would
-eventually fail with a log recovery error preventing the system from
-mounting the root filesystem. It manifested as a directory leaf node
-corruption on writeback like so:
+RFE type4 is a new NIC which has one RF antenna shares with BT.
+RFE type4 HW is the same as RFE type2 but attaching antenna to
+aux antenna connector.
 
- XFS (loop0): Mounting V5 Filesystem
- XFS (loop0): Starting recovery (logdev: internal)
- XFS (loop0): Metadata corruption detected at xfs_dir3_leaf_check_int+0x99/0xf0, xfs_dir3_leaf1 block 0x12faa158
- XFS (loop0): Unmount and run xfs_repair
- XFS (loop0): First 128 bytes of corrupted metadata buffer:
- 00000000: 00 00 00 00 00 00 00 00 3d f1 00 00 e1 9e d5 8b  ........=.......
- 00000010: 00 00 00 00 12 fa a1 58 00 00 00 29 00 00 1b cc  .......X...)....
- 00000020: 91 06 78 ff f7 7e 4a 7d 8d 53 86 f2 ac 47 a8 23  ..x..~J}.S...G.#
- 00000030: 00 00 00 00 17 e0 00 80 00 43 00 00 00 00 00 00  .........C......
- 00000040: 00 00 00 2e 00 00 00 08 00 00 17 2e 00 00 00 0a  ................
- 00000050: 02 35 79 83 00 00 00 30 04 d3 b4 80 00 00 01 50  .5y....0.......P
- 00000060: 08 40 95 7f 00 00 02 98 08 41 fe b7 00 00 02 d4  .@.......A......
- 00000070: 0d 62 ef a7 00 00 01 f2 14 50 21 41 00 00 00 0c  .b.......P!A....
- XFS (loop0): Corruption of in-memory data (0x8) detected at xfs_do_force_shutdown+0x1a/0x20 (fs/xfs/xfs_buf.c:1514).  Shutting down.
- XFS (loop0): Please unmount the filesystem and rectify the problem(s)
- XFS (loop0): log mount/recovery failed: error -117
- XFS (loop0): log mount failed
+RFE type2 attach antenna to main antenna connector.
+Load the same parameter as RFE type2 when initializing NIC.
 
-Tracing indicated that we were recovering changes from a transaction
-at LSN 0x29/0x1c16 into a buffer that had an LSN of 0x29/0x1d57.
-That is, log recovery was overwriting a buffer with newer changes on
-disk than was in the transaction. Tracing indicated that we were
-hitting the "recovery immediately" case in
-xfs_buf_log_recovery_lsn(), and hence it was ignoring the LSN in the
-buffer.
-
-The code was extracting the LSN correctly, then ignoring it because
-the UUID in the buffer did not match the superblock UUID. The
-problem arises because the UUID check uses the wrong UUID - it
-should be checking the sb_meta_uuid, not sb_uuid. This filesystem
-has sb_uuid != sb_meta_uuid (which is fine), and the buffer has the
-correct matching sb_meta_uuid in it, it's just the code checked it
-against the wrong superblock uuid.
-
-The is no corruption in the filesystem, and failing to recover the
-buffer due to a write verifier failure means the recovery bug did
-not propagate the corruption to disk. Hence there is no corruption
-before or after this bug has manifested, the impact is limited
-simply to an unmountable filesystem....
-
-This was missed back in 2015 during an audit of incorrect sb_uuid
-usage that resulted in commit fcfbe2c4ef42 ("xfs: log recovery needs
-to validate against sb_meta_uuid") that fixed the magic32 buffers to
-validate against sb_meta_uuid instead of sb_uuid. It missed the
-magicda buffers....
-
-Fixes: ce748eaa65f2 ("xfs: create new metadata UUID field and incompat flag")
-Signed-off-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210922023637.9357-1-pkshih@realtek.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_buf_item_recover.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/fs/xfs/xfs_buf_item_recover.c
-+++ b/fs/xfs/xfs_buf_item_recover.c
-@@ -816,7 +816,7 @@ xlog_recover_get_buf_lsn(
- 	}
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -304,7 +304,8 @@ static void rtw8821c_set_channel_rf(stru
+ 	if (channel <= 14) {
+ 		if (rtwdev->efuse.rfe_option == 0)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
+-		else if (rtwdev->efuse.rfe_option == 2)
++		else if (rtwdev->efuse.rfe_option == 2 ||
++			 rtwdev->efuse.rfe_option == 4)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
+@@ -777,6 +778,15 @@ static void rtw8821c_coex_cfg_ant_switch
+ 	if (switch_status == coex_dm->cur_switch_status)
+ 		return;
  
- 	if (lsn != (xfs_lsn_t)-1) {
--		if (!uuid_equal(&mp->m_sb.sb_uuid, uuid))
-+		if (!uuid_equal(&mp->m_sb.sb_meta_uuid, uuid))
- 			goto recover_immediately;
- 		return lsn;
- 	}
++	if (coex_rfe->wlg_at_btg) {
++		ctrl_type = COEX_SWITCH_CTRL_BY_BBSW;
++
++		if (coex_rfe->ant_switch_polarity)
++			pos_type = COEX_SWITCH_TO_WLA;
++		else
++			pos_type = COEX_SWITCH_TO_WLG_BT;
++	}
++
+ 	coex_dm->cur_switch_status = switch_status;
+ 
+ 	if (coex_rfe->ant_switch_diversity &&
+@@ -1502,6 +1512,7 @@ static const struct rtw_intf_phy_para_ta
+ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+ 	[0] = RTW_DEF_RFE(8821c, 0, 0),
+ 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
++	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ };
+ 
+ static struct rtw_hw_reg rtw8821c_dig[] = {
 
 
