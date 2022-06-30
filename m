@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6283C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236493AbiF3OEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        id S236506AbiF3OEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:04:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235538AbiF3OEF (ORCPT
+        with ESMTP id S236466AbiF3OEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:04:05 -0400
+        Thu, 30 Jun 2022 10:04:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9750E6B80E;
-        Thu, 30 Jun 2022 06:53:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A436B805;
+        Thu, 30 Jun 2022 06:53:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 131286204B;
-        Thu, 30 Jun 2022 13:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C96C34115;
-        Thu, 30 Jun 2022 13:53:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63F9A6210F;
+        Thu, 30 Jun 2022 13:53:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F075C34115;
+        Thu, 30 Jun 2022 13:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597207;
-        bh=/VgdTWu0dxKHhk1MIlpNq8s8juV2Au1DBtaZAj/hcb0=;
+        s=korg; t=1656597204;
+        bh=B6o1vVJE8G5b1r5QxOa5AGOqbLfmPxyGA5Nfo4bviAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eOijS7bqTSZLgBSE2LSORnmbSXtvw09wwhtT/zP7tV10YhVT/dmfx+QeJ0E08rCh9
-         B1Y3kyKL8PJPU2rgmubX8VmTLM3moVmc4RSRU034SrIWqPqiGdL2/RwBjVL9c4zAoI
-         H0j4X3fJGYmOJV01Ce0JN00D0bstvudwimsco3ZY=
+        b=l3PiiUwyCwYRsMx3/hAjCT5nTaL8eMJKzbJWicGNPkp4omWvzefOsSOVUQbu2yCY4
+         9tIo158o7YQ2Ve7bb5MPs6eQokI9wbJQi34+GyUsVY9mNrIqxiJLs1bmJgnuPFBbcJ
+         NUrZlBV9lqVufHkOmEwPkkkRFXRxc2nt0xUBze9E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 03/16] powerpc/ftrace: Remove ftrace init tramp once kernel init is complete
-Date:   Thu, 30 Jun 2022 15:46:57 +0200
-Message-Id: <20220630133231.038219498@linuxfoundation.org>
+        Stefan Agner <stefan@agner.ch>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 5.4 16/16] crypto: arm/ghash-ce - define fpu before fpu registers are referenced
+Date:   Thu, 30 Jun 2022 15:47:10 +0200
+Message-Id: <20220630133231.416143558@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
 References: <20220630133230.936488203@linuxfoundation.org>
@@ -49,97 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Stefan Agner <stefan@agner.ch>
 
-commit 84ade0a6655bee803d176525ef457175cbf4df22 upstream.
+commit 7548bf8c17d84607c106bd45d81834afd95a2edb upstream
 
-Stop using the ftrace trampoline for init section once kernel init is
-complete.
+Building ARMv7 with Clang's integrated assembler leads to errors such
+as:
+arch/arm/crypto/ghash-ce-core.S:34:11: error: register name expected
+ t3l .req d16
+          ^
 
-Fixes: 67361cf8071286 ("powerpc/ftrace: Handle large kernel configs")
-Cc: stable@vger.kernel.org # v4.20+
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220516071422.463738-1-naveen.n.rao@linux.vnet.ibm.com
+Since no FPU has selected yet Clang considers d16 not a valid register.
+Moving the FPU directive on-top allows Clang to parse the registers and
+allows to successfully build this file with Clang's integrated assembler.
+
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/ftrace.h  |    5 ++++-
- arch/powerpc/kernel/trace/ftrace.c |   15 ++++++++++++---
- arch/powerpc/mm/mem.c              |    2 ++
- 3 files changed, 18 insertions(+), 4 deletions(-)
+ arch/arm/crypto/ghash-ce-core.S |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/powerpc/include/asm/ftrace.h
-+++ b/arch/powerpc/include/asm/ftrace.h
-@@ -96,7 +96,7 @@ static inline bool arch_syscall_match_sy
- #endif /* PPC64_ELF_ABI_v1 */
- #endif /* CONFIG_FTRACE_SYSCALLS */
+--- a/arch/arm/crypto/ghash-ce-core.S
++++ b/arch/arm/crypto/ghash-ce-core.S
+@@ -8,6 +8,9 @@
+ #include <linux/linkage.h>
+ #include <asm/assembler.h>
  
--#ifdef CONFIG_PPC64
-+#if defined(CONFIG_PPC64) && defined(CONFIG_FUNCTION_TRACER)
- #include <asm/paca.h>
- 
- static inline void this_cpu_disable_ftrace(void)
-@@ -108,9 +108,12 @@ static inline void this_cpu_enable_ftrac
- {
- 	get_paca()->ftrace_enabled = 1;
- }
++	.arch		armv8-a
++	.fpu		crypto-neon-fp-armv8
 +
-+void ftrace_free_init_tramp(void);
- #else /* CONFIG_PPC64 */
- static inline void this_cpu_disable_ftrace(void) { }
- static inline void this_cpu_enable_ftrace(void) { }
-+static inline void ftrace_free_init_tramp(void) { }
- #endif /* CONFIG_PPC64 */
- #endif /* !__ASSEMBLY__ */
+ 	SHASH		.req	q0
+ 	T1		.req	q1
+ 	XL		.req	q2
+@@ -88,8 +91,6 @@
+ 	T3_H		.req	d17
  
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -328,9 +328,7 @@ static int setup_mcount_compiler_tramp(u
+ 	.text
+-	.arch		armv8-a
+-	.fpu		crypto-neon-fp-armv8
  
- 	/* Is this a known long jump tramp? */
- 	for (i = 0; i < NUM_FTRACE_TRAMPS; i++)
--		if (!ftrace_tramps[i])
--			break;
--		else if (ftrace_tramps[i] == tramp)
-+		if (ftrace_tramps[i] == tramp)
- 			return 0;
- 
- 	/* Is this a known plt tramp? */
-@@ -868,6 +866,17 @@ void arch_ftrace_update_code(int command
- 
- extern unsigned int ftrace_tramp_text[], ftrace_tramp_init[];
- 
-+void ftrace_free_init_tramp(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < NUM_FTRACE_TRAMPS && ftrace_tramps[i]; i++)
-+		if (ftrace_tramps[i] == (unsigned long)ftrace_tramp_init) {
-+			ftrace_tramps[i] = 0;
-+			return;
-+		}
-+}
-+
- int __init ftrace_dyn_arch_init(void)
- {
- 	int i;
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -48,6 +48,7 @@
- #include <asm/fixmap.h>
- #include <asm/swiotlb.h>
- #include <asm/rtas.h>
-+#include <asm/ftrace.h>
- 
- #include <mm/mmu_decl.h>
- 
-@@ -346,6 +347,7 @@ void free_initmem(void)
- 	mark_initmem_nx();
- 	init_mem_is_free = true;
- 	free_initmem_default(POISON_FREE_INITMEM);
-+	ftrace_free_init_tramp();
- }
- 
- /**
+ 	.macro		__pmull_p64, rd, rn, rm, b1, b2, b3, b4
+ 	vmull.p64	\rd, \rn, \rm
 
 
