@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A22D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7ACAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236423AbiF3OF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S236354AbiF3OGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236404AbiF3OFZ (ORCPT
+        with ESMTP id S236474AbiF3OFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:05:25 -0400
+        Thu, 30 Jun 2022 10:05:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77F16EE91;
-        Thu, 30 Jun 2022 06:53:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F226EEA2;
+        Thu, 30 Jun 2022 06:53:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9831061FF6;
-        Thu, 30 Jun 2022 13:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C28BC34115;
-        Thu, 30 Jun 2022 13:53:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C176210F;
+        Thu, 30 Jun 2022 13:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6163EC34115;
+        Thu, 30 Jun 2022 13:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597224;
-        bh=RGsatybUy2IVoxQlTGrXAd1ewMgnrCmqFCingxAVs00=;
+        s=korg; t=1656597226;
+        bh=B38O70NoaMcu4XQpJfrxymGHgtMsHJvKZHqlKigsZx8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oEII0HoQzYVzPc9gJ5EowZQicahnr/oxloswEQ3HOwaDVXbj0SHpPB5cSEoaXuRyt
-         ijCdfBR/sbzO/9jT+JhSZ2UxGpZNJFd6OP9MWCOJW8UtcRp5QE2WISXo4BxnVJd3x3
-         GVz8yCKBpPoQdgX1HxqMvfwRN4I4LHidBDm5sbL0=
+        b=tOCnsTJq0DHvO/x2wrtpPhmShPGn3srI4Rri7ABdPS9TDnTvJ4nTJGLSZmJ+oS6V1
+         glEi9nfJJVk5VcLpsSnQeTfJgXu6BdMQ9bEb1LSl6iogg7KASVaz7r6PXXNZ2/DQIb
+         LIpCVcgC/oHsvn+vaiz7DJQYK+jso6KH2EzE+9oQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.4 09/16] crypto: arm/sha256-neon - avoid ADRL pseudo instruction
-Date:   Thu, 30 Jun 2022 15:47:03 +0200
-Message-Id: <20220630133231.213267670@linuxfoundation.org>
+Subject: [PATCH 5.4 10/16] crypto: arm/sha512-neon - avoid ADRL pseudo instruction
+Date:   Thu, 30 Jun 2022 15:47:04 +0200
+Message-Id: <20220630133231.243227230@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
 References: <20220630133230.936488203@linuxfoundation.org>
@@ -52,7 +52,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 54781938ec342cadbe2d76669ef8d3294d909974 upstream
+commit 0f5e8323777bfc1c1d2cba71242db6a361de03b6 upstream
 
 The ADRL pseudo instruction is not an architectural construct, but a
 convenience macro that was supported by the ARM proprietary assembler
@@ -72,13 +72,13 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/crypto/sha256-armv4.pl       |    4 ++--
- arch/arm/crypto/sha256-core.S_shipped |    4 ++--
+ arch/arm/crypto/sha512-armv4.pl       |    4 ++--
+ arch/arm/crypto/sha512-core.S_shipped |    4 ++--
  2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/arm/crypto/sha256-armv4.pl
-+++ b/arch/arm/crypto/sha256-armv4.pl
-@@ -175,7 +175,6 @@ $code=<<___;
+--- a/arch/arm/crypto/sha512-armv4.pl
++++ b/arch/arm/crypto/sha512-armv4.pl
+@@ -212,7 +212,6 @@ $code=<<___;
  #else
  .syntax unified
  # ifdef __thumb2__
@@ -86,19 +86,19 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  .thumb
  # else
  .code   32
-@@ -471,7 +470,8 @@ sha256_block_data_order_neon:
- 	stmdb	sp!,{r4-r12,lr}
- 
- 	sub	$H,sp,#16*4+16
--	adrl	$Ktbl,K256
-+	adr	$Ktbl,.Lsha256_block_data_order
-+	sub	$Ktbl,$Ktbl,#.Lsha256_block_data_order-K256
- 	bic	$H,$H,#15		@ align for 128-bit stores
- 	mov	$t2,sp
- 	mov	sp,$H			@ alloca
---- a/arch/arm/crypto/sha256-core.S_shipped
-+++ b/arch/arm/crypto/sha256-core.S_shipped
-@@ -56,7 +56,6 @@
+@@ -602,7 +601,8 @@ sha512_block_data_order_neon:
+ 	dmb				@ errata #451034 on early Cortex A8
+ 	add	$len,$inp,$len,lsl#7	@ len to point at the end of inp
+ 	VFP_ABI_PUSH
+-	adrl	$Ktbl,K512
++	adr	$Ktbl,.Lsha512_block_data_order
++	sub	$Ktbl,$Ktbl,.Lsha512_block_data_order-K512
+ 	vldmia	$ctx,{$A-$H}		@ load context
+ .Loop_neon:
+ ___
+--- a/arch/arm/crypto/sha512-core.S_shipped
++++ b/arch/arm/crypto/sha512-core.S_shipped
+@@ -79,7 +79,6 @@
  #else
  .syntax unified
  # ifdef __thumb2__
@@ -106,15 +106,15 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  .thumb
  # else
  .code   32
-@@ -1885,7 +1884,8 @@ sha256_block_data_order_neon:
- 	stmdb	sp!,{r4-r12,lr}
- 
- 	sub	r11,sp,#16*4+16
--	adrl	r14,K256
-+	adr	r14,.Lsha256_block_data_order
-+	sub	r14,r14,#.Lsha256_block_data_order-K256
- 	bic	r11,r11,#15		@ align for 128-bit stores
- 	mov	r12,sp
- 	mov	sp,r11			@ alloca
+@@ -543,7 +542,8 @@ sha512_block_data_order_neon:
+ 	dmb				@ errata #451034 on early Cortex A8
+ 	add	r2,r1,r2,lsl#7	@ len to point at the end of inp
+ 	VFP_ABI_PUSH
+-	adrl	r3,K512
++	adr	r3,.Lsha512_block_data_order
++	sub	r3,r3,.Lsha512_block_data_order-K512
+ 	vldmia	r0,{d16-d23}		@ load context
+ .Loop_neon:
+ 	vshr.u64	d24,d20,#14	@ 0
 
 
