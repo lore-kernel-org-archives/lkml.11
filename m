@@ -2,145 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FCFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB393C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236430AbiF3OJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S236697AbiF3OJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236727AbiF3OH1 (ORCPT
+        with ESMTP id S236547AbiF3OG4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:07:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548BA72EF5;
-        Thu, 30 Jun 2022 06:54:33 -0700 (PDT)
+        Thu, 30 Jun 2022 10:06:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BB76F342;
+        Thu, 30 Jun 2022 06:54:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6CA862152;
-        Thu, 30 Jun 2022 13:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A19C34115;
-        Thu, 30 Jun 2022 13:54:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CA916211A;
+        Thu, 30 Jun 2022 13:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6137BC34115;
+        Thu, 30 Jun 2022 13:54:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597265;
-        bh=MsT6bAXMxy3BBJuQ+eQJx81JIY1mMrFyvXy7QNY985o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TxeyRi/y/40/9WRBKN+3xEKhfUENFam9OwKaR0S3cgEu3cO7nmpwPRYpaw1OVpl/R
-         8Q+ZO/OHfLYLitYomgWN7MolS3absAszyW8enoxPCVvbCb0wjuR2UjCkXd9s8sYv5B
-         7udi8FhAMX+HdX5ptG4tUbb8j0xCAUTu+Al79KeI=
+        s=korg; t=1656597259;
+        bh=qiyJ6ZqStaVBXRF5MPGLLNG1dYk/bGu+j7tVjqJ/dcw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SsmcFZZM25AZy3jTIuTi/H+924QLi2hKHfl2bKVr4kihMGUyZP3A6/VVEW5O8PwGt
+         P5CR2rWt4IJB97iP/IfyqxkyObDRTbSDO/h/xBPB+SdfkodaM2LTdxC1bkKnv9YWZ1
+         1qhTWsmgepddvLHDvR8trKLa12kgdou0DPByRSvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.10 00/12] 5.10.128-rc1 review
-Date:   Thu, 30 Jun 2022 15:47:05 +0200
-Message-Id: <20220630133230.676254336@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 08/12] xfs: Fix the free logic of state in xfs_attr_node_hasname
+Date:   Thu, 30 Jun 2022 15:47:13 +0200
+Message-Id: <20220630133230.938024271@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-MIME-Version: 1.0
+In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
+References: <20220630133230.676254336@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.128-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.10.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.10.128-rc1
-X-KernelTest-Deadline: 2022-07-02T13:32+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.10.128 release.
-There are 12 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-Anything received after that time might be too late.
+commit a1de97fe296c52eafc6590a3506f4bbd44ecb19a upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.128-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-and the diffstat can be found below.
+When testing xfstests xfs/126 on lastest upstream kernel, it will hang on some machine.
+Adding a getxattr operation after xattr corrupted, I can reproduce it 100%.
 
-thanks,
+The deadlock as below:
+[983.923403] task:setfattr        state:D stack:    0 pid:17639 ppid: 14687 flags:0x00000080
+[  983.923405] Call Trace:
+[  983.923410]  __schedule+0x2c4/0x700
+[  983.923412]  schedule+0x37/0xa0
+[  983.923414]  schedule_timeout+0x274/0x300
+[  983.923416]  __down+0x9b/0xf0
+[  983.923451]  ? xfs_buf_find.isra.29+0x3c8/0x5f0 [xfs]
+[  983.923453]  down+0x3b/0x50
+[  983.923471]  xfs_buf_lock+0x33/0xf0 [xfs]
+[  983.923490]  xfs_buf_find.isra.29+0x3c8/0x5f0 [xfs]
+[  983.923508]  xfs_buf_get_map+0x4c/0x320 [xfs]
+[  983.923525]  xfs_buf_read_map+0x53/0x310 [xfs]
+[  983.923541]  ? xfs_da_read_buf+0xcf/0x120 [xfs]
+[  983.923560]  xfs_trans_read_buf_map+0x1cf/0x360 [xfs]
+[  983.923575]  ? xfs_da_read_buf+0xcf/0x120 [xfs]
+[  983.923590]  xfs_da_read_buf+0xcf/0x120 [xfs]
+[  983.923606]  xfs_da3_node_read+0x1f/0x40 [xfs]
+[  983.923621]  xfs_da3_node_lookup_int+0x69/0x4a0 [xfs]
+[  983.923624]  ? kmem_cache_alloc+0x12e/0x270
+[  983.923637]  xfs_attr_node_hasname+0x6e/0xa0 [xfs]
+[  983.923651]  xfs_has_attr+0x6e/0xd0 [xfs]
+[  983.923664]  xfs_attr_set+0x273/0x320 [xfs]
+[  983.923683]  xfs_xattr_set+0x87/0xd0 [xfs]
+[  983.923686]  __vfs_removexattr+0x4d/0x60
+[  983.923688]  __vfs_removexattr_locked+0xac/0x130
+[  983.923689]  vfs_removexattr+0x4e/0xf0
+[  983.923690]  removexattr+0x4d/0x80
+[  983.923693]  ? __check_object_size+0xa8/0x16b
+[  983.923695]  ? strncpy_from_user+0x47/0x1a0
+[  983.923696]  ? getname_flags+0x6a/0x1e0
+[  983.923697]  ? _cond_resched+0x15/0x30
+[  983.923699]  ? __sb_start_write+0x1e/0x70
+[  983.923700]  ? mnt_want_write+0x28/0x50
+[  983.923701]  path_removexattr+0x9b/0xb0
+[  983.923702]  __x64_sys_removexattr+0x17/0x20
+[  983.923704]  do_syscall_64+0x5b/0x1a0
+[  983.923705]  entry_SYSCALL_64_after_hwframe+0x65/0xca
+[  983.923707] RIP: 0033:0x7f080f10ee1b
 
-greg k-h
+When getxattr calls xfs_attr_node_get function, xfs_da3_node_lookup_int fails with EFSCORRUPTED in
+xfs_attr_node_hasname because we have use blocktrash to random it in xfs/126. So it
+free state in internal and xfs_attr_node_get doesn't do xfs_buf_trans release job.
 
--------------
-Pseudo-Shortlog of commits:
+Then subsequent removexattr will hang because of it.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.10.128-rc1
+This bug was introduced by kernel commit 07120f1abdff ("xfs: Add xfs_has_attr and subroutines").
+It adds xfs_attr_node_hasname helper and said caller will be responsible for freeing the state
+in this case. But xfs_attr_node_hasname will free state itself instead of caller if
+xfs_da3_node_lookup_int fails.
 
-Vladimir Oltean <vladimir.oltean@nxp.com>
-    net: mscc: ocelot: allow unregistered IP multicast flooding
+Fix this bug by moving the step of free state into caller.
 
-Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-    powerpc/ftrace: Remove ftrace init tramp once kernel init is complete
+[amir: this text from original commit is not relevant for 5.10 backport:
+Also, use "goto error/out" instead of returning error directly in xfs_attr_node_addname_find_attr and
+xfs_attr_node_removename_setup function because we should free state ourselves.
+]
 
-Dave Chinner <dchinner@redhat.com>
-    xfs: check sb_meta_uuid for dabuf buffer recovery
+Fixes: 07120f1abdff ("xfs: Add xfs_has_attr and subroutines")
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/xfs/libxfs/xfs_attr.c |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-Darrick J. Wong <djwong@kernel.org>
-    xfs: remove all COW fork extents when remounting readonly
-
-Yang Xu <xuyang2018.jy@fujitsu.com>
-    xfs: Fix the free logic of state in xfs_attr_node_hasname
-
-Brian Foster <bfoster@redhat.com>
-    xfs: punch out data fork delalloc blocks on COW writeback failure
-
-Rustam Kovhaev <rkovhaev@gmail.com>
-    xfs: use kmem_cache_free() for kmem_cache objects
-
-Coly Li <colyli@suse.de>
-    bcache: memset on stack variables in bch_btree_check() and bch_sectors_dirty_init()
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    clocksource/drivers/ixp4xx: remove __init from ixp4xx_timer_setup()
-
-Masahiro Yamada <masahiroy@kernel.org>
-    tick/nohz: unexport __init-annotated tick_nohz_full_setup()
-
-Christoph Hellwig <hch@lst.de>
-    drm: remove drm_fb_helper_modinit
-
-Amir Goldstein <amir73il@gmail.com>
-    MAINTAINERS: add Amir as xfs maintainer for 5.10.y
-
-
--------------
-
-Diffstat:
-
- MAINTAINERS                                |  3 ++-
- Makefile                                   |  4 ++--
- arch/powerpc/include/asm/ftrace.h          |  4 +++-
- arch/powerpc/kernel/trace/ftrace.c         | 15 ++++++++++++---
- arch/powerpc/mm/mem.c                      |  2 ++
- drivers/clocksource/mmio.c                 |  2 +-
- drivers/clocksource/timer-ixp4xx.c         | 10 ++++------
- drivers/gpu/drm/drm_crtc_helper_internal.h | 10 ----------
- drivers/gpu/drm/drm_fb_helper.c            | 21 ---------------------
- drivers/gpu/drm/drm_kms_helper_common.c    | 25 ++++++++++++-------------
- drivers/md/bcache/btree.c                  |  1 +
- drivers/md/bcache/writeback.c              |  1 +
- drivers/net/ethernet/mscc/ocelot.c         |  8 ++++++--
- fs/xfs/libxfs/xfs_attr.c                   | 13 +++++--------
- fs/xfs/xfs_aops.c                          | 15 ++++++++++++---
- fs/xfs/xfs_buf_item_recover.c              |  2 +-
- fs/xfs/xfs_extfree_item.c                  |  6 +++---
- fs/xfs/xfs_super.c                         | 14 +++++++++++---
- include/linux/platform_data/timer-ixp4xx.h |  5 ++---
- kernel/time/tick-sched.c                   |  1 -
- 20 files changed, 80 insertions(+), 82 deletions(-)
+--- a/fs/xfs/libxfs/xfs_attr.c
++++ b/fs/xfs/libxfs/xfs_attr.c
+@@ -876,21 +876,18 @@ xfs_attr_node_hasname(
+ 
+ 	state = xfs_da_state_alloc(args);
+ 	if (statep != NULL)
+-		*statep = NULL;
++		*statep = state;
+ 
+ 	/*
+ 	 * Search to see if name exists, and get back a pointer to it.
+ 	 */
+ 	error = xfs_da3_node_lookup_int(state, &retval);
+-	if (error) {
+-		xfs_da_state_free(state);
+-		return error;
+-	}
++	if (error)
++		retval = error;
+ 
+-	if (statep != NULL)
+-		*statep = state;
+-	else
++	if (!statep)
+ 		xfs_da_state_free(state);
++
+ 	return retval;
+ }
+ 
 
 
