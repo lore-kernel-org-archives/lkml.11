@@ -2,111 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBA6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231622AbiF3C3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 22:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        id S231639AbiF3C3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 22:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbiF3C3A (ORCPT
+        with ESMTP id S231623AbiF3C3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 22:29:00 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B60286EE;
-        Wed, 29 Jun 2022 19:28:58 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id m14so15778360plg.5;
-        Wed, 29 Jun 2022 19:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:date:subject:from:to:cc:message-id:thread-topic
-         :references:in-reply-to:mime-version:content-transfer-encoding;
-        bh=Nz7YaeC1RqAbaDnJaLInZJQMb1KtakdskR8mdlJ2eZs=;
-        b=jsm031dLci7T7xfCZcrxJhGLtC6qdMG+XFDOjS91O+0PTxyTPg6Tgsp7CJWAWom6Yn
-         xb8hw0Is5Dk2T4f49NY/ux4KjdKtUiJREN/KvaBQGaQ19AS2MEMARARAyrRNb9JOqZAL
-         Dx3dktkJUd82MFNM+RXIpYA4f1a8Pv5ZDwJ4+yfmb+JEVNNXObf32DGghug1CxMfUkWc
-         rL67Yhybom1DcsvUVv5HrFImv7uJg4oaBes53eNsfdr4HGN45qvE+kZlc7nZ9HlCIGZq
-         krOXWHRwem/L+agyuMjxJfqquOnKugILanTkspN7KfaF6JZ1wnuMrYl1Eb8CUfM9BV2+
-         J8dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:user-agent:date:subject:from:to:cc:message-id
-         :thread-topic:references:in-reply-to:mime-version
-         :content-transfer-encoding;
-        bh=Nz7YaeC1RqAbaDnJaLInZJQMb1KtakdskR8mdlJ2eZs=;
-        b=D0wzqlZe9AtpMeHXeEOUaafshMDdIKZqXD5A9tajIVDF4KU5B0bijQa1BbXRXC/203
-         YUgfsHS+ENhAadusnd5+evCAc83G8yEEHrRj8kQoe+5P3M0SiZestGTdc3y4BGv9tJcP
-         A+ogqpB7dBpf0zljcagc47hAxzDzF1OSgIZcNAyDSBgaULq/O2a23Xd8+x7H/kcgCYDu
-         QmXTMavgLOD3GVcKZaiEwCSk+o7mC6OnqBadf42QTESUwPNTr0wfaddRmaqLDJhxDro+
-         yCyH06sB0pAFoSsEXoVSxcGjfjpnWW3VXi9npWOtHaX/apAzMZJCrv0RFBYzTvm8F9VR
-         aZfA==
-X-Gm-Message-State: AJIora90dwlCiEKTGhj/I4QRQr35Lvt6SIa5BEggM2zE8lv9NX/mSnzU
-        Y0pi0gDhEEU161CLuJkYKmy+BKYEdT5IK9aT
-X-Google-Smtp-Source: AGRyM1soUQnGfT6x10p2b8f9dl2vSYJYj8xGd7hmWu1NjaMILpUv08tAeyvig421grqAoYoamW+voQ==
-X-Received: by 2002:a17:902:dac1:b0:16a:3ebe:c722 with SMTP id q1-20020a170902dac100b0016a3ebec722mr12736695plx.169.1656556138140;
-        Wed, 29 Jun 2022 19:28:58 -0700 (PDT)
-Received: from [10.80.23.34] ([203.205.141.116])
-        by smtp.gmail.com with ESMTPSA id f8-20020a17090ace0800b001eee6b107fasm2901560pju.39.2022.06.29.19.28.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Jun 2022 19:28:57 -0700 (PDT)
-User-Agent: Microsoft-MacOutlook/16.62.22061100
-Date:   Thu, 30 Jun 2022 10:28:55 +0800
-Subject: Re: [PATCH] io_uring: fix a typo in comment
-From:   Xinghui Li <korantwork@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>, <asml.silence@gmail.com>
-CC:     <io-uring@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Xinghui Li <korantli@tencent.com>
-Message-ID: <FA9C6A6C-C02F-4CEE-A423-E4A7BBA61C23@gmail.com>
-Thread-Topic: [PATCH] io_uring: fix a typo in comment
-References: <20220629144301.9308-1-korantwork@gmail.com>
- <4768f72e-6c23-b2ac-d446-b69ded9c19a1@kernel.dk>
-In-Reply-To: <4768f72e-6c23-b2ac-d446-b69ded9c19a1@kernel.dk>
-Mime-version: 1.0
-Content-type: text/plain;
-        charset="UTF-8"
-Content-transfer-encoding: quoted-printable
+        Wed, 29 Jun 2022 22:29:39 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E701E767F;
+        Wed, 29 Jun 2022 19:29:37 -0700 (PDT)
+X-UUID: b4f413b992e541d7b3160804af19b7ad-20220630
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:b34c9f49-69f9-453d-91df-593f61f050a5,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:87442a2,CLOUDID:0ae22486-57f0-47ca-ba27-fe8c57fbf305,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: b4f413b992e541d7b3160804af19b7ad-20220630
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1078674193; Thu, 30 Jun 2022 10:29:31 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 30 Jun 2022 10:29:30 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 30 Jun 2022 10:29:27 +0800
+Message-ID: <52747ddcdae8c1445b6bed00acec03da0806b068.camel@mediatek.com>
+Subject: Re: [PATCH v12 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 30 Jun 2022 10:29:27 +0800
+In-Reply-To: <20220627080341.5087-6-rex-bc.chen@mediatek.com>
+References: <20220627080341.5087-1-rex-bc.chen@mediatek.com>
+         <20220627080341.5087-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/29 22:46=EF=BC=8C=E2=80=9CJens Axboe=E2=80=9D<axboe@kernel.dk> wrote:
->
->    On 6/29/22 8:43 AM, korantwork@gmail.com wrote:
->    > From: Xinghui Li <korantli@tencent.com>
->    >=20
->    > fix a typo in comment in io_allocate_scq_urings.
->    > sane -> same.
->    >=20
->    > Signed-off-by: Xinghui Li <korantli@tencent.com>
->    > ---
->    >  fs/io_uring.c | 2 +-
->    >  1 file changed, 1 insertion(+), 1 deletion(-)
->    >=20
->    > diff --git a/fs/io_uring.c b/fs/io_uring.c
->    > index d3ee4fc532fa..af17adf3fa79 100644
->    > --- a/fs/io_uring.c
->    > +++ b/fs/io_uring.c
->    > @@ -12284,7 +12284,7 @@ static __cold int io_allocate_scq_urings(str=
-uct io_ring_ctx *ctx,
->    >  	struct io_rings *rings;
->    >  	size_t size, sq_array_offset;
->    > =20
->    > -	/* make sure these are sane, as we already accounted them */
->    > +	/* make sure these are same, as we already accounted them */
->    >  	ctx->sq_entries =3D p->sq_entries;
->    >  	ctx->cq_entries =3D p->cq_entries;
+Hi, Bo-Chen:
 
->    That's not really a typo, though I can see why you'd think so. It's
->    trying to say that we need to ensure that the ctx entries are sane,
->    as they have already been accounted. This means that if we teardown
->    past this point, they need to be assigned (eg sane) so that we undo
->    that accounting appropriately.
+On Mon, 2022-06-27 at 16:03 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
+> 
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
+> 
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> [Bo-Chen: Cleanup the drivers and modify comments from reviewers]
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
 
-Thanks a lot for your reply and I am sorry about wasting your effort. I wil=
-l try to submit some valuable patches. : - )
+[snip]
 
---=20
-Xinghui Li
+> +
+> +static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
+> +			   struct platform_device *pdev)
+> +{
+> +	struct device_node *of_node = pdev->dev.of_node;
+> +	struct device *dev = &pdev->dev;
+> +	int ret = 0;
+> +	void __iomem *base;
+> +	u32 linkrate;
+> +	int len;
+> +
+> +	base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(base))
+> +		return PTR_ERR(base);
+> +
+> +	mtk_dp->regs = devm_regmap_init_mmio(dev, base,
+> &mtk_dp_regmap_config);
+> +	if (IS_ERR(mtk_dp->regs))
+> +		return PTR_ERR(mtk_dp->regs);
+> +
+> +	len = of_property_count_elems_of_size(of_node,
+> +					      "data-lanes",
+> sizeof(u32));
+> +	if (len < 0 || len > 4 || len == 3) {
+> +		dev_err(dev, "invalid data lane size: %d\n", len);
+> +		return -EINVAL;
+> +	}
+> +
+> +	mtk_dp->max_lanes = len;
+> +
+> +	ret = device_property_read_u32(dev, "max-linkrate-mhz",
+> &linkrate);
+> +	if (ret) {
+> +		dev_err(dev, "failed to read max linkrate: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	switch (linkrate) {
+> +	case 8100: /* 8.1G */
+> +		mtk_dp->max_linkrate = DP_LINK_BW_8_1;
+> +		break;
+> +	case 5400: /* 5.4G */
+> +		mtk_dp->max_linkrate = DP_LINK_BW_5_4;
+> +		break;
+> +	case 2700: /* 2.7G */
+> +		mtk_dp->max_linkrate = DP_LINK_BW_2_7;
+> +		break;
+> +	case 1620: /* 1.62G */
+> +		mtk_dp->max_linkrate = DP_LINK_BW_1_62;
+> +		break;
+> +	default:
+> +		dev_err(dev, "invalid linkrate: %d\n", linkrate);
+> +		return -EINVAL;
+> +	}
 
+Use drm_dp_link_rate_to_bw_code() instead of self-implementation.
 
+Regards,
+CK
+
+> +
+> +	return 0;
+> +}
+> +
 
