@@ -2,111 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38781C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D67C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 08:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233777AbiF3I0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
+        id S233315AbiF3I1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233901AbiF3I0N (ORCPT
+        with ESMTP id S229873AbiF3I1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:26:13 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 483F7655B;
-        Thu, 30 Jun 2022 01:26:02 -0700 (PDT)
-Received: from fedora33.wangsu.com (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id SyJltACniUYFXr1i9U4BAA--.2324S2;
-        Thu, 30 Jun 2022 16:25:51 +0800 (CST)
-From:   Lin Feng <linf@wangsu.com>
-To:     tj@kernel.org, lizefan.x@bytedance.com, hannes@cmpxchg.org
-Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linf@wangsu.com
-Subject: [PATCH] cgroup-v1: use find granularity format identifiers to make /proc/cgroups show pretty
-Date:   Thu, 30 Jun 2022 16:25:39 +0800
-Message-Id: <20220630082539.83602-1-linf@wangsu.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 30 Jun 2022 04:27:13 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDE9102;
+        Thu, 30 Jun 2022 01:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656577632; x=1688113632;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Qi9li/NCV765ItXQMioKvs0Czkex9a7+A1S0LgmtYeY=;
+  b=OnUxFdSh68jlzHUMuxr/eV9mcd0Y5QGcazevQslFlWMhRGz4l5imyq0n
+   aHEgou5CL8XDv7ktRLpg4Sqh7lCknXfcg77pYoTqvJURkmSxyfJAKUAWR
+   tODc+4a8H7G72v7H7KcuJpbXHQUVBnVyB+aXnB8R/evA4fZisBwVZfe8f
+   CgMtAuQC+0k2UoObRlvXhEC2adjzb2b09EkeK9OMDOeOTOLQNmOH73ego
+   zPd3iz+UYAvaupZ3xF9+1tD0u0GBa8nrZjiLI+lw4KNADoXoeukM/YzNr
+   5nUhNDKINTouFvKip6JhR8BQ2rVUfXM0vAY3wFmHeye1dhE9w9D4ewiyH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="262083040"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="262083040"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 01:27:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="733545706"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 30 Jun 2022 01:27:08 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 30 Jun 2022 11:27:07 +0300
+Date:   Thu, 30 Jun 2022 11:27:07 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev, bleung@chromium.org,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: Re: [PATCH 2/9] usb: typec: Add retimer handle to port
+Message-ID: <Yr1eW1gHR7LGP70Y@kuha.fi.intel.com>
+References: <20220629233314.3540377-1-pmalani@chromium.org>
+ <20220629233314.3540377-3-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: SyJltACniUYFXr1i9U4BAA--.2324S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7KFy5Zr43Zr4kZw1DGw47CFg_yoW8Gr4xpF
-        s8CryFyw45K348Kw12y34v93yrKws7Xw4jg3ZrJ34ayF13A39Fqr1vv3W2qrZYvFWSkF4q
-        vFW5Zr4I93WDJ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyC1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
-        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
-        x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2
-        z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4
-        xG64xvF2IEw4CE5I8CrVC2j2WlYx0E74AGY7Cv6cx26r48McIj6xkF7I0En7xvr7AKxVW8
-        Jr0_Cr1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6I
-        AqYI8I648v4I1lc2xSY4AK67AK6r43MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIE
-        Y20_Gr4l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
-        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE
-        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42
-        xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF
-        7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0Jj1MKtUUUUU=
-X-CM-SenderInfo: holqwq5zdqw23xof0z/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629233314.3540377-3-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The listing subsys info is unaligned with the header columns and we can
-make the output more intuitive to read by specifying "left alignment"
-and "fixed length" format styles for seq_printf.
+Hi,
 
-# cat /proc/cgroups
+On Wed, Jun 29, 2022 at 11:32:20PM +0000, Prashant Malani wrote:
+> Similar to mux and orientation switch, add a handle for registered
+> retimer to the port, so that it has handles to the various switches
+> connected to it.
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> ---
+>  drivers/usb/typec/class.c | 8 ++++++++
+>  drivers/usb/typec/class.h | 1 +
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+> index 2fa0b3718d23..2bc5fbdb25dd 100644
+> --- a/drivers/usb/typec/class.c
+> +++ b/drivers/usb/typec/class.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/usb/pd_vdo.h>
+>  #include <linux/usb/typec_mux.h>
+> +#include <linux/usb/typec_retimer.h>
+>  
+>  #include "bus.h"
+>  #include "class.h"
+> @@ -2249,6 +2250,13 @@ struct typec_port *typec_register_port(struct device *parent,
+>  		return ERR_PTR(ret);
+>  	}
+>  
+> +	port->retimer = typec_retimer_get(&port->dev);
+> +	if (IS_ERR(port->retimer)) {
+> +		ret = PTR_ERR(port->retimer);
+> +		put_device(&port->dev);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+>  	ret = device_add(&port->dev);
+>  	if (ret) {
+>  		dev_err(parent, "failed to register port (%d)\n", ret);
 
-the output originally:
+I think you need to release the reference with typec_retimer_put() in
+typec_release().
 
-#subsys_name	hierarchy	num_cgroups	enabled
-cpuset	11	19	1
-cpu	5	122	1
-cpuacct	5	122	1
-blkio	4	122	1
-memory	10	129	1
-devices	6	122	1
-freezer	9	19	1
-net_cls	8	19	1
-perf_event	3	19	1
-net_prio	8	19	1
-hugetlb	7	19	1
-pids	12	122	1
-rdma	2	1	1
+I guess we can look handle this later, but there can actually be two
+onboard retimers for each connector.
 
-output after this patch:
+thanks,
 
-#subsys_name	hierarchy	num_cgroups	enabled
-cpuset      	11        	19      	1
-cpu         	5         	122     	1
-cpuacct     	5         	122     	1
-blkio       	4         	122     	1
-memory      	10        	129     	1
-devices     	6         	122     	1
-freezer     	9         	19      	1
-net_cls     	8         	19      	1
-perf_event  	3         	19      	1
-net_prio    	8         	19      	1
-hugetlb     	7         	19      	1
-pids        	12        	122     	1
-rdma        	2         	1       	1
+> diff --git a/drivers/usb/typec/class.h b/drivers/usb/typec/class.h
+> index 1bb1da124109..97520406929e 100644
+> --- a/drivers/usb/typec/class.h
+> +++ b/drivers/usb/typec/class.h
+> @@ -55,6 +55,7 @@ struct typec_port {
+>  	enum typec_orientation		orientation;
+>  	struct typec_switch		*sw;
+>  	struct typec_mux		*mux;
+> +	struct typec_retimer		*retimer;
+>  
+>  	const struct typec_capability	*cap;
+>  	const struct typec_operations   *ops;
 
-Signed-off-by: Lin Feng <linf@wangsu.com>
----
- kernel/cgroup/cgroup-v1.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/cgroup/cgroup-v1.c b/kernel/cgroup/cgroup-v1.c
-index afc6c0e9c966..1a74b0c504aa 100644
---- a/kernel/cgroup/cgroup-v1.c
-+++ b/kernel/cgroup/cgroup-v1.c
-@@ -677,7 +677,7 @@ int proc_cgroupstats_show(struct seq_file *m, void *v)
- 	 */
- 
- 	for_each_subsys(ss, i)
--		seq_printf(m, "%s\t%d\t%d\t%d\n",
-+		seq_printf(m, "%-12s\t%-10d\t%-10d\t%-d\n",
- 			   ss->legacy_name, ss->root->hierarchy_id,
- 			   atomic_read(&ss->root->nr_cgrps),
- 			   cgroup_ssid_enabled(i));
 -- 
-2.31.1
-
+heikki
