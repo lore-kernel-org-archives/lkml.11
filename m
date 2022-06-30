@@ -2,97 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A46CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B6E1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234143AbiF3K4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
+        id S234013AbiF3K7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234102AbiF3K4t (ORCPT
+        with ESMTP id S231468AbiF3K7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:56:49 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B782427D3;
-        Thu, 30 Jun 2022 03:56:48 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LYZxw6k3nz9stV;
-        Thu, 30 Jun 2022 18:56:04 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 18:56:46 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
- 2022 18:56:46 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
-        Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH stable 4.19] swiotlb: skip swiotlb_bounce when orig_addr is zero
-Date:   Thu, 30 Jun 2022 19:33:31 +0800
-Message-ID: <20220630113331.1544886-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 30 Jun 2022 06:59:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D29D3DDCD
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:59:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656586742;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u4SjDbVVWNYM18ADMvqxFYQQNU0RZaZbfLhHUkl51ig=;
+        b=OgzphNkWLKzxoAYpYv3ar4IryIB8tBL+607RriuqQzm/8Ny4fIiSBASrbnQ71+tSuL+VFl
+        xtB9QvgVa65IcggoK/0wn4E+gldTTDCuk3nPeCiTjcCBmROswN74F3Uk9VjY7tzLGzYF2L
+        vKjIyvObjXl0oMvdNohZvoZRshf367A=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-504-gLtOffcfPqiPo7Xc4gwhbg-1; Thu, 30 Jun 2022 06:59:01 -0400
+X-MC-Unique: gLtOffcfPqiPo7Xc4gwhbg-1
+Received: by mail-qk1-f199.google.com with SMTP id i124-20020a37b882000000b006af41a43f76so9679238qkf.6
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:59:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=u4SjDbVVWNYM18ADMvqxFYQQNU0RZaZbfLhHUkl51ig=;
+        b=AdymLphUf1OkMPE5zHubZ+P92DSi/0YZfaGfCGFUdxWooRd5pEde68kJSG7WmQuEzl
+         Q/Jc7B63Jq/fQT3KTHjD8QVeAri3P7kWfYA3wG/689/7CVuITEuo3dA+BUnPp/GLDatp
+         o4mxxqh615kC40zz39uNr1PJmkhbLIRsmB5pjx+pVMPtcoGnqGvnXfc87hRPt329EBQd
+         ATqXz5uFMHNav2GseVkWo6gu3zFfjypG/msOWIyxAD7uZNjs+6h0Aj5mO6A/m4k80f0I
+         IInBq1ouj32jvyHST+Hv/kPI+pFR92djntoRd/A2AfqjyZ3SJvMg28fpMhdUYMMjayCP
+         +iAA==
+X-Gm-Message-State: AJIora88/B9lPMBuYgUGZ3mGXEi/y8ba+FLEmRWtHNXAl6JrnxG35i7w
+        Vpm6nGqyQZKGKwqdtqwJ/YJNmx00nqWytIlu21y5rYSxFGWRWSh/hZsQRLPrDSzuzC3EtU1PBki
+        RQZJthVUEKAfO+X7lARZr9l2l
+X-Received: by 2002:a05:620a:4249:b0:6a8:b684:a1c6 with SMTP id w9-20020a05620a424900b006a8b684a1c6mr5671159qko.64.1656586741117;
+        Thu, 30 Jun 2022 03:59:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sdcMLjk9I06I9o/rnhA8cBS87Y2V9VdLcS6owOG/4P0/PUwML68oPAoacDdDraAX6CSTrlaA==
+X-Received: by 2002:a05:620a:4249:b0:6a8:b684:a1c6 with SMTP id w9-20020a05620a424900b006a8b684a1c6mr5671153qko.64.1656586740888;
+        Thu, 30 Jun 2022 03:59:00 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
+        by smtp.gmail.com with ESMTPSA id n8-20020a05620a222800b006ab935c1563sm14397231qkh.8.2022.06.30.03.58.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 03:59:00 -0700 (PDT)
+Message-ID: <0cddb061e2b863c9f4a652e923d0b689ec7ecd30.camel@redhat.com>
+Subject: Re: [PATCH] drivers: Remove extra commas and align them
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Li kunyu <kunyu@nfschina.com>, rajur@chelsio.com,
+        edumazet@google.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 30 Jun 2022 12:58:56 +0200
+In-Reply-To: <20220629083530.48186-1-kunyu@nfschina.com>
+References: <20220629083530.48186-1-kunyu@nfschina.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After patch ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE"),
-swiotlb_bounce will be called in swiotlb_tbl_map_single unconditionally.
-This requires that the physical address must be valid, which is not always
-true on stable-4.19 or earlier version.
-On stable-4.19, swiotlb_alloc_buffer will call swiotlb_tbl_map_single with
-orig_addr equal to zero, which cause such a panic:
+On Wed, 2022-06-29 at 16:35 +0800, Li kunyu wrote:
+> There is an extra comma and space in this sentence when I read the code.
+> 
+> Signed-off-by: Li kunyu <kunyu@nfschina.com>
 
-Unable to handle kernel paging request at virtual address ffffb77a40000000
-...
-pc : __memcpy+0x100/0x180
-lr : swiotlb_bounce+0x74/0x88
-...
-Call trace:
- __memcpy+0x100/0x180
- swiotlb_tbl_map_single+0x2c8/0x338
- swiotlb_alloc+0xb4/0x198
- __dma_alloc+0x84/0x1d8
- ...
+Sorry, I'm going to be quite nitpicking on this kind of patches. Please
+try to stick to a consistent format, see Jakub guidance:
 
-On stable-4.9 and stable-4.14, swiotlb_alloc_coherent wille call map_single
-with orig_addr equal to zero, which can cause same panic.
+https://lore.kernel.org/all/20220623092208.1abbd9dc@kernel.org/
 
-Fix this by skipping swiotlb_bounce when orig_addr is zero.
+e.g.
 
-Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- kernel/dma/swiotlb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+<sub-system>: fix typo in <somewhere>
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8b1360772fc5..b1e2ce2f9c2d 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -594,7 +594,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- 	 * unconditional bounce may prevent leaking swiotlb content (i.e.
- 	 * kernel memory) to user-space.
- 	 */
--	swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
-+	if (orig_addr)
-+		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
- 
--- 
-2.25.1
+Remove the repeated <what> from <somewhere>
+
+Thanks!
+
+Paolo
 
