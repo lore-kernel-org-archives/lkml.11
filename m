@@ -2,121 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39467CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237594AbiF3Vca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 17:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        id S234334AbiF3VeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233496AbiF3VcZ (ORCPT
+        with ESMTP id S230392AbiF3VeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 17:32:25 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E0E50715;
-        Thu, 30 Jun 2022 14:32:25 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2DA3D22236;
-        Thu, 30 Jun 2022 23:32:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656624742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hhIM7xkXVLpCgTOC9u3u0l6IjtG+a88bi2pntBrpJIo=;
-        b=hT11cBNXtnyB1FKwoVxTYskaPjbn+HRZOW0dtvXqnJjTwl4IOPN22WvQMtA18pog25XKyP
-        SnIMOdm11PExB994mPfRKmKLvxSf2D7NXOQAF2cSXI5tC9D/dUfSXs1kCa2XgpQ3UMtEAr
-        XJ1mefUOgXAdvhuqdxj2p/hWOZ/ZqlA=
+        Thu, 30 Jun 2022 17:34:11 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553764475B
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:34:10 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id jh14so552318plb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:34:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=m5LTLCvSbl3Mimeu9cxekADyiuhH9Ah66rwKi2/jIWE=;
+        b=LbSJfheaBJvAm3n4hF89qMFLPLF9B8GGg1NwuaiSHKdHguUeOq1j7I2oKsawuMgpor
+         V5wBah2cCiJX5cRW1Cve+ain+VJUEkXyv1uaNDcDJOG/WW6vw11iBnx21CMBs+O3S/cQ
+         CaHdbg0fyyRC6dAT4ymEVyIIq0ds6NZwzgMOwzcxV+W2hV14s+qpFyyLJLhUxPEq6w3b
+         CisPVszGJPNVi/D7JGtRRUKjHWbG/fZptrlLFsq9MDxoihpXxJQu9PkY1+W0cxZiIuIE
+         H8uHDxEvGJqTtkA1KFaA1AvTKNMv27Qp52OuSJuzhrEKl/VDTPp/goRdlGUU8T0CXnQP
+         Y0lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=m5LTLCvSbl3Mimeu9cxekADyiuhH9Ah66rwKi2/jIWE=;
+        b=DK0UXsauTBTHjcTEry3LsKMTz0pKGqeElurjPHkbsod6bfZBA4LrOaDMjNVVi3x8iY
+         7aVJdCrFn1UvJj5SIg/KWu5TyuMpqHsZHhfNzsKV/mI0a0kM3VjtAvZ57KYnAyoXnw3V
+         GECS9dSRHuFJSQjV6ggfnwSrQAJZNDNonBddMQmY4OsNvjnv37SFvutmoFY6wa7iQNSc
+         Cn2itelp5IRZhSWGy0Uei2kTkW+JyGiCBDJuqIIY6oPYTUGy+653IrUbztDuhHQ7Ir2Y
+         hOq1J9M/etsRUjOwUiISzwj5atbP5yCUerLTg8GdVpQg1swFb59P/GJ+N7DPUmEGFBig
+         IFIw==
+X-Gm-Message-State: AJIora86ZgW7HKdbtKke6MOB8QXVF9Iq+z1CqOzNLl2PtnQu32pm0mo/
+        nIDK0pufkuB1G2RIgBuqIT9HFxBetyM=
+X-Google-Smtp-Source: AGRyM1uHNieIqEeaaoEg6sdpmGfjbYmezVY2gbd7xjvOiUAgyTIY8ax2+/1dgdk4uhOc8Vyuj31cMQ==
+X-Received: by 2002:a17:902:c651:b0:16b:aebc:3615 with SMTP id s17-20020a170902c65100b0016baebc3615mr4672749pls.48.1656624849623;
+        Thu, 30 Jun 2022 14:34:09 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 64-20020a621743000000b0051e7b6e8b12sm14490535pfx.11.2022.06.30.14.34.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 14:34:08 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <7d2e699a-fb14-9adb-4d88-3f0cab3dd954@roeck-us.net>
+Date:   Thu, 30 Jun 2022 14:34:05 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 30 Jun 2022 23:32:21 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
-In-Reply-To: <20220630212120.t3in6i7s7chaqacr@skbuf>
-References: <3ab8afab-b6b7-46aa-06d4-6740cee422d7@linaro.org>
- <288f56ba9cfad46354203b7698babe91@walle.cc>
- <daaddbd5-1cd4-d3ce-869a-249bdd8aecb9@linaro.org>
- <96f40ae6abf76af3b643b1e1c60d1d9f@walle.cc>
- <f9eb6d94-c451-0c9f-f123-2f1324f68b68@linaro.org>
- <CAHp75VdWdUY-XyGBsQb3i9thCswmBo4UEAEaZCO5MC_HMW+fSQ@mail.gmail.com>
- <20220628205254.gnllvaz7w5jmpfe5@soft-dev3-1.localhost>
- <4782de1fc6692a98bd6c267c2714325f@walle.cc>
- <20220630201617.sqpihcevym7sxqng@soft-dev3-1.localhost>
- <b0e3cd1f6b210943030a1e7a355d1a7f@walle.cc>
- <20220630212120.t3in6i7s7chaqacr@skbuf>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <65a17cff8d80b0c27976a2c2a17519bf@walle.cc>
-X-Sender: michael@walle.cc
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>
+Cc:     Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Daniel Axtens <dja@axtens.net>
+References: <20220618232737.2036722-1-linux@roeck-us.net>
+ <584fc348-7a60-26a2-af61-9edc4f4830e4@amd.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] drm/amd/display: Add missing hard-float compile flags for
+ PPC64 builds
+In-Reply-To: <584fc348-7a60-26a2-af61-9edc4f4830e4@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-06-30 23:21, schrieb Vladimir Oltean:
-> On Thu, Jun 30, 2022 at 11:00:37PM +0200, Michael Walle wrote:
->> > > > It is not possible to have a defined for the MAX number of ports that
->> > > > supported by lan966x. Which is 8. And assigned that define to
->> > > > num_phys_ports instead of counting the entries in DT?
->> > >
->> > > You mean also for the lan9662? I'm pretty sure that doesn't
->> > > work. Have a look where num_phys_ports is used. One random
->> > > example:
->> > > https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/microchip/lan966x/lan966x_main.c#L874
->> > >
->> > > So if your switch only has 4 ports, then I'd guess you'll
->> > > access a non-existing register.
->> >
->> > Underneath lan662 and lan668 is the same chip. The HW people disable
->> > some ports/features on each platform but from what I know you will still
->> > be able to access the registers.
->> 
->> I noticed that there are still 8 ports in the register description and
->> assumed that it was wrong [1]. But ok, that makes sense in some way.
->> OTOH that means, we cannot do the guesswork Vladimir proposed.
->> 
->> -michael
->> 
->> [1] 
->> https://microchip-ung.github.io/lan9662_reginfo/reginfo_LAN9662.html
+On 6/30/22 14:01, Rodrigo Siqueira Jordao wrote:
 > 
-> Are you 100% positive that the default values for the flooding PGIDs 
-> are
-> GENMASK(8, 0) for a 4-port switch? And that the packet buffer has the
-> same size for a switch with half as many ports? Ok...
 > 
-> But in that case, what exactly is the problem if the port count of 8 is
-> a synthesis time constant for lan966x, and if the CPU port module is
-> always at index 8 in the analyzer (with a gap between indices 4 and 7)?
-> Just hardcode lan966x->num_phys_ports to 8 and work with that 
-> throughout.
-> Allocate lan966x->ports as an array of 8 pointers to struct 
-> lan966x_port
-> (which they are already), and the pointers themselves are populated as
-> being the netdev_priv of the interfaces that are actually present and
-> used. Literally the only thing you need to fix is that you need to
-> hardcode num_phys_ports to 8, problem solved. It means that lan9662 is
-> nothing but a lan9668 where the last 4 ports have 'status = "disabled"'
-> in the device tree.
+> On 2022-06-18 19:27, Guenter Roeck wrote:
+>> ppc:allmodconfig builds fail with the following error.
+>>
+>> powerpc64-linux-ld:
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+>>         uses hard float,
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+>>         uses soft float
+>> powerpc64-linux-ld:
+>>     failed to merge target specific data of file
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+>> powerpc64-linux-ld:
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+>>         uses hard float,
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+>>         uses soft float
+>> powerpc64-linux-ld:
+>>     failed to merge target specific data of
+>>     file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+>> powerpc64-linux-ld:
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+>>         uses hard float,
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+>>         uses soft float
+>> powerpc64-linux-ld:
+>>     failed to merge target specific data of file
+>>     drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+>>
+>> The problem was introduced with commit 41b7a347bf14 ("powerpc: Book3S
+>> 64-bit outline-only KASAN support") which adds support for KASAN. This
+>> commit in turn enables DRM_AMD_DC_DCN because KCOV_INSTRUMENT_ALL and
+>> KCOV_ENABLE_COMPARISONS are no longer enabled. As result, new files are
+>> compiled which lack the selection of hard-float.
+>>
+>> Fixes: 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN support")
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Daniel Axtens <dja@axtens.net>
+>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>> ---
+>>   drivers/gpu/drm/amd/display/dc/dcn31/Makefile  | 4 ++++
+>>   drivers/gpu/drm/amd/display/dc/dcn315/Makefile | 4 ++++
+>>   drivers/gpu/drm/amd/display/dc/dcn316/Makefile | 4 ++++
+>>   3 files changed, 12 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+>> index ec041e3cda30..74be02114ae4 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+>> +++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+>> @@ -15,6 +15,10 @@ DCN31 = dcn31_resource.o dcn31_hubbub.o dcn31_hwseq.o dcn31_init.o dcn31_hubp.o
+>>       dcn31_apg.o dcn31_hpo_dp_stream_encoder.o dcn31_hpo_dp_link_encoder.o \
+>>       dcn31_afmt.o dcn31_vpg.o
+>> +ifdef CONFIG_PPC64
+>> +CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o := -mhard-float -maltivec
+>> +endif
+>> +
+>>   AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
+>>   AMD_DISPLAY_FILES += $(AMD_DAL_DCN31)
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+>> index 59381d24800b..1395c1ced8c5 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+>> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+>> @@ -25,6 +25,10 @@
+>>   DCN315 = dcn315_resource.o
+>> +ifdef CONFIG_PPC64
+>> +CFLAGS_$(AMDDALPATH)/dc/dcn315/dcn315_resource.o := -mhard-float -maltivec
+>> +endif
+>> +
+>>   AMD_DAL_DCN315 = $(addprefix $(AMDDALPATH)/dc/dcn315/,$(DCN315))
+>>   AMD_DISPLAY_FILES += $(AMD_DAL_DCN315)
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+>> index 819d44a9439b..c3d2dd78f1e2 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+>> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+>> @@ -25,6 +25,10 @@
+>>   DCN316 = dcn316_resource.o
+>> +ifdef CONFIG_PPC64
+>> +CFLAGS_$(AMDDALPATH)/dc/dcn316/dcn316_resource.o := -mhard-float -maltivec
+>> +endif
+>> +
+>>   AMD_DAL_DCN316 = $(addprefix $(AMDDALPATH)/dc/dcn316/,$(DCN316))
+>>   AMD_DISPLAY_FILES += $(AMD_DAL_DCN316)
+> 
+> Hi,
+> 
+> I don't want to re-introduce those FPU flags for DCN31/DCN314/DCN316 since we fully isolate FPU operations for those ASICs inside the DML folder. Notice that we have the PPC64 in the DML Makefile:
+> 
+> https://gitlab.freedesktop.org/agd5f/linux/-/blob/amd-staging-drm-next/drivers/gpu/drm/amd/display/dc/dml/Makefile
+> 
 
-If that's the case, sure. The last four ports can just be omitted no?
-Of course you'll lose the possibility to validate the device tree ports
-input, i.e. port@5 would perfectly valid although it doesn't make any
-sense for the lan9662. (Regardless if it is disabled, or if it's 
-omitted)
+Yes, sure, ppc64 is in dc/dml/Makefile. The problem is that it selects hard-float
 
--michael
+ifdef CONFIG_PPC64
+dml_ccflags := -mhard-float -maltivec
+endif
+
+and dc/{dcn31,dcn315,dcn316} don't.
+
+
+> Could you share what you see without your patch in the amd-staging-drm-next?
+
+You mean linux-next ? Same error.
+
+Building powerpc:allmodconfig ... failed
+--------------
+Error log:
+powerpc64-linux-ld: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses hard float, drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o uses soft float
+powerpc64-linux-ld: failed to merge target specific data of file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+powerpc64-linux-ld: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses hard float, drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o uses soft float
+powerpc64-linux-ld: failed to merge target specific data of file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+powerpc64-linux-ld: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses hard float, drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o uses soft float
+powerpc64-linux-ld: failed to merge target specific data of file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+
+This isn't really surprising since dc/dml/ does build with hard float, and
+dc/{dcn31,dcn315,dcn316} build with soft float. As mentioned above,
+the problem is now seen because DRM_AMD_DC_DCN is now enabled which was
+previously not the case.
+
+select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Up to v5.18, both KCOV_INSTRUMENT_ALL and KCOV_ENABLE_COMPARISONS were enabled
+and DRM_AMD_DC_DCN was therefore disabled. Now KCOV_INSTRUMENT_ALL and
+KCOV_ENABLE_COMPARISONS are disabled, which results in DRM_AMD_DC_DCN=y.
+This in turn results in the hard/soft float inconsistencies and the compile
+failure.
+
+  Also:
+> * Are you using cross-compilation? If so, could you share your setup?
+> * Which GCC/Clang version are you using?
+
+gcc 11.2.0 with binutils 2.36.1, but that really does not make a difference.
+
+Guenter
