@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C661AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D87CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236644AbiF3OLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        id S236922AbiF3OLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236860AbiF3OKg (ORCPT
+        with ESMTP id S236656AbiF3OKl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:10:36 -0400
+        Thu, 30 Jun 2022 10:10:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D791973915;
-        Thu, 30 Jun 2022 06:55:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0245B7C193;
+        Thu, 30 Jun 2022 06:55:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4F43B82AF5;
-        Thu, 30 Jun 2022 13:55:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E905C34115;
-        Thu, 30 Jun 2022 13:55:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 832BFB82AF0;
+        Thu, 30 Jun 2022 13:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7388C34115;
+        Thu, 30 Jun 2022 13:55:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597328;
-        bh=8gSpTM0M2+5AiSnd+UDb4VINeI9nE6g3nHJOluh2suY=;
+        s=korg; t=1656597339;
+        bh=X+VjRnndfUI4QqKb7WEv/LzvUNrdcRk6Kcq9ik80mBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M5b4c904YUJwxIFdSjrASpeQevkhE7WXiOC78LN3a2Pufg1w/s/75lHT62WQxpZx8
-         DAQ5lx+qLi63ovNuQf15NxFTfO9peM3IaOU1PI01/GKl6q5/8szHJAhHxKSTf+X3M2
-         okobm9fnw/zCNg5Lj4jC445TCkyDKmd14qG8pdEA=
+        b=tl1bkSXqRBH3w+xKOBwTOkwlSLJ2d1CLUed3v4JdX0SLeYtwu8grFfS9n1yrkDtuV
+         US7UhivYKN3YcKMboEACqfxPeAyM/Ot2tK1BQX9c3LKzkszvIpj0jHvRd7gimJ9eOF
+         bCqMCgAQtjIrydI4N6yDxYNKm5p5pAPV6Tgq6El0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-fsdevel@vger.kernel.org,
         Christian Brauner <christian.brauner@ubuntu.com>,
         "Christian Brauner (Microsoft)" <brauner@kernel.org>
-Subject: [PATCH 5.15 18/28] fs: use low-level mapping helpers
-Date:   Thu, 30 Jun 2022 15:47:14 +0200
-Message-Id: <20220630133233.464470992@linuxfoundation.org>
+Subject: [PATCH 5.15 22/28] fs: support mapped mounts of mapped filesystems
+Date:   Thu, 30 Jun 2022 15:47:18 +0200
+Message-Id: <20220630133233.582495063@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -55,17 +55,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Christian Brauner <christian.brauner@ubuntu.com>
 
-commit 4472071331549e911a5abad41aea6e3be855a1a4 upstream.
+commit bd303368b776eead1c29e6cdda82bde7128b82a7 upstream.
 
-In a few places the vfs needs to interact with bare k{g,u}ids directly
-instead of struct inode. These are just a few. In previous patches we
-introduced low-level mapping helpers that are able to support
-filesystems mounted an idmapping. This patch simply converts the places
-to use these new helpers.
+In previous patches we added new and modified existing helpers to handle
+idmapped mounts of filesystems mounted with an idmapping. In this final
+patch we convert all relevant places in the vfs to actually pass the
+filesystem's idmapping into these helpers.
 
-Link: https://lore.kernel.org/r/20211123114227.3124056-7-brauner@kernel.org (v1)
-Link: https://lore.kernel.org/r/20211130121032.3753852-7-brauner@kernel.org (v2)
-Link: https://lore.kernel.org/r/20211203111707.3901969-7-brauner@kernel.org
+With this the vfs is in shape to handle idmapped mounts of filesystems
+mounted with an idmapping. Note that this is just the generic
+infrastructure. Actually adding support for idmapped mounts to a
+filesystem mountable with an idmapping is follow-up work.
+
+In this patch we extend the definition of an idmapped mount from a mount
+that that has the initial idmapping attached to it to a mount that has
+an idmapping attached to it which is not the same as the idmapping the
+filesystem was mounted with.
+
+As before we do not allow the initial idmapping to be attached to a
+mount. In addition this patch prevents that the idmapping the filesystem
+was mounted with can be attached to a mount created based on this
+filesystem.
+
+This has multiple reasons and advantages. First, attaching the initial
+idmapping or the filesystem's idmapping doesn't make much sense as in
+both cases the values of the i_{g,u}id and other places where k{g,u}ids
+are used do not change. Second, a user that really wants to do this for
+whatever reason can just create a separate dedicated identical idmapping
+to attach to the mount. Third, we can continue to use the initial
+idmapping as an indicator that a mount is not idmapped allowing us to
+continue to keep passing the initial idmapping into the mapping helpers
+to tell them that something isn't an idmapped mount even if the
+filesystem is mounted with an idmapping.
+
+Link: https://lore.kernel.org/r/20211123114227.3124056-11-brauner@kernel.org (v1)
+Link: https://lore.kernel.org/r/20211130121032.3753852-11-brauner@kernel.org (v2)
+Link: https://lore.kernel.org/r/20211203111707.3901969-11-brauner@kernel.org
 Cc: Seth Forshee <sforshee@digitalocean.com>
 Cc: Amir Goldstein <amir73il@gmail.com>
 Cc: Christoph Hellwig <hch@lst.de>
@@ -76,180 +101,292 @@ Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smbacl.c    |   18 ++----------------
- fs/ksmbd/smbacl.h    |    4 ++--
- fs/open.c            |    4 ++--
- fs/posix_acl.c       |   16 ++++++++++------
- security/commoncap.c |   13 ++++++++-----
- 5 files changed, 24 insertions(+), 31 deletions(-)
+ fs/namespace.c       |   51 ++++++++++++++++++++++++++++++++++++++-------------
+ fs/open.c            |    7 ++++---
+ fs/posix_acl.c       |    8 ++++----
+ include/linux/fs.h   |   17 +++++++++--------
+ security/commoncap.c |    9 ++++-----
+ 5 files changed, 59 insertions(+), 33 deletions(-)
 
---- a/fs/ksmbd/smbacl.c
-+++ b/fs/ksmbd/smbacl.c
-@@ -275,14 +275,7 @@ static int sid_to_id(struct user_namespa
- 		uid_t id;
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -31,6 +31,7 @@
+ #include <uapi/linux/mount.h>
+ #include <linux/fs_context.h>
+ #include <linux/shmem_fs.h>
++#include <linux/mnt_idmapping.h>
  
- 		id = le32_to_cpu(psid->sub_auth[psid->num_subauth - 1]);
--		/*
--		 * Translate raw sid into kuid in the server's user
--		 * namespace.
--		 */
--		uid = make_kuid(&init_user_ns, id);
+ #include "pnode.h"
+ #include "internal.h"
+@@ -561,7 +562,7 @@ static void free_vfsmnt(struct mount *mn
+ 	struct user_namespace *mnt_userns;
+ 
+ 	mnt_userns = mnt_user_ns(&mnt->mnt);
+-	if (mnt_userns != &init_user_ns)
++	if (!initial_idmapping(mnt_userns))
+ 		put_user_ns(mnt_userns);
+ 	kfree_const(mnt->mnt_devname);
+ #ifdef CONFIG_SMP
+@@ -965,6 +966,7 @@ static struct mount *skip_mnt_tree(struc
+ struct vfsmount *vfs_create_mount(struct fs_context *fc)
+ {
+ 	struct mount *mnt;
++	struct user_namespace *fs_userns;
+ 
+ 	if (!fc->root)
+ 		return ERR_PTR(-EINVAL);
+@@ -982,6 +984,10 @@ struct vfsmount *vfs_create_mount(struct
+ 	mnt->mnt_mountpoint	= mnt->mnt.mnt_root;
+ 	mnt->mnt_parent		= mnt;
+ 
++	fs_userns = mnt->mnt.mnt_sb->s_user_ns;
++	if (!initial_idmapping(fs_userns))
++		mnt->mnt.mnt_userns = get_user_ns(fs_userns);
++
+ 	lock_mount_hash();
+ 	list_add_tail(&mnt->mnt_instance, &mnt->mnt.mnt_sb->s_mounts);
+ 	unlock_mount_hash();
+@@ -1072,7 +1078,7 @@ static struct mount *clone_mnt(struct mo
+ 
+ 	atomic_inc(&sb->s_active);
+ 	mnt->mnt.mnt_userns = mnt_user_ns(&old->mnt);
+-	if (mnt->mnt.mnt_userns != &init_user_ns)
++	if (!initial_idmapping(mnt->mnt.mnt_userns))
+ 		mnt->mnt.mnt_userns = get_user_ns(mnt->mnt.mnt_userns);
+ 	mnt->mnt.mnt_sb = sb;
+ 	mnt->mnt.mnt_root = dget(root);
+@@ -3927,11 +3933,19 @@ static unsigned int recalc_flags(struct
+ static int can_idmap_mount(const struct mount_kattr *kattr, struct mount *mnt)
+ {
+ 	struct vfsmount *m = &mnt->mnt;
++	struct user_namespace *fs_userns = m->mnt_sb->s_user_ns;
+ 
+ 	if (!kattr->mnt_userns)
+ 		return 0;
+ 
+ 	/*
++	 * Creating an idmapped mount with the filesystem wide idmapping
++	 * doesn't make sense so block that. We don't allow mushy semantics.
++	 */
++	if (kattr->mnt_userns == fs_userns)
++		return -EINVAL;
++
++	/*
+ 	 * Once a mount has been idmapped we don't allow it to change its
+ 	 * mapping. It makes things simpler and callers can just create
+ 	 * another bind-mount they can idmap if they want to.
+@@ -3943,12 +3957,8 @@ static int can_idmap_mount(const struct
+ 	if (!(m->mnt_sb->s_type->fs_flags & FS_ALLOW_IDMAP))
+ 		return -EINVAL;
+ 
+-	/* Don't yet support filesystem mountable in user namespaces. */
+-	if (m->mnt_sb->s_user_ns != &init_user_ns)
+-		return -EINVAL;
 -
--		/* If this is an idmapped mount, apply the idmapping. */
--		uid = kuid_from_mnt(user_ns, uid);
-+		uid = mapped_kuid_user(user_ns, &init_user_ns, KUIDT_INIT(id));
- 		if (uid_valid(uid)) {
- 			fattr->cf_uid = uid;
- 			rc = 0;
-@@ -292,14 +285,7 @@ static int sid_to_id(struct user_namespa
- 		gid_t id;
+ 	/* We're not controlling the superblock. */
+-	if (!capable(CAP_SYS_ADMIN))
++	if (!ns_capable(fs_userns, CAP_SYS_ADMIN))
+ 		return -EPERM;
  
- 		id = le32_to_cpu(psid->sub_auth[psid->num_subauth - 1]);
--		/*
--		 * Translate raw sid into kgid in the server's user
--		 * namespace.
--		 */
--		gid = make_kgid(&init_user_ns, id);
--
--		/* If this is an idmapped mount, apply the idmapping. */
--		gid = kgid_from_mnt(user_ns, gid);
-+		gid = mapped_kgid_user(user_ns, &init_user_ns, KGIDT_INIT(id));
- 		if (gid_valid(gid)) {
- 			fattr->cf_gid = gid;
- 			rc = 0;
---- a/fs/ksmbd/smbacl.h
-+++ b/fs/ksmbd/smbacl.h
-@@ -217,7 +217,7 @@ static inline uid_t posix_acl_uid_transl
- 	kuid_t kuid;
+ 	/* Mount has already been visible in the filesystem hierarchy. */
+@@ -4002,14 +4012,27 @@ out:
  
- 	/* If this is an idmapped mount, apply the idmapping. */
--	kuid = kuid_into_mnt(mnt_userns, pace->e_uid);
-+	kuid = mapped_kuid_fs(mnt_userns, &init_user_ns, pace->e_uid);
+ static void do_idmap_mount(const struct mount_kattr *kattr, struct mount *mnt)
+ {
+-	struct user_namespace *mnt_userns;
++	struct user_namespace *mnt_userns, *old_mnt_userns;
  
- 	/* Translate the kuid into a userspace id ksmbd would see. */
- 	return from_kuid(&init_user_ns, kuid);
-@@ -229,7 +229,7 @@ static inline gid_t posix_acl_gid_transl
- 	kgid_t kgid;
+ 	if (!kattr->mnt_userns)
+ 		return;
  
- 	/* If this is an idmapped mount, apply the idmapping. */
--	kgid = kgid_into_mnt(mnt_userns, pace->e_gid);
-+	kgid = mapped_kgid_fs(mnt_userns, &init_user_ns, pace->e_gid);
++	/*
++	 * We're the only ones able to change the mount's idmapping. So
++	 * mnt->mnt.mnt_userns is stable and we can retrieve it directly.
++	 */
++	old_mnt_userns = mnt->mnt.mnt_userns;
++
+ 	mnt_userns = get_user_ns(kattr->mnt_userns);
+ 	/* Pairs with smp_load_acquire() in mnt_user_ns(). */
+ 	smp_store_release(&mnt->mnt.mnt_userns, mnt_userns);
++
++	/*
++	 * If this is an idmapped filesystem drop the reference we've taken
++	 * in vfs_create_mount() before.
++	 */
++	if (!initial_idmapping(old_mnt_userns))
++		put_user_ns(old_mnt_userns);
+ }
  
- 	/* Translate the kgid into a userspace id ksmbd would see. */
- 	return from_kgid(&init_user_ns, kgid);
+ static void mount_setattr_commit(struct mount_kattr *kattr,
+@@ -4133,13 +4156,15 @@ static int build_mount_idmapped(const st
+ 	}
+ 
+ 	/*
+-	 * The init_user_ns is used to indicate that a vfsmount is not idmapped.
+-	 * This is simpler than just having to treat NULL as unmapped. Users
+-	 * wanting to idmap a mount to init_user_ns can just use a namespace
+-	 * with an identity mapping.
++	 * The initial idmapping cannot be used to create an idmapped
++	 * mount. We use the initial idmapping as an indicator of a mount
++	 * that is not idmapped. It can simply be passed into helpers that
++	 * are aware of idmapped mounts as a convenient shortcut. A user
++	 * can just create a dedicated identity mapping to achieve the same
++	 * result.
+ 	 */
+ 	mnt_userns = container_of(ns, struct user_namespace, ns);
+-	if (mnt_userns == &init_user_ns) {
++	if (initial_idmapping(mnt_userns)) {
+ 		err = -EPERM;
+ 		goto out_fput;
+ 	}
 --- a/fs/open.c
 +++ b/fs/open.c
-@@ -653,8 +653,8 @@ int chown_common(const struct path *path
+@@ -641,7 +641,7 @@ SYSCALL_DEFINE2(chmod, const char __user
+ 
+ int chown_common(const struct path *path, uid_t user, gid_t group)
+ {
+-	struct user_namespace *mnt_userns;
++	struct user_namespace *mnt_userns, *fs_userns;
+ 	struct inode *inode = path->dentry->d_inode;
+ 	struct inode *delegated_inode = NULL;
+ 	int error;
+@@ -653,8 +653,9 @@ int chown_common(const struct path *path
  	gid = make_kgid(current_user_ns(), group);
  
  	mnt_userns = mnt_user_ns(path->mnt);
--	uid = kuid_from_mnt(mnt_userns, uid);
--	gid = kgid_from_mnt(mnt_userns, gid);
-+	uid = mapped_kuid_user(mnt_userns, &init_user_ns, uid);
-+	gid = mapped_kgid_user(mnt_userns, &init_user_ns, gid);
+-	uid = mapped_kuid_user(mnt_userns, &init_user_ns, uid);
+-	gid = mapped_kgid_user(mnt_userns, &init_user_ns, gid);
++	fs_userns = i_user_ns(inode);
++	uid = mapped_kuid_user(mnt_userns, fs_userns, uid);
++	gid = mapped_kgid_user(mnt_userns, fs_userns, gid);
  
  retry_deleg:
  	newattrs.ia_valid =  ATTR_CTIME;
 --- a/fs/posix_acl.c
 +++ b/fs/posix_acl.c
-@@ -376,7 +376,9 @@ posix_acl_permission(struct user_namespa
-                                         goto check_perm;
+@@ -377,8 +377,8 @@ posix_acl_permission(struct user_namespa
                                  break;
                          case ACL_USER:
--				uid = kuid_into_mnt(mnt_userns, pa->e_uid);
-+				uid = mapped_kuid_fs(mnt_userns,
-+						      &init_user_ns,
-+						      pa->e_uid);
+ 				uid = mapped_kuid_fs(mnt_userns,
+-						      &init_user_ns,
+-						      pa->e_uid);
++						     i_user_ns(inode),
++						     pa->e_uid);
  				if (uid_eq(uid, current_fsuid()))
                                          goto mask;
  				break;
-@@ -389,7 +391,9 @@ posix_acl_permission(struct user_namespa
-                                 }
+@@ -392,8 +392,8 @@ posix_acl_permission(struct user_namespa
  				break;
                          case ACL_GROUP:
--				gid = kgid_into_mnt(mnt_userns, pa->e_gid);
-+				gid = mapped_kgid_fs(mnt_userns,
-+						      &init_user_ns,
-+						      pa->e_gid);
+ 				gid = mapped_kgid_fs(mnt_userns,
+-						      &init_user_ns,
+-						      pa->e_gid);
++						     i_user_ns(inode),
++						     pa->e_gid);
  				if (in_group_p(gid)) {
  					found = 1;
  					if ((pa->e_perm & want) == want)
-@@ -736,17 +740,17 @@ static void posix_acl_fix_xattr_userns(
- 		case ACL_USER:
- 			uid = make_kuid(from, le32_to_cpu(entry->e_id));
- 			if (from_user)
--				uid = kuid_from_mnt(mnt_userns, uid);
-+				uid = mapped_kuid_user(mnt_userns, &init_user_ns, uid);
- 			else
--				uid = kuid_into_mnt(mnt_userns, uid);
-+				uid = mapped_kuid_fs(mnt_userns, &init_user_ns, uid);
- 			entry->e_id = cpu_to_le32(from_kuid(to, uid));
- 			break;
- 		case ACL_GROUP:
- 			gid = make_kgid(from, le32_to_cpu(entry->e_id));
- 			if (from_user)
--				gid = kgid_from_mnt(mnt_userns, gid);
-+				gid = mapped_kgid_user(mnt_userns, &init_user_ns, gid);
- 			else
--				gid = kgid_into_mnt(mnt_userns, gid);
-+				gid = mapped_kgid_fs(mnt_userns, &init_user_ns, gid);
- 			entry->e_id = cpu_to_le32(from_kgid(to, gid));
- 			break;
- 		default:
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -1643,7 +1643,7 @@ static inline void i_gid_write(struct in
+ static inline kuid_t i_uid_into_mnt(struct user_namespace *mnt_userns,
+ 				    const struct inode *inode)
+ {
+-	return mapped_kuid_fs(mnt_userns, &init_user_ns, inode->i_uid);
++	return mapped_kuid_fs(mnt_userns, i_user_ns(inode), inode->i_uid);
+ }
+ 
+ /**
+@@ -1657,7 +1657,7 @@ static inline kuid_t i_uid_into_mnt(stru
+ static inline kgid_t i_gid_into_mnt(struct user_namespace *mnt_userns,
+ 				    const struct inode *inode)
+ {
+-	return mapped_kgid_fs(mnt_userns, &init_user_ns, inode->i_gid);
++	return mapped_kgid_fs(mnt_userns, i_user_ns(inode), inode->i_gid);
+ }
+ 
+ /**
+@@ -1671,7 +1671,7 @@ static inline kgid_t i_gid_into_mnt(stru
+ static inline void inode_fsuid_set(struct inode *inode,
+ 				   struct user_namespace *mnt_userns)
+ {
+-	inode->i_uid = mapped_fsuid(mnt_userns, &init_user_ns);
++	inode->i_uid = mapped_fsuid(mnt_userns, i_user_ns(inode));
+ }
+ 
+ /**
+@@ -1685,7 +1685,7 @@ static inline void inode_fsuid_set(struc
+ static inline void inode_fsgid_set(struct inode *inode,
+ 				   struct user_namespace *mnt_userns)
+ {
+-	inode->i_gid = mapped_fsgid(mnt_userns, &init_user_ns);
++	inode->i_gid = mapped_fsgid(mnt_userns, i_user_ns(inode));
+ }
+ 
+ /**
+@@ -1706,10 +1706,10 @@ static inline bool fsuidgid_has_mapping(
+ 	kuid_t kuid;
+ 	kgid_t kgid;
+ 
+-	kuid = mapped_fsuid(mnt_userns, &init_user_ns);
++	kuid = mapped_fsuid(mnt_userns, fs_userns);
+ 	if (!uid_valid(kuid))
+ 		return false;
+-	kgid = mapped_fsgid(mnt_userns, &init_user_ns);
++	kgid = mapped_fsgid(mnt_userns, fs_userns);
+ 	if (!gid_valid(kgid))
+ 		return false;
+ 	return kuid_has_mapping(fs_userns, kuid) &&
+@@ -2655,13 +2655,14 @@ static inline struct user_namespace *fil
+  * is_idmapped_mnt - check whether a mount is mapped
+  * @mnt: the mount to check
+  *
+- * If @mnt has an idmapping attached to it @mnt is mapped.
++ * If @mnt has an idmapping attached different from the
++ * filesystem's idmapping then @mnt is mapped.
+  *
+  * Return: true if mount is mapped, false if not.
+  */
+ static inline bool is_idmapped_mnt(const struct vfsmount *mnt)
+ {
+-	return mnt_user_ns(mnt) != &init_user_ns;
++	return mnt_user_ns(mnt) != mnt->mnt_sb->s_user_ns;
+ }
+ 
+ extern long vfs_truncate(const struct path *, loff_t);
 --- a/security/commoncap.c
 +++ b/security/commoncap.c
 @@ -419,7 +419,7 @@ int cap_inode_getsecurity(struct user_na
  	kroot = make_kuid(fs_ns, root);
  
  	/* If this is an idmapped mount shift the kuid. */
--	kroot = kuid_into_mnt(mnt_userns, kroot);
-+	kroot = mapped_kuid_fs(mnt_userns, &init_user_ns, kroot);
+-	kroot = mapped_kuid_fs(mnt_userns, &init_user_ns, kroot);
++	kroot = mapped_kuid_fs(mnt_userns, fs_ns, kroot);
  
  	/* If the root kuid maps to a valid uid in current ns, then return
  	 * this as a nscap. */
-@@ -489,6 +489,7 @@ out_free:
-  * @size:	size of @ivalue
-  * @task_ns:	user namespace of the caller
-  * @mnt_userns:	user namespace of the mount the inode was found from
-+ * @fs_userns:	user namespace of the filesystem
-  *
-  * If the inode has been found through an idmapped mount the user namespace of
-  * the vfsmount must be passed through @mnt_userns. This function will then
-@@ -498,7 +499,8 @@ out_free:
-  */
- static kuid_t rootid_from_xattr(const void *value, size_t size,
- 				struct user_namespace *task_ns,
--				struct user_namespace *mnt_userns)
-+				struct user_namespace *mnt_userns,
-+				struct user_namespace *fs_userns)
- {
- 	const struct vfs_ns_cap_data *nscap = value;
- 	kuid_t rootkid;
-@@ -508,7 +510,7 @@ static kuid_t rootid_from_xattr(const vo
- 		rootid = le32_to_cpu(nscap->rootid);
- 
- 	rootkid = make_kuid(task_ns, rootid);
--	return kuid_from_mnt(mnt_userns, rootkid);
-+	return mapped_kuid_user(mnt_userns, fs_userns, rootkid);
- }
- 
- static bool validheader(size_t size, const struct vfs_cap_data *cap)
-@@ -559,7 +561,8 @@ int cap_convert_nscap(struct user_namesp
+@@ -556,13 +556,12 @@ int cap_convert_nscap(struct user_namesp
+ 		return -EINVAL;
+ 	if (!capable_wrt_inode_uidgid(mnt_userns, inode, CAP_SETFCAP))
+ 		return -EPERM;
+-	if (size == XATTR_CAPS_SZ_2 && (mnt_userns == &init_user_ns))
++	if (size == XATTR_CAPS_SZ_2 && (mnt_userns == fs_ns))
+ 		if (ns_capable(inode->i_sb->s_user_ns, CAP_SETFCAP))
  			/* user is privileged, just write the v2 */
  			return size;
  
--	rootid = rootid_from_xattr(*ivalue, size, task_ns, mnt_userns);
-+	rootid = rootid_from_xattr(*ivalue, size, task_ns, mnt_userns,
-+				   &init_user_ns);
+-	rootid = rootid_from_xattr(*ivalue, size, task_ns, mnt_userns,
+-				   &init_user_ns);
++	rootid = rootid_from_xattr(*ivalue, size, task_ns, mnt_userns, fs_ns);
  	if (!uid_valid(rootid))
  		return -EINVAL;
  
-@@ -700,7 +703,7 @@ int get_vfs_caps_from_disk(struct user_n
+@@ -703,7 +702,7 @@ int get_vfs_caps_from_disk(struct user_n
  	/* Limit the caps to the mounter of the filesystem
  	 * or the more limited uid specified in the xattr.
  	 */
--	rootkuid = kuid_into_mnt(mnt_userns, rootkuid);
-+	rootkuid = mapped_kuid_fs(mnt_userns, &init_user_ns, rootkuid);
+-	rootkuid = mapped_kuid_fs(mnt_userns, &init_user_ns, rootkuid);
++	rootkuid = mapped_kuid_fs(mnt_userns, fs_ns, rootkuid);
  	if (!rootid_owns_currentns(rootkuid))
  		return -ENODATA;
  
