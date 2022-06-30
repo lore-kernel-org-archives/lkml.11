@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27467C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 419FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236544AbiF3OFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
+        id S236361AbiF3OFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236455AbiF3OEm (ORCPT
+        with ESMTP id S236441AbiF3OEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 10:04:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E1B6D555;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D67B403D1;
         Thu, 30 Jun 2022 06:53:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 737526211E;
-        Thu, 30 Jun 2022 13:53:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEB2C36AED;
-        Thu, 30 Jun 2022 13:53:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDD626204B;
+        Thu, 30 Jun 2022 13:53:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1674C34115;
+        Thu, 30 Jun 2022 13:53:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597212;
-        bh=ffpHr7ABlkI6Z45CH7Vc8Mv9rfjUscCFPhHmwiZa+wo=;
+        s=korg; t=1656597221;
+        bh=PmnDGD1wvVsZRF/w/y92NUWwuEhPh2DN7+cm8pXrFxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l85+Hj3/IaoKAoT6AH+Zie4g5oryTKLZnAEPim2IIb2yLH2xcniQyJVUfUVGu72V3
-         xTR+nRHWTYqWu+db1S4+0ACVHveC1nsZ5N2Qf94o9U44tl14Qfmcs+d4EJsqWtp9xK
-         +GRDGT/u/ssJs3mMM7SAeW4kTySqHx/jaJx+DVD0=
+        b=kkVO0Xh6C7+eHqYgrqipYyyra2Vk0jd5pI44Dt5o5pntXFKMcFw/i6Uq2kE6pnknY
+         ccj6pUKiuwByf5fYXwZRTIeBdkI9ttjsc8JSmU48zOe93wmSyu618EsQGMnhz3tGa6
+         1MUV5C+Ubr3/kDdQuBgIZRz81KSfW9MDQ4lxAToE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH 5.4 05/16] net: mscc: ocelot: allow unregistered IP multicast flooding
-Date:   Thu, 30 Jun 2022 15:46:59 +0200
-Message-Id: <20220630133231.096566009@linuxfoundation.org>
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Jian Cai <caij2003@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 5.4 08/16] ARM: 8971/1: replace the sole use of a symbol with its definition
+Date:   Thu, 30 Jun 2022 15:47:02 +0200
+Message-Id: <20220630133231.184537231@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
 References: <20220630133230.936488203@linuxfoundation.org>
@@ -48,61 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Jian Cai <caij2003@gmail.com>
 
-Flooding of unregistered IP multicast has been broken (both to other
-switch ports and to the CPU) since the ocelot driver introduction, and
-up until commit 4cf35a2b627a ("net: mscc: ocelot: fix broken IP
-multicast flooding"), a bug fix for commit 421741ea5672 ("net: mscc:
-ocelot: offload bridge port flags to device") from v5.12.
+commit a780e485b5768e78aef087502499714901b68cc4 upstream
 
-The driver used to set PGID_MCIPV4 and PGID_MCIPV6 to the empty port
-mask (0), which made unregistered IPv4/IPv6 multicast go nowhere, and
-without ever modifying that port mask at runtime.
+ALT_UP_B macro sets symbol up_b_offset via .equ to an expression
+involving another symbol. The macro gets expanded twice when
+arch/arm/kernel/sleep.S is assembled, creating a scenario where
+up_b_offset is set to another expression involving symbols while its
+current value is based on symbols. LLVM integrated assembler does not
+allow such cases, and based on the documentation of binutils, "Values
+that are based on expressions involving other symbols are allowed, but
+some targets may restrict this to only being done once per assembly", so
+it may be better to avoid such cases as it is not clearly stated which
+targets should support or disallow them. The fix in this case is simple,
+as up_b_offset has only one use, so we can replace the use with the
+definition and get rid of up_b_offset.
 
-The expectation is that such packets are treated as broadcast, and
-flooded according to the forwarding domain (to the CPU if the port is
-standalone, or to the CPU and other bridged ports, if under a bridge).
+ Link:https://github.com/ClangBuiltLinux/linux/issues/920
 
-Since the aforementioned commit, the limitation has been lifted by
-responding to SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS events emitted by the
-bridge. As for host flooding, DSA synthesizes another call to
-ocelot_port_bridge_flags() on the NPI port which ensures that the CPU
-gets the unregistered multicast traffic it might need, for example for
-smcroute to work between standalone ports.
+ Reviewed-by: Stefan Agner <stefan@agner.ch>
 
-But between v4.18 and v5.12, IP multicast flooding has remained unfixed.
-
-Delete the inexplicable premature optimization of clearing PGID_MCIPV4
-and PGID_MCIPV6 as part of the init sequence, and allow unregistered IP
-multicast to be flooded freely according to the forwarding domain
-established by PGID_SRC, by explicitly programming PGID_MCIPV4 and
-PGID_MCIPV6 towards all physical ports plus the CPU port module.
-
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Cc: stable@kernel.org
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Jian Cai <caij2003@gmail.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/arm/include/asm/assembler.h |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2153,8 +2153,12 @@ int ocelot_init(struct ocelot *ocelot)
- 	ocelot_write_rix(ocelot,
- 			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
- 			 ANA_PGID_PGID, PGID_MC);
--	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
--	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
-+	ocelot_write_rix(ocelot,
-+			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
-+			 ANA_PGID_PGID, PGID_MCIPV4);
-+	ocelot_write_rix(ocelot,
-+			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
-+			 ANA_PGID_PGID, PGID_MCIPV6);
- 
- 	/* CPU port Injection/Extraction configuration */
- 	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
+--- a/arch/arm/include/asm/assembler.h
++++ b/arch/arm/include/asm/assembler.h
+@@ -279,10 +279,9 @@
+ 	.endif							;\
+ 	.popsection
+ #define ALT_UP_B(label)					\
+-	.equ	up_b_offset, label - 9998b			;\
+ 	.pushsection ".alt.smp.init", "a"			;\
+ 	.long	9998b						;\
+-	W(b)	. + up_b_offset					;\
++	W(b)	. + (label - 9998b)					;\
+ 	.popsection
+ #else
+ #define ALT_SMP(instr...)
 
 
