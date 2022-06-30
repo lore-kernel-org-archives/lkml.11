@@ -2,85 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B75C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19775C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234385AbiF3JVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52596 "EHLO
+        id S233297AbiF3JVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234182AbiF3JVP (ORCPT
+        with ESMTP id S234304AbiF3JVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:21:15 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33CE396AD
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:21:11 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U0La7c008170
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:21:08 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=2nIzbijtoANac14n5z+hDP1FKE7gnAEKn4hYu+nUwCk=;
- b=fX0vLhUPzwCzucH5KJJNd1ShqfBEreANWLxyO/nxefI/brQqXQHAEr66JV4+ukBqlwvB
- HFbdj8RztxmiNdeJGplpTTHuRWXXmtiDCIKJmCUM3JnRFWw6WljBaj79907iqJpC6EQ3
- WwGwq8y2/dPrmSAsSh5GNgeRM2IIj8QhOnI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h0qgqxedn-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:21:08 -0700
-Received: from twshared22934.08.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+        Thu, 30 Jun 2022 05:21:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10C340E56;
+        Thu, 30 Jun 2022 02:21:27 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LYXpS3qvtzkWdj;
+        Thu, 30 Jun 2022 17:19:28 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 30 Jun 2022 02:21:07 -0700
-Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id D898C2599FE4; Thu, 30 Jun 2022 02:14:08 -0700 (PDT)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        <io-uring@vger.kernel.org>
-CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH v2 for-next 11/12] io_uring: fix io_uring_cqe_overflow trace format
-Date:   Thu, 30 Jun 2022 02:12:30 -0700
-Message-ID: <20220630091231.1456789-12-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220630091231.1456789-1-dylany@fb.com>
-References: <20220630091231.1456789-1-dylany@fb.com>
+ 15.1.2375.24; Thu, 30 Jun 2022 17:21:21 +0800
+Received: from [10.67.110.218] (10.67.110.218) by
+ dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 30 Jun 2022 17:21:21 +0800
+Message-ID: <0a05d98f-96f6-ffee-87bf-ba9e0231bde4@huawei.com>
+Date:   Thu, 30 Jun 2022 17:21:14 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: yn-1MPl0dgyorLRioZevHYJFALQyXJ5M
-X-Proofpoint-ORIG-GUID: yn-1MPl0dgyorLRioZevHYJFALQyXJ5M
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_05,2022-06-28_01,2022-06-22_01
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH] tracing/histograms: Simplify create_hist_fields()
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <tom.zanussi@linux.intel.com>,
+        <trix@redhat.com>, <stable@vger.kernel.org>,
+        <zhangjinhao2@huawei.com>
+References: <20220630013152.164871-1-zhengyejian1@huawei.com>
+ <Yr1DtC4Gvg00SVfr@kroah.com>
+From:   "Zhengyejian (Zetta)" <zhengyejian1@huawei.com>
+Reply-To: <Yr1DtC4Gvg00SVfr@kroah.com>
+In-Reply-To: <Yr1DtC4Gvg00SVfr@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.110.218]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make the trace format consistent with io_uring_complete for cflags
+On 2022/6/30 14:33, Greg KH wrote:
+> On Thu, Jun 30, 2022 at 09:31:52AM +0800, Zheng Yejian wrote:
+>> When I look into implements of create_hist_fields(), I think there can be
+>> following two simplifications:
+>>    1. If something wrong happened in parse_var_defs(), free_var_defs() would
+>>       have been called in it, so no need goto free again after calling it;
+>>    2. After calling create_key_fields(), regardless of the value of 'ret', it
+>>       then always runs into 'out: ', so the judge of 'ret' is redundant.
+>>
+>> No functional changes.
+>>
+>> Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
+>> ---
+>>   kernel/trace/trace_events_hist.c | 5 ++---
+>>   1 file changed, 2 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+>> index 2784951e0fc8..832c4ccf41ab 100644
+>> --- a/kernel/trace/trace_events_hist.c
+>> +++ b/kernel/trace/trace_events_hist.c
+>> @@ -4454,7 +4454,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
+>>   
+>>   	ret = parse_var_defs(hist_data);
+>>   	if (ret)
+>> -		goto out;
+>> +		return ret;
+>>   
+>>   	ret = create_val_fields(hist_data, file);
+>>   	if (ret)
+>> @@ -4465,8 +4465,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
+>>   		goto out;
+>>   
+>>   	ret = create_key_fields(hist_data, file);
+>> -	if (ret)
+>> -		goto out;
+>> +
+>>    out:
+>>   	free_var_defs(hist_data);
+>>   
+>> -- 
+>> 2.32.0
+>>
+> 
+> <formletter>
+> 
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read:
 
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
----
- include/trace/events/io_uring.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch is a cleanup, no need to include in stable kernel tree.
+I accidentally copied the patch to stable mailbox, sorry for that :(
 
-diff --git a/include/trace/events/io_uring.h b/include/trace/events/io_ur=
-ing.h
-index 918e3a43e4b2..95a8cfaad15a 100644
---- a/include/trace/events/io_uring.h
-+++ b/include/trace/events/io_uring.h
-@@ -594,7 +594,7 @@ TRACE_EVENT(io_uring_cqe_overflow,
- 		__entry->ocqe		=3D ocqe;
- 	),
-=20
--	TP_printk("ring %p, user_data 0x%llx, res %d, flags %x, "
-+	TP_printk("ring %p, user_data 0x%llx, res %d, cflags 0x%x, "
- 		  "overflow_cqe %p",
- 		  __entry->ctx, __entry->user_data, __entry->res,
- 		  __entry->cflags, __entry->ocqe)
---=20
-2.30.2
-
+>      https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
+> 
+> </formletter>
