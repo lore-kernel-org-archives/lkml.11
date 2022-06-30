@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC85C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F36DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbiF3ODQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
+        id S236220AbiF3ODW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235365AbiF3OB5 (ORCPT
+        with ESMTP id S236380AbiF3OCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48ACD50718;
-        Thu, 30 Jun 2022 06:52:48 -0700 (PDT)
+        Thu, 30 Jun 2022 10:02:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749DA4506C;
+        Thu, 30 Jun 2022 06:52:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53A26B82AEF;
-        Thu, 30 Jun 2022 13:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A4FC34115;
-        Thu, 30 Jun 2022 13:52:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85FC4B82AEE;
+        Thu, 30 Jun 2022 13:52:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E856BC34115;
+        Thu, 30 Jun 2022 13:52:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597147;
-        bh=TBHOlCgI4P/ivcpcBjHQMwjrR2XUb2vJ4UkttqkCnUs=;
+        s=korg; t=1656597166;
+        bh=ROIp5lZCFo+ioynwx0XiisiwiQ8VO4TOq9K1OHbLQCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1vsdSaxQeDSzi5+PqGbDap0NpkWqwlowOcI175KsbPu2BrqVyXXUlpLQECIrmC6kd
-         DxifrxN5GzonxHzBaOCw2SadpOA1tcVzlRhnPoxz3vIj6P2DIo6Xprb60MoxtbzANC
-         BoX6erQBF34sj8ULbsNDsSd0sCM7368xTFxj21Po=
+        b=uQZb4lJasOfaXieZNVnxX0nK172Ckzj4aU/V2H0yX0dkkIjby18ubyJrqEKsHkGM5
+         D5icYI7TrdjrgPaVdMpYtUEAO1MF+pZhUyvxlix2HP21QspeJt6N8+PfmLD/rptZbg
+         Vq1IDMOPSTijPy4e7vqzkbKWqfp3Mv3ulCj8/JIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Christoph Hellwig <hch@lst.de>, Jessica Yu <jeyu@kernel.org>
-Subject: [PATCH 4.19 43/49] drm: remove drm_fb_helper_modinit
-Date:   Thu, 30 Jun 2022 15:46:56 +0200
-Message-Id: <20220630133235.144699150@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH 4.19 49/49] swiotlb: skip swiotlb_bounce when orig_addr is zero
+Date:   Thu, 30 Jun 2022 15:47:02 +0200
+Message-Id: <20220630133235.317860776@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 References: <20220630133233.910803744@linuxfoundation.org>
@@ -48,104 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Liu Shixin <liushixin2@huawei.com>
 
-commit bf22c9ec39da90ce866d5f625d616f28bc733dc1 upstream.
+After patch ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE"),
+swiotlb_bounce will be called in swiotlb_tbl_map_single unconditionally.
+This requires that the physical address must be valid, which is not always
+true on stable-4.19 or earlier version.
+On stable-4.19, swiotlb_alloc_buffer will call swiotlb_tbl_map_single with
+orig_addr equal to zero, which cause such a panic:
 
-drm_fb_helper_modinit has a lot of boilerplate for what is not very
-simple functionality.  Just open code it in the only caller using
-IS_ENABLED and IS_MODULE, and skip the find_module check as a
-request_module is harmless if the module is already loaded (and not
-other caller has this find_module check either).
+Unable to handle kernel paging request at virtual address ffffb77a40000000
+...
+pc : __memcpy+0x100/0x180
+lr : swiotlb_bounce+0x74/0x88
+...
+Call trace:
+ __memcpy+0x100/0x180
+ swiotlb_tbl_map_single+0x2c8/0x338
+ swiotlb_alloc+0xb4/0x198
+ __dma_alloc+0x84/0x1d8
+ ...
 
-Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jessica Yu <jeyu@kernel.org>
+On stable-4.9 and stable-4.14, swiotlb_alloc_coherent wille call map_single
+with orig_addr equal to zero, which can cause same panic.
+
+Fix this by skipping swiotlb_bounce when orig_addr is zero.
+
+Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_crtc_helper_internal.h |   10 ----------
- drivers/gpu/drm/drm_fb_helper.c            |   21 ---------------------
- drivers/gpu/drm/drm_kms_helper_common.c    |   23 +++++++++++------------
- 3 files changed, 11 insertions(+), 43 deletions(-)
+ kernel/dma/swiotlb.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/drm_crtc_helper_internal.h
-+++ b/drivers/gpu/drm/drm_crtc_helper_internal.h
-@@ -32,16 +32,6 @@
- #include <drm/drm_encoder.h>
- #include <drm/drm_modes.h>
- 
--/* drm_fb_helper.c */
--#ifdef CONFIG_DRM_FBDEV_EMULATION
--int drm_fb_helper_modinit(void);
--#else
--static inline int drm_fb_helper_modinit(void)
--{
--	return 0;
--}
--#endif
--
- /* drm_dp_aux_dev.c */
- #ifdef CONFIG_DRM_DP_AUX_CHARDEV
- int drm_dp_aux_dev_init(void);
---- a/drivers/gpu/drm/drm_fb_helper.c
-+++ b/drivers/gpu/drm/drm_fb_helper.c
-@@ -3270,24 +3270,3 @@ int drm_fbdev_generic_setup(struct drm_d
- 	return 0;
- }
- EXPORT_SYMBOL(drm_fbdev_generic_setup);
--
--/* The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
-- * but the module doesn't depend on any fb console symbols.  At least
-- * attempt to load fbcon to avoid leaving the system without a usable console.
-- */
--int __init drm_fb_helper_modinit(void)
--{
--#if defined(CONFIG_FRAMEBUFFER_CONSOLE_MODULE) && !defined(CONFIG_EXPERT)
--	const char name[] = "fbcon";
--	struct module *fbcon;
--
--	mutex_lock(&module_mutex);
--	fbcon = find_module(name);
--	mutex_unlock(&module_mutex);
--
--	if (!fbcon)
--		request_module_nowait(name);
--#endif
--	return 0;
--}
--EXPORT_SYMBOL(drm_fb_helper_modinit);
---- a/drivers/gpu/drm/drm_kms_helper_common.c
-+++ b/drivers/gpu/drm/drm_kms_helper_common.c
-@@ -63,19 +63,18 @@ MODULE_PARM_DESC(edid_firmware,
- 
- static int __init drm_kms_helper_init(void)
- {
--	int ret;
-+	/*
-+	 * The Kconfig DRM_KMS_HELPER selects FRAMEBUFFER_CONSOLE (if !EXPERT)
-+	 * but the module doesn't depend on any fb console symbols.  At least
-+	 * attempt to load fbcon to avoid leaving the system without a usable
-+	 * console.
-+	 */
-+	if (IS_ENABLED(CONFIG_DRM_FBDEV_EMULATION) &&
-+	    IS_MODULE(CONFIG_FRAMEBUFFER_CONSOLE) &&
-+	    !IS_ENABLED(CONFIG_EXPERT))
-+		request_module_nowait("fbcon");
- 
--	/* Call init functions from specific kms helpers here */
--	ret = drm_fb_helper_modinit();
--	if (ret < 0)
--		goto out;
--
--	ret = drm_dp_aux_dev_init();
--	if (ret < 0)
--		goto out;
--
--out:
--	return ret;
-+	return drm_dp_aux_dev_init();
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -594,7 +594,8 @@ found:
+ 	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+ 	 * kernel memory) to user-space.
+ 	 */
+-	swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
++	if (orig_addr)
++		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+ 	return tlb_addr;
  }
  
- static void __exit drm_kms_helper_exit(void)
 
 
