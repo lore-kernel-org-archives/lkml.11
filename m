@@ -2,84 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7128BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B22C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbiF3HBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
+        id S232904AbiF3HCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiF3HBT (ORCPT
+        with ESMTP id S232925AbiF3HCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:01:19 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314C836697
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:01:18 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id v185so22618036ybe.8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9MAZhSdNJo3QokCNWF16iPYG6xcDRmv0nRT3AeZjRHk=;
-        b=d1872KUv97LdlFmqqlKYeSNxhGag05R6wVXr96rFIwqSnSEjzF4+E6vhbBZc3Ksi2b
-         ihHpXQRBkpuz7GcmAfaO1eEr6TO4q6GWRWWmQwb292nav8hK8D8mOZGISeHd0EUA37Ga
-         5IwnDj8e4pVcnBpQDsn/COi2WlrE3RuGCe9HnYftNMq4rizOw6mEI0eK08z+kKvQ8hde
-         HoyQX5HNqxNU65sIhc5TAvpG4QqC7AcrkcxJifPIiKFk2iZflZVWzRhtSV0trmh2L2Yn
-         JS2WkLDqdnxC68huw33b55uU2tdepqzGCSDO84Vz0xoDYoPNVm61QInmJ89OzWXIH9mr
-         9nLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9MAZhSdNJo3QokCNWF16iPYG6xcDRmv0nRT3AeZjRHk=;
-        b=uk8KCtbj7kRHOFcgP+eNfv0Y/xR8atr7wUt7yupuAzmvwrAyBq916c/+1X1/Ocgrsn
-         vQNhR7Hm1Avm1xTjk32LoXxvxfOWx8qe5/mMfOUB2G49WxR2b/Amb3BX/6iQjf+iy+GQ
-         ZHTKuBNDSkIsoDjwldXib6LTxY0a+U3y101JUUlNxU0OXXnn4fYiXL9E4fIC/iIwqUFj
-         KEqHzjzsWS/1iwBlqh3PeY32VRfdCxRV57cxkhfOsV6uNyQUyKj2yN+2aZN7MbXQ34Op
-         PLiLrfcqiHcYVDAFzb5ufZXbUIvMJ0e3I09toVvCnSPbJlED+8BCb7PcSAaDaNvQ/DJO
-         s5QA==
-X-Gm-Message-State: AJIora8a7SCeLoIv4hwkh9tl4FUixA45UNq56oxOqWiOy+1cxRhdmvJ9
-        /YppBKgmkAZLJmliz/7ZO7QRoROpT6nh6jCCYdV48g==
-X-Google-Smtp-Source: AGRyM1tI8AU9DaGXxeIyzotuiun7FqolJenmEF9ES7RUXabvemB9RjBSPIJMc0Jn7NjK0uYgCL/0rTZdFzpLFDbTzgc=
-X-Received: by 2002:a05:6902:1501:b0:66d:2ae0:46b5 with SMTP id
- q1-20020a056902150100b0066d2ae046b5mr8039359ybu.225.1656572477270; Thu, 30
- Jun 2022 00:01:17 -0700 (PDT)
+        Thu, 30 Jun 2022 03:02:01 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E30C35DED;
+        Thu, 30 Jun 2022 00:01:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656572519; x=1688108519;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AeHi61WsIJAmFsEU0j7KjinoFRAELD1Z5s+ZxYgSLyY=;
+  b=B12RwlGLfYmRZ+bDaxNHye+mWPcBYJplpNBX5W+z9M1C7eJGM9MG+Uib
+   JzR2j8scoqtpoJhAv+EpbOky1f3/FuzujYK2Bjr/cK7mlS/8eXD6jMFxQ
+   dP5ardu6SIP4eCF5RkVevQeHfpUmuViSNzxslSk54HLG3IKi7P9UJo8QW
+   sC7z3vdnyzB1eyXQ5CKtVwlFBjWIQuS0fsAbpKmYNlHCeAhbSLxXU+DrI
+   +T6GnQZmsSdE3Sanlawy0e08ROFNEp50XS+iX0c93XE89gbkZq8ujwXRf
+   L0d9dzszckKjU0Z2lxRWdSdqm24qu6PCjSsv7WFkhL1E80PIQaHVS2Zb4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="271032833"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="271032833"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 00:01:56 -0700
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="647761832"
+Received: from nirmoyda-mobl.ger.corp.intel.com (HELO [10.251.217.92]) ([10.251.217.92])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 00:01:49 -0700
+Message-ID: <83341d51-6c63-4b37-2f02-b3f305930308@linux.intel.com>
+Date:   Thu, 30 Jun 2022 09:01:47 +0200
 MIME-Version: 1.0
-References: <BYAPR02MB4488F89EC5DB73D1FEAE9B4594B59@BYAPR02MB4488.namprd02.prod.outlook.com>
- <CAKfTPtA7wJBROfRkSQV7FzWaWqoaQjSO7iyqBt6AgGsv2OsNSw@mail.gmail.com>
- <409fc8d0-119a-3358-0fc5-99a786a9564a@huawei.com> <20220627105954.GA7670@vingu-book>
- <BYAPR02MB44881D68479406679935EDAA94BB9@BYAPR02MB4488.namprd02.prod.outlook.com>
-In-Reply-To: <BYAPR02MB44881D68479406679935EDAA94BB9@BYAPR02MB4488.namprd02.prod.outlook.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Thu, 30 Jun 2022 09:01:06 +0200
-Message-ID: <CAKfTPtDyzBHtJ7ZFoXXDgBo721QsfR9m7FR4KaEn34EjoE2GhQ@mail.gmail.com>
-Subject: Re: Perf regression from scheduler load_balance rework in 5.5?
-To:     David Chen <david.chen@nutanix.com>
-Cc:     Zhang Qiao <zhangqiao22@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1] Fix: SYNCOBJ TIMELINE Test failed.
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        jie1zhan <jesse.zhang@amd.com>, broonie@kernel.org,
+        alsa-devel@alsa-project.org
+Cc:     Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
+        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>
+References: <20220629060236.3283445-1-jesse.zhang@amd.com>
+ <8499b1f1-cd39-5cb4-9fac-735e68393556@amd.com>
+From:   "Das, Nirmoy" <nirmoy.das@linux.intel.com>
+In-Reply-To: <8499b1f1-cd39-5cb4-9fac-735e68393556@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
 
-On Wed, 29 Jun 2022 at 23:45, David Chen <david.chen@nutanix.com> wrote:
+On 6/29/2022 11:12 AM, Christian König wrote:
+> Am 29.06.22 um 08:02 schrieb jie1zhan:
+>>   The issue cause by the commit :
+>>
+>> 721255b527(drm/syncobj: flatten dma_fence_chains on transfer).
+>>
+>> Because it use the point of dma_fence incorrectly
+>>
+>> Correct the point of dma_fence by fence array
 >
+> Well that patch is just utterly nonsense as far as I can see.
 >
-[...]
+>>
+>> Signed-off-by: jie1zhan <jesse.zhang@amd.com>
+>>
+>> Reviewed-by: Christian König <christian.koenig@amd.com>
+>>
+>> Reviewed-by: Nirmoy Das <nirmoy.das@linux.intel.com>
+>
+> I have strong doubts that Nirmoy has reviewed this and I certainly 
+> haven't reviewed it.
+
+
+I haven't  reviewed this either.
+
+
+Nirmoy
 
 >
-> Hi,
+> Christian.
 >
-> I applied the patch on top of 5.10 and also enabled CONFIG_IRQ_TIME_ACCOUNTING.
-> And it did fix the issue I had.
-
-Thanks for testing. I'm going to prepare a patch
-
-Vincent
+>> ---
+>>   drivers/gpu/drm/drm_syncobj.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/gpu/drm/drm_syncobj.c 
+>> b/drivers/gpu/drm/drm_syncobj.c
+>> index 7e48dcd1bee4..d5db818f1c76 100644
+>> --- a/drivers/gpu/drm/drm_syncobj.c
+>> +++ b/drivers/gpu/drm/drm_syncobj.c
+>> @@ -887,7 +887,7 @@ static int drm_syncobj_flatten_chain(struct 
+>> dma_fence **f)
+>>           goto free_fences;
+>>         dma_fence_put(*f);
+>> -    *f = &array->base;
+>> +    *f = array->fences[0];
+>>       return 0;
+>>     free_fences:
 >
-> Thanks,
-> David
