@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27AECCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E12C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236489AbiF3OI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        id S236590AbiF3OIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236826AbiF3OHh (ORCPT
+        with ESMTP id S236857AbiF3OHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:07:37 -0400
+        Thu, 30 Jun 2022 10:07:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18B748835;
-        Thu, 30 Jun 2022 06:54:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFD44F671;
+        Thu, 30 Jun 2022 06:54:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6542662123;
-        Thu, 30 Jun 2022 13:54:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6920FC3411E;
-        Thu, 30 Jun 2022 13:54:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D25D620E4;
+        Thu, 30 Jun 2022 13:54:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF39C34115;
+        Thu, 30 Jun 2022 13:54:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597281;
-        bh=piyC3L6uuPyfoT9X7ui+FEczQZnzKsyn7sl7Q/Oeuds=;
+        s=korg; t=1656597284;
+        bh=DvDfn2BRrFyIyKJ7P5xj6xM1ZLoSo0VhU2tDsbxFz9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eyxXY+kMFidI4c4DISExrtIyEW+V2MERDvTzigtF7NbbCppcwGbpz315Cxk8RX84H
-         1es1MgQYe0BcrlDA8FiZ50OCIwW15JZiYeCExM8jVnHJghyUy1G4NqDsnxkxAA/oR3
-         2wHuaWEE6OcwH419KYTjfZn2jKyocLEI5hnT+G0Q=
+        b=Sj2y7hKCwnaMghRM0Qb4T91LB3ovyKstUDcxygmN6AWi7jt981MgZBj17XXF73Lp/
+         wYxWOg81qQOeb+RNeBEv/aWbwbEMglxeBl8ZiHF1Xr/zVVaaTJ8Wob5vy2H09mKRho
+         EicfWZjC1zWSp4VaUHvYIX8brpjVslcFaCQZL0GQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH 5.15 02/28] clocksource/drivers/ixp4xx: remove __init from ixp4xx_timer_setup()
-Date:   Thu, 30 Jun 2022 15:46:58 +0200
-Message-Id: <20220630133233.000575254@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 03/28] x86, kvm: use proper ASM macros for kvm_vcpu_is_preempted
+Date:   Thu, 30 Jun 2022 15:46:59 +0200
+Message-Id: <20220630133233.028129552@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -50,73 +49,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-ixp4xx_timer_setup is exported, and so can not be an __init function.
-Remove the __init marking as the build system is rightfully claiming
-this is an error in older kernels.
+The build rightfully complains about:
+	arch/x86/kernel/kvm.o: warning: objtool: __raw_callee_save___kvm_vcpu_is_preempted()+0x12: missing int3 after ret
 
-This is fixed "properly" in commit 41929c9f628b
-("clocksource/drivers/ixp4xx: Drop boardfile probe path") but that can
-not be backported to older kernels as the reworking of the IXP4xx
-codebase is not suitable for stable releases.
+because the ASM_RET call is not being used correctly in kvm_vcpu_is_preempted().
 
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+This was hand-fixed-up in the kvm merge commit a4cfff3f0f8c ("Merge branch
+'kvm-older-features' into HEAD") which of course can not be backported to
+stable kernels, so just fix this up directly instead.
+
+Cc: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clocksource/mmio.c                 |    2 +-
- drivers/clocksource/timer-ixp4xx.c         |   10 ++++------
- include/linux/platform_data/timer-ixp4xx.h |    5 ++---
- 3 files changed, 7 insertions(+), 10 deletions(-)
+ arch/x86/kernel/kvm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/clocksource/mmio.c
-+++ b/drivers/clocksource/mmio.c
-@@ -46,7 +46,7 @@ u64 clocksource_mmio_readw_down(struct c
-  * @bits:	Number of valid bits
-  * @read:	One of clocksource_mmio_read*() above
-  */
--int __init clocksource_mmio_init(void __iomem *base, const char *name,
-+int clocksource_mmio_init(void __iomem *base, const char *name,
- 	unsigned long hz, int rating, unsigned bits,
- 	u64 (*read)(struct clocksource *))
- {
---- a/drivers/clocksource/timer-ixp4xx.c
-+++ b/drivers/clocksource/timer-ixp4xx.c
-@@ -161,9 +161,8 @@ static int ixp4xx_resume(struct clock_ev
-  * We use OS timer1 on the CPU for the timer tick and the timestamp
-  * counter as a source of real clock ticks to account for missed jiffies.
-  */
--static __init int ixp4xx_timer_register(void __iomem *base,
--					int timer_irq,
--					unsigned int timer_freq)
-+static int ixp4xx_timer_register(void __iomem *base, int timer_irq,
-+				 unsigned int timer_freq)
- {
- 	struct ixp4xx_timer *tmr;
- 	int ret;
-@@ -269,9 +268,8 @@ builtin_platform_driver(ixp4xx_timer_dri
-  * @timer_irq: Linux IRQ number for the timer
-  * @timer_freq: Fixed frequency of the timer
-  */
--void __init ixp4xx_timer_setup(resource_size_t timerbase,
--			       int timer_irq,
--			       unsigned int timer_freq)
-+void ixp4xx_timer_setup(resource_size_t timerbase, int timer_irq,
-+			unsigned int timer_freq)
- {
- 	void __iomem *base;
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -948,7 +948,7 @@ asm(
+ "movq	__per_cpu_offset(,%rdi,8), %rax;"
+ "cmpb	$0, " __stringify(KVM_STEAL_TIME_preempted) "+steal_time(%rax);"
+ "setne	%al;"
+-"ret;"
++ASM_RET
+ ".size __raw_callee_save___kvm_vcpu_is_preempted, .-__raw_callee_save___kvm_vcpu_is_preempted;"
+ ".popsection");
  
---- a/include/linux/platform_data/timer-ixp4xx.h
-+++ b/include/linux/platform_data/timer-ixp4xx.h
-@@ -4,8 +4,7 @@
- 
- #include <linux/ioport.h>
- 
--void __init ixp4xx_timer_setup(resource_size_t timerbase,
--			       int timer_irq,
--			       unsigned int timer_freq);
-+void ixp4xx_timer_setup(resource_size_t timerbase, int timer_irq,
-+			unsigned int timer_freq);
- 
- #endif
 
 
