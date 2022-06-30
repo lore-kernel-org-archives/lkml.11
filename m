@@ -2,217 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FA6CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D84F1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234992AbiF3KYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
+        id S234665AbiF3KY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234886AbiF3KYA (ORCPT
+        with ESMTP id S233146AbiF3KYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:24:00 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C8013B463;
-        Thu, 30 Jun 2022 03:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656584614; x=1688120614;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IgrfXQvwhrthgUHtFK/JPBJXRlEO7I1iuTHwrPUQ4KI=;
-  b=udhuOzn0aJxncojt6Qo5avCTVVPnHHhn61eQ05kXnqqqJyOiOmiQo1XI
-   x2W/KgiHG+kIhyLaLZoSoukO3r7h6GpPnHTHn7gb7NRdN1Dbrwbo3g5XN
-   Sc+FUudgagQkMoEpEG1FIWdy36Vk+adDYWR0Zxoe1JCFsDFwvi7WaiI1/
-   OuqYH3gnky5OzhMeehGtZu2p9RNqS9g140bA6u67GaKJuufPh3fTT30qI
-   kecN1LucCEQOZ7/LNPJZs3lRGOgnw4tP4jWdq3cVXRYq8S1l4NasC9gBr
-   NJbfDHfFKE0k+KTv70nwMf+JFWbDwTTNrQvWFRTdlCyX2xD44AXQbWy8g
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="162744725"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:23:32 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 03:23:29 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:23:21 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v14 12/13] net: dsa: microchip: lan937x: add phylink_mac_config support
-Date:   Thu, 30 Jun 2022 15:50:40 +0530
-Message-ID: <20220630102041.25555-13-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220630102041.25555-1-arun.ramadoss@microchip.com>
-References: <20220630102041.25555-1-arun.ramadoss@microchip.com>
+        Thu, 30 Jun 2022 06:24:20 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907637E02F
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:23:39 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-317710edb9dso174764287b3.0
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 03:23:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cbnlfACHSMD2kFp2nkR9i85EQl5tAVPGzguGHV0sdHk=;
+        b=e2jXjAyJXC6mG92CBxrGO58oqtaV37I1fe1bSVpuNM4nnb9BHM2jyyXedb503XdFQH
+         QJdkVKBuiwGJUmiBJksvpW6BUFmf3dMzzgyz/A3eri5sXm0kOe7d8RNB+/CrPIQB+YB+
+         GWzeXAJ69dc1n39+VA0ypOSyXDjEfFGeemHj9sLtH1TfEzaBPmlkJHG1on5A0IhJdfRJ
+         Rlx2SYgl0eMegOeO5UPL+GRJGV3Yx4p9JlcI4jiMSgX7mV0eLszZLbwX4g7MTyvSCZww
+         Ac0dSlotFBBwqO8VeZDCa00cTJzo8ic8jmE/yrkETJixIG1BclYrvPKEeDDjrFs7NyZY
+         YhCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cbnlfACHSMD2kFp2nkR9i85EQl5tAVPGzguGHV0sdHk=;
+        b=h9TM3jiQ4EYo7ivJqSQrntRlLCHdaPwepzqJU/FYuoxN1Zxae9fORCeBF7MLoViZSb
+         cvYOz3ejQifWKnWnIV9rFJlqxb9masVNiY56cHhLbInYCLRiXKoZ7tLxPcY0w307SD7K
+         YKF4Fb9OrDYx2PUqg342/+lIj0YchbRgwDaecwecQUobjsdWnGlcFf6jyLN6BcAs8nKB
+         OzDmyNzxROvYwXIopJKj0FDRgQwaiC+W0cEGMp8Kduwp0glf94qWpFMwwKw/SQjuHh14
+         8+eU2IRnlPGSi1Yr3A5/hJvKOhID+RxGv9E0QxaeZLnrbSWAhusce7xB5SYNNW/Ir9aR
+         juag==
+X-Gm-Message-State: AJIora/SfznZLjbnkdu3gITxJy77zZI9+wwzzK5FwmOyont90f/ZTptX
+        mrI6dmfEfj5b22rPdNJp6i7EzlbKkF1Z8Z8nORLryA==
+X-Google-Smtp-Source: AGRyM1vCYKo3K9x+FRI+mTpzo7P34FXDjurwnb0nZ6G+rEltQim+oN+awgAZWEL3q5wp/n6GMgRh5F48RRkZOyi1vSI=
+X-Received: by 2002:a81:1809:0:b0:317:c014:f700 with SMTP id
+ 9-20020a811809000000b00317c014f700mr9808354ywy.255.1656584618094; Thu, 30 Jun
+ 2022 03:23:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
+In-Reply-To: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 30 Jun 2022 12:23:26 +0200
+Message-ID: <CANn89iLpW4zFf2ABADbMNERPFr=OrAXEMm6ZgCxYA5VpcDpYTw@mail.gmail.com>
+Subject: Re: [PATCH] net: hinic: avoid kernel hung in hinic_get_stats64()
+To:     Qiao Ma <mqaio@linux.alibaba.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, gustavoars@kernel.org,
+        cai.huoqing@linux.dev, Aviad Krawczyk <aviad.krawczyk@huawei.com>,
+        zhaochen6@huawei.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add support for phylink_mac_config dsa hook. It configures
-the mac for MII/RMII modes. The RGMII mode will be added in the future
-patches.
+On Wed, Jun 29, 2022 at 9:28 AM Qiao Ma <mqaio@linux.alibaba.com> wrote:
+>
+> When using hinic device as a bond slave device, and reading device stats of
+> master bond device, the kernel may hung.
+>
+> The kernel panic calltrace as follows:
+> Kernel panic - not syncing: softlockup: hung tasks
+> Call trace:
+>   native_queued_spin_lock_slowpath+0x1ec/0x31c
+>   dev_get_stats+0x60/0xcc
+>   dev_seq_printf_stats+0x40/0x120
+>   dev_seq_show+0x1c/0x40
+>   seq_read_iter+0x3c8/0x4dc
+>   seq_read+0xe0/0x130
+>   proc_reg_read+0xa8/0xe0
+>   vfs_read+0xb0/0x1d4
+>   ksys_read+0x70/0xfc
+>   __arm64_sys_read+0x20/0x30
+>   el0_svc_common+0x88/0x234
+>   do_el0_svc+0x2c/0x90
+>   el0_svc+0x1c/0x30
+>   el0_sync_handler+0xa8/0xb0
+>   el0_sync+0x148/0x180
+>
+> And the calltrace of task that actually caused kernel hungs as follows:
+>   __switch_to+124
+>   __schedule+548
+>   schedule+72
+>   schedule_timeout+348
+>   __down_common+188
+>   __down+24
+>   down+104
+>   hinic_get_stats64+44 [hinic]
+>   dev_get_stats+92
+>   bond_get_stats+172 [bonding]
+>   dev_get_stats+92
+>   dev_seq_printf_stats+60
+>   dev_seq_show+24
+>   seq_read_iter+964
+>   seq_read+220
+>   proc_reg_read+164
+>   vfs_read+172
+>   ksys_read+108
+>   __arm64_sys_read+28
+>   el0_svc_common+132
+>   do_el0_svc+40
+>   el0_svc+24
+>   el0_sync_handler+164
+>   el0_sync+324
+>
+> When getting device stats from bond, kernel will call bond_get_stats().
+> It first holds the spinlock bond->stats_lock, and then call
+> hinic_get_stats64() to collect hinic device's stats.
+> However, hinic_get_stats64() calls `down(&nic_dev->mgmt_lock)` to
+> protect its critical section, which may schedule current task out.
+> And if system is under high pressure, the task cannot be woken up
+> immediately, which eventually triggers kernel hung panic.
+>
+> Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
+> Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/huawei/hinic/hinic_dev.h  | 1 +
+>  drivers/net/ethernet/huawei/hinic/hinic_main.c | 7 +++----
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+> index fb3e89141a0d..1fb343d03fd5 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+> @@ -97,6 +97,7 @@ struct hinic_dev {
+>
+>         struct hinic_txq_stats          tx_stats;
+>         struct hinic_rxq_stats          rx_stats;
+> +       spinlock_t                      stats_lock;
+>
+>         u8                              rss_tmpl_idx;
+>         u8                              rss_hash_engine;
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+> index 56a89793f47d..32a3d700ad26 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+> @@ -125,11 +125,13 @@ static void update_nic_stats(struct hinic_dev *nic_dev)
+>  {
+>         int i, num_qps = hinic_hwdev_num_qps(nic_dev->hwdev);
+>
+> +       spin_lock(&nic_dev->stats_lock);
+>         for (i = 0; i < num_qps; i++)
+>                 update_rx_stats(nic_dev, &nic_dev->rxqs[i]);
+>
+>         for (i = 0; i < num_qps; i++)
+>                 update_tx_stats(nic_dev, &nic_dev->txqs[i]);
+> +       spin_unlock(&nic_dev->stats_lock);
+>  }
+>
+>  /**
+> @@ -859,13 +861,9 @@ static void hinic_get_stats64(struct net_device *netdev,
+>         nic_rx_stats = &nic_dev->rx_stats;
+>         nic_tx_stats = &nic_dev->tx_stats;
+>
+> -       down(&nic_dev->mgmt_lock);
+> -
+>         if (nic_dev->flags & HINIC_INTF_UP))
+>                 update_nic_stats(nic_dev);
+>
+> -       up(&nic_dev->mgmt_lock);
+> -
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_common.c   | 12 +++++++
- drivers/net/dsa/microchip/ksz_common.h   |  3 ++
- drivers/net/dsa/microchip/lan937x.h      |  3 ++
- drivers/net/dsa/microchip/lan937x_main.c | 46 ++++++++++++++++++++++++
- 4 files changed, 64 insertions(+)
+Note: The following is racy, because multiple threads can call
+hinic_get_stats64() at the same time.
+It needs a loop, see include/linux/u64_stats_sync.h for detail.
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 9972b2fabf27..28d7cb2ce98f 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -221,6 +221,7 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
- 	.mirror_add = ksz9477_port_mirror_add,
- 	.mirror_del = ksz9477_port_mirror_del,
- 	.get_caps = lan937x_phylink_get_caps,
-+	.phylink_mac_config = lan937x_phylink_mac_config,
- 	.phylink_mac_link_up = lan937x_phylink_mac_link_up,
- 	.fdb_dump = ksz9477_fdb_dump,
- 	.fdb_add = ksz9477_fdb_add,
-@@ -1341,6 +1342,16 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
- 	return dev->dev_ops->max_mtu(dev, port);
- }
- 
-+static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
-+				   unsigned int mode,
-+				   const struct phylink_link_state *state)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (dev->dev_ops->phylink_mac_config)
-+		dev->dev_ops->phylink_mac_config(dev, port, mode, state);
-+}
-+
- static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 				    unsigned int mode,
- 				    phy_interface_t interface,
-@@ -1428,6 +1439,7 @@ static const struct dsa_switch_ops ksz_switch_ops = {
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
- 	.phylink_get_caps	= ksz_phylink_get_caps,
-+	.phylink_mac_config	= ksz_phylink_mac_config,
- 	.phylink_mac_link_up	= ksz_phylink_mac_link_up,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
- 	.port_enable		= ksz_enable_port,
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index f449feab5499..d5dddb7ec045 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -271,6 +271,9 @@ struct ksz_dev_ops {
- 	int (*max_mtu)(struct ksz_device *dev, int port);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
-+	void (*phylink_mac_config)(struct ksz_device *dev, int port,
-+				   unsigned int mode,
-+				   const struct phylink_link_state *state);
- 	void (*phylink_mac_link_up)(struct ksz_device *dev, int port,
- 				    unsigned int mode,
- 				    phy_interface_t interface,
-diff --git a/drivers/net/dsa/microchip/lan937x.h b/drivers/net/dsa/microchip/lan937x.h
-index 145770aec963..72ba9cb2fbc6 100644
---- a/drivers/net/dsa/microchip/lan937x.h
-+++ b/drivers/net/dsa/microchip/lan937x.h
-@@ -21,4 +21,7 @@ void lan937x_phylink_mac_link_up(struct ksz_device *dev, int port,
- 				 unsigned int mode, phy_interface_t interface,
- 				 struct phy_device *phydev, int speed,
- 				 int duplex, bool tx_pause, bool rx_pause);
-+void lan937x_phylink_mac_config(struct ksz_device *dev, int port,
-+				unsigned int mode,
-+				const struct phylink_link_state *state);
- #endif
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 95700e0233de..1608cd6b41cd 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -320,6 +320,36 @@ static void lan937x_config_gbit(struct ksz_device *dev, bool gbit, u8 *data)
- 		*data |= PORT_MII_NOT_1GBIT;
- }
- 
-+void lan937x_mac_config(struct ksz_device *dev, int port,
-+			phy_interface_t interface)
-+{
-+	u8 data8;
-+
-+	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
-+
-+	/* clear MII selection & set it based on interface later */
-+	data8 &= ~PORT_MII_SEL_M;
-+
-+	/* configure MAC based on interface */
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_MII:
-+		lan937x_config_gbit(dev, false, &data8);
-+		data8 |= PORT_MII_SEL;
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		lan937x_config_gbit(dev, false, &data8);
-+		data8 |= PORT_RMII_SEL;
-+		break;
-+	default:
-+		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
-+			phy_modes(interface), port);
-+		return;
-+	}
-+
-+	/* Write the updated value */
-+	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
-+}
-+
- static void lan937x_config_interface(struct ksz_device *dev, int port,
- 				     int speed, int duplex,
- 				     bool tx_pause, bool rx_pause)
-@@ -391,6 +421,22 @@ void lan937x_phylink_mac_link_up(struct ksz_device *dev, int port,
- 				 tx_pause, rx_pause);
- }
- 
-+void lan937x_phylink_mac_config(struct ksz_device *dev, int port,
-+				unsigned int mode,
-+				const struct phylink_link_state *state)
-+{
-+	/* Internal PHYs */
-+	if (dev->info->internal_phy[port])
-+		return;
-+
-+	if (phylink_autoneg_inband(mode)) {
-+		dev_err(dev->dev, "In-band AN not supported!\n");
-+		return;
-+	}
-+
-+	lan937x_mac_config(dev, port, state->interface);
-+}
-+
- int lan937x_setup(struct dsa_switch *ds)
- {
- 	struct ksz_device *dev = ds->priv;
--- 
-2.36.1
+>         stats->rx_bytes   = nic_rx_stats->bytes;
+>         stats->rx_packets = nic_rx_stats->pkts;
+>         stats->rx_errors  = nic_rx_stats->errors;
 
+Same remark for nic_tx_stats->{bytes|pkts|errors}
+
+> @@ -1239,6 +1237,7 @@ static int nic_dev_init(struct pci_dev *pdev)
+>
+>         u64_stats_init(&tx_stats->syncp);
+>         u64_stats_init(&rx_stats->syncp);
+> +       spin_lock_init(&nic_dev->stats_lock);
+>
+>         nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
+>                                                   GFP_KERNEL);
+> --
+> 1.8.3.1
+>
