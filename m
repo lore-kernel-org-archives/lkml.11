@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3EC9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0718CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbiF3NwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
+        id S235582AbiF3NwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235520AbiF3Nv3 (ORCPT
+        with ESMTP id S235554AbiF3Nvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:51:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDCE42A16;
-        Thu, 30 Jun 2022 06:49:19 -0700 (PDT)
+        Thu, 30 Jun 2022 09:51:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B3F43AF5;
+        Thu, 30 Jun 2022 06:49:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3244661FD8;
-        Thu, 30 Jun 2022 13:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D8FC34115;
-        Thu, 30 Jun 2022 13:49:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6C8BB82AF7;
+        Thu, 30 Jun 2022 13:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02679C34115;
+        Thu, 30 Jun 2022 13:49:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596958;
-        bh=y9i6OcD3+jttfol87JifqvXY8ddQ2O+EJsT5yNM2FLE=;
+        s=korg; t=1656596961;
+        bh=SFPCNYMIa6duS07QbJTp6fZo5uJ7Nj5zQ/CfAM0yrGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJWrqn2FPe+X996vU8Mhju+PT3n1JCqSK/empU+RyhlW1dsxI0EqL2lcfObCIvvCT
-         gtXK26CU4FiTxoX6wYsR6p+NFPw9Lj/QaxgzBAYonoKgLcai4PeUZdU+2sZ2NITXpT
-         mgmjFTPI0I02f37e+uTLESWggSLBLPFmC6xHUkSc=
+        b=ci1PIaPCMovZNUoUAs25FRQL4jbpbt6j+WwriA3Ivy3BEvwRklozCorPPnY1N8n0l
+         PE76fTzWosyzzi/tKVmIeqJFEu+a2kJse+vF59eWFqPOwEYW2mUEkqIpPTtI9JCxTv
+         6GOVmLRsQLmQiLk4pdTBN1MvRZsEqQQqvnx5aSyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 13/35] iio: adc: vf610: fix conversion mode sysfs node name
-Date:   Thu, 30 Jun 2022 15:46:24 +0200
-Message-Id: <20220630133232.833185273@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Yang <xu.yang_2@nxp.com>
+Subject: [PATCH 4.14 14/35] usb: chipidea: udc: check request status before setting device address
+Date:   Thu, 30 Jun 2022 15:46:25 +0200
+Message-Id: <20220630133232.862400159@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -50,35 +47,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch@tkos.co.il>
+From: Xu Yang <xu.yang_2@nxp.com>
 
-[ Upstream commit f1a633b15cd5371a2a83f02c513984e51132dd68 ]
+commit b24346a240b36cfc4df194d145463874985aa29b upstream.
 
-The documentation missed the "in_" prefix for this IIO_SHARED_BY_DIR
-entry.
+The complete() function may be called even though request is not
+completed. In this case, it's necessary to check request status so
+as not to set device address wrongly.
 
-Fixes: bf04c1a367e3 ("iio: adc: vf610: implement configurable conversion modes")
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-Acked-by: Haibo Chen <haibo.chen@nxp.com>
-Link: https://lore.kernel.org/r/560dc93fafe5ef7e9a409885fd20b6beac3973d8.1653900626.git.baruch@tkos.co.il
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 10775eb17bee ("usb: chipidea: udc: update gadget states according to ch9")
+cc: <stable@vger.kernel.org>
+Signed-off-by: Xu Yang <xu.yang_2@nxp.com>
+Link: https://lore.kernel.org/r/20220623030242.41796-1-xu.yang_2@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/ABI/testing/sysfs-bus-iio-vf610 | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/chipidea/udc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
-index 308a6756d3bf..491ead804488 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
-@@ -1,4 +1,4 @@
--What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/in_conversion_mode
- KernelVersion:	4.2
- Contact:	linux-iio@vger.kernel.org
- Description:
--- 
-2.35.1
-
+--- a/drivers/usb/chipidea/udc.c
++++ b/drivers/usb/chipidea/udc.c
+@@ -923,6 +923,9 @@ isr_setup_status_complete(struct usb_ep
+ 	struct ci_hdrc *ci = req->context;
+ 	unsigned long flags;
+ 
++	if (req->status < 0)
++		return;
++
+ 	if (ci->setaddr) {
+ 		hw_usb_set_address(ci, ci->address);
+ 		ci->setaddr = false;
 
 
