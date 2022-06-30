@@ -2,177 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD93FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E903C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236592AbiF3OJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
+        id S236780AbiF3OJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236897AbiF3OHq (ORCPT
+        with ESMTP id S236916AbiF3OHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:07:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D522C48806;
-        Thu, 30 Jun 2022 06:54:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9273E61FDB;
-        Thu, 30 Jun 2022 13:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1EAC34115;
-        Thu, 30 Jun 2022 13:54:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597279;
-        bh=xiRTtprmP5An0sA7v5N9LMYPbpjDmy0F5HtTfS2RoTk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wRkJJp0EyG8+dafqt1Dcj21g7LGBPZOwFQDVXx/WZuWqT9c/iyX4mC0+qY7nLOVUd
-         sj44dNU8YhBBhO/knu83EJ3Ivt12jf5Aq61cTHkj8jjlb23BZmIBDtp5HuhuPQlW7e
-         wXNb/8/tw0iwooEw1u1F2KR3Gnixm/29XlJ4DSsQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>
-Subject: [PATCH 5.15 13/28] fs: add is_idmapped_mnt() helper
-Date:   Thu, 30 Jun 2022 15:47:09 +0200
-Message-Id: <20220630133233.318154508@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
-References: <20220630133232.926711493@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 30 Jun 2022 10:07:50 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CC44881C
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:54:51 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id o19so27327974ybg.2
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/jxJKSEEZPwLWnGCYB3czxKxexehqWgULIniyW8Vusc=;
+        b=IvnKLOrpM7ZzFd+3S8iyTwTWK3oLRfRUh4NLGrpOhLbWRKdhwgtFBt6JU+iG8Pc/zm
+         alrs9JLmKKnlyyyCCjPLI2s1Qez5UvZ8fKBTaNb4ot3oJCscPSpvtEmMSF6XA5xUIyn1
+         XDCmd4O2Ln6YywpMsY1n2wgyRrYnP302RTOxEOSePQumvKA5N5kBpHMj7l/i/6M1jCzv
+         hK6RPb1nKvedu1KEW8GAy7S8ZEgxGpeYJYItdOBXStnBxM4KpTLx92jQNNJTFZLqWX4+
+         TSgdrG68hLa0yM0oACKCsrB4JWih4ZX11wGRicxQV0sjE1dOd0exP15juh0alFOKeAkA
+         KcAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/jxJKSEEZPwLWnGCYB3czxKxexehqWgULIniyW8Vusc=;
+        b=1pOaLx0gy47QoRGxhfN9gwsD+uKdChUaVjJ5jD+0M4gzLBOukfWsTzfrrFGrprlLs0
+         b+MEUPUPHJz3tF/ugxWA9F5Z7cno2SbKZGsZ9XSDbebulTw+m4b6gPOf1rGOm5EtVuxD
+         s+1/GqWbId+N3pXH7f+3pIZyNlNza21XJDoaTxi4Rz+9+k7GcL6Nn1lZ23CgTRcsQ6f6
+         ObOafh+SQx2c/R4xYZHgWG4w9GQgsr3GxD6TnFMblmxwosTGJE5TNWoef82kvP2zA1oe
+         z7DRPv/3Qk0AOyrK9B8nRqIVZdLyGuxFqLI0Lk9s0RKTD8WA7IT0a57JwCca7T/ikffz
+         cXoA==
+X-Gm-Message-State: AJIora82vfzCDqofTfu9PXunLzhwN5GFELW9bATuRk++g2GbCJRlmLem
+        2YsApiGrbWgLeSfXxt4iYMbewO6P9hejBBtNMU9IN6d9KDOGQQ==
+X-Google-Smtp-Source: AGRyM1sByVtJbc7VM6TcfEj2dxzmGpvDdobwJarP6Z2wkcthbUNMrgRR0ecLlvEEmZfLSOYPP7FB29tiDrjwnAXlYxI=
+X-Received: by 2002:a25:6641:0:b0:669:b4ae:a15f with SMTP id
+ z1-20020a256641000000b00669b4aea15fmr9916992ybm.241.1656597290275; Thu, 30
+ Jun 2022 06:54:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220609071956.5183-1-quic_neeraju@quicinc.com> <Yqdxz9lZo5qedTG4@e120937-lin>
+In-Reply-To: <Yqdxz9lZo5qedTG4@e120937-lin>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 30 Jun 2022 15:54:38 +0200
+Message-ID: <CAKfTPtDNmYiSy=WsSiDvtQXvB_bpS0f-Z4FwB=rbpTC-PjRPJg@mail.gmail.com>
+Subject: Re: [RFC 0/3] SCMI Vhost and Virtio backend implementation
+To:     Cristian Marussi <cristian.marussi@arm.com>
+Cc:     Neeraj Upadhyay <quic_neeraju@quicinc.com>, mst@redhat.com,
+        jasowang@redhat.com, sudeep.holla@arm.com,
+        quic_sramana@quicinc.com, linux-arm-kernel@lists.infradead.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Souvik Chakravarty <Souvik.Chakravarty@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <christian.brauner@ubuntu.com>
+Hi Neeraj and Cristian,
 
-commit bb49e9e730c2906a958eee273a7819f401543d6c upstream.
+On Mon, 13 Jun 2022 at 19:20, Cristian Marussi <cristian.marussi@arm.com> wrote:
+>
+> +CC: Souvik
+>
+> On Thu, Jun 09, 2022 at 12:49:53PM +0530, Neeraj Upadhyay wrote:
+> > This RFC series, provides ARM System Control and Management Interface (SCMI)
+> > protocol backend implementation for Virtio transport. The purpose of this
+>
+> Hi Neeraj,
+>
+> Thanks for this work, I only glanced through the series at first to
+> grasp a general understanding of it (without goind into much details for
+> now) and I'd have a few questions/concerns that I'll noted down below.
+>
+> I focused mainly on the backend server aims/functionalities/issues ignoring
+> at first the vhost-scmi entry-point since the vost-scmi accelerator is just
+> a (more-or-less) standard means of configuring and grabbing SCMI traffic
+> from the VMs into the Host Kernel and so I found more interesting at first
+> to understand what we can do with such traffic at first.
+> (IOW the vhost-scmi layer is welcome but remain to see what to do with it...)
+>
+> > feature is to provide para-virtualized interfaces to guest VMs, to various
+> > hardware blocks like clocks, regulators. This allows the guest VMs to
+> > communicate their resource needs to the host, in the absence of direct
+> > access to those resources.
 
-Multiple places open-code the same check to determine whether a given
-mount is idmapped. Introduce a simple helper function that can be used
-instead. This allows us to get rid of the fragile open-coding. We will
-later change the check that is used to determine whether a given mount
-is idmapped. Introducing a helper allows us to do this in a single
-place instead of doing it for multiple places.
+IIUC, you want to leverage on the drivers already developed in the
+kernel for those resources instead of developing a dedicated SCMI
+server. The main concern is that this also provides full access to
+these resources from userspace without any control which is a concern
+also described by Cristian below. It would be good to describe how you
+want to manage resources availability and permission access.This is
+the main open point in your RFC so far
 
-Link: https://lore.kernel.org/r/20211123114227.3124056-2-brauner@kernel.org (v1)
-Link: https://lore.kernel.org/r/20211130121032.3753852-2-brauner@kernel.org (v2)
-Link: https://lore.kernel.org/r/20211203111707.3901969-2-brauner@kernel.org
-Cc: Seth Forshee <sforshee@digitalocean.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-CC: linux-fsdevel@vger.kernel.org
-Reviewed-by: Amir Goldstein <amir73il@gmail.com>
-Reviewed-by: Seth Forshee <sforshee@digitalocean.com>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/cachefiles/bind.c |    2 +-
- fs/ecryptfs/main.c   |    2 +-
- fs/namespace.c       |    2 +-
- fs/nfsd/export.c     |    2 +-
- fs/overlayfs/super.c |    2 +-
- fs/proc_namespace.c  |    2 +-
- include/linux/fs.h   |   14 ++++++++++++++
- 7 files changed, 20 insertions(+), 6 deletions(-)
-
---- a/fs/cachefiles/bind.c
-+++ b/fs/cachefiles/bind.c
-@@ -117,7 +117,7 @@ static int cachefiles_daemon_add_cache(s
- 	root = path.dentry;
- 
- 	ret = -EINVAL;
--	if (mnt_user_ns(path.mnt) != &init_user_ns) {
-+	if (is_idmapped_mnt(path.mnt)) {
- 		pr_warn("File cache on idmapped mounts not supported");
- 		goto error_unsupported;
- 	}
---- a/fs/ecryptfs/main.c
-+++ b/fs/ecryptfs/main.c
-@@ -537,7 +537,7 @@ static struct dentry *ecryptfs_mount(str
- 		goto out_free;
- 	}
- 
--	if (mnt_user_ns(path.mnt) != &init_user_ns) {
-+	if (is_idmapped_mnt(path.mnt)) {
- 		rc = -EINVAL;
- 		printk(KERN_ERR "Mounting on idmapped mounts currently disallowed\n");
- 		goto out_free;
---- a/fs/namespace.c
-+++ b/fs/namespace.c
-@@ -3936,7 +3936,7 @@ static int can_idmap_mount(const struct
- 	 * mapping. It makes things simpler and callers can just create
- 	 * another bind-mount they can idmap if they want to.
- 	 */
--	if (mnt_user_ns(m) != &init_user_ns)
-+	if (is_idmapped_mnt(m))
- 		return -EPERM;
- 
- 	/* The underlying filesystem doesn't support idmapped mounts yet. */
---- a/fs/nfsd/export.c
-+++ b/fs/nfsd/export.c
-@@ -427,7 +427,7 @@ static int check_export(struct path *pat
- 		return -EINVAL;
- 	}
- 
--	if (mnt_user_ns(path->mnt) != &init_user_ns) {
-+	if (is_idmapped_mnt(path->mnt)) {
- 		dprintk("exp_export: export of idmapped mounts not yet supported.\n");
- 		return -EINVAL;
- 	}
---- a/fs/overlayfs/super.c
-+++ b/fs/overlayfs/super.c
-@@ -873,7 +873,7 @@ static int ovl_mount_dir_noesc(const cha
- 		pr_err("filesystem on '%s' not supported\n", name);
- 		goto out_put;
- 	}
--	if (mnt_user_ns(path->mnt) != &init_user_ns) {
-+	if (is_idmapped_mnt(path->mnt)) {
- 		pr_err("idmapped layers are currently not supported\n");
- 		goto out_put;
- 	}
---- a/fs/proc_namespace.c
-+++ b/fs/proc_namespace.c
-@@ -80,7 +80,7 @@ static void show_mnt_opts(struct seq_fil
- 			seq_puts(m, fs_infop->str);
- 	}
- 
--	if (mnt_user_ns(mnt) != &init_user_ns)
-+	if (is_idmapped_mnt(mnt))
- 		seq_puts(m, ",idmapped");
- }
- 
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -2726,6 +2726,20 @@ static inline struct user_namespace *fil
- {
- 	return mnt_user_ns(file->f_path.mnt);
- }
-+
-+/**
-+ * is_idmapped_mnt - check whether a mount is mapped
-+ * @mnt: the mount to check
-+ *
-+ * If @mnt has an idmapping attached to it @mnt is mapped.
-+ *
-+ * Return: true if mount is mapped, false if not.
-+ */
-+static inline bool is_idmapped_mnt(const struct vfsmount *mnt)
-+{
-+	return mnt_user_ns(mnt) != &init_user_ns;
-+}
-+
- extern long vfs_truncate(const struct path *, loff_t);
- int do_truncate(struct user_namespace *, struct dentry *, loff_t start,
- 		unsigned int time_attrs, struct file *filp);
-
-
+>
+> In an SCMI stack the agents (like VMs) issue requests to an SCMI platform
+> backend that is in charge of policying and armonizing such requests
+> eventually denying some of these (possibly malicious) while allowing others
+> (possibly armonizing/merging such reqs); with your solution basically the
+> SCMI backend in Kernel marshals/conveys all of such SCMI requests to the
+> proper Linux Kernel subsystem that is usually in charge of it, using
+> dedicated protocol handlers that basically translates SCMI requests to
+> Linux APIs calls to the Host. (I may have oversimplified or missed
+> something...)
+>
+> At the price of a bit of overhead and code-duplication introduced by
+> this SCMI Backend you can indeed leverage the existing mechanisms for
+> resource accounting and sharing included in such Linux subsystems (like
+> Clock framework), and that's nice and useful, BUT how do you policy/filter
+> (possibly dinamically as VMs come and go) what these VMs can see and do
+> with these resources ?
+>
+> ... MORE importantly how do you protect the Host (or another VM) from
+> unacceptable (or possibly malicious) requests conveyed from one VM request
+> vqueue into the Linux subsystems (like clocks) ?
+>
+> I saw you have added a good deal of DT bindings for the backend
+> describing protocols, so you could just expose only some protocols via
+> the backend (if I get it right) but you cannot anyway selectively expose
+> only a subset of resources to the different agents, so, if you expose the
+> clock protocol, that will be visible by any VMs and an agent could potentially
+> kill the Host or mount some clock related attack acting on the right clock.
+> (I mean you cannot describe in the Host DT a number X of clocks to be
+> supported by the Host Linux Clock framework BUT then expose selectively to
+> the SCMI agents only a subset Y < X to shield the Host from misbehaviour...
+> ...at least not in a dynamic way avoiding to bake a fixed policy into
+> the backend...or maybe I'm missing how you can do that, in such a case
+> please explain...)
+>
+> Moreover, in a normal SCMI stack the server resides out of reach from the
+> OSPM agents since the server, wherever it sits, has the last word and can
+> deny and block unreasonable/malicious requests while armonizing others: this
+> means the typical SCMI platform fw is configured in such a way that clearly
+> defines a set of policies to be enforced between the access of the various
+> agents. (and it can reside in the trusted codebase given its 'reduced'
+> size...even though this policies are probably at the moment not so
+> dynamically modificable there either...)
+>
+> With your approach of a Linux Kernel based SCMI platform backend you are
+> certainly using all the good and well proven mechanisms offered by the
+> Kernel to share and co-ordinate access to such resources, which is good
+> (.. even though Linux is not so small in term of codebase to be used as
+> a TCB to tell the truth :D), BUT I don't see the same level of policying
+> or filtering applied anywhere in the proposed RFCs, especially to protect
+> the Host which at the end is supposed to use the same Linux subsystems and
+> possibly share some of those resources for its own needs.
+>
+> I saw the Base protocol basic implementation you provided to expose the
+> supported backend protocols to the VMs, it would be useful to see how
+> you plan to handle something like the Clock protocol you mention in the
+> example below. (if you have Clock protocol backend that as WIP already
+> would be interesting to see it...)
+>
+> Another issue/criticality that comes to my mind is how do you gather in
+> general basic resources states/descriptors from the existing Linux subsystems
+> (even leaving out any policying concerns): as an example, how do you gather
+> from the Host Clock framework the list of available clocks and their rates
+> descriptors that you're going expose to a specific VMs once this latter will
+> issue the related SCMI commands to get to know which SCMI Clock domain are
+> available ?
+> (...and I mean in a dynamic way not using a builtin per-platform baked set of
+>  resources known to be made available... I doubt that any sort of DT
+>  description would be accepted in this regards ...)
+>
+> >
+> > 1. Architecture overview
+> > ---------------------
+> >
+> > Below diagram shows the overall software architecture of SCMI communication
+> > between guest VM and the host software. In this diagram, guest is a linux
+> > VM; also, host uses KVM linux.
+> >
+> >          GUEST VM                   HOST
+> >  +--------------------+    +---------------------+    +--------------+
+> >  |   a. Device A      |    |   k. Device B       |    |      PLL     |
+> >  |  (Clock consumer)  |    |  (Clock consumer)   |    |              |
+> >  +--------------------+    +---------------------+    +--------------+
+> >           |                         |                         ^
+> >           v                         v                         |
+> >  +--------------------+    +---------------------+    +-----------------+
+> >  | b. Clock Framework |    | j. Clock Framework  | -->| l. Clock Driver |
+> >  +-- -----------------+    +---------------------+    +-----------------+
+> >           |                         ^
+> >           v                         |
+> >  +--------------------+    +------------------------+
+> >  |  c. SCMI Clock     |    | i. SCMI Virtio Backend |
+> >  +--------------------+    +------------------------+
+> >           |                         ^
+> >           v                         |
+> >  +--------------------+    +----------------------+
+> >  |  d. SCMI Virtio    |    |   h. SCMI Vhost      |<-----------+
+> >  +--------------------+    +----------------------+            |
+> >           |                         ^                          |
+> >           v                         |                          |
+> > +-------------------------------------------------+    +-----------------+
+> > |              e. Virtio Infra                    |    |    g. VMM       |
+> > +-------------------------------------------------+    +-----------------+
+> >           |                         ^                           ^
+> >           v                         |                           |
+> > +-------------------------------------------------+             |
+> > |                f. Hypervisor                    |-------------
+> > +-------------------------------------------------+
+> >
+>
+> Looking at the above schema and thinking out loud where any dynamic
+> policying against the resources can fit (..and trying desperately NOT to push
+> that into the Kernel too :P...) ... I think that XEN was trying something similar
+> (with a real backend SCMI platform FW at the end of the pipe though I think...) and
+> in their case the per-VMs resource allocation was performed using SCMI
+> BASE_SET_DEVICE_PERMISSIONS commands issued by the Hypervisor/VMM itself
+> I think or by a Dom0 elected as a trusted agent and so allowed to configure
+> such resource partitioning ...
+>
+> https://www.mail-archive.com/xen-devel@lists.xenproject.org/msg113868.html
+>
+> ...maybe a similar approach, with some sort of SCMI Trusted Agent living within
+> the VMM and in charge of directing such resources' partitioning between
+> VMs by issuing BASE_SET_DEVICE_PERMISSIONS towards the Kernel SCMI Virtio
+> Backend, could help keeping at least the policy bits related to the VMs out of
+> the kernel/DTs and possibly dynamically configurable following VMs lifecycle.
+>
+> Even though, in our case ALL the resource management by device ID would have to
+> happen in the Kernel SCMI backend at the end, given that is where the SCMI
+> platform resides indeed, BUT at least you could keep the effective policy out of
+> kernel space, doing something like:
+>
+> 1. VMM/TrustedAgent query Kernel_SCMI_Virtio_backend for available resources
+>
+> 2. VMM/TrustedAg decides resources allocation between VMs (and/or possibly the Host
+>    based on some configured policy)
+>
+> 3. VMM/TrustedAgent issues BASE_SET_DEVICE_PERMISSIONS/PROTOCOLS to the
+>    Kernel_SCMI_Virtio_backend
+>
+> 4. Kernel_SCMI_Virtio_backend enforces resource partioning and sharing
+>    when processing subsequent VMs SCMI requests coming via Vhost-SCMI
+>
+> ...where the TrustedAgent here could be (I guess) the VMM or the Host or
+> both with different level of privilege if you don't want the VMM to be able
+> to configure resources access for the whole Host.
+>
+> > a. Device A             This is the client kernel driver in guest VM,
+> >                         for ex. diplay driver, which uses standard
+> >                         clock framework APIs to vote for a clock.
+> >
+> > b. Clock Framework      Underlying kernel clock framework on
+> >                         guest.
+> >
+> > c. SCMI Clock           SCMI interface based clock driver.
+> >
+> > d. SCMI Virtio          Underlying SCMI framework, using Virtio as
+> >                         transport driver.
+> >
+> > e. Virtio Infra         Virtio drivers on guest VM. These drivers
+> >                         initiate virtqueue requests over Virtio
+> >                         transport (MMIO/PCI), and forwards response
+> >                         to SCMI Virtio registered callbacks.
+> >
+> > f. Hypervisor           Hosted Hypervisor (KVM for ex.), which traps
+> >                         and forwards requests on virtqueue ring
+> >                         buffers to the VMM.
+> >
+> > g. VMM                  Virtual Machine Monitor, running on host userspace,
+> >                         which manages the lifecycle of guest VMs, and forwards
+> >                         guest initiated virtqueue requests as IOCTLs to the
+> >                         Vhost driver on host.
+> >
+> > h. SCMI Vhost           In kernel driver, which handles SCMI virtqueue
+> >                         requests from guest VMs. This driver forwards the
+> >                         requests to SCMI Virtio backend driver, and returns
+> >                         the response from backend, over the virtqueue ring
+> >                         buffers.
+> >
+> > i. SCMI Virtio Backend  SCMI backend, which handles the incoming SCMI messages
+> >                         from SCMI Vhost driver, and forwards them to the
+> >                         backend protocols like clock and voltage protocols.
+> >                         The backend protocols uses the host apis for those
+> >                         resources like clock APIs provided by clock framework,
+> >                         to vote/request for the resource. The response from
+> >                         the host api is parceled into a SCMI response message,
+> >                         and is returned to the SCMI Vhost driver. The SCMI
+> >                         Vhost driver in turn, returns the reponse over the
+> >                         Virtqueue reponse buffers.
+> >
+>
+> Last but not least, this SCMI Virtio Backend layer in charge of
+> processing incoming SCMI packets, interfacing with the Linux subsystems
+> final backend and building SCMI replies from Linux will introduce a
+> certain level of code/funcs duplication given that this same SCMI basic
+> processing capabilities have been already baked in the SCMI stacks found in
+> SCP and in TF-A (.. and maybe a few other other proprietary backends)...
+>
+> ... but this is something maybe to be addressed in general in a
+> different context not something that can be addressed by this series.
+>
+> Sorry for the usual flood of words :P ... I'll have a more in deep
+> review of the series in the next days, for now I wanted just to share my
+> concerns and (maybe wrong) understanding and see what you or Sudeep and
+> Souvik think about.
+>
+> Thanks,
+> Cristian
+>
