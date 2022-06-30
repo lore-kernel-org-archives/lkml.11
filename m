@@ -2,102 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FC4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1740BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 11:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235063AbiF3Lap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 07:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        id S234765AbiF3LdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 07:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234976AbiF3Lac (ORCPT
+        with ESMTP id S233832AbiF3LdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 07:30:32 -0400
-Received: from relay2.uni-heidelberg.de (relay2.uni-heidelberg.de [129.206.119.212])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2566A51B28
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:30:30 -0700 (PDT)
-X-IPAS-Result: =?us-ascii?q?A2CyBQALiL1iffxkzoFagliDJYFXlBABAQEGjHKHH4ong?=
- =?us-ascii?q?gcBAQEBAQEBAQEJLxMEAQFAihEnNAkOAQIEAQEBAQMCAwEBAQEBAQMBAQYBA?=
- =?us-ascii?q?QEBAQcEFAEBIzwnhWgNhkMGJwsBRhBRVxmCeAIBAQKCZAEDMK1UMoEBhloBg?=
- =?us-ascii?q?T+BZYE9iVqFIIFAgRCBFTODNYQLgQaFbgSaPgoDCQQHBUYXEk4xIQJFCxwBC?=
- =?us-ascii?q?AYGBwEIAQUIKAQCAQEBBgUYFAEDAQETEgUTDAcoChICEgwKGwcHAwsFMg0CD?=
- =?us-ascii?q?gcBAQwPAQIPAwECEQEHAgkSCAYPKwgDAQEDAQcBAgIDIAsCAxYJBwgCAQIFA?=
- =?us-ascii?q?gIBAw8BCAocEhAUAgQNBB4JAggBAhkeLAcCAgQOAyMdCAsKAw4DBAMBEAIYB?=
- =?us-ascii?q?wIBFQEFAgQIBAEDBgMIFRkBDScEBwMSAg0BBgECBgEBBQUBAxgIAxQDBQECC?=
- =?us-ascii?q?AMWBwECIQUKJgkEDQMBIhsCAwMBBBsKAgECAgUWBQIBAQIDAgYVBgICPy8RH?=
- =?us-ascii?q?Q0IBAgECRIcIwECDAEEAQIHLwUELQIBAR4EBQEFDwIIAQEWAgYEAwICAwEBA?=
- =?us-ascii?q?gEWAhAIAggnFwcTMxkBBTcUDg8BAwYIGRwiBwkHBQYWAwwVJx4pBQcREhsPB?=
- =?us-ascii?q?A0NCjQgFiQBAQ4FAwESGREOBxQKUyYhFRAGASsWAwQBAwMCBhoBAgMiAhILC?=
- =?us-ascii?q?RUCBCYICQMWBi0FASIdGZwMAYENTpd7q2YHg1EQAYsQlSaFRZEdApIAlnOid?=
- =?us-ascii?q?IRPNYEsSYFMTSODOAlIGQ+XVIUeczsCBgsBAQMJjD2CSAEB?=
-IronPort-Data: A9a23:HLPP8qi1Z4U8BnuyiKDwgLPqX161+hAKZh0ujC45NGQN5FlHY01je
- htvCDyCb//eNjTxedkiPI7k8UlQsJbQmtFjTQBr+3hjFC5jpJueD7x1DG+pYnzIfpOfJK5EA
- 2fyTvGacajYm1eF/k/F3oDJ9CU6jefSLlbFILas1hpZHWeIcw98z0M58wIFqtQw24LhXVjV4
- YmaT/D3YTdJ5RYlagr41Ire8HuDjNyq0N/PlgVjDRzjlAa2e0g9VPrzF4noR5fLatE88tqBe
- gr25OrRElU1X/saIojNfr7TKiXmS1NJVOSEoiI+t6OK2nCuqsGuu0o2HKJ0VKtZt9mGt/Qv4
- dFJvKWSdT0gDIDrkqcvVAF+PAgraMWq+JefSZS+mcmazkmeKj3xxfQrDEw3MYAc8OttDidC+
- JT0KhhUNEHF3brohuvjEq82255LwMrDZevzvll7xjHdAO4+TIrrWLnX6ZlF2jZ1hs1PEfvab
- ccDZnxjYXwsZjUWZwhJUsNjzbjAan/XUjhnolWIvukL0mXf5i1L7onnLID3Q4nfLSlSth3E+
- D6cpjyR7gshHMOd0j2Z+1qjg+bOmWXwX4d6PLKi+/FpgHWXx2oOGBMRSF23qOW4jUj4XMhQQ
- 2QQ+ywzve0p6EWkT9/ydxm5u2Kf+BodXcdAVeE39mmlxPHP6AbfCWkYZjlcdNghs8xwTjsvv
- neNntX0FXlsvaeTRHa16LiZt3WxNDITIGtEYjULJTbp+PHmqYA31kuJU9BiVa64j9H4HTv92
- T/MoCVWa6gvYdAj8/uS+VTOuhCQnJH7Yyk/pTfQRkSKx1YsDGK6XLCA5V/e5PdGCY+WSFido
- XQJ8/RyCshTV/lhcwTQEI0w8KGVC+WtbGyA2AYwd3U132Tzqyb6FWxFyGwmfC9U3tA4lSjBT
- GK7Vel5xJJSMHauZ6JtbOpd4Ox0nPG6TbwJutj+Z9ZDZN1O39ud4D1jYESdxW+FraTBuaQ2O
- JPDKICxC3dfCalmwDeyTeoH3vkny0jSJF8/p7ilkHxLMpLHOhZ5rIvp1nPVMYjVC4vY+G3oH
- y53bZfi9vmmeLSWjtPr2YASN0sWCnMwGIr7rcdaHsbafFc4RTt+V6SKmOp+E2CAo0izvrmQl
- p1achEEoGcTeVWZeG1ml1g5MOKyA88hxZ7FFX1xZAfAN4cfjXaHt/tBK8FuJdHLBcRpwPprU
- vRNZsOBHPlVUTXb6nwbYIXiq5ZhHClHdirRVxdJlAMXIcU6LySXoYCMQ+ca3HNTZsZBnZdl/
- ufIO8KyacZrejmO++6PMarylAPp4iNH8A+wNmORSuRulIzX2NACA0TMYjUfeang9T2rKuOm6
- jur
-IronPort-HdrOrdr: A9a23:H2L/saFUJeQZFhsgpLqE0ceALOsnbusQ8zAXPidKOHtom62j5q
- STdZEgvnXJYVkqNU3I5urwXpVoLUmyyXcN2/hyAV7AZniChILLFuFfBOLZqlXd8kvFmNK1vp
- 0AT0ERMrHN5CBB/KXHCQCDYq8d/OU=
-X-IronPort-Anti-Spam-Filtered: true
-Received: from mail01.uni-heidelberg.de ([129.206.100.252])
-  by relay2.uni-heidelberg.de with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 30 Jun 2022 13:30:30 +0200
-Received: from localhost (dhcp567-177.laptop-wlc.uni-heidelberg.de [147.142.67.177])
-        (Authenticated sender: ln194)
-        by mail01.uni-heidelberg.de (Postfix) with ESMTPSA id D8565300084F1;
-        Thu, 30 Jun 2022 13:30:29 +0200 (CEST)
-From:   Felix Schlepper <f3sch.git@outlook.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        wjsota@gmail.com, Felix Schlepper <f3sch.git@outlook.com>
-Subject: [PATCH v2 6/6] Staging: rtl8192e: Added spaces around '+'
-Date:   Thu, 30 Jun 2022 13:30:19 +0200
-Message-Id: <9b673fce3e6200a9fc0d21ec5a493d59cfe12241.1656587827.git.f3sch.git@outlook.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1656587827.git.f3sch.git@outlook.com>
-References: <cover.1656587827.git.f3sch.git@outlook.com>
+        Thu, 30 Jun 2022 07:33:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A6E12087
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 04:33:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8505DB82A30
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 11:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F06C34115;
+        Thu, 30 Jun 2022 11:33:06 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YhIALwNu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656588784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=v+Re/J7CDomnNGKEEalv3NlzbBAIQfyC1PELROLBY8Y=;
+        b=YhIALwNur1qkYjJu/VWPDuUmqWt0LFVP+/bvH7k0RymOhM3VmKGTdJd1tTUb2ybw+4shEI
+        UChvYc0MAD8xeHVXYBqGiiQMMZoiDcFxniK7ECbdE9N8whZsx2N4rKlXx84GjgoFW1bK12
+        Iqoct9TuCnR8yngeNstWfnbmtU5sOYw=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0e0c30d7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 30 Jun 2022 11:33:04 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH] x86/setup: Allow passing RNG seeds via e820 setup table
+Date:   Thu, 30 Jun 2022 13:33:00 +0200
+Message-Id: <20220630113300.1892799-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This addresses two issues raised by checkpatch.pl:
+Currently the only way x86 can get an early boot RNG seed is via EFI,
+which is generally always used now for physical machines, but is very
+rarely used in VMs, especially VMs that are optimized for starting
+"instantaneously", such as Firecracker's MicroVM. Here, we really want
+the ability for the firmware to pass a random seed, similar to what OF
+platforms do with the "rng-seed" property. It also would be nice for
+bootloaders to be able to append seeds to the kernel before launching.
 
-     $ ./scripts/checkpatch.pl --terse -f drivers/staging/rtl8192e/rtllib_wx.c
-     CHECK: spaces preferred around that '+' (ctx:VxV)
+This patch accomplishes that by adding SETUP_RNG_SEED, similar to the
+other 7 SETUP_* entries that are parsed from the e820 setup table. I've
+verified that this works well with QEMU.
 
-Signed-off-by: Felix Schlepper <f3sch.git@outlook.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/staging/rtl8192e/rtllib_wx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/uapi/asm/bootparam.h | 1 +
+ arch/x86/kernel/setup.c               | 8 +++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_wx.c b/drivers/staging/rtl8192e/rtllib_wx.c
-index 778b6b7e0939..1bb94a1fe868 100644
---- a/drivers/staging/rtl8192e/rtllib_wx.c
-+++ b/drivers/staging/rtl8192e/rtllib_wx.c
-@@ -767,7 +767,7 @@ int rtllib_wx_set_gen_ie(struct rtllib_device *ieee, u8 *ie, size_t len)
- 	kfree(ieee->wps_ie);
- 	ieee->wps_ie = NULL;
- 	if (len) {
--		if (len != ie[1]+2)
-+		if (len != ie[1] + 2)
- 			return -EINVAL;
- 		buf = kmemdup(ie, len, GFP_KERNEL);
- 		if (!buf)
+diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
+index bea5cdcdf532..a60676b8d1d4 100644
+--- a/arch/x86/include/uapi/asm/bootparam.h
++++ b/arch/x86/include/uapi/asm/bootparam.h
+@@ -11,6 +11,7 @@
+ #define SETUP_APPLE_PROPERTIES		5
+ #define SETUP_JAILHOUSE			6
+ #define SETUP_CC_BLOB			7
++#define SETUP_RNG_SEED			8
+ 
+ #define SETUP_INDIRECT			(1<<31)
+ 
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index bd6c6fd373ae..4135fa17a90e 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -23,6 +23,7 @@
+ #include <linux/usb/xhci-dbgp.h>
+ #include <linux/static_call.h>
+ #include <linux/swiotlb.h>
++#include <linux/random.h>
+ 
+ #include <uapi/linux/mount.h>
+ 
+@@ -343,7 +344,8 @@ static void __init parse_setup_data(void)
+ 		data_len = data->len + sizeof(struct setup_data);
+ 		data_type = data->type;
+ 		pa_next = data->next;
+-		early_memunmap(data, sizeof(*data));
++		if (data_type != SETUP_RNG_SEED)
++			early_memunmap(data, sizeof(*data));
+ 
+ 		switch (data_type) {
+ 		case SETUP_E820_EXT:
+@@ -355,6 +357,10 @@ static void __init parse_setup_data(void)
+ 		case SETUP_EFI:
+ 			parse_efi_setup(pa_data, data_len);
+ 			break;
++		case SETUP_RNG_SEED:
++			add_bootloader_randomness(data + 1, data_len);
++			early_memunmap(data, sizeof(*data));
++			break;
+ 		default:
+ 			break;
+ 		}
 -- 
-2.36.1
+2.35.1
 
