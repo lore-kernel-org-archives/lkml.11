@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AC0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BEAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236842AbiF3OLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
+        id S236959AbiF3OLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236704AbiF3OKo (ORCPT
+        with ESMTP id S236878AbiF3OKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:10:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B157C19B;
-        Thu, 30 Jun 2022 06:55:43 -0700 (PDT)
+        Thu, 30 Jun 2022 10:10:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD08D36B7D;
+        Thu, 30 Jun 2022 06:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AFD7620E4;
-        Thu, 30 Jun 2022 13:55:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5B6C34115;
-        Thu, 30 Jun 2022 13:55:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E116B82AF4;
+        Thu, 30 Jun 2022 13:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F6CFC341CB;
+        Thu, 30 Jun 2022 13:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597342;
-        bh=DPSnfVmUkjxjOVgrKP/yyu45qCKH1BtQKQNHohlDJmo=;
+        s=korg; t=1656597344;
+        bh=HP2qV5LrHhp9bKrd7hSE3trP3eHldB16bon3al1pziA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PlazCD0tum4jgKRb7ngXMZw7cHlcT5kArH1CC71VgzJkc6EPatAmTCcl+7A72R3sW
-         MbQfBlgLzHTu2eKCSUNiDyLYrcJ0AiTzdMlRnosZGrQRHVSbYDJIJ8/87KSMBVsfje
-         wBzXHveYmd79sdCEChi3cPMm1K/PysIOHKfyNcKA=
+        b=pIQ9Ebky842iy+MyXwC38n0aRMpHRS1XKa+fwuXQ7SrLMkGgn+U1VnYNTQF4+h7xI
+         1pFc6rnJkl2BAOxrVdBUM3bIl7UElsWkWy7bwg8S5tmuvZtcJPJggYtnvnQRfKv+g8
+         QxwYmajyV/r21rzgK74kiZIHMuDerwGikbmSMc/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Christoph Hellwig <hch@lst.de>, regressions@lists.linux.dev,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 23/28] fs: fix acl translation
-Date:   Thu, 30 Jun 2022 15:47:19 +0200
-Message-Id: <20220630133233.613171266@linuxfoundation.org>
+        Christoph Hellwig <hch@lst.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>
+Subject: [PATCH 5.15 14/28] fs: move mapping helpers
+Date:   Thu, 30 Jun 2022 15:47:10 +0200
+Message-Id: <20220630133233.347526772@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
 References: <20220630133232.926711493@linuxfoundation.org>
@@ -50,124 +52,319 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+From: Christian Brauner <christian.brauner@ubuntu.com>
 
-commit 705191b03d507744c7e097f78d583621c14988ac upstream.
+commit a793d79ea3e041081cd7cbd8ee43d0b5e4914a2b upstream.
 
-Last cycle we extended the idmapped mounts infrastructure to support
-idmapped mounts of idmapped filesystems (No such filesystem yet exist.).
-Since then, the meaning of an idmapped mount is a mount whose idmapping
-is different from the filesystems idmapping.
+The low-level mapping helpers were so far crammed into fs.h. They are
+out of place there. The fs.h header should just contain the higher-level
+mapping helpers that interact directly with vfs objects such as struct
+super_block or struct inode and not the bare mapping helpers. Similarly,
+only vfs and specific fs code shall interact with low-level mapping
+helpers. And so they won't be made accessible automatically through
+regular {g,u}id helpers.
 
-While doing that work we missed to adapt the acl translation helpers.
-They still assume that checking for the identity mapping is enough.  But
-they need to use the no_idmapping() helper instead.
-
-Note, POSIX ACLs are always translated right at the userspace-kernel
-boundary using the caller's current idmapping and the initial idmapping.
-The order depends on whether we're coming from or going to userspace.
-The filesystem's idmapping doesn't matter at the border.
-
-Consequently, if a non-idmapped mount is passed we need to make sure to
-always pass the initial idmapping as the mount's idmapping and not the
-filesystem idmapping.  Since it's irrelevant here it would yield invalid
-ids and prevent setting acls for filesystems that are mountable in a
-userns and support posix acls (tmpfs and fuse).
-
-I verified the regression reported in [1] and verified that this patch
-fixes it.  A regression test will be added to xfstests in parallel.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215849 [1]
-Fixes: bd303368b776 ("fs: support mapped mounts of mapped filesystems")
+Link: https://lore.kernel.org/r/20211123114227.3124056-3-brauner@kernel.org (v1)
+Link: https://lore.kernel.org/r/20211130121032.3753852-3-brauner@kernel.org (v2)
+Link: https://lore.kernel.org/r/20211203111707.3901969-3-brauner@kernel.org
 Cc: Seth Forshee <sforshee@digitalocean.com>
 Cc: Christoph Hellwig <hch@lst.de>
-Cc: <stable@vger.kernel.org> # 5.15+
-Cc: <regressions@lists.linux.dev>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+CC: linux-fsdevel@vger.kernel.org
+Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Seth Forshee <sforshee@digitalocean.com>
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/posix_acl.c                  |   10 ++++++++++
- fs/xattr.c                      |    6 ++++--
- include/linux/posix_acl_xattr.h |    4 ++++
- 3 files changed, 18 insertions(+), 2 deletions(-)
+ fs/ksmbd/smbacl.c             |    1 
+ fs/ksmbd/smbacl.h             |    1 
+ fs/open.c                     |    1 
+ fs/posix_acl.c                |    1 
+ fs/xfs/xfs_linux.h            |    1 
+ include/linux/fs.h            |   91 -------------------------------------
+ include/linux/mnt_idmapping.h |  101 ++++++++++++++++++++++++++++++++++++++++++
+ security/commoncap.c          |    1 
+ 8 files changed, 108 insertions(+), 90 deletions(-)
+ create mode 100644 include/linux/mnt_idmapping.h
 
+--- a/fs/ksmbd/smbacl.c
++++ b/fs/ksmbd/smbacl.c
+@@ -9,6 +9,7 @@
+ #include <linux/fs.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include <linux/mnt_idmapping.h>
+ 
+ #include "smbacl.h"
+ #include "smb_common.h"
+--- a/fs/ksmbd/smbacl.h
++++ b/fs/ksmbd/smbacl.h
+@@ -11,6 +11,7 @@
+ #include <linux/fs.h>
+ #include <linux/namei.h>
+ #include <linux/posix_acl.h>
++#include <linux/mnt_idmapping.h>
+ 
+ #include "mgmt/tree_connect.h"
+ 
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -32,6 +32,7 @@
+ #include <linux/ima.h>
+ #include <linux/dnotify.h>
+ #include <linux/compat.h>
++#include <linux/mnt_idmapping.h>
+ 
+ #include "internal.h"
+ 
 --- a/fs/posix_acl.c
 +++ b/fs/posix_acl.c
-@@ -760,9 +760,14 @@ static void posix_acl_fix_xattr_userns(
+@@ -23,6 +23,7 @@
+ #include <linux/export.h>
+ #include <linux/user_namespace.h>
+ #include <linux/namei.h>
++#include <linux/mnt_idmapping.h>
+ 
+ static struct posix_acl **acl_by_type(struct inode *inode, int type)
+ {
+--- a/fs/xfs/xfs_linux.h
++++ b/fs/xfs/xfs_linux.h
+@@ -61,6 +61,7 @@ typedef __u32			xfs_nlink_t;
+ #include <linux/ratelimit.h>
+ #include <linux/rhashtable.h>
+ #include <linux/xattr.h>
++#include <linux/mnt_idmapping.h>
+ 
+ #include <asm/page.h>
+ #include <asm/div64.h>
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -41,6 +41,7 @@
+ #include <linux/stddef.h>
+ #include <linux/mount.h>
+ #include <linux/cred.h>
++#include <linux/mnt_idmapping.h>
+ 
+ #include <asm/byteorder.h>
+ #include <uapi/linux/fs.h>
+@@ -1627,34 +1628,6 @@ static inline void i_gid_write(struct in
  }
  
- void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
-+				   struct inode *inode,
- 				   void *value, size_t size)
- {
- 	struct user_namespace *user_ns = current_user_ns();
+ /**
+- * kuid_into_mnt - map a kuid down into a mnt_userns
+- * @mnt_userns: user namespace of the relevant mount
+- * @kuid: kuid to be mapped
+- *
+- * Return: @kuid mapped according to @mnt_userns.
+- * If @kuid has no mapping INVALID_UID is returned.
+- */
+-static inline kuid_t kuid_into_mnt(struct user_namespace *mnt_userns,
+-				   kuid_t kuid)
+-{
+-	return make_kuid(mnt_userns, __kuid_val(kuid));
+-}
+-
+-/**
+- * kgid_into_mnt - map a kgid down into a mnt_userns
+- * @mnt_userns: user namespace of the relevant mount
+- * @kgid: kgid to be mapped
+- *
+- * Return: @kgid mapped according to @mnt_userns.
+- * If @kgid has no mapping INVALID_GID is returned.
+- */
+-static inline kgid_t kgid_into_mnt(struct user_namespace *mnt_userns,
+-				   kgid_t kgid)
+-{
+-	return make_kgid(mnt_userns, __kgid_val(kgid));
+-}
+-
+-/**
+  * i_uid_into_mnt - map an inode's i_uid down into a mnt_userns
+  * @mnt_userns: user namespace of the mount the inode was found from
+  * @inode: inode to map
+@@ -1683,68 +1656,6 @@ static inline kgid_t i_gid_into_mnt(stru
+ }
+ 
+ /**
+- * kuid_from_mnt - map a kuid up into a mnt_userns
+- * @mnt_userns: user namespace of the relevant mount
+- * @kuid: kuid to be mapped
+- *
+- * Return: @kuid mapped up according to @mnt_userns.
+- * If @kuid has no mapping INVALID_UID is returned.
+- */
+-static inline kuid_t kuid_from_mnt(struct user_namespace *mnt_userns,
+-				   kuid_t kuid)
+-{
+-	return KUIDT_INIT(from_kuid(mnt_userns, kuid));
+-}
+-
+-/**
+- * kgid_from_mnt - map a kgid up into a mnt_userns
+- * @mnt_userns: user namespace of the relevant mount
+- * @kgid: kgid to be mapped
+- *
+- * Return: @kgid mapped up according to @mnt_userns.
+- * If @kgid has no mapping INVALID_GID is returned.
+- */
+-static inline kgid_t kgid_from_mnt(struct user_namespace *mnt_userns,
+-				   kgid_t kgid)
+-{
+-	return KGIDT_INIT(from_kgid(mnt_userns, kgid));
+-}
+-
+-/**
+- * mapped_fsuid - return caller's fsuid mapped up into a mnt_userns
+- * @mnt_userns: user namespace of the relevant mount
+- *
+- * Use this helper to initialize a new vfs or filesystem object based on
+- * the caller's fsuid. A common example is initializing the i_uid field of
+- * a newly allocated inode triggered by a creation event such as mkdir or
+- * O_CREAT. Other examples include the allocation of quotas for a specific
+- * user.
+- *
+- * Return: the caller's current fsuid mapped up according to @mnt_userns.
+- */
+-static inline kuid_t mapped_fsuid(struct user_namespace *mnt_userns)
+-{
+-	return kuid_from_mnt(mnt_userns, current_fsuid());
+-}
+-
+-/**
+- * mapped_fsgid - return caller's fsgid mapped up into a mnt_userns
+- * @mnt_userns: user namespace of the relevant mount
+- *
+- * Use this helper to initialize a new vfs or filesystem object based on
+- * the caller's fsgid. A common example is initializing the i_gid field of
+- * a newly allocated inode triggered by a creation event such as mkdir or
+- * O_CREAT. Other examples include the allocation of quotas for a specific
+- * user.
+- *
+- * Return: the caller's current fsgid mapped up according to @mnt_userns.
+- */
+-static inline kgid_t mapped_fsgid(struct user_namespace *mnt_userns)
+-{
+-	return kgid_from_mnt(mnt_userns, current_fsgid());
+-}
+-
+-/**
+  * inode_fsuid_set - initialize inode's i_uid field with callers fsuid
+  * @inode: inode to initialize
+  * @mnt_userns: user namespace of the mount the inode was found from
+--- /dev/null
++++ b/include/linux/mnt_idmapping.h
+@@ -0,0 +1,101 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_MNT_IDMAPPING_H
++#define _LINUX_MNT_IDMAPPING_H
 +
-+	/* Leave ids untouched on non-idmapped mounts. */
-+	if (no_idmapping(mnt_userns, i_user_ns(inode)))
-+		mnt_userns = &init_user_ns;
- 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
- 		return;
- 	posix_acl_fix_xattr_userns(&init_user_ns, user_ns, mnt_userns, value,
-@@ -770,9 +775,14 @@ void posix_acl_fix_xattr_from_user(struc
- }
- 
- void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
-+				 struct inode *inode,
- 				 void *value, size_t size)
- {
- 	struct user_namespace *user_ns = current_user_ns();
++#include <linux/types.h>
++#include <linux/uidgid.h>
 +
-+	/* Leave ids untouched on non-idmapped mounts. */
-+	if (no_idmapping(mnt_userns, i_user_ns(inode)))
-+		mnt_userns = &init_user_ns;
- 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
- 		return;
- 	posix_acl_fix_xattr_userns(user_ns, &init_user_ns, mnt_userns, value,
---- a/fs/xattr.c
-+++ b/fs/xattr.c
-@@ -569,7 +569,8 @@ setxattr(struct user_namespace *mnt_user
- 		}
- 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
- 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
--			posix_acl_fix_xattr_from_user(mnt_userns, kvalue, size);
-+			posix_acl_fix_xattr_from_user(mnt_userns, d_inode(d),
-+						      kvalue, size);
- 	}
++struct user_namespace;
++extern struct user_namespace init_user_ns;
++
++/**
++ * kuid_into_mnt - map a kuid down into a mnt_userns
++ * @mnt_userns: user namespace of the relevant mount
++ * @kuid: kuid to be mapped
++ *
++ * Return: @kuid mapped according to @mnt_userns.
++ * If @kuid has no mapping INVALID_UID is returned.
++ */
++static inline kuid_t kuid_into_mnt(struct user_namespace *mnt_userns,
++				   kuid_t kuid)
++{
++	return make_kuid(mnt_userns, __kuid_val(kuid));
++}
++
++/**
++ * kgid_into_mnt - map a kgid down into a mnt_userns
++ * @mnt_userns: user namespace of the relevant mount
++ * @kgid: kgid to be mapped
++ *
++ * Return: @kgid mapped according to @mnt_userns.
++ * If @kgid has no mapping INVALID_GID is returned.
++ */
++static inline kgid_t kgid_into_mnt(struct user_namespace *mnt_userns,
++				   kgid_t kgid)
++{
++	return make_kgid(mnt_userns, __kgid_val(kgid));
++}
++
++/**
++ * kuid_from_mnt - map a kuid up into a mnt_userns
++ * @mnt_userns: user namespace of the relevant mount
++ * @kuid: kuid to be mapped
++ *
++ * Return: @kuid mapped up according to @mnt_userns.
++ * If @kuid has no mapping INVALID_UID is returned.
++ */
++static inline kuid_t kuid_from_mnt(struct user_namespace *mnt_userns,
++				   kuid_t kuid)
++{
++	return KUIDT_INIT(from_kuid(mnt_userns, kuid));
++}
++
++/**
++ * kgid_from_mnt - map a kgid up into a mnt_userns
++ * @mnt_userns: user namespace of the relevant mount
++ * @kgid: kgid to be mapped
++ *
++ * Return: @kgid mapped up according to @mnt_userns.
++ * If @kgid has no mapping INVALID_GID is returned.
++ */
++static inline kgid_t kgid_from_mnt(struct user_namespace *mnt_userns,
++				   kgid_t kgid)
++{
++	return KGIDT_INIT(from_kgid(mnt_userns, kgid));
++}
++
++/**
++ * mapped_fsuid - return caller's fsuid mapped up into a mnt_userns
++ * @mnt_userns: user namespace of the relevant mount
++ *
++ * Use this helper to initialize a new vfs or filesystem object based on
++ * the caller's fsuid. A common example is initializing the i_uid field of
++ * a newly allocated inode triggered by a creation event such as mkdir or
++ * O_CREAT. Other examples include the allocation of quotas for a specific
++ * user.
++ *
++ * Return: the caller's current fsuid mapped up according to @mnt_userns.
++ */
++static inline kuid_t mapped_fsuid(struct user_namespace *mnt_userns)
++{
++	return kuid_from_mnt(mnt_userns, current_fsuid());
++}
++
++/**
++ * mapped_fsgid - return caller's fsgid mapped up into a mnt_userns
++ * @mnt_userns: user namespace of the relevant mount
++ *
++ * Use this helper to initialize a new vfs or filesystem object based on
++ * the caller's fsgid. A common example is initializing the i_gid field of
++ * a newly allocated inode triggered by a creation event such as mkdir or
++ * O_CREAT. Other examples include the allocation of quotas for a specific
++ * user.
++ *
++ * Return: the caller's current fsgid mapped up according to @mnt_userns.
++ */
++static inline kgid_t mapped_fsgid(struct user_namespace *mnt_userns)
++{
++	return kgid_from_mnt(mnt_userns, current_fsgid());
++}
++
++#endif /* _LINUX_MNT_IDMAPPING_H */
+--- a/security/commoncap.c
++++ b/security/commoncap.c
+@@ -24,6 +24,7 @@
+ #include <linux/user_namespace.h>
+ #include <linux/binfmts.h>
+ #include <linux/personality.h>
++#include <linux/mnt_idmapping.h>
  
- 	error = vfs_setxattr(mnt_userns, d, kname, kvalue, size, flags);
-@@ -667,7 +668,8 @@ getxattr(struct user_namespace *mnt_user
- 	if (error > 0) {
- 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
- 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
--			posix_acl_fix_xattr_to_user(mnt_userns, kvalue, error);
-+			posix_acl_fix_xattr_to_user(mnt_userns, d_inode(d),
-+						    kvalue, error);
- 		if (size && copy_to_user(value, kvalue, error))
- 			error = -EFAULT;
- 	} else if (error == -ERANGE && size >= XATTR_SIZE_MAX) {
---- a/include/linux/posix_acl_xattr.h
-+++ b/include/linux/posix_acl_xattr.h
-@@ -34,15 +34,19 @@ posix_acl_xattr_count(size_t size)
- 
- #ifdef CONFIG_FS_POSIX_ACL
- void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
-+				   struct inode *inode,
- 				   void *value, size_t size);
- void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
-+				   struct inode *inode,
- 				 void *value, size_t size);
- #else
- static inline void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
-+						 struct inode *inode,
- 						 void *value, size_t size)
- {
- }
- static inline void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
-+					       struct inode *inode,
- 					       void *value, size_t size)
- {
- }
+ /*
+  * If a non-root user executes a setuid-root binary in
 
 
