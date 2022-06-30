@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A19C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234518AbiGAItq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57876 "EHLO
+        id S234921AbiGAItt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236416AbiGAItN (ORCPT
+        with ESMTP id S236329AbiGAItN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Jul 2022 04:49:13 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85391262B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5EC120BB;
         Fri,  1 Jul 2022 01:48:59 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 15:10:32 -0000
+Date:   Thu, 30 Jun 2022 15:10:34 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1656665337;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
@@ -23,12 +23,12 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZcFvGeiS6wY4PWTdQBRFYqnlvmdaRSGng4TPww04LoI=;
-        b=3aiv62k1D5hncQtlQVKKm7I8hTST2o8Tqj3+FZBY3zRkvSF4HqD0IaDTWEjssQsL1y5Xtf
-        +VrbfwyoFR9DbdLt5Oig4SimpeTUMKlRADXPxft13PTpdvnWMbZujevogjh0rOYrXhhq4P
-        DPZh3ZX1RmQdiLOyXaZSSPDVk9Pq+beXwqJoCnUejw5uugurS98jgfxwLwbi55snR3MsAv
-        Ud5t6Bgbtwo1Uf9U+rJnKO8iC4/OJIrKUNO73zPahguRUbqwK8A5H93hGo/UG/ixm56/Cb
-        SN4Iwpzc+1zJkB+/Q37DMkLJw4dKMRdX4LvwylS/2n9n5FottzF8p1Ahjc44yQ==
+        bh=txenhuAm1wdt22ieIO4TxKPIWhHKwWofbdvU0fYyNkQ=;
+        b=UwXmHGTQvfXhC9Wf5wvQK5WYD7Z226mnG9Zo8ooNVLOd4FtV3s8h3unEJg7OHRTATjnNvy
+        kt8NwD/Om5ZaPRqw3gCpLFCS66rHd+axfTykb+zOeEyZWwXWG7Y4i4Tsn/Jfz9rtqaIftr
+        ZBF1a/arJwoeE+dW6tXhKA2B8ESbuOgVjY6Xhgc6jFWy8+vDsFrZZoJGH/BKCbOhJE4dRV
+        W4X8TfsXQKePwwwfnsV0s8gzLESUHQwq4qSWeTOhb0DHU4fQi5qgTyHcPtYMV+vXQAD5v2
+        JkHSIm6Sh/EpQCo3wJY1YRKuKLz9YIjPLuTz5dlQeplr/Tg4icKcFaQ1Vd96FQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1656665337;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
@@ -36,24 +36,24 @@ DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZcFvGeiS6wY4PWTdQBRFYqnlvmdaRSGng4TPww04LoI=;
-        b=XCRKeifCmBoa2q8RlRXYSEhQSVeKpqIUJ3jp50Yw2j4o7yzmNmp4VXqSumf5AKiWUC0Ryv
-        SQaObV9/u6nEzZBg==
-From:   "tip-bot2 for Vincent Donnefort" <tip-bot2@linutronix.de>
+        bh=txenhuAm1wdt22ieIO4TxKPIWhHKwWofbdvU0fYyNkQ=;
+        b=JKRmT6QttBQXeVoP0OGEqWy/mZ6Zz9aOKgSKHF46X2AAUTqqCQY3JRMqbCfv2wpvbEmCiO
+        bC/gNR8gOA+3L0Ag==
+From:   "tip-bot2 for Dietmar Eggemann" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Remove the energy margin in feec()
-Cc:     Vincent Donnefort <vincent.donnefort@arm.com>,
-        Vincent Donnefort <vdonnefort@google.com>,
+Subject: [tip: sched/core] sched/fair: Use the same cpumask per-PD throughout
+ find_energy_efficient_cpu()
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
         Lukasz Luba <lukasz.luba@arm.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220621090414.433602-8-vdonnefort@google.com>
-References: <20220621090414.433602-8-vdonnefort@google.com>
+In-Reply-To: <20220621090414.433602-6-vdonnefort@google.com>
+References: <20220621090414.433602-6-vdonnefort@google.com>
 MIME-Version: 1.0
-Message-ID: <165660183266.15455.13843699448813066343.tip-bot2@tip-bot2>
+Message-ID: <165660183471.15455.10860273694768857101.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -64,150 +64,122 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     b812fc9768e0048582c8e18d7b66559c1758dde1
-Gitweb:        https://git.kernel.org/tip/b812fc9768e0048582c8e18d7b66559c1758dde1
-Author:        Vincent Donnefort <vincent.donnefort@arm.com>
-AuthorDate:    Tue, 21 Jun 2022 10:04:14 +01:00
+Commit-ID:     9b340131a4bcf6d0a282a2bdcd8ca268a74da709
+Gitweb:        https://git.kernel.org/tip/9b340131a4bcf6d0a282a2bdcd8ca268a74da709
+Author:        Dietmar Eggemann <dietmar.eggemann@arm.com>
+AuthorDate:    Tue, 21 Jun 2022 10:04:12 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 28 Jun 2022 09:17:48 +02:00
+CommitterDate: Tue, 28 Jun 2022 09:17:47 +02:00
 
-sched/fair: Remove the energy margin in feec()
+sched/fair: Use the same cpumask per-PD throughout find_energy_efficient_cpu()
 
-find_energy_efficient_cpu() integrates a margin to protect tasks from
-bouncing back and forth from a CPU to another. This margin is set as being
-6% of the total current energy estimated on the system. This however does
-not work for two reasons:
+The Perf Domain (PD) cpumask (struct em_perf_domain.cpus) stays
+invariant after Energy Model creation, i.e. it is not updated after
+CPU hotplug operations.
 
-1. The energy estimation is not a good absolute value:
+That's why the PD mask is used in conjunction with the cpu_online_mask
+(or Sched Domain cpumask). Thereby the cpu_online_mask is fetched
+multiple times (in compute_energy()) during a run-queue selection
+for a task.
 
-compute_energy() used in feec() is a good estimation for task placement as
-it allows to compare the energy with and without a task. The computed
-delta will give a good overview of the cost for a certain task placement.
-It, however, doesn't work as an absolute estimation for the total energy
-of the system. First it adds the contribution to idle CPUs into the
-energy, second it mixes util_avg with util_est values. util_avg contains
-the near history for a CPU usage, it doesn't tell at all what the current
-utilization is. A system that has been quite busy in the near past will
-hold a very high energy and then a high margin preventing any task
-migration to a lower capacity CPU, wasting energy. It even creates a
-negative feedback loop: by holding the tasks on a less efficient CPU, the
-margin contributes in keeping the energy high.
+cpu_online_mask may change during this time which can lead to wrong
+energy calculations.
 
-2. The margin handicaps small tasks:
+To be able to avoid this, use the select_rq_mask per-cpu cpumask to
+create a cpumask out of PD cpumask and cpu_online_mask and pass it
+through the function calls of the EAS run-queue selection path.
 
-On a system where the workload is composed mostly of small tasks (which is
-often the case on Android), the overall energy will be high enough to
-create a margin none of those tasks can cross. On a Pixel4, a small
-utilization of 5% on all the CPUs creates a global estimated energy of 140
-joules, as per the Energy Model declaration of that same device. This
-means, after applying the 6% margin that any migration must save more than
-8 joules to happen. No task with a utilization lower than 40 would then be
-able to migrate away from the biggest CPU of the system.
+The PD cpumask for max_spare_cap_cpu/compute_prev_delta selection
+(find_energy_efficient_cpu()) is now ANDed not only with the SD mask
+but also with the cpu_online_mask. This is fine since this cpumask
+has to be in syc with the one used for energy computation
+(compute_energy()).
+An exclusive cpuset setup with at least one asymmetric CPU capacity
+island (hence the additional AND with the SD cpumask) is the obvious
+exception here.
 
-The 6% of the overall system energy was brought by the following patch:
-
- (eb92692b2544 sched/fair: Speed-up energy-aware wake-ups)
-
-It was previously 6% of the prev_cpu energy. Also, the following one
-made this margin value conditional on the clusters where the task fits:
-
- (8d4c97c105ca sched/fair: Only compute base_energy_pd if necessary)
-
-We could simply revert that margin change to what it was, but the original
-version didn't have strong grounds neither and as demonstrated in (1.) the
-estimated energy isn't a good absolute value. Instead, removing it
-completely. It is indeed, made possible by recent changes that improved
-energy estimation comparison fairness (sched/fair: Remove task_util from
-effective utilization in feec()) (PM: EM: Increase energy calculation
-precision) and task utilization stabilization (sched/fair: Decay task
-util_avg during migration)
-
-Without a margin, we could have feared bouncing between CPUs. But running
-LISA's eas_behaviour test coverage on three different platforms (Hikey960,
-RB-5 and DB-845) showed no issue.
-
-Removing the energy margin enables more energy-optimized placements for a
-more energy efficient system.
-
-Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
+Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
 Tested-by: Lukasz Luba <lukasz.luba@arm.com>
-Link: https://lkml.kernel.org/r/20220621090414.433602-8-vdonnefort@google.com
+Link: https://lkml.kernel.org/r/20220621090414.433602-6-vdonnefort@google.com
 ---
- kernel/sched/fair.c | 23 ++++++++---------------
- 1 file changed, 8 insertions(+), 15 deletions(-)
+ kernel/sched/fair.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 0ef7e0a..a78d2e3 100644
+index e3f7501..46d6692 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6868,9 +6868,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+@@ -6709,14 +6709,14 @@ static unsigned long cpu_util_without(int cpu, struct task_struct *p)
+  * task.
+  */
+ static long
+-compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
++compute_energy(struct task_struct *p, int dst_cpu, struct cpumask *cpus,
++	       struct perf_domain *pd)
  {
- 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
+-	struct cpumask *pd_mask = perf_domain_span(pd);
+ 	unsigned long max_util = 0, sum_util = 0, cpu_cap;
+ 	int cpu;
+ 
+-	cpu_cap = arch_scale_cpu_capacity(cpumask_first(pd_mask));
+-	cpu_cap -= arch_scale_thermal_pressure(cpumask_first(pd_mask));
++	cpu_cap = arch_scale_cpu_capacity(cpumask_first(cpus));
++	cpu_cap -= arch_scale_thermal_pressure(cpumask_first(cpus));
+ 
+ 	/*
+ 	 * The capacity state of CPUs of the current rd can be driven by CPUs
+@@ -6727,7 +6727,7 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
+ 	 * If an entire pd is outside of the current rd, it will not appear in
+ 	 * its pd list and will not be accounted by compute_energy().
+ 	 */
+-	for_each_cpu_and(cpu, pd_mask, cpu_online_mask) {
++	for_each_cpu(cpu, cpus) {
+ 		unsigned long util_freq = cpu_util_next(cpu, p, dst_cpu);
+ 		unsigned long cpu_util, util_running = util_freq;
+ 		struct task_struct *tsk = NULL;
+@@ -6814,6 +6814,7 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
+  */
+ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ {
++	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
  	unsigned long prev_delta = ULONG_MAX, best_delta = ULONG_MAX;
--	int cpu, best_energy_cpu = prev_cpu, target = -1;
- 	struct root_domain *rd = this_rq()->rd;
--	unsigned long base_energy = 0;
-+	int cpu, best_energy_cpu, target = -1;
- 	struct sched_domain *sd;
- 	struct perf_domain *pd;
- 	struct energy_env eenv;
-@@ -6902,8 +6901,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 		unsigned long cpu_cap, cpu_thermal_cap, util;
- 		unsigned long cur_delta, max_spare_cap = 0;
- 		bool compute_prev_delta = false;
--		unsigned long base_energy_pd;
+ 	struct root_domain *rd = cpu_rq(smp_processor_id())->rd;
+ 	int cpu, best_energy_cpu = prev_cpu, target = -1;
+@@ -6848,7 +6849,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 		unsigned long base_energy_pd;
  		int max_spare_cap_cpu = -1;
-+		unsigned long base_energy;
  
- 		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
+-		for_each_cpu_and(cpu, perf_domain_span(pd), sched_domain_span(sd)) {
++		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
++
++		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
+ 			if (!cpumask_test_cpu(cpu, p->cpus_ptr))
+ 				continue;
  
-@@ -6961,17 +6960,16 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+@@ -6885,12 +6888,12 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 			continue;
  
- 		eenv_pd_busy_time(&eenv, cpus, p);
  		/* Compute the 'base' energy of the pd, without @p */
--		base_energy_pd = compute_energy(&eenv, pd, cpus, p, -1);
--		base_energy += base_energy_pd;
-+		base_energy = compute_energy(&eenv, pd, cpus, p, -1);
+-		base_energy_pd = compute_energy(p, -1, pd);
++		base_energy_pd = compute_energy(p, -1, cpus, pd);
+ 		base_energy += base_energy_pd;
  
  		/* Evaluate the energy impact of using prev_cpu. */
  		if (compute_prev_delta) {
- 			prev_delta = compute_energy(&eenv, pd, cpus, p,
- 						    prev_cpu);
- 			/* CPU utilization has changed */
--			if (prev_delta < base_energy_pd)
-+			if (prev_delta < base_energy)
+-			prev_delta = compute_energy(p, prev_cpu, pd);
++			prev_delta = compute_energy(p, prev_cpu, cpus, pd);
+ 			if (prev_delta < base_energy_pd)
  				goto unlock;
--			prev_delta -= base_energy_pd;
-+			prev_delta -= base_energy;
- 			best_delta = min(best_delta, prev_delta);
- 		}
+ 			prev_delta -= base_energy_pd;
+@@ -6899,7 +6902,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
  
-@@ -6980,9 +6978,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 			cur_delta = compute_energy(&eenv, pd, cpus, p,
- 						   max_spare_cap_cpu);
- 			/* CPU utilization has changed */
--			if (cur_delta < base_energy_pd)
-+			if (cur_delta < base_energy)
+ 		/* Evaluate the energy impact of using max_spare_cap_cpu. */
+ 		if (max_spare_cap_cpu >= 0) {
+-			cur_delta = compute_energy(p, max_spare_cap_cpu, pd);
++			cur_delta = compute_energy(p, max_spare_cap_cpu, cpus,
++						   pd);
+ 			if (cur_delta < base_energy_pd)
  				goto unlock;
--			cur_delta -= base_energy_pd;
-+			cur_delta -= base_energy;
- 			if (cur_delta < best_delta) {
- 				best_delta = cur_delta;
- 				best_energy_cpu = max_spare_cap_cpu;
-@@ -6991,12 +6989,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	}
- 	rcu_read_unlock();
- 
--	/*
--	 * Pick the best CPU if prev_cpu cannot be used, or if it saves at
--	 * least 6% of the energy used by prev_cpu.
--	 */
--	if ((prev_delta == ULONG_MAX) ||
--	    (prev_delta - best_delta) > ((prev_delta + base_energy) >> 4))
-+	if (best_delta < prev_delta)
- 		target = best_energy_cpu;
- 
- 	return target;
+ 			cur_delta -= base_energy_pd;
