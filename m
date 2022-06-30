@@ -2,173 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06709C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6530C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbiF3Hf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S232956AbiF3Hgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232787AbiF3Hf5 (ORCPT
+        with ESMTP id S232787AbiF3Hgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:35:57 -0400
-X-Greylist: delayed 397 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 00:35:56 PDT
-Received: from gw2.atmark-techno.com (gw2.atmark-techno.com [35.74.137.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCDF7326E8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:35:56 -0700 (PDT)
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-        by gw2.atmark-techno.com (Postfix) with ESMTPS id 0F07B20D5C
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:29:19 +0900 (JST)
-Received: by mail-pj1-f69.google.com with SMTP id em12-20020a17090b014c00b001ed493d4f0cso5249192pjb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:29:19 -0700 (PDT)
+        Thu, 30 Jun 2022 03:36:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 808191A81B
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:36:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656574606;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PwzmZMvr1HwTOyfvLBeay0UNdb3hWyqojFY1Kj6edFc=;
+        b=ToLNUmgJkq8DzTOgsn0F6CyBXO4GhnET3xsVFjXZzQITrVKdYUi+TGzvweqtV3j8d+7ndq
+        PKk2qa7xTXfc1H5rWhgAGZBiXqQbv/Y4udEHncOAXN13bZRLyxsy4AKeABGb0ZTJwxNsmy
+        QFVmsklU26EQ8hLT1I+tX/WkmjY+mHo=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-tsqQ2h_9P6CyofEkBYS0nA-1; Thu, 30 Jun 2022 03:36:42 -0400
+X-MC-Unique: tsqQ2h_9P6CyofEkBYS0nA-1
+Received: by mail-wm1-f72.google.com with SMTP id e24-20020a05600c219800b003a0471b1904so1030821wme.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:36:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZlpDtdwmWp2b5cqasTMpXtBnyv72jy1sATeseuyLyBc=;
-        b=cznR8oAII9+W3YDcruYYf0Wk5lFby+7UjaO8AQsC0CS8TOu3i0FPazXxRt97TTfbwu
-         V5B4F4LVl6i4m8mE0JnaaJ+5CMfSIdqdrFW6Cfgbx2h1MNaJSjmhCL0Hp0WORVHJ0oGW
-         JvK1oTuR/vvWtDwR6VKC/cUwSTCFXl3aYYO+lOGyCfODOfb+BDE1wH4DvzL4+Q6vDF6H
-         pVMOfenDT5aVIg4VDslrHLPtjHLNISiTspaoXrxmbaD9uurCC4Xn1nMKQHLgnyhXSvTl
-         CkkWXiGKi4uICXj4stkisdIvfRuRNyU/0hbzfUB7h0ivR942cUoYcE7DiqeJ3oIwG9I0
-         yacg==
-X-Gm-Message-State: AJIora+EVWBscK/XfJcB86YBLEaB5J6Gu/oGNfrz3GMh6GykFtVJA0v4
-        eqp/bvd+fIjAS25gs9uOBuuPsJVEjBA7kaSUVsBHvA9jTKnhug3TGPBNmFrn7guQO9pWTLwRGMp
-        fuW5chdSZYqChs7VsVCYx78mcBA==
-X-Received: by 2002:a17:902:e807:b0:16a:471b:a4cc with SMTP id u7-20020a170902e80700b0016a471ba4ccmr13385058plg.102.1656574158054;
-        Thu, 30 Jun 2022 00:29:18 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1unkGtBy8pj1LseJ12CPT9D2tB8s8CwrIAP721pTZJ67uSW54oYP5hdrssb9ch6i39KkfjNeg==
-X-Received: by 2002:a17:902:e807:b0:16a:471b:a4cc with SMTP id u7-20020a170902e80700b0016a471ba4ccmr13385043plg.102.1656574157789;
-        Thu, 30 Jun 2022 00:29:17 -0700 (PDT)
-Received: from pc-zest.atmarktech (126.88.200.35.bc.googleusercontent.com. [35.200.88.126])
-        by smtp.gmail.com with ESMTPSA id a3-20020a1709027e4300b0016bb24f5d19sm286102pln.209.2022.06.30.00.29.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Jun 2022 00:29:17 -0700 (PDT)
-Received: from martinet by pc-zest.atmarktech with local (Exim 4.95)
-        (envelope-from <martinet@pc-zest>)
-        id 1o6obz-00BbWI-FR;
-        Thu, 30 Jun 2022 16:29:15 +0900
-Date:   Thu, 30 Jun 2022 16:29:05 +0900
-From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-btrfs@vger.kernel.org
-Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>
-Subject: Major btrfs fiemap slowdown on file with many extents once in cache
- (RCU stalls?) (Was: [PATCH 1/3] filemap: Correct the conditions for marking
- a folio as accessed)
-Message-ID: <Yr1QwVW+sHWlAqKj@atmark-techno.com>
-References: <20220619151143.1054746-1-willy@infradead.org>
- <20220619151143.1054746-2-willy@infradead.org>
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=PwzmZMvr1HwTOyfvLBeay0UNdb3hWyqojFY1Kj6edFc=;
+        b=Mi1g8+ChmtSGoDB2us/Ubfi01Or+ino2l7AKgR7gyLj8qhRpOJcZcdCq48aUMK2lwG
+         gQ0az0N09XGJ/QtiFqp3qIJFd3A0kV/AgfvKg6pku9bjUnh0ubCscuCKlCgZWDjT1PlE
+         Ax+1KASJjeh5Y6Yp9JNLTxBk/kV+KZHTbtr1vAEGDzxBOYnju2l1XsI9FfXbg+67iOfP
+         fcVWUi7ZtakWF0Ex+0rCxsJDgA75nCT4kLE+biZrkzR8JctmLeonLSWXZSbMOuQ4IWjK
+         n1OH0QplheIobA0nkKJ/F9wB4S0ZAK7if66EJx9Tkb1WrrzyTRVKCphE6/yj4Rms4eT7
+         EqfQ==
+X-Gm-Message-State: AJIora9HRlVcGEe3MwMSP57eQvj3SAAzLSAKmQG9GdeBLQf9O+2f2HOa
+        WrILJL01nhVzVWcCI8FWEowI51s0lX1l3xOh+rCj41vnuhA/liIkIe3t/vdhRq4R/tN9T0kJFeR
+        FY8AaBSEQG1i6wwSQ3CKMUjbhYqFZO3LHteM+s0tjFUlg6A1b6FRrke2kugdETqp/xz0lZ6yBPK
+        Ds
+X-Received: by 2002:a5d:6704:0:b0:21b:8258:b773 with SMTP id o4-20020a5d6704000000b0021b8258b773mr6600904wru.284.1656574601153;
+        Thu, 30 Jun 2022 00:36:41 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vE3BOs0DEpp+YFr2cGu7j4qggJVT3ycC/Awg1J1DjBCXCJeDvJEASklLYOzQTIogJGAkKlxA==
+X-Received: by 2002:a5d:6704:0:b0:21b:8258:b773 with SMTP id o4-20020a5d6704000000b0021b8258b773mr6600874wru.284.1656574600876;
+        Thu, 30 Jun 2022 00:36:40 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id f20-20020a05600c155400b0039c41686421sm1868636wmg.17.2022.06.30.00.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 00:36:40 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Jim Mattson <jmattson@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 28/28] KVM: nVMX: Use cached host MSR_IA32_VMX_MISC
+ value for setting up nested MSR
+In-Reply-To: <CALMp9eRCbgYVGtAwpDWhytQSjeGeAOuqKZXVg3RpV92uKV5u0A@mail.gmail.com>
+References: <20220629150625.238286-1-vkuznets@redhat.com>
+ <20220629150625.238286-29-vkuznets@redhat.com>
+ <CALMp9eRCbgYVGtAwpDWhytQSjeGeAOuqKZXVg3RpV92uKV5u0A@mail.gmail.com>
+Date:   Thu, 30 Jun 2022 09:36:39 +0200
+Message-ID: <87tu82siuw.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220619151143.1054746-2-willy@infradead.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Willy, linux-btrfs@vger,
+Jim Mattson <jmattson@google.com> writes:
 
-Matthew Wilcox (Oracle) wrote on Sun, Jun 19, 2022 at 04:11:41PM +0100:
-> We had an off-by-one error which meant that we never marked the first page
-> in a read as accessed.  This was visible as a slowdown when re-reading
-> a file as pages were being evicted from cache too soon.  In reviewing
-> this code, we noticed a second bug where a multi-page folio would be
-> marked as accessed multiple times when doing reads that were less than
-> the size of the folio.
+> On Wed, Jun 29, 2022 at 8:07 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+>>
+>> vmcs_config has cased host MSR_IA32_VMX_MISC value, use it for setting
+>> up nested MSR_IA32_VMX_MISC in nested_vmx_setup_ctls_msrs() and avoid the
+>> redundant rdmsr().
+>>
+>> No (real) functional change intended.
+>
+> Just imaginary functional change? :-)
+>
 
-when debugging an unrelated issue (short reads on btrfs with io_uring
-and O_DIRECT[1]), I noticed that my horrible big file copy speeds fell
-down from ~2GB/s (there's compression and lots of zeroes) to ~100MB/s
-the second time I was copying it with cp.
+Well, yea) The assumption here is that MSR_IA32_VMX_MISC's value doesn't
+change underneath KVM, caching doesn't change anything then. It is, of
+course, possible that when KVM runs as a nested hypervisor on top of
+something else, it will observe different values. I truly hope this is
+purely imaginary :-)
 
-I've taken a moment to bisect this and came down to this patch.
+>>
+>> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> Reviewed-by: Jim Mattson <jmattson@google.com>
+>
 
-[1] https://lore.kernel.org/all/YrrFGO4A1jS0GI0G@atmark-techno.com/T/#u
+Thanks!
 
-
-
-Dropping caches (echo 3 > /proc/sys/vm/drop_caches) restore the speed,
-so there appears to be some bad effect to having the file in cache for
-fiemap?
-To be fair that file is pretty horrible:
----
-# compsize bigfile
-Processed 1 file, 194955 regular extents (199583 refs), 0 inline.
-Type       Perc     Disk Usage   Uncompressed Referenced  
-TOTAL       15%      3.7G          23G          23G       
-none       100%      477M         477M         514M       
-zstd        14%      3.2G          23G          23G       
----
-
-Here's what perf has to say about it on top of this patch when running
-`cp bigfile /dev/null` the first time:
-
-98.97%     0.00%  cp       [kernel.kallsyms]    [k]
-entry_SYSCALL_64_after_hwframe
- entry_SYSCALL_64_after_hwframe
- do_syscall_64
-  - 93.40% ksys_read
-     - 93.36% vfs_read
-        - 93.25% new_sync_read
-           - 93.20% filemap_read
-              - 83.38% filemap_get_pages
-                 - 82.76% page_cache_ra_unbounded
-                    + 59.72% folio_alloc
-                    + 13.43% read_pages
-                    + 8.75% filemap_add_folio
-                      0.64% xa_load
-                   0.52% filemap_get_read_batch
-              + 8.75% copy_page_to_iter
-  - 4.73% __x64_sys_ioctl
-     - 4.72% do_vfs_ioctl
-        - btrfs_fiemap
-           - 4.70% extent_fiemap
-              + 3.95% btrfs_check_shared
-              + 0.70% get_extent_skip_holes
-
-and second time:
-99.90%     0.00%  cp       [kernel.kallsyms]    [k]
-entry_SYSCALL_64_after_hwfram
- entry_SYSCALL_64_after_hwframe
- do_syscall_64
-  - 94.62% __x64_sys_ioctl
-       do_vfs_ioctl
-       btrfs_fiemap
-     - extent_fiemap
-        - 50.01% get_extent_skip_holes
-           - 50.00% btrfs_get_extent_fiemap
-              - 49.97% count_range_bits
-                   rb_next
-        + 28.72% lock_extent_bits
-        + 15.55% __clear_extent_bit
-  - 5.21% ksys_read
-     + 5.21% vfs_read
-
-(if this isn't readable, 95% of the time is spent on fiemap the second
-time around)
-
-
-
-
-I've also been observing RCU stalls on my laptop with the same workload
-(cp to /dev/null), but unfortunately I could not reproduce in qemu so I
-could not take traces to confirm they are caused by the same commit but
-given the workload I'd say that is it?
-I can rebuild a kernel for my laptop and confirm if you think it should
-be something else.
-
-
-I didn't look at the patch itself (yet) so have no suggestion at this
-point - it's plausible the patch fixed something and just exposed slow
-code that had been there all along so it might be better to look at the
-btrfs side first, I don't know.
-If you don't manage to reproduce I'll be happy to test anything thrown
-at me at the very least.
-
-
-Thanks,
 -- 
-Dominique Martinet | Asmadeus
+Vitaly
+
