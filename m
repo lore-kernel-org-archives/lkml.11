@@ -2,98 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4984C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 20:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9539BCCA473
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 20:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235656AbiF3U1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 16:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53134 "EHLO
+        id S236456AbiF3UdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 16:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234038AbiF3U1Q (ORCPT
+        with ESMTP id S232654AbiF3Uc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 16:27:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B96053D48C
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656620832;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=B3cZCUIF3lnhc5FF1faZXpJlZvOkKmHLoTPPOnd8z5Q=;
-        b=deGcGhyuGQFUbgrhGjO61nJOz/MBbkWudsIKoaIWkgdcxyai4vvYCtKx/GfQgdDmZZTmyX
-        P7rDJ9yoFg6L5lTMib4gguPxWdAuegMqltk8C+pOYfJuaFwVUrzcH/ras0slCi0IAhiU1H
-        t8EQmY2IHUjQNIeDSWQaPx8J4PAJrzU=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-292-XMTnXfYmNm2AUdEwe45u9A-1; Thu, 30 Jun 2022 16:27:11 -0400
-X-MC-Unique: XMTnXfYmNm2AUdEwe45u9A-1
-Received: by mail-wr1-f69.google.com with SMTP id o21-20020adfa115000000b0021d3f78ebc2so15720wro.11
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:27:11 -0700 (PDT)
+        Thu, 30 Jun 2022 16:32:59 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAD62EA12
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:32:56 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id r1so383928plo.10
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:32:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=FSOXo30Uq9BCNVmuAsi5w5C8gOosb3t9WRfMVCrT6IQ=;
+        b=71OaPdRgzLBTFUshicbPVMG4LFaecqp39w7V47CfMj+0gY4RebWxjQKLK0o1lonnjr
+         IoAMSLIWtQD5z7lRwT5WsJnZkVxgqw8urqB2CkcXtj5r7PxFc4TRxG1ra6n1A44W5SZt
+         u++p3JA2pefoNjsXomGzNSTArkokqVSIIWO2FjZkv6yzOiJr4DRTnrlrwBcexAPYyBx8
+         X4w38cbLY5T7ozhjVVvtz0HjacsTUDNch7stI7DOeuoGvcUiSZyChBTe5kAc1VXRnXZC
+         g6vUZae+vpwFvl4X1eemIiAuQhGwbuci0/1I2yA+X0LB+1yC5jZyNjnvEQU73CRNIxQI
+         0NiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=B3cZCUIF3lnhc5FF1faZXpJlZvOkKmHLoTPPOnd8z5Q=;
-        b=MbrAI8nF/+hlH1GgiTCpUgH6rur7drbgBujemhlIV4cOSNxFWvPX5fWdRxJxC7weUW
-         jJoQf9x2gWOpuAo2ixbQOlh1ZtLIZdgqWspTCzkVCuFoTOyxPwhrG1599RW9CLQ2atuT
-         YDQ+5W9QsLDI7eLw2rRU9XRE4iP7v/NKBQ2scpDZO+gqmKm4p8kgSou2LDmCkHKvYgC8
-         +/kgl3oivmE/nZSd2c/sXTbSvNzcpo+EmPHJE0iByJogyTK1faPCUU1RWqRlgUJDB85X
-         8QSQbJMktUiKC0LtwdwlUvUISu3LB+1bwqpE1KSY/m9iW+J9YKT+vqf29+gq5u5xb7Zt
-         oJOA==
-X-Gm-Message-State: AJIora8Z3Mbayxn3ATBHhAk65XYqIKOBsPnFu5t1jqBoiJJPN7yyGSlc
-        R1gaXUKzK55aAq57vkgwbGm+qhuUg1/nCIyoKJ9LaMzHXX09HgKb+OO3ONdm1CIdZMzABYddWt9
-        eGEJc4ge6zZH8M4s55HXk7LPkNg8GZwZOOnv1Vlc64qaA9BmnMHwpfLaaVYXUXQwQ92Lxlw==
-X-Received: by 2002:a1c:4405:0:b0:3a1:886d:c33c with SMTP id r5-20020a1c4405000000b003a1886dc33cmr1979080wma.200.1656620830421;
-        Thu, 30 Jun 2022 13:27:10 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vN3emLAhFi79LfaVq/yG2oz3uypiyXu0Rea6T98wAbOL8ANlXOGgUJAGGt8l7pf/DJEfTVhg==
-X-Received: by 2002:a1c:4405:0:b0:3a1:886d:c33c with SMTP id r5-20020a1c4405000000b003a1886dc33cmr1979048wma.200.1656620830194;
-        Thu, 30 Jun 2022 13:27:10 -0700 (PDT)
-Received: from redhat.com ([2.55.3.188])
-        by smtp.gmail.com with ESMTPSA id j10-20020a5d448a000000b0021b8c99860asm20440516wrq.115.2022.06.30.13.27.08
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=FSOXo30Uq9BCNVmuAsi5w5C8gOosb3t9WRfMVCrT6IQ=;
+        b=y6/je0u21awkCbP6AN2oWkkFAPCWsVzIDniozj7NAON0qzT2h9ceK8D4Gxbsh0TR2N
+         KY2ZQUvUL6nszUtabyiCeV2nvXAtYS5yLItFDnKc5wudTtWGtLzajILrO0Cy9TM/wLw8
+         fFpm5TzKnQMKYOISs3OfKDJu1UyVM/dV16ZWhGKhRPcYFiOSKL+qbPUqEPOG/G2u9JdL
+         bN6FLVvv9pggoGchn45OCjoIMYGm+8z5THPxhFovasUNBuDI2e+l761Gufxl5bHvYwSJ
+         hfSyXbA8J2ZE/k7HbvsaC949pm0qK54ip/VU3wGOZfoVGY4KyQEy7PlEM0pWkEtdGQHv
+         Pvrw==
+X-Gm-Message-State: AJIora9Mn+m5YUeCux13NzEKT5xvLZZ4ZUjC3qfgXmAJ4vd9V0LqKxEc
+        SfYuEicLBjhFU4tgEnJHb7xb4jqr/Ca06g==
+X-Google-Smtp-Source: AGRyM1u3r0jLkJPWYEWyhol/kypao7RlzkqpzAuN75e/SjlpAHz+TJeGBAXqSJqhLeP3Be+jqUbY/A==
+X-Received: by 2002:a17:90b:390e:b0:1ed:1133:8711 with SMTP id ob14-20020a17090b390e00b001ed11338711mr11904632pjb.90.1656621175704;
+        Thu, 30 Jun 2022 13:32:55 -0700 (PDT)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id kx10-20020a17090b228a00b001ec9ae91e30sm2475038pjb.12.2022.06.30.13.32.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 13:27:09 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 16:27:07 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Subject: [PATCH] Bluetooth: virtio_bt: mark broken
-Message-ID: <20220630202700.18187-1-mst@redhat.com>
+        Thu, 30 Jun 2022 13:32:55 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     asml.silence@gmail.com, dylany@fb.com, io-uring@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Kernel-team@fb.com
+In-Reply-To: <20220630091231.1456789-1-dylany@fb.com>
+References: <20220630091231.1456789-1-dylany@fb.com>
+Subject: Re: [PATCH v2 for-next 00/12] io_uring: multishot recv
+Message-Id: <165662117486.56180.16557557417345255423.b4-ty@kernel.dk>
+Date:   Thu, 30 Jun 2022 14:32:54 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Issues around the driver are not addressed
-- issues around device removal:
-https://lore.kernel.org/r/20211125174200.133230-1-mst%40redhat.com
-- no spec
-- no QEMU support
+On Thu, 30 Jun 2022 02:12:19 -0700, Dylan Yudaken wrote:
+> This series adds support for multishot recv/recvmsg to io_uring.
+> 
+> The idea is that generally socket applications will be continually
+> enqueuing a new recv() when the previous one completes. This can be
+> improved on by allowing the application to queue a multishot receive,
+> which will post completions as and when data is available. It uses the
+> provided buffers feature to receive new data into a pool provided by
+> the application.
+> 
+> [...]
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/bluetooth/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Applied, thanks!
 
-diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
-index e30707405455..c5bb105416bd 100644
---- a/drivers/bluetooth/Kconfig
-+++ b/drivers/bluetooth/Kconfig
-@@ -435,6 +435,7 @@ config BT_HCIRSI
- config BT_VIRTIO
- 	tristate "Virtio Bluetooth driver"
- 	depends on VIRTIO
-+	depends on BROKEN
- 	help
- 	  Virtio Bluetooth support driver.
- 	  This driver supports Virtio Bluetooth devices.
+[01/12] io_uring: allow 0 length for buffer select
+        (no commit info)
+[02/12] io_uring: restore bgid in io_put_kbuf
+        (no commit info)
+[03/12] io_uring: allow iov_len = 0 for recvmsg and buffer select
+        (no commit info)
+[04/12] io_uring: recycle buffers on error
+        (no commit info)
+[05/12] io_uring: clean up io_poll_check_events return values
+        (no commit info)
+[06/12] io_uring: add IOU_STOP_MULTISHOT return code
+        (no commit info)
+[07/12] io_uring: add allow_overflow to io_post_aux_cqe
+        (no commit info)
+[08/12] io_uring: fix multishot poll on overflow
+        (no commit info)
+[09/12] io_uring: fix multishot accept ordering
+        (no commit info)
+[10/12] io_uring: multishot recv
+        (no commit info)
+[11/12] io_uring: fix io_uring_cqe_overflow trace format
+        (no commit info)
+[12/12] io_uring: only trace one of complete or overflow
+        (no commit info)
+
+Best regards,
 -- 
-MST
+Jens Axboe
+
 
