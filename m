@@ -2,106 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADCBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbiF3JbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
+        id S233973AbiF3Jb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbiF3JbS (ORCPT
+        with ESMTP id S233020AbiF3JbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:31:18 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B221242A34;
-        Thu, 30 Jun 2022 02:31:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656581477; x=1688117477;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ts2C+OqBlxWP7DBOA939sjPkbYuxOnt3IFBir6lTgbI=;
-  b=iHaBuJWFdcIHRxrzU5+WLKkAkRK39u8rXNbNLPW0ujdBqsiljlUHOKK3
-   tUwqqWGs51w/g3NUnVTP++QZz8lqamEiS/MnFmSXuj6r6mDkGlwqK3ptA
-   x2utLx9AxOtnhy/FFaJE8t1o9OawF/TtXLivEFzYcvf573VM5DL0HDl9d
-   zg6/p/NNia+81+y/zloelwo2iH2USlAD0ODqETAda2B/KqYr1NWm2rEll
-   +14mUQxIWiVoOi3B2CHA9/gqxoA7WNR3RmJ3tbbXcpMvGtRdJe0zZEUOY
-   ZfpGpeOzAFh6NB1/fTUzKcUkXOZTez/fZw1PlG7KqFjjosFC19QDpp9ze
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="262704216"
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="262704216"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:31:17 -0700
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="718160631"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:31:15 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o6qW0-000yQX-DP;
-        Thu, 30 Jun 2022 12:31:12 +0300
-Date:   Thu, 30 Jun 2022 12:31:12 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
-Message-ID: <Yr1tYLgj4+F8pKO4@smile.fi.intel.com>
-References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
- <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
- <J98AER.7ZO6O9DK05IM1@crapouillou.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <J98AER.7ZO6O9DK05IM1@crapouillou.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Thu, 30 Jun 2022 05:31:24 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47FC442A33;
+        Thu, 30 Jun 2022 02:31:22 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 7339D1E80D11;
+        Thu, 30 Jun 2022 17:30:01 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id tcSNZRmyGWA2; Thu, 30 Jun 2022 17:29:58 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 53F231E80CB6;
+        Thu, 30 Jun 2022 17:29:58 +0800 (CST)
+From:   Yu Zhe <yuzhe@nfschina.com>
+To:     sfrench@samba.org
+Cc:     linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: [PATCH] cifs: remove unnecessary type castings
+Date:   Thu, 30 Jun 2022 17:30:27 +0800
+Message-Id: <20220630093027.26200-1-yuzhe@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 09:44:07AM +0100, Paul Cercueil wrote:
-> Le jeu., juin 30 2022 at 10:41:40 +0300, Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> a écrit :
-> > On Wed, 29 Jun 2022, Andy Shevchenko wrote:
-> > 
-> > >  Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting
-> > > dw8250_pm_ops
-> > >  to use new PM macros.
-> > > 
-> > >  Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > 
-> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+remove unnecessary void* type castings.
 
-I will drop this for v2.
+Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
+---
+ fs/cifs/connect.c  | 2 +-
+ fs/cifs/inode.c    | 4 ++--
+ fs/cifs/netmisc.c  | 2 +-
+ fs/cifs/smb2misc.c | 2 +-
+ fs/cifs/smb2pdu.c  | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-> > Not directily related to the patch itself but do you have any idea why
-> > 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
-> > didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
-> > because in SET_RUNTIME_PM_OPS() the callbacks are only created with
-> > #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain that
-> > behavior but it didn't? Was it just an oversight that should be fixed?
-> 
-> The RUNTIME_PM_OPS() does not wrap pointers with pm_ptr(), because the
-> pointer to the dev_pm_ops should only ever be used wrapped with pm_ptr() or
-> pm_sleep_ptr().
-> 
-> Which is not done here.
-> 
-> Andy:
-> The deference of dw8250_pm_ops should be pm_ptr(&dw8250_pm_ops). If you only
-> had system suspend/resume functions, you'd use pm_sleep_ptr() there.
-
-Right, it's a shame how I forgot that while telling everybody to use them.
-
-Thanks, Paul!
-
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index fa29c9aae24b..90863b3b5204 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -2646,7 +2646,7 @@ match_prepath(struct super_block *sb, struct cifs_mnt_data *mnt_data)
+ int
+ cifs_match_super(struct super_block *sb, void *data)
+ {
+-	struct cifs_mnt_data *mnt_data = (struct cifs_mnt_data *)data;
++	struct cifs_mnt_data *mnt_data = data;
+ 	struct smb3_fs_context *ctx;
+ 	struct cifs_sb_info *cifs_sb;
+ 	struct TCP_Server_Info *tcp_srv;
+diff --git a/fs/cifs/inode.c b/fs/cifs/inode.c
+index 81da81e18553..3ad303dd5e5a 100644
+--- a/fs/cifs/inode.c
++++ b/fs/cifs/inode.c
+@@ -1223,7 +1223,7 @@ static const struct inode_operations cifs_ipc_inode_ops = {
+ static int
+ cifs_find_inode(struct inode *inode, void *opaque)
+ {
+-	struct cifs_fattr *fattr = (struct cifs_fattr *) opaque;
++	struct cifs_fattr *fattr = opaque;
+ 
+ 	/* don't match inode with different uniqueid */
+ 	if (CIFS_I(inode)->uniqueid != fattr->cf_uniqueid)
+@@ -1247,7 +1247,7 @@ cifs_find_inode(struct inode *inode, void *opaque)
+ static int
+ cifs_init_inode(struct inode *inode, void *opaque)
+ {
+-	struct cifs_fattr *fattr = (struct cifs_fattr *) opaque;
++	struct cifs_fattr *fattr = opaque;
+ 
+ 	CIFS_I(inode)->uniqueid = fattr->cf_uniqueid;
+ 	CIFS_I(inode)->createtime = fattr->cf_createtime;
+diff --git a/fs/cifs/netmisc.c b/fs/cifs/netmisc.c
+index 235aa1b395eb..28caae7aed1b 100644
+--- a/fs/cifs/netmisc.c
++++ b/fs/cifs/netmisc.c
+@@ -911,7 +911,7 @@ map_and_check_smb_error(struct mid_q_entry *mid, bool logErr)
+ unsigned int
+ smbCalcSize(void *buf, struct TCP_Server_Info *server)
+ {
+-	struct smb_hdr *ptr = (struct smb_hdr *)buf;
++	struct smb_hdr *ptr = buf;
+ 	return (sizeof(struct smb_hdr) + (2 * ptr->WordCount) +
+ 		2 /* size of the bcc field */ + get_bcc(ptr));
+ }
+diff --git a/fs/cifs/smb2misc.c b/fs/cifs/smb2misc.c
+index 17813c3d0c6e..db0f27fd373b 100644
+--- a/fs/cifs/smb2misc.c
++++ b/fs/cifs/smb2misc.c
+@@ -402,7 +402,7 @@ smb2_get_data_area_len(int *off, int *len, struct smb2_hdr *shdr)
+ unsigned int
+ smb2_calc_size(void *buf, struct TCP_Server_Info *srvr)
+ {
+-	struct smb2_pdu *pdu = (struct smb2_pdu *)buf;
++	struct smb2_pdu *pdu = buf;
+ 	struct smb2_hdr *shdr = &pdu->hdr;
+ 	int offset; /* the offset from the beginning of SMB to data area */
+ 	int data_length; /* the length of the variable length data area */
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index 12b4dddaedb0..92fb513e5478 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -354,7 +354,7 @@ fill_small_buf(__le16 smb2_command, struct cifs_tcon *tcon,
+ 	       void *buf,
+ 	       unsigned int *total_len)
+ {
+-	struct smb2_pdu *spdu = (struct smb2_pdu *)buf;
++	struct smb2_pdu *spdu = buf;
+ 	/* lookup word count ie StructureSize from table */
+ 	__u16 parmsize = smb2_req_struct_sizes[le16_to_cpu(smb2_command)];
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.11.0
 
