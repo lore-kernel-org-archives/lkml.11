@@ -2,148 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0223C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4302EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbiF3HQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
+        id S229864AbiF3HXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231690AbiF3HQn (ORCPT
+        with ESMTP id S229676AbiF3HXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:16:43 -0400
-X-Greylist: delayed 70667 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 00:16:42 PDT
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0539838199;
-        Thu, 30 Jun 2022 00:16:41 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3C033240011;
-        Thu, 30 Jun 2022 07:16:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656573400;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9I94e4QJGBDEKtn1NYQX9pGoS4V5rF6gB5rgv3ePiKY=;
-        b=f1D5owjWynMmSNvMz/29rgnS21+K0IiCKp4Q9pLK4PR/JbHpD4NuS+5PkOWug5hXGX/1c0
-        qA4QB5yL58gvxqdMb8wfap5OvlGS8XR1sGAmO2D0JFodHMDhIa6Gwmep4OIFX2lg9nB8vx
-        2RuAsIBg5a5fMFsg4QFGXnvMK88ycDolLJ0jqX4TyUiyXKnSsjoNB7n7CNEqUmGpWtEijI
-        GAWNSXlFwJN4bL0r03f7/CAqqRpgUYRdofQYKBADNJb9xufoH0C7FkvI0AbvEUKdaMbXpR
-        +FQy3m9wcU+6BSf1VfptrzqejlDFFXLqPjrt7ED0DDbf8KtaoLmtPngXyfnjqA==
-Date:   Thu, 30 Jun 2022 09:16:36 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: mtd/partitions: Convert
- arm-firmware-suite to DT schema
-Message-ID: <20220630091636.03386395@xps-13>
-In-Reply-To: <20220629185031.23826-1-robh@kernel.org>
-References: <20220629185031.23826-1-robh@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Thu, 30 Jun 2022 03:23:48 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF352AE13
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:23:47 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id m14so16274990plg.5
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 00:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=kPj3DJDPahvvDxF0DURO3tVx6ujFEvydZkmaEtn28Rg=;
+        b=QaORBQDDJbzqP4G6eVt9wELj+P4mgfHQNbLnVJgBIr0oOT2IpfcB69NR4a8tF0lLlm
+         xIo3PekLAOXHFpK5nvAyRJ9SFX7IncdUll2plBAhu2VUIzOxIjU2WrVQR3g0J/Q1G+XP
+         E1XgCr4X7QjaSDCnQhaDjlU6yqNeqktMMAeBVqXDzofKyQJysj/hjACRLJdcCYZyMLNA
+         HSME5+ytZjhdNCmisSCGj6yLEPy/G1qRQutlUhWqBu/QxP5DzHZuzkXWsJj0wKI3DRKq
+         dHBSe4L7BjyKabfr4OV1WLA4Q1ifFMQpKL7gOZc9zPHNRUn19foJrvOGYg6ISHcA//4H
+         qvaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=kPj3DJDPahvvDxF0DURO3tVx6ujFEvydZkmaEtn28Rg=;
+        b=prUKfkPMbpML+963jxPIXTmdyAPzaZJhpm7h7F3dgfjeasTzwD47oV2UixDjcy2592
+         Dw+RxAx06LkSwHk3FeEu5qKKedbKE+seEuNeJRC+QrerAO8jKzotLwCXTHW5zNcCe8PB
+         5YScQN7lQqOgyi8+xcpTxb5cIqiUcPm6V6ueXp9Mf9H3sHlH2zAvICmdecWfzIkW3vYG
+         EY+A7MisviQ0htx/otAHcOBl0kXI+B83p/gXEXJv7Ub4xJ3czYY9BjcTwKCp6L6vTPQZ
+         fvTdwlALPzffiZL/u4pHmbQygujI0eF36+0UdJ/+A1E4kcQFK+8pkDEGJB7GvX3bRLu8
+         CcwA==
+X-Gm-Message-State: AJIora/io8DMQKC0wgwTSXh5+y7h1Y6EVittd94tyJXRNnRv7oCYw9o9
+        hDSJd0RSOF2/NbKEkMH2Q5rtBK9s5dMRFA==
+X-Google-Smtp-Source: AGRyM1vf2H5neloO5d3aKoFxRUFceQx95p3IxJsndYQCU7U17oceCA7Hfne4ZjMjm8r2qoDz4TLHiQ==
+X-Received: by 2002:a17:902:d706:b0:16b:960e:e689 with SMTP id w6-20020a170902d70600b0016b960ee689mr10659856ply.24.1656573827047;
+        Thu, 30 Jun 2022 00:23:47 -0700 (PDT)
+Received: from ?IPv6:fdbd:ff1:ce00:422:15e6:97a:66d6:17ac? ([2404:9dc0:cd01::a])
+        by smtp.gmail.com with ESMTPSA id q13-20020aa7960d000000b00525161431f5sm12758307pfg.36.2022.06.30.00.23.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 Jun 2022 00:23:46 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [External] [PATCH v2 0/4] virtio-crypto: support ECDSA algorithm
+From:   Lei He <helei.sig11@bytedance.com>
+In-Reply-To: <Yr1JvG1aJUp4I/fP@gondor.apana.org.au>
+Date:   Thu, 30 Jun 2022 15:23:39 +0800
+Cc:     Lei He <helei.sig11@bytedance.com>, davem@davemloft.net,
+        dhowells@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        berrange@redhat.com, pizhenwei@bytedance.com
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <C7191BC8-5BE0-47CB-A302-735BBD1CBED0@bytedance.com>
+References: <20220623070550.82053-1-helei.sig11@bytedance.com>
+ <Yr1JvG1aJUp4I/fP@gondor.apana.org.au>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
 
-robh@kernel.org wrote on Wed, 29 Jun 2022 12:50:30 -0600:
-
-> Convert the arm,arm-firmware-suite partition binding to DT schema
-> format. Simple conversion as there's only a compatible property.
+> On Jun 30, 2022, at 2:59 PM, Herbert Xu <herbert@gondor.apana.org.au> =
+wrote:
 >=20
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
-
-> ---
-> v2:
->  - Fix example dtc warning
-> ---
->  .../mtd/partitions/arm,arm-firmware-suite.txt | 17 -----------
->  .../partitions/arm,arm-firmware-suite.yaml    | 28 +++++++++++++++++++
->  2 files changed, 28 insertions(+), 17 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mtd/partitions/arm,=
-arm-firmware-suite.txt
->  create mode 100644 Documentation/devicetree/bindings/mtd/partitions/arm,=
-arm-firmware-suite.yaml
+> On Thu, Jun 23, 2022 at 03:05:46PM +0800, Lei He wrote:
+>> From: lei he <helei.sig11@bytedance.com>
+>>=20
+>> This patch supports the ECDSA algorithm for virtio-crypto.
 >=20
-> diff --git a/Documentation/devicetree/bindings/mtd/partitions/arm,arm-fir=
-mware-suite.txt b/Documentation/devicetree/bindings/mtd/partitions/arm,arm-=
-firmware-suite.txt
-> deleted file mode 100644
-> index d5c5616f6db5..000000000000
-> --- a/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-s=
-uite.txt
-> +++ /dev/null
-> @@ -1,17 +0,0 @@
-> -ARM AFS - ARM Firmware Suite Partitions
-> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> -
-> -The ARM Firmware Suite is a flash partitioning system found on the
-> -ARM reference designs: Integrator AP, Integrator CP, Versatile AB,
-> -Versatile PB, the RealView family, Versatile Express and Juno.
-> -
-> -Required properties:
-> -- compatible : (required) must be "arm,arm-firmware-suite"
-> -
-> -Example:
-> -
-> -flash@0 {
-> -	partitions {
-> -		compatible =3D "arm,arm-firmware-suite";
-> -	};
-> -};
-> diff --git a/Documentation/devicetree/bindings/mtd/partitions/arm,arm-fir=
-mware-suite.yaml b/Documentation/devicetree/bindings/mtd/partitions/arm,arm=
--firmware-suite.yaml
-> new file mode 100644
-> index 000000000000..76c88027b6d2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-s=
-uite.yaml
-> @@ -0,0 +1,28 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mtd/partitions/arm,arm-firmware-suite=
-.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ARM Firmware Suite (AFS) Partitions
-> +
-> +maintainers:
-> +  - Linus Walleij <linus.walleij@linaro.org>
-> +
-> +description: |
-> +  The ARM Firmware Suite is a flash partitioning system found on the
-> +  ARM reference designs: Integrator AP, Integrator CP, Versatile AB,
-> +  Versatile PB, the RealView family, Versatile Express and Juno.
-> +
-> +properties:
-> +  compatible:
-> +    const: arm,arm-firmware-suite
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    partitions {
-> +        compatible =3D "arm,arm-firmware-suite";
-> +    };
-> +...
+> Why is this necessary?
+>=20
 
+The main purpose of this patch is to offload ECDSA computations to =
+virtio-crypto dev.
+We can modify the backend of virtio-crypto to allow hardware like Intel =
+QAT cards to=20
+perform the actual calculations, and user-space applications such as =
+HTTPS server=20
+can access those backend in a unified way(eg, keyctl_pk_xx syscall).
 
-Thanks,
-Miqu=C3=A8l
+Related works are also described in following patch series:
+=
+https://lwn.net/ml/linux-crypto/20220525090118.43403-1-helei.sig11@bytedan=
+ce.com/
+
+> Thanks,
+> --=20
+> Email: Herbert Xu <herbert@gondor.apana.org.au>
+> Home Page: http://gondor.apana.org.au/~herbert/
+> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+
