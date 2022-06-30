@@ -2,65 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A364C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9486BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 07:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbiF3HmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        id S233098AbiF3HnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232963AbiF3HmI (ORCPT
+        with ESMTP id S232259AbiF3HnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:42:08 -0400
-Received: from out199-15.us.a.mail.aliyun.com (out199-15.us.a.mail.aliyun.com [47.90.199.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0ECD3AA78;
-        Thu, 30 Jun 2022 00:42:06 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R631e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VHr1SVp_1656574913;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VHr1SVp_1656574913)
-          by smtp.aliyun-inc.com;
-          Thu, 30 Jun 2022 15:42:03 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     kashyap.desai@broadcom.com
-Cc:     sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] scsi: megaraid_sas: Clean up some inconsistent indenting
-Date:   Thu, 30 Jun 2022 15:41:52 +0800
-Message-Id: <20220630074152.29171-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Thu, 30 Jun 2022 03:43:07 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E9A3B55A;
+        Thu, 30 Jun 2022 00:43:01 -0700 (PDT)
+X-QQ-mid: bizesmtp68t1656574957teobvpan
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 30 Jun 2022 15:42:28 +0800 (CST)
+X-QQ-SSF: 0100000000200070C000B00A0000000
+X-QQ-FEAT: hN6wzL7d0UsiEnMr6xOtAk/cLcddHpnYkgtiNC0ASRaL0Fh9mmdnfs2dExQbN
+        BDYRg5ebkXbQBxHJqiyHPRZdjxDusFvqA0/4EOctmjHPKYAzAxVxoEO+/k8awg8AeZ5k5gY
+        FZR4N+gBdtbhUGzjHWHjvNHli8r65HXWKyBkzGwUjoWMKncP6JVNuht74s3FWSMOIEaBYnI
+        DMmaCdOb7FtqA4xs7vaKqsdXkV2NN3oiegbooCm/lQu5YM+YBKsub7LK0ZIkgDIxWp9k1nu
+        IKh+W16cla98FVDkX2LpgVrx6DjTJ9o/cc2/Dam+8gQCLSBozDEi5YoEoxDMZlzY7crUSMA
+        wiywtLg4T+AGDsAUJw=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     idosch@nvidia.com, petrm@nvidia.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] mellanox/mlxsw: fix repeated words in comments
+Date:   Thu, 30 Jun 2022 15:42:21 +0800
+Message-Id: <20220630074221.63148-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This was found by coccicheck:
+Delete the redundant word 'action'.
+Delete the redundant word 'refer'.
+Delete the redundant word 'for'.
 
-drivers/scsi/megaraid/megaraid_sas_base.c:3950 process_fw_state_change_wq() warn: inconsistent indenting.
-
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/scsi/megaraid/megaraid_sas_base.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/core_env.c              | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c        | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index c95360a3c186..fb28c8178828 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -3947,9 +3947,9 @@ process_fw_state_change_wq(struct work_struct *work)
- 	u32 wait;
- 	unsigned long flags;
- 
--    if (atomic_read(&instance->adprecovery) != MEGASAS_ADPRESET_SM_INFAULT) {
-+	if (atomic_read(&instance->adprecovery) != MEGASAS_ADPRESET_SM_INFAULT) {
- 		dev_notice(&instance->pdev->dev, "error, recovery st %x\n",
--				atomic_read(&instance->adprecovery));
-+			   atomic_read(&instance->adprecovery));
- 		return ;
- 	}
- 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+index fa33caecc91d..636db9a87457 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+@@ -1164,7 +1164,7 @@ EXPORT_SYMBOL(mlxsw_afa_block_append_vlan_modify);
+  * trap control. In addition, the Trap / Discard action enables activating
+  * SPAN (port mirroring).
+  *
+- * The Trap with userdef action action has the same functionality as
++ * The Trap with userdef action has the same functionality as
+  * the Trap action with addition of user defined value that can be set
+  * and used by higher layer applications.
+  */
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.c b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
+index 34bec9cd572c..0107cbc32fc7 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_env.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
+@@ -180,7 +180,7 @@ mlxsw_env_query_module_eeprom(struct mlxsw_core *mlxsw_core, u8 slot_index,
+ 		} else {
+ 			/* When reading upper pages 1, 2 and 3 the offset
+ 			 * starts at 0 and I2C high address is used. Please refer
+-			 * refer to "Memory Organization" figure in SFF-8472
++			 * to "Memory Organization" figure in SFF-8472
+ 			 * specification for graphical depiction.
+ 			 */
+ 			i2c_addr = MLXSW_REG_MCIA_I2C_ADDR_HIGH;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
+index 10ae1115de6c..24ff305a2995 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
+@@ -15,7 +15,7 @@ struct mlxsw_sp2_kvdl_part_info {
+ 	 * usage bits we need and how many indexes there are
+ 	 * represented by a single bit. This could be got from FW
+ 	 * querying appropriate resources. So have the resource
+-	 * ids for for this purpose in partition definition.
++	 * ids for this purpose in partition definition.
+ 	 */
+ 	enum mlxsw_res_id usage_bit_count_res_id;
+ 	enum mlxsw_res_id index_range_res_id;
 -- 
-2.20.1.7.g153144c
+2.36.1
 
