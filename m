@@ -2,97 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11338C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiF3XJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57154 "EHLO
+        id S231571AbiF3XJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231415AbiF3XJH (ORCPT
+        with ESMTP id S230416AbiF3XJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:09:07 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8275459255
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:08:52 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id p9so354794ilj.7
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:08:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YiiXu0cJQMjKT9LWIZtpdMHTzQKvQmFUOcOzqfaSgnc=;
-        b=O5IlcubKk1akgyzHocPgRmTw5e1MigaldWyYjxl8krtlQCHvJD3s4E/q81eBXKaVsR
-         OayB3KoufAz/h5HYCMmH7KatlSSeVWZnJ2FF8mMRXVH0BlKiQTVwszwQVUO66jWfh2Pz
-         Uj222pe0+VRAo1LY2TmCU996jUwe5f8pJZ40A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YiiXu0cJQMjKT9LWIZtpdMHTzQKvQmFUOcOzqfaSgnc=;
-        b=WQVBG8GV/LRuf8s+OsYeCp2GWXM+sI4YF0sRMH0DqM14Nb899854cPdzl387HxRkEO
-         xzeplkCEsU0/yo6sfRDxdICDZKaoBql8MvRurXxrSk3+mNO7j8L3n0L85Qu1PYmNpsLs
-         AgfeciGGMc7cFbNMvIFvNX0RcKVh2ycFdwtJNnfmFFEDmIrfCLGYBQz77xpEcsLdV8Rp
-         vI26hi/H4ZkHybX6wZ+NVxPY9wSrg5XtZ8c1WJqLjvkTLNmGQfJftmovBNg6m3ECP7FA
-         we/kovjaeGLZtOshzuX3hV7nWVKYzUsioh3sBJqYZFd7bRRYP+wNYIzh5X90WRsOK3Yu
-         4GGw==
-X-Gm-Message-State: AJIora8YM646Hm6XkCLtzVgyo5FRkNAV5ce3dl8w5GH7JED1cUWf7DNs
-        L8FHEkSua5UHf8zdoVZpiDQm0g==
-X-Google-Smtp-Source: AGRyM1t3pKNB8xI7EOxG2dZ+/6KxR82KNXzrViwF/zYm/45XKBAwaOhk9AOcuOX82X8fkRKRBM4hEg==
-X-Received: by 2002:a05:6e02:1708:b0:2da:9eef:5bc8 with SMTP id u8-20020a056e02170800b002da9eef5bc8mr6705255ill.153.1656630531637;
-        Thu, 30 Jun 2022 16:08:51 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id h8-20020a92d848000000b002da9f82c703sm4454762ilq.5.2022.06.30.16.08.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jun 2022 16:08:51 -0700 (PDT)
-Subject: Re: [PATCH 4.19 00/49] 4.19.250-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220630133233.910803744@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <6c82f710-04b2-c6b5-fd35-708633f3b49f@linuxfoundation.org>
-Date:   Thu, 30 Jun 2022 17:08:50 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 30 Jun 2022 19:09:29 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCD658FF6;
+        Thu, 30 Jun 2022 16:09:10 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LYvCj5btvz4xYN;
+        Fri,  1 Jul 2022 09:09:05 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1656630546;
+        bh=QBTNcuUm751z0k80BSQeAPHxagbvkvhrF/MhPGElgIM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=hR9GJ6/xLqNEtpml6gBusBL17BkWfzbkXRStStpSduPShT2COmXcr6C+DUYuntM/4
+         CToOeHdo6YEx1PfZGdLfxPyxitjdYekC8Rx4tYfUwa1XS0x/WIL3jgxp1rrmQ43ICo
+         iThAGBTkIZLVL1+lS5VANJm+T0BrOrNLYAC0G9aMz4BYler1QfkeqNPSr2DA+KsKGI
+         D6Qa/o5inzZMMYBN7nDi+LWCA/H72fH014IsKudtpBX73IeOiWyny0D3ixXVtaNPmG
+         4vaKgucCywTw4bWsET108rR4TS16Kbwuv+8HCimwbr3rkRSLjH1pm+b4GuS1Eik1tP
+         ofOU2DARIEfag==
+Date:   Fri, 1 Jul 2022 08:56:57 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the amdgpu tree
+Message-ID: <20220701085657.230b2e13@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/Pe/PFjYc42CpnmZK=c=P=GR";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/30/22 7:46 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.250 release.
-> There are 49 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.250-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+--Sig_/Pe/PFjYc42CpnmZK=c=P=GR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Compiled and booted on my test system. No dmesg regressions.
+Hi all,
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+In commits
 
-thanks,
--- Shuah
+  41a2d4df3d72 ("drm/amd/display: Fix __nedf2 undefined for 32 bit compilat=
+ion")
+  916ae9cc5385 ("drm/amd/display: Fix __muldf3 undefined for 32 bit compila=
+tion")
+  f20eb84561de ("drm/amd/display: Fix __floatunsidf undefined for 32 bit co=
+mpilation")
+
+Fixes tag
+
+  Fixes: 9b79abf79c414 ("drm/amd/display: add CLKMGR changes for DCN32/321")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Maybe you meant
+
+Fixes: 265280b99822 ("drm/amd/display: add CLKMGR changes for DCN32/321")
+
+In commit
+
+  204b022bcbbf ("drm/amd/display: Fix __umoddi3 undefined for 32 bit compil=
+ation")
+
+Fixes tag
+
+  Fixes: 9b0e0d433f74 ("drm/amd/display: Add dependant changes for DCN32/32=
+1")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Maybe you meant
+
+Fixes: d3dfceb58de5 ("drm/amd/display: Add dependant changes for DCN32/321")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Pe/PFjYc42CpnmZK=c=P=GR
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK+KjkACgkQAVBC80lX
+0Gz3bgf/W/aaApNBPysZiDfpX0ddOI72IFtdSyeiNTseWCBGfEfLCUIxxURSPBk8
+vT5Nj4oXvB6Smu0drN2o0qFaN66y7GOjfIrvahl5uJs+BbtUtt+RGbBuM3xd0Mjl
+FuCkDa3U10uuC8EMxNBeC5OBznnQmIfA88VHBNEYEXsLuj2kRCTZjZT/HGg0zk9Q
+A2prbZmYZls04fYt8z7jyK7VfSlguWtpV+4kiisLH9ddbkO9BHxN/0Zq4pKrNAB2
+yLGLl4cew72Rys5RRVYrtKT7XJASSGegh6B0MFLPtaAwPvfq7Ff2Pz8OjkOWZB1z
+76qoEB60p4698WpMeSUnOeNibLY/zA==
+=yHLb
+-----END PGP SIGNATURE-----
+
+--Sig_/Pe/PFjYc42CpnmZK=c=P=GR--
