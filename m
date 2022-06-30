@@ -2,138 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE355CCA473
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40319C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236356AbiF3VAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 17:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
+        id S237179AbiF3VBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiF3VAm (ORCPT
+        with ESMTP id S230148AbiF3VBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 17:00:42 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CEE4D15C;
-        Thu, 30 Jun 2022 14:00:41 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3E15522236;
-        Thu, 30 Jun 2022 23:00:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656622837;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GTq9btX49e5m0sHPzYxeKQ7Uls84RHJVy8UQyM+UM8A=;
-        b=ItoMZoyefxT3MZJQUuqoJungzv5DfQ3AS7XH6+UKt/7YkBckqSB1Le3Zes3vqUivhnYZgb
-        t5HdLmGbNNcWbSiHZ5RKcNhyiImpM7tQ8aRVo5SRmcX/v6oqxb7+rul4AlW/oeAnBFFrZ9
-        j/wpJJna3ICu9q5NCQBOKVV2RKgxIwI=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+        Thu, 30 Jun 2022 17:01:10 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2082.outbound.protection.outlook.com [40.107.244.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4E24D15C
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:01:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KCeNj1V/QKvGBiEuuWV1wWPDebShCx50GOwqG1En6mzTSLAxmOEKd2OBRJFBdXZa5BqRG9oUCpPN9WwJViFBmfCXO5N0C38KF36kmo2/8cAX3z2FH8uG4ne7aIzjFfjuad2hruZ0n1NsrmN9GfYfzOYXgo3xnZmGYfDVyX+IaWfmNlHmYI91+wmi6GinexRW7Eb9RIBKGcgDJQIGU049Nu0no3gO4ohy6hGz2a0gmMcGztPA8s6+5Ie+gImWRouoH5dqzt0shUXjahD54P4elT/JPy44/PsVuhrMauoRkk5P8WMst19VuPqBEc5izVX9+fsJrpwMIatzfZUnMpaVnA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ywYaWMjDSqaNx7KmlEQ1YOtkMZTrZXGFn2NV/1RcntM=;
+ b=j2ITRgD4tsJTIQhg4ODXzM+rdlo/F+JOz96yDMYqaiq4q+VCEbzo23cZD9hs8hA21XJlfTev+vbijjoa7hbB2dky+DMLCJuaqa8QSpGTba6caWmPHV4nFx4UitPH4+oA/v/X6mYasofkufiqrg7DBo9rNc3gmZCA+xGulfxJSyEbeTz/MmcMfCFHOKOWNuA9OFcVgdHcyIucmRsYgt+53wEb8LvZarjL4G2Z0k315wIH3bsrmC/Ct4+D+39jCTJDLH9UK2XExE0HpxL1JzohnoSYKtLRRYv/vQL4CavKMSPWXTbqSWwhImbb7B4EYIOf2Ni4RMfnF8KNhAuWdRntzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ywYaWMjDSqaNx7KmlEQ1YOtkMZTrZXGFn2NV/1RcntM=;
+ b=pgQFzQTk/1pyDzNUHUDQMWGroZDMeFDC+Jl1sxV+LXPyG2kxHpng1mSOCQ571+ou62wNFVxyuBBEuYcRS9rX2n8r38qOgur6iQBDu1H96FMeq0bmZaj0ftKURNHjGG5UBOyaPOkoAE7xz52yR5AMy2UGSP1+al+dZAUO7ODRrQk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MN2PR12MB2941.namprd12.prod.outlook.com (2603:10b6:208:a9::12)
+ by DM5PR12MB1513.namprd12.prod.outlook.com (2603:10b6:4:d::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5395.15; Thu, 30 Jun 2022 21:01:03 +0000
+Received: from MN2PR12MB2941.namprd12.prod.outlook.com
+ ([fe80::85a:3075:1744:8317]) by MN2PR12MB2941.namprd12.prod.outlook.com
+ ([fe80::85a:3075:1744:8317%7]) with mapi id 15.20.5395.015; Thu, 30 Jun 2022
+ 21:01:03 +0000
+Message-ID: <584fc348-7a60-26a2-af61-9edc4f4830e4@amd.com>
+Date:   Thu, 30 Jun 2022 17:01:01 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] drm/amd/display: Add missing hard-float compile flags for
+ PPC64 builds
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Harry Wentland <harry.wentland@amd.com>
+Cc:     Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Daniel Axtens <dja@axtens.net>
+References: <20220618232737.2036722-1-linux@roeck-us.net>
+From:   Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>
+In-Reply-To: <20220618232737.2036722-1-linux@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Thu, 30 Jun 2022 23:00:37 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: fwnode_for_each_child_node() and OF backend discrepancy
-In-Reply-To: <20220630201617.sqpihcevym7sxqng@soft-dev3-1.localhost>
-References: <CAHp75VcANMjxgS6S24Zh+mz66usb6LBnQk-ENvU9JHSXXsG1DA@mail.gmail.com>
- <9e58f421c27121977d11381530757a6e@walle.cc>
- <3ab8afab-b6b7-46aa-06d4-6740cee422d7@linaro.org>
- <288f56ba9cfad46354203b7698babe91@walle.cc>
- <daaddbd5-1cd4-d3ce-869a-249bdd8aecb9@linaro.org>
- <96f40ae6abf76af3b643b1e1c60d1d9f@walle.cc>
- <f9eb6d94-c451-0c9f-f123-2f1324f68b68@linaro.org>
- <CAHp75VdWdUY-XyGBsQb3i9thCswmBo4UEAEaZCO5MC_HMW+fSQ@mail.gmail.com>
- <20220628205254.gnllvaz7w5jmpfe5@soft-dev3-1.localhost>
- <4782de1fc6692a98bd6c267c2714325f@walle.cc>
- <20220630201617.sqpihcevym7sxqng@soft-dev3-1.localhost>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <b0e3cd1f6b210943030a1e7a355d1a7f@walle.cc>
-X-Sender: michael@walle.cc
+X-ClientProxiedBy: MN2PR15CA0049.namprd15.prod.outlook.com
+ (2603:10b6:208:237::18) To MN2PR12MB2941.namprd12.prod.outlook.com
+ (2603:10b6:208:a9::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 88951fcf-81c5-4a7a-1333-08da5adba46c
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1513:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: g1Mv38kUg4TN44f8JO1t1MUfFrGk1CfEsVBV0Fvw13ARJlb+aFiD+O0zJZ6GobMnELoShRJuL8BHaPy+kWRQ+A8r4ZPK/kvW8mrrfrBO8m5TUmGsImsH1ze8sMwME6b74FIg9FapaYYIg+2/15iW+mnLlN3mEUPf0lYKmwMlDfvysTx1wWCQXHAqWe8fA0c1QGYL1y2hWCHg7mdbHBGrKtiAwlp6odm7Mb4LCEXE5O7FpmO1RrpKkorvQ/f7HEzcunPI5sd1NRlYtdesNVLN1n+N1h1jihvVSFv+bkExadEzZMimABVm7uuW/XEYpQkd20pqv/PBmnR41L9eZI1t5hS5D6UvdrDqkF2LnXvPfVCdglxVuC0vTM0UFEFVUa/2g90fOMEwLlILhgNUGfVp600HC+zbgj6rPvvbIjhZj7CrGxkE4moz5nDGi13d/9BW4ECdw3sElmgmD2w43JvbL92NBzIQFAe0xeJhvMIg1ojE6KPuSn+eY7D5uJpweC+LbXgweffRvvwtrwSx/lFBqIkmN1ah8o1mWsxgJuCerpWFQ5qKJxrcm4RK6OZZhDQlEsIS8AafZiqulYE9NqQiyiBmFEm5PA6e4Pyihu9vkNX3iRmTEKKUiUy2uxkOdQvaFP+Bf8KyVRAox+54M/GhcoC/eogMjUnFr0lhsFN+i/HvOsUJeNuALPAorfeQ2EGcEfBxjbty/dTBGAmDPghC6drxTRaY9q7vAX47MJYdH83xhFbfEpGfhhoTuDOKaqiABbOr+0KVh9votvNUfyibNGzvWyTDmjx8zmFWiiI46S4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB2941.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(396003)(346002)(366004)(53546011)(186003)(6506007)(6512007)(26005)(2616005)(31696002)(41300700001)(86362001)(38100700002)(2906002)(478600001)(66476007)(66556008)(66946007)(36756003)(4326008)(8676002)(966005)(31686004)(83380400001)(6486002)(5660300002)(316002)(110136005)(6636002)(54906003)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dWVYc1Z6NVhobm1FR3F1bURZNFozV3l5QjdFZjJQS2l4RVpmMEtGTUFnTUVB?=
+ =?utf-8?B?R2NaLzE0Yms0ZGtDYTZBUkRnQ1NiMjNZL0Qybi9XaE1aTklKUDNiWUJ1L0dr?=
+ =?utf-8?B?aFNnVmpPR1lIdXRjQVFjVGIvYVZobnY1YnpHUUdIWitlNnNWeDVSaFJYSG5p?=
+ =?utf-8?B?WHZGNi9tbHBsL0YwUkFzTkRrcjFoUHhuemt3S0liRGdPbjBLK0FTS1hrelJN?=
+ =?utf-8?B?dENFUkdobTV1clFTbmxMTXkxUDBLUm1WMG5IQkdaQVVHSWM0M2ZmdEpFNmhu?=
+ =?utf-8?B?UFNzd0gyQTNnWmZnU0VDQ1A0MDYxMEo1L3pwWVFCaVVPMmVwUUp2VE81WlJZ?=
+ =?utf-8?B?bkpCS21ZUVJJS2k3a2xTWTYxRlhPV1ljK1UvcGtrVXBzMTNpNWttVFdZSFFk?=
+ =?utf-8?B?VmRvMzdPcWs0MVBRTk5ETloxNzlOUG5OVVJOczh6U0lmT2hMMzg3ZGRLdElU?=
+ =?utf-8?B?cWdMckVwZmVKQmZtcmVNMGphdllkMGJIYWUyMmVDaXRGN0d5b004aklhVEI0?=
+ =?utf-8?B?VmhlUU9JeldObVdJNzV3c0lRMmJNZmxVNmhVUndVbnBwY1VCVS96RWtGV0dC?=
+ =?utf-8?B?aUZJSHRaaGwzRGdRVmJkZkpyMDBPNlAvblptR0hVNC9UR2ZRNGNQaW9EZ2di?=
+ =?utf-8?B?RERycklMdTE1d2FoZFp4ckFQKzNQaVg4di8zd0Flb01BOWFqaGFycGI0bTZa?=
+ =?utf-8?B?djM1Q0pjbHQwalBJMUpZQVpXNjhtNXlHekZ5eHlpYllheGJtVkZVbHI4QWVy?=
+ =?utf-8?B?NzF1RXF2YUtIOTNFVGd6UjVaOUplRDRiL0g3OXIvcmdoNG1QS1JWOXhDbjFz?=
+ =?utf-8?B?NGxoOWpobWdNdU9vZWZIOXVpelI2UXZxMUZ3TkJyK2dJRy9ldGRIcnBYQXJW?=
+ =?utf-8?B?a2VOYlhPdlNGd2M1aEZHdWlMTXZWN01rdThJYmtXdnBpb3loSXZxUlRYRDJo?=
+ =?utf-8?B?RTJqaUtkREo3MG84d0gyNitZaHFESjFJd21lV2JPMm5leW1QUHRLMUhsSVEy?=
+ =?utf-8?B?SHVOc0hTeDNRZStNLzlEeGJnUlNrTm5jbTYvcFJpZkJqNlZGOHhDaWxJb0E3?=
+ =?utf-8?B?NkNWek41UW9aL0xabkRXNkNybDAwSHFZZTZqc0o3ZVQ5Vk9tNVRJSG1oRVln?=
+ =?utf-8?B?S1VQUHdNU1cyQm5kMWcrSjRFcVpVUGtIVCs0VGpnTmxIaEtIY1FvTWc2aU5y?=
+ =?utf-8?B?TWRlVG9zUFM1cGFlL25zdGQ0Q3B2NU10eGVKb1REKzFINzA1V0JNNURkWjRN?=
+ =?utf-8?B?RURwZlIvSEJMc2toeDJ0N2d3bnRPc2tVM0lPL3VhTnk5Zk42OTZzakN4bkJY?=
+ =?utf-8?B?a0I2LzNSNFQwV00rYkR2bVRWK3J1djdaSDBnaFM5dWJFc2VqbUhic0o4dU0x?=
+ =?utf-8?B?amhUMkNYVHVRdXQ0NmpGeHppOC9VR0dNQnByK2RKWGEyQ0loQUx0VEN3a1Rk?=
+ =?utf-8?B?YmNHQkdrdWV0ck5QWTJtQ040bFdWZGNnOUQrUHVCcmpNKy9xckJXMjF4SHps?=
+ =?utf-8?B?UHlqcnIzOEYyTmExdm9hR0hMMFBHYWN2Wndna0Z5VnlmRUhQMTUwRU1mdHgw?=
+ =?utf-8?B?V3N4Z2VhNW1JTnJSVi9qNlh5YTQxVWd5TGExeU9iK1o1allRZ1RYVDhOdVNP?=
+ =?utf-8?B?MmZsM3ZZYXFOby9lWHAvdXhHTXZIcFZaTmlpeEVoMStvRXU4TjZHWWRaWXJr?=
+ =?utf-8?B?ekhmcTIwK3FMYXZCREZmSkdnRmhseXdsdDE1cWYyN2poUU1TazFxN20zK0Iy?=
+ =?utf-8?B?RnFLeVAyazNRbXlpWEVDakdYKzhRd0JQVWxlV282V1FaMFNtak56RzZqNzFR?=
+ =?utf-8?B?Uno3UEhJZTJEaTd0K3lNNlZXeUZIa1F4S0lHUjEyVHg5VUplVm9FeXlORytw?=
+ =?utf-8?B?Wk5LMHN2YTFvQUJObllaL0drbytnTjNYK2prOEw1VmFib2VlOEtQdzIzZmR4?=
+ =?utf-8?B?RHl3ckxicnk1NW90K01wd1c4ZmEyb2lUWHMzQmRLQXIwRE9kRnZKQUhKOXQ1?=
+ =?utf-8?B?QzFVVmhMaVg0ZVVZWGVMd3phYS9vNlQ4SGZ1MHduTGdMNTdYRGRoSTIvenp6?=
+ =?utf-8?B?TE5jV1cxdW90WDY0aEhyWmcwWisveDlDbDcrbVV2SGNIT3Y0Vnl4MDNtTlpG?=
+ =?utf-8?Q?e7vX4qftbxb8q7GJQ0WEOBIRp?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88951fcf-81c5-4a7a-1333-08da5adba46c
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB2941.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2022 21:01:03.0792
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y+te8ttIDozBVp5HZCHTD/suoeOq0Tv6C4AxEv2K1nDZ2j8lGo0cwB014W2lc9DVUsfg7eQfnkPXd/jjegA+xg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1513
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-06-30 22:16, schrieb Horatiu Vultur:
-> The 06/28/2022 23:07, Michael Walle wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> Am 2022-06-28 22:52, schrieb Horatiu Vultur:
->> > The 06/28/2022 22:28, Andy Shevchenko wrote:
->> > > EXTERNAL EMAIL: Do not click links or open attachments unless you know
->> > > the content is safe
->> > >
->> > > On Tue, Jun 28, 2022 at 5:17 PM Krzysztof Kozlowski
->> > > <krzysztof.kozlowski@linaro.org> wrote:
->> > > > On 28/06/2022 17:09, Michael Walle wrote:
->> >
->> > Hi,
->> >
->> > Sorry for joint this late.
->> >
->> > >
->> > > ...
->> > >
->> > > > > Mh. Assume a SoC with an integrated ethernet switch. Some ports
->> > > > > are externally connected, some don't. I'd think they should be disabled,
->> > > > > no? Until now, all bindings I know, treat them as disabled. But OTOH
->> > > > > you still need to do some configurations on them, like disable port
->> > > > > forwarding, disable them or whatever. So the hardware is present, but
->> > > > > it is not connected to anything.
->> > > >
->> > > > I see your point and the meaning is okay... except that drivers don't
->> > > > touch disabled nodes. If a device (with some address space) is disabled,
->> > > > you do not write there "please be power off". Here the case is a bit
->> > > > different, because I think ports do not have their own address space.
->> > > > Yet it contradicts the logic - something is disabled in DT and you
->> > > > expect to perform actual operations on it.
->> > >
->> > > You beat me up to this comment, I also see a contradiction of what
->> > > "disabled" means in your, Michael, case and what it should be.
->> > >
->> > > If you need to perform an operation on some piece of HW, it has not to
->> > > be disabled.
->> > >
->> > > Or, you may deduce them by knowing how many ports in hardware (this is
->> > > usually done not by counting the nodes, but by a property) and do
->> > > whatever you want on ones, you have  not listed (by port_num) in the
->> > > array of parsed children.
->> >
->> > It is not possible to have a defined for the MAX number of ports that
->> > supported by lan966x. Which is 8. And assigned that define to
->> > num_phys_ports instead of counting the entries in DT?
->> 
->> You mean also for the lan9662? I'm pretty sure that doesn't
->> work. Have a look where num_phys_ports is used. One random
->> example:
->> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/microchip/lan966x/lan966x_main.c#L874
->> 
->> So if your switch only has 4 ports, then I'd guess you'll
->> access a non-existing register.
+
+
+On 2022-06-18 19:27, Guenter Roeck wrote:
+> ppc:allmodconfig builds fail with the following error.
 > 
-> Underneath lan662 and lan668 is the same chip. The HW people disable
-> some ports/features on each platform but from what I know you will 
-> still
-> be able to access the registers.
+> powerpc64-linux-ld:
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+> 		uses hard float,
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+> 		uses soft float
+> powerpc64-linux-ld:
+> 	failed to merge target specific data of file
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+> powerpc64-linux-ld:
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+> 		uses hard float,
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+> 		uses soft float
+> powerpc64-linux-ld:
+> 	failed to merge target specific data of
+> 	file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+> powerpc64-linux-ld:
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+> 		uses hard float,
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+> 		uses soft float
+> powerpc64-linux-ld:
+> 	failed to merge target specific data of file
+> 	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+> 
+> The problem was introduced with commit 41b7a347bf14 ("powerpc: Book3S
+> 64-bit outline-only KASAN support") which adds support for KASAN. This
+> commit in turn enables DRM_AMD_DC_DCN because KCOV_INSTRUMENT_ALL and
+> KCOV_ENABLE_COMPARISONS are no longer enabled. As result, new files are
+> compiled which lack the selection of hard-float.
+> 
+> Fixes: 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN support")
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Daniel Axtens <dja@axtens.net>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>   drivers/gpu/drm/amd/display/dc/dcn31/Makefile  | 4 ++++
+>   drivers/gpu/drm/amd/display/dc/dcn315/Makefile | 4 ++++
+>   drivers/gpu/drm/amd/display/dc/dcn316/Makefile | 4 ++++
+>   3 files changed, 12 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+> index ec041e3cda30..74be02114ae4 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+> +++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+> @@ -15,6 +15,10 @@ DCN31 = dcn31_resource.o dcn31_hubbub.o dcn31_hwseq.o dcn31_init.o dcn31_hubp.o
+>   	dcn31_apg.o dcn31_hpo_dp_stream_encoder.o dcn31_hpo_dp_link_encoder.o \
+>   	dcn31_afmt.o dcn31_vpg.o
+>   
+> +ifdef CONFIG_PPC64
+> +CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o := -mhard-float -maltivec
+> +endif
+> +
+>   AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
+>   
+>   AMD_DISPLAY_FILES += $(AMD_DAL_DCN31)
+> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+> index 59381d24800b..1395c1ced8c5 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+> @@ -25,6 +25,10 @@
+>   
+>   DCN315 = dcn315_resource.o
+>   
+> +ifdef CONFIG_PPC64
+> +CFLAGS_$(AMDDALPATH)/dc/dcn315/dcn315_resource.o := -mhard-float -maltivec
+> +endif
+> +
+>   AMD_DAL_DCN315 = $(addprefix $(AMDDALPATH)/dc/dcn315/,$(DCN315))
+>   
+>   AMD_DISPLAY_FILES += $(AMD_DAL_DCN315)
+> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+> index 819d44a9439b..c3d2dd78f1e2 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+> @@ -25,6 +25,10 @@
+>   
+>   DCN316 = dcn316_resource.o
+>   
+> +ifdef CONFIG_PPC64
+> +CFLAGS_$(AMDDALPATH)/dc/dcn316/dcn316_resource.o := -mhard-float -maltivec
+> +endif
+> +
+>   AMD_DAL_DCN316 = $(addprefix $(AMDDALPATH)/dc/dcn316/,$(DCN316))
+>   
+>   AMD_DISPLAY_FILES += $(AMD_DAL_DCN316)
 
-I noticed that there are still 8 ports in the register description and
-assumed that it was wrong [1]. But ok, that makes sense in some way.
-OTOH that means, we cannot do the guesswork Vladimir proposed.
+Hi,
 
--michael
+I don't want to re-introduce those FPU flags for DCN31/DCN314/DCN316 
+since we fully isolate FPU operations for those ASICs inside the DML 
+folder. Notice that we have the PPC64 in the DML Makefile:
 
-[1] https://microchip-ung.github.io/lan9662_reginfo/reginfo_LAN9662.html
+https://gitlab.freedesktop.org/agd5f/linux/-/blob/amd-staging-drm-next/drivers/gpu/drm/amd/display/dc/dml/Makefile
+
+Could you share what you see without your patch in the 
+amd-staging-drm-next? Also:
+* Are you using cross-compilation? If so, could you share your setup?
+* Which GCC/Clang version are you using?
+
+Thanks
+Siqueira
+
