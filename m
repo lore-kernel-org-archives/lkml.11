@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F004C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E279BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 10:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234047AbiF3KXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60074 "EHLO
+        id S234873AbiF3KXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234310AbiF3KWL (ORCPT
+        with ESMTP id S235058AbiF3KWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:22:11 -0400
+        Thu, 30 Jun 2022 06:22:52 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F304552F;
-        Thu, 30 Jun 2022 03:22:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E9545534;
+        Thu, 30 Jun 2022 03:22:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656584523; x=1688120523;
+  t=1656584571; x=1688120571;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XrVdSgF7L+yor5zvc9iVb53OIWV9KFn0hFs6z5pSf/I=;
-  b=cQxTa8TbiyvWMf61tpKEQVDVdb2oqQ+M6lSSH1jsAAicVuWAw1zZFc1v
-   9nTThJCzpNpF3ZI/tZVbf5hKCdWAC1IhoGTJftoGuMVShMfpQ6sykH03E
-   k5Gg9kgQ+hqbFcSW3X7wDNVlVVOQwT8usWNVQS0TuUe28ryUt2hU0fTZL
-   3PQ96H8KEL8SFqpf5pWSEndJvC3EyCQIYMA6wuNIB6Zf1MeV+CnHUUIVt
-   1X2e/SpaXFYP9iuM/TekGvyV9/NFyZUX6CiYpJU2dmYqYnmMhmWRCDOlZ
-   NB0G1C0aSWVxAomga5IOd9DXa4xrAoXERO775A5D0vGZaA3uohZ+OlpdC
-   g==;
+  bh=MicE8fGK5svKumXmAptj8sQUzXdu2+kFAZVOBmDFZw8=;
+  b=KwIJ3L87lH438Wx+JKbkbwRNQxVcqRIQ8bIOzb2g2/y3e+HQQ1odlbHH
+   cohsdC5B44ShZZYqOyu27RjxzWeIZffjYgMuvoz5feCz7X8M+Si66jZoZ
+   TKpzBOMZmowB4npI70nTHrLYQMNFrkuo8MMblmZrEqqDC/YRxu3UegnJa
+   PenH6fpF9GSqTRomVPstEGWf06TVGiDX1TyNQsGQpWPetbAyice7QOcQj
+   vcv5gxwW7cO8+4keuu+I8xR0Oeg2MaEn+Hzfpgsxt5SHttDsVLCi0/fJ2
+   6t0cGye+rIkhsPBPhSqwyDM3Cj/BI8A+goaSwa17nkLCCtksBDHKXoo/a
+   w==;
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="165804737"
+   d="scan'208";a="165805067"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:22:02 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 03:22:50 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 03:22:01 -0700
+ 15.1.2375.17; Thu, 30 Jun 2022 03:22:47 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:21:53 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 30 Jun 2022 03:22:39 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
@@ -61,9 +61,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v14 04/13] net: dsa: microchip: generic access to ksz9477 static and reserved table
-Date:   Thu, 30 Jun 2022 15:50:32 +0530
-Message-ID: <20220630102041.25555-5-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v14 08/13] net: dsa: microchip: lan937x: register mdio-bus
+Date:   Thu, 30 Jun 2022 15:50:36 +0530
+Message-ID: <20220630102041.25555-9-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220630102041.25555-1-arun.ramadoss@microchip.com>
 References: <20220630102041.25555-1-arun.ramadoss@microchip.com>
@@ -74,271 +74,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ksz9477 and lan937x has few difference in the static and reserved
-table register 0x041C. For the ksz9477 if the bit 0 is 1 - read
-operation and 0 - write operation. But for lan937x bit 1:0 used for
-selecting the read/write operation, 01 - write and 10 - read.
-To use ksz9477 mdb add/del and enable_stp_addr for the lan937x, masks &
-shifts are introduced for ksz9477 & lan937x in ksz_common.c. Then
-updated the function with masks & shifts based on the switch instead of
-hard coding it.
+This patch register mdio-bus for the lan937x series switch. mdio read
+and write uses the vphy for accessing the phy register.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz9477.c     | 27 ++++++++++++++-----
- drivers/net/dsa/microchip/ksz9477_reg.h |  3 ---
- drivers/net/dsa/microchip/ksz_common.c  | 35 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h  |  3 +++
- 4 files changed, 58 insertions(+), 10 deletions(-)
+ drivers/net/dsa/microchip/lan937x_main.c | 74 ++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 0e808d27124c..6453642fa14c 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -644,11 +644,16 @@ int ksz9477_mdb_add(struct ksz_device *dev, int port,
- 		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db)
- {
- 	u32 static_table[4];
-+	const u8 *shifts;
-+	const u32 *masks;
- 	u32 data;
- 	int index;
- 	u32 mac_hi, mac_lo;
- 	int err = 0;
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index 5a2e14fe3cf3..7090947cf52c 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -7,6 +7,7 @@
+ #include <linux/iopoll.h>
+ #include <linux/phy.h>
+ #include <linux/of_net.h>
++#include <linux/of_mdio.h>
+ #include <linux/if_bridge.h>
+ #include <linux/math.h>
+ #include <net/dsa.h>
+@@ -136,6 +137,73 @@ void lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
+ 	lan937x_internal_phy_write(dev, addr, reg, val);
+ }
  
-+	shifts = dev->info->shifts;
-+	masks = dev->info->masks;
++static int lan937x_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
++{
++	struct ksz_device *dev = bus->priv;
++	u16 val;
++	int ret;
 +
- 	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
- 	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
- 	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
-@@ -657,8 +662,8 @@ int ksz9477_mdb_add(struct ksz_device *dev, int port,
- 
- 	for (index = 0; index < dev->info->num_statics; index++) {
- 		/* find empty slot first */
--		data = (index << ALU_STAT_INDEX_S) |
--			ALU_STAT_READ | ALU_STAT_START;
-+		data = (index << shifts[ALU_STAT_INDEX]) |
-+			masks[ALU_STAT_READ] | ALU_STAT_START;
- 		ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
- 
- 		/* wait to be finished */
-@@ -702,7 +707,7 @@ int ksz9477_mdb_add(struct ksz_device *dev, int port,
- 
- 	ksz9477_write_table(dev, static_table);
- 
--	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	data = (index << shifts[ALU_STAT_INDEX]) | ALU_STAT_START;
- 	ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
- 
- 	/* wait to be finished */
-@@ -718,11 +723,16 @@ int ksz9477_mdb_del(struct ksz_device *dev, int port,
- 		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db)
- {
- 	u32 static_table[4];
-+	const u8 *shifts;
-+	const u32 *masks;
- 	u32 data;
- 	int index;
- 	int ret = 0;
- 	u32 mac_hi, mac_lo;
- 
-+	shifts = dev->info->shifts;
-+	masks = dev->info->masks;
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
 +
- 	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
- 	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
- 	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
-@@ -731,8 +741,8 @@ int ksz9477_mdb_del(struct ksz_device *dev, int port,
- 
- 	for (index = 0; index < dev->info->num_statics; index++) {
- 		/* find empty slot first */
--		data = (index << ALU_STAT_INDEX_S) |
--			ALU_STAT_READ | ALU_STAT_START;
-+		data = (index << shifts[ALU_STAT_INDEX]) |
-+			masks[ALU_STAT_READ] | ALU_STAT_START;
- 		ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
- 
- 		/* wait to be finished */
-@@ -774,7 +784,7 @@ int ksz9477_mdb_del(struct ksz_device *dev, int port,
- 
- 	ksz9477_write_table(dev, static_table);
- 
--	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	data = (index << shifts[ALU_STAT_INDEX]) | ALU_STAT_START;
- 	ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
- 
- 	/* wait to be finished */
-@@ -1230,9 +1240,12 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 
- int ksz9477_enable_stp_addr(struct ksz_device *dev)
- {
-+	const u32 *masks;
- 	u32 data;
- 	int ret;
- 
-+	masks = dev->info->masks;
++	ret = lan937x_internal_phy_read(dev, addr, regnum, &val);
++	if (ret < 0)
++		return ret;
 +
- 	/* Enable Reserved multicast table */
- 	ksz_cfg(dev, REG_SW_LUE_CTRL_0, SW_RESV_MCAST_ENABLE, true);
- 
-@@ -1242,7 +1255,7 @@ int ksz9477_enable_stp_addr(struct ksz_device *dev)
- 	if (ret < 0)
++	return val;
++}
++
++static int lan937x_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
++				 u16 val)
++{
++	struct ksz_device *dev = bus->priv;
++
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	return lan937x_internal_phy_write(dev, addr, regnum, val);
++}
++
++static int lan937x_mdio_register(struct ksz_device *dev)
++{
++	struct dsa_switch *ds = dev->ds;
++	struct device_node *mdio_np;
++	struct mii_bus *bus;
++	int ret;
++
++	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
++	if (!mdio_np) {
++		dev_err(ds->dev, "no MDIO bus node\n");
++		return -ENODEV;
++	}
++
++	bus = devm_mdiobus_alloc(ds->dev);
++	if (!bus) {
++		of_node_put(mdio_np);
++		return -ENOMEM;
++	}
++
++	bus->priv = dev;
++	bus->read = lan937x_sw_mdio_read;
++	bus->write = lan937x_sw_mdio_write;
++	bus->name = "lan937x slave smi";
++	snprintf(bus->id, MII_BUS_ID_SIZE, "SMI-%d", ds->index);
++	bus->parent = ds->dev;
++	bus->phy_mask = ~ds->phys_mii_mask;
++
++	ds->slave_mii_bus = bus;
++
++	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
++	if (ret) {
++		dev_err(ds->dev, "unable to register MDIO bus %s\n",
++			bus->id);
++	}
++
++	of_node_put(mdio_np);
++
++	return ret;
++}
++
+ int lan937x_reset_switch(struct ksz_device *dev)
+ {
+ 	u32 data32;
+@@ -228,6 +296,12 @@ int lan937x_setup(struct dsa_switch *ds)
  		return ret;
+ 	}
  
--	data = ALU_STAT_START | ALU_RESV_MCAST_ADDR;
-+	data = ALU_STAT_START | ALU_RESV_MCAST_ADDR | masks[ALU_STAT_WRITE];
- 
- 	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
- 	if (ret < 0)
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 2ba0f4449130..d0cce4ca3cf9 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -419,12 +419,9 @@
- 
- #define REG_SW_ALU_STAT_CTRL__4		0x041C
- 
--#define ALU_STAT_INDEX_M		(BIT(4) - 1)
--#define ALU_STAT_INDEX_S		16
- #define ALU_RESV_MCAST_INDEX_M		(BIT(6) - 1)
- #define ALU_STAT_START			BIT(7)
- #define ALU_RESV_MCAST_ADDR		BIT(1)
--#define ALU_STAT_READ			BIT(0)
- 
- #define REG_SW_ALU_VAL_A		0x0420
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 29b42b3b39c9..d631a4bf35ed 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -314,7 +314,24 @@ static const u16 ksz9477_regs[] = {
- 	[S_START_CTRL]			= 0x0300,
- 	[S_BROADCAST_CTRL]		= 0x0332,
- 	[S_MULTICAST_CTRL]		= 0x0331,
-+};
++	ret = lan937x_mdio_register(dev);
++	if (ret < 0) {
++		dev_err(dev->dev, "failed to register the mdio");
++		return ret;
++	}
 +
-+static const u32 ksz9477_masks[] = {
-+	[ALU_STAT_WRITE]		= 0,
-+	[ALU_STAT_READ]			= 1,
-+};
-+
-+static const u8 ksz9477_shifts[] = {
-+	[ALU_STAT_INDEX]		= 16,
-+};
-+
-+static const u32 lan937x_masks[] = {
-+	[ALU_STAT_WRITE]		= 1,
-+	[ALU_STAT_READ]			= 2,
-+};
- 
-+static const u8 lan937x_shifts[] = {
-+	[ALU_STAT_INDEX]		= 8,
- };
- 
- const struct ksz_chip_data ksz_switch_chips[] = {
-@@ -432,6 +449,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = ksz9477_masks,
-+		.shifts = ksz9477_shifts,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -456,6 +475,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = ksz9477_masks,
-+		.shifts = ksz9477_shifts,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -479,6 +500,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = ksz9477_masks,
-+		.shifts = ksz9477_shifts,
- 		.supports_mii = {false, false, true},
- 		.supports_rmii = {false, false, true},
- 		.supports_rgmii = {false, false, true},
-@@ -499,6 +522,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = ksz9477_masks,
-+		.shifts = ksz9477_shifts,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -521,6 +546,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = lan937x_masks,
-+		.shifts = lan937x_shifts,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -539,6 +566,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = lan937x_masks,
-+		.shifts = lan937x_shifts,
- 		.supports_mii = {false, false, false, false, true, true},
- 		.supports_rmii = {false, false, false, false, true, true},
- 		.supports_rgmii = {false, false, false, false, true, true},
-@@ -557,6 +586,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = lan937x_masks,
-+		.shifts = lan937x_shifts,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -579,6 +610,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = lan937x_masks,
-+		.shifts = lan937x_shifts,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -601,6 +634,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz9477_regs,
-+		.masks = lan937x_masks,
-+		.shifts = lan937x_shifts,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index b61e569a9949..5f69dc872752 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -191,6 +191,8 @@ enum ksz_masks {
- 	DYNAMIC_MAC_TABLE_FID,
- 	DYNAMIC_MAC_TABLE_SRC_PORT,
- 	DYNAMIC_MAC_TABLE_TIMESTAMP,
-+	ALU_STAT_WRITE,
-+	ALU_STAT_READ,
- };
- 
- enum ksz_shifts {
-@@ -203,6 +205,7 @@ enum ksz_shifts {
- 	DYNAMIC_MAC_FID,
- 	DYNAMIC_MAC_TIMESTAMP,
- 	DYNAMIC_MAC_SRC_PORT,
-+	ALU_STAT_INDEX,
- };
- 
- struct alu_struct {
+ 	/* The VLAN aware is a global setting. Mixed vlan
+ 	 * filterings are not supported.
+ 	 */
 -- 
 2.36.1
 
