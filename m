@@ -2,99 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DEDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E67CEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 23:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbiF3XS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 19:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
+        id S232763AbiF3XSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 19:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232672AbiF3XSW (ORCPT
+        with ESMTP id S232635AbiF3XSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 19:18:22 -0400
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6F8B05;
-        Thu, 30 Jun 2022 16:18:12 -0700 (PDT)
-Received: by mail-io1-f47.google.com with SMTP id d3so681082ioi.9;
-        Thu, 30 Jun 2022 16:18:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=9gNUQLHFQPHo0E6Bk43UyIkswDGTVgKImpHtKfx0xvg=;
-        b=k8FAvHCTXex7ryloSNa6RtOC1axvQQFUzg1rBPL5WVT21XDUP1KKbuGi/k6VzeEVJP
-         flx8Vc3aeyHY8qRXnCKK/SxAFKhKcvBOLXCyfLBbJhz0JqmeQlHlzM8E1IhL5I0O9DhD
-         qiygQ1gP5TW0xElpF+fpL48cVBPeGyKlXLsE/f4iQwfts/LWCoWyVWY+wRdDYHL/qeUQ
-         lhVsARKeoeTSk7MmCcE1U7CfQXiPoyGyp1qdCZMUxPo0G/r7RI83LJmo27TeiKVXEI7o
-         ap8vw1GnUqvn0ldsmr1alpRgJl8ewujy+UXF/AnkmrUfQe7+83mJoOQDE5NNBhb9ee4C
-         eS+g==
-X-Gm-Message-State: AJIora8E81FX8W3Nn/3jw2t+pHe/vuMVcUwUdVSIi1gOWSWCFeANaTZ5
-        LsC6pe+53Pptsoz1aK302g==
-X-Google-Smtp-Source: AGRyM1su16XuZ3P1C/gSpnPqv5Wj9auvAHesaclQYdz2S96RxT7/OA1S+mZcS20iiJlEwB9ke8UXdg==
-X-Received: by 2002:a05:6638:410e:b0:33c:d3b8:a4bd with SMTP id ay14-20020a056638410e00b0033cd3b8a4bdmr6441419jab.264.1656631091659;
-        Thu, 30 Jun 2022 16:18:11 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id s8-20020a92cb08000000b002d900368a19sm8478492ilo.22.2022.06.30.16.18.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 16:18:11 -0700 (PDT)
-Received: (nullmailer pid 3516208 invoked by uid 1000);
-        Thu, 30 Jun 2022 23:18:09 -0000
-Date:   Thu, 30 Jun 2022 17:18:09 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?77+977+977+9zrHvv70vVGl6ZW4gUGxhdGZvcm0gTGFiKFNSKS/vv73vvLo=?=
-         =?utf-8?B?77+977+977+977+9?= <inki.dae@samsung.com>
-Cc:     'Krzysztof Kozlowski' <krzysztof.kozlowski@linaro.org>,
-        'Seung-Woo Kim' <sw0312.kim@samsung.com>,
-        'Kyungmin Park' <kyungmin.park@samsung.com>,
-        'David Airlie' <airlied@linux.ie>,
-        'Daniel Vetter' <daniel@ffwll.ch>,
-        'Krzysztof Kozlowski' <krzysztof.kozlowski+dt@linaro.org>,
-        'Alim Akhtar' <alim.akhtar@samsung.com>,
-        'Kishon Vijay Abraham I' <kishon@ti.com>,
-        'Vinod Koul' <vkoul@kernel.org>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-phy@lists.infradead.org
-Subject: Re: [PATCH 1/2] drm/exynos: MAINTAINERS: move Joonyoung Shim to
- credits
-Message-ID: <20220630231809.GA3514176-robh@kernel.org>
-References: <CGME20220626163558epcas1p3f525431b9fb237bd420ad1453daaf1ac@epcas1p3.samsung.com>
- <20220626163320.6393-1-krzysztof.kozlowski@linaro.org>
- <0de401d88c38$23aeb8e0$6b0c2aa0$@samsung.com>
+        Thu, 30 Jun 2022 19:18:23 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEDDE0E
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 16:18:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656631097; x=1688167097;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Dfm7axZWAKkEl0Yg6555XwrTd6tTzwlKszTTyyKnpIQ=;
+  b=JWhK65Erumn/ez/a8GrFjpnCUJH3Kd1vcnTU/u6tkZTgz7A4c4hLxmSK
+   usptliAgEagLju8TH4Vf7B3mf0A4t+9LotCa+08qevwQFngOJ6x0NvwUS
+   B+0ornxazoTzBKfVi69dN9Nt33uxxGE9sZAwOO5g+7guoo0U7c+Ue4Uzs
+   zTfT+gj9oD1pj/A+CZx2AKeyzP1Ga6u99nvXdyHiTrN/hqjrGMHZXNUac
+   IOs7jrkvy5vXl8OeVzRV+tNzJWo9VjeLXmxcdkEhC9yL0fI7hkZVMNP+3
+   OeWQzmIHfvfrSLJBjR1fiFvQgOj7RgtLcMjzZZhq5UKDCiT/LvIA0kxa6
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="283594277"
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="283594277"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 16:18:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="596012036"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 30 Jun 2022 16:18:15 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o73QM-000DIY-ND;
+        Thu, 30 Jun 2022 23:18:14 +0000
+Date:   Fri, 1 Jul 2022 07:17:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 31/56]
+ ld.lld: error: undefined symbol: fscache_begin_cache_operation
+Message-ID: <202207010740.uNqYXgaP-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0de401d88c38$23aeb8e0$6b0c2aa0$@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 01:16:14PM +0900, ���α�/Tizen Platform Lab(SR)/�Ｚ���� wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@linaro.org]
-> > Sent: Monday, June 27, 2022 1:33 AM
-> > To: Inki Dae <inki.dae@samsung.com>; Seung-Woo Kim
-> > <sw0312.kim@samsung.com>; Kyungmin Park <kyungmin.park@samsung.com>; David
-> > Airlie <airlied@linux.ie>; Daniel Vetter <daniel@ffwll.ch>; Rob Herring
-> > <robh+dt@kernel.org>; Krzysztof Kozlowski
-> > <krzysztof.kozlowski+dt@linaro.org>; Alim Akhtar
-> <alim.akhtar@samsung.com>;
-> > Kishon Vijay Abraham I <kishon@ti.com>; Vinod Koul <vkoul@kernel.org>;
-> > linux-kernel@vger.kernel.org; dri-devel@lists.freedesktop.org;
-> > devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
-> > samsung-soc@vger.kernel.org; linux-phy@lists.infradead.org
-> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > Subject: [PATCH 1/2] drm/exynos: MAINTAINERS: move Joonyoung Shim to
-> > credits
-> > 
-> > Emails to Joonyoung Shim bounce ("550 5.1.1 Recipient address rejected:
-> > User unknown"), so move him to credits file.
-> > 
-> 
-> Applied.
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
+head:   acac17cdb0f9f6db9fc03eea371e399906146f96
+commit: 822bd57525b5cf3038ef9d8086398a8aecc95161 [31/56] fscache: Add a function to begin an cache op from a netfslib request
+config: arm64-randconfig-r001-20220629 (https://download.01.org/0day-ci/archive/20220701/202207010740.uNqYXgaP-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a774ba7f60d1fef403b5507b1b1a7475d3684d71)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/822bd57525b5cf3038ef9d8086398a8aecc95161
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
+        git checkout 822bd57525b5cf3038ef9d8086398a8aecc95161
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Both patches or just this one?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> ld.lld: error: undefined symbol: fscache_begin_cache_operation
+   >>> referenced by addr.c
+   >>>               ceph/addr.o:(ceph_netfs_ops) in archive fs/built-in.a
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
