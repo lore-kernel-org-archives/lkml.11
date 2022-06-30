@@ -2,86 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0569C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237102AbiF3OPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        id S235806AbiF3OTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237203AbiF3OO1 (ORCPT
+        with ESMTP id S237361AbiF3OSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:14:27 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FDA53D0D
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 07:00:00 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2ef5380669cso179772507b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 07:00:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=T+ea1w8QRkUddSdVnFCFkg9e+PUNpgdO8wtU8eLtl2c=;
-        b=bm5xbqUhoFqxsUzsolFkWpWmVa3yxNJ/oI3RgKxw7J5R71k2WEYGS5kZDr4PS9cLjF
-         C0IBLt/IfQbIkso14ODe2bFQUuv2rNwuxnmVHLRDNSpZXgymttSCff/Nv6v9xzjKonuL
-         6Mhbgbv0tvyETNZ77A2JWvba5VrGuTfm1R/S2qZYRlkZaQdn4t7mth0oLsxxwgfwJGgM
-         31XSsdLp5Ss46yxewm2/qz9p0alUjrfCW0q5V9mwEx1ppoECg7dU5BTZDunWpVe6yRWl
-         AkhZhqwTF4UQy5fn3C57peUR+X4T3zJdreQJ58VfoRQhd8TStPruf2KnU1zBJ2n1ZoTl
-         8BTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=T+ea1w8QRkUddSdVnFCFkg9e+PUNpgdO8wtU8eLtl2c=;
-        b=bFnR7BJaSL0RL1YYM1afRWhWjgqod33vl9l5rWJPcKQBjljpqeGHbRvEZzQrGagPFO
-         Bvx0saEDM13MpwBqFnsqPGb2PDiqDANC8bT8R4SJr1DWSVJRv371w4lmdKOUbIHx8ryM
-         b3DqWmXQ5LOhrtnOro5/131bQWZClrVEITHnH0iJlFSQLbLnNu9eiF0DvrQoXUvZS69+
-         8XKw6Teyh03Lq76hmPvVJwWvEOwazyoIbDgpq3krOd7aNVxdfJEpJJgRMUS2mBgMzyfl
-         nlcOM1U1t7ogwFLH9li3z6lg6m6ElGWgaManl0ZSRWm8yzfMLDKiT5Pc0PHahwvO6s65
-         fADg==
-X-Gm-Message-State: AJIora/7zAD3CKqwe3lFHHv1RHDkMoMd/R8dR4DflOfN6cPiS67FlA6l
-        d4uvofNQUH/AzecbiUCdhzbxgiTNsCKZYCacPFsGsQ==
-X-Google-Smtp-Source: AGRyM1thKLDhXRDe9ieaVjZQXmKEPL9hxWESyEef3JZPDrCUIjmNqZlOreFKFwaQodOti/6xuSbB01HkQRmpW1HnlZc=
-X-Received: by 2002:a81:5c9:0:b0:317:b1a5:bf8b with SMTP id
- 192-20020a8105c9000000b00317b1a5bf8bmr10445328ywf.489.1656597599582; Thu, 30
- Jun 2022 06:59:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
- <CANn89iLpW4zFf2ABADbMNERPFr=OrAXEMm6ZgCxYA5VpcDpYTw@mail.gmail.com> <8b012bbd-a175-5699-1f26-108dd52fc5b7@linux.alibaba.com>
-In-Reply-To: <8b012bbd-a175-5699-1f26-108dd52fc5b7@linux.alibaba.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 30 Jun 2022 15:59:48 +0200
-Message-ID: <CANn89iJ-2BTR1SfFBbNG3jSgHK-TuRE_J-Khbbednu=pWnFtmw@mail.gmail.com>
-Subject: Re: [PATCH] net: hinic: avoid kernel hung in hinic_get_stats64()
-To:     maqiao <mqaio@linux.alibaba.com>
-Cc:     David Miller <davem@davemloft.net>,
+        Thu, 30 Jun 2022 10:18:01 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630DA50734;
+        Thu, 30 Jun 2022 07:02:50 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8706422249;
+        Thu, 30 Jun 2022 16:02:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1656597768;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kQyPXI6BbKEMw79a2SpHlnjL6fNse7z3fzhKXJC+JgE=;
+        b=UxGIrxTsgQhg7VufwvHneZzuNX03YyraxI2wV56TO6geI0Mi+JOI71vvIH+zt8Dp6EHDW6
+        TZVCUqvYthlUdNoyNFuc93hNMikSr1Vmz+SNCulN6TX4dlFwxKfHxfJNC/Zzp6nniXxlMB
+        8uTTtAXf2Ls7IpahT2OVItd4EBcjcK8=
+From:   Michael Walle <michael@walle.cc>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, gustavoars@kernel.org,
-        cai.huoqing@linux.dev, Aviad Krawczyk <aviad.krawczyk@huawei.com>,
-        zhaochen6@huawei.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next 3/4] net: lan966x: add new compatible microchip,lan9668-switch
+Date:   Thu, 30 Jun 2022 16:02:36 +0200
+Message-Id: <20220630140237.692986-4-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220630140237.692986-1-michael@walle.cc>
+References: <20220630140237.692986-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 3:57 PM maqiao <mqaio@linux.alibaba.com> wrote:
->
->
->
-> =E5=9C=A8 2022/6/30 =E4=B8=8B=E5=8D=886:23, Eric Dumazet =E5=86=99=E9=81=
-=93:
+The old generic compatible string is deprecated. Add the new specific
+one.
 
-> > Note: The following is racy, because multiple threads can call
-> > hinic_get_stats64() at the same time.
-> > It needs a loop, see include/linux/u64_stats_sync.h for detail.
-> Thanks for reminding, and I noticed that nic_tx_stats/nic_rx_stats has
-> been protected by u64_stats_sync in update_t/rx_stats(), it seems that
-> it's unnecessary to use spinlock in update_nic_stats().
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-It is necessary to use the spinlock to protect writers among themselves.
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index d611b52d3a07..adc5474041a6 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -35,6 +35,7 @@ static const struct lan966x_info lan9668_info = {
+ };
+ 
+ static const struct of_device_id lan966x_match[] = {
++	{ .compatible = "microchip,lan9668-switch", .data = &lan9668_info },
+ 	{ .compatible = "microchip,lan966x-switch", .data = &lan9668_info },
+ 	{ }
+ };
+-- 
+2.30.2
 
-
->
-> I will send v2 as soon as possible, thanks.
