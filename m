@@ -2,78 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC941C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 001F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234630AbiF3Jkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
+        id S234587AbiF3Jla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234532AbiF3JkR (ORCPT
+        with ESMTP id S234607AbiF3JlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:40:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F8E43AC4;
-        Thu, 30 Jun 2022 02:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DE56B827E3;
-        Thu, 30 Jun 2022 09:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1E27BC341CA;
-        Thu, 30 Jun 2022 09:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656582013;
-        bh=RY4c7Pum0yD/rlWNWuPghL/24LB9E8YULvxz3Jn4vsA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=T0VlJwQJ3Dt59UgcmGhcz+EZl+yiCOCupLsKaZoV8A10tZvI3Qh7c77/lrSQ/uxGR
-         tTtAnreuB3Uzgf7up8qNa8BMVxc650SfqBTHZ+f5qZ66UPJaeuJ0RN43sxrIs8oS4A
-         ZJNN9Zbob2AoVslMcyXCfl4HjWZcaY9+5OERTO/7nqmUd9x7t73F1mCP0T1WVKnF3q
-         yeeIJ+EMy6mzr5u7tFG1q1P7tNkbN34BAS782HN0KJcc4NqC6W9803J8BhKhZuMx67
-         PHFGKG6tsP9OwXPdbKlgQ6YDNt5Inxn5SOIlHLDwYJMA0Q/sdFeHohuMN62BG4Izju
-         6nNt74+Y3sjKA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0096EE49BBB;
-        Thu, 30 Jun 2022 09:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 30 Jun 2022 05:41:14 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5364814006;
+        Thu, 30 Jun 2022 02:40:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656582057; x=1688118057;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=dwAueDKLQ5Wcmqhh92BjSYr6GZvEHvGnhzXkG3KxdNQ=;
+  b=PDBwujgpfg8U/NFBlU6rfA/AByrfhFP3GlThcpAz3vnvh3cB1PL0dVAK
+   dA1NZhM3BGQZSKa4EONFAt7gXcsGzFarPSsM7UBAYiRm7edIOvN2hxbQy
+   xs8OO6BxZ49a034p3+S1zKnqGh4bzH2Fv0I1BMcCtBvwpCHt0paocaJq0
+   AVoFjZA90Mk7W4EWhqEvs9oyBnAN33KL0p7wZv/XOoQzxBLf5f16UZI+b
+   QJWVIkTR7gnKwdhlwAyIddvYLSud6xn5F5EMixsOLO6XFX5dW/FNo2RtM
+   t5tSZaz3NOnZG1HbcOJAAkGA706k44bCfeMylwK8L8MjyXNRqqMn0I4H2
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="262706057"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="262706057"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:40:57 -0700
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="647818956"
+Received: from emontau-mobl2.ger.corp.intel.com ([10.249.42.178])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:40:55 -0700
+Date:   Thu, 30 Jun 2022 12:40:53 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Sort headers alphabetically
+In-Reply-To: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <f5522869-8140-1362-442f-43605fb564@linux.intel.com>
+References: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 RESEND] net: rose: fix UAF bugs caused by timer handler
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165658201299.18643.15753400397215370488.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Jun 2022 09:40:12 +0000
-References: <20220629002640.5693-1-duoming@zju.edu.cn>
-In-Reply-To: <20220629002640.5693-1-duoming@zju.edu.cn>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
-        edumazet@google.com, davem@davemloft.net, ralf@linux-mips.org
+Content-Type: multipart/mixed; boundary="8323329-1638031143-1656582057=:1605"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+--8323329-1638031143-1656582057=:1605
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-On Wed, 29 Jun 2022 08:26:40 +0800 you wrote:
-> There are UAF bugs in rose_heartbeat_expiry(), rose_timer_expiry()
-> and rose_idletimer_expiry(). The root cause is that del_timer()
-> could not stop the timer handler that is running and the refcount
-> of sock is not managed properly.
+On Thu, 30 Jun 2022, Andy Shevchenko wrote:
+
+> For the sake of better maintenance, sort included headers alphabetically.
+> While at it, split the serial group of headers which makes clear the
+> subsystem the driver belongs to.
 > 
-> One of the UAF bugs is shown below:
-> 
-> [...]
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Here is the summary with links:
-  - [v3,RESEND] net: rose: fix UAF bugs caused by timer handler
-    https://git.kernel.org/netdev/net/c/9cc02ede6962
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ i.
 
-
+--8323329-1638031143-1656582057=:1605--
