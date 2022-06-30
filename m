@@ -2,75 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB2AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 993BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 16:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235827AbiF3QHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 12:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44314 "EHLO
+        id S235704AbiF3QHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 12:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235595AbiF3QHX (ORCPT
+        with ESMTP id S235595AbiF3QHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 12:07:23 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5A7D1AF0F
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 09:07:18 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 25UFwEc4007186;
-        Thu, 30 Jun 2022 10:58:14 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 25UFwBWR007180;
-        Thu, 30 Jun 2022 10:58:11 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 30 Jun 2022 10:58:11 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        Sathvika Vasireddy <sv@linux.vnet.ibm.com>,
-        Marc Zyngier <maz@kernel.org>, "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-Message-ID: <20220630155811.GK25951@gate.crashing.org>
-References: <20220624183238.388144-1-sv@linux.ibm.com> <20220624183238.388144-12-sv@linux.ibm.com> <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu> <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com> <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu> <1656572413.pbaqjnrrcl.naveen@linux.ibm.com> <da86c612-186d-364f-cc36-bcf942a97083@csgroup.eu> <1656583960.0nqsj977sr.naveen@linux.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1656583960.0nqsj977sr.naveen@linux.ibm.com>
-User-Agent: Mutt/1.4.2.3i
+        Thu, 30 Jun 2022 12:07:33 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07331AF0F;
+        Thu, 30 Jun 2022 09:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656605251; x=1688141251;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=rVhsXlaSwKi/9ubObaloKtFwrU5bFv0Ykt9c96pG2MQ=;
+  b=ax5J+5tQdvIcxPU6y1UC1yWN2tNzAWlDqY8RJPqdTc5r9AZBRep9kx/8
+   4mAABkrvMKCteDXnqix8pDVQkDtkNoQ64L3IHXGDHAMJL3klqc8VHs7jA
+   ox0qKfSbnuZoejJ+f/mx+01b4JAt5Kn0ARTmKFxt0R4lXZ6Rc67TVtCqV
+   uXMX4OkE47CBnx8s0/rOctzVHAB9EzZdF6USmnmkx4zrIB+XcaSw6XJda
+   lXrHWL3faKHQAksIERb2wKMNZcWPoKRo6HcKUwVvccAqq+SBX9U8HOWmK
+   2OLz5eo7qMeyI3m2UqRXYRSC9CTuihknXNiMyz0RqLsXp2FNZ2JSokuPp
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262793284"
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="262793284"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 09:07:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
+   d="scan'208";a="647949156"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by fmsmga008.fm.intel.com with ESMTP; 30 Jun 2022 09:07:31 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 30 Jun 2022 09:07:30 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 30 Jun 2022 09:07:29 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
+ Thu, 30 Jun 2022 09:07:29 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     "Bae, Chang Seok" <chang.seok.bae@intel.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>
+CC:     "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-man@vger.kernel.org" <linux-man@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 1/1] Documentation/x86: Add the AMX enabling example
+Thread-Topic: [PATCH v2 1/1] Documentation/x86: Add the AMX enabling example
+Thread-Index: AQHYjArQoWH2w9xfNEO7Tn8LqH3Xaq1nBneQgAGCcwD//5Sy0A==
+Date:   Thu, 30 Jun 2022 16:07:29 +0000
+Message-ID: <66c4d3ce4c6f47d29bbb951739555eb0@intel.com>
+References: <20220629224235.20589-1-chang.seok.bae@intel.com>
+ <20220629224235.20589-2-chang.seok.bae@intel.com>
+ <f01bb09a504240059a79a94c24ba4eba@intel.com>
+ <5c67d453-a162-b61d-4a27-c854f1ef3587@intel.com>
+In-Reply-To: <5c67d453-a162-b61d-4a27-c854f1ef3587@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 04:07:47PM +0530, Naveen N. Rao wrote:
-> Objtool classifies 'ud2' as INSN_BUG, and 'int3' as INSN_TRAP. In x86 
-> BUG(), there is no need for an annotation since objtool assumes that 
-> 'ud2' terminates control flow. But, for __WARN_FLAGS(), since 'ud2' is 
-> used, an explicit annotate_reachable() is needed. That's _reachable_, to 
-> indicate that the control flow can continue with the next instruction.
-> 
-> On powerpc, we should (eventually) classify all trap variants as 
-> INSN_TRAP. Even in the absence of that classification today, objtool 
-> assumes that control flow continues with the next instruction. With your 
-> work to utilize asm goto for __WARN_FLAGS(), with no extra instructions 
-> being generated, I think it is appropriate to just use 
-> __builtin_unreachable() and to not use the annotation.
-> 
-> In any case, we are only hitting this since gcc is generating a 'bl' due 
-> to that annotation. We are not yet enabling full objtool validation on 
-> powerpc, so I think we can revisit this at that point.
-
-See also <https://gcc.gnu.org/PR99299> that asks for a __builtin_trap()
-variant that does not terminate control flow ("that is recoverable").
-
-
-Segher
+PiBCdXQgdGhlc2Ugc3RhdGUgY29tcG9uZW50cyBhcmUgYXJjaGl0ZWN0dXJhbC4gV2hpbGUgdGhp
+cyBjYW4gaGVscCANCj4gdXNlcnNwYWNlIGFueXdheSwgc2F5aW5nICJYU1RBVEUgY29tcG9uZW50
+IiBoZXJlIGFuZCBvbiB0aGUgbWFuLXBhZ2UgaXMgDQo+IHByb2JhYmx5IGl0IGFzIHRoZXkgYXJl
+IGFscmVhZHkgZGVmaW5lZCBpbiB0aGUgeDg2IHNwZWMuDQoNCkFuIGFwcGxpY2F0aW9uIHdyaXRl
+ciBjYW4ndCB1c2U6DQoNCiMgaW5jbHVkZSB7eDg2IHNwZWN9Ig0KDQp0byBnZXQgdGhlc2UgdmFs
+dWVzIC4uLiBpZiBhcHBsaWNhdGlvbnMgbmVlZCB0aGVtIHRvIGZpbmQgb3V0IGlmIEFNWCBpcyBw
+cmVzZW50LA0KYW5kIHRvIGVuYWJsZSBpdCwgdGhlbiB0aGV5IG5lZWQgYW4gQVBJLg0KDQpNYXli
+ZSB5b3VyIGV4YW1wbGUgY29kZSBzaG91bGQganVzdCBiZSBhIGxpYnJhcnkgcm91dGluZT8gU28g
+YXBwbGljYXRpb24gd3JpdGVycw0KY2FuIGp1c3QgZG86DQoNCglpZiAoIWludGVsX2FteF9lbmFi
+bGUoKSkgew0KCQllcnJvciBtZXNzYWdlLCBvciBmYWxsIGJhY2sgdG8gbm9uLUFNWCBpbXBsZW1l
+bnRhdGlvbg0KCX0NCg0Kd2l0aG91dCBoYXZpbmcgdG8gd29ycnkgYWJvdXQgdGhvc2UgI2RlZmlu
+ZXMuDQoNCi1Ub255DQo=
