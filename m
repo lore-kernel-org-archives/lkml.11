@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB6E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A74C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235963AbiF3N4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
+        id S235721AbiF3N5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235795AbiF3Nzy (ORCPT
+        with ESMTP id S234875AbiF3N4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:55:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4387E022;
-        Thu, 30 Jun 2022 06:50:43 -0700 (PDT)
+        Thu, 30 Jun 2022 09:56:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2049D3A738;
+        Thu, 30 Jun 2022 06:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DC6CB82AF6;
-        Thu, 30 Jun 2022 13:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E89C34115;
-        Thu, 30 Jun 2022 13:50:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D64AF620C8;
+        Thu, 30 Jun 2022 13:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E404DC34115;
+        Thu, 30 Jun 2022 13:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597036;
-        bh=cpzX2yLedtKk+NI8PK8akJRB/FF4SgQBdiOZDYm3AXc=;
+        s=korg; t=1656597042;
+        bh=h2JDpZP4+w1S5GsPmV9MTCOP0Fo5GPWS2uYAPZKXtpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Azgg+66EUaMplU2/Zof78g0sqL4VEwEirdF11U3hIIFlHRVPAJ3bzbkYbmAa1yGDX
-         n8XtCGYB7jhHDPHIOYdOrUgRhPct2MAHYzuP5OBRG2ISnqPfhzZg50TzueNQsBUc6/
-         bXFXuYb51t2HqLJyw8fzNQyP1ZwF86kZnKc4MTNA=
+        b=0nqK8F2MvJ44QC0rj7aU2nPUi5bgNpq5GVY7TpdNNobx161FvsBDQhqv6haafjwhA
+         jAsiNMwINFlYyac0M5K0nuPtvKmgFQ3UIAmOxMnORBom/hbhuj6vqq56BA3c6ujBcc
+         VaOEY7lx79ws4azGuChyKfM/+Sw2flKcZIcsBSwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 09/35] bonding: ARP monitor spams NETDEV_NOTIFY_PEERS notifiers
-Date:   Thu, 30 Jun 2022 15:46:20 +0200
-Message-Id: <20220630133232.715988145@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH 4.14 35/35] swiotlb: skip swiotlb_bounce when orig_addr is zero
+Date:   Thu, 30 Jun 2022 15:46:46 +0200
+Message-Id: <20220630133233.472267211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -50,48 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jay Vosburgh <jay.vosburgh@canonical.com>
+From: Liu Shixin <liushixin2@huawei.com>
 
-[ Upstream commit 7a9214f3d88cfdb099f3896e102a306b316d8707 ]
+After patch ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE"),
+swiotlb_bounce will be called in swiotlb_tbl_map_single unconditionally.
+This requires that the physical address must be valid, which is not always
+true on stable-4.19 or earlier version.
+On stable-4.19, swiotlb_alloc_buffer will call swiotlb_tbl_map_single with
+orig_addr equal to zero, which cause such a panic:
 
-The bonding ARP monitor fails to decrement send_peer_notif, the
-number of peer notifications (gratuitous ARP or ND) to be sent. This
-results in a continuous series of notifications.
+Unable to handle kernel paging request at virtual address ffffb77a40000000
+...
+pc : __memcpy+0x100/0x180
+lr : swiotlb_bounce+0x74/0x88
+...
+Call trace:
+ __memcpy+0x100/0x180
+ swiotlb_tbl_map_single+0x2c8/0x338
+ swiotlb_alloc+0xb4/0x198
+ __dma_alloc+0x84/0x1d8
+ ...
 
-Correct this by decrementing the counter for each notification.
+On stable-4.9 and stable-4.14, swiotlb_alloc_coherent wille call map_single
+with orig_addr equal to zero, which can cause same panic.
 
-Reported-by: Jonathan Toppins <jtoppins@redhat.com>
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Fixes: b0929915e035 ("bonding: Fix RTNL: assertion failed at net/core/rtnetlink.c for ab arp monitor")
-Link: https://lore.kernel.org/netdev/b2fd4147-8f50-bebd-963a-1a3e8d1d9715@redhat.com/
-Tested-by: Jonathan Toppins <jtoppins@redhat.com>
-Reviewed-by: Jonathan Toppins <jtoppins@redhat.com>
-Link: https://lore.kernel.org/r/9400.1655407960@famine
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by skipping swiotlb_bounce when orig_addr is zero.
+
+Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ lib/swiotlb.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 7096fcbf699c..98e64f63d9ba 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3048,9 +3048,11 @@ static void bond_activebackup_arp_mon(struct bonding *bond)
- 		if (!rtnl_trylock())
- 			return;
- 
--		if (should_notify_peers)
-+		if (should_notify_peers) {
-+			bond->send_peer_notif--;
- 			call_netdevice_notifiers(NETDEV_NOTIFY_PEERS,
- 						 bond->dev);
-+		}
- 		if (should_notify_rtnl) {
- 			bond_slave_state_notify(bond);
- 			bond_slave_link_notify(bond);
--- 
-2.35.1
-
+--- a/lib/swiotlb.c
++++ b/lib/swiotlb.c
+@@ -607,7 +607,8 @@ found:
+ 	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+ 	 * kernel memory) to user-space.
+ 	 */
+-	swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
++	if (orig_addr)
++		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+ 	return tlb_addr;
+ }
+ EXPORT_SYMBOL_GPL(swiotlb_tbl_map_single);
 
 
