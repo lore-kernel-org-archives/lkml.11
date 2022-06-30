@@ -2,114 +2,540 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F162EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 20:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 20:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237219AbiF3UQf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 16:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
+        id S236952AbiF3USI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 16:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236609AbiF3UQe (ORCPT
+        with ESMTP id S236035AbiF3USE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 16:16:34 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F5F443E9;
-        Thu, 30 Jun 2022 13:16:33 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UJIOxk032478;
-        Thu, 30 Jun 2022 20:16:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=M6h9rCysIve6/4MDaHJHBceL6zoUVpld+iy6duPPzP0=;
- b=jX9iLG/g2sitZSwByO685IZ4yIqR6tfDHbHifOtPDSiHAnsvvrM7k2xAgTp6mUepWObK
- OvkCGIUXRwj2+J9SuAjJN92y1qms59OkItRG3stD/QRvTxYL4wMEASYD9XJwSlkak3FX
- 9w670aVFElkjeaJbpLG3Zenc7Wa/iRl/6ZR1W/FxHP2KBJy82igWoyB5M1GhtrUBAlx/
- NU0dPSi2ydkYdLeILm6bxHxPuSIQ4pFwvDgnIBrDb/qKl4yYuWOjMcKnmTzLrc1rQIjY
- WhzaNChqBsoAfjcpvrTVVv3EXwGTyMR7JENvysTtEztOq+5ZTpHmP3hxeE9qvG02Y+67 8A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1hvf9xhu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 20:16:20 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25UJTGv7015427;
-        Thu, 30 Jun 2022 20:16:19 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1hvf9xgk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 20:16:19 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UK5wN8020235;
-        Thu, 30 Jun 2022 20:16:18 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma05wdc.us.ibm.com with ESMTP id 3gwt0anab1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 20:16:18 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UKGH3C56361320
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Jun 2022 20:16:17 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C9C98112062;
-        Thu, 30 Jun 2022 20:16:17 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C3C37112061;
-        Thu, 30 Jun 2022 20:16:15 +0000 (GMT)
-Received: from [9.211.159.19] (unknown [9.211.159.19])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 30 Jun 2022 20:16:15 +0000 (GMT)
-Message-ID: <fcac3b0c-db51-7221-d41a-0207144f131c@linux.ibm.com>
-Date:   Thu, 30 Jun 2022 22:16:14 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v2] net/smc: align the connect behaviour with TCP
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Cc:     davem@davemloft.net, Karsten Graul <kgraul@linux.ibm.com>,
-        liuyacan@corp.netease.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com
-References: <26d43c65-1f23-5b83-6377-3327854387c4@linux.ibm.com>
- <20220524125725.951315-1-liuyacan@corp.netease.com>
- <3bb9366d-f271-a603-a280-b70ae2d59c00@linux.ibm.com>
- <8a15e288-4534-501c-8b3d-c235ae93238f@linux.ibm.com>
- <d2195919-1cae-b667-c137-8398848fa43b@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <d2195919-1cae-b667-c137-8398848fa43b@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: CMcqm8_cUXiFbKypbQ8ENzzB_-f_ZRuU
-X-Proofpoint-GUID: HYvWA50vrtk3KRUVBO-AnEw9-n12uWtq
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 30 Jun 2022 16:18:04 -0400
+X-Greylist: delayed 5247 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 13:18:00 PDT
+Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D2F48820
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 13:18:00 -0700 (PDT)
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx0.riseup.net (Postfix) with ESMTPS id 4LYqQH5R6Bz9t3L;
+        Thu, 30 Jun 2022 20:17:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1656620280; bh=rZZfTNxDEfSl9tcQU9oW6x/190Q0/3YhqEuXiQqK7tc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Z5neAfw6FJWvEKnmAkKxtDBR7mPWFcK0KThHbQk4FVFiBHM37Xk8glqfnW+rJ/7+i
+         A3WXYYudiN+65jLligELy9ICWxm+cHUzkDCHkCXG2pUtA8UR4ke0fJRordPIPpK/AY
+         DdzFkdZ9XNyPI9IOPnmYvmgVvL06xCwm6odfYA88=
+X-Riseup-User-ID: 73FC3F6A18D9107A66E3AA6B055D55B48A0B10E1AC8A5CB2E4BDF06A14DB9CA1
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4LYqQC4893z1yTL;
+        Thu, 30 Jun 2022 20:17:55 +0000 (UTC)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH] drm/amd/display: Remove duplicate code across dcn30 and dcn31
+Date:   Thu, 30 Jun 2022 17:17:41 -0300
+Message-Id: <20220630201741.991501-1-mairacanal@riseup.net>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_14,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- impostorscore=0 mlxscore=0 phishscore=0 clxscore=1015 bulkscore=0
- mlxlogscore=933 priorityscore=1501 lowpriorityscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206300073
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The function CalculateBytePerPixelAnd256BBlockSizes was defined four
+times: on display_mode_vba_30.c, display_rq_dlg_calc_30.c,
+display_mode_vba_31.c and display_rq_dlg_calc_31.c. In order to avoid
+code duplication, the CalculateBytePerPixelAnd256BBlockSizes is defined
+on display_mode_vba_30.h and used across dcn30 and dcn31.
 
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+---
+ .../dc/dml/dcn30/display_mode_vba_30.c        |  21 +---
+ .../dc/dml/dcn30/display_mode_vba_30.h        |  11 ++
+ .../dc/dml/dcn30/display_rq_dlg_calc_30.c     |  93 +--------------
+ .../dc/dml/dcn31/display_mode_vba_31.c        | 106 +-----------------
+ .../dc/dml/dcn31/display_rq_dlg_calc_31.c     |  91 +--------------
+ 5 files changed, 23 insertions(+), 299 deletions(-)
 
-On 30.06.22 16:29, Guangguan Wang wrote:
-> I'm so sorry I missed the last emails for this discussion.
-> 
-> Yes, commit (86434744) is the trigger of the problem described in
-> https://lore.kernel.org/linux-s390/45a19f8b-1b64-3459-c28c-aebab4fd8f1e@linux.alibaba.com/#t  .
-> 
-> And I have tested just remove the following lines from smc_connection() can solve the above problem.
-> if (smc->use_fallback)
->       goto out;
-> 
-> I aggree that partly reverting the commit (86434744) is a better solution.
-> 
-> Thanks,
-> Guangguan Wang
-Thank you for your effort!
-Would you like to revert this patch? We'll revert the commit (86434744) 
-partly.
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
+index fb4aa4c800bf..842eb94ebe04 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
+@@ -712,18 +712,6 @@ static double CalculateUrgentLatency(
+ 		double UrgentLatencyAdjustmentFabricClockReference,
+ 		double FabricClockSingle);
+ 
+-static bool CalculateBytePerPixelAnd256BBlockSizes(
+-		enum source_format_class SourcePixelFormat,
+-		enum dm_swizzle_mode SurfaceTiling,
+-		unsigned int *BytePerPixelY,
+-		unsigned int *BytePerPixelC,
+-		double       *BytePerPixelDETY,
+-		double       *BytePerPixelDETC,
+-		unsigned int *BlockHeight256BytesY,
+-		unsigned int *BlockHeight256BytesC,
+-		unsigned int *BlockWidth256BytesY,
+-		unsigned int *BlockWidth256BytesC);
+-
+ void dml30_recalculate(struct display_mode_lib *mode_lib)
+ {
+ 	ModeSupportAndSystemConfiguration(mode_lib);
+@@ -2095,7 +2083,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
+ 	DTRACE("   return_bus_bw      = %f", v->ReturnBW);
+ 
+ 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
+-		CalculateBytePerPixelAnd256BBlockSizes(
++		dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 				v->SourcePixelFormat[k],
+ 				v->SurfaceTiling[k],
+ 				&v->BytePerPixelY[k],
+@@ -3165,7 +3153,7 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
+ 
+ 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
+ 
+-		CalculateBytePerPixelAnd256BBlockSizes(
++		dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 				mode_lib->vba.SourcePixelFormat[k],
+ 				mode_lib->vba.SurfaceTiling[k],
+ 				&BytePerPixY[k],
+@@ -3218,7 +3206,7 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
+ 			&dummysinglestring);
+ }
+ 
+-static bool CalculateBytePerPixelAnd256BBlockSizes(
++void dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 		enum source_format_class SourcePixelFormat,
+ 		enum dm_swizzle_mode SurfaceTiling,
+ 		unsigned int *BytePerPixelY,
+@@ -3305,7 +3293,6 @@ static bool CalculateBytePerPixelAnd256BBlockSizes(
+ 		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+ 		*BlockWidth256BytesC = 256U / *BytePerPixelC / *BlockHeight256BytesC;
+ 	}
+-	return true;
+ }
+ 
+ static double CalculateTWait(
+@@ -3709,7 +3696,7 @@ void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
+ 	/*Bandwidth Support Check*/
+ 
+ 	for (k = 0; k <= v->NumberOfActivePlanes - 1; k++) {
+-		CalculateBytePerPixelAnd256BBlockSizes(
++		dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 				v->SourcePixelFormat[k],
+ 				v->SurfaceTiling[k],
+ 				&v->BytePerPixelY[k],
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+index 4e249eaabfdb..daaf0883b84d 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+@@ -39,5 +39,16 @@ double dml30_CalculateWriteBackDISPCLK(
+ 		long   WritebackDestinationWidth,
+ 		unsigned int HTotal,
+ 		unsigned int WritebackLineBufferSize);
++void dml30_CalculateBytePerPixelAnd256BBlockSizes(
++		enum source_format_class SourcePixelFormat,
++		enum dm_swizzle_mode SurfaceTiling,
++		unsigned int *BytePerPixelY,
++		unsigned int *BytePerPixelC,
++		double       *BytePerPixelDETY,
++		double       *BytePerPixelDETC,
++		unsigned int *BlockHeight256BytesY,
++		unsigned int *BlockHeight256BytesC,
++		unsigned int *BlockWidth256BytesY,
++		unsigned int *BlockWidth256BytesC);
+ 
+ #endif /* __DML30_DISPLAY_MODE_VBA_H__ */
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
+index 747167083dea..8179be1f34bb 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
+@@ -29,6 +29,7 @@
+ #include "../display_mode_vba.h"
+ #include "../dml_inline_defs.h"
+ #include "display_rq_dlg_calc_30.h"
++#include "display_mode_vba_30.h"
+ 
+ static bool is_dual_plane(enum source_format_class source_format)
+ {
+@@ -275,96 +276,6 @@ static void handle_det_buf_split(struct display_mode_lib *mode_lib,
+ 		full_swath_bytes_packed_c);
+ }
+ 
+-static bool CalculateBytePerPixelAnd256BBlockSizes(
+-		enum source_format_class SourcePixelFormat,
+-		enum dm_swizzle_mode SurfaceTiling,
+-		unsigned int *BytePerPixelY,
+-		unsigned int *BytePerPixelC,
+-		double       *BytePerPixelDETY,
+-		double       *BytePerPixelDETC,
+-		unsigned int *BlockHeight256BytesY,
+-		unsigned int *BlockHeight256BytesC,
+-		unsigned int *BlockWidth256BytesY,
+-		unsigned int *BlockWidth256BytesC)
+-{
+-	if (SourcePixelFormat == dm_444_64) {
+-		*BytePerPixelDETY = 8;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 8;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_32 || SourcePixelFormat == dm_rgbe) {
+-		*BytePerPixelDETY = 4;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 4;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_16) {
+-		*BytePerPixelDETY = 2;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_8) {
+-		*BytePerPixelDETY = 1;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 1;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_rgbe_alpha) {
+-		*BytePerPixelDETY = 4;
+-		*BytePerPixelDETC = 1;
+-		*BytePerPixelY = 4;
+-		*BytePerPixelC = 1;
+-	} else if (SourcePixelFormat == dm_420_8) {
+-		*BytePerPixelDETY = 1;
+-		*BytePerPixelDETC = 2;
+-		*BytePerPixelY = 1;
+-		*BytePerPixelC = 2;
+-	} else if (SourcePixelFormat == dm_420_12) {
+-		*BytePerPixelDETY = 2;
+-		*BytePerPixelDETC = 4;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 4;
+-	} else {
+-		*BytePerPixelDETY = 4.0 / 3;
+-		*BytePerPixelDETC = 8.0 / 3;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 4;
+-	}
+-
+-	if ((SourcePixelFormat == dm_444_64 || SourcePixelFormat == dm_444_32
+-			|| SourcePixelFormat == dm_444_16 || SourcePixelFormat == dm_444_8
+-			|| SourcePixelFormat == dm_mono_16 || SourcePixelFormat == dm_mono_8
+-			|| SourcePixelFormat == dm_rgbe)) {
+-		if (SurfaceTiling == dm_sw_linear) {
+-			*BlockHeight256BytesY = 1;
+-		} else if (SourcePixelFormat == dm_444_64) {
+-			*BlockHeight256BytesY = 4;
+-		} else if (SourcePixelFormat == dm_444_8) {
+-			*BlockHeight256BytesY = 16;
+-		} else {
+-			*BlockHeight256BytesY = 8;
+-		}
+-		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+-		*BlockHeight256BytesC = 0;
+-		*BlockWidth256BytesC = 0;
+-	} else {
+-		if (SurfaceTiling == dm_sw_linear) {
+-			*BlockHeight256BytesY = 1;
+-			*BlockHeight256BytesC = 1;
+-		} else if (SourcePixelFormat == dm_rgbe_alpha) {
+-			*BlockHeight256BytesY = 8;
+-			*BlockHeight256BytesC = 16;
+-		} else if (SourcePixelFormat == dm_420_8) {
+-			*BlockHeight256BytesY = 16;
+-			*BlockHeight256BytesC = 8;
+-		} else {
+-			*BlockHeight256BytesY = 8;
+-			*BlockHeight256BytesC = 8;
+-		}
+-		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+-		*BlockWidth256BytesC = 256U / *BytePerPixelC / *BlockHeight256BytesC;
+-	}
+-	return true;
+-}
+-
+ static void get_meta_and_pte_attr(struct display_mode_lib *mode_lib,
+ 	display_data_rq_dlg_params_st *rq_dlg_param,
+ 	display_data_rq_misc_params_st *rq_misc_param,
+@@ -450,7 +361,7 @@ static void get_meta_and_pte_attr(struct display_mode_lib *mode_lib,
+ 	double byte_per_pixel_det_y = 0;
+ 	double byte_per_pixel_det_c = 0;
+ 
+-	CalculateBytePerPixelAnd256BBlockSizes((enum source_format_class)(source_format),
++	dml30_CalculateBytePerPixelAnd256BBlockSizes((enum source_format_class)(source_format),
+ 		(enum dm_swizzle_mode)(tiling),
+ 		&bytes_per_element_y,
+ 		&bytes_per_element_c,
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_mode_vba_31.c b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_mode_vba_31.c
+index 448fbbcdf88a..9957313da732 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_mode_vba_31.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_mode_vba_31.c
+@@ -26,6 +26,7 @@
+ #include "dc.h"
+ #include "dc_link.h"
+ #include "../display_mode_lib.h"
++#include "dml/dcn30/display_mode_vba_30.h"
+ #include "display_mode_vba_31.h"
+ #include "../dml_inline_defs.h"
+ 
+@@ -86,17 +87,6 @@ typedef struct {
+ #define BPP_INVALID 0
+ #define BPP_BLENDED_PIPE 0xffffffff
+ 
+-static bool CalculateBytePerPixelAnd256BBlockSizes(
+-		enum source_format_class SourcePixelFormat,
+-		enum dm_swizzle_mode SurfaceTiling,
+-		unsigned int *BytePerPixelY,
+-		unsigned int *BytePerPixelC,
+-		double *BytePerPixelDETY,
+-		double *BytePerPixelDETC,
+-		unsigned int *BlockHeight256BytesY,
+-		unsigned int *BlockHeight256BytesC,
+-		unsigned int *BlockWidth256BytesY,
+-		unsigned int *BlockWidth256BytesC);
+ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib);
+ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib);
+ static unsigned int dscceComputeDelay(
+@@ -2220,7 +2210,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
+ 	DTRACE("   return_bus_bw      = %f", v->ReturnBW);
+ 
+ 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
+-		CalculateBytePerPixelAnd256BBlockSizes(
++		dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 				v->SourcePixelFormat[k],
+ 				v->SurfaceTiling[k],
+ 				&v->BytePerPixelY[k],
+@@ -3415,7 +3405,7 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
+ 
+ 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
+ 
+-		CalculateBytePerPixelAnd256BBlockSizes(
++		dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 				v->SourcePixelFormat[k],
+ 				v->SurfaceTiling[k],
+ 				&BytePerPixY[k],
+@@ -3469,94 +3459,6 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
+ 			&dummysinglestring);
+ }
+ 
+-static bool CalculateBytePerPixelAnd256BBlockSizes(
+-		enum source_format_class SourcePixelFormat,
+-		enum dm_swizzle_mode SurfaceTiling,
+-		unsigned int *BytePerPixelY,
+-		unsigned int *BytePerPixelC,
+-		double *BytePerPixelDETY,
+-		double *BytePerPixelDETC,
+-		unsigned int *BlockHeight256BytesY,
+-		unsigned int *BlockHeight256BytesC,
+-		unsigned int *BlockWidth256BytesY,
+-		unsigned int *BlockWidth256BytesC)
+-{
+-	if (SourcePixelFormat == dm_444_64) {
+-		*BytePerPixelDETY = 8;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 8;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_32 || SourcePixelFormat == dm_rgbe) {
+-		*BytePerPixelDETY = 4;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 4;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_16) {
+-		*BytePerPixelDETY = 2;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_8) {
+-		*BytePerPixelDETY = 1;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 1;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_rgbe_alpha) {
+-		*BytePerPixelDETY = 4;
+-		*BytePerPixelDETC = 1;
+-		*BytePerPixelY = 4;
+-		*BytePerPixelC = 1;
+-	} else if (SourcePixelFormat == dm_420_8) {
+-		*BytePerPixelDETY = 1;
+-		*BytePerPixelDETC = 2;
+-		*BytePerPixelY = 1;
+-		*BytePerPixelC = 2;
+-	} else if (SourcePixelFormat == dm_420_12) {
+-		*BytePerPixelDETY = 2;
+-		*BytePerPixelDETC = 4;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 4;
+-	} else {
+-		*BytePerPixelDETY = 4.0 / 3;
+-		*BytePerPixelDETC = 8.0 / 3;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 4;
+-	}
+-
+-	if ((SourcePixelFormat == dm_444_64 || SourcePixelFormat == dm_444_32 || SourcePixelFormat == dm_444_16 || SourcePixelFormat == dm_444_8 || SourcePixelFormat == dm_mono_16
+-			|| SourcePixelFormat == dm_mono_8 || SourcePixelFormat == dm_rgbe)) {
+-		if (SurfaceTiling == dm_sw_linear) {
+-			*BlockHeight256BytesY = 1;
+-		} else if (SourcePixelFormat == dm_444_64) {
+-			*BlockHeight256BytesY = 4;
+-		} else if (SourcePixelFormat == dm_444_8) {
+-			*BlockHeight256BytesY = 16;
+-		} else {
+-			*BlockHeight256BytesY = 8;
+-		}
+-		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+-		*BlockHeight256BytesC = 0;
+-		*BlockWidth256BytesC = 0;
+-	} else {
+-		if (SurfaceTiling == dm_sw_linear) {
+-			*BlockHeight256BytesY = 1;
+-			*BlockHeight256BytesC = 1;
+-		} else if (SourcePixelFormat == dm_rgbe_alpha) {
+-			*BlockHeight256BytesY = 8;
+-			*BlockHeight256BytesC = 16;
+-		} else if (SourcePixelFormat == dm_420_8) {
+-			*BlockHeight256BytesY = 16;
+-			*BlockHeight256BytesC = 8;
+-		} else {
+-			*BlockHeight256BytesY = 8;
+-			*BlockHeight256BytesC = 8;
+-		}
+-		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+-		*BlockWidth256BytesC = 256U / *BytePerPixelC / *BlockHeight256BytesC;
+-	}
+-	return true;
+-}
+-
+ static double CalculateTWait(unsigned int PrefetchMode, double DRAMClockChangeLatency, double UrgentLatency, double SREnterPlusExitTime)
+ {
+ 	if (PrefetchMode == 0) {
+@@ -4066,7 +3968,7 @@ void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
+ 	/*Bandwidth Support Check*/
+ 
+ 	for (k = 0; k < v->NumberOfActivePlanes; k++) {
+-		CalculateBytePerPixelAnd256BBlockSizes(
++		dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 				v->SourcePixelFormat[k],
+ 				v->SurfaceTiling[k],
+ 				&v->BytePerPixelY[k],
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+index dd570689c095..c94cf6e01e25 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+@@ -27,94 +27,7 @@
+ #include "../display_mode_vba.h"
+ #include "../dml_inline_defs.h"
+ #include "display_rq_dlg_calc_31.h"
+-
+-static bool CalculateBytePerPixelAnd256BBlockSizes(
+-		enum source_format_class SourcePixelFormat,
+-		enum dm_swizzle_mode SurfaceTiling,
+-		unsigned int *BytePerPixelY,
+-		unsigned int *BytePerPixelC,
+-		double *BytePerPixelDETY,
+-		double *BytePerPixelDETC,
+-		unsigned int *BlockHeight256BytesY,
+-		unsigned int *BlockHeight256BytesC,
+-		unsigned int *BlockWidth256BytesY,
+-		unsigned int *BlockWidth256BytesC)
+-{
+-	if (SourcePixelFormat == dm_444_64) {
+-		*BytePerPixelDETY = 8;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 8;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_32 || SourcePixelFormat == dm_rgbe) {
+-		*BytePerPixelDETY = 4;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 4;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_16) {
+-		*BytePerPixelDETY = 2;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_444_8) {
+-		*BytePerPixelDETY = 1;
+-		*BytePerPixelDETC = 0;
+-		*BytePerPixelY = 1;
+-		*BytePerPixelC = 0;
+-	} else if (SourcePixelFormat == dm_rgbe_alpha) {
+-		*BytePerPixelDETY = 4;
+-		*BytePerPixelDETC = 1;
+-		*BytePerPixelY = 4;
+-		*BytePerPixelC = 1;
+-	} else if (SourcePixelFormat == dm_420_8) {
+-		*BytePerPixelDETY = 1;
+-		*BytePerPixelDETC = 2;
+-		*BytePerPixelY = 1;
+-		*BytePerPixelC = 2;
+-	} else if (SourcePixelFormat == dm_420_12) {
+-		*BytePerPixelDETY = 2;
+-		*BytePerPixelDETC = 4;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 4;
+-	} else {
+-		*BytePerPixelDETY = 4.0 / 3;
+-		*BytePerPixelDETC = 8.0 / 3;
+-		*BytePerPixelY = 2;
+-		*BytePerPixelC = 4;
+-	}
+-
+-	if ((SourcePixelFormat == dm_444_64 || SourcePixelFormat == dm_444_32 || SourcePixelFormat == dm_444_16 || SourcePixelFormat == dm_444_8 || SourcePixelFormat == dm_mono_16
+-			|| SourcePixelFormat == dm_mono_8 || SourcePixelFormat == dm_rgbe)) {
+-		if (SurfaceTiling == dm_sw_linear) {
+-			*BlockHeight256BytesY = 1;
+-		} else if (SourcePixelFormat == dm_444_64) {
+-			*BlockHeight256BytesY = 4;
+-		} else if (SourcePixelFormat == dm_444_8) {
+-			*BlockHeight256BytesY = 16;
+-		} else {
+-			*BlockHeight256BytesY = 8;
+-		}
+-		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+-		*BlockHeight256BytesC = 0;
+-		*BlockWidth256BytesC = 0;
+-	} else {
+-		if (SurfaceTiling == dm_sw_linear) {
+-			*BlockHeight256BytesY = 1;
+-			*BlockHeight256BytesC = 1;
+-		} else if (SourcePixelFormat == dm_rgbe_alpha) {
+-			*BlockHeight256BytesY = 8;
+-			*BlockHeight256BytesC = 16;
+-		} else if (SourcePixelFormat == dm_420_8) {
+-			*BlockHeight256BytesY = 16;
+-			*BlockHeight256BytesC = 8;
+-		} else {
+-			*BlockHeight256BytesY = 8;
+-			*BlockHeight256BytesC = 8;
+-		}
+-		*BlockWidth256BytesY = 256U / *BytePerPixelY / *BlockHeight256BytesY;
+-		*BlockWidth256BytesC = 256U / *BytePerPixelC / *BlockHeight256BytesC;
+-	}
+-	return true;
+-}
++#include "dml/dcn30/display_mode_vba_30.h"
+ 
+ static bool is_dual_plane(enum source_format_class source_format)
+ {
+@@ -467,7 +380,7 @@ static void get_meta_and_pte_attr(
+ 	double byte_per_pixel_det_y;
+ 	double byte_per_pixel_det_c;
+ 
+-	CalculateBytePerPixelAnd256BBlockSizes(
++	dml30_CalculateBytePerPixelAnd256BBlockSizes(
+ 			(enum source_format_class) (source_format),
+ 			(enum dm_swizzle_mode) (tiling),
+ 			&bytes_per_element_y,
+-- 
+2.36.1
+
