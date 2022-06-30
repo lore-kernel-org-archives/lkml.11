@@ -2,107 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85118C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 09:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232424AbiF3JTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
+        id S231782AbiF3JVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234376AbiF3JTh (ORCPT
+        with ESMTP id S234178AbiF3JVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:19:37 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EA13617B;
-        Thu, 30 Jun 2022 02:19:26 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id jb13so16491612plb.9;
-        Thu, 30 Jun 2022 02:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fLYDaSCtaI4oKBIoE33L26xaElZMqg+lpnSIEv8ui4M=;
-        b=lQS+XYiWOOir8W0h4O7FLvFCbXwQ1NslTGRCyy+sYAdMQt7kYtHsiTaqWvnlQphT52
-         rmH/898s2V8aSXHRk7DAEazmm7cuRgEGYHW9S+WDmA2fBPpwq0bg5q1af6s9/PQ/dq3x
-         3NCjGiJkt67TAmLgL0zS5JllWOc9ovhWit0j+ex/4XXqr9Ab7Ry1Y0T1T9YwLOuSGQgQ
-         xhVe/3MU46/JycjOULbinyJ2qZCQ/noICqDmAGaY82NNjvJuUZr6n9UeLGidhofdUKW9
-         /O/uVMCJ9vkznFRg4l+tHHyHlS2i3SksSlXnllf82f8lYmIeVgAq216JCnejPGkj1KZ7
-         MKsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fLYDaSCtaI4oKBIoE33L26xaElZMqg+lpnSIEv8ui4M=;
-        b=PMQISoBvzHhZNknGRdgQyXdZRsGYCsdvGLZxv2M+rr3PNxaqJXDAL2GkKZqlzX0ayn
-         n9AS0L+BVKOnJlCfW1wrcGigEhe0nhyV81nKln25qiD84zSp4iY9T1kGsR3loZIc4cJW
-         qa7Bn4aaa1IFfoFchCw4ZEEZn4/qz7GXqUCkg+piTq8sFR0Q5dU3L0Gov9i3vVD5QDZA
-         m49u54wHIL+7jI8fq1ZnlLl3FGlCKOiHPRm31mz+bkdnoFYGPsiLFj8PiNMBmAXzzePc
-         JDA6hNyFf8IhqQMrR96vfvefY5EYhZwNfRm9Vdn+m7GQOiLHBupzB/cA+UVZJuud/UYd
-         RRfA==
-X-Gm-Message-State: AJIora+7AAcqipHfbKArYFt5+PgfrxLC05Hw1nTiC6DpWOpyCG1RdD7h
-        EHnxefBHcQW1eCwHvL/kA9BZ4jQ6mLSNzA==
-X-Google-Smtp-Source: AGRyM1vLop+Jg2Qyz8OlJ9mHLFy3qCvrTfWpgyKdWHGPoJmvygDLtysX/JGUENFAxWM/OgooTXeEUA==
-X-Received: by 2002:a17:90b:3a8d:b0:1ef:7d4:6a5f with SMTP id om13-20020a17090b3a8d00b001ef07d46a5fmr8969827pjb.139.1656580766226;
-        Thu, 30 Jun 2022 02:19:26 -0700 (PDT)
-Received: from [192.168.50.247] ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id w20-20020a1709029a9400b0015e8d4eb231sm12958654plp.123.2022.06.30.02.19.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jun 2022 02:19:25 -0700 (PDT)
-Message-ID: <665de056-6ec1-e4e1-adf9-4df3e35628b7@gmail.com>
-Date:   Thu, 30 Jun 2022 17:19:21 +0800
+        Thu, 30 Jun 2022 05:21:15 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E138535857
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:21:10 -0700 (PDT)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U4dOAM001285
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:21:08 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=/4GLmyjWNgSDAU2q7NAl1jE/TW8cFmkpQXoCGI8PVNA=;
+ b=U4GWugo1lGYTf8n1ZJEyHAPbzQwSlqUZgXExyidlKzaDiyt5DyJM+m4F2MqTwIY6S1cP
+ 2RSP4h3HsVYQi5mb7WFuoNf1yF3fPZDLnv3LQ7Z6AvpymurjSrQFarcYRVaNAT4LUYvc
+ v9TVmP2iPFeOLFUZecoeDOPCPNzwMTUGVzM= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h150e9545-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 02:21:07 -0700
+Received: from twshared25478.08.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 30 Jun 2022 02:21:04 -0700
+Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
+        id DEFC52599FE6; Thu, 30 Jun 2022 02:14:08 -0700 (PDT)
+From:   Dylan Yudaken <dylany@fb.com>
+To:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        <io-uring@vger.kernel.org>
+CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
+        Dylan Yudaken <dylany@fb.com>
+Subject: [PATCH v2 for-next 12/12] io_uring: only trace one of complete or overflow
+Date:   Thu, 30 Jun 2022 02:12:31 -0700
+Message-ID: <20220630091231.1456789-13-dylany@fb.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220630091231.1456789-1-dylany@fb.com>
+References: <20220630091231.1456789-1-dylany@fb.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] net: tipc: fix possible infoleak in tipc_mon_rcv()
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        tung.q.nguyen@dektech.com.au, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org
-References: <20220628083122.26942-1-hbh25y@gmail.com>
- <20220629203118.7bdcc87f@kernel.org>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <20220629203118.7bdcc87f@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: qiIq81OsTxcL2WAxz7qZqkit8docdNlD
+X-Proofpoint-ORIG-GUID: qiIq81OsTxcL2WAxz7qZqkit8docdNlD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_05,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/30 11:31, Jakub Kicinski wrote:
-> On Tue, 28 Jun 2022 16:31:22 +0800 Hangyu Hua wrote:
->> dom_bef is use to cache current domain record only if current domain
->> exists. But when current domain does not exist, dom_bef will still be used
->> in mon_identify_lost_members. This may lead to an information leak.
-> 
-> AFAICT applied_bef must be zero if peer->domain was 0, so I don't think
-> mon_identify_lost_members() will do anything.
-> 
+In overflow we see a duplcate line in the trace, and in some cases 3
+lines (if initial io_post_aux_cqe fails).
+Instead just trace once for each CQE
 
-void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
-		  struct tipc_mon_state *state, int bearer_id)
-{
-...
-	if (!dom || (dom->len < new_dlen)) {
-		kfree(dom);
-		dom = kmalloc(new_dlen, GFP_ATOMIC);	<--- [1]
-		peer->domain = dom;
-		if (!dom)
-			goto exit;
-	}
-...
-}
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+---
+ io_uring/io_uring.c |  3 ++-
+ io_uring/io_uring.h | 10 ++++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
-peer->domain will be NULL when [1] fails. But there will not change 
-peer->applied to 0. In this case, if tipc_mon_rcv is called again then 
-an information leak will happen.
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index 523b6ebad15a..caf979cd4327 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -742,7 +742,6 @@ static bool io_fill_cqe_aux(struct io_ring_ctx *ctx,
+ 	struct io_uring_cqe *cqe;
+=20
+ 	ctx->cq_extra++;
+-	trace_io_uring_complete(ctx, NULL, user_data, res, cflags, 0, 0);
+=20
+ 	/*
+ 	 * If we can't get a cq entry, userspace overflowed the
+@@ -751,6 +750,8 @@ static bool io_fill_cqe_aux(struct io_ring_ctx *ctx,
+ 	 */
+ 	cqe =3D io_get_cqe(ctx);
+ 	if (likely(cqe)) {
++		trace_io_uring_complete(ctx, NULL, user_data, res, cflags, 0, 0);
++
+ 		WRITE_ONCE(cqe->user_data, user_data);
+ 		WRITE_ONCE(cqe->res, res);
+ 		WRITE_ONCE(cqe->flags, cflags);
+diff --git a/io_uring/io_uring.h b/io_uring/io_uring.h
+index e022d71c177a..868f45d55543 100644
+--- a/io_uring/io_uring.h
++++ b/io_uring/io_uring.h
+@@ -101,10 +101,6 @@ static inline bool __io_fill_cqe_req(struct io_ring_=
+ctx *ctx,
+ {
+ 	struct io_uring_cqe *cqe;
+=20
+-	trace_io_uring_complete(req->ctx, req, req->cqe.user_data,
+-				req->cqe.res, req->cqe.flags,
+-				(req->flags & REQ_F_CQE32_INIT) ? req->extra1 : 0,
+-				(req->flags & REQ_F_CQE32_INIT) ? req->extra2 : 0);
+ 	/*
+ 	 * If we can't get a cq entry, userspace overflowed the
+ 	 * submission (by quite a lot). Increment the overflow count in
+@@ -113,6 +109,12 @@ static inline bool __io_fill_cqe_req(struct io_ring_=
+ctx *ctx,
+ 	cqe =3D io_get_cqe(ctx);
+ 	if (unlikely(!cqe))
+ 		return io_req_cqe_overflow(req);
++
++	trace_io_uring_complete(req->ctx, req, req->cqe.user_data,
++				req->cqe.res, req->cqe.flags,
++				(req->flags & REQ_F_CQE32_INIT) ? req->extra1 : 0,
++				(req->flags & REQ_F_CQE32_INIT) ? req->extra2 : 0);
++
+ 	memcpy(cqe, &req->cqe, sizeof(*cqe));
+=20
+ 	if (ctx->flags & IORING_SETUP_CQE32) {
+--=20
+2.30.2
 
-Thanks,
-Hangyu.
-
->> Fix this by adding a memset before using dom_bef.
->>
->> Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
