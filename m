@@ -2,245 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC1BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D1CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232743AbiF3GIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
+        id S232334AbiF3GJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232106AbiF3GIK (ORCPT
+        with ESMTP id S230302AbiF3GJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:08:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88BB91122
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656569287;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8F2nUeN3UIGvhWhPwdXFRxrBpN+YKacrhMVno3b0HOE=;
-        b=DCGVpnElsO3BwLDIhZxih7UhJZkMn2Dh9W+4IX7bt1gU/c3IgR0KnGT3pYmzXPNunpxJz6
-        d2SXATDrWQ3bV6RO9N3nn1ne/BuJYqyIlS5ISg3xoxHU26a9Omz6Yz68ALRb82tKzE3tzW
-        gT8j7p+9gtvTOWhSRl0K7yrtS2nxuYM=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-55-JLZKD7nXNnG_W3rOpmBhcA-1; Thu, 30 Jun 2022 02:08:05 -0400
-X-MC-Unique: JLZKD7nXNnG_W3rOpmBhcA-1
-Received: by mail-lf1-f71.google.com with SMTP id h18-20020a056512055200b004810d1b257aso6148556lfl.13
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:08:05 -0700 (PDT)
+        Thu, 30 Jun 2022 02:09:23 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3ED81A80C
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:09:22 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id z18-20020a056e02089200b002dab7cef3d2so3204728ils.16
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:09:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8F2nUeN3UIGvhWhPwdXFRxrBpN+YKacrhMVno3b0HOE=;
-        b=Mx3opvGN0Jsw1eDRd6Z1AKD8TYA3uOLaS8Rsqy4PYb/I8BvYFqJ0Te6k9hias0meCl
-         ToWabJ26f29HjnxsWUf8DKsi35YEYfwoBtk+/j8X6YYDWg5VeyVAGWMoyN3YFp7yiDaC
-         K0fFBCtkXyfDjIZuMZiDbz1KYJDVK7uFPntmjsiJyncQAJ+JKG5YKL4edrwRCuQTpDTm
-         FwHKcmv0IZuFCvhp+khCVT0zhS+VYYXPd4fLjEH8Sxzi9pixjZKSge7GvRO1FceEfGya
-         MTj4MVyTBWlkemUVABID3WXwMI6YMCQY3H8EtW0giKvu0SCQfc0YxncopBDlOHz0PLyG
-         19dg==
-X-Gm-Message-State: AJIora/kwwClTuv0Qj48APrg3+vAMX8//VVR4jgruIgl21Metmz9ZnpH
-        NVSpH7q8Yxc+rhhYoHeBXKIunETl3HMRqDd3VGNzy1hY5iFP8VorPZ3DC3ZbK1OaESHjxpkbrmk
-        7G711UXoxu9PO7kNXPl6nk4GZ1j/ToM0hZdFi8rlI
-X-Received: by 2002:a2e:9ad0:0:b0:25a:7156:26bb with SMTP id p16-20020a2e9ad0000000b0025a715626bbmr3893981ljj.141.1656569283324;
-        Wed, 29 Jun 2022 23:08:03 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uycjpe9LzkeJnJwvQ8/m/MahJ4H/ysGKojEgms9aLE1GxSCP4NZcX8Lj7MKqEKJME0I1SUIsT2FYJTz+SKeGY=
-X-Received: by 2002:a2e:9ad0:0:b0:25a:7156:26bb with SMTP id
- p16-20020a2e9ad0000000b0025a715626bbmr3893973ljj.141.1656569283083; Wed, 29
- Jun 2022 23:08:03 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=6Bwik4YJ/z6hqLdAFagjgHvT1Tdn44mBnKUBC2kVmms=;
+        b=KlHsJCh8TzTvD6XY6BIAk2Mf1dMxBDhIVzlIpX8ZGvsl15PcIz9NSmsHuAm7uuK7ao
+         FwFSlgQDTdgxkI2ryMTtUHuHolw45vLXUCCaVMKVeqoXpHoWL7OrvzABR/nyhbkvnN6R
+         UgUaELyHBh7pcsmgDyFlu3mSslW66zt7i2EHH8OYtEM9ZIzzoeW0jc3LvseWvN4Glmcm
+         lIq1A9ll0nUwTV816HHZeBkz4arqTgKlaibY3XiG7rBiX1o80NoADwKrf5Ac4ksp1Dhp
+         nHa3K0W/xbeq1UDho+Vph/+mGNBJ28gjiv7nvMvke09aJ0W5p4nRULt4l526N8xBidCv
+         RJmQ==
+X-Gm-Message-State: AJIora9isVLOR6Qeg7HAj0I2me0WHOwIhjS9B8lQ55EYbbaxIkg9vZ++
+        6mtafFjk2Nvl0Pc38DHkMdMqNd+QjFkr5FITbSryawC0iBh8
+X-Google-Smtp-Source: AGRyM1ulGAJKtSd49kmLTC8kxHT3qrI+vGY2hkINERqf7fF9JIbPDBWf7Em9Qmgj0En65QFRvsQOswaW6ilHq0C6StaSeogejom6
 MIME-Version: 1.0
-References: <20220630020805.74658-1-jasowang@redhat.com> <1656555045.7370687-2-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1656555045.7370687-2-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 30 Jun 2022 14:07:52 +0800
-Message-ID: <CACGkMEvMrxWRNY_NbujLsWff4zMVELr7C9CJ77k_m5OTFEe0dA@mail.gmail.com>
-Subject: Re: [PATCH V2] virtio-net: fix the race between refill work and close
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     mst <mst@redhat.com>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+X-Received: by 2002:a05:6602:3298:b0:675:7d23:6643 with SMTP id
+ d24-20020a056602329800b006757d236643mr3588156ioz.143.1656569362086; Wed, 29
+ Jun 2022 23:09:22 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 23:09:22 -0700
+In-Reply-To: <0000000000002cd2b1058ee760fe@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005f821205e2a41c4e@google.com>
+Subject: Re: [syzbot] memory leak in pty_common_install
+From:   syzbot <syzbot+bdebcbf44250d75bdd82@syzkaller.appspotmail.com>
+To:     anant.thazhemadam@gmail.com, gregkh@linuxfoundation.org,
+        hdanton@sina.com, jirislaby@kernel.org, jslaby@suse.com,
+        jslaby@suse.cz, linux-kernel@vger.kernel.org, phind.uet@gmail.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 10:22 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> On Thu, 30 Jun 2022 10:08:04 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > We try using cancel_delayed_work_sync() to prevent the work from
-> > enabling NAPI. This is insufficient since we don't disable the source
-> > of the refill work scheduling. This means an NAPI poll callback after
-> > cancel_delayed_work_sync() can schedule the refill work then can
-> > re-enable the NAPI that leads to use-after-free [1].
->
->
-> Can you explain in more detail how this happened?
->
-> napi_disable() is normally called after cancel_delayed_work_sync(). This ensures
-> that all napi callbacks will end, and the new napi_disable() will wait.
-> There will be no re-enable napi.
+syzbot has found a reproducer for the following issue on:
 
-An rx interrupt that may come between after the cancel_delayed_work()
-but before the napi_disable(). It schedules a refill_work that may run
-after the napi_disable() in virtnet_close().
+HEAD commit:    d9b2ba67917c Merge tag 'platform-drivers-x86-v5.19-3' of g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1795f0f0080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b6c1840347c4c391
+dashboard link: https://syzkaller.appspot.com/bug?extid=bdebcbf44250d75bdd82
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13d01f90080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=126f34f0080000
 
->
-> So I guess the use-after-free is caused by refill_work being called after
-> dev/vi/napi is released. In this way, we can just call
-> cancel_delayed_work_sync() after napi_disalbe().
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+bdebcbf44250d75bdd82@syzkaller.appspotmail.com
 
-So the refill_work can re-enable the NAPI when it is run after
-napi_disable() in this case.
+Warning: Permanently added '10.128.1.122' (ECDSA) to the list of known hosts.
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff88810222e600 (size 512):
+  comm "syz-executor149", pid 3615, jiffies 4294954919 (age 12.620s)
+  hex dump (first 32 bytes):
+    50 e6 22 02 81 88 ff ff e0 ff ff ff 0f 00 00 00  P.".............
+    10 e6 22 02 81 88 ff ff 10 e6 22 02 81 88 ff ff  ..".......".....
+  backtrace:
+    [<ffffffff8262ce09>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff8262ce09>] pty_common_install+0x59/0x3d0 drivers/tty/pty.c:381
+    [<ffffffff8261decb>] tty_driver_install_tty drivers/tty/tty_io.c:1307 [inline]
+    [<ffffffff8261decb>] tty_init_dev.part.0+0x5b/0x2f0 drivers/tty/tty_io.c:1419
+    [<ffffffff8261e1a0>] tty_init_dev+0x40/0x60 drivers/tty/tty_io.c:1409
+    [<ffffffff8262cc29>] ptmx_open drivers/tty/pty.c:834 [inline]
+    [<ffffffff8262cc29>] ptmx_open+0xd9/0x210 drivers/tty/pty.c:800
+    [<ffffffff815dd68d>] chrdev_open+0x10d/0x340 fs/char_dev.c:414
+    [<ffffffff815cbf96>] do_dentry_open+0x1e6/0x660 fs/open.c:848
+    [<ffffffff815f26c1>] do_open fs/namei.c:3520 [inline]
+    [<ffffffff815f26c1>] path_openat+0x18a1/0x1e70 fs/namei.c:3653
+    [<ffffffff815f5391>] do_filp_open+0xc1/0x1b0 fs/namei.c:3680
+    [<ffffffff815cf88d>] do_sys_openat2+0xed/0x260 fs/open.c:1278
+    [<ffffffff815d02df>] do_sys_open fs/open.c:1294 [inline]
+    [<ffffffff815d02df>] __do_sys_openat fs/open.c:1310 [inline]
+    [<ffffffff815d02df>] __se_sys_openat fs/open.c:1305 [inline]
+    [<ffffffff815d02df>] __x64_sys_openat+0x7f/0xe0 fs/open.c:1305
+    [<ffffffff845ac915>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845ac915>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Thanks
+BUG: memory leak
+unreferenced object 0xffff88810213d400 (size 1024):
+  comm "syz-executor149", pid 3615, jiffies 4294954919 (age 12.620s)
+  hex dump (first 32 bytes):
+    01 54 00 00 01 00 00 00 00 00 00 00 00 00 00 00  .T..............
+    40 be ca 41 81 88 ff ff 60 65 c5 84 ff ff ff ff  @..A....`e......
+  backtrace:
+    [<ffffffff8261dbbc>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff8261dbbc>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff8261dbbc>] alloc_tty_struct+0x3c/0x2f0 drivers/tty/tty_io.c:3091
+    [<ffffffff8262ce72>] pty_common_install+0xc2/0x3d0 drivers/tty/pty.c:389
+    [<ffffffff8261decb>] tty_driver_install_tty drivers/tty/tty_io.c:1307 [inline]
+    [<ffffffff8261decb>] tty_init_dev.part.0+0x5b/0x2f0 drivers/tty/tty_io.c:1419
+    [<ffffffff8261e1a0>] tty_init_dev+0x40/0x60 drivers/tty/tty_io.c:1409
+    [<ffffffff8262cc29>] ptmx_open drivers/tty/pty.c:834 [inline]
+    [<ffffffff8262cc29>] ptmx_open+0xd9/0x210 drivers/tty/pty.c:800
+    [<ffffffff815dd68d>] chrdev_open+0x10d/0x340 fs/char_dev.c:414
+    [<ffffffff815cbf96>] do_dentry_open+0x1e6/0x660 fs/open.c:848
+    [<ffffffff815f26c1>] do_open fs/namei.c:3520 [inline]
+    [<ffffffff815f26c1>] path_openat+0x18a1/0x1e70 fs/namei.c:3653
+    [<ffffffff815f5391>] do_filp_open+0xc1/0x1b0 fs/namei.c:3680
+    [<ffffffff815cf88d>] do_sys_openat2+0xed/0x260 fs/open.c:1278
+    [<ffffffff815d02df>] do_sys_open fs/open.c:1294 [inline]
+    [<ffffffff815d02df>] __do_sys_openat fs/open.c:1310 [inline]
+    [<ffffffff815d02df>] __se_sys_openat fs/open.c:1305 [inline]
+    [<ffffffff815d02df>] __x64_sys_openat+0x7f/0xe0 fs/open.c:1305
+    [<ffffffff845ac915>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845ac915>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-
->
-> Thanks.
->
-> >
-> > Since the work can enable NAPI, we can't simply disable NAPI before
-> > calling cancel_delayed_work_sync(). So fix this by introducing a
-> > dedicated boolean to control whether or not the work could be
-> > scheduled from NAPI.
-> >
-> > [1]
-> > ==================================================================
-> > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
-> > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
-> >
-> > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> > Workqueue: events refill_work
-> > Call Trace:
-> >  <TASK>
-> >  dump_stack_lvl+0x34/0x44
-> >  print_report.cold+0xbb/0x6ac
-> >  ? _printk+0xad/0xde
-> >  ? refill_work+0x43/0xd4
-> >  kasan_report+0xa8/0x130
-> >  ? refill_work+0x43/0xd4
-> >  refill_work+0x43/0xd4
-> >  process_one_work+0x43d/0x780
-> >  worker_thread+0x2a0/0x6f0
-> >  ? process_one_work+0x780/0x780
-> >  kthread+0x167/0x1a0
-> >  ? kthread_exit+0x50/0x50
-> >  ret_from_fork+0x22/0x30
-> >  </TASK>
-> > ...
-> >
-> > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> >  drivers/net/virtio_net.c | 38 ++++++++++++++++++++++++++++++++++++--
-> >  1 file changed, 36 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index db05b5e930be..21bf1e5c81ef 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -251,6 +251,12 @@ struct virtnet_info {
-> >       /* Does the affinity hint is set for virtqueues? */
-> >       bool affinity_hint_set;
-> >
-> > +     /* Is refill work enabled? */
-> > +     bool refill_work_enabled;
-> > +
-> > +     /* The lock to synchronize the access to refill_work_enabled */
-> > +     spinlock_t refill_lock;
-> > +
-> >       /* CPU hotplug instances for online & dead */
-> >       struct hlist_node node;
-> >       struct hlist_node node_dead;
-> > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
-> >       return p;
-> >  }
-> >
-> > +static void enable_refill_work(struct virtnet_info *vi)
-> > +{
-> > +     spin_lock(&vi->refill_lock);
-> > +     vi->refill_work_enabled = true;
-> > +     spin_unlock(&vi->refill_lock);
-> > +}
-> > +
-> > +static void disable_refill_work(struct virtnet_info *vi)
-> > +{
-> > +     spin_lock(&vi->refill_lock);
-> > +     vi->refill_work_enabled = false;
-> > +     spin_unlock(&vi->refill_lock);
-> > +}
-> > +
-> >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> >                                   struct virtqueue *vq)
-> >  {
-> > @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
-> >       }
-> >
-> >       if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
-> > -             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
-> > -                     schedule_delayed_work(&vi->refill, 0);
-> > +             if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
-> > +                     spin_lock(&vi->refill_lock);
-> > +                     if (vi->refill_work_enabled)
-> > +                             schedule_delayed_work(&vi->refill, 0);
-> > +                     spin_unlock(&vi->refill_lock);
-> > +             }
-> >       }
-> >
-> >       u64_stats_update_begin(&rq->stats.syncp);
-> > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
-> >       struct virtnet_info *vi = netdev_priv(dev);
-> >       int i, err;
-> >
-> > +     enable_refill_work(vi);
-> > +
-> >       for (i = 0; i < vi->max_queue_pairs; i++) {
-> >               if (i < vi->curr_queue_pairs)
-> >                       /* Make sure we have some buffers: if oom use wq. */
-> > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
-> >       struct virtnet_info *vi = netdev_priv(dev);
-> >       int i;
-> >
-> > +     /* Make sure NAPI doesn't schedule refill work */
-> > +     disable_refill_work(vi);
-> >       /* Make sure refill_work doesn't re-enable napi! */
-> >       cancel_delayed_work_sync(&vi->refill);
-> >
-> > @@ -2776,6 +2804,9 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
-> >       netif_tx_lock_bh(vi->dev);
-> >       netif_device_detach(vi->dev);
-> >       netif_tx_unlock_bh(vi->dev);
-> > +     /* Make sure NAPI doesn't schedule refill work */
-> > +     disable_refill_work(vi);
-> > +     /* Make sure refill_work doesn't re-enable napi! */
-> >       cancel_delayed_work_sync(&vi->refill);
-> >
-> >       if (netif_running(vi->dev)) {
-> > @@ -2799,6 +2830,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> >
-> >       virtio_device_ready(vdev);
-> >
-> > +     enable_refill_work(vi);
-> > +
-> >       if (netif_running(vi->dev)) {
-> >               for (i = 0; i < vi->curr_queue_pairs; i++)
-> >                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
-> > @@ -3548,6 +3581,7 @@ static int virtnet_probe(struct virtio_device *vdev)
-> >       vdev->priv = vi;
-> >
-> >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > +     spin_lock_init(&vi->refill_lock);
-> >
-> >       /* If we can receive ANY GSO packets, we must allocate large ones. */
-> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > --
-> > 2.25.1
-> >
->
 
