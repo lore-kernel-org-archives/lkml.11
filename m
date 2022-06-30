@@ -2,69 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 05:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 05:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232077AbiF3FuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 01:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
+        id S232118AbiF3FvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 01:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiF3FuP (ORCPT
+        with ESMTP id S230135AbiF3FvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 01:50:15 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD51024091;
-        Wed, 29 Jun 2022 22:50:10 -0700 (PDT)
-X-QQ-mid: bizesmtp75t1656568184tl9in6hy
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 30 Jun 2022 13:49:41 +0800 (CST)
-X-QQ-SSF: 0100000000200070C000B00A0000000
-X-QQ-FEAT: RMVj0UrY8cC86zkyM/sTHILcmu4TcWO/dhVWA42VaDHmX5IaW7nBIvRVgyT/8
-        bzDLCLRbD1BraZVDxg1Zjd4lIFaO6AT3y9WfF22JL1hU0V7qEVHLXgwaxhrbDdx/RDO6oiW
-        Mep0A+t0VWzeqvYMDaIX53GgIoHxnGIRVnkwsGfQzXhL6h/VGrAIu5IZTTtpWWIASfwNhfP
-        V3H5uGpAmQ0eP/OJ9MAkc3bR+OWnU0WhRLr1WrW+hIR0MK6HqlS5xcS6UCIdh92L2sYd9xg
-        SKeGyUhAoshC0NaBbDDIgcIS1DngcE1henwDMLqizwcalfZABbQVg6Bq6uLv3wx+E4SK78j
-        Q5i9CrpfuqP6wC+n/k=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     mlindner@marvell.com, stephen@networkplumber.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] ethernet/marvell: fix repeated words in comments
-Date:   Thu, 30 Jun 2022 13:49:25 +0800
-Message-Id: <20220630054925.49173-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 30 Jun 2022 01:51:04 -0400
+Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B547240B9;
+        Wed, 29 Jun 2022 22:51:01 -0700 (PDT)
+X-UUID: 6ac140b59ab44ceb8994a31cedae9485-20220630
+X-GW-Reason: 13103
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
+X-Content-Feature: ica/max.line-size 73
+        audit/email.address 1
+        dict/adv 1
+        dict/contack 1
+        dict/job 1
+        dict/notice 1
+        dict/operate 1
+        dict/time 1
+        meta/cnt.alert 1
+X-CPASD-INFO: 2e8b9918045d42f3b781bab8c232cf5e@e7VygmZrX2hcVHewg3WxbYJoaGGSjYK
+        HpWxTYpGWYYWVgnxsTWBnX1OEgnBQYl5dZFZ3dG9RYmBgYlB_i4Jyj1RgXmCCVHSTgHSfWJJnaQ==
+X-CLOUD-ID: 2e8b9918045d42f3b781bab8c232cf5e
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:182.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:195.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
+        5,AUF:11,DUF:237,ACD:3,DCD:3,SL:0,EISP:0,AG:0,CFC:0.512,CFSR:0.049,UAT:0,RAF:
+        0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EAF
+        :0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: 6ac140b59ab44ceb8994a31cedae9485-20220630
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: 6ac140b59ab44ceb8994a31cedae9485-20220630
+X-User: xiongxin@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by mailgw
+        (envelope-from <xiongxin@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1894798137; Thu, 30 Jun 2022 08:57:52 +0800
+From:   xiongxin <xiongxin@kylinos.cn>
+To:     rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz,
+        xiongxin@kylinos.cn, luriwen@kylinos.cn
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 -next 2/2] PM: suspend: advanced pm_wakeup_clear() for normal suspend/hibernate
+Date:   Thu, 30 Jun 2022 08:57:18 +0800
+Message-Id: <20220630005718.309178-3-xiongxin@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220630005718.309178-1-xiongxin@kylinos.cn>
+References: <20220630005718.309178-1-xiongxin@kylinos.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'a'.
+pm_wakeup_clear() will clear the wakeup source, which can ensure that it
+is not disturbed by useless wakeup signals when doing suspend/hibernate;
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+At the beginning of the suspend/hibernate process, the notifier
+mechanism is used to notify other device drivers. This action is
+time-consuming (second-level time-consuming). If the process fails due
+to the received wakeup signal during the execution of these functions,
+it can better improve the experience of failing suspend/hibernate
+returns;
+
+Therefore, it is recommended here that for the suspend/hibernate process
+normally called from /sys/power/state, the pm_wakeup_clear() function
+should be brought before the notifier call; for the freeze_process()
+function called from other places, the original logic is kept;
+
+The pm_suspend_target_state variable is used here to identify whether the
+suspend process is going normally.
+
+Signed-off-by: xiongxin <xiongxin@kylinos.cn>
 ---
- drivers/net/ethernet/marvell/sky2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/power/process.c | 5 ++++-
+ kernel/power/suspend.c | 6 ++++++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index a1e907c85217..9f1a7ec0491a 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4711,7 +4711,7 @@ static irqreturn_t sky2_test_intr(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
+diff --git a/kernel/power/process.c b/kernel/power/process.c
+index 3068601e585a..3fde0240b3d1 100644
+--- a/kernel/power/process.c
++++ b/kernel/power/process.c
+@@ -131,7 +131,10 @@ int freeze_processes(void)
+ 	if (!pm_freezing)
+ 		atomic_inc(&system_freezing_cnt);
  
--/* Test interrupt path by forcing a a software IRQ */
-+/* Test interrupt path by forcing a software IRQ */
- static int sky2_test_msi(struct sky2_hw *hw)
- {
- 	struct pci_dev *pdev = hw->pdev;
+-	pm_wakeup_clear(0);
++	if (pm_suspend_target_state != PM_SUSPEND_ON)
++		pm_wakeup_clear(1);
++	else
++		pm_wakeup_clear(0);
+ 	pr_info("Freezing user space processes ... ");
+ 	pm_freezing = true;
+ 	error = try_to_freeze_tasks(true);
+diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
+index 4cfa464600bf..2a82db57adc9 100644
+--- a/kernel/power/suspend.c
++++ b/kernel/power/suspend.c
+@@ -569,6 +569,12 @@ static int enter_state(suspend_state_t state)
+ 	 * performed from the /sys/power/state entry.
+ 	 */
+ 	pm_suspend_target_state = state;
++	/*
++	 * Put pm_wakeup_clear() before the notifier notification chain to
++	 * optimize in the suspend process, the wakeup signal can interrupt
++	 * the suspend in advance and fail to return.
++	 */
++	pm_wakeup_clear(0);
+ 
+ 	if (sync_on_suspend_enabled) {
+ 		trace_suspend_resume(TPS("sync_filesystems"), 0, true);
 -- 
-2.36.1
+2.25.1
 
+
+No virus found
+		Checked by Hillstone Network AntiVirus
