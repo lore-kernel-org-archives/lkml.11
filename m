@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 811EFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13227C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:53:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235759AbiF3Nxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
+        id S235395AbiF3Nxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbiF3Nw2 (ORCPT
+        with ESMTP id S235829AbiF3Nwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:52:28 -0400
+        Thu, 30 Jun 2022 09:52:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A671745509;
-        Thu, 30 Jun 2022 06:49:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7428F4578C;
+        Thu, 30 Jun 2022 06:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFE6861FF6;
-        Thu, 30 Jun 2022 13:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D73F3C34115;
-        Thu, 30 Jun 2022 13:49:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 995D661FFB;
+        Thu, 30 Jun 2022 13:49:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A291FC34115;
+        Thu, 30 Jun 2022 13:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596978;
-        bh=h1N85u9a3APp1yw2woC9p/8mzkK2TLZrhyjIps8M9WU=;
+        s=korg; t=1656596981;
+        bh=//tNa/+oXvrh+YZZ1UklDkaYoawaeD35eJmeJbf1BKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qt4iUnqyXYHK25BHwhPHFiCoyAq47RsyYeDbXtiHwirlu1AsNKaeYAxdiscit5UOi
-         jfkIPVdFk6smgYC7Gyvx25NdEa+rkzLEaNC6BKPvMKKDjHx6bx+hBB0/ckTBUeVYEa
-         A+57dKVWkboN0nPeXFhYCiqJXGpMPMCekc1J9nyM=
+        b=H/71ka4wiBvpG98YZevpw19O5C0wO2i3HsqAw7TJDvxVNxUohiIraq/v3DwTEVb1Q
+         Sltt5kBe3EJY3MERloGLRr7P52XtDsTKtIPKqneflFwkH/ltiTH79fSsCQ3G555O2Y
+         Plh9+MJ63KyEQuOJc5OhZbXYQF99UlFnB51Vd13g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 02/35] random: schedule mix_interrupt_randomness() less often
-Date:   Thu, 30 Jun 2022 15:46:13 +0200
-Message-Id: <20220630133232.511345542@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 4.14 20/35] xtensa: xtfpga: Fix refcount leak bug in setup
+Date:   Thu, 30 Jun 2022 15:46:31 +0200
+Message-Id: <20220630133233.035122118@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
 References: <20220630133232.433955678@linuxfoundation.org>
@@ -50,56 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Liang He <windhl@126.com>
 
-commit 534d2eaf1970274150596fdd2bf552721e65d6b2 upstream.
+commit 173940b3ae40114d4179c251a98ee039dc9cd5b3 upstream.
 
-It used to be that mix_interrupt_randomness() would credit 1 bit each
-time it ran, and so add_interrupt_randomness() would schedule mix() to
-run every 64 interrupts, a fairly arbitrary number, but nonetheless
-considered to be a decent enough conservative estimate.
+In machine_setup(), of_find_compatible_node() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-Since e3e33fc2ea7f ("random: do not use input pool from hard IRQs"),
-mix() is now able to credit multiple bits, depending on the number of
-calls to add(). This was done for reasons separate from this commit, but
-it has the nice side effect of enabling this patch to schedule mix()
-less often.
-
-Currently the rules are:
-a) Credit 1 bit for every 64 calls to add().
-b) Schedule mix() once a second that add() is called.
-c) Schedule mix() once every 64 calls to add().
-
-Rules (a) and (c) no longer need to be coupled. It's still important to
-have _some_ value in (c), so that we don't "over-saturate" the fast
-pool, but the once per second we get from rule (b) is a plenty enough
-baseline. So, by increasing the 64 in rule (c) to something larger, we
-avoid calling queue_work_on() as frequently during irq storms.
-
-This commit changes that 64 in rule (c) to be 1024, which means we
-schedule mix() 16 times less often. And it does *not* need to change the
-64 in rule (a).
-
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
 Cc: stable@vger.kernel.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617115323.4046905-1-windhl@126.com>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/xtensa/platforms/xtfpga/setup.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -996,7 +996,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
+--- a/arch/xtensa/platforms/xtfpga/setup.c
++++ b/arch/xtensa/platforms/xtfpga/setup.c
+@@ -152,6 +152,7 @@ static int __init machine_setup(void)
  
--	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
-+	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
- 	if (unlikely(!fast_pool->mix.func))
+ 	if ((eth = of_find_compatible_node(eth, NULL, "opencores,ethoc")))
+ 		update_local_mac(eth);
++	of_node_put(eth);
+ 	return 0;
+ }
+ arch_initcall(machine_setup);
 
 
