@@ -2,193 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17632C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44787CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 02:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbiF3CV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 29 Jun 2022 22:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        id S231425AbiF3CYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 29 Jun 2022 22:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiF3CV5 (ORCPT
+        with ESMTP id S231320AbiF3CYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 29 Jun 2022 22:21:57 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D071F36B61;
-        Wed, 29 Jun 2022 19:21:55 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VHpiy7b_1656555711;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHpiy7b_1656555711)
-          by smtp.aliyun-inc.com;
-          Thu, 30 Jun 2022 10:21:52 +0800
-Message-ID: <1656555045.7370687-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH V2] virtio-net: fix the race between refill work and close
-Date:   Thu, 30 Jun 2022 10:10:45 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220630020805.74658-1-jasowang@redhat.com>
-In-Reply-To: <20220630020805.74658-1-jasowang@redhat.com>
+        Wed, 29 Jun 2022 22:24:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57ADA22B33;
+        Wed, 29 Jun 2022 19:24:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C052561962;
+        Thu, 30 Jun 2022 02:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF22EC34114;
+        Thu, 30 Jun 2022 02:24:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1656555876;
+        bh=yJeJ8cxCY1JPgvNnKkpCGOCqg6IUmcfcvP4TCv5bff0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=2AiqIjuhS5T+jbkNlITFAdB4je3qEdSDNFbTndEgoO0p/HibCpc+8FT781kPXIdZH
+         qxkwGDFH1BW2EcPyZAD+7AUSj+j2EuK6roYIiid7fqgAvnKuU8ek6vKRAgJZHfLXFt
+         sIApNFeR8JfgYlbzzmkAz1NxBEPkqUkL9MJgH1mY=
+Date:   Wed, 29 Jun 2022 19:24:35 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Benjamin Segall <bsegall@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Roman Penyaev <rpenyaev@suse.de>,
+        Jason Baron <jbaron@akamai.com>,
+        Khazhismel Kumykov <khazhy@google.com>, Heiher <r@hev.cc>
+Subject: Re: [RESEND RFC PATCH] epoll: autoremove wakers even more
+ aggressively
+Message-Id: <20220629192435.df27c0dbb07ef72165e1de5e@linux-foundation.org>
+In-Reply-To: <CALvZod5KX7XEHR9h_jFHf5pJcYB+dODEeaLKrQLtSy9EUqgvWw@mail.gmail.com>
+References: <xm26fsjotqda.fsf@google.com>
+        <20220629165542.da7fc8a2a5dbd53cf99572aa@linux-foundation.org>
+        <CALvZod5KX7XEHR9h_jFHf5pJcYB+dODEeaLKrQLtSy9EUqgvWw@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 30 Jun 2022 10:08:04 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> We try using cancel_delayed_work_sync() to prevent the work from
-> enabling NAPI. This is insufficient since we don't disable the source
-> of the refill work scheduling. This means an NAPI poll callback after
-> cancel_delayed_work_sync() can schedule the refill work then can
-> re-enable the NAPI that leads to use-after-free [1].
+On Wed, 29 Jun 2022 18:12:46 -0700 Shakeel Butt <shakeelb@google.com> wrote:
 
+> On Wed, Jun 29, 2022 at 4:55 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> >
+> > On Wed, 15 Jun 2022 14:24:23 -0700 Benjamin Segall <bsegall@google.com> wrote:
+> >
+> > > If a process is killed or otherwise exits while having active network
+> > > connections and many threads waiting on epoll_wait, the threads will all
+> > > be woken immediately, but not removed from ep->wq. Then when network
+> > > traffic scans ep->wq in wake_up, every wakeup attempt will fail, and
+> > > will not remove the entries from the list.
+> > >
+> > > This means that the cost of the wakeup attempt is far higher than usual,
+> > > does not decrease, and this also competes with the dying threads trying
+> > > to actually make progress and remove themselves from the wq.
+> > >
+> > > Handle this by removing visited epoll wq entries unconditionally, rather
+> > > than only when the wakeup succeeds - the structure of ep_poll means that
+> > > the only potential loss is the timed_out->eavail heuristic, which now
+> > > can race and result in a redundant ep_send_events attempt. (But only
+> > > when incoming data and a timeout actually race, not on every timeout)
+> > >
+> >
+> > Thanks.  I added people from 412895f03cbf96 ("epoll: atomically remove
+> > wait entry on wake up") to cc.  Hopefully someone there can help review
+> > and maybe test this.
+> >
+> >
+> 
+> Thanks Andrew. Just wanted to add that we are seeing this issue in
+> production with real workloads and it has caused hard lockups.
+> Particularly network heavy workloads with a lot of threads in
+> epoll_wait() can easily trigger this issue if they get killed
+> (oom-killed in our case).
 
-Can you explain in more detail how this happened?
-
-napi_disable() is normally called after cancel_delayed_work_sync(). This ensures
-that all napi callbacks will end, and the new napi_disable() will wait.
-There will be no re-enable napi.
-
-So I guess the use-after-free is caused by refill_work being called after
-dev/vi/napi is released. In this way, we can just call
-cancel_delayed_work_sync() after napi_disalbe().
-
-Thanks.
-
->
-> Since the work can enable NAPI, we can't simply disable NAPI before
-> calling cancel_delayed_work_sync(). So fix this by introducing a
-> dedicated boolean to control whether or not the work could be
-> scheduled from NAPI.
->
-> [1]
-> ==================================================================
-> BUG: KASAN: use-after-free in refill_work+0x43/0xd4
-> Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
->
-> CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> Workqueue: events refill_work
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x34/0x44
->  print_report.cold+0xbb/0x6ac
->  ? _printk+0xad/0xde
->  ? refill_work+0x43/0xd4
->  kasan_report+0xa8/0x130
->  ? refill_work+0x43/0xd4
->  refill_work+0x43/0xd4
->  process_one_work+0x43d/0x780
->  worker_thread+0x2a0/0x6f0
->  ? process_one_work+0x780/0x780
->  kthread+0x167/0x1a0
->  ? kthread_exit+0x50/0x50
->  ret_from_fork+0x22/0x30
->  </TASK>
-> ...
->
-> Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/net/virtio_net.c | 38 ++++++++++++++++++++++++++++++++++++--
->  1 file changed, 36 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index db05b5e930be..21bf1e5c81ef 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -251,6 +251,12 @@ struct virtnet_info {
->  	/* Does the affinity hint is set for virtqueues? */
->  	bool affinity_hint_set;
->
-> +	/* Is refill work enabled? */
-> +	bool refill_work_enabled;
-> +
-> +	/* The lock to synchronize the access to refill_work_enabled */
-> +	spinlock_t refill_lock;
-> +
->  	/* CPU hotplug instances for online & dead */
->  	struct hlist_node node;
->  	struct hlist_node node_dead;
-> @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
->  	return p;
->  }
->
-> +static void enable_refill_work(struct virtnet_info *vi)
-> +{
-> +	spin_lock(&vi->refill_lock);
-> +	vi->refill_work_enabled = true;
-> +	spin_unlock(&vi->refill_lock);
-> +}
-> +
-> +static void disable_refill_work(struct virtnet_info *vi)
-> +{
-> +	spin_lock(&vi->refill_lock);
-> +	vi->refill_work_enabled = false;
-> +	spin_unlock(&vi->refill_lock);
-> +}
-> +
->  static void virtqueue_napi_schedule(struct napi_struct *napi,
->  				    struct virtqueue *vq)
->  {
-> @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
->  	}
->
->  	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
-> -		if (!try_fill_recv(vi, rq, GFP_ATOMIC))
-> -			schedule_delayed_work(&vi->refill, 0);
-> +		if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
-> +			spin_lock(&vi->refill_lock);
-> +			if (vi->refill_work_enabled)
-> +				schedule_delayed_work(&vi->refill, 0);
-> +			spin_unlock(&vi->refill_lock);
-> +		}
->  	}
->
->  	u64_stats_update_begin(&rq->stats.syncp);
-> @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
->  	struct virtnet_info *vi = netdev_priv(dev);
->  	int i, err;
->
-> +	enable_refill_work(vi);
-> +
->  	for (i = 0; i < vi->max_queue_pairs; i++) {
->  		if (i < vi->curr_queue_pairs)
->  			/* Make sure we have some buffers: if oom use wq. */
-> @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
->  	struct virtnet_info *vi = netdev_priv(dev);
->  	int i;
->
-> +	/* Make sure NAPI doesn't schedule refill work */
-> +	disable_refill_work(vi);
->  	/* Make sure refill_work doesn't re-enable napi! */
->  	cancel_delayed_work_sync(&vi->refill);
->
-> @@ -2776,6 +2804,9 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
->  	netif_tx_lock_bh(vi->dev);
->  	netif_device_detach(vi->dev);
->  	netif_tx_unlock_bh(vi->dev);
-> +	/* Make sure NAPI doesn't schedule refill work */
-> +	disable_refill_work(vi);
-> +	/* Make sure refill_work doesn't re-enable napi! */
->  	cancel_delayed_work_sync(&vi->refill);
->
->  	if (netif_running(vi->dev)) {
-> @@ -2799,6 +2830,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
->
->  	virtio_device_ready(vdev);
->
-> +	enable_refill_work(vi);
-> +
->  	if (netif_running(vi->dev)) {
->  		for (i = 0; i < vi->curr_queue_pairs; i++)
->  			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
-> @@ -3548,6 +3581,7 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	vdev->priv = vi;
->
->  	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> +	spin_lock_init(&vi->refill_lock);
->
->  	/* If we can receive ANY GSO packets, we must allocate large ones. */
->  	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> --
-> 2.25.1
->
+Hard lockups are undesirable.  Is a cc:stable justified here?
