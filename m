@@ -2,128 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B30E7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 092C8CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 21:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237323AbiF3VGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 17:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
+        id S237310AbiF3VIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237310AbiF3VG3 (ORCPT
+        with ESMTP id S236786AbiF3VIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 17:06:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68ADE2E69F
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:06:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656623187;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PgCRCs3Ju1LT1H7xrn3YHeQT3HJmnLyEcvVhogV2p8s=;
-        b=ECuxXhbrqyFI5zdGzdeAdAmq/nJ4rf82GoY5/w57OlfMZ0IUcN/LbChWiq+HYTYJ3sRQ+J
-        88Ler4yQzNzXYVFt60vEwOUyzliFtOW69iarSSmBBGtFNxA85MdNjGjXUjyjArrpCsoyYZ
-        qY3cwWSQlI+/ymzCPw0dRqCI3Aqv/Zg=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-36-dBXvMvptOJ2Igq7EWW0iWA-1; Thu, 30 Jun 2022 17:06:26 -0400
-X-MC-Unique: dBXvMvptOJ2Igq7EWW0iWA-1
-Received: by mail-qv1-f70.google.com with SMTP id ls8-20020a0562145f8800b0047078180732so709149qvb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:06:26 -0700 (PDT)
+        Thu, 30 Jun 2022 17:08:49 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0851319C30
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:08:48 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id u14so253228ljh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 14:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1ZoCzbq4enWBVchP9RP44MqGpIFw4W432LhKj2F/Ovs=;
+        b=JPpSnMTCb87zEzKFyOpGz0aoNzR5cYSj+hUDxxSOlkCRnvE1VRKqGctg22nrcuqCgn
+         SF990zjUvZFUPM82RpA3A/N9rK/+VLjG6teSA3BXQBsljxyPYnTH2OcdRk407319vuRr
+         EU7T9MGIgwjADBrCkHdDdP7YrkrZA2uvx3RCOjlqPe6tBVytl08nu2JQyv4SapqxHBBQ
+         RH8m/msvnTMGSSrR+dcgX56RxtoSbrrY+UyBAR8ixv098rSIOYbXI5Bb+7dRKFCe/cfn
+         9+vOCLti2oXp0AxUH8P6f/9criLrFQ/tnZUDHpTXj9wJtqSH1whhK+8AM94718jPKHJb
+         s5Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PgCRCs3Ju1LT1H7xrn3YHeQT3HJmnLyEcvVhogV2p8s=;
-        b=ZBrriWyT6VjvEncKdcwpHsDZHIsBubZIqZf+brPEgMqlB/mpYzO5IB0H7do0HCj4L5
-         ArSAmXIW1CAGDmq+c1AArKPjbGKXbn0lyjf3S6PMEWVVDjhx7ZWkaTqgqZ69Lv0EsOxp
-         WS56duuhCGTtLSZDtFrc63sWK9vAaKoNABPir/kFTE6fhx8X3pjd/fEEYjs1x4GhQGF6
-         4S7HiE7GYt7BUo+tS7dYBlzKkJ4s31BCaZYXJlshi0jfx+tySOdAZDFDQQ3fFPs8BpQL
-         lejdj37crZm3K11sMm6CwMQ6ZEAE51xTarrenPFZl0AOz0CAow/3aEKZRfqSKMrnbBmf
-         XV6Q==
-X-Gm-Message-State: AJIora/gV65Tp2QL8YdFy7TPfB15PagYIbFT5mQAVNsbTir7bhA3maCz
-        x5R8oH5Pf+Hw4xV9ImvMKESg1nEHfLj0h4ZtjGtYwMJ/gIEldgSM653wcPozHbxha7ieVdHGbc0
-        fB2pdwGOGmBh1bxDPhu9Ib9MT
-X-Received: by 2002:a05:620a:2903:b0:6af:41a4:3f71 with SMTP id m3-20020a05620a290300b006af41a43f71mr8265243qkp.350.1656623185646;
-        Thu, 30 Jun 2022 14:06:25 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vWq9ez6tSed5y9DzhsOiLl8H6BjGzMp//FKEqb9RaQrfBysTvAYMxg4p2bdggmgxJctN+7+w==
-X-Received: by 2002:a05:620a:2903:b0:6af:41a4:3f71 with SMTP id m3-20020a05620a290300b006af41a43f71mr8265219qkp.350.1656623185408;
-        Thu, 30 Jun 2022 14:06:25 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id v123-20020a379381000000b006a6c230f5e0sm7703164qkd.31.2022.06.30.14.06.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 14:06:25 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     kishon@ti.com, lpieralisi@kernel.org, kw@linux.com,
-        bhelgaas@google.com, Frank.Li@nxp.com, jdmason@kudzu.us
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] PCI: endpoint: reduce several globals to statics
-Date:   Thu, 30 Jun 2022 17:05:17 -0400
-Message-Id: <20220630210517.1825677-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1ZoCzbq4enWBVchP9RP44MqGpIFw4W432LhKj2F/Ovs=;
+        b=6AEaFz5bqE87Pv9mX1w0MmsQFMCVFtkFmfnwn8fnDdaMXThD+sZTxF6EuSOi7CxFsC
+         axaHmY4wgM+EwB16ONvZVhGT84bObDuUCZZGdGfQ09dxLuZZqrnTvxLgQpjMtQ8JlUKr
+         l/mnHFXe81yw7EjLwZfX7CmaXB9LPRhg4HR038fLtlR+b+F/qcRyHRA1fCTYSHwI8Nq6
+         n3fOkxaFlJOFtYK/yGJ6Tg2G8zcQcL+5NgYSpBC2nkLd2BPDSg2Mv6vutTx5ov9DzayC
+         sp1/a7xghRwqjXKZs9ikdl15thZpuwIU1fQyeBNq+yE+91HQW5jeo4+MxvkBhgn1gPO+
+         HBYA==
+X-Gm-Message-State: AJIora9UKn4QOrj7cuHid2NyVbGhXZ7ldDa5x/ECfFF55ptw5IhGIVXs
+        IyCC+1B9KYc167KyvA1MZlXyvamgvSZzzBcRZcXIpw==
+X-Google-Smtp-Source: AGRyM1vBEvtf7ov+JoIEPe7L4X7srxN3a2/MCUADh+0tWA0mWFZJNSmPn9Itfl63NL6pqyJURE6SqRGtOGHQ2yZqCT0=
+X-Received: by 2002:a2e:720f:0:b0:25a:9f46:6f5e with SMTP id
+ n15-20020a2e720f000000b0025a9f466f5emr6013417ljc.103.1656623326207; Thu, 30
+ Jun 2022 14:08:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220630153121.1317045-1-nathan@kernel.org> <20220630153121.1317045-3-nathan@kernel.org>
+In-Reply-To: <20220630153121.1317045-3-nathan@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 30 Jun 2022 14:08:34 -0700
+Message-ID: <CAKwvOd=UdmcP0Ef8gbyO7QWqS6kRTC2JLNH8LE4QdjQAXX=EbQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] arm64: vdso32: Add DWARF_DEBUG
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Joey Gouly <joey.gouly@arm.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linudx.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sparse reports
-drivers/pci/endpoint/functions/pci-epf-vntb.c:956:10: warning: symbol 'pci_space' was not declared. Should it be static?
-drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: symbol 'pci_read' was not declared. Should it be static?
-drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: symbol 'pci_write' was not declared. Should it be static?
-drivers/pci/endpoint/functions/pci-epf-vntb.c:989:16: warning: symbol 'vpci_ops' was not declared. Should it be static?
+On Thu, Jun 30, 2022 at 8:32 AM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> When building the 32-bit vDSO with LLVM 15 and CONFIG_DEBUG_INFO, there
+> are the following orphan section warnings:
+>
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_abbrev) is being placed in '.debug_abbrev'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_info) is being placed in '.debug_info'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_str_offsets) is being placed in '.debug_str_offsets'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_str) is being placed in '.debug_str'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_addr) is being placed in '.debug_addr'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_line) is being placed in '.debug_line'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/note.o:(.debug_line_str) is being placed in '.debug_line_str'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_loclists) is being placed in '.debug_loclists'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_abbrev) is being placed in '.debug_abbrev'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_info) is being placed in '.debug_info'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_rnglists) is being placed in '.debug_rnglists'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_str_offsets) is being placed in '.debug_str_offsets'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_str) is being placed in '.debug_str'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_addr) is being placed in '.debug_addr'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_frame) is being placed in '.debug_frame'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_line) is being placed in '.debug_line'
+>   ld.lld: warning: arch/arm64/kernel/vdso32/vgettimeofday.o:(.debug_line_str) is being placed in '.debug_line_str'
+>
+> These are DWARF5 sections, as that is the implicit default version for
 
-These functions and variables are only used in pci-epf-vntb.c, so their storage
-class specifiers should be static.
+Most of these are DWARF v5, but some like .debug_info and .debug_line
+are DWARF v2; this isn't specifically a DWARF v5 issue, more so just
+an issue with CONFIG_DEBUG_INFO.  Not worth a v2 IMO though.  Thanks
+for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and EP connection")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
-v2 : Change commit prefix
+> clang-14 and newer when just '-g' is used. All DWARF sections are
+> handled by the DWARF_DEBUG macro from include/asm-generic/vmlinux.lds.h
+> so use that macro here to fix the warnings regardless of DWARF version.
+>
+> Fixes: 9d4775b332e1 ("arm64: vdso32: enable orphan handling for VDSO")
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  arch/arm64/kernel/vdso32/vdso.lds.S | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/arch/arm64/kernel/vdso32/vdso.lds.S b/arch/arm64/kernel/vdso32/vdso.lds.S
+> index c25bed8e6df1..8d95d7d35057 100644
+> --- a/arch/arm64/kernel/vdso32/vdso.lds.S
+> +++ b/arch/arm64/kernel/vdso32/vdso.lds.S
+> @@ -57,6 +57,7 @@ SECTIONS
+>         .rel.dyn        : { *(.rel*) }
+>
+>         .ARM.exidx : { *(.ARM.exidx*) }
+> +       DWARF_DEBUG
+>         ELF_DETAILS
+>         .ARM.attributes 0 : { *(.ARM.attributes) }
+>
+> --
+> 2.37.0
+>
 
----
- drivers/pci/endpoint/functions/pci-epf-vntb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-index ebf7e243eefa..6f0775b1fec3 100644
---- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-@@ -953,7 +953,7 @@ static struct config_group *epf_ntb_add_cfs(struct pci_epf *epf,
- 
- #define VPCI_BUS_NUM 0x10
- 
--uint32_t pci_space[] = {
-+static uint32_t pci_space[] = {
- 	(VNTB_VID | (VNTB_PID << 16)),	//DeviceID, Vendor ID
- 	0,		// status, Command
- 	0xffffffff,	// Class code, subclass, prog if, revision id
-@@ -972,7 +972,7 @@ uint32_t pci_space[] = {
- 	0,		//Max Lat, Min Gnt, interrupt pin, interrupt line
- };
- 
--int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 *val)
-+static int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 *val)
- {
- 	if (devfn == 0) {
- 		memcpy(val, ((uint8_t *)pci_space) + where, size);
-@@ -981,12 +981,12 @@ int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 *
- 	return -1;
- }
- 
--int pci_write(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 val)
-+static int pci_write(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 val)
- {
- 	return 0;
- }
- 
--struct pci_ops vpci_ops = {
-+static struct pci_ops vpci_ops = {
- 	.read = pci_read,
- 	.write = pci_write,
- };
 -- 
-2.27.0
-
+Thanks,
+~Nick Desaulniers
