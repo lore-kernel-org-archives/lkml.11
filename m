@@ -2,138 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD20C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB22C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234821AbiF3NZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
+        id S235077AbiF3N0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbiF3NZR (ORCPT
+        with ESMTP id S229966AbiF3N0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:25:17 -0400
-X-Greylist: delayed 2163 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 06:25:17 PDT
-Received: from maynard.decadent.org.uk (maynard.decadent.org.uk [95.217.213.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFB03120B
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:25:17 -0700 (PDT)
-Received: from 168.7-181-91.adsl-dyn.isp.belgacom.be ([91.181.7.168] helo=deadeye)
-        by maynard with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1o6tbT-0001RQ-EK; Thu, 30 Jun 2022 14:49:03 +0200
-Received: from ben by deadeye with local (Exim 4.95)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1o6tbR-003M4l-LM;
-        Thu, 30 Jun 2022 14:49:01 +0200
-Message-ID: <01d6cfab3d8e466718cb254279bcae90d3390235.camel@decadent.org.uk>
-Subject: Re: [PATCH stable 4.19] swiotlb: skip swiotlb_bounce when orig_addr
- is zero
-From:   Ben Hutchings <ben@decadent.org.uk>
-To:     Liu Shixin <liushixin2@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Date:   Thu, 30 Jun 2022 14:48:56 +0200
-In-Reply-To: <20220630113331.1544886-1-liushixin2@huawei.com>
-References: <20220630113331.1544886-1-liushixin2@huawei.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-yepyHi/rra1L4p3Rn+ML"
-User-Agent: Evolution 3.44.1-2 
+        Thu, 30 Jun 2022 09:26:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EF53123C;
+        Thu, 30 Jun 2022 06:26:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46AF5B827E3;
+        Thu, 30 Jun 2022 13:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0253C341CC;
+        Thu, 30 Jun 2022 13:26:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656595563;
+        bh=f1AhAEbtOQpKJYZkVMkLIr2pWM9nsIVxDq9aRJR/hYw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=HjE4PD4jHcuAbPNQVuK/DimREx0njb1vMNpOmDmzZUTOkxk9ga/W/xctR4bJQy+Bm
+         iMxIacFW8uaeKBNdy6VGOjebwnJeLyv8YsxT9M36utpXR0mJKVb9nZVpglKwfxtXlV
+         Aihjr5IL/Pt5lSOr/ThJEaNI9KXNmqR8eXutv3kvmHEaz6LIL+UxV/O5ruBpnamBlL
+         s2pN2dUKoZYYc7lKeAzqBD/muBOmQarggYHSPp/v1V8BIb0Dr7fT/qrg1yH1hWpPCN
+         gUV2PPU0Crhow7wSCZ5blo/qWsFo37Hdm1J4np9n9RvL1pBVK5V7l2Z6evhreKeFnb
+         F2q71K1LmuTPA==
+Received: by mail-ua1-f48.google.com with SMTP id x21so6941625uat.2;
+        Thu, 30 Jun 2022 06:26:02 -0700 (PDT)
+X-Gm-Message-State: AJIora/X5HexBOMnKDzLzN5857FSEeyyHdKtIh48p1ZAPd8xDMWHeR8g
+        i+XVvAJXNa/DXtP030kwwzF75tF7+JnWsr9rRA==
+X-Google-Smtp-Source: AGRyM1u2FAdt1MdyKTOx7+K3CIj35ka7dcgH3rANVgZR2hKk8wO2rrhAVvOcMBkWDHtTJi4+RvoitfZzKWAXUJ+yRRM=
+X-Received: by 2002:ab0:244f:0:b0:37f:2985:e620 with SMTP id
+ g15-20020ab0244f000000b0037f2985e620mr4593945uan.36.1656595561967; Thu, 30
+ Jun 2022 06:26:01 -0700 (PDT)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 91.181.7.168
-X-SA-Exim-Mail-From: ben@decadent.org.uk
-X-SA-Exim-Scanned: No (on maynard); SAEximRunCond expanded to false
+References: <20220630173801.41bf22a2@canb.auug.org.au> <Yr14AyVYbhjmRa+b@debian.me>
+In-Reply-To: <Yr14AyVYbhjmRa+b@debian.me>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 30 Jun 2022 07:25:50 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+BRV1vJ+kQ3mA9Ks-mMpub+vexXUD7oDUu1OmsKeXAXA@mail.gmail.com>
+Message-ID: <CAL_Jsq+BRV1vJ+kQ3mA9Ks-mMpub+vexXUD7oDUu1OmsKeXAXA@mail.gmail.com>
+Subject: Re: linux-next: build warning after merge of the coresight tree
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jun 30, 2022 at 4:16 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+>
+> On Thu, Jun 30, 2022 at 05:38:01PM +1000, Stephen Rothwell wrote:
+> > Hi all,
+> >
+> > After merging the coresight tree, today's linux-next build (htmldocs)
+> > produced this warning:
+> >
+> > Documentation/trace/coresight/coresight.rst:133: WARNING: Inline emphasis start-string without end-string.
+> >
+> > Introduced by commit
+> >
+> >   3c15fddf3121 ("dt-bindings: arm: Convert CoreSight bindings to DT schema")
+> >
+>
+> I have sent the fix at [1]. Thanks.
+>
+> [1]: https://lore.kernel.org/linux-doc/20220630101317.102680-1-bagasdotme@gmail.com/
 
---=-yepyHi/rra1L4p3Rn+ML
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Thanks!
 
-On Thu, 2022-06-30 at 19:33 +0800, Liu Shixin wrote:
-> After patch ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE"),
-> swiotlb_bounce will be called in swiotlb_tbl_map_single unconditionally.
-> This requires that the physical address must be valid, which is not alway=
-s
-> true on stable-4.19 or earlier version.
-> On stable-4.19, swiotlb_alloc_buffer will call swiotlb_tbl_map_single wit=
-h
-> orig_addr equal to zero, which cause such a panic:
->=20
-> Unable to handle kernel paging request at virtual address ffffb77a4000000=
-0
-> ...
-> pc : __memcpy+0x100/0x180
-> lr : swiotlb_bounce+0x74/0x88
-> ...
-> Call trace:
->  __memcpy+0x100/0x180
->  swiotlb_tbl_map_single+0x2c8/0x338
->  swiotlb_alloc+0xb4/0x198
->  __dma_alloc+0x84/0x1d8
->  ...
->=20
-> On stable-4.9 and stable-4.14, swiotlb_alloc_coherent wille call map_sing=
-le
-> with orig_addr equal to zero, which can cause same panic.
->=20
-> Fix this by skipping swiotlb_bounce when orig_addr is zero.
-
-Thanks for fixing this.  I tried to test the backports by forcing use
-of swiotlb, but apparently it still didn't get used.
-
-Ben.
-
-> Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
-> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
-> ---
->  kernel/dma/swiotlb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 8b1360772fc5..b1e2ce2f9c2d 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -594,7 +594,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwd=
-ev,
->  	 * unconditional bounce may prevent leaking swiotlb content (i.e.
->  	 * kernel memory) to user-space.
->  	 */
-> -	swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
-> +	if (orig_addr)
-> +		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
->  	return tlb_addr;
->  }
-> =20
-
---=20
-Ben Hutchings
-Nothing is ever a complete failure;
-it can always serve as a bad example.
-
---=-yepyHi/rra1L4p3Rn+ML
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQIyBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAmK9m7kACgkQ57/I7JWG
-EQmAzg/4778VL7ohyyfG2tX3pG5qxojr5oph3JeBdR1qkBQ40kvSS4KXd3yk8d4t
-9CfsXko1TQie1bp01KsEJtcpbuo6V2Hsz7T+eb3z15C4FB1RZ5j7W45Sd4Tu8NkB
-aCxzxgUJYoSXodZsKXQU/cA3hXEDv0ypE+JQvMHFJ+8CqSKD6IXaPaxZg65RtlQz
-btmh3U3NeQ4Kn7d7LYsxU0JaF1qNVESqbRnO92SXqfStZDt3aL8loO+rOJiEwpdp
-Wp0zWNyPyo9AosmrIKo9a4kJbj9k30ND8aPCoO6H5NpMVO6/kYO4sCHuQcYUKyUa
-lXuoJG0RQnOuWOVm9OqfeVIa9G8MfZ0JH8YCLJ8/w/jxGcPweRC9h2YrwzR/9cNQ
-wqWH9sscwtBUTEaY73+URipEeQz32R/qSXmZksmSPGzdsB7A3ruErBoD7VK5LkNX
-INOgIYDRMR9RnEVsEULeb5b6xaxex+LZSnS78D503bV9pHafw4zxjVgLYhPhN7ZG
-pOnS3QBoOfX35taT1p9UwLl+NvJmtSP5BGnx8Py24SZlYLQWSFlaT0BjteFJcFXR
-FsnaT990164jM7Mw9uqj5PUkNZvmgVdw8z65ZkjsWt/0h2+MOXUU7cmh8s13PHzE
-IVMkayp7kk1VuXeIHgwcrRUEq1Ek/Qlwya1tYCbqQEuwh+Nl/Q==
-=lErt
------END PGP SIGNATURE-----
-
---=-yepyHi/rra1L4p3Rn+ML--
+Rob
