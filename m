@@ -2,134 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26581C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19503C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237027AbiF3OT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53676 "EHLO
+        id S237052AbiF3OTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237349AbiF3OSA (ORCPT
+        with ESMTP id S237772AbiF3OSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:18:00 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FD250707;
-        Thu, 30 Jun 2022 07:02:49 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DA0F522248;
-        Thu, 30 Jun 2022 16:02:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656597767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ass4dmeUBL1qbJ56Qd90hEzwbZXn4e7pswz+/m2UBRk=;
-        b=XBGzYxbEe8yNmRuCYQV3Mm+5nZvD3U9eVQfguks0tK5VG7PGFDd5prmlhfl5MRyCV1jAm+
-        IEjXAZMz6fnp9oD2nlJo5uHxtmO+/4pLXME6nKXMzNUxJbMpQ6/o0CIi9R05J4/eMLgW2m
-        VrKn19wzHs1fV9xvx+Hum1jhfnA7CPY=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 1/4] net: lan966x: hardcode the number of external ports
-Date:   Thu, 30 Jun 2022 16:02:34 +0200
-Message-Id: <20220630140237.692986-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220630140237.692986-1-michael@walle.cc>
-References: <20220630140237.692986-1-michael@walle.cc>
+        Thu, 30 Jun 2022 10:18:53 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4474D88F0E;
+        Thu, 30 Jun 2022 07:03:21 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LYg3J1xLmz1L8fD;
+        Thu, 30 Jun 2022 22:01:00 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 30 Jun 2022 22:03:17 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
+ 2022 22:03:17 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-clk@vger.kernel.org>
+CC:     <abelvesa@kernel.org>, <shawnguo@kernel.org>
+Subject: [PATCH -next] clk: imx: remove unnecessary NULL check of clk
+Date:   Thu, 30 Jun 2022 22:13:08 +0800
+Message-ID: <20220630141308.121526-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of counting the child nodes in the device tree, hardcode the
-number of ports in the driver itself. The counting won't work at all
-if an ethernet port is marked as disabled, eg. because it is not
-connected on the board at all.
+It has NULL check in clk_prepare_enable(), so it no need
+to check the clk before calling it.
 
-This is hardcoding the number of ports to eight for the generic
-compatible string "microchip,lan966x-switch", although it clearly only
-applies to the LAN9668. This is because, first, there is only one user
-for now, and that is the LAN9668 and second, the generic compatible
-string will be deprecated in favor of a more specific one. Therefore,
-if there will be support for the LAN9662, it can be added by another
-specific compatible string.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- .../ethernet/microchip/lan966x/lan966x_main.c | 23 +++++++++++++------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ drivers/clk/imx/clk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 5784c4161e5e..d611b52d3a07 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -26,8 +26,16 @@
+diff --git a/drivers/clk/imx/clk.c b/drivers/clk/imx/clk.c
+index 5582f18dd632..1c5d5b957c96 100644
+--- a/drivers/clk/imx/clk.c
++++ b/drivers/clk/imx/clk.c
+@@ -189,9 +189,7 @@ void imx_register_uart_clocks(unsigned int clk_count)
+ 			if (IS_ERR(imx_uart_clocks[imx_enabled_uart_clocks]))
+ 				return;
  
- #define IO_RANGES 2
- 
-+struct lan966x_info {
-+	u8 num_phys_ports;
-+};
-+
-+static const struct lan966x_info lan9668_info = {
-+	.num_phys_ports = 8,
-+};
-+
- static const struct of_device_id lan966x_match[] = {
--	{ .compatible = "microchip,lan966x-switch" },
-+	{ .compatible = "microchip,lan966x-switch", .data = &lan9668_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, lan966x_match);
-@@ -992,9 +1000,10 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
- static int lan966x_probe(struct platform_device *pdev)
- {
- 	struct fwnode_handle *ports, *portnp;
-+	const struct lan966x_info *info;
- 	struct lan966x *lan966x;
- 	u8 mac_addr[ETH_ALEN];
--	int err, i;
-+	int err;
- 
- 	lan966x = devm_kzalloc(&pdev->dev, sizeof(*lan966x), GFP_KERNEL);
- 	if (!lan966x)
-@@ -1003,6 +1012,10 @@ static int lan966x_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, lan966x);
- 	lan966x->dev = &pdev->dev;
- 
-+	info = device_get_match_data(&pdev->dev);
-+	if (!info)
-+		return -ENODEV;
-+
- 	if (!device_get_mac_address(&pdev->dev, mac_addr)) {
- 		ether_addr_copy(lan966x->base_mac, mac_addr);
- 	} else {
-@@ -1025,11 +1038,7 @@ static int lan966x_probe(struct platform_device *pdev)
- 	if (err)
- 		return dev_err_probe(&pdev->dev, err, "Reset failed");
- 
--	i = 0;
--	fwnode_for_each_available_child_node(ports, portnp)
--		++i;
--
--	lan966x->num_phys_ports = i;
-+	lan966x->num_phys_ports = info->num_phys_ports;
- 	lan966x->ports = devm_kcalloc(&pdev->dev, lan966x->num_phys_ports,
- 				      sizeof(struct lan966x_port *),
- 				      GFP_KERNEL);
+-			/* Only enable the clock if it's not NULL */
+-			if (imx_uart_clocks[imx_enabled_uart_clocks])
+-				clk_prepare_enable(imx_uart_clocks[imx_enabled_uart_clocks++]);
++			clk_prepare_enable(imx_uart_clocks[imx_enabled_uart_clocks++]);
+ 		}
+ 	}
+ #endif
 -- 
-2.30.2
+2.25.1
 
