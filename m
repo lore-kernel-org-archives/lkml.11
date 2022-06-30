@@ -2,154 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C88CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41580C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 06:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232817AbiF3Gmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 02:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
+        id S232828AbiF3GpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 02:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232867AbiF3Gmf (ORCPT
+        with ESMTP id S232717AbiF3GpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 02:42:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171E22F679
-        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:42:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 34F16CE2BCE
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 226C2C341CA;
-        Thu, 30 Jun 2022 06:42:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656571350;
-        bh=n8/aWzfP7FAsvJoeycNZ8swGQKCwTxKT/KxY3fF1rME=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C/w9h8s30n5rRj4CENTPEQ9ppa+/Y8reiGW8vKWs058A0NgwggYfxNDqtVr9SPGBb
-         41c8CqRABfz1wZfEjb5eTE8mhvScJcd3SKFd/RxqEaUBPQ5gVrBJqEoVWlG8gumBt8
-         oexpmWmYP0VHV4UTVzVIxhLINjw9KN1TY6liANjY=
-Date:   Thu, 30 Jun 2022 08:42:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Vipin Sharma <vipinsh@google.com>, rkovhaev@gmail.com,
-        zackary.liu.pro@gmail.com, ripxorip@gmail.com,
-        masahiroy@kernel.org, xujialu@vimux.org,
-        "drjones@redhat.com" <drjones@redhat.com>, dmatlack@google.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] scripts/tags.sh: Include tools directory in tags
- generation
-Message-ID: <Yr1F0xKlrFsuJWWA@kroah.com>
-References: <20220618005457.2379324-1-vipinsh@google.com>
- <CAHVum0euKMV+rCLXMQ4NuDAqowyeCkO1LheSafR2tm=R4aUfJw@mail.gmail.com>
- <YrqaKpdVDl8DBl4g@kroah.com>
- <CAHVum0f=_7kh_OrOqiTH=UZuvr3ZbxNcZeUSbT66x5r0q2XEgQ@mail.gmail.com>
- <b1b5666a-67a7-469c-d6c7-e585cf59c632@collabora.com>
+        Thu, 30 Jun 2022 02:45:08 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3185E2F679
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:45:07 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id sb34so36957475ejc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 29 Jun 2022 23:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=SEHHtXscQPdl7vov2HttOhjl2K/3hLOdoodmcl4p85o=;
+        b=mQ8uWCg/PjD7TkytMn5/9PSoSY+uzqsmvzu6MKlaoFW2UBG9jlRSyZNBDFwgxl1o5h
+         u/atKVC4jvPDnRdAntXL+Mq50nCBCjjSPtAxbAKCuEr8x8m2fGesiLBcUbJca9f1nbcF
+         u2HRZey4syVKo6v3KVGPHa3AYnKcc7nq3KPLmjm9C2VFoE9AGA7ng1OoLhZ6LHAk08yl
+         gM59AFVkk2/sqq35ZOvl4efbz0JcyVJZq0q2LQV9H89k422mnVBkNG66wKob2hgpXSiD
+         SsiGDUJAULf1fYw6SbNLHNHOhLg3v5cuBMUMh+dMQbo0T6i4mHgwS5P65jQn4ffaDgGM
+         PV8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SEHHtXscQPdl7vov2HttOhjl2K/3hLOdoodmcl4p85o=;
+        b=s5dO+2mn5LpS1hOvTBh6CQGLtWvg9kj8mopegfHXLlMlgieqIJQozaHSZVFzg1JPYr
+         fyoLMys4EtSTeuln9B1he3J8EpjpWA8byR7whiGhjS6jhD+uSflWDJYSvz3LnvIOHGt6
+         CKDoXdEm/PBYTyUsedaWuPqwp7zAUu6wEYdaOfIY1smbxnfBFBP1HF2E/YrdCzWhYd1d
+         sqIlrZvSo/wh2gr5mM2vDZR9X+Oq159D0sOZPPb0/le3hGsiuXMcNg4THH3ZvrMXUgzK
+         Qi68VjgKKlyTOYEXtNKa126otaynpU8PgHNRCFVuzUxCBONTC0S00LNdFLz6KS3ctgtx
+         +XGQ==
+X-Gm-Message-State: AJIora+ynrnhFAmo+ApPHxtNfbR3Z5H/pX6A0IIjgxFvcYrlyMgsA/BM
+        qOzHYDpjjcRd18oNA6Bs4MBgNww4/I8=
+X-Google-Smtp-Source: AGRyM1tl8g3NYtHoVMp383h2kVsFbxVBbWuRR3STVIr08Pz8c9Q8oFzLEaghSp/mRcK1qvE/Ucq67Q==
+X-Received: by 2002:a17:907:9483:b0:726:bea5:7a87 with SMTP id dm3-20020a170907948300b00726bea57a87mr7276684ejc.629.1656571505579;
+        Wed, 29 Jun 2022 23:45:05 -0700 (PDT)
+Received: from [192.168.0.12] (nborisov.ddns.nbis.net. [85.187.217.137])
+        by smtp.gmail.com with ESMTPSA id s2-20020a170906454200b006fe9ec4ba9esm8763471ejq.52.2022.06.29.23.45.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 23:45:05 -0700 (PDT)
+Message-ID: <feb7d93c-76bc-a7fc-0714-ed71495a16b9@gmail.com>
+Date:   Thu, 30 Jun 2022 09:45:04 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b1b5666a-67a7-469c-d6c7-e585cf59c632@collabora.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 5/7] fs: remove no_llseek
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
+References: <20220629130702.954310-1-Jason@zx2c4.com>
+ <20220629130702.954310-6-Jason@zx2c4.com>
+From:   Nikolay Borisov <n.borisov.lkml@gmail.com>
+In-Reply-To: <20220629130702.954310-6-Jason@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 01:54:00AM +0300, Cristian Ciocaltea wrote:
-> 
-> On 6/30/22 01:18, Vipin Sharma wrote:
-> > On Mon, Jun 27, 2022 at 11:05 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > 
-> > > On Mon, Jun 27, 2022 at 10:47:35AM -0700, Vipin Sharma wrote:
-> > > > On Fri, Jun 17, 2022 at 5:55 PM Vipin Sharma <vipinsh@google.com> wrote:
-> > > > > 
-> > > > > Add tools directory in generating tags and quiet the "No such file or
-> > > > > directory" warnings.
-> > > > > 
-> > > > > It reverts the changes introduced in commit 162343a876f1
-> > > > > ("scripts/tags.sh: exclude tools directory from tags generation") while
-> > > > > maintainig the original intent of the patch to get rid of the warnings.
-> > > > > This allows the root level cscope files to include tools source code
-> > > > > besides kernel and a single place to browse the code for both.
-> > > > > 
-> > > > > Signed-off-by: Vipin Sharma <vipinsh@google.com>
-> > > > > ---
-> > > > > 
-> > > > > I have found myself many times to browse tools and other part of the
-> > > > > kernel code together. Excluding tools from the root level cscope makes
-> > > > > it difficult to efficiently move between files and find user api
-> > > > > definitions.
-> > > > > 
-> > > > > Root cause of these warning is due to generated .cmd files which use
-> > > > > relative paths in some files, I am not sure how to make them absolute
-> > > > > file paths which can satisfy realpath warnings. Also, not sure if those
-> > > > > warnings are helpful and should be kept. Passing "-q" to realpath seems
-> > > > > easier solution. Please, let me know if there is a better alternative.
-> > > > > 
-> > > > > Thanks
-> > > > > 
-> > > > >   scripts/tags.sh | 9 +--------
-> > > > >   1 file changed, 1 insertion(+), 8 deletions(-)
-> > > > > 
-> > > > > diff --git a/scripts/tags.sh b/scripts/tags.sh
-> > > > > index 01fab3d4f90b5..e137cf15aae9d 100755
-> > > > > --- a/scripts/tags.sh
-> > > > > +++ b/scripts/tags.sh
-> > > > > @@ -25,13 +25,6 @@ else
-> > > > >          tree=${srctree}/
-> > > > >   fi
-> > > > > 
-> > > > > -# ignore userspace tools
-> > > > > -if [ -n "$COMPILED_SOURCE" ]; then
-> > > > > -       ignore="$ignore ( -path ./tools ) -prune -o"
-> > > > > -else
-> > > > > -       ignore="$ignore ( -path ${tree}tools ) -prune -o"
-> > > > > -fi
-> > > > > -
-> > > > >   # Detect if ALLSOURCE_ARCHS is set. If not, we assume SRCARCH
-> > > > >   if [ "${ALLSOURCE_ARCHS}" = "" ]; then
-> > > > >          ALLSOURCE_ARCHS=${SRCARCH}
-> > > > > @@ -100,7 +93,7 @@ all_compiled_sources()
-> > > > >                  find $ignore -name "*.cmd" -exec \
-> > > > >                          grep -Poh '(?(?=^source_.* \K).*|(?=^  \K\S).*(?= \\))' {} \+ |
-> > > > >                  awk '!a[$0]++'
-> > > > > -       } | xargs realpath -es $([ -z "$KBUILD_ABS_SRCTREE" ] && echo --relative-to=.) |
-> > > > > +       } | xargs realpath -esq $([ -z "$KBUILD_ABS_SRCTREE" ] && echo --relative-to=.) |
-> > > > >          sort -u
-> > > > >   }
-> > > > > 
-> > > > > --
-> > > > > 2.37.0.rc0.104.g0611611a94-goog
-> > > > > 
-> > > > 
-> > > > Hi Greg,
-> > > > 
-> > > > Any update on the patch?
-> > > 
-> > > Nope!
-> > > 
-> > > I don't really think we should add back in the tools to this, as if you
-> > > want to search them, then can't you just generate the needed tags for
-> > > the tools directory?
-> > > 
-> > 
-> > Some folders in the tools directory do provide cscope rules. However,
-> > those tags can only be used when I open the vim in those directories.
-> > For example, if I am writing a KVM selftest and I want to explore code
-> > related to certain ioctl in kernel as well as some code in KVM
-> > selftest library, I cannot use two cscope files (one in the kernel
-> > root dir and another in tools/testing/selftests/kvm) in a single VIM
-> > instance. It starts having issues with the file paths. If the root
-> > level cscope file includes tools directory then all of the tags will
-> > be at one place and makes it very easy to browse tools code along with
-> > the rest of the kernel.
-> > 
-> > > But as I don't even use this script ever, it feels odd for me to be the
-> > > one "owning" it, so it would be great if others could chime in who
-> > > actually use it.
-> > > 
-> 
-> Since the tools directory has been excluded just to get rid of those
-> warnings, I think there is no obvious reason to not add it back - at least
-> the use case described above is perfectly valid.
 
-So is that an "Acked-by:"?
 
+On 29.06.22 г. 16:07 ч., Jason A. Donenfeld wrote:
+> Now that all callers of ->llseek are going through vfs_llseek(), we
+> don't gain anything by keeping no_llseek around. Nothing compares it or
+> calls it.
+> 
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>   fs/read_write.c    | 17 +++--------------
+>   include/linux/fs.h |  1 -
+>   2 files changed, 3 insertions(+), 15 deletions(-)
+> 
+> diff --git a/fs/read_write.c b/fs/read_write.c
+> index b1b1cdfee9d3..69cd8d72d91e 100644
+> --- a/fs/read_write.c
+> +++ b/fs/read_write.c
+> @@ -227,12 +227,6 @@ loff_t noop_llseek(struct file *file, loff_t offset, int whence)
+>   }
+>   EXPORT_SYMBOL(noop_llseek);
+>   
+> -loff_t no_llseek(struct file *file, loff_t offset, int whence)
+> -{
+> -	return -ESPIPE;
+> -}
+> -EXPORT_SYMBOL(no_llseek);
+> -
+>   loff_t default_llseek(struct file *file, loff_t offset, int whence)
+>   {
+>   	struct inode *inode = file_inode(file);
+> @@ -290,14 +284,9 @@ EXPORT_SYMBOL(default_llseek);
+>   
+>   loff_t vfs_llseek(struct file *file, loff_t offset, int whence)
+>   {
+> -	loff_t (*fn)(struct file *, loff_t, int);
+> -
+> -	fn = no_llseek;
+> -	if (file->f_mode & FMODE_LSEEK) {
+> -		if (file->f_op->llseek)
+> -			fn = file->f_op->llseek;
+> -	}
+> -	return fn(file, offset, whence);
+> +	if (!(file->f_mode & FMODE_LSEEK) || !file->f_op->llseek)
+
+Is it not sufficient here to just check for the presence of FMODE_LSEEK? 
+NULL  llseek shall result in FMODE_LSEEK not being set when the file is 
+opened?
+
+> +		return -ESPIPE;
+> +	return file->f_op->llseek(file, offset, whence);
+>   }
+>   EXPORT_SYMBOL(vfs_llseek);
+>   
+> diff --git a/include/linux/fs.h b/include/linux/fs.h
+> index 9ad5e3520fae..0cb5a1706e1f 100644
+> --- a/include/linux/fs.h
+> +++ b/include/linux/fs.h
+> @@ -3022,7 +3022,6 @@ extern long do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
+>   extern void
+>   file_ra_state_init(struct file_ra_state *ra, struct address_space *mapping);
+>   extern loff_t noop_llseek(struct file *file, loff_t offset, int whence);
+> -extern loff_t no_llseek(struct file *file, loff_t offset, int whence);
+>   extern loff_t vfs_setpos(struct file *file, loff_t offset, loff_t maxsize);
+>   extern loff_t generic_file_llseek(struct file *file, loff_t offset, int whence);
+>   extern loff_t generic_file_llseek_size(struct file *file, loff_t offset,
