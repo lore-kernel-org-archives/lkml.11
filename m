@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCA6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A22D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236565AbiF3OFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
+        id S236423AbiF3OF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236379AbiF3OFV (ORCPT
+        with ESMTP id S236404AbiF3OFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:05:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826396D56F;
-        Thu, 30 Jun 2022 06:53:44 -0700 (PDT)
+        Thu, 30 Jun 2022 10:05:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77F16EE91;
+        Thu, 30 Jun 2022 06:53:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3D264CE2DD1;
-        Thu, 30 Jun 2022 13:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD7DC34115;
-        Thu, 30 Jun 2022 13:53:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9831061FF6;
+        Thu, 30 Jun 2022 13:53:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C28BC34115;
+        Thu, 30 Jun 2022 13:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597215;
-        bh=75FS4mImmojh8s0Xv4FDHHXbR73W83BbQ4InWvG+w1w=;
+        s=korg; t=1656597224;
+        bh=RGsatybUy2IVoxQlTGrXAd1ewMgnrCmqFCingxAVs00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KCoxJDs+pK1asheEjhcpUzAWFhpb6SxkztEogGDseqNDIxNPrw3ixAED+LnhjKMGT
-         gBy0U0zd7JijcmNm1yH6wUKxduBgErK0qqFA7zA/PB+ophM5iYYOJcDsl1Jzd/X0X/
-         1UUN1bb9rQPkggV1ZcUzU1cnyriPuHu5ZCF2BhTk=
+        b=oEII0HoQzYVzPc9gJ5EowZQicahnr/oxloswEQ3HOwaDVXbj0SHpPB5cSEoaXuRyt
+         ijCdfBR/sbzO/9jT+JhSZ2UxGpZNJFd6OP9MWCOJW8UtcRp5QE2WISXo4BxnVJd3x3
+         GVz8yCKBpPoQdgX1HxqMvfwRN4I4LHidBDm5sbL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.4 06/16] ARM: 8989/1: use .fpu assembler directives instead of assembler arguments
-Date:   Thu, 30 Jun 2022 15:47:00 +0200
-Message-Id: <20220630133231.126308979@linuxfoundation.org>
+Subject: [PATCH 5.4 09/16] crypto: arm/sha256-neon - avoid ADRL pseudo instruction
+Date:   Thu, 30 Jun 2022 15:47:03 +0200
+Message-Id: <20220630133231.213267670@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133230.936488203@linuxfoundation.org>
 References: <20220630133230.936488203@linuxfoundation.org>
@@ -49,119 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Agner <stefan@agner.ch>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit a6c30873ee4a5cc0549c1973668156381ab2c1c4 upstream
+commit 54781938ec342cadbe2d76669ef8d3294d909974 upstream
 
-Explicit FPU selection has been introduced in commit 1a6be26d5b1a
-("[ARM] Enable VFP to be built when non-VFP capable CPUs are selected")
-to make use of assembler mnemonics for VFP instructions.
+The ADRL pseudo instruction is not an architectural construct, but a
+convenience macro that was supported by the ARM proprietary assembler
+and adopted by binutils GAS as well, but only when assembling in 32-bit
+ARM mode. Therefore, it can only be used in assembler code that is known
+to assemble in ARM mode only, but as it turns out, the Clang assembler
+does not implement ADRL at all, and so it is better to get rid of it
+entirely.
 
-However, clang currently does not support passing assembler flags
-like this and errors out with:
-clang-10: error: the clang compiler does not support '-Wa,-mfpu=softvfp+vfp'
+So replace the ADRL instruction with a ADR instruction that refers to
+a nearer symbol, and apply the delta explicitly using an additional
+instruction.
 
-Make use of the .fpu assembler directives to select the floating point
-hardware selectively. Also use the new unified assembler language
-mnemonics. This allows to build these procedures with Clang.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/762
-
-Signed-off-by: Stefan Agner <stefan@agner.ch>
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/vfp/Makefile |    2 --
- arch/arm/vfp/vfphw.S  |   30 ++++++++++++++++++++----------
- 2 files changed, 20 insertions(+), 12 deletions(-)
+ arch/arm/crypto/sha256-armv4.pl       |    4 ++--
+ arch/arm/crypto/sha256-core.S_shipped |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/arm/vfp/Makefile
-+++ b/arch/arm/vfp/Makefile
-@@ -8,6 +8,4 @@
- # ccflags-y := -DDEBUG
- # asflags-y := -DDEBUG
+--- a/arch/arm/crypto/sha256-armv4.pl
++++ b/arch/arm/crypto/sha256-armv4.pl
+@@ -175,7 +175,6 @@ $code=<<___;
+ #else
+ .syntax unified
+ # ifdef __thumb2__
+-#  define adrl adr
+ .thumb
+ # else
+ .code   32
+@@ -471,7 +470,8 @@ sha256_block_data_order_neon:
+ 	stmdb	sp!,{r4-r12,lr}
  
--KBUILD_AFLAGS	:=$(KBUILD_AFLAGS:-msoft-float=-Wa,-mfpu=softvfp+vfp -mfloat-abi=soft)
--
- obj-y		+= vfpmodule.o entry.o vfphw.o vfpsingle.o vfpdouble.o
---- a/arch/arm/vfp/vfphw.S
-+++ b/arch/arm/vfp/vfphw.S
-@@ -253,11 +253,14 @@ vfp_current_hw_state_address:
+ 	sub	$H,sp,#16*4+16
+-	adrl	$Ktbl,K256
++	adr	$Ktbl,.Lsha256_block_data_order
++	sub	$Ktbl,$Ktbl,#.Lsha256_block_data_order-K256
+ 	bic	$H,$H,#15		@ align for 128-bit stores
+ 	mov	$t2,sp
+ 	mov	sp,$H			@ alloca
+--- a/arch/arm/crypto/sha256-core.S_shipped
++++ b/arch/arm/crypto/sha256-core.S_shipped
+@@ -56,7 +56,6 @@
+ #else
+ .syntax unified
+ # ifdef __thumb2__
+-#  define adrl adr
+ .thumb
+ # else
+ .code   32
+@@ -1885,7 +1884,8 @@ sha256_block_data_order_neon:
+ 	stmdb	sp!,{r4-r12,lr}
  
- ENTRY(vfp_get_float)
- 	tbl_branch r0, r3, #3
-+	.fpu	vfpv2
- 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
--1:	mrc	p10, 0, r0, c\dr, c0, 0	@ fmrs	r0, s0
-+1:	vmov	r0, s\dr
- 	ret	lr
- 	.org	1b + 8
--1:	mrc	p10, 0, r0, c\dr, c0, 4	@ fmrs	r0, s1
-+	.endr
-+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
-+1:	vmov	r0, s\dr
- 	ret	lr
- 	.org	1b + 8
- 	.endr
-@@ -265,11 +268,14 @@ ENDPROC(vfp_get_float)
- 
- ENTRY(vfp_put_float)
- 	tbl_branch r1, r3, #3
-+	.fpu	vfpv2
- 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
--1:	mcr	p10, 0, r0, c\dr, c0, 0	@ fmsr	r0, s0
-+1:	vmov	s\dr, r0
- 	ret	lr
- 	.org	1b + 8
--1:	mcr	p10, 0, r0, c\dr, c0, 4	@ fmsr	r0, s1
-+	.endr
-+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
-+1:	vmov	s\dr, r0
- 	ret	lr
- 	.org	1b + 8
- 	.endr
-@@ -277,15 +283,17 @@ ENDPROC(vfp_put_float)
- 
- ENTRY(vfp_get_double)
- 	tbl_branch r0, r3, #3
-+	.fpu	vfpv2
- 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
--1:	fmrrd	r0, r1, d\dr
-+1:	vmov	r0, r1, d\dr
- 	ret	lr
- 	.org	1b + 8
- 	.endr
- #ifdef CONFIG_VFPv3
- 	@ d16 - d31 registers
--	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
--1:	mrrc	p11, 3, r0, r1, c\dr	@ fmrrd	r0, r1, d\dr
-+	.fpu	vfpv3
-+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
-+1:	vmov	r0, r1, d\dr
- 	ret	lr
- 	.org	1b + 8
- 	.endr
-@@ -299,15 +307,17 @@ ENDPROC(vfp_get_double)
- 
- ENTRY(vfp_put_double)
- 	tbl_branch r2, r3, #3
-+	.fpu	vfpv2
- 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
--1:	fmdrr	d\dr, r0, r1
-+1:	vmov	d\dr, r0, r1
- 	ret	lr
- 	.org	1b + 8
- 	.endr
- #ifdef CONFIG_VFPv3
-+	.fpu	vfpv3
- 	@ d16 - d31 registers
--	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
--1:	mcrr	p11, 3, r0, r1, c\dr	@ fmdrr	r0, r1, d\dr
-+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
-+1:	vmov	d\dr, r0, r1
- 	ret	lr
- 	.org	1b + 8
- 	.endr
+ 	sub	r11,sp,#16*4+16
+-	adrl	r14,K256
++	adr	r14,.Lsha256_block_data_order
++	sub	r14,r14,#.Lsha256_block_data_order-K256
+ 	bic	r11,r11,#15		@ align for 128-bit stores
+ 	mov	r12,sp
+ 	mov	sp,r11			@ alloca
 
 
