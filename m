@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E33C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFD1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235519AbiF3Ntb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
+        id S235525AbiF3Nte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235325AbiF3Nsc (ORCPT
+        with ESMTP id S235370AbiF3Nsd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:48:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CBBBC04;
-        Thu, 30 Jun 2022 06:48:29 -0700 (PDT)
+        Thu, 30 Jun 2022 09:48:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2B1B8A;
+        Thu, 30 Jun 2022 06:48:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1BE28CE2DD1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72EA8B82AEE;
+        Thu, 30 Jun 2022 13:48:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA20FC34115;
         Thu, 30 Jun 2022 13:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12EB7C341CE;
-        Thu, 30 Jun 2022 13:48:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596906;
-        bh=YiK67/b56FS6ITKRi/RKQdx1c6mpNnFrT0R6m0aomG0=;
+        s=korg; t=1656596909;
+        bh=3Ihd5GIIOBhwJzmG7v9iDbiZR6D5ygr/fsn/Xgn+6KI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EZizHJqibJ8pdjtOhXVzj1KM4d/FArC2bX1RzEip6OQAIuBNeEtR9pL/ZcXuNKXR0
-         EXlqChlOxx8tKoQcCgulapRWxyj/dI5LB33LDjc84gvTHkOzSioJyAH+V4g71CfOFT
-         ys3KavBV5/VqAsnuCo/cDvg8QKWGEYjI+WBXLJtg=
+        b=RJDCO9cCsoTkc6ISgooRf/WxSjKn3F/Su29I9Qa/kX005oXXHnLJCfY7uPcMNcWR7
+         ERBtEJ7gEwCNyBpGmlCzCGte0GuuWB/cfotnz+kAZKkSf3RX9qpUs/HXBNE7GRd8B8
+         NFu2ZrR3Y5UoOACTxfZiKVXDL68RkTX0e0bafUqU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 4.9 23/29] modpost: fix section mismatch check for exported init/exit sections
-Date:   Thu, 30 Jun 2022 15:46:23 +0200
-Message-Id: <20220630133231.881578142@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.9 24/29] powerpc/pseries: wire up rng during setup_arch()
+Date:   Thu, 30 Jun 2022 15:46:24 +0200
+Message-Id: <20220630133231.913966773@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133231.200642128@linuxfoundation.org>
 References: <20220630133231.200642128@linuxfoundation.org>
@@ -48,37 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 28438794aba47a27e922857d27b31b74e8559143 upstream.
+commit e561e472a3d441753bd012333b057f48fef1045b upstream.
 
-Since commit f02e8a6596b7 ("module: Sort exported symbols"),
-EXPORT_SYMBOL* is placed in the individual section ___ksymtab(_gpl)+<sym>
-(3 leading underscores instead of 2).
+The platform's RNG must be available before random_init() in order to be
+useful for initial seeding, which in turn means that it needs to be
+called from setup_arch(), rather than from an init call. Fortunately,
+each platform already has a setup_arch function pointer, which means
+it's easy to wire this up. This commit also removes some noisy log
+messages that don't add much.
 
-Since then, modpost cannot detect the bad combination of EXPORT_SYMBOL
-and __init/__exit.
-
-Fix the .fromsec field.
-
-Fixes: f02e8a6596b7 ("module: Sort exported symbols")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: a489043f4626 ("powerpc/pseries: Implement arch_get_random_long() based on H_RANDOM")
+Cc: stable@vger.kernel.org # v3.13+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220611151015.548325-4-Jason@zx2c4.com
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/mod/modpost.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/pseries/pseries.h |    2 ++
+ arch/powerpc/platforms/pseries/rng.c     |   11 +++--------
+ arch/powerpc/platforms/pseries/setup.c   |    1 +
+ 3 files changed, 6 insertions(+), 8 deletions(-)
 
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1060,7 +1060,7 @@ static const struct sectioncheck section
- },
- /* Do not export init/exit functions or data */
+--- a/arch/powerpc/platforms/pseries/pseries.h
++++ b/arch/powerpc/platforms/pseries/pseries.h
+@@ -81,4 +81,6 @@ unsigned long pseries_memory_block_size(
+ 
+ void pseries_setup_rfi_flush(void);
+ 
++void pseries_rng_init(void);
++
+ #endif /* _PSERIES_PSERIES_H */
+--- a/arch/powerpc/platforms/pseries/rng.c
++++ b/arch/powerpc/platforms/pseries/rng.c
+@@ -14,6 +14,7 @@
+ #include <asm/archrandom.h>
+ #include <asm/machdep.h>
+ #include <asm/plpar_wrappers.h>
++#include "pseries.h"
+ 
+ 
+ static int pseries_get_random_long(unsigned long *v)
+@@ -28,19 +29,13 @@ static int pseries_get_random_long(unsig
+ 	return 0;
+ }
+ 
+-static __init int rng_init(void)
++void __init pseries_rng_init(void)
  {
--	.fromsec = { "__ksymtab*", NULL },
-+	.fromsec = { "___ksymtab*", NULL },
- 	.bad_tosec = { INIT_SECTIONS, EXIT_SECTIONS, NULL },
- 	.mismatch = EXPORT_TO_INIT_EXIT,
- 	.symbol_white_list = { DEFAULT_SYMBOL_WHITE_LIST, NULL },
+ 	struct device_node *dn;
+ 
+ 	dn = of_find_compatible_node(NULL, NULL, "ibm,random");
+ 	if (!dn)
+-		return -ENODEV;
+-
+-	pr_info("Registering arch random hook.\n");
+-
++		return;
+ 	ppc_md.get_random_seed = pseries_get_random_long;
+-
+ 	of_node_put(dn);
+-	return 0;
+ }
+-machine_subsys_initcall(pseries, rng_init);
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -585,6 +585,7 @@ static void __init pSeries_setup_arch(vo
+ 	}
+ 
+ 	ppc_md.pcibios_root_bridge_prepare = pseries_root_bridge_prepare;
++	pseries_rng_init();
+ }
+ 
+ static int __init pSeries_init_panel(void)
 
 
