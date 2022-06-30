@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 13:49:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235497AbiF3NtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 09:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
+        id S235503AbiF3NtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 09:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235345AbiF3Ns3 (ORCPT
+        with ESMTP id S235349AbiF3Nsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 09:48:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB460E3D;
-        Thu, 30 Jun 2022 06:48:17 -0700 (PDT)
+        Thu, 30 Jun 2022 09:48:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256F5100C;
+        Thu, 30 Jun 2022 06:48:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A76AB82AEE;
-        Thu, 30 Jun 2022 13:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEC9BC3411E;
-        Thu, 30 Jun 2022 13:48:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4539D61FF6;
+        Thu, 30 Jun 2022 13:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F329C34115;
+        Thu, 30 Jun 2022 13:48:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656596895;
-        bh=Ck3eaCv3Nug/fKci8rFdYHilyJDZV3uAyDonD/VKl00=;
+        s=korg; t=1656596900;
+        bh=l+0t1T7UVgnnl52KigGaMI+Ya57FIMlUgLltqt/jz/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FlE+hbGSxO/JTUygVpu0jhmMsRX7hriXF8iahcS7u1cDk8wnaKUASscCd8xETP9eD
-         SS3DBxzzVh9ImVoVHlCpWkLttSS5My/lBBTJhimKEA6xnYhzuWgrAjiIdGjHtT+B66
-         oa90vFh764XAtivyCgDf/Wh2aq06q3HCkVWPx5XQ=
+        b=KL7bzW3CyG0ZItErRGGteoIautfkHs8bf5qmg0TWZNITRKHZ0osY82Oc0TY0rarZE
+         as7UAP3sM/AOzI2XpIm5l0DEt8U6EWjxam15rUbbVVDZGTNJshUCe+sKb5xMtEPVM+
+         gK7r183yTObTmXYRkVvj415OIl2XG/TO4aTuCvB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 02/29] random: schedule mix_interrupt_randomness() less often
-Date:   Thu, 30 Jun 2022 15:46:02 +0200
-Message-Id: <20220630133231.274393389@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 4.9 21/29] ARM: Fix refcount leak in axxia_boot_secondary
+Date:   Thu, 30 Jun 2022 15:46:21 +0200
+Message-Id: <20220630133231.825078988@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220630133231.200642128@linuxfoundation.org>
 References: <20220630133231.200642128@linuxfoundation.org>
@@ -50,56 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 534d2eaf1970274150596fdd2bf552721e65d6b2 upstream.
+commit 7c7ff68daa93d8c4cdea482da4f2429c0398fcde upstream.
 
-It used to be that mix_interrupt_randomness() would credit 1 bit each
-time it ran, and so add_interrupt_randomness() would schedule mix() to
-run every 64 interrupts, a fairly arbitrary number, but nonetheless
-considered to be a decent enough conservative estimate.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Since e3e33fc2ea7f ("random: do not use input pool from hard IRQs"),
-mix() is now able to credit multiple bits, depending on the number of
-calls to add(). This was done for reasons separate from this commit, but
-it has the nice side effect of enabling this patch to schedule mix()
-less often.
-
-Currently the rules are:
-a) Credit 1 bit for every 64 calls to add().
-b) Schedule mix() once a second that add() is called.
-c) Schedule mix() once every 64 calls to add().
-
-Rules (a) and (c) no longer need to be coupled. It's still important to
-have _some_ value in (c), so that we don't "over-saturate" the fast
-pool, but the once per second we get from rule (b) is a plenty enough
-baseline. So, by increasing the 64 in rule (c) to something larger, we
-avoid calling queue_work_on() as frequently during irq storms.
-
-This commit changes that 64 in rule (c) to be 1024, which means we
-schedule mix() 16 times less often. And it does *not* need to change the
-64 in rule (a).
-
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
-Cc: stable@vger.kernel.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 1d22924e1c4e ("ARM: Add platform support for LSI AXM55xx SoC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220601090548.47616-1-linmq006@gmail.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-axxia/platsmp.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -997,7 +997,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
+--- a/arch/arm/mach-axxia/platsmp.c
++++ b/arch/arm/mach-axxia/platsmp.c
+@@ -42,6 +42,7 @@ static int axxia_boot_secondary(unsigned
+ 		return -ENOENT;
  
--	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
-+	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
+ 	syscon = of_iomap(syscon_np, 0);
++	of_node_put(syscon_np);
+ 	if (!syscon)
+ 		return -ENOMEM;
  
- 	if (unlikely(!fast_pool->mix.func))
 
 
