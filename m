@@ -2,130 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A337C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB1BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237028AbiF3OM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
+        id S236965AbiF3OOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236657AbiF3OL1 (ORCPT
+        with ESMTP id S237065AbiF3ONz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:11:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFD474795;
-        Thu, 30 Jun 2022 06:56:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 30 Jun 2022 10:13:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50316419A9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 06:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656597589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+GZL7A1rDCS9BWoMyYGxRSSo338VZcyjs0gmjggSCak=;
+        b=Etzmo4O4pwCY8kO0u8ilNHRSzcs1R3wYE5wYEOmNMB+WdoDbyqX3Mn/kj+hWDYUi8P2yP4
+        dchEWFAV86p6miPxxfWz4U9OZxk4En3BeJVnxZOZfpvTTpo6o5KIq4YIH0wjCh9h1yW3Ke
+        kVI7GTKLrHGFNbNK/0lekWO/Q6W/JeY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-357-YLw-229DPCCjkNgIoXGUaA-1; Thu, 30 Jun 2022 09:59:46 -0400
+X-MC-Unique: YLw-229DPCCjkNgIoXGUaA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA486211A;
-        Thu, 30 Jun 2022 13:56:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5147C34115;
-        Thu, 30 Jun 2022 13:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597361;
-        bh=+YLc4a0WbZpCVn31X/6oyULnGlfdxP35QoZV3HumIlI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DdO9W/OzETwctEidDZ2qlf/PyhqITcjlebMtgi7x98CLacYlMqRfT0/fk8nBSKHVQ
-         ZJI/EpXifSIB+wCXMK3I789NgTseHFd0P8+ydmnbFLKJuwsY9tjfgwqL1I94xXTduB
-         IXg211ZQ/1qjke4/FbQkigPYCPdg1ah1SzLNpdjQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 5.18 6/6] io_uring: fix not locked access to fixed buf table
-Date:   Thu, 30 Jun 2022 15:47:32 +0200
-Message-Id: <20220630133230.432585784@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
-References: <20220630133230.239507521@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 49F7189C7DC;
+        Thu, 30 Jun 2022 13:59:45 +0000 (UTC)
+Received: from fs-i40c-03.fs.lab.eng.bos.redhat.com (fs-i40c-03.fs.lab.eng.bos.redhat.com [10.16.224.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EC25C815B;
+        Thu, 30 Jun 2022 13:59:44 +0000 (UTC)
+From:   Alexander Aring <aahringo@redhat.com>
+To:     will@kernel.org
+Cc:     peterz@infradead.org, boqun.feng@gmail.com, mark.rutland@arm.com,
+        thunder.leizhen@huawei.com, jacob.e.keller@intel.com,
+        akpm@linux-foundation.org, linux-sparse@vger.kernel.org,
+        cluster-devel@redhat.com, luc.vanoostenryck@gmail.com,
+        torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        aahringo@redhat.com
+Subject: [RFC 2/2] kref: move kref_put_lock() callback to caller
+Date:   Thu, 30 Jun 2022 09:59:34 -0400
+Message-Id: <20220630135934.1799248-3-aahringo@redhat.com>
+In-Reply-To: <20220630135934.1799248-1-aahringo@redhat.com>
+References: <20220630135934.1799248-1-aahringo@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+This patch moves the release callback call to the caller of kref_put_lock()
+functionality. Since refcount_dec_and_lock() uses __cond_lock() we get
+the following warning for e.g. net/sunrpc/svcauth.c:
 
-commit 05b538c1765f8d14a71ccf5f85258dcbeaf189f7 upstream.
+warning: context imbalance in 'auth_domain_put' - wrong count at exit
 
-We can look inside the fixed buffer table only while holding
-->uring_lock, however in some cases we don't do the right async prep for
-IORING_OP_{WRITE,READ}_FIXED ending up with NULL req->imu forcing making
-an io-wq worker to try to resolve the fixed buffer without proper
-locking.
+The warning occurs now because it seems that before __cond_lock() change
+sparse was able to detect the correct locking behaviour. Now it thinks
+there is an additional lock acquire. However the __cond_lock()
+instrumentation in refcount_dec_and_lock() was making it possible to
+avoid sparse warnings by evaluating the return value and unlock the lock
+if conditional necessary.
 
-Move req->imu setup into early req init paths, i.e. io_prep_rw(), which
-is called unconditionally for rw requests and under uring_lock.
+This patch solves the problem by just do the passed release callback
+call based by the return value of kref_put_lock() and not inside of
+kref_put_lock() and evaluating the return value of
+refcount_dec_and_lock() that surprisingly sparse can recognize.
 
-Fixes: 634d00df5e1cf ("io_uring: add full-fledged dynamic buffers support")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It seems it's only possible to have the one way or the other. This patch
+changes the kref_put_lock() in way that it works like
+refcount_dec_and_lock() way with __cond_lock().
+
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
 ---
- fs/io_uring.c |   34 ++++++++++++++++++----------------
- 1 file changed, 18 insertions(+), 16 deletions(-)
+ include/linux/kref.h | 24 ++++++++----------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3187,6 +3187,21 @@ static int io_prep_rw(struct io_kiocb *r
- 	int ret;
- 
- 	kiocb->ki_pos = READ_ONCE(sqe->off);
-+	/* used for fixed read/write too - just read unconditionally */
-+	req->buf_index = READ_ONCE(sqe->buf_index);
-+	req->imu = NULL;
-+
-+	if (req->opcode == IORING_OP_READ_FIXED ||
-+	    req->opcode == IORING_OP_WRITE_FIXED) {
-+		struct io_ring_ctx *ctx = req->ctx;
-+		u16 index;
-+
-+		if (unlikely(req->buf_index >= ctx->nr_user_bufs))
-+			return -EFAULT;
-+		index = array_index_nospec(req->buf_index, ctx->nr_user_bufs);
-+		req->imu = ctx->user_bufs[index];
-+		io_req_set_rsrc_node(req, ctx, 0);
-+	}
- 
- 	ioprio = READ_ONCE(sqe->ioprio);
- 	if (ioprio) {
-@@ -3199,11 +3214,9 @@ static int io_prep_rw(struct io_kiocb *r
- 		kiocb->ki_ioprio = get_current_ioprio();
- 	}
- 
--	req->imu = NULL;
- 	req->rw.addr = READ_ONCE(sqe->addr);
- 	req->rw.len = READ_ONCE(sqe->len);
- 	req->rw.flags = READ_ONCE(sqe->rw_flags);
--	req->buf_index = READ_ONCE(sqe->buf_index);
+diff --git a/include/linux/kref.h b/include/linux/kref.h
+index d32e21a2538c..a70d45940d55 100644
+--- a/include/linux/kref.h
++++ b/include/linux/kref.h
+@@ -68,27 +68,19 @@ static inline int kref_put(struct kref *kref, void (*release)(struct kref *kref)
  	return 0;
  }
  
-@@ -3335,20 +3348,9 @@ static int __io_import_fixed(struct io_k
- static int io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter,
- 			   unsigned int issue_flags)
+-static inline int kref_put_mutex(struct kref *kref,
+-				 void (*release)(struct kref *kref),
+-				 struct mutex *lock)
++static inline bool raw_kref_put_mutex(struct kref *kref, struct mutex *lock)
  {
--	struct io_mapped_ubuf *imu = req->imu;
--	u16 index, buf_index = req->buf_index;
--
--	if (likely(!imu)) {
--		struct io_ring_ctx *ctx = req->ctx;
--
--		if (unlikely(buf_index >= ctx->nr_user_bufs))
--			return -EFAULT;
--		io_req_set_rsrc_node(req, ctx, issue_flags);
--		index = array_index_nospec(buf_index, ctx->nr_user_bufs);
--		imu = READ_ONCE(ctx->user_bufs[index]);
--		req->imu = imu;
+-	if (refcount_dec_and_mutex_lock(&kref->refcount, lock)) {
+-		release(kref);
+-		return 1;
 -	}
--	return __io_import_fixed(req, rw, iter, imu);
-+	if (WARN_ON_ONCE(!req->imu))
-+		return -EFAULT;
-+	return __io_import_fixed(req, rw, iter, req->imu);
+-	return 0;
++	return refcount_dec_and_mutex_lock(&kref->refcount, lock);
  }
++#define kref_put_mutex(kref, release, lock) \
++	((raw_kref_put_mutex(kref, lock)) ? ({ release(kref); 1; }) : 0)
  
- static void io_ring_submit_unlock(struct io_ring_ctx *ctx, bool needs_lock)
-
+-static inline int kref_put_lock(struct kref *kref,
+-				void (*release)(struct kref *kref),
+-				spinlock_t *lock)
++static inline bool raw_kref_put_lock(struct kref *kref, spinlock_t *lock)
+ {
+-	if (refcount_dec_and_lock(&kref->refcount, lock)) {
+-		release(kref);
+-		return 1;
+-	}
+-	return 0;
++	return refcount_dec_and_lock(&kref->refcount, lock);
+ }
++#define kref_put_lock(kref, release, lock) \
++	((raw_kref_put_lock(kref, lock)) ? ({ release(kref); 1; }) : 0)
+ 
+ /**
+  * kref_get_unless_zero - Increment refcount for object unless it is zero.
+-- 
+2.31.1
 
