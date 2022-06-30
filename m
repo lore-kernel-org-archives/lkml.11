@@ -2,69 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D27C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F953CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 19:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236405AbiF3Twf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 15:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
+        id S236867AbiF3Twj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 15:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235972AbiF3Twc (ORCPT
+        with ESMTP id S236782AbiF3Twg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 15:52:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C25B443D3
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:30 -0700 (PDT)
+        Thu, 30 Jun 2022 15:52:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DB3C443E9
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656618750;
+        s=mimecast20190719; t=1656618754;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iiVi3fBF+mPpX5wbqqQkr9ugeLmDT4STERjx4L3diUc=;
-        b=C0S8nihgu8mgnR8bzoIKag0uag/tWBULhwGMTopmfzlalee5+CawOLFVeSqzJ4QEzYZoGb
-        RrMMeIzQ79L4PWGXPbITGufVOvjf3FzWqgmK3mkuv5LyPRFLwcw/YHZ53bds/dS4U/srpg
-        7GKpH0SRxhHMVMxuqtwI4ku9x/nHAcs=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ExCLRUTepyP4PJv4nv3WQINVvpNQ2mK6jdr2kPhXUFc=;
+        b=OVjKbs6bGKNFQ9FmVxmBYcI9uEiDB9+r2OCQjhakaQxhfOHCxA4TO/HBClrBh5tBW0+636
+        Tff15kDZzCJTZ/P7kBP7q7eBSwQAflWDWENaRf4cipJhkj6SBTgWgllwyK/I/8UyTJs99g
+        AEk9UxfsXxmC6OavOXZc5DmZmVUZqtM=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-532-aSJstWRkMy6eIyoGrVhcjQ-1; Thu, 30 Jun 2022 15:52:28 -0400
-X-MC-Unique: aSJstWRkMy6eIyoGrVhcjQ-1
-Received: by mail-il1-f197.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so57516ile.4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:28 -0700 (PDT)
+ us-mta-127-JNIdn-q_M9i3UnWY2uBWDw-1; Thu, 30 Jun 2022 15:52:33 -0400
+X-MC-Unique: JNIdn-q_M9i3UnWY2uBWDw-1
+Received: by mail-io1-f69.google.com with SMTP id q75-20020a6b8e4e000000b0067275f1e6c4so94610iod.14
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 12:52:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=iiVi3fBF+mPpX5wbqqQkr9ugeLmDT4STERjx4L3diUc=;
-        b=UfQeCWVT4ljEzY6N/UcRt6ZzkxJ3Y3LG/j+xlYP+CKWz7ihnGl0a1dRwui+FM9TWjj
-         UhoW6AXRh+6vV+6KRY5+IXVhmJ+IZF+l+BLj8b/Nv5jDGM1RecY7uFGiTbsMcWgv2gLj
-         WjdbfoCPaldU4xE81rXDj/m5FbW3jzwhwvulNFogjYJ8M9ZhpE0xJvYr+CHknvMVN13b
-         gK2XNY/mzRqiTxJvasQK7VaKYa2wZQcn2wTrpoFmqR9T4/dJ88mobTTwsrb0bl1Zfd6E
-         1q3RTE4EoAGkt6inzeD5p97w+B5Okl2xdrB7Ze7GtGy2jmLVzCNzwWMeEaDPz8uxyVwC
-         fAOQ==
-X-Gm-Message-State: AJIora+fSyq36tcOZmBUwlei0lvxiDtSCs5L139IpS4caeEJGBGEqWzu
-        CuliivNmGcEynsaGgpw5myi5owdVXpD8tuV1XuUrggciLjx1uEiU3kJ6G01ZeK4Wlbai1EJpKJa
-        dAPt4oHZpD+Ld3VRNDr23sRqE
-X-Received: by 2002:a05:6e02:801:b0:2da:7df7:e7c3 with SMTP id u1-20020a056e02080100b002da7df7e7c3mr6525095ilm.105.1656618748075;
-        Thu, 30 Jun 2022 12:52:28 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vkcx78ZXPwxRMS/yFesIoGgG1FqqC2U1FIf/UNHUpZkOUixKiDM+yOoVa7ZRUViTNNlMeFDg==
-X-Received: by 2002:a05:6e02:801:b0:2da:7df7:e7c3 with SMTP id u1-20020a056e02080100b002da7df7e7c3mr6525083ilm.105.1656618747724;
-        Thu, 30 Jun 2022 12:52:27 -0700 (PDT)
+        bh=ExCLRUTepyP4PJv4nv3WQINVvpNQ2mK6jdr2kPhXUFc=;
+        b=l0yAKp6letVYuIcnknRkZtjb1kqIsDv9/Jq/72jRw5BMkoCmFTZu4tIuLcVEhE+Tpj
+         u6a7DxnguG77QBNT1bXa69oOkGHVy6hxhGnDeykG6Ig306NiOX/qjflfxXV0+qPP6/kF
+         PfmCt+g3KJSxDufJP/+Xurh8wH66zMmARUf4UsUeYqYSCPDY8oQG+hKnpARebv0iQCOD
+         X9rZE+1xdc80wr34H9r39hUxbyGwS0koTN7nQyfDvSkNfdvfwFRaA9gkqupwhNyjP4jz
+         XMKZDnpzZUyzjZLyEhSG6d4q75aKvt6SJop2eFxGEtKTbkNnWK5CRSyf6qhD6LUI6Rqi
+         40Ow==
+X-Gm-Message-State: AJIora9JfVIw88InN9Rn6gqQvroTNC34xEJ1Gyx/0gC5B5YdxOKkx8Kc
+        QObayNYR3uM1oNwtEbV4sQeBN2nXs2cHdmggeU+9oJH13pR/6pyqIp9TiGCvHH/DW6AwpPBFaW0
+        2hx6vzcJ6gQYv9hEfspSUx6q6
+X-Received: by 2002:a05:6638:1a8d:b0:33c:9a98:ff2d with SMTP id ce13-20020a0566381a8d00b0033c9a98ff2dmr6701517jab.31.1656618752626;
+        Thu, 30 Jun 2022 12:52:32 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vV3dSvtdAEongR8ZorbRwm1TM07AxbSckZ7zfr5UPRFS8Cn4Wkuiy4T4xypOywlTXPfamwEA==
+X-Received: by 2002:a05:6638:1a8d:b0:33c:9a98:ff2d with SMTP id ce13-20020a0566381a8d00b0033c9a98ff2dmr6701505jab.31.1656618752455;
+        Thu, 30 Jun 2022 12:52:32 -0700 (PDT)
 Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id x42-20020a0294ad000000b00330c5581c03sm8880286jah.1.2022.06.30.12.52.26
+        by smtp.gmail.com with ESMTPSA id x42-20020a0294ad000000b00330c5581c03sm8880286jah.1.2022.06.30.12.52.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 12:52:26 -0700 (PDT)
-Date:   Thu, 30 Jun 2022 13:51:45 -0600
+        Thu, 30 Jun 2022 12:52:31 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 13:51:41 -0600
 From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Robin Murphy <robin.murphy@arm.com>
+To:     Liam Ni <zhiguangni01@gmail.com>
 Cc:     cohuck@redhat.com, kvm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        jgg@nvidia.com, baolu.lu@linux.intel.com, iommu@lists.linux.dev
-Subject: Re: [PATCH v3 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <20220630135145.30fd18d1.alex.williamson@redhat.com>
-In-Reply-To: <194a12d3434d7b38f84fa96503c7664451c8c395.1656092606.git.robin.murphy@arm.com>
-References: <194a12d3434d7b38f84fa96503c7664451c8c395.1656092606.git.robin.murphy@arm.com>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vfio: check iommu_group_set_name() return value
+Message-ID: <20220630135141.4fd4c4d5.alex.williamson@redhat.com>
+In-Reply-To: <20220625114239.9301-1-zhiguangni01@gmail.com>
+References: <20220625114239.9301-1-zhiguangni01@gmail.com>
 Organization: Red Hat
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -73,138 +72,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 24 Jun 2022 18:51:44 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
+On Sat, 25 Jun 2022 19:42:39 +0800
+Liam Ni <zhiguangni01@gmail.com> wrote:
 
-> Since IOMMU groups are mandatory for drivers to support, it stands to
-> reason that any device which has been successfully added to a group
-> must be on a bus supported by that IOMMU driver, and therefore a domain
-> viable for any device in the group must be viable for all devices in
-> the group. This already has to be the case for the IOMMU API's internal
-> default domain, for instance. Thus even if the group contains devices on
-> different buses, that can only mean that the IOMMU driver actually
-> supports such an odd topology, and so without loss of generality we can
-> expect the bus type of any device in a group to be suitable for IOMMU
-> API calls.
+> As iommu_group_set_name() can fail,we should check the return value.
 > 
-> Furthermore, scrutiny reveals a lack of protection for the bus being
-> removed while vfio_iommu_type1_attach_group() is using it; the reference
-> that VFIO holds on the iommu_group ensures that data remains valid, but
-> does not prevent the group's membership changing underfoot.
-> 
-> We can address both concerns by recycling vfio_bus_type() into some
-> superficially similar logic to indirect the IOMMU API calls themselves.
-> Each call is thus protected from races by the IOMMU group's own locking,
-> and we no longer need to hold group-derived pointers beyond that scope.
-> It also gives us an easy path for the IOMMU API's migration of bus-based
-> interfaces to device-based, of which we can already take the first step
-> with device_iommu_capable(). As with domains, any capability must in
-> practice be consistent for devices in a given group - and after all it's
-> still the same capability which was expected to be consistent across an
-> entire bus! - so there's no need for any complicated validation.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Liam Ni <zhiguangni01@gmail.com>
 > ---
+>  drivers/vfio/vfio.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-Applied series to vfio next branch for v5.20.  Thanks,
+Applied to vfio next branch for v5.20.  Thanks,
 
 Alex
 
-
-> v3: Complete rewrite yet again, and finally it doesn't feel like we're
-> stretching any abstraction boundaries the wrong way, and the diffstat
-> looks right too. I did think about embedding IOMMU_CAP_INTR_REMAP
-> directly in the callback, but decided I like the consistency of minimal
-> generic wrappers. And yes, if the capability isn't supported then it
-> does end up getting tested for the whole group, but meh, it's harmless.
 > 
->  drivers/vfio/vfio_iommu_type1.c | 42 +++++++++++++++++----------------
->  1 file changed, 22 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index c13b9290e357..a77ff00c677b 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1679,18 +1679,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->  	return ret;
->  }
+> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> index 61e71c1154be..ca823eeac237 100644
+> --- a/drivers/vfio/vfio.c
+> +++ b/drivers/vfio/vfio.c
+> @@ -504,7 +504,9 @@ static struct vfio_group *vfio_noiommu_group_alloc(struct device *dev,
+>  	if (IS_ERR(iommu_group))
+>  		return ERR_CAST(iommu_group);
 >  
-> -static int vfio_bus_type(struct device *dev, void *data)
-> -{
-> -	struct bus_type **bus = data;
-> -
-> -	if (*bus && *bus != dev->bus)
-> -		return -EINVAL;
-> -
-> -	*bus = dev->bus;
-> -
-> -	return 0;
-> -}
-> -
->  static int vfio_iommu_replay(struct vfio_iommu *iommu,
->  			     struct vfio_domain *domain)
->  {
-> @@ -2153,13 +2141,25 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
->  	list_splice_tail(iova_copy, iova);
->  }
->  
-> +static int vfio_iommu_device_capable(struct device *dev, void *data)
-> +{
-> +	return device_iommu_capable(dev, (enum iommu_cap)data);
-> +}
-> +
-> +static int vfio_iommu_domain_alloc(struct device *dev, void *data)
-> +{
-> +	struct iommu_domain **domain = data;
-> +
-> +	*domain = iommu_domain_alloc(dev->bus);
-> +	return 1; /* Don't iterate */
-> +}
-> +
->  static int vfio_iommu_type1_attach_group(void *iommu_data,
->  		struct iommu_group *iommu_group, enum vfio_group_type type)
->  {
->  	struct vfio_iommu *iommu = iommu_data;
->  	struct vfio_iommu_group *group;
->  	struct vfio_domain *domain, *d;
-> -	struct bus_type *bus = NULL;
->  	bool resv_msi, msi_remap;
->  	phys_addr_t resv_msi_base = 0;
->  	struct iommu_domain_geometry *geo;
-> @@ -2192,18 +2192,19 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  		goto out_unlock;
->  	}
->  
-> -	/* Determine bus_type in order to allocate a domain */
-> -	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
-> -	if (ret)
-> -		goto out_free_group;
-> -
->  	ret = -ENOMEM;
->  	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
->  	if (!domain)
->  		goto out_free_group;
->  
-> +	/*
-> +	 * Going via the iommu_group iterator avoids races, and trivially gives
-> +	 * us a representative device for the IOMMU API call. We don't actually
-> +	 * want to iterate beyond the first device (if any).
-> +	 */
->  	ret = -EIO;
-> -	domain->domain = iommu_domain_alloc(bus);
-> +	iommu_group_for_each_dev(iommu_group, &domain->domain,
-> +				 vfio_iommu_domain_alloc);
->  	if (!domain->domain)
->  		goto out_free_domain;
->  
-> @@ -2258,7 +2259,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	list_add(&group->next, &domain->group_list);
->  
->  	msi_remap = irq_domain_check_msi_remap() ||
-> -		    iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
-> +		    iommu_group_for_each_dev(iommu_group, (void *)IOMMU_CAP_INTR_REMAP,
-> +					     vfio_iommu_device_capable);
->  
->  	if (!allow_unsafe_interrupts && !msi_remap) {
->  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+> -	iommu_group_set_name(iommu_group, "vfio-noiommu");
+> +	ret = iommu_group_set_name(iommu_group, "vfio-noiommu");
+> +	if (ret)
+> +		goto out_put_group;
+>  	ret = iommu_group_add_device(iommu_group, dev);
+>  	if (ret)
+>  		goto out_put_group;
 
