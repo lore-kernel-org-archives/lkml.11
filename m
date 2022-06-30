@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB393C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD93FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 30 Jun 2022 14:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236697AbiF3OJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 10:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S236592AbiF3OJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 10:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236547AbiF3OG4 (ORCPT
+        with ESMTP id S236897AbiF3OHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 10:06:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BB76F342;
-        Thu, 30 Jun 2022 06:54:20 -0700 (PDT)
+        Thu, 30 Jun 2022 10:07:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D522C48806;
+        Thu, 30 Jun 2022 06:54:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CA916211A;
-        Thu, 30 Jun 2022 13:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6137BC34115;
-        Thu, 30 Jun 2022 13:54:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9273E61FDB;
+        Thu, 30 Jun 2022 13:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1EAC34115;
+        Thu, 30 Jun 2022 13:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656597259;
-        bh=qiyJ6ZqStaVBXRF5MPGLLNG1dYk/bGu+j7tVjqJ/dcw=;
+        s=korg; t=1656597279;
+        bh=xiRTtprmP5An0sA7v5N9LMYPbpjDmy0F5HtTfS2RoTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SsmcFZZM25AZy3jTIuTi/H+924QLi2hKHfl2bKVr4kihMGUyZP3A6/VVEW5O8PwGt
-         P5CR2rWt4IJB97iP/IfyqxkyObDRTbSDO/h/xBPB+SdfkodaM2LTdxC1bkKnv9YWZ1
-         1qhTWsmgepddvLHDvR8trKLa12kgdou0DPByRSvU=
+        b=wRkJJp0EyG8+dafqt1Dcj21g7LGBPZOwFQDVXx/WZuWqT9c/iyX4mC0+qY7nLOVUd
+         sj44dNU8YhBBhO/knu83EJ3Ivt12jf5Aq61cTHkj8jjlb23BZmIBDtp5HuhuPQlW7e
+         wXNb/8/tw0iwooEw1u1F2KR3Gnixm/29XlJ4DSsQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 08/12] xfs: Fix the free logic of state in xfs_attr_node_hasname
-Date:   Thu, 30 Jun 2022 15:47:13 +0200
-Message-Id: <20220630133230.938024271@linuxfoundation.org>
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>
+Subject: [PATCH 5.15 13/28] fs: add is_idmapped_mnt() helper
+Date:   Thu, 30 Jun 2022 15:47:09 +0200
+Message-Id: <20220630133233.318154508@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
-References: <20220630133230.676254336@linuxfoundation.org>
+In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
+References: <20220630133232.926711493@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,110 +52,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Christian Brauner <christian.brauner@ubuntu.com>
 
-commit a1de97fe296c52eafc6590a3506f4bbd44ecb19a upstream.
+commit bb49e9e730c2906a958eee273a7819f401543d6c upstream.
 
-When testing xfstests xfs/126 on lastest upstream kernel, it will hang on some machine.
-Adding a getxattr operation after xattr corrupted, I can reproduce it 100%.
+Multiple places open-code the same check to determine whether a given
+mount is idmapped. Introduce a simple helper function that can be used
+instead. This allows us to get rid of the fragile open-coding. We will
+later change the check that is used to determine whether a given mount
+is idmapped. Introducing a helper allows us to do this in a single
+place instead of doing it for multiple places.
 
-The deadlock as below:
-[983.923403] task:setfattr        state:D stack:    0 pid:17639 ppid: 14687 flags:0x00000080
-[  983.923405] Call Trace:
-[  983.923410]  __schedule+0x2c4/0x700
-[  983.923412]  schedule+0x37/0xa0
-[  983.923414]  schedule_timeout+0x274/0x300
-[  983.923416]  __down+0x9b/0xf0
-[  983.923451]  ? xfs_buf_find.isra.29+0x3c8/0x5f0 [xfs]
-[  983.923453]  down+0x3b/0x50
-[  983.923471]  xfs_buf_lock+0x33/0xf0 [xfs]
-[  983.923490]  xfs_buf_find.isra.29+0x3c8/0x5f0 [xfs]
-[  983.923508]  xfs_buf_get_map+0x4c/0x320 [xfs]
-[  983.923525]  xfs_buf_read_map+0x53/0x310 [xfs]
-[  983.923541]  ? xfs_da_read_buf+0xcf/0x120 [xfs]
-[  983.923560]  xfs_trans_read_buf_map+0x1cf/0x360 [xfs]
-[  983.923575]  ? xfs_da_read_buf+0xcf/0x120 [xfs]
-[  983.923590]  xfs_da_read_buf+0xcf/0x120 [xfs]
-[  983.923606]  xfs_da3_node_read+0x1f/0x40 [xfs]
-[  983.923621]  xfs_da3_node_lookup_int+0x69/0x4a0 [xfs]
-[  983.923624]  ? kmem_cache_alloc+0x12e/0x270
-[  983.923637]  xfs_attr_node_hasname+0x6e/0xa0 [xfs]
-[  983.923651]  xfs_has_attr+0x6e/0xd0 [xfs]
-[  983.923664]  xfs_attr_set+0x273/0x320 [xfs]
-[  983.923683]  xfs_xattr_set+0x87/0xd0 [xfs]
-[  983.923686]  __vfs_removexattr+0x4d/0x60
-[  983.923688]  __vfs_removexattr_locked+0xac/0x130
-[  983.923689]  vfs_removexattr+0x4e/0xf0
-[  983.923690]  removexattr+0x4d/0x80
-[  983.923693]  ? __check_object_size+0xa8/0x16b
-[  983.923695]  ? strncpy_from_user+0x47/0x1a0
-[  983.923696]  ? getname_flags+0x6a/0x1e0
-[  983.923697]  ? _cond_resched+0x15/0x30
-[  983.923699]  ? __sb_start_write+0x1e/0x70
-[  983.923700]  ? mnt_want_write+0x28/0x50
-[  983.923701]  path_removexattr+0x9b/0xb0
-[  983.923702]  __x64_sys_removexattr+0x17/0x20
-[  983.923704]  do_syscall_64+0x5b/0x1a0
-[  983.923705]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-[  983.923707] RIP: 0033:0x7f080f10ee1b
-
-When getxattr calls xfs_attr_node_get function, xfs_da3_node_lookup_int fails with EFSCORRUPTED in
-xfs_attr_node_hasname because we have use blocktrash to random it in xfs/126. So it
-free state in internal and xfs_attr_node_get doesn't do xfs_buf_trans release job.
-
-Then subsequent removexattr will hang because of it.
-
-This bug was introduced by kernel commit 07120f1abdff ("xfs: Add xfs_has_attr and subroutines").
-It adds xfs_attr_node_hasname helper and said caller will be responsible for freeing the state
-in this case. But xfs_attr_node_hasname will free state itself instead of caller if
-xfs_da3_node_lookup_int fails.
-
-Fix this bug by moving the step of free state into caller.
-
-[amir: this text from original commit is not relevant for 5.10 backport:
-Also, use "goto error/out" instead of returning error directly in xfs_attr_node_addname_find_attr and
-xfs_attr_node_removename_setup function because we should free state ourselves.
-]
-
-Fixes: 07120f1abdff ("xfs: Add xfs_has_attr and subroutines")
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
+Link: https://lore.kernel.org/r/20211123114227.3124056-2-brauner@kernel.org (v1)
+Link: https://lore.kernel.org/r/20211130121032.3753852-2-brauner@kernel.org (v2)
+Link: https://lore.kernel.org/r/20211203111707.3901969-2-brauner@kernel.org
+Cc: Seth Forshee <sforshee@digitalocean.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+CC: linux-fsdevel@vger.kernel.org
+Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Seth Forshee <sforshee@digitalocean.com>
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/libxfs/xfs_attr.c |   13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ fs/cachefiles/bind.c |    2 +-
+ fs/ecryptfs/main.c   |    2 +-
+ fs/namespace.c       |    2 +-
+ fs/nfsd/export.c     |    2 +-
+ fs/overlayfs/super.c |    2 +-
+ fs/proc_namespace.c  |    2 +-
+ include/linux/fs.h   |   14 ++++++++++++++
+ 7 files changed, 20 insertions(+), 6 deletions(-)
 
---- a/fs/xfs/libxfs/xfs_attr.c
-+++ b/fs/xfs/libxfs/xfs_attr.c
-@@ -876,21 +876,18 @@ xfs_attr_node_hasname(
+--- a/fs/cachefiles/bind.c
++++ b/fs/cachefiles/bind.c
+@@ -117,7 +117,7 @@ static int cachefiles_daemon_add_cache(s
+ 	root = path.dentry;
  
- 	state = xfs_da_state_alloc(args);
- 	if (statep != NULL)
--		*statep = NULL;
-+		*statep = state;
+ 	ret = -EINVAL;
+-	if (mnt_user_ns(path.mnt) != &init_user_ns) {
++	if (is_idmapped_mnt(path.mnt)) {
+ 		pr_warn("File cache on idmapped mounts not supported");
+ 		goto error_unsupported;
+ 	}
+--- a/fs/ecryptfs/main.c
++++ b/fs/ecryptfs/main.c
+@@ -537,7 +537,7 @@ static struct dentry *ecryptfs_mount(str
+ 		goto out_free;
+ 	}
  
- 	/*
- 	 * Search to see if name exists, and get back a pointer to it.
+-	if (mnt_user_ns(path.mnt) != &init_user_ns) {
++	if (is_idmapped_mnt(path.mnt)) {
+ 		rc = -EINVAL;
+ 		printk(KERN_ERR "Mounting on idmapped mounts currently disallowed\n");
+ 		goto out_free;
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -3936,7 +3936,7 @@ static int can_idmap_mount(const struct
+ 	 * mapping. It makes things simpler and callers can just create
+ 	 * another bind-mount they can idmap if they want to.
  	 */
- 	error = xfs_da3_node_lookup_int(state, &retval);
--	if (error) {
--		xfs_da_state_free(state);
--		return error;
--	}
-+	if (error)
-+		retval = error;
+-	if (mnt_user_ns(m) != &init_user_ns)
++	if (is_idmapped_mnt(m))
+ 		return -EPERM;
  
--	if (statep != NULL)
--		*statep = state;
--	else
-+	if (!statep)
- 		xfs_da_state_free(state);
-+
- 	return retval;
+ 	/* The underlying filesystem doesn't support idmapped mounts yet. */
+--- a/fs/nfsd/export.c
++++ b/fs/nfsd/export.c
+@@ -427,7 +427,7 @@ static int check_export(struct path *pat
+ 		return -EINVAL;
+ 	}
+ 
+-	if (mnt_user_ns(path->mnt) != &init_user_ns) {
++	if (is_idmapped_mnt(path->mnt)) {
+ 		dprintk("exp_export: export of idmapped mounts not yet supported.\n");
+ 		return -EINVAL;
+ 	}
+--- a/fs/overlayfs/super.c
++++ b/fs/overlayfs/super.c
+@@ -873,7 +873,7 @@ static int ovl_mount_dir_noesc(const cha
+ 		pr_err("filesystem on '%s' not supported\n", name);
+ 		goto out_put;
+ 	}
+-	if (mnt_user_ns(path->mnt) != &init_user_ns) {
++	if (is_idmapped_mnt(path->mnt)) {
+ 		pr_err("idmapped layers are currently not supported\n");
+ 		goto out_put;
+ 	}
+--- a/fs/proc_namespace.c
++++ b/fs/proc_namespace.c
+@@ -80,7 +80,7 @@ static void show_mnt_opts(struct seq_fil
+ 			seq_puts(m, fs_infop->str);
+ 	}
+ 
+-	if (mnt_user_ns(mnt) != &init_user_ns)
++	if (is_idmapped_mnt(mnt))
+ 		seq_puts(m, ",idmapped");
  }
  
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -2726,6 +2726,20 @@ static inline struct user_namespace *fil
+ {
+ 	return mnt_user_ns(file->f_path.mnt);
+ }
++
++/**
++ * is_idmapped_mnt - check whether a mount is mapped
++ * @mnt: the mount to check
++ *
++ * If @mnt has an idmapping attached to it @mnt is mapped.
++ *
++ * Return: true if mount is mapped, false if not.
++ */
++static inline bool is_idmapped_mnt(const struct vfsmount *mnt)
++{
++	return mnt_user_ns(mnt) != &init_user_ns;
++}
++
+ extern long vfs_truncate(const struct path *, loff_t);
+ int do_truncate(struct user_namespace *, struct dentry *, loff_t start,
+ 		unsigned int time_attrs, struct file *filp);
 
 
