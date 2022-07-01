@@ -2,94 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB522CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055B3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233681AbiGAE36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 00:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        id S233326AbiGAEgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 00:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbiGAE3w (ORCPT
+        with ESMTP id S229984AbiGAEgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 00:29:52 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C2C58FFC;
-        Thu, 30 Jun 2022 21:29:49 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOGa015919;
-        Thu, 30 Jun 2022 23:29:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1656649764;
-        bh=JYBVx3JdKuz1QT+7Di8b8mVJ2UBqNYpKk5ZP6ZOIYsg=;
-        h=From:To:CC:Subject:Date;
-        b=DXeEQ5mZEfQ0z1qNYPVr/NBDomH6WfGWbTwfaK4iP/UIQ51hhzBdThTdqnQG6L/4c
-         8xOetdNW67Z/lXnsOM2ctqIS6g6Z1Ln4JOVVU6h0AnRl8Y+kJzAU5FLJ58OqlryB5c
-         iN59u4vddiUhBMt3DFkr+6ZgpuGcoh2Y0vycev/g=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2614TOOB104506
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 30 Jun 2022 23:29:24 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 30
- Jun 2022 23:29:24 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 30 Jun 2022 23:29:24 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOhm015244;
-        Thu, 30 Jun 2022 23:29:24 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>
-CC:     Nishanth Menon <nm@ti.com>, Florian Eckert <fe@dev.tdt.de>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [PATCH 0/2] iio: adc: ti-adc128s052: Add support for adc102s021 and family
-Date:   Thu, 30 Jun 2022 23:29:17 -0500
-Message-ID: <20220701042919.18180-1-nm@ti.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 1 Jul 2022 00:36:09 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2396759A
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 21:36:07 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VHxsaoR_1656650160;
+Received: from 30.225.28.186(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VHxsaoR_1656650160)
+          by smtp.aliyun-inc.com;
+          Fri, 01 Jul 2022 12:36:02 +0800
+Message-ID: <f8ee2f3f-d0ed-3291-ec04-f7f754ab1931@linux.alibaba.com>
+Date:   Fri, 1 Jul 2022 12:36:00 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3] arm64: mm: fix linear mapping mem access performance
+ degradation
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     baolin.wang@linux.alibaba.com, catalin.marinas@arm.com,
+        will@kernel.org, akpm@linux-foundation.org, david@redhat.com,
+        jianyong.wu@arm.com, james.morse@arm.com, quic_qiancai@quicinc.com,
+        christophe.leroy@csgroup.eu, jonathan@marek.ca,
+        mark.rutland@arm.com, thunder.leizhen@huawei.com,
+        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, geert+renesas@glider.be,
+        ardb@kernel.org, linux-mm@kvack.org, yaohongbo@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com
+References: <1656586222-98555-1-git-send-email-guanghuifeng@linux.alibaba.com>
+ <Yr2pT8SLznI6beqS@kernel.org>
+From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
+In-Reply-To: <Yr2pT8SLznI6beqS@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Thanks.
 
-This is probably a continuation of [1] and has a dependency on [2].
+在 2022/6/30 21:46, Mike Rapoport 写道:
+> Hi,
+> 
+> On Thu, Jun 30, 2022 at 06:50:22PM +0800, Guanghui Feng wrote:
+>> The arm64 can build 2M/1G block/sectiion mapping. When using DMA/DMA32 zone
+>> (enable crashkernel, disable rodata full, disable kfence), the mem_map will
+>> use non block/section mapping(for crashkernel requires to shrink the region
+>> in page granularity). But it will degrade performance when doing larging
+>> continuous mem access in kernel(memcpy/memmove, etc).
+>>
+>> There are many changes and discussions:
+>> commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+>> platforms with no DMA memory zones")
+>> commit 0a30c53573b0 ("arm64: mm: Move reserve_crashkernel() into
+>> mem_init()")
+>> commit 2687275a5843 ("arm64: Force NO_BLOCK_MAPPINGS if crashkernel
+>> reservation is required")
+>>
+>> This patch changes mem_map to use block/section mapping with crashkernel.
+>> Firstly, do block/section mapping(normally 2M or 1G) for all avail mem at
+>> mem_map, reserve crashkernel memory. And then walking pagetable to split
+>> block/section mapping to non block/section mapping(normally 4K) [[[only]]]
+>> for crashkernel mem. So the linear mem mapping use block/section mapping
+>> as more as possible. We will reduce the cpu dTLB miss conspicuously, and
+>> accelerate mem access about 10-20% performance improvement.
+> 
+> ...
+>   
+>> Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+>> ---
+>>   arch/arm64/include/asm/mmu.h |   1 +
+>>   arch/arm64/mm/init.c         |   8 +-
+>>   arch/arm64/mm/mmu.c          | 231 ++++++++++++++++++++++++++++++-------------
+>>   3 files changed, 168 insertions(+), 72 deletions(-)
+> 
+> ...
+> 
+>> diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+>> index 626ec32..4b779cf 100644
+>> --- a/arch/arm64/mm/mmu.c
+>> +++ b/arch/arm64/mm/mmu.c
+>> @@ -42,6 +42,7 @@
+>>   #define NO_BLOCK_MAPPINGS	BIT(0)
+>>   #define NO_CONT_MAPPINGS	BIT(1)
+>>   #define NO_EXEC_MAPPINGS	BIT(2)	/* assumes FEAT_HPDS is not used */
+>> +#define NO_SEC_REMAPPINGS	BIT(3)	/* rebuild with non block/sec mapping*/
+>>   
+>>   u64 idmap_t0sz = TCR_T0SZ(VA_BITS_MIN);
+>>   u64 idmap_ptrs_per_pgd = PTRS_PER_PGD;
+>> @@ -156,11 +157,12 @@ static bool pgattr_change_is_safe(u64 old, u64 new)
+>>   }
+>>   
+>>   static void init_pte(pmd_t *pmdp, unsigned long addr, unsigned long end,
+>> -		     phys_addr_t phys, pgprot_t prot)
+>> +		     phys_addr_t phys, pgprot_t prot, int flags)
+>>   {
+>>   	pte_t *ptep;
+>>   
+>> -	ptep = pte_set_fixmap_offset(pmdp, addr);
+>> +	ptep = (flags & NO_SEC_REMAPPINGS) ? pte_offset_kernel(pmdp, addr) :
+>> +		pte_set_fixmap_offset(pmdp, addr);
+>>   	do {
+>>   		pte_t old_pte = READ_ONCE(*ptep);
+>>   
+>> @@ -176,7 +178,8 @@ static void init_pte(pmd_t *pmdp, unsigned long addr, unsigned long end,
+>>   		phys += PAGE_SIZE;
+>>   	} while (ptep++, addr += PAGE_SIZE, addr != end);
+>>   
+>> -	pte_clear_fixmap();
+>> +	if (!(flags & NO_SEC_REMAPPINGS))
+>> +		pte_clear_fixmap();
+>>   }
+>>   
+>>   static void alloc_init_cont_pte(pmd_t *pmdp, unsigned long addr,
+>> @@ -208,16 +211,59 @@ static void alloc_init_cont_pte(pmd_t *pmdp, unsigned long addr,
+>>   		next = pte_cont_addr_end(addr, end);
+>>   
+>>   		/* use a contiguous mapping if the range is suitably aligned */
+>> -		if ((((addr | next | phys) & ~CONT_PTE_MASK) == 0) &&
+>> +		if (!(flags & NO_SEC_REMAPPINGS) &&
+>> +		   (((addr | next | phys) & ~CONT_PTE_MASK) == 0) &&
+>>   		    (flags & NO_CONT_MAPPINGS) == 0)
+>>   			__prot = __pgprot(pgprot_val(prot) | PTE_CONT);
+>>   
+>> -		init_pte(pmdp, addr, next, phys, __prot);
+>> +		init_pte(pmdp, addr, next, phys, __prot, flags);
+>>   
+>>   		phys += next - addr;
+>>   	} while (addr = next, addr != end);
+>>   }
+>>   
+>> +static void init_pmd_remap(pud_t *pudp, unsigned long addr, unsigned long end,
+>> +			   phys_addr_t phys, pgprot_t prot,
+>> +			   phys_addr_t (*pgtable_alloc)(int), int flags)
+>> +{
+>> +	unsigned long next;
+>> +	pmd_t *pmdp;
+>> +	phys_addr_t map_offset;
+>> +	pmdval_t pmdval;
+>> +
+>> +	pmdp = pmd_offset(pudp, addr);
+>> +	do {
+>> +		next = pmd_addr_end(addr, end);
+>> +
+>> +		if (!pmd_none(*pmdp) && pmd_sect(*pmdp)) {
+>> +			phys_addr_t pte_phys = pgtable_alloc(PAGE_SHIFT);
+>> +			pmd_clear(pmdp);
+>> +			pmdval = PMD_TYPE_TABLE | PMD_TABLE_UXN;
+>> +			if (flags & NO_EXEC_MAPPINGS)
+>> +				pmdval |= PMD_TABLE_PXN;
+>> +			__pmd_populate(pmdp, pte_phys, pmdval);
+>> +			flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
+>> +
+>> +			map_offset = addr - (addr & PMD_MASK);
+>> +			if (map_offset)
+>> +			    alloc_init_cont_pte(pmdp, addr & PMD_MASK, addr,
+>> +						phys - map_offset, prot,
+>> +						pgtable_alloc,
+>> +						flags & (~NO_SEC_REMAPPINGS));
+>> +
+>> +			if (next < (addr & PMD_MASK) + PMD_SIZE)
+>> +			    alloc_init_cont_pte(pmdp, next,
+>> +					       (addr & PUD_MASK) + PUD_SIZE,
+>> +					        next - addr + phys,
+>> +						prot, pgtable_alloc,
+>> +						flags & (~NO_SEC_REMAPPINGS));
+>> +		}
+>> +		alloc_init_cont_pte(pmdp, addr, next, phys, prot,
+>> +				    pgtable_alloc, flags);
+>> +		phys += next - addr;
+>> +	} while (pmdp++, addr = next, addr != end);
+>> +}
+> 
+> There is still to much duplicated code here and in init_pud_remap().
+> 
+> Did you consider something like this:
+> 
+> void __init map_crashkernel(void)
+> {
+> 	int flags = NO_EXEC_MAPPINGS | NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+> 	u64 size;
+> 
+> 	/*
+> 	 * check if crash kernel supported, reserved etc
+> 	 */
+> 
+> 
+> 	size = crashk_res.end + 1 - crashk_res.start;
+> 
+> 	__remove_pgd_mapping(swapper_pg_dir, __phys_to_virt(start), size);
+> 	__create_pgd_mapping(swapper_pg_dir, crashk_res.start,
+> 			     __phys_to_virt(crashk_res.start), size,
+> 			     PAGE_KERNEL, early_pgtable_alloc, flags);
+> }
+> 
+I'm trying do this.
+But I think it's the Inverse Process of mem mapping and also generates 
+duplicated code(Boundary judgment, pagetable modify).
 
-Inspiration for this series is drivers/hwmon/adcxx.c though constrained
-to the family that I had access to test with.
-
-As stated in drivers/hwmon/adcxx.c, the family of devices are easier to
-support since they all (no matter the resolution) seem to respond in 12
-bits with the LSBs set to 0 for the reduced resolution devices.
-
-Note: This series does'nt attempt to cleanup the sparse and extended
-build warnings existing in the driver.
-
-Series based on [2] and next-20220630
-
-Nishanth Menon (2):
-  dt-bindings: iio: adc: ti,adc128s052: Add adc08c and adc10c family
-  iio: adc: ti-adc128s052: Add lower resolution devices support
-
- .../bindings/iio/adc/ti,adc128s052.yaml       |  6 +++++
- drivers/iio/adc/ti-adc128s052.c               | 26 +++++++++++++++++++
- 2 files changed, 32 insertions(+)
-
-[1] https://patchwork.kernel.org/project/linux-hwmon/patch/20181115135013.30723-2-fe@dev.tdt.de/
-[2] https://lore.kernel.org/linux-iio/20220630230107.13438-1-nm@ti.com/
--- 
-2.31.1
-
+When removing the pgd mapping, it may split pud/pmd section which also 
+needs [[[rebuild and clear]]] some pagetable.
+> ...
+> 
