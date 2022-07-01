@@ -2,119 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FC3CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5B4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235222AbiGAHl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        id S235266AbiGAHmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiGAHly (ORCPT
+        with ESMTP id S229966AbiGAHmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:41:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CF11409D;
-        Fri,  1 Jul 2022 00:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656661312; x=1688197312;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6+6Lv6Z81pEXaBMjGbvAZKSh8w+AukCkGPMgazAg30o=;
-  b=qGgi7AnXE0ZZbdIBZ7A2lgwCrm95/7a5QMlu2RrFBBTguHvgekEvHs1j
-   vAhkJOaaxtHFwOVGHgwkhPUUeWIPzn+WmYFU8KoLzIfFVwB5uCSnts/Ps
-   r1tAAWyrvmzVC5SnP5KMBJEeSr7sEs7x7+sfr8prL34NfyKgslPc9kf3q
-   LdagReElTpF+4g5safl3oYJtdThUzUjIFlVps0rIax6UsT4pl0jpKHVHY
-   mkPdmA+PDAC5QOrIcgXhZodSRkhKRvnjVKCIUKtmgWzD68vBBDghrWBo4
-   P8ZAUyulvPjVnzB3G3orfMnTcHQme/eF5KbDu3tzl2kExPle8J97UDame
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="180328294"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 00:41:52 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 00:41:51 -0700
-Received: from [10.12.72.20] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 1 Jul 2022 00:41:49 -0700
-Message-ID: <a85357c2-a2f6-472e-50a8-2dcf41217ac1@microchip.com>
-Date:   Fri, 1 Jul 2022 09:41:48 +0200
+        Fri, 1 Jul 2022 03:42:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B88D140C2
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:42:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB61C6248A
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC3AFC3411E;
+        Fri,  1 Jul 2022 07:41:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656661319;
+        bh=HZrNIKNTW/tWeEz+OIJTTEr2M6NHVQaxjmpqR/0N95I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T+j4uFEMnBrHe5TMnLonc7z2KICIlGfuOKDyGOIPBQGqrpdpUfcWR/nOBnUp2DA8B
+         /fkvewYwjfwkajGpVw+9XFy8t5rN2ncOq6houSKYl2Udvq9Sx0mrhVB+BcknUAfuZm
+         BPrr+KSGehaLBenY4mug8dPWhkkr1pAx7t8AcD/w=
+Date:   Fri, 1 Jul 2022 09:41:56 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Andrew Donnellan <ajd@linux.ibm.com>
+Cc:     Michael Ellerman <patch-notifications@ellerman.id.au>,
+        arnd@arndb.de, fbarrat@linux.ibm.com,
+        Jiang Jian <jiangjian@cdjrlc.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cxl: drop unexpected word "the" in the comments
+Message-ID: <Yr6lRMxtX5LVdjwZ@kroah.com>
+References: <20220621125321.122280-1-jiangjian@cdjrlc.com>
+ <165650492410.3004956.4938254521446368740.b4-ty@ellerman.id.au>
+ <fbc5d92a4028349aea0d89232db4795fb189ced4.camel@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] dt-bindings: spi: convert spi_atmel to json-schema
-Content-Language: en-US
-To:     Conor Dooley - M52691 <Conor.Dooley@microchip.com>,
-        Rob Herring <robh@kernel.org>,
-        Sergiu Moga - M68701 <Sergiu.Moga@microchip.com>
-CC:     Claudiu Beznea - M18063 <Claudiu.Beznea@microchip.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Kavyasree Kotagiri - I30978 
-        <Kavyasree.Kotagiri@microchip.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-References: <20220629125804.137099-1-sergiu.moga@microchip.com>
- <1656542219.625404.1042476.nullmailer@robh.at.kernel.org>
- <8191d9e3-88e9-c8fb-2544-d25d3a93d0a8@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <8191d9e3-88e9-c8fb-2544-d25d3a93d0a8@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fbc5d92a4028349aea0d89232db4795fb189ced4.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
-
-On 30/06/2022 at 00:45, Conor Dooley - M52691 wrote:
-> On 29/06/2022 23:36, Rob Herring wrote:
->> On Wed, 29 Jun 2022 15:58:04 +0300, Sergiu Moga wrote:
->>> Convert SPI binding for Atmel/Microchip SoCs to Device Tree Schema
->>> format.
->>>
->>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
->>> ---
->>>   .../devicetree/bindings/spi/atmel,spi.yaml    | 82 +++++++++++++++++++
->>>   .../devicetree/bindings/spi/spi_atmel.txt     | 36 --------
->>>   2 files changed, 82 insertions(+), 36 deletions(-)
->>>   create mode 100644 Documentation/devicetree/bindings/spi/atmel,spi.yaml
->>>   delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
->>>
->>
->> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
->> on your patch (DT_CHECKER_FLAGS is new in v5.13):
->>
->> yamllint warnings/errors:
->>
->> dtschema/dtc warnings/errors:
->> Documentation/devicetree/bindings/spi/atmel,spi.example.dtb:0:0: /example-0/spi@fffcc000/mmc@0: failed to match any schema with compatible: ['mmc-spi-slot']
+On Thu, Jun 30, 2022 at 11:10:13AM +1000, Andrew Donnellan wrote:
+> On Wed, 2022-06-29 at 22:15 +1000, Michael Ellerman wrote:
+> > On Tue, 21 Jun 2022 20:53:21 +0800, Jiang Jian wrote:
+> > > there is an unexpected word "the" in the comments that need to be
+> > > dropped
+> > > 
+> > > file: drivers/misc/cxl/cxl.h
+> > > line: 1107
+> > > +/* check if the given pci_dev is on the the cxl vphb bus */
+> > > changed to
+> > > +/* check if the given pci_dev is on the cxl vphb bus */
+> > > 
+> > > [...]
+> > 
+> > Applied to powerpc/next.
+> > 
+> > [1/1] cxl: drop unexpected word "the" in the comments
+> >      
+> > https://git.kernel.org/powerpc/c/882c835b71e22ca82361dab3b60b85b557abd72f
 > 
-> My conversion of this should be in -next right?
+> I believe Greg's already merged this in char-misc...
 
-Aren't you talking about
-Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml or 
-Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-rather than atmel,spi.yaml ?
-
-> Is this just an incorrect base for the bot, or am I missing
-> something?
-
-[..]
-
-Regards,
-   Nicolas
-
-
--- 
-Nicolas Ferre
+git can handle merges like this without any problems :)
