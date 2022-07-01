@@ -2,91 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67387C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C65C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236517AbiGAIfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        id S236584AbiGAIfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234866AbiGAIfJ (ORCPT
+        with ESMTP id S235086AbiGAIfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:35:09 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AD6BCB6
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:35:04 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id c65so2034219edf.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:35:04 -0700 (PDT)
+        Fri, 1 Jul 2022 04:35:10 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A483671240
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:35:07 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id o18so1752655plg.2
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:35:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=yMa2IUU0MMjVVFZMbcvg6SCECsrNdRpao2T0ErtMqsA=;
-        b=W2O615zY5ih5nD4IwyMjJFYDvAf4FusViu+KrnCWjgqcoBbGZuRmZnE21hRHFQctdD
-         IyL2wXWczPl5+abTumlZjVh/XEmP2/CUGHCZYtAiKJ47DF4TewkQxcCsA2EWM9jsg/jr
-         R16GpzVOrnSmxAgsXYAocuqkSVshtDzdUB6JCA396glcX02IwlbybY0In3pERkbDg8RF
-         Y7kTk2UXf3wvj6y3nL+0Yh/h0Za9/iBO67g9XCOtUpE0JXbuQ9bdSxzpWXekqX+zhkh1
-         MCflSS+jUFg1QYnKO+Bd8D50D6xPvrVSv4iQJ+sHElkjXV7gnjY8CxlswzoDQoPIsIHF
-         vjAg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=lRM1PjazghlAlPXD7tv2+SDz7O4GVNObgvkudXkk8IM=;
+        b=dQcvYUX3d0Hc0/3/lPi3x4cea9DpxT15pkG7XJcV/dRQwLiCxhr2Xy2LgqoLzItyej
+         zzKQPqreKgGzKukt5sLNtRRhy3aFjlf5ekppgoSU04aLj0/JlX5XcRByJ9d9nRmIFCo4
+         rc7FLitPNQPGO/3DrtFeyB5VoGynlR/kV8HnUbUPoMq1zupRxXfbRlk5wx9AJohtE7vV
+         sakRnduEheX83YXsAudn/QPLOuPTh08lUjMVGflTR6LRRb0endklvEI7oyZYIDtuLcgH
+         I3ziaBt2snD7ovzFYLq8MJBSiKQszyoRkM2D+fxEWbHk6CScZ/29a+wBeEcTvaFqv3fB
+         FgLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yMa2IUU0MMjVVFZMbcvg6SCECsrNdRpao2T0ErtMqsA=;
-        b=JgvC1lzvuUTj6gY3wnVLPFvo4vJ7GKHJY5b1e7tI+hjAciEV4sQkfBWmA/jIwMK5Lr
-         AzqQrKmowi8mDtLAv+4ftvNE6hHHOmjYf/v2ZnDzLoVnCOM2xygaGHqXNoyU8kHLIUvT
-         zi6MXSMMMF/RTjlf2wRKTDlRJ2khsEdlmuCawd3+KUugbv4JfBnqor5AF3fRhekhB3Eg
-         04GbVoDHh5B/vmXQOv/A8/x259bRrpGrN+5NI2/MCZBC950BPINNgHLkzuQTSZ38MW1R
-         qiA5VcaD0TMRZ4kMaLF8TD1m9Tm0ad9NI8AiAnWoXPYctgjho6BapZVwcj3++qQn6ojW
-         Molg==
-X-Gm-Message-State: AJIora/4VNAx2UW9a10bSS8doZCR1QGLhoJFc6tiMNVepyDyJSF9o3UJ
-        a9AbTm7M16EMH5t/87G1qRWZZQ==
-X-Google-Smtp-Source: AGRyM1tKBOo52SFuio4IS4Jh7TszbiuHbVz1Y1z4yV20RnFhz4nN5NcxJkkBjMXnWFUqhCJYBK2Jwg==
-X-Received: by 2002:a05:6402:524d:b0:437:8d2e:c675 with SMTP id t13-20020a056402524d00b004378d2ec675mr17894302edd.65.1656664503461;
-        Fri, 01 Jul 2022 01:35:03 -0700 (PDT)
-Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id pj10-20020a170906d78a00b006fa84a0af2asm10183514ejb.16.2022.07.01.01.35.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 01:35:02 -0700 (PDT)
-Message-ID: <3facb426-e9d0-9421-2eeb-bb2939982a4f@linaro.org>
-Date:   Fri, 1 Jul 2022 10:35:00 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lRM1PjazghlAlPXD7tv2+SDz7O4GVNObgvkudXkk8IM=;
+        b=AIpBIMhyU6+cb/b8cQGb96N4mrr9I45eNpJG6s6cMg2jsL+jRKMPF/r8Xo/EIfX7aQ
+         DKTUm7tzJr3yL3RYLf7Udl6ykM5J4CsO9Pfp3WXjEAF7Loh50ObBzQwr3dDOTBOBo+OT
+         FOFNC7jFCRgHfBmPyqlN+erks+UYPlPLjV2g2rK1xRZ3RmQzt9zfkb9vtwhtWmepSklp
+         q29cZh2gPitjVt/Z/isi3h+gOA6JreQxafQSxqm/jFCoaY2wDtSUZOhyLMdahXsdzuQy
+         prgdiIPpmsq9bis2xw/qLqmeOSdugsYzee+FvFllmu5WTYfLBw7pAfwHWgQvuArepcP3
+         tjbg==
+X-Gm-Message-State: AJIora9K3SKww7jvC1MpLHYPaqoirey2Q1rx77Zf7MqmeK4aMz59QpUj
+        wmYRhcPvkryORNtmr1Ap4FqgrA==
+X-Google-Smtp-Source: AGRyM1vWS4XhZQ2vX+0HfYDGexiYN0ySk/slaYykTQoF5+866XV74mzfPyfUvGl17A9dviN85hDFtg==
+X-Received: by 2002:a17:90b:895:b0:1ec:827c:ef0f with SMTP id bj21-20020a17090b089500b001ec827cef0fmr16875092pjb.10.1656664507206;
+        Fri, 01 Jul 2022 01:35:07 -0700 (PDT)
+Received: from localhost ([122.172.201.58])
+        by smtp.gmail.com with ESMTPSA id d63-20020a621d42000000b0052532d9cb18sm14864102pfd.183.2022.07.01.01.35.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 01:35:06 -0700 (PDT)
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 2/5] OPP: Make _generic_set_opp_regulator() a config_regulators() interface
+Date:   Fri,  1 Jul 2022 14:04:52 +0530
+Message-Id: <2d9786a0e2460d3c4ac94a147a8b7ff77d36f696.1656664183.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
+In-Reply-To: <cover.1656664183.git.viresh.kumar@linaro.org>
+References: <cover.1656664183.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 03/10] dt-bindings: PCI: qcom: Enumerate platforms with
- single msi interrupt
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220629141000.18111-1-johan+linaro@kernel.org>
- <20220629141000.18111-4-johan+linaro@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220629141000.18111-4-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/06/2022 16:09, Johan Hovold wrote:
-> Explicitly enumerate the older platforms that have a single msi host
-> interrupt. This allows for adding further platforms without resorting
-> to nested conditionals.
+In order to reuse the same code path, i.e. clk_set_rate() from
+_set_opp(), migrate _generic_set_opp_regulator() to implement a
+config_regulators() interface.
 
-How does it allow it? New platform if not explicitly added to first
-"if:" will fall into the "else:", so will be handled and there is no
-need for nested if.
+It is renamed to _opp_config_regulator_single() and is set as the
+preferred config_regulators() interface whenever we have a single
+regulator available.
 
-Best regards,
-Krzysztof
+Note that this also drops code responsible for restoring the
+voltage/freq in case of errors. We aren't handling that properly
+currently, restoring only some of the resources while leaving others out
+(like bandwidth and required OPPs). It is better to drop all of it
+instead of partial restoration.
+
+Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ drivers/opp/core.c | 51 +++++++++++-----------------------------------
+ 1 file changed, 12 insertions(+), 39 deletions(-)
+
+diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+index d5e1ae6f5ea1..df0135f2cfec 100644
+--- a/drivers/opp/core.c
++++ b/drivers/opp/core.c
+@@ -896,62 +896,34 @@ static inline int _generic_set_opp_clk_only(struct device *dev, struct clk *clk,
+ 	return ret;
+ }
+ 
+-static int _generic_set_opp_regulator(struct opp_table *opp_table,
+-				      struct device *dev,
+-				      struct dev_pm_opp *opp,
+-				      unsigned long freq,
+-				      int scaling_down)
++static int _opp_config_regulator_single(struct device *dev,
++			struct dev_pm_opp *old_opp, struct dev_pm_opp *new_opp,
++			struct regulator **regulators, unsigned int count)
+ {
+-	struct regulator *reg = opp_table->regulators[0];
+-	struct dev_pm_opp *old_opp = opp_table->current_opp;
++	struct regulator *reg = regulators[0];
+ 	int ret;
+ 
+ 	/* This function only supports single regulator per device */
+-	if (WARN_ON(opp_table->regulator_count > 1)) {
++	if (WARN_ON(count > 1)) {
+ 		dev_err(dev, "multiple regulators are not supported\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	/* Scaling up? Scale voltage before frequency */
+-	if (!scaling_down) {
+-		ret = _set_opp_voltage(dev, reg, opp->supplies);
+-		if (ret)
+-			goto restore_voltage;
+-	}
+-
+-	/* Change frequency */
+-	ret = _generic_set_opp_clk_only(dev, opp_table->clk, freq);
++	ret = _set_opp_voltage(dev, reg, new_opp->supplies);
+ 	if (ret)
+-		goto restore_voltage;
+-
+-	/* Scaling down? Scale voltage after frequency */
+-	if (scaling_down) {
+-		ret = _set_opp_voltage(dev, reg, opp->supplies);
+-		if (ret)
+-			goto restore_freq;
+-	}
++		return ret;
+ 
+ 	/*
+ 	 * Enable the regulator after setting its voltages, otherwise it breaks
+ 	 * some boot-enabled regulators.
+ 	 */
+-	if (unlikely(!opp_table->enabled)) {
++	if (unlikely(!new_opp->opp_table->enabled)) {
+ 		ret = regulator_enable(reg);
+ 		if (ret < 0)
+ 			dev_warn(dev, "Failed to enable regulator: %d", ret);
+ 	}
+ 
+ 	return 0;
+-
+-restore_freq:
+-	if (_generic_set_opp_clk_only(dev, opp_table->clk, old_opp->rate))
+-		dev_err(dev, "%s: failed to restore old-freq (%lu Hz)\n",
+-			__func__, old_opp->rate);
+-restore_voltage:
+-	/* This shouldn't harm even if the voltages weren't updated earlier */
+-	_set_opp_voltage(dev, reg, old_opp->supplies);
+-
+-	return ret;
+ }
+ 
+ static int _set_opp_bw(const struct opp_table *opp_table,
+@@ -1200,9 +1172,6 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
+ 
+ 	if (opp_table->set_opp) {
+ 		ret = _set_opp_custom(opp_table, dev, opp, freq);
+-	} else if (opp_table->regulators) {
+-		ret = _generic_set_opp_regulator(opp_table, dev, opp, freq,
+-						 scaling_down);
+ 	} else {
+ 		/* Only frequency scaling */
+ 		ret = _generic_set_opp_clk_only(dev, opp_table->clk, freq);
+@@ -2113,6 +2082,10 @@ static int _opp_set_regulators(struct opp_table *opp_table, struct device *dev,
+ 	}
+ 	mutex_unlock(&opp_table->lock);
+ 
++	/* Set generic config_regulators() for single regulators here */
++	if (count == 1)
++		opp_table->config_regulators = _opp_config_regulator_single;
++
+ 	return 0;
+ 
+ free_regulators:
+-- 
+2.31.1.272.g89b43f80a514
+
