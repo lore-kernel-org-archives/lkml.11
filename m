@@ -2,111 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB63C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 534C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232053AbiGANw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
+        id S229741AbiGANxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiGANwx (ORCPT
+        with ESMTP id S229379AbiGANxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:52:53 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E766B286ED;
-        Fri,  1 Jul 2022 06:52:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656683572; x=1688219572;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=hU5wtGG6cfmkysoPoL41jEdZ2gEmdJViRKm4NPb0bgE=;
-  b=EPv9QJTRepvHoM7RXJmoPC5ZR27AzQALETHdqoOUviwUbxg0lG6oWoIf
-   7M2gL+VrXfoRv8iKiG3m3vVuWM9aRkosYgJq90ZTP4AmkYq5z4iJ55E4Y
-   lWk3nofR4Kd4Lh+aCu3bsmqEaFdfAK+ni6wKlFntltEiJBcRAJM0OMk39
-   K5p3+GV30anucBwafxKe+bz0wG1SBJcDd3mVaCKYfYz4wyo1PVYU6hv30
-   nxe7sG5zC3sXuQruNX8mEAW/zhF53X23As4GoqNbolOqRVjG61JT0Mqdc
-   RE3A6ahiex3I/ykaxOZxe1ziSJyRIQR+Ra5QjQsSvW3SOHtryJNmtKt0y
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="280207482"
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="280207482"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:52:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="694515095"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga002.fm.intel.com with ESMTP; 01 Jul 2022 06:52:50 -0700
-Date:   Fri, 1 Jul 2022 15:52:49 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
-Message-ID: <Yr78Md1Nqpj+peO0@boxer>
-References: <20220701042810.26362-1-lukas.bulwahn@gmail.com>
- <Yr7mcjRq57laZGEY@boxer>
- <CAJ8uoz16yGJqYX2xOcczTGKFnG4joh8+f1uPGMAP4rmm3feYDQ@mail.gmail.com>
+        Fri, 1 Jul 2022 09:53:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25E52C648
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 06:53:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E2D6B82DDC
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 13:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42939C3411E;
+        Fri,  1 Jul 2022 13:53:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656683626;
+        bh=dVNFg89+mDLmTWPi6mKY7mz9CcYeyfjyk2+ivszQfdo=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=liNmo2iUrQDmotIrk7q7IAwgniQ231lb+/ZX3IxZXyiwhdPeZvxhR2FHhPVKgWTCc
+         AsTvkcaP3r43Apdkj0qNLuhaJ6YmcLrvTvGwOwI0kaa02iZy48g1Rkmhu+jHstNWoe
+         1RdkIqyIN/cd/sbjZeu+0RrRCmvjyms1iOttrHJYmC+yoNt2SW660AGJymYV0LcIkl
+         Q222NyZCLWBWWdAsbPIijzX8q6TA2qGveYBeztFnUOqm59OiIJbuYSOJfMWr0H/a8R
+         Nx84k4c7Fqp+++e8SF19FmROcKg3vREcT+/JYIO5W6TlRVO1zP17iKiy8qfeaUEn2l
+         37yZigTwv8dIg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id E044B5C06A1; Fri,  1 Jul 2022 06:53:45 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 06:53:45 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Chen, Rong A" <rong.a.chen@intel.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [kbuild-all] Re:
+ [ammarfaizi2-block:paulmck/linux-rcu/pmladek.2022.06.15a 123/140]
+ xtensa-linux-ld: arch/xtensa/kernel/entry.o:undefined reference to
+ `context_tracking_user_exit'
+Message-ID: <20220701135345.GP1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <202207010405.MVCHQe6d-lkp@intel.com>
+ <20220630230823.GD1790663@paulmck-ThinkPad-P17-Gen-1>
+ <fe28b30e-dbc9-dba3-7275-2baa2e68197a@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJ8uoz16yGJqYX2xOcczTGKFnG4joh8+f1uPGMAP4rmm3feYDQ@mail.gmail.com>
+In-Reply-To: <fe28b30e-dbc9-dba3-7275-2baa2e68197a@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 03:13:36PM +0200, Magnus Karlsson wrote:
-> On Fri, Jul 1, 2022 at 2:38 PM Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
-> >
-> > On Fri, Jul 01, 2022 at 06:28:10AM +0200, Lukas Bulwahn wrote:
-> > > Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
-> > > files tools/{lib => testing/selftests}/bpf/xsk.[ch], but misses to adjust
-> > > the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
-> > >
-> > > Adjust the file entry after this file movement.
-> > >
-> > > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> > > ---
-> > > Andrii, please ack.
-> > >
-> > > Alexei, please pick this minor non-urgent clean-up on top of the commit above.
-> > >
-> > >  MAINTAINERS | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index fa4bfa3d10bf..27d9e65b9a85 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -22042,7 +22042,7 @@ F:    include/uapi/linux/xdp_diag.h
-> > >  F:   include/net/netns/xdp.h
-> > >  F:   net/xdp/
-> > >  F:   samples/bpf/xdpsock*
-> > > -F:   tools/lib/bpf/xsk*
-> > > +F:   tools/testing/selftests/bpf/xsk*
-> >
-> > Magnus, this doesn't cover xdpxceiver.
-> > How about we move the lib part and xdpxceiver part to a dedicated
-> > directory? Or would it be too nested from main dir POV?
+On Fri, Jul 01, 2022 at 06:15:50PM +0800, Chen, Rong A wrote:
 > 
-> Or we can just call everything we add xsk* something?
-
-No strong feelings. test_xsk.sh probably also needs to be addressed.
-That's why I proposed dedicated dir.
-
 > 
-> > >
-> > >  XEN BLOCK SUBSYSTEM
-> > >  M:   Roger Pau Monné <roger.pau@citrix.com>
-> > > --
-> > > 2.17.1
-> > >
+> On 7/1/2022 7:08 AM, Paul E. McKenney wrote:
+> > On Fri, Jul 01, 2022 at 04:15:11AM +0800, kernel test robot wrote:
+> > > tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/pmladek.2022.06.15a
+> > > head:   0ba7324b44282870af740a5a121add62c7f5f730
+> > > commit: 9d16390cc0d00ae1100bca4f4adb0ae2906631ec [123/140] context_tracking: Take idle eqs entrypoints over RCU
+> > > config: xtensa-randconfig-r004-20220629 (https://download.01.org/0day-ci/archive/20220701/202207010405.MVCHQe6d-lkp@intel.com/config)
+> > > compiler: xtensa-linux-gcc (GCC) 11.3.0
+> > > reproduce (this is a W=1 build):
+> > >          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >          chmod +x ~/bin/make.cross
+> > >          # https://github.com/ammarfaizi2/linux-block/commit/9d16390cc0d00ae1100bca4f4adb0ae2906631ec
+> > >          git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+> > >          git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/pmladek.2022.06.15a
+> > >          git checkout 9d16390cc0d00ae1100bca4f4adb0ae2906631ec
+> > >          # save the config file
+> > >          mkdir build_dir && cp config build_dir/.config
+> > >          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+> > > 
+> > > If you fix the issue, kindly add following tag where applicable
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > 
+> > This should be fixed in the current version of this commit:
+> > 
+> > 6a87dff9f33a ("context_tracking: Take idle eqs entrypoints over RCU")
+> > 
+> > Please let me know if this commit does not address the problem.
+> > 
+> > 							Thaxn, Paul
+> 
+> 
+> Hi Paul,
+> 
+> I have confirmed that there's no such issue on commit 6a87dff9f33a,
+> but I'm not sure the commit fixed the issue, I can't find the error on
+> parent commit 24a9c54182b3 too.
+> 
+>   $ git log --oneline -2 6a87dff9f33a
+>   6a87dff9f33af context_tracking: Take idle eqs entrypoints over RCU
+>   24a9c54182b37 context_tracking: Split user tracking Kconfig
+
+I will defer to Frederic on this one.  ;-)
+
+							Thanx, Paul
+
+> Best Regards,
+> Rong Chen
+> 
+> > 
+> > > All errors (new ones prefixed by >>):
+> > > 
+> > > > > xtensa-linux-ld: arch/xtensa/kernel/entry.o:(.text+0x0): undefined reference to `context_tracking_user_exit'
+> > > > > xtensa-linux-ld: arch/xtensa/kernel/entry.o:(.text+0xc): undefined reference to `context_tracking_user_enter'
+> > >     xtensa-linux-ld: arch/xtensa/kernel/entry.o: in function `common_exception':
+> > >     arch/xtensa/kernel/entry.S:459: undefined reference to `context_tracking_user_exit'
+> > >     xtensa-linux-ld: arch/xtensa/kernel/entry.o: in function `common_exception_return':
+> > >     arch/xtensa/kernel/entry.S:542: undefined reference to `context_tracking_user_enter'
+> > > 
+> > > -- 
+> > > 0-DAY CI Kernel Test Service
+> > > https://01.org/lkp
+> > _______________________________________________
+> > kbuild-all mailing list -- kbuild-all@lists.01.org
+> > To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> > 
