@@ -2,118 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA60C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 01:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4881ECCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 01:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbiGABV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 21:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37660 "EHLO
+        id S231903AbiGABWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 21:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiGABVx (ORCPT
+        with ESMTP id S232650AbiGABWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 21:21:53 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E920E5A2DA
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 18:21:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656638512; x=1688174512;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=H4ENz9j9WZZPAItQz3miCy+CRrDXsBwHO08vdhTePe4=;
-  b=lMBbdCzbw2kizWQDpva+gC5VatwkDHmjCaNo8YDAZCVG3MPLzdOCyvfA
-   t722sLw4nO3p23W+Wf7YGYKX5wuVKk3+hvOx6ot7yXQ6YmxT7aE10LOZV
-   uBkx5nFHi+zFOTUACIh/nxm+4gBdifxQ++R7pIM+sk2BaHwwgfZEIpqa0
-   4l/3Dk7GpPxvG3jJpdwcTpe9H29PzfBvREv8ZfUjxiSAOmvmy4BFZkV+n
-   GGZ/6kp19nKO+VQlXNSgSIQ4xga+a7CDybUdewjiBf98ObNs3fGlbXcbG
-   6XHTp5NhNuyP3w/q/HUMIofqmZkOlmUHUVtw9YO1wcWmANEvO2lHrP2Wg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271287726"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="271287726"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 18:21:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="589038477"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 18:21:49 -0700
-Message-ID: <617e5bc8-aaef-c6b9-c50b-8fadb8ea8efb@linux.intel.com>
-Date:   Fri, 1 Jul 2022 09:17:33 +0800
+        Thu, 30 Jun 2022 21:22:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F4955A2CB
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 18:22:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656638550;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2KH53Wl1gr5UMbynLfVT+FjBM4ZDGlsSeHT6iWm6OnU=;
+        b=bRdviL9TDbL6BeBKnbyhb4tpyRgCxiQEsZFnuxvVhybI3jLOmm2/RfRiESovHgHV8d99Ie
+        AuQBHX29ZIBCI3Pc+q3jfZZ2qtailWwSYwtYO8PHjiUlCuzEE8CbYocdSDUhh+Iae6V7Cb
+        tAJslrD1FVh5Ps/LLmhzv4kS/WLxlTc=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-279-GyrQLR1-PyaZrSSfoBcrlw-1; Thu, 30 Jun 2022 21:22:28 -0400
+X-MC-Unique: GyrQLR1-PyaZrSSfoBcrlw-1
+Received: by mail-lf1-f69.google.com with SMTP id p2-20020a05651212c200b004814102d512so391391lfg.1
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 18:22:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2KH53Wl1gr5UMbynLfVT+FjBM4ZDGlsSeHT6iWm6OnU=;
+        b=L9FrRwWD1l+zTKYF4tQ4yNzQkM3LL0rS3CIlcD0CseYT1uZtVTmF3EtfFEReuinDz1
+         sJXWU5oRgn6yq2ymFPnUEc2WjiajO1zXeUOYCKEJ/XjbN33+qI4RvtTVSPsvzsrmtLTi
+         tYMFscpjNNr3jxU/D1MueUtNsDKsqi0iCpnzue/gLqEqQn6peZTPOhMXTQ6sxlrjLVTn
+         Miuw5zHy//dYSh+rupcJniaG03CheG3789Fw/+G/WRgaK2+GwkGaYh5M5m04C1Wbf+xI
+         imO6MueciNNREM6uVwzDXgND/G2lJWRn1KZooVA+ULB9Md02gcVZv8eaYqYxHhdsRLPo
+         d0Aw==
+X-Gm-Message-State: AJIora+tbwIV9tRIbLEW7zyd9E78Br+kG2/KAX1vZK7Xyofi9DWJSIQx
+        s+BoiWUjHoc6n4wz+lj7x07I1rCwy522J5Kch3BHVmdBAxdbSbGU3+FAGFee1xfMOcdQvKqgEh0
+        1aUzeC585NL81dg6r9VFOB3lzoRGxq6/w3E+mGk1g
+X-Received: by 2002:a05:6512:22c3:b0:47f:704b:3820 with SMTP id g3-20020a05651222c300b0047f704b3820mr7390619lfu.411.1656638546133;
+        Thu, 30 Jun 2022 18:22:26 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vr8HxTtR3VyCNAME9Etu0HGTUwoK8NFuuJdU03zhtIJfCQW8P7Cfwl91EkAy5W/C6W4aZiLeDVgXy6h3cd8Cw=
+X-Received: by 2002:a05:6512:22c3:b0:47f:704b:3820 with SMTP id
+ g3-20020a05651222c300b0047f704b3820mr7390605lfu.411.1656638545914; Thu, 30
+ Jun 2022 18:22:25 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <sivanich@hpe.com>,
-        "Anderson, Russ" <russ.anderson@hpe.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 2/6] iommu/vt-d: Use IDA interface to manage iommu
- sequence id
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>
-References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
- <20220625125204.2199437-3-baolu.lu@linux.intel.com>
- <BL1PR11MB5271C0143C8EA440BDAF45828CBA9@BL1PR11MB5271.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BL1PR11MB5271C0143C8EA440BDAF45828CBA9@BL1PR11MB5271.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220608171334.730739-1-apatel@ventanamicro.com>
+ <20220629174318.GB2018382@p14s> <bf87a50c-6d92-8657-72a9-75af81d2489f@foss.st.com>
+ <CANLsYkzHZMV3eVUn3Xpk0eiAexyr9HC5__K9xfAwfm23nuQj=A@mail.gmail.com> <20220630152003-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220630152003-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 1 Jul 2022 09:22:15 +0800
+Message-ID: <CACGkMEtHuoHT6meHacsie8M87yjUX3jGEvP7BuU_Vrb3yqkDWw@mail.gmail.com>
+Subject: Re: [PATCH] rpmsg: virtio: Fix broken rpmsg_probe()
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-remoteproc@vger.kernel.org, kvm-riscv@lists.infradead.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/30/22 4:21 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Saturday, June 25, 2022 8:52 PM
->>
->> @@ -1062,11 +1040,14 @@ static int alloc_iommu(struct dmar_drhd_unit
->> *drhd)
->>   	if (!iommu)
->>   		return -ENOMEM;
->>
->> -	if (dmar_alloc_seq_id(iommu) < 0) {
->> +	iommu->seq_id = ida_alloc_range(&dmar_seq_ids, 0,
->> +					DMAR_UNITS_SUPPORTED,
-> 
-> should be "DMAR_UNITS_SUPPORTED - 1"
+On Fri, Jul 1, 2022 at 3:20 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Thu, Jun 30, 2022 at 11:51:30AM -0600, Mathieu Poirier wrote:
+> > + virtualization@lists.linux-foundation.org
+> > + jasowang@redhat.com
+> > + mst@redhat.com
+> >
+> > On Thu, 30 Jun 2022 at 10:20, Arnaud POULIQUEN
+> > <arnaud.pouliquen@foss.st.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On 6/29/22 19:43, Mathieu Poirier wrote:
+> > > > Hi Anup,
+> > > >
+> > > > On Wed, Jun 08, 2022 at 10:43:34PM +0530, Anup Patel wrote:
+> > > >> The rpmsg_probe() is broken at the moment because virtqueue_add_inbuf()
+> > > >> fails due to both virtqueues (Rx and Tx) marked as broken by the
+> > > >> __vring_new_virtqueue() function. To solve this, virtio_device_ready()
+> > > >> (which unbreaks queues) should be called before virtqueue_add_inbuf().
+> > > >>
+> > > >> Fixes: 8b4ec69d7e09 ("virtio: harden vring IRQ")
+> > > >> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > >> ---
+> > > >>  drivers/rpmsg/virtio_rpmsg_bus.c | 6 +++---
+> > > >>  1 file changed, 3 insertions(+), 3 deletions(-)
+> > > >>
+> > > >> diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
+> > > >> index 905ac7910c98..71a64d2c7644 100644
+> > > >> --- a/drivers/rpmsg/virtio_rpmsg_bus.c
+> > > >> +++ b/drivers/rpmsg/virtio_rpmsg_bus.c
+> > > >> @@ -929,6 +929,9 @@ static int rpmsg_probe(struct virtio_device *vdev)
+> > > >>      /* and half is dedicated for TX */
+> > > >>      vrp->sbufs = bufs_va + total_buf_space / 2;
+> > > >>
+> > > >> +    /* From this point on, we can notify and get callbacks. */
+> > > >> +    virtio_device_ready(vdev);
+> > > >> +
+> > > >
+> > > > Calling virtio_device_ready() here means that virtqueue_get_buf_ctx_split() can
+> > > > potentially be called (by way of rpmsg_recv_done()), which will race with
+> > > > virtqueue_add_inbuf().  If buffers in the virtqueue aren't available then
+> > > > rpmsg_recv_done() will fail, potentially breaking remote processors' state
+> > > > machines that don't expect their initial name service to fail when the "device"
+> > > > has been marked as ready.
+> > > >
+> > > > What does make me curious though is that nobody on the remoteproc mailing list
+> > > > has complained about commit 8b4ec69d7e09 breaking their environment... By now,
+> > > > i.e rc4, that should have happened.  Anyone from TI, ST and Xilinx care to test this on
+> > > > their rig?
+> > >
+> > > I tested on STm32mp1 board using tag v5.19-rc4(03c765b0e3b4)
+> > > I confirm the issue!
+> > >
+> > > Concerning the solution, I share Mathieu's concern. This could break legacy.
+> > > I made a short test and I would suggest to use __virtio_unbreak_device instead, tounbreak the virtqueues without changing the init sequence.
+> > >
+> > > I this case the patch would be:
+> > >
+> > > +       /*
+> > > +        * Unbreak the virtqueues to allow to add buffers before setting the vdev status
+> > > +        * to ready
+> > > +        */
+> > > +       __virtio_unbreak_device(vdev);
+> > > +
+> > >
+> > >         /* set up the receive buffers */
+> > >         for (i = 0; i < vrp->num_bufs / 2; i++) {
+> > >                 struct scatterlist sg;
+> > >                 void *cpu_addr = vrp->rbufs + i * vrp->buf_size;
+> >
+> > This will indeed fix the problem.  On the flip side the kernel
+> > documentation for __virtio_unbreak_device() puzzles me...
+> > It clearly states that it should be used for probing and restoring but
+> > _not_ directly by the driver.  Function rpmsg_probe() is part of
+> > probing but also the entry point to a driver.
+> >
+> > Michael and virtualisation folks, is this the right way to move forward?
+>
+> I don't think it is, __virtio_unbreak_device is intended for core use.
 
-Yes, according to "@max: Highest ID to allocate.". Updated.
+Can we fill the rx after virtio_device_ready() in this case?
 
->> GFP_KERNEL);
->> +	if (iommu->seq_id < 0) {
->>   		pr_err("Failed to allocate seq_id\n");
->>   		err = -ENOSPC;
->>   		goto error;
->>   	}
-> 
-> ida_alloc_range() returns error code already. No need to change it.
-> 
+Btw, the driver set driver ok after registering, we probably get a svq
+kick before DRIVER_OK?
 
-Agreed. Updated as below:
+Thanks
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index bf43889b9d2a..6327b34f5aa7 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1041,10 +1041,10 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
-                 return -ENOMEM;
+>
+> > >
+> > > Regards,
+> > > Arnaud
+> > >
+> > > >
+> > > > Thanks,
+> > > > Mathieu
+> > > >
+> > > >>      /* set up the receive buffers */
+> > > >>      for (i = 0; i < vrp->num_bufs / 2; i++) {
+> > > >>              struct scatterlist sg;
+> > > >> @@ -983,9 +986,6 @@ static int rpmsg_probe(struct virtio_device *vdev)
+> > > >>       */
+> > > >>      notify = virtqueue_kick_prepare(vrp->rvq);
+> > > >>
+> > > >> -    /* From this point on, we can notify and get callbacks. */
+> > > >> -    virtio_device_ready(vdev);
+> > > >> -
+> > > >>      /* tell the remote processor it can start sending messages */
+> > > >>      /*
+> > > >>       * this might be concurrent with callbacks, but we are only
+> > > >> --
+> > > >> 2.34.1
+> > > >>
+>
 
-         iommu->seq_id = ida_alloc_range(&dmar_seq_ids, 0,
--                                       DMAR_UNITS_SUPPORTED, GFP_KERNEL);
-+                                       DMAR_UNITS_SUPPORTED - 1, 
-GFP_KERNEL);
-         if (iommu->seq_id < 0) {
-                 pr_err("Failed to allocate seq_id\n");
--               err = -ENOSPC;
-+               err = iommu->seq_id;
-                 goto error;
-         }
-         sprintf(iommu->name, "dmar%d", iommu->seq_id);
-
-Best regards,
-baolu
