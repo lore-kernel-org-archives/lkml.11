@@ -2,139 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 742B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232460AbiGAQ2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
+        id S232506AbiGAQ2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232459AbiGAQ17 (ORCPT
+        with ESMTP id S232459AbiGAQ2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:27:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7F742A09
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 09:27:55 -0700 (PDT)
+        Fri, 1 Jul 2022 12:28:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5D73205B;
+        Fri,  1 Jul 2022 09:28:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA3876255A
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 16:27:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E137EC3411E;
-        Fri,  1 Jul 2022 16:27:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C599162573;
+        Fri,  1 Jul 2022 16:28:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21922C341C7;
+        Fri,  1 Jul 2022 16:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656692874;
-        bh=CfrRwJeGcqujZMKzXtTS5dmHXhzhyLZ2PysUxfIWMb4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lJ1PXtBex6m8EajNJwd7sY7UdPUKfnHO+rmOkoVaIN7EXb3ZoOS1mys+vRewtoQ+K
-         CTmgdKIDT45a+ugRneNynFUu3e0aTfcgMBfF4LzPFUhkoGY+2bNvgBbi3RuECusKrG
-         jXKOdi6w3Q5CAY24ZqrSqWCKQsSOOZ+ncTgkDgtcI9LSZHi5a4tNbZ/6pNtBTLvVlV
-         PqQ2es7Irzl+DW8umFoLlPxga1U02DWVfzTU0Z/WfvAsc2XMvSb2JnlwrWhN91OvYU
-         AF1FP/XlGt+YyOPkAgIH9PLWb0I9edASU/zexnWUlv14T87mt8pDU55eJB9iEneWZh
-         OT5gVq5eSlqhg==
-Date:   Fri, 1 Jul 2022 09:27:52 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: [char-misc:char-misc-linus 3/3]
- drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used
- uninitialized whenever 'if' condition is true
-Message-ID: <Yr8giNcxMQyxx+KZ@dev-arch.thelio-3990X>
-References: <202207011658.rHJFVLWA-lkp@intel.com>
- <Yr63Zyvj49o8U/ti@kroah.com>
- <67a09516-ec1f-d0b6-c027-fd52159318ed@linuxfoundation.org>
- <Yr8VIT2vjvGYrbmR@dev-arch.thelio-3990X>
- <1c13496a-9e45-38b6-1563-c09d412cf576@linuxfoundation.org>
- <6e148c41-4a31-f173-f5ea-d52e115c268c@linuxfoundation.org>
+        s=k20201202; t=1656692928;
+        bh=8EPMGYldgRgjjDYLaj6mvfXTi2oreQHR+PEXE+t1tns=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=JtZzSsYzmJedsJFw0B8d8L5oCI5pxc5AqSscDz7QxpPeNFe2cUASx8JDfrtygZyN6
+         T8kKljVBPkWvHF8M+CVm+bJFVraXDZr8unrSKQE6Oh81HHTqPe1dwkH8tjP1DzXBjg
+         Cox6C9EqtYq+xIjcVMJbpEOruvHJdecNf5AMkVjgDWA9EcZgAV92CBrsqg3ZtRoYFW
+         cFAG71C5CuzCMSno1cq+Oof9SACkiYHCAF68T7ZQoWvIcRnLsG28/hvsRa+4FvxFeX
+         JT50MfQzCZllUm7mjgR5S0EuHAcaZJvAImaAz+ocDBBr8/SbanF1m8LRCAkwcXImE+
+         jmoV4OZLZbjtg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id C22315C06A1; Fri,  1 Jul 2022 09:28:47 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 09:28:47 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Hongtao Yu <hoy@fb.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Bill Wendling <morbo@google.com>,
+        "Jose E. Marchesi" <jemarch@gnu.org>,
+        Ruud van der Pas <ruud.vanderpas@oracle.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Vladimir Mezentsev <vladimir.mezentsev@oracle.com>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Wenlei He <wenlei@fb.com>, Ingo Molnar <mingo@kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>,
+        "elena.zannoni@oracle.com" <elena.zannoni@oracle.com>
+Subject: Re: plumbers session on profiling?
+Message-ID: <20220701162847.GS1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <87mtf7z0rt.fsf@gnu.org>
+ <6F9E9D93-3913-4022-9384-D809C8EF7715@oracle.com>
+ <CAKwvOdm=_YqBpuBzouqoWHYNe6MMUE10vqF0PUkU=hcOj+UqrQ@mail.gmail.com>
+ <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com>
+ <878rpgpvfj.fsf@gnu.org>
+ <Yr638aOIaaEBPICy@worktop.programming.kicks-ass.net>
+ <CAGG=3QWbW-Dang49Jx3fyNExWtL8syuMkMJmcPHA7J25cHQ0zw@mail.gmail.com>
+ <Yr7fMre18pUMz9rA@worktop.programming.kicks-ass.net>
+ <20220701135028.GN1790663@paulmck-ThinkPad-P17-Gen-1>
+ <MW3PR15MB3868B1DC443B538A2A27F1D3CFBD9@MW3PR15MB3868.namprd15.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6e148c41-4a31-f173-f5ea-d52e115c268c@linuxfoundation.org>
+In-Reply-To: <MW3PR15MB3868B1DC443B538A2A27F1D3CFBD9@MW3PR15MB3868.namprd15.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 10:09:45AM -0600, Shuah Khan wrote:
-> On 7/1/22 9:52 AM, Shuah Khan wrote:
-> > On 7/1/22 9:39 AM, Nathan Chancellor wrote:
-> > > On Fri, Jul 01, 2022 at 08:48:11AM -0600, Shuah Khan wrote:
-> > > > On 7/1/22 2:59 AM, Greg Kroah-Hartman wrote:
+On Fri, Jul 01, 2022 at 03:32:12PM +0000, Hongtao Yu wrote:
 > 
-> > > > > > All warnings (new ones prefixed by >>):
-> > > > > > 
-> > > > > > > > drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-> > > > > >              if (!ucr->rsp_buf)
-> > > > > >                  ^~~~~~~~~~~~~
-> > > > > >      drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-> > > > > >              return ret;
-> > > > > >                     ^~~
-> > > > > >      drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-> > > > > >              if (!ucr->rsp_buf)
-> > > > > >              ^~~~~~~~~~~~~~~~~~
-> > > > > >      drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-> > > > > >              int ret;
-> > > > > >                     ^
-> > > > > >                      = 0
-> > > > > >      1 warning generated.
-> > > > > 
-> > > > > Odd, gcc doesn't show this for me.  Shuah, can you send a follow-on
-> > > > > patch to fix this?  The warning does look correct.
-> > > > > 
-> > > > 
-> > > > gcc didn't complain when I compiled either. I will send a follow-on patch.
-> > > 
-> > > Unfortunately, GCC won't warn for most uninitialized variables by
-> > > default after 5.7, which included commit 78a5255ffb6a ("Stop the ad-hoc
-> > > games with -Wno-maybe-initialized"). They will potentially show up at
-> > > W=2 or with an explicit KCFLAGS=-Wmaybe-uninitialized (it does in this
-> > > case):
-> > > 
-> > 
-> > Thank you.
-> > 
-> > > | drivers/misc/cardreader/rtsx_usb.c: In function ‘rtsx_usb_probe’:
-> > > | drivers/misc/cardreader/rtsx_usb.c:678:16: error: ‘ret’ may be used uninitialized [-Werror=maybe-uninitialized]
-> > > |   678 |         return ret;
-> > > |       |                ^~~
-> > > | drivers/misc/cardreader/rtsx_usb.c:622:13: note: ‘ret’ was declared here
-> > > |   622 |         int ret;
-> > > |       |             ^~~
-> > > | cc1: all warnings being treated as errors
-> > > 
-> > 
-> > This is a bug and a good find. ret should have been set
-> > in the if (!ucr->rsp_buf) before going to error handling.
-> > 
-> > I wonder if it would have been flagged if ret were to be
-> > initialized to 0. Something to experiment.
-> > 
 > 
-> I had to try. As I suspected initializing ret will mask this bug.
+> ________________________________
+> From: Paul E. McKenney <paulmck@kernel.org>
+> Sent: Friday, July 1, 2022 6:50 AM
+> To: Peter Zijlstra <peterz@infradead.org>
+> Cc: Bill Wendling <morbo@google.com>; Jose E. Marchesi <jemarch@gnu.org>; Ruud van der Pas <ruud.vanderpas@oracle.com>; Nick Desaulniers <ndesaulniers@google.com>; Sami Tolvanen <samitolvanen@google.com>; Vladimir Mezentsev <vladimir.mezentsev@oracle.com>; clang-built-linux <llvm@lists.linux.dev>; LKML <linux-kernel@vger.kernel.org>; Yonghong Song <yhs@fb.com>; Wenlei He <wenlei@fb.com>; Hongtao Yu <hoy@fb.com>; Ingo Molnar <mingo@kernel.org>; linux-toolchains <linux-toolchains@vger.kernel.org>; elena.zannoni@oracle.com <elena.zannoni@oracle.com>
+> Subject: Re: plumbers session on profiling?
 > 
-> KCFLAGS=-Wmaybe-uninitialized will not flag it even though
-> the bug still exists. It will return 0 w hen memory allocation
-> fails.
+> On Fri, Jul 01, 2022 at 01:49:06PM +0200, Peter Zijlstra wrote:
+> > On Fri, Jul 01, 2022 at 03:17:54AM -0700, Bill Wendling wrote:
+> > > On Fri, Jul 1, 2022 at 2:02 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > > >
+> > > > On Tue, Jun 28, 2022 at 07:08:48PM +0200, Jose E. Marchesi wrote:
+> > > > >
+> > > > > [Added linux-toolchains@vger in CC]
+> > > > >
+> > > > > It would be interesting to have some discussion in the Toolchains track
+> > > > > on building the kernel with PGO/FDO.  I have seen a raise on interest on
+> > > > > the topic in several companies, but it would make very little sense if
+> > > > > no kernel hacker is interested in participating... anybody?
+> > > >
+> > > > I know there's been a lot of work in this area, but none of it seems to
+> > > > have trickled down to be easy enough for me to use it.
+> > >
+> > > We use an instrumented kernel to collect the data we need. It gives us
+> > > the best payoff, because the profiling data is more fine-grained and
+> > > accurate. (PGO does much more than make inlining decisions.)
+> > >
+> > > If I recall correctly, you previously suggested using sampling data.
+> > > (Correct?) Is there a document or article that outlines that process?
+> >
+> > IIRC Google has LBR sample driven PGO somewhere as well. ISTR that being
+> > the whole motivation for that gruesome Zen3 BRS hack.
+> >
+> > Google got me this: https://research.google.com/pubs/archive/45290.pdf
+> 
+> > Whatever else, please refrain from using PGO and friends to drive
+> data-value speculation!
+> 
+>  Is there a particular reason for this?
 
-Right, if the variable is unconditonally initialized at the top of the
-function, it can never be flagged as uninitialized but that doesn't mean
-the value is correct for every branch within the function.
+Yes, there is.
 
-> Initializing isn't always the right answer for these kinds of
-> warnings.
+Doing so breaks many concurrent algorithms.
 
-I would say "unconditional initialization", as ret has to be initialized
-somewhere to fix this warning, right? If you are referring to clang's
-'ret = 0' suggestion, I agree that it can be misleading (especially in
-the case of suggesting initializing dereferenced pointers to NULL...,
-see [1]) but at the end of the day, it is still on the programmer to
-analyze their code fully in light of the warning before implementing a
-fix. Clang cannot know that the return code should be set in the if
-statement rather than at the top of the function.
+Sure, the hardware can get away with this sort of thing.  But that is
+only because it has access to cache and store-buffer state that allows it
+to roll back and replay when needed.  The compiler does not have access
+to this state [1], so it needs to avoid playing this game.
 
-[1]: https://github.com/llvm/llvm-project/issues/51901
-
-Cheers,
-Nathan
+							Thanx, Paul
