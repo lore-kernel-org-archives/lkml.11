@@ -2,93 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC46DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3874C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233617AbiGANJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S234556AbiGANJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbiGANI5 (ORCPT
+        with ESMTP id S229716AbiGANJT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:08:57 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01592E696
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 06:08:56 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-101bb9275bcso3449746fac.8
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 06:08:56 -0700 (PDT)
+        Fri, 1 Jul 2022 09:09:19 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F342EBDC;
+        Fri,  1 Jul 2022 06:09:17 -0700 (PDT)
+Received: from relayfre-01.paragon-software.com (unknown [172.30.72.12])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id A962221B4;
+        Fri,  1 Jul 2022 13:08:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KChte2H+GQGgzLuFF3Cguq7pYgmwTYanbBPncuTfAMs=;
-        b=KSuIzE1BB0zTfWAwGuIu8v9r4eTugMyUZCsyrQ1R8whMGosfla2cMrxtMrclif7+rs
-         m6EpqBhrbVJG5RkeB9GzGXArf032gaSCEh2/XtcVP3SbNyyyjcv7+86nrROVxXUUYQPW
-         5Z7mR4+62aGEpOrTyCC/Ct7wCq+w9GfM0IbAUlTyBvVMiJ8gYiXCZUwhcybCugN0h+E0
-         6Ar/AvNRHnM+e9+gbVRMgNyYpfhHtC0s5PMZLN7ItLj4AGknhp/PSiJEjHgei+3JSM1c
-         GWdkl2uwPFTz4lKECT4PCkqFyDHmCtNDdYMgRe0VCaGJkMgl9v5lUqXZ6140RclOP+Gw
-         hZug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KChte2H+GQGgzLuFF3Cguq7pYgmwTYanbBPncuTfAMs=;
-        b=JamphWjxAJy7bTDejcQHP0n5AlE2WkB1tQ85bHfLNe3InSHF/lFwNTjtU7vlaE4Gwx
-         vz2bJeYwJbKyaucsNJC58YYUIPK+AEIlx55a9E/zkoXx/xuufiy3vxXTZ5I9onHz3fxO
-         3F6ElaTIVxA82kNvtQ0V6muInNSH6kALYZtrRr1bADb+Q1Jt1RNfbdm//yKXy2uhRFK7
-         zJ2hDt0OE1lNE0Y/9lhR3eN63eqr3RrJi6Nixzwdjk/Jz+DgPmqdefv3vpWQ5x2TsnV+
-         3KrxozsbkjH2xrAijMU1/fUkYxOSi1LOjIjgZe8rqeVbYc9kNjYnY5cPD6MK83dUT9vt
-         GoNQ==
-X-Gm-Message-State: AJIora/PGJySEtCxhQIGw2N0F6Totb3AP4KW1mTOMV98aHHMm9q0eX2J
-        IW5kmeidhPPTrycmefcj6Jcbi7zPEiaSedqRa74vyw==
-X-Google-Smtp-Source: AGRyM1vAduFxKJgGNeq4OgKjn06zHGpr8i13LXKC6Bg6uNio4tgI7fXFw67CA5Rwoja1UB3xpLFdkkE+nG4PhT70n4I=
-X-Received: by 2002:a05:6870:d3c7:b0:104:9120:8555 with SMTP id
- l7-20020a056870d3c700b0010491208555mr8291131oag.181.1656680936157; Fri, 01
- Jul 2022 06:08:56 -0700 (PDT)
+        d=paragon-software.com; s=mail; t=1656680898;
+        bh=MKsRJ8t+8zaBZCE5e9v9aMhJnYe1KsFG588Y04zQGIM=;
+        h=Date:To:CC:From:Subject;
+        b=os8jk9fNLTrNYSRxtCswNaTjIT84rUcaEMD/AXbeX7O0iO7N7ouHmFlSdk8H6pBkc
+         RdYcLPCkw92jLB8QGnzxB6Vm0UjSw/Dfs4GxHBo/HlF0jcK5LrwclyWNrkt+zHFZNb
+         XO8PT2IdMQeAHrNMKipfK6N5q3Mu3s3fKlEqGR2s=
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayfre-01.paragon-software.com (Postfix) with ESMTPS id F0AC821B8;
+        Fri,  1 Jul 2022 13:09:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1656680956;
+        bh=MKsRJ8t+8zaBZCE5e9v9aMhJnYe1KsFG588Y04zQGIM=;
+        h=Date:To:CC:From:Subject;
+        b=hBQ0fEMeeSKv7qyDMImHu6Ks/MjyDgTJmNS1grqvMC03MMM8slBafpo6vVtN5HVz+
+         rdUR8mqMh3KB4Fo5RKdUkYLSWo8kleYDxTqV2WVI5zN33JR1HWLdPdVNKRpCwuEwl+
+         feFv2vUNeidlWsoLZdnOJ1vj9TENlCIKZALYyCeQ=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 1 Jul 2022 16:09:15 +0300
+Message-ID: <34e58f6e-e508-4ad8-6941-37281ea7d3ef@paragon-software.com>
+Date:   Fri, 1 Jul 2022 16:09:15 +0300
 MIME-Version: 1.0
-References: <20220701042122.5273-1-liubo03@inspur.com>
-In-Reply-To: <20220701042122.5273-1-liubo03@inspur.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Fri, 1 Jul 2022 06:08:45 -0700
-Message-ID: <CALMp9eSFvTFn5Uogyu2XJbu6gcNL89R7OqbeF1yop650PUhYJw@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/mmu: Return true/false from bool function
-To:     Bo Liu <liubo03@inspur.com>
-Cc:     seanjc@google.com, pbonzini@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     <ntfs3@lists.linux.dev>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 0/5] fs/ntfs3: Some fixes and refactoring
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vobn-exch-01.paragon-software.com (172.30.72.13) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 10:50 PM Bo Liu <liubo03@inspur.com> wrote:
->
-> Return boolean values ("true" or "false") instead of integer values
-> from bool function.
->
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index bfb50262fd37..572e0c487376 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -1024,7 +1024,7 @@ static bool rmap_can_add(struct kvm_vcpu *vcpu)
->         struct kvm_mmu_memory_cache *mc;
->
->         mc = &vcpu->arch.mmu_pte_list_desc_cache;
-> -       return kvm_mmu_memory_cache_nr_free_objects(mc);
-> +       return !!kvm_mmu_memory_cache_nr_free_objects(mc);
+5 patches with various fixes and refactoring:
+- fix for fragmented case
+- remove old code
+- fix double locking
+- hide internal function
+- refactor function
 
-This is entirely unnecessary, since conversion of any scalar type to
-bool already converts 0 to false and non-zero to true.
+Konstantin Komarov (5):
+   fs/ntfs3: Fix very fragmented case in attr_punch_hole
+   fs/ntfs3: Remove unused mi_mark_free
+   fs/ntfs3: Add new argument is_mft to ntfs_mark_rec_free
+   fs/ntfs3: Make static function attr_load_runs
+   fs/ntfs3: Fill duplicate info in ni_add_name
 
->  }
->
->  static void rmap_remove(struct kvm *kvm, u64 *spte)
-> --
-> 2.27.0
->
+  fs/ntfs3/attrib.c  | 17 ++++++++++++++---
+  fs/ntfs3/frecord.c | 32 ++++++++++++++++++++------------
+  fs/ntfs3/fsntfs.c  |  9 ++++++---
+  fs/ntfs3/inode.c   | 12 +-----------
+  fs/ntfs3/namei.c   |  2 +-
+  fs/ntfs3/ntfs_fs.h |  5 +----
+  fs/ntfs3/record.c  | 22 ----------------------
+  fs/ntfs3/super.c   |  2 +-
+  8 files changed, 44 insertions(+), 57 deletions(-)
+
+-- 
+2.37.0
+
