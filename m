@@ -2,76 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30679C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAB7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236670AbiGAKjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        id S236706AbiGAKkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbiGAKju (ORCPT
+        with ESMTP id S236621AbiGAKkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:39:50 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C061E7B377
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 03:39:49 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id d145so108469ybh.1
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 03:39:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QhSJpdElfxLJFyuRKCFkIgo8J87kpfyiNf5gNwRrRdk=;
-        b=ocasRLLt7ZDwKINnqCUl5FR0RNg3PQjS5gXEQjvHSeo7W055JZlxinK2HUcaK9w5bh
-         eSN5A/+QtNlO1aX10mlD2JbNYLvX64ZhASo914nhKidpwAtpvu4Sta1SN077iSfCpy2t
-         CkzOa6S94V0kN8rvcfmrtw6/E3rj5yp0k5AJo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QhSJpdElfxLJFyuRKCFkIgo8J87kpfyiNf5gNwRrRdk=;
-        b=tmL7M0uG6IBVm07xLpdmMAMtbp6YuRzpiEnBh70dblJO0ITXRLDj0qbyR09M+eb/k7
-         V0mvguC1Gz2Aii3iI99NnTnX/YPg7d5e/jKj2PajHLoSPeLIqjm5a2tU1aYvzpJsYpwo
-         ZDnNNc4PMap2Akp+jQzcpJCYnjjmFJEU6hCF6LoEx5FhtXYwKK2pm5JKcTqXzW0KW3zH
-         sFdFJflsOclbN+TNOzpp4hyAA9NIDcDh4/uzmq1TdHD6kjkMi8+n2RrQTFqEw/g73BBN
-         JHfAhRt9jpwWC/zA2FP6cKzKOzsQbS94eawWrsIXfCcuRnVBKe6oU+SWtYXIEV4M3dyd
-         yUzw==
-X-Gm-Message-State: AJIora8lmvCcx4YwyiDmwTXf6RXFn062F2JkwPmN14ioxlkExUTT6wsp
-        USzUocn9bpCeIXrdWYkHM9sUCNTA0l2Ju5hIynF9fQ==
-X-Google-Smtp-Source: AGRyM1vft/EQMm1oncXjofFh3jIP3Ex+EX4u97g9AM0PzBmMCHK71dtxNdvf6XCacmM+Xex1pm9BVN9k7B5IjJg8Hv8=
-X-Received: by 2002:a25:7801:0:b0:669:b51b:10d0 with SMTP id
- t1-20020a257801000000b00669b51b10d0mr15080419ybc.204.1656671988852; Fri, 01
- Jul 2022 03:39:48 -0700 (PDT)
+        Fri, 1 Jul 2022 06:40:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E62A7B34C;
+        Fri,  1 Jul 2022 03:40:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A1386246A;
+        Fri,  1 Jul 2022 10:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E35FC341C7;
+        Fri,  1 Jul 2022 10:40:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656672017;
+        bh=uLLR+kRtWhieUPAXiXI7WJc07BuUyFsorV/m6SnB2ro=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=H4Cs6tdOaHQbq6NBeGHDW8oJMgWfQrZKr88UKmhVPA38zF6l06kdM7pxgdCrECbbd
+         myobEzTNf33oFUFF2rfksAaTawhZ8XtLvQ1aV9zLGdFfErWexoJYMmn7b1kw67BG2l
+         3yuZD3KvZ9ma9xhIeKKVQXvkDVFGLlFMpfgjn5hlzqSo+ajkbNJXUzjSP2Ki0arcZc
+         tyPXpbCAtS/06frnK7nbE9sOr7yqNi/r990mlGz6zAmE/ivNPGZYziEtyULcakRNft
+         B2WPoTcF7YGX+jZqpC13sM1tZWEtxPbWIvwwuPpcfdXGljhW9SnCpqj9bYQtUvzHru
+         ZIbmb4tzPl67w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5815EE49BB8;
+        Fri,  1 Jul 2022 10:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220629155956.1138955-1-nfraprado@collabora.com> <20220629155956.1138955-20-nfraprado@collabora.com>
-In-Reply-To: <20220629155956.1138955-20-nfraprado@collabora.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Fri, 1 Jul 2022 18:39:37 +0800
-Message-ID: <CAGXv+5FEM0UNg5vCK3qF6yzhCPWDryQx0iEzhFJJEQQhpx1M-w@mail.gmail.com>
-Subject: Re: [PATCH v4 19/19] arm64: dts: mediatek: asurada: Add SPI NOR flash memory
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ethernet/marvell: fix repeated words in comments
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165667201735.26485.18435115239377915498.git-patchwork-notify@kernel.org>
+Date:   Fri, 01 Jul 2022 10:40:17 +0000
+References: <20220630054925.49173-1-yuanjilin@cdjrlc.com>
+In-Reply-To: <20220630054925.49173-1-yuanjilin@cdjrlc.com>
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>
+Cc:     mlindner@marvell.com, stephen@networkplumber.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 12:00 AM N=C3=ADcolas F. R. A. Prado
-<nfraprado@collabora.com> wrote:
->
-> Add support for the SPI NOR flash memory present on the Asurada
-> platform.
->
-> Signed-off-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collab=
-ora.com>
+Hello:
 
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 30 Jun 2022 13:49:25 +0800 you wrote:
+> Delete the redundant word 'a'.
+> 
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+> ---
+>  drivers/net/ethernet/marvell/sky2.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - ethernet/marvell: fix repeated words in comments
+    https://git.kernel.org/netdev/net-next/c/1c3997b1cdb0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
