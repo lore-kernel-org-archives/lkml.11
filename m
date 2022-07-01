@@ -2,96 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D60DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A90FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234280AbiGADpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 23:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        id S234395AbiGADrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 23:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234050AbiGADpp (ORCPT
+        with ESMTP id S234351AbiGADrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 23:45:45 -0400
-X-Greylist: delayed 509 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 20:45:44 PDT
-Received: from mail-m11874.qiye.163.com (mail-m11874.qiye.163.com [115.236.118.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C36F1F
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 20:45:44 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPV6:240e:36a:1490:a600:e4a7:e096:77dd:23b4])
-        by mail-m11874.qiye.163.com (Hmail) with ESMTPA id E674D3C02C1;
-        Fri,  1 Jul 2022 11:37:12 +0800 (CST)
-From:   Yupeng Li <liyupeng@zbhlos.com>
-To:     fweisbec@gmail.com, tglx@linutronix.de, mingo@kernel.org
-Cc:     caizp2008@163.com, linux-kernel@vger.kernel.org,
-        Yupeng Li <liyupeng@zbhlos.com>
-Subject: [PATCH 1/1] timers/nohz: fix build with CONFIG_NO_HZ_FULL warnning.
-Date:   Fri,  1 Jul 2022 11:36:47 +0800
-Message-Id: <20220701033647.911334-1-liyupeng@zbhlos.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 30 Jun 2022 23:47:09 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC552BF0
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 20:47:08 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id u199so2042129oie.0
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 20:47:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JkA08FeJ1HPIWUMmPcxvLgd72joY5bgojRJIZwDeTG8=;
+        b=JytORWl21Ha4yQ9vdhNmxGpP8g/xHKB5SStKIhVBRYA/JTy2bIfHNl969VPp9j28pR
+         lLrkOeU+ACPpdO00smm8p7vCJYGVC/tFIHcB1mWLeG9UH1fjUlUl37YDkRc27ER0iHQF
+         XeIt1h0agCslGSinWj5+pTOCmbQ8N6FdHgkmM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JkA08FeJ1HPIWUMmPcxvLgd72joY5bgojRJIZwDeTG8=;
+        b=wzII3hcqSfmPedbLbozp1iOG+WsoZaQ31S2Zv3Ss+4qg1WqgcRt1z1NuT+F/fwgRsH
+         TmLYQ5Y7jrraiwbEecKoJSoGKGMcgC/I74a/dskyBoL4obg2hgYViO/sf04+S2T0SbuC
+         eQJV92mltwHbBnWrwLfflfpAbOL0H6QyFpI+ko0w0rIlJr2XC1xWuHHvzT4lPaRjFWRT
+         okvO1OrNegFhx5/w5vccLRWwg7IHgcSvvUxua1vgA9rRpQjtO3AKslMeZh23aSpYI5G5
+         VfzLLxVG9FMM0XeIIr+riIzd2s8aqI6sSxLSrs8g1f4X+Xy5F6ZJZG9rhWN63KnZDgRU
+         Yx1g==
+X-Gm-Message-State: AJIora/8pdHGtllcUBIPpKxWD1M4W4bJ2P6XBHXsmu8F5T7PG9Ul0ET4
+        ndCs2H1k4nTlG+acrlhfJiq/jw==
+X-Google-Smtp-Source: AGRyM1ttKCiWIzqJTEca/XZV2t3Mb0HUtTNHINW3dPLSGBTo8+e387vz+HM5miYJDcvhpRheVLai3A==
+X-Received: by 2002:a05:6808:1295:b0:335:ab74:6d33 with SMTP id a21-20020a056808129500b00335ab746d33mr7173916oiw.229.1656647227463;
+        Thu, 30 Jun 2022 20:47:07 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id r16-20020a056830237000b006168bc4caacsm12205744oth.67.2022.06.30.20.47.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 20:47:07 -0700 (PDT)
+Message-ID: <01368386-521f-230b-1d49-de19377c27d1@cloudflare.com>
+Date:   Thu, 30 Jun 2022 22:47:05 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
+Content-Language: en-US
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, brauner@kernel.org,
+        paul@paul-moore.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
+References: <20220621233939.993579-1-fred@cloudflare.com>
+ <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
+ <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
+ <87v8singyt.fsf@email.froward.int.ebiederm.org>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <87v8singyt.fsf@email.froward.int.ebiederm.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSk9DVkhMSx1LHx0ZQ0NNTFUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUlPSx5BSE0aQUpPQktBGk1LS0EeTxpMQR5LQk1BTEwfH0FJSBlPWVdZFhoPEhUdFF
-        lBWU9LSFVKSktITk9VS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MVE6KQw6Sj06Qyo8TT0YAzIM
-        GRwaCg1VSlVKTU5NTU9NTUhIT01JVTMWGhIXVRcSAg4LHhUcOwEZExcUCFUYFBZFWVdZEgtZQVlJ
-        T0seQUhNGkFKT0JLQRpNS0tBHk8aTEEeS0JNQUxMHx9BSUgZT1lXWQgBWUFIS0pMNwY+
-X-HM-Tid: 0a81b7d586682eb0kusne674d3c02c1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_NO_HZ_FULL was enabled,build kernel with Section mismatch
-warnnings.Fixed this by removing the __init annotation according to
-the prompt of compilation information ,some build messages as followed:
-  GEN     .version
-  CHK     include/generated/compile.h
-  UPD     include/generated/compile.h
-  CC      init/version.o
-  AR      init/built-in.a
-  LD      vmlinux.o
-  MODPOST vmlinux.symvers
-WARNING: modpost: vmlinux.o(___ksymtab_gpl+tick_nohz_full_setup+0x0): Section mismatch in reference from the variable __ksymtab_tick_nohz_full_setup to the function .init.text:tick_nohz_full_setup()
-The symbol tick_nohz_full_setup is exported and annotated __init
-Fix this by removing the __init annotation of tick_nohz_full_setup or drop the export.
+On 6/30/22 1:28 PM, Eric W. Biederman wrote:
+> Frederick Lawler <fred@cloudflare.com> writes:
+> 
+>> Hi Casey,
+>>
+>> On 6/21/22 7:19 PM, Casey Schaufler wrote:
+>>> On 6/21/2022 4:39 PM, Frederick Lawler wrote:
+>>>> While creating a LSM BPF MAC policy to block user namespace creation, we
+>>>> used the LSM cred_prepare hook because that is the closest hook to prevent
+>>>> a call to create_user_ns().
+>>>>
+>>>> The calls look something like this:
+>>>>
+>>>>       cred = prepare_creds()
+>>>>           security_prepare_creds()
+>>>>               call_int_hook(cred_prepare, ...
+>>>>       if (cred)
+>>>>           create_user_ns(cred)
+>>>>
+>>>> We noticed that error codes were not propagated from this hook and
+>>>> introduced a patch [1] to propagate those errors.
+>>>>
+>>>> The discussion notes that security_prepare_creds()
+>>>> is not appropriate for MAC policies, and instead the hook is
+>>>> meant for LSM authors to prepare credentials for mutation. [2]
+>>>>
+>>>> Ultimately, we concluded that a better course of action is to introduce
+>>>> a new security hook for LSM authors. [3]
+>>>>
+>>>> This patch set first introduces a new security_create_user_ns() function
+>>>> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
+>>> Why restrict this hook to user namespaces? It seems that an LSM that
+>>> chooses to preform controls on user namespaces may want to do so for
+>>> network namespaces as well.
+>> IIRC, CLONE_NEWUSER is the only namespace flag that does not require
+>> CAP_SYS_ADMIN. There is a security use case to prevent this namespace
+>> from being created within an unprivileged environment. I'm not opposed to a more
+>> generic hook, but I don't currently have a use case to block any others. We can
+>> also say the same is true for the other namespaces: add this generic security
+>> function to these too.
+> 
+> There is also a very strong security use case for not putting security
+> checks in the creation of the user namespace.
+> 
+> In particular there are all kinds of kernel features that are useful for
+> building sandboxes namespaces, chroot, etc, that previous to user
+> namespaces were not possible to make available to unprivileged users
+> because they could confuse suid-root executables.  With user namespaces
+> the concern about confusing suid-root executable goes away.
+> 
+> The only justification I have ever heard for restricting the user
+> namespace is because it indirectly allows for greater kernel attack
+> surface.
+> 
+> Do you have a case for restricting the user namespace other than the
+> kernel is buggy and the user namespace makes the kernel bugs easier
+> to access?
 
-  MODINFO modules.builtin.modinfo
-  GEN     modules.builtin
-  LD      .tmp_vmlinux.kallsyms1
+No.
 
-Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-Reviewed-by: Caicai <caizp2008@163.com>
----
- include/linux/tick.h     | 2 +-
- kernel/time/tick-sched.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> How does increasing the attack surface of the kernel make the situation
+> that the kernel is buggy and the attack surface is too big better?
+> 
 
-diff --git a/include/linux/tick.h b/include/linux/tick.h
-index bfd571f18cfd..63fe21c6a55c 100644
---- a/include/linux/tick.h
-+++ b/include/linux/tick.h
-@@ -272,7 +272,7 @@ static inline void tick_dep_clear_signal(struct signal_struct *signal,
- 
- extern void tick_nohz_full_kick_cpu(int cpu);
- extern void __tick_nohz_task_switch(void);
--extern void __init tick_nohz_full_setup(cpumask_var_t cpumask);
-+extern void tick_nohz_full_setup(cpumask_var_t cpumask);
- #else
- static inline bool tick_nohz_full_enabled(void) { return false; }
- static inline bool tick_nohz_full_cpu(int cpu) { return false; }
-diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 58a11f859ac7..f8641c66f0d8 100644
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -520,7 +520,7 @@ void __tick_nohz_task_switch(void)
- }
- 
- /* Get the boot-time nohz CPU list from the kernel parameters. */
--void __init tick_nohz_full_setup(cpumask_var_t cpumask)
-+void tick_nohz_full_setup(cpumask_var_t cpumask)
- {
- 	alloc_bootmem_cpumask_var(&tick_nohz_full_mask);
- 	cpumask_copy(tick_nohz_full_mask, cpumask);
--- 
-2.34.1
+We agree that completely blocking this feature may disable effective 
+sandboxing techniques, but uncontrolled user namespace creation 
+increases the attack surface as well. There are known examples where 
+creating a new namespace is the first step in a priv escalation attack.
+
+> Perhaps it is explained somewhere down-thread and I just have not caught
+> up yet, but so far I have not see a description of why it makes sense
+> for a security module to restrict the kernel here.
+> 
+
+Having a new security hook allows us to decide when unpriv user 
+namespace creation is acceptable and unacceptable. Patching 
+vulnerabilities takes time and effort amongst the community. We want to 
+protect our systems so that we are not as impacted by the next 0-day 
+disclosure. This in turn decreases our overall attack surface.
+
+Security hooks are a good fit because they offer us flexibility to 
+protect our systems how we see fit.
+
+> Eric
+> 
+> p.s.  I am little disappointed that I was not copied on this thread
+> given that it is my code you are messing with, and I was in an earlier
+> version of this thread.
 
