@@ -2,102 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 832CAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D308CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236545AbiGAKiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
+        id S232297AbiGAKjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236585AbiGAKik (ORCPT
+        with ESMTP id S236649AbiGAKjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:38:40 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE72510FE;
-        Fri,  1 Jul 2022 03:38:34 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id d17so2566967wrc.10;
-        Fri, 01 Jul 2022 03:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mgt/Z2s/iXV2JOEmbfj5qncD2GVhoZ1LXkNgUe37ArQ=;
-        b=Lvuh3KWqnrKuz3tjEnNResZ3siQ7nP5M0v0SFvi+8mPNeEu9wFjHfSb4Qnj0ntYN2m
-         YW6yFQc/IXk6LDQK+YW8Xo+F6UCoDpNunCB+oz0OKzwCloYULdBcOZlIXcW81loD95Ml
-         1LNdo587zrHpb09dSeushL/A78+2EBOTyiXLmC8/c/cgDLK1ntF1C+vZfDDJyEZpdl6B
-         x2m9e3zJxjfE6jVeQANJVxVk9OnT286lRIcoWbk0CXaqWvkylJGOVgVRyTnLm15KJMdh
-         hJ9e9mN04s5/pdNAat+Pbu0I9Cwfa+aXvBTZbDNo6K9CjPbWprLFYsQxQcmeCSne66QP
-         QcyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mgt/Z2s/iXV2JOEmbfj5qncD2GVhoZ1LXkNgUe37ArQ=;
-        b=YKMVrY3TsRcWkT0P1olVlORLOYxsrx5FxhSyLDpMFK9vlvjJN4z42S6mhM6kiL3oLo
-         kdrOCxMkZBr3Z/PVWlENo/IGfKAJNST7iacJShNt6Bl9hfFNnHnpq/T5RDuZDyB9ahcG
-         2BKx2/m4166fCKlsmiAzWoXGxQAEOOv/aUziK6GSqp5Pd/luD0+DhQAKojt1W7nXoAbT
-         KwOKd6nyw3N+INtSIHD+CCH/BFtDoeHoO3LoaysjVLO8+k6mhTYQ2iRO3MaxeJj7dVGq
-         akbLFpKibiD1vhkXvlhlwEgUxZA2k4nim0mQqLz7HrI0jCLF1b1bh+cV9KNE1QmSF/9S
-         0Low==
-X-Gm-Message-State: AJIora+YpSjPgTrAS5DzpnnMdDOcnqh7sI7lOz2CXz6O7NhFowEeDgWV
-        u3f4GL1kXVetNN4mL1McWgg=
-X-Google-Smtp-Source: AGRyM1tVN5pAoe7/cFBqlOUIe8qIQWckGaWJ7gpvfcpHr15uDNm6k/waW3Vqh7xiF6N0vpXRspj2jQ==
-X-Received: by 2002:a05:6000:1a89:b0:21b:83a9:aa6f with SMTP id f9-20020a0560001a8900b0021b83a9aa6fmr13377146wry.33.1656671912874;
-        Fri, 01 Jul 2022 03:38:32 -0700 (PDT)
-Received: from debian ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id f7-20020a05600c4e8700b003a17ab4e7c8sm7335322wmq.39.2022.07.01.03.38.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 03:38:32 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 11:38:30 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/49] 4.19.250-rc1 review
-Message-ID: <Yr7OpkhYKMKTlapx@debian>
-References: <20220630133233.910803744@linuxfoundation.org>
+        Fri, 1 Jul 2022 06:39:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F009D7B363;
+        Fri,  1 Jul 2022 03:39:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96CB5B82F5C;
+        Fri,  1 Jul 2022 10:39:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49CEBC3411E;
+        Fri,  1 Jul 2022 10:38:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656671940;
+        bh=T0XBeDYljbRFmQyINnaCOdDR8jU5Y5HNwbtK/xZuj9g=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Mf2WP2dI5ypSyV8u1nmWowrJ2uhtBjF8ww25aIqzj5blp3T6WNm1K8Cl/zfH6kMoo
+         x3nwNVG6R+MnI3oZjIQ9V7cLgXcbg3Vk9y5O2H4LMv5IheVA9VKApz9eDaDTNI/QS2
+         Frkft1NZGJ2LHtREQf57Hp1yNDO0tHBnVXAFZIhzsGHvdqtAb7CqEQ9Gq/BcLXQ3O0
+         /Rq8r9fWS0hBzT6rFuvyx5U2Xea4AxRVQALg+fU0vIHo6x/pHXCLy8U7H0jRzkrpPD
+         cgvvlpbReWlyeJNhfnWzcYfFMqS17qIa5pVW4A/bjygNx0hDhIYLWBRWpyGnKibDus
+         nHli1VhQ4rS+w==
+Message-ID: <30a4bd0e19626f5fb30f19f0ae70fba2debb361a.camel@kernel.org>
+Subject: Re: [PATCH 1/2] netfs: release the folio lock and put the folio
+ before retrying
+From:   Jeff Layton <jlayton@kernel.org>
+To:     xiubli@redhat.com, idryomov@gmail.com, dhowells@redhat.com
+Cc:     vshankar@redhat.com, linux-kernel@vger.kernel.org,
+        ceph-devel@vger.kernel.org, willy@infradead.org,
+        keescook@chromium.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com
+Date:   Fri, 01 Jul 2022 06:38:57 -0400
+In-Reply-To: <20220701022947.10716-2-xiubli@redhat.com>
+References: <20220701022947.10716-1-xiubli@redhat.com>
+         <20220701022947.10716-2-xiubli@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630133233.910803744@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Fri, 2022-07-01 at 10:29 +0800, xiubli@redhat.com wrote:
+> From: Xiubo Li <xiubli@redhat.com>
+>=20
+> The lower layer filesystem should always make sure the folio is
+> locked and do the unlock and put the folio in netfs layer.
+>=20
+> URL: https://tracker.ceph.com/issues/56423
+> Signed-off-by: Xiubo Li <xiubli@redhat.com>
+> ---
+>  fs/netfs/buffered_read.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/fs/netfs/buffered_read.c b/fs/netfs/buffered_read.c
+> index 42f892c5712e..257fd37c2461 100644
+> --- a/fs/netfs/buffered_read.c
+> +++ b/fs/netfs/buffered_read.c
+> @@ -351,8 +351,11 @@ int netfs_write_begin(struct netfs_inode *ctx,
+>  		ret =3D ctx->ops->check_write_begin(file, pos, len, folio, _fsdata);
+>  		if (ret < 0) {
+>  			trace_netfs_failure(NULL, NULL, ret, netfs_fail_check_write_begin);
+> -			if (ret =3D=3D -EAGAIN)
+> +			if (ret =3D=3D -EAGAIN) {
+> +				folio_unlock(folio);
+> +				folio_put(folio);
+>  				goto retry;
+> +			}
+>  			goto error;
+>  		}
+>  	}
 
-On Thu, Jun 30, 2022 at 03:46:13PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.250 release.
-> There are 49 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
+I don't know here... I think it might be better to just expect that when
+this function returns an error that the folio has already been unlocked.
+Doing it this way will mean that you will lock and unlock the folio a
+second time for no reason.
 
-Build test (gcc version 11.3.1 20220627):
-mips: 63 configs -> no  failure
-arm: 115 configs -> no failure
-arm64: 2 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-powerpc allmodconfig -> no failure
-riscv allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
+Maybe something like this instead?
 
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
+diff --git a/fs/netfs/buffered_read.c b/fs/netfs/buffered_read.c
+index 42f892c5712e..8ae7b0f4c909 100644
+--- a/fs/netfs/buffered_read.c
++++ b/fs/netfs/buffered_read.c
+@@ -353,7 +353,7 @@ int netfs_write_begin(struct netfs_inode *ctx,
+                        trace_netfs_failure(NULL, NULL, ret, netfs_fail_che=
+ck_write_begin);
+                        if (ret =3D=3D -EAGAIN)
+                                goto retry;
+-                       goto error;
++                       goto error_unlocked;
+                }
+        }
+=20
+@@ -418,6 +418,7 @@ int netfs_write_begin(struct netfs_inode *ctx,
+ error:
+        folio_unlock(folio);
+        folio_put(folio);
++error_unlocked:
+        _leave(" =3D %d", ret);
+        return ret;
+ }
 
-[1]. https://openqa.qa.codethink.co.uk/tests/1428
-
-
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-
---
-Regards
-Sudip
