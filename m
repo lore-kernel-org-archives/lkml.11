@@ -2,71 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2734EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233482AbiGAOiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56292 "EHLO
+        id S232716AbiGAOjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbiGAOhz (ORCPT
+        with ESMTP id S233276AbiGAOio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:37:55 -0400
-Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB61396BD;
-        Fri,  1 Jul 2022 07:34:10 -0700 (PDT)
-Received: from violet.fr.zoreil.com ([127.0.0.1])
-        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 261EXTCu876807;
-        Fri, 1 Jul 2022 16:33:29 +0200
-DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 261EXTCu876807
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
-        s=v20220413; t=1656686009;
-        bh=66Ql3pAlEnCDWDBK1KpaLaZ5id556xQAtLfeDM/YJ94=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kIun5lHtXquqsIs+UbvVm13eUHAzHVhXUPGck47CMbaE5risqntEzYY3HeJwMxvTj
-         7DGOFgvFCI5x3wSAL22s+JS3gl5ip/s8590PVe3OgiLpYl+8MlnJq95HcAv8cGkh4/
-         s7d+uBbJRmesAUkOCppcLmJru8KByK/iAiTjhdr4=
-Received: (from romieu@localhost)
-        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 261EXS9v876806;
-        Fri, 1 Jul 2022 16:33:28 +0200
-Date:   Fri, 1 Jul 2022 16:33:28 +0200
-From:   Francois Romieu <romieu@fr.zoreil.com>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     irusskikh@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: atlantic: fix potential memory leak in
- aq_ndev_close()
-Message-ID: <Yr8FuKXVD83AW+u+@electric-eye.fr.zoreil.com>
-References: <20220701065253.2183789-1-niejianglei2021@163.com>
+        Fri, 1 Jul 2022 10:38:44 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C8656D56F;
+        Fri,  1 Jul 2022 07:36:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 89713113E;
+        Fri,  1 Jul 2022 07:36:19 -0700 (PDT)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 03FFE3F792;
+        Fri,  1 Jul 2022 07:36:17 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 15:36:14 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     herbert@gondor.apana.org.au, hch@lst.de, heiko@sntech.de,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: Re: [RFC PATCH] crypto: flush poison data
+Message-ID: <20220701153614.0a576f9c@donnerap.cambridge.arm.com>
+In-Reply-To: <20220701132735.1594822-1-clabbe@baylibre.com>
+References: <20220701132735.1594822-1-clabbe@baylibre.com>
+Organization: ARM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701065253.2183789-1-niejianglei2021@163.com>
-X-Organisation: Land of Sunshine Inc.
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jianglei Nie <niejianglei2021@163.com> :
-> If aq_nic_stop() fails, aq_ndev_close() returns err without calling
-> aq_nic_deinit() to release the relevant memory and resource, which
-> will lead to a memory leak.
+On Fri,  1 Jul 2022 13:27:35 +0000
+Corentin Labbe <clabbe@baylibre.com> wrote:
+
+Hi,
+
+> On my Allwinner D1 nezha, the sun8i-ce fail self-tests due to:
+> alg: skcipher: cbc-des3-sun8i-ce encryption overran dst buffer on test vector 0
 > 
-> We can fix it by deleting the if condition judgment and goto statement to
-> call aq_nic_deinit() directly after aq_nic_stop() to fix the memory leak.
+> In fact the buffer is not overran by device but by the dma_map_single() operation.
 > 
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> To prevent any corruption of the poisoned data, simply flush them before
+> giving the buffer to the tested driver.
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+> 
+> Hello
+> 
+> I put this patch as RFC, since this behavour happen only on non yet merged RISCV code.
+> (Mostly riscv: implement Zicbom-based CMO instructions + the t-head variant)
+> 
+> Regards
+> 
+>  crypto/testmgr.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+> index c59bd9e07978..187163e2e593 100644
+> --- a/crypto/testmgr.c
+> +++ b/crypto/testmgr.c
+> @@ -19,6 +19,7 @@
+>  #include <crypto/aead.h>
+>  #include <crypto/hash.h>
+>  #include <crypto/skcipher.h>
+> +#include <linux/cacheflush.h>
+>  #include <linux/err.h>
+>  #include <linux/fips.h>
+>  #include <linux/module.h>
+> @@ -205,6 +206,8 @@ static void testmgr_free_buf(char *buf[XBUFSIZE])
+>  static inline void testmgr_poison(void *addr, size_t len)
+>  {
+>  	memset(addr, TESTMGR_POISON_BYTE, len);
+> +	/* Be sure data is written to prevent corruption from some DMA sync */
+> +	flush_icache_range((unsigned long)addr, (unsigned long)addr + len);
 
-Either (1) the hardware is stopped and the relevance of error returning
-aq_nic_stop is dubious at best or (2) the hardware is not stopped and
-it may not be safe to remove its kernel allocated resources behind its
-back.
+As Ben already mentioned, this looks like having nothing to do with the I
+cache. I guess you picked that because it does the required cache cleaning
+and doesn't require a vma parameter?
 
-There is a problem but this patch is imho targeting the symptom.
+But more importantly: I think drivers shouldn't do explicit cache
+maintenance, this is what the DMA API is for.
+So if you get DMA corruption, then this points to some flaw in the DMA API
+usage: either the buffer belongs to the CPU, then the device must not write
+to it. Or the buffer belongs to the device, then the CPU cannot expect to
+write to that without that data potentially getting corrupted.
 
-A knowledgeable answer to (1), (2) could also help to avoid the
-dev_{close/open} danse in drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c.
+So can you check if that's the case?
 
--- 
-Ueimor
+Cheers,
+Andre
+
+>  }
+>  
+>  /* Is the memory region still fully poisoned? */
+
