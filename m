@@ -2,124 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0221EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 679D4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiGAOSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
+        id S231537AbiGAOV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiGAOSh (ORCPT
+        with ESMTP id S229570AbiGAOV4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:18:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CBBD20F66
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:18:36 -0700 (PDT)
+        Fri, 1 Jul 2022 10:21:56 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0890521E1E
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:21:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656685116; x=1688221116;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3wzRj5NJlP7HHnjC6iFDXafrek+CylxTqxEu0SV+jSg=;
-  b=ndXczQIDv0NZZc0FYSEp32hpp2ZlvZT2BB+gastW3hDrait9REH0Dwsb
-   +InTBM8GASbuSd9US7GT2JeZTVfAYZpu4dNd9yvKLypbAOQN4fFef6a/Q
-   B9R2TEAbdGoJGEZJHDYA0zPk/Zwy4ZmKvnrHQdmapIfIvKETndzzGt/J/
-   a+ZLH4dbKsjV+8ysRcLrJ0zRSrCs7cfpli8nROOLM1RFqBtqYW4sBsDPb
-   UoslKGdZUwn8CwmsCFIoGbBvzZkindagMYOgmCDW7wvP1pncyggK2hgPE
-   be6y54V50u5EwYiAmx/urD9QJhlkncR9U/I4T/w+CvXKoEBKOgpmyncuS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="368981607"
+  t=1656685316; x=1688221316;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lUrti5DzUcLoSfCzCbzJ7wtawMRCS/X3VGtpsrE0y0M=;
+  b=ip+S/09bIpf6lcMNQDDv5uEab/kHMaPcFysvSv8pEfxlO7T6Ihz0u7uG
+   ATu/3KJ8e+vstmwyI3Wbi2XMIa3YZ8lhuQBgU9c7rzXBtXXKJrxzUlA+9
+   bY8EOkQsbpEvz7wMFFc/qZF/ic5rdsgi3HyXOlBjoRFJqXetCAPsWDfiw
+   fEWrwmN0GUopzb/RROtX5a9EnIpbTvdxMkBAiSLhLsqryb2GyE8AfHCfD
+   e+s9Hx3uaHBti/Bq9dswj53+zEHdtKa6J9M+hwTYOmXUiJNHt2Bhk9Hfu
+   AexrqP2hJXAT+Q0KOsdrZ/lt3xOOtmJEd52waeFHqNYp+Z6HJt8RqwDIz
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="281425251"
 X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="368981607"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 07:18:36 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="281425251"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 07:21:55 -0700
 X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="838058898"
-Received: from brentlu-brix.itwn.intel.com ([10.5.253.25])
-  by fmsmga006.fm.intel.com with ESMTP; 01 Jul 2022 07:18:33 -0700
-From:   Brent Lu <brent.lu@intel.com>
-To:     alsa-devel@alsa-project.org
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Brent Lu <brent.lu@intel.com>,
-        Yong Zhi <yong.zhi@intel.com>,
-        Ajye Huang <ajye.huang@gmail.com>,
-        Mac Chiang <mac.chiang@intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ASoC: Intel: sof_rt5682: fix out-of-bounds array access
-Date:   Fri,  1 Jul 2022 22:15:17 +0800
-Message-Id: <20220701141517.264070-1-brent.lu@intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="694523981"
+Received: from nkamathe-mobl.amr.corp.intel.com (HELO [10.209.98.74]) ([10.209.98.74])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 07:21:55 -0700
+Message-ID: <e333c40a-13da-8def-56db-9b61ef46e296@intel.com>
+Date:   Fri, 1 Jul 2022 07:20:28 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] x86/split_lock: Enable the split lock detect feature on
+ Raptor Lake P and Alder Lake N CPUs
+Content-Language: en-US
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Tony Luck <tony.luck@intel.com>
+Cc:     x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220701131958.687066-1-fenghua.yu@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220701131958.687066-1-fenghua.yu@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Starting from ADL platform we have four HDMI PCM devices which exceeds
-the size of sof_hdmi array. Since each sof_hdmi_pcm structure
-represents one HDMI PCM device, we remove the sof_hdmi array and add a
-new member hdmi_jack to the sof_hdmi_pcm structure to fix the
-out-of-bounds problem.
+On 7/1/22 06:19, Fenghua Yu wrote:
+> These CPU models support the split lock detect feature. Add them to
+> the x86_cpu_ids match table.
 
-Signed-off-by: Brent Lu <brent.lu@intel.com>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
----
- sound/soc/intel/boards/sof_rt5682.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
-
-diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
-index a24fb71d5ff3..1384716c6360 100644
---- a/sound/soc/intel/boards/sof_rt5682.c
-+++ b/sound/soc/intel/boards/sof_rt5682.c
-@@ -69,11 +69,10 @@ static unsigned long sof_rt5682_quirk = SOF_RT5682_MCLK_EN |
- 
- static int is_legacy_cpu;
- 
--static struct snd_soc_jack sof_hdmi[3];
--
- struct sof_hdmi_pcm {
- 	struct list_head head;
- 	struct snd_soc_dai *codec_dai;
-+	struct snd_soc_jack hdmi_jack;
- 	int device;
- };
- 
-@@ -447,7 +446,6 @@ static int sof_card_late_probe(struct snd_soc_card *card)
- 	char jack_name[NAME_SIZE];
- 	struct sof_hdmi_pcm *pcm;
- 	int err;
--	int i = 0;
- 
- 	/* HDMI is not supported by SOF on Baytrail/CherryTrail */
- 	if (is_legacy_cpu || !ctx->idisp_codec)
-@@ -468,17 +466,15 @@ static int sof_card_late_probe(struct snd_soc_card *card)
- 		snprintf(jack_name, sizeof(jack_name),
- 			 "HDMI/DP, pcm=%d Jack", pcm->device);
- 		err = snd_soc_card_jack_new(card, jack_name,
--					    SND_JACK_AVOUT, &sof_hdmi[i]);
-+					    SND_JACK_AVOUT, &pcm->hdmi_jack);
- 
- 		if (err)
- 			return err;
- 
- 		err = hdac_hdmi_jack_init(pcm->codec_dai, pcm->device,
--					  &sof_hdmi[i]);
-+					  &pcm->hdmi_jack);
- 		if (err < 0)
- 			return err;
--
--		i++;
- 	}
- 
- 	if (sof_rt5682_quirk & SOF_MAX98373_SPEAKER_AMP_PRESENT) {
--- 
-2.25.1
-
+When is there going to be architectural detection for this feature?  Or,
+is the plan to just keep adding CPUs to this table as they are available.
