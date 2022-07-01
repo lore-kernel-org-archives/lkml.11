@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 18:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC695C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 18:53:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbiGASxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 14:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
+        id S231596AbiGASxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 14:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231381AbiGASxP (ORCPT
+        with ESMTP id S231529AbiGASxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 14:53:15 -0400
+        Fri, 1 Jul 2022 14:53:17 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F208111455
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 11:53:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E8D813E89
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 11:53:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656701593;
+        s=mimecast20190719; t=1656701595;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=h/eGVHzjhye4tUiS8VCyJS+YtTUEyz7/sK1IBUUWWhM=;
-        b=gofCx+Z4pLFmQ7yLPqU9uoQ92xbabBlgKGhj8n8DuaBQGlvnQJaJgArRUyFQL6gIR6Z5To
-        oYQrCTzfID+YrtsyRfD/SfPH4boEbi1lc26fiGi/tqizkDIbGsacNI7DZRNbsksbOpUyKB
-        5NU6KgqtibhcIy+hGw2DWL+2DQFK78M=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=CdygpZqh9NvpmiEiKhKOinbjqxdLDChD2fJR1JgBJ3I=;
+        b=ZLagBYIKyTnbPlMB7tlGB+Uwh1gVy5Uick81k6G1kQ/SsEDaLoIT75Ur35EGOinYqwldYX
+        YftPgWtYuf5IxNvQ1TRzn26uudIqQXRmxeImLLGTkGF12q1XjGbtfGQGBIzIgn+/nRP1KW
+        rLjMvNWcc4GQd5yQ5Uj8jEK/BzJXLvk=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-yKMdK10gPBCNqhmvPAK18w-1; Fri, 01 Jul 2022 14:53:11 -0400
-X-MC-Unique: yKMdK10gPBCNqhmvPAK18w-1
-Received: by mail-ed1-f70.google.com with SMTP id w22-20020a05640234d600b00435ba41dbaaso2294902edc.12
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 11:53:11 -0700 (PDT)
+ us-mta-583-UprX4n0fMJqriqnQJ3juNA-1; Fri, 01 Jul 2022 14:53:14 -0400
+X-MC-Unique: UprX4n0fMJqriqnQJ3juNA-1
+Received: by mail-ed1-f72.google.com with SMTP id y18-20020a056402441200b0043564cdf765so2304708eda.11
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 11:53:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h/eGVHzjhye4tUiS8VCyJS+YtTUEyz7/sK1IBUUWWhM=;
-        b=5TjIk/f4d1uXhl55zyDAq95ti37BwW+/YcepNFXls2QVcHgMn0MXY0N8k3bIW0lAWE
-         f+Y8g38n7bzl2GIjnwmJMvISVvO9IurHb1AVRIzUvbRggeeW8/YjR8DW0KHdRjhYVDZ9
-         NqnyP66V1HnIZyKTEVYNLClhKU1KpvPWN8han1dgeJclvx8i291W5DvYF8ToAASz9XAv
-         CTb0Sq8aGy5ZqUd7JmQlGRTXzSlf8nsRlB/cGXFSLIEniLpwnNkb4wtEaFVNKUQPjkse
-         coqKtgWRe1vcWpS+KvTcEn9uzCy9fBwAyq/QD9osN+W2bB1L4VQq60CDDoNdqcXsWC3w
-         DobQ==
-X-Gm-Message-State: AJIora867kPEa5j1zrjy+CDFBXizE68PEGCV4PUBXIs0kOGuj1d8pEJh
-        NkquKq6Fek7cPp8tpEmND4BSOdSYS4L2Ohd6x1Mr7FFzYh4xA6kRan7RvB0K8bKnAu+7DK0IR7m
-        uwqC7RpU/2tqkRvVkcOqkQ16m
-X-Received: by 2002:a17:907:9488:b0:722:e5c8:c647 with SMTP id dm8-20020a170907948800b00722e5c8c647mr15451432ejc.291.1656701590532;
-        Fri, 01 Jul 2022 11:53:10 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1twrosMg5ykAMCjALhx0tb7xsAbjXTCVpYQRYG7l64S4JJBJdRhEr/kbxeM0Y3ZOyHI+W5ZJQ==
-X-Received: by 2002:a17:907:9488:b0:722:e5c8:c647 with SMTP id dm8-20020a170907948800b00722e5c8c647mr15451417ejc.291.1656701590372;
-        Fri, 01 Jul 2022 11:53:10 -0700 (PDT)
+        bh=CdygpZqh9NvpmiEiKhKOinbjqxdLDChD2fJR1JgBJ3I=;
+        b=q8Qh4u7092cI57HUenkAFzaOrmltutHd4svrLZcRgoYYClLHxatwi4WEaNvQcTcGQP
+         RYnmcNkHfTBJvpnFvI3EpReGby/iEjOEqtBLkGuVhdENejpYqa1Wbks0sOyXIOSFPVWo
+         qpamCd7J9QLrzTjJXhvhvFjhDUW59fRCNGnRPPMYkqs53ifLl5ZnP65K1r8OI8pkH9x/
+         iWnRJgSPffvfNsgDAHq4fpLtdGiV5TDDrg9tXJd5AHZirxV/UUdS+qIshHK0KAFZZjkW
+         choqI6SfME1jM8iRruaaHzeDQgJliH7XxoUikU03gji/uQOXuKkdCnYXgVvYgXBy1uoh
+         3Aow==
+X-Gm-Message-State: AJIora/+P9Qk1NEfuqP5gWvScxd0ymjZveHdARlw8I5JhYwA/K8Sxmz4
+        YM6KC/yOparmgFNXjtquX0kEn0EikWWjjfL+iwZX3wgyMEhebnp0TPTXlf9Eb+G0IUcufz1bg3c
+        7M8ub0SvWo1Mc/M+aV2DLx/Su
+X-Received: by 2002:a17:907:1c11:b0:726:851e:179e with SMTP id nc17-20020a1709071c1100b00726851e179emr16035593ejc.39.1656701593200;
+        Fri, 01 Jul 2022 11:53:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s0Fdu/TsECHntNJrudLVig+OOZhMwqESCp2Ml9dWHu45h34F9jhd9i+N3vVzxtmd/q3deigw==
+X-Received: by 2002:a17:907:1c11:b0:726:851e:179e with SMTP id nc17-20020a1709071c1100b00726851e179emr16035577ejc.39.1656701593048;
+        Fri, 01 Jul 2022 11:53:13 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id cb25-20020a0564020b7900b004359dafe822sm15406658edb.29.2022.07.01.11.53.09
+        by smtp.gmail.com with ESMTPSA id cb25-20020a0564020b7900b004359dafe822sm15406658edb.29.2022.07.01.11.53.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 11:53:10 -0700 (PDT)
+        Fri, 01 Jul 2022 11:53:12 -0700 (PDT)
 From:   dakr@redhat.com
 To:     airlied@linux.ie, daniel@ffwll.ch, christian.koenig@amd.com,
         emma@anholt.net
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH 01/10] drm/amdgpu: use idr_init_base() to initialize mgr->ctx_handles
-Date:   Fri,  1 Jul 2022 20:52:54 +0200
-Message-Id: <20220701185303.284082-2-dakr@redhat.com>
+Subject: [PATCH 03/10] drm: use idr_init_base() to initialize master->magic_map
+Date:   Fri,  1 Jul 2022 20:52:56 +0200
+Message-Id: <20220701185303.284082-4-dakr@redhat.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220701185303.284082-1-dakr@redhat.com>
 References: <20220701185303.284082-1-dakr@redhat.com>
@@ -78,27 +78,27 @@ idr_init_base(), implemented by commit 6ce711f27500 ("idr: Make 1-based
 IDRs more efficient"), let us set an arbitrary base other than
 idr_init(), which uses base 0.
 
-Since, for this IDR, no ID < 1 is ever requested, using
+Since, for this IDR, no ID < 1 is ever requested/allocated, using
 idr_init_base(&idr, 1) avoids unnecessary tree walks.
 
 Signed-off-by: Danilo Krummrich <dakr@redhat.com>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c | 2 +-
+ drivers/gpu/drm/drm_auth.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
-index 7dc92ef36b2b..cc87c3809a8d 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
-@@ -841,7 +841,7 @@ void amdgpu_ctx_mgr_init(struct amdgpu_ctx_mgr *mgr,
+diff --git a/drivers/gpu/drm/drm_auth.c b/drivers/gpu/drm/drm_auth.c
+index 6e433d465f41..63395bebaa6b 100644
+--- a/drivers/gpu/drm/drm_auth.c
++++ b/drivers/gpu/drm/drm_auth.c
+@@ -140,7 +140,7 @@ struct drm_master *drm_master_create(struct drm_device *dev)
  
- 	mgr->adev = adev;
- 	mutex_init(&mgr->lock);
--	idr_init(&mgr->ctx_handles);
-+	idr_init_base(&mgr->ctx_handles, 1);
+ 	kref_init(&master->refcount);
+ 	drm_master_legacy_init(master);
+-	idr_init(&master->magic_map);
++	idr_init_base(&master->magic_map, 1);
+ 	master->dev = dev;
  
- 	for (i = 0; i < AMDGPU_HW_IP_NUM; ++i)
- 		atomic64_set(&mgr->time_spend[i], 0);
+ 	/* initialize the tree of output resource lessees */
 -- 
 2.36.1
 
