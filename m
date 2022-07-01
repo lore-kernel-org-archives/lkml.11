@@ -2,89 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 879E2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 00:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039FDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 00:00:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231551AbiGAAAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 20:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
+        id S232252AbiGAAAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 20:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiGAAAH (ORCPT
+        with ESMTP id S231553AbiGAAAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 20:00:07 -0400
-Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7644E11C10;
-        Thu, 30 Jun 2022 17:00:06 -0700 (PDT)
-Received: by mail-il1-f182.google.com with SMTP id a16so415152ilr.6;
-        Thu, 30 Jun 2022 17:00:06 -0700 (PDT)
+        Thu, 30 Jun 2022 20:00:33 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986425A2FA
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 17:00:28 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id z191so773914iof.6
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 17:00:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PAlUtN7SL9XFXUbrECixMis635HqzUUk73c0sMI7wYQ=;
+        b=DfCQu91v2qJm2MCzhcjWTkOT0huxiIQlwiVZG5YzaTebf7Tsp0l6inrI7eLwxnLfcp
+         JlzvwikYppEaqvHZ8OOKoLOWlA48NEpZU1qT350aXgMNMAFcKQvJfm7Vsp8vgzUsVNdq
+         0A0/687El+GnlHIf6Kt3F4csRQPHJQcE3kIwU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=alaOAxac/whasDo+F0SLlYnMNG4UT3+tKraIB0ld9sU=;
-        b=Ql3cb4M4tybaqP04CQxWCBkvqnLHG01UdySK60y1AaJex/I/Zrj1SyHMVZ2MCnBXBY
-         05iZeY9TIcxENYsWTOUl1WxH0dIhbjVsFC+78lU4ZvIjxWHGaNm1fglD6kW1shUtK+83
-         AZAADw0OH1beqL+XIZqjwGDjxnFf8NSiUnbSxB+sPCKPp1VSWLQzhXp/oEHTmQo6Pk0V
-         HwW9AZhPde0RqQRuzMK7QN+m3o8iDXh5qLbs6Ef+dJByXonoGFdqOlKXSE9j7VwbTkAA
-         LPWEUsj+8poWphVpmqel1Sj/hymu7jQpmbys/pIq6cQWVsxwE0tLcMdgSwG0Xmjpk1jZ
-         5YjQ==
-X-Gm-Message-State: AJIora/7C0P6m1VrI0cSIbNw4bcUW/r2SKsVvu+JxKXrPgrzu+yepauY
-        8UyL4cXZFcT0sUWbzuJ49w==
-X-Google-Smtp-Source: AGRyM1upbMkLP2rl+RR+ByeAK0sVONUQtA5X3aak4lRl3y0M9b4b1+XGOebPSYcQAoIu79d6FWPifw==
-X-Received: by 2002:a05:6e02:154a:b0:2da:8a02:bcba with SMTP id j10-20020a056e02154a00b002da8a02bcbamr6797198ilu.167.1656633605730;
-        Thu, 30 Jun 2022 17:00:05 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id q1-20020a02a981000000b0032b3a78178bsm9124749jam.79.2022.06.30.17.00.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 17:00:05 -0700 (PDT)
-Received: (nullmailer pid 3585421 invoked by uid 1000);
-        Fri, 01 Jul 2022 00:00:01 -0000
-Date:   Thu, 30 Jun 2022 18:00:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        linux-renesas-soc@vger.kernel.org,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next v2] dt-bindings: net: dsa: renesas,rzn1-a5psw:
- add interrupts description
-Message-ID: <20220701000001.GA3585383-robh@kernel.org>
-References: <20220630162515.37302-1-clement.leger@bootlin.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PAlUtN7SL9XFXUbrECixMis635HqzUUk73c0sMI7wYQ=;
+        b=pgKp4Hv5k63bKUk37uPeQFllfNllGWitXo8iy2+GAlidUd2a9ooqk7wJ7Fn+DEMuEl
+         Zd5lAmJzRVZwUqqIQFn5QmgVHRWddg7m9bxvXUKQsj8qMGhsHqRPHHYYVwsMvCvqyTbu
+         W1kpbJfrBvptuDyG99ybdMJypzEuY3FHxff1jN1b1vPPj/unEUALffrGYz8sVlWw/kjA
+         HiAhtFU6R7/feDm+YpeB3bZpxgOWs6GPCVoRW4CoqySInMlmghii2eDrpdYSfOaNjQzP
+         tlydWN5463WNi4b50dVe677xcGHCrfUp+WVxpG8KQ7JK+9G9saA+AnpxhCFeRtwok0y3
+         sRog==
+X-Gm-Message-State: AJIora+GNJyZ+sPoLAJA+m8zYyZ/ZC9wR8Y5Z+jYCgS5QTgxymuDog7N
+        dKSJnlQuqEEkOu2WcHNCbjO4wQ==
+X-Google-Smtp-Source: AGRyM1uSw8B+vZBkRjINHHYqtDGj7eh6OecWI5/rZOo1JZbRK/1RZMWA/BuiiXZfsp/eTd53J4KbaQ==
+X-Received: by 2002:a5d:890d:0:b0:668:afd6:5477 with SMTP id b13-20020a5d890d000000b00668afd65477mr6274571ion.195.1656633628037;
+        Thu, 30 Jun 2022 17:00:28 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id k6-20020a02cb46000000b00331743a983asm7798694jap.179.2022.06.30.17.00.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 17:00:27 -0700 (PDT)
+Subject: Re: [PATCH] MAINTAINERS: Add tools/testing/crypto/chacha20-s390/
+To:     Siddh Raman Pant <code@siddh.me>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220628064621.14427-1-code@siddh.me>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <390aca1b-3b48-e0c1-07a1-ec8c29f0b8af@linuxfoundation.org>
+Date:   Thu, 30 Jun 2022 18:00:27 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220630162515.37302-1-clement.leger@bootlin.com>
+In-Reply-To: <20220628064621.14427-1-code@siddh.me>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 30 Jun 2022 18:25:15 +0200, Clément Léger wrote:
-> Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
-> are connected to the GIC.
+On 6/28/22 12:46 AM, Siddh Raman Pant wrote:
+> This adds the maintainers' information for the
+> s390 ChaCha20 self-test module.
 > 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> Signed-off-by: Siddh Raman Pant <code@siddh.me>
 > ---
-> Changes in V2:
->  - Fix typo in interrupt-names property.
+>   MAINTAINERS | 8 ++++++++
+>   1 file changed, 8 insertions(+)
 > 
->  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
->  1 file changed, 23 insertions(+)
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index fe5daf141501..0fcacd715b1c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -17438,6 +17438,14 @@ F:	Documentation/s390/
+>   F:	arch/s390/
+>   F:	drivers/s390/
+>   
+> +S390 CHACHA20 SELFTEST
+> +M:	Vladis Dronov <vdronov@redhat.com>
+> +M:	Herbert Xu <herbert@gondor.apana.org.au>
+> +R:	Harald Freudenberger <freude@linux.ibm.com>
+> +L:	linux-s390@vger.kernel.org
+> +S:	Supported
+> +F:	tools/testing/crypto/chacha20-s390/
+> +
+>   S390 COMMON I/O LAYER
+>   M:	Vineeth Vijayan <vneethv@linux.ibm.com>
+>   M:	Peter Oberparleiter <oberpar@linux.ibm.com>
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Doesn't look like you cc'ed the maintainers - please do and resend.
+
+thanks,
+-- Shuah
