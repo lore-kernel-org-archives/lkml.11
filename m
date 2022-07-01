@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A785C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233134AbiGAOaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S232625AbiGAOai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbiGAO3Z (ORCPT
+        with ESMTP id S232871AbiGAO30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:29:25 -0400
-Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB94661D5B
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:22 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id qf29-20020a1709077f1d00b00722e68806c4so835257ejc.4
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:22 -0700 (PDT)
+        Fri, 1 Jul 2022 10:29:26 -0400
+Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FCFE6D56F
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:25 -0700 (PDT)
+Received: by mail-ej1-x649.google.com with SMTP id go10-20020a1709070d8a00b00722e8ee15b4so849825ejc.22
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=/n5egAWhgjqHJF7YploSYMAs3TFFsaM1JiTS0Bn58vA=;
-        b=Q64KAy7Oa2nU5QEGyiPc+WuoNDDnAlGeuwj9Gnp4CxbUOEi4OI3mY3DVAxjpBiKgfy
-         oa7qyOyW4RhD6IyTiejiC7YtXEPcWRYAw5gxMRCHiOP9br49u9DBYFU0wT8izXo989yb
-         SsJ683z3889b7saADkdB2NmfOQkA9W3PR5kSJXdTK6rlAIAn/matyXusT0WxYIYR1PdC
-         nsJAkTFlORzo0vstvDMrGlx6qd2DiIZ3JP81lA81CBvxEItVe4LQpcoX5OTFruunfhnn
-         6Il7stXu45y2U2bIykk0AFttgTTdTXs+YT4Idf4maBbQ8qhqqM+TVsUW/CeEtqqLOi3k
-         x6Qw==
+        bh=auy4Z9/QbdBH93W7clb5ShO/bvtQNUkdCMoxr4yxtk4=;
+        b=TJFxAn5Ss516YvoMDGVEwjUVJwMCvGA1uys6DFajPPpbZIMmu2QzyGWPOotDWBpn+r
+         rgIkzih/ujs5bTKljPLwUBtpQa/dNgrfp0MBxT1kb+eKYfRAVyELcJtbxVB7958xF9rm
+         Zk0fIJMREitsgbyi1gy837q4R1mHa+3JGBT6oi1Hs5AApXttsWy/csNFxBANvSau0uZu
+         me+bQ66jrcYrfHdDel7oJAdmULEw4S6O18cufBNY46EF+SYvAbZhuw7DOE9ygaIc+DUH
+         epOsUEkbVsljZQLqnxiEbG1wf8XSFU+0Q/2K/o1oN5f4fsTtQ+6GgHHmMLvBksi3ftZb
+         I9uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/n5egAWhgjqHJF7YploSYMAs3TFFsaM1JiTS0Bn58vA=;
-        b=vEhIb/Bliezgrv5EMxYr4+hvXzVTcAXebx43H5cFyM+Mz15ZxdT/gbqrChpx0Ace3J
-         o1SYOm+aLfzCQyxzXNtznzrGtSm+MbjkGlVx1guVHt8jlL2zxuPAOpxufp+VE4XOC9cW
-         yUqADRufuN/fyEPlfJZG1EU/xwfVvTrcU4y8FCTAe0lYvkntbzNlbffMfkFlEgg2T+34
-         C5j74rMADVKMxCyc3wWkeuISRDHqQAQstfzYScxAckE4388jm4H1cZswF0XN8zzXVQYF
-         fbAeQr6lIg2JthKdmRfO9h5rPkAxXjGIKAm1g8ZV55WxC6TTb92ZGKPbWlvgoqU1vceK
-         uqiA==
-X-Gm-Message-State: AJIora/1OHl2c+30EtKnxCw4fzSv+wNKIpVNrx4OZKaEwettLf0A61Bd
-        ho7gj4aaak+sfbLyyTdCMyzpibqgm18=
-X-Google-Smtp-Source: AGRyM1vUh8ZooMqVrhXc2xeGCFSNfOoXJqVl3ZPA1oCNI4qUloUIWKz76DRGg3RXhdunivVizxxEE/eITwE=
+        bh=auy4Z9/QbdBH93W7clb5ShO/bvtQNUkdCMoxr4yxtk4=;
+        b=IVTlScd890zhFQpLb0HRxhebmqZicPS/NL3HNawwL1h/ysIagHuUeiSYOuPodNe2mX
+         htjq426b2MoOLZioj/7kAtEufYoSDrWpOE7HHF683aGhpCqOjbEP7SDyUoZsz+mlsk5f
+         NxjZHCOszQRc61ZtmuBSR7y5PJc2eWwk6gH251IIL2F+xThkOr71msZqg5AhGMhj0Jag
+         OmNmF7Wwg+Fnas/ZoFg7saP2m7g6O74+O4hnpvmNk8bdu+lBnFx/jh6U9Lm8WXVyI3GK
+         P5yG8wNlUFnwZ6JOZdWLE5J+vVCstBycxDeagQtZNN6nxCCvaAajtyNpfO9xIm8CBjwZ
+         D9qQ==
+X-Gm-Message-State: AJIora9QOs3inRgT5IveLGMY0sPurjMmSX2xMsMAp5AuLdWM5IJUewNg
+        QkA0YothU/e+Emn33VTVhH64/3pXigo=
+X-Google-Smtp-Source: AGRyM1sPr6BbVcj2G+ZB+lPBZAJjGton9fbZSyRJE7DwNhWSxx5v5nK5h5ZIpUkHajs/dx3CGzAw9kjasBQ=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:a6f5:f713:759c:abb6])
- (user=glider job=sendgmr) by 2002:a05:6402:51ca:b0:437:79a9:4dd with SMTP id
- r10-20020a05640251ca00b0043779a904ddmr19173589edd.319.1656685515729; Fri, 01
- Jul 2022 07:25:15 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:23:08 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:4408:b0:435:9ed2:9be with SMTP id
+ y8-20020a056402440800b004359ed209bemr18990092eda.81.1656685521229; Fri, 01
+ Jul 2022 07:25:21 -0700 (PDT)
+Date:   Fri,  1 Jul 2022 16:23:10 +0200
 In-Reply-To: <20220701142310.2188015-1-glider@google.com>
-Message-Id: <20220701142310.2188015-44-glider@google.com>
+Message-Id: <20220701142310.2188015-46-glider@google.com>
 Mime-Version: 1.0
 References: <20220701142310.2188015-1-glider@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 43/45] namei: initialize parameters passed to step_into()
+Subject: [PATCH v4 45/45] x86: kmsan: enable KMSAN builds for x86
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -85,79 +85,103 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Vegard Nossum <vegard.nossum@oracle.com>,
         Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
         linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Evgenii Stepanov <eugenis@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Vitaly Buka <vitalybuka@google.com>,
-        linux-toolchains@vger.kernel.org
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Under certain circumstances initialization of `unsigned seq` and
-`struct inode *inode` passed into step_into() may be skipped.
-In particular, if the call to lookup_fast() in walk_component()
-returns NULL, and lookup_slow() returns a valid dentry, then the
-`seq` and `inode` will remain uninitialized until the call to
-step_into() (see [1] for more info).
+Make KMSAN usable by adding the necessary Kconfig bits.
 
-Right now step_into() does not use these uninitialized values,
-yet passing uninitialized values to functions is considered undefined
-behavior (see [2]). To fix that, we initialize `seq` and `inode` at
-definition.
+Also declare x86-specific functions checking address validity
+in arch/x86/include/asm/kmsan.h.
 
-[1] https://github.com/ClangBuiltLinux/linux/issues/1648#issuecomment-1146608063
-[2] https://lore.kernel.org/linux-toolchains/CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com/
-
-Cc: Evgenii Stepanov <eugenis@google.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Marco Elver <elver@google.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Segher Boessenkool <segher@kernel.crashing.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Vitaly Buka <vitalybuka@google.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-toolchains@vger.kernel.org
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I94d4e8cc1f0ecc7174659e9506ce96aaf2201d0a
----
- fs/namei.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+v4:
+ -- per Marco Elver's request, create arch/x86/include/asm/kmsan.h
+    and move arch-specific inline functions there.
 
-diff --git a/fs/namei.c b/fs/namei.c
-index 1f28d3f463c3b..6b39dfd3b41bc 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -1995,8 +1995,8 @@ static const char *handle_dots(struct nameidata *nd, int type)
- static const char *walk_component(struct nameidata *nd, int flags)
- {
- 	struct dentry *dentry;
--	struct inode *inode;
--	unsigned seq;
-+	struct inode *inode = NULL;
-+	unsigned seq = 0;
- 	/*
- 	 * "." and ".." are special - ".." especially so because it has
- 	 * to be able to know about the current root directory and
-@@ -3393,8 +3393,8 @@ static const char *open_last_lookups(struct nameidata *nd,
- 	struct dentry *dir = nd->path.dentry;
- 	int open_flag = op->open_flag;
- 	bool got_write = false;
--	unsigned seq;
--	struct inode *inode;
-+	unsigned seq = 0;
-+	struct inode *inode = NULL;
- 	struct dentry *dentry;
- 	const char *res;
- 
+Link: https://linux-review.googlesource.com/id/I1d295ce8159ce15faa496d20089d953a919c125e
+---
+ arch/x86/Kconfig             |  1 +
+ arch/x86/include/asm/kmsan.h | 55 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+)
+ create mode 100644 arch/x86/include/asm/kmsan.h
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index aadbb16a59f01..d1a601111b277 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -169,6 +169,7 @@ config X86
+ 	select HAVE_ARCH_KASAN			if X86_64
+ 	select HAVE_ARCH_KASAN_VMALLOC		if X86_64
+ 	select HAVE_ARCH_KFENCE
++	select HAVE_ARCH_KMSAN			if X86_64
+ 	select HAVE_ARCH_KGDB
+ 	select HAVE_ARCH_MMAP_RND_BITS		if MMU
+ 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if MMU && COMPAT
+diff --git a/arch/x86/include/asm/kmsan.h b/arch/x86/include/asm/kmsan.h
+new file mode 100644
+index 0000000000000..a790b865d0a68
+--- /dev/null
++++ b/arch/x86/include/asm/kmsan.h
+@@ -0,0 +1,55 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * x86 KMSAN support.
++ *
++ * Copyright (C) 2022, Google LLC
++ * Author: Alexander Potapenko <glider@google.com>
++ */
++
++#ifndef _ASM_X86_KMSAN_H
++#define _ASM_X86_KMSAN_H
++
++#ifndef MODULE
++
++#include <asm/processor.h>
++#include <linux/mmzone.h>
++
++/*
++ * Taken from arch/x86/mm/physaddr.h to avoid using an instrumented version.
++ */
++static inline bool kmsan_phys_addr_valid(unsigned long addr)
++{
++	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT))
++		return !(addr >> boot_cpu_data.x86_phys_bits);
++	else
++		return true;
++}
++
++/*
++ * Taken from arch/x86/mm/physaddr.c to avoid using an instrumented version.
++ */
++static inline bool kmsan_virt_addr_valid(void *addr)
++{
++	unsigned long x = (unsigned long)addr;
++	unsigned long y = x - __START_KERNEL_map;
++
++	/* use the carry flag to determine if x was < __START_KERNEL_map */
++	if (unlikely(x > y)) {
++		x = y + phys_base;
++
++		if (y >= KERNEL_IMAGE_SIZE)
++			return false;
++	} else {
++		x = y + (__START_KERNEL_map - PAGE_OFFSET);
++
++		/* carry flag will be set if starting x was >= PAGE_OFFSET */
++		if ((x > y) || !kmsan_phys_addr_valid(x))
++			return false;
++	}
++
++	return pfn_valid(x >> PAGE_SHIFT);
++}
++
++#endif /* !MODULE */
++
++#endif /* _ASM_X86_KMSAN_H */
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
