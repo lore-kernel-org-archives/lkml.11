@@ -2,230 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D812C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234970AbiGAGiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        id S233784AbiGAGkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234647AbiGAGis (ORCPT
+        with ESMTP id S232223AbiGAGkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:38:48 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 23:38:46 PDT
-Received: from esa20.fujitsucc.c3s2.iphmx.com (esa20.fujitsucc.c3s2.iphmx.com [216.71.158.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CDD220C6
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:38:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1656657528; x=1688193528;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=x/qNyfee8z6RUjiy1govKqgoC7dkSVzOgmRt97PfTHQ=;
-  b=oqEGQDDlMD8SRkd1wedI3y7gvwEDrh9AWW05fqlOH7pwPN/e+FkI0j8O
-   WriUaZomXk+t62ApjsHisg+KcPtkIu3KrMxQwyZ4a3DmtrVO8Qpr4OooV
-   NRmXg7rUaHcl2kLTwOt+XhkJeZifvyNOsuyuUVqiMww01C80QjG1S6In6
-   2wX7La1xsq4phQYBjsaUMTSG8dOMr8JaAtVCgAPT/+qY8PqAIOLSmCuYk
-   IHD8sLJR5OhHVsyVWCcj7+XduUSqeZ/cawaTzyuRke5nDmd+fVKEwsi31
-   BV+eEcIZor/ZwOWGO14D71xiWSKlBOeOFWEqAUjSmB+e1oNQLP2rBTnf9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="59339706"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650898800"; 
-   d="scan'208";a="59339706"
-Received: from mail-tycjpn01lp2174.outbound.protection.outlook.com (HELO JPN01-TYC-obe.outbound.protection.outlook.com) ([104.47.23.174])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 15:37:38 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LhccgG0Coy91/SRX3COFuG8rTuQ2WTTNWX/SB0QBEBIwAoQOG9E5UBRkZZgIiUjcsUEIZOCh3piUJvlGFAHHih+EQMQjDh+YoWfTDEbpiwlw57DcXc6NpW0Hy5Eu0GFNIFvcck4HY81/u2HbESQ6jzVttQUituGpd/5PUSxGACqLo7EKHKjzNVIkjAZKwrt0+YOONwTFQdOGLVW8nUXyEqlCeGCTKf9L2U7k9s9VIQnjxMa8IExXZzHXPEWhL8/1zc2hPwbuOoemecv6nvlb/IDGGSa94OXw++yIJE9YqdyTuBGN6b8j4SgwcVT5E05OAujbqe4f59C/eK25yVf0Jw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wiFJx6MC+e6cLnxK4S3yPEfwTqgjibF5pAUqULlqUIg=;
- b=RoAzkdG+yPfQ9ygjriWNCnBRJftrk5DuFJrCY/f8cmoNW6VHTROL9OnPrJ1b6lDjWnMAMuSxXW94wY5MR6xw/Ub4uQc+t0kU9TDfXzwhvW/iLL46KgA3VTNxMipHQ0qpPEeOdkWc53GsWd1ktFv/DhEe3Q9wnGBSQ2G5sFRNkQFNBxkS/gmVvzZBTU5JiYXwDg6iyuKnRvr7G/vAtqXf2M89pdimWp++CN+z7Xknt6L/azuqjx4wI9h+gqNqPYdgydmx9InIl5CRN5HmS+1SOX6IhN4s+MjG5w5QYgOjuxQaOXDvRxOlgGpS+Gj5oNPNISlqHUy3mlT5C8rR28ZhAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wiFJx6MC+e6cLnxK4S3yPEfwTqgjibF5pAUqULlqUIg=;
- b=Fv8qPu9RkeFSdSOOpaaCQbjGshltAeFD2CjiSXj45a+62GFgoY9lJoF9ivWm3U/EvcoJm3SwxDCqgSbmBgf80MwvXZ6YTGdUMY1ekFkaJvZe2dcCeaRDDdPxIQktpldYCiOKc3/SBypMsgqCztN87D5H06++8l2kr4v7bTvbaDE=
-Received: from TYAPR01MB6330.jpnprd01.prod.outlook.com (2603:1096:402:3e::12)
- by OSAPR01MB4129.jpnprd01.prod.outlook.com (2603:1096:604:32::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Fri, 1 Jul
- 2022 06:37:34 +0000
-Received: from TYAPR01MB6330.jpnprd01.prod.outlook.com
- ([fe80::cd21:d921:e755:ef70]) by TYAPR01MB6330.jpnprd01.prod.outlook.com
- ([fe80::cd21:d921:e755:ef70%9]) with mapi id 15.20.5395.015; Fri, 1 Jul 2022
- 06:37:34 +0000
-From:   "tan.shaopeng@fujitsu.com" <tan.shaopeng@fujitsu.com>
-To:     'James Morse' <james.morse@arm.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        "shameerali.kolothum.thodi@huawei.com" 
-        <shameerali.kolothum.thodi@huawei.com>,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        "lcherian@marvell.com" <lcherian@marvell.com>,
-        "bobo.shaobowang@huawei.com" <bobo.shaobowang@huawei.com>,
-        Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>,
-        "xingxin.hx@openanolis.org" <xingxin.hx@openanolis.org>,
-        "baolin.wang@linux.alibaba.com" <baolin.wang@linux.alibaba.com>
-Subject: RE: [PATCH v5 04/21] x86/resctrl: Group struct rdt_hw_domain cleanup
-Thread-Topic: [PATCH v5 04/21] x86/resctrl: Group struct rdt_hw_domain cleanup
-Thread-Index: AQHYhle68z3EpKIpt0Wg+v62Ec3kEK1mDBuAgAA4AgCAAtgaMA==
-Date:   Fri, 1 Jul 2022 06:37:33 +0000
-Message-ID: <TYAPR01MB63305B2B5CECD651FCBF61348BBD9@TYAPR01MB6330.jpnprd01.prod.outlook.com>
-References: <20220622164629.20795-1-james.morse@arm.com>
- <20220622164629.20795-5-james.morse@arm.com>
- <TYAPR01MB6330E0E18CF4A229B38511648BBB9@TYAPR01MB6330.jpnprd01.prod.outlook.com>
- <4ae1e6d4-89c9-ee6a-f74f-73fa84b406e5@arm.com>
-In-Reply-To: <4ae1e6d4-89c9-ee6a-f74f-73fa84b406e5@arm.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Enabled=true;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_SetDate=2022-07-01T06:33:18Z;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Method=Standard;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Name=FUJITSU-RESTRICTED?;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_SiteId=a19f121d-81e1-4858-a9d8-736e267fd4c7;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_ActionId=55a806ab-e703-4f2d-9234-87a0596242c3;
- MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_ContentBits=0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=fujitsu.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: de1cd09e-4b4e-4df3-dacb-08da5b2c2e4e
-x-ms-traffictypediagnostic: OSAPR01MB4129:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: u+krR9AupGlzvi3GKRntrtserWFtf//4VwsCSLJ9Yg12xoebuM3Jadd09aa+LMozXRvY+cNLjLy0vZ7sQ8miVr7EEajivgycZBmp+kmuDUruNK3ewGL4qNuihKLd4p87gr24Ah5QFYD7rl4x6LYR19142waYnXoMlDVk+6ECBSmjBMzy2fToGRkYaW4xsWiajiE5ktUtku2k9EWe1pPY8xyr0oaRsHwi8BRPXubiesSNy/Ia2EFo3bh52TkIoIAwRbtLBALZ7vYzS5m5jm5Duwkh2PzBvZtN2ew0y6UdLRwt+m7ST2NFqyvfkc1kQMswEWVoGKwzw0tITMsWyVKZx9eu5SVDB2gMprsP94ioBdwciiPI086G+BN//BBfPTlT5QxueMIH7ir9lvzyJCCRQ2xgsPR20EXggOPbqPS1JevN/xfxxKgJe714HsjRLG+2HipTZJk+ORE2pDkVIxu0+JvURPCdjxMVYy5glf+QocOTCo3iLPfmGEVX661DQ7XKkTLLEO+2CZmfgd9mHTA5UF7jL1wkTN6xDJ75Mvk9B8VuwWNxoFv9gwDa5xs9rtQKkcC6qGwoCPC520/76fP5W++N3ci1bsWmhNOK9qqvDJuJa1ErfhAF9biOkIH+ueMItxwUsX4HRfhE7/gUmahXc9q/+NXW23DAh8M84PuMGo/VTmUikncPwgVfrq1DZimMWDUL1W8E7H1zueRSEs5uuFfNyUQDZ3Fwrw6SDQtUwRlGh40EeuvCd7/oZjQJHn6HUii3GwxUc2K9H9+DzRwvc1xnCfnW5g9sdixjxPsvAF4u/1dDum8xEJ9Q6coAbsQ5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB6330.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(366004)(39860400002)(376002)(136003)(26005)(53546011)(86362001)(110136005)(9686003)(85182001)(55016003)(38070700005)(2906002)(41300700001)(66556008)(316002)(66446008)(64756008)(66946007)(7696005)(38100700002)(6506007)(8676002)(66476007)(76116006)(54906003)(8936002)(52536014)(4326008)(122000001)(7416002)(5660300002)(186003)(33656002)(82960400001)(478600001)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?WXNVcGE3em1wRHVFU2xoclNTNUExTlNUQWQveExZdEEwc1pLd3hMaVo5?=
- =?iso-2022-jp?B?bTg0WkFYWVRwSnJHMmJXRlY2RlZwSEVwZ3A3c3FyaGNxUlNYY1FFOUY4?=
- =?iso-2022-jp?B?N2xoT3VXejlJQjhHVFBEaWpmcEMya1hYQndOTkdoY1RzQkRDNndZS2R5?=
- =?iso-2022-jp?B?SFFDZGhLeFAvRldtSWE0WWw3MDdkaTdvNVNJcXlZa1JrNjg4cVpGQURB?=
- =?iso-2022-jp?B?S1RDWXlSeXVIWVQrUjhIS1pIRlVVWnc3bDYxbVFNUWxvN2VrUDF6Rjdq?=
- =?iso-2022-jp?B?eXZaSlFYa1hJblFmWURDWTAxVDdtK3lpaW5ZeS9aQ1RyOWpSRUZheEJ6?=
- =?iso-2022-jp?B?R2wwaUVBMnkvcTlCQksybWZkZDNjSTNrdDdDbjMyWXU4NXlGVlVXeXVj?=
- =?iso-2022-jp?B?UHowQzdVd3FRVEIxa1pSQW1oUm5WcDNaempONTBVNjBwclFOUkVaVU1X?=
- =?iso-2022-jp?B?UnYzOURSM3RIUUl1bUt3UFF1NkRSTVIxanlZM3A5OW93dVh5ZzNSaUlP?=
- =?iso-2022-jp?B?anRrZ2YyT0w4aHkycXJQdEordC9DZHFuaVgrTEhQOVErTE1YV1Iwc1kw?=
- =?iso-2022-jp?B?VTRBQlhaOWd4aXJPY21UVzdkOWx4Yis4aWtuTHk0WktrMUh1SUZQcXNz?=
- =?iso-2022-jp?B?eEZ4UGpQL2ZiM3hPMmFiM1RZZUFrTFRkYjdKNWY3QVYzYjRWS1pjYTZL?=
- =?iso-2022-jp?B?anFTS3RUajgyL3ZzWEEvVjR4QlVZYXJKbW4xbkhLNStGUmF5a29SY3Mr?=
- =?iso-2022-jp?B?a2k5aXllMVNoSFNLdFg2cWt3YlBRWks3K0hlcFFKaHhlcjFzV0czclVC?=
- =?iso-2022-jp?B?anZGSGtRU1BodVJZN1lNcm5vMDlJZll6SnVCZXd4YXZpaTdwdzh1OW1h?=
- =?iso-2022-jp?B?TkZIT0NTdGJaTllscmU0NWl4aW9raE00LzczazNDMU5VSnlJSXVwa0VE?=
- =?iso-2022-jp?B?dGxJSGNmZGgzYWtYRWlkc1M4MExBejlZUnpYMkNYWHhLME9RdjQ0UFoz?=
- =?iso-2022-jp?B?ZE1Eb3c5RllXWGlRajA4R282NHpjTzBuYkxRZ3Uyc05HV0h5RmtjZ3E4?=
- =?iso-2022-jp?B?cHdhKytnVTI5YzAwTmtZUCs5eXRNcnM5clc4MXJGcXJiVmQyQVVkdnVp?=
- =?iso-2022-jp?B?VzVvT2VyOE1rSnNweTB1emlMb2ZMV2I3TmptSjNPM1drSXRaWlBDZGZY?=
- =?iso-2022-jp?B?dEs5em90TkxwSE5FWk9obEhlUjhzYko3SGhWaUdkSFBidy9SekZVVVl5?=
- =?iso-2022-jp?B?b1lGM092cVM5V3NFYVdJRnExalQ5RzQybWxXNzMvN3dldklTcG1ReUNl?=
- =?iso-2022-jp?B?dGFTVG5YczgxTjhUSllIQ0VBakdtTXQ0ZTJjZFNRektyWVRNdVMxNXpo?=
- =?iso-2022-jp?B?N3lqZDVhNWI2M1ZLdDhCdTBNdCtkNEF2OFhNckE3cXB0YVFZbmkwbzRP?=
- =?iso-2022-jp?B?ZTJuRkhUeVlRcmE5ZUdTc3k3alJlb1FTQzlhaE8rUXBJR1FNU0pmanU5?=
- =?iso-2022-jp?B?TEVoc1dqd0hUYXRYQmF3MUU1aVZQWjVEZ1BTNlZTRmlDWmxRbURtZWlq?=
- =?iso-2022-jp?B?MHNmbUkrOVVoUWlHd1BkZ0g0SzUwREVZUStzNmRPVi8vUUxaQVlBeWRo?=
- =?iso-2022-jp?B?eWRvT3pTcytCT082UTkvMkJrbktJTVVYaWtNSUR5b2dGVHFEWVk1RHdV?=
- =?iso-2022-jp?B?Tm1pUEpxZGlYQU9nOVJjSEQ5QVpMUW5EYm1hOEhrR2U0NkJiWmc5STRs?=
- =?iso-2022-jp?B?TnQvVkZMN0pTQ1dtem5rOEtmekhZbkc1cG9ZQ1c5RzBUaU5XMlh4V1Qw?=
- =?iso-2022-jp?B?MDdJb215bTh2cUdqSUpNcGxaQUFRdTZlUnVSc1BiRmFnTThkaysvajA4?=
- =?iso-2022-jp?B?endEQXpBR1pGMk5wdkhnVzRGSkQxeDdFM2VJN0g5VVVxVk5ycUU0RHRa?=
- =?iso-2022-jp?B?SEQxcmZONUtsSHhaTkxGQk1ydGZzcCswblhDUjNZS2dITmxJSGZkN2JX?=
- =?iso-2022-jp?B?Z3pITXF3L2d3NXBWTlVtUlhjMFZNSHFENi9STEFvSTl1dmVzSXQrVUNl?=
- =?iso-2022-jp?B?VVh1dnpKaENEbWZGaWlrQUFOYlZmcGxFcjNVUVdOeVY2KzVRaU9odjNZ?=
- =?iso-2022-jp?B?by9CUzZzY0NnZ2RaMU5XTzltaGVVWkxtUnhXeUNURUNuWkdvb0xrazNI?=
- =?iso-2022-jp?B?OHZFcEVzTkU0RVkvQkkwRGY2elhRR0htanNPb1AvQTh2ai8yYktiTU50?=
- =?iso-2022-jp?B?T1ZZZEIwOXMyM1lPYXE5VTd0bVcwVlhrRXdlSUZlTUhtd2t4cW9DSkt4?=
- =?iso-2022-jp?B?dkgwY0lRWmgwNGpWbHVNRXEyZ0I5WFNMa2c9PQ==?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 1 Jul 2022 02:40:02 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F87E48836;
+        Thu, 30 Jun 2022 23:40:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32D5C1042;
+        Thu, 30 Jun 2022 23:40:01 -0700 (PDT)
+Received: from a077893.blr.arm.com (unknown [10.162.43.6])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 409A53F792;
+        Thu, 30 Jun 2022 23:39:57 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH] perf/core: Add macros for possible sysctl_perf_event_paranoid values
+Date:   Fri,  1 Jul 2022 12:09:49 +0530
+Message-Id: <20220701063949.1769434-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYAPR01MB6330.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de1cd09e-4b4e-4df3-dacb-08da5b2c2e4e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 06:37:33.9330
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 14xLP+VV3XFLw+EkOOdKj3FsFwRN23aYe3Gp/USopHtHq1YiIfdSE9h9u+f1bV3SngiFo4ktej55MQXfZ75sJjQ6AIgNUSj66BjH/FdDsQU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4129
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi James
+sysctl_perf_event_paranoid can have values from [-1, 0, 1, 2] which decides
+on perf event restrictions for unprivileged users. But using them directly
+makes it difficult to correlate exact restriction level they might impose.
+This just adds macros for those numerical restriction values, making them
+clear and improving readability.
 
-> On 29/06/2022 09:33, tan.shaopeng@fujitsu.com wrote:
-> >> domain_add_cpu() and domain_remove_cpu() need to kfree() the child
-> >> arrays that were allocated by domain_setup_ctrlval().
-> >>
-> >> As this memory is moved around, and new arrays are created, adjusting
-> >> the error handling cleanup code becomes noisier.
-> >>
-> >> To simplify this, move all the kfree() calls into a domain_free() help=
-er.
-> >> This depends on struct rdt_hw_domain being kzalloc()d, allowing it to
-> >> unconditionally kfree() all the child arrays.
->=20
-> >> diff --git a/arch/x86/kernel/cpu/resctrl/core.c
-> >> b/arch/x86/kernel/cpu/resctrl/core.c
-> >> index 25f30148478b..e37889f7a1a5 100644
-> >> --- a/arch/x86/kernel/cpu/resctrl/core.c
-> >> +++ b/arch/x86/kernel/cpu/resctrl/core.c
-> >> @@ -414,6 +414,13 @@ void setup_default_ctrlval(struct rdt_resource
-> >> *r, u32 *dc, u32 *dm)
-> >>  	}
-> >>  }
-> >>
-> >> +static void domain_free(struct rdt_hw_domain *hw_dom) {
-> >> +	kfree(hw_dom->ctrl_val);
-> >> +	kfree(hw_dom->mbps_val);
-> >> +	kfree(hw_dom);
-> >> +}
-> >> +
-> >>  static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_do=
-main
-> *d)  {
-> >>  	struct rdt_hw_resource *hw_res =3D resctrl_to_arch_res(r); @@ -488,7
-> >> +495,7 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
-> >>  	rdt_domain_reconfigure_cdp(r);
-> >>
-> >>  	if (r->alloc_capable && domain_setup_ctrlval(r, d)) {
-> >> -		kfree(hw_dom);
-> >> +		domain_free(hw_dom);
->=20
-> > domain_free(hw_dom) is executed when fails allocated hw_dom->ctrl_val
-> > by kmalloc_array() in domain_setup_ctrlval(r, d), but hw_dom->ctrl_val
-> > is freed in domain_free(hw_dom).
-> >
-> > Also, hw_dom->mbps_val is not allocated at this time, but it is freed
-> > in domain_free(hw_dom).
->=20
-> Yes, this is deliberate. These cases end up doing:
-> |	kfree(NULL);
-> which is harmless. kfree() checks for a NULL argument and does nothing.
->=20
-> The alternative would be to spread the cleanup all over the place, so it =
-only calls
-> kfree() on something that has been allocated - this would be more complex=
- and
-> easier to miss something.
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: linux-perf-users@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ include/linux/perf_event.h | 22 ++++++++++++++++++----
+ kernel/events/core.c       |  9 +--------
+ kernel/kallsyms.c          |  3 ++-
+ 3 files changed, 21 insertions(+), 13 deletions(-)
 
-Thank you for explaining. I learned.
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index da759560eec5..78156b9154df 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -1359,14 +1359,28 @@ int perf_event_max_stack_handler(struct ctl_table *table, int write,
+ #define PERF_SECURITY_KERNEL		2
+ #define PERF_SECURITY_TRACEPOINT	3
+ 
++/*
++ * perf event paranoia level:
++ *  -1 - not paranoid at all
++ *   0 - disallow raw tracepoint access for unpriv
++ *   1 - disallow cpu events for unpriv
++ *   2 - disallow kernel profiling for unpriv
++ */
++enum {
++	PERF_EVENT_DISALLOW_NONE	= -1,
++	PERF_EVENT_DISALLOW_TRACE,
++	PERF_EVENT_DISALLOW_CPU,
++	PERF_EVENT_DISALLOW_KERNEL
++};
++
+ static inline int perf_is_paranoid(void)
+ {
+-	return sysctl_perf_event_paranoid > -1;
++	return sysctl_perf_event_paranoid > PERF_EVENT_DISALLOW_NONE;
+ }
+ 
+ static inline int perf_allow_kernel(struct perf_event_attr *attr)
+ {
+-	if (sysctl_perf_event_paranoid > 1 && !perfmon_capable())
++	if (sysctl_perf_event_paranoid >= PERF_EVENT_DISALLOW_KERNEL && !perfmon_capable())
+ 		return -EACCES;
+ 
+ 	return security_perf_event_open(attr, PERF_SECURITY_KERNEL);
+@@ -1374,7 +1388,7 @@ static inline int perf_allow_kernel(struct perf_event_attr *attr)
+ 
+ static inline int perf_allow_cpu(struct perf_event_attr *attr)
+ {
+-	if (sysctl_perf_event_paranoid > 0 && !perfmon_capable())
++	if (sysctl_perf_event_paranoid >= PERF_EVENT_DISALLOW_CPU && !perfmon_capable())
+ 		return -EACCES;
+ 
+ 	return security_perf_event_open(attr, PERF_SECURITY_CPU);
+@@ -1382,7 +1396,7 @@ static inline int perf_allow_cpu(struct perf_event_attr *attr)
+ 
+ static inline int perf_allow_tracepoint(struct perf_event_attr *attr)
+ {
+-	if (sysctl_perf_event_paranoid > -1 && !perfmon_capable())
++	if (sysctl_perf_event_paranoid >= PERF_EVENT_DISALLOW_TRACE && !perfmon_capable())
+ 		return -EPERM;
+ 
+ 	return security_perf_event_open(attr, PERF_SECURITY_TRACEPOINT);
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 80782cddb1da..6fdfdc731bab 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -408,14 +408,7 @@ static struct srcu_struct pmus_srcu;
+ static cpumask_var_t perf_online_mask;
+ static struct kmem_cache *perf_event_cache;
+ 
+-/*
+- * perf event paranoia level:
+- *  -1 - not paranoid at all
+- *   0 - disallow raw tracepoint access for unpriv
+- *   1 - disallow cpu events for unpriv
+- *   2 - disallow kernel profiling for unpriv
+- */
+-int sysctl_perf_event_paranoid __read_mostly = 2;
++int sysctl_perf_event_paranoid __read_mostly = PERF_EVENT_DISALLOW_KERNEL;
+ 
+ /* Minimum for 512 kiB + 1 user control page */
+ int sysctl_perf_event_mlock __read_mostly = 512 + (PAGE_SIZE / 1024); /* 'free' kiB per user */
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index fbdf8d3279ac..705f7d7d81dc 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -18,6 +18,7 @@
+ #include <linux/fs.h>
+ #include <linux/kdb.h>
+ #include <linux/err.h>
++#include <linux/perf_event.h>
+ #include <linux/proc_fs.h>
+ #include <linux/sched.h>	/* for cond_resched */
+ #include <linux/ctype.h>
+@@ -803,7 +804,7 @@ static inline int kallsyms_for_perf(void)
+ {
+ #ifdef CONFIG_PERF_EVENTS
+ 	extern int sysctl_perf_event_paranoid;
+-	if (sysctl_perf_event_paranoid <= 1)
++	if (sysctl_perf_event_paranoid <= PERF_EVENT_DISALLOW_CPU)
+ 		return 1;
+ #endif
+ 	return 0;
+-- 
+2.20.1
 
-Best regards,
-Shaopeng
