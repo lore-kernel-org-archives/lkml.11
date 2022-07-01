@@ -2,89 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19407CCA481
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 18:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbiGASCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 14:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
+        id S231648AbiGASCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 14:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiGASCe (ORCPT
+        with ESMTP id S231557AbiGASCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 14:02:34 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6074F3FBDB;
-        Fri,  1 Jul 2022 11:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ZPeAoAQGd/dAHDv+0muzdJmtfTPd5PlsJuI6fl18td4=; b=g88+VmrETYRxPZAQwilIOXhYrO
-        tNJR6pqKwjPdMW0jx2gfcYlAjA2hl9OKLoENxyPHhtNys//9urQsANz3YjmXFP3ISPntSfJMRGMBy
-        cGd8mLUJJFJCEgN5K0E++ig1zW/9uSgQfX3WsVghPJXb4e6owpQdsj4yZVAagjZS42+FX01HIaODk
-        WuTZ5E4CCS0MNDUXqhBO0DuJFizELQFpt6UG6bqW7FM2z987RytPn7Vk0kXpgtWJbQSgUw+Zhq4Mj
-        25wKqI2B86oNFzhRS8M6in/XzV5Oib31HWyV2g4SOVbxHcCg1AjUCMrKh8Tp6LdWDlnsHCgnjzNhk
-        QrOhsIUQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o7KyN-006JRZ-CH; Fri, 01 Jul 2022 18:02:31 +0000
-Date:   Fri, 1 Jul 2022 11:02:31 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Helge Deller <deller@gmx.de>
-Cc:     jeyu@kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        live-patching@vger.kernel.org
-Subject: Re: [PATCH 1/2] modules: Ensure natural alignment for
- .altinstructions and __bug_table sections
-Message-ID: <Yr82t0PQoYIcx++J@bombadil.infradead.org>
-References: <20220627190551.517561-1-deller@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627190551.517561-1-deller@gmx.de>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+        Fri, 1 Jul 2022 14:02:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8993F403E1;
+        Fri,  1 Jul 2022 11:02:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17D50614B3;
+        Fri,  1 Jul 2022 18:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6C88CC3411E;
+        Fri,  1 Jul 2022 18:02:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656698560;
+        bh=w3KzFyaYEIc284AKOdm/iI5z51t8mxZXiqscMxHjcXI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=CQwQKe0DmeF6TKqa0NADm8mgX+v8S248XO7rwEVHzJx3klZZ9BgyyVyuwJUGzqMws
+         SOs7uZH8Mkup1+yCraQ6n7KJ3DbjSvrQ8wrMwCI7EfS0b7RBxm2ajEkoq6eSSJV8iL
+         npJLKRN8yy4O/OnVhE90Rh3r+DodqvfaeNhvkie54CcgWqGf3cZLim8JW1/6Wr5JlW
+         0wFLYo6kMrR9pVfZcDorhypOceeT0yS9ZXhHI3An+HH1kGUqezO5eNWGB5EEMefK55
+         imoaer05/emM4TaBfFRLtdl/lHD9CSGQH7HL6rTaGCvnWCL9xQs+ohbIg0oNzq/Wzu
+         4JD0Fcb42licA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5AFA0E49BBC;
+        Fri,  1 Jul 2022 18:02:40 +0000 (UTC)
+Subject: Re: [GIT PULL] clk fixes for v5.19-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220701021413.276395-1-sboyd@kernel.org>
+References: <20220701021413.276395-1-sboyd@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220701021413.276395-1-sboyd@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git tags/clk-fixes-for-linus
+X-PR-Tracked-Commit-Id: a79e69c8714f416bd324952d06d1dd7bce3f35bf
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9650910d05a31d62f562f90ca15ece685a4c1b9c
+Message-Id: <165669856036.14842.11250001484706715167.pr-tracker-bot@kernel.org>
+Date:   Fri, 01 Jul 2022 18:02:40 +0000
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 09:05:50PM +0200, Helge Deller wrote:
-> In the kernel image vmlinux.lds.S linker scripts the .altinstructions
-> and __bug_table sections are 32- or 64-bit aligned because they hold 32-
-> and/or 64-bit values.
-> 
-> But for modules the module.lds.S linker script doesn't define a default
-> alignment yet, so the linker chooses the default byte-alignment, which
-> then leads to unnecessary unaligned memory accesses at runtime.
-> 
-> This patch adds the missing alignments.
-> 
-> Signed-off-by: Helge Deller <deller@gmx.de>
+The pull request you sent on Thu, 30 Jun 2022 19:14:13 -0700:
 
-Good catch but does this fix a real world issue? When are
-altinstructions used for modules? When are alternatives used
-for modules?
+> https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git tags/clk-fixes-for-linus
 
-How did you notice this issue?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9650910d05a31d62f562f90ca15ece685a4c1b9c
 
-This information should go into the commit log.
+Thank you!
 
-  Luis
-> ---
->  scripts/module.lds.S | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/scripts/module.lds.S b/scripts/module.lds.S
-> index 1d0e1e4dc3d2..3a3aa2354ed8 100644
-> --- a/scripts/module.lds.S
-> +++ b/scripts/module.lds.S
-> @@ -27,6 +27,8 @@ SECTIONS {
->  	.ctors			0 : ALIGN(8) { *(SORT(.ctors.*)) *(.ctors) }
->  	.init_array		0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }
-> 
-> +	.altinstructions	0 : ALIGN(8) { KEEP(*(.altinstructions)) }
-> +	__bug_table		0 : ALIGN(8) { KEEP(*(__bug_table)) }
->  	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
-> 
->  	__patchable_function_entries : { *(__patchable_function_entries) }
-> --
-> 2.35.3
-> 
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
