@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF7BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1B0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiGAO3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41118 "EHLO
+        id S232573AbiGAO3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiGAO1g (ORCPT
+        with ESMTP id S232499AbiGAO2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:27:36 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D5D5C963
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:24:56 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id w5-20020a056402268500b0043980311a5fso1408249edd.3
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:24:56 -0700 (PDT)
+        Fri, 1 Jul 2022 10:28:36 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E785B64D45
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:02 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id hs18-20020a1709073e9200b0072a3e7eb0beso844375ejc.10
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=y2vNDbHfnK38Naadc3+Fwqq63OR/g0K1wBY1TqEXyAM=;
-        b=JFjDqoVxXFGtm201IbbG357skezLd+T04/kWKBQGEughGhugLaopnebvFnawR0Kdsr
-         27ps95W+5qwzJFISc09B33+ERrKVXpOpqoMtrCKT/HtJS/mc+Y2T4vZtazhtmZt5dEW/
-         6YcV3sK0Awn2rROg1rzXOx4DymiaFx9MNHURtldWEnOEz01PiUXsvdxOa9SJzM6FKaQu
-         heiTguJRDqBIlOpunqu4UGMuMlcF9OwwspcMFPk4tB7coqypU57aVRBKufAmVL56Ntdn
-         YavSj16XkJUWu5JYiDjJH4XZH6E6lfbc716eCpEJho13ZlQOC3VfHu610QO29KVA6ujZ
-         pKyg==
+        bh=7Mhpta8bleV/UMALfZOJOInTXQD6eorZ40ixMEZLH18=;
+        b=SK4zuM/LqN9V22hVvhABvQyziEAxlHrFJzT62CJ+8Gr5z1csKhH0NIvPZy7HXwJZFS
+         0o2Dz9vScER5v/m3+Ov0b57zCiiCbrCApAZdn0z0ihUpL5uyP1/bXdMsnOidMKiSUJDa
+         BkpEhnOP5g9I2ipIkJ/00hmAFD/og1SK1bdSIzNn7w1oXdItFTnvjA3O0QGS+joj1qPX
+         vu0mr88M+r8S11fh0jNIUSEtNfYY0tXFLftByqdopzCcL3vRLSr276xum9GnJaDchFRq
+         uhPrpu558FoA7vusBo7CKw0yXyOXaTlW7kFEpBeSn/VATqyQvBlleRzR7PZQtdIROe8G
+         gmaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=y2vNDbHfnK38Naadc3+Fwqq63OR/g0K1wBY1TqEXyAM=;
-        b=xOQ752nX2ztbly8WyLJADYCwvp5oF2ESgsWY7dDVDdcZxj/uUPwKric+KpNAqm6Btv
-         NWWpFnMY3785OfZrHJCgC5lfusXiA2fiMASQdBD2gShUHpGxC4GaUDuz7qlgS0df5ZIe
-         dosC2leUiy0vNybQEpoe4r3wJ4ASJFBhKlHjNdaC9qUg2pyaFxT8JI5raTaB+hnC/SBR
-         MoIF0RLGDu0r7ArHPHcTvbXOYOo/IzNHcHBuMUKJp1ps3MUT2qe/uFq5efgjiD+KuQvD
-         B8iQSs4a7iR4UMMkIs+gIMXWbV9ZGUx0DQc49jWCG2fDwg3zQZnoQ/FQp1sRT1+qYQCm
-         vQTg==
-X-Gm-Message-State: AJIora8OeAw6mkOe/ibjMIF/XzxnySA2ucxOmZ4/wbY4AHIIMG3dMcoI
-        6PxcaPii5T+FqgLOoTjGpXgXQy2hZBc=
-X-Google-Smtp-Source: AGRyM1uuNnnM3qssrOrgZOqetYyyDgTLXfrXa0K/82jjlreLIfrHkHYk4kBhmEAowU1mOBxY98uQNMpqi60=
+        bh=7Mhpta8bleV/UMALfZOJOInTXQD6eorZ40ixMEZLH18=;
+        b=jBSsm9EUBWsr57z3MKb/PjsdxXWiZMzMNsTYl1A1rYpkSu67sELgjHAaDDSw26t/+7
+         kcM480vGQ19h9Jso5ghuY7Q2cwE6FL6E3hI+n8dBEbokWnK5jhcbQJHyHN+Rx0YrK/ky
+         EiRHUPIhl3+uCStSJr2qPdtG9d/iGEJXidEExSs3JgPbWD3qqwzG0ka/v7E8DtiIGUlD
+         2/CxVnuAvmGnBq1dSfEnA+DH6zlV5naNzAE9aRn++TzP33EISN72FdmuFYn9PgI/mu8F
+         +FU8Ipu6+2Fl8V8T/8HrHaWwBC7CHoHucPD+xmo1gfy0T0wSV6EKZMRcNZ6Gw+Ea6O1D
+         HsJw==
+X-Gm-Message-State: AJIora80WaCXr+kr+OPQ/B8UGzcz8SnZaq7rhswCf0Xt5aHKbpFabKK7
+        UUx6SOWWtTyMJDhsxd7CK4HewIyQXLw=
+X-Google-Smtp-Source: AGRyM1ukHF/75hMCkE1ceqIKqAwme//w8kYLgX2Q1lXtK73q2uRxhmeeO4GeXUnmM9oAotsl2fJIw5hKglI=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:a6f5:f713:759c:abb6])
- (user=glider job=sendgmr) by 2002:aa7:c9c9:0:b0:431:962f:f61e with SMTP id
- i9-20020aa7c9c9000000b00431962ff61emr19491774edt.189.1656685496470; Fri, 01
- Jul 2022 07:24:56 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:23:01 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:f29:b0:435:c108:58f2 with SMTP id
+ i41-20020a0564020f2900b00435c10858f2mr19006559eda.401.1656685502496; Fri, 01
+ Jul 2022 07:25:02 -0700 (PDT)
+Date:   Fri,  1 Jul 2022 16:23:03 +0200
 In-Reply-To: <20220701142310.2188015-1-glider@google.com>
-Message-Id: <20220701142310.2188015-37-glider@google.com>
+Message-Id: <20220701142310.2188015-39-glider@google.com>
 Mime-Version: 1.0
 References: <20220701142310.2188015-1-glider@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 36/45] x86: kmsan: use __msan_ string functions where possible
+Subject: [PATCH v4 38/45] x86: kasan: kmsan: support CONFIG_GENERIC_CSUM on
+ x86, enable it for KASAN/KMSAN
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,99 +92,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unless stated otherwise (by explicitly calling __memcpy(), __memset() or
-__memmove()) we want all string functions to call their __msan_ versions
-(e.g. __msan_memcpy() instead of memcpy()), so that shadow and origin
-values are updated accordingly.
-
-Bootloader must still use the default string functions to avoid crashes.
+This is needed to allow memory tools like KASAN and KMSAN see the
+memory accesses from the checksum code. Without CONFIG_GENERIC_CSUM the
+tools can't see memory accesses originating from handwritten assembly
+code.
+For KASAN it's a question of detecting more bugs, for KMSAN using the C
+implementation also helps avoid false positives originating from
+seemingly uninitialized checksum values.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
+
 ---
 
-Link: https://linux-review.googlesource.com/id/I7ca9bd6b4f5c9b9816404862ae87ca7984395f33
+Link: https://linux-review.googlesource.com/id/I3e95247be55b1112af59dbba07e8cbf34e50a581
 ---
- arch/x86/include/asm/string_64.h | 23 +++++++++++++++++++++--
- include/linux/fortify-string.h   |  2 ++
- 2 files changed, 23 insertions(+), 2 deletions(-)
+ arch/x86/Kconfig                |  4 ++++
+ arch/x86/include/asm/checksum.h | 16 ++++++++++------
+ arch/x86/lib/Makefile           |  2 ++
+ 3 files changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/include/asm/string_64.h b/arch/x86/include/asm/string_64.h
-index 6e450827f677a..3b87d889b6e16 100644
---- a/arch/x86/include/asm/string_64.h
-+++ b/arch/x86/include/asm/string_64.h
-@@ -11,11 +11,23 @@
-    function. */
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index be0b95e51df66..4a5d0a0f54dea 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -324,6 +324,10 @@ config GENERIC_ISA_DMA
+ 	def_bool y
+ 	depends on ISA_DMA_API
  
- #define __HAVE_ARCH_MEMCPY 1
-+#if defined(__SANITIZE_MEMORY__)
-+#undef memcpy
-+void *__msan_memcpy(void *dst, const void *src, size_t size);
-+#define memcpy __msan_memcpy
-+#else
- extern void *memcpy(void *to, const void *from, size_t len);
-+#endif
- extern void *__memcpy(void *to, const void *from, size_t len);
- 
- #define __HAVE_ARCH_MEMSET
-+#if defined(__SANITIZE_MEMORY__)
-+extern void *__msan_memset(void *s, int c, size_t n);
-+#undef memset
-+#define memset __msan_memset
-+#else
- void *memset(void *s, int c, size_t n);
-+#endif
- void *__memset(void *s, int c, size_t n);
- 
- #define __HAVE_ARCH_MEMSET16
-@@ -55,7 +67,13 @@ static inline void *memset64(uint64_t *s, uint64_t v, size_t n)
- }
- 
- #define __HAVE_ARCH_MEMMOVE
-+#if defined(__SANITIZE_MEMORY__)
-+#undef memmove
-+void *__msan_memmove(void *dest, const void *src, size_t len);
-+#define memmove __msan_memmove
-+#else
- void *memmove(void *dest, const void *src, size_t count);
-+#endif
- void *__memmove(void *dest, const void *src, size_t count);
- 
- int memcmp(const void *cs, const void *ct, size_t count);
-@@ -64,8 +82,7 @@ char *strcpy(char *dest, const char *src);
- char *strcat(char *dest, const char *src);
- int strcmp(const char *cs, const char *ct);
- 
--#if defined(CONFIG_KASAN) && !defined(__SANITIZE_ADDRESS__)
--
-+#if (defined(CONFIG_KASAN) && !defined(__SANITIZE_ADDRESS__))
- /*
-  * For files that not instrumented (e.g. mm/slub.c) we
-  * should use not instrumented version of mem* functions.
-@@ -73,7 +90,9 @@ int strcmp(const char *cs, const char *ct);
- 
- #undef memcpy
- #define memcpy(dst, src, len) __memcpy(dst, src, len)
-+#undef memmove
- #define memmove(dst, src, len) __memmove(dst, src, len)
-+#undef memset
- #define memset(s, c, n) __memset(s, c, n)
- 
- #ifndef __NO_FORTIFY
-diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
-index 3b401fa0f3746..6c8a1a29d0b63 100644
---- a/include/linux/fortify-string.h
-+++ b/include/linux/fortify-string.h
-@@ -285,8 +285,10 @@ __FORTIFY_INLINE void fortify_memset_chk(__kernel_size_t size,
-  * __builtin_object_size() must be captured here to avoid evaluating argument
-  * side-effects further into the macro layers.
-  */
-+#ifndef CONFIG_KMSAN
- #define memset(p, c, s) __fortify_memset_chk(p, c, s,			\
- 		__builtin_object_size(p, 0), __builtin_object_size(p, 1))
-+#endif
- 
- /*
-  * To make sure the compiler can enforce protection against buffer overflows,
++config GENERIC_CSUM
++	bool
++	default y if KMSAN || KASAN
++
+ config GENERIC_BUG
+ 	def_bool y
+ 	depends on BUG
+diff --git a/arch/x86/include/asm/checksum.h b/arch/x86/include/asm/checksum.h
+index bca625a60186c..6df6ece8a28ec 100644
+--- a/arch/x86/include/asm/checksum.h
++++ b/arch/x86/include/asm/checksum.h
+@@ -1,9 +1,13 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-#define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
+-#define HAVE_CSUM_COPY_USER
+-#define _HAVE_ARCH_CSUM_AND_COPY
+-#ifdef CONFIG_X86_32
+-# include <asm/checksum_32.h>
++#ifdef CONFIG_GENERIC_CSUM
++# include <asm-generic/checksum.h>
+ #else
+-# include <asm/checksum_64.h>
++# define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
++# define HAVE_CSUM_COPY_USER
++# define _HAVE_ARCH_CSUM_AND_COPY
++# ifdef CONFIG_X86_32
++#  include <asm/checksum_32.h>
++# else
++#  include <asm/checksum_64.h>
++# endif
+ #endif
+diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
+index f76747862bd2e..7ba5f61d72735 100644
+--- a/arch/x86/lib/Makefile
++++ b/arch/x86/lib/Makefile
+@@ -65,7 +65,9 @@ ifneq ($(CONFIG_X86_CMPXCHG64),y)
+ endif
+ else
+         obj-y += iomap_copy_64.o
++ifneq ($(CONFIG_GENERIC_CSUM),y)
+         lib-y += csum-partial_64.o csum-copy_64.o csum-wrappers_64.o
++endif
+         lib-y += clear_page_64.o copy_page_64.o
+         lib-y += memmove_64.o memset_64.o
+         lib-y += copy_user_64.o
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
