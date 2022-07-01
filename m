@@ -2,90 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAB5FCCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1697CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiGAOhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
+        id S231715AbiGAOiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbiGAOgJ (ORCPT
+        with ESMTP id S229553AbiGAOhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:36:09 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A857F71BE4;
-        Fri,  1 Jul 2022 07:31:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1656685875; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=erWTcZFPc95uCcQpwWIsuffV+kMaIdZaBX2lUFVZ6jQ0PkdyHTqc0dgxgq+SJpUEKhZ8oaW3QIf0a/ZO3ZsSMD72HA4t4cPRLHOpqqauFo9veeNn2A8crxUBVJ5JIzIaBcxO42va30l9d2W/YI01+SZ27NGn25xSVtBHlJ94jOQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1656685875; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=veI3Bj2kl/WS8P7h6+c+mQ6AYTA/bSwSuSLXsp+yw6c=; 
-        b=A2oWkHKIUEIGcq9vZwEgZwueTgVJ6qaIjKwYp4DrQR1pJ9o+DXNBxHi7w2oWC+mM2ioJCGkVgWJClQpwYiJGYiesQuThFbEJz8a/aOLlYi5vA2Ifma/Y2j7kdVYOBnknzTuU/VLzeQ8jCvFgg0I/Cbnzx09xP7/ujfoQBMEFnAg=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1656685875;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=veI3Bj2kl/WS8P7h6+c+mQ6AYTA/bSwSuSLXsp+yw6c=;
-        b=Mj1LyBSmD4fFfVr9RLZxrfArld07QiqMwOU8nOsCvbAFUGlly4k6nsqGitBpd2Mz
-        yMihqvc+n9a+fUzYM0OH6NRJBVTb/dudXgBDo6mhot4fbzIEh2L2+KJNmr92UzDQzug
-        xSVhrMm8GvSg3zyn7WTeYSXwBtjx2V46W5lQwW1g=
-Received: from localhost.localdomain (103.250.137.221 [103.250.137.221]) by mx.zoho.in
-        with SMTPS id 1656685873410201.92961736997165; Fri, 1 Jul 2022 20:01:13 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     Vladis Dronov <vdronov@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Harald Freudenberger <freude@linux.ibm.com>
-Cc:     linux-s390 <linux-s390@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <20220701142515.14800-1-code@siddh.me>
-Subject: [RESEND PATCH] MAINTAINERS: Add tools/testing/crypto/chacha20-s390/
-Date:   Fri,  1 Jul 2022 19:55:15 +0530
-X-Mailer: git-send-email 2.35.1
+        Fri, 1 Jul 2022 10:37:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991A519289
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:34:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31444622B4
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 14:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF03C3411E;
+        Fri,  1 Jul 2022 14:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656686047;
+        bh=Fh2Yx93xB3C+S/wXYC4C1fagIRcAr8t3LoCK9meJw6o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JlTpod6kmJ8Vu+1s2M+gHRiphuzguWZM2ld9fH1qN7NS79nWrdmbv+BUjm6//ODgJ
+         LCPmIY9CnRUFe85yAL7RzvXogOD4sxyvoXTFJZkN3az/aTX0nelgkmmEXrG1O00bzD
+         UcXu4alq2933ycz+RuPskq5jjKS8FS2wbCKi94NOPjDNRY6lmHObra2LjYFtFDs8md
+         lXhQo8hrv7e2ipOQzBwQibtaUIA+pZoKKX7EN7sc6BEdn2t3goh+FmJeAltt/D1J94
+         ccC4by786WslgGhWcZLrjLxzTiteIWQCdPuseEhfupAgxheRXluKb6m2aBlvka5IhG
+         p+d/D/j76b/sA==
+Date:   Fri, 1 Jul 2022 15:34:02 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Xenia Ragiadakou <burzalodowa@gmail.com>
+Cc:     joro@8bytes.org, robin.murphy@arm.com,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix undefined behavior in GBPA_UPDATE
+Message-ID: <20220701143401.GA28408@willie-the-truck>
+References: <20220630063959.27226-1-burzalodowa@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630063959.27226-1-burzalodowa@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds the maintainers' information for the
-s390 ChaCha20 self-test module.
+On Thu, Jun 30, 2022 at 09:39:59AM +0300, Xenia Ragiadakou wrote:
+> The expression 1 << 31 results in undefined behaviour because the type of
+> integer constant 1 is (signed) int and the result of shifting 1 by 31 bits
+> is not representable in the (signed) int type.
+> 
+> Change the type of 1 to unsigned int by adding the U suffix.
+> 
+> Signed-off-by: Xenia Ragiadakou <burzalodowa@gmail.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index cd48590ada30..44fbd499edea 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -96,7 +96,7 @@
+>  #define CR2_E2H				(1 << 0)
+>  
+>  #define ARM_SMMU_GBPA			0x44
+> -#define GBPA_UPDATE			(1 << 31)
+> +#define GBPA_UPDATE			(1U << 31)
 
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
----
-CC'd the maintainers in this enail which I had not
-done last time.
+There are loads of these kicking around in the kernel sources and we compile
+with -fno-strict-overflow.
 
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+If you really want to change these, then let's use the BIT() macro instead,
+but I think it's really just churn.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fe5daf141501..0fcacd715b1c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17438,6 +17438,14 @@ F:=09Documentation/s390/
- F:=09arch/s390/
- F:=09drivers/s390/
-=20
-+S390 CHACHA20 SELFTEST
-+M:=09Vladis Dronov <vdronov@redhat.com>
-+M:=09Herbert Xu <herbert@gondor.apana.org.au>
-+R:=09Harald Freudenberger <freude@linux.ibm.com>
-+L:=09linux-s390@vger.kernel.org
-+S:=09Supported
-+F:=09tools/testing/crypto/chacha20-s390/
-+
- S390 COMMON I/O LAYER
- M:=09Vineeth Vijayan <vneethv@linux.ibm.com>
- M:=09Peter Oberparleiter <oberpar@linux.ibm.com>
---=20
-2.35.1
-
-
+Will
