@@ -2,158 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64046C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C9AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:45:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236414AbiGAMpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 08:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
+        id S236468AbiGAMpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 08:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236174AbiGAMpJ (ORCPT
+        with ESMTP id S236428AbiGAMpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 08:45:09 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9B3340DE
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 05:45:05 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2ef5380669cso22330177b3.9
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 05:45:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WeGYBPwVDixR2qJouCEO0ByS8rMRdZZ7Fc5WEDHOkR8=;
-        b=fwJ/7oQxr9u0A+gZ+PAk5PGvMB3ZTFUSYKEOHOxcSmW6hg2LlJhh1bYkZAkskHhjud
-         nBiWx6xjWRpRv5zrvSfNVCGJw2lM/I2mR5YZ7CWbfEBcKoJewqKDF1qGILgw1+GImUsx
-         oTZz5efquRuj2iDioBDF17v7f79Dsep40ga0o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WeGYBPwVDixR2qJouCEO0ByS8rMRdZZ7Fc5WEDHOkR8=;
-        b=1hnesEnxeRlNgxRZJM5WL7zUR7FD94H+4U8/VbGAQATA5mGjieVRnLvfdPgKUQlTZd
-         G7fEQhuSJ6xCqIyjT8CvxBiHtUTf5cwPHC7/+qTIhAbv8uitjApCg6zeX4zBAuAyXvtI
-         BR9dNuWsGjdvweQzlZYwu7+ZECsmDgQsuPFLHOm93S3A3/PtWcb4xwm4NeNSN/4Q5qPA
-         mcl9TRtEr2syNpkbHZK6y67CJt9sUI5EkoYBNeqGHdFp1VXFJKmHd5j3YKlI102EnXGp
-         hcLWvA9b3ZtckPvuZWB+pxlNFcRW1wfyuOMaNZLGIQ27h3lffGSihMZdEPBGzqsVBhMa
-         tjIQ==
-X-Gm-Message-State: AJIora/8IGwZqXAlFrWcNiGwlqDPQRSnQaUHf9B2RDzCbXz7uKAg3n6N
-        yc7V9uSyHrb4EO0wXPfCRelOFdeLGmxyQ7AnqhzNuQ==
-X-Google-Smtp-Source: AGRyM1sTMCFR93Cs/lcO5WPfXN00h1mu0K5SZtXz0zhdzHdEqwF3pf2Anm9v9f5YHNas1DSzoSqgOZLlmMh4l0Obodw=
-X-Received: by 2002:a05:690c:316:b0:314:2147:2b90 with SMTP id
- bg22-20020a05690c031600b0031421472b90mr15915094ywb.318.1656679504880; Fri, 01
- Jul 2022 05:45:04 -0700 (PDT)
+        Fri, 1 Jul 2022 08:45:35 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CA72B263;
+        Fri,  1 Jul 2022 05:45:34 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 261CcQVB025997;
+        Fri, 1 Jul 2022 12:45:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=ijW8+X9I6GEhQsMMJAQpxBegezU8N6QyHu3cA/a0ot8=;
+ b=OfUuyLktyDHR3zeqUqAk/uIsnnUfm1NRTVXlIDVbg2CsJRzuk+3tJd/72tumuf+1L0cy
+ bq4455JBaAUHaIGbIBM6cLWJrQTmZoekZsIkGm4dV/EdNueht35eT44EcCh+kiJtVzZg
+ 5gzkiwOM3EDV5+wJ2avaHGsfLHNyKAObLG5fxSwAxkaKUn2Gau8zJe9WoQdG5h8at5d2
+ ZYVjxtVTTr4rEThPxkmDRH6SP6raUSnp02phokH1itwU4Q3AMHcROA5Q0d49Pms8dFLV
+ BIfkNtJjPTWCe+18Zj/lHYrgLx+VD2OsJeZVpklXiQCf0w2D1nuHwM3Ur+YeTq9wqwBr Lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h20up8rfa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 12:45:26 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 261CciKQ027971;
+        Fri, 1 Jul 2022 12:45:26 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h20up8reu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 12:45:26 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 261CaO9C002123;
+        Fri, 1 Jul 2022 12:45:25 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma02dal.us.ibm.com with ESMTP id 3gwt0bbgp8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 12:45:25 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 261CjOhq62915008
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 1 Jul 2022 12:45:24 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5382F112061;
+        Fri,  1 Jul 2022 12:45:24 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 05BFC112065;
+        Fri,  1 Jul 2022 12:45:22 +0000 (GMT)
+Received: from [9.163.16.104] (unknown [9.163.16.104])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri,  1 Jul 2022 12:45:21 +0000 (GMT)
+Message-ID: <00aeafda-ed23-1066-c0b0-d8fb7f8ec2d2@linux.ibm.com>
+Date:   Fri, 1 Jul 2022 14:45:20 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2] net/smc: align the connect behaviour with TCP
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Cc:     davem@davemloft.net, Karsten Graul <kgraul@linux.ibm.com>,
+        liuyacan@corp.netease.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
+References: <26d43c65-1f23-5b83-6377-3327854387c4@linux.ibm.com>
+ <20220524125725.951315-1-liuyacan@corp.netease.com>
+ <3bb9366d-f271-a603-a280-b70ae2d59c00@linux.ibm.com>
+ <8a15e288-4534-501c-8b3d-c235ae93238f@linux.ibm.com>
+ <d2195919-1cae-b667-c137-8398848fa43b@linux.alibaba.com>
+ <fcac3b0c-db51-7221-d41a-0207144f131c@linux.ibm.com>
+ <3e801eb5-6305-aa87-43a6-98f591d7d55c@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <3e801eb5-6305-aa87-43a6-98f591d7d55c@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: cu5U6BG5Ne_od5wBs9Jz-jFPB43Ue_um
+X-Proofpoint-ORIG-GUID: EOrAQk_hgoVK8TSqrNob6FXGYG36jRSX
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220629155956.1138955-1-nfraprado@collabora.com>
-In-Reply-To: <20220629155956.1138955-1-nfraprado@collabora.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Fri, 1 Jul 2022 20:44:53 +0800
-Message-ID: <CAGXv+5Epmo1=DZvoFkqj57hiO8nim=cuP1v3i9b2diZwqBe3Mw@mail.gmail.com>
-Subject: Re: [PATCH v4 00/19] Introduce support for MediaTek MT8192 Google Chromebooks
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luca Weiss <luca@z3ntu.xyz>, Maxim Kutnij <gtk3@inbox.ru>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Shih <sam.shih@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-01_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 spamscore=0 adultscore=0 mlxlogscore=999
+ bulkscore=0 phishscore=0 priorityscore=1501 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2207010048
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 12:00 AM N=C3=ADcolas F. R. A. Prado
-<nfraprado@collabora.com> wrote:
->
->
-> This series introduces Devicetrees for the MT8192-based Asurada platform
-> as well as Asurada Spherion and Asurada Hayato boards.
->
-> Support for the boards is added to the extent that is currently enabled
-> in the mt8192.dtsi, and using only properties already merged in the
-> dt-bindings, as to not add any dependencies to this series.
->
-> This series was peer-reviewed internally before submission.
->
-> Series tested on next-20220629.
 
-Just FYI I also got the internal display to work after some fixes to
-the dtsi [1] and copying the stuff over from the ChromeOS kernel tree.
 
-It might be harder to enable the external display, given that we don't
-have a good way of describing the weird design of using the DP bridge
-also as a mux. See [2] for ongoing discussion.
-
-ChenYu
-
-[1] https://lore.kernel.org/linux-mediatek/CAGXv+5F_Gi_=3DvV1NSk0AGRVYCa3Q8=
-+gBaE+nv3OJ1AKe2voOwg@mail.gmail.com/
-[2] https://lore.kernel.org/dri-devel/20220622173605.1168416-1-pmalani@chro=
-mium.org/
-
-> v3: https://lore.kernel.org/all/20220512205602.158273-1-nfraprado@collabo=
-ra.com/
-> v2: https://lore.kernel.org/all/20220505194550.3094656-1-nfraprado@collab=
-ora.com/
-> v1: https://lore.kernel.org/all/20220316151327.564214-1-nfraprado@collabo=
-ra.com/
->
-> Changes in v4:
-> - Added patches 17-19 enabling MMC, SCP and SPI NOR flash
-> - Switched mediatek,drive-strength-adv for drive-strength-microamp
-> - Switched mediatek,pull-up-adv for bias-pull-up
-> - Updated Vgpu minimum voltage to appropriate value
->
-> Changes in v3:
-> - Renamed regulator nodes to be generic
-> - Fixed keyboard layout for Hayato
->
-> Changes in v2:
-> - Added patches 1-2 for Mediatek board dt-bindings
-> - Added patches 13-16 enabling hardware for Asurada that has since been
->   enabled on mt8192.dtsi
->
-> N=C3=ADcolas F. R. A. Prado (19):
->   dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-spherion
->   dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-hayato
->   arm64: dts: mediatek: Introduce MT8192-based Asurada board family
->   arm64: dts: mediatek: asurada: Document GPIO names
->   arm64: dts: mediatek: asurada: Add system-wide power supplies
->   arm64: dts: mediatek: asurada: Enable and configure I2C and SPI busses
->   arm64: dts: mediatek: asurada: Add ChromeOS EC
->   arm64: dts: mediatek: asurada: Add keyboard mapping for the top row
->   arm64: dts: mediatek: asurada: Add Cr50 TPM
->   arm64: dts: mediatek: asurada: Add Elan eKTH3000 I2C trackpad
->   arm64: dts: mediatek: asurada: Add I2C touchscreen
->   arm64: dts: mediatek: spherion: Add keyboard backlight
->   arm64: dts: mediatek: asurada: Enable XHCI
->   arm64: dts: mediatek: asurada: Enable PCIe and add WiFi
->   arm64: dts: mediatek: asurada: Add MT6359 PMIC
->   arm64: dts: mediatek: asurada: Add SPMI regulators
->   arm64: dts: mediatek: asurada: Enable MMC
->   arm64: dts: mediatek: asurada: Enable SCP
->   arm64: dts: mediatek: asurada: Add SPI NOR flash memory
->
->  .../devicetree/bindings/arm/mediatek.yaml     |  13 +
->  arch/arm64/boot/dts/mediatek/Makefile         |   2 +
->  .../dts/mediatek/mt8192-asurada-hayato-r1.dts |  47 +
->  .../mediatek/mt8192-asurada-spherion-r0.dts   |  62 ++
->  .../boot/dts/mediatek/mt8192-asurada.dtsi     | 959 ++++++++++++++++++
->  5 files changed, 1083 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1=
-.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-=
-r0.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
->
-> --
-> 2.36.1
->
+On 01.07.22 04:03, Guangguan Wang wrote:
+> 
+> 
+> On 2022/7/1 04:16, Wenjia Zhang wrote:
+>>
+>>
+>> On 30.06.22 16:29, Guangguan Wang wrote:
+>>> I'm so sorry I missed the last emails for this discussion.
+>>>
+>>> Yes, commit (86434744) is the trigger of the problem described in
+>>> https://lore.kernel.org/linux-s390/45a19f8b-1b64-3459-c28c-aebab4fd8f1e@linux.alibaba.com/#t  .
+>>>
+>>> And I have tested just remove the following lines from smc_connection() can solve the above problem.
+>>> if (smc->use_fallback)
+>>>        goto out;
+>>>
+>>> I aggree that partly reverting the commit (86434744) is a better solution.
+>>>
+>>> Thanks,
+>>> Guangguan Wang
+>> Thank you for your effort!
+>> Would you like to revert this patch? We'll revert the commit (86434744) partly.
+> 
+> Did you mean revert commit (3aba1030)?
+> Sorry, I think I led to a misunderstanding. I mean commit (86434744) is the trigger of the problem I replied
+> in email https://lore.kernel.org/linux-s390/45a19f8b-1b64-3459-c28c-aebab4fd8f1e@linux.alibaba.com/#t, not
+> the problem that commit (3aba1030) resolved for.
+> 
+> So I think the final solution is to remove the following lines from smc_connection() based on the current code.
+> if (smc->use_fallback) {
+> 	sock->state = rc ? SS_CONNECTING : SS_CONNECTED;
+> 	goto out;
+> }
+> 
+> Thanks,
+> Guangguan Wang
+That would be also ok for us, thanks!
