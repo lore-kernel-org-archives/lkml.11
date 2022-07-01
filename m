@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82023C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 17:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 17:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiGARoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 13:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S230095AbiGARqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 13:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiGARox (ORCPT
+        with ESMTP id S229541AbiGARp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 13:44:53 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AB515A17;
-        Fri,  1 Jul 2022 10:44:51 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id d2so5357975ejy.1;
-        Fri, 01 Jul 2022 10:44:51 -0700 (PDT)
+        Fri, 1 Jul 2022 13:45:59 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BF13586E
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 10:45:56 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id m24-20020a0568301e7800b00616b5c114d4so2342665otr.11
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 10:45:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
+        d=linuxtx.org; s=google;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=2w2/BpthXqOHTkCsAaU0UBZebQgMrwCMp2rLplxRxgE=;
-        b=Rx8I1j/jXL3YcmiEv56BHfgMxMTRlOdfVIYYEnZmBb0FNznCz+VEBtA1dE4KBGLx9d
-         j3i1HbaVR6jUi6BtfPbCfh49QFeNvarrY4xJjD+7IRa8EAqHaoOa6wgVJmMAcPGjvt8V
-         +mJgJJ5EhAd2vlrFLXiTA8/Fiy4o+KE7CRtdXM5sPIlZ9BV2rK+FV1EB5kzLuweBm7xQ
-         ck0Akgz+Lw4+1Ed2Kdhrq2hM+QyeWwLu0OJwEm0aJwhy0GIwebfQWv8uI0QE+Lf2Ph/g
-         bS7cHhsb4a0C7FsMRhdc+rMh3FNhBGbrSv6prflLRiwiaUvZI6oW+xeBsMios6Zo0GqJ
-         mMAA==
+        bh=+uIzzdIqyx1C6A1HKW7nXMx0lE0tm3iNprUI98UNAUU=;
+        b=YtVG2Sjd5m9rs2+dhrnvYW3C3+DBij0IYl+cvTgLrW3Hhtfrq4OUGHX+0fPazgMVHK
+         FDQ81a5YdXRy1e96RX0d/19s4YCFlkjekR8GAjLGwoNGN+SOEvZFHGh6TOqEl5OSuEtc
+         Kdv0Ig5uoj7B/+zq3Rcuhhmi3bbCLMPV7awAk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2w2/BpthXqOHTkCsAaU0UBZebQgMrwCMp2rLplxRxgE=;
-        b=YWRKe0cyu6Gz2sxC+NwfNBjAB2xCd1sizt9rHFoHntXHS7R8Z5bRsy8jcZBannSWH3
-         UKIxxvaJJWsS1AqY5BEjADn9aC8d26ro6ijsv5/Al9jtJGE+Jwy0+G5TCx6jFsS+YZA0
-         D58DAeyj6fotcFLtihMx+YwRqC/CY5VLD5zPjD5A0q4fhsa8Ye7UpfumR5O4+iUrTJN8
-         QF2UktP85j1s9b966e8R/A4Yo2aZOOpjDpPpAzW9QQvGa3KZV9/kYYsoUKb9Kflzcfnh
-         YCF4cyVPeKJ7LFAVoRscZTaHLe1yNbt3zs/jSSQYhn0S4vJxpZGr8ssOIGXjBEj0fl3Z
-         rIXA==
-X-Gm-Message-State: AJIora/mRVX2kl9QvW8ElT4AUC9DQ99pNnh65Zw9U8pPs1AQ4A/SDekr
-        tsSqvCMfXiHZuRSCfAC2uf8=
-X-Google-Smtp-Source: AGRyM1vY2qQU6x5AEoRfVHsbQLbVaw0kMakjWaMhipgGZ4HVZJKqUD4I3Y7652u2i2UpsDSCmJ0anw==
-X-Received: by 2002:a17:907:608b:b0:725:f45:39be with SMTP id ht11-20020a170907608b00b007250f4539bemr15963305ejc.669.1656697490382;
-        Fri, 01 Jul 2022 10:44:50 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170906174600b00715705dd23asm10712725eje.89.2022.07.01.10.44.49
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=+uIzzdIqyx1C6A1HKW7nXMx0lE0tm3iNprUI98UNAUU=;
+        b=KvKOgLObQiXv4WqNnOrFojnBKPrzMlcBfIhpZ/LjCBOfIjTBXgkiNgiFzRwylRJ7eV
+         r/vgsBdlmEPfVo6HwKeakl9kabLtEspJH+lOjYBhMdn5PZi5S1Ow7s6LiwAYYdHDbm3I
+         IRUdrw/wK2IfFZNFoi2BdSY+K04KYRx+1aGstIUOfviGIqitpiRb7znn9BOzGvBfr+Ek
+         VQIPjwH8E38chSB0h/IfdMsnMjxYyB86c9Jx4jnQCMDjhJH2kgpPyx02HoPdHlsfPWVM
+         WXCZeSHRfbYyqNvviHTO2DkaYl3PRE9rqAFMyRodYA7dnSbrsN+T2r2jmHrqGi7NYITB
+         hKTg==
+X-Gm-Message-State: AJIora/rgd//pCGTOEWpi6h5p5KS/xXf6kfp4OAbAXFryVkHCs/SFykX
+        QJAkClUSkVgsgLCJX/hUDWXx+Q==
+X-Google-Smtp-Source: AGRyM1t7FtB00Y0DvB1zawcqNsUYNyKXrLFdTG6V+9CprD263LFKV2Droh55OHeKOHMJpIQ/qyICDQ==
+X-Received: by 2002:a9d:630f:0:b0:618:da60:4c62 with SMTP id q15-20020a9d630f000000b00618da604c62mr777731otk.296.1656697555809;
+        Fri, 01 Jul 2022 10:45:55 -0700 (PDT)
+Received: from fedora64.linuxtx.org (99-47-93-78.lightspeed.rcsntx.sbcglobal.net. [99.47.93.78])
+        by smtp.gmail.com with ESMTPSA id r16-20020a056830237000b006168bc4caacsm12955696oth.67.2022.07.01.10.45.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 10:44:50 -0700 (PDT)
-Message-ID: <62bf3292.1c69fb81.f66df.44ed@mx.google.com>
-X-Google-Original-Message-ID: <Yr8vncVpgOcziTu0@Ansuel-xps.>
-Date:   Fri, 1 Jul 2022 19:32:13 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: Re: [PATCH v4 3/5] dt-bindings: arm: msm: Rework kpss-gcc driver
- Documentation to yaml
-References: <20220629121441.6552-1-ansuelsmth@gmail.com>
- <20220629121441.6552-4-ansuelsmth@gmail.com>
- <20220701173238.GA1175908-robh@kernel.org>
+        Fri, 01 Jul 2022 10:45:54 -0700 (PDT)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+Date:   Fri, 1 Jul 2022 12:45:53 -0500
+From:   Justin Forbes <jforbes@fedoraproject.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 0/6] 5.18.9-rc1 review
+Message-ID: <Yr8y0SYVXmzEDGmG@fedora64.linuxtx.org>
+References: <20220630133230.239507521@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220701173238.GA1175908-robh@kernel.org>
+In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 11:32:38AM -0600, Rob Herring wrote:
-> On Wed, Jun 29, 2022 at 02:14:39PM +0200, Christian Marangi wrote:
-> > Rework kpss-gcc driver Documentation to yaml Documentation.
+On Thu, Jun 30, 2022 at 03:47:26PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.9 release.
+> There are 6 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> It's not 'driver Documentation'. It's a DT binding for h/w.
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
 > 
-> Lot's of things are YAML. I prefer 'DT schema'
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.9-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
 > 
-> The subjects are bit long and get cut off as well. For the subject, 
-> something like:
+> thanks,
 > 
-> dt-bindings: arm: msm: Convert kpss-gcc to DT schema
-> 
-> And similar for the other patch.
->
+> greg k-h
 
-It was pointed out that since this have additional change than simple
-conversion, using "Convert" can be confusing.
-Is Rework or Refactor a better naming for this single patch?
+Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
+s390x, x86_64), and boot tested x86_64. No regressions noted.
 
-> > The current kpss-gcc Documentation have major problems and can't be
-> > converted directly. Introduce various changes to the original
-> > Documentation.
-> > 
-> > Add #clock-cells additional binding as this clock outputs a static clk
-> > named acpu_l2_aux with supported compatible.
-> > Only some compatible require and outputs a clock, for the others, set
-> > only the reg as a required binding to correctly export the kpss-gcc
-> > registers. As the reg is shared also add the required syscon compatible.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ---------
-> >  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 90 +++++++++++++++++++
-> >  2 files changed, 90 insertions(+), 44 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-
--- 
-	Ansuel
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
