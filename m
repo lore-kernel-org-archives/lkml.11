@@ -2,60 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC92CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236272AbiGAIY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49856 "EHLO
+        id S236307AbiGAIZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234932AbiGAIYp (ORCPT
+        with ESMTP id S236196AbiGAIYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:24:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A486672ED7
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:22:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656663777; x=1688199777;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KQT2Js8BSZVnKoLQyDVtKNHzugCIZ6dztQGR4wapsqs=;
-  b=lps2hkyiEnnzHSZBLhmiKbMt368Nt+nnT7ovn4zK/2Bhm5GyzAzfAyka
-   OOkVgZz2p90TuUr3ycF3qQixrKRzHxwDTOcsTTVHoPWSzpYS9WExn6G7T
-   JvoArwjS9LIgu0QJk42MVrWwBgXb/yhvSpgLuguiyPC8EeLihEvB45V2a
-   oPaDBZyngMNfFo9SomIBRxsP1CN7XpGXWMaC7CyoSTVUEHSba64FnRI+N
-   9q9LEzWKXQa53OUJP4txrH09toMk2zvmpArlPHU/C3f8c35fgwA8YF2JI
-   3IdraUYeOhcbSFKE6sr8A411sbpXR6N1d2pFkgyg08qBdMlRHnFfMxbfj
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262989091"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="262989091"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:22:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="694423047"
-Received: from brentlu-brix.itwn.intel.com ([10.5.253.25])
-  by fmsmga002.fm.intel.com with ESMTP; 01 Jul 2022 01:22:54 -0700
-From:   Brent Lu <brent.lu@intel.com>
-To:     alsa-devel@alsa-project.org
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Brent Lu <brent.lu@intel.com>,
-        Yong Zhi <yong.zhi@intel.com>,
-        Mac Chiang <mac.chiang@intel.com>,
-        Ajye Huang <ajye.huang@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: Intel: sof_rt5682: fix out-of-bounds array access
-Date:   Fri,  1 Jul 2022 16:19:08 +0800
-Message-Id: <20220701081908.248239-1-brent.lu@intel.com>
+        Fri, 1 Jul 2022 04:24:50 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA3AE7393B;
+        Fri,  1 Jul 2022 01:22:59 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 6545B1E80D93;
+        Fri,  1 Jul 2022 16:21:29 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 4KTjlSqAWO5c; Fri,  1 Jul 2022 16:21:26 +0800 (CST)
+Received: from localhost.localdomain (unknown [112.65.12.78])
+        (Authenticated sender: jiaming@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id BF5971E80D92;
+        Fri,  1 Jul 2022 16:21:24 +0800 (CST)
+From:   Zhang Jiaming <jiaming@nfschina.com>
+To:     xiubli@redhat.com, idryomov@gmail.com, jlayton@kernel.org
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com,
+        Zhang Jiaming <jiaming@nfschina.com>
+Subject: [PATCH] netfs: Fix typo
+Date:   Fri,  1 Jul 2022 16:22:50 +0800
+Message-Id: <20220701082250.14935-1-jiaming@nfschina.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,62 +41,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Starting from ADL platform we have four HDMI PCM devices which exceeds
-the size of sof_hdmi array. Since each sof_hdmi_pcm structure
-represents one HDMI PCM device, we remove the sof_hdmi array and add a
-new member hdmi_jack to the snd_soc_jack structure to fix the
-out-of-bounds problem.
+There is a typo (writeable) in comments and dout information.
+Fix it.
 
-Signed-off-by: Brent Lu <brent.lu@intel.com>
+Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
 ---
- sound/soc/intel/boards/sof_rt5682.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ fs/ceph/addr.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
-index a24fb71d5ff3..1384716c6360 100644
---- a/sound/soc/intel/boards/sof_rt5682.c
-+++ b/sound/soc/intel/boards/sof_rt5682.c
-@@ -69,11 +69,10 @@ static unsigned long sof_rt5682_quirk = SOF_RT5682_MCLK_EN |
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index 6dee88815491..083c5b6cae9e 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -565,7 +565,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
  
- static int is_legacy_cpu;
+ 	dout("writepage %p idx %lu\n", page, page->index);
  
--static struct snd_soc_jack sof_hdmi[3];
--
- struct sof_hdmi_pcm {
- 	struct list_head head;
- 	struct snd_soc_dai *codec_dai;
-+	struct snd_soc_jack hdmi_jack;
- 	int device;
- };
- 
-@@ -447,7 +446,6 @@ static int sof_card_late_probe(struct snd_soc_card *card)
- 	char jack_name[NAME_SIZE];
- 	struct sof_hdmi_pcm *pcm;
- 	int err;
--	int i = 0;
- 
- 	/* HDMI is not supported by SOF on Baytrail/CherryTrail */
- 	if (is_legacy_cpu || !ctx->idisp_codec)
-@@ -468,17 +466,15 @@ static int sof_card_late_probe(struct snd_soc_card *card)
- 		snprintf(jack_name, sizeof(jack_name),
- 			 "HDMI/DP, pcm=%d Jack", pcm->device);
- 		err = snd_soc_card_jack_new(card, jack_name,
--					    SND_JACK_AVOUT, &sof_hdmi[i]);
-+					    SND_JACK_AVOUT, &pcm->hdmi_jack);
- 
- 		if (err)
- 			return err;
- 
- 		err = hdac_hdmi_jack_init(pcm->codec_dai, pcm->device,
--					  &sof_hdmi[i]);
-+					  &pcm->hdmi_jack);
- 		if (err < 0)
- 			return err;
--
--		i++;
+-	/* verify this is a writeable snap context */
++	/* verify this is a writable snap context */
+ 	snapc = page_snap_context(page);
+ 	if (!snapc) {
+ 		dout("writepage %p page %p not dirty?\n", inode, page);
+@@ -573,7 +573,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
  	}
+ 	oldest = get_oldest_context(inode, &ceph_wbc, snapc);
+ 	if (snapc->seq > oldest->seq) {
+-		dout("writepage %p page %p snapc %p not writeable - noop\n",
++		dout("writepage %p page %p snapc %p not writable - noop\n",
+ 		     inode, page, snapc);
+ 		/* we should only noop if called by kswapd */
+ 		WARN_ON(!(current->flags & PF_MEMALLOC));
+@@ -860,7 +860,7 @@ static int ceph_writepages_start(struct address_space *mapping,
+ 	} else if (!ceph_wbc.head_snapc) {
+ 		/* Do not respect wbc->range_{start,end}. Dirty pages
+ 		 * in that range can be associated with newer snapc.
+-		 * They are not writeable until we write all dirty pages
++		 * They are not writable until we write all dirty pages
+ 		 * associated with 'snapc' get written */
+ 		if (index > 0)
+ 			should_loop = true;
+@@ -1219,7 +1219,7 @@ static int ceph_writepages_start(struct address_space *mapping,
  
- 	if (sof_rt5682_quirk & SOF_MAX98373_SPEAKER_AMP_PRESENT) {
+ 
+ /*
+- * See if a given @snapc is either writeable, or already written.
++ * See if a given @snapc is either writable, or already written.
+  */
+ static int context_is_writeable_or_written(struct inode *inode,
+ 					   struct ceph_snap_context *snapc)
+@@ -1265,18 +1265,18 @@ ceph_find_incompatible(struct page *page)
+ 
+ 		/*
+ 		 * this page is already dirty in another (older) snap
+-		 * context!  is it writeable now?
++		 * context!  is it writable now?
+ 		 */
+ 		oldest = get_oldest_context(inode, NULL, NULL);
+ 		if (snapc->seq > oldest->seq) {
+-			/* not writeable -- return it for the caller to deal with */
++			/* not writable -- return it for the caller to deal with */
+ 			ceph_put_snap_context(oldest);
+ 			dout(" page %p snapc %p not current or oldest\n", page, snapc);
+ 			return ceph_get_snap_context(snapc);
+ 		}
+ 		ceph_put_snap_context(oldest);
+ 
+-		/* yay, writeable, do it now (without dropping page lock) */
++		/* yay, writable, do it now (without dropping page lock) */
+ 		dout(" page %p snapc %p not current, but oldest\n", page, snapc);
+ 		if (clear_page_dirty_for_io(page)) {
+ 			int r = writepage_nounlock(page, NULL);
 -- 
 2.25.1
 
