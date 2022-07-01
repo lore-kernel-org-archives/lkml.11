@@ -2,218 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 133E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F26AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbiGAIYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
+        id S236272AbiGAIY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233994AbiGAIYB (ORCPT
+        with ESMTP id S234932AbiGAIYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:24:01 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99C473904
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:22:10 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id g7so1940724pjj.2
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:22:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=b7SNzEv2Y0yMoLr0YW1Rr4xpG010Vhadeq8nxGyUQ7g=;
-        b=AuEQTOaWqe6eTjPtJvstSxgy2AATbxAiNYqJCbiYyAruGoKmeax/KPtEzFE8BZBJz3
-         oUJCxJM00l3FliWHHMVx+C0vwCxSL3G7n4I23Flwy07sszZiEamRbMbBgrcqQD332OaZ
-         xZTBHv8XLmpiM2Zi4JAGOWsZFduMuM53NSHjVMYYzJoLNdeZkX1M0bAYPDeRPBXgCtJx
-         AEJmetHGYtoKEKviGJ3y1QgRm4TzV0yqSFfbg4UfePNRkwYRnthFiLRgXRN1C/gcZMb7
-         K7iN+pu5eTUo2DccCPImrvoqwM+8Yx8woObRknJvjFZqKBMJtRXoCEoGng4XGfNQ0J1j
-         giGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=b7SNzEv2Y0yMoLr0YW1Rr4xpG010Vhadeq8nxGyUQ7g=;
-        b=rpzC3raSVJk+wyQzhGfVDNK7PdE5NdL2HqZvbpSSwGbZcKQFxLuzqJxrq1IaVsxB/z
-         RJnRS5f9nMU+7TxG9OOew7LTG7JxjTMzTDl+uzwwsCQm6GzUNn6qOATFw9714n5IsfUv
-         V2jVW1pG2/lWO1O1Z0L+6lhCVkJ7pGq8kS2/n4flLrxLawoHGmVH1D6/GmBIjxFMOTYT
-         0/ZImbFl4jVSqwMGcvFgxzLUmXX7PWdMj50VbEjhJxVrxZuNlCz3z4DHr7T61qDLOI8+
-         vKfjvyUVovHv2zkDk6ELa5Ai1kfwu5utyXEvO5YrPAwSge02dA0VpY21nlvm4nbVXUlw
-         0kGA==
-X-Gm-Message-State: AJIora+72wTlQRl83EqGO9wTC7D7Q6VpaG2x/gMOcgvXvL7SlKX2NuOT
-        lkDame7Xsi29ZriCfjc2kv1Uqg==
-X-Google-Smtp-Source: AGRyM1umn8qHkGZedvpCETfMBY/tg0uf0IicbyM848kvybseXS0QBaHz8B9yPUnGvGAzb16e6fVmtg==
-X-Received: by 2002:a17:902:e983:b0:16a:2221:fc99 with SMTP id f3-20020a170902e98300b0016a2221fc99mr18533979plb.19.1656663730172;
-        Fri, 01 Jul 2022 01:22:10 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id s26-20020a65645a000000b0040c755b7651sm14813778pgv.41.2022.07.01.01.22.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 01:22:09 -0700 (PDT)
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V2 30/30] OPP: Remove dev_pm_opp_set_prop_name() and friends
-Date:   Fri,  1 Jul 2022 13:50:25 +0530
-Message-Id: <100facac98a8f481fdb4f3cedd6a760c627d0239.1656660185.git.viresh.kumar@linaro.org>
-X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
-In-Reply-To: <cover.1656660185.git.viresh.kumar@linaro.org>
-References: <cover.1656660185.git.viresh.kumar@linaro.org>
+        Fri, 1 Jul 2022 04:24:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A486672ED7
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:22:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656663777; x=1688199777;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KQT2Js8BSZVnKoLQyDVtKNHzugCIZ6dztQGR4wapsqs=;
+  b=lps2hkyiEnnzHSZBLhmiKbMt368Nt+nnT7ovn4zK/2Bhm5GyzAzfAyka
+   OOkVgZz2p90TuUr3ycF3qQixrKRzHxwDTOcsTTVHoPWSzpYS9WExn6G7T
+   JvoArwjS9LIgu0QJk42MVrWwBgXb/yhvSpgLuguiyPC8EeLihEvB45V2a
+   oPaDBZyngMNfFo9SomIBRxsP1CN7XpGXWMaC7CyoSTVUEHSba64FnRI+N
+   9q9LEzWKXQa53OUJP4txrH09toMk2zvmpArlPHU/C3f8c35fgwA8YF2JI
+   3IdraUYeOhcbSFKE6sr8A411sbpXR6N1d2pFkgyg08qBdMlRHnFfMxbfj
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262989091"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="262989091"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:22:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="694423047"
+Received: from brentlu-brix.itwn.intel.com ([10.5.253.25])
+  by fmsmga002.fm.intel.com with ESMTP; 01 Jul 2022 01:22:54 -0700
+From:   Brent Lu <brent.lu@intel.com>
+To:     alsa-devel@alsa-project.org
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Brent Lu <brent.lu@intel.com>,
+        Yong Zhi <yong.zhi@intel.com>,
+        Mac Chiang <mac.chiang@intel.com>,
+        Ajye Huang <ajye.huang@gmail.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: Intel: sof_rt5682: fix out-of-bounds array access
+Date:   Fri,  1 Jul 2022 16:19:08 +0800
+Message-Id: <20220701081908.248239-1-brent.lu@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that everyone has migrated to dev_pm_opp_set_config(), remove the
-public interface for dev_pm_opp_set_prop_name() and friends.
+Starting from ADL platform we have four HDMI PCM devices which exceeds
+the size of sof_hdmi array. Since each sof_hdmi_pcm structure
+represents one HDMI PCM device, we remove the sof_hdmi array and add a
+new member hdmi_jack to the snd_soc_jack structure to fix the
+out-of-bounds problem.
 
-Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Brent Lu <brent.lu@intel.com>
 ---
- drivers/opp/core.c     | 55 ++++++++++++++----------------------------
- include/linux/pm_opp.h |  9 -------
- 2 files changed, 18 insertions(+), 46 deletions(-)
+ sound/soc/intel/boards/sof_rt5682.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 17e9d272026f..75bb570d30e4 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -1997,7 +1997,7 @@ static void _opp_put_supported_hw(struct opp_table *opp_table)
- }
+diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
+index a24fb71d5ff3..1384716c6360 100644
+--- a/sound/soc/intel/boards/sof_rt5682.c
++++ b/sound/soc/intel/boards/sof_rt5682.c
+@@ -69,11 +69,10 @@ static unsigned long sof_rt5682_quirk = SOF_RT5682_MCLK_EN |
  
- /**
-- * dev_pm_opp_set_prop_name() - Set prop-extn name
-+ * _opp_set_prop_name() - Set prop-extn name
-  * @dev: Device for which the prop-name has to be set.
-  * @name: name to postfix to properties.
-  *
-@@ -2006,50 +2006,33 @@ static void _opp_put_supported_hw(struct opp_table *opp_table)
-  * which the extension will apply are opp-microvolt and opp-microamp. OPP core
-  * should postfix the property name with -<name> while looking for them.
-  */
--struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name)
-+static int _opp_set_prop_name(struct opp_table *opp_table, const char *name)
- {
--	struct opp_table *opp_table;
+ static int is_legacy_cpu;
+ 
+-static struct snd_soc_jack sof_hdmi[3];
 -
--	opp_table = _add_opp_table(dev, false);
--	if (IS_ERR(opp_table))
--		return opp_table;
+ struct sof_hdmi_pcm {
+ 	struct list_head head;
+ 	struct snd_soc_dai *codec_dai;
++	struct snd_soc_jack hdmi_jack;
+ 	int device;
+ };
+ 
+@@ -447,7 +446,6 @@ static int sof_card_late_probe(struct snd_soc_card *card)
+ 	char jack_name[NAME_SIZE];
+ 	struct sof_hdmi_pcm *pcm;
+ 	int err;
+-	int i = 0;
+ 
+ 	/* HDMI is not supported by SOF on Baytrail/CherryTrail */
+ 	if (is_legacy_cpu || !ctx->idisp_codec)
+@@ -468,17 +466,15 @@ static int sof_card_late_probe(struct snd_soc_card *card)
+ 		snprintf(jack_name, sizeof(jack_name),
+ 			 "HDMI/DP, pcm=%d Jack", pcm->device);
+ 		err = snd_soc_card_jack_new(card, jack_name,
+-					    SND_JACK_AVOUT, &sof_hdmi[i]);
++					    SND_JACK_AVOUT, &pcm->hdmi_jack);
+ 
+ 		if (err)
+ 			return err;
+ 
+ 		err = hdac_hdmi_jack_init(pcm->codec_dai, pcm->device,
+-					  &sof_hdmi[i]);
++					  &pcm->hdmi_jack);
+ 		if (err < 0)
+ 			return err;
 -
--	/* Make sure there are no concurrent readers while updating opp_table */
--	WARN_ON(!list_empty(&opp_table->opp_list));
--
- 	/* Another CPU that shares the OPP table has set the property ? */
--	if (opp_table->prop_name)
--		return opp_table;
--
--	opp_table->prop_name = kstrdup(name, GFP_KERNEL);
- 	if (!opp_table->prop_name) {
--		dev_pm_opp_put_opp_table(opp_table);
--		return ERR_PTR(-ENOMEM);
-+		opp_table->prop_name = kstrdup(name, GFP_KERNEL);
-+		if (!opp_table->prop_name)
-+			return -ENOMEM;
+-		i++;
  	}
  
--	return opp_table;
-+	return 0;
- }
--EXPORT_SYMBOL_GPL(dev_pm_opp_set_prop_name);
- 
- /**
-- * dev_pm_opp_put_prop_name() - Releases resources blocked for prop-name
-- * @opp_table: OPP table returned by dev_pm_opp_set_prop_name().
-+ * _opp_put_prop_name() - Releases resources blocked for prop-name
-+ * @opp_table: OPP table returned by _opp_set_prop_name().
-  *
-  * This is required only for the V2 bindings, and is called for a matching
-- * dev_pm_opp_set_prop_name(). Until this is called, the opp_table structure
-+ * _opp_set_prop_name(). Until this is called, the opp_table structure
-  * will not be freed.
-  */
--void dev_pm_opp_put_prop_name(struct opp_table *opp_table)
-+static void _opp_put_prop_name(struct opp_table *opp_table)
- {
--	if (unlikely(!opp_table))
--		return;
--
--	kfree(opp_table->prop_name);
--	opp_table->prop_name = NULL;
--
--	dev_pm_opp_put_opp_table(opp_table);
-+	if (opp_table->prop_name) {
-+		kfree(opp_table->prop_name);
-+		opp_table->prop_name = NULL;
-+	}
- }
--EXPORT_SYMBOL_GPL(dev_pm_opp_put_prop_name);
- 
- /**
-  * _opp_set_regulators() - Set regulator names for the device
-@@ -2392,7 +2375,7 @@ static void _opp_clear_config(struct opp_config_data *data)
- 	if (data->flags & OPP_CONFIG_REGULATOR_HELPER)
- 		_opp_unregister_set_opp_helper(data->opp_table);
- 	if (data->flags & OPP_CONFIG_PROP_NAME)
--		dev_pm_opp_put_prop_name(data->opp_table);
-+		_opp_put_prop_name(data->opp_table);
- 	if (data->flags & OPP_CONFIG_CLK)
- 		_opp_put_clknames(data->opp_table);
- 
-@@ -2419,7 +2402,7 @@ static void _opp_clear_config(struct opp_config_data *data)
-  */
- int dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
- {
--	struct opp_table *opp_table, *err;
-+	struct opp_table *opp_table;
- 	struct opp_config_data *data;
- 	unsigned int id;
- 	int ret;
-@@ -2455,11 +2438,9 @@ int dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
- 
- 	/* Configure property names */
- 	if (config->prop_name) {
--		err = dev_pm_opp_set_prop_name(dev, config->prop_name);
--		if (IS_ERR(err)) {
--			ret = PTR_ERR(err);
-+		ret = _opp_set_prop_name(opp_table, config->prop_name);
-+		if (ret)
- 			goto err;
--		}
- 
- 		data->flags |= OPP_CONFIG_PROP_NAME;
- 	}
-diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
-index 63ad7870ae11..26653be21dc0 100644
---- a/include/linux/pm_opp.h
-+++ b/include/linux/pm_opp.h
-@@ -187,8 +187,6 @@ int dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config);
- int devm_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config);
- void dev_pm_opp_clear_config(int token);
- 
--struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name);
--void dev_pm_opp_put_prop_name(struct opp_table *opp_table);
- struct dev_pm_opp *dev_pm_opp_xlate_required_opp(struct opp_table *src_table, struct opp_table *dst_table, struct dev_pm_opp *src_opp);
- int dev_pm_opp_xlate_performance_state(struct opp_table *src_table, struct opp_table *dst_table, unsigned int pstate);
- int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq);
-@@ -360,13 +358,6 @@ static inline int dev_pm_opp_unregister_notifier(struct device *dev, struct noti
- 	return -EOPNOTSUPP;
- }
- 
--static inline struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name)
--{
--	return ERR_PTR(-EOPNOTSUPP);
--}
--
--static inline void dev_pm_opp_put_prop_name(struct opp_table *opp_table) {}
--
- static inline int dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
- {
- 	return -EOPNOTSUPP;
+ 	if (sof_rt5682_quirk & SOF_MAX98373_SPEAKER_AMP_PRESENT) {
 -- 
-2.31.1.272.g89b43f80a514
+2.25.1
 
