@@ -2,151 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 701D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235248AbiGAJGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
+        id S235571AbiGAJIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiGAJGI (ORCPT
+        with ESMTP id S232948AbiGAJIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:06:08 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C149C114E;
-        Fri,  1 Jul 2022 02:06:03 -0700 (PDT)
-X-UUID: 7bf54f5d3122414ab72b5d34e9d28e84-20220701
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:af400ecc-fc78-4c3f-8811-04654e690bbd,OB:0,LO
-        B:20,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:90
-X-CID-INFO: VERSION:1.1.7,REQID:af400ecc-fc78-4c3f-8811-04654e690bbd,OB:0,LOB:
-        20,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:90
-X-CID-META: VersionHash:87442a2,CLOUDID:17e559d6-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:241272e3c83d,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 7bf54f5d3122414ab72b5d34e9d28e84-20220701
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 559337415; Fri, 01 Jul 2022 17:05:53 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 1 Jul 2022 17:05:53 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 17:05:53 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v2 6/6] arm64: dts: mt8192: Add vcodec lat and core nodes
-Date:   Fri, 1 Jul 2022 17:05:47 +0800
-Message-ID: <20220701090547.21429-7-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220701090547.21429-1-allen-kh.cheng@mediatek.com>
-References: <20220701090547.21429-1-allen-kh.cheng@mediatek.com>
+        Fri, 1 Jul 2022 05:08:41 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1161EC62
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:08:37 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LZ8Sn2d6Mz1L8Vl;
+        Fri,  1 Jul 2022 17:06:17 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 17:08:36 +0800
+Received: from [10.67.111.205] (10.67.111.205) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 17:08:35 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+Subject: [BUG] I found a syzkaller softlockup "BUG: soft lockup in
+ __mmap_region"
+To:     <peterz@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Ingo Molnar" <mingo@redhat.com>
+CC:     <yangjihong1@huawei.com>
+Message-ID: <7c67bae9-be74-e3cc-9189-e42bbb39a0a0@huawei.com>
+Date:   Fri, 1 Jul 2022 17:08:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-MTK:  N
+X-Originating-IP: [10.67.111.205]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add vcodec lat and core nodes for mt8192 SoC.
+Hello，
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 60 ++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+In my environment, a perf_mmap softlockup syzkaller problem occurs. The 
+call stack is as follows:
+[ 3666.984385][    C2] watchdog: BUG: soft lockup - CPU#2 stuck for 23s! 
+[syz-executor.2:32404]
+[ 3666.986137][    C2] Modules linked in:
+[ 3666.989581][    C2] CPU: 2 PID: 32404 Comm: syz-executor.2 Not 
+tainted 5.10.0+ #4
+[ 3666.990697][    C2] Hardware name: linux,dummy-virt (DT)
+[ 3666.992270][    C2] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO BTYPE=--)
+[ 3666.993787][    C2] pc : __kasan_check_write+0x0/0x40
+[ 3666.994841][    C2] lr : perf_mmap+0x3c8/0xf80
+[ 3666.995661][    C2] sp : ffff00001011f8f0
+[ 3666.996598][    C2] x29: ffff00001011f8f0 x28: ffff0000cf644868
+[ 3666.998488][    C2] x27: ffff000012cad2c0 x26: 0000000000000000
+[ 3666.999888][    C2] x25: 0000000000000001 x24: ffff000012cad298
+[ 3667.003511][    C2] x23: 0000000000000000 x22: ffff000012cad000
+[ 3667.005504][    C2] x21: ffff0000cf644818 x20: ffff0000cf6d2400
+[ 3667.006891][    C2] x19: ffff0000cf6d24c0 x18: 0000000000000000
+[ 3667.008295][    C2] x17: 0000000000000000 x16: 0000000000000000
+[ 3667.009528][    C2] x15: 0000000000000000 x14: 0000000000000000
+[ 3667.010658][    C2] x13: 0000000000000000 x12: ffff800002023f17
+[ 3667.012169][    C2] x11: 1fffe00002023f16 x10: ffff800002023f16
+[ 3667.013780][    C2] x9 : dfffa00000000000 x8 : ffff00001011f8b7
+[ 3667.015265][    C2] x7 : 0000000000000001 x6 : ffff800002023f16
+[ 3667.016683][    C2] x5 : ffff0000c0f36400 x4 : 0000000000000000
+[ 3667.018078][    C2] x3 : ffffa00010000000 x2 : ffffa000119a0000
+[ 3667.019343][    C2] x1 : 0000000000000004 x0 : ffff0000cf6d24c0
+[ 3667.021276][    C2] Call trace:
+[ 3667.022598][    C2]  __kasan_check_write+0x0/0x40
+[ 3667.023666][    C2]  __mmap_region+0x7a4/0xc90
+[ 3667.024679][    C2]  __do_mmap_mm+0x600/0xa20
+[ 3667.025700][    C2]  do_mmap+0x114/0x384
+[ 3667.026583][    C2]  vm_mmap_pgoff+0x138/0x230
+[ 3667.027532][    C2]  ksys_mmap_pgoff+0x1d8/0x570
+[ 3667.028537][    C2]  __arm64_sys_mmap+0xa4/0xd0
+[ 3667.029597][    C2]  el0_svc_common.constprop.0+0xf4/0x414
+[ 3667.030682][    C2]  do_el0_svc+0x50/0x11c
+[ 3667.031545][    C2]  el0_svc+0x20/0x30
+[ 3667.032368][    C2]  el0_sync_handler+0xe4/0x1e0
+[ 3667.033305][    C2]  el0_sync+0x148/0x180
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 6d9164b47bd1..2a1ad3084a01 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -1437,6 +1437,66 @@
- 			power-domains = <&spm MT8192_POWER_DOMAIN_ISP2>;
- 		};
- 
-+		vcodec_dec: vcodec-dec@16000000 {
-+			compatible = "mediatek,mt8192-vcodec-dec";
-+			reg = <0 0x16000000 0 0x1000>;
-+			mediatek,scp = <&scp>;
-+			iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>;
-+			dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			ranges = <0 0 0 0x16000000 0 0x26000>;
-+
-+			vcodec_lat: vcodec-lat@10000 {
-+				compatible = "mediatek,mtk-vcodec-lat";
-+				reg = <0x0 0x10000 0 0x800>;
-+				interrupts = <GIC_SPI 426 IRQ_TYPE_LEVEL_HIGH 0>;
-+				iommus = <&iommu0 M4U_PORT_L5_VDEC_LAT0_VLD_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_VLD2_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_AVC_MV_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_PRED_RD_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_TILE_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_WDMA_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_RG_CTRL_DMA_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_UFO_ENC_EXT>;
-+				clocks = <&topckgen CLK_TOP_VDEC_SEL>,
-+					 <&vdecsys_soc CLK_VDEC_SOC_VDEC>,
-+					 <&vdecsys_soc CLK_VDEC_SOC_LAT>,
-+					 <&vdecsys_soc CLK_VDEC_SOC_LARB1>,
-+					 <&topckgen CLK_TOP_MAINPLL_D4>;
-+				clock-names = "sel", "soc-vdec", "soc-lat", "vdec", "top";
-+				assigned-clocks = <&topckgen CLK_TOP_VDEC_SEL>;
-+				assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D4>;
-+				power-domains = <&spm MT8192_POWER_DOMAIN_VDEC>;
-+			};
-+
-+			vcodec_core: vcodec-core@25000 {
-+				compatible = "mediatek,mtk-vcodec-core";
-+				reg = <0 0x25000 0 0x1000>;
-+				interrupts = <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH 0>;
-+				iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_UFO_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PP_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PRED_RD_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PRED_WR_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PPWRAP_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_TILE_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_VLD_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_VLD2_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_AVC_MV_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_RG_CTRL_DMA_EXT>;
-+				clocks = <&topckgen CLK_TOP_VDEC_SEL>,
-+					 <&vdecsys CLK_VDEC_VDEC>,
-+					 <&vdecsys CLK_VDEC_LAT>,
-+					 <&vdecsys CLK_VDEC_LARB1>,
-+					 <&topckgen CLK_TOP_MAINPLL_D4>;
-+				clock-names = "sel", "soc-vdec", "soc-lat", "vdec", "top";
-+				assigned-clocks = <&topckgen CLK_TOP_VDEC_SEL>;
-+				assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D4>;
-+				power-domains = <&spm MT8192_POWER_DOMAIN_VDEC2>;
-+			};
-+		};
-+
- 		larb5: larb@1600d000 {
- 			compatible = "mediatek,mt8192-smi-larb";
- 			reg = <0 0x1600d000 0 0x1000>;
--- 
-2.18.0
+I checked the perf_mmap code locally. When the problem occurred, the 
+kernel kept running the goto again command:
 
+again:
+         mutex_lock(&event->mmap_mutex);
+         if (event->rb) {
+                 if (data_page_nr(event->rb) != nr_pages) {
+                         ret = -EINVAL;
+                         goto unlock;
+                 }
+
+                 if (!atomic_inc_not_zero(&event->rb->mmap_count)) {
+                         /*
+                          * Raced against perf_mmap_close() through
+                          * perf_event_set_output(). Try again, hope for 
+bette
+                          * luck.
+                          */
+                         mutex_unlock(&event->mmap_mutex);
+                         goto again;             ===> kept goto again
+                 }
+
+                 goto unlock;
+         } else {
+                 printk("[%d]test_mmap: perf_mmap lock, NULL\n", get_cpu());
+                 put_cpu();
+         }
+
+
+Under what conditions would this cause?
+
+Best Regards,
+Yang
