@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125D4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48058C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234603AbiGAD7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 23:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39598 "EHLO
+        id S229379AbiGAEAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 00:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233527AbiGAD67 (ORCPT
+        with ESMTP id S234532AbiGAD7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 23:58:59 -0400
+        Thu, 30 Jun 2022 23:59:00 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3964677FB;
-        Thu, 30 Jun 2022 20:58:57 -0700 (PDT)
-X-UUID: 9a91b7c1d51e4e00ad3072f0162fe798-20220701
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83728677FC;
+        Thu, 30 Jun 2022 20:58:58 -0700 (PDT)
+X-UUID: 329a145a47064f5b866499363a7d31e7-20220701
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:2f40aa36-689c-414d-8057-1efdbffe2244,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:25,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:25
-X-CID-META: VersionHash:87442a2,CLOUDID:e9d61e63-0b3f-4b2c-b3a6-ed5c044366a0,C
+X-CID-O-INFO: VERSION:1.1.7,REQID:cb9e2510-eeb1-4e98-870e-d3424c8525bd,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:30
+X-CID-META: VersionHash:87442a2,CLOUDID:e8d61e63-0b3f-4b2c-b3a6-ed5c044366a0,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:5,IP:nil,URL:1,File:nil,
         QS:nil,BEC:nil,COL:0
-X-UUID: 9a91b7c1d51e4e00ad3072f0162fe798-20220701
+X-UUID: 329a145a47064f5b866499363a7d31e7-20220701
 Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 439531180; Fri, 01 Jul 2022 11:58:48 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Fri, 1 Jul 2022 11:58:47 +0800
+        with ESMTP id 2075274232; Fri, 01 Jul 2022 11:58:47 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Fri, 1 Jul 2022 11:58:47 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
  15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 11:58:47 +0800
@@ -50,9 +50,9 @@ CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v15 07/16] drm/mediatek: dpi: implement a swap_input toggle in SoC config
-Date:   Fri, 1 Jul 2022 11:58:36 +0800
-Message-ID: <20220701035845.16458-8-rex-bc.chen@mediatek.com>
+Subject: [PATCH v15 05/16] drm/mediatek: dpi: Add support for quantization range
+Date:   Fri, 1 Jul 2022 11:58:34 +0800
+Message-ID: <20220701035845.16458-6-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
 References: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
@@ -63,84 +63,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+For RGB colorimetry, CTA-861 support both limited and full range data
+when receiving video with RGB color space.
+We use drm_default_rgb_quant_range() to determine the correct setting.
 
-The hardware design of dp_intf does not support input swap, so we add
-a bit of flexibility to support SoCs without swap_input support.
-We also add a warning message if the hardware is not supported and it
-needs to swap input.
-
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
 Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 34 ++++++++++++++++++------------
+ 1 file changed, 21 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index b89ad9f38396..ba871c347d15 100644
+index 3473ee18ad97..0855bbdfe4e1 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -121,6 +121,7 @@ struct mtk_dpi_yc_limit {
-  * @output_fmts: Array of supported output formats.
-  * @num_output_fmts: Quantity of supported output formats.
-  * @is_ck_de_pol: Support CK/DE polarity.
-+ * @swap_input_support: Support input swap function.
-  */
- struct mtk_dpi_conf {
- 	unsigned int (*cal_factor)(int clock);
-@@ -130,6 +131,7 @@ struct mtk_dpi_conf {
- 	const u32 *output_fmts;
- 	u32 num_output_fmts;
- 	bool is_ck_de_pol;
-+	bool swap_input_support;
- };
- 
- static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
-@@ -393,7 +395,8 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
- 	/* only support RGB888 */
- 	mtk_dpi_config_yuv422_enable(dpi, false);
- 	mtk_dpi_config_csc_enable(dpi, false);
--	mtk_dpi_config_swap_input(dpi, false);
-+	if (dpi->conf->swap_input_support)
-+		mtk_dpi_config_swap_input(dpi, false);
- 	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+@@ -238,16 +238,30 @@ static void mtk_dpi_config_fb_size(struct mtk_dpi *dpi, u32 width, u32 height)
+ 	mtk_dpi_mask(dpi, DPI_SIZE, height << VSIZE, VSIZE_MASK);
  }
  
-@@ -804,6 +807,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- };
+-static void mtk_dpi_config_channel_limit(struct mtk_dpi *dpi,
+-					 struct mtk_dpi_yc_limit *limit)
++static void mtk_dpi_config_channel_limit(struct mtk_dpi *dpi)
+ {
+-	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit->y_bottom << Y_LIMINT_BOT,
++	struct mtk_dpi_yc_limit limit;
++
++	if (drm_default_rgb_quant_range(&dpi->mode) ==
++	    HDMI_QUANTIZATION_RANGE_LIMITED) {
++		limit.y_bottom = 0x10;
++		limit.y_top = 0xfe0;
++		limit.c_bottom = 0x10;
++		limit.c_top = 0xfe0;
++	} else {
++		limit.y_bottom = 0;
++		limit.y_top = 0xfff;
++		limit.c_bottom = 0;
++		limit.c_top = 0xfff;
++	}
++
++	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit.y_bottom << Y_LIMINT_BOT,
+ 		     Y_LIMINT_BOT_MASK);
+-	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit->y_top << Y_LIMINT_TOP,
++	mtk_dpi_mask(dpi, DPI_Y_LIMIT, limit.y_top << Y_LIMINT_TOP,
+ 		     Y_LIMINT_TOP_MASK);
+-	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit->c_bottom << C_LIMIT_BOT,
++	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit.c_bottom << C_LIMIT_BOT,
+ 		     C_LIMIT_BOT_MASK);
+-	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit->c_top << C_LIMIT_TOP,
++	mtk_dpi_mask(dpi, DPI_C_LIMIT, limit.c_top << C_LIMIT_TOP,
+ 		     C_LIMIT_TOP_MASK);
+ }
  
- static const struct mtk_dpi_conf mt2701_conf = {
-@@ -814,6 +818,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- };
+@@ -439,7 +453,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
+ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+ 				    struct drm_display_mode *mode)
+ {
+-	struct mtk_dpi_yc_limit limit;
+ 	struct mtk_dpi_polarities dpi_pol;
+ 	struct mtk_dpi_sync_param hsync;
+ 	struct mtk_dpi_sync_param vsync_lodd = { 0 };
+@@ -474,11 +487,6 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+ 	dev_dbg(dpi->dev, "Got  PLL %lu Hz, pixel clock %lu Hz\n",
+ 		pll_rate, vm.pixelclock);
  
- static const struct mtk_dpi_conf mt8183_conf = {
-@@ -823,6 +828,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.output_fmts = mt8183_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- };
+-	limit.c_bottom = 0x0010;
+-	limit.c_top = 0x0FE0;
+-	limit.y_bottom = 0x0010;
+-	limit.y_top = 0x0FE0;
+-
+ 	dpi_pol.ck_pol = MTK_DPI_POLARITY_FALLING;
+ 	dpi_pol.de_pol = MTK_DPI_POLARITY_RISING;
+ 	dpi_pol.hsync_pol = vm.flags & DISPLAY_FLAGS_HSYNC_HIGH ?
+@@ -526,7 +534,7 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+ 	else
+ 		mtk_dpi_config_fb_size(dpi, vm.hactive, vm.vactive);
  
- static const struct mtk_dpi_conf mt8192_conf = {
-@@ -832,6 +838,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.output_fmts = mt8183_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
- 	.is_ck_de_pol = true,
-+	.swap_input_support = true,
- };
- 
- static int mtk_dpi_probe(struct platform_device *pdev)
+-	mtk_dpi_config_channel_limit(dpi, &limit);
++	mtk_dpi_config_channel_limit(dpi);
+ 	mtk_dpi_config_bit_num(dpi, dpi->bit_num);
+ 	mtk_dpi_config_channel_swap(dpi, dpi->channel_swap);
+ 	mtk_dpi_config_yc_map(dpi, dpi->yc_map);
 -- 
 2.18.0
 
