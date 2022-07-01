@@ -2,203 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3890C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3648CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231865AbiGANtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        id S231880AbiGANuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiGANtp (ORCPT
+        with ESMTP id S229379AbiGANuG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:49:45 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA32C27B32;
-        Fri,  1 Jul 2022 06:49:42 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id EA7935FD03;
-        Fri,  1 Jul 2022 16:49:39 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1656683380;
-        bh=YXUoraWfnYfy0hSgolh/FxiWqXDsGzZ4lVAE9CP5umc=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=jeIH+5NN2v4t2D8ZdTOioxfh08oUzODDmcpPa4W2LCteNTrAtCKp100sTP77aO9LQ
-         lP63XC7PgS4xkOjaUp/24GXZWAktK/YKCuyP7pYuDpSrfD51Pf7IRxDrwnc8Hpgkdf
-         Fe4rY1jzWfVfsbtPibsCbbJnJ83UupA11w42xBKScvEqzi2D1tOISDC5o0w++/lZby
-         I+VDly2EdmneivYbfmTzO7yg/odpxhCSdkxQTCRGx6KnLolOgViUXJhVMf9Mn8W/Yb
-         jgZ/2bXUvPDdvBIfBRuiZkXbJawt7YtBJRyHyoWLf1tVKmdDXAYEDLzwqvDkbxFFqd
-         msPEEzug9xiHA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri,  1 Jul 2022 16:49:39 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYgW2+up0uMWdZgUWEAW/5cCPkBq1WepyAgBLyeQA=
-Date:   Fri, 1 Jul 2022 13:49:10 +0000
-Message-ID: <20220701134734.nfc6xa4q7rhfi3r7@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
- <20220616104211.9257-3-ddrokosov@sberdevices.ru>
- <20220619132703.5cf3b090@jic23-huawei>
-In-Reply-To: <20220619132703.5cf3b090@jic23-huawei>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <036813C44A635F4DA01F1C93886F5056@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Fri, 1 Jul 2022 09:50:06 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3654127B0F;
+        Fri,  1 Jul 2022 06:50:05 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id fd6so3052474edb.5;
+        Fri, 01 Jul 2022 06:50:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=S238Db/f5zI03A6YGNudmxgF/CExzHE07DknqK4x2mc=;
+        b=IVQrkRTajyHNPWyatD25GMEUfTOxHvMUU548LOOr4xfC1aQlrm2IZ2UxgWjqfNEDHz
+         2fUkUf3xw+3nkHj7Q4VRxYVopJqtMQtVizt8wT9vSk6VRiE70PVI3rZYhkWeeSNQDCAr
+         FXkLG1e97blUWgNNh+ikXajFRmvNMWQrAv31pn+ncFYW4qrmBoNOLAbibxyBPErq+ktr
+         cwFSMfqwNnBec2vZnZxUGqrwG6khmOH7W33j1R76wdkQQn+vvFMq3NTBS9jRw89SvNPD
+         lPJ6Xs5Dmk4/cxcULFqD6HTjpCuK1ww9v0kpFLJ9VaI8BkMUfhCA6Dw5GUJHGwGJhy7n
+         I8sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=S238Db/f5zI03A6YGNudmxgF/CExzHE07DknqK4x2mc=;
+        b=7Coe7bI4se/eY76+eE4jkqRVEInvs8KlPqeO+z/5mu3u7M4OiX/S5C0DeXdhSdliDF
+         YKZ7boVqqtuwCqaaEhu54XLjN9hVtJDHMJVTUg9FIvFa26lFO2pGr2PuZzkIE3v+Xwqb
+         R7NxmdzXn/u7ukejvIx8J9fIXkFsftiQr7RcgtUY3jSLPFV3gqxl3TNyu9VDL8elmaxb
+         IKq4mb0cw7ZoHtPX5GsBMvKS+UikKmrsulREndUJQvUgmPqfMB26OuXGFXPuMeenvJ+H
+         FCyFiwqrzZYI3QcCN6Nh1NTNSHBaUF+e/7PNmWl7czQ/cfQb+3NcpiKBPxrEi5sG0G4R
+         X67w==
+X-Gm-Message-State: AJIora9HusVBWIZO9OZO4uXrON4bPUblslm2R6Ue4S8V9DC710PWBnuP
+        eeBut4ti+Ya2evBNirRHbtsWrrSY3x+z8P8BFmY=
+X-Google-Smtp-Source: AGRyM1skCD0fwcFKlUMkw9csHBGhfe0Sg8KpdhXXvn2uBEcW+iftoqoTJkcysNP/k/AO0r0LuqAPnDcqkGS78J5nwPk=
+X-Received: by 2002:a05:6402:500b:b0:431:78d0:bf9d with SMTP id
+ p11-20020a056402500b00b0043178d0bf9dmr18948899eda.184.1656683403633; Fri, 01
+ Jul 2022 06:50:03 -0700 (PDT)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/01 07:59:00 #19867624
-X-KSMG-AntiVirus-Status: Clean, skipped
+References: <20220701133126.26496-1-ansuelsmth@gmail.com>
+In-Reply-To: <20220701133126.26496-1-ansuelsmth@gmail.com>
+Reply-To: cwchoi00@gmail.com
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+Date:   Fri, 1 Jul 2022 22:49:22 +0900
+Message-ID: <CAGTfZH1FZLihHVUcFYGif0o3RnwLMsy_3_=4vqKYed10pqAP3A@mail.gmail.com>
+Subject: Re: [PATCH v2] PM / devfreq: exynos-bus: Fix NULL pointer dereference
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jonathan,
+Dear Rafael,
 
-Sorry for the delayed response.
+The pull request[1] has an  issue for exynos-bus.c devfreq driver
+and then fixed it by this patch.
 
-On Sun, Jun 19, 2022 at 01:27:03PM +0100, Jonathan Cameron wrote:
-> On Thu, 16 Jun 2022 10:42:14 +0000
-> Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
->=20
-> > MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-> > sensitivity consumer applications. It has dynamical user selectable ful=
-l
-> > scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measuremen=
-ts
-> > with output data rates from 1Hz to 1000Hz.
-> >=20
-> > Datasheet can be found at following URL:
-> > https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
-> >=20
-> > This driver supports following MSA311 features:
-> >     - IIO interface
-> >     - Different power modes: NORMAL and SUSPEND (using pm_runtime)
-> >     - ODR (Output Data Rate) selection
-> >     - Scale and samp_freq selection
-> >     - IIO triggered buffer, IIO reg access
-> >     - NEW_DATA interrupt + trigger
-> >=20
-> > Below features to be done:
-> >     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
-> >     - Low Power mode
-> >=20
-> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> Hi Dmitry,
->=20
-> A few things I missed before + I'm still not happy with the runtime
-> pm handling.  One case that isn't covered well is !CONFIG_RUNTIME_PM
->=20
-> Thanks,
->=20
-> Jonathan
->=20
+If possible, could you please apply this patch to linux-pm.git
+directly for 5.19-rc5?
 
-...
+[1] "[GIT,PULL] devfreq fixes for 5.19-rc5"
+- https://patchwork.kernel.org/project/linux-pm/patch/03056170-6501-3f4d-0331-37866d12330e@gmail.com/
 
-> > +static irqreturn_t msa311_buffer_thread(int irq, void *p)
-> > +{
-> > +	struct iio_poll_func *pf =3D p;
-> > +	struct iio_dev *indio_dev =3D pf->indio_dev;
-> > +	struct msa311_priv *msa311 =3D iio_priv(indio_dev);
-> > +	struct device *dev =3D &msa311->i2c->dev;
-> > +	const struct iio_chan_spec *chan;
-> > +	__le16 axis;
-> > +	int bit =3D 0, err, i =3D 0;
-> > +
-> > +	/* Ensure correct alignment of time stamp when present */
-> > +	struct {
-> > +		__le16 channels[MSA311_SI_Z + 1];
-> > +		s64 ts __aligned(8);
-> > +	} buf;
-> > +
-> > +	memset(&buf, 0, sizeof(buf));
-> > +
-> > +	mutex_lock(&msa311->lock);
-> > +
-> > +	for_each_set_bit(bit, indio_dev->active_scan_mask,
-> > +			 indio_dev->masklength) {
-> > +		chan =3D &msa311_channels[bit];
->=20
-> Nothing to do with your driver, but feels like it's worth
-> exploring a
-> 	for_each_chan_in_iio_scan(struct iio_chan_spec, struct iio_dev) macro.
->=20
-> I'll add that to my todo list.
->=20
+Best Regards,
+Chanwoo Choi
 
-If you don't mind, I can prepare such a patch.
-
-...
-
-> When this unwind we will disable autosuspend etc, but leave the device
-> in whatever state it happens to be in at that stage (if I understand
-> this handling correctly).  That might seem like a bad thing, but if
-> we register a devm_add_action_or_reset() callback before this which
-> disables the device independently of anything to do with runtime PM,
-> then the device will
-> a) Be turned off as desired.
-> b) It'll still be turned off even if runtime pm is disabled for the syste=
-m
->    which is nice.
->=20
-> Given the particular state register must be writeable and is presumably
-> idempotent, can we just call=20
-> err =3D msa311_set_pwr_mode(msa311, MSA311_PWR_MODE_SUSPEND);
-> Unconditionally in such a callback?
-
-I think it's a good idea. I didn't think about the configs when runtime pm
-is disabled. So looks like we need to make sure that device is workable
-from a pm perspective, and it is achievable only using a direct
-msa311_set_pwr_mode() call as you suggested below.
-
-> > +	err =3D devm_pm_runtime_enable(dev);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	/* Resume msa311 logic before any interactions with registers */
-> > +	err =3D pm_runtime_resume_and_get(dev);
-> I missed this before, but if runtime pm is disabled, this won't do anythi=
-ng
-> so device won't be powered on.
->=20
-> One common(ish) way to handle this is the following sequence.
->=20
-> 1) Power up supply regs etc and a register a devm_ callback to turn them =
-off again.
-> 2) Put the device into a non suspend state (not using runtime pm calls).
-> 3) Register a callback to turn it off again (that is safe against it bein=
-g
->    turned off via another path such as runtime pm).
-> 4) pm_runtime_set_active() to let the runtime pm code know it is turned o=
-n.
-> 5) devm_pm_runtime_enable()
-> 6) autosuspend setup and enablement.
->=20
-> If runtime pm isn't enabled then only 1-3 happen.  We waste power but the
-> device works.
-
---=20
-Thank you,
-Dmitry=
+On Fri, Jul 1, 2022 at 10:45 PM Christian Marangi <ansuelsmth@gmail.com> wrote:
+>
+> Fix exynos-bus NULL pointer dereference by correctly using the local
+> generated freq_table to output the debug values instead of using the
+> profile freq_table that is not used in the driver.
+>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Fixes: b5d281f6c16d ("PM / devfreq: Rework freq_table to be local to devfreq struct")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> ---
+>  drivers/devfreq/exynos-bus.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/devfreq/exynos-bus.c b/drivers/devfreq/exynos-bus.c
+> index b5615e667e31..79725bbb4bb0 100644
+> --- a/drivers/devfreq/exynos-bus.c
+> +++ b/drivers/devfreq/exynos-bus.c
+> @@ -447,9 +447,9 @@ static int exynos_bus_probe(struct platform_device *pdev)
+>                 }
+>         }
+>
+> -       max_state = bus->devfreq->profile->max_state;
+> -       min_freq = (bus->devfreq->profile->freq_table[0] / 1000);
+> -       max_freq = (bus->devfreq->profile->freq_table[max_state - 1] / 1000);
+> +       max_state = bus->devfreq->max_state;
+> +       min_freq = (bus->devfreq->freq_table[0] / 1000);
+> +       max_freq = (bus->devfreq->freq_table[max_state - 1] / 1000);
+>         pr_info("exynos-bus: new bus device registered: %s (%6ld KHz ~ %6ld KHz)\n",
+>                         dev_name(dev), min_freq, max_freq);
+>
+> --
+> 2.36.1
+>
