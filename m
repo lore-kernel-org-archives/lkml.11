@@ -2,145 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FC9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbiGAJoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S232365AbiGAJqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiGAJoU (ORCPT
+        with ESMTP id S229911AbiGAJqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:44:20 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F305071BE4
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656668659; x=1688204659;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=M8wTHUY0yoeEhvmBXz7drJQ+okeOeA7YaazWFhwMzkw=;
-  b=FjFuR4KhWpzw26R2uwVXvlSmpl3qrIlsfkQzp4N1zKPcZnne75j+9WHv
-   vzeE24xOTIGem5ZMrisLBfr9caM6F21+gJs1HkridlA6Zc/Tx2E9wr8JF
-   ZweYmU7MSCIb6ScaSCdqoh2n5441O2Uu0YC+y+gB3om/QmOtAaNKMKX4Y
-   6R6IqtICrqSyQwmpVRLSpjRkc1hOlr6gYUt/KiDADr31H2xrgeE/jykE4
-   vVBoJ8gcSmd18l3ZtGD//NfVPFhLUElOKF+cJiRdmhaLcm2X8yTcXnVI4
-   al7gOSTAnZHz/b7dqUaXtnpSYkwbbSP8l4iwIfiLK+lGFUIbJ9yyR9iLn
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="280160786"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="280160786"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 02:44:19 -0700
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="624130231"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.48.203])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 02:44:17 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] modules: Fix corruption of /proc/kallsyms
-Date:   Fri,  1 Jul 2022 12:44:03 +0300
-Message-Id: <20220701094403.3044-1-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 1 Jul 2022 05:46:12 -0400
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39AC747B9
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:46:10 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id WIW00101;
+        Fri, 01 Jul 2022 17:46:01 +0800
+Received: from localhost.localdomain (10.200.104.82) by
+ jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 1 Jul 2022 17:46:05 +0800
+From:   Deming Wang <wangdeming@inspur.com>
+To:     <mpe@ellerman.id.au>
+CC:     <benh@kernel.crashing.org>, <paulus@samba.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        Deming Wang <wangdeming@inspur.com>
+Subject: [PATCH] powerpc: Fix formatting problems to make code look more beautiful
+Date:   Fri, 1 Jul 2022 05:45:53 -0400
+Message-ID: <20220701094553.1722-1-wangdeming@inspur.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.200.104.82]
+tUid:   20227011746015071030bb3701dfeb457290dce6ab190
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit 91fb02f31505 ("module: Move kallsyms support into a separate
-file") changed from using strlcpy() to using strscpy() which created a
-buffer overflow. That happened because:
- 1) an incorrect value was passed as the buffer length
- 2) strscpy() (unlike strlcpy()) may copy beyond the length of the
-    input string when copying word-by-word.
-The assumption was that because it was already known that the strings
-being copied would fit in the space available, it was not necessary
-to correctly set the buffer length.  strscpy() breaks that assumption
-because although it will not touch bytes beyond the given buffer length
-it may write bytes beyond the input string length when writing
-word-by-word.
+Operators should be separated by spaces in tce_buildmulti_pSeriesLP
 
-The result of the buffer overflow is to corrupt the symbol type
-information that follows. e.g.
-
- $ sudo cat -v /proc/kallsyms | grep '\^' | head
- ffffffffc0615000 ^@ rfcomm_session_get  [rfcomm]
- ffffffffc061c060 ^@ session_list        [rfcomm]
- ffffffffc06150d0 ^@ rfcomm_send_frame   [rfcomm]
- ffffffffc0615130 ^@ rfcomm_make_uih     [rfcomm]
- ffffffffc07ed58d ^@ bnep_exit   [bnep]
- ffffffffc07ec000 ^@ bnep_rx_control     [bnep]
- ffffffffc07ec1a0 ^@ bnep_session        [bnep]
- ffffffffc07e7000 ^@ input_leds_event    [input_leds]
- ffffffffc07e9000 ^@ input_leds_handler  [input_leds]
- ffffffffc07e7010 ^@ input_leds_disconnect       [input_leds]
-
-Notably, the null bytes (represented above by ^@) can confuse tools.
-
-Fix by correcting the buffer length.
-
-Fixes: 91fb02f31505 ("module: Move kallsyms support into a separate file")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Deming Wang <wangdeming@inspur.com>
 ---
- kernel/module/kallsyms.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/pseries/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index 3e11523bc6f6..18c23545b984 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -137,6 +137,7 @@ void layout_symtab(struct module *mod, struct load_info *info)
- 	info->symoffs = ALIGN(mod->data_layout.size, symsect->sh_addralign ?: 1);
- 	info->stroffs = mod->data_layout.size = info->symoffs + ndst * sizeof(Elf_Sym);
- 	mod->data_layout.size += strtab_size;
-+	/* Note add_kallsyms() computes strtab_size as core_typeoffs - stroffs */
- 	info->core_typeoffs = mod->data_layout.size;
- 	mod->data_layout.size += ndst * sizeof(char);
- 	mod->data_layout.size = strict_align(mod->data_layout.size);
-@@ -169,6 +170,7 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	Elf_Sym *dst;
- 	char *s;
- 	Elf_Shdr *symsec = &info->sechdrs[info->index.sym];
-+	unsigned long strtab_size;
+diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
+index fba64304e859..d09c8bb06e5b 100644
+--- a/arch/powerpc/platforms/pseries/iommu.c
++++ b/arch/powerpc/platforms/pseries/iommu.c
+@@ -248,7 +248,7 @@ static int tce_buildmulti_pSeriesLP(struct iommu_table *tbl, long tcenum,
+ 		 * Set up the page with TCE data, looping through and setting
+ 		 * the values.
+ 		 */
+-		limit = min_t(long, npages, 4096/TCE_ENTRY_SIZE);
++		limit = min_t(long, npages, 4096 / TCE_ENTRY_SIZE);
  
- 	/* Set up to point into init section. */
- 	mod->kallsyms = (void __rcu *)mod->init_layout.base +
-@@ -190,19 +192,26 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	mod->core_kallsyms.symtab = dst = mod->data_layout.base + info->symoffs;
- 	mod->core_kallsyms.strtab = s = mod->data_layout.base + info->stroffs;
- 	mod->core_kallsyms.typetab = mod->data_layout.base + info->core_typeoffs;
-+	strtab_size = info->core_typeoffs - info->stroffs;
- 	src = rcu_dereference_sched(mod->kallsyms)->symtab;
- 	for (ndst = i = 0; i < rcu_dereference_sched(mod->kallsyms)->num_symtab; i++) {
- 		rcu_dereference_sched(mod->kallsyms)->typetab[i] = elf_type(src + i, info);
- 		if (i == 0 || is_livepatch_module(mod) ||
- 		    is_core_symbol(src + i, info->sechdrs, info->hdr->e_shnum,
- 				   info->index.pcpu)) {
-+			ssize_t ret;
-+
- 			mod->core_kallsyms.typetab[ndst] =
- 			    rcu_dereference_sched(mod->kallsyms)->typetab[i];
- 			dst[ndst] = src[i];
- 			dst[ndst++].st_name = s - mod->core_kallsyms.strtab;
--			s += strscpy(s,
--				     &rcu_dereference_sched(mod->kallsyms)->strtab[src[i].st_name],
--				     KSYM_NAME_LEN) + 1;
-+			ret = strscpy(s,
-+				      &rcu_dereference_sched(mod->kallsyms)->strtab[src[i].st_name],
-+				      strtab_size);
-+			if (ret < 0)
-+				break;
-+			s += ret + 1;
-+			strtab_size -= ret + 1;
- 		}
- 	}
- 	preempt_enable();
+ 		for (l = 0; l < limit; l++) {
+ 			tcep[l] = cpu_to_be64(proto_tce | rpn << tceshift);
 -- 
-2.25.1
+2.27.0
 
