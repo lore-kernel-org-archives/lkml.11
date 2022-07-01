@@ -2,146 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF229C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D034EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234579AbiGAMSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 08:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51458 "EHLO
+        id S237216AbiGAMSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 08:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236376AbiGAMS0 (ORCPT
+        with ESMTP id S235412AbiGAMSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 08:18:26 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0B412774
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 05:18:23 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id i1so2938962wrb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 05:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9XkBrLdbExkrMK0Kb9rCuJwrg1QdNLAV6sdPgOxnSw4=;
-        b=Tmam4JZy3k0yYs6+v2edS2NIZvmEsbA6R/cZ5QIJBDBoqOf+Wjmgl+3UfR1rLYaLdk
-         BlG0fln7K03XCuxOSlNQl5RTTiG+bVT2r6nhlPv6tVIEbJy8BsqXN7aPMPP6afToZumx
-         9ZdqGCtmd60+xmib814axqXVCRNxOxJyJOeW4AV5AEHhw46kO+i/WXEpNnTOUPdIBXfB
-         XEgk4h9M0CZ1w/p/NeY/mAFxqEQGxm6O/Xe6ctLRrjoptLwiETI2v3VAMu/eBRiIvJQw
-         tH3Gg5zcy4RCypSaA24bwZsePixzZGMNn1yijFAjwDL+efiaMH8zGsfcSwaTor9znFX2
-         T88g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9XkBrLdbExkrMK0Kb9rCuJwrg1QdNLAV6sdPgOxnSw4=;
-        b=6qu1YNRM3MA+b8yLdQsro/2aHtlJqHX87KXAmATvgl7M3KYao0gSRnpGIVhTJlE+CT
-         DdcLS/DOqy6yptaso+j/0mdy7GkoKkRqQxJJmDVlwkAGfRHYghkEVtzbEjS7tE0EnceC
-         2Y0opJci3JzhmdloW3Ea78fWf+l3Rdf0cXhtZqjb3KAY3msQ3WZd40SKy7B3I5pomiei
-         AcTLzZBEzU1GObb3Eexp0XBCkJ5QhZ98AkoWLPdGgrZoRPm0fCXIipDIENzD7EwNfmjE
-         ILdwlnJg6YbC48Tb/4Xt8aez+rCVEa5dEFZZeQ+I9Dx5Qn0JAVXaj9EbXgVtWzwL/9tA
-         uyEQ==
-X-Gm-Message-State: AJIora+yBYsEkd0Ylyls5fffQDKP8hiQyxIbPwSJf+dZ7U3L6K8Tuzu5
-        T6Z8iQogsJvckMdBvpPwvQfPlOWWxFbsePeneWI=
-X-Google-Smtp-Source: AGRyM1tlT1R6HcGZ4lGt9xawKuyWa11OJqG1FOOkcs7HzMj04PFcZ+5/Psujd0avoVS4s2qw/BZuPqsBis43cpNl8iY=
-X-Received: by 2002:a5d:47c8:0:b0:21d:2295:6a05 with SMTP id
- o8-20020a5d47c8000000b0021d22956a05mr13337594wrc.302.1656677901653; Fri, 01
- Jul 2022 05:18:21 -0700 (PDT)
+        Fri, 1 Jul 2022 08:18:39 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E946813D1F;
+        Fri,  1 Jul 2022 05:18:37 -0700 (PDT)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LZDgs0S2vz6H6sf;
+        Fri,  1 Jul 2022 20:16:09 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 14:18:35 +0200
+Received: from [10.126.173.51] (10.126.173.51) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 13:18:34 +0100
+Message-ID: <df8c0a5d-e950-1726-5d30-80dcc8b20ff9@huawei.com>
+Date:   Fri, 1 Jul 2022 13:18:37 +0100
 MIME-Version: 1.0
-References: <20220627154051.92599-1-schspa@gmail.com> <xhsmhh7415e12.mognet@vschneid.remote.csb>
-In-Reply-To: <xhsmhh7415e12.mognet@vschneid.remote.csb>
-From:   Schspa Shi <schspa@gmail.com>
-Date:   Fri, 1 Jul 2022 20:18:10 +0800
-Message-ID: <CAMA88TrZ-o4W81Yfw9Wcs3ghoxwpeAKtFejtMTt78GNB0tKaSA@mail.gmail.com>
-Subject: Re: [PATCH v2] sched/rt: fix bad task migration for rt tasks
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, Benjamin Segall <bsegall@google.com>,
-        mgorman@suse.de, bristot@redhat.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3] hisi_lpc: Use acpi_dev_for_each_child()
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yang Yingliang <yangyingliang@huawei.com>
+References: <12026357.O9o76ZdvQC@kreacher> <2657553.mvXUDI8C0e@kreacher>
+ <5606189.DvuYhMxLoT@kreacher>
+ <e9666883-3285-36a6-6278-ace219b88f3c@huawei.com>
+ <CAHp75Ve-Cm43HhqqxxfmKTbC_Gkx=0aAcj0jJmA=-Nr-NT1FqQ@mail.gmail.com>
+ <CAHp75VdT1YZUQbdHupA2RmucUBSzypcPwKBgSa4=sVQAhC+Vsw@mail.gmail.com>
+ <61fbd71b-9c36-345c-7aed-561b81c34259@huawei.com>
+ <CAHp75VdxaBG8Sj3j7Wa7BrZOrn1j2eAtJMw0N8z255HwMSohYw@mail.gmail.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <CAHp75VdxaBG8Sj3j7Wa7BrZOrn1j2eAtJMw0N8z255HwMSohYw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.173.51]
+X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Valentin Schneider <vschneid@redhat.com> writes:
-
-> On 27/06/22 23:40, Schspa Shi wrote:
->> @@ -2115,6 +2115,15 @@ static int push_rt_task(struct rq *rq, bool pull)
->>       if (WARN_ON(next_task == rq->curr))
->>               return 0;
+On 01/07/2022 13:05, Andy Shevchenko wrote:
+> On Fri, Jul 1, 2022 at 1:54 PM John Garry <john.garry@huawei.com> wrote:
+>> On 01/07/2022 12:07, Andy Shevchenko wrote:
+>>> On Fri, Jul 1, 2022 at 1:06 PM Andy Shevchenko
+>>> <andy.shevchenko@gmail.com> wrote:
+>>>> On Fri, Jul 1, 2022 at 1:04 PM John Garry <john.garry@huawei.com> wrote:
+>>>>> On 30/06/2022 19:13, Rafael J. Wysocki wrote:
+> 
+> ...
+> 
+>>>>> However Yang Yingliang spotted a pre-existing bug in the ACPI probe and
+>>>>> sent a fix today (coincidence?):
+>>>>>
+>>>>> https://lore.kernel.org/lkml/20220701094352.2104998-1-yangyingliang@huawei.com/T/#u
+>>>>>
+>>>>> And they conflict. This code has been this way for years, so I just
+>>>>> suggest Yang Yingliang resends the fix on top off Rafael's change.
+>>>>
+>>>> Wondering if Yang can actually switch that to use
+>>>> platform_device_register_full().
 >>
->> +    /*
->> +     * It is possible the task has running for a while, we need to check
->> +     * task migration disable flag again. If task migration is disabled,
->> +     * the retry code will retry to push the current running task on this
->> +     * CPU away.
->> +     */
->> +    if (unlikely(is_migration_disabled(next_task)))
->> +            goto retry;
->> +
->
-> Can we ever hit this? The previous is_migration_disabled() check is in the
-> same rq->lock segment.
-
-Ahh, I'm sorry, I add this to the wrong place, It should be in front of
-deactivate_task(rq, next_task, 0);
-Sorry for this mistake.
-
->
-> AFAIA this doesn't fix the problem v1 was fixing, which is next_task can
-> become migrate_disable() after push_rt_task() goes through
-> find_lock_lowest_rq().
->
-
-Something in the following should fix it.
-
-                put_task_struct(next_task);
-                next_task = task;
-                goto retry;
-        }
-
-        if (unlikely(is_migration_disabled(next_task))) {
-                put_task_struct(next_task);
-                goto retry;
-        }
-
-        deactivate_task(rq, next_task, 0);
-
-> For the task to still be in the pushable_tasks list after having made
-> itself migration disabled, it must no longer be current, which means we
-> enqueued a higher priority RT task, in which case we went through
-> set_next_task_rt() so we did rt_queue_push_tasks().
-
-The current task may not have a higher priority, maybe a process of
-the same priority preempted the migration disabled task.
-
-In this case, we still have the opportunity to make this migration
-disabled task execute faster by migrating the higher priority task
-to other CPUs. And this is what the commit
-   95158a89dd50 ("sched,rt: Use the full cpumask for balancing")
-and
-   1beec5b55060 ("sched: Fix migrate_disable() vs rt/dl balancing")
-doing.
-
-Considering this, the V1 patch is not the best solution, and I send
-this V2 patch (although there is a misplaced bug here).
-
-Or can we ignore this small possibility?
-
->
-> So I think what you had in v1 was actually what we needed.
->
-
-Yes, v1 is the patch I have tested for a week, V2 hasn't done this
-long time.
-
-
->>       /* We might release rq lock */
->>       get_task_struct(next_task);
+>> Maybe that would work and simplify things. Let me check it.
 >>
->> --
->> 2.24.3 (Apple Git-128)
+>> BTW, when we originally upstreamed this driver there was some ACPI
+>> platform device registration code which you/we thought could be factored
+>> out later. I can't remember it. I was looking through lore but couldn't
+>> find it. I don't remember it being so important, though.
+> 
+> My suggestion is definitely not for the fix itself, but as a follow up.
 
--- 
-Schspa Shi
-BRs
+FWIW, it works out quite neatly:
+
+diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+index e0fee1f863e6..70198d5644c7 100644
+--- a/drivers/bus/hisi_lpc.c
++++ b/drivers/bus/hisi_lpc.c
+@@ -472,9 +472,7 @@ static int hisi_lpc_acpi_clear_enumerated(struct 
+acpi_device *adev, void *not_us
+
+  struct hisi_lpc_acpi_cell {
+  	const char *hid;
+-	const char *name;
+-	void *pdata;
+-	size_t pdata_size;
++	struct platform_device_info pdevinfo;
+  };
+
+  static void hisi_lpc_acpi_remove(struct device *hostdev)
+@@ -505,28 +503,36 @@ static int hisi_lpc_acpi_add_child(struct 
+acpi_device *child, void *data)
+  		/* ipmi */
+  		{
+  			.hid = "IPI0001",
+-			.name = "hisi-lpc-ipmi",
++			.pdevinfo = {
++				.name = "hisi-lpc-ipmi",
++				.num_res = num_res,
++				.res = res,
++			},
+  		},
+  		/* 8250-compatible uart */
+  		{
+  			.hid = "HISI1031",
+-			.name = "serial8250",
+-			.pdata = (struct plat_serial8250_port []) {
+-				{
+-					.iobase = res->start,
+-					.uartclk = 1843200,
+-					.iotype = UPIO_PORT,
+-					.flags = UPF_BOOT_AUTOCONF,
++			.pdevinfo = {
++				.name = "serial8250",
++				.data = (struct plat_serial8250_port []) {
++					{
++						.iobase = res->start,
++						.uartclk = 1843200,
++						.iotype = UPIO_PORT,
++						.flags = UPF_BOOT_AUTOCONF,
++					},
++					{}
+  				},
+-				{}
++				.size_data = 2 *
++					sizeof(struct plat_serial8250_port),
++				.num_res = num_res,
++				.res = res,
+  			},
+-			.pdata_size = 2 *
+-				sizeof(struct plat_serial8250_port),
+  		},
+  		{}
+  	};
+
+-	for (; cell && cell->name; cell++) {
++	for (; cell && cell->pdevinfo.name; cell++) {
+  		if (!strcmp(cell->hid, hid)) {
+  			found = true;
+  			break;
+@@ -540,25 +546,13 @@ static int hisi_lpc_acpi_add_child(struct 
+acpi_device *child, void *data)
+  		return 0;
+  	}
+
+-	pdev = platform_device_alloc(cell->name, PLATFORM_DEVID_AUTO);
++	pdev = platform_device_register_full(&cell->pdevinfo);
+  	if (!pdev)
+  		return -ENOMEM;
+
+  	pdev->dev.parent = hostdev;
+  	ACPI_COMPANION_SET(&pdev->dev, child);
+
+-	ret = platform_device_add_resources(pdev, res, num_res);
+-	if (ret)
+-		return ret;
+-
+-	ret = platform_device_add_data(pdev, cell->pdata, cell->pdata_size);
+-	if (ret)
+-		return ret;
+-
+-	ret = platform_device_add(pdev);
+-	if (ret)
+-		return ret;
+-
+  	acpi_device_set_enumerated(child);
+
+  	return 0;
+
+> 
+>>> And for the record, I think the Fixes even for very rare bug hits
+>>> should go first.
+>>
+>> ok, I have to admit that I was going to feel awkward asking Rafael to
+>> deal with this fix by having a v4 on top of it.
+> 
+> I don't think it's a problem as long as we have an immutable branch /
+> tag with that patch. Another approach could be that Rafael can take it
+> as a precursor for his series and route via ACPI tree, but let's hear
+> what he thinks about this himself.
+> 
+
+ok, fine.
+
+Thanks,
+John
