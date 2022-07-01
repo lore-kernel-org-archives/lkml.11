@@ -2,85 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87309C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236190AbiGAKep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
+        id S236246AbiGAKe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235288AbiGAKel (ORCPT
+        with ESMTP id S236241AbiGAKe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:34:41 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6A76F35E;
-        Fri,  1 Jul 2022 03:34:40 -0700 (PDT)
-X-UUID: c88f4e3228b9446492a1f0ef543b7ade-20220701
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:5db7e833-5ee6-4bd3-8290-db17694472ae,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.7,REQID:5db7e833-5ee6-4bd3-8290-db17694472ae,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:87442a2,CLOUDID:09ec4c86-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:03a29585789a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: c88f4e3228b9446492a1f0ef543b7ade-20220701
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1057326839; Fri, 01 Jul 2022 18:34:31 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 1 Jul 2022 18:34:30 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 18:34:30 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
-CC:     Lala Lin <lala.lin@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH] dt-bindings: nvmem: mediatek: efuse: add support for mt8186
-Date:   Fri, 1 Jul 2022 18:34:28 +0800
-Message-ID: <20220701103428.22099-1-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Fri, 1 Jul 2022 06:34:56 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FE270E4E;
+        Fri,  1 Jul 2022 03:34:52 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id cl1so2583727wrb.4;
+        Fri, 01 Jul 2022 03:34:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UV84BF5cBxzD9zx/TkNLuFqo3S029h6omQw2ybz7xL0=;
+        b=hrmcvAujQcgMmtFFtuUOC5QyzI7RFmwh9xGDOtbj9Hqx3uFV854Z8S+7MqBL/GCFy7
+         k4ddXrGe9bzZKz58MEw7I72rFjC15U+vvGUZmVNyWv83RA+EMzCyhtiqhYy43omaurvh
+         YwKfgieyfKojnjbzAuXkfkDp7kyefJEPUdV4ijf//ghhD/Iu3T1e/81ffJ4oaMzIggVO
+         ejcZ6yybYfRKAmv9CfHJQizyJJAwt+6qagtvEGrC+eJtt9t8mCMhtiwtPlfy+eSbRbyo
+         R1XY75QZXfktqscQiz17GRA0cuGyKIkcEodvM2KSnishrFqgaZd1lPb+L1RkKAUkgThH
+         urVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UV84BF5cBxzD9zx/TkNLuFqo3S029h6omQw2ybz7xL0=;
+        b=YcyM8OfrEzKChYvV7U0u5k8hLGUcZvBc/lXM5neHClW6Y/zQI187gBYKQnVQDmNNfi
+         DAzuimLlCQWMAAJ9XTQZ0k2UhqRo/Aq4wYDy6EiA0iIhB/oVLWwPM8EboFQ6qzlt+wiY
+         MAiuC9VydksNJG8ZpPuOXBP4Tl5L/gvinn9KT38gbo6ORgBfnzHy+FJIb6+MwYW4tjKk
+         xFnfGg+K7CME2Z83vwjFDyRjoeaz1PmjW1KXZGi7TBq0N27jJQ7P4LPv3cwKVfnoPyHg
+         j767NOJlvhUCBP6NHiJmDpi2Q6xim4O8woSL57STqJrYfJQRTdwS/y3wBFejfklgDT+q
+         Xe8A==
+X-Gm-Message-State: AJIora93vevaBauEk5tyrEABpaZI6FVlhFXqxM46Zl9FgI9x8f1cmCne
+        a51tuliq2ykX7lup6LNwGo+UiSNZieU=
+X-Google-Smtp-Source: AGRyM1uvwp/m0djVdzmRpWXiYsWmf9D3si4CiC7nlqzHlJLkNwO2aDhY0TEeRpRAW/OWTksPSEv7gg==
+X-Received: by 2002:a5d:598c:0:b0:21d:26b6:ee94 with SMTP id n12-20020a5d598c000000b0021d26b6ee94mr12890512wri.457.1656671691525;
+        Fri, 01 Jul 2022 03:34:51 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id v4-20020a7bcb44000000b0039746638d6esm9580991wmj.33.2022.07.01.03.34.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 03:34:51 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 11:34:49 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/12] 5.10.128-rc1 review
+Message-ID: <Yr7NyXIs9KpzMZK9@debian>
+References: <20220630133230.676254336@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible for mt8186 SoC.
+Hi Greg,
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml | 1 +
- 1 file changed, 1 insertion(+)
+On Thu, Jun 30, 2022 at 03:47:05PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.128 release.
+> There are 12 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
 
-diff --git a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-index 7c7233e29ecf..b5a1109f2ee1 100644
---- a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-+++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-@@ -29,6 +29,7 @@ properties:
-               - mediatek,mt7623-efuse
-               - mediatek,mt8173-efuse
-               - mediatek,mt8183-efuse
-+              - mediatek,mt8186-efuse
-               - mediatek,mt8192-efuse
-               - mediatek,mt8195-efuse
-               - mediatek,mt8516-efuse
--- 
-2.18.0
+Build test (gcc version 11.3.1 20220627):
+mips: 63 configs -> no failure
+arm: 104 configs -> no failure
+arm64: 3 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1429
+[2]. https://openqa.qa.codethink.co.uk/tests/1436
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
