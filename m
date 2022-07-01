@@ -2,73 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85704C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B39AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbiGAQSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41438 "EHLO
+        id S231548AbiGAQUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiGAQSm (ORCPT
+        with ESMTP id S229570AbiGAQT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:18:42 -0400
-Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471BD38BC1;
-        Fri,  1 Jul 2022 09:18:42 -0700 (PDT)
-Received: by mail-il1-f169.google.com with SMTP id o4so1704773ilm.9;
-        Fri, 01 Jul 2022 09:18:42 -0700 (PDT)
+        Fri, 1 Jul 2022 12:19:59 -0400
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A89D3C4A6;
+        Fri,  1 Jul 2022 09:19:59 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id v185so2710246ioe.11;
+        Fri, 01 Jul 2022 09:19:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=VVq9FhmaSCUNqqcPRzai6+Yorwbl6Z9gJF6zzAz/I1o=;
-        b=2Wv013GAZ8eC6FO1ZboevkTBQ0oMnIjvtVwbWcs032R2u1ZXIHVqGW8yKap0GRsx9k
-         YDcAty+tLxMgIi0GP8xLuzPTSImM+kML9Co59i7XZsLvde4RThNp6jWrMlIKEqx3MDDA
-         SAqYFiTKtsD5PB9AY5cRTBwdZniiN6koNxKl1/35U7OEZUB+KXE1P1C14fXkZFNl3hGo
-         tL7bfeiD4A18nnAg79vjRUQevxu4rI66CU4n3qF9OF3Q/f3mzVWpwzsBoW4+O9lFPOk4
-         BxVZgUEPaTNbqJWBufRA1U2w4QTikEgPiz3BZ9r95+vJuJwsiM4s6AXl4ioKSiMuyenk
-         JOiQ==
-X-Gm-Message-State: AJIora+z4P8cJ85B9nqDtes8EX3B1KA3dQ3yw9YRm4TXB0raXsqa/yRN
-        rPZd+LHHBihaIxMXVcDUeA==
-X-Google-Smtp-Source: AGRyM1uKu4ZHeXlBk47g/1Kn+xIxVsoVCeJJK86OxxIz1zMtHypyobrtFZSlf2w6duKGphDJrzQIhQ==
-X-Received: by 2002:a05:6e02:194b:b0:2da:8568:99da with SMTP id x11-20020a056e02194b00b002da856899damr8933917ilu.80.1656692321453;
-        Fri, 01 Jul 2022 09:18:41 -0700 (PDT)
+        bh=ZQCylsq9M4rPkFWxs4C1uvnNMPUdbfbfI4jjvjvy8og=;
+        b=q8FNKulD5SWgXA8pn2a5SvjPd7AYhmzzU0xqlZgaE35sVt+puncTBWCFr5sRCBA/0o
+         o5g6I1S9SQIjNBdsKsfxN2AYpW2u9gE3qTzlL9zGWQpXIuzPuN2jucA/TkrBYpjJAr9y
+         yhmodL6V6S+i77ophYvp+c4+Gu+f9I19X95sWddnzkL8UmArAA2GC1L/zHnmVfNmFqlb
+         4r455mPiGJZEbjnXjyL6zJkDDDHP/RdhDdu0UOeCpfN+KH64rQve/4O6huTmkMoUue9t
+         vOc1nwXyvXefFu1W7A2g6GowAPRVMs6zVlZ/DS8dsZlxOgWvOCM6XRo4iId/m/GvdO9U
+         uZKw==
+X-Gm-Message-State: AJIora8s5z23ESNoImn4+7AhIlcz0slHZ4RaRctOdYVTHRJT6UeU3v1g
+        zjp1eGaL43tTbQRcIisPlQ==
+X-Google-Smtp-Source: AGRyM1u3Qr+tXqjLIi/7Jr5GJVG/S9BRBU00/78V+UB90jdiTjI+ZtZU2goYTjMedm+wRJ06+ao5sQ==
+X-Received: by 2002:a05:6638:10c:b0:339:e949:b332 with SMTP id x12-20020a056638010c00b00339e949b332mr9136760jao.22.1656692398271;
+        Fri, 01 Jul 2022 09:19:58 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id a3-20020a029403000000b0032e6358ccefsm9862984jai.77.2022.07.01.09.18.40
+        by smtp.gmail.com with ESMTPSA id b11-20020a05663801ab00b0033a3d88cebbsm10036931jaq.105.2022.07.01.09.19.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 09:18:41 -0700 (PDT)
-Received: (nullmailer pid 1065573 invoked by uid 1000);
-        Fri, 01 Jul 2022 16:18:39 -0000
-Date:   Fri, 1 Jul 2022 10:18:39 -0600
+        Fri, 01 Jul 2022 09:19:57 -0700 (PDT)
+Received: (nullmailer pid 1067780 invoked by uid 1000);
+        Fri, 01 Jul 2022 16:19:56 -0000
+Date:   Fri, 1 Jul 2022 10:19:56 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Roger Quadros <rogerq@kernel.org>
-Cc:     sjakhade@cadence.com, vigneshr@ti.com, kishon@ti.com,
-        linux-phy@lists.infradead.org, s-vadapalli@ti.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vkoul@kernel.org, t-patil@ti.com
-Subject: Re: [PATCH 4/7] dt-bindings: phy: ti,phy-j721e-wiz: deprecate clock
- MUX nodes
-Message-ID: <20220701161839.GA1065515-robh@kernel.org>
+Cc:     t-patil@ti.com, s-vadapalli@ti.com, devicetree@vger.kernel.org,
+        linux-phy@lists.infradead.org, vigneshr@ti.com, kishon@ti.com,
+        linux-kernel@vger.kernel.org, sjakhade@cadence.com,
+        vkoul@kernel.org
+Subject: Re: [PATCH 5/7] dt-bindings: phy: ti,phy-j721e-wiz: Add support for
+ ti,j7200-wiz-10g
+Message-ID: <20220701161956.GA1067719-robh@kernel.org>
 References: <20220628122255.24265-1-rogerq@kernel.org>
- <20220628122255.24265-5-rogerq@kernel.org>
+ <20220628122255.24265-6-rogerq@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220628122255.24265-5-rogerq@kernel.org>
+In-Reply-To: <20220628122255.24265-6-rogerq@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 15:22:52 +0300, Roger Quadros wrote:
-> Mark "pll[0|1]-refclk", "refclk-dig" and "cmn-refclk1?-dig-div"
-> as deprecated. The clock muxes are provided by the device driver
-> so not required in device tree.
+On Tue, 28 Jun 2022 15:22:53 +0300, Roger Quadros wrote:
+> ti,j7200-wiz-10g supports an additional reference clock.
+> Add compatible and the additional clock.
 > 
 > Cc: Rob Herring <robh@kernel.org>
 > Signed-off-by: Roger Quadros <rogerq@kernel.org>
 > ---
->  Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml | 3 +++
->  1 file changed, 3 insertions(+)
+>  .../bindings/phy/ti,phy-j721e-wiz.yaml        | 21 ++++++++++++++++++-
+>  1 file changed, 20 insertions(+), 1 deletion(-)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
