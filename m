@@ -2,157 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7E4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9007FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233662AbiGAOsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43160 "EHLO
+        id S233380AbiGAOsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233472AbiGAOsK (ORCPT
+        with ESMTP id S233710AbiGAOse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:48:10 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C895D2E693;
-        Fri,  1 Jul 2022 07:47:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656686879; x=1688222879;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Rf7fW/FCxNnSxG/1HF5J6f4FI/REm839eNlYY1nJDw8=;
-  b=C3d/Q6GkA4NhD02YfR+XNWPTB9upU+noTsfEmWKvATpU2/UUGQ3/vZo4
-   FyNAD94X1a5NxYnzBLRnYVDEPi510VrH4CsniPPVteeHB5ur9K1JxQIJ+
-   YNk8raFbpdiHazQGlPM9acDM/sEjrAVOKQzBJSTqZmjAb7UD8086hPMXx
-   E23RY8gYwwLczQfaP0JSIKz9SuwKxqo6ewZFku9oxmlrkkVCyy3EWEnEI
-   e7Lj74IFNVs0biBtFufguvreAXlvaUgj8bNH4OHCXhDca/XXUybfPYq6R
-   eiB0ES0PMphXRxbswlDgYyfYUyHmvaGItErM5x9iiSL/Gsifzn5l4gC6A
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="102666208"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 07:47:47 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 07:47:46 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 07:47:25 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v15 01/13] dt-bindings: net: make internal-delay-ps based on phy-mode
-Date:   Fri, 1 Jul 2022 20:16:40 +0530
-Message-ID: <20220701144652.10526-2-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220701144652.10526-1-arun.ramadoss@microchip.com>
-References: <20220701144652.10526-1-arun.ramadoss@microchip.com>
+        Fri, 1 Jul 2022 10:48:34 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0519613D78
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:48:14 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id r133so2483553iod.3
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:48:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YwnHVKpuUoSoXVCF1lKKK3GjSIrTJeRKu+Us3h8Q3ag=;
+        b=d9MbkHqVYvRR4GV8BJLwFGJL52FX0K6LlXBnT1DuAxsz8q9iYl/78fB0bYpCjjKiiu
+         lo59M1FjBQJXKreUsGH/XYLCcTMehBLMPDJ/nRM9OpKRuT1EnqF0ay/wvjDdWWgUviP8
+         OtlmvLyd0BmxASW+aHatje5FY3Xrvia1XRzTY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YwnHVKpuUoSoXVCF1lKKK3GjSIrTJeRKu+Us3h8Q3ag=;
+        b=iAtMIGHnfkVqvsF366/E8G1vXCipOC8rpFNwWWNNJtvCZrViGLnnM7pGaui8Naa1P5
+         hOIzPim2qDgiMPINQvlzm7/mQNBQIBbhZcvzkO1nLAfLirl4XW611lS0LkKIwAKIJ93G
+         Ag2HnIWB1Z5t7raEpADlNSvUqXYn3ynO96xBSGRrGWE3yol51P/35geZGsq4Um31QXa1
+         65JT2dXuTsNWrzNHA14RHcH9ZS1Ry0oHsQABdLE4ghNcl9YCMMirP8EVVNPKwqGNpUF4
+         2SaVMy6l9+mkMrpPjk9es1/E+2djsRBCkHbZ3S5Bt3e3Pqc2ULmoQZwnLGI/ssPpgUqd
+         vZGg==
+X-Gm-Message-State: AJIora9F1ZecyfNWkzFIntBIuP09LZKDE8wOuCzh/2afYCXyr+BRAIqt
+        6EQ6YzUZoDccl+6+xS94iLhIKcklJGEKIw==
+X-Google-Smtp-Source: AGRyM1u6oOUbaGYqbLkQvZ3X+2Cs1/BvXAhACtYr6ULnMfiWbLLjSLRUcAEobfjrk95df2W3U7mYHQ==
+X-Received: by 2002:a05:6638:12ca:b0:33c:c664:64fe with SMTP id v10-20020a05663812ca00b0033cc66464femr9084174jas.67.1656686893371;
+        Fri, 01 Jul 2022 07:48:13 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id a11-20020a056e020e0b00b002da99df289fsm5401982ilk.48.2022.07.01.07.48.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 07:48:12 -0700 (PDT)
+Subject: Re: [char-misc:char-misc-linus 3/3]
+ drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used
+ uninitialized whenever 'if' condition is true
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel test robot <lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <202207011658.rHJFVLWA-lkp@intel.com> <Yr63Zyvj49o8U/ti@kroah.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <67a09516-ec1f-d0b6-c027-fd52159318ed@linuxfoundation.org>
+Date:   Fri, 1 Jul 2022 08:48:11 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <Yr63Zyvj49o8U/ti@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+On 7/1/22 2:59 AM, Greg Kroah-Hartman wrote:
+> On Fri, Jul 01, 2022 at 04:49:50PM +0800, kernel test robot wrote:
+>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git char-misc-linus
+>> head:   3776c78559853fd151be7c41e369fd076fb679d5
+>> commit: 3776c78559853fd151be7c41e369fd076fb679d5 [3/3] misc: rtsx_usb: use separate command and response buffers
+>> config: arm-buildonly-randconfig-r006-20220629 (https://download.01.org/0day-ci/archive/20220701/202207011658.rHJFVLWA-lkp@intel.com/config)
+>> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a9119143a2d1f4d0d0bc1fe0d819e5351b4e0deb)
+>> reproduce (this is a W=1 build):
+>>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>>          chmod +x ~/bin/make.cross
+>>          # install arm cross compiling tool for clang build
+>>          # apt-get install binutils-arm-linux-gnueabi
+>>          # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/commit/?id=3776c78559853fd151be7c41e369fd076fb679d5
+>>          git remote add char-misc https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git
+>>          git fetch --no-tags char-misc char-misc-linus
+>>          git checkout 3776c78559853fd151be7c41e369fd076fb679d5
+>>          # save the config file
+>>          mkdir build_dir && cp config build_dir/.config
+>>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/misc/cardreader/
+>>
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All warnings (new ones prefixed by >>):
+>>
+>>>> drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+>>             if (!ucr->rsp_buf)
+>>                 ^~~~~~~~~~~~~
+>>     drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
+>>             return ret;
+>>                    ^~~
+>>     drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
+>>             if (!ucr->rsp_buf)
+>>             ^~~~~~~~~~~~~~~~~~
+>>     drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
+>>             int ret;
+>>                    ^
+>>                     = 0
+>>     1 warning generated.
+> 
+> Odd, gcc doesn't show this for me.  Shuah, can you send a follow-on
+> patch to fix this?  The warning does look correct.
+> 
 
-*-internal-delay-ps properties would be applicable only for RGMII interface
-modes.
+gcc didn't complain when I compiled either. I will send a follow-on patch.
 
-It is changed as per the request.
-
-Ran dt_binding_check to confirm nothing is broken.
-
-link: https://lore.kernel.org/netdev/d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com/
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .../bindings/net/ethernet-controller.yaml     | 35 ++++++++++++-------
- 1 file changed, 23 insertions(+), 12 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index 4f15463611f8..56d9aca8c954 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -133,12 +133,6 @@ properties:
-       and is useful for determining certain configuration settings
-       such as flow control thresholds.
- 
--  rx-internal-delay-ps:
--    description: |
--      RGMII Receive Clock Delay defined in pico seconds.
--      This is used for controllers that have configurable RX internal delays.
--      If this property is present then the MAC applies the RX delay.
--
-   sfp:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
-@@ -150,12 +144,6 @@ properties:
-       The size of the controller\'s transmit fifo in bytes. This
-       is used for components that can have configurable fifo sizes.
- 
--  tx-internal-delay-ps:
--    description: |
--      RGMII Transmit Clock Delay defined in pico seconds.
--      This is used for controllers that have configurable TX internal delays.
--      If this property is present then the MAC applies the TX delay.
--
-   managed:
-     description:
-       Specifies the PHY management type. If auto is set and fixed-link
-@@ -232,6 +220,29 @@ properties:
-           required:
-             - speed
- 
-+allOf:
-+  - if:
-+      properties:
-+        phy-mode:
-+          contains:
-+            enum:
-+              - rgmii
-+              - rgmii-rxid
-+              - rgmii-txid
-+              - rgmii-id
-+    then:
-+      properties:
-+        rx-internal-delay-ps:
-+          description:
-+            RGMII Receive Clock Delay defined in pico seconds.This is used for
-+            controllers that have configurable RX internal delays. If this
-+            property is present then the MAC applies the RX delay.
-+        tx-internal-delay-ps:
-+          description:
-+            RGMII Transmit Clock Delay defined in pico seconds.This is used for
-+            controllers that have configurable TX internal delays. If this
-+            property is present then the MAC applies the TX delay.
-+
- additionalProperties: true
- 
- ...
--- 
-2.36.1
+thanks,
+-- Shuah
 
