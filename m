@@ -2,129 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A70D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231547AbiGAQDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S230211AbiGAQGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231442AbiGAQDk (ORCPT
+        with ESMTP id S229541AbiGAQGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:03:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88C241F2DF;
-        Fri,  1 Jul 2022 09:03:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98867143D;
-        Fri,  1 Jul 2022 09:03:39 -0700 (PDT)
-Received: from pierre123.arm.com (unknown [10.57.40.143])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 61C8F3F66F;
-        Fri,  1 Jul 2022 09:03:37 -0700 (PDT)
-From:   Pierre Gondois <pierre.gondois@arm.com>
-To:     linux-eng@arm.com
-Cc:     Pierre Gondois <Pierre.Gondois@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/2] ACPI/PCI: Make _PRS optional for link device
-Date:   Fri,  1 Jul 2022 18:03:08 +0200
-Message-Id: <20220701160309.2842180-2-pierre.gondois@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220701160309.2842180-1-pierre.gondois@arm.com>
-References: <20220701160309.2842180-1-pierre.gondois@arm.com>
+        Fri, 1 Jul 2022 12:06:03 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5648237D8
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 09:06:02 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id b23-20020a9d7557000000b00616c7999865so2144002otl.12
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 09:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tA1We13n/kM82sx0YkjNZewIMefOanocSsCM/govz+0=;
+        b=HVBgkL2ltgMWKb+Ud9xDGdc/ePbGYT9TfJqKmZF2NnExOSDq9GD90EH0Ovmb7srZmJ
+         ZpjLCVbLKK5qzBb0g2ihopTVCOZ+UsKiv8/PpIYNlynL41GScN9X1T/b9f0quwMCr1gr
+         8u2pkT5+RDwXkqmGw4Em1grpppr/gQom1iZeBLc+muWCkh+upOL+ENLK2Q1z989Eixei
+         BMn2SzHw6wqiVVSUbCYc5y/OG7CqvEptn8V9h0Ffe94UU3c8p6brvEuUpRrMod/7FtSP
+         a/0WBXDjTMa/C9aBSPjfR6tm3r79QGTYc7SOmtr8gCbqD0rh+gYGujKTWCkBU6dhrYXn
+         pUww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tA1We13n/kM82sx0YkjNZewIMefOanocSsCM/govz+0=;
+        b=15MDj8YokF1dgjsOj+6ceh6r1DE72rfP27hj7AquuzIO8OF3Mr1q0EBgqMfbZyIxv8
+         wqVXC97rtG9Gc0JKJVTkodTGvHVx9pZ5qgRy94wuNPgX1Dv74WHGFlOeMJfrh7T2bggc
+         r2sdwpJdfjKOeUCxPR2bfZxh+PCan32CfUdbTMr2RyzUVSnqvMSvj/CB8KpeYN20e+ED
+         6oBHRXyr4P6XhFiBZJWCQnkBCpgcYrdEcPura6Vkx53y/baejmf1VxmMuHGedTnFPoP8
+         0GxACtsp9VlgXGYgjvsSsIuW01DBE56mi2i4e40CJYZkrkFvCLu/HSu4lgZZ/QzoYfnP
+         iwSA==
+X-Gm-Message-State: AJIora8XVBOdLX/yc5BDKOYv2GsyATwYjp1c3U8qJbLGLs9ZasuLS4oC
+        JJWlyPodqpz7VKBiO81ZAOxA59Pqvekd4wvqRJcFSw==
+X-Google-Smtp-Source: AGRyM1vO9dokoKBnHxwFww77KA9btH7PjekLij6H512iD8tpl8+XaDfN/gT0wirOwEoKkiShKCKK4bdDBXGs2nNmuAk=
+X-Received: by 2002:a05:6830:1d5b:b0:616:de98:2556 with SMTP id
+ p27-20020a0568301d5b00b00616de982556mr7173527oth.367.1656691561453; Fri, 01
+ Jul 2022 09:06:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220629150625.238286-1-vkuznets@redhat.com> <20220629150625.238286-22-vkuznets@redhat.com>
+In-Reply-To: <20220629150625.238286-22-vkuznets@redhat.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Fri, 1 Jul 2022 09:05:50 -0700
+Message-ID: <CALMp9eRuYt0qjD-xkDZJYyu5zxUMTy5wVARzaGmP5nGtDZmqYg@mail.gmail.com>
+Subject: Re: [PATCH v2 21/28] KVM: VMX: Add missing CPU based VM execution
+ controls to vmcs_config
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
-
-In ACPI 6.4, s6.2.13 "_PRT (PCI Routing Table)", PCI legacy
-interrupts can be described though a link device (first model).
-From s6.2.12 "_PRS (Possible Resource Settings)":
-"This optional object evaluates [...]"
-
-It is currently checked that the interrupt advertised in _CRS
-is one of the interrupts available in _PRS.
-Make this check conditional to the presence of _PRS.
-
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215560
-Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
----
- drivers/acpi/pci_link.c | 39 +++++++++++++++++++++++++--------------
- 1 file changed, 25 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/acpi/pci_link.c b/drivers/acpi/pci_link.c
-index 129e3e7e80ee..b5a41866f135 100644
---- a/drivers/acpi/pci_link.c
-+++ b/drivers/acpi/pci_link.c
-@@ -532,19 +532,10 @@ int __init acpi_irq_penalty_init(void)
- 
- static int acpi_irq_balance = -1;	/* 0: static, 1: balance */
- 
--static int acpi_pci_link_allocate(struct acpi_pci_link *link)
-+static int select_from_possible(struct acpi_pci_link *link)
- {
--	acpi_handle handle = link->device->handle;
--	int irq;
- 	int i;
- 
--	if (link->irq.initialized) {
--		if (link->refcnt == 0)
--			/* This means the link is disabled but initialized */
--			acpi_pci_link_set(link, link->irq.active);
--		return 0;
--	}
--
- 	/*
- 	 * search for active IRQ in list of possible IRQs.
- 	 */
-@@ -557,8 +548,9 @@ static int acpi_pci_link_allocate(struct acpi_pci_link *link)
- 	 */
- 	if (i == link->irq.possible_count) {
- 		if (acpi_strict)
--			acpi_handle_warn(handle, "_CRS %d not found in _PRS\n",
--					 link->irq.active);
-+			acpi_handle_warn(link->device->handle,
-+					"_CRS %d not found in _PRS\n",
-+					link->irq.active);
- 		link->irq.active = 0;
- 	}
- 
-@@ -566,9 +558,28 @@ static int acpi_pci_link_allocate(struct acpi_pci_link *link)
- 	 * if active found, use it; else pick entry from end of possible list.
- 	 */
- 	if (link->irq.active)
--		irq = link->irq.active;
-+		return link->irq.active;
-+	else
-+		return link->irq.possible[link->irq.possible_count - 1];
-+}
-+
-+static int acpi_pci_link_allocate(struct acpi_pci_link *link)
-+{
-+	acpi_handle handle = link->device->handle;
-+	int irq;
-+	int i;
-+
-+	if (link->irq.initialized) {
-+		if (link->refcnt == 0)
-+			/* This means the link is disabled but initialized */
-+			acpi_pci_link_set(link, link->irq.active);
-+		return 0;
-+	}
-+
-+	if (link->irq.possible_count)
-+		irq = select_from_possible(link);
- 	else
--		irq = link->irq.possible[link->irq.possible_count - 1];
-+		irq = link->irq.active;
- 
- 	if (acpi_irq_balance || !link->irq.active) {
- 		/*
--- 
-2.25.1
-
+On Wed, Jun 29, 2022 at 8:07 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+>
+> As a preparation to reusing the result of setup_vmcs_config() in
+> nested VMX MSR setup, add the CPU based VM execution controls which KVM
+> doesn't use but supports for nVMX to KVM_OPT_VMX_CPU_BASED_VM_EXEC_CONTROL
+> and filter them out in vmx_exec_control().
+>
+> No functional change intended.
+>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Jim Mattson <jmattson@google.com>
