@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDB4CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236329AbiGAJrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
+        id S236346AbiGAJrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236194AbiGAJr2 (ORCPT
+        with ESMTP id S236240AbiGAJrd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:47:28 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EB274DF4;
-        Fri,  1 Jul 2022 02:47:27 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2AB88201398;
-        Fri,  1 Jul 2022 11:47:26 +0200 (CEST)
+        Fri, 1 Jul 2022 05:47:33 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E5A74DFB;
+        Fri,  1 Jul 2022 02:47:32 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1A3691A13D5;
+        Fri,  1 Jul 2022 11:47:31 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E74C620138B;
-        Fri,  1 Jul 2022 11:47:25 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id ABC4C1A13CF;
+        Fri,  1 Jul 2022 11:47:30 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 3D995181D0CA;
-        Fri,  1 Jul 2022 17:47:24 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 09172180222C;
+        Fri,  1 Jul 2022 17:47:28 +0800 (+08)
 From:   Shengjiu Wang <shengjiu.wang@nxp.com>
 To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
         shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
         perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
         robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/6] Add support of two Audio PLL source
-Date:   Fri,  1 Jul 2022 17:32:35 +0800
-Message-Id: <1656667961-1799-1-git-send-email-shengjiu.wang@nxp.com>
+Subject: [PATCH v2 4/6] ASoC: fsl_sai: Add support for PLL switch at runtime
+Date:   Fri,  1 Jul 2022 17:32:39 +0800
+Message-Id: <1656667961-1799-5-git-send-email-shengjiu.wang@nxp.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1656667961-1799-1-git-send-email-shengjiu.wang@nxp.com>
+References: <1656667961-1799-1-git-send-email-shengjiu.wang@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -42,32 +44,113 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 i.MX8MQ/MN/MM/MP platforms typically have 2 AUDIO PLLs being
 configured to handle 8kHz and 11kHz series audio rates.
 
-The patches implement the functionality to select at runtime
-the appropriate AUDIO PLL for root clock, if there is no
-two PLL registered, then no action taken.
+The patch implements the functionality to select at runtime
+the appropriate AUDIO PLL as function of sysclk rate.
 
-change in v2:
-- simply the logic for calling reparent function
+Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/Kconfig   |  1 +
+ sound/soc/fsl/fsl_sai.c | 38 ++++++++++++++++++++++++++++++++++++++
+ sound/soc/fsl/fsl_sai.h |  2 ++
+ 3 files changed, 41 insertions(+)
 
-Shengjiu Wang (6):
-  ASoC: fsl_utils: Add function to handle PLL clock source
-  ASoC: fsl_spdif: Add support for PLL switch at runtime.
-  ASoC: fsl_micfil: Add support for PLL switch at runtime
-  ASoC: fsl_sai: Add support for PLL switch at runtime
-  ASoC: dt-bindings: fsl_spdif: Add two PLL clock source
-  ASoC: dt-bindings: fsl-sai: Add two PLL clock source
-
- .../devicetree/bindings/sound/fsl,spdif.yaml  |  4 ++
- .../devicetree/bindings/sound/fsl-sai.txt     |  3 +
- sound/soc/fsl/Kconfig                         |  3 +
- sound/soc/fsl/fsl_micfil.c                    | 31 +++++++++
- sound/soc/fsl/fsl_sai.c                       | 38 ++++++++++
- sound/soc/fsl/fsl_sai.h                       |  2 +
- sound/soc/fsl/fsl_spdif.c                     | 48 +++++++++++--
- sound/soc/fsl/fsl_utils.c                     | 69 +++++++++++++++++++
- sound/soc/fsl/fsl_utils.h                     |  7 ++
- 9 files changed, 200 insertions(+), 5 deletions(-)
-
+diff --git a/sound/soc/fsl/Kconfig b/sound/soc/fsl/Kconfig
+index 533937166b4a..614eceda6b9e 100644
+--- a/sound/soc/fsl/Kconfig
++++ b/sound/soc/fsl/Kconfig
+@@ -19,6 +19,7 @@ config SND_SOC_FSL_SAI
+ 	select REGMAP_MMIO
+ 	select SND_SOC_IMX_PCM_DMA if SND_IMX_SOC != n
+ 	select SND_SOC_GENERIC_DMAENGINE_PCM
++	select SND_SOC_FSL_UTILS
+ 	help
+ 	  Say Y if you want to add Synchronous Audio Interface (SAI)
+ 	  support for the Freescale CPUs.
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index a0ddaf7e9f60..974ba0780b19 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -23,6 +23,7 @@
+ #include <linux/mfd/syscon/imx6q-iomuxc-gpr.h>
+ 
+ #include "fsl_sai.h"
++#include "fsl_utils.h"
+ #include "imx-pcm.h"
+ 
+ #define FSL_SAI_FLAGS (FSL_SAI_CSR_SEIE |\
+@@ -220,14 +221,48 @@ static int fsl_sai_set_dai_sysclk_tr(struct snd_soc_dai *cpu_dai,
+ 	return 0;
+ }
+ 
++static int fsl_sai_set_mclk_rate(struct snd_soc_dai *dai, int clk_id, unsigned int freq)
++{
++	struct fsl_sai *sai = snd_soc_dai_get_drvdata(dai);
++	int ret;
++
++	fsl_asoc_reparent_pll_clocks(dai->dev, sai->mclk_clk[clk_id],
++				     sai->pll8k_clk, sai->pll11k_clk, freq);
++
++	ret = clk_set_rate(sai->mclk_clk[clk_id], freq);
++	if (ret < 0)
++		dev_err(dai->dev, "failed to set clock rate (%u): %d\n", freq, ret);
++
++	return ret;
++}
++
+ static int fsl_sai_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
+ 		int clk_id, unsigned int freq, int dir)
+ {
++	struct fsl_sai *sai = snd_soc_dai_get_drvdata(cpu_dai);
+ 	int ret;
+ 
+ 	if (dir == SND_SOC_CLOCK_IN)
+ 		return 0;
+ 
++	if (freq > 0 && clk_id != FSL_SAI_CLK_BUS) {
++		if (clk_id < 0 || clk_id >= FSL_SAI_MCLK_MAX) {
++			dev_err(cpu_dai->dev, "Unknown clock id: %d\n", clk_id);
++			return -EINVAL;
++		}
++
++		if (IS_ERR_OR_NULL(sai->mclk_clk[clk_id])) {
++			dev_err(cpu_dai->dev, "Unassigned clock: %d\n", clk_id);
++			return -EINVAL;
++		}
++
++		if (sai->mclk_streams == 0) {
++			ret = fsl_sai_set_mclk_rate(cpu_dai, clk_id, freq);
++			if (ret < 0)
++				return ret;
++		}
++	}
++
+ 	ret = fsl_sai_set_dai_sysclk_tr(cpu_dai, clk_id, freq, true);
+ 	if (ret) {
+ 		dev_err(cpu_dai->dev, "Cannot set tx sysclk: %d\n", ret);
+@@ -1281,6 +1316,9 @@ static int fsl_sai_probe(struct platform_device *pdev)
+ 	else
+ 		sai->mclk_clk[0] = sai->bus_clk;
+ 
++	fsl_asoc_get_pll_clocks(&pdev->dev, &sai->pll8k_clk,
++				&sai->pll11k_clk);
++
+ 	/* read dataline mask for rx and tx*/
+ 	ret = fsl_sai_read_dlcfg(sai);
+ 	if (ret < 0) {
+diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
+index 9bb8ced520c8..17956b5731dc 100644
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -273,6 +273,8 @@ struct fsl_sai {
+ 	struct regmap *regmap;
+ 	struct clk *bus_clk;
+ 	struct clk *mclk_clk[FSL_SAI_MCLK_MAX];
++	struct clk *pll8k_clk;
++	struct clk *pll11k_clk;
+ 	struct resource *res;
+ 
+ 	bool is_consumer_mode;
 -- 
 2.17.1
 
