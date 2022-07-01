@@ -2,58 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F89AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 22:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 012C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 22:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232213AbiGAWHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 18:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
+        id S230172AbiGAWML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 18:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbiGAWHP (ORCPT
+        with ESMTP id S229606AbiGAWMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 18:07:15 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC575C9F2;
-        Fri,  1 Jul 2022 15:07:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7ys1H/itbGlSJmn0R1YyKpZrJjKGuppwOKh7bqYI3v8=; b=UyE3pZVdG4JJ37tooODvaz5w/N
-        CUohGoZFz6VDw9CirfU9M4DK+Nam6XSogFYNqZCtPExhWAcxsevOLKnvbuoiK5/a3MAqJFHq6y33v
-        cmU6aPtR0Jl3G8DvI5DC0huyiiA1bERou533bjV1zJo7GKGYEsOFObxSKAn1ryWoq0vGzf4uJGBuP
-        l/FIxJUR1jfMI9C64uYO990Xd4q12ZG6xs/8dH1As50gq1pKwkGRz3+MX4xV+taFTyEpAlm6Tp52V
-        PTDPjeh9s/w4bUvCUO3QPu7rT4sXiKYxSLWUH0tvkrnpwU+2cpyhUAjw4Bf6J00Ec2zX7Piokkwg0
-        /TProHlg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o7OnC-0079Jk-1x; Fri, 01 Jul 2022 22:07:14 +0000
-Date:   Fri, 1 Jul 2022 15:07:14 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] module: Increase readability of
- module_kallsyms_lookup_name()
-Message-ID: <Yr9wEiJpu6EfPdaq@bombadil.infradead.org>
-References: <f15dcfd75e064f80eeb75c9baf9e881196039db7.1655100096.git.christophe.leroy@csgroup.eu>
- <133321ea63ceb4cdd83346e068d1d16b676678f8.1655100096.git.christophe.leroy@csgroup.eu>
+        Fri, 1 Jul 2022 18:12:09 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D56599F2;
+        Fri,  1 Jul 2022 15:12:07 -0700 (PDT)
+Received: from notapiano (unknown [194.36.25.35])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 644AE660177B;
+        Fri,  1 Jul 2022 23:12:03 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656713526;
+        bh=vO57gVtWH9VVPfhwKrj1w3mSb/OAbqwWY5Fzq8waJtc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GAm9TKTeIYFZ/1jL+pZskQdvoZt5+1rr5343uvEnaRAtQV+EL1LFP6YYQcfzrWG9d
+         VRY022M79HIK2A0ZUANLfskx0Ncqojd+6Adb+QtNfIf8tMNH1AemTQoZFZqBUk+RLJ
+         OH+M/knafQKaYdHgOXC3dftIiL/rqg/cZyAZI3W40RVx6ozGh4L2X1fhd82qPGC50S
+         RQkWhw/P7QlfXYjVQnCjNUqapiz777M+zWhpUxJD8TS6mONJD9TRkIB340QaXCt9sZ
+         O+sAE99EM0vQVYo6E8eYK+5Kmvx6VgLgDl7D/ijhbCCr+tP061/iCslhYfE8w7mM7o
+         XYpSBMJxfKdRQ==
+Date:   Fri, 1 Jul 2022 18:11:58 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, hsinyi@chromium.org,
+        allen-kh.cheng@mediatek.com, gtk3@inbox.ru, luca@z3ntu.xyz,
+        sam.shih@mediatek.com, sean.wang@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wenst@chromium.org
+Subject: Re: [PATCH 02/11] arm64: dts: mediatek: Introduce MT8195 Cherry
+ platform's Tomato
+Message-ID: <20220701221158.iuw5fehgkjrqw6zh@notapiano>
+References: <20220630153316.308767-1-angelogioacchino.delregno@collabora.com>
+ <20220630153316.308767-3-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <133321ea63ceb4cdd83346e068d1d16b676678f8.1655100096.git.christophe.leroy@csgroup.eu>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220630153316.308767-3-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 08:02:02AM +0200, Christophe Leroy wrote:
-> module_kallsyms_lookup_name() has several exit conditions but
-> can't return immediately due to preempt_disable().
+On Thu, Jun 30, 2022 at 05:33:07PM +0200, AngeloGioacchino Del Regno wrote:
+> Introduce the MT8195 Cherry Chromebook platform, including three
+> revisions of Cherry Tomato boards.
 > 
-> Refactor module_kallsyms_lookup_name() to allow returning from
-> anywhere, and reduce depth.
+> This basic configuration allows to boot Linux on all board revisions
+> and get a serial console from a ramdisk.
 > 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/Makefile         |  3 +++
+>  .../dts/mediatek/mt8195-cherry-tomato-r1.dts  | 11 ++++++++
+>  .../dts/mediatek/mt8195-cherry-tomato-r2.dts  | 11 ++++++++
+>  .../dts/mediatek/mt8195-cherry-tomato-r3.dts  | 12 +++++++++
+>  .../boot/dts/mediatek/mt8195-cherry.dtsi      | 26 +++++++++++++++++++
+>  5 files changed, 63 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+[..]
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+> new file mode 100644
+> index 000000000000..17e9e4d6f6ab
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+> @@ -0,0 +1,11 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * Copyright (C) 2021 MediaTek Inc.
+> + */
+> +/dts-v1/;
+> +#include "mt8195-cherry.dtsi"
+> +
+> +/ {
+> +	model = "MediaTek Tomato (rev1) board";
 
-Thanks for this cleanup, holy crap that was gross before, queued up!
+Given that the compatible is "google," I believe we'll want to rename the model
+to "Google Tomato", much like was commented on the Asurada series [1], but
+better to have confirmation from someone from Google. Chen-Yu? :)
 
-  Luis
+Otherwise,
+
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+Thanks,
+Nícolas
+
+[1] https://lore.kernel.org/all/CAGXv+5Gv2pjPXynz6HCdgux+giPDC5qRk+KW1aFduVz82rM=+g@mail.gmail.com/
+
+> +	compatible = "google,tomato-rev1", "google,tomato", "mediatek,mt8195";
+> +};
+[..]
+> -- 
+> 2.35.1
+> 
