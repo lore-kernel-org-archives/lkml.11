@@ -2,119 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3C1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B74FACCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:06:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiGAJED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        id S232801AbiGAJGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232975AbiGAJD6 (ORCPT
+        with ESMTP id S231426AbiGAJGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:03:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF452F005;
-        Fri,  1 Jul 2022 02:03:57 -0700 (PDT)
-Received: from dimapc.. (109-252-118-164.nat.spd-mgts.ru [109.252.118.164])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 085B26601995;
-        Fri,  1 Jul 2022 10:03:54 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656666236;
-        bh=RmdslR01N1MBAgH0PuAGwuMu+yy8zq6PlP6HQWG4wYg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nHrfgsTuoRx8kOzlzVaWvklMsHeGG13lF79SxJNVQbDTriU/ELNxzpwemsXd/HJ6N
-         tCgqYRHlBxMlkuqLP3wsvalsaUDzYtkehIk70F1HgELnpzz4FiOPyAtyY4y5UswUDN
-         yAfyeqq7GMAYr/O9HKsoT/o1xbyv232TpRHF5nPetXV/bIdrNp6Q3ggZZvtcXuVttG
-         Eg8Ad61hn6u3fNaXzZdHbQACed/6jgtaBhm55qJoAveWbHXi0f717HOAgAlTlD2G75
-         U7x206lJR1eFRFcfFdZcuxuWhuc+VzhdBI/8dKCJrNzOZ7u51CzPwOWOBQgagOvI9I
-         rrmFFUrwntThg==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas_os@shipmail.org>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-tegra@vger.kernel.org, kernel@collabora.com,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v8 2/2] drm/gem: Don't map imported GEMs
-Date:   Fri,  1 Jul 2022 12:02:40 +0300
-Message-Id: <20220701090240.1896131-3-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
-References: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
+        Fri, 1 Jul 2022 05:06:04 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9DFBC84;
+        Fri,  1 Jul 2022 02:05:57 -0700 (PDT)
+X-UUID: 7c594efba21a41439db7abf3a52454bd-20220701
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:bc41ca23-3ad4-4003-868d-9c3053912664,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:87442a2,CLOUDID:5ea82763-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 7c594efba21a41439db7abf3a52454bd-20220701
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 855301923; Fri, 01 Jul 2022 17:05:49 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 1 Jul 2022 17:05:47 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 17:05:47 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v2 0/6] Complete driver nodes for MT8192 SoC
+Date:   Fri, 1 Jul 2022 17:05:41 +0800
+Message-ID: <20220701090547.21429-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drivers that use drm_gem_mmap() and drm_gem_mmap_obj() helpers don't
-handle imported dma-bufs properly, which results in mapping of something
-else than the imported dma-buf. On NVIDIA Tegra we get a hard lockup when
-userspace writes to the memory mapping of a dma-buf that was imported into
-Tegra's DRM GEM.
+This series are based on matthias.bgg/linux.git, for-next
 
-Majority of DRM drivers prohibit mapping of the imported GEM objects.
-Mapping of imported GEMs require special care from userspace since it
-should sync dma-buf because mapping coherency of the exporter device may
-not match the DRM device. Let's prohibit the mapping for all DRM drivers
-for consistency.
+Also should reference below PATCH for dsi in chunkuang.hu/linux.git
+dt-bindings: display: mediatek: dsi: Convert dsi_dtbinding to .yaml
 
-Suggested-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- drivers/gpu/drm/drm_gem.c              | 4 ++++
- drivers/gpu/drm/drm_gem_shmem_helper.c | 9 ---------
- 2 files changed, 4 insertions(+), 9 deletions(-)
+changes since v1:
+ - add Reviewed-by Tag
+ - rename dsi-phy from dsi-dphy
+ - add missing power-domains in disp mutex
+ - Add remove mt8192 display rdma compatible PATCH in series
+ - use "mediatek,mt8183-disp-rdma" as fallback
+ - remove mediatek,larb from rdma node
+ - remove syscon-dsi and add power-domains in dsi
+ - add reset property in dsi and mt8192-resets.h
+ - correct Typo: s/ndoe/node in commit message
 
-diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
-index 86d670c71286..fc9ec42fa0ab 100644
---- a/drivers/gpu/drm/drm_gem.c
-+++ b/drivers/gpu/drm/drm_gem.c
-@@ -1034,6 +1034,10 @@ int drm_gem_mmap_obj(struct drm_gem_object *obj, unsigned long obj_size,
- {
- 	int ret;
- 
-+	/* Don't allow imported objects to be mapped */
-+	if (obj->import_attach)
-+		return -EINVAL;
-+
- 	/* Check for valid size. */
- 	if (obj_size < vma->vm_end - vma->vm_start)
- 		return -EINVAL;
-diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index 8ad0e02991ca..6190f5018986 100644
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -609,17 +609,8 @@ EXPORT_SYMBOL_GPL(drm_gem_shmem_vm_ops);
-  */
- int drm_gem_shmem_mmap(struct drm_gem_shmem_object *shmem, struct vm_area_struct *vma)
- {
--	struct drm_gem_object *obj = &shmem->base;
- 	int ret;
- 
--	if (obj->import_attach) {
--		/* Drop the reference drm_gem_mmap_obj() acquired.*/
--		drm_gem_object_put(obj);
--		vma->vm_private_data = NULL;
--
--		return dma_buf_mmap(obj->dma_buf, vma, 0);
--	}
--
- 	ret = drm_gem_shmem_get_pages(shmem);
- 	if (ret) {
- 		drm_gem_vm_close(vma);
+Allen-KH Cheng (6):
+  drm/mediatek: Remove mt8192 display rdma compatible
+  arm64: dts: mt8192: Add pwm node
+  arm64: dts: mt8192: Add mipi_tx node
+  arm64: dts: mt8192: Add display nodes
+  arm64: dts: mt8192: Add dsi node
+  arm64: dts: mt8192: Add vcodec lat and core nodes
+
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 238 +++++++++++++++++++++++
+ drivers/gpu/drm/mediatek/mtk_disp_rdma.c |   6 -
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c   |   2 -
+ 3 files changed, 238 insertions(+), 8 deletions(-)
+
 -- 
-2.36.1
+2.18.0
 
