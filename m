@@ -2,72 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF41C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6592CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236309AbiGAJCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
+        id S235025AbiGAJD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbiGAJCi (ORCPT
+        with ESMTP id S233522AbiGAJDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:02:38 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851BC193C8;
-        Fri,  1 Jul 2022 02:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=0/2zvonDcE3Fklpe/jarNXLTTDqCN2xFbwhTdVMbRho=; b=F6BYYBOSnF6QrD1t3Oziop62MF
-        3VjhUBpC4lFaMLIGRMl32DI5uYtwFrEw4YPo0pNH+97ooDPQHISHAb2Ki3OE+1Ogu64u77WvL+z40
-        Z0iE2A3Mi5/uRafY2WmLrH2BnqfwK7dlX62jnJ5/p6OienKV6ohiEdHTx5wIDURfJDfPX+pOeuF9W
-        TRGCx7RIrvSt2yNnZ2NqghxGdwnsmZRjYeMafZ5vlz5S2yG5aU+b0m9K98+rnyGmkFuxIRHi+ajWT
-        E59zMAcJSXcNZsBPDSjjfb8xC2GzFvRiE9qjOEZEYiklU4yDC1TUn8wL4JjWPVzT7GLMAJk8CAdKb
-        uQAa7hfA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o7CWw-00Fe4k-40; Fri, 01 Jul 2022 09:01:48 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A278F980017; Fri,  1 Jul 2022 11:01:37 +0200 (CEST)
-Date:   Fri, 1 Jul 2022 11:01:37 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Jose E. Marchesi" <jemarch@gnu.org>
-Cc:     Ruud van der Pas <ruud.vanderpas@oracle.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Vladimir Mezentsev <vladimir.mezentsev@oracle.com>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Wenlei He <wenlei@fb.com>, Hongtao Yu <hoy@fb.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        linux-toolchains@vger.kernel.org, elena.zannoni@oracle.com
-Subject: Re: plumbers session on profiling?
-Message-ID: <Yr638aOIaaEBPICy@worktop.programming.kicks-ass.net>
-References: <CAKwvOdkyY9rsH3eViMK-_4iz_W_usumz5nD+3AhbNCVQ3FRCjA@mail.gmail.com>
- <CAKwvOdnsZekEM77axBf67MDqQVP0n6PTKH=njSyPSWTNiWAOiA@mail.gmail.com>
- <87mtf7z0rt.fsf@gnu.org>
- <6F9E9D93-3913-4022-9384-D809C8EF7715@oracle.com>
- <CAKwvOdm=_YqBpuBzouqoWHYNe6MMUE10vqF0PUkU=hcOj+UqrQ@mail.gmail.com>
- <B0A01DE7-1B50-479A-92DF-DAFAB3F06E0F@oracle.com>
- <878rpgpvfj.fsf@gnu.org>
+        Fri, 1 Jul 2022 05:03:24 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3CA1571A;
+        Fri,  1 Jul 2022 02:03:23 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:2a18:eef7:517c:3467] (unknown [IPv6:2a01:e0a:120:3210:2a18:eef7:517c:3467])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 099BA66015B2;
+        Fri,  1 Jul 2022 10:03:21 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656666201;
+        bh=HeVABiQifDKZmsejKzWKuWsrRSudGKBJZ7pqrByEerQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=nwQ+wI922KmSe3X33SneWndU3TbI/sjRvPQJ8Dr5Xx5e+O3qg5hog/1NfrfSZLLa+
+         uiofarX6QER7SRj2Socni4uPTSAQWRCqvBlpKKJW9qGo5lGcEk2o08vW2y1EogP2yf
+         Er5jCtdTUH1iSLSOQe/5IZo2K3fmdvkTD8DY16m2Bto4fPs3QeAcL2Otxzd/KusWTh
+         +5WhbyviowG4guFPNMai5QO1z1hlQI4fVdmiSKw2/rCJl+CsdHNDVuFp5LAVwrEHsh
+         QhTDO0SZt/zk+9K5tTKjKTU+cWKKVLKpaDNBmWwyxA41gdiPS+vybDFYccNgp4oEzr
+         H6JM/1lzE99Gw==
+Message-ID: <37145626-1a7e-2aba-4f3c-4d0574729a41@collabora.com>
+Date:   Fri, 1 Jul 2022 11:03:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878rpgpvfj.fsf@gnu.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 3/7] media: hantro: HEVC: Fix chroma offset computation
+Content-Language: en-US
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, andrzej.p@collabora.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com
+References: <20220617115802.396442-1-benjamin.gaignard@collabora.com>
+ <20220617115802.396442-4-benjamin.gaignard@collabora.com>
+ <Yr60jj4OOAM6plWC@aptenodytes>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <Yr60jj4OOAM6plWC@aptenodytes>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 07:08:48PM +0200, Jose E. Marchesi wrote:
-> 
-> [Added linux-toolchains@vger in CC]
-> 
-> It would be interesting to have some discussion in the Toolchains track
-> on building the kernel with PGO/FDO.  I have seen a raise on interest on
-> the topic in several companies, but it would make very little sense if
-> no kernel hacker is interested in participating... anybody?
 
-I know there's been a lot of work in this area, but none of it seems to
-have trickled down to be easy enough for me to use it.
+Le 01/07/2022 à 10:47, Paul Kocialkowski a écrit :
+> Hi Benjamin,
+>
+> On Fri 17 Jun 22, 13:57, Benjamin Gaignard wrote:
+>> The chroma offset depends of the bitstream depth.
+>> Make sure that ctx->bit_depth is used to compute it.
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>> ---
+>>   drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>> index 9eac133bda68..8407ad45b7b7 100644
+>> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>> @@ -12,7 +12,7 @@
+>>   
+>>   static size_t hantro_hevc_chroma_offset(struct hantro_ctx *ctx)
+>>   {
+>> -	return ctx->dst_fmt.width * ctx->dst_fmt.height;
+>> +	return ctx->dst_fmt.width * ctx->dst_fmt.height * ctx->bit_depth / 8;
+> Is this a case for DIV_ROUND_UP or are you sure the rounded-down size is always
+> sufficient?
+
+No need of DIV_ROUND_UP here because it could affect the chroma offset when
+using decoder tiled format and add extra bytes between luma and chroma planes.
+
+Regards,
+Benjamin
+
+> Cheers,
+>
+> Paul
+>
+>>   }
+>>   
+>>   static size_t hantro_hevc_motion_vectors_offset(struct hantro_ctx *ctx)
+>> -- 
+>> 2.32.0
+>>
