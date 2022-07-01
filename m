@@ -2,263 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01337C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235127AbiGAIYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        id S235307AbiGAIYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234708AbiGAIXh (ORCPT
+        with ESMTP id S234051AbiGAIXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:23:37 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECBE735A6
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:22:04 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n10so1759784plp.0
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:22:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=occJkHHu6x23QwNkK+mJiCbcRgGi/dU2FHiFOrlSYbY=;
-        b=DfpOjzJqDmPgNlzLJG3E0dPhRhARULlPZWnEvfN4mlod27WHw/HwD4Ex/MzoFQt1lq
-         ifaj5yfIE6DUaoG5Bt1xQzabIKqyNR6Q8zkPi3nHG8wYin+qUA65PczAZvfLhvzrl49v
-         B/XMtibfwIDlAHCsII0r2WlMX7JCcVnq4WPQv/6RlKMJe7V4AwcBdUGILNGqlZF80IYB
-         QqlCJQUhhzZ/8EBF6XHG6ZzpS0vfmOgQtZu1KGHr77B71D6PiWItGdTq5CJtpeym+DLx
-         D8iMcM2dppFv/MbFWz1rCqIZ9EybSx18pDpie1y7iI+befL7X0w+1ht/ZG44Sd1eWdHa
-         nCyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=occJkHHu6x23QwNkK+mJiCbcRgGi/dU2FHiFOrlSYbY=;
-        b=17hhEnewnpY+oN6emjKPKO1Ly/9UpMHO12SnAdWxbDaZRvW3pbIVi5a8ahvrl/4db4
-         fzelTFHDe97rzuCvWzB53H/Zy1rL6ktCQs8A1LZwk3H2IbgEKrfo92l7MARWBdC7RUYt
-         a5QFqHKV9Pjprh2vFlP2OMRGfeg+M1CZDaeQexwJfUAH/bt9p4c0uVLMeOPdqkku99iA
-         xtYrhnKEKf1Qn56us67IQqOuLORsypb6p45mV+A/9S0lifVXCdRHjCWi7HhhxqyK0feO
-         wB9mN9WExb9+/En4EyrGi49REBzJf857969vd8WMWNdfodgv+aoDz028PU8vNX4jqStZ
-         DpHg==
-X-Gm-Message-State: AJIora/cfcajfc02+6ZAVULssR0fQn9E97S/osVX7hE2P7DafYA9IYTV
-        u3jToFYpt47NuS9XvOe1TgsFcg==
-X-Google-Smtp-Source: AGRyM1tRf7aYIs8kaHYiDj0HDOku3J/sNXhwvKbJc66rflsZjIYdVXvYfQ3uUMgzTYIS8F1RbLX8mA==
-X-Received: by 2002:a17:90b:194:b0:1ec:96dd:fef2 with SMTP id t20-20020a17090b019400b001ec96ddfef2mr14832285pjs.195.1656663723813;
-        Fri, 01 Jul 2022 01:22:03 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id a5-20020a1709027e4500b0016784c93f23sm14762687pln.197.2022.07.01.01.22.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 01:22:03 -0700 (PDT)
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V2 28/30] OPP: Remove dev_pm_opp_register_set_opp_helper() and friends
-Date:   Fri,  1 Jul 2022 13:50:23 +0530
-Message-Id: <188bd4f0cdaa5aa79e5d112d2dd623c0603ef25c.1656660185.git.viresh.kumar@linaro.org>
-X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
-In-Reply-To: <cover.1656660185.git.viresh.kumar@linaro.org>
-References: <cover.1656660185.git.viresh.kumar@linaro.org>
+        Fri, 1 Jul 2022 04:23:39 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99CC735B2;
+        Fri,  1 Jul 2022 01:22:06 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-118-164.nat.spd-mgts.ru [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 324386600BA8;
+        Fri,  1 Jul 2022 09:22:04 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656663725;
+        bh=rjfOD5XJ4oMrFc0ADdNTY8d0gJRB40Z3xVocscFIFek=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=IuIzOVGwc5ZfP59Dw1rJgrS3VGGnhLBrSQFAyYkMfG/wkNtXOx+waALYJU2CDfhqN
+         NOsW/fygf0Mcxr4sUkOk+45rNt/47gERiVx0466vCvzG2YOpTt2ac1ftqqBV1r3SzU
+         BUIO5i/T6t7nMUY7F4qtbZJJ/vO1T6FFRtrYmQOp3fILGb65v4YjIr7jYQDa2sk7fK
+         E4yl6eTuWIRwIMVDl/LnWVUl80bFxQM78Y7S7XSbjIPOwot91w+u55iA2vuWP1Kbaq
+         U5ol2uJNXoLN+8tFEAh6H7xUe5b8f3nJoRcoCSRyDcwInxxv3PonjkQ0aq8lQzWOld
+         7RbIo1eLD7jJg==
+Message-ID: <7f33ec06-5325-b0f9-3e62-df00c356906e@collabora.com>
+Date:   Fri, 1 Jul 2022 11:22:01 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v7 2/2] drm/gem: Don't map imported GEMs
+Content-Language: en-US
+To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m_=28Intel=29?= 
+        <thomas_os@shipmail.org>, David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-tegra@vger.kernel.org, kernel@collabora.com,
+        virtualization@lists.linux-foundation.org
+References: <20220630200405.1883897-1-dmitry.osipenko@collabora.com>
+ <20220630200405.1883897-3-dmitry.osipenko@collabora.com>
+ <75b677b6-c704-e270-c921-93c982020c38@shipmail.org>
+ <8ab15669-889b-1119-9323-ec47689c7fb7@collabora.com>
+ <22005f1b-4ae2-0fda-beda-1d9847bb2ade@shipmail.org>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <22005f1b-4ae2-0fda-beda-1d9847bb2ade@shipmail.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that everyone has migrated to dev_pm_opp_set_config(), remove the
-public interface for dev_pm_opp_register_set_opp_helper() and friends.
+On 6/30/22 23:26, Thomas Hellström (Intel) wrote:
+> 
+> On 6/30/22 22:22, Dmitry Osipenko wrote:
+>> Hello Thomas,
+>>
+>> On 6/30/22 23:15, Thomas Hellström (Intel) wrote:
+>>> Hi, Dmitry,
+>>>
+>>> On 6/30/22 22:04, Dmitry Osipenko wrote:
+>>>> Drivers that use drm_gem_mmap() and drm_gem_mmap_obj() helpers don't
+>>>> handle imported dma-bufs properly, which results in mapping of
+>>>> something
+>>>> else than the imported dma-buf. On NVIDIA Tegra we get a hard lockup
+>>>> when
+>>>> userspace writes to the memory mapping of a dma-buf that was imported
+>>>> into
+>>>> Tegra's DRM GEM.
+>>>>
+>>>> Majority of DRM drivers prohibit mapping of the imported GEM objects.
+>>>> Mapping of imported GEMs require special care from userspace since it
+>>>> should sync dma-buf because mapping coherency of the exporter device
+>>>> may
+>>>> not match the DRM device. Let's prohibit the mapping for all DRM
+>>>> drivers
+>>>> for consistency.
+>>>>
+>>>> Cc: stable@vger.kernel.org
+>>>> Suggested-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+>>>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+>>> This might break drivers whose obj->funcs->mmap() callback already
+>>> handles this case, and has userspace that does the right thing.
+>> The drm-shmem helper should be the only that maps imported GEMs
+>> properly, but drivers that use drm-shmem already prohibit to map
+>> imported GEMs. Okay, I'll try to re-check once again to be sure.
+> 
+> OK. If you aren't 100.1% sure, then please drop the Cc: stable tag and
+> let the patch ride out at least an -rc series, because breaking a stable
+> kernel is something we woudln't want to do.
 
-Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- drivers/opp/core.c     | 89 ++++++++++--------------------------------
- include/linux/pm_opp.h | 17 --------
- 2 files changed, 20 insertions(+), 86 deletions(-)
+Apparently the OMAP DRM driver should be broken similarly to the Tegra
+DRM. Unlikely that anyone else maps the imported GEMs in practice, other
+drivers are prohibiting the mapping AFAICS. I'll make the v8 without the
+stable tag since it's not a critical problem after all because it never
+worked for the broken drivers.
 
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 9b4f67994993..3040e735fe1c 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -2209,7 +2209,7 @@ static void _opp_put_clknames(struct opp_table *opp_table)
- }
- 
- /**
-- * dev_pm_opp_register_set_opp_helper() - Register custom set OPP helper
-+ * _opp_register_set_opp_helper() - Register custom set OPP helper
-  * @dev: Device for which the helper is getting registered.
-  * @set_opp: Custom set OPP helper.
-  *
-@@ -2218,32 +2218,18 @@ static void _opp_put_clknames(struct opp_table *opp_table)
-  *
-  * This must be called before any OPPs are initialized for the device.
-  */
--struct opp_table *dev_pm_opp_register_set_opp_helper(struct device *dev,
--			int (*set_opp)(struct dev_pm_set_opp_data *data))
-+static int _opp_register_set_opp_helper(struct opp_table *opp_table,
-+	struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data))
- {
- 	struct dev_pm_set_opp_data *data;
--	struct opp_table *opp_table;
--
--	if (!set_opp)
--		return ERR_PTR(-EINVAL);
--
--	opp_table = _add_opp_table(dev, false);
--	if (IS_ERR(opp_table))
--		return opp_table;
--
--	/* This should be called before OPPs are initialized */
--	if (WARN_ON(!list_empty(&opp_table->opp_list))) {
--		dev_pm_opp_put_opp_table(opp_table);
--		return ERR_PTR(-EBUSY);
--	}
- 
- 	/* Another CPU that shares the OPP table has set the helper ? */
- 	if (opp_table->set_opp)
--		return opp_table;
-+		return 0;
- 
- 	data = kzalloc(sizeof(*data), GFP_KERNEL);
- 	if (!data)
--		return ERR_PTR(-ENOMEM);
-+		return -ENOMEM;
- 
- 	mutex_lock(&opp_table->lock);
- 	opp_table->set_opp_data = data;
-@@ -2256,60 +2242,26 @@ struct opp_table *dev_pm_opp_register_set_opp_helper(struct device *dev,
- 
- 	opp_table->set_opp = set_opp;
- 
--	return opp_table;
-+	return 0;
- }
--EXPORT_SYMBOL_GPL(dev_pm_opp_register_set_opp_helper);
- 
- /**
-- * dev_pm_opp_unregister_set_opp_helper() - Releases resources blocked for
-- *					   set_opp helper
-- * @opp_table: OPP table returned from dev_pm_opp_register_set_opp_helper().
-+ * _opp_unregister_set_opp_helper() - Releases resources blocked for set_opp helper
-+ * @opp_table: OPP table returned from _opp_register_set_opp_helper().
-  *
-  * Release resources blocked for platform specific set_opp helper.
-  */
--void dev_pm_opp_unregister_set_opp_helper(struct opp_table *opp_table)
-+static void _opp_unregister_set_opp_helper(struct opp_table *opp_table)
- {
--	if (unlikely(!opp_table))
--		return;
--
--	opp_table->set_opp = NULL;
--
--	mutex_lock(&opp_table->lock);
--	kfree(opp_table->set_opp_data);
--	opp_table->set_opp_data = NULL;
--	mutex_unlock(&opp_table->lock);
--
--	dev_pm_opp_put_opp_table(opp_table);
--}
--EXPORT_SYMBOL_GPL(dev_pm_opp_unregister_set_opp_helper);
--
--static void devm_pm_opp_unregister_set_opp_helper(void *data)
--{
--	dev_pm_opp_unregister_set_opp_helper(data);
--}
--
--/**
-- * devm_pm_opp_register_set_opp_helper() - Register custom set OPP helper
-- * @dev: Device for which the helper is getting registered.
-- * @set_opp: Custom set OPP helper.
-- *
-- * This is a resource-managed version of dev_pm_opp_register_set_opp_helper().
-- *
-- * Return: 0 on success and errorno otherwise.
-- */
--int devm_pm_opp_register_set_opp_helper(struct device *dev,
--					int (*set_opp)(struct dev_pm_set_opp_data *data))
--{
--	struct opp_table *opp_table;
--
--	opp_table = dev_pm_opp_register_set_opp_helper(dev, set_opp);
--	if (IS_ERR(opp_table))
--		return PTR_ERR(opp_table);
-+	if (opp_table->set_opp) {
-+		opp_table->set_opp = NULL;
- 
--	return devm_add_action_or_reset(dev, devm_pm_opp_unregister_set_opp_helper,
--					opp_table);
-+		mutex_lock(&opp_table->lock);
-+		kfree(opp_table->set_opp_data);
-+		opp_table->set_opp_data = NULL;
-+		mutex_unlock(&opp_table->lock);
-+	}
- }
--EXPORT_SYMBOL_GPL(devm_pm_opp_register_set_opp_helper);
- 
- static void _opp_detach_genpd(struct opp_table *opp_table)
- {
-@@ -2485,7 +2437,7 @@ static void _opp_clear_config(struct opp_config_data *data)
- 	if (data->flags & OPP_CONFIG_SUPPORTED_HW)
- 		_opp_put_supported_hw(data->opp_table);
- 	if (data->flags & OPP_CONFIG_REGULATOR_HELPER)
--		dev_pm_opp_unregister_set_opp_helper(data->opp_table);
-+		_opp_unregister_set_opp_helper(data->opp_table);
- 	if (data->flags & OPP_CONFIG_PROP_NAME)
- 		dev_pm_opp_put_prop_name(data->opp_table);
- 	if (data->flags & OPP_CONFIG_CLK)
-@@ -2561,11 +2513,10 @@ int dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
- 
- 	/* Configure opp helper */
- 	if (config->set_opp) {
--		err = dev_pm_opp_register_set_opp_helper(dev, config->set_opp);
--		if (IS_ERR(err)) {
--			ret = PTR_ERR(err);
-+		ret = _opp_register_set_opp_helper(opp_table, dev,
-+						   config->set_opp);
-+		if (ret)
- 			goto err;
--		}
- 
- 		data->flags |= OPP_CONFIG_REGULATOR_HELPER;
- 	}
-diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
-index 31062dc216f3..75edb6a14a76 100644
---- a/include/linux/pm_opp.h
-+++ b/include/linux/pm_opp.h
-@@ -189,9 +189,6 @@ void dev_pm_opp_clear_config(int token);
- 
- struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name);
- void dev_pm_opp_put_prop_name(struct opp_table *opp_table);
--struct opp_table *dev_pm_opp_register_set_opp_helper(struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data));
--void dev_pm_opp_unregister_set_opp_helper(struct opp_table *opp_table);
--int devm_pm_opp_register_set_opp_helper(struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data));
- struct opp_table *dev_pm_opp_attach_genpd(struct device *dev, const char * const *names, struct device ***virt_devs);
- void dev_pm_opp_detach_genpd(struct opp_table *opp_table);
- int devm_pm_opp_attach_genpd(struct device *dev, const char * const *names, struct device ***virt_devs);
-@@ -366,20 +363,6 @@ static inline int dev_pm_opp_unregister_notifier(struct device *dev, struct noti
- 	return -EOPNOTSUPP;
- }
- 
--static inline struct opp_table *dev_pm_opp_register_set_opp_helper(struct device *dev,
--			int (*set_opp)(struct dev_pm_set_opp_data *data))
--{
--	return ERR_PTR(-EOPNOTSUPP);
--}
--
--static inline void dev_pm_opp_unregister_set_opp_helper(struct opp_table *opp_table) {}
--
--static inline int devm_pm_opp_register_set_opp_helper(struct device *dev,
--				    int (*set_opp)(struct dev_pm_set_opp_data *data))
--{
--	return -EOPNOTSUPP;
--}
--
- static inline struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name)
- {
- 	return ERR_PTR(-EOPNOTSUPP);
 -- 
-2.31.1.272.g89b43f80a514
-
+Best regards,
+Dmitry
