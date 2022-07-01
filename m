@@ -2,70 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A14FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6909CCCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235358AbiGAHiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
+        id S235402AbiGAHiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235222AbiGAHiA (ORCPT
+        with ESMTP id S235363AbiGAHiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:38:00 -0400
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310536D576
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:37:58 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id VEM00054;
-        Fri, 01 Jul 2022 15:37:54 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
- 15.1.2507.9; Fri, 1 Jul 2022 15:37:53 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <joro@8bytes.org>, <will@kernel.org>,
-        <suravee.suthikulpanit@amd.com>
-CC:     <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] iommu/amd: Handle return of iommu_device_sysfs_add
-Date:   Fri, 1 Jul 2022 02:20:08 -0400
-Message-ID: <20220701062008.6988-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Fri, 1 Jul 2022 03:38:03 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D086F6D576
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:38:02 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so1020261wmb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 00:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=/vcgopOT2upUpDmIm53joh9K47D2C5Zrxpx/Q99r1iw=;
+        b=xfHF/7sOVLQbcrw/u3cF6Y/rTHyKvSuiPGBZUlQlW0fyz927MfEa67jigZSFeshdEL
+         yMFSBaIcRtVUERLtB/GAYRjMhdzLnJzIcHF8pnaRINLo9ckajo59vti4plXq10oog7pZ
+         EeDyAoqjphNoN5236krqhyHl3y0h+UWKpHsiR/PDg/ND3svkTPKOhe4ovChPuaaLfjMS
+         j1+kQgPn+mvEcP7wcb2nE6Rl+ojqrJgN26I9/eKlf38Bn7EFV9Stywa3xRYiT5cmLc0H
+         vJ7C0Y1m6n1PEyz8gkUYAXd8YKIBMOjpMM/+nm3XEEWVSejX9AcnqAR6iAABNbcc5m6y
+         dbrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/vcgopOT2upUpDmIm53joh9K47D2C5Zrxpx/Q99r1iw=;
+        b=matrfEjqMqMC9p4L+4HbPre9kupEW05ieEfJxgwjxJnpylXVAoFBb0uUBBDXQ7kska
+         xIzZHPIYGiuWzsUb+pJdgHIZ/8MBPVgmddVLjwnitTiTy+C+1/MBG51R9uDJIGUi+5Ep
+         UMQ0ysGIHRE/Ucfuye8MZFVnBtezJcA1dNdqt7tZ9NXqFcFdnjW8dMChNe713hDoOV03
+         jCdS7ZXj8SDa4X/GA9D1ibAOJAYt7/NxiOB6zDNOV/xXTKAjPYM4LN6deznc+9CKhpIt
+         7LSDq8+wLxTIJ5e6WAcEI9G08beMcuxinvbVYhVJjC4WIQcQbDk6f8lT7ueDLWNo7QCP
+         LM2g==
+X-Gm-Message-State: AJIora9Q6HM2Lu1TH91CSD78+X8e51+B3rM+3TrjnMsKap2OqZ8yYUEL
+        nW8G/RMbVqJbclenXErvuF3EZIBDTqPGZg==
+X-Google-Smtp-Source: AGRyM1vhl++y9Dmpa+muBRGRxUCfXmkkzS/X7bXlmXQMyI/GPJ2xIFIFzE2c8uw8U5HACanB9o7Y3g==
+X-Received: by 2002:a7b:c310:0:b0:38c:f07a:e10d with SMTP id k16-20020a7bc310000000b0038cf07ae10dmr14732650wmj.110.1656661081441;
+        Fri, 01 Jul 2022 00:38:01 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id v17-20020a5d43d1000000b0021b95bcaf7fsm21253318wrr.59.2022.07.01.00.37.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 00:38:00 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 08:37:58 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>, dmitry.torokhov@gmail.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        linux-input@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] mfd: rt5120: Add Richtek PMIC support
+Message-ID: <Yr6kVg2OlHkm6+bB@google.com>
+References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
+ <1655892104-10874-3-git-send-email-u0084500@gmail.com>
+ <Yrm9ObaltUiQUTqS@google.com>
+ <CADiBU3802sLTPjrGiaQ-xw-2jep1UXo+t7pYc6bCC4MiJLhOyA@mail.gmail.com>
+ <CADiBU3838Mgi3sqv+R_=8g-ROTrbN45AKPaTS_9GCWVDYASMyg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022701153754142284bb54b59ca6fffe76b63419a9b2
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CADiBU3838Mgi3sqv+R_=8g-ROTrbN45AKPaTS_9GCWVDYASMyg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As iommu_device_sysfs_add() can fail, we should check the return value.
+On Fri, 01 Jul 2022, ChiYuan Huang wrote:
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- drivers/iommu/amd/init.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> HI, Lee:
+> 
+> ChiYuan Huang <u0084500@gmail.com> 於 2022年6月27日 週一 晚上10:56寫道：
+> >
+> > Lee Jones <lee.jones@linaro.org> 於 2022年6月27日 週一 晚上10:22寫道：
+> > >
+> > > On Wed, 22 Jun 2022, cy_huang wrote:
+> > >
+> > > > From: ChiYuan Huang <cy_huang@richtek.com>
+> > > >
+> > > > Add Richtek RT5120 PMIC I2C driver.
+> > >
+> > > Why a whole new driver?
+> > >
+> > > How different is this to rt5033?
+> > >
+> > > Looks like this could easily be woven into this existing support?
+> > >
+> > It's different with the function domain.
+> > RT5033 is most like as the SubPMIC that includes PMU (battery
+> > charger/gauge/led/few buck and ldo)
+> > RT5120 is a main PMIC with default-on power that follows the boot on sequence.
+> > RT5120 only integrates regulator and power key report module.
+> >
+> Since I have explained the chip difference, do you still think it's
+> better to merge this code into rt5033 mfd?
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 3c82d9c5f1c0..a3c4fdd40f04 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2058,8 +2058,11 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 	amd_iommu_erratum_746_workaround(iommu);
- 	amd_iommu_ats_write_check_workaround(iommu);
- 
--	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
-+	ret = iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
- 			       amd_iommu_groups, "ivhd%d", iommu->index);
-+	if (ret)
-+		return ret;
-+
- 	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
- 
- 	return pci_enable_device(iommu->dev);
+I think it's okay to group devices which are similar but not exactly
+the same, if they can be.  The integration of this device into the
+other looks trivial to my naive eyes.
+
+A PMIC is a PMIC, main or sub.
+
+> > > > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> > > > ---
+> > > >  drivers/mfd/Kconfig  |  12 +++++
+> > > >  drivers/mfd/Makefile |   1 +
+> > > >  drivers/mfd/rt5120.c | 125 +++++++++++++++++++++++++++++++++++++++++++++++++++
+> > > >  3 files changed, 138 insertions(+)
+> > > >  create mode 100644 drivers/mfd/rt5120.c
+
 -- 
-2.27.0
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
