@@ -2,73 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4DA7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE60FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbiGAJT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
+        id S233678AbiGAJWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232834AbiGAJTV (ORCPT
+        with ESMTP id S231781AbiGAJWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:19:21 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFF351B2B
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:19:19 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VI0Cs3W_1656667156;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VI0Cs3W_1656667156)
-          by smtp.aliyun-inc.com;
-          Fri, 01 Jul 2022 17:19:16 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     harry.wentland@amd.com
-Cc:     sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH -next] drm/amd/display: clean up some inconsistent indenting
-Date:   Fri,  1 Jul 2022 17:19:14 +0800
-Message-Id: <20220701091914.66476-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Fri, 1 Jul 2022 05:22:03 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFDE59243;
+        Fri,  1 Jul 2022 02:22:00 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LZ8ny1xkYzKJ3c;
+        Fri,  1 Jul 2022 17:21:10 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgB32mm1vL5i6ab6AA--.40529S6;
+        Fri, 01 Jul 2022 17:21:59 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     tj@kernel.org, mkoutny@suse.com, axboe@kernel.dk,
+        ming.lei@redhat.com
+Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH RESEND v6 2/8] blk-throttle: prevent overflow while calculating wait time
+Date:   Fri,  1 Jul 2022 17:34:35 +0800
+Message-Id: <20220701093441.885741-3-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220701093441.885741-1-yukuai1@huaweicloud.com>
+References: <20220701093441.885741-1-yukuai1@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgB32mm1vL5i6ab6AA--.40529S6
+X-Coremail-Antispam: 1UD129KBjvJXoW7CFyxKr4UKrWkJrWUWF48WFg_yoW8Gr17pr
+        WfCr10gF45Xw1xKF13Ga1Yva48Ars8JFy5G3y3WanayF90kr97XF9YvryFva18ZFZ7ua1f
+        Ar1Dtry7Ar1DArJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPj14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWUJVWUGwAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
+        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
+        IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
+        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2
+        xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v2
+        6r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2
+        Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_
+        Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMI
+        IF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjfU8wZ2UUUU
+        U
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the follow smatch warning:
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:3151 commit_planes_for_stream() warn: inconsistent indenting
+From: Yu Kuai <yukuai3@huawei.com>
 
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+In tg_with_in_bps_limit(), 'bps_limit * jiffy_elapsed_rnd' might
+overflow. FIx the problem by calling mul_u64_u64_div_u64() instead.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ block/blk-throttle.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index 146fd4b864b2..d31da9c0256a 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -3148,15 +3148,15 @@ static void commit_planes_for_stream(struct dc *dc,
- 		else
- 			dc->hwss.pipe_control_lock(dc, top_pipe_to_program, false);
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 5c1d1c4d8188..a89c62bef2fb 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -806,7 +806,7 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 				 u64 bps_limit, unsigned long *wait)
+ {
+ 	bool rw = bio_data_dir(bio);
+-	u64 bytes_allowed, extra_bytes, tmp;
++	u64 bytes_allowed, extra_bytes;
+ 	unsigned long jiffy_elapsed, jiffy_wait, jiffy_elapsed_rnd;
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
  
--	if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
--		if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
--			top_pipe_to_program->stream_res.tg->funcs->wait_for_state(
-+		if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
-+			if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
-+				top_pipe_to_program->stream_res.tg->funcs->wait_for_state(
- 					top_pipe_to_program->stream_res.tg,
- 					CRTC_STATE_VACTIVE);
--			top_pipe_to_program->stream_res.tg->funcs->wait_for_state(
-+				top_pipe_to_program->stream_res.tg->funcs->wait_for_state(
- 					top_pipe_to_program->stream_res.tg,
- 					CRTC_STATE_VBLANK);
--			top_pipe_to_program->stream_res.tg->funcs->wait_for_state(
-+				top_pipe_to_program->stream_res.tg->funcs->wait_for_state(
- 					top_pipe_to_program->stream_res.tg,
- 					CRTC_STATE_VACTIVE);
+@@ -824,10 +824,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 		jiffy_elapsed_rnd = tg->td->throtl_slice;
  
+ 	jiffy_elapsed_rnd = roundup(jiffy_elapsed_rnd, tg->td->throtl_slice);
+-
+-	tmp = bps_limit * jiffy_elapsed_rnd;
+-	do_div(tmp, HZ);
+-	bytes_allowed = tmp;
++	bytes_allowed = mul_u64_u64_div_u64(bps_limit, (u64)jiffy_elapsed_rnd,
++					    (u64)HZ);
+ 
+ 	if (tg->bytes_disp[rw] + bio_size <= bytes_allowed) {
+ 		if (wait)
 -- 
-2.20.1.7.g153144c
+2.31.1
 
