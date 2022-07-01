@@ -2,173 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA17C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76498C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231826AbiGANpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        id S231630AbiGANpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231479AbiGANpK (ORCPT
+        with ESMTP id S231555AbiGANpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:45:10 -0400
-Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6022252F;
-        Fri,  1 Jul 2022 06:45:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1656683079; bh=/SVrJu8HUYn/zMI8qvKwd54V1yrEpq8nFnuKYXes/pc=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding;
-        b=b41KRg5sTBw7K5FjPQavkHS2bCbclBIg0amKv2imu0vjwmd+UTqEaUKVCHsrC3K7G
-         5m7g42EjwDh40QLKvbHJ13Efv2YE80iYvDb9Dq86oRKHDrgmgyb3UJlY7JNigGu4ve
-         vWJYx/k6emBiQeU8Zkkqj88pCqzUDinxk2jkS+sk=
-Received: by b-6.in.mailobj.net [192.168.90.16] with ESMTP
-        via [213.182.55.207]
-        Fri,  1 Jul 2022 15:44:39 +0200 (CEST)
-X-EA-Auth: hq57Tmjon9Xg6T8opbV135yFjwz0Mkh73U9UC1SW0TG+bpX7AXK06TZDOWK+8eBjxtJ6k1ZvbggAk++YsOAo/FAP99tF+ygWBOF8UYH2Qvw=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vincent Knecht <vincent.knecht@mailoo.org>
-Subject: [PATCH v2 2/6] dt-bindings: leds: is31fl319x: Document variants specificities
-Date:   Fri,  1 Jul 2022 15:44:09 +0200
-Message-Id: <20220701134415.4017794-3-vincent.knecht@mailoo.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220701134415.4017794-1-vincent.knecht@mailoo.org>
-References: <20220701134415.4017794-1-vincent.knecht@mailoo.org>
+        Fri, 1 Jul 2022 09:45:19 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CD1C24958
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 06:45:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F0490113E;
+        Fri,  1 Jul 2022 06:45:13 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8F2B53F800;
+        Fri,  1 Jul 2022 06:45:12 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 14:45:09 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Cristian Marussi <cristian.marussi@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        vincent.guittot@linaro.org, f.fainelli@gmail.com,
+        Sudeep Holla <sudeep.holla@arm.com>
+Subject: Re: [PATCH 2/5] firmware: arm_scmi: Support only one single
+ SystemPower device
+Message-ID: <20220701134509.e6wk3vwhimqre6h5@bogus>
+References: <20220623124742.2492164-1-cristian.marussi@arm.com>
+ <20220623124742.2492164-3-cristian.marussi@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623124742.2492164-3-cristian.marussi@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add si-en compatibles for all chip variants and add conditionals
-depending on compatibles to document variants specs:
-- possible reg addresses
-- whether audio-gain-db is supported or not
-- maximum number of leds
-- led-max-microamp values
+On Thu, Jun 23, 2022 at 01:47:39PM +0100, Cristian Marussi wrote:
+> In order to minimize SCMI platform fw-side complexity, only one single SCMI
+> platform should be in charge of SCMI SystemPower protocol communications
+> with the OSPM: enforce the existence of one single unique device associated
+> with SystemPower protocol across any possible number of SCMI platforms, and
+> warn if a system tries to register different SystemPower devices from
+> multiple platforms.
+> 
+> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> ---
+>  drivers/firmware/arm_scmi/bus.c | 31 ++++++++++++++++++++++++++++++-
+>  1 file changed, 30 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/firmware/arm_scmi/bus.c b/drivers/firmware/arm_scmi/bus.c
+> index a7cbf4d09081..476855d3dccb 100644
+> --- a/drivers/firmware/arm_scmi/bus.c
+> +++ b/drivers/firmware/arm_scmi/bus.c
+> @@ -19,6 +19,11 @@ static DEFINE_IDA(scmi_bus_id);
+>  static DEFINE_IDR(scmi_protocols);
+>  static DEFINE_SPINLOCK(protocol_lock);
+>  
+> +/* Track globally the creation of SCMI SystemPower related devices */
+> +static bool scmi_syspower_registered;
+> +/* Protect access to scmi_syspower_registered */
+> +static DEFINE_MUTEX(scmi_syspower_mtx);
+> +
 
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
- .../bindings/leds/issi,is31fl319x.yaml        | 84 ++++++++++++++++++-
- 1 file changed, 82 insertions(+), 2 deletions(-)
+Since we create device from the driver, can't we do this from there
+and keep the bus code free from handling all these special conditions
+which are checked for each device creation.
 
-diff --git a/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml b/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
-index 17635a7cf8af..ddbe8ba9b002 100644
---- a/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
-+++ b/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
-@@ -28,6 +28,10 @@ properties:
-       - issi,is31fl3193
-       - issi,is31fl3196
-       - issi,is31fl3199
-+      - si-en,sn3190
-+      - si-en,sn3191
-+      - si-en,sn3193
-+      - si-en,sn3196
-       - si-en,sn3199
- 
-   reg:
-@@ -61,8 +65,6 @@ patternProperties:
-         maximum: 9
- 
-       led-max-microamp:
--        default: 20000
--        enum: [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000]
-         description:
-           Note that a driver will take the lowest of all LED limits
-           since the chip has a single global setting. The lowest value
-@@ -71,6 +73,84 @@ patternProperties:
-           and not the current, which will always have its peak value
-           equal to led-max-microamp.
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3190
-+              - issi,is31fl3191
-+              - issi,is31fl3193
-+              - si-en,sn3190
-+              - si-en,sn3191
-+              - si-en,sn3193
-+    then:
-+      properties:
-+        reg:
-+          enum: [0x68, 0x69, 0x6a, 0x6b]
-+
-+        audio-gain-db: false
-+
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            led-max-microamp:
-+              default: 42000
-+              enum: [5000, 10000, 17500, 30000, 42000]
-+    else:
-+      properties:
-+        reg:
-+          enum: [0x64, 0x65, 0x66, 0x67]
-+
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            led-max-microamp:
-+              default: 20000
-+              enum: [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000]
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3190
-+              - issi,is31fl3191
-+              - si-en,sn3190
-+              - si-en,sn3191
-+    then:
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            reg:
-+              maximum: 1
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3193
-+              - si-en,sn3193
-+    then:
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            reg:
-+              maximum: 3
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3196
-+              - si-en,sn3196
-+    then:
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            reg:
-+              maximum: 6
-+
- required:
-   - compatible
-   - reg
+Yes scmi_device_create can be called outside the exiting code but since it
+is not exported(yet), we can assume all users are in kernel and we can
+catch that if anyone attempts to add. And probably we don't need the lock
+as well if it is taken care in the single loop creating the device.
+
 -- 
-2.35.3
-
-
-
+Regards,
+Sudeep
