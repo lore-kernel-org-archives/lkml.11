@@ -2,104 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F17C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F46C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiGAItF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57758 "EHLO
+        id S236366AbiGAItZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235911AbiGAIs4 (ORCPT
+        with ESMTP id S232946AbiGAItL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:48:56 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91CD13D56;
-        Fri,  1 Jul 2022 01:48:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=mY2YJsRE/yBS43tn1f7s0RHEEaTIk2g/RfTS1WyV6ug=; b=XjrOE8lfVYBHTAJTCA/bOgOgZ/
-        wcYdChR/17ayscOYNFB9kP7t6BMY8Hs+uy3SJmVk9ki1DJwU/psjT3zoqOhOsPZfaaUKNw6xuMOHM
-        cYQLXky8QVnO4onSSxH14ebDP5e8U+OVkx1VdsSS73Il7FxFmg7xOfcDBHIglcYPAuE94KAtwQadt
-        8HwwDUdrc9uLWyi4zR1k3BEoRsK2EOVk3X8Rl5unreH0IupKaPG2iKQlluf1umazRub3W4APvZtWe
-        vFaHpqakVoTAfvDEqr2rotdjoiNtX368Edt4YRs8CAqILu1SUHIxFWDxIcYjmrzzlav6tGHM0R4mb
-        1m4uIzQg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o7CJb-00FdrR-AC; Fri, 01 Jul 2022 08:47:52 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 63D90980017; Fri,  1 Jul 2022 10:47:49 +0200 (CEST)
-Date:   Fri, 1 Jul 2022 10:47:49 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Aring <aahringo@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        thunder.leizhen@huawei.com, jacob.e.keller@intel.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>,
-        cluster-devel <cluster-devel@redhat.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 0/2] refcount: attempt to avoid imbalance warnings
-Message-ID: <Yr60tWxN4P568x3W@worktop.programming.kicks-ass.net>
-References: <20220630135934.1799248-1-aahringo@redhat.com>
- <CAHk-=wjZfO9hGqJ2_hGQG3U_XzSh9_XaXze=HgPdvJbgrvASfA@mail.gmail.com>
+        Fri, 1 Jul 2022 04:49:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332567393E;
+        Fri,  1 Jul 2022 01:48:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0FD36223B;
+        Fri,  1 Jul 2022 08:48:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E63BC341CB;
+        Fri,  1 Jul 2022 08:48:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656665335;
+        bh=pVzRk2aOjBqChxhGbyCkErNxF6Xl2nyq8gDIuD1VAr0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DFxRs9rOQ9H4j3Skeg9fNug+kN8gVWr/U7RHSaZDz6vh1bSPdcpQw6WmxQOjDNcgm
+         LIBQsp/E+IjQHCybJZzXvQbaY5FHMK2bWiSoVLOHp9YbG27Q27n5OqQhIDIkF8UXEH
+         NUfJCn1WU4sj7dyPSFcfA21+uetXFu4xl+9xHwL7IAPIxkXCjdCU/6T/pkiR8piOBl
+         BSJFxw41l/Irj3taBZYQW2ISaaTAjqlfyzCXfD7dapDJAwa9ca4Uw9Pfc+wXr2i2MZ
+         PHuCcppiGeS3zeopc/jjJJ3YIeYqCl7lmwpzv7mHlqf/INmosSWHLvW9lO0DszrN05
+         1SDLTFvFGRI5w==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1o7CKZ-006T9H-Rw;
+        Fri, 01 Jul 2022 09:48:51 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
+        ksummit-discuss@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/4] scripts: sphinx-pre-install: check for PDF min version later on
+Date:   Fri,  1 Jul 2022 09:48:48 +0100
+Message-Id: <3f8199555a432aededab38b1df7750ebba07d35c.1656664906.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656664906.git.mchehab@kernel.org>
+References: <cover.1656664906.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjZfO9hGqJ2_hGQG3U_XzSh9_XaXze=HgPdvJbgrvASfA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 09:34:10AM -0700, Linus Torvalds wrote:
+Cc: "Jonathan Corbet" <corbet@lwn.net>
+Cc: "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: ksummit-discuss@lists.linuxfoundation.org
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Not commenting on sparse, since I'm not much qualified there, however,
+Better to add the PDF note late for venv recommendation.
 
->  include/linux/compiler_types.h | 2 ++
->  include/linux/refcount.h       | 6 +++---
->  2 files changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> index d08dfcb0ac68..4f2a819fd60a 100644
-> --- a/include/linux/compiler_types.h
-> +++ b/include/linux/compiler_types.h
-> @@ -24,6 +24,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
->  /* context/locking */
->  # define __must_hold(x)	__attribute__((context(x,1,1)))
->  # define __acquires(x)	__attribute__((context(x,0,1)))
-> +# define __cond_acquires(x) __attribute__((context(x,0,-1)))
->  # define __releases(x)	__attribute__((context(x,1,0)))
->  # define __acquire(x)	__context__(x,1)
->  # define __release(x)	__context__(x,-1)
-> @@ -50,6 +51,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
->  /* context/locking */
->  # define __must_hold(x)
->  # define __acquires(x)
-> +# define __cond_acquires(x)
->  # define __releases(x)
->  # define __acquire(x)	(void)0
->  # define __release(x)	(void)0
-> diff --git a/include/linux/refcount.h b/include/linux/refcount.h
-> index b8a6e387f8f9..a62fcca97486 100644
-> --- a/include/linux/refcount.h
-> +++ b/include/linux/refcount.h
-> @@ -361,9 +361,9 @@ static inline void refcount_dec(refcount_t *r)
->  
->  extern __must_check bool refcount_dec_if_one(refcount_t *r);
->  extern __must_check bool refcount_dec_not_one(refcount_t *r);
-> -extern __must_check bool refcount_dec_and_mutex_lock(refcount_t *r, struct mutex *lock);
-> -extern __must_check bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock);
-> +extern __must_check bool refcount_dec_and_mutex_lock(refcount_t *r, struct mutex *lock) __cond_acquires(lock);
-> +extern __must_check bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock) __cond_acquires(lock);
->  extern __must_check bool refcount_dec_and_lock_irqsave(refcount_t *r,
->  						       spinlock_t *lock,
-> -						       unsigned long *flags);
-> +						       unsigned long *flags) __cond_acquires(lock);
->  #endif /* _LINUX_REFCOUNT_H */
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 0/4] at: https://lore.kernel.org/all/cover.1656664906.git.mchehab@kernel.org/
 
-YES!, thank you!
+ scripts/sphinx-pre-install | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/sphinx-pre-install b/scripts/sphinx-pre-install
+index 18537e5af692..930a6d058c12 100755
+--- a/scripts/sphinx-pre-install
++++ b/scripts/sphinx-pre-install
+@@ -785,12 +785,13 @@ sub recommend_sphinx_version($)
+ {
+ 	my $virtualenv_cmd = shift;
+ 
+-	if ($latest_avail_ver lt $min_pdf_version) {
+-		print "note: If you want pdf, you need at least Sphinx $min_pdf_version.\n";
+-	}
+-
+ 	# Version is OK. Nothing to do.
+-	return if ($cur_version && ($cur_version ge $rec_version));
++	if ($cur_version && ($cur_version ge $rec_version)) {
++		if ($cur_version lt $min_pdf_version) {
++			print "note: If you want pdf, you need at least Sphinx $min_pdf_version.\n";
++		}
++		return;
++	};
+ 
+ 	if (!$need_sphinx) {
+ 		# sphinx-build is present and its version is >= $min_version
+@@ -837,6 +838,10 @@ sub recommend_sphinx_version($)
+ 			printf "\t. $activate_cmd\n";
+ 			deactivate_help();
+ 
++			if ($latest_avail_ver lt $min_pdf_version) {
++				print "note: If you want pdf, you need at least Sphinx $min_pdf_version.\n";
++			}
++
+ 			return;
+ 		}
+ 
+-- 
+2.36.1
+
