@@ -2,161 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 481D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:09:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F029C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236165AbiGANJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
+        id S236183AbiGANJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235574AbiGANJh (ORCPT
+        with ESMTP id S230291AbiGANJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:09:37 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2B9BDC
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 06:09:35 -0700 (PDT)
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 101EB3F1EB
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 13:09:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1656680973;
-        bh=b7R8ql7cF0yekbAJkH0ry0LqcE+e1poUS0Q2MROPNF0=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=nFJFvKzVFguG/jvo33cUjRiMVV2u8Mj+FwMoi1lUFKyxQrVpsESCFT8GF8/d4SVCJ
-         ojcTMI2oZylRPXsvSRf9u98//jPmNh7+JRVO0eEU+Y0suBVEEAuI+NXPCV+ByvXWlI
-         EGrZ/gIc5qoGHFloQnJB6B4787qMTprg9AOrFoUuE5ik+nrNmev9RQ4UGeQsQtHMbt
-         bqRbsszNWWMonSs5G/mxENzDzbZV1tg4pp90pc9lro0MorCmdBs8qD+BP1Z4o1XKGt
-         jpdJRL6snTPg2pckeojNc9SDx/TlxEBy2RMKnJXj7PMiaYhVYOgzmwW1E6M8yy2Zou
-         SapVYJu+V7Fng==
-Received: by mail-pl1-f200.google.com with SMTP id m17-20020a170902d19100b0016a0e65a433so1430425plb.8
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 06:09:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=b7R8ql7cF0yekbAJkH0ry0LqcE+e1poUS0Q2MROPNF0=;
-        b=ZcrOQ6Olmhp/GyW48ZghcDGJ6lQwzrtIh45SdSNR6oXV33+m8jauDQxy5/uKzJPvZq
-         Qe/c1WBGSBMS16WExw22Jzn+2IHE+1c2r/8yMwhC2/Wupn8FB7crSapEV2B9OR+Jj5qR
-         2pU+YuZOUy5DLXdNYcL7T/N3gWlO/49p5zeEH/gdTWAHNUk9Ci/HBviMYEBAsfjU0sNu
-         mwkcv+tcIQizWb3MQqPfbMzx+RpNUNDS2N/YAJM/g16hDOcvKk9pIS5lzX7mkkXVjkyw
-         IuoXpTER5ogxKftsyGYUeUq7v9Ov6PoDFzIMfcidGSPsNqXU+20n/ZRmNfSPf/P2mZC0
-         Yz4Q==
-X-Gm-Message-State: AJIora/VvxD7h+hrYDIM7CFTnoJyE1AGKMexNx+OMxSITJPv3YqyfAAn
-        owA/ZJyEIlk94vf/nOKCnfGFsJ52xy/NSVVq4wQoAkZI6sWM+Cjqe1JdwyP1LF4KDKeWlSCLDk/
-        r2p274TKYESH1tXbU85NKYxglnjvUzATOx1KOzG8/
-X-Received: by 2002:a17:903:2c2:b0:168:e323:d471 with SMTP id s2-20020a17090302c200b00168e323d471mr20824058plk.147.1656680968725;
-        Fri, 01 Jul 2022 06:09:28 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vqObrdPNgdHs2+FKrAT3pPzBjH9lMoLRQETrv6f8KLXOdxkCqEXAlvCi3uZpaAB7QD3CH8FA==
-X-Received: by 2002:a17:903:2c2:b0:168:e323:d471 with SMTP id s2-20020a17090302c200b00168e323d471mr20824037plk.147.1656680968462;
-        Fri, 01 Jul 2022 06:09:28 -0700 (PDT)
-Received: from localhost.localdomain (223-137-32-253.emome-ip.hinet.net. [223.137.32.253])
-        by smtp.gmail.com with ESMTPSA id cp2-20020a170902e78200b0015e8d4eb1d7sm15489395plb.33.2022.07.01.06.09.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 06:09:27 -0700 (PDT)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     stable@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     memxor@gmail.com, linux-kernel@vger.kernel.org, ast@kernel.org,
-        po-hsu.lin@canonical.com
-Subject: [PATCH stable 5.15 1/1] selftests/bpf: Add test_verifier support to fixup kfunc call insns
-Date:   Fri,  1 Jul 2022 21:08:58 +0800
-Message-Id: <20220701130858.282569-2-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220701130858.282569-1-po-hsu.lin@canonical.com>
-References: <20220701130858.282569-1-po-hsu.lin@canonical.com>
+        Fri, 1 Jul 2022 09:09:51 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A81B62FD;
+        Fri,  1 Jul 2022 06:09:48 -0700 (PDT)
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id E095621B4;
+        Fri,  1 Jul 2022 13:08:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1656680929;
+        bh=wiDeM+XRrwA5/U5QVEV7KWqJSki1m26BRivbZ581EWI=;
+        h=Date:Subject:From:To:CC:References:In-Reply-To;
+        b=eNqXwrX0yHLY8RBBgMwYVrJn4CpNuXmoNwqaL8/eopdArXljmFl/U35NnjZfmkUHB
+         zEw74duTwrOrHgsVGTSJYKVsLNU5Mkpdy3F7Vaga6/mC8j8BNtGnMVsJyq22z7E1dl
+         XTZpegwWd4h1nNz1H0mABfS/Iy+QPzipeyzCQNM0=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 1 Jul 2022 16:09:45 +0300
+Message-ID: <011fda2c-3717-b429-dc87-0f1471a735d5@paragon-software.com>
+Date:   Fri, 1 Jul 2022 16:09:45 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: [PATCH 1/5] fs/ntfs3: Fix very fragmented case in attr_punch_hole
+Content-Language: en-US
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+To:     <ntfs3@lists.linux.dev>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
+References: <34e58f6e-e508-4ad8-6941-37281ea7d3ef@paragon-software.com>
+In-Reply-To: <34e58f6e-e508-4ad8-6941-37281ea7d3ef@paragon-software.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vobn-exch-01.paragon-software.com (172.30.72.13) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+In some cases we need to ni_find_attr attr_b
 
-commit 0201b80772ac2b712bbbfe783cdb731fdfb4247e upstream.
-
-This allows us to add tests (esp. negative tests) where we only want to
-ensure the program doesn't pass through the verifier, and also verify
-the error. The next commit will add the tests making use of this.
-
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220114163953.1455836-9-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-[PHLin: backport due to lack of fixup_map_timer]
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 ---
- tools/testing/selftests/bpf/test_verifier.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+  fs/ntfs3/attrib.c | 13 ++++++++++++-
+  1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index 3a9e332..68a9a89 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -31,6 +31,7 @@
- #include <linux/if_ether.h>
- #include <linux/btf.h>
- 
-+#include <bpf/btf.h>
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
- 
-@@ -63,6 +64,11 @@ static bool unpriv_disabled = false;
- static int skips;
- static bool verbose = false;
- 
-+struct kfunc_btf_id_pair {
-+	const char *kfunc;
-+	int insn_idx;
-+};
-+
- struct bpf_test {
- 	const char *descr;
- 	struct bpf_insn	insns[MAX_INSNS];
-@@ -88,6 +94,7 @@ struct bpf_test {
- 	int fixup_map_event_output[MAX_FIXUPS];
- 	int fixup_map_reuseport_array[MAX_FIXUPS];
- 	int fixup_map_ringbuf[MAX_FIXUPS];
-+	struct kfunc_btf_id_pair fixup_kfunc_btf_id[MAX_FIXUPS];
- 	/* Expected verifier log output for result REJECT or VERBOSE_ACCEPT.
- 	 * Can be a tab-separated sequence of expected strings. An empty string
- 	 * means no log verification.
-@@ -718,6 +725,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 	int *fixup_map_event_output = test->fixup_map_event_output;
- 	int *fixup_map_reuseport_array = test->fixup_map_reuseport_array;
- 	int *fixup_map_ringbuf = test->fixup_map_ringbuf;
-+	struct kfunc_btf_id_pair *fixup_kfunc_btf_id = test->fixup_kfunc_btf_id;
- 
- 	if (test->fill_helper) {
- 		test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
-@@ -903,6 +911,26 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 			fixup_map_ringbuf++;
- 		} while (*fixup_map_ringbuf);
- 	}
-+
-+	/* Patch in kfunc BTF IDs */
-+	if (fixup_kfunc_btf_id->kfunc) {
-+		struct btf *btf;
-+		int btf_id;
-+
-+		do {
-+			btf_id = 0;
-+			btf = btf__load_vmlinux_btf();
-+			if (btf) {
-+				btf_id = btf__find_by_name_kind(btf,
-+								fixup_kfunc_btf_id->kfunc,
-+								BTF_KIND_FUNC);
-+				btf_id = btf_id < 0 ? 0 : btf_id;
-+			}
-+			btf__free(btf);
-+			prog[fixup_kfunc_btf_id->insn_idx].imm = btf_id;
-+			fixup_kfunc_btf_id++;
-+		} while (fixup_kfunc_btf_id->kfunc);
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index 59d8f482ef0a..43b9482f9830 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -2054,6 +2054,7 @@ int attr_punch_hole(struct ntfs_inode *ni, u64 vbo, u64 bytes, u32 *frame_size)
+  				if (err)
+  					goto out;
+  				/* Layout of records maybe changed. */
++				attr_b = NULL;
+  			}
+  		}
+  		/* Free all allocated memory. */
+@@ -2073,6 +2074,14 @@ int attr_punch_hole(struct ntfs_inode *ni, u64 vbo, u64 bytes, u32 *frame_size)
+  	}
+  
+  	total_size -= (u64)dealloc << sbi->cluster_bits;
++	if (!attr_b) {
++		attr_b = ni_find_attr(ni, NULL, NULL, ATTR_DATA, NULL, 0, NULL,
++				      &mi_b);
++		if (!attr_b) {
++			err = -EINVAL;
++			goto out;
++		}
 +	}
- }
- 
- struct libcap {
+  	attr_b->nres.total_size = cpu_to_le64(total_size);
+  	mi_b->dirty = true;
+  
+@@ -2083,8 +2092,10 @@ int attr_punch_hole(struct ntfs_inode *ni, u64 vbo, u64 bytes, u32 *frame_size)
+  
+  out:
+  	up_write(&ni->file.run_lock);
+-	if (err)
++	if (err) {
++		ntfs_set_state(sbi, NTFS_DIRTY_ERROR);
+  		make_bad_inode(&ni->vfs_inode);
++	}
+  
+  	return err;
+  }
 -- 
-2.7.4
+2.37.0
+
 
