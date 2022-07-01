@@ -2,134 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 395F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:57:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234920AbiGAG5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
+        id S234440AbiGAG57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234969AbiGAG50 (ORCPT
+        with ESMTP id S234579AbiGAG54 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:57:26 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAE0599FE
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:57:25 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id fi2so2297623ejb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YfRTFJ02bj0rSle4oHFbCTtD3AzfJegzrCINfxa5z78=;
-        b=ra+Quhh0Thq+O+pDwNGVWGKshm6dhVQrA0NwUrQk6urw1fww60IgrAdq9TctmVZtI0
-         9imy4vadKzymt3zTc60EZMX1KXg9q2LMthU8xJZHjMxTE5m39ZOWIM3rtl78U/J2X4BF
-         pD9xQ9wMQlrdVi+wPN6oQTdbOxrmfjY4+21nFMchj4H7MxbCTcqCKGuTBpNLtU+CmN/t
-         iO2zwcbO0+w7nX86aEa++YAzE0FWu1M19jqSjdt2MBhqQL9DANsEMgtZ4joZUZCIU2kf
-         xY13fWzGhi/kPQ2VSBPCfF7ttILfcPilh9iht6+fTep2c6fiiTI70OghAIjJeYgFbl4n
-         S74g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YfRTFJ02bj0rSle4oHFbCTtD3AzfJegzrCINfxa5z78=;
-        b=h0DhlURuPQBNQVEQCpTlJNQPClrwFm5NHuAfFPJS1kCv8d6tVZBZtlmZkIxuYJLr3+
-         3i+KEi3t3bJ6BPdytk8M/oFiEUrLWFBOFN35NBlmjot5LENsG3FyYk00pPG27JYxAWeo
-         GhjCH3JKJEIXJptx8+CUs6TYuTnxlr1g60vv5NMFSZwFT43fzxe+adWKkUziH4XIEwfQ
-         qWKbxXAP2IWHVXyiZM8S/SsmnYPV5V+nAaLlLyR/LhDDYa3TO+WEFKM9N06g4Z54tsj8
-         aecNC2IVOhc2PSh0nmh1packuJZXvtVNoNkMvRXYnTSl8FDdgdmXH4SJNCpH6rrjnkDo
-         DslA==
-X-Gm-Message-State: AJIora+H4t6Av06+4eciBigTb6SwgIgrazK8NaDvqV54LHg0XBj200Gk
-        PluS2xn0fqewywvpPFV2eYjmA0UUX+0vJg==
-X-Google-Smtp-Source: AGRyM1vgSY+Q1bs04Xt3yu0XBbUlCmbact+Ael9eMXAwrEsdruB+WC8BJiTeqcT4uqf0qSDYsUmcnA==
-X-Received: by 2002:a17:907:9686:b0:71b:6f0a:c724 with SMTP id hd6-20020a170907968600b0071b6f0ac724mr12435861ejc.138.1656658644129;
-        Thu, 30 Jun 2022 23:57:24 -0700 (PDT)
-Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id x10-20020a170906298a00b00705cd37fd5asm10106858eje.72.2022.06.30.23.57.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jun 2022 23:57:23 -0700 (PDT)
-Message-ID: <628a7302-1409-81f7-f72b-6b1645df9225@linaro.org>
-Date:   Fri, 1 Jul 2022 08:57:22 +0200
+        Fri, 1 Jul 2022 02:57:56 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AEA67581
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:57:54 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 261637KB006173;
+        Fri, 1 Jul 2022 06:57:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=6290l+NgHjrty8aLnZBrt0cioXD/e+jyaJB8M2OYygk=;
+ b=iUnAEzAc54CKZZxBjehi/edXAAhkMJyibtFxGnWodpZFzpPrcnoOQamdDsDNk0nxQogB
+ H885kaJ9jcl1m/kJG8nqARS6FPrnBfme3wEP6VB4+z5E/IzzJkbA9ABRQc0P0x6VbQop
+ eACPA2YKfJaRBQ6g+SYX9oIRfemEvyJJEuJo7c6M1+LUokPyYwk8i9YL6I6WwbSBs+9o
+ ue15Q8Bs9Ca0XBJtGhrCFctT705feopuo4tbM30uzJ5vyWTh8jjYlBRk1rQ9SQRoZtdH
+ TXqzahnCimPs6tJgMpysyATpFisyRKiXn2fcXvbOtbhdae55aJgefes3M5icTbCMJ8kA nQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1uan98nx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 06:57:00 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2616AQgC034287;
+        Fri, 1 Jul 2022 06:57:00 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1uan98mh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 06:57:00 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2616ZM9g007665;
+        Fri, 1 Jul 2022 06:56:58 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3gwsmj9b46-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 06:56:57 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2616utpI22675730
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 1 Jul 2022 06:56:55 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8AB9511C05B;
+        Fri,  1 Jul 2022 06:56:55 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5234811C04A;
+        Fri,  1 Jul 2022 06:56:50 +0000 (GMT)
+Received: from [9.43.39.55] (unknown [9.43.39.55])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  1 Jul 2022 06:56:50 +0000 (GMT)
+Message-ID: <8787a12a-e84c-cb0e-abe0-6bd6093e359a@linux.vnet.ibm.com>
+Date:   Fri, 1 Jul 2022 12:26:49 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC] Correct memory layout reporting for "jedec,lpddr2" and
- related bindings
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
 Content-Language: en-US
-To:     Julius Werner <jwerner@chromium.org>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Jian-Jia Su <jjsu@google.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Nikola Milosavljevic <mnidza@outlook.com>
-References: <CAODwPW9E8wWwxbYKyf4_-JFb4F-JSmLR3qOF_iudjX0f9ndF0A@mail.gmail.com>
- <CAODwPW8fiFSNehZbZDdR9kjHxohLGiyE7edU=Opy0xV_P8JbEQ@mail.gmail.com>
- <3bb0ffa0-8091-0848-66af-180a41a68bf7@linaro.org>
- <CAODwPW89xZQZiZdQNt6+CcRjz=nbEAAFH0h_dBFSE5v3aFU4rQ@mail.gmail.com>
- <8f51aed8-956b-ac09-3baf-2b4572db1352@linaro.org>
- <CAODwPW9MvYJo8QbKOoVcUAKJ8Hxon2MCv_H5qpv=yaSTLLc+ug@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAODwPW9MvYJo8QbKOoVcUAKJ8Hxon2MCv_H5qpv=yaSTLLc+ug@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Chen Zhongjin <chenzhongjin@huawei.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>
+References: <20220624183238.388144-1-sv@linux.ibm.com>
+ <20220624183238.388144-12-sv@linux.ibm.com>
+ <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
+ <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
+ <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
+ <1656572413.pbaqjnrrcl.naveen@linux.ibm.com>
+ <dcbc25df-ce0c-45bf-35af-4d694e09ad37@huawei.com>
+From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
+In-Reply-To: <dcbc25df-ce0c-45bf-35af-4d694e09ad37@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: yIinsZUEGvAFPMHkW16uRukE1xSVo4Pn
+X-Proofpoint-GUID: Aa-yPuWDFO0zzrnYi-bgtt-sr8lCNW3i
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-01_04,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 bulkscore=0 clxscore=1011 phishscore=0
+ spamscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207010023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/07/2022 02:52, Julius Werner wrote:
->> How the asymmetric SDRAMs report density? This is a field with
->> fixed/enum values, so does it mean two-rank-asymmetric module has two
->> registers, one per each rank and choice of register depends on chip select?
-> 
-> Yes, each rank has a completely separate set of mode registers.
+Hi Chen,
 
-Then I would assume that all lpddr properties can differ between ranks,
-including the timings. But probably some SDRAM memory expert should
-clarify that.
+Thanks for pitching in and providing your inputs :-)
 
-> 
->> Manufacturer ID is taken from compatible. LPDDR3 has it deprecated.
-> 
-> Oh! Oh no, I only just saw that. I wish you had CCed us on that patch. :/
-> 
-> That really doesn't work for our use case, we can't generate a
-> specific compatible string for each part number. This may work when
-> your board is only using a single memory part and you can hardcode
-> that in the DTB blob bundled with the kernel, but we are trying to do
-> runtime identification between dozens of different parts on our
-> boards. The whole point of us wanting to add these bindings is that we
-> want to have the firmware inject the raw values it can read from mode
-> registers into the device tree (with just the compatible string
-> "jedec,lpddr3"),
+On 01/07/22 07:43, Chen Zhongjin wrote:
+> Hi everyone,
+>
+> Hope I'm not too late for this discussion.
+>
+> I'm not familiar with ppc so it spent me some time to reproduce this. 
+> But at last I didn't make it.
+>
+> What I did:
+>
+> 1 checkout to tip/objtool/core
+>
+> 2 apply this patch
+>
+> 3 recover the unreachable() after WARN_ENTRY(..
+>
+> 4 compile on defconfig/allyesconfig
+>
+> If anyone can point out which file will generate this problem it will 
+> be perfect.
 
-You cannot have jedec,lpddr3 alone. You need specific compatible.
+To reproduce this problem, you may want to apply this patch series on 
+top of objtool/core branch of the tip tree, and compile on 
+ppc64le_defconfig.
 
-> so that we can then delegate the task of matching
-> those values to part numbers to a userspace process. 
+There are a couple of C files that are generating these warnings. One 
+such file is: arch/powerpc/kvm/../../../virt/kvm/kvm_main.o which gives
+*arch/powerpc/kvm/../../../virt/kvm/kvm_main.o: warning: objtool: 
+kvm_mmu_notifier_release+0x6c: unannotated intra-function call* warning.
 
-Constructing a vendor from mode registers is like 10 lines of C code, so
-this is not a problem. Trouble would be with device part of compatible.
+With unreachable() in __WARN_FLAGS(), we get unannotated intra-function 
+call warnings, but without unreachable() like in patch 11/12 or with 
+just the builtin variant of unreachable (__builtin_unreachable()) 
+instead of unreachable(), we do not get those warnings.
 
-> We don't want to
-> hardcode long tables for ID-to-string matching that have to be updated
-> all the time in our constrained firmware space.
 
-I understand.
+- Sathvika
 
-> Can we please revert that deprecation and at least keep the property
-> around as optional?
-
-Yes, we can. You still would need to generate the compatible according
-to the current bindings. Whether we can change it I am not sure. I think
-it depends how much customization is possible per vendor, according to
-JEDEC spec. If we never ever have to identify specific part, because
-JEDEC spec and registers tell us everything, then we could skip it,
-similarly to lpddr2 and jedec,spi-nor.
-
-Best regards,
-Krzysztof
