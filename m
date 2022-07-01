@@ -2,167 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE663C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61CDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232480AbiGAQ26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
+        id S229657AbiGAQap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbiGAQ2x (ORCPT
+        with ESMTP id S229627AbiGAQal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:28:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1570433E99;
-        Fri,  1 Jul 2022 09:28:50 -0700 (PDT)
+        Fri, 1 Jul 2022 12:30:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8133135F;
+        Fri,  1 Jul 2022 09:30:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 787A7B82DDC;
-        Fri,  1 Jul 2022 16:28:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862EAC341CD;
-        Fri,  1 Jul 2022 16:28:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4974CB830A5;
+        Fri,  1 Jul 2022 16:30:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B34BC341C8;
+        Fri,  1 Jul 2022 16:30:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656692928;
-        bh=R8iGcJ/q4R9xa0G3mQb3hMxAlVQoBfF30z8+ZZkTAVE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k7nnHPKmQ78xkG3MaFecuBEPoBXG6f1Qg+E/PH1vsnn06xDko5MYwE/leoTqSTj6i
-         ozFze5Roamqux+noCahHYLuuH9rJfaTqgnc5i6FAEB9TPAubzHygIm34XiUvhbLl78
-         bzxHUScSbhLaskc3vVwcQclgIqvnK4IFX02CtgYjHTOu/+XEmVxHG6jc6DHBIP0PQa
-         jJrXCiDz1jxCeHnOPd0tYnfZCYA7a+xhZrq/SVs+xrd/9BH2uVaGfcVI2A6jcVH+/4
-         cjb/ePzIPQvTKnkugwYZn9XoF1uMjgCNUKTxGoy9UN/TQ5/1GYzrEs4w+JPzubZUFq
-         IESuBzxGTCZKg==
-Date:   Fri, 1 Jul 2022 21:58:43 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] dmaengine: sun4i: Set the maximum segment size
-Message-ID: <Yr8guz0No80hdgxi@matsya>
-References: <20220621031350.36187-1-samuel@sholland.org>
+        s=k20201202; t=1656693038;
+        bh=cFeQkiG6enetQ6lbFo12SK/2ylH3uFnDMr/9MeqML0Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XNWHpi7MFAkm4mdgV4xFKVo2xXjl0NAzm0m8df8TA+N11Tlt8ttCaB4enNU7lMFUM
+         enBDfzX59pC7zHhnyBgAiFT00+uYqhQIk95HAPtQYH4wL/H1N3I6RTP77pUYjlSGwJ
+         SeI8lI4g4Zc9XAZxvIiVNnsDpz9v9by7jv0ScRbWjLeUZoxMcKu81o0Jc2ZzvuYwU3
+         8GROYo9reHT+jCoa/LdRlgzZSXOlOOnWiePTDhcobXIY/PUFc/mQov2XdDM5/gfdz1
+         KJxB9hUIQz67exTNY9be8/Q0i7ViyA0QGF4pT7CBVc0lO1tiBfPHPy4A1lPxlR0EB+
+         RnMt23iSHdO8g==
+Date:   Fri, 1 Jul 2022 17:40:11 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Nishanth Menon <nm@ti.com>
+Cc:     Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Florian Eckert <fe@dev.tdt.de>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: ti-adc128s052: Add lower resolution
+ devices support
+Message-ID: <20220701174011.14d17f43@jic23-huawei>
+In-Reply-To: <20220701042919.18180-3-nm@ti.com>
+References: <20220701042919.18180-1-nm@ti.com>
+        <20220701042919.18180-3-nm@ti.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621031350.36187-1-samuel@sholland.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20-06-22, 22:13, Samuel Holland wrote:
-> The sun4i DMA engine supports transfer sizes up to 128k for normal DMA
-> and 16M for dedicated DMA, as documented in the A10 and A20 manuals.
+On Thu, 30 Jun 2022 23:29:19 -0500
+Nishanth Menon <nm@ti.com> wrote:
+
+> The adcxx4s communicates with a host processor via an SPI/Microwire Bus
+> interface. The device family responds with 12bit data, of which the LSB
+> bits are transmitted by the lower resolution devices as 0. We don't need
+> to mess with ADC108S102_BITS as a result for the lower resolution
+> devices.
+
+whilst not strictly necessary I would prefer we did as it may reduce
+storage requirements, computation complexity etc for userspace (particularly
+if they are 8 bits).
+
+Would affect scale and shift so slightly more complex, but not a lot
+so still a fairly simple change.  Just add resolution to your config
+structure and duplicate it where necessary to allow whatever resolutions
+we support.
+
 > 
-> Since this is larger than the default segment size limit (64k), exposing
-> the real limit reduces the number of transfers needed for a transaction.
-> However, because the device can only report one segment size limit, we
-> have to expose the smaller limit from normal DMA.
+> I have been able to test adc102s051, hence adding just the missing
+> ones in that family.
 > 
-> One complication is that the driver combines pairs of periodic transfers
-> to reduce programming overhead. This only works when the period size is
-> at most half of the maximum transfer size. With the default 64k segment
-> size limit, this was always the case, but for normal DMA it is no longer
-> guaranteed. Skip the optimization if the period is too long; even
-> without it, the overhead is less than before.
+> Lets reuse the driver to support the family of devices with name
+> ADC<bb><c>S<sss>, where
+> * bb is the resolution in number of bits (8, 10, 12)
+> * c is the number of channels (1, 2, 4, 8)
+> * sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
+>   and 101 for 1 MSPS)
 > 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> Complete datasheets are available at TI's website here:
+>   https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
+> 
+> Also see: drivers/hwmon/adcxx.c
+> 
+> Signed-off-by: Nishanth Menon <nm@ti.com>
 > ---
-> I don't have any A10 or A20 boards I can test this on.
 > 
->  drivers/dma/sun4i-dma.c | 32 +++++++++++++++++++++++++++-----
->  1 file changed, 27 insertions(+), 5 deletions(-)
+> This does add on additional sparse warnings around casting .data value
+> to const from int for the of_match_table, and a bunch around the .cls
+> field for acpi_device_id - maybe someone could suggest a smarter way to
+> fix those.
 > 
-> diff --git a/drivers/dma/sun4i-dma.c b/drivers/dma/sun4i-dma.c
-> index 93f1645ae928..f291b1b4db32 100644
-> --- a/drivers/dma/sun4i-dma.c
-> +++ b/drivers/dma/sun4i-dma.c
-> @@ -7,6 +7,7 @@
->  #include <linux/bitmap.h>
->  #include <linux/bitops.h>
->  #include <linux/clk.h>
-> +#include <linux/dma-mapping.h>
->  #include <linux/dmaengine.h>
->  #include <linux/dmapool.h>
->  #include <linux/interrupt.h>
-> @@ -122,6 +123,15 @@
->  	 SUN4I_DDMA_PARA_DST_WAIT_CYCLES(2) |				\
->  	 SUN4I_DDMA_PARA_SRC_WAIT_CYCLES(2))
+> Applies after https://lore.kernel.org/linux-iio/20220630230107.13438-1-nm@ti.com/
+> 
+>  drivers/iio/adc/ti-adc128s052.c | 26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+> index 21a7764cbb93..0a3aab4df60e 100644
+> --- a/drivers/iio/adc/ti-adc128s052.c
+> +++ b/drivers/iio/adc/ti-adc128s052.c
+> @@ -7,6 +7,20 @@
+>   * https://www.ti.com/lit/ds/symlink/adc128s052.pdf
+>   * https://www.ti.com/lit/ds/symlink/adc122s021.pdf
+>   * https://www.ti.com/lit/ds/symlink/adc124s021.pdf
+> + *
+> + * The adcxx4s communicates with a host processor via an SPI/Microwire Bus
+> + * interface. This driver supports the whole family of devices with name
+> + * ADC<bb><c>S<sss>, where
+> + * bb is the resolution in number of bits (8, 10, 12)
+> + * c is the number of channels (1, 2, 4, 8)
+> + * sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
+> + * and 101 for 1 MSPS)
+> + *
+> + * Complete datasheets are available at TI's website here:
+> + *   https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
+> + *
+> + * Handling of 8, 10 and 12 bits converters are the same, the
+> + * unavailable bits are 0 in LSB :)
+>   */
 >  
-> +/*
-> + * Normal DMA supports individual transfers (segments) up to 128k.
-> + * Dedicated DMA supports transfers up to 16M. We can only report
-> + * one size limit, so we have to use the smaller value.
-> + */
-> +#define SUN4I_NDMA_MAX_SEG_SIZE		SZ_128K
-> +#define SUN4I_DDMA_MAX_SEG_SIZE		SZ_16M
+>  #include <linux/acpi.h>
+> @@ -185,6 +199,12 @@ static const struct of_device_id adc128_of_match[] = {
+>  	{ .compatible = "ti,adc122s021", .data = 1},
+>  	{ .compatible = "ti,adc122s051", .data = 1},
+>  	{ .compatible = "ti,adc122s101", .data = 1},
+> +	{ .compatible = "ti,adc102s021", .data = 1},
+> +	{ .compatible = "ti,adc102s051", .data = 1},
+> +	{ .compatible = "ti,adc102s101", .data = 1},
 
-This new define is not used, so why add?
+Numeric order preferred. Not sure why these are in the middle.
 
-> +#define SUN4I_DMA_MAX_SEG_SIZE		SUN4I_NDMA_MAX_SEG_SIZE
-> +
->  struct sun4i_dma_pchan {
->  	/* Register base of channel */
->  	void __iomem			*base;
-> @@ -155,7 +165,8 @@ struct sun4i_dma_contract {
->  	struct virt_dma_desc		vd;
->  	struct list_head		demands;
->  	struct list_head		completed_demands;
-> -	int				is_cyclic;
-> +	bool				is_cyclic : 1;
-> +	bool				use_half_int : 1;
->  };
->  
->  struct sun4i_dma_dev {
-> @@ -372,7 +383,7 @@ static int __execute_vchan_pending(struct sun4i_dma_dev *priv,
->  	if (promise) {
->  		vchan->contract = contract;
->  		vchan->pchan = pchan;
-> -		set_pchan_interrupt(priv, pchan, contract->is_cyclic, 1);
-> +		set_pchan_interrupt(priv, pchan, contract->use_half_int, 1);
+> +	{ .compatible = "ti,adc082s021", .data = 1},
+> +	{ .compatible = "ti,adc082s051", .data = 1},
+> +	{ .compatible = "ti,adc082s101", .data = 1},
 
-not interrupt when cyclic?
+Andy's comment on using pointers instead follows through to here.
+To describe the channels more fully you'll need additional
+_config[] structures.
 
->  		configure_pchan(pchan, promise);
->  	}
->  
-> @@ -735,12 +746,21 @@ sun4i_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf, size_t len,
->  	 *
->  	 * Which requires half the engine programming for the same
->  	 * functionality.
-> +	 *
-> +	 * This only works if two periods fit in a single promise. That will
-> +	 * always be the case for dedicated DMA, where the hardware has a much
-> +	 * larger maximum transfer size than advertised to clients.
->  	 */
-> -	nr_periods = DIV_ROUND_UP(len / period_len, 2);
-> +	if (vchan->is_dedicated || period_len <= SUN4I_NDMA_MAX_SEG_SIZE / 2) {
-> +		period_len *= 2;
-> +		contract->use_half_int = 1;
-> +	}
-> +
-> +	nr_periods = DIV_ROUND_UP(len, period_len);
->  	for (i = 0; i < nr_periods; i++) {
->  		/* Calculate the offset in the buffer and the length needed */
-> -		offset = i * period_len * 2;
-> -		plength = min((len - offset), (period_len * 2));
-> +		offset = i * period_len;
-> +		plength = min((len - offset), period_len);
->  		if (dir == DMA_MEM_TO_DEV)
->  			src = buf + offset;
->  		else
-> @@ -1149,6 +1169,8 @@ static int sun4i_dma_probe(struct platform_device *pdev)
->  	platform_set_drvdata(pdev, priv);
->  	spin_lock_init(&priv->lock);
->  
-> +	dma_set_max_seg_size(&pdev->dev, SUN4I_DMA_MAX_SEG_SIZE);
-> +
->  	dma_cap_zero(priv->slave.cap_mask);
->  	dma_cap_set(DMA_PRIVATE, priv->slave.cap_mask);
->  	dma_cap_set(DMA_MEMCPY, priv->slave.cap_mask);
-> -- 
-> 2.35.1
 
--- 
-~Vinod
+>  	{ .compatible = "ti,adc124s021", .data = 2},
+>  	{ .compatible = "ti,adc124s051", .data = 2},
+>  	{ .compatible = "ti,adc124s101", .data = 2},
+> @@ -197,6 +217,12 @@ static const struct spi_device_id adc128_id[] = {
+>  	{ "adc122s021",	1 },
+>  	{ "adc122s051",	1 },
+>  	{ "adc122s101",	1 },
+> +	{ "adc102s021",	1 },
+> +	{ "adc102s051",	1 },
+> +	{ "adc102s101",	1 },
+> +	{ "adc082s021",	1 },
+> +	{ "adc082s051",	1 },
+> +	{ "adc082s101",	1 },
+>  	{ "adc124s021", 2 },
+>  	{ "adc124s051", 2 },
+>  	{ "adc124s101", 2 },
+
