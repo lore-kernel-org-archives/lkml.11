@@ -2,174 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4550C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4951EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232732AbiGAOam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
+        id S232269AbiGAOdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232994AbiGAO30 (ORCPT
+        with ESMTP id S231575AbiGAOdc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:29:26 -0400
-Received: from mail-lj1-x24a.google.com (mail-lj1-x24a.google.com [IPv6:2a00:1450:4864:20::24a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2056D563
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:24 -0700 (PDT)
-Received: by mail-lj1-x24a.google.com with SMTP id p7-20020a2e9a87000000b0025a99d8c2dcso502649lji.18
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=iGvD4mfjvjSWX+nv6535woTSPAyHTTcU/sEMimyHpxI=;
-        b=P7QKDp3hV6WoKSuU7RWtHYNnUzKsYPMuoVFYGC5CAEPmJ0nl1tQiRY+9OYfXLY42wB
-         nFSOJB8BBflVDmdDuWSkOCm55g6bwX9dQkpXj4xCR6s6JCEls/jHSMNPkv+lVDZh5nKs
-         hUARMca5KeTe+Ir0fpc6ZOi4Uq5KQZl/WLZTZOatCEOeYcao1NRgQlKKrm6iBVPu3X1Z
-         JYhJ2HBgIVmRPYmPgcVuYdtvK/4rJXCJLuWe7FZ63qgHZC3DxwnGi+wOpBYOkbuzJh/f
-         yrpShYElychLxpVWGpPbFszkIP0ovqs29G1ENpHftNUWpa2XkYBhGLzu4Zi+nYeVFrno
-         cQCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=iGvD4mfjvjSWX+nv6535woTSPAyHTTcU/sEMimyHpxI=;
-        b=zAVXVamtRr+4E2pPkxwAjaGswMr6Mag2vJ7cWkGWV3O/EjnndbocpduJftbNPLrHqE
-         3/G9n0X4449ksxp153PbVuTvnN9uQhP/+g1yinDClmCIuWEUw4S4sP4EZVjM34vNgb4s
-         DXesznXgznSfkBpf+TNR0fq7u9Pm6Qs/BwiWqJHtiQATSMTbuaVHdPQSOOVNBUtx1tCE
-         wO6Rm+37tvEju3RtLp7CFnSKGrDwwdsuXxfUaV3EkPvoHvJobn1qv0y3kdHE5imjcj7D
-         jD/8YORxEaUX29QtK5r341FxfJY08I90KvhGfSD0z2hNv+JAi6gT0nrft9XHt40FxaBR
-         1vRg==
-X-Gm-Message-State: AJIora++NRCQkPfSCrJoI2A5w6AmddtxL7p1TMzdENPDheCSZF+k8s0H
-        cuMbfj2FpK6MoQiw97sckmlKx8uuz34=
-X-Google-Smtp-Source: AGRyM1s7QtTcOviesKYVgedtf1csh4E3jTJYd2DFNUsU1Lb1euL9e2M1gyfvpy9SPS5aVSID3ksrqFaDH6I=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:a6f5:f713:759c:abb6])
- (user=glider job=sendgmr) by 2002:a05:6512:4c3:b0:47f:6f6e:a7e7 with SMTP id
- w3-20020a05651204c300b0047f6f6ea7e7mr9859006lfq.674.1656685518270; Fri, 01
- Jul 2022 07:25:18 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:23:09 +0200
-In-Reply-To: <20220701142310.2188015-1-glider@google.com>
-Message-Id: <20220701142310.2188015-45-glider@google.com>
-Mime-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 44/45] mm: fs: initialize fsdata passed to
- write_begin/write_end interface
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        Fri, 1 Jul 2022 10:33:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02273F89C;
+        Fri,  1 Jul 2022 07:28:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CC076227C;
+        Fri,  1 Jul 2022 14:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CC2DC341C7;
+        Fri,  1 Jul 2022 14:28:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656685730;
+        bh=eb0RVw4u/anxVBhBeK6RNGoBor+v7IkGnAADFe79wz8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N4dveUvYzzWyC8fMV0v0hedmOK1ZAMnFbdqhysk4WaSM0nBJ5UGNNFqdZwQ6rvMIn
+         CP7ClyXkRLM/63cRf55J9y6B7IMxWTTHcdoGVsMy4uSFk7LGQjzFjqRc6omPUcwwRn
+         B9kqf9pRrlu6yoi8KFGJ7VRs49YYxJ/d2sia7XcvSGprDsbgyvadOiPqbzPAT1XDvJ
+         9lUkAzGaYu2A49lfHm5lhFMTyzyBYx8+fliV5Kgwv/5AtG9NtVvmMuvIb5P+3JK/48
+         moPFmDTxjnYJm7qHwhnkR8pKAXK4Y2HtDwBqgBMGVmYIOksPHsfjZwJ/VArWBElV2u
+         fj3qZ04BLthLw==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o7HdY-004bu7-EO;
+        Fri, 01 Jul 2022 15:28:48 +0100
+MIME-Version: 1.0
+Date:   Fri, 01 Jul 2022 15:28:48 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Guo Ren <guoren@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v3 0/4] Add PLIC support for Renesas RZ/Five SoC / Fix
+ T-HEAD PLIC edge flow
+In-Reply-To: <20220630100241.35233-1-samuel@sholland.org>
+References: <20220630100241.35233-1-samuel@sholland.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <92a45bf04cfe140c7605559fa3d8f4eb@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: samuel@sholland.org, prabhakar.mahadev-lad.rj@bp.renesas.com, prabhakar.csengg@gmail.com, sagar.kadam@sifive.com, paul.walmsley@sifive.com, palmer@dabbelt.com, guoren@kernel.org, tglx@linutronix.de, geert+renesas@glider.be, linux-renesas-soc@vger.kernel.org, biju.das.jz@bp.renesas.com, krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Functions implementing the a_ops->write_end() interface accept the
-`void *fsdata` parameter that is supposed to be initialized by the
-corresponding a_ops->write_begin() (which accepts `void **fsdata`).
+On 2022-06-30 11:02, Samuel Holland wrote:
+> This patch series adds PLIC support for Renesas RZ/Five SoC.
+> 
+> Since the T-HEAD C900 PLIC has the same behavior, it also applies the
+> fix for that variant.
+> 
+> This series is an update of v2 of the RZ/Five series[0], and replaces
+> the separate T-HEAD series[1].
+> 
+> [0]:
+> https://lore.kernel.org/linux-riscv/20220626004326.8548-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> [1]:
+> https://lore.kernel.org/linux-riscv/20220627051257.38543-1-samuel@sholland.org/
+> 
+> Changes in v3:
+>  - Add a more detailed explanation for why #interrupt-cells differs
+>  - Add andestech,nceplic100 as a fallback compatible
+>  - Separate the conditional part of the binding into two blocks (one 
+> for
+>    the PLIC implementation and the other for the SoC integration)
+>  - Use a quirk bit for selecting the flow instead of a variant ID
+>  - Use the andestech,nceplic100 compatible to select the new behavior
+>  - Use handle_edge_irq instead of handle_fasteoi_ack_irq so .irq_ack
+>    always gets called
+>  - Do not set the handler name, as RISC-V selects 
+> GENERIC_IRQ_SHOW_LEVEL
+>  - Use the same name for plic_edge_chip as plic_chip
+> 
+> Changes in v2:
+>  - Fixed review comments pointed by Marc and Krzysztof.
+> 
+> Changes in v1:
+>  - Fixed review comments pointed by Rob and Geert.
+>  - Changed implementation for EDGE interrupt handling on Renesas 
+> RZ/Five
+>    SoC.
+> 
+> Lad Prabhakar (2):
+>   dt-bindings: interrupt-controller: sifive,plic: Document Renesas
+>     RZ/Five SoC
+>   irqchip/sifive-plic: Add support for Renesas RZ/Five SoC
+> 
+> Samuel Holland (2):
+>   dt-bindings: interrupt-controller: Require trigger type for T-HEAD
+>     PLIC
+>   irqchip/sifive-plic: Fix T-HEAD PLIC edge trigger handling
+> 
+>  .../sifive,plic-1.0.0.yaml                    | 65 +++++++++++++--
+>  drivers/irqchip/irq-sifive-plic.c             | 80 +++++++++++++++++--
+>  2 files changed, 135 insertions(+), 10 deletions(-)
 
-However not all a_ops->write_begin() implementations initialize `fsdata`
-unconditionally, so it may get passed uninitialized to a_ops->write_end(),
-resulting in undefined behavior.
+I'm going to provisionally queue this into -next so that it
+can get some testing. I'd still want the DT changes to be
+Ack'ed before the next merge window though.
 
-Fix this by initializing fsdata with NULL before the call to
-write_begin(), rather than doing so in all possible a_ops
-implementations.
+Thanks,
 
-This patch covers only the following cases found by running x86 KMSAN
-under syzkaller:
-
- - generic_perform_write()
- - cont_expand_zero() and generic_cont_expand_simple()
- - page_symlink()
-
-Other cases of passing uninitialized fsdata may persist in the codebase.
-
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-Link: https://linux-review.googlesource.com/id/I414f0ee3a164c9c335d91d82ce4558f6f2841471
----
- fs/buffer.c  | 4 ++--
- fs/namei.c   | 2 +-
- mm/filemap.c | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/fs/buffer.c b/fs/buffer.c
-index 898c7f301b1b9..d014009cff941 100644
---- a/fs/buffer.c
-+++ b/fs/buffer.c
-@@ -2349,7 +2349,7 @@ int generic_cont_expand_simple(struct inode *inode, loff_t size)
- 	struct address_space *mapping = inode->i_mapping;
- 	const struct address_space_operations *aops = mapping->a_ops;
- 	struct page *page;
--	void *fsdata;
-+	void *fsdata = NULL;
- 	int err;
- 
- 	err = inode_newsize_ok(inode, size);
-@@ -2375,7 +2375,7 @@ static int cont_expand_zero(struct file *file, struct address_space *mapping,
- 	const struct address_space_operations *aops = mapping->a_ops;
- 	unsigned int blocksize = i_blocksize(inode);
- 	struct page *page;
--	void *fsdata;
-+	void *fsdata = NULL;
- 	pgoff_t index, curidx;
- 	loff_t curpos;
- 	unsigned zerofrom, offset, len;
-diff --git a/fs/namei.c b/fs/namei.c
-index 6b39dfd3b41bc..5e3ff9d65f502 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -5051,7 +5051,7 @@ int page_symlink(struct inode *inode, const char *symname, int len)
- 	const struct address_space_operations *aops = mapping->a_ops;
- 	bool nofs = !mapping_gfp_constraint(mapping, __GFP_FS);
- 	struct page *page;
--	void *fsdata;
-+	void *fsdata = NULL;
- 	int err;
- 	unsigned int flags;
- 
-diff --git a/mm/filemap.c b/mm/filemap.c
-index ffdfbc8b0e3ca..72467f00f1916 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -3753,7 +3753,7 @@ ssize_t generic_perform_write(struct kiocb *iocb, struct iov_iter *i)
- 		unsigned long offset;	/* Offset into pagecache page */
- 		unsigned long bytes;	/* Bytes to write to page */
- 		size_t copied;		/* Bytes copied from user */
--		void *fsdata;
-+		void *fsdata = NULL;
- 
- 		offset = (pos & (PAGE_SIZE - 1));
- 		bytes = min_t(unsigned long, PAGE_SIZE - offset,
+         M.
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+Jazz is not dead. It just smells funny...
