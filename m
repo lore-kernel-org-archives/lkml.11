@@ -2,108 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCD9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A98AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235062AbiGAHRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        id S233903AbiGAHSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234353AbiGAHRe (ORCPT
+        with ESMTP id S230393AbiGAHSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:17:34 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67866B276;
-        Fri,  1 Jul 2022 00:17:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656659853; x=1688195853;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=GBB5iuEgmhph9RjzbVLlUF6rwOvV59YvfcO8hpiv5V4=;
-  b=tXRqQBDj9U4gSGFh6VHPjscEpPZpcFvVSLjRWdY6J2DwkiQ4B86SKeCd
-   VuEERYit+E6a7L4Zp/tirUk4LuxaeVqWPE3krF1yDZ5DX12/r1JATBIYa
-   pLjuQAKTplh+YYpK0P/1GhemYl+zgfbbHuIMwpLNX/K5qBpOP0oCGEhKg
-   c=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jul 2022 00:17:33 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 00:17:32 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 1 Jul 2022 00:17:32 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 1 Jul 2022 00:17:26 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <vkoul@kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [RESEND v5 1/2] soundwire: qcom: Add flag for software clock gating check
-Date:   Fri, 1 Jul 2022 12:47:06 +0530
-Message-ID: <1656659827-27450-2-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1656659827-27450-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1656659827-27450-1-git-send-email-quic_srivasam@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Fri, 1 Jul 2022 03:18:31 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 138ED1AA;
+        Fri,  1 Jul 2022 00:18:30 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id EB91C1E80D95;
+        Fri,  1 Jul 2022 15:17:00 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TK8ptf41WCOH; Fri,  1 Jul 2022 15:16:58 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id B3AA51E80D94;
+        Fri,  1 Jul 2022 15:16:57 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     davem@davemloft.net, edumazet@google.com
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] net: usb: Remove unnecessary '0' values from hasdata
+Date:   Fri,  1 Jul 2022 15:18:02 +0800
+Message-Id: <20220701071802.3388-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Validate software clock gating required or not and do software
-clock gating on hclk if soundwire is operational and keep it
-running by adding flag in private data structure.
-This is to avoid conflict between older architectures,
-where software clock gating is not required and on latest
-architectures, where software clock gating is mandatory.
+hasdata does not need to be initialized to zero. It will be assigned a
+value in the following judgment conditions.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
 ---
- drivers/soundwire/qcom.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/usb/catc.c | 2 +-
+ 1 file changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index 22b7063..5baceda 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -179,6 +179,7 @@ struct qcom_swrm_ctrl {
- struct qcom_swrm_data {
- 	u32 default_cols;
- 	u32 default_rows;
-+	bool sw_clk_gate_required;
- };
+diff --git a/drivers/net/usb/catc.c b/drivers/net/usb/catc.c
+index e7fe9c0f63a9..268c32521691 100644
+--- a/drivers/net/usb/catc.c
++++ b/drivers/net/usb/catc.c
+@@ -280,7 +280,7 @@ static void catc_irq_done(struct urb *urb)
+ 	struct catc *catc = urb->context;
+ 	u8 *data = urb->transfer_buffer;
+ 	int status = urb->status;
+-	unsigned int hasdata = 0, linksts = LinkNoChange;
++	unsigned int hasdata, linksts = LinkNoChange;
+ 	int res;
  
- static const struct qcom_swrm_data swrm_v1_3_data = {
-@@ -1307,6 +1308,15 @@ static int qcom_swrm_probe(struct platform_device *pdev)
- 			return PTR_ERR(ctrl->mmio);
- 	}
- 
-+	if (data->sw_clk_gate_required) {
-+		ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, "swr_audio_cgcr");
-+		if (IS_ERR_OR_NULL(ctrl->audio_cgcr)) {
-+			dev_err(dev, "Failed to get cgcr reset ctrl required for SW gating\n");
-+			ret = PTR_ERR(ctrl->audio_cgcr);
-+			goto err_init;
-+		}
-+	}
-+
- 	ctrl->irq = of_irq_get(dev->of_node, 0);
- 	if (ctrl->irq < 0) {
- 		ret = ctrl->irq;
+ 	if (!catc->is_f5u011) {
 -- 
-2.7.4
+2.18.2
 
