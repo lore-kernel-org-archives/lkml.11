@@ -2,190 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 02:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56677C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 02:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233652AbiGACkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 22:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        id S232381AbiGAClZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 22:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233336AbiGACkL (ORCPT
+        with ESMTP id S229531AbiGAClY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 22:40:11 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784313879A
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 19:40:10 -0700 (PDT)
+        Thu, 30 Jun 2022 22:41:24 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A8361D71
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 19:41:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656643210; x=1688179210;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=edwKdOeVps2DTKJzwrZSMgChaL5jo07778euBqV1TM8=;
-  b=caRbIjGkd5t7pSm6fUCEoP7dQ6hFHn7wkIq5r0jVyoWcN6HwAERRgFTm
-   H/lGt2uAIQdi+4xVl6w42MBjW0XD5UKv3ufQTvIkNGtCRzAqo7iy6Cf8Q
-   ePkRcjIHlSMbj+EXize0F0TOVdMKoVJqpKOUcPCHfPTh+Bj4b7fngcMEw
-   tO3rNlDwUvJD0L8GxtSkrIz74EEowf+bIsbaKqnZu9GderfcIKAkTVhWm
-   0SL4gvFKaaIGQ0NNtbRbfzVuLPmXZfhbLbuS8q2J9Nn6uoWJgSS8P1RGE
-   wCXS6Fkzo6BVjNuyR1eDSDTAYEZShzfm5l79SjGIrcGV+t/EN9gAhD1Dr
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="308044292"
+  t=1656643283; x=1688179283;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=oDk6q32MtovJ4lorASbnkX/SG98a50WieSs/VcndFyw=;
+  b=Qm/XGscFdwpaR9U2Qn5z4B/+BYxSFRGh0rWGZZlvdDJPSnBpYQydS8OA
+   ZQVWrEKla6FaEa5XfouLRQh8HW1znkajlMXAvOZ8pY2b5M0rf5ZGhewEo
+   Vu0ffxP71fgFEAT54iHxgsvWGwAQf2mQgmHJj16nj8UCeBBxhb6mNxzvw
+   RJLOtFNv+nynKuqqRR5AGcg4wnASPmiY5MbmSYZkDrLxiDE6oXvjTZRfD
+   zK+P84iR8Jy7jOqtKscL9m+DMTSmthvIL+uCJhmNZy+ahJuAo4lmcA3BC
+   rbuJsR2agiI8XgI50Z+7IzYIP/eDiX4NHZqhawVLmwB8GeTUTVJBXNXak
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271305291"
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="308044292"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 19:40:10 -0700
+   d="scan'208";a="271305291"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 19:41:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="589059098"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 19:40:07 -0700
-Message-ID: <595c314b-2d16-aeef-d808-d1cb713ba175@linux.intel.com>
-Date:   Fri, 1 Jul 2022 10:35:50 +0800
+   d="scan'208";a="596067783"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 30 Jun 2022 19:41:21 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o76au-000DRq-Sm;
+        Fri, 01 Jul 2022 02:41:20 +0000
+Date:   Fri, 1 Jul 2022 10:40:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 56/56]
+ ld.lld: error: undefined symbol: __fscache_resize_cookie
+Message-ID: <202207011046.63cgHZ5l-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <sivanich@hpe.com>,
-        "Anderson, Russ" <russ.anderson@hpe.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 3/6] iommu/vt-d: Refactor iommu information of each
- domain
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>
-References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
- <20220625125204.2199437-4-baolu.lu@linux.intel.com>
- <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/30/22 4:28 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Saturday, June 25, 2022 8:52 PM
->>
->> +struct iommu_domain_info {
->> +	struct intel_iommu *iommu;
->> +	unsigned int refcnt;
->> +	u16 did;
->> +};
->> +
->>   struct dmar_domain {
->>   	int	nid;			/* node id */
->> -
->> -	unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
->> -					/* Refcount of devices per iommu */
->> -
->> -
->> -	u16		iommu_did[DMAR_UNITS_SUPPORTED];
->> -					/* Domain ids per IOMMU. Use u16
->> since
->> -					 * domain ids are 16 bit wide
->> according
->> -					 * to VT-d spec, section 9.3 */
-> 
-> It'd make sense to keep the comments when moving above fields.
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
+head:   acac17cdb0f9f6db9fc03eea371e399906146f96
+commit: acac17cdb0f9f6db9fc03eea371e399906146f96 [56/56] netfs: Implement truncation
+config: arm64-randconfig-r001-20220629 (https://download.01.org/0day-ci/archive/20220701/202207011046.63cgHZ5l-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a774ba7f60d1fef403b5507b1b1a7475d3684d71)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/acac17cdb0f9f6db9fc03eea371e399906146f96
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
+        git checkout acac17cdb0f9f6db9fc03eea371e399906146f96
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Sure. Updated.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 56c3d1a9e155..fae45bbb0c7f 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -527,8 +527,10 @@ struct context_entry {
+All errors (new ones prefixed by >>):
 
-  struct iommu_domain_info {
-         struct intel_iommu *iommu;
--       unsigned int refcnt;
--       u16 did;
-+       unsigned int refcnt;            /* Refcount of devices per iommu */
-+       u16 did;                        /* Domain ids per IOMMU. Use u16 
-since
-+                                        * domain ids are 16 bit wide 
-according
-+                                        * to VT-d spec, section 9.3 */
-  };
+>> ld.lld: error: undefined symbol: __fscache_resize_cookie
+   >>> referenced by fscache.h:387 (include/linux/fscache.h:387)
+   >>> netfs/truncate.o:(netfs_truncate) in archive fs/built-in.a
 
-
-> 
->> +	spin_lock(&iommu->lock);
->> +	curr = xa_load(&domain->iommu_array, iommu->seq_id);
->> +	if (curr) {
->> +		curr->refcnt++;
->> +		kfree(info);
->> +		goto success;
-> 
-> Not a fan of adding a label for success. Just putting two lines (unlock+
-> return) here is clearer.
-
-Updated.
-
-> 
->> +	ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
->> +			      info, GFP_ATOMIC));
-> 
-> check xa_err in separate line.
-
-Sure. Updated as below:
-
-@@ -1778,13 +1780,14 @@ static int domain_attach_iommu(struct 
-dmar_domain *domain,
-         info->did       = num;
-         info->iommu     = iommu;
-         domain->nid     = iommu->node;
--       ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
--                             info, GFP_ATOMIC));
--       if (ret)
-+       curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
-+                         NULL, info, GFP_ATOMIC);
-+       if (curr) {
-+               ret = xa_err(curr) ? : -EBUSY;
-                 goto err_clear;
-+       }
-         domain_update_iommu_cap(domain);
-
-> 
->>
->>   static void domain_detach_iommu(struct dmar_domain *domain,
->>   				struct intel_iommu *iommu)
->>   {
->> -	int num;
->> +	struct iommu_domain_info *info;
->>
->>   	spin_lock(&iommu->lock);
->> -	domain->iommu_refcnt[iommu->seq_id] -= 1;
->> -	if (domain->iommu_refcnt[iommu->seq_id] == 0) {
->> -		num = domain->iommu_did[iommu->seq_id];
->> -		clear_bit(num, iommu->domain_ids);
->> +	info = xa_load(&domain->iommu_array, iommu->seq_id);
->> +	if (--info->refcnt == 0) {
->> +		clear_bit(info->did, iommu->domain_ids);
->> +		xa_erase(&domain->iommu_array, iommu->seq_id);
->>   		domain_update_iommu_cap(domain);
->> -		domain->iommu_did[iommu->seq_id] = 0;
->> +		kfree(info);
-> 
-> domain->nid may still point to the node of the removed iommu.
-
-Good catch! I should assign it to NUMA_NO_NODE, so that it could be
-updated in the next domain_update_iommu_cap(). Updated as below:
-
-@@ -1806,6 +1809,7 @@ static void domain_detach_iommu(struct dmar_domain 
-*domain,
-         if (--info->refcnt == 0) {
-                 clear_bit(info->did, iommu->domain_ids);
-                 xa_erase(&domain->iommu_array, iommu->seq_id);
-+               domain->nid = NUMA_NO_NODE;
-                 domain_update_iommu_cap(domain);
-                 kfree(info);
-         }
-
-Best regards,
-baolu
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
