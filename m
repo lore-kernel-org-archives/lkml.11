@@ -2,141 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF5DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 21:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893B4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 21:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbiGAVhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 17:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
+        id S231327AbiGAVlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 17:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiGAVhH (ORCPT
+        with ESMTP id S229508AbiGAVk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 17:37:07 -0400
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8197D5C94E;
-        Fri,  1 Jul 2022 14:37:05 -0700 (PDT)
-Received: by mail-il1-f180.google.com with SMTP id h20so2151982ilj.13;
-        Fri, 01 Jul 2022 14:37:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=J86v2cLDP22dhdMQY1gkogeTSb0Yh6JFnGz+u5RmAN4=;
-        b=n7EBcob2aoNHxC3VdPMo1ya4BTxVa2InRSrwDJr5w049qokmz0zxnfDLxuHFZws8jm
-         A5ScfalNpF+UP1plY/q37I0bzHDx73uikxv1F5dlGwoPEhjH7t9wYitbioLlFXW87S3q
-         4RTQzDHDBM/BweJzZCFhh2AmQ2fEyDn5syFUMETKUSi7BKgu4+qun5L9MLo/LlZTZzZl
-         MrT2+MzRW48jskGRyv9amINACQYWIp9nFT32LaE+3xpg0o16amIqIm2ZYanWkBqa5NBz
-         w3qa9QqpWULIwdcftW2HRlLzKchu1IhpPCuj+BCAMRb91VowQAR70xHfAlFxJM4MGFaN
-         JSAQ==
-X-Gm-Message-State: AJIora9dVxF842sfFyDyKgt4SJ0PXP1ND7j+1/sF+U8iyD5XG95UNJtZ
-        j0lffUs3KOHfJ8vPtaLs+w==
-X-Google-Smtp-Source: AGRyM1sYR91twYxQYAQPVbEe2Fqnz0wIkKnwr9gOaTJIX2q5xD/4kgmop65ap+DhwWDj1Bc3j/yEmw==
-X-Received: by 2002:a05:6e02:1c85:b0:2da:956b:6bc with SMTP id w5-20020a056e021c8500b002da956b06bcmr9686339ill.36.1656711424773;
-        Fri, 01 Jul 2022 14:37:04 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id x5-20020a026f05000000b0033eb2f2ccfasm100716jab.43.2022.07.01.14.37.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 14:37:04 -0700 (PDT)
-Received: (nullmailer pid 1599831 invoked by uid 1000);
-        Fri, 01 Jul 2022 21:37:02 -0000
-Date:   Fri, 1 Jul 2022 15:37:02 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado 
-        <nfraprado@collabora.com>
-Cc:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] dt-bindings: usb: mtk-xhci: Make all clocks
- required
-Message-ID: <20220701213702.GA1591697-robh@kernel.org>
-References: <20220623193702.817996-1-nfraprado@collabora.com>
- <20220623193702.817996-3-nfraprado@collabora.com>
- <93c6b7201533325cf7758637dd194a372f3c00c6.camel@mediatek.com>
- <20220629185546.z6rn7xp3ejpmaupi@notapiano>
+        Fri, 1 Jul 2022 17:40:59 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F5742EF0
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 14:40:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3V0/ZHeDnwpkrNjAz9hZP6JxPOkXktskzD7IxMyAcKk=; b=RLFm8noq7YFbdJKokSNBcxO/kY
+        TH9omDc7Hvbc1D1NXGmbgnsXskL9fmEe4OsLvbYsyHlGMaHa2oFQSplmBVj5vR1sKQqztfoUkUg0R
+        OdkqBO6ViL9NdSQZivXNzpuLjIPo9/yDilCvBXSyHm1ay7Lnt1G+Az8OTLqM/CBFZbGWC9DOdpMl3
+        rvGqH28jwHKug2m6KHoB422uZbIm85NOeuKTdXzGryNhp7W6lfJXznw3ivHF4DDg/54R0PxpmvXuZ
+        j3z8A0J7b4eWe8Yp4rdXwGVSccyFu16MD5AXoKwi6v23UWbDRgXMEU6v9/n+WQX5aoT2Auz3r7evJ
+        IKXrNGfQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o7ONd-0072zi-Fk; Fri, 01 Jul 2022 21:40:49 +0000
+Date:   Fri, 1 Jul 2022 14:40:49 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Aaron Tomlin <atomlin@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] modules: Fix corruption of /proc/kallsyms
+Message-ID: <Yr9p4YOOfJp5evCq@bombadil.infradead.org>
+References: <20220701094403.3044-1-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220629185546.z6rn7xp3ejpmaupi@notapiano>
+In-Reply-To: <20220701094403.3044-1-adrian.hunter@intel.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 02:55:46PM -0400, Nícolas F. R. A. Prado wrote:
-> On Tue, Jun 28, 2022 at 08:57:45AM +0800, Chunfeng Yun wrote:
-> > Hi Nícolas,
-> > 
-> > On Thu, 2022-06-23 at 15:37 -0400, Nícolas F. R. A. Prado wrote:
-> > > All of the clocks listed in the binding are always wired to the XHCI
-> > > controller hardware blocks on all SoCs. The reason some clocks were
-> > > made
-> > > optional in the binding was to account for the fact that depending on
-> > > the SoC, some of the clocks might be fixed (ie not controlled by
-> > > software).
-> > > 
-> > > Given that the devicetree should represent the hardware, make all
-> > > clocks
-> > > required in the binding. Subsequent patches will make the DTS changes
-> > > to
-> > > specify fixed-clocks for the clocks that aren't controllable.
-> > > 
-> > > Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> > > 
-> > > ---
-> > > 
-> > > Changes in v2:
-> > > - Undid clock list changes that allowed middle clocks to be missing
-> > > from
-> > >   v1 and made all clocks required instead
-> > > - Rewrote commit message and title
-> > > 
-> > >  Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml | 4 +
-> > > ---
-> > >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtk-
-> > > xhci.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtk-
-> > > xhci.yaml
-> > > index 63cbc2b62d18..1444d18ef9bc 100644
-> > > --- a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-> > > +++ b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-> > > @@ -67,7 +67,6 @@ properties:
-> > >      maxItems: 1
-> > >  
-> > >    clocks:
-> > > -    minItems: 1
-> > >      items:
-> > >        - description: Controller clock used by normal mode
-> > >        - description: Reference clock used by low power mode etc
-> > > @@ -76,9 +75,8 @@ properties:
-> > >        - description: controller clock
-> > >  
-> > >    clock-names:
-> > > -    minItems: 1
-> > >      items:
-> > > -      - const: sys_ck  # required, the following ones are optional
-> > > +      - const: sys_ck
-> > >        - const: ref_ck
-> > >        - const: mcu_ck
-> > >        - const: dma_ck
-> > 
-> > This patch causes more check warning, I prefer to leave dt-bindings
-> > unchanged, but just fix mt8195's dts warning instead, thanks a lot
+On Fri, Jul 01, 2022 at 12:44:03PM +0300, Adrian Hunter wrote:
+> The commit 91fb02f31505 ("module: Move kallsyms support into a separate
+> file") changed from using strlcpy() to using strscpy() which created a
+> buffer overflow. That happened because:
+>  1) an incorrect value was passed as the buffer length
+>  2) strscpy() (unlike strlcpy()) may copy beyond the length of the
+>     input string when copying word-by-word.
+> The assumption was that because it was already known that the strings
+> being copied would fit in the space available, it was not necessary
+> to correctly set the buffer length.  strscpy() breaks that assumption
+> because although it will not touch bytes beyond the given buffer length
+> it may write bytes beyond the input string length when writing
+> word-by-word.
 > 
-> Hi Chunfeng,
+> The result of the buffer overflow is to corrupt the symbol type
+> information that follows. e.g.
 > 
-> the warnings reported by Rob's bot only happen if patches 3 and 4 aren't applied
-> to adapt the devicetrees. They are ABI breaking changes, but I understood this
-> as the desired solution from the discussion we had with Krzysztof on v1 [1].
+>  $ sudo cat -v /proc/kallsyms | grep '\^' | head
+>  ffffffffc0615000 ^@ rfcomm_session_get  [rfcomm]
+>  ffffffffc061c060 ^@ session_list        [rfcomm]
+>  ffffffffc06150d0 ^@ rfcomm_send_frame   [rfcomm]
+>  ffffffffc0615130 ^@ rfcomm_make_uih     [rfcomm]
+>  ffffffffc07ed58d ^@ bnep_exit   [bnep]
+>  ffffffffc07ec000 ^@ bnep_rx_control     [bnep]
+>  ffffffffc07ec1a0 ^@ bnep_session        [bnep]
+>  ffffffffc07e7000 ^@ input_leds_event    [input_leds]
+>  ffffffffc07e9000 ^@ input_leds_handler  [input_leds]
+>  ffffffffc07e7010 ^@ input_leds_disconnect       [input_leds]
+> 
+> Notably, the null bytes (represented above by ^@) can confuse tools.
+> 
+> Fix by correcting the buffer length.
+> 
+> Fixes: 91fb02f31505 ("module: Move kallsyms support into a separate file")
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-The warnings have nothing to do with patches 3 and 4 as those are for 
-dts files. It's examples in bindings that are the problem.
+Queued up thanks!
 
-Rob
+  Luis
