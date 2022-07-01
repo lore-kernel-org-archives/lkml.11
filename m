@@ -2,261 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78C4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E998ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234249AbiGAKG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S233311AbiGAKIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234107AbiGAKGX (ORCPT
+        with ESMTP id S229562AbiGAKIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:06:23 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4029D76979
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 03:06:22 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id k7so2431992wrc.12
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 03:06:22 -0700 (PDT)
+        Fri, 1 Jul 2022 06:08:44 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438EC14D30;
+        Fri,  1 Jul 2022 03:08:43 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id p136so3206726ybg.4;
+        Fri, 01 Jul 2022 03:08:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TiLVWLx63nyWyTQAY2zgpzwOLEkwTA7TBvrzJVEFLY0=;
-        b=VSZVgCiBv/LEcqG2i3/LoY3K4GYoKYc2g6vdrRUe29yEfPFb9V51iIkJK+zv3OdM5e
-         qtHsJdmdYcFdJCUlaOv2H1WxOrlI+3SNu7zPZOvaT/KVxyMnEb/gK12j18ujfpF7f6XO
-         3Yk2ec7KueUUSu7TgNl7blf75Qarbcrv7rO7VQkzAeuCHeCvCr9sszsOIXvR1SiSr58o
-         pZFk1STeu4NF4OOuoFA+X0PFR28Dzu9TYoowMOFn/+ndBwLHUQf/fV2GTXi3Tlpca/tl
-         Zib7Lk7hnnpPOeaufSjJfLbEt0O57Iq9EFtlKrkKvEQSkG9/yBAdz8HX4AZIm0XNyZDp
-         uaHw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6i9rjfH3G4VsINLZARCwk6I6fFER2N6iAYbqDz9ALlU=;
+        b=cytPxckd4rDinhKxg/CCDo60hAhJynJCv5EPy5twlZYEiy+Kg1x3K6k46ZzCd7JTWQ
+         OHhHdSiJi9dSnMeOmp4jqdLkFPav0weA2H+aXVJCjoFwY/RWPak6dGt6wpF5tt9KGLgc
+         DyQaAoacTPzil528dHqkxrVlFDnKgdoWs4OmRO1RNJz+sIbd1EHZb7NBXxOVeR36WbNZ
+         mMMlX03aDMxS9se6dyi3szg8sQB2sb4umsxpwVcdvRXmNL4sNvezbHhKZ8MH83IbMMgy
+         4cxrCJAYoWgKG+mdaUspmpxxGT66ZQVJhab7a6c2Ll560fZIShGLcmoITfphzCaw3dNG
+         /1Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TiLVWLx63nyWyTQAY2zgpzwOLEkwTA7TBvrzJVEFLY0=;
-        b=18PoraiaVgo04efFfhx9Z6TMCzDyrx5dpriDsXGhS85Rqu0WD+fwSq6Ltb5T+DXxwb
-         tQ7mY35vlOiEsEDfGLA9jmxrah+tWc2ayVaQoopyhy2WHewvmu6cEJ6/zkVGJgmiy6Wi
-         gqj7nnw5GY8pHAt1Jjm1Ub4kROLRZGeeqiEWp0W3ZnUxHyYuMsYPF4JXSN/GWRzlNhCE
-         uYXwtXccfe2T+gzyuPUosKge+jjkYpau6KJ7D6q46ob86d81M69CEToa7QkrBoPpqF7P
-         cOUsRWXwyYOrNfOH91qic6+kKYvQVaZdbA4y7NmuIPOpBvVxjimVXcvFZoJ7daE0aySW
-         +t1Q==
-X-Gm-Message-State: AJIora89FizyG9slnnynpb76x5XFYJsDDH9wVgoZwMpU0bQUR6pKkh6N
-        vIlt5KfPo+Hx2wDl9Kq7QYjpdQ==
-X-Google-Smtp-Source: AGRyM1v3jB4wo495BGQVx5FDNFneed+hnet73p0jiqLRbahpKYdgWd4wUhG3+uvOA7F2UScGQdXpFQ==
-X-Received: by 2002:a5d:660d:0:b0:21b:899f:5d69 with SMTP id n13-20020a5d660d000000b0021b899f5d69mr11988627wru.688.1656669980647;
-        Fri, 01 Jul 2022 03:06:20 -0700 (PDT)
-Received: from [192.168.86.238] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id a1-20020a05600c348100b003a03be22f9fsm193981wmq.18.2022.07.01.03.06.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 03:06:20 -0700 (PDT)
-Message-ID: <864aac78-d3a4-0008-345f-d210582b100e@linaro.org>
-Date:   Fri, 1 Jul 2022 11:06:18 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6i9rjfH3G4VsINLZARCwk6I6fFER2N6iAYbqDz9ALlU=;
+        b=bby35xCHwZGvh1BM7dDfL5X9H7KScv+07NQU+Zz9NTRZlneN5D8LA8wY7QZhyXmM+k
+         U76E5GHxAhf2etzRrSQPSrf/8+Z/HN6xhXbqM4VMyDh8ru3RW7QEYobi/oIY27BdzGX2
+         xAISEDFjrEWh0C3pqcTFkPxHO7z3z+9gqL6BsrU3flnsut6uvNwXV+udMDjIjobfA3N/
+         2f2TJScMuaKguSKsvpwkL3XUboFGh+cBNVkAb7NuntdYEVQ5A4Yo30OkPaMVS7bbXei3
+         zVbdLcjx1lyx/8VgI+bhQXU1GA/vG4Gu6Y789tHB88Yv48NAIztnwZzqV717WytdhUG1
+         g3bA==
+X-Gm-Message-State: AJIora/MHsZUvdmC/lvGsdarD9q9mu9q1mfKQONkR7hQ3rvV91ApuxUB
+        7o8xhR2nJAbfkI3sA30ShaJezUgJ1KV0P/nytlJH1EQbokm4Dg==
+X-Google-Smtp-Source: AGRyM1tin3rcSGQHeGy6u1k9+zpSCrGM2TVhVW6q+f76DChNQmAL0Ovoh0IAEmrL8sY8qjkwcAJdRhiABTEETOYyXzw=
+X-Received: by 2002:a25:dd83:0:b0:66c:8d8d:4f5f with SMTP id
+ u125-20020a25dd83000000b0066c8d8d4f5fmr14224195ybg.79.1656670122397; Fri, 01
+ Jul 2022 03:08:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] dt-bindings: pinctrl: qcom: Add sm8450 lpass lpi
- pinctrl bindings
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     bjorn.andersson@linaro.org, linus.walleij@linaro.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220629091716.68771-1-srinivas.kandagatla@linaro.org>
- <20220629091716.68771-2-srinivas.kandagatla@linaro.org>
- <20220630210848.GA3295428-robh@kernel.org>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220630210848.GA3295428-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220630230107.13438-1-nm@ti.com> <20220701033823.gkp5hfowv7f3eemx@tinsel>
+In-Reply-To: <20220701033823.gkp5hfowv7f3eemx@tinsel>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 1 Jul 2022 12:08:05 +0200
+Message-ID: <CAHp75VfAMtb1jZHdLsb=TtajGC6WFZ0z-5k31Vy=cG7ytjByTg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-adc128s052: Fix number of channels when
+ device tree is used
+To:     Nishanth Menon <nm@ti.com>
+Cc:     Javier Martinez Canillas <javier@osg.samsung.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-thanks Rob,
+On Fri, Jul 1, 2022 at 5:41 AM Nishanth Menon <nm@ti.com> wrote:
+> On 18:01-20220630, Nishanth Menon wrote:
 
-On 30/06/2022 22:08, Rob Herring wrote:
-> On Wed, Jun 29, 2022 at 10:17:15AM +0100, Srinivas Kandagatla wrote:
->> Add device tree binding Documentation details for Qualcomm SM8450
->> LPASS(Low Power Audio Sub System) LPI(Low Power Island) pinctrl driver.
->>
->> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
->> ---
->>   .../qcom,sm8450-lpass-lpi-pinctrl.yaml        | 138 ++++++++++++++++++
->>   1 file changed, 138 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8450-lpass-lpi-pinctrl.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sm8450-lpass-lpi-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sm8450-lpass-lpi-pinctrl.yaml
->> new file mode 100644
->> index 000000000000..b49d70b9ba9a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pinctrl/qcom,sm8450-lpass-lpi-pinctrl.yaml
->> @@ -0,0 +1,138 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/pinctrl/qcom,sm8450-lpass-lpi-pinctrl.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Technologies, Inc. Low Power Audio SubSystem (LPASS)
->> +  Low Power Island (LPI) TLMM block
->> +
->> +maintainers:
->> +  - Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
->> +
->> +description: |
->> +  This binding describes the Top Level Mode Multiplexer block found in the
->> +  LPASS LPI IP on most Qualcomm SoCs
->> +
->> +properties:
->> +  compatible:
->> +    const: qcom,sm8450-lpass-lpi-pinctrl
->> +
->> +  reg:
->> +    minItems: 2
->> +    maxItems: 2
-> 
-> What is each entry?
+...
 
-These are tlmm and slew register base address.
+> >  static const struct of_device_id adc128_of_match[] = {
+> > -     { .compatible = "ti,adc128s052", },
+> > -     { .compatible = "ti,adc122s021", },
+> > -     { .compatible = "ti,adc122s051", },
+> > -     { .compatible = "ti,adc122s101", },
+> > -     { .compatible = "ti,adc124s021", },
+> > -     { .compatible = "ti,adc124s051", },
+> > -     { .compatible = "ti,adc124s101", },
+> > +     { .compatible = "ti,adc128s052", .data = 0},
+>
+> I should probably cast these as .data = (void *)0 thoughts?
 
-This has been like this in previous bindings for sm8250 and sc7280 lpi 
-binding.
+The 0 is default. You shouldn't use that in the first place for
+something meaningful rather than "no, we have no driver data for this
+chip).
 
-Are you suggesting that we should add a description for reg for more 
-clarity?
-
-
-> 
->> +
->> +  clocks:
->> +    items:
->> +      - description: LPASS Core voting clock
->> +      - description: LPASS Audio voting clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: core
->> +      - const: audio
->> +
->> +  gpio-controller: true
->> +
->> +  '#gpio-cells':
->> +    description: Specifying the pin number and flags, as defined in
->> +      include/dt-bindings/gpio/gpio.h
->> +    const: 2
->> +
->> +  gpio-ranges:
->> +    maxItems: 1
->> +
->> +#PIN CONFIGURATION NODES
->> +patternProperties:
->> +  '-pins$':
->> +    type: object
->> +    description:
->> +      Pinctrl node's client devices use subnodes for desired pin configuration.
->> +      Client device subnodes use below standard properties.
->> +    $ref: "/schemas/pinctrl/pincfg-node.yaml"
->> +
->> +    properties:
->> +      pins:
->> +        description:
->> +          List of gpio pins affected by the properties specified in this
->> +          subnode.
->> +        items:
->> +          oneOf:
->> +            - pattern: "^gpio([0-9]|[1-9][0-9])$"
-> 
-> Don't need oneOf with only 1.
-> 
-I think other lpass lpi bindings need that fix too.
-
->> +        minItems: 1
->> +        maxItems: 23
->> +
->> +      function:
->> +        enum: [ swr_tx_clk, swr_tx_data, swr_rx_clk, swr_rx_data,
->> +                dmic1_clk, dmic1_data, dmic2_clk, dmic2_data, dmic4_clk,
->> +                dmic4_data, i2s2_clk, i2s2_ws, dmic3_clk, dmic3_data,
->> +                qua_mi2s_sclk, qua_mi2s_ws, qua_mi2s_data, i2s1_clk, i2s1_ws,
->> +                i2s1_data, wsa_swr_clk, wsa_swr_data, wsa2_swr_clk,
->> +                wsa2_swr_data, i2s2_data, i2s4_ws, i2s4_clk, i2s4_data,
->> +                slimbus_clk, i2s3_clk, i2s3_ws, i2s3_data, slimbus_data,
->> +                ext_mclk1_c, ext_mclk1_b, ext_mclk1_a, ext_mclk1_d,
->> +                ext_mclk1_e ]
->> +
->> +        description:
->> +          Specify the alternative function to be configured for the specified
->> +          pins.
->> +
->> +      drive-strength:
->> +        enum: [2, 4, 6, 8, 10, 12, 14, 16]
->> +        default: 2
->> +        description:
->> +          Selects the drive strength for the specified pins, in mA.
->> +
->> +      slew-rate:
->> +        enum: [0, 1, 2, 3]
->> +        default: 0
->> +        description: |
->> +            0: No adjustments
->> +            1: Higher Slew rate (faster edges)
->> +            2: Lower Slew rate (slower edges)
->> +            3: Reserved (No adjustments)
-> 
-> Indent should be 2 more, not 4.
-
-true, Will fix this in next spin.
-
-Thanks,
-Srini
-> 
->> +
->> +      bias-pull-down: true
->> +
->> +      bias-pull-up: true
->> +
->> +      bias-disable: true
->> +
->> +      output-high: true
->> +
->> +      output-low: true
->> +
->> +    required:
->> +      - pins
->> +      - function
->> +
->> +    additionalProperties: false
->> +
->> +allOf:
->> +  - $ref: "pinctrl.yaml#"
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - clocks
->> +  - clock-names
->> +  - gpio-controller
->> +  - '#gpio-cells'
->> +  - gpio-ranges
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/sound/qcom,q6afe.h>
->> +    lpi_tlmm: pinctrl@3440000 {
->> +        compatible = "qcom,sm8450-lpass-lpi-pinctrl";
->> +        reg = <0x3440000 0x20000>,
->> +              <0x34d0000 0x10000>;
->> +        clocks = <&q6prmcc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
->> +                 <&q6prmcc LPASS_HW_DCODEC_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
->> +        clock-names = "core", "audio";
->> +        gpio-controller;
->> +        #gpio-cells = <2>;
->> +        gpio-ranges = <&lpi_tlmm 0 0 23>;
->> +    };
->> -- 
->> 2.25.1
->>
->>
+-- 
+With Best Regards,
+Andy Shevchenko
