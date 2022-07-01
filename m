@@ -2,201 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099A6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A074AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236022AbiGAJZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
+        id S234169AbiGAJ0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235071AbiGAJZD (ORCPT
+        with ESMTP id S235187AbiGAJZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:25:03 -0400
-Received: from out0-140.mail.aliyun.com (out0-140.mail.aliyun.com [140.205.0.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC61674360;
-        Fri,  1 Jul 2022 02:24:57 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047188;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---.OHOTEQy_1656667454;
-Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.OHOTEQy_1656667454)
-          by smtp.aliyun-inc.com;
-          Fri, 01 Jul 2022 17:24:14 +0800
-From:   "Hou Wenlong" <houwenlong.hwl@antgroup.com>
-To:     kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: x86/mmu: Replace UNMAPPED_GVA with INVALID_GPA for gva_to_gpa()
-Date:   Fri, 01 Jul 2022 17:24:13 +0800
-Message-Id: <6104978956449467d3c68f1ad7f2c2f6d771d0ee.1656667239.git.houwenlong.hwl@antgroup.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 1 Jul 2022 05:25:05 -0400
+Received: from relay2.uni-heidelberg.de (relay2.uni-heidelberg.de [129.206.119.212])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD47724F2E
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:25:03 -0700 (PDT)
+X-IPAS-Result: =?us-ascii?q?A2A5BQBPvL5iffxkzoFagliDJYFXlBADBoFCizCHH4wuA?=
+ =?us-ascii?q?QEBAQEBAQEBCS8TBAEBQIoRJzcGDgECBAEBAQEDAgMBAQEBAQEDAQEGAQEBA?=
+ =?us-ascii?q?QEHBBQBASM8J4VoDYZDBjIBRhBRVxmCeAIBAQKCZAEDMK5ZgQGGWgGBP4Flg?=
+ =?us-ascii?q?T6JW4UggUCBEIFIgQmCLIQLgQaFbgSXaIJnCgMJBAcFRhcSTjEhAkULHAEIB?=
+ =?us-ascii?q?gYHAQgBBQgoBAIBAQEGBRgUAQMBARMSBRMMBygKEgISDAobBwcDCwUyDQIOB?=
+ =?us-ascii?q?wEBDA8BAg8DAQIRAQcCCRIIBg8rCAMBAQMBBwECAgMgCwIDFgkHCAIBAgUCA?=
+ =?us-ascii?q?gEDDwEIChwSEBQCBA0EHgkCCAECGR4sBwICBA4DIx0ICwoDDgMEAwEQAhgHA?=
+ =?us-ascii?q?gEVAQUCBAgEAQMGAwgVGQENJwQHAxICDQEGAQIGAQEFBQEDGAgDFAMFAQIIA?=
+ =?us-ascii?q?xYHAQIhBQomCQQNAwEiGwIDAwEEGwoCAQICBRYFAgEBAgMCBhUGAgI/LxEdD?=
+ =?us-ascii?q?QgECAQJEhwjAQIMAQQBAgcvBQQtAgEBHgQFAQUPAggBARYCBgQDAgIDAQECA?=
+ =?us-ascii?q?RYCEAgCCCcXBxMzGQEFNxQODwEDBggZHCIHCQcFBhYDDBUnHikFBxESGw8ED?=
+ =?us-ascii?q?Q0KNCAWJAEBDgUDARIZEQ4HFApTJiEVEAYBKxYDBAEDAwIGGgECAyICEAsJF?=
+ =?us-ascii?q?QIEIQgJAxYGIgscBQEiHRmcGAFZNExbk2uDN6tmB4NREAGLEJUmhUWRHQKSA?=
+ =?us-ascii?q?JZzonSETzWBQjOBTE0jgzgJSBkPl1SFHnM7AgYLAQEDCYw9gkgBAQ?=
+IronPort-Data: A9a23:OcpnLK5xlzWZDWutNNglfAxRtKDHchMFZxGqfqrLsTDasY5as4F+v
+ mcZWjqHOP6IMTTzKo8naIyw9xhUvZPRnNZqHgFv/iE9Zn8b8sCt6faxdxqvZXPMcqUvb67FA
+ +E2MISowBUcFyeEzvuVGuG96yE6j8lkf5KkYAL+EngZqTRMFWFw03qPp8Zj2tQy2YfhWlvU0
+ T/Pi5S31GGNimYc3l08tvrrRCNH5JwebxtB4zTSzdgS1LPvvyF94KA3fMldHFOgKmVgJdNWc
+ s6YpF2PEsM1yD92Yj+tuu6TnkTn2dc+NyDW4pZdc/DKbhSvOkXe345jXMfwZ3u7hB2rwc9K9
+ Y9upKboCi4rOL3Jx8c7djxhRnQW0a1uoNcrIFC6uM2XlxSAbn3thvVjDU07OYcV4OkxDWwmG
+ f4wcWpcKErb2aTvmOr9ELQ27iggBJCD0Ic3oXpgyTzBFfs8aYvfXqmM+NlZmTc9h8xDGfzTf
+ cVfZTcHgBHoOkAQZQpNUslk9AuurlTVUQZds0ycnKU241j6kAUv3pLQG+OAL7RmQu0OwhjE/
+ Duel4jjOTkFNseY1TOt/Xelh+uJliT+MKodDrC39f5ChFyV23wdDwAQWVKnoP6/zEmkVLp3L
+ 00S5zprtrQ7+02tQfH5XgakuziAvxgBS5xcHvNSwA/W0aHUpQmYGkADUyJFb9sl8sQxQFQC0
+ l6PgsOsBjF1trCRYWyS+63Srj6oPyURa2gYakc5oRAt5tDipNlqyA/JT5NjHa+5g9n/FCv/h
+ TyHxMQju1kNpexVyJ6Gp3PWuWrvj5rPXgtqxSPye1vwu2uVe7WZT4Cv7FHa69NJI4CYUkSNs
+ RA4dy62sb9m4XalyXzlfQkdIF26z6rUbGSE3jaDC7FxqWT1ohZPaKgNuGkWGat/DioTURPEC
+ KM5kSNc5ZNeOHGnd6Afj2mZVZVzl/CI+TjNfPnYY9wLXTOlbhOb8SRkaFSft10BfWApmKA7Y
+ c7dbMCtSHYXCKhqyDC7Xehb3bJDKsECKYH7G8CTI/ePiOT2iJuppVEtawvmggcRsPvsnekt2
+ 4wDX/ZmMj0GOAEEXgHZ8JQIMXcBJmUhCJb9pqR/L7DefFQ/QzF6V6SKndvNnrCJeYwLzY8kG
+ VnjBydlJKbX2yyvxfiiMCgyNe22A/6TU1pqYHV3VbpX55TTSd3zsvtFLsNfkUgP/uFn0uN5B
+ +QDetuNGO9OViWP/TkBcp7nr+RfmOeD2mqz096eSGZkJfZIGVeWkuIIiyO1qUHi+ALr7pZky
+ 1BhvyuHKac+q/NKXJ6JM6/xngzZULp0sLsaYnYk6+J7IC3EmLWG4QSq5hPrC6ng8Sn++wY=
+IronPort-HdrOrdr: A9a23:ezhoN6Ni1UGGwsBcTtyjsMiBIKoaSvp037BN7S5MoH1uHvBw8v
+ rEoB11726XtN98YhEdcLO7V5VoP0mskKKdiLN5Vd3OYOCMggqVxe9ZnOjf/wE=
+X-IronPort-Anti-Spam-Filtered: true
+Received: from mail01.uni-heidelberg.de ([129.206.100.252])
+  by relay2.uni-heidelberg.de with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 01 Jul 2022 11:25:01 +0200
+Received: from localhost (ip-037-209-006-204.um11.pools.vodafone-ip.de [37.209.6.204])
+        (Authenticated sender: ln194)
+        by mail01.uni-heidelberg.de (Postfix) with ESMTPSA id 4F140300719FC;
+        Fri,  1 Jul 2022 11:25:01 +0200 (CEST)
+From:   Felix Schlepper <f3sch.git@outlook.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        wjsota@gmail.com, Felix Schlepper <f3sch.git@outlook.com>
+Subject: [PATCH v3 2/6] Staging: rtl8192e: Avoid multiple assignments
+Date:   Fri,  1 Jul 2022 11:24:50 +0200
+Message-Id: <899a1010643a05668465069951518e5dcab9c77e.1656667089.git.f3sch.git@outlook.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656667089.git.f3sch.git@outlook.com>
+References: <cover.1656667089.git.f3sch.git@outlook.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The result of gva_to_gpa() is physical address not virtual address,
-it is odd that UNMAPPED_GVA macro is used as the result for physical
-address. Replace UNMAPPED_GVA with INVALID_GPA and drop UNMAPPED_GVA
-macro.
+This addresses an issue raised by checkpatch.pl:
 
-No functional change intended.
+     $ ./scripts/checkpatch.pl --terse -f drivers/staging/rtl8192e/rtllib_wx.c
+     CHECK: multiple assignments should be avoided
 
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Signed-off-by: Felix Schlepper <f3sch.git@outlook.com>
 ---
- arch/x86/include/asm/kvm_host.h |  1 -
- arch/x86/kvm/mmu/paging_tmpl.h  |  6 +++---
- arch/x86/kvm/vmx/sgx.c          |  2 +-
- arch/x86/kvm/x86.c              | 18 +++++++++---------
- 4 files changed, 13 insertions(+), 14 deletions(-)
+ drivers/staging/rtl8192e/rtllib_wx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 665667d61caf..b438d86796ac 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -129,7 +129,6 @@
- #define INVALID_PAGE (~(hpa_t)0)
- #define VALID_PAGE(x) ((x) != INVALID_PAGE)
- 
--#define UNMAPPED_GVA (~(gpa_t)0)
- #define INVALID_GPA (~(gpa_t)0)
- 
- /* KVM Hugepage definitions for x86 */
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index fc6d8dcff019..25ad6c32700a 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -378,7 +378,7 @@ static int FNAME(walk_addr_generic)(struct guest_walker *walker,
- 		 * information to fix the exit_qualification or exit_info_1
- 		 * fields.
- 		 */
--		if (unlikely(real_gpa == UNMAPPED_GVA))
-+		if (unlikely(real_gpa == INVALID_GPA))
- 			return 0;
- 
- 		host_addr = kvm_vcpu_gfn_to_hva_prot(vcpu, gpa_to_gfn(real_gpa),
-@@ -431,7 +431,7 @@ static int FNAME(walk_addr_generic)(struct guest_walker *walker,
- #endif
- 
- 	real_gpa = kvm_translate_gpa(vcpu, mmu, gfn_to_gpa(gfn), access, &walker->fault);
--	if (real_gpa == UNMAPPED_GVA)
-+	if (real_gpa == INVALID_GPA)
- 		return 0;
- 
- 	walker->gfn = real_gpa >> PAGE_SHIFT;
-@@ -962,7 +962,7 @@ static gpa_t FNAME(gva_to_gpa)(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
- 			       struct x86_exception *exception)
- {
- 	struct guest_walker walker;
--	gpa_t gpa = UNMAPPED_GVA;
-+	gpa_t gpa = INVALID_GPA;
- 	int r;
- 
- #ifndef CONFIG_X86_64
-diff --git a/arch/x86/kvm/vmx/sgx.c b/arch/x86/kvm/vmx/sgx.c
-index 35e7ec91ae86..7ae8aa73724c 100644
---- a/arch/x86/kvm/vmx/sgx.c
-+++ b/arch/x86/kvm/vmx/sgx.c
-@@ -79,7 +79,7 @@ static int sgx_gva_to_gpa(struct kvm_vcpu *vcpu, gva_t gva, bool write,
- 	else
- 		*gpa = kvm_mmu_gva_to_gpa_read(vcpu, gva, &ex);
- 
--	if (*gpa == UNMAPPED_GVA) {
-+	if (*gpa == INVALID_GPA) {
- 		kvm_inject_emulated_page_fault(vcpu, &ex);
- 		return -EFAULT;
+diff --git a/drivers/staging/rtl8192e/rtllib_wx.c b/drivers/staging/rtl8192e/rtllib_wx.c
+index b7f19b38b0e1..121bf939c6a4 100644
+--- a/drivers/staging/rtl8192e/rtllib_wx.c
++++ b/drivers/staging/rtl8192e/rtllib_wx.c
+@@ -149,7 +149,8 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
+ 			max_rate = rate;
  	}
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 7ce0c6fe166d..fe6ae7f518d2 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -849,7 +849,7 @@ int load_pdptrs(struct kvm_vcpu *vcpu, unsigned long cr3)
- 	 */
- 	real_gpa = kvm_translate_gpa(vcpu, mmu, gfn_to_gpa(pdpt_gfn),
- 				     PFERR_USER_MASK | PFERR_WRITE_MASK, NULL);
--	if (real_gpa == UNMAPPED_GVA)
-+	if (real_gpa == INVALID_GPA)
- 		return 0;
- 
- 	/* Note the offset, PDPTRs are 32 byte aligned when using PAE paging. */
-@@ -6981,7 +6981,7 @@ static int kvm_read_guest_virt_helper(gva_t addr, void *val, unsigned int bytes,
- 		unsigned toread = min(bytes, (unsigned)PAGE_SIZE - offset);
- 		int ret;
- 
--		if (gpa == UNMAPPED_GVA)
-+		if (gpa == INVALID_GPA)
- 			return X86EMUL_PROPAGATE_FAULT;
- 		ret = kvm_vcpu_read_guest_page(vcpu, gpa >> PAGE_SHIFT, data,
- 					       offset, toread);
-@@ -7012,7 +7012,7 @@ static int kvm_fetch_guest_virt(struct x86_emulate_ctxt *ctxt,
- 	/* Inline kvm_read_guest_virt_helper for speed.  */
- 	gpa_t gpa = mmu->gva_to_gpa(vcpu, mmu, addr, access|PFERR_FETCH_MASK,
- 				    exception);
--	if (unlikely(gpa == UNMAPPED_GVA))
-+	if (unlikely(gpa == INVALID_GPA))
- 		return X86EMUL_PROPAGATE_FAULT;
- 
- 	offset = addr & (PAGE_SIZE-1);
-@@ -7082,7 +7082,7 @@ static int kvm_write_guest_virt_helper(gva_t addr, void *val, unsigned int bytes
- 		unsigned towrite = min(bytes, (unsigned)PAGE_SIZE - offset);
- 		int ret;
- 
--		if (gpa == UNMAPPED_GVA)
-+		if (gpa == INVALID_GPA)
- 			return X86EMUL_PROPAGATE_FAULT;
- 		ret = kvm_vcpu_write_guest(vcpu, gpa, data, towrite);
- 		if (ret < 0) {
-@@ -7193,7 +7193,7 @@ static int vcpu_mmio_gva_to_gpa(struct kvm_vcpu *vcpu, unsigned long gva,
- 
- 	*gpa = mmu->gva_to_gpa(vcpu, mmu, gva, access, exception);
- 
--	if (*gpa == UNMAPPED_GVA)
-+	if (*gpa == INVALID_GPA)
- 		return -1;
- 
- 	return vcpu_is_mmio_gpa(vcpu, gva, *gpa, write);
-@@ -7430,7 +7430,7 @@ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
- 
- 	gpa = kvm_mmu_gva_to_gpa_write(vcpu, addr, NULL);
- 
--	if (gpa == UNMAPPED_GVA ||
-+	if (gpa == INVALID_GPA ||
- 	    (gpa & PAGE_MASK) == APIC_DEFAULT_PHYS_BASE)
- 		goto emul_write;
- 
-@@ -8253,7 +8253,7 @@ static bool reexecute_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 		 * If the mapping is invalid in guest, let cpu retry
- 		 * it to generate fault.
- 		 */
--		if (gpa == UNMAPPED_GVA)
-+		if (gpa == INVALID_GPA)
- 			return true;
- 	}
- 
-@@ -11292,7 +11292,7 @@ int kvm_arch_vcpu_ioctl_translate(struct kvm_vcpu *vcpu,
- 	gpa = kvm_mmu_gva_to_gpa_system(vcpu, vaddr, NULL);
- 	srcu_read_unlock(&vcpu->kvm->srcu, idx);
- 	tr->physical_address = gpa;
--	tr->valid = gpa != UNMAPPED_GVA;
-+	tr->valid = gpa != INVALID_GPA;
- 	tr->writeable = 1;
- 	tr->usermode = 0;
- 
-@@ -12893,7 +12893,7 @@ void kvm_fixup_and_inject_pf_error(struct kvm_vcpu *vcpu, gva_t gva, u16 error_c
- 		(PFERR_WRITE_MASK | PFERR_FETCH_MASK | PFERR_USER_MASK);
- 
- 	if (!(error_code & PFERR_PRESENT_MASK) ||
--	    mmu->gva_to_gpa(vcpu, mmu, gva, access, &fault) != UNMAPPED_GVA) {
-+	    mmu->gva_to_gpa(vcpu, mmu, gva, access, &fault) != INVALID_GPA) {
- 		/*
- 		 * If vcpu->arch.walk_mmu->gva_to_gpa succeeded, the page
- 		 * tables probably do not match the TLB.  Just proceed
+ 	iwe.cmd = SIOCGIWRATE;
+-	iwe.u.bitrate.fixed = iwe.u.bitrate.disabled = 0;
++	iwe.u.bitrate.disabled = 0;
++	iwe.u.bitrate.fixed = 0;
+ 	iwe.u.bitrate.value = max_rate * 500000;
+ 	start = iwe_stream_add_event_rsl(info, start, stop, &iwe, IW_EV_PARAM_LEN);
+ 	iwe.cmd = IWEVCUSTOM;
 -- 
-2.31.1
+2.36.1
 
