@@ -2,121 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E29C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbiGAPDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
+        id S233222AbiGAPDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbiGAPC4 (ORCPT
+        with ESMTP id S232536AbiGAPC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:02:56 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDD63DDC3;
-        Fri,  1 Jul 2022 08:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656687776; x=1688223776;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3p1haOctquxewPlqf+5TUBaW2f+6nbsODmUnBqHiBj8=;
-  b=rPacwOmsl1v6tsZZjDOdCrblMjM6MFaQWSRwAI37GLzwoiBECQriF42i
-   OCvrOlXSI/KglgvyxpF64eD4bnLC0jMpqvECPdznjICnzR8pcAY8GrFOR
-   cbFwkOWoRwMnh3H1Dtt6QbT8gsM/TYga3oMzcJA0LrIQ8pG3jBv4TT2yG
-   E99z3C8VId1fZFZ+GkMp3MfX99NnCe5SodIHNNFJeb/LhgLaveBrAYVr1
-   vOqONgCI4xfViakh/S3yu6H4oMObwHnER/lMA+pBSdmbIW9RT675MMgOH
-   vApogXfm1d09NvL9uumFKhVi4BQxXBYLOM23RjyR3kD8oGs7wgelrEOXP
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="162957738"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 08:02:55 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 08:02:51 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 08:02:31 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Fri, 1 Jul 2022 11:02:59 -0400
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4751F3DA6F;
+        Fri,  1 Jul 2022 08:02:56 -0700 (PDT)
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 261F2OSZ022994
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 1 Jul 2022 17:02:25 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v15 06/13] net: dsa: microchip: lan937x: add dsa_tag_protocol
-Date:   Fri, 1 Jul 2022 20:32:23 +0530
-Message-ID: <20220701150223.23832-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220701144652.10526-1-arun.ramadoss@microchip.com>
-References: <20220701144652.10526-1-arun.ramadoss@microchip.com>
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Anton Makarov <anton.makarov11235@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net-next v4 0/4] seg6: add support for SRv6 Headend Reduced Encapsulation
+Date:   Fri,  1 Jul 2022 17:01:48 +0200
+Message-Id: <20220701150152.24103-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch update the ksz_get_tag_protocol to return LAN937x specific
-tag if the chip id matches one of LAN937x series switch
+This patchset adds support for SRv6 Headend behavior with Reduced
+Encapsulation. It introduces the H.Encaps.Red and H.L2Encaps.Red versions
+of the SRv6 H.Encaps and H.L2Encaps behaviors, according to RFC 8986 [1].
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_common.c | 3 +++
- drivers/net/dsa/microchip/ksz_common.h | 9 +++++++++
- 2 files changed, 12 insertions(+)
+In details, the patchset is made of:
+ - patch 1/4: add support for SRv6 H.Encaps.Red behavior;
+ - Patch 2/4: add support for SRv6 H.L2Encaps.Red behavior;
+ - patch 2/4: add selftest for SRv6 H.Encaps.Red behavior;
+ - patch 3/4: add selftest for SRv6 H.L2Encaps.Red behavior.
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 83e44598d00c..07b6f34a437e 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -1254,6 +1254,9 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
- 	    dev->chip_id == KSZ9567_CHIP_ID)
- 		proto = DSA_TAG_PROTO_KSZ9477;
- 
-+	if (is_lan937x(dev))
-+		proto = DSA_TAG_PROTO_LAN937X_VALUE;
-+
- 	return proto;
- }
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 5f69dc872752..bf4f3f3922a5 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -403,6 +403,15 @@ static inline void ksz_regmap_unlock(void *__mtx)
- 	mutex_unlock(mtx);
- }
- 
-+static inline int is_lan937x(struct ksz_device *dev)
-+{
-+	return dev->chip_id == LAN9370_CHIP_ID ||
-+		dev->chip_id == LAN9371_CHIP_ID ||
-+		dev->chip_id == LAN9372_CHIP_ID ||
-+		dev->chip_id == LAN9373_CHIP_ID ||
-+		dev->chip_id == LAN9374_CHIP_ID;
-+}
-+
- /* STP State Defines */
- #define PORT_TX_ENABLE			BIT(2)
- #define PORT_RX_ENABLE			BIT(1)
+The corresponding iproute2 patch for supporting SRv6 H.Encaps.Red and
+H.L2Encaps.Red behaviors is provided in a separated patchset.
+
+[1] - https://datatracker.ietf.org/doc/html/rfc8986
+
+v3 -> v4:
+ - Add selftests to the Makefile, thanks to Jakub Kicinski.
+
+v2 -> v3:
+ - Keep SRH when HMAC TLV is present;
+
+ - Split the support for H.Encaps.Red and H.L2Encaps.Red behaviors in two
+   patches (respectively, patch 1/4 and patch 2/4);
+
+ - Add selftests for SRv6 H.Encaps.Red and H.L2Encaps.Red.
+
+v1 -> v2:
+ - Fixed sparse warnings;
+
+ - memset now uses sizeof() instead of hardcoded value;
+
+ - Removed EXPORT_SYMBOL_GPL.
+
+Andrea Mayer (4):
+  seg6: add support for SRv6 H.Encaps.Red behavior
+  seg6: add support for SRv6 H.L2Encaps.Red behavior
+  selftests: seg6: add selftest for SRv6 H.Encaps.Red behavior
+  selftests: seg6: add selftest for SRv6 H.L2Encaps.Red behavior
+
+ include/uapi/linux/seg6_iptunnel.h            |   2 +
+ net/ipv6/seg6_iptunnel.c                      | 138 +++-
+ tools/testing/selftests/net/Makefile          |   2 +
+ .../net/srv6_hencap_red_l3vpn_test.sh         | 742 ++++++++++++++++++
+ .../net/srv6_hl2encap_red_l2vpn_test.sh       | 674 ++++++++++++++++
+ 5 files changed, 1556 insertions(+), 2 deletions(-)
+ create mode 100755 tools/testing/selftests/net/srv6_hencap_red_l3vpn_test.sh
+ create mode 100755 tools/testing/selftests/net/srv6_hl2encap_red_l2vpn_test.sh
+
 -- 
-2.36.1
+2.20.1
 
