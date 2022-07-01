@@ -2,114 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8DCFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76409C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234263AbiGAIWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49078 "EHLO
+        id S234043AbiGAIWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236048AbiGAIVd (ORCPT
+        with ESMTP id S236194AbiGAIVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:21:33 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8D67125F
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:21:15 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id r1so1692119plo.10
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:21:15 -0700 (PDT)
+        Fri, 1 Jul 2022 04:21:34 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7B171274
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:21:17 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id v185so1546183ioe.11
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:21:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aJVM4zFbFbhC4PcmmIcXH43PSItTV2w1+waf0FbvJO8=;
-        b=ac3+8dQHtEe1GOgSD/+czOHQobsLexnh9mWvBEggRIwxaSkJBUDtOkg+DdQaX5UU4E
-         /gF3RRVm1g4RdX3XjTJQAcgHRHoZT54dk8B20CgpadbZbkeIczX08V0uSVwJZ/2fHpOc
-         BrxDO5WkUpbdEm5ZsGV4KXnf8tLMdR9fC5obVM1zvtSDdtsWzQqeuANKELx6Z0FiWqeh
-         Xpy4r/vAGHlZOBjNPfjrlhLmEIdrQaRr2fS57CCpFMYLsBczqnDWqCURvTumj1Y6c1Mb
-         sac7u8Q5HUOdteP+2VnJmr6qovBq50d5MAhM1sgP+0JN/+NPK4UjkYBMtVaMxEyWS+KA
-         FaDA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1lp7VNnqm2tf0ddBrHuILheNLPsX4Zh0bZVJc7ezqPQ=;
+        b=qM9lBtt4aM8D9O+ReKl19L6tjvm78755wjRhkKSItdHTkVYaMAFAtyY5tZZrErnYmy
+         0xY8B7Xa57NM/7qGUzhSwPKg3DiRl8mF43HwUQ3dkq/dJ/zVLZAPkV7ifNADkm/+0HUp
+         7KbgYAjmZ7pwY5ZmSKCGwX415gbyjO/5ia8FrWhBRFY9JmDkh1/5Nes+mrDHMRD8II2D
+         X3UnJh9ajTH8EF4tABgQQim68KDFrj/B8XB3ZLNoQuL4/ctAoO74ca5yr0b4SHZ0LZAp
+         hNbMYT9ekDYdXRE4Jm+Z3KKHkpfAsJM3Z2zgltVQtLtFoTXju3WisGpru/W6dFYulgn6
+         J/jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aJVM4zFbFbhC4PcmmIcXH43PSItTV2w1+waf0FbvJO8=;
-        b=Fn/sYBdEDg2ElgFTVQelTJeHWLDueWMI2wtDGPzvqTNBNdPq3WEKihCcDB+twGqdgb
-         1AKXR/FpzbUkt84aonTc6DIPf6F7HORX/GqYsMNjXtVYhJRW6tj4IbW5S/j90UQP28xQ
-         6hImhepkLGiVJmLEkLYvDv8dGPEbS6+SqI+c5J9bT0y3pZAE25BRLtqwCT91JgDOb4cZ
-         M+8C0MCdAlmAd+5AaBZj0NUifI0J9BzPxtB0cETjeDDpaOtfAeaT/QAZA2WjeSZ602ar
-         CY+MNCnfObwn1SIUkLu8CbVj8aYTzxB1zas0DzSu/BgeWoHD/L7Ye+LGmdw9dYXyxKgW
-         +lNg==
-X-Gm-Message-State: AJIora+wR43AgJ0+3cAvZbbDBpoAE6PnZXe/ocNfbWIO8K89U3x5wIy1
-        3jc+3BCcHh04CyzwkpJKpUCmj3jKVlCnag==
-X-Google-Smtp-Source: AGRyM1vu5xQ/FaApTDjk/0jnEWXTkKjAl95QQ8Gbqhs9UyvgMPjWnaNlxNRSi4k/foLg6slD829VNA==
-X-Received: by 2002:a17:902:f650:b0:15f:3a10:a020 with SMTP id m16-20020a170902f65000b0015f3a10a020mr18701639plg.61.1656663675180;
-        Fri, 01 Jul 2022 01:21:15 -0700 (PDT)
-Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id n17-20020a056a0007d100b0051bada81bc7sm14907263pfu.161.2022.07.01.01.21.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 01:21:14 -0700 (PDT)
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V2 11/30] devfreq: sun8i: Migrate to dev_pm_opp_set_config()
-Date:   Fri,  1 Jul 2022 13:50:06 +0530
-Message-Id: <cb05495f1f2af5a40767bb67211d69fbaf626298.1656660185.git.viresh.kumar@linaro.org>
-X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
-In-Reply-To: <cover.1656660185.git.viresh.kumar@linaro.org>
-References: <cover.1656660185.git.viresh.kumar@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1lp7VNnqm2tf0ddBrHuILheNLPsX4Zh0bZVJc7ezqPQ=;
+        b=E4rm6LUylNU+tkVVHrOE0QNsTMM1xGOA+oIXiR3ueIi5c250hv/yuiGtSUXzzO7VjB
+         CGF97ASdBRqZ5DHXjQ6n/aoATHz4xb82kp0WygUECQuXUMCpqR389q2gN1RVVf/3PQDP
+         jTY2dNISWuYESnGArWmfbB1F2atohQulw1ZqwuGiL7aGfUdIvs0uqA+fLfjuzdu5mc7U
+         xX+Ujc1MFnWv5idj49bV9QdMDdAohPqWwPl/VKL4StcZ49kcWNgc5M+tRBxxYUAy/gQ2
+         55tkHAA3IzKB72cY+RNKVOLH7TSjpuo7i4QbXVpPze5C8twaZ8CrRzpv2xsNZmfUOMr4
+         4dEA==
+X-Gm-Message-State: AJIora9B4KNfjxLogt30Oc6WhAaZd08YU+4MKTg3SbKUG+q0mRauqz9Z
+        SduKCwS2gIam6BooOgtDopb37EGsyiaAKzP9NNazng==
+X-Google-Smtp-Source: AGRyM1vus3sKVluFrejHJJBjZZtbigf1Q7Cfsq1JuXjTrS1UalvATAnT6LtvpoFO0XPvatIoYnfOR7Em+iRka76y+n0=
+X-Received: by 2002:a5d:8f96:0:b0:675:573e:6eb5 with SMTP id
+ l22-20020a5d8f96000000b00675573e6eb5mr7014355iol.144.1656663676780; Fri, 01
+ Jul 2022 01:21:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220630133232.433955678@linuxfoundation.org>
+In-Reply-To: <20220630133232.433955678@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 1 Jul 2022 13:51:05 +0530
+Message-ID: <CA+G9fYuxx3wdLXiKhYAPEs-g6uxPn-OsyaiHQOvjuegVEShgMg@mail.gmail.com>
+Subject: Re: [PATCH 4.14 00/35] 4.14.286-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OPP core now provides a unified API for setting all configuration
-types, i.e. dev_pm_opp_set_config().
+On Thu, 30 Jun 2022 at 19:20, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.14.286 release.
+> There are 35 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.14.286-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.14.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Lets start using it.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- drivers/devfreq/sun8i-a33-mbus.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+NOTE:
+while building arm and arm64 kernel Image the following warning noticed
+on stable rc 4.19, 4.14 and 4.9 branches.
 
-diff --git a/drivers/devfreq/sun8i-a33-mbus.c b/drivers/devfreq/sun8i-a33-mbus.c
-index 13d32213139f..0dcc13cae7d7 100644
---- a/drivers/devfreq/sun8i-a33-mbus.c
-+++ b/drivers/devfreq/sun8i-a33-mbus.c
-@@ -337,6 +337,10 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
- 	unsigned int max_state;
- 	const char *err;
- 	int i, ret;
-+	struct dev_pm_opp_config config = {
-+		.clk_names = (const char *[]){ "dram" },
-+		.clk_count = 1,
-+	};
- 
- 	variant = device_get_match_data(dev);
- 	if (!variant)
-@@ -404,9 +408,9 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
- 	priv->profile.freq_table	= priv->freq_table;
- 	priv->profile.max_state		= max_state;
- 
--	ret = devm_pm_opp_set_clkname(dev, "dram");
-+	ret = devm_pm_opp_set_config(dev, &config);
- 	if (ret) {
--		err = "failed to add OPP table\n";
-+		err = "failed to set OPP config\n";
- 		goto err_unlock_mbus;
- 	}
- 
--- 
-2.31.1.272.g89b43f80a514
+WARNING: modpost: Found 1 section mismatch(es).
 
+Build link:
+https://builds.tuxbuild.com/2BIbl6QeikBHKOcW7R8EWkanT1N/
+
+## Build
+* kernel: 4.14.286-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.14.y
+* git commit: f1dcd28ff18404d41b501785ed86299b263953d7
+* git describe: v4.14.285-36-gf1dcd28ff184
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.14.y/build/v4.14=
+.285-36-gf1dcd28ff184
+
+## Test Regressions (compared to v4.14.285)
+No test regressions found.
+
+## Metric Regressions (compared to v4.14.285)
+No metric regressions found.
+
+## Test Fixes (compared to v4.14.285)
+No test fixes found.
+
+## Metric Fixes (compared to v4.14.285)
+No metric fixes found.
+
+## Test result summary
+total: 101427, pass: 89678, fail: 203, skip: 10715, xfail: 831
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 287 total, 281 passed, 6 failed
+* arm64: 51 total, 47 passed, 4 failed
+* i386: 27 total, 23 passed, 4 failed
+* mips: 33 total, 33 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 16 total, 16 passed, 0 failed
+* s390: 12 total, 9 passed, 3 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 49 total, 47 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
