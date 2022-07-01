@@ -2,137 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E602C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057B7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233818AbiGAHCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
+        id S235233AbiGAHDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234778AbiGAHBg (ORCPT
+        with ESMTP id S235169AbiGAHDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:01:36 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589AE599D3;
-        Fri,  1 Jul 2022 00:01:35 -0700 (PDT)
-Received: from [IPV6:2a01:e0a:120:3210:2a18:eef7:517c:3467] (unknown [IPv6:2a01:e0a:120:3210:2a18:eef7:517c:3467])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9C6E6660194C;
-        Fri,  1 Jul 2022 08:01:32 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656658893;
-        bh=NTiiCjHsVzQfkW49+IKSa3lND9VprClSAoCryBqkY7g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=G0GQiXo3kDQz4wF1/cVHjADGf4/k+qqNIGKSr5xznbhyQVJmTYgEA/RwSr8naWWoX
-         IKvvneS5gwgmXm3JatggW9poKEly4OItp7c2m/iTunYcjADZ686BqOrDkThAUCMlxO
-         N5gJ09i4bg3oX8Grrkr5gdtmxAnM9/ZDuUP9Um1JYH+zNUwAb3TYRDWwEJwtWYS1z2
-         FzXBUTgrhvfVHif3NcpOMwsjWtFMPVKOrR1Mkgh2R39kt1BYRpS5HynQvRD2SK/qlN
-         ZBXTlaItprH8/yy3AyqtiYim1GlQXo1WXypgTsPprbWg4xMuyaGOmLhOFOJDwh51MH
-         Cb1ZCMBK4ZVQg==
-Message-ID: <16bb6fe6-0d95-d4d1-f7c7-f2ca61f7bdcc@collabora.com>
-Date:   Fri, 1 Jul 2022 09:01:29 +0200
+        Fri, 1 Jul 2022 03:03:01 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E4B677F4
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:02:59 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-3176b6ed923so14527707b3.11
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 00:02:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
+        b=G4+aGmI06EueqwK7C5Qo4w/41Yp3wU/CWyAMnimOU3r1x56NK0xwWd5NnQsEtkPJT1
+         j1wWR6jutsCmi+xE7hxYUqJNrQrMI+GL07X5ZYgIgqDAqQnMWhF8y5nc40xNPfhYS3jC
+         0nJhLPxfL1eyodYvq4oKHJFLeueGwA5XPbFVGoQA05bmNWxXq8PGbVqamZrTZs9J6qBh
+         1fRZx/U4bPFmJBSVu1knm/cNESUDsxYs6X7kurTJA14GFNtyIPF26073epdL9z6eSE2L
+         X78efI4BN3icU+xkSEEQMO42kPgo3k8M7uVN2JrWdQyoK9p0Z0nOVmWHNbnRgASj9y0m
+         xe+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
+        b=vhlVM8Ew5TDDfbPV7AvqYvq6QXhUYYxpxqCJ+M0SeuqbrE0+6DqERJjT8InvWqEMDb
+         AiXuOi5liEYq9EClasL5H/+ud0Nz/TXzIT/hcj7ETo4U8IPzN4Cacg3ee5v09rgSSHLn
+         usDwqV6b93foqfjDx+wvf/d0AorAbHmiPo4uZRX0GFtJwrv0MFVaMhE4whLmV9eD5Cxj
+         fqcYi+47KCYWR2R6Y86Rnr6z9EZLnpiT3V1YktsVwlq/zu9/FW6zMu8mthzfy4e9pgk5
+         pGEv6ML9ishz/lJMJ2fQ5fY1yitpdGR0StfsmjZc1Ftd0nOfOx/rwGM5mjNndRpoFI+U
+         1Mtw==
+X-Gm-Message-State: AJIora/FiPkut/3UmnEUlxnyQ7c/Yot8Ui1BQazAH0c+0O3UCfE2nXwE
+        0CEIicIeDw3mWsiEfZcuuz1/MbukPp5NXf+KeJ7wgw==
+X-Google-Smtp-Source: AGRyM1sjHYE6b1ihEm8EzVroyoytiPu2X1qfGuWU3WGWHfolVcCLEjpB4ZdcYExvwYNCmCj3ip+B1gZf6PvcXiQN0KE=
+X-Received: by 2002:a81:4896:0:b0:317:f767:95f8 with SMTP id
+ v144-20020a814896000000b00317f76795f8mr15214195ywa.218.1656658978077; Fri, 01
+ Jul 2022 00:02:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 6/7] media: hantro: imx8m: Enable 10bit decoding
-Content-Language: en-US
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     mchehab@kernel.org, hverkuil@xs4all.nl, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-References: <20220617115802.396442-1-benjamin.gaignard@collabora.com>
- <20220617115802.396442-7-benjamin.gaignard@collabora.com>
- <Yr3gDuzOXk58wTnd@eze-laptop>
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <Yr3gDuzOXk58wTnd@eze-laptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <4799738.LvFx2qVVIh@steina-w> <CAGETcx_1qa=gGT4LVkyPpcA1vFM9FzuJE+0DhL_nFyg5cbFjVg@mail.gmail.com>
+ <5265491.31r3eYUQgx@steina-w>
+In-Reply-To: <5265491.31r3eYUQgx@steina-w>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Fri, 1 Jul 2022 00:02:22 -0700
+Message-ID: <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
+Subject: Re: (EXT) Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jun 30, 2022 at 11:02 PM Alexander Stein
+<alexander.stein@ew.tq-group.com> wrote:
+>
+> Hi Saravana,
+>
+> Am Freitag, 1. Juli 2022, 02:37:14 CEST schrieb Saravana Kannan:
+> > On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
+> >
+> > <alexander.stein@ew.tq-group.com> wrote:
+> > > Hi,
+> > >
+> > > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
+> > > > Hi,
+> > > >
+> > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
+> > > > > Now that fw_devlink=on by default and fw_devlink supports
+> > > > > "power-domains" property, the execution will never get to the point
+> > > > > where driver_deferred_probe_check_state() is called before the
+> > > > > supplier
+> > > > > has probed successfully or before deferred probe timeout has expired.
+> > > > >
+> > > > > So, delete the call and replace it with -ENODEV.
+> > > >
+> > > > Looks like this causes omaps to not boot in Linux next. With this
+> > > > simple-pm-bus fails to probe initially as the power-domain is not
+> > > > yet available. On platform_probe() genpd_get_from_provider() returns
+> > > > -ENOENT.
+> > > >
+> > > > Seems like other stuff is potentially broken too, any ideas on
+> > > > how to fix this?
+> > >
+> > > I think I'm hit by this as well, although I do not get a lockup.
+> > > In my case I'm using
+> > > arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts and probing of
+> > > 38320000.blk-ctrl fails as the power-domain is not (yet) registed.
+> >
+> > Ok, took a look.
+> >
+> > The problem is that there are two drivers for the same device and they
+> > both initialize this device.
+> >
+> >     gpc: gpc@303a0000 {
+> >         compatible = "fsl,imx8mq-gpc";
+> >     }
+> >
+> > $ git grep -l "fsl,imx7d-gpc" -- drivers/
+> > drivers/irqchip/irq-imx-gpcv2.c
+> > drivers/soc/imx/gpcv2.c
+> >
+> > IMHO, this is a bad/broken design.
+> >
+> > So what's happening is that fw_devlink will block the probe of
+> > 38320000.blk-ctrl until 303a0000.gpc is initialized. And it stops
+> > blocking the probe of 38320000.blk-ctrl as soon as the first driver
+> > initializes the device. In this case, it's the irqchip driver.
+> >
+> > I'd recommend combining these drivers into one. Something like the
+> > patch I'm attaching (sorry for the attachment, copy-paste is mangling
+> > the tabs). Can you give it a shot please?
+>
+> I tried this patch and it delayed the driver initialization (those of UART as
+> well BTW). Unfortunately the driver fails the same way:
 
-Le 30/06/2022 à 19:40, Ezequiel Garcia a écrit :
-> Hi Benjamin,
->
-> On Fri, Jun 17, 2022 at 01:58:01PM +0200, Benjamin Gaignard wrote:
->> Expose 10bit pixel formats to enable 10bit decoding in IMX8M SoCs.
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> Looks good to me.
->
-> Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
->
-> Have you checked Fluster tests passess using both P010 and P010_4L4?
-> It would be good to double-check.
+Thanks for testing the patch!
 
-It isn't possible to check P010_4L4 with fluster because GStreamer
-videoconvert element doesn't support this format.
-
-Regards,
-Benjamin
-
+> > [    1.125253] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed to
+> attach power domain "bus"
 >
-> Thanks a lot,
-> Ezequiel
->
->> ---
->>   drivers/staging/media/hantro/imx8m_vpu_hw.c | 27 +++++++++++++++++++++
->>   1 file changed, 27 insertions(+)
->>
->> diff --git a/drivers/staging/media/hantro/imx8m_vpu_hw.c b/drivers/staging/media/hantro/imx8m_vpu_hw.c
->> index 77f574fdfa77..b390228fd3b4 100644
->> --- a/drivers/staging/media/hantro/imx8m_vpu_hw.c
->> +++ b/drivers/staging/media/hantro/imx8m_vpu_hw.c
->> @@ -162,12 +162,39 @@ static const struct hantro_fmt imx8m_vpu_g2_postproc_fmts[] = {
->>   			.step_height = MB_DIM,
->>   		},
->>   	},
->> +	{
->> +		.fourcc = V4L2_PIX_FMT_P010,
->> +		.codec_mode = HANTRO_MODE_NONE,
->> +		.postprocessed = true,
->> +		.frmsize = {
->> +			.min_width = FMT_MIN_WIDTH,
->> +			.max_width = FMT_UHD_WIDTH,
->> +			.step_width = MB_DIM,
->> +			.min_height = FMT_MIN_HEIGHT,
->> +			.max_height = FMT_UHD_HEIGHT,
->> +			.step_height = MB_DIM,
->> +		},
->> +	},
->>   };
->>   
->>   static const struct hantro_fmt imx8m_vpu_g2_dec_fmts[] = {
->>   	{
->>   		.fourcc = V4L2_PIX_FMT_NV12_4L4,
->>   		.codec_mode = HANTRO_MODE_NONE,
->> +		.match_depth = true,
->> +		.frmsize = {
->> +			.min_width = FMT_MIN_WIDTH,
->> +			.max_width = FMT_UHD_WIDTH,
->> +			.step_width = TILE_MB_DIM,
->> +			.min_height = FMT_MIN_HEIGHT,
->> +			.max_height = FMT_UHD_HEIGHT,
->> +			.step_height = TILE_MB_DIM,
->> +		},
->> +	},
->> +	{
->> +		.fourcc = V4L2_PIX_FMT_P010_4L4,
->> +		.codec_mode = HANTRO_MODE_NONE,
->> +		.match_depth = true,
->>   		.frmsize = {
->>   			.min_width = FMT_MIN_WIDTH,
->>   			.max_width = FMT_UHD_WIDTH,
->> -- 
->> 2.32.0
->>
+> More than that it even introduced some more errors:
+> > [    0.008160] irq: no irq domain found for gpc@303a0000 !
+
+So the idea behind my change was that as long as the irqchip isn't the
+root of the irqdomain (might be using the terms incorrectly) like the
+gic, you can make it a platform driver. And I was trying to hack up a
+patch that's the equivalent of platform_irqchip_probe() (which just
+ends up eventually calling the callback you use in IRQCHIP_DECLARE().
+I probably made some mistake in the quick hack that I'm sure if
+fixable.
+
+> > [    0.013251] Failed to map interrupt for
+> > /soc@0/bus@30400000/timer@306a0000
+
+However, this timer driver also uses TIMER_OF_DECLARE() which can't
+handle failure to get the IRQ (because it's can't -EPROBE_DEFER). So,
+this means, the timer driver inturn needs to be converted to a
+platform driver if it's supposed to work with the IRQCHIP_DECLARE()
+being converted to a platform driver.
+
+But that's a can of worms not worth opening. But then I remembered
+this simpler workaround will work and it is pretty much a variant of
+the workaround that's already in the gpc's irqchip driver to allow two
+drivers to probe the same device (people really should stop doing
+that).
+
+Can you drop my previous hack patch and try this instead please? I'm
+99% sure this will work.
+
+diff --git a/drivers/irqchip/irq-imx-gpcv2.c b/drivers/irqchip/irq-imx-gpcv2.c
+index b9c22f764b4d..8a0e82067924 100644
+--- a/drivers/irqchip/irq-imx-gpcv2.c
++++ b/drivers/irqchip/irq-imx-gpcv2.c
+@@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
+device_node *node,
+         * later the GPC power domain driver will not be skipped.
+         */
+        of_node_clear_flag(node, OF_POPULATED);
++       fwnode_dev_initialized(domain->fwnode, false);
+        return 0;
+ }
+
+-Saravana
