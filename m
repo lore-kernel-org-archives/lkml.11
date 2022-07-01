@@ -2,100 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A5CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5525C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235774AbiGANB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S234005AbiGANCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234005AbiGANBw (ORCPT
+        with ESMTP id S235533AbiGANCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:01:52 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB7D43AE0
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 06:01:51 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o7GHF-0002ni-LQ; Fri, 01 Jul 2022 15:01:41 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o7GH7-003mvK-2Z; Fri, 01 Jul 2022 15:01:36 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o7GH9-002Jzq-VC; Fri, 01 Jul 2022 15:01:35 +0200
-Date:   Fri, 1 Jul 2022 15:01:33 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Nikita Travkin <nikita@trvn.ru>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
-        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
-        masneyb@onstation.org, sean.anderson@seco.com,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v7 1/2] dt-bindings: pwm: Document clk based PWM
- controller
-Message-ID: <20220701130133.st7zaw4ta4v42fiy@pengutronix.de>
-References: <20220612132203.290726-1-nikita@trvn.ru>
- <20220612132203.290726-2-nikita@trvn.ru>
+        Fri, 1 Jul 2022 09:02:03 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DEE43387;
+        Fri,  1 Jul 2022 06:02:02 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id e2so2898982edv.3;
+        Fri, 01 Jul 2022 06:02:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1/RLqkH8Gd0Y17rScmMrfXLRf9OzTmbqFRPX8nmyzuA=;
+        b=luGyxVgoK+t0xvpm3ZJjCmKsS9gEIo4fTHpOVaGC80a7+mfiYY22Ywvf4YT83xkAqy
+         bZwwMWzZ4hdATnJLr1mOb/K9cLWFXLGzAENqhSBcaHqNnU7/ic9HmnLqTEvE2DyfyN63
+         eZ3zNmqzkBbNtV0tKoFjGk1joj2FOKgCJAPz1pHDhoLS9EAmkgHkBsCAhQYd3gDXUoGV
+         6qypRMHY9DFml9QGokcmAthJtms762KUev0q3dduKetWFUb3dFcxMZRJjPzOGIr7tPmM
+         373dSijI02YyGvAdz5JyyWC9QRIp3xhI7cSzvH5JTk463e03Oozk3FXCZu+8AKkUM7wr
+         qdFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1/RLqkH8Gd0Y17rScmMrfXLRf9OzTmbqFRPX8nmyzuA=;
+        b=1es45V/kgqRPiR88RrYC5Kh1zgZHcC5/qUH5kXMVaIqgjoGFrDDyYPzXJ2J3eWQmpf
+         JC7wG2oYzukkhZGTunO8CMSsXZ9fiSAsxRjwA/Y2mtzSYvk2HEDrgjhm+zN5qK7kjdco
+         zphemRVbTZm253NJGn5yCfmF4EeP+Nb8HLA1ztu4Rt5a8WydHuYqOms0KQ4pBhKQ9gY4
+         R6DSqQnPA+yPyOJA8Txmf9eWiZPEfUr9z0VdDs+bnkBJlHtMjtRBsvGnpzdglb19/0Kh
+         hEdm6gOaa7SRh1IUBy7Q/WxgLjkXPxXnN8j+7HLx+YhkeuBLmiTtw+71Ekax4Oe1SvoT
+         ebLQ==
+X-Gm-Message-State: AJIora953OIvHoShNa4OMIh459gebygP14aEOwlqB3hpl3+nyaV1bRcm
+        HbVubL0ntojzjldYcMrQfHU=
+X-Google-Smtp-Source: AGRyM1ve3ssj0zHA/aFx1Kbpy5BLIj9UvR4MWMCzzTaVBQH0tcZ3PrUN92An2Suw/7Qhi8jWoWIQiA==
+X-Received: by 2002:a05:6402:371:b0:439:641d:f104 with SMTP id s17-20020a056402037100b00439641df104mr8671800edw.131.1656680520118;
+        Fri, 01 Jul 2022 06:02:00 -0700 (PDT)
+Received: from skbuf ([188.25.161.207])
+        by smtp.gmail.com with ESMTPSA id 24-20020a170906329800b00722f2a0944fsm2601361ejw.107.2022.07.01.06.01.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 06:01:58 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 16:01:57 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     hauke@hauke-m.de, netdev@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net v1] net: dsa: lantiq_gswip: Fix FDB add/remove on the
+ CPU port
+Message-ID: <20220701130157.bwepfw2oeco6teyv@skbuf>
+References: <20220630212703.3280485-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kgghnss7vxtqvlnc"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220612132203.290726-2-nikita@trvn.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220630212703.3280485-1-martin.blumenstingl@googlemail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Martin,
 
---kgghnss7vxtqvlnc
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Thu, Jun 30, 2022 at 11:27:03PM +0200, Martin Blumenstingl wrote:
+> There's no bridge available when adding or removing a static FDB entry
+> for (towards) the CPU port. This is intentional because the CPU port is
+> always considered standalone, even if technically for the GSWIP driver
+> it's part of every bridge.
+> 
+> Handling FDB add/remove on the CPU port fixes the following message
+> during boot in OpenWrt:
+>   port 4 failed to add <LAN MAC address> vid 1 to fdb: -22
+> as well as the following message during system shutdown:
+>   port 4 failed to delete <LAN MAC address> vid 1 from fdb: -22
+> 
+> Use FID 0 (which is also the "default" FID) when adding/removing an FDB
+> entry for the CPU port.
 
-Hello,
+What does "default" FID even mean, and why is the default FID relevant?
 
-[fixing the address of the devicetree list]
+> Testing with a BT Home Hub 5A shows that this "default" FID works as
+> expected:
+> - traffic from/to LAN (ports in a bridge) is not seen on the WAN port
+>   (standalone port)
 
-On Sun, Jun 12, 2022 at 06:22:02PM +0500, Nikita Travkin wrote:
-> Add YAML devicetree binding for clk based PWM controller
->=20
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Why is this fact relevant to the change in any way? By saying that the
+FID of FDB entries installed towards the CPU doesn't affect the
+forwarding isolation between a bridged and a standalone port, you're
+effectively only saying that you're silencing a warning and you're not
+doing any harm. But you aren't explaining how the commit is doing any
+good, either (hint: it isn't).
 
-I'm discarding this patch from the PWM patchwork as I expect it to be
-resent when the review comments for patch 2 are addressed.
+> - traffic from/to the WAN port (standalone port) is not seen on the LAN
+>   (ports in a bridge) ports
 
-Best regards
-Uwe
+Same
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+> - traffic from/to LAN is not seen on another LAN port with a different
+>   VLAN
 
---kgghnss7vxtqvlnc
-Content-Type: application/pgp-signature; name="signature.asc"
+Same
 
------BEGIN PGP SIGNATURE-----
+> - traffic from/to one LAN port to another is still seen
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmK+8CoACgkQwfwUeK3K
-7AmtdQf9E3zHemlvY2NEH8un1rijwUybR8QZ7J7kEdj4B4ATuXYPwq+N2B+O1MVt
-x7q9zbTSLLUFTf+2gM7hxTNdkH+82upf4SaYNncMDcgZyDZMCGBZuvS8lvB9pHxz
-rFlB0iDQIfkIT3tTLf1dM+7ZQv+hsP+GV7mstsv8R5ifjGXvihilS2RP1fu8h9mV
-/Qi0gIzikwqfGd/5CewNv4XzWvkGiYsdVUchoOUmdk7oCvg4i41K9Um3Pp6JGkcW
-A6JSRXCfiawikKUOYda/3BjeynG65HVW+rq/Wy+JEBUKpc0rTmYUbR4Wcy5nZcof
-c75IRUFjARv5BWkAfjYqMMyAcCS5ZQ==
-=zTYG
------END PGP SIGNATURE-----
+Same
 
---kgghnss7vxtqvlnc--
+> 
+> Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
+
+I guess you don't understand the problem. That commit can't be wrong,
+since it dates from v5.2, but DSA only started calling port_fdb_add() on
+a CPU port at all since commit
+d5f19486cee7 ("net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign bridge neighbors") (v5.12)
+- and technically, that was opt-in, and the technique only started to become more widespread with commits
+81a619f78759 ("net: dsa: include fdb entries pointing to bridge in the host fdb list"),
+10fae4ac89ce ("net: dsa: include bridge addresses which are local in the host fdb list") and
+3068d466a67e ("net: dsa: sync static FDB entries on foreign interfaces to hardware")
+(all appeared in v5.14).
+Also, the most recent application of the "port_fdb_add() on CPU ports" technique was introduced in commit
+5e8a1e03aa4d ("net: dsa: install secondary unicast and multicast addresses as host FDB/MDB")
+(v5.18). But that is also more or less opt-in, since the driver needs to
+declare support for FDB isolation to make use of it.
+
+> Cc: stable@vger.kernel.org
+
+We don't CC stable for patches that go through the "net" tree, the
+networking maintainers send weekly pull requests and the patches get
+automatically backported from there to the relevant and still-not-EOL
+stable branches, based on the Fixes: tag. That's why it's important that
+you fill that in correctly.
+
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+> This patch is "minimalistic" on purpose: the goal is to have it
+> backported to Linux 5.15. Linux 5.15 doesn't have dsa_fdb_present_in_other_db()
+> or struct dsa_db yet. Once this patch has been accepted I will work on
+> implementing FDB isolation for the Lantiq GSWIP driver.
+
+Don't you want to go the other way around, first understand what is the
+real problem, its impact and the correct solution, then figure out what
+and how can be backported, and _where_?
+
+I'm willing to help.
+
+First it should be understood why DSA bothers to install FDB entries on
+the CPU port in the first place. It does so because there is a largeish
+class of switches where the MAC source addresses of traffic originating
+from Linux are not learned by the hardware. As such, packets being targeted
+_towards_ Linux interfaces will not find an entry in the FDB, and will
+be flooded. This can be seen if you have a system with swp0 and swp1
+both under br0, and the station attached to swp0 pings br0. The ICMP
+requests will also be visible by the station attached to swp1.
+
+It's hard to say whether this is the case or not for gswip, but this has
+been going on for years and years. Not really a functional (connectivity)
+problem, but nonetheless undesirable.
+
+Recently (5.12-5.14), DSA started to address the problem by accepting
+the fact that MAC SA learning won't necessarily take place for packets
+xmitted by Linux, and just populating the FDB by itself on the CPU port.
+
+At first, FDB isolation and the concept of FIDs was not very well understood,
+so DSA would simply pass on the bridge local FDB entries to port_fdb_add()
+with little concern as to which bridge actually offloaded those addresses.
+The particular driver implementation of mv88e6xxx may have shaped that
+decision in large part, because
+(a) if the FDB entry had a non-zero VID, that VID could be uniquely
+    traced back to a FID, since that driver does not allow the same VID
+    to be added to more than 1 VLAN-aware bridge
+(b) if the FDB entry had a VID of 0 (aka the entry is supposed to match
+    only on MAC DA, for when the port is VLAN-unaware), the driver did
+    not have FDB isolation (different FIDs) between one VLAN-unaware
+    bridge and another VLAN-unaware bridge. Just one FID for standalone
+    and VLAN-unaware bridge ports, and one FID per bridge VLAN.
+
+Yet, the above was incorrect because it ironically did not consider
+drivers such as the gswip which have FDB isolation implemented, but not
+exposed to the DSA core, because the DSA core doesn't understand FDB
+isolation.
+
+From my reading of the gswip driver, it allocates a "single port bridge"
+for each standalone port (effectively a VLAN which contains only port X
+and the CPU port, with VID=0 and FID=X+1). It also allocates one FID for
+each VLAN-unaware bridge, and one FID for each bridge VLAN. In other
+words, what more could you want.
+
+My understanding of the "if (!bridge) return -EINVAL" code that you're
+deleting is this: the gswip driver needs to map the FDB entry to a FID
+(simply put, it's asking: "On which packets should the FDB entry match?
+Having which VLAN, and coming from which ports?"), yet the DSA core
+simply isn't providing enough information.
+
+You're deleting that, and saying: FID 0.
+
+FID 0, what?
+
+I'm not at all clear on how (if at all) is FID 0 used by this driver.
+The "single port bridges" use a FID in range 1 to max_ports (port + 1),
+whereas gswip_vlan_active_create() allocates a fid in range max_ports to
+ARRAY_SIZE(priv->vlans). Neither of those is 0.
+
+So while you may program FDB entries in FID 0, they will probably not
+match any packet. So packets would still be flooded as before.
+So what you're doing
+(a) is useless
+(b) consumes FDB space for nothing
+
+So I consider that introducing host FDB entries without some gating
+condition was a mistake. We thought we could wing it and mass-migrate a
+bunch of drivers to include new functionality, and now we can't probably
+fix that up, since some would probably perceive it as being a
+regression.
+
+Yet, in a strange way, it appears that it isn't the development of new
+core features that draws people's attention, but the harmless kernel log
+error messages. So in a way, I don't feel so bad that now I have your
+attention?
+
+In any case, I recommend you to first set up a test bench where you
+actually see a difference between packets being flooded to the CPU vs
+matching an FDB entry targeting it. Then read up a bit what the provided
+dsa_db argument wants from port_fdb_add(). This conversation with Alvin
+should explain a few things.
+https://patchwork.kernel.org/project/netdevbpf/cover/20220302191417.1288145-1-vladimir.oltean@nxp.com/#24763870
+
+Then have a patch (set) lifting the "return -EINVAL" from gswip *properly*.
+And only then do we get to ask the questions "how bad are things for
+linux-5.18.y? how bad are they for linux-5.15.y? what do we need to do?".
+
+> Hauke, I hope I considered all test-cases which you find relevant. If not
+> then please let me know.
+> 
+> 
+>  drivers/net/dsa/lantiq_gswip.c | 29 ++++++++++++++++++-----------
+>  1 file changed, 18 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+> index e531b93f3cb2..9dab28903af0 100644
+> --- a/drivers/net/dsa/lantiq_gswip.c
+> +++ b/drivers/net/dsa/lantiq_gswip.c
+> @@ -1365,19 +1365,26 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
+>  	int i;
+>  	int err;
+>  
+> -	if (!bridge)
+> -		return -EINVAL;
+> -
+> -	for (i = max_ports; i < ARRAY_SIZE(priv->vlans); i++) {
+> -		if (priv->vlans[i].bridge == bridge) {
+> -			fid = priv->vlans[i].fid;
+> -			break;
+> +	if (bridge) {
+> +		for (i = max_ports; i < ARRAY_SIZE(priv->vlans); i++) {
+> +			if (priv->vlans[i].bridge == bridge) {
+> +				fid = priv->vlans[i].fid;
+> +				break;
+> +			}
+>  		}
+> -	}
+>  
+> -	if (fid == -1) {
+> -		dev_err(priv->dev, "Port not part of a bridge\n");
+> -		return -EINVAL;
+> +		if (fid == -1) {
+> +			dev_err(priv->dev, "Port not part of a bridge\n");
+> +			return -EINVAL;
+> +		}
+> +	} else if (dsa_is_cpu_port(ds, port)) {
+> +		/* Use FID 0 which is the "default" and used as fallback. This
+> +		 * is not used by any standalone port or a bridge, so we can
+> +		 * safely use it for the CPU port.
+> +		 */
+> +		fid = 0;
+> +	} else {
+> +		return -EOPNOTSUPP;
+>  	}
+>  
+>  	mac_bridge.table = GSWIP_TABLE_MAC_BRIDGE;
+> -- 
+> 2.37.0
+> 
+
