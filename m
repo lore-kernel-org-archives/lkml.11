@@ -2,100 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2D9CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69585C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234188AbiGAE3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 00:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
+        id S234274AbiGAE3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 00:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiGAE3A (ORCPT
+        with ESMTP id S229549AbiGAE3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 00:29:00 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8373D58FDD;
-        Thu, 30 Jun 2022 21:28:58 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id cf14so1420450edb.8;
-        Thu, 30 Jun 2022 21:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0O4/oNbZ3YRoOmSuse2orABsjwO93HDgN0c9nygzXkg=;
-        b=fx0uLrcSQjZTXvB8Hu09bD0L2czFcKCI1dhTczw2jK//jpIFIOw9zrjIG4Ekl3fDyg
-         tsL8YBSJEeTLOHoKvqu6m5E9DdNlfBVoib6TBMnFAuEkdc0ENq0Ck0NCfnRxRx9gcO+1
-         JIikryE5KvK84hE00FXdGwLWDJnGlYaLICN4vG/07bBvYxRtLZyd25f66gXGxII9SsT/
-         tPNEW6OaaL/Uf+g90g1mikLHkU/VrZWyynVW3ixRiqJHU+rHkNJudhFH5/f+R98yWVFx
-         5uKDF7R4AiXRhjZUajMN47RNbeXi1tmNgV1d6/2ym28LeZU9IUm11P61VEfKzbTLhCoo
-         XfAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0O4/oNbZ3YRoOmSuse2orABsjwO93HDgN0c9nygzXkg=;
-        b=luBelySV2JtcU3G2lnCzkwozJkZhdgsOvZ+Sb660zSroeTahSSdmbbNRQLFJTlus70
-         0MhEd8pWWhRBRg01eTeoctNkVL6JmW9giJtqRF+IbiisG7zDQs4boqlPUBrfY32MmbF5
-         2zAghRcgnDbMG+ZrYIEWK/BR1DcjqD0NoubWV0IQ8rs+R0Jx88CA0lSJ7OqGm/pphow7
-         OMvz6nqdxiaaW54nbwpXbu3GlMPCGY0a/sV1FLILx2kj2Sq1pFmD8OBhpjv2A+nLxOQO
-         Ihgep8Vo2pwywkd9sIdlZ8ZCEVlDfKotuHwEeIsbMgpNmnG+s+jlySuxmyKKP/pSR+N+
-         QuJQ==
-X-Gm-Message-State: AJIora+VmHBZS+wf9xJVotik/KtK/FXRuAKprCBolhmvjhoepXo4SkmF
-        vTSq+UVQHgn4yXuea66jSaw=
-X-Google-Smtp-Source: AGRyM1veiW2EfEXKBX9p8FXLTR5ucjbaZny9cnQElotgkUzW71FChR9E1mXGinabKbKZoVmPsdt4gA==
-X-Received: by 2002:a05:6402:524d:b0:437:8d2e:c675 with SMTP id t13-20020a056402524d00b004378d2ec675mr16771826edd.65.1656649737098;
-        Thu, 30 Jun 2022 21:28:57 -0700 (PDT)
-Received: from felia.fritz.box (200116b826fa4e008c7f8ad93cf12391.dip.versatel-1u1.de. [2001:16b8:26fa:4e00:8c7f:8ad9:3cf1:2391])
-        by smtp.gmail.com with ESMTPSA id b27-20020a17090630db00b0072a72b0fe72sm1130850ejb.111.2022.06.30.21.28.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 21:28:56 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
-Date:   Fri,  1 Jul 2022 06:28:10 +0200
-Message-Id: <20220701042810.26362-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 1 Jul 2022 00:29:44 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D053F58FDF;
+        Thu, 30 Jun 2022 21:29:43 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOqn076480;
+        Thu, 30 Jun 2022 23:29:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1656649764;
+        bh=RdWieFXSTVSF5qpoNseA6pN2AYbEbvotaPg5KZk9hEw=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=wFa7Tue+fvIhHUqukRJER25jpeTRJeeOyU2z9cY/m6mLtnXl5fexl+LqjJS75c7ZO
+         Ie4nJrxc42NSwAzw1spKqYLOjR7dXDfsFXpR6EYTksMsmNEIRnqdaJDc5GKReSckAo
+         BoE+HyBP8dyHmKdJIeCgFxVMK3WCbbkbFAoqlbVI=
+Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2614TOSK022508
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 30 Jun 2022 23:29:24 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 30
+ Jun 2022 23:29:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 30 Jun 2022 23:29:24 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2614TO22062987;
+        Thu, 30 Jun 2022 23:29:24 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>
+CC:     Nishanth Menon <nm@ti.com>, Florian Eckert <fe@dev.tdt.de>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: [PATCH 1/2] dt-bindings: iio: adc: ti,adc128s052: Add adc08c and adc10c family
+Date:   Thu, 30 Jun 2022 23:29:18 -0500
+Message-ID: <20220701042919.18180-2-nm@ti.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220701042919.18180-1-nm@ti.com>
+References: <20220701042919.18180-1-nm@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
-files tools/{lib => testing/selftests}/bpf/xsk.[ch], but misses to adjust
-the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
+The adcxx4s communicates with a host processor via an SPI/Microwire Bus
+interface. The device family responds with 12bit data, of which the LSB
+bits are 0 for the lower resolution devices. I have been able to test
+adc102s051, hence adding just the missing ones in that family.
 
-Adjust the file entry after this file movement.
+Lets reuse the binding to support the family of devices with name
+ADC<bb><c>S<sss>, where
+* bb is the resolution in number of bits (8, 10, 12)
+* c is the number of channels (1, 2, 4, 8)
+* sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
+  and 101 for 1 MSPS)
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Complete datasheets are available at TI's website here:
+  https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
+
+Handling of 8, 10 and 12 bits converters are the same, the
+unavailable bits are 0 in LSB :)
+
+Inspired-by: drivers/hwmon/adcxx.c
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
-Andrii, please ack.
 
-Alexei, please pick this minor non-urgent clean-up on top of the commit above.
+Checkpatch does complain with Inspired-by: insisting it to be an email
+address.. but I was really inspired by the hwmon driver.. Don't know
+what else to say here.. we could probably drop it?
 
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/iio/adc/ti,adc128s052.yaml          | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fa4bfa3d10bf..27d9e65b9a85 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -22042,7 +22042,7 @@ F:	include/uapi/linux/xdp_diag.h
- F:	include/net/netns/xdp.h
- F:	net/xdp/
- F:	samples/bpf/xdpsock*
--F:	tools/lib/bpf/xsk*
-+F:	tools/testing/selftests/bpf/xsk*
- 
- XEN BLOCK SUBSYSTEM
- M:	Roger Pau Monné <roger.pau@citrix.com>
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,adc128s052.yaml b/Documentation/devicetree/bindings/iio/adc/ti,adc128s052.yaml
+index d54a0183f024..85adf53c83c1 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,adc128s052.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,adc128s052.yaml
+@@ -16,6 +16,12 @@ description: |
+ properties:
+   compatible:
+     enum:
++      - ti,adc082s021
++      - ti,adc082s051
++      - ti,adc082s101
++      - ti,adc102s021
++      - ti,adc102s051
++      - ti,adc102s101
+       - ti,adc122s021
+       - ti,adc122s051
+       - ti,adc122s101
 -- 
-2.17.1
+2.31.1
 
