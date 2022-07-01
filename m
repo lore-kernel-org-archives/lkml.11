@@ -2,989 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D12C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 00:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 022F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 00:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231546AbiGAAlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 20:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41872 "EHLO
+        id S231566AbiGAAnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 20:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiGAAlJ (ORCPT
+        with ESMTP id S229868AbiGAAnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 20:41:09 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413181AF2A;
-        Thu, 30 Jun 2022 17:41:01 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LYxFh1HF1z4xD0;
-        Fri,  1 Jul 2022 10:40:55 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1656636056;
-        bh=Bn/f6/vuecr65Ku1Shmz63cOGi2zyB7CkNJ9wIK3pRs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=EsfgxMMqXdOpl52U8nobcJLh82NKfhxJPfySpt9dmm6sEG+CG+AwwHpy0T6mpdOS3
-         UYwaNWeTQwt7Ccbatzeoy/qEZaa4uhNfLxmA28UFNFtL3mc6p1ABM4iLHkcWxtGdTx
-         NFSOHOr3mUPmuotMmi7JIvgdriThHSDAuOck/yka/OKaqAhrkiTyKZS1ksXbZkdNaQ
-         eKiwOqevKOo1l3/g/c/K+nq0WYu+EHLxwVfdH9joqzDYJOx5Zs79QGw3Sd6Z92aG4b
-         brRxqiEClff2C2UuW7ZFTq4+vVumD6du+iOO7vL0R1h4c+9m5CQPArPsOxne7gBj78
-         XE9zmE1zz/Qgw==
-Date:   Fri, 1 Jul 2022 10:36:34 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Cristian Marussi <cristian.marussi@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the scmi tree
-Message-ID: <20220701103634.16114ec4@canb.auug.org.au>
+        Thu, 30 Jun 2022 20:43:19 -0400
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C36270A
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 17:43:12 -0700 (PDT)
+Received: from [127.0.0.1] ([73.223.250.219])
+        (authenticated bits=0)
+        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 2610gQt53726835
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Thu, 30 Jun 2022 17:42:27 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 2610gQt53726835
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2022060401; t=1656636148;
+        bh=Fvvdz6Xn8mA7CdAdsJcHxFqtcVFfnY0q+Q5e1QN+RKw=;
+        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+        b=ge00sOFNTXBfXm/37UJKqs0erUzdsvLKa8Y4kqebwyx0dv0guRwIF+coc+C/xk8cL
+         Tc+WZDfRevS3gm/ZAiF+L7Fk+j+j7Lh1EQQbF1z4t3NH9VWaH5EYm54k7byaKxTrMt
+         VK+Ts9DsdOmZe9w8XTafBqtn/WuxI1mk274UdbY3uKjYLE26uw9vVi1KCVIiIwt5So
+         E/ef4JUntkJ25MdS3mKx1WlHZeteO/dImHIhA6/dyQtgcM5JeEk3oF1sfcSSOoExMR
+         tCs2TRiSqNhk2Wt/deHaetr2lGto0jHySVeRmjxTHYfGqAw/MZQRu71JXLCir7iLLP
+         sBZgAMelgiSdg==
+Date:   Thu, 30 Jun 2022 17:42:24 -0700
+From:   "H. Peter Anvin" <hpa@zytor.com>
+To:     Vasily Averin <vvs@openvz.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org
+CC:     kernel@openvz.org, linux-kernel@vger.kernel.org,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        steve.sipes@comandsolutions.com
+Subject: Re: [PATCH] x86/fault: ignore RSVD flag in error code if P flag is 0
+User-Agent: K-9 Mail for Android
+In-Reply-To: <85bd8614-9a55-3113-e5a8-b7e73f636135@openvz.org>
+References: <9bc8de5f-fd80-57fe-0169-0ec942638299@openvz.org> <85bd8614-9a55-3113-e5a8-b7e73f636135@openvz.org>
+Message-ID: <AA872C07-ED54-4497-8255-F67F40EB8179@zytor.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/dNQ9SFw=eeGPgmqQ4xV8/A0";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/dNQ9SFw=eeGPgmqQ4xV8/A0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On June 29, 2022 10:58:36 PM PDT, Vasily Averin <vvs@openvz=2Eorg> wrote:
+>Some older Intel CPUs have errata:
+>"Not-Present Page Faults May Set the RSVD Flag in the Error Code
+>
+>Problem:
+>An attempt to access a page that is not marked present causes a page
+>fault=2E Such a page fault delivers an error code in which both the
+>P flag (bit 0) and the RSVD flag (bit 3) are 0=2E Due to this erratum,
+>not-present page faults may deliver an error code in which the P flag
+>is 0 but the RSVD flag is 1=2E
+>
+>Implication:
+>Software may erroneously infer that a page fault was due to a
+>reserved-bit violation when it was actually due to an attempt
+>to access a not-present page=2E
+>
+>Workaround: Page-fault handlers should ignore the RSVD flag in the error
+>code if the P flag is 0=2E"
+>
+>This issues was observed on several nodes crashed with messages
+>httpd: Corrupted page table at address 7f62d5b48e68
+>PGD 80000002e92bf067 PUD 1c99c5067 PMD 195015067 PTE 7fffffffb78b680
+>Bad pagetable: 000c [#1] SMP
+>
+>Let's follow the recommendation and will ignore the RSVD flag in the
+>error code if the P flag is 0
+>
+>Link: https://lore=2Ekernel=2Eorg/all/aae9c7c6-989c-0261-470a-252537493b5=
+3@openvz=2Eorg
+>Signed-off-by: Vasily Averin <vvs@openvz=2Eorg>
+>---
+> arch/x86/mm/fault=2Ec | 9 +++++++++
+> 1 file changed, 9 insertions(+)
+>
+>diff --git a/arch/x86/mm/fault=2Ec b/arch/x86/mm/fault=2Ec
+>index fe10c6d76bac=2E=2Effc6d6bd2a22 100644
+>--- a/arch/x86/mm/fault=2Ec
+>+++ b/arch/x86/mm/fault=2Ec
+>@@ -1481,6 +1481,15 @@ handle_page_fault(struct pt_regs *regs, unsigned l=
+ong error_code,
+> 	if (unlikely(kmmio_fault(regs, address)))
+> 		return;
+>=20
+>+	/*
+>+	 * Some older Intel CPUs have errata
+>+	 * "Not-Present Page Faults May Set the RSVD Flag in the Error Code"
+>+	 * It is recommended to ignore the RSVD flag (bit 3) in the error code
+>+	 * if the P flag (bit 0) is 0=2E
+>+	 */
+>+	if (unlikely((error_code & X86_PF_RSVD) && !(error_code & X86_PF_PROT))=
+)
+>+		error_code &=3D ~X86_PF_RSVD;
+>+
+> 	/* Was the fault on kernel-controlled part of the address space? */
+> 	if (unlikely(fault_in_kernel_space(address))) {
+> 		do_kern_addr_fault(regs, error_code, address);
 
-Hi all,
-
-After merging the scmi tree, today's linux-next build (arm
-multi_v7_defconfig) failed like this:
-
-In file included from <command-line>:
-drivers/firmware/arm_scmi/powercap.c: In function 'scmi_powercap_measuremen=
-ts_threshold_set':
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:65:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   65 |                 BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),     =
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:65:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   65 |                 BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),     =
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:67:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   67 |                 BUILD_BUG_ON_MSG((_mask) =3D=3D 0, _pfx "mask is ze=
-ro");    \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:67:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   67 |                 BUILD_BUG_ON_MSG((_mask) =3D=3D 0, _pfx "mask is ze=
-ro");    \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?      =
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?      =
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?      =
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:69:47: note: in expansion of macro '__bf_shf'
-   69 |                                  ~((_mask) >> __bf_shf(_mask)) & (_=
-val) : 0, \
-      |                                               ^~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?      =
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:69:47: note: in expansion of macro '__bf_shf'
-   69 |                                  ~((_mask) >> __bf_shf(_mask)) & (_=
-val) : 0, \
-      |                                               ^~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:71:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >=
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:71:34: note: in expansion of macro '__bf_cast_unsi=
-gned'
-   71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >=
-     \
-      |                                  ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:71:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >=
-     \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:71:34: note: in expansion of macro '__bf_cast_unsi=
-gned'
-   71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >=
-     \
-      |                                  ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-   75 |                                               (1ULL << __bf_shf(_ma=
-sk))); \
-      |                                                        ^~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-   75 |                                               (1ULL << __bf_shf(_ma=
-sk))); \
-      |                                                        ^~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-   75 |                                               (1ULL << __bf_shf(_ma=
-sk))); \
-      |                                                        ^~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/compiler_types.h:332:23: note: in definition of macro '__comp=
-iletime_assert'
-  332 |                 if (!(condition))                                  =
-     \
-      |                       ^~~~~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condit=
-ion)
-      |         ^~~~~~~~~~~~~~~~
-include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-   21 |         BUILD_BUG_ON(((n) & ((n) - 1)) !=3D 0)
-      |         ^~~~~~~~~~~~
-include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON=
-_NOT_POWER_OF_2'
-   74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +            =
-     \
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-   75 |                                               (1ULL << __bf_shf(_ma=
-sk))); \
-      |                                                        ^~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-In file included from drivers/firmware/arm_scmi/powercap.c:10:
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/bitfield.h:45:38: note: in definition of macro '__bf_shf'
-   45 | #define __bf_shf(x) (__builtin_ffsll(x) - 1)
-      |                                      ^
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/bitfield.h:45:38: note: in definition of macro '__bf_shf'
-   45 | #define __bf_shf(x) (__builtin_ffsll(x) - 1)
-      |                                      ^
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:35:29: warning: left shift count >=3D width of type [-=
-Wshift-count-overflow]
-   35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-      |                             ^~
-include/linux/bitfield.h:115:63: note: in definition of macro 'FIELD_PREP'
-  115 |                 ((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask=
-);   \
-      |                                                               ^~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift=
--count-negative]
-   36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-      |                  ^~
-include/linux/bitfield.h:115:63: note: in definition of macro 'FIELD_PREP'
-  115 |                 ((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask=
-);   \
-      |                                                               ^~~~~
-include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-   38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-      |                                      ^~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:29: note: in expansion of macro 'G=
-ENMASK'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                             ^~~~~~~
-In file included from <command-line>:
-include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert=
-_210' declared with attribute error: FIELD_PREP: mask is zero
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |                                             ^
-include/linux/compiler_types.h:333:25: note: in definition of macro '__comp=
-iletime_assert'
-  333 |                         prefix ## suffix();                        =
-     \
-      |                         ^~~~~~
-include/linux/compiler_types.h:352:9: note: in expansion of macro '_compile=
-time_assert'
-  352 |         _compiletime_assert(condition, msg, __compiletime_assert_, =
-__COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_a=
-ssert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-include/linux/bitfield.h:67:17: note: in expansion of macro 'BUILD_BUG_ON_M=
-SG'
-   67 |                 BUILD_BUG_ON_MSG((_mask) =3D=3D 0, _pfx "mask is ze=
-ro");    \
-      |                 ^~~~~~~~~~~~~~~~
-include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CH=
-ECK'
-  114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ")=
-;    \
-      |                 ^~~~~~~~~~~~~~~~
-drivers/firmware/arm_scmi/powercap.c:556:18: note: in expansion of macro 'F=
-IELD_PREP'
-  556 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-      |                  ^~~~~~~~~~
-
-Caused by commit
-
-  14e527571502 ("firmware: arm_scmi: Add SCMIv3.1 Powercap protocol basic s=
-upport")
-
-I have used the scmi tree from next-20220630 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/dNQ9SFw=eeGPgmqQ4xV8/A0
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK+QZIACgkQAVBC80lX
-0GzMLQgAnEcfcDWjXA3MYwxflEreJw6Tsy499jcCBDXV2RjVmXI5WB9MHo0gcN36
-AdR/kYkq4668GsDalxMtfnosU0oprwdsoW042okFT/yHE3dw9/k9bejLB3+l18J4
-FK3xTP4fC/I5vOcaSgk9VfrQnuiyeJh2ica8WY/cM+F+ykoZ6MBVLFHTFJCSPaIY
-Mb75Rrh8v25DV3m81BRwCFLHU3hWN9u/iBhiMFSMncli5ZG7J2ktdAG0zqHlDEL+
-ZTw3EAGJyfSAQ7eS8wfhdo6uRl0svD5kHGeS3Zf/o5EOGksR+PieyrgraQXCnQHK
-9BbO9sAmff8ji9XmMwA7Nfw0cg+uWA==
-=VdjP
------END PGP SIGNATURE-----
-
---Sig_/dNQ9SFw=eeGPgmqQ4xV8/A0--
+Are there other bits we could/should mask=2Eout in the case P =3D 0? The o=
+nly bits that should be able to appear are ones that are independent of the=
+ PTE content=2E
