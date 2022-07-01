@@ -2,127 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47216C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7DCC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbiGAPSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        id S230132AbiGAPVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiGAPSl (ORCPT
+        with ESMTP id S229436AbiGAPVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:18:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90B330543;
-        Fri,  1 Jul 2022 08:18:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A0D7B83076;
-        Fri,  1 Jul 2022 15:18:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11654C341CF;
-        Fri,  1 Jul 2022 15:18:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656688718;
-        bh=XT19J7tfEXlwiUinDfQaGsUAqM2Jh+CfB0vp/2kuJP8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PmO0KbcapyN0IF797m1MeyFs2D36zNUM4PWE2tXHGsno8vroSpAu8WJOdR+LqACgD
-         qsgxFI3SsTwegRgvL/4Gzqv2MWyiqaCGNP4uGhFoiXXEcIYmNmYFw7r9b6btJ7ysIw
-         I0ZyaX1UgsQKV8BpeRJIiCvau/TKfPGl9NpLwSH1M3+uAhTgAVpEv8sr5Hw1zuiVrW
-         DIRABCoSFU7EiGAwxu5T68FeHDMo2ezlVZgmB0Ymg7+cu6UAZtuDXHwmE4Js04/p8o
-         oLCjVYfkEIa+uuDbrjGdYofuawBP7a6xT3nwVI7EJcjJYJHmGCEMj2wMDIN1cF3NGQ
-         Fg3ccan+5REaQ==
-Received: by mail-ua1-f47.google.com with SMTP id l27so935956uac.10;
-        Fri, 01 Jul 2022 08:18:38 -0700 (PDT)
-X-Gm-Message-State: AJIora+U1JSvEKdMYKgUEYm9XbHDm9fRBvoRfUA9X+StLPwd92gdxRRf
-        Uk6pxm5miZX/8q+oXilGeAp6MnCwBl+XukEjHFw=
-X-Google-Smtp-Source: AGRyM1su4bh/Qc4VULUJCugaye8aZYrrc3pSCAd5DT+9mUsito0CtDyo7cy8TkPrir1gknw2h5ic++3eTmFbXpc9OeA=
-X-Received: by 2002:ab0:4384:0:b0:37f:1bac:b425 with SMTP id
- l4-20020ab04384000000b0037f1bacb425mr8408793ual.12.1656688716940; Fri, 01 Jul
- 2022 08:18:36 -0700 (PDT)
+        Fri, 1 Jul 2022 11:21:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B269DE88
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 08:21:15 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 503D3113E;
+        Fri,  1 Jul 2022 08:21:15 -0700 (PDT)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 463EC3F66F;
+        Fri,  1 Jul 2022 08:21:13 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 16:21:11 +0100
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        james.quinlan@broadcom.com, Jonathan.Cameron@huawei.com,
+        f.fainelli@gmail.com, etienne.carriere@linaro.org,
+        vincent.guittot@linaro.org, daniel.lezcano@linaro.org,
+        tarek.el-sherbiny@arm.com, adrian.slatineanu@arm.com,
+        souvik.chakravarty@arm.com, wleavitt@marvell.com,
+        wbartczak@marvell.com
+Subject: Re: [PATCH v3 8/9] firmware: arm_scmi: Add scmi_driver optional
+ setup/teardown callbacks
+Message-ID: <Yr8Q2RqGe4+FOSLS@e120937-lin>
+References: <20220627123038.1427067-1-cristian.marussi@arm.com>
+ <20220627123038.1427067-9-cristian.marussi@arm.com>
+ <20220701140946.uar5ohadyjksf2ka@bogus>
+ <Yr8I6KHUrOfLSmEj@e120937-lin>
+ <20220701151829.j2blytsgma5so6ox@bogus>
 MIME-Version: 1.0
-References: <20220628081707.1997728-1-guoren@kernel.org> <20220628081707.1997728-2-guoren@kernel.org>
- <8eaf85d4e4d9401ea187366de12e7269@AcuMS.aculab.com>
-In-Reply-To: <8eaf85d4e4d9401ea187366de12e7269@AcuMS.aculab.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 1 Jul 2022 23:18:25 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTTWO-HxQNME=YN4pvEeFD5fT0dUx9pQhLujMk1V008U5A@mail.gmail.com>
-Message-ID: <CAJF2gTTWO-HxQNME=YN4pvEeFD5fT0dUx9pQhLujMk1V008U5A@mail.gmail.com>
-Subject: Re: [PATCH V7 1/5] asm-generic: ticket-lock: Remove unnecessary atomic_read
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "palmer@rivosinc.com" <palmer@rivosinc.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "longman@redhat.com" <longman@redhat.com>,
-        "boqun.feng@gmail.com" <boqun.feng@gmail.com>,
-        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701151829.j2blytsgma5so6ox@bogus>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 4:27 PM David Laight <David.Laight@aculab.com> wrote:
->
-> From: guoren@kernel.org
-> > Sent: 28 June 2022 09:17
-> >
-> > From: Guo Ren <guoren@linux.alibaba.com>
-> >
-> > Remove unnecessary atomic_read in arch_spin_value_unlocked(lock),
-> > because the value has been in lock. This patch could prevent
-> > arch_spin_value_unlocked contend spin_lock data again.
->
-> I'm confused (as usual).
-> Isn't atomic_read() pretty much free?
-When a cache line is shared with multi-harts, not as free as you think.
-Preventing touching contended data is the basic principle.
+On Fri, Jul 01, 2022 at 04:18:29PM +0100, Sudeep Holla wrote:
+> On Fri, Jul 01, 2022 at 04:09:05PM +0100, Cristian Marussi wrote:
+> > On Fri, Jul 01, 2022 at 03:09:46PM +0100, Sudeep Holla wrote:
+> > > On Mon, Jun 27, 2022 at 01:30:37PM +0100, Cristian Marussi wrote:
+> > > > Add optional .setup and .teardown methods to the scmi_driver descriptor:
+> > > > such callbacks, if provided, will be called by the SCIM core at driver
+> > > > registration time, so that, an SCMI driver, registered as usual with the
+> > > > module_scmi_driver() helper macro, can provide custom callbacks to be
+> > > > run once for all at module load/unload time to perform specific setup
+> > > > or teardown operations before/after .probe and .remove steps.
+> > > >
+> > > 
+> > > What can't the driver call this setup/teardown on its own before/after
+> > > calling scmi_driver_register/unregister ?
+> > 
+> > > 
+> > > Based on the usage in 9/9, I guess it is mainly to use the
+> > > module_scmi_driver ? If so, I would avoid using that or have another
+> > > macro to manage this setup/teardown(once there are multiple users for that).
+> > > IMO, it doesn't make sense to add callbacks to do things that are outside
+> > > the scope of scmi drivers. No ?
+> > >
+> > 
+> > This is exactly what I was doing in fact :D at first ... defining a normal
+> > init/exit from where I called what I needed at first and then ivoke the
+> > scmi_driver_register()...so bypassing/not using the module_scmi-driver macro
+> > indeed...then I realized I needed something similar also for the SCMI Test
+> > driver, so I tried to unify; in both cases indeed the required ops to be
+> > done before the scmi_driver_register are NOT scmi related things.
+> > 
+> > So I can drop this if you prefer and use bare module_init/exit that
+> > calls scmi_driver_register() after having setup what needed for the
+> > specific driver initialization (before probe)...I was not really
+> > convinced it was worth this level of unification.
+> > 
+> 
+> We can add macro for that too if there is another user for this. i.e.
+> if and when we merge the test code using something similar, we can
+> wrap them in a macro module_scmi_driver_setup_teardown(driver, setup, teardown)
+> and simplify things for the users.
+> 
+Ok, thanks I'll drop this for this series.
 
-atomic_read in alpha is heavy, It could be a potential user of ticket-lock.
-
->
-> ..
-> > diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
-> > index fdfebcb050f4..f1e4fa100f5a 100644
-> > --- a/include/asm-generic/spinlock.h
-> > +++ b/include/asm-generic/spinlock.h
-> > @@ -84,7 +84,9 @@ static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
-> >
-> >  static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
-> >  {
-> > -     return !arch_spin_is_locked(&lock);
-> > +     u32 val = lock.counter;
-> > +
-> > +     return ((val >> 16) == (val & 0xffff));
->
-> That almost certainly needs a READ_ONCE().
->
-> The result is also inherently stale.
-> So the uses must be pretty limited.
-The previous read_once could get 64bit, use the API to check the 32bit
-atomic data part.
-
->
->         David
->
-> >  }
-> >
-> >  #include <asm/qrwlock.h>
-> > --
-> > 2.36.1
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
->
-
-
--- 
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
+Thanks,
+Cristian
