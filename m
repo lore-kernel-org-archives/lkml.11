@@ -2,145 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 23:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC2DCCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 23:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231128AbiGAXVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 19:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
+        id S230477AbiGAX21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 19:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230258AbiGAXVv (ORCPT
+        with ESMTP id S230172AbiGAX2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 19:21:51 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81F871BCF
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 16:21:50 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id b129-20020a25e487000000b0066e1c52ac55so398521ybh.11
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 16:21:50 -0700 (PDT)
+        Fri, 1 Jul 2022 19:28:25 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AAE27B32
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 16:28:23 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id z13so1758554qts.12
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 16:28:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=r1hNWMzTHbP1T3u0oJfFG4ATF129b7TBwtFs10zIbH0=;
-        b=AfniH5QTWUN+wqcSlLlKuJx5yJp8JJHk89CfEEMl5lQ1ICN/xG92kx5WNxs+hwMLDj
-         y1MPwtf1lGA1NblcuJoqXrs4bHlUiq1iRR4w2azrECLCuIIInWJydMnwbeDO9A1gacJ3
-         6MGIh5dly4GfP0UxK6LkaOJEKAyc0fb9wkYVNqLZI/LJvBlKOBg9aYrMP5pGDiKej7u1
-         +TSLG69EXbh9UkRVy1yh07pPtZuKzomVtNA3mYLLapw8CWSLayla3G2XPDgskRdknVyf
-         NEpGzNbVutswz0xnFL6MooUMFGxU0t5boARFQ0DJRPTPIgfUU9whtp2A/smT/aBmeW2C
-         fGJA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vB+wIPmejTn5guDzm5cOLEtXJ3nVXhdD7b4J4pd+cFY=;
+        b=g6OkOcxXIvG59akpnlImlIcETkdMs26zUNWZQ7dS0paRnswQFjyUzljmU0lm45Ib0h
+         0G/oxnjfVsmFsfH9s8GG0BWyLSiR43LrciR6mGgnaBm1jZmpQxOM+VER18y0zlcr2kfM
+         2/TQ/BiTV0uXVtJBx3k/DlrG4G5htuJ4I0T2sN4KYYSSQAGYRhaG3AuEkPZbLt3h5pXf
+         5WALSJGk8C8SFulTVbniylYxiH6EBhxnRVlM/VcL3kHGVTyle1R047fofkkf62Bxghqo
+         pqw/irKAUFGsBAXs+wUObzD/Q0FAxX1Hk8lrghs+vElBBVNb7lf7JhOHrcR9IpYWq4kn
+         z9Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=r1hNWMzTHbP1T3u0oJfFG4ATF129b7TBwtFs10zIbH0=;
-        b=41SFVZIZMoMYZvUMKDfXLtHYY4CN8l8Bedo4dUYZ3lWN6cxi/yGpXri0OfiGpG2ls2
-         oiyaZCCbTNCvAuKYnOa10zACM8M/Xl0Yp6zj2mMJNSAijO1y+d827O2U6sBAbAXJeKPC
-         k6vYMfSsCZyQwSlBen2HZoSw9dEqyWwLg0rZZq8QVV0oemr4t8mUZkyZnPGi5goVVMTJ
-         54/AUUY9QJAmCP5NOP/2qYi2mOPUjO4hpANfUxptkCSbISJLVX3bbl9b4zek+RFstZor
-         nBAJzB9dVvTI9yJE5DIdvi7bGiP7dnv5h32qq7fKhJEpSZD+bMG/IlsTkDpqwo80D/s9
-         4TxA==
-X-Gm-Message-State: AJIora9SLvjZFdopDGBaga1hw2K+Vj0fKVTZsOqVw5kg3tYI2pknGMkf
-        YsS67WEn2fMWjI+5Qh0w3JHzabhpZPRZmm6sJQ==
-X-Google-Smtp-Source: AGRyM1vS8lR6ohgVW9YKUmSTvCAVBF+D2wOLXwW/aqjioj8VQIMa9zehx7RkG7my6+BiriAauGh24+9hI4ngKzSURg==
-X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:a7a5:71:ddd5:892b])
- (user=justinstitt job=sendgmr) by 2002:a0d:f9c1:0:b0:31b:726f:9ef2 with SMTP
- id j184-20020a0df9c1000000b0031b726f9ef2mr20290827ywf.252.1656717710164; Fri,
- 01 Jul 2022 16:21:50 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:20:31 -0700
-Message-Id: <20220701232031.2639134-1-justinstitt@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH] eeprom: idt_89hpesx: fix clang -Wformat warnings
-From:   Justin Stitt <justinstitt@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Justin Stitt <justinstitt@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vB+wIPmejTn5guDzm5cOLEtXJ3nVXhdD7b4J4pd+cFY=;
+        b=YbQT1zDaRLq81eW0tQxVCkHkh4z/Gni170EueCNcFG+7z/RxM6GHHc5EI5uyNQCLGS
+         iSmoIzIbLL4NHb+GKNR0zLRNvx2K2rvfgwCMeSpQAYfxdCO20F1yC8Fft4l21ekLv1zg
+         wg2ec4upaw5NlnQNXYQ+BjeBeW03CRZBGIbQsSM0IY5vcMKZ2KTIzdxPIkrPm5n28jOc
+         8aYOjKdCNEM/j8tMWTLmttpK3ne2UlP03nRpfdY+iK3IKyk7X3grKHfyjDQBO4RpL+vt
+         xnsriOcUoMFAwi4YIO2y9A9FL710J15VdKdhWTtSAhWl5JanIC15GDDcMPJ3kmcRoscl
+         u7kg==
+X-Gm-Message-State: AJIora8VRbHTlyMhGH84Xj6jgTuGG0BaECaJ1xHOQBrPNW7DQnEJAVz9
+        X7TMZMEIsMP/qMrXJduSIrYBsiG9Gwi4y4b6n0Vrcg==
+X-Google-Smtp-Source: AGRyM1syrEY6iPUk1ySOigzAfhn29UJW//l7jUCeAyTBPKAPp9fI/2FxH8eSUodfOrelgdQ9aHzBYPO6D0gD2l3ljtc=
+X-Received: by 2002:a05:6214:202f:b0:432:4810:1b34 with SMTP id
+ 15-20020a056214202f00b0043248101b34mr18957932qvf.35.1656718102554; Fri, 01
+ Jul 2022 16:28:22 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220610194435.2268290-1-yosryahmed@google.com>
+ <20220610194435.2268290-9-yosryahmed@google.com> <00df1932-38fe-c6f8-49d0-3a44affb1268@fb.com>
+ <CAJD7tkaNnx6ebFrMxWgkJbtx=Qoe+cEwnjtWeY5=EAaVktrenw@mail.gmail.com>
+ <CAJD7tkbOztCEWgMzoCOdD+g3whMMQWW2e0gwo9p0tVK=3hqmcw@mail.gmail.com> <59376285-21bc-ff12-3d64-3ea7257becb2@fb.com>
+In-Reply-To: <59376285-21bc-ff12-3d64-3ea7257becb2@fb.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Fri, 1 Jul 2022 16:28:11 -0700
+Message-ID: <CA+khW7jLLwgLBxpyn5s6Nc8V=0fjfH22193kjP1STbU2A+3v6Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 8/8] bpf: add a selftest for cgroup
+ hierarchical stats collection
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-see warnings:
-| drivers/misc/eeprom/idt_89hpesx.c:570:5: error: format specifies type
-| 'unsigned char' but the argument has type 'u16' (aka 'unsigned short')
-| [-Werror,-Wformat] memaddr);
--
-| drivers/misc/eeprom/idt_89hpesx.c:579:5: error: format specifies type
-| 'unsigned char' but the argument has type 'u16' (aka 'unsigned short')
-| [-Werror,-Wformat] memaddr);
--
-| drivers/misc/eeprom/idt_89hpesx.c:814:4: error: format specifies type
-| 'unsigned short' but the argument has type 'unsigned int'
-| [-Werror,-Wformat] CSR_REAL_ADDR(csraddr));
+On Tue, Jun 28, 2022 at 11:27 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 6/28/22 12:43 AM, Yosry Ahmed wrote:
+> > On Mon, Jun 27, 2022 at 11:47 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+> >>
+> >> On Mon, Jun 27, 2022 at 11:14 PM Yonghong Song <yhs@fb.com> wrote:
+[...]
+> >>> btf_dump_data:FAIL:ensure expected/actual match unexpected ensure
+> >>> expected/actual match: actual '(union bpf_iter_link_info){.map =
+> >>> (struct){.map_fd = (__u32)1,},.cgroup '
+> >>> test_btf_dump_struct_data:PASS:find struct sk_buff 0 nsec
+> >>>
+> >>
+> >> Yeah I see what happened there. bpf_iter_link_info was changed by the
+> >> patch that introduced cgroup_iter, and this specific union is used by
+> >> the test to test the "union with nested struct" btf dumping. I will
+> >> add a patch in the next version that updates the btf_dump_data test
+> >> accordingly. Thanks.
+> >>
+> >
+> > So I actually tried the attached diff to updated the expected dump of
+> > bpf_iter_link_info in this test, but the test still failed:
+> >
+> > btf_dump_data:FAIL:ensure expected/actual match unexpected ensure
+> > expected/actual match: actual '(union bpf_iter_link_info){.map =
+> > (struct){.map_fd = (__u32)1,},.cgroup = (struct){.cgroup_fd =
+> > (__u32)1,},}'  != expected '(union bpf_iter_link_info){.map =
+> > (struct){.map_fd = (__u32)1,},.cgroup = (struct){.cgroup_fd =
+> > (__u32)1,.traversal_order = (__u32)1},}'
+> >
+> > It seems to me that the actual output in this case is not right, it is
+> > missing traversal_order. Did we accidentally find a bug in btf dumping
+> > of unions with nested structs, or am I missing something here?
+>
+> Probably there is an issue in btf_dump_data() function in
+> tools/lib/bpf/btf_dump.c. Could you take a look at it?
+>
 
-There's an ongoing movement to eventually enable the -Wformat flag for
-clang. See: https://github.com/ClangBuiltLinux/linux/issues/378
+Regarding this failure of btf_dump_data, the cause seems that:
 
-The format specifier for idt_89hpesx.c:570 and 579 was `0x%02hhx`. The
-part we care about `%hhx` describes a single byte format, wherein the
-leftmost byte of our u16 type (of which memaddr is) is truncated.
+I added a new struct in 'union bpf_iter_link_info' in this patch
+series, which expanded bpf_iter_link_info's size from 32bit to 64bit.
+However, the test still used the old struct to initialize, which makes
+a temporary stack variable (of type bpf_iter_link_info) partially
+initialized. If I initialize the type by the larger new struct only,
+btf_dump_data will output the correct content and the said test will
+pass.
 
-example:
-```
-uint16_t x = 0xbabe;
-printf("%hhx\n", x);
-// output is: be
-// we lost 'ba'
-```
+Yosry, we need to fold the said solution in the patch which introduced
+changes to bpf_iter_link_info, so that it won't break the test.
 
-There exists a similar issue at idt_89hpesx.c:814 which involves the
-CSR_REAL_ADDR macro. This macro returns a u16 but due to default
-argument promotion for variadic functions (printf-like) actually
-provides an int to the dev_err method.
+I haven't dug into btf_dump_data() on why partially initialized union
+fails. I need to look at the get_cgroup_vmscan_delay selftest in this
+patch now.
 
-My proposed solution is to expand the width of the format specifier to
-fully encompass the provided argument (which is promoted to an int, see
-below). I opted for '%x' as this specifies an unsigned hexadecimal
-integer which, with a guarantee, can represent all the values of a u16.
-
-As per C11 6.3.1.1:
-(https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
-`If an int can represent all values of the original type ..., the
-value is converted to an int; otherwise, it is converted to an
-unsigned int. These are called the integer promotions.`
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Justin Stitt <justinstitt@google.com>
----
- drivers/misc/eeprom/idt_89hpesx.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/misc/eeprom/idt_89hpesx.c b/drivers/misc/eeprom/idt_89hpesx.c
-index b0cff4b152da..42eac114edd7 100644
---- a/drivers/misc/eeprom/idt_89hpesx.c
-+++ b/drivers/misc/eeprom/idt_89hpesx.c
-@@ -566,7 +566,7 @@ static int idt_eeprom_read_byte(struct idt_89hpesx_dev *pdev, u16 memaddr,
- 		eeseq.memaddr = cpu_to_le16(memaddr);
- 		ret = pdev->smb_write(pdev, &smbseq);
- 		if (ret != 0) {
--			dev_err(dev, "Failed to init eeprom addr 0x%02hhx",
-+			dev_err(dev, "Failed to init eeprom addr 0x%02x",
- 				memaddr);
- 			break;
- 		}
-@@ -575,7 +575,7 @@ static int idt_eeprom_read_byte(struct idt_89hpesx_dev *pdev, u16 memaddr,
- 		smbseq.bytecnt = EEPROM_RD_CNT;
- 		ret = pdev->smb_read(pdev, &smbseq);
- 		if (ret != 0) {
--			dev_err(dev, "Failed to read eeprom data 0x%02hhx",
-+			dev_err(dev, "Failed to read eeprom data 0x%02x",
- 				memaddr);
- 			break;
- 		}
-@@ -810,7 +810,7 @@ static int idt_csr_read(struct idt_89hpesx_dev *pdev, u16 csraddr, u32 *data)
- 	smbseq.bytecnt = CSR_RD_CNT;
- 	ret = pdev->smb_read(pdev, &smbseq);
- 	if (ret != 0) {
--		dev_err(dev, "Failed to read csr 0x%04hx",
-+		dev_err(dev, "Failed to read csr 0x%04x",
- 			CSR_REAL_ADDR(csraddr));
- 		goto err_mutex_unlock;
- 	}
--- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+Hao
