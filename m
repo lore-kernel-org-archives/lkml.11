@@ -2,137 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02AB6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD38AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236263AbiGAKfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
+        id S236380AbiGAKf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231503AbiGAKe4 (ORCPT
+        with ESMTP id S236333AbiGAKfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:34:56 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BD174345
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 03:34:53 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id y16so3085455lfb.9
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 03:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r9tKEj16d5tR2G+qnALq6e2umf1wAchyZTQfWhHn/lQ=;
-        b=hOWskhaT9BnBIvhYHwEipW3tIPTPzs+uwhJQcQvKiX36zsPu3hbdGi8car8k4C3Nv4
-         a6jxrlWgQRh9j0Jd3iCSsI3CPEJzdXY1sutH2NrQJ/KpqS+zPNvUYv/xARIGCRgIqcwu
-         P/NAQjBIxMV9QslcP9CZrDbXa3KC57R3bnGRB/4DOPcKG/V3VD/V4K+kVa/1Y6wmhvCs
-         cPq67bZWiz9SS8D9C8PNjVBnuCkOSzQVjwmFQHqcSbTiNzjTF/H9M2aQFrEybJFd6duW
-         jlLYHBlYx1BcpPQ41+nKa34vmIlYNmKk9wOeAnJCYZNEzdKAuhmfXTaSY0rryr1usjYj
-         jJ2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r9tKEj16d5tR2G+qnALq6e2umf1wAchyZTQfWhHn/lQ=;
-        b=fc6NcoQUh4jS33HIJ0JCUKT+7YSOQiZWzq84KOKi/b590E0GdyqqK/wW2X/1AzuU1T
-         cNIZmWDs4QIO34mlpoUjHa1/PrUSIZluiM0dBn7hN+KVAF+NlLxtWARVaTTMIPA9w83i
-         0Vsf2Hxv5UkqOOedm1st/5G+RJbrFnyZ8gTLuIzsBXSIo32VyUkEqSjs23hJM6i2B5o/
-         3J3139kXl20W+nInqtarQQmFSA57f2YngXC0LlC8hxMqRm1EPrjfMmkxhSlilNW7sqrt
-         leC+QtFAwddOrrCTBjQqAGGXMrEJsjySPELl1wtSbhG29XCnTbbYiBot3JEIsDO+6pxh
-         ynxQ==
-X-Gm-Message-State: AJIora8qknNduk2fQCtKh1U61mlZB1gafi/l6k4244EeRTgZigUhn64S
-        zl4hDQyl17XgAECddKi2NBGPpp9HzLYwkyujf51scA==
-X-Google-Smtp-Source: AGRyM1v5FUVOat6gmgFRKbQSnfiJy8R8hSU6Xh0lZv1nXMkdfAeKL5kC85n2Od+ElP7r82Pw5f9ECw9k9nrZtDTko/w=
-X-Received: by 2002:a05:6512:10c3:b0:47f:a97e:35c with SMTP id
- k3-20020a05651210c300b0047fa97e035cmr8666355lfg.417.1656671686899; Fri, 01
- Jul 2022 03:34:46 -0700 (PDT)
+        Fri, 1 Jul 2022 06:35:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE157969E;
+        Fri,  1 Jul 2022 03:35:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B61062339;
+        Fri,  1 Jul 2022 10:35:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A6C4C341C6;
+        Fri,  1 Jul 2022 10:35:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656671720;
+        bh=5hX8oRoPZn4b5fAaXxxYWDQveykgB7sgy/RluBH/fJU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UWsq++M5k0Wo3efjXd1fLAQzurXJaA8GNRq0b6drz75gynuFHQa39dFdvKWiH04u3
+         u89Q2AoTV2EoGcNYW3oH4iH1+CvKo0EWKBfUMEyz0xZlzarTk2K6bJkFVql7L82ddO
+         LuY+yThHSOoxvhtr0vmohQ3P7cO/ZS7ygZl7sY6A=
+Date:   Fri, 1 Jul 2022 12:35:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Ray Chi <raychi@google.com>
+Cc:     corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Albert Wang <albertccwang@google.com>
+Subject: Re: [PATCH] USB: hub: add module parameters to usbcore for port init
+ retries
+Message-ID: <Yr7N5ZjKLpeQflxd@kroah.com>
+References: <20220617102256.3253019-1-raychi@google.com>
+ <YrFxLYibDtyuxSO6@kroah.com>
+ <CAPBYUsBbP7ssGXSRyWN46u1-Qaa712QLm748FhJ-M3pANZUsng@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220630080834.2742777-1-davidgow@google.com> <20220630080834.2742777-2-davidgow@google.com>
- <CACT4Y+ZahTu0pGNSdZmx=4ZJHt4=mVuhxQnH_7ykDA5_fBJZVQ@mail.gmail.com>
- <20220630125434.GA20153@axis.com> <CA+fCnZe6zk8WQ7FkCsnMPLpDW2+wJcjdcrs5fxJRh+T=FvFDVA@mail.gmail.com>
- <CABVgOSmxnTc31C-gbmbns+8YOkpppK77sdXLzASZ-hspFYDwfA@mail.gmail.com>
- <20220701091653.GA7009@axis.com> <CABVgOSnEEWEe16O4YsyuiWttffdAAbkpuXehefGEEeYvjPqVkA@mail.gmail.com>
- <20220701100441.GA8082@axis.com>
-In-Reply-To: <20220701100441.GA8082@axis.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 1 Jul 2022 12:34:35 +0200
-Message-ID: <CACT4Y+ZvPDLR_e2VR8+hKZ+fnLo9_KkTTgUMqqM1kaoo0kW-fA@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] UML: add support for KASAN under x86_64
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     David Gow <davidgow@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Patricia Alfonso <trishalfonso@google.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        "anton.ivanov@cambridgegreys.com" <anton.ivanov@cambridgegreys.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "kunit-dev@googlegroups.com" <kunit-dev@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPBYUsBbP7ssGXSRyWN46u1-Qaa712QLm748FhJ-M3pANZUsng@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 at 12:04, Vincent Whitchurch
-<vincent.whitchurch@axis.com> wrote:
-> > <vincent.whitchurch@axis.com> wrote:
-> > > On Fri, Jul 01, 2022 at 11:08:27AM +0200, David Gow wrote:
-> > > > On Thu, Jun 30, 2022 at 9:29 PM Andrey Konovalov <andreyknvl@gmail.com> wrote:
-> > > > > Stack trace collection code might trigger KASAN splats when walking
-> > > > > stack frames, but this can be resolved by using unchecked accesses.
-> > > > > The main reason to disable instrumentation here is for performance
-> > > > > reasons, see the upcoming patch for arm64 [1] for some details.
-> > > > >
-> > > > > [1] https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?id=802b91118d11
-> > > >
-> > > > Ah -- that does it! Using READ_ONCE_NOCHECK() in dump_trace() gets rid
-> > > > of the nasty recursive KASAN failures we were getting in the tests.
-> > > >
-> > > > I'll send out v5 with those files instrumented again.
+On Fri, Jul 01, 2022 at 05:46:42PM +0800, Ray Chi wrote:
+> On Tue, Jun 21, 2022 at 3:20 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Fri, Jun 17, 2022 at 06:22:56PM +0800, Ray Chi wrote:
+> > > Currently, there is a Kconfig (CONFIG_USB_FEW_INIT_RETRIES) to
+> > > reduce retries when the port initialization is failed. The retry
+> > > times are fixed and assigned in compile time. To improve the
+> > > flexibility, this patch add four module parameters:
+> > > port_reset_tries, set_address_tries, get_descriptor_tries,
+> > > and get_maxpacket0_tries, to replace the original default values.
 > > >
-> > > Hmm, do we really want that?  In the patch Andrey linked to above he
-> > > removed the READ_ONCE_NOCHECK() and added the KASAN_SANITIZE on the
-> > > corresponding files for arm64, just like it's already the case in this
-> > > patch for UML.
+> > > The default value of module parameters is the same as before
+> > > to preserve the existing behavior.
+> > >
+> > > Signed-off-by: Ray Chi <raychi@google.com>
+> > > ---
+> > >  .../admin-guide/kernel-parameters.txt         | 16 ++++++++++
+> > >  drivers/usb/core/hub.c                        | 31 ++++++++++++++++---
+> > >  2 files changed, 42 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> > > index 8090130b544b..c467b2778128 100644
+> > > --- a/Documentation/admin-guide/kernel-parameters.txt
+> > > +++ b/Documentation/admin-guide/kernel-parameters.txt
+> > > @@ -6277,6 +6277,22 @@
+> > >                       USB_REQ_GET_DESCRIPTOR request in milliseconds
+> > >                       (default 5000 = 5.0 seconds).
+> > >
+> > > +     usbcore.port_reset_tries=
+> > > +                     [USB] Set the retry time of port reset for each
+> > > +                     port initialization (default PORT_RESET_TRIES = 5).
+> > > +
+> > > +     usbcore.set_address_tries=
+> > > +                     [USB] set the retry time of set address for each
+> > > +                     port initialization (default SET_ADDRESS_TRIES = 2).
+> > > +
+> > > +     usbcore.get_descriptor_tries=
+> > > +                     [USB] set the retry time of set address for each
+> > > +                     port initialization (default GET_DESCRIPTOR_TRIES = 2).
+> > > +
+> > > +     usbcore.get_maxpacket0_tries=
+> > > +                     [USB] set the retry time of get maxpacket0 for each
+> > > +                     port initialization (default GET_MAXPACKET0_TRIES = 3).
+> > > +
+> > >       usbcore.nousb   [USB] Disable the USB subsystem
+> > >
+> > >       usbcore.quirks=
+> > > diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+> > > index b7f66dcd1fe0..c5c695886424 100644
+> > > --- a/drivers/usb/core/hub.c
+> > > +++ b/drivers/usb/core/hub.c
+> > > @@ -2788,6 +2788,27 @@ static unsigned hub_is_wusb(struct usb_hub *hub)
+> > >  #define HUB_LONG_RESET_TIME  200
+> > >  #define HUB_RESET_TIMEOUT    800
+> > >
+> > > +/* define retry time for port reset */
+> > > +static int port_reset_tries = PORT_RESET_TRIES;
+> > > +module_param(port_reset_tries, int, S_IRUGO|S_IWUSR);
+> > > +MODULE_PARM_DESC(port_reset_tries, "retry times of port reset for each port initialization");
 > >
-> > Personally, I'm okay with the performance overhead so far: in my tests
-> > with a collection of ~350 KUnit tests, the total difference in runtime
-> > was about ~.2 seconds, and was within the margin of error caused by
-> > fluctuations in the compilation time.
+> > Please no.  Module parameters are from the 1990's, let us never add new
+> > ones if at all possible.
 > >
-> > As an example, without the stacktrace code instrumented:
-> > [17:36:50] Testing complete. Passed: 364, Failed: 0, Crashed: 0,
-> > Skipped: 47, Errors: 0
-> > [17:36:50] Elapsed time: 15.114s total, 0.003s configuring, 8.518s
-> > building, 6.433s running
-> >
-> > versus with it instrumented:
-> > [17:35:40] Testing complete. Passed: 364, Failed: 0, Crashed: 0,
-> > Skipped: 47, Errors: 0
-> > [17:35:40] Elapsed time: 15.497s total, 0.003s configuring, 8.691s
-> > building, 6.640s running
->
-> OK, good to know.
->
-> > That being said, I'm okay with disabling it again and adding a comment
-> > if it's slow enough in some other usecase to cause problems (or even
-> > just be annoying). That could either be done in a v6 of this patchset,
-> > or a follow-up patch, depending on what people would prefer. But I'd
-> > not have a problem with leaving it instrumented for now.
->
-> I don't have any strong opinion either way either, so you don't have to
-> change it back on my account.  Thanks.
+> > These are global options, for all devices in the system.  Instead, use
+> > per-device settings if you really need to change these values.
+> 
+> Sorry for the late reply.
+> Since the driver is using define macro to decide the retry time
+> currently, we can't
+> modify the value directly. Do you mean setting by device tree for
+> per-device settings? or other methods?
 
-I would consider using READ_ONCE_NOCHECK() by default. And then
-switching to KASAN_SANITIZE:=n only if there is a real reason for
-that. Disabling instrumentation of any part of the kernel makes things
-faster, but at the same time we are losing checking coverage.
-For arm it was done for a very specific reason related to performance.
-While UML can be considered more test-oriented rather than
-production-oriented.
+Yes, anything other than a module parameter as you just modified the
+value of ALL devices in the system, which I do not think you really
+want, right?  Odds are you just want to be able to work around a broken
+internal USB hub, and do not want this option changed for anything that
+a user plugs into the system, right?
+
+> > But I would even push back on that and ask why these values need to be
+> > changed at all.  What hardware is broken so badly that our timeout
+> > settings do not work properly?  Can we modify them gracefully to "just
+> > work" without any need for tweaking or requiring any modification by a
+> > user at all?  That would be the better solution instead of requiring
+> > users to do this on their own when confronted by misbehaving hardware.
+> 
+> I got some reports from end users, but I couldn't see the hardware
+> information due to
+> enumeration not being complete. There are too many hardwares owned by end users.
+> It is hard to make work for all of them. In addition, some users just
+> tried to reboot the Host device
+> when they found their connected hardware not working. It would cause
+> the device reset or hang
+> due to the retry mechanism. This is why I want to modify the retry times.
+
+So this is for external devices?  Then just change the kernel build
+option for those systems?  In all the 20+ years, we haven't seen a real
+need for this yet, what just changed to require it?
+
+thanks,
+
+greg k-h
