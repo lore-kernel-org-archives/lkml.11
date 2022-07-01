@@ -2,176 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E68C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49251C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230030AbiGAQge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S232184AbiGAQhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbiGAQga (ORCPT
+        with ESMTP id S229955AbiGAQhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:36:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE65A41987;
-        Fri,  1 Jul 2022 09:36:28 -0700 (PDT)
+        Fri, 1 Jul 2022 12:37:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C952C37A3D;
+        Fri,  1 Jul 2022 09:37:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 627C962531;
-        Fri,  1 Jul 2022 16:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 198A0C341C7;
-        Fri,  1 Jul 2022 16:36:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8977CB83090;
+        Fri,  1 Jul 2022 16:37:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5645C3411E;
+        Fri,  1 Jul 2022 16:37:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656693387;
-        bh=ooeSNeFdZ5T+oMd/579rTg3mNtDz7W8VDV0eFE/RTgQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UK14zdU9reYMhjShHyCsXE32Yi4/rJhsrAMG4NgyCByWWRSL14C2/4hv2lrQ3JELO
-         2gwnPH5PtYyGHivAYOuAGL+pMzLPYmh9Jm+I7iTqaorpnO0YdGi29wKCMzN8b3bIXx
-         4XxbLQNLa4sP1L8MXpyhgg3YlMYppCdELhvZ8Y/16y+WKjvrKsFItGEOwenOOLQSm5
-         xpSEAaB5OAYIgiGZW0AKZBiXyrQ9olkTZGny6Tix6RuHXA6HAUxSJeDYZrId8g2g0Y
-         txIHbYaxOoU2wOc19/wyNCUMR0TnpFUl0quQ3ZnwFchGLpNLE+3NKXDiQXuziNwUUN
-         XRzKPsVdGhBeg==
-Date:   Fri, 1 Jul 2022 17:46:02 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     lars@metafoo.de, tomas.melin@vaisala.com, nuno.sa@analog.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bsp-development.geo@leica-geosystems.com
-Subject: Re: [PATCH V1 1/1] iio: accel: sca3300: Extend the trigger buffer
- from 16 to 32 bytes
-Message-ID: <20220701174602.68b20753@jic23-huawei>
-In-Reply-To: <20220701023030.2527019-2-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220701023030.2527019-1-Qing-wu.Li@leica-geosystems.com.cn>
-        <20220701023030.2527019-2-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1656693426;
+        bh=dvn0q53TXBDnV3Qt4aSdr2WzDOqUHtfan8BhemxpCOI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QkiDgZpOfaN9dOsDRrcDsbMySgGbQpKCeO+no3q1kSX+1cRgqA2x4iEzPdY/XW3UF
+         1+2xoNv9YCEy7Q2lYD4OCwmmWsdnAYTFzcCjV1CrNKS8xmZXVPb+0Uelzf5iWfWx7g
+         prCRoRfZtwtTMVw3j99tU/q+FAW+tbfcH1E/MTMPYNnmoM3XhZbgodSspBaCkRzIHH
+         eXzeCb2+JRoT7Rs2YCkucN713hRlcycMY3jm5NsgaWoDCC0dtJv6efdUljoPTbJ5Oy
+         v9buw0XVWJyeh4Dc2K3+zmhU0AgZLwv2zdi6fW/VbhS9zqdApMrLm9fSDidJRNrAH8
+         4Eut+nwcApcRQ==
+Date:   Fri, 1 Jul 2022 22:07:01 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     sean.wang@mediatek.com, matthias.bgg@gmail.com,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dmaengine: mediatek: mtk-hsdma: Fix typo in comment
+Message-ID: <Yr8ircxQa4I7/jmW@matsya>
+References: <20220618130120.9783-1-wangxiang@cdjrlc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220618130120.9783-1-wangxiang@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  1 Jul 2022 02:30:30 +0000
-LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
+On 18-06-22, 21:01, Xiang wangx wrote:
+> Delete the redundant word 'be'.
 
-> After added inclination angle channels, the trigger buffer size is
-> insufficient. Extend the buffer size from 16 to 32 bytes, and change
-> the trigger buffer from the struct to a u8 array to adapt the sensor
-> with/without inclination angles output.
-> New trigger buffer data:
->   - SCA3300: 3 accel channels, temp, and timestamp.
->   - SCL3300: 3 accel channels, temp, 3 incli channels, and timestamp.
-> Readjustment the scan index to make it consistent with the buffer data.
-> 
-> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Applied, thanks
 
-Hi.
-
-Looks good. A trivial suggestion inline to make the code a little more
-'self documenting'.  It's a minor change so if you are happy with
-the suggestion I can tweak that whilst applying.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/accel/sca3300.c | 29 ++++++++++++++++++-----------
->  1 file changed, 18 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-> index 3c4827bfef53..820dfb635bf1 100644
-> --- a/drivers/iio/accel/sca3300.c
-> +++ b/drivers/iio/accel/sca3300.c
-> @@ -47,12 +47,20 @@
->  #define SCL3300_REG_ANG_CTRL 0x0C
->  #define SCL3300_ANG_ENABLE   0x1F
->  
-> +/*
-> + * Buffer size max case:
-> + * Three accel channels, two bytes per channel.
-> + * Temperature channel, two bytes.
-> + * Three incli channels, two bytes per channel.
-> + * Timestamp channel, eight bytes.
-> + */
-> +#define SCA3300_MAX_BUFFER_SIZE (ALIGN(2 * 7, sizeof(s64)) + sizeof(s64))
-
-Instead of the 2 use sizeof(s16)
- Also now you don't have timestamp in your enum sca3000_scan_indexes
-you could add a 'tail' element to the enum such as SCA3000_SCAN_MAX then
-use that instead of the 7 here.  Hopefully that would make
-this more self documenting.
-
-> +
->  enum sca3300_scan_indexes {
->  	SCA3300_ACC_X = 0,
->  	SCA3300_ACC_Y,
->  	SCA3300_ACC_Z,
->  	SCA3300_TEMP,
-> -	SCA3300_TIMESTAMP,
->  	SCA3300_INCLI_X,
->  	SCA3300_INCLI_Y,
->  	SCA3300_INCLI_Z,
-> @@ -140,10 +148,10 @@ static const struct iio_chan_spec scl3300_channels[] = {
->  	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
->  	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
->  	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
-> -	IIO_CHAN_SOFT_TIMESTAMP(4),
->  	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
->  	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
->  	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
-> +	IIO_CHAN_SOFT_TIMESTAMP(7),
->  };
->  
->  static const unsigned long sca3300_scan_masks[] = {
-> @@ -184,7 +192,9 @@ struct sca3300_chip_info {
->   * @spi: SPI device structure
->   * @lock: Data buffer lock
->   * @chip: Sensor chip specific information
-> - * @scan: Triggered buffer. Four channel 16-bit data + 64-bit timestamp
-> + * @buffer: Triggered buffer:
-> + *          -SCA3300: 4 channel 16-bit data + 64-bit timestamp
-> + *          -SCL3300: 7 channel 16-bit data + 64-bit timestamp
->   * @txbuf: Transmit buffer
->   * @rxbuf: Receive buffer
->   */
-> @@ -192,10 +202,7 @@ struct sca3300_data {
->  	struct spi_device *spi;
->  	struct mutex lock;
->  	const struct sca3300_chip_info *chip;
-> -	struct {
-> -		s16 channels[4];
-> -		s64 ts __aligned(sizeof(s64));
-> -	} scan;
-> +	u8 buffer[SCA3300_MAX_BUFFER_SIZE] __aligned(sizeof(s64));
->  	u8 txbuf[4] __aligned(IIO_DMA_MINALIGN);
->  	u8 rxbuf[4];
->  };
-> @@ -484,21 +491,21 @@ static irqreturn_t sca3300_trigger_handler(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct sca3300_data *data = iio_priv(indio_dev);
->  	int bit, ret, val, i = 0;
-> +	s16 *channels = (s16 *)data->buffer;
->  
->  	for_each_set_bit(bit, indio_dev->active_scan_mask,
->  			 indio_dev->masklength) {
-> -		ret = sca3300_read_reg(data, sca3300_channels[bit].address,
-> -				       &val);
-> +		ret = sca3300_read_reg(data, indio_dev->channels[bit].address, &val);
->  		if (ret) {
->  			dev_err_ratelimited(&data->spi->dev,
->  				"failed to read register, error: %d\n", ret);
->  			/* handled, but bailing out due to errors */
->  			goto out;
->  		}
-> -		data->scan.channels[i++] = val;
-> +		channels[i++] = val;
->  	}
->  
-> -	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->  					   iio_get_time_ns(indio_dev));
->  out:
->  	iio_trigger_notify_done(indio_dev->trig);
-
+-- 
+~Vinod
