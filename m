@@ -2,108 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D24FDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235224AbiGALZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
+        id S234458AbiGAL1a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiGALZe (ORCPT
+        with ESMTP id S231503AbiGAL12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:25:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 872847B34B
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656674732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5OmlA/t9RccN7KSRkjLQlSW9pQ8XucLvZm0GyPWgBPo=;
-        b=fDw/8ApdxWwGk/KpKDJW5O3er5VSsD8SxjF2g+NaduXzpU07+O6oR+cIUPNerQeTv0VzMd
-        RWeGBOmZ1eE5eSS5j7bCVJA+dE+NO4A/QS8qn4iI5AFC3XvEJFaHsUmJ2EzP9phw09Mbmv
-        T2cYsjuzbnXTlUGuKpRp3aMFH0l9oCo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-034TTLxxOD2edDV_xLTQGQ-1; Fri, 01 Jul 2022 07:25:31 -0400
-X-MC-Unique: 034TTLxxOD2edDV_xLTQGQ-1
-Received: by mail-wm1-f70.google.com with SMTP id j35-20020a05600c1c2300b003a167dfa0ecso1268567wms.5
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 04:25:31 -0700 (PDT)
+        Fri, 1 Jul 2022 07:27:28 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DAD81484;
+        Fri,  1 Jul 2022 04:27:27 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id ej4so2547250edb.7;
+        Fri, 01 Jul 2022 04:27:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=kPJJjylIpBkQ8W7Ml6hHpSSjjYliXppQHMQmyiUop9Q=;
+        b=L1IPD8ninOruMAbXZlKHku59T3sS5xXk+D9sBBiOg/rk1J6jDylYkWEK/coJsiGpB9
+         /4sjWjEaryt0I3Is97qYC5cqLSxIonGDXwChh47Mz5LKZbjz+Iw4moJxMCQhbxjGW+pX
+         ihNGXvBG6j0giHRLnYrOm9/QxgDrUvTbOU2Dsier3V+MuxvZqXbCXFOxA3YjKyRxATYm
+         yT8RhhHKAOiRXpvyWAvjZlkTBoXsHftq4IqpedCo9dIQN1QWzivBcIjkuIm8jkEi3k+A
+         F6k7xaRNMKW0QS9vNOI9Ye6/c9i8j1udo8US4ftQqAX+KBEMz/0wNEnxFIuVAEDLGh1V
+         DXuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=5OmlA/t9RccN7KSRkjLQlSW9pQ8XucLvZm0GyPWgBPo=;
-        b=uf91WdYe9Zy73juyyr7821l8+7/UogScb3w5cRSEMqQy/rWdjl1x9TO7w7tMxUVUdS
-         qVTuHpH77qAVG1FMKhqXgTRchw7cagv2eDN8Zi5od2dKc1Bm82InlHClCCMKVJ7w84gX
-         UzXng19mCma1GRKgSBFXYYP2TBcUb9aEkpi9unfJcbedw8ppzqdcpHJHaDx5wcEFLZ9A
-         +KSpCYcu0u3AzFa/0f8eNCr9cclxCsw45qJahjxWsyCSJ4QCYAHjU0xeY1+PJtWTk5TB
-         tI0MzN0xpDTUgoZ9cus/PiGyp7cmo0VMlUyZQLqovo8lKEmAblWCjgObFX3HLksuX3S0
-         QjiA==
-X-Gm-Message-State: AJIora8717vGJsKSsMOLKJ7djZ62216/KfmU1ywwUMSUqzM55jJV3uHf
-        QAj+mx4StieaCxF4pLNvqXgHbBTbZyygja3zdHnTHhgDZ5pGyX4LtNRGjotl+vkn7OT6qiejIUp
-        MAXCOrFNbwWloD6NzqE7gfKJ3
-X-Received: by 2002:a1c:720f:0:b0:3a0:2ac9:5231 with SMTP id n15-20020a1c720f000000b003a02ac95231mr15818998wmc.39.1656674730549;
-        Fri, 01 Jul 2022 04:25:30 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1v/lwU2oxUG3naM8CeuP8DCWGu05RJ3M2eBqVXS9RJaaGCh4Va3ISeKKIPp16rjvj7DLxzF0w==
-X-Received: by 2002:a1c:720f:0:b0:3a0:2ac9:5231 with SMTP id n15-20020a1c720f000000b003a02ac95231mr15818981wmc.39.1656674730362;
-        Fri, 01 Jul 2022 04:25:30 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id w6-20020a5d4b46000000b0021d3fbf1d29sm3862405wrs.97.2022.07.01.04.25.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kPJJjylIpBkQ8W7Ml6hHpSSjjYliXppQHMQmyiUop9Q=;
+        b=7rhOS1eFqY2W+b3+9JW5ssTA42oNJvU0htNYO5eVbAOacH0pyJLstCHshp5lcS39Py
+         VFRaWDMtL2CFJnkJEK1vsMhc9u14fETfady1riffaSi3/LHXBLkIPLEPOTXi6NZINOv5
+         SCIS5guHEJnDTvHuQCT5iC09sItlvEJhaO1icBP3VkoslUvkF470xLnoblg28QtUuShv
+         v62Wrfl8cqKCpLvstJTpPfBpovufCGE7XwzujEJOgWf3MYwmH2CuULFjy73yHGU4BuCc
+         ZJX4FkuPG8PZi3N04UbANj2fVlLClV/onvKRm18V4Vhf5SKMB89tDhxt7AGOzSB+F7kl
+         mdjQ==
+X-Gm-Message-State: AJIora9m9iUaEkuyVazpMYeVwOrq4uxB4ndxyjgo32AC6/44ZycI4IrN
+        xDUGi7v9/BxBZtGFpX6cqgSx+g6XOfM=
+X-Google-Smtp-Source: AGRyM1susy/qfIZI1T1yxmxSf7281014snIkVQO+0mLyOdyCK9p25FB2sMMTP+WEOQ99BhQIt+uCNw==
+X-Received: by 2002:a50:fc15:0:b0:435:7897:e8ab with SMTP id i21-20020a50fc15000000b004357897e8abmr18287719edr.17.1656674846155;
+        Fri, 01 Jul 2022 04:27:26 -0700 (PDT)
+Received: from felia.fritz.box (200116b826fa4e0041b3c167ba41e809.dip.versatel-1u1.de. [2001:16b8:26fa:4e00:41b3:c167:ba41:e809])
+        by smtp.gmail.com with ESMTPSA id ds12-20020a0564021ccc00b00437d3e6c4c7sm4764548edb.53.2022.07.01.04.27.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 04:25:29 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        linux-kernel@vger.kernel.org, fweisbec@gmail.com
-Cc:     bristot@redhat.com, cmetcalf@ezchip.com, mgorman@suse.de,
-        bsegall@google.com, rostedt@goodmis.org, dietmar.eggemann@arm.com,
-        vincent.guittot@linaro.org, juri.lelli@redhat.com,
-        peterz@infradead.org, mingo@redhat.com, mtosatti@redhat.com,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Subject: Re: [PATCH] nohz/full, sched/rt: Fix missed tick-reenabling bug in
- dequeue_task_rt
-In-Reply-To: <20220628092259.330171-1-nsaenzju@redhat.com>
-References: <20220628092259.330171-1-nsaenzju@redhat.com>
-Date:   Fri, 01 Jul 2022 12:25:28 +0100
-Message-ID: <xhsmhedz55b2v.mognet@vschneid.remote.csb>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Fri, 01 Jul 2022 04:27:25 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] HID: core: remove unneeded assignment in hid_process_report()
+Date:   Fri,  1 Jul 2022 13:27:20 +0200
+Message-Id: <20220701112720.13452-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/06/22 11:22, Nicolas Saenz Julienne wrote:
-> dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
-> called sched_update_tick_dependency() preventing it from re-enabling the
-> tick on systems that no longer have pending SCHED_RT tasks but have
-> multiple runnable SCHED_OTHER tasks:
->
->   dequeue_task_rt()
->     dequeue_rt_entity()
->       dequeue_rt_stack()
->         dequeue_top_rt_rq()
->         sub_nr_running()	// decrements rq->nr_running
->           sched_update_tick_dependency()
->             sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
->             ...
->         __dequeue_rt_entity()
->           dec_rt_tasks()	// decrements rq->rt.rt_nr_running
->         ...
->
-> Every other scheduler class performs the operation in the opposite
-> order, and sched_update_tick_dependency() expects the values to be
-> updated as such. So avoid the misbehaviour by inverting the order in
-> which the above operations are performed in the RT scheduler.
->
+Commit bebcc522fbee ("HID: core: for input reports, process the usages by
+priority list") split the iteration into two distinct loops in
+hid_process_report().
 
-I can't see anything wrong with your approach, though I did have to spend
-some time re-learning RT_GROUP_SCHED. The designated Fixes: commit looks
-about right too.
+After this change, the variable field is only used while iterating in the
+second loop and the assignment of values to this variable in the first loop
+is simply not needed.
 
-> Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Remove the unneeded assignment during retrieval. No functional change and
+no change in the resulting object code.
 
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+This was discovered as a dead store with clang-analyzer.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Benjamin, Jiri, please pick this minor non-urgent clean-up patch.
+
+ drivers/hid/hid-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index 00154a1cd2d8..b7f5566e338d 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1662,7 +1662,7 @@ static void hid_process_report(struct hid_device *hid,
+ 
+ 	/* first retrieve all incoming values in data */
+ 	for (a = 0; a < report->maxfield; a++)
+-		hid_input_fetch_field(hid, field = report->field[a], data);
++		hid_input_fetch_field(hid, report->field[a], data);
+ 
+ 	if (!list_empty(&report->field_entry_list)) {
+ 		/* INPUT_REPORT, we have a priority list of fields */
+-- 
+2.17.1
 
