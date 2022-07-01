@@ -2,126 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC48C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C420C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235753AbiGALvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
+        id S235741AbiGALxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235808AbiGALvp (ORCPT
+        with ESMTP id S230147AbiGALxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:51:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202983F1C;
-        Fri,  1 Jul 2022 04:51:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656676304; x=1688212304;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OLXHbADubhqmD0kqklxc8Slb/CATWcYqQM8m+MGGNRQ=;
-  b=RRMU5MQKpuBC5ElQmQcvgkybCKMb/2ivDMv1wgy47FVCJQfbtHXV45pB
-   lc0xWfFDoVsT1BbnSw/EED8nDGm8V7OkSZIq0uDF8mcnisdJ6tFItnU/P
-   fSy59d8/eEEA/YLZ/Li9k0HOeWWM5jmHrbnqNfTcQuCQzctK0olLPjnCS
-   Hub2qskSlMFFC78GkyFCo3uL4btC+tLV7L+nhS3Mg4Dx8OcXEsmYK3Avc
-   knKxNfbCfVLBr8Ff84BgtqhECPciTVXHNjGC5WnWRVQvJfrUFRhPA5bq/
-   DBqLCIrfYiHlrIJe3bvBnrTbs2prmHqZ67ui/rtXn9exqxQvJcREX+t+j
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="263034011"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="263034011"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 04:51:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="659407919"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 01 Jul 2022 04:51:42 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7FBW-000DuE-2R;
-        Fri, 01 Jul 2022 11:51:42 +0000
-Date:   Fri, 1 Jul 2022 19:50:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     kbuild-all@lists.01.org, linux-pm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 05/10] rtc: cmos: Use `pm_suspend_preferred_s2idle`
-Message-ID: <202207011940.s0fsRy23-lkp@intel.com>
-References: <20220701023328.2783-5-mario.limonciello@amd.com>
+        Fri, 1 Jul 2022 07:53:53 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A09E7C1AA
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:53:52 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id x1-20020a17090abc8100b001ec7f8a51f5so6233659pjr.0
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 04:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IXx8UMBs37XoCr/P34doCY5FYejV0CoORrXgAbU85YQ=;
+        b=JFQ0s8zobdsMGnTI4K4O+OztMfyj1no/YtLtammtwj2DuYO7CqH2tknwvBhO64obSn
+         Ef0HDvbyboVnJJOqM9ApksyD4tmiI88YP2ND2A6DDm7GZynad5O9RF36TUdsymib/q7Z
+         zfGFmMU0MpjLqo9f3X0+mcl/6sW6/hWOTo4us=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IXx8UMBs37XoCr/P34doCY5FYejV0CoORrXgAbU85YQ=;
+        b=Qyy13Fj6MJXKFPKmmbaNQL9Ut14R71Jgr6kUmkNG0eT6rCMh0Kun6lLvCmmPzYXq54
+         eKj93AaDm4h6SFMwKLo6mHMyN1orszIflxIhcgtzvQiKgiX6j8ka0mIxmV0u9hTuwoxk
+         bLsXw7rcqkELHiOsPKvndstrVg9A7ijj2UlDfTHIax/av7QJIoXeJUnAzth06mYydBDO
+         txQ5RZwX/+hGgUYul4fSjTfQ70SLWT4sMBWXTZfbX3cFlgf1wyC4teISytstkW0GpYJ3
+         RlYxSiU/kIYmxRHomXmwv6mTr7ueLK9VldfS4nuznrHgRyuuOWw4s4bYKbF8TQsQhMu2
+         LguA==
+X-Gm-Message-State: AJIora8xy3ePJRglGckx761lkKWasajROcvlPNHjXxpo/L5x6oIzeixc
+        YWLzKqTPZDtXyPnm9PiYbbJe9A==
+X-Google-Smtp-Source: AGRyM1vsDSInbm2Fvjq7cYDf0xMMom7pKw2+yFVZ8Cx2EsKFn9vyh/QyxEkn3kFHJxxRIkfNmJavMA==
+X-Received: by 2002:a17:90b:4a0b:b0:1ed:4a56:d805 with SMTP id kk11-20020a17090b4a0b00b001ed4a56d805mr18346618pjb.246.1656676431516;
+        Fri, 01 Jul 2022 04:53:51 -0700 (PDT)
+Received: from 792b621d1c2d ([203.220.223.63])
+        by smtp.gmail.com with ESMTPSA id j4-20020a17090a7e8400b001ec98cc43e4sm6364383pjl.49.2022.07.01.04.53.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 04:53:50 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 11:53:43 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 0/6] 5.18.9-rc1 review
+Message-ID: <20220701115343.GA9121@792b621d1c2d>
+References: <20220630133230.239507521@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220701023328.2783-5-mario.limonciello@amd.com>
+In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mario,
+On Thu, Jun 30, 2022 at 03:47:26PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.9 release.
+> There are 6 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
 
-Thank you for the patch! Yet something to improve:
+Hi Greg,
 
-[auto build test ERROR on rafael-pm/linux-next]
-[also build test ERROR on drm-misc/drm-misc-next hid/for-next linus/master v5.19-rc4 next-20220701]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+5.18.8-rc1 tested.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mario-Limonciello/PM-suspend-Introduce-pm_suspend_preferred_s2idle/20220701-103534
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220701/202207011940.s0fsRy23-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/f5c9ad12802ecfaf2fc73e35ee9b563d7283b049
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mario-Limonciello/PM-suspend-Introduce-pm_suspend_preferred_s2idle/20220701-103534
-        git checkout f5c9ad12802ecfaf2fc73e35ee9b563d7283b049
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Run tested on:
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- Allwinner H6
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
 
-All errors (new ones prefixed by >>):
-
-   drivers/rtc/rtc-cmos.c: In function 'use_acpi_alarm_quirks':
->> drivers/rtc/rtc-cmos.c:1264:14: error: implicit declaration of function 'pm_suspend_preferred_s2idle'; did you mean 'pm_suspend_default_s2idle'? [-Werror=implicit-function-declaration]
-    1264 |         if (!pm_suspend_preferred_s2idle())
-         |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |              pm_suspend_default_s2idle
-   cc1: some warnings being treated as errors
-
-
-vim +1264 drivers/rtc/rtc-cmos.c
-
-  1256	
-  1257	#ifdef CONFIG_X86
-  1258	/* Enable use_acpi_alarm mode for Intel platforms no earlier than 2015 */
-  1259	static void use_acpi_alarm_quirks(void)
-  1260	{
-  1261		if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
-  1262			return;
-  1263	
-> 1264		if (!pm_suspend_preferred_s2idle())
-  1265			return;
-  1266	
-  1267		if (!is_hpet_enabled())
-  1268			return;
-  1269	
-  1270		if (dmi_get_bios_year() < 2015)
-  1271			return;
-  1272	
-  1273		use_acpi_alarm = true;
-  1274	}
-  1275	#else
-  1276	static inline void use_acpi_alarm_quirks(void) { }
-  1277	#endif
-  1278	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
