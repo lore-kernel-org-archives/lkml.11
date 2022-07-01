@@ -2,105 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87063C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232543AbiGAQx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
+        id S232248AbiGAQ7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbiGAQxz (ORCPT
+        with ESMTP id S232197AbiGAQ7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:53:55 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9CF33A39
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 09:53:54 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id l24so2785309ion.13
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 09:53:54 -0700 (PDT)
+        Fri, 1 Jul 2022 12:59:08 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6945B11A38
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 09:59:07 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id fd6so3695375edb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 09:59:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LaW3j8hbP/ddoj0KXcLD6b4OP7Z2ovMHOo40fbigHv4=;
-        b=PsqDLXORcCNMMYdjv5CKT1lXfaZSa0sNyo4oqq3T65XGk20Vo3gdC+C7wgIs1Ovei/
-         ZTMUckHuxfwlZqj/T0yAgGPiZaETEc9EajK17CUUZhlp0Go6KUZ2kYv0ZQ8mUzh/I7JL
-         0OJ3Q59n6ZUsL+zPpBwwmmcAHRv3K4j04Tm/M=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=51XJmeFGSCpeWpGVJIgYYkXCjZO/7dCyc5nbhZQFE9g=;
+        b=btYkkxWkV3SrBUcr1GL9Wh70bDS4aKRkmhJ3E5KKhdhPNHMIPrkdfrqNny4F/v7sUv
+         h8eTQihiOMQSCK5RJZiKdKZwucl3L7wHe4mnaXW2+RJJokS3tluWSZEmByI9q58LVq6X
+         NvyaGbSo7ITsKWPB1d+r9c7i2J0wV/QzVxOP4Igs2R0IwtVfdRrN53peVlmXDHa+cYqF
+         hXS7GwyLGNxoWCzJQvFUcjn826DTM+ygAR8IrZ+yN6R1Dgu9doR3+Jg0SZq29FXqxYOl
+         iPNUrk79RYIKpS/yJIx3vFZBXdDnOCccHa8oEXeQJlA8feSrF5fbF5r4ytMpaJXEL2EZ
+         +Ubw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LaW3j8hbP/ddoj0KXcLD6b4OP7Z2ovMHOo40fbigHv4=;
-        b=nblnxfZlL+0KUr91GG3DA7S0idNGzOmYEx9HCHCvY0Ya+DgoR/p8Anuwu4hQL6rl+V
-         upNOYDns/5Ygek7RcysfxrJ1PxuGFtPOLDkaHwHXAP4b50Oux3J9PpwwbEUxJQCtB5sA
-         6FdOTHPVL/bkJqnax8tOipiKajUAgAxnNHzI0zjZaowwZG8swK1isFQfuIHAtwQiouy1
-         S9EDiFR4/WfCNudWNY/cLgmj0iIRzitEYqT7dj6XFdq5Oaw3LU+EQtYMtNfdA9S0Wt9C
-         s6DswKuwPDdbkSDc/9h1g+1SYODc6lOhrl5PIBAUxAVYcxkz7weoXum5DcDJd9Fru3wm
-         vUzw==
-X-Gm-Message-State: AJIora9Nh6g7JnQMX9WrQNYmWWCUJSvEEHK53DjdWkgYjcH9oTiqjrRb
-        lr5AZnZVofiXDUCjeEj1PkZGEw==
-X-Google-Smtp-Source: AGRyM1sEzipgi8TeJgTU049tz0zehytYTwsNREtfcixFnphoS0pcPQKjcnhOKBN70gnFZyLjjC6M8g==
-X-Received: by 2002:a05:6638:3727:b0:33c:98a9:9 with SMTP id k39-20020a056638372700b0033c98a90009mr9260911jav.84.1656694434285;
-        Fri, 01 Jul 2022 09:53:54 -0700 (PDT)
-Received: from shuah-tx13.internal ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id r6-20020a924406000000b002dab4765893sm3911800ila.66.2022.07.01.09.53.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 09:53:53 -0700 (PDT)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [RESEND PATCH] misc: rtsx_usb: set return value in rsp_buf alloc err path
-Date:   Fri,  1 Jul 2022 10:53:52 -0600
-Message-Id: <20220701165352.15687-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=51XJmeFGSCpeWpGVJIgYYkXCjZO/7dCyc5nbhZQFE9g=;
+        b=PV9NELpb+BqXApI2b4Iu4Hx8QevvP2HmfCCcchb+wywtSMi85uBYJGb/SlEwmyuFbu
+         1ftavu98aUOfJ7FjvOqAmlAzd1dA/eDS2dkR3bn1KFfHXgB3Bztj8AK/7n0pvlFXty/I
+         ESR5nu4RtlSVrngSma8uZbH27IDNNILBFumWrKOC4NLmlhnIYxXjTiJgwZzNRlipteYV
+         SwkYA9Xu59T7SDMi5OC7S+MGJ2mkZIYoRuNSIjNcq2UvIZn+VqtBDkBlYOJNDOv7iVTI
+         hIon8PwDNWIR+aVRMqRZsWczl3f2sdhve/Lu/325+WWSpY22qnGzLnDHqb6SXahWp2oZ
+         6oNw==
+X-Gm-Message-State: AJIora8PGPCk3/XtO/qHTggl7ClYg2v+Lp7r5yXM1f4BBz37vutz3+Y8
+        2pjdNH1T4ERWRyDp8Yk9THpmzNLkhE8q9lj/5ty5Hw==
+X-Google-Smtp-Source: AGRyM1ukVHnZIKXXd90a1KBf/JucgBk0M9Kzg6bmVGukBHFFeBtewkkuSZM9kshCwi7pvSh2Nrhxy7xirSbm8yURxM0=
+X-Received: by 2002:a05:6402:3511:b0:437:7eec:c44c with SMTP id
+ b17-20020a056402351100b004377eecc44cmr20456910edd.11.1656694745877; Fri, 01
+ Jul 2022 09:59:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220701095421.1.I78ded92e416b55de31975686d34b2058d4761c07@changeid>
+In-Reply-To: <20220701095421.1.I78ded92e416b55de31975686d34b2058d4761c07@changeid>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Fri, 1 Jul 2022 09:58:54 -0700
+Message-ID: <CABXOdTc+2JhmBnxzhpDW4yfZK7-V3H2vx-7QKgH4JBJb84Mveg@mail.gmail.com>
+Subject: Re: [PATCH] platform/chrome: cros_ec: Send host event for prepare/complete
+To:     Tim Van Patten <timvp@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Rob Barnes <robbarnes@google.com>,
+        Raul Rangel <rrangel@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set return value in rsp_buf alloc error path before going to
-error handling.
+On Fri, Jul 1, 2022 at 8:54 AM Tim Van Patten <timvp@google.com> wrote:
+>
+> Update cros_ec_lpc_pm_ops to call cros_ec_lpc_suspend() during PM
+> .prepare() and cros_ec_lpc_resume() during .complete. This allows the
+> EC to log entry/exit of AP's suspend/resume more accurately.
+>
+> Signed-off-by: Tim Van Patten <timvp@google.com>
+> ---
+>
+>  drivers/platform/chrome/cros_ec_lpc.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+> index 7677ab3c0ead9..783a0e56bf5f3 100644
+> --- a/drivers/platform/chrome/cros_ec_lpc.c
+> +++ b/drivers/platform/chrome/cros_ec_lpc.c
+> @@ -534,19 +534,24 @@ static int cros_ec_lpc_suspend(struct device *dev)
+>  {
+>         struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
+>
+> +       dev_info(dev, "Prepare EC suspend\n");
 
-drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!ucr->rsp_buf)
-               ^~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-           if (!ucr->rsp_buf)
-           ^~~~~~~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
+I don't see why that logging noise is necessary and/or adds value. If
+every driver did that, the entire kernel log would be polluted by
+similar messages.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 3776c7855985 ("misc: rtsx_usb: use separate command and response buffers")
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
-Sorry the first attempt had typo in the to list
+> +
+>         return cros_ec_suspend(ec_dev);
+>  }
+>
+> -static int cros_ec_lpc_resume(struct device *dev)
+> +static void cros_ec_lpc_resume(struct device *dev)
+>  {
+>         struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
+>
+> -       return cros_ec_resume(ec_dev);
+> +       cros_ec_resume(ec_dev);
+> +
+> +       dev_info(dev, "EC resume completed\n");
 
- drivers/misc/cardreader/rtsx_usb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Same here.
 
-diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
-index 4e2108052509..f150d8769f19 100644
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -636,8 +636,10 @@ static int rtsx_usb_probe(struct usb_interface *intf,
- 		return -ENOMEM;
- 
- 	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->rsp_buf)
-+	if (!ucr->rsp_buf) {
-+		ret = -ENOMEM;
- 		goto out_free_cmd_buf;
-+	}
- 
- 	usb_set_intfdata(intf, ucr);
- 
--- 
-2.34.1
+Guenter
 
+>  }
+>  #endif
+>
+>  static const struct dev_pm_ops cros_ec_lpc_pm_ops = {
+> -       SET_LATE_SYSTEM_SLEEP_PM_OPS(cros_ec_lpc_suspend, cros_ec_lpc_resume)
+> +       .prepare = cros_ec_lpc_suspend,
+> +       .complete = cros_ec_lpc_resume
+>  };
+>
+>  static struct platform_driver cros_ec_lpc_driver = {
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
