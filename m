@@ -2,80 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 309D0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3764C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234519AbiGAHD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
+        id S234805AbiGAHFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiGAHDw (ORCPT
+        with ESMTP id S231727AbiGAHFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:03:52 -0400
-Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB89564E5
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:03:48 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id VEE00141;
-        Fri, 01 Jul 2022 15:03:41 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
- 15.1.2507.9; Fri, 1 Jul 2022 15:03:44 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <jean-philippe@linaro.org>, <joro@8bytes.org>, <will@kernel.org>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] iommu/virtio: Handle return of iommu_device_register
-Date:   Fri, 1 Jul 2022 01:43:04 -0400
-Message-ID: <20220701054304.6434-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Fri, 1 Jul 2022 03:05:52 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 519A7677D1
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:05:51 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 87A9E1E80D90;
+        Fri,  1 Jul 2022 15:04:22 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id w7qXELU5YKyf; Fri,  1 Jul 2022 15:04:19 +0800 (CST)
+Received: from localhost.localdomain (unknown [112.65.12.78])
+        (Authenticated sender: jiaming@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 4F0491E80D21;
+        Fri,  1 Jul 2022 15:04:17 +0800 (CST)
+From:   Zhang Jiaming <jiaming@nfschina.com>
+To:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
+        hpa@zytor.com
+Cc:     linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        renyu@nfschina.com, Zhang Jiaming <jiaming@nfschina.com>
+Subject: [PATCH] mm/pgtable: Fix typo in comments
+Date:   Fri,  1 Jul 2022 15:05:34 +0800
+Message-Id: <20220701070534.9874-1-jiaming@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   20227011503418d5d708f5b31f05e32cd5086aa14c86f
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-iommu_device_register returns an error code and, although it currently
-never fails, we should check its return value anyway.
+There are 2 typo (writeable) in init.c and pgtable.c's comments.
+Fix it.
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
+Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
 ---
- drivers/iommu/virtio-iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/mm/init.c    | 2 +-
+ arch/x86/mm/pgtable.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 25be4b822aa0..12e7d8364560 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1144,7 +1144,9 @@ static int viommu_probe(struct virtio_device *vdev)
- 	if (ret)
- 		goto err_free_vqs;
- 
--	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
-+	ret = iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
-+	if (ret)
-+		goto err_remove_sysfs;
- 
- #ifdef CONFIG_PCI
- 	if (pci_bus_type.iommu_ops != &viommu_ops) {
-@@ -1175,8 +1177,9 @@ static int viommu_probe(struct virtio_device *vdev)
- 	return 0;
- 
- err_unregister:
--	iommu_device_sysfs_remove(&viommu->iommu);
- 	iommu_device_unregister(&viommu->iommu);
-+err_remove_sysfs:
-+	iommu_device_sysfs_remove(&viommu->iommu);
- err_free_vqs:
- 	vdev->config->del_vqs(vdev);
- 
+diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
+index d8cfce221275..e027239406d5 100644
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -893,7 +893,7 @@ void free_init_pages(const char *what, unsigned long begin, unsigned long end)
+ 		/*
+ 		 * We just marked the kernel text read only above, now that
+ 		 * we are going to free part of that, we need to make that
+-		 * writeable and non-executable first.
++		 * writable and non-executable first.
+ 		 */
+ 		set_memory_nx(begin, (end - begin) >> PAGE_SHIFT);
+ 		set_memory_rw(begin, (end - begin) >> PAGE_SHIFT);
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index a932d7712d85..95f930104deb 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -480,7 +480,7 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd)
+  * Used to set accessed or dirty bits in the page table entries
+  * on other architectures. On x86, the accessed and dirty bits
+  * are tracked by hardware. However, do_wp_page calls this function
+- * to also make the pte writeable at the same time the dirty bit is
++ * to also make the pte writable at the same time the dirty bit is
+  * set. In that case we do actually need to write the PTE.
+  */
+ int ptep_set_access_flags(struct vm_area_struct *vma,
 -- 
-2.27.0
+2.25.1
 
