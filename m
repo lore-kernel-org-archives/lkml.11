@@ -2,171 +2,479 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFD0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6611EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236095AbiGAIS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
+        id S236126AbiGAITY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbiGAISw (ORCPT
+        with ESMTP id S233516AbiGAITW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:18:52 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804B43B036
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:18:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656663531; x=1688199531;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=73qOXj54mzh5bn7snpSdtNZbOJdj9TfQtRUWfAhQ1ss=;
-  b=nrW+xr0lrNdiCb7DiP5v/mObvXaqrg1tRZ24D+Aad3JIxwbrfUaekcGe
-   AK5yj9X20+fpOET8Htv3CsqPOTC190d0dDbqI340efRqDuJx/CFYl77m1
-   wu5imZiGolnazmTf6bAomPvwKaThcK0cbE4kE0vOU19Zl3KHicMpmVsKn
-   pqokcbGcYSV8BmxJ5MitoTZuAPkWkvAAguegGA8BH6L/icDedVKmEnbMf
-   d9K1PbhUF0/w9/II+oF2mR0qxFYiQwMAnTFA2dgFYZU1/0Bi2Yno1PS+r
-   MtctpKNbdpjYiyM9mZDVGWQXmFehZ9UMwfhOFstbqADvKjwBCPSjPeHGE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271359089"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="271359089"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:18:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="768422848"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga005.jf.intel.com with ESMTP; 01 Jul 2022 01:18:50 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 1 Jul 2022 01:18:50 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.104)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UD+G2dqQLOOqQIoDrk2KbZkzAUxGy+vor/TP/ItHA3gYIIPCSTTQmbcGbb4tNrxT95toqdQZ6CHw9waOPBRm0sLwRpB7ftKV8xeSTQmJI8IMD6CD+3JrRMc+so/0bhLO6fOzLbF6TiVji8PKPW/vR5C0yP/maPIvIl9KpBUE7Vi9LtH85LaW+VpfhqpRq50qsDmCcTH7Wg24GN6ckYQz7t+GtfazQS/c1lgTPZNjUY/7OsGhkS8wAhQ44h9+2eefARAUXmfEkUiZ+h7uY5T1ql6ZN4AMh+43Ct8I/mnuoTcrbhhBsWIOM5VZUmlLgX/r8WF5Z5ZFiTX5za0oNToqsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=73qOXj54mzh5bn7snpSdtNZbOJdj9TfQtRUWfAhQ1ss=;
- b=hWKLRJKUDelkaJ9+CXYMvItVgwNIdrg5heGtCgQp+Xzu8re0golK5LbNeQYNrRS+PpN1oJtAXybXBMp9+NLvWmSbB6x7nJnAYvRfArBbxvl4antlMN/AD+zEC0bcKjr4zpemurIWaaVuemS3ayxr7qZCsX+XuDdth5Okp3pShWIBaYZNPZGmg4US2Xt86e3u0M7C5Jwn8eCKZHwPtP9IPhlhp3kngQDy9H3UFF5cmIa2uAlsTPjJtWL9y5Dp7dqQWmVv7UyKBcZum8jSRz0EkzNtHTStPM79NN2iYgTk+V7xgOJ/mMgh8T90YclMBgcZB+IwmDCJHutCHGiLkjWgqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW3PR11MB4762.namprd11.prod.outlook.com (2603:10b6:303:5d::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 1 Jul
- 2022 08:18:48 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5395.015; Fri, 1 Jul 2022
- 08:18:48 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-CC:     "Raj, Ashok" <ashok.raj@intel.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per
- domain lock
-Thread-Topic: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per
- domain lock
-Thread-Index: AQHYi40tpDd6OUEG+UyFq7K+xVikta1pLxKw
-Date:   Fri, 1 Jul 2022 08:18:48 +0000
-Message-ID: <BN9PR11MB5276DA58D6BA7B1B366B0AC28CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
- <20220629074725.2331441-12-baolu.lu@linux.intel.com>
-In-Reply-To: <20220629074725.2331441-12-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5a9e852e-0e97-4a9a-d496-08da5b3a52ee
-x-ms-traffictypediagnostic: MW3PR11MB4762:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QMvRSG5v3PSj+/NlLR/yQH+DGPN4Z30af37l6kkeGwxBAZ2z/odSSBgBGsDM8MoAVpZeZEBpr9eMRc9dRz4cRyBYVN12xcdqX/HM7k00M2oFD8iSPWLkqRvHifIvExvoNh+cO1UN9DCIQc0hZfkHalLre7C5MNwvyTygcBEjVYZB9MFaOBw7Yx2exHY7elTpm+22IYeP8EPFM+9mYBmhwuBUtVYYM4FfFoYr9lJe0+frrLGlMgHGKQSelLdodlKiK0C99YXJXKX8SrSHFQzUDDxb+tRvwwEqTKUNfMi4esdCC/XoRrShflbm+sRfmKI5tA5ML2attJVsJN2bpGBYc/xYmjqyKPxc7Q3cjbq0feKQBAbGw0Gza8T7Ypps677eLh+pLWpPV9JM6hEGAZqnBNNtS25Ts0XBS4h6k8FaZdvo5Ow09LWsuq4ks9a4juy2AlqDCW7Ymymq5yUEXCuPCburEotBpy0i4oGR52K5TBVBtXEqaxkPnfm2YgQHCjIzjjZgxDtWczxYJkC9gGFokRDPt6gZfz5vjtq1nzyzJkiNvM5k3N/aXFwA2jQvNfgy5jQkd6yeXRWogx/8BoxzcSDu7CRxgc0w7y9wUhV9CyxYEAOszA4N07A2KWYyA5tGwAaR5tyaQ9nhyULCzFVAPMGn/isCtm1znCCdTT+HMVdSAqvgu6LYJrqNYJ5CQ/kJbry8dwKuaWqJDKOpb1rKIgwDDpFSir4zULcYvwX778pD6QQtYBcvoWfIHu5lfyHL7aAo7xLkqysr/+gWKXuT+krIZ52+qpVcclFoDl7y6mtsefgJfgbqKR0gQ0GY9nSq
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(346002)(396003)(376002)(39860400002)(38100700002)(110136005)(41300700001)(66476007)(54906003)(186003)(33656002)(316002)(2906002)(478600001)(5660300002)(122000001)(7696005)(83380400001)(6506007)(38070700005)(86362001)(4744005)(26005)(82960400001)(8936002)(66556008)(64756008)(8676002)(4326008)(55016003)(66446008)(66946007)(52536014)(76116006)(9686003)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0Mha11no+cBDS2N4wGdhTdUbMUXZwAoCPjQM2g7hSZxtyGTxxAQTbDY4TCwk?=
- =?us-ascii?Q?kTsYfOreFboHxMOLGzokaGjiOw5hiLILCCAVmYmbJBJG5du4ZcCr3gbOzpfk?=
- =?us-ascii?Q?N4nGef4MyBuENavGmkXdqTrn/A1cPHfVBPS5bYN6xbzwPktqBhpuj8jcV/YV?=
- =?us-ascii?Q?ZeYZcPVDF/FDqE/CeOrmWr6U+V9IYQgJojzODbcoW5JoyFjGMbzs5DjGxbhL?=
- =?us-ascii?Q?iHQVoPwkb0O4i1sRakDoyTs7QPcxpLShu68o+U53B9yr3OZu9Mswsvll7a3z?=
- =?us-ascii?Q?ptcexXZFjj84aVsi3Vxgl4ByH26k7kzXATZRrvjs0mypMk2qLnv05ZY+XFq9?=
- =?us-ascii?Q?AapXdWkIO5nXRd/lCpfuX9aksOcuoBhfCoV2XGLspBeuMvAbiCwbf+wNky7o?=
- =?us-ascii?Q?ByMzx5X2RhP46VqvGSPR+T24AS0erJ/uV9ToAepkWejLOFHbIHQOhO3yYIy8?=
- =?us-ascii?Q?P24THaIvg6d8CKBKvb4RTadBX91v+EEANH+En33wgm7RT/XkWbk4BDGgZbg4?=
- =?us-ascii?Q?EDQwLQq4hLWwFwVtsOIrzW3QWggsScGx3n+ZSP1EitnIxllUhwmOil14Dua7?=
- =?us-ascii?Q?m49yd9haa+ZDG3EkTIjMlQBA4lHflbZGYq/l1MjSRxUJwUrxeFrhabSr1PKX?=
- =?us-ascii?Q?E8WSDVL+BoKt8n2fBvk4aBoYC53dGJC3ZTnV6gTh773C6O04yQcAmDoqE8S0?=
- =?us-ascii?Q?QlgTh8zUfi7m14m0v/+hph4o+ltgR93i/CN9InzSiNQJkVioiZCGIwkm3aQV?=
- =?us-ascii?Q?OdDC3UuoS+OSeZ7zi+RRg4vqY2aB1e2vlWWGOqghAWc0omo/kmLR4tdCHUgB?=
- =?us-ascii?Q?/pxUWAnAG3CNMdCyjNOHUGIuVa67t0DJCfgMPM+ifmtVbDYsPMNUJLLZo3P6?=
- =?us-ascii?Q?WayCRvKm2tMUezN23bxsxaOjbqgeIIgiNbPktRGdI5wrfqlhFtDyATJOzNBx?=
- =?us-ascii?Q?r6RM5i6q/PxKTvk/fFLH5qap7g3VCbyxekvtVcmcLySXvRRqcTDqzsx+p+Q8?=
- =?us-ascii?Q?G+iBMtywBGCGr6jHBRD9lOVrPE3Q6EoJSqWWJTrCRQ9GA/gc8NNzjFItaAHS?=
- =?us-ascii?Q?mudNUXCwbXE/EUBa5QORodeWmi8eYO9QAxqaxmV2GDo97xXKozPCLm9K3LZK?=
- =?us-ascii?Q?+5aQRc3j5x0RY92swk4p3QgCsXsuWeojT05p0DfIHlNWXt5G+wCNwiIA4ttW?=
- =?us-ascii?Q?vQvZVg0OEPyvqy8AsAjPxEqTlvQJfbvXoelaIEanbJRX+fW30HXlIT7RScat?=
- =?us-ascii?Q?vRvzhKIwmKs819M43enZaXRV4PsPaeIuVY8d4mTW9vuEUnaoZLPz5qZboodL?=
- =?us-ascii?Q?BEC2DRD9rIr4I91//bUX1IXpu708LTupnD3rjKULjcLigCS4iBxwE+0TunZc?=
- =?us-ascii?Q?xB0/+lxylTJkC5QBt7K+6r4HOV4IUP+VtJ3nR75KMrEdWYemE6Zy3w7cxFXO?=
- =?us-ascii?Q?SONAO2vLG1Rg/emSy3OpG1x7jKcTWP8C03bSpI3vFx7uPR20hqnVMTM0ZUmq?=
- =?us-ascii?Q?yNVqTGi/wqyRTz7AQds7vMoVElyiCl4JPLfK0w1eO0iOwlNie03lXYz7sg9R?=
- =?us-ascii?Q?cihnCDhszXKooW+k4UUm0w2zRbROqTX/ElnZnFYe?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 1 Jul 2022 04:19:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63FB639D;
+        Fri,  1 Jul 2022 01:19:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52A25B82EEF;
+        Fri,  1 Jul 2022 08:19:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D15AC341C6;
+        Fri,  1 Jul 2022 08:19:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656663557;
+        bh=iofprNZZbcI5St/5SQyQ0vF2ht0PL5Tzg5WnoHSo8Ok=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=166y6zHSIY0qwuF/fmsogcBj275v8Wuwv3LJxyEi2IFJvATncJ+5gMTcUAIwKQpdK
+         zQoTw8rBZ1x9r+RQEXWFjs8cxp+BO3kx5vZsGmxEPzAgo+5Q+8vnCM07DTXUt0LZda
+         kSdna1cuPExLwJi6rFw81luaB5USmo5UlS+XoS9c=
+Date:   Fri, 1 Jul 2022 10:19:14 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, derek.kiernan@xilinx.com,
+        dragan.cvetic@xilinx.com, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, git@amd.com, git@xilinx.com
+Subject: Re: [PATCH 2/4] drivers: misc: Add Support for TMR Manager
+Message-ID: <Yr6uArBFOIMFpLUt@kroah.com>
+References: <20220628054338.1631516-1-appana.durga.rao@xilinx.com>
+ <20220628054338.1631516-3-appana.durga.rao@xilinx.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a9e852e-0e97-4a9a-d496-08da5b3a52ee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 08:18:48.3492
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AqAvglG1p9Eq6GOZnNyxhQRciV3ZctU7sEvQ6H9ZGgtjMdRz32APGGcLS4ihHfRMzEGfFUtpPLo2OIfItcSQoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4762
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628054338.1631516-3-appana.durga.rao@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Wednesday, June 29, 2022 3:47 PM
->=20
-> Using a global device_domain_lock spinlock to protect per-domain device
-> tracking lists is an inefficient way, especially considering this lock
-> is also needed in the hot paths. This optimizes the locking mechanism
-> by converting the global lock to per domain lock.
->=20
-> On the other hand, as the device tracking lists are never accessed in
-> any interrupt context, there is no need to disable interrupts while
-> spinning. Replace irqsave variant with spinlock calls.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On Tue, Jun 28, 2022 at 11:13:36AM +0530, Appana Durga Kedareswara rao wrote:
+> The Triple Modular Redundancy(TMR) Manager is responsible for handling
+> the TMR subsystem state, including fault detection and error recovery
+> provides soft error detection, correction and recovery features.
+> 
+> This commit adds support for fault detection feature via
+> sysfs interface.
+> 
+> Usage:
+> To know the hardware status:
+> cat /sys/devices/platform/amba_pl/44a10000.tmr_manager/status
+> To know the break handler count(Error count):
+> cat /sys/devices/platform/amba_pl/44a10000.tmr_manager/errcnt
+> 
+> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+> ---
+>  .../testing/sysfs-driver-xilinx-tmr-manager   |  18 ++
+>  MAINTAINERS                                   |   7 +
+>  drivers/misc/Kconfig                          |  10 +
+>  drivers/misc/Makefile                         |   1 +
+>  drivers/misc/xilinx_tmr_manager.c             | 288 ++++++++++++++++++
+>  5 files changed, 324 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-driver-xilinx-tmr-manager
+>  create mode 100644 drivers/misc/xilinx_tmr_manager.c
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-driver-xilinx-tmr-manager b/Documentation/ABI/testing/sysfs-driver-xilinx-tmr-manager
+> new file mode 100644
+> index 000000000000..c2f615126201
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-driver-xilinx-tmr-manager
+> @@ -0,0 +1,18 @@
+> +What:		/sys/devices/platform/amba_pl/<dev>/status
+> +Date:		June 2022
+> +Contact:	appana.durga.rao@xilinx.com
+> +Description:	This control file provides the status of the tmr manager
+> +		useful for getting the status of fault.
+> +		This file cannot be written.
 
-except the previous comment on where to convert spin_lock_irqsave()
-the rest looks good to me.
+Examples of what the data in this file will be?
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> +
+> +What:		/sys/devices/platform/amba_pl/<dev>/errcnt
+> +Date:		June 2022
+> +Contact:	appana.durga.rao@xilinx.com
+> +Description:	This control file provides the fault detection count.
+> +		This file cannot be written.
+
+Again, example output?
+
+
+
+> +
+> +What:		/sys/devices/platform/amba_pl/<dev>/dis_block_break
+> +Date:		June 2022
+> +Contact:	appana.durga.rao@xilinx.com
+> +Description:	This control file enables the break signal.
+> +		This file is write only.
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 6cc825857722..3d29109788ed 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12962,6 +12962,13 @@ W:	http://www.monstr.eu/fdt/
+>  T:	git git://git.monstr.eu/linux-2.6-microblaze.git
+>  F:	arch/microblaze/
+>  
+> +MICROBLAZE TMR MANAGER
+> +M:	Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+> +S:	Supported
+> +F:	Documentation/ABI/testing/sysfs-driver-xilinx-tmr-manager
+> +F:	Documentation/devicetree/bindings/misc/xlnx,tmr-manager.yaml
+> +F:	drivers/misc/xilinx_tmr_manager.c
+> +
+>  MICROCHIP AT91 DMA DRIVERS
+>  M:	Ludovic Desroches <ludovic.desroches@microchip.com>
+>  M:	Tudor Ambarus <tudor.ambarus@microchip.com>
+> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> index 41d2bb0ae23a..555ae2e33b91 100644
+> --- a/drivers/misc/Kconfig
+> +++ b/drivers/misc/Kconfig
+> @@ -483,6 +483,16 @@ config OPEN_DICE
+>  
+>  	  If unsure, say N.
+>  
+> +config TMR_MANAGER
+> +	bool "Select TMR Manager"
+> +	depends on MICROBLAZE && MB_MANAGER
+> +	help
+> +	  This option enables the driver developed for TMR Manager. The Triple
+> +	  Modular Redundancy(TMR) manager provides support for fault detection
+> +	  via sysfs interface.
+> +
+> +	  Say N here unless you know what you are doing.
+> +
+>  source "drivers/misc/c2port/Kconfig"
+>  source "drivers/misc/eeprom/Kconfig"
+>  source "drivers/misc/cb710/Kconfig"
+> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> index 70e800e9127f..28b9803f909b 100644
+> --- a/drivers/misc/Makefile
+> +++ b/drivers/misc/Makefile
+> @@ -60,3 +60,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+>  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+>  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+>  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+> +obj-$(CONFIG_TMR_MANAGER)	+= xilinx_tmr_manager.o
+> diff --git a/drivers/misc/xilinx_tmr_manager.c b/drivers/misc/xilinx_tmr_manager.c
+> new file mode 100644
+> index 000000000000..5a4562e4a9d4
+> --- /dev/null
+> +++ b/drivers/misc/xilinx_tmr_manager.c
+> @@ -0,0 +1,288 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Xilinx TMR Subsystem.
+> + *
+> + * Copyright (C) 2022 Xilinx, Inc.
+> + *
+> + * Description:
+> + * This driver is developed for TMR Manager,The Triple Modular Redundancy(TMR)
+> + * Manager is responsible for handling the TMR subsystem state, including
+> + * fault detection and error recovery. The core is triplicated in each of
+> + * the sub-blocks in the TMR subsystem, and provides majority voting of
+> + * its internal state provides soft error detection, correction and
+> + * recovery. Error detection feature is provided through sysfs
+> + * entries which allow the user to observer the TMR microblaze
+> + * status.
+> + */
+> +
+> +#include <asm/xilinx_mb_manager.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +
+> +/* TMR Manager Register offsets */
+> +#define XTMR_MANAGER_CR_OFFSET		0x0
+> +#define XTMR_MANAGER_FFR_OFFSET		0x4
+> +#define XTMR_MANAGER_CMR0_OFFSET	0x8
+> +#define XTMR_MANAGER_CMR1_OFFSET	0xC
+> +#define XTMR_MANAGER_BDIR_OFFSET	0x10
+> +#define XTMR_MANAGER_SEMIMR_OFFSET	0x1C
+> +
+> +/* Register Bitmasks/shifts */
+> +#define XTMR_MANAGER_CR_MAGIC1_MASK	GENMASK(7, 0)
+> +#define XTMR_MANAGER_CR_MAGIC2_MASK	GENMASK(15, 8)
+> +#define XTMR_MANAGER_CR_RIR_MASK	BIT(16)
+> +#define XTMR_MANAGER_FFR_LM12_MASK	BIT(0)
+> +#define XTMR_MANAGER_FFR_LM13_MASK	BIT(1)
+> +#define XTMR_MANAGER_FFR_LM23_MASK	BIT(2)
+> +
+> +#define XTMR_MANAGER_CR_MAGIC2_SHIFT	4
+> +#define XTMR_MANAGER_CR_RIR_SHIFT	16
+> +#define XTMR_MANAGER_CR_BB_SHIFT	18
+> +
+> +#define XTMR_MANAGER_MAGIC1_MAX_VAL	255
+> +
+> +/**
+> + * struct xtmr_manager_dev - Driver data for TMR Manager
+> + * @regs: device physical base address
+> + * @dev: pointer to device struct
+> + * @cr_val: control register value
+> + * @magic1: Magic 1 hardware configuration value
+> + * @err_cnt: error statistics count
+> + * @phys_baseaddr: Physical base address
+> + */
+> +struct xtmr_manager_dev {
+> +	void __iomem *regs;
+> +	struct device *dev;
+
+Is this the parent of this device?  Why not make a new device?  The
+interaction here isn't well defined, what controls the lifespan of this
+structure?
+
+> +	u32 cr_val;
+> +	u32 magic1;
+> +	u32 err_cnt;
+> +	uintptr_t phys_baseaddr;
+
+This should be resource_size_t, not uintptr_t, right?
+
+
+> +};
+> +
+> +/* IO accessors */
+> +static inline void xtmr_manager_write(struct xtmr_manager_dev *xtmr_manager,
+> +				      u32 addr, u32 value)
+> +{
+> +	iowrite32(value, xtmr_manager->regs + addr);
+> +}
+> +
+> +static inline u32 xtmr_manager_read(struct xtmr_manager_dev *xtmr_manager,
+> +				    u32 addr)
+> +{
+> +	return ioread32(xtmr_manager->regs + addr);
+> +}
+> +
+> +/**
+> + * xtmr_manager_unblock_break - unblocks the break signal
+> + * @xtmr_manager: Pointer to xtmr_manager_dev structure
+> + */
+> +static void xtmr_manager_unblock_break(struct xtmr_manager_dev *xtmr_manager)
+> +{
+> +	xtmr_manager->cr_val &= ~(1 << XTMR_MANAGER_CR_BB_SHIFT);
+> +	xtmr_manager_write(xtmr_manager, XTMR_MANAGER_CR_OFFSET,
+> +			   xtmr_manager->cr_val);
+> +}
+> +
+> +/**
+> + * xmb_manager_reset_handler - clears the ffr register contents
+> + * @priv: Private pointer
+> + */
+> +static void xmb_manager_reset_handler(void *priv)
+> +{
+> +	struct xtmr_manager_dev *xtmr_manager = (struct xtmr_manager_dev *)priv;
+> +	/* Clear the FFR Register contents as a part of recovery process. */
+> +	xtmr_manager_write(xtmr_manager, XTMR_MANAGER_FFR_OFFSET, 0);
+
+Did you run checkpatch on this code?  Please do so.
+
+> +}
+> +
+> +/**
+
+No need for kernel doc formatting for static functions, right?
+
+> + * xmb_manager_update_errcnt - update the error inject count
+> + * @priv: Private pointer
+> + */
+> +static void xmb_manager_update_errcnt(void *priv)
+
+Use a real pointer, not a void one please.  We want type safe functions.
+
+> +{
+> +	struct xtmr_manager_dev *xtmr_manager = (struct xtmr_manager_dev *)priv;
+
+And even if you did have a real pointer, you never need to cast from a
+void *.
+
+> +
+> +	xtmr_manager->err_cnt++;
+> +}
+> +
+> +static ssize_t errcnt_show(struct device *dev, struct device_attribute *attr,
+> +			   char *buf)
+> +{
+> +	struct xtmr_manager_dev *xtmr_manager = dev_get_drvdata(dev);
+> +
+> +	return sprintf(buf, "%x\n", xtmr_manager->err_cnt);
+
+sysfs_emit() here and everywhere please.
+
+> +}
+> +static DEVICE_ATTR_RO(errcnt);
+> +
+> +static ssize_t status_show(struct device *dev, struct device_attribute *attr,
+> +			   char *buf)
+> +{
+> +	struct xtmr_manager_dev *xtmr_manager = dev_get_drvdata(dev);
+> +	size_t ffr;
+> +	int len = 0;
+> +
+> +	ffr = xtmr_manager_read(xtmr_manager, XTMR_MANAGER_FFR_OFFSET);
+> +	if ((ffr & XTMR_MANAGER_FFR_LM12_MASK) == XTMR_MANAGER_FFR_LM12_MASK) {
+> +		len += sprintf(buf + len,
+> +			       "Lockstep mismatch between processor 1 and 2\n");
+> +	}
+> +
+> +	if ((ffr & XTMR_MANAGER_FFR_LM13_MASK) == XTMR_MANAGER_FFR_LM13_MASK) {
+> +		len += sprintf(buf + len,
+> +			       "Lockstep mismatch between processor 1 and 3\n");
+> +	}
+> +
+> +	if ((ffr & XTMR_MANAGER_FFR_LM23_MASK) == XTMR_MANAGER_FFR_LM23_MASK) {
+> +		len += sprintf(buf + len,
+> +			       "Lockstep mismatch between processor 2 and 3\n");
+
+That feels like a lot more than "one bit of information", who is going
+to parse this and do something with this information?
+
+
+> +	}
+> +
+> +	return len;
+> +}
+> +static DEVICE_ATTR_RO(status);
+> +
+> +static ssize_t dis_block_break_store(struct device *dev,
+> +				     struct device_attribute *attr,
+> +				     const char *buf, size_t size)
+> +{
+> +	struct xtmr_manager_dev *xtmr_manager = dev_get_drvdata(dev);
+> +	int ret;
+> +	long value;
+> +
+> +	ret = kstrtoul(buf, 16, &value);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (value > 1)
+> +		return -EINVAL;
+> +
+> +	xtmr_manager_unblock_break(xtmr_manager);
+
+No error checking?
+
+> +	return size;
+> +}
+> +static DEVICE_ATTR_WO(dis_block_break);
+> +
+> +static struct attribute *xtmr_manager_attrs[] = {
+> +	&dev_attr_dis_block_break.attr,
+> +	&dev_attr_status.attr,
+> +	&dev_attr_errcnt.attr,
+> +	NULL,
+> +};
+> +ATTRIBUTE_GROUPS(xtmr_manager);
+> +
+> +static void xtmr_manager_init(struct xtmr_manager_dev *xtmr_manager)
+> +{
+> +	/* Clear the SEM interrupt mask register to disable the interrupt */
+> +	xtmr_manager_write(xtmr_manager, XTMR_MANAGER_SEMIMR_OFFSET, 0);
+> +
+> +	/* Allow recovery reset by default */
+> +	xtmr_manager->cr_val = (1 << XTMR_MANAGER_CR_RIR_SHIFT) |
+> +				xtmr_manager->magic1;
+> +	xtmr_manager_write(xtmr_manager, XTMR_MANAGER_CR_OFFSET,
+> +			   xtmr_manager->cr_val);
+> +	/*
+> +	 * Configure Break Delay Initialization Register to zero so that
+> +	 * break occurs immediately
+> +	 */
+> +	xtmr_manager_write(xtmr_manager, XTMR_MANAGER_BDIR_OFFSET, 0);
+> +
+> +	/*
+> +	 * To come out of break handler need to block the break signal
+> +	 * in the tmr manager, update the xtmr_manager cr_val for the same
+> +	 */
+> +	xtmr_manager->cr_val |= (1 << XTMR_MANAGER_CR_BB_SHIFT);
+> +
+> +	/*
+> +	 * When the break vector gets asserted because of error injection,
+> +	 * the break signal must be blocked before exiting from the
+> +	 * break handler, Below api updates the TMR manager address and
+> +	 * control register and error counter callback arguments,
+> +	 * which will be used by the break handler to block the
+> +	 * break and call the callback function.
+> +	 */
+> +	xmb_manager_register(xtmr_manager->phys_baseaddr, xtmr_manager->cr_val,
+> +			     xmb_manager_update_errcnt,
+> +			     xtmr_manager, xmb_manager_reset_handler);
+
+No error handling?
+
+> +}
+> +
+> +/**
+> + * xtmr_manager_probe - Driver probe function
+> + * @pdev: Pointer to the platform_device structure
+> + *
+> + * This is the driver probe routine. It does all the memory
+> + * allocation and creates sysfs entries for the device.
+> + *
+> + * Return: 0 on success and failure value on error
+> + */
+> +static int xtmr_manager_probe(struct platform_device *pdev)
+> +{
+> +	struct xtmr_manager_dev *xtmr_manager;
+> +	struct resource *res;
+> +	int err;
+> +
+> +	xtmr_manager = devm_kzalloc(&pdev->dev, sizeof(*xtmr_manager),
+> +				    GFP_KERNEL);
+> +	if (!xtmr_manager)
+> +		return -ENOMEM;
+> +
+> +	xtmr_manager->dev = &pdev->dev;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	xtmr_manager->regs =  devm_ioremap_resource(xtmr_manager->dev, res);
+> +	if (IS_ERR(xtmr_manager->regs))
+> +		return PTR_ERR(xtmr_manager->regs);
+> +
+> +	xtmr_manager->phys_baseaddr = res->start;
+> +
+> +	err = of_property_read_u32(pdev->dev.of_node, "xlnx,magic1",
+> +				   &xtmr_manager->magic1);
+> +	if (err < 0) {
+> +		dev_err(&pdev->dev, "unable to read xlnx,magic1 property");
+> +		return err;
+> +	} else if (xtmr_manager->magic1 > XTMR_MANAGER_MAGIC1_MAX_VAL) {
+
+No need for else.
+
+> +		dev_err(&pdev->dev, "invalid xlnx,magic1 property value");
+> +		return err;
+
+but err is not an error value here, right?
+
+> +	}
+> +
+> +	/* Initialize TMR Manager */
+> +	xtmr_manager_init(xtmr_manager);
+> +
+> +	err = sysfs_create_groups(&xtmr_manager->dev->kobj,
+> +				  xtmr_manager_groups);
+
+You just raced with userspace and lost.  NEVER deal with raw kobjects,
+that's a huge sign that you are doing something wrong in a driver.
+
+Please use the proper default groups pointer for your driver to do this
+correctly so that the driver core will handle this for you.
+
+> +	if (err < 0) {
+> +		dev_err(&pdev->dev, "unable to create sysfs entries\n");
+> +		return err;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, xtmr_manager);
+> +
+> +	return 0;
+> +}
+> +
+> +static int xtmr_manager_remove(struct platform_device *pdev)
+> +{
+> +	sysfs_remove_groups(&pdev->dev.kobj, xtmr_manager_groups);
+
+Again, never touch a kobject in a driver.
+
+thanks,
+
+greg k-h
