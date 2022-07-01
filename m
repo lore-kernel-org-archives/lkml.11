@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7C6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbiGAD7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 23:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39572 "EHLO
+        id S234789AbiGAD7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 23:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiGAD66 (ORCPT
+        with ESMTP id S234305AbiGAD66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 30 Jun 2022 23:58:58 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577C3675B5;
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B86677E8;
         Thu, 30 Jun 2022 20:58:57 -0700 (PDT)
-X-UUID: 00bde0b01bfe4f48867bc312ae2a00ba-20220701
+X-UUID: 67afe1ea1670436fa878f26607fd9e35-20220701
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:fba598aa-1dc2-426f-9647-aa193e4cf816,OB:10,L
-        OB:20,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.7,REQID:fba598aa-1dc2-426f-9647-aa193e4cf816,OB:10,LOB
-        :20,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:95
-X-CID-META: VersionHash:87442a2,CLOUDID:f81751d6-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:3427db7ea8b3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 00bde0b01bfe4f48867bc312ae2a00ba-20220701
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.7,REQID:c041676c-82c5-4fd5-a5e9-ea5d5bf903a7,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:20
+X-CID-META: VersionHash:87442a2,CLOUDID:e7d61e63-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 67afe1ea1670436fa878f26607fd9e35-20220701
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 888980174; Fri, 01 Jul 2022 11:58:49 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Fri, 1 Jul 2022 11:58:48 +0800
+        with ESMTP id 1471168837; Fri, 01 Jul 2022 11:58:47 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Fri, 1 Jul 2022 11:58:46 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 11:58:48 +0800
+ 15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 11:58:46 +0800
 From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
         <daniel@ffwll.ch>, <robh+dt@kernel.org>,
@@ -51,10 +48,11 @@ CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
         <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v15 12/16] drm/mediatek: dpi: move the csc_enable bit to SoC config
-Date:   Fri, 1 Jul 2022 11:58:41 +0800
-Message-ID: <20220701035845.16458-13-rex-bc.chen@mediatek.com>
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v15 01/16] dt-bindings: mediatek,dpi: Add DP_INTF compatible
+Date:   Fri, 1 Jul 2022 11:58:30 +0800
+Message-ID: <20220701035845.16458-2-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
 References: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
@@ -65,80 +63,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-Add flexibility by moving the csc_enable bit to SoC specific config
+DP_INTF is similar to DPI but does not have the exact same feature set
+or register layouts.
 
+DP_INTF is the sink of the display pipeline that is connected to the
+DisplayPort controller and encoder unit. It takes the same clocks as
+DPI.
+
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 0b75a4ce8261..3085033becbd 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -127,6 +127,7 @@ struct mtk_dpi_yc_limit {
-  * @hvsize_mask: Mask of HSIZE and VSIZE mask (no shift).
-  * @channel_swap_shift: Shift value of channel swap.
-  * @yuv422_en_bit: Enable bit of yuv422.
-+ * @csc_enable_bit: Enable bit of CSC.
-  */
- struct mtk_dpi_conf {
- 	unsigned int (*cal_factor)(int clock);
-@@ -141,6 +142,7 @@ struct mtk_dpi_conf {
- 	u32 hvsize_mask;
- 	u32 channel_swap_shift;
- 	u32 yuv422_en_bit;
-+	u32 csc_enable_bit;
- };
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+index 77ee1b923991..8e526a4b134e 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+@@ -4,16 +4,16 @@
+ $id: http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
-@@ -384,7 +386,8 @@ static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool enable)
+-title: mediatek DPI Controller Device Tree Bindings
++title: mediatek DPI and DP_INTF Controller
  
- static void mtk_dpi_config_csc_enable(struct mtk_dpi *dpi, bool enable)
- {
--	mtk_dpi_mask(dpi, DPI_CON, enable ? CSC_ENABLE : 0, CSC_ENABLE);
-+	mtk_dpi_mask(dpi, DPI_CON, enable ? dpi->conf->csc_enable_bit : 0,
-+		     dpi->conf->csc_enable_bit);
- }
+ maintainers:
+   - CK Hu <ck.hu@mediatek.com>
+   - Jitao shi <jitao.shi@mediatek.com>
  
- static void mtk_dpi_config_swap_input(struct mtk_dpi *dpi, bool enable)
-@@ -826,6 +829,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
- 	.yuv422_en_bit = YUV422_EN,
-+	.csc_enable_bit = CSC_ENABLE,
- };
+ description: |
+-  The Mediatek DPI function block is a sink of the display subsystem and
+-  provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a parallel
+-  output bus.
++  The Mediatek DPI and DP_INTF function blocks are a sink of the display
++  subsystem and provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a
++  parallel output bus.
  
- static const struct mtk_dpi_conf mt2701_conf = {
-@@ -841,6 +845,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
- 	.yuv422_en_bit = YUV422_EN,
-+	.csc_enable_bit = CSC_ENABLE,
- };
+ properties:
+   compatible:
+@@ -24,6 +24,7 @@ properties:
+       - mediatek,mt8183-dpi
+       - mediatek,mt8186-dpi
+       - mediatek,mt8192-dpi
++      - mediatek,mt8195-dp-intf
  
- static const struct mtk_dpi_conf mt8183_conf = {
-@@ -855,6 +860,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
- 	.yuv422_en_bit = YUV422_EN,
-+	.csc_enable_bit = CSC_ENABLE,
- };
+   reg:
+     maxItems: 1
+@@ -55,7 +56,7 @@ properties:
+     $ref: /schemas/graph.yaml#/properties/port
+     description:
+       Output port node. This port should be connected to the input port of an
+-      attached HDMI or LVDS encoder chip.
++      attached HDMI, LVDS or DisplayPort encoder chip.
  
- static const struct mtk_dpi_conf mt8192_conf = {
-@@ -869,6 +875,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
- 	.yuv422_en_bit = YUV422_EN,
-+	.csc_enable_bit = CSC_ENABLE,
- };
- 
- static int mtk_dpi_probe(struct platform_device *pdev)
+ required:
+   - compatible
 -- 
 2.18.0
 
