@@ -2,82 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbiGAPJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39278 "EHLO
+        id S232688AbiGAPKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233554AbiGAPJT (ORCPT
+        with ESMTP id S231732AbiGAPKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:09:19 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B415D2AE1D
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 08:09:17 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8FF45113E;
-        Fri,  1 Jul 2022 08:09:17 -0700 (PDT)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 81BDE3F66F;
-        Fri,  1 Jul 2022 08:09:15 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 16:09:05 +0100
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        james.quinlan@broadcom.com, Jonathan.Cameron@huawei.com,
-        f.fainelli@gmail.com, etienne.carriere@linaro.org,
-        vincent.guittot@linaro.org, daniel.lezcano@linaro.org,
-        tarek.el-sherbiny@arm.com, adrian.slatineanu@arm.com,
-        souvik.chakravarty@arm.com, wleavitt@marvell.com,
-        wbartczak@marvell.com
-Subject: Re: [PATCH v3 8/9] firmware: arm_scmi: Add scmi_driver optional
- setup/teardown callbacks
-Message-ID: <Yr8I6KHUrOfLSmEj@e120937-lin>
-References: <20220627123038.1427067-1-cristian.marussi@arm.com>
- <20220627123038.1427067-9-cristian.marussi@arm.com>
- <20220701140946.uar5ohadyjksf2ka@bogus>
+        Fri, 1 Jul 2022 11:10:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA662340FB;
+        Fri,  1 Jul 2022 08:10:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5831D623C3;
+        Fri,  1 Jul 2022 15:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14C0FC3411E;
+        Fri,  1 Jul 2022 15:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656688205;
+        bh=VE3xxCP6qqMSL2Ge+UO5AZuDtQGRgxKsVxk0c6Av2T0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vQP7Pi54fa7ZlG5vmHtJ7YP4w9Zl7R6UolfS21FRKD0FrxXep/C+ymxdztrJJKQq2
+         Wnodsl9qNX5zewz9cNtwNOLWVDVASDmiGvE46ybj8XTIPHyQTJSz3YtmnljPecHY5s
+         1GvGFt5pr/4NNT3r+1F7nyVFeksLwpSuAslTrl6SWAMnt0hGgaMPONb7h6hPoCKx5A
+         4450/CLeN5jlE9mXZ8+IMhcTxGVrkoA+GIlMje27H0Rn2WLZAl5pd1b9luG7HHO+d0
+         3TZ4IuvszhIWicsFMOYL/oVLkXIHovhGbH8HGVL0xoK1uVGbpW2c6ViGW3a1QYSPJS
+         ts0LGRh5LZigA==
+Date:   Fri, 1 Jul 2022 08:10:03 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        m.szyprowski@samsung.com, michael@walle.cc, robh@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        guillaume.tucker@collabora.com, pmladek@suse.com
+Subject: Re: [PATCH] kernfs: Avoid re-adding kernfs_node into
+ kernfs_notify_list.
+Message-ID: <Yr8OSxotW2VEUyKQ@dev-arch.thelio-3990X>
+References: <20220701145047.2206900-1-imran.f.khan@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220701140946.uar5ohadyjksf2ka@bogus>
+In-Reply-To: <20220701145047.2206900-1-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 03:09:46PM +0100, Sudeep Holla wrote:
-> On Mon, Jun 27, 2022 at 01:30:37PM +0100, Cristian Marussi wrote:
-> > Add optional .setup and .teardown methods to the scmi_driver descriptor:
-> > such callbacks, if provided, will be called by the SCIM core at driver
-> > registration time, so that, an SCMI driver, registered as usual with the
-> > module_scmi_driver() helper macro, can provide custom callbacks to be
-> > run once for all at module load/unload time to perform specific setup
-> > or teardown operations before/after .probe and .remove steps.
-> >
+On Sat, Jul 02, 2022 at 12:50:47AM +1000, Imran Khan wrote:
+> Kick fsnotify only if an event is not already scheduled for target
+> kernfs node. commit b8f35fa1188b ("kernfs: Change kernfs_notify_list to
+> llist.") changed kernfs_notify_list to a llist.
+> Prior to this list was a singly linked list, protected by
+> kernfs_notify_lock. Whenever a kernfs_node was added to the list
+> its ->attr.notify_next was set to head of the list and upon removal
+> ->attr.notify_next was reset to NULL. Addition to kernfs_notify_list
+> would only happen if kernfs_node was not already in the list i.e.
+> if ->attr.notify_next was NULL. commit b8f35fa1188b ("kernfs: Change
+> kernfs_notify_list to llist.") removed this checking and this was wrong
+> as it resulted in multiple additions for same kernfs_node.
 > 
-> What can't the driver call this setup/teardown on its own before/after
-> calling scmi_driver_register/unregister ?
-
+> So far this bug only got reflected with some console related setting.
+> Nathan found this issue when console was specified both in DT and in
+> kernel command line and Marek found this issue when earlycon was enabled.
 > 
-> Based on the usage in 9/9, I guess it is mainly to use the
-> module_scmi_driver ? If so, I would avoid using that or have another
-> macro to manage this setup/teardown(once there are multiple users for that).
-> IMO, it doesn't make sense to add callbacks to do things that are outside
-> the scope of scmi drivers. No ?
->
+> This patch avoids adding an already added kernfs_node into notify list.
+> 
+> Reported-by: Nathan Chancellor <nathan@kernel.org>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-This is exactly what I was doing in fact :D at first ... defining a normal
-init/exit from where I called what I needed at first and then ivoke the
-scmi_driver_register()...so bypassing/not using the module_scmi-driver macro
-indeed...then I realized I needed something similar also for the SCMI Test
-driver, so I tried to unify; in both cases indeed the required ops to be
-done before the scmi_driver_register are NOT scmi related things.
+This should also include:
 
-So I can drop this if you prefer and use bare module_init/exit that
-calls scmi_driver_register() after having setup what needed for the
-specific driver initialization (before probe)...I was not really
-convinced it was worth this level of unification.
+Reported-by: Michael Walle <michael@walle.cc>
 
-Thanks,
-Cristian
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Fixes: b8f35fa1188b ("kernfs: Change kernfs_notify_list to llist.")
+> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
 
+For the ARCH=um case that I noticed:
+
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+
+> ---
+>  fs/kernfs/file.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+> index bb933221b4bae..e8ec054e11c63 100644
+> --- a/fs/kernfs/file.c
+> +++ b/fs/kernfs/file.c
+> @@ -917,6 +917,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
+>  	if (free == NULL)
+>  		return;
+>  
+> +	free->next = NULL;
+>  	attr = llist_entry(free, struct kernfs_elem_attr, notify_next);
+>  	kn = attribute_to_node(attr, struct kernfs_node, attr);
+>  	root = kernfs_root(kn);
+> @@ -992,9 +993,11 @@ void kernfs_notify(struct kernfs_node *kn)
+>  	rcu_read_unlock();
+>  
+>  	/* schedule work to kick fsnotify */
+> -	kernfs_get(kn);
+> -	llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> -	schedule_work(&kernfs_notify_work);
+> +	if (kn->attr.notify_next.next != NULL) {
+> +		kernfs_get(kn);
+> +		llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> +		schedule_work(&kernfs_notify_work);
+> +	}
+>  }
+>  EXPORT_SYMBOL_GPL(kernfs_notify);
+>  
+> 
+> base-commit: 6cc11d2a1759275b856e464265823d94aabd5eaf
+> -- 
+> 2.30.2
+> 
