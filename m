@@ -2,220 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB094C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C681EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbiGAKqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43316 "EHLO
+        id S237104AbiGAKqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237098AbiGAKqL (ORCPT
+        with ESMTP id S237096AbiGAKqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:46:11 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150073.outbound.protection.outlook.com [40.107.15.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F99B7437D;
-        Fri,  1 Jul 2022 03:46:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eWk21Lp3evZvXGJ/ZB3b3Vyr1+oELRAH3o8aDyQp7iQAEfqKCxye1/QDIY3yAiq0oE6aZr3zg0akrZQ0ES2vH7MjgNpncYanF20S9C7euw6lRkBasgJ+aty5OcqmKLzWp1T2d9jp2Xjf3vNsh+7uhajL4ny2nYziIf2aUkDvHsnViCG8l3MdtDW7/zZVQVkG8P+mZx99mflYLbyhP39t9Eo1rLYetMTaL3nU9jT0FFvgTtdDgTlpmoD8rI6jSXkVUFlzLZqfs19PJHPwBfYWkAQNktkEzjpTZyDl/PPr0iU1TV0oqHzZpZRWpIv5UOSQi4OSvHTKI/yeaMrhp+DmSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G4v1X+G8Uwsw43fPbSGEUIs1mZJalqnDugebOFaA3wc=;
- b=ZB/rC9ug2NHEJuwECLicHX/+lsAFCDIc9AJX59SoIry67UOAxX1wP4mnXZWTPlAkq9cvE2KZbl/lAycY5LEHV8R1iAYUvYxzDz+H9N3blNrk+WlL9h9Vp6EjEmoDIeNEJySkKY62weJV89dIo1CWc4ezlIDhQcRb2HWmuGPlafrduviWv58P5swql+l2TEvo0RmD+jSZY+ZvtcXt65qCg0ud+8taCxKHNuNYYIeZN8XibWiGOzS5I2YxeGsjVPYrOwhbLkVSdMsFMADrLiCMe7ydAjeohTjEmXw/+AHfTDc77PxxwcDCGESRUQI3WRujfdCkm4L7y7VcZZxkIfMBsw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G4v1X+G8Uwsw43fPbSGEUIs1mZJalqnDugebOFaA3wc=;
- b=FdwwrSDVyPoFKGtnd8npj5Sxsl6bLdtL/q0hXftjtjbLhXqQBPGfd6pl+ZsVylcS8/N52eoGeXvoFaoBrTusHP6PP1Dy7KcSCMBSi9xKYKoiLH7944Y1Qf7gEcgUM8DrOH6RZSCQXNdxIMJ0nMkSSpXUqvdkcMU0iRSwqm18U88=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB7PR04MB4554.eurprd04.prod.outlook.com (2603:10a6:5:35::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Fri, 1 Jul
- 2022 10:46:06 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::fdd4:8557:334b:180d]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::fdd4:8557:334b:180d%6]) with mapi id 15.20.5395.015; Fri, 1 Jul 2022
- 10:46:06 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH V4 6/6] remoteproc: imx_rproc: request mbox channel later
-Date:   Fri,  1 Jul 2022 18:47:25 +0800
-Message-Id: <20220701104725.557314-7-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220701104725.557314-1-peng.fan@oss.nxp.com>
-References: <20220701104725.557314-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0034.apcprd02.prod.outlook.com
- (2603:1096:4:195::9) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Fri, 1 Jul 2022 06:46:42 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023787E01C;
+        Fri,  1 Jul 2022 03:46:36 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id r3so3342538ybr.6;
+        Fri, 01 Jul 2022 03:46:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RWCMizkXva41Nm1wqlGXLvbQDsWrO1ICOtX0qSZGbJo=;
+        b=XYyB8IdTaXHGEitNXV+dgDP8Tx5lfY9J/39gAzlPnOPe57t3dV44GcU5DqByaWhnBt
+         c3cXvHd6Yu1OaeIiB80MwSS98vYnk9JPM/UNneYKTFc6UuPycV8UhPy00m2+b7duuEIW
+         VOvJ0PqiVKsORGTH6H01GBaQTizG23QTIpoT4Z/iCxcZDW5ef6pKhaCCbHar8PmmYVb0
+         gUBdl83IL39y5E1xSTBLW/CTA00cm60OOFTxaUkmj5003Jk1U4ZRASxC+22hIHG8AWia
+         FzjlBhOOwmEaMoCcCGzZYO56zahDUKoqMdUL06TmeITaRNV2u775WDUhbJBO5nYN0I0b
+         SOGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RWCMizkXva41Nm1wqlGXLvbQDsWrO1ICOtX0qSZGbJo=;
+        b=vYWE2KXwLPC4JtbxA/Jme5s4QqO1Os+3gUYNqHZrxnnPxPf/8ZrXh/lqLyqN9pp1RV
+         PZ+wvpdaim3xYagTYmZ+aGta3S+vxr36DyZA/TMAeKUI9luuUAIyjircWHno6/pZpeZ3
+         MYQpavQbmwPbovUrUrm6nLyTVM2DqkGw8DLRk7npudBYiOlnocsCsU8utEW+oTw5Gg5f
+         nqa7EbuTEg7BZIafhIH2CyMXhh9hSKCuShsvk8jlz04+5XdbL2AlHKy0lGI7Hd/AFU74
+         HOWeglqBffsYK3IiwRWBRmi627RJoDS08NXbNHdPTepcZrvFuglBhGKXUrb9xLKm6eoL
+         tARg==
+X-Gm-Message-State: AJIora/Yw4LQ1AntjU/EnvBEO3VCKI/8lGPR/W/n73qZ0/CWrIlYn9JA
+        Z+rTR9UQ/8Rq9Ezug6RmfNoZ4QglhjRKn8d2ESZlOMuhWmDibYBPDBs=
+X-Google-Smtp-Source: AGRyM1t8n7hxMdE5FzKlZGrnuS1T6c61dW+z5ixhFpQmMQxwN2OkLejdcuV+aH191xXe8O6/lwJovM0emTmsE+xWVJA=
+X-Received: by 2002:a25:dd83:0:b0:66c:8d8d:4f5f with SMTP id
+ u125-20020a25dd83000000b0066c8d8d4f5fmr14396420ybg.79.1656672395126; Fri, 01
+ Jul 2022 03:46:35 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71762b70-7be1-4aaf-ae0f-08da5b4ee6ba
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4554:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aiad2bybCIDCeESMunMw2Rq5d+FBXa2SB8KuuB4ZELYH+IsjD3aSEB4d2mxe6rSHqgDExsoAAl5NzvTmfRuKt/Uk3qswtMZsKrJhJfvKNnumu+AHdUUCkHNLG+BdQqH98bK3iS884SPsIkxUC0jpBk2yLi0K93BJ8bPfyTNWHzYZXWyRRzvZosIJ0rn6uwz2pttdgjUYzmayXdeVEu7YXKeO8dobpvHNv9cFJVTDhA+VCwoZy+dilRvylgLctu9iA0XayGGKDiJEzxw+tvSijjh5HMRkuW2AJgLaR18iBt3HsyN8wpdI85aV1X2LaNSf8AMMEqx0E0Yv8YNfJW6o5gNlgIWoLzZ/zftfTOHTgYEpoKcIhl4lCtrkBNeqofY4n70+AwE8p21bngxHLUwRK7oyOSLBuAVL7VtUM2qLks8iRIiboK82ThsVYYzHpUTz1hcUVqebivTW5Vii+J2zCs93n1x5dNs5FpWbBS1Y34QPFVl3nr19xHzOr4Um6bWvV5vu8UOOEQGxBk3+/ui4rmZ8dB8NJC5Iyo8gnXIbs3s9ILp8ZiL1G0Z8L6Abok/Md54bkm2PQtypoxCtWX/lue9vk6UgxkADey6P4iNfCmltS2m1k3sk+Yos4X/Ei2jkMtE+fUje2qa2Wn2Ron7hUvdgw61LIAoF/YpQ724fPLW2LFIhQ0/F6BQyHnhwqDw/Y1j9537+X6TGcc76fpE6i6/BMiKf8mjy2TwfzDBoNU01Xg1wvtLdBAa8nVHmqojRiHKB645EUxVKDYeHjhnwcdiuAlzZheKYgwSpjlB875ZTN78kxZVZuWFO17VKu2ga
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(366004)(396003)(2616005)(186003)(1076003)(38100700002)(6666004)(38350700002)(316002)(8676002)(4326008)(83380400001)(66476007)(26005)(66946007)(66556008)(6486002)(478600001)(7416002)(8936002)(5660300002)(52116002)(86362001)(6506007)(6512007)(41300700001)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a/2qUAXw3lc7zTd4fdslfllaWqo+XFph19ljfpVB3bpW6VZ0gWlyz0ow7oB8?=
- =?us-ascii?Q?Yq4ngWc3xFJ0fbPH0d0CRTENFk7snllfbGFAyl/u0gJ6PHYQPlXuAUkWlTC6?=
- =?us-ascii?Q?tbbcS/XmYrRIe/AyehUDRa6XdipXLEnDYqpnE6jytgx3Hwa7+10A1yVtojef?=
- =?us-ascii?Q?VHHTfA1dfuFqsXz53mCamyo6gQ7TQ2WCTctOgnKmR2ysv49xv+zF2cSgZYA5?=
- =?us-ascii?Q?lr86vcOdgPGyabxOy7LobQKFoMJD5SAkVpDfBd/4vxUwrsZtQrC/l26zdip3?=
- =?us-ascii?Q?K6mGF9Gwz/TtX4ISW6au13tOCrI1zPY8y9mCUjXFcAJZDLauOdtPGPdsfRHV?=
- =?us-ascii?Q?3NOjR6mXvjRQE73yefNmbKqYV0WqhM/puMjzOqetx3f5mc5oIvB9drg1iB7s?=
- =?us-ascii?Q?pi+VwSG9tQG2GK0phYKUlULBu7Enf68lOUNt/q9n+K0IE2HCuuivPJ4sDXhm?=
- =?us-ascii?Q?YCmWEW5Eujz6g12LoipM5AcBcjhpb91F2kqNmvYjTPaMEUOG/HTR6Xn9eAqk?=
- =?us-ascii?Q?nn85ZKAQ7vfVa6zYarI8zPl7pGxcIntQ+9bLKn2sJB4JbdxyXDhNTT68EGtt?=
- =?us-ascii?Q?fsOEOvBgODTCrrp9UfrVr5oCXjTOdpltNfByP0qiu0umqMmfPoIHKfLVQDyO?=
- =?us-ascii?Q?563rKu8rxH5eEJQP2/kJZVC6yfejYJoSjUCzjqvTd3Ra1cydPO7ejwYFoSTQ?=
- =?us-ascii?Q?ylH4hiHvcwXADmVlqelgZ0X7bCxq+siua4gizCjx0wAKggRDYMEXVUMCrgjL?=
- =?us-ascii?Q?MuxIqJYiXI3Hz+a8OPjc63tR89JjRje+XuqAu8kJa1XcbqKB+aV2V/1yM0IM?=
- =?us-ascii?Q?ryDhvQ6oW2pK6yDZlvgy/gBJuz6Cqqn/EkM9FmkCN+/+yc5pGUvdMPVeJE/J?=
- =?us-ascii?Q?+stXsEEBUMF6WypumAfr4XAgCiOebFLYl4XeAOFz0MVm1RjHgFqTuMvvfDpM?=
- =?us-ascii?Q?0PiS0aaaCcUqVdbwl6A/060rxfVUNcgNvtq2aVWMC04Gn6HONYhupihklWD8?=
- =?us-ascii?Q?2FRFB0PWLqypvnS5lRQ7okYnIQRg1a+Oc22CayRDYt2C0Z+4qLWfPEDs/MQU?=
- =?us-ascii?Q?JUen8D3JdMJe6ES0EgXnH0lYOx3ECsIwm/uJJR6w83zNhYW5PxET9gPDemH6?=
- =?us-ascii?Q?KOD0Xx9zuH8xsYpQ1JOhfNQfzGfiYXUX+ojXugWyu69pna/81WtMD4fBYa0x?=
- =?us-ascii?Q?3BqSQmzWKjspnLa28QktFwKI+hHhuX/71qmYwBlTV/2I8gldXA1gEF/accUx?=
- =?us-ascii?Q?9zEdkO4XZhOiYXHlzg+VfpUQrAbkn/PEEkXh5IfUOa6jW6z5z0RwWWel5OlK?=
- =?us-ascii?Q?OiAny8pW7ZN26GnWreVZh01xdVhAJ0BtdaKzC8C+H2LgKUBe3V2miaoFg7KB?=
- =?us-ascii?Q?jaGROkeG3N2ikzmZmFn6B9lQ5TIvBOSxBjSUb7n71aFCbDhlkGQBRj3ra7Bv?=
- =?us-ascii?Q?NvzvQjKZGuouFgf/BwYZqx6LIbFXKp8qPBbxM2W5WmsqHkhJNr92525wz5Mz?=
- =?us-ascii?Q?WBRqJcTm5A673xFNup8HJID1R0VUUzFf/LwlmVaAM8mIWaHKjI+ZGjopLQkA?=
- =?us-ascii?Q?T43DrL9ck6GqZzf3AGm8ZWK2PXvDrQoEqlWBp8oa?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71762b70-7be1-4aaf-ae0f-08da5b4ee6ba
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2022 10:46:06.5585
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V3IQHxxp775nUez9DVvgLUR9PzTWU8cfvbB2hYakKQMp+4LpCiVj7Motb1+G7g2xwYnKeXv2LkaR08v8NU2bdw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4554
+References: <20220701091412.20718-1-henning.schild@siemens.com> <20220701091412.20718-2-henning.schild@siemens.com>
+In-Reply-To: <20220701091412.20718-2-henning.schild@siemens.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 1 Jul 2022 12:45:58 +0200
+Message-ID: <CAHp75VcoN6eekZXPK8Kpw4aaJN7jfirnUH+1Q0JTEyLSKwrB0w@mail.gmail.com>
+Subject: Re: [PATCH 1/1] gpio: nct6116d: add new driver for several Nuvoton
+ super io chips
+To:     Henning Schild <henning.schild@siemens.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>,
+        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Kuan-Wei Ho <cwho@nuvoton.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+On Fri, Jul 1, 2022 at 11:15 AM Henning Schild
+<henning.schild@siemens.com> wrote:
+>
+> This patch adds gpio support for several Nuvoton NCTXXX chips. These super
+> io chips offer multiple functions of which several already have drivers in
 
-It is possible that when remote processor crash, the communication
-channel will be broken with garbage value in mailbox, such as
-when Linux is issuing a message through mailbox, remote processor
-crashes, we need free & rebuild the mailbox channels to make sure
-no garbage value in mailbox channels.
+Super-I/O (to be consistent with the help in Kconfig, etc).
 
-So move the request/free to start/stop for managing remote procesosr in
-Linux, move to attach/detach for remote processor is out of control of
-Linux.
 
-Previous, we just request mbox when attach for CM4 boot early before
-Linux, but if mbox defer probe, remoteproc core will do resource cleanup
-and corrupt resource table for later probe.
+> the kernel, i.e. hwmon and wdt.
 
-So move request mbox ealier and still keep mbox request when attach
-for self recovery case, but keep a check when request/free mbox.
+watchdog
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- drivers/remoteproc/imx_rproc.c | 26 +++++++++++++++++++++++---
- 1 file changed, 23 insertions(+), 3 deletions(-)
+...
 
-diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
-index f129cc840931..503435ad1f11 100644
---- a/drivers/remoteproc/imx_rproc.c
-+++ b/drivers/remoteproc/imx_rproc.c
-@@ -84,6 +84,8 @@ struct imx_rproc_mem {
- #define ATT_CORE_MASK   0xffff
- #define ATT_CORE(I)     BIT((I))
- 
-+static int imx_rproc_xtr_mbox_init(struct rproc *rproc);
-+static void imx_rproc_free_mbox(struct rproc *rproc);
- static int imx_rproc_detach_pd(struct rproc *rproc);
- 
- struct imx_rproc {
-@@ -357,6 +359,10 @@ static int imx_rproc_start(struct rproc *rproc)
- 	struct arm_smccc_res res;
- 	int ret;
- 
-+	ret = imx_rproc_xtr_mbox_init(rproc);
-+	if (ret)
-+		return ret;
-+
- 	switch (dcfg->method) {
- 	case IMX_RPROC_MMIO:
- 		ret = regmap_update_bits(priv->regmap, dcfg->src_reg, dcfg->src_mask,
-@@ -407,6 +413,8 @@ static int imx_rproc_stop(struct rproc *rproc)
- 
- 	if (ret)
- 		dev_err(dev, "Failed to stop remote core\n");
-+	else
-+		imx_rproc_free_mbox(rproc);
- 
- 	return ret;
- }
-@@ -592,7 +600,7 @@ static void imx_rproc_kick(struct rproc *rproc, int vqid)
- 
- static int imx_rproc_attach(struct rproc *rproc)
- {
--	return 0;
-+	return imx_rproc_xtr_mbox_init(rproc);
- }
- 
- static struct resource_table *imx_rproc_get_loaded_rsc_table(struct rproc *rproc, size_t *table_sz)
-@@ -721,6 +729,9 @@ static int imx_rproc_xtr_mbox_init(struct rproc *rproc)
- 	struct mbox_client *cl;
- 	int ret;
- 
-+	if (priv->tx_ch && priv->rx_ch)
-+		return 0;
-+
- 	if (!of_get_property(dev->of_node, "mbox-names", NULL))
- 		return 0;
- 
-@@ -753,8 +764,15 @@ static void imx_rproc_free_mbox(struct rproc *rproc)
- {
- 	struct imx_rproc *priv = rproc->priv;
- 
--	mbox_free_channel(priv->tx_ch);
--	mbox_free_channel(priv->rx_ch);
-+	if (priv->tx_ch) {
-+		mbox_free_channel(priv->tx_ch);
-+		priv->tx_ch = NULL;
-+	}
-+
-+	if (priv->rx_ch) {
-+		mbox_free_channel(priv->rx_ch);
-+		priv->rx_ch = NULL;
-+	}
- }
- 
- static void imx_rproc_put_scu(struct rproc *rproc)
-@@ -781,6 +799,8 @@ static int imx_rproc_partition_notify(struct notifier_block *nb,
- 	if (!((event & BIT(priv->rproc_pt)) && (*(u8 *)group == IMX_SC_IRQ_GROUP_REBOOTED)))
- 		return 0;
- 
-+	imx_rproc_free_mbox(priv->rproc);
-+
- 	rproc_report_crash(priv->rproc, RPROC_WATCHDOG);
- 
- 	pr_info("Partition%d reset!\n", priv->rproc_pt);
+Since you are talking about authorship in the cover letter, is it
+possible to get the original authorship to be preserved in the commit
+and authors / co-developers giving their SoB tags?
+
+...
+
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/io.h>
+> +#include <linux/gpio/driver.h>
+
+Keep it sorted?
+
+...
+
+> +#define SIO_ID_MASK            0xFFF0
+
+GENMASK() ?
+
+...
+
+> +enum chips {
+> +       nct5104d,
+> +       nct6106d,
+> +       nct6116d,
+> +       nct6122d,
+> +};
+> +
+> +static const char * const nct6116d_names[] = {
+> +       "nct5104d",
+> +       "nct6106d",
+> +       "nct6116d",
+> +       "nct6122d",
+
+It would be slightly more flexible to use enum values as indices here:
+
+[nct5104d] = "nct5104d",
+
+> +};
+
+...
+
+> +               pr_err(DRVNAME "I/O address 0x%04x already in use\n", base);
+
+Why not use pr_fmt() properly and drop DRVNAME here and in other pr_*(), if any?
+
+...
+
+> +static int nct6116d_gpio_direction_in(struct gpio_chip *chip, unsigned int offset);
+> +static int nct6116d_gpio_get(struct gpio_chip *chip, unsigned int offset);
+> +static int nct6116d_gpio_direction_out(struct gpio_chip *chip,
+> +                                    unsigned int offset, int value);
+> +static void nct6116d_gpio_set(struct gpio_chip *chip, unsigned int offset, int value);
+
+Is it possible to avoid forward declarations?
+
+...
+
+> +#define NCT6116D_GPIO_BANK(_base, _ngpio, _regbase, _label)                    \
+> +       {                                                               \
+> +               .chip = {                                               \
+> +                       .label            = _label,                     \
+> +                       .owner            = THIS_MODULE,                \
+> +                       .direction_input  = nct6116d_gpio_direction_in, \
+> +                       .get              = nct6116d_gpio_get,          \
+> +                       .direction_output = nct6116d_gpio_direction_out,        \
+> +                       .set              = nct6116d_gpio_set,          \
+
+.get_direction ?
+
+> +                       .base             = _base,                      \
+> +                       .ngpio            = _ngpio,                     \
+> +                       .can_sleep        = false,                      \
+> +               },                                                      \
+> +               .regbase = _regbase,                                    \
+> +       }
+
+...
+
+> +       int err;
+> +       struct nct6116d_gpio_bank *bank =
+> +               container_of(chip, struct nct6116d_gpio_bank, chip);
+
+Can it be transformed to macro or inliner and then
+
+       struct nct6116d_gpio_bank *bank = to_nct6116d_gpio_bank(chip);
+
+> +       struct nct6116d_sio *sio = bank->data->sio;
+> +       u8 dir;
+
+Here and everywhere else, perhaps keep the reversed xmas tree order?
+
+...
+
+> +               err = devm_gpiochip_add_data(&pdev->dev, &bank->chip, bank);
+> +               if (err) {
+> +                       dev_err(&pdev->dev,
+> +                               "Failed to register gpiochip %d: %d\n",
+> +                               i, err);
+> +                       return err;
+
+return dev_err_probe(...);
+
+...
+
+> +       pr_info(DRVNAME ": Found %s at %#x chip id 0x%04x\n",
+> +                       nct6116d_names[sio->type],
+> +                       (unsigned int)addr,
+
+Casting in printf() very often means a wrong specifier in use.
+
+> +                       devid);
+
+...
+
+> +       nct6116d_gpio_pdev = platform_device_alloc(DRVNAME, -1);
+> +       if (!nct6116d_gpio_pdev)
+> +               return -ENOMEM;
+> +
+> +       err = platform_device_add_data(nct6116d_gpio_pdev, sio, sizeof(*sio));
+> +       if (err) {
+> +               pr_err(DRVNAME "Platform data allocation failed\n");
+> +               goto err;
+> +       }
+> +
+> +       err = platform_device_add(nct6116d_gpio_pdev);
+> +       if (err) {
+> +               pr_err(DRVNAME "Device addition failed\n");
+> +               goto err;
+> +       }
+
+Wonder, don't we have some shortcuts for these? Perhaps
+platform_device_register_full()?
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
