@@ -2,112 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05104C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ACCC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232539AbiGAHPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
+        id S233609AbiGAHRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiGAHPd (ORCPT
+        with ESMTP id S235062AbiGAHRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:15:33 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E466B276
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:15:31 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so990460wmb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 00:15:31 -0700 (PDT)
+        Fri, 1 Jul 2022 03:17:40 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3904A6B276;
+        Fri,  1 Jul 2022 00:17:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lw8ZlwadLY0wkiHoA0z4GBncJvnPkTnilxujckAMYIE=;
-        b=moQgk9C2Fb3qL9azQrATSZ7jlyc6Dn83wNYY/G8lRBO4VB4C7ab04tYwC4pYTCepE3
-         p/FJBgf76lVvoy+W1koFX/Xcu28c/JeQ97N30NjYYDBdve6+2oPqNMB/PESC7ad1Eyft
-         J9V3SbSMtSfMUBrnIJkMQQs09JfjSSgUdNWVAd2HT74Tp0eavY3D1FARD1KaSs+Xk5Nt
-         P2Y/qXVQvkdPbmCM5LwSEux/bIOjJhy6BYI4x/Tq4tfmX3WyPfo9+Ssz9S/xzfNu5aHt
-         7CjkCdTjOMKjU23VPwoWyO1u9Uctdn8ivYgTQRMryHnyVncEgVkhp+2NPqK/3ncXeMLg
-         DjbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lw8ZlwadLY0wkiHoA0z4GBncJvnPkTnilxujckAMYIE=;
-        b=IWwiKxk4sXgKs21eqrf+0uefwr9oQa7tInp7ZpHpwyIkOCY8Umcr9EtKdfE4AfISuT
-         G/HWbYL/pdGvua9Zfvnas6Ro/xWWCtXU/mB/hlNUxk3MQFMQ/aug9wHODg+OR8LmVdYw
-         4/l2AnqbFHg/lYkY1dLxvvhSIgIkV2VL09AWZfsWWWBEDUHjyfAwvnQazNV45LqwcKnn
-         Ak0yFE81mW0Rldjhj1ZRwHvBLrZQoCa4NShlWHZPZP4Y9wWX2ln5ytS9gJF7bYRgCN6t
-         yYSCwKvmu7sblqzb/bIfUvi7L5K1lVYP5Vf3KVm40DTscSR6YyMV+fr9/r7EqqJgt0Lw
-         l7Yw==
-X-Gm-Message-State: AJIora+In32BoTdC396OvE6kNIXUH8b+pt1tG8aCKcLBfa3W3l7YnQ0t
-        0SJHlcqd2wLDEZMLOgo8yzA4QUCD4WRXnkAgTPA=
-X-Google-Smtp-Source: AGRyM1vE9teVMSzqKqoi2fq3/fvWxqiunTP5ildmoq5uF6ajQ5Qe+ALZNj5LeAj1WfIF+kJAWZriPvrzx0wmWMHqs/U=
-X-Received: by 2002:a05:600c:501f:b0:39d:a3d:e919 with SMTP id
- n31-20020a05600c501f00b0039d0a3de919mr14502078wmr.132.1656659730450; Fri, 01
- Jul 2022 00:15:30 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656659860; x=1688195860;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=d3C89lxkSV25rneKnYRK3zet+skzg3cqSdSRgWF97+s=;
+  b=tas/J0XQ1VsMCTn0BtT5eI6GVS4rw7pVd/hdDFrR00PwQ2t74E3CirPT
+   Sr4mfaxHZzaIhq/SmuEoxd+1jUI+0Qep0YmxXQLrAwn0WLAOY6GnF4ry0
+   HPTQW1mUBStwi5DyqKvyt/vaELlPrrG1moHPqIsNjnY5teKitd+7a/SNh
+   8=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 01 Jul 2022 00:17:39 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 00:17:38 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 1 Jul 2022 00:17:38 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 1 Jul 2022 00:17:32 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <vkoul@kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [RESEND v5 2/2] ASoC: qcom: soundwire: Enable software clock gating requirement flag
+Date:   Fri, 1 Jul 2022 12:47:07 +0530
+Message-ID: <1656659827-27450-3-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1656659827-27450-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1656659827-27450-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-References: <20220623182932.58589-1-schspa@gmail.com> <xhsmhv8sq5nyx.mognet@vschneid.remote.csb>
-In-Reply-To: <xhsmhv8sq5nyx.mognet@vschneid.remote.csb>
-From:   Schspa Shi <schspa@gmail.com>
-Date:   Fri, 1 Jul 2022 15:15:18 +0800
-Message-ID: <CAMA88Tp0x6Mrs9gaKeRJ5L7B1VVjgDB4oYBPx9+bpF=NFdX-9g@mail.gmail.com>
-Subject: Re: [PATCH] sched: fix bad task migration for rt tasks
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Valentin Schneider <vschneid@redhat.com> writes:
+Enable software clock gating flag in private data for SC7280
+based platforms, which are soundwire 1.6.0 version based.
 
-> On 24/06/22 02:29, Schspa Shi wrote:
->> @@ -1998,12 +1998,15 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
->>                       * the mean time, task could have
->>                       * migrated already or had its affinity changed.
->>                       * Also make sure that it wasn't scheduled on its rq.
->> +                     * It is possible the task has running for a while,
->> +                     * And we check task migration disable flag again.
->>                       */
->>                      if (unlikely(task_rq(task) != rq ||
->>                                   !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_mask) ||
->
-> cf. 95158a89dd50 ("sched,rt: Use the full cpumask for balancing"), this
-> made sense to me back then but not so much anymore... Shouldn't this have
-> remained a ->cpus_ptr check?
->
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+---
+ drivers/soundwire/qcom.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-This cpus_ptr check seems to be somehow same with is_migration_disabled(task).
-
-> I'm going to revisit that commit, I evicted too much of it.
->
-
-Any further progress on this?
-
-We have tested this patch for a weak, It seems the problems have gone
-(It will reproduce 2-3 times per week usually).
-
-I have send a V2 patch too, it task the other case into consideration
-(Going to retry to push the current running task on this CPU away,
-instead doing nothing for this migrate disabled task.).
-
-Link: https://lore.kernel.org/all/20220627154051.92599-1-schspa@gmail.com/
-
-
->>                                   task_running(rq, task) ||
->>                                   !rt_task(task) ||
->> -                                 !task_on_rq_queued(task))) {
->> +                                 !task_on_rq_queued(task) ||
->> +                                 is_migration_disabled(task))) {
->>
->>                              double_unlock_balance(rq, lowest_rq);
->>                              lowest_rq = NULL;
->> --
->> 2.24.3 (Apple Git-128)
-
+diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+index 5baceda..4a77e74 100644
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -192,6 +192,12 @@ static const struct qcom_swrm_data swrm_v1_5_data = {
+ 	.default_cols = 16,
+ };
+ 
++static const struct qcom_swrm_data swrm_v1_6_data = {
++	.default_rows = 50,
++	.default_cols = 16,
++	.sw_clk_gate_required = true,
++};
++
+ #define to_qcom_sdw(b)	container_of(b, struct qcom_swrm_ctrl, bus)
+ 
+ static int qcom_swrm_ahb_reg_read(struct qcom_swrm_ctrl *ctrl, int reg,
+@@ -1558,7 +1564,7 @@ static const struct dev_pm_ops swrm_dev_pm_ops = {
+ static const struct of_device_id qcom_swrm_of_match[] = {
+ 	{ .compatible = "qcom,soundwire-v1.3.0", .data = &swrm_v1_3_data },
+ 	{ .compatible = "qcom,soundwire-v1.5.1", .data = &swrm_v1_5_data },
+-	{ .compatible = "qcom,soundwire-v1.6.0", .data = &swrm_v1_5_data },
++	{ .compatible = "qcom,soundwire-v1.6.0", .data = &swrm_v1_6_data },
+ 	{/* sentinel */},
+ };
+ 
 -- 
-Schspa Shi
-BRs
+2.7.4
+
