@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B37CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 17:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CE3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 17:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbiGAR1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 13:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
+        id S229845AbiGARcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 13:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbiGAR07 (ORCPT
+        with ESMTP id S229441AbiGARcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 13:26:59 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5DD35DFB
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 10:26:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656696419; x=1688232419;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Vck+4XbfKzgiBiwFSWO94G/QusWXFYDCXSQdw3JT4zY=;
-  b=ENHFa4UhpbU90DUwMW2BB+/+r6KvFXqrhQUcKoOS/xA9BD4fulsRUvBQ
-   aEPXY0QHY/Ih7x2R//BeXBI4JCp7XZclOtBzoRvgfGI3Gmf16C0JcoLYg
-   NU3D7q6e4Ui+l2L1/iLIyI5fHHohY4AXqkFCDT3SWNTizU40HRmNJQimk
-   v0ZEkNj+MUbGDyP0iBI1tHFKcaxyRLcUNYRF+3i2Q/rqhrxA9fuRQ/iez
-   Z89DFD8Ic2cPatGk7aOOzEq29LADbbbSh8C9bxi1vF6ZyzVPGmM2weu/K
-   gsZdjSgnzuEMKdQcIc+Al7NDuUJTfXl5ns0d/DC12S1MFF2zYv+evMQGk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10395"; a="281465882"
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="281465882"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 10:26:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="596332334"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 01 Jul 2022 10:26:57 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7KPw-000EBu-Fp;
-        Fri, 01 Jul 2022 17:26:56 +0000
-Date:   Sat, 2 Jul 2022 01:26:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yupeng Li <liyupeng@zbhlos.com>, fweisbec@gmail.com,
-        tglx@linutronix.de, mingo@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, caizp2008@163.com,
-        linux-kernel@vger.kernel.org, Yupeng Li <liyupeng@zbhlos.com>
-Subject: Re: [PATCH 1/1] timers/nohz: fix build with CONFIG_NO_HZ_FULL
- warnning.
-Message-ID: <202207020130.RZbvd92n-lkp@intel.com>
-References: <20220701033647.911334-1-liyupeng@zbhlos.com>
+        Fri, 1 Jul 2022 13:32:42 -0400
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9164427B26;
+        Fri,  1 Jul 2022 10:32:41 -0700 (PDT)
+Received: by mail-io1-f44.google.com with SMTP id p128so2946948iof.1;
+        Fri, 01 Jul 2022 10:32:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kdihIzz/bUBc79Tl403XsRH5T+EuaLhkcyZfLILKxN8=;
+        b=0EYypL/zJa40wA2jfVV5CEgWp+IM4m430msR8ascesOg71Yq50TDy/lb8/69orhHz+
+         wDBR2B/BVX9ZKlmaV5Mb9E+mla15odUsCf8H1efLUS8Pxe0YU0nD9ad+WemRvlY3R+V+
+         VaxOxJwTKyHZMzk+79wul3zI+ucqeh5cerT76m8XgSMMfT7hEqEhVHAyqUP1jXprVmkn
+         4AiRlQS7I2ZLnq7gsUwm+TK0HacGjN17d7lOLmKFrt5p7ni2whJnhU29Yc2gatrLGtMw
+         NHcofuvCUOCwUo7zsPF7uxDb5GYGgxBh9D8Hx6dJIupHa4Vcis0Znz5vCMr1yGdc7ET+
+         ATWg==
+X-Gm-Message-State: AJIora+XLbdAjpwy6BX+2yj3sKHfg09xrHF06arW4fXL8qifakNVPxln
+        6Wh2umCzKT/xTxQ0Tc81WQ==
+X-Google-Smtp-Source: AGRyM1uZ8OwgEzsYCO7/yMQZmvzU4+eDubJKYCRdP+KsYw/UCew6Al3YMalNieo9Vemle++GbRPKbA==
+X-Received: by 2002:a5d:9b85:0:b0:675:31ec:97dd with SMTP id r5-20020a5d9b85000000b0067531ec97ddmr8084076iom.111.1656696760783;
+        Fri, 01 Jul 2022 10:32:40 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id i19-20020a023b53000000b00339cdf821dasm10007287jaf.51.2022.07.01.10.32.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 10:32:40 -0700 (PDT)
+Received: (nullmailer pid 1184843 invoked by uid 1000);
+        Fri, 01 Jul 2022 17:32:38 -0000
+Date:   Fri, 1 Jul 2022 11:32:38 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: Re: [PATCH v4 3/5] dt-bindings: arm: msm: Rework kpss-gcc driver
+ Documentation to yaml
+Message-ID: <20220701173238.GA1175908-robh@kernel.org>
+References: <20220629121441.6552-1-ansuelsmth@gmail.com>
+ <20220629121441.6552-4-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220701033647.911334-1-liyupeng@zbhlos.com>
+In-Reply-To: <20220629121441.6552-4-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yupeng,
+On Wed, Jun 29, 2022 at 02:14:39PM +0200, Christian Marangi wrote:
+> Rework kpss-gcc driver Documentation to yaml Documentation.
 
-Thank you for the patch! Perhaps something to improve:
+It's not 'driver Documentation'. It's a DT binding for h/w.
 
-[auto build test WARNING on tip/timers/nohz]
-[also build test WARNING on linus/master v5.19-rc4 next-20220701]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Lot's of things are YAML. I prefer 'DT schema'
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yupeng-Li/timers-nohz-fix-build-with-CONFIG_NO_HZ_FULL-warnning/20220701-114723
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 09fe880ed7a160ebbffb84a0a9096a075e314d2f
-config: x86_64-randconfig-k001 (https://download.01.org/0day-ci/archive/20220702/202207020130.RZbvd92n-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a9119143a2d1f4d0d0bc1fe0d819e5351b4e0deb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d7397dd311be292d170c1fbd0f3bdc5104c06849
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yupeng-Li/timers-nohz-fix-build-with-CONFIG_NO_HZ_FULL-warnning/20220701-114723
-        git checkout d7397dd311be292d170c1fbd0f3bdc5104c06849
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+The subjects are bit long and get cut off as well. For the subject, 
+something like:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+dt-bindings: arm: msm: Convert kpss-gcc to DT schema
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+And similar for the other patch.
 
->> WARNING: modpost: vmlinux.o(.text+0x19a091): Section mismatch in reference from the function tick_nohz_full_setup() to the function .init.text:alloc_bootmem_cpumask_var()
-The function tick_nohz_full_setup() references
-the function __init alloc_bootmem_cpumask_var().
-This is often because tick_nohz_full_setup lacks a __init
-annotation or the annotation of alloc_bootmem_cpumask_var is wrong.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> The current kpss-gcc Documentation have major problems and can't be
+> converted directly. Introduce various changes to the original
+> Documentation.
+> 
+> Add #clock-cells additional binding as this clock outputs a static clk
+> named acpu_l2_aux with supported compatible.
+> Only some compatible require and outputs a clock, for the others, set
+> only the reg as a required binding to correctly export the kpss-gcc
+> registers. As the reg is shared also add the required syscon compatible.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ---------
+>  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 90 +++++++++++++++++++
+>  2 files changed, 90 insertions(+), 44 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
