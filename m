@@ -2,75 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BE4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbiGAQfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
+        id S231633AbiGAQfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232502AbiGAQe5 (ORCPT
+        with ESMTP id S229845AbiGAQft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:34:57 -0400
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236D243AE9;
-        Fri,  1 Jul 2022 09:34:56 -0700 (PDT)
-Received: by mail-io1-f54.google.com with SMTP id u20so2755732iob.8;
-        Fri, 01 Jul 2022 09:34:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=55hRSP/w3rvpp9TsnL35ydQoX/LWK6GoP8N89NL7PFI=;
-        b=o0l1Q3er4GsPkpm+C+VFCj6XFoeFqXijm9sBCOJDNQUEXMrc62WplklMsY10Q24CBE
-         91D0/Wl4jVcYA8/M0EPPsI4VEywuswA0AOAscSXVDuSjmPrxcT963o54dapS6hUncbmN
-         nnFqJNXZUmZoglFisQcgr99Rl2n1yPQQa/wuz25UbqrAPcyHPtowqhUNCwoYVJMpcTJS
-         A5kZkzepnem/LB2/KSBMggQDi6SpOe8LLsCoEe7nGiI8qEsGfzrgSTvUmrK/Qo9lUB1e
-         xEyViIlM1wKts4s7w89YIuXtjCAmv1KuFrT/cj9NDIb7WlNdhe15hSVJsN7bWcM9qq6v
-         Uc0A==
-X-Gm-Message-State: AJIora9lKRdOmg0Z4lMPq/tvC7WofnJa7NwDdPdJxrdPJrzYu58ik10W
-        sa1Gm3y9oOOjOeE617dqBg==
-X-Google-Smtp-Source: AGRyM1vFPXB68b9W3FN25GIqccQhrF7paJkdox5ewz2KYZ5v1T4YjYta/ZdF+5FhRpfCzPpZgWgI+w==
-X-Received: by 2002:a05:6638:24c9:b0:33c:b7e8:4a14 with SMTP id y9-20020a05663824c900b0033cb7e84a14mr9170081jat.293.1656693295444;
-        Fri, 01 Jul 2022 09:34:55 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id e17-20020a6b5011000000b00675594df2d3sm5077855iob.17.2022.07.01.09.34.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 09:34:55 -0700 (PDT)
-Received: (nullmailer pid 1092275 invoked by uid 1000);
-        Fri, 01 Jul 2022 16:34:53 -0000
-Date:   Fri, 1 Jul 2022 10:34:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
-        devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: chosen: remove
-Message-ID: <20220701163453.GA1092186-robh@kernel.org>
-References: <YrserfmdD+QH+y/X@zx2c4.com>
- <20220628153354.870543-1-Jason@zx2c4.com>
+        Fri, 1 Jul 2022 12:35:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248F03FBC7;
+        Fri,  1 Jul 2022 09:35:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B66B76257C;
+        Fri,  1 Jul 2022 16:35:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4649BC3411E;
+        Fri,  1 Jul 2022 16:35:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656693348;
+        bh=TZguSwspOIt4L4Wa6O3+ebRs84Ga2Xv/b+fie/Hie2s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jcvK0Ldow7LDexUk8ieNY0llvi2exbIYdrUpM78qMbmzstn6SAW+ViMy/zzwMOuOa
+         N1bK3FIBpRiyftr9KKHg9mINAMuFf4CGBF0/BJPJ7JgyZo8DueQV9Kr03cTZc8gea3
+         ZCBOuWobVfY0ngl5lrpJd18uR4nxQhat0S9F2+/0cOHfX98PUpElWYiNAmkUXZ3Gdd
+         LhxrBaaUxGYnLxskaEYsj9hzFWDGrjNcmf9PpUxOP7ZmkzndmyRCauSehsHbTKRwRf
+         twHfomBcSc/cSnxUKUQGnmlMR5CRR60wq0ZDWDVxtOR6gxPmt/iODYTLYo/BjRLiTe
+         ekyR5X6EftWYg==
+Date:   Fri, 1 Jul 2022 22:05:42 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     dmaengine@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joy.zou@nxp.com,
+        Peng Fan <peng.fan@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH V4] dt-bindings: dma: fsl-edma: Convert to DT schema
+Message-ID: <Yr8iXjJ6vuFub9Gy@matsya>
+References: <20220620020002.3966343-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220628153354.870543-1-Jason@zx2c4.com>
+In-Reply-To: <20220620020002.3966343-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 17:33:54 +0200, Jason A. Donenfeld wrote:
-> Apparently this is no longer maintained and undesired. Remove it.
+On 20-06-22, 10:00, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 > 
-> Link: https://lore.kernel.org/lkml/c8dddfe6-6385-ed34-e789-9f845c8a32bd@linaro.org/
-> Link: https://lore.kernel.org/lkml/CAL_Jsq+uSdk9YNbUW35yjN3q8-3FDobrxHmBpy=4RKmCfnB0KQ@mail.gmail.com/
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  Documentation/devicetree/bindings/chosen.txt | 137 -------------------
->  1 file changed, 137 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/chosen.txt
-> 
+> Convert the eDMA controller binding to DT schema.
 
-Applied, thanks!
+Applied, thanks
+
+-- 
+~Vinod
