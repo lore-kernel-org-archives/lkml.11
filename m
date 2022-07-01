@@ -2,100 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7ADEC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:29:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B11C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235337AbiGAI3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33216 "EHLO
+        id S236191AbiGAI36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235928AbiGAI2z (ORCPT
+        with ESMTP id S236102AbiGAI3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:28:55 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3061EB88;
-        Fri,  1 Jul 2022 01:28:54 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LZ7dc1Qwjz4xRC;
-        Fri,  1 Jul 2022 18:28:52 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1656664132;
-        bh=Vd2cdSFDHZEZx66FyAPMxjsbD/k2inzch+DwnzCClVI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jc1az3VuogEsnRDjsPkjnVjBF1neaY7ZYVHa6hNcsmYHHGtf3CXSugcs5DgxZ/Jku
-         WLNRFbiuwlTee3CWHOATbuCjMqK6uFFnKGwhkYnsUe3Jci+lwF824BEdNi/Il7i35W
-         MnMWnLqvfMhvg8vSqnGWIjlVXcDqYpvLebg+t9PXce+9xT7hRUoP+tAxj5Vh1dv3Vg
-         n8sRnxhNtjwrCdGfHzo/HnbpYlSorAEPv/pWsWkMngSxWADlSAs9wJOE/m0cTgH/YS
-         +qqZjZ3AID2vX0xFLK4xNTEoGg6uiR4tk3m4ib045XRR+3u4HT5UMFRPMyh8on38e8
-         R/6pHub9cq/5w==
-Date:   Fri, 1 Jul 2022 18:28:49 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the iio tree
-Message-ID: <20220701182849.124d8cd1@canb.auug.org.au>
-In-Reply-To: <20220701152944.27539407@canb.auug.org.au>
-References: <20220701152944.27539407@canb.auug.org.au>
+        Fri, 1 Jul 2022 04:29:46 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F45271245
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:29:44 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id lw20so2719367ejb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dxZbpRkh5l4JeCdeImv9Ijljaa3y0PVNYCMebKYCl5U=;
+        b=JzK4vRtf2boD93GH5GeGpymBSJi2/wRmfBUvwyV19BN6BECcAB5LUoqtwFaeVfUBPz
+         nY3OwaYESyX7QZ2Tnule/458OtqLPPcxlVeD/+2ZKHRAQhy5jC2pcksMsOQuFSWnqOxJ
+         Tpfj6eWejLln5hf23mQfXSdxfxSI7BWuccMLNcFpgO3LjeEJ7gi0P8vjxNPZsL7Nw7hm
+         e7QVEpvH84B7eLpa/73jfdZ+TC8BBN1cB0VRzFDCkijH+T39KeYCFXZW3uh5MbZgS+oD
+         l3Zz1bfBNd6KWcd2PZeAZkA7B9oi/Hzjkfhqv740zDyyVEkVfoXgOGqsp7veVEdGnqt4
+         2ltw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dxZbpRkh5l4JeCdeImv9Ijljaa3y0PVNYCMebKYCl5U=;
+        b=IleLmXNNgpB0tKSHdIXbqrxb3GoSBrtJdLfAherHCkizmNFuIfSrAlg+QlwN9iLN0G
+         abcKdYg3YxmRiAOEWQPmuwnm58TOQWFZ+1IN90Gy5cWfq+BuJU63mb9dXzqixuWTzKsG
+         WCGPvKZZQZA0PZ/ACuHYYz0Uzddh9QH0ZgPZ5wg/IpjrAnkb91LGuzIVwdGq6aJgwLIP
+         cwPghu1sdbQOUs16Zmtv8TwrN41B/XAKPfp2kIKSALNOUnooMELi1G2Y1YUgVj583+b7
+         Cpl1hOZFLwkwoKa1jgap7CHHN4fag1Y4RTgrZSYI71eSV54X0scIGuK9gu2SD7ZHtT+i
+         DC8A==
+X-Gm-Message-State: AJIora/Fh5MK/iXQ7crMiDWaN/k2w0WT8sb3iYJEeYWU4BHJacTrPFBP
+        k6mxm4IoYr6J1N0yoG7Qp2qQWQ==
+X-Google-Smtp-Source: AGRyM1vRa+C2UOMEzZXuI0s812xXVlGPUrJ3Cy8g8SB9jAZEyZodSm6NyqwYhJ9kBMUX7Gh97vNwVw==
+X-Received: by 2002:a17:906:7288:b0:722:da04:da51 with SMTP id b8-20020a170906728800b00722da04da51mr13174406ejl.316.1656664182607;
+        Fri, 01 Jul 2022 01:29:42 -0700 (PDT)
+Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id s6-20020a1709062ec600b00711d88ae162sm10147597eji.24.2022.07.01.01.29.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 01:29:42 -0700 (PDT)
+Message-ID: <3c17965c-a588-0580-c7d5-f6252712c35d@linaro.org>
+Date:   Fri, 1 Jul 2022 10:29:40 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/OiQI/TeD8owvQP0Gg12OcP4";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 01/10] dt-bindings: PCI: qcom: Fix reset conditional
+Content-Language: en-US
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220629141000.18111-1-johan+linaro@kernel.org>
+ <20220629141000.18111-2-johan+linaro@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220629141000.18111-2-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/OiQI/TeD8owvQP0Gg12OcP4
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 29/06/2022 16:09, Johan Hovold wrote:
+> Fix the reset conditional which always evaluated to true due to a
+> misspelled property name ("compatibles" in plural).
+> 
+> Fixes: 6700a9b00f0a ("dt-bindings: PCI: qcom: Do not require resets on msm8996 platforms")
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
-Hi all,
 
-On Fri, 1 Jul 2022 15:29:44 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
-\>=20
-> After merging the iio tree, today's linux-next build (x86_64 allmodconfig)
-> produced this warning:
->=20
-> WARNING: modpost: module qcom-spmi-adc-tm5 uses symbol qcom_adc_tm5_temp_=
-volt_scale from namespace IIO_QCOM_VADC, but does not import it.
-> WARNING: modpost: module qcom-spmi-adc-tm5 uses symbol qcom_adc5_prescali=
-ng_from_dt from namespace IIO_QCOM_VADC, but does not import it.
-> WARNING: modpost: module qcom-spmi-adc-tm5 uses symbol qcom_adc5_hw_settl=
-e_time_from_dt from namespace IIO_QCOM_VADC, but does not import it.
-> WARNING: modpost: module qcom-spmi-adc-tm5 uses symbol qcom_adc5_avg_samp=
-les_from_dt from namespace IIO_QCOM_VADC, but does not import it.
-> WARNING: modpost: module qcom-spmi-adc-tm5 uses symbol qcom_adc5_decimati=
-on_from_dt from namespace IIO_QCOM_VADC, but does not import it.
->=20
-> Introduced by commit
->=20
->   ec9b269f61cc ("iio: adc: qcom-vadc: Move symbol exports to IIO_QCOM_VAD=
-C namespace")
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-This became a build failure in the arm64 defconfig build, so I have
-reverted that commit for today.
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/OiQI/TeD8owvQP0Gg12OcP4
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK+sEEACgkQAVBC80lX
-0GxixQf+MKEsnWUTxwOjjV1OWp7ZHyrFoagrpW4eor5jSMiiULV94QQ7oxn4tcdw
-+EOf0OrMyJW+UshiZTZFrD587pTZNBvUANHvjxNhreQ9WMEaiiLU3EBX6vJ+Z7LA
-GJMtwKHs7dH96W+bBA73lLFBke6yLjuWjTwfsL3m8jK4fu10azRg3YI66YX8nD5N
-igaShHH2bpB+PCDdft7UvnZ0TBmKXps7Yoyhv9CgmWlqOd3qa+dNJB0spuZBdl6c
-SnTF4puaLXQdj5xk2wxp2XPwmJ65w/f34XARRB1vnFGFBh053PvckMoKLO9ohtlV
-xOxLE+KE8jR5LkFhRTU2A/N3roN2gg==
-=KqBo
------END PGP SIGNATURE-----
-
---Sig_/OiQI/TeD8owvQP0Gg12OcP4--
+Best regards,
+Krzysztof
