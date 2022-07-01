@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B22ADC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232802AbiGAMzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 08:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51342 "EHLO
+        id S229562AbiGAMzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 08:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235813AbiGAMyl (ORCPT
+        with ESMTP id S236227AbiGAMyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 08:54:41 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1C63AA6E;
-        Fri,  1 Jul 2022 05:54:40 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id g14so317196qto.9;
-        Fri, 01 Jul 2022 05:54:40 -0700 (PDT)
+        Fri, 1 Jul 2022 08:54:43 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D493AA79;
+        Fri,  1 Jul 2022 05:54:42 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id 2so4111705qvc.0;
+        Fri, 01 Jul 2022 05:54:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gmLdladheqxAWwfcqAo0zECfXUO+llLx3LkvFH+700E=;
-        b=Yk+/uLtYXUwgn0wFnU+xBwbbd3TV73jozv6kkTCTPvnSU9wbfdn60UbySuTSzEnlro
-         OFkfibFSzHxte2aNxRaTB4TAFPYFvgl2SO8cegFcl0yTUgA4NOjqmhZQDwqkpglxQE4E
-         EDkQELLxqbSTr1l3tptyPi1u1KXl3+n4nt5EvNzr7Fel2D1S6yqNVMbhuQ5VI5f0fwyQ
-         yDK/6Rzu9EAz4D/X8McX3fiBEh6f6NfyPWW97wLZssbppvSs9DIilPK4/adUVClpALkj
-         7KF0kU2JesgZU0jpoSRIxaGW5Ygz8MSH42mPif+ahyF2X8YO9PAyEJz82S9F9t0ziyVA
-         1mKw==
+        bh=1Gf0HCV+B4rZrfJAP5Zzmb/SkEYLt2rvf4yUabNLaBM=;
+        b=m3gzMyaX9F96et1o8wS9j16V2SjRTjHJI5dhb2wg/ahdsdNWOvWCjNETS07Atq8YSZ
+         NCEMufsi5CUvVxRdlOBBHoBsJ+AclOhKsErjlEIbR0thodZH+OTFFxsLate0HeHdmUy9
+         OXvJjC27aukUSgFVM4vv/MwcxF3jVfgbHAAgEOq9hjI+XeygOokAGfg4pSoA+lHmzVSm
+         noCvYgAWh2RfNQxyTN049m7pZE5GQGDVmU+0vL0yVl3lETfS8kJbvSsMVsXd5j9dWUJ1
+         Sxnake72rCg2Icjcrtq4sdayDe9wTuDv6bTLViCCmwLNo7VQiPeo7yeryEV6tTk+WRP8
+         6Vmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gmLdladheqxAWwfcqAo0zECfXUO+llLx3LkvFH+700E=;
-        b=TtqkHVykuJ0HKm//3oOVtJQel97SXBi9B6NEXhvtWYYMbcSh9V38loGLc41exqeJ63
-         IgSBRg/tlJYAGocAKiUkNjtWtxmMDiwRQHqhqEbtUj6tJiAbqDtPnhVDkDMF9vlJX4XT
-         /utKqYv5sZFf2rn3szVanoBbbCuyxLCtFctKm0TZWYzVh+HRCk1S065/TXK1iQSfVrE5
-         LFLWx3gnZarbFXwzusvnJDuXoxsygMd0Z4vJi9qZVMkkW4UOmBxSY15fpf4OJqN6jWOk
-         bxrOqnxtc4HZoUdNDQNRHO50qoHf0vGs2NVxfUMypoMZhpvYDEYyY018ErHXXkD22ZWL
-         j7ZA==
-X-Gm-Message-State: AJIora9TuvtPM7LHdhabzMl/RKo/04tE6OiV/KdoopZMrI4Z5HIKuhwA
-        8XcFMB/KLs0thfeuP0TfFF2YWsHN9k4=
-X-Google-Smtp-Source: AGRyM1vO/ADr3cD/se1PN5gtMxssiVvttv4kkUOmlPTTOpQ+ZzknMS4C2otZaWPxwqIx7qTrO6XQgA==
-X-Received: by 2002:ac8:5b88:0:b0:305:340b:6f14 with SMTP id a8-20020ac85b88000000b00305340b6f14mr12235034qta.344.1656680080278;
-        Fri, 01 Jul 2022 05:54:40 -0700 (PDT)
+        bh=1Gf0HCV+B4rZrfJAP5Zzmb/SkEYLt2rvf4yUabNLaBM=;
+        b=XsdMYDn3SrvmQD6NN+kwRUia8CTK8c7CBsGM9Nu8kgBoUTovjexbzmFrfBiUOzUihW
+         kmvr/0eU7OF/O99lS9c/iqx9hnZcL7s3/7dF/c5K1lphHX7u/4XlkCjhS5Sej9qZ0Mj5
+         NuRDzOLBDpHEuaK5MTgHvhuqoRtrMlACkkFQeNfPbifsDYPlKYmZM982KANod8Te2r6M
+         jRdD4VLy5YMY6nPp/S4dOq93ZFJBOJholN396YPshUr7SjQ00DXc+LVwIDAAlwjT/S6s
+         PxR0LhWN3GUvjvNYMURYH6QJ2f94+KHL04sFb2IYWkuikpO9NRCzJ1SFk/j+qp1XrHrm
+         GRCQ==
+X-Gm-Message-State: AJIora8IgWYWce6WIP2FLMYVvBhFNsnSUP39V0a8JCQcyoStnLSHwiDG
+        2MWmFwr7RQ6lOITPv/c1mAGmi85r1N0=
+X-Google-Smtp-Source: AGRyM1ssrxAWIQQigtyIX+ADjOkwuYwaxPAK62qYcGGaz4u/H2t0ROYqO9PWoZpEzilBKv8ddLPPIg==
+X-Received: by 2002:a0c:c68a:0:b0:46b:8e6b:306 with SMTP id d10-20020a0cc68a000000b0046b8e6b0306mr17084010qvj.7.1656680082228;
+        Fri, 01 Jul 2022 05:54:42 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:f902:9816:653f:2f66])
-        by smtp.gmail.com with ESMTPSA id v2-20020a05622a130200b00304e47b9602sm15875188qtk.9.2022.07.01.05.54.39
+        by smtp.gmail.com with ESMTPSA id t18-20020ac86a12000000b00304bbcc1b8asm14228141qtr.28.2022.07.01.05.54.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 05:54:40 -0700 (PDT)
+        Fri, 01 Jul 2022 05:54:41 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
@@ -65,9 +65,9 @@ To:     linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mm@kvack.org
 Cc:     Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 6/8] lib/cpumask: move trivial wrappers around find_bit to the header
-Date:   Fri,  1 Jul 2022 05:54:28 -0700
-Message-Id: <20220701125430.2907638-7-yury.norov@gmail.com>
+Subject: [PATCH 8/8] lib/cpumask: move some one-line wrappers to header file
+Date:   Fri,  1 Jul 2022 05:54:30 -0700
+Message-Id: <20220701125430.2907638-9-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220701125430.2907638-1-yury.norov@gmail.com>
 References: <20220701125430.2907638-1-yury.norov@gmail.com>
@@ -77,169 +77,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid circular dependencies, cpumask keeps simple (almost) one-line
-wrappers around find_bit() in a c-file.
-
-Commit 47d8c15615c0a2 ("include: move find.h from asm_generic to linux")
-moved find.h header out of asm_generic include path, and it helped to fix
-many circular dependencies, including some in cpumask.h.
-
-This patch moves those one-liners to header files.
+After moving gfp flags to a separate header, it's possible to move some
+cpumask allocators into headers, and avoid creating real functions.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/cpumask.h | 57 ++++++++++++++++++++++++++++++++++++++---
- lib/cpumask.c           | 55 ---------------------------------------
- 2 files changed, 54 insertions(+), 58 deletions(-)
+
+After this patch, only alloc/free functions are still in c-file, because
+moving them causes multiple circular dependencies between mm and
+cpumask. I'll get back later to it.
+
+ include/linux/cpumask.h | 34 +++++++++++++++++++++++++++++++---
+ lib/cpumask.c           | 28 ----------------------------
+ 2 files changed, 31 insertions(+), 31 deletions(-)
 
 diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index 760022bcb925..ea3de2c2c180 100644
+index ea3de2c2c180..0738a6c9be40 100644
 --- a/include/linux/cpumask.h
 +++ b/include/linux/cpumask.h
-@@ -241,7 +241,21 @@ static inline unsigned int cpumask_last(const struct cpumask *srcp)
- 	return find_last_bit(cpumask_bits(srcp), nr_cpumask_bits);
- }
+@@ -12,6 +12,8 @@
+ #include <linux/bitmap.h>
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
++#include <linux/gfp_flags.h>
++#include <linux/numa.h>
  
--unsigned int __pure cpumask_next(int n, const struct cpumask *srcp);
-+/**
-+ * cpumask_next - get the next cpu in a cpumask
-+ * @n: the cpu prior to the place to search (ie. return will be > @n)
-+ * @srcp: the cpumask pointer
-+ *
-+ * Returns >= nr_cpu_ids if no further cpus set.
-+ */
+ /* Don't assign or return these: may not be this big! */
+ typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
+@@ -794,9 +796,35 @@ typedef struct cpumask *cpumask_var_t;
+ #define __cpumask_var_read_mostly	__read_mostly
+ 
+ bool alloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node);
+-bool alloc_cpumask_var(cpumask_var_t *mask, gfp_t flags);
+-bool zalloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node);
+-bool zalloc_cpumask_var(cpumask_var_t *mask, gfp_t flags);
++
 +static inline
-+unsigned int cpumask_next(int n, const struct cpumask *srcp)
++bool zalloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node)
 +{
-+	/* -1 is a legal arg here. */
-+	if (n != -1)
-+		cpumask_check(n);
-+	return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
-+}
- 
- /**
-  * cpumask_next_zero - get the next unset cpu in a cpumask
-@@ -258,8 +272,25 @@ static inline unsigned int cpumask_next_zero(int n, const struct cpumask *srcp)
- 	return find_next_zero_bit(cpumask_bits(srcp), nr_cpumask_bits, n+1);
- }
- 
--unsigned int __pure cpumask_next_and(int n, const struct cpumask *, const struct cpumask *);
--unsigned int __pure cpumask_any_but(const struct cpumask *mask, unsigned int cpu);
-+/**
-+ * cpumask_next_and - get the next cpu in *src1p & *src2p
-+ * @n: the cpu prior to the place to search (ie. return will be > @n)
-+ * @src1p: the first cpumask pointer
-+ * @src2p: the second cpumask pointer
-+ *
-+ * Returns >= nr_cpu_ids if no further cpus set in both.
-+ */
-+static inline
-+unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
-+		     const struct cpumask *src2p)
-+{
-+	/* -1 is a legal arg here. */
-+	if (n != -1)
-+		cpumask_check(n);
-+	return find_next_and_bit(cpumask_bits(src1p), cpumask_bits(src2p),
-+		nr_cpumask_bits, n + 1);
++	return alloc_cpumask_var_node(mask, flags | __GFP_ZERO, node);
 +}
 +
- unsigned int cpumask_local_spread(unsigned int i, int node);
- unsigned int cpumask_any_and_distribute(const struct cpumask *src1p,
- 			       const struct cpumask *src2p);
-@@ -324,6 +355,26 @@ unsigned int cpumask_next_wrap(int n, const struct cpumask *mask, int start, boo
- 	for ((cpu) = -1;						\
- 		(cpu) = cpumask_next_and((cpu), (mask1), (mask2)),	\
- 		(cpu) < nr_cpu_ids;)
-+
 +/**
-+ * cpumask_any_but - return a "random" in a cpumask, but not this one.
-+ * @mask: the cpumask to search
-+ * @cpu: the cpu to ignore.
++ * alloc_cpumask_var - allocate a struct cpumask
++ * @mask: pointer to cpumask_var_t where the cpumask is returned
++ * @flags: GFP_ flags
 + *
-+ * Often used to find any cpu but smp_processor_id() in a mask.
-+ * Returns >= nr_cpu_ids if no cpus set.
++ * Only defined when CONFIG_CPUMASK_OFFSTACK=y, otherwise is
++ * a nop returning a constant 1 (in <linux/cpumask.h>).
++ *
++ * See alloc_cpumask_var_node.
 + */
 +static inline
-+unsigned int cpumask_any_but(const struct cpumask *mask, unsigned int cpu)
++bool alloc_cpumask_var(cpumask_var_t *mask, gfp_t flags)
 +{
-+	unsigned int i;
-+
-+	cpumask_check(cpu);
-+	for_each_cpu(i, mask)
-+		if (i != cpu)
-+			break;
-+	return i;
++	return alloc_cpumask_var_node(mask, flags, NUMA_NO_NODE);
 +}
- #endif /* SMP */
- 
- #define CPU_BITS_NONE						\
++
++static inline
++bool zalloc_cpumask_var(cpumask_var_t *mask, gfp_t flags)
++{
++	return alloc_cpumask_var(mask, flags | __GFP_ZERO);
++}
++
+ void alloc_bootmem_cpumask_var(cpumask_var_t *mask);
+ void free_cpumask_var(cpumask_var_t mask);
+ void free_bootmem_cpumask_var(cpumask_var_t mask);
 diff --git a/lib/cpumask.c b/lib/cpumask.c
-index da68f6bbde44..cb7262ff8633 100644
+index cb7262ff8633..f0ae119be8c4 100644
 --- a/lib/cpumask.c
 +++ b/lib/cpumask.c
-@@ -7,61 +7,6 @@
- #include <linux/memblock.h>
- #include <linux/numa.h>
+@@ -70,34 +70,6 @@ bool alloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node)
+ }
+ EXPORT_SYMBOL(alloc_cpumask_var_node);
  
--/**
-- * cpumask_next - get the next cpu in a cpumask
-- * @n: the cpu prior to the place to search (ie. return will be > @n)
-- * @srcp: the cpumask pointer
-- *
-- * Returns >= nr_cpu_ids if no further cpus set.
-- */
--unsigned int cpumask_next(int n, const struct cpumask *srcp)
+-bool zalloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node)
 -{
--	/* -1 is a legal arg here. */
--	if (n != -1)
--		cpumask_check(n);
--	return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
+-	return alloc_cpumask_var_node(mask, flags | __GFP_ZERO, node);
 -}
--EXPORT_SYMBOL(cpumask_next);
+-EXPORT_SYMBOL(zalloc_cpumask_var_node);
 -
 -/**
-- * cpumask_next_and - get the next cpu in *src1p & *src2p
-- * @n: the cpu prior to the place to search (ie. return will be > @n)
-- * @src1p: the first cpumask pointer
-- * @src2p: the second cpumask pointer
+- * alloc_cpumask_var - allocate a struct cpumask
+- * @mask: pointer to cpumask_var_t where the cpumask is returned
+- * @flags: GFP_ flags
 - *
-- * Returns >= nr_cpu_ids if no further cpus set in both.
-- */
--unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
--		     const struct cpumask *src2p)
--{
--	/* -1 is a legal arg here. */
--	if (n != -1)
--		cpumask_check(n);
--	return find_next_and_bit(cpumask_bits(src1p), cpumask_bits(src2p),
--		nr_cpumask_bits, n + 1);
--}
--EXPORT_SYMBOL(cpumask_next_and);
--
--/**
-- * cpumask_any_but - return a "random" in a cpumask, but not this one.
-- * @mask: the cpumask to search
-- * @cpu: the cpu to ignore.
+- * Only defined when CONFIG_CPUMASK_OFFSTACK=y, otherwise is
+- * a nop returning a constant 1 (in <linux/cpumask.h>).
 - *
-- * Often used to find any cpu but smp_processor_id() in a mask.
-- * Returns >= nr_cpu_ids if no cpus set.
+- * See alloc_cpumask_var_node.
 - */
--unsigned int cpumask_any_but(const struct cpumask *mask, unsigned int cpu)
+-bool alloc_cpumask_var(cpumask_var_t *mask, gfp_t flags)
 -{
--	unsigned int i;
--
--	cpumask_check(cpu);
--	for_each_cpu(i, mask)
--		if (i != cpu)
--			break;
--	return i;
+-	return alloc_cpumask_var_node(mask, flags, NUMA_NO_NODE);
 -}
--EXPORT_SYMBOL(cpumask_any_but);
+-EXPORT_SYMBOL(alloc_cpumask_var);
+-
+-bool zalloc_cpumask_var(cpumask_var_t *mask, gfp_t flags)
+-{
+-	return alloc_cpumask_var(mask, flags | __GFP_ZERO);
+-}
+-EXPORT_SYMBOL(zalloc_cpumask_var);
 -
  /**
-  * cpumask_next_wrap - helper to implement for_each_cpu_wrap
-  * @n: the cpu prior to the place to search
+  * alloc_bootmem_cpumask_var - allocate a struct cpumask from the bootmem arena.
+  * @mask: pointer to cpumask_var_t where the cpumask is returned
 -- 
 2.34.1
 
