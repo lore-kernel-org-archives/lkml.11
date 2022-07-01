@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9696DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB4CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234902AbiGAI0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
+        id S235385AbiGAI1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbiGAI0Y (ORCPT
+        with ESMTP id S236338AbiGAI1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:26:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E2B796BC;
-        Fri,  1 Jul 2022 01:24:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 1 Jul 2022 04:27:07 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FF17BD39;
+        Fri,  1 Jul 2022 01:24:46 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC47761CE3;
-        Fri,  1 Jul 2022 08:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0BA7C341C6;
-        Fri,  1 Jul 2022 08:24:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656663853;
-        bh=n9dhyCK11IrHKMh1ZOr35YIkHf8CJtBe9qy5A3a85Fk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=y/6nmU94zHyjEvECDtSMi1RzCikXHQqUCgMGttL3y6b/MKONcNZpBCVybJzOLmVE4
-         gTDazxLDWNksyAeQK5DAYEXaO03xWyeVtOSAI0wsaETM9akyBxOHCAimon66Kx1/fd
-         REVg0KA+cPX47deQ1TZi1fsAxQQVAqSF2vDS9iyk=
-Date:   Fri, 1 Jul 2022 10:24:10 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Paulo Alcantara <pc@cjr.nz>,
-        Enzo Matsumiya <ematsumiya@suse.de>,
-        Steve French <stfrench@microsoft.com>
-Subject: Re: [PATCH 5.18 0/6] 5.18.9-rc1 review
-Message-ID: <Yr6vKgOmqF562oc+@kroah.com>
-References: <20220630133230.239507521@linuxfoundation.org>
- <Yr6pTvc0Zka7qVfc@debian.me>
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E6AC66601974;
+        Fri,  1 Jul 2022 09:24:43 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656663885;
+        bh=6VbdfSOOs3Mk31GnoM4flK6rivXwW2rx7zZhOL2M5uc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mYFw5+jeerPUkzUWglYj+XMjkDIMdGTB6AeVXME2HCO7fsc2gX3Ece34moLO8e2la
+         b2A7aelCOsmvOQZ60qGa5LMnK+LSwPdbm17RzOE5f+9tp44JSrUkXv89n7Y4oHFehA
+         9lhXRhDnDJB0AcvhDJUloxfrrNo4JjRBbn1ccpHXU60sG2h2NQPVHSqhdqwQFSAaDb
+         mnon/U++cZloCHMuYbRrnyYgsasVnFie+kgNKgV3/pSwWQ0p8a3ljeJXbo0Co4IIf1
+         flbgLkTb5B/Skq6rh4ENMfCNDsBbrg9/H+AwfYsd82jv8irpKCDymb6PBQriLJU6G+
+         TvSwAP4NuNdLw==
+Message-ID: <250cd177-fbbf-343c-80c1-d9278c01410a@collabora.com>
+Date:   Fri, 1 Jul 2022 10:24:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yr6pTvc0Zka7qVfc@debian.me>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v13 10/10] drm/mediatek: fix no audio when resolution
+ change
+Content-Language: en-US
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com, deller@gmx.de,
+        airlied@linux.ie
+Cc:     msp@baylibre.com, granquet@baylibre.com, jitao.shi@mediatek.com,
+        wenst@chromium.org, ck.hu@mediatek.com, liangxu.xu@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-fbdev@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220701062808.18596-1-rex-bc.chen@mediatek.com>
+ <20220701062808.18596-11-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220701062808.18596-11-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 02:59:10PM +0700, Bagas Sanjaya wrote:
-> On Thu, Jun 30, 2022 at 03:47:26PM +0200, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.18.9 release.
-> > There are 6 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> > 
+Il 01/07/22 08:28, Bo-Chen Chen ha scritto:
+> When switching resolutions, config the audio setting with the
+> previous audio parameters.
 > 
-> Successfully cross-compiled for arm64 (bcm2711_defconfig, GCC 12.1.0)
-> and powerpc (ps3_defconfig, GCC 12.1.0).
-> 
-> I get a warning on cifs:
-> 
->   CC [M]  fs/cifs/connect.o
->   CC      drivers/tty/tty_baudrate.o
->   CC      drivers/tty/tty_jobctrl.o
-> fs/cifs/connect.c: In function 'is_path_remote':
-> fs/cifs/connect.c:3426:14: warning: unused variable 'nodfs' [-Wunused-variable]
->  3426 |         bool nodfs = cifs_sb->mnt_cifs_flags & CIFS_MOUNT_NO_DFS;
->       |              ^~~~~
-> 
-> The culprit is commit 2340f1adf9fbb3 ("cifs: don't call
-> cifs_dfs_query_info_nonascii_quirk() if nodfs was set") (upstream commit
-> 421ef3d56513b2).
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
 
-Again, gcc-12 is going to have problems with stable releases until
-Linus's tree is fixed up entirely.  Once that happens, then I will take
-backports to stable kernels to get them to build properly.
+Change the title to:
+drm/mediatek: Use cached audio config when changing resolution
 
-But until then, no need to report anything here, as there's nothing I
-can do.
+...and a more suitable description would be:
 
-thanks,
+Use the cached audio configuration during a resolution switch
+to avoid loss of sound.
 
-greg k-h
+(perhaps also explain why we're losing it and why using cached
+data is necessary).
+
+After which...
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
