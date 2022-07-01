@@ -2,203 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F161C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234725AbiGAGQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
+        id S234853AbiGAGS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234703AbiGAGQf (ORCPT
+        with ESMTP id S234792AbiGAGS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:16:35 -0400
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5466E248F4
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=vqY49
-        op8zSxUL8baAhR237zfSlqn0AZQ8crnI2RphPY=; b=khue8xj3bUnfjomZdu69H
-        j+V6Rtoj2+OguDpU4LQb6MkzIkJUlUolscB7D51kA9D0w1e/ZkY9Vn3xAJIx22YR
-        unEsQKtfEM4Np5CeATKcuMUx2kJphSQle0HnHTJXNenCgkFUwWcmO877gj4V6h6a
-        UAyYS2vo9TO7YsPf+w5x38=
-Received: from localhost.localdomain (unknown [111.48.58.12])
-        by smtp14 (Coremail) with SMTP id EsCowACnrwcikb5i+c9YKg--.61416S2;
-        Fri, 01 Jul 2022 14:16:08 +0800 (CST)
-From:   huhai <15815827059@163.com>
-To:     sudeep.holla@arm.com, cristian.marussi@arm.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        luriwen@kylinos.cn, liuyun01@kylinos.cn, huhai <huhai@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>
-Subject: [PATCH] firmware: arm_scpi: Fix error handle when scpi probe failed
-Date:   Fri,  1 Jul 2022 14:16:06 +0800
-Message-Id: <20220701061606.151366-1-15815827059@163.com>
-X-Mailer: git-send-email 2.27.0
+        Fri, 1 Jul 2022 02:18:28 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58FD17584
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:18:26 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id k7so810534ils.8
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Bdwz0tYqpNDBeePHz2QEf1aIGJX1PgK1kxd0heP96Lc=;
+        b=VWGWEZ+f/esEjS6qMTcvIIhVIjRk2ToZdpmNICJ8GOC2UpbqBEUoHs9xcs96ZrQsVW
+         ISy+Ya3GqpqtWvJ0HFGHGtH3PbCmPGLdMw2kWVdp06/3BZP5AG6x7rET+Y7helaIAs2Z
+         VPxuZ/O41PSVT8vHq2AbirK8+KKC/riDeT07d74YKjAXT9AEXgT7QHXdHZeiAeuU6FxP
+         7CF9V0GAVafMZl5zhT/4TZus2HsGhX1+2Ct04PrX5qYULrM1uqKNgODQCIJQU/2UKXvW
+         1j3wRPNsQ1p8mMutIK9+USsqE1VnLdCjYQ6vB+LRQIbjmJXrp+hA/nyriN+OVMKAuxY7
+         PhZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Bdwz0tYqpNDBeePHz2QEf1aIGJX1PgK1kxd0heP96Lc=;
+        b=KgkPRr+7eW1LD/JppdSa9Xs2r91y6AQvYXFydCrvA5nDu1yC/EYjYIVa3Ajxlje69K
+         oNKmXh7+3GUP8wzozJ2yaitYtduRb8Luo99HaGKUSv8oACXduhTQZzesINq0IruIUIvU
+         T42aeItWNhYm0vMejhZIo9zVyFg6WwiAvJKGrh4eiw7mJfve1MDCmHd3hOgE7tK9bGo2
+         eHgQaZ/VEPCAVLvlbrwOCSTAs6E6X5IwQ+tmiNI+6ozXOJ3Q6plQoSdfzO/Pz+blMOgh
+         C08IQZvS7y4NAarTKazbjfG41m9ke8VIr+fFI6f1d2+Ke7sSnuWnvrX98oGihJt9j3Cm
+         YV0Q==
+X-Gm-Message-State: AJIora/ZXrIUfFSH3Oe2Vfa1xagSIWVaPzh7N0NAdC+vgkzELwEoXIaj
+        TRfDlcq+0KehUVkabcvsUoin8cUfyC/SuB3/wMTg6Q==
+X-Google-Smtp-Source: AGRyM1t7T4d76Qu2AlQn8AGSEL1RDiUs1IGOGVVu7+nxP23ba3mV5D32I3xZd2A9jTqLWt2RpqLWNR5vY3x15Ub++tM=
+X-Received: by 2002:a05:6e02:1c27:b0:2d9:4d66:8541 with SMTP id
+ m7-20020a056e021c2700b002d94d668541mr7436043ilh.176.1656656304863; Thu, 30
+ Jun 2022 23:18:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowACnrwcikb5i+c9YKg--.61416S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWr1UKr17KF4UJF47Cw13twb_yoWrKrW5pF
-        y5Ja45KrW8Gr1fGryxAr15ZF4Yyw40ya17Wry7Gw1xA3WUAr98Xw1ftFWjg3W5JFW5ta47
-        tr13XFy09F4Utw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jSc_3UUUUU=
-X-Originating-IP: [111.48.58.12]
-X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/xtbB3wgxhWBHKxOB-wAAsC
+References: <20220630133232.926711493@linuxfoundation.org>
+In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 1 Jul 2022 11:48:13 +0530
+Message-ID: <CA+G9fYuVx58oCN0_JCnUn8vUqdZfKkexOeGhumX1=qviP+vG2Q@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/28] 5.15.52-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+On Thu, 30 Jun 2022 at 19:25, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.52 release.
+> There are 28 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.52-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-When scpi probe fails, do not just return the error code, but also reset
-the global scpi_info to NULL, otherwise scpi_hwmon_probe() may get a UAF
-and cause panic:
 
-  scpi_protocol FTSC0001:00: incorrect or no SCP firmware found
-  ... ...
-  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-  Mem abort info:
-    ESR = 0x86000005
-    Exception class = IABT (current EL), IL = 32 bits
-    SET = 0, FnV = 0
-    EA = 0, S1PTW = 0
-  user pgtable: 64k pages, 48-bit VAs, pgdp = (____ptrval____)
-  [0000000000000000] pgd=0000000000000000, pud=0000000000000000
-  Internal error: Oops: 86000005 [#1] SMP
-  ... ...
-  pc :           (null)
-  lr : scpi_hwmon_probe+0x2c/0x4bc [scpi_hwmon]
-  sp : ffff801fa13cfb20
-  x29: ffff801fa13cfb20 x28: ffff00000931c1e8
-  x27: ffff0000093b7318 x26: 000000000000000d
-  x25: ffff801fa1174da8 x24: 0000000000000000
-  x23: ffff801fa15e9000 x22: 0000000000000000
-  x21: ffff0000012c0028 x20: ffff801fa15e9010
-  x19: 0000000000000000 x18: 0000000000000000
-  x17: 0000000000000000 x16: 0000000000000000
-  x15: 0000000000000400 x14: 0000000000000400
-  x13: 0000000000000001 x12: 0000000000000018
-  x11: 0101010101010101 x10: 7f7f7f7f7f7f7f7f
-  x9 : fefefefeff2f2f39 x8 : 7f7f7f7f7f7f7f7f
-  x7 : 302f2f2f52525345 x6 : ffff801fa5771a8c
-  x5 : 0000000000000000 x4 : 0000000000000000
-  x3 : ffff801fa13bbc00 x2 : ffff000009360118
-  x1 : 0000000000000000 x0 : ffff801fa13cfbbe
-  Call trace:
-             (null)
-   platform_drv_probe+0x50/0xa0
-   really_probe+0x240/0x420
-   driver_probe_device+0x68/0x134
-   __device_attach_driver+0xb8/0x130
-   bus_for_each_drv+0x64/0xa0
-   __device_attach+0xa8/0x194
-   device_initial_probe+0x10/0x1c
-   bus_probe_device+0x90/0xa0
-   deferred_probe_work_func+0x90/0xe0
-   process_one_work+0x1c0/0x390
-   worker_thread+0x6c/0x384
-   kthread+0xfc/0x12c
-   ret_from_fork+0x10/0x18
-  Code: bad PC value
-  ---[ end trace b4b2f27a69b5712c ]---
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: huhai <huhai@kylinos.cn>
----
- drivers/firmware/arm_scpi.c | 36 +++++++++++++++++++++++++-----------
- 1 file changed, 25 insertions(+), 11 deletions(-)
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-diff --git a/drivers/firmware/arm_scpi.c b/drivers/firmware/arm_scpi.c
-index ddf0b9ff9e15..ad2355814bdf 100644
---- a/drivers/firmware/arm_scpi.c
-+++ b/drivers/firmware/arm_scpi.c
-@@ -924,17 +924,20 @@ static int scpi_probe(struct platform_device *pdev)
- 	count = of_count_phandle_with_args(np, "mboxes", "#mbox-cells");
- 	if (count < 0) {
- 		dev_err(dev, "no mboxes property in '%pOF'\n", np);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto err;
- 	}
- 
- 	scpi_info->channels = devm_kcalloc(dev, count, sizeof(struct scpi_chan),
- 					   GFP_KERNEL);
--	if (!scpi_info->channels)
--		return -ENOMEM;
-+	if (!scpi_info->channels) {
-+		ret = -ENOMEM;
-+		goto err;
-+	}
- 
- 	ret = devm_add_action(dev, scpi_free_channels, scpi_info);
- 	if (ret)
--		return ret;
-+		goto err;
- 
- 	for (; scpi_info->num_chans < count; scpi_info->num_chans++) {
- 		resource_size_t size;
-@@ -943,21 +946,24 @@ static int scpi_probe(struct platform_device *pdev)
- 		struct mbox_client *cl = &pchan->cl;
- 		struct device_node *shmem = of_parse_phandle(np, "shmem", idx);
- 
--		if (!of_match_node(shmem_of_match, shmem))
--			return -ENXIO;
-+		if (!of_match_node(shmem_of_match, shmem)) {
-+			ret = -ENXIO;
-+			goto err;
-+		}
- 
- 		ret = of_address_to_resource(shmem, 0, &res);
- 		of_node_put(shmem);
- 		if (ret) {
- 			dev_err(dev, "failed to get SCPI payload mem resource\n");
--			return ret;
-+			goto err;
- 		}
- 
- 		size = resource_size(&res);
- 		pchan->rx_payload = devm_ioremap(dev, res.start, size);
- 		if (!pchan->rx_payload) {
- 			dev_err(dev, "failed to ioremap SCPI payload\n");
--			return -EADDRNOTAVAIL;
-+			ret = -EADDRNOTAVAIL;
-+			goto err;
- 		}
- 		pchan->tx_payload = pchan->rx_payload + (size >> 1);
- 
-@@ -983,7 +989,7 @@ static int scpi_probe(struct platform_device *pdev)
- 				dev_err(dev, "failed to get channel%d err %d\n",
- 					idx, ret);
- 		}
--		return ret;
-+		goto err;
- 	}
- 
- 	scpi_info->commands = scpi_std_commands;
-@@ -1004,7 +1010,7 @@ static int scpi_probe(struct platform_device *pdev)
- 	ret = scpi_init_versions(scpi_info);
- 	if (ret) {
- 		dev_err(dev, "incorrect or no SCP firmware found\n");
--		return ret;
-+		goto err;
- 	}
- 
- 	if (scpi_info->is_legacy && !scpi_info->protocol_version &&
-@@ -1024,7 +1030,15 @@ static int scpi_probe(struct platform_device *pdev)
- 				   scpi_info->firmware_version));
- 	scpi_info->scpi_ops = &scpi_ops;
- 
--	return devm_of_platform_populate(dev);
-+	ret = devm_of_platform_populate(dev);
-+	if (ret)
-+		goto err;
-+
-+	return ret;
-+err:
-+	/* stop exporting SCPI ops through get_scpi_ops */
-+	scpi_info = NULL;
-+	return ret;
- }
- 
- static const struct of_device_id scpi_of_match[] = {
--- 
-2.27.0
+## Build
+* kernel: 5.15.52-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.15.y
+* git commit: 49249bfc4d1bc5a4f6c82471a12a13bcc78a40c4
+* git describe: v5.15.51-29-g49249bfc4d1b
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.51-29-g49249bfc4d1b
 
+## Test Regressions (compared to v5.15.51)
+No test regressions found.
+
+## Metric Regressions (compared to v5.15.51)
+No metric regressions found.
+
+## Test Fixes (compared to v5.15.51)
+No test fixes found.
+
+## Metric Fixes (compared to v5.15.51)
+No metric fixes found.
+
+## Test result summary
+total: 132820, pass: 118669, fail: 310, skip: 12977, xfail: 864
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 308 total, 308 passed, 0 failed
+* arm64: 62 total, 62 passed, 0 failed
+* i386: 52 total, 49 passed, 3 failed
+* mips: 48 total, 48 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* riscv: 22 total, 22 passed, 0 failed
+* s390: 20 total, 20 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 56 total, 55 passed, 1 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
