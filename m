@@ -2,97 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEC3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbiGAQkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
+        id S231881AbiGAQkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232012AbiGAQkH (ORCPT
+        with ESMTP id S229906AbiGAQkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:40:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BDB27FF5;
-        Fri,  1 Jul 2022 09:40:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 1 Jul 2022 12:40:51 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8926044753;
+        Fri,  1 Jul 2022 09:40:49 -0700 (PDT)
+Received: from notapiano (unknown [193.27.14.116])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CCFA62135;
-        Fri,  1 Jul 2022 16:40:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE950C341C7;
-        Fri,  1 Jul 2022 16:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656693605;
-        bh=ELXcZJElN/A6bSufZdnLypdmVgxyKZbLEyPYVr2U9m8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NRbf97Pq0eVt5tY1lxoCOAIiR0L+FCltn/9eUPXin+K8U00JkLeSw82d2wvNisxQU
-         xp1iu+by40cirjRZjFpMl2rcHotmdwM/xzLlLKRbMSBVUjuAvdPaUVuUXFTsJSKQq/
-         7nAC6N2lUEBaQ2zy2mRvWqAmGtm6eGDcxkiEtEck9dxpJpqh4EgNHHzOch/ZFCbvHt
-         Ag6DbswQiHoAenv7SzVPchZwJCSG4KfWzJf/0VhgUSRiMkW7nRCCW/CeuDa+oyLbsX
-         D+jmjOLgepL1yD7kB/WECX7oHeOQENs0xFrLpaO5cmXsisim49DPOrLlKiITc3BshU
-         Lu8UcMs1fRUjA==
-Date:   Fri, 1 Jul 2022 17:49:40 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] iio: adc: tsc2046: silent spi_device_id
- warning
-Message-ID: <20220701174940.6a0f3e02@jic23-huawei>
-In-Reply-To: <20220630075155.2718293-1-o.rempel@pengutronix.de>
-References: <20220630075155.2718293-1-o.rempel@pengutronix.de>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3A2C666015DA;
+        Fri,  1 Jul 2022 17:40:45 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656693647;
+        bh=0LN1nCFHY1IULTVl6FBa/H7bg/S9tIWVbV69kp8VbnA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BAA9Si32fplazkxh8kicyhndXMgFsW4Iwzx/0yfMwj67OTUL7wGYE4ZQyAZnKtqEO
+         iT6m6YdR/rwyrKrIVNJcb57lJfZpOyjXfncsoT+IT9UxEBvedDLpkq9nwO5uAgNMei
+         frFMUE0Bv7Re8x2+qC0kdXny9jG3ke/Az7B41EdbKURPBmFxbOGUxYFJeVOB0UJitA
+         9iHPk+xxmpLp1txmzqZnuny6BoeNZZZP/hkMeo8lcfWvugQrYTeDsBht/2Dg1yPSCv
+         Z9EeIdYXw6QCIoY/+/9UIbFEic6Ii3YwQ8Ddet0J7HWLVzn/pSaglY9OEyFrQ4muXF
+         XEBBetMaCs1Yw==
+Date:   Fri, 1 Jul 2022 12:40:41 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>
+Subject: Re: [PATCH v2 4/6] arm64: dts: mt8192: Add display nodes
+Message-ID: <20220701164041.rbt3idraawafubcf@notapiano>
+References: <20220701090547.21429-1-allen-kh.cheng@mediatek.com>
+ <20220701090547.21429-5-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220701090547.21429-5-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 30 Jun 2022 09:51:55 +0200
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-
-> Add spi_device_id to silent following warning:
->  SPI driver tsc2046 has no spi_device_id for ti,tsc2046e-adc
+On Fri, Jul 01, 2022 at 05:05:45PM +0800, Allen-KH Cheng wrote:
+> Add display nodes and gce info for mt8192 SoC.
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-If the device was probed via this path (old school board file
-or similar) then the device_get_matchdata() call will fail.
-
-So I think we need to add handling for this case.  Usually
-along lines of
-if (dev_fwnode)
-	.. device_get_match_data()
-else
-	.. handle what is the spi_device_id structure
-
-
+> GCE (Global Command Engine) properties to the display nodes in order to
+> enable the usage of the CMDQ (Command Queue), which is required for
+> operating the display.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 > ---
->  drivers/iio/adc/ti-tsc2046.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 137 +++++++++++++++++++++++
+>  1 file changed, 137 insertions(+)
 > 
-> diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-> index 55b35570ad8b..27dc959aee37 100644
-> --- a/drivers/iio/adc/ti-tsc2046.c
-> +++ b/drivers/iio/adc/ti-tsc2046.c
-> @@ -833,11 +833,18 @@ static const struct of_device_id ads7950_of_table[] = {
->  };
->  MODULE_DEVICE_TABLE(of, ads7950_of_table);
->  
-> +static const struct spi_device_id tsc2046_adc_spi_ids[] = {
-> +	{ "tsc2046e-adc" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
-> +
->  static struct spi_driver tsc2046_adc_driver = {
->  	.driver = {
->  		.name = "tsc2046",
->  		.of_match_table = ads7950_of_table,
->  	},
-> +	.id_table = tsc2046_adc_spi_ids,
->  	.probe = tsc2046_adc_probe,
->  };
->  module_spi_driver(tsc2046_adc_driver);
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index a789b7c9b2af..c4dc8777f26c 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+[..]
+> +		rdma4: rdma@14015000 {
+> +			compatible = "mediatek,mt8192-disp-rdma";
 
+You added the fallback compatible on rdma0 but missing it on this node.
+
+Thanks,
+Nícolas
+
+> +			reg = <0 0x14015000 0 0x1000>;
+> +			interrupts = <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+> +			clocks = <&mmsys CLK_MM_DISP_RDMA4>;
+> +			iommus = <&iommu0 M4U_PORT_L1_DISP_RDMA4>;
+> +			mediatek,rdma-fifo-size = <2048>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x5000 0x1000>;
+> +		};
+> +
+>  		dpi0: dpi@14016000 {
+>  			compatible = "mediatek,mt8192-dpi";
+>  			reg = <0 0x14016000 0 0x1000>;
+> -- 
+> 2.18.0
+> 
+> 
