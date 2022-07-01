@@ -2,177 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234466AbiGADlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 23:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
+        id S234624AbiGADlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 23:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiGADkh (ORCPT
+        with ESMTP id S234477AbiGADlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 23:40:37 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B7765D4C;
-        Thu, 30 Jun 2022 20:40:36 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4A8FB2035C1;
-        Fri,  1 Jul 2022 05:40:35 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DEDC52035BE;
-        Fri,  1 Jul 2022 05:40:34 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 4FAEC1820F58;
-        Fri,  1 Jul 2022 11:40:33 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v14 17/17] PCI: imx6: Reformat suspend callback to keep symmetric with resume
-Date:   Fri,  1 Jul 2022 11:25:35 +0800
-Message-Id: <1656645935-1370-18-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Thu, 30 Jun 2022 23:41:21 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFE067587
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 20:41:07 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id i8-20020a056e020d8800b002d931252904so536143ilj.23
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 20:41:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Jd4zwShDPU0ZsidpPN7v1uc+f7slDYSQuG2StPqKSLg=;
+        b=OvNzAvF+f3+wsAtPeJt3qR+2jsbQ1RduEOPSnaLIinfqHvraNCAe6XFvkYBbCE/Df6
+         mMpJ9zMhpWeqIp3aHVueN1US5RTO3hlwo4Efl5fWmdTf3pdXu1rj4c7j9yM8rpkSZdIy
+         NQ3g2VMkMknTaj6mGFGHM1lEe/qDiBYpVrTcNV5faNziObtaUeGLUPytAg7SSAwpetx9
+         jaqBqGSVVSLMHIWHymwHJGrvZXpz6fkxXtSjIpA333D/Ha6V2APSB0E/tp7HzcVmr4o7
+         iNI8j0CdOzJ4psvWdSQv9q1SXMzlxtgLgSNdXd4onHLZDGE0ldy+XvyiyhImZbEcp3T9
+         w/Ww==
+X-Gm-Message-State: AJIora9OYkwuSCSrofNQjEaA0UDo5pPwcu2m85T57aQ2n1MByt0HVZ5a
+        URqlc3/s9njJEF6XWiLLh1drAr5mcvsZFWmCoTgyGLZ1o8Ig
+X-Google-Smtp-Source: AGRyM1vUxrl5pWJOfY4QLnVTxwQWa9EFWgUw/40C4FiatjUze9f7xjezwN2CkIrTuFw4t04blFzpZFA5pSvUozTN+ltpF/S/nAcI
+MIME-Version: 1.0
+X-Received: by 2002:a05:6638:150d:b0:33e:987a:4139 with SMTP id
+ b13-20020a056638150d00b0033e987a4139mr1743432jat.205.1656646867338; Thu, 30
+ Jun 2022 20:41:07 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 20:41:07 -0700
+In-Reply-To: <20220701032313.1164-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000bcd1c05e2b628f0@google.com>
+Subject: Re: [syzbot] WARNING in sk_stream_kill_queues (8)
+From:   syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create imx6_pcie_stop_link() and imx6_pcie_host_exit() functions.
-Encapsulate clocks, regulators disables and PHY uninitialization into
-imx6_pcie_host_exit().
-To keep suspend/resume symmetric as much as possible, invoke these two
-new created functions in suspend callback.
+Hello,
 
-To be symmetric with imx6_pcie_host_exit(), move imx6_pcie_clk_enable()
-to imx6_pcie_host_init() from imx6_pcie_deassert_core_reset().
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+BUG: sleeping function called from invalid context in sk_psock_stop
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 60 ++++++++++++++++-----------
- 1 file changed, 36 insertions(+), 24 deletions(-)
+nf_conntrack: default automatic helper assignment has been turned off for security reasons and CT-based firewall rule not found. Use the iptables CT target to attach helpers instead.
+BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 14037, name: syz-executor244
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+3 locks held by syz-executor244/14037:
+ #0: ffff88806b374410 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:761 [inline]
+ #0: ffff88806b374410 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:649
+ #1: ffff88807ecaed30 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1664 [inline]
+ #1: ffff88807ecaed30 (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_close+0x1e/0xc0 net/ipv4/tcp.c:2974
+ #2: ffff88807ecaecb0 (slock-AF_INET){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
+ #2: ffff88807ecaecb0 (slock-AF_INET){+.-.}-{2:2}, at: __tcp_close+0x4d3/0xf50 net/ipv4/tcp.c:2897
+Preemption disabled at:
+[<ffffffff87dbd2fb>] local_bh_disable include/linux/bottom_half.h:20 [inline]
+[<ffffffff87dbd2fb>] __tcp_close+0x4cb/0xf50 net/ipv4/tcp.c:2896
+CPU: 1 PID: 14037 Comm: syz-executor244 Not tainted 5.19.0-rc4-next-20220627-syzkaller-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/18/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ __might_resched.cold+0x222/0x26b kernel/sched/core.c:9859
+ start_flush_work kernel/workqueue.c:3010 [inline]
+ __flush_work+0x109/0xb10 kernel/workqueue.c:3074
+ __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3162
+ sk_psock_stop+0x4cb/0x630 net/core/skmsg.c:810
+ sock_map_destroy+0x333/0x760 net/core/sock_map.c:1581
+ inet_csk_destroy_sock+0x196/0x440 net/ipv4/inet_connection_sock.c:1011
+ __tcp_close+0xb92/0xf50 net/ipv4/tcp.c:2963
+ tcp_close+0x29/0xc0 net/ipv4/tcp.c:2975
+ sock_map_close+0x3b9/0x780 net/core/sock_map.c:1607
+ inet_release+0x12e/0x270 net/ipv4/af_inet.c:428
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xaf1/0x29f0 kernel/exit.c:795
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f1abfde9989
+Code: Unable to access opcode bytes at RIP 0x7f1abfde995f.
+RSP: 002b:00007ffd0bbbdb28 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f1abfe5d270 RCX: 00007f1abfde9989
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000010
+R10: 0000000000000010 R11: 0000000000000246 R12: 00007f1abfe
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 1cf8bf9035f2..bf8992a6c238 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -703,13 +703,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- {
- 	struct dw_pcie *pci = imx6_pcie->pci;
- 	struct device *dev = pci->dev;
--	int ret;
--
--	ret = imx6_pcie_clk_enable(imx6_pcie);
--	if (ret) {
--		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
--		return ret;
--	}
- 
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MQ:
-@@ -905,6 +898,14 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 	return 0;
- }
- 
-+static void imx6_pcie_stop_link(struct dw_pcie *pci)
-+{
-+	struct device *dev = pci->dev;
-+
-+	/* Turn off PCIe LTSSM */
-+	imx6_pcie_ltssm_disable(dev);
-+}
-+
- static int imx6_pcie_host_init(struct pcie_port *pp)
- {
- 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-@@ -922,11 +923,17 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
- 			return ret;
- 		}
- 	}
-+	ret = imx6_pcie_clk_enable(imx6_pcie);
-+	if (ret) {
-+		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
-+		goto err_reg_disable;
-+	}
-+
- 	if (imx6_pcie->phy) {
- 		ret = phy_power_on(imx6_pcie->phy);
- 		if (ret) {
- 			dev_err(dev, "pcie phy power up failed.\n");
--			goto err_reg_disable;
-+			goto err_clk_disable;
- 		}
- 	}
- 
-@@ -947,17 +954,33 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
- 
- 	return 0;
- 
--err_clk_disable:
--	imx6_pcie_clk_disable(imx6_pcie);
- err_phy_off:
- 	if (imx6_pcie->phy)
- 		phy_power_off(imx6_pcie->phy);
-+err_clk_disable:
-+	imx6_pcie_clk_disable(imx6_pcie);
- err_reg_disable:
- 	if (imx6_pcie->vpcie)
- 		regulator_disable(imx6_pcie->vpcie);
- 	return ret;
- }
- 
-+static void imx6_pcie_host_exit(struct pcie_port *pp)
-+{
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
-+
-+	if (imx6_pcie->phy) {
-+		if (phy_power_off(imx6_pcie->phy))
-+			dev_err(pci->dev, "unable to power off PHY\n");
-+		phy_exit(imx6_pcie->phy);
-+	}
-+	imx6_pcie_clk_disable(imx6_pcie);
-+
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
-+}
-+
- static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
- 	.host_init = imx6_pcie_host_init,
- };
-@@ -1007,25 +1030,14 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
- static int imx6_pcie_suspend_noirq(struct device *dev)
- {
- 	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
-+	struct pcie_port *pp = &imx6_pcie->pci->pp;
- 
- 	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_SUPPORTS_SUSPEND))
- 		return 0;
- 
- 	imx6_pcie_pm_turnoff(imx6_pcie);
--	imx6_pcie_ltssm_disable(dev);
--	imx6_pcie_clk_disable(imx6_pcie);
--	switch (imx6_pcie->drvdata->variant) {
--	case IMX8MM:
--		if (phy_power_off(imx6_pcie->phy))
--			dev_err(dev, "unable to power off PHY\n");
--		phy_exit(imx6_pcie->phy);
--		break;
--	default:
--		break;
--	}
--
--	if (imx6_pcie->vpcie)
--		regulator_disable(imx6_pcie->vpcie);
-+	imx6_pcie_stop_link(imx6_pcie->pci);
-+	imx6_pcie_host_exit(pp);
- 
- 	return 0;
- }
--- 
-2.25.1
+
+Tested on:
+
+commit:         aab35c3d Add linux-next specific files for 20220627
+git tree:       http://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/next/linux-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=15f66b98080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6a874f114a1e4a6b
+dashboard link: https://syzkaller.appspot.com/bug?extid=a0e6f8738b58f7654417
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=15b63ef4080000
 
