@@ -2,116 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D06C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B43C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234149AbiGALnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S233132AbiGALnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233732AbiGALnI (ORCPT
+        with ESMTP id S229562AbiGALnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:43:08 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18E8A0;
-        Fri,  1 Jul 2022 04:43:06 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2619ABPB011517;
-        Fri, 1 Jul 2022 13:42:48 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=15qIDpOe/XT/QH0PFDnUlqnoWBjzCCBwmSf9Q6SHfmU=;
- b=XCi2Vm5D4zSoHdTHuvD63EznGu2sBqNlP2iTRM4CFxJ0RTQ7srj++yzvHgDxKuutULyd
- R1vS27ajpmXhRDkt5eoUw2raNZeN5guyxuJmn+KYAuNEaDBdhmimF8wNdkOeuc02SCpm
- 3SBqkbbcP6l8ms4X8+7boGWuMfGkyvHeJaglw5byFJUwn6tRfBx3w6bSQCgsEEzFjIaQ
- odE5caTvz0BWZn9avUy0nwJiqw9pbgM/YPtbhcCa6zHgqj0TkX6T+dxKoNRY5L1nXAmb
- HefbbCUp7VI/GRBnLfw2XEAQx3VvGjvcX3Du0/Zqehgaev7JwfUrER5uyopZxPGB9QZ+ Sw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h1x2bruqc-1
+        Fri, 1 Jul 2022 07:43:46 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA0F6D56C;
+        Fri,  1 Jul 2022 04:43:45 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 261BLUcN039011;
+        Fri, 1 Jul 2022 11:43:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : reply-to : to : cc : date : in-reply-to : references : content-type
+ : mime-version : content-transfer-encoding; s=pp1;
+ bh=4Ig8q/zItxYk+yCgAqOsbU65m0EVzCGLXoaZt/UeboU=;
+ b=kfeKbE50hY9clhvpQMfd5uaUYTIcFUO0jkP9wC8kXuD31EHpxfBwrAPVwbRTu/EllPjx
+ FvW7OLh5uNO+6rwWOT4xaX4NZ5ltND542Oldisgku1fozR2ZVHd28T60GrjDJtNXJnQD
+ 3pwJ7xYlsk3J8k07nY8RDVAgwWJR+QyUywRFgDA02EaWftRwqAVzXcW/qpBNY/jVEggS
+ yosDlQAJ2mHL4SMP28bJAOlgDSfmF130ovzJ2tUR1kgnHdaDYoQurJV241QguPs3B0a3
+ IrEASsTfQPDu+oLYSBp5dGoGb8X2nXEgCdVEGapQTgRQfuMgOemPDxwhdNf1lyx6wtCE Cw== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1yyngx4j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Jul 2022 13:42:48 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CDA5D10002A;
-        Fri,  1 Jul 2022 13:42:47 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B917A21B515;
-        Fri,  1 Jul 2022 13:42:47 +0200 (CEST)
-Received: from [10.201.21.93] (10.75.127.51) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 1 Jul
- 2022 13:42:47 +0200
-Message-ID: <5a33ac18-5232-979d-889b-0cf2c1fac923@foss.st.com>
-Date:   Fri, 1 Jul 2022 13:42:46 +0200
+        Fri, 01 Jul 2022 11:43:34 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 261BKGb9025460;
+        Fri, 1 Jul 2022 11:43:33 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma03wdc.us.ibm.com with ESMTP id 3gwt0a9crg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 11:43:33 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 261BhW1q22610252
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 1 Jul 2022 11:43:32 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 73CF87805E;
+        Fri,  1 Jul 2022 11:43:32 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8863A78063;
+        Fri,  1 Jul 2022 11:43:31 +0000 (GMT)
+Received: from lingrow.int.hansenpartnership.com (unknown [9.163.6.8])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri,  1 Jul 2022 11:43:31 +0000 (GMT)
+Message-ID: <1338d1aed2e55c3107363a6b7e521d75f877db2f.camel@linux.ibm.com>
+Subject: Re: [PATCH] scsi: bfa: use strscpy to replace strlcpy
+From:   James Bottomley <jejb@linux.ibm.com>
+Reply-To: jejb@linux.ibm.com
+To:     XueBing Chen <chenxuebing@jari.cn>, martin.petersen@oracle.com
+Cc:     anil.gurumurthy@qlogic.com, sudarsana.kalluru@qlogic.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 01 Jul 2022 07:43:30 -0400
+In-Reply-To: <2975fca0.d18.181b97a760e.Coremail.chenxuebing@jari.cn>
+References: <2975fca0.d18.181b97a760e.Coremail.chenxuebing@jari.cn>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] ARM: dts: stm32: add missing usbh clock and fix clk order
- on stm32mp15
-Content-Language: en-US
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>, <robh+dt@kernel.org>
-CC:     <amelie.delaunay@foss.st.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <20220621084509.407451-1-fabrice.gasnier@foss.st.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20220621084509.407451-1-fabrice.gasnier@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: VKWl1J7Nl0FG63qangoHSp7x6BFa4oCA
+X-Proofpoint-ORIG-GUID: VKWl1J7Nl0FG63qangoHSp7x6BFa4oCA
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-01_06,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 mlxlogscore=670 malwarescore=0 adultscore=0
+ phishscore=0 clxscore=1011 bulkscore=0 spamscore=0 mlxscore=0
+ impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2207010043
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabrice
+On Fri, 2022-07-01 at 19:16 +0800, XueBing Chen wrote:
+> The strlcpy should not be used
 
-On 6/21/22 10:45, Fabrice Gasnier wrote:
-> The USBH composed of EHCI and OHCI controllers needs the PHY clock to be
-> initialized first, before enabling (gating) them. The reverse is also
-> required when going to suspend.
-> So, add USBPHY clock as 1st entry in both controllers, so the USBPHY PLL
-> gets enabled 1st upon controller init. Upon suspend/resume, this also makes
-> the clock to be disabled/re-enabled in the correct order.
-> This fixes some IRQ storm conditions seen when going to low-power, due to
-> PHY PLL being disabled before all clocks are cleanly gated.
-> 
-> Fixes: 949a0c0dec85 ("ARM: dts: stm32: add USB Host (USBH) support to stm32mp157c")
-> Fixes: db7be2cb87ae ("ARM: dts: stm32: use usbphyc ck_usbo_48m as USBH OHCI clock on stm32mp151")
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-> ---
->   arch/arm/boot/dts/stm32mp151.dtsi | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/stm32mp151.dtsi b/arch/arm/boot/dts/stm32mp151.dtsi
-> index edc0a1641c7b..9e2226430802 100644
-> --- a/arch/arm/boot/dts/stm32mp151.dtsi
-> +++ b/arch/arm/boot/dts/stm32mp151.dtsi
-> @@ -1473,7 +1473,7 @@ stmmac_axi_config_0: stmmac-axi-config {
->   		usbh_ohci: usb@5800c000 {
->   			compatible = "generic-ohci";
->   			reg = <0x5800c000 0x1000>;
-> -			clocks = <&rcc USBH>, <&usbphyc>;
-> +			clocks = <&usbphyc>, <&rcc USBH>;
->   			resets = <&rcc USBH_R>;
->   			interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
->   			status = "disabled";
-> @@ -1482,7 +1482,7 @@ usbh_ohci: usb@5800c000 {
->   		usbh_ehci: usb@5800d000 {
->   			compatible = "generic-ehci";
->   			reg = <0x5800d000 0x1000>;
-> -			clocks = <&rcc USBH>;
-> +			clocks = <&usbphyc>, <&rcc USBH>;
->   			resets = <&rcc USBH_R>;
->   			interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>;
->   			companion = <&usbh_ohci>;
+That's not true.
 
-Applied in stm32-fixes.
+>  because it doesn't limit the source length. Preferred is strscpy.
 
-Thanks
-Alex
+And that's not the reason why strscpy is often a marginally better
+choice.  In the case of what you change in bfa, none of the reasons why
+strscpy might be marginally better actually apply.
+
+James
+
+
