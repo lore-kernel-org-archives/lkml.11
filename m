@@ -2,92 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D72C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5498AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237241AbiGALOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
+        id S234596AbiGALRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236921AbiGALOk (ORCPT
+        with ESMTP id S233037AbiGALRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:14:40 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BC1534650
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:14:38 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 1 Jul 2022
- 19:09:15 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.13.66]
-Date:   Fri, 1 Jul 2022 19:09:15 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     rostedt@goodmis.org, mingo@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] ftrace: use strscpy to replace strlcpy
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Fri, 1 Jul 2022 07:17:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D9E38DA3
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:17:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39710B82CEF
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 11:17:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95393C3411E;
+        Fri,  1 Jul 2022 11:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656674227;
+        bh=nHu0ElrLXx8qkNrtLKo6/SodmCcmwAbd6i/rONrG0i0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dI65g5VZNhEYnslFvcbgfHVrl5cQ8nndqBpreT83lFNydq2BCmovJwkZTFKaHV2i6
+         Sp00emQaSVXMXH5jI/ri+yEBbiwlOcVYux9XXo4EYvPbZW4uzZJcFfgfLkKc6tPpgN
+         D8OBMJoNReSXvoxtMnff0bU9fTxRMJZNojO34gvYpsW9kE/TaiZEUZvRR1MN7XJka5
+         o6F+iOQLRk8jEcS9CeQNZXsLhIXUE2lhiTy3qKoDxcmPkvbpT8wrdpmiwYhmtz7/ca
+         I9y56WZojJOyDgWqCQzF8oMsLGQUKxoHMlIlAYtCy4aLzC4QN7sqEV51gWcvSA1Uw+
+         2ErncFjyBZcKw==
+Date:   Fri, 1 Jul 2022 12:17:02 +0100
+From:   Will Deacon <will@kernel.org>
+To:     =?utf-8?B?aGFpYmluemhhbmco5byg5rW35paMKQ==?= 
+        <haibinzhang@tencent.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] arm64: fix oops in concurrently setting insn_emulation
+ sysctls
+Message-ID: <20220701111702.GA28070@willie-the-truck>
+References: <6C55A58E-6F30-4EDD-B943-421226DBC4AD@tencent.com>
 MIME-Version: 1.0
-Message-ID: <479ff932.d17.181b9735fdb.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwD3AG_b1b5irfdFAA--.864W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvOAAKsD
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6C55A58E-6F30-4EDD-B943-421226DBC4AD@tencent.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
-dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
-WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGtlcm5lbC90cmFjZS9mdHJh
-Y2UuYyB8IDE4ICsrKysrKysrKy0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9u
-cygrKSwgOSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9rZXJuZWwvdHJhY2UvZnRyYWNlLmMg
-Yi9rZXJuZWwvdHJhY2UvZnRyYWNlLmMKaW5kZXggNjAxY2NmMWIyZjA5Li44ZDJhZDE0NzJmY2Ig
-MTAwNjQ0Ci0tLSBhL2tlcm5lbC90cmFjZS9mdHJhY2UuYworKysgYi9rZXJuZWwvdHJhY2UvZnRy
-YWNlLmMKQEAgLTU5MDIsNyArNTkwMiw3IEBAIGJvb2wgZnRyYWNlX2ZpbHRlcl9wYXJhbSBfX2lu
-aXRkYXRhOwogc3RhdGljIGludCBfX2luaXQgc2V0X2Z0cmFjZV9ub3RyYWNlKGNoYXIgKnN0cikK
-IHsKIAlmdHJhY2VfZmlsdGVyX3BhcmFtID0gdHJ1ZTsKLQlzdHJsY3B5KGZ0cmFjZV9ub3RyYWNl
-X2J1Ziwgc3RyLCBGVFJBQ0VfRklMVEVSX1NJWkUpOworCXN0cnNjcHkoZnRyYWNlX25vdHJhY2Vf
-YnVmLCBzdHIsIEZUUkFDRV9GSUxURVJfU0laRSk7CiAJcmV0dXJuIDE7CiB9CiBfX3NldHVwKCJm
-dHJhY2Vfbm90cmFjZT0iLCBzZXRfZnRyYWNlX25vdHJhY2UpOwpAQCAtNTkxMCw3ICs1OTEwLDcg
-QEAgX19zZXR1cCgiZnRyYWNlX25vdHJhY2U9Iiwgc2V0X2Z0cmFjZV9ub3RyYWNlKTsKIHN0YXRp
-YyBpbnQgX19pbml0IHNldF9mdHJhY2VfZmlsdGVyKGNoYXIgKnN0cikKIHsKIAlmdHJhY2VfZmls
-dGVyX3BhcmFtID0gdHJ1ZTsKLQlzdHJsY3B5KGZ0cmFjZV9maWx0ZXJfYnVmLCBzdHIsIEZUUkFD
-RV9GSUxURVJfU0laRSk7CisJc3Ryc2NweShmdHJhY2VfZmlsdGVyX2J1Ziwgc3RyLCBGVFJBQ0Vf
-RklMVEVSX1NJWkUpOwogCXJldHVybiAxOwogfQogX19zZXR1cCgiZnRyYWNlX2ZpbHRlcj0iLCBz
-ZXRfZnRyYWNlX2ZpbHRlcik7CkBAIC01OTIyLDE0ICs1OTIyLDE0IEBAIHN0YXRpYyBpbnQgZnRy
-YWNlX2dyYXBoX3NldF9oYXNoKHN0cnVjdCBmdHJhY2VfaGFzaCAqaGFzaCwgY2hhciAqYnVmZmVy
-KTsKIAogc3RhdGljIGludCBfX2luaXQgc2V0X2dyYXBoX2Z1bmN0aW9uKGNoYXIgKnN0cikKIHsK
-LQlzdHJsY3B5KGZ0cmFjZV9ncmFwaF9idWYsIHN0ciwgRlRSQUNFX0ZJTFRFUl9TSVpFKTsKKwlz
-dHJzY3B5KGZ0cmFjZV9ncmFwaF9idWYsIHN0ciwgRlRSQUNFX0ZJTFRFUl9TSVpFKTsKIAlyZXR1
-cm4gMTsKIH0KIF9fc2V0dXAoImZ0cmFjZV9ncmFwaF9maWx0ZXI9Iiwgc2V0X2dyYXBoX2Z1bmN0
-aW9uKTsKIAogc3RhdGljIGludCBfX2luaXQgc2V0X2dyYXBoX25vdHJhY2VfZnVuY3Rpb24oY2hh
-ciAqc3RyKQogewotCXN0cmxjcHkoZnRyYWNlX2dyYXBoX25vdHJhY2VfYnVmLCBzdHIsIEZUUkFD
-RV9GSUxURVJfU0laRSk7CisJc3Ryc2NweShmdHJhY2VfZ3JhcGhfbm90cmFjZV9idWYsIHN0ciwg
-RlRSQUNFX0ZJTFRFUl9TSVpFKTsKIAlyZXR1cm4gMTsKIH0KIF9fc2V0dXAoImZ0cmFjZV9ncmFw
-aF9ub3RyYWNlPSIsIHNldF9ncmFwaF9ub3RyYWNlX2Z1bmN0aW9uKTsKQEAgLTY3MTQsOCArNjcx
-NCw4IEBAIHN0YXRpYyBpbnQgZnRyYWNlX2dldF90cmFtcG9saW5lX2thbGxzeW0odW5zaWduZWQg
-aW50IHN5bW51bSwKIAkJCWNvbnRpbnVlOwogCQkqdmFsdWUgPSBvcC0+dHJhbXBvbGluZTsKIAkJ
-KnR5cGUgPSAndCc7Ci0JCXN0cmxjcHkobmFtZSwgRlRSQUNFX1RSQU1QT0xJTkVfU1lNLCBLU1lN
-X05BTUVfTEVOKTsKLQkJc3RybGNweShtb2R1bGVfbmFtZSwgRlRSQUNFX1RSQU1QT0xJTkVfTU9E
-LCBNT0RVTEVfTkFNRV9MRU4pOworCQlzdHJzY3B5KG5hbWUsIEZUUkFDRV9UUkFNUE9MSU5FX1NZ
-TSwgS1NZTV9OQU1FX0xFTik7CisJCXN0cnNjcHkobW9kdWxlX25hbWUsIEZUUkFDRV9UUkFNUE9M
-SU5FX01PRCwgTU9EVUxFX05BTUVfTEVOKTsKIAkJKmV4cG9ydGVkID0gMDsKIAkJcmV0dXJuIDA7
-CiAJfQpAQCAtNzA0Niw3ICs3MDQ2LDcgQEAgZnRyYWNlX2Z1bmNfYWRkcmVzc19sb29rdXAoc3Ry
-dWN0IGZ0cmFjZV9tb2RfbWFwICptb2RfbWFwLAogCQlpZiAob2ZmKQogCQkJKm9mZiA9IGFkZHIg
-LSBmb3VuZF9mdW5jLT5pcDsKIAkJaWYgKHN5bSkKLQkJCXN0cmxjcHkoc3ltLCBmb3VuZF9mdW5j
-LT5uYW1lLCBLU1lNX05BTUVfTEVOKTsKKwkJCXN0cnNjcHkoc3ltLCBmb3VuZF9mdW5jLT5uYW1l
-LCBLU1lNX05BTUVfTEVOKTsKIAogCQlyZXR1cm4gZm91bmRfZnVuYy0+bmFtZTsKIAl9CkBAIC03
-MTAwLDggKzcxMDAsOCBAQCBpbnQgZnRyYWNlX21vZF9nZXRfa2FsbHN5bSh1bnNpZ25lZCBpbnQg
-c3ltbnVtLCB1bnNpZ25lZCBsb25nICp2YWx1ZSwKIAogCQkJKnZhbHVlID0gbW9kX2Z1bmMtPmlw
-OwogCQkJKnR5cGUgPSAnVCc7Ci0JCQlzdHJsY3B5KG5hbWUsIG1vZF9mdW5jLT5uYW1lLCBLU1lN
-X05BTUVfTEVOKTsKLQkJCXN0cmxjcHkobW9kdWxlX25hbWUsIG1vZF9tYXAtPm1vZC0+bmFtZSwg
-TU9EVUxFX05BTUVfTEVOKTsKKwkJCXN0cnNjcHkobmFtZSwgbW9kX2Z1bmMtPm5hbWUsIEtTWU1f
-TkFNRV9MRU4pOworCQkJc3Ryc2NweShtb2R1bGVfbmFtZSwgbW9kX21hcC0+bW9kLT5uYW1lLCBN
-T0RVTEVfTkFNRV9MRU4pOwogCQkJKmV4cG9ydGVkID0gMTsKIAkJCXByZWVtcHRfZW5hYmxlKCk7
-CiAJCQlyZXR1cm4gMDsKLS0gCjIuMjUuMQoKCg==
+On Fri, Jul 01, 2022 at 02:27:17AM +0000, haibinzhang(张海斌) wrote:
+> How to reproduce:
+>     launch two shell executions:
+>        #!/bin/bash
+>        while [ 1 ];
+>        do
+>            echo 1 > /proc/sys/abi/swp
+>        done
+> 
+> Oops info:
+>     Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+>     Internal error: Oops: 96000006 [#1] SMP
+>     Call trace:
+>     update_insn_emulation_mode+0xc0/0x148
+>     emulation_proc_handler+0x64/0xb8
+>     proc_sys_call_handler+0x9c/0xf8
+>     proc_sys_write+0x18/0x20
+>     __vfs_write+0x20/0x48
+>     vfs_write+0xe4/0x1d0
+>     ksys_write+0x70/0xf8
+>     __arm64_sys_write+0x20/0x28
+>     el0_svc_common.constprop.0+0x7c/0x1c0
+>     el0_svc_handler+0x2c/0xa0
+>     el0_svc+0x8/0x200
+> 
+> emulation_proc_handler changes table->data for proc_dointvec_minmax
+> and so it isn't allowed to reenter before restoring table->data,
+> which isn't right now.
+> To fix this issue, Add mutal exclusion covering related code section.
+
+typo: mutual
+
+> Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
+> ---
+>  arch/arm64/kernel/armv8_deprecated.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
+> index 6875a16..c519792 100644
+> --- a/arch/arm64/kernel/armv8_deprecated.c
+> +++ b/arch/arm64/kernel/armv8_deprecated.c
+> @@ -207,8 +207,12 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+>  				  loff_t *ppos)
+>  {
+>  	int ret = 0;
+> -	struct insn_emulation *insn = (struct insn_emulation *) table->data;
+> -	enum insn_emulation_mode prev_mode = insn->current_mode;
+> +	struct insn_emulation *insn;
+> +	enum insn_emulation_mode prev_mode;
+> +
+> +	raw_spin_lock(&insn_emulation_lock);
+> +	insn = (struct insn_emulation *) table->data;
+> +	prev_mode = insn->current_mode;
+>  
+>  	table->data = &insn->current_mode;
+>  	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+> @@ -224,6 +228,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+>  	}
+>  ret:
+>  	table->data = insn;
+> +	raw_spin_unlock(&insn_emulation_lock);
+>  	return ret;
+
+This looks very similar to the patch previously posted here:
+
+https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
+
+but Catalin's suggestion was ignored:
+
+https://lore.kernel.org/all/Yf0dxon1d07rzxZH@arm.com/
+
+Please can have you send a v2 along the line that he suggested?
+
+I also think a mutex is probably better than a spinlock given that we
+can end up cross-calling in the proc handler.
+
+Thanks,
+
+Will
