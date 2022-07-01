@@ -2,111 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53120C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C8C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 04:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234164AbiGAERy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 00:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
+        id S233634AbiGAEZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 00:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234099AbiGAERw (ORCPT
+        with ESMTP id S229549AbiGAEZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 00:17:52 -0400
-Received: from gproxy4-pub.mail.unifiedlayer.com (gproxy4-pub.mail.unifiedlayer.com [69.89.23.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622A821E19
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 21:17:51 -0700 (PDT)
-Received: from cmgw15.mail.unifiedlayer.com (unknown [10.0.90.130])
-        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id E483910047D91
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:17:50 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id 786IorNNUecv9786Io9fyj; Fri, 01 Jul 2022 04:17:50 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=E6YIGYRl c=1 sm=1 tr=0 ts=62be756e
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=JPEYwPQDsx4A:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=RyL8EgcdUj_kepXCPdEA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QrcP9l5zwhD4ru5YcYFwlVtiG8CAmCSfVKdQAdbGpwU=; b=pxrGVf5SGAMt0I0drlYJCx5fuH
-        WfMOHsQSYFI0vNwYaSk6Oiy49xXc0zMjw7M0q21G4VLwSF4ZYANSKMvBpu54/JI1GstV+192cy11S
-        rqPazJBj+swa0JVa/hTa5kYyXDG/+J/9RyhuZEPF88GdteOqaJNymg2vVBEH2Cv1zRyqHt0TDLL9w
-        IYc1PWSSLJNaOaSnCTVES7EA1BC5d7/IbRiiiAjdPhQrr47Cdc7PXSY/Gs4M1GBacVUaT9l5Kq0XJ
-        r9xBlXM7bydi7Zqe2ca/eaM8BMEWqcAiRkIZu8/GyoAkSJIsa11gyyVgnBwujGT+cl/2zCuT3Fdmi
-        t4bb34Aw==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:34088 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1o786H-002MOb-Ed;
-        Thu, 30 Jun 2022 22:17:49 -0600
-Subject: Re: [PATCH 5.18 0/6] 5.18.9-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220630133230.239507521@linuxfoundation.org>
-In-Reply-To: <20220630133230.239507521@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <37518138-2b5b-2c83-c146-e805568c1498@w6rz.net>
-Date:   Thu, 30 Jun 2022 21:17:47 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 1 Jul 2022 00:25:28 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5F5344E9;
+        Thu, 30 Jun 2022 21:25:26 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LZ2B23MnYz1L8VN;
+        Fri,  1 Jul 2022 12:23:06 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 12:25:25 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 12:25:24 +0800
+Subject: Re: [PATCH 1/2] serial: sh-sci: fix missing sci_cleanup_single() in
+ sci_probe_single()
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <geert+renesas@glider.be>, <peter@hurleysoftware.com>,
+        <sjoerd.simons@collabora.co.uk>
+References: <20220630140919.3857698-1-yangyingliang@huawei.com>
+ <Yr29tlTOTrBfJPBP@kroah.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <46cdf509-c3ff-982d-33fe-ced7159f5093@huawei.com>
+Date:   Fri, 1 Jul 2022 12:25:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <Yr29tlTOTrBfJPBP@kroah.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1o786H-002MOb-Ed
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:34088
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/30/22 6:47 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.9 release.
-> There are 6 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.9-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
+
+On 2022/6/30 23:13, Greg KH wrote:
+> On Thu, Jun 30, 2022 at 10:09:18PM +0800, Yang Yingliang wrote:
+>> Add missing sci_cleanup_single() in error case in sci_probe_single()
+>>
+>> Fixes: f907c9ea8835 ("serial: sh-sci: Add support for GPIO-controlled modem lines")
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>> ---
+>>   drivers/tty/serial/sh-sci.c | 20 +++++++++++++-------
+>>   1 file changed, 13 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> index 0075a1420005..ca5a58f01aff 100644
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+>> @@ -3283,25 +3283,31 @@ static int sci_probe_single(struct platform_device *dev,
+>>   		return ret;
+>>   
+>>   	sciport->gpios = mctrl_gpio_init(&sciport->port, 0);
+>> -	if (IS_ERR(sciport->gpios))
+>> -		return PTR_ERR(sciport->gpios);
+>> +	if (IS_ERR(sciport->gpios)) {
+>> +		ret = PTR_ERR(sciport->gpios);
+>> +		goto err_cleanup_single;
+>> +	}
+>>   
+>>   	if (sciport->has_rtscts) {
+>>   		if (mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_CTS) ||
+>>   		    mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_RTS)) {
+>>   			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
+>> -			return -EINVAL;
+>> +			ret = -EINVAL;
+>> +			goto err_cleanup_single;
+>>   		}
+>>   		sciport->port.flags |= UPF_HARD_FLOW;
+>>   	}
+>>   
+>>   	ret = uart_add_one_port(&sci_uart_driver, &sciport->port);
+>> -	if (ret) {
+>> -		sci_cleanup_single(sciport);
+>> -		return ret;
+>> -	}
+>> +	if (ret)
+>> +		goto err_cleanup_single;
+>>   
+>>   	return 0;
+>> +
+>> +err_cleanup_single:
+>> +	sci_cleanup_single(sciport);
+>> +
+>> +	return ret;
+>>   }
+>>   
+>>   static int sci_probe(struct platform_device *dev)
+>> -- 
+>> 2.25.1
+>>
+> How was this tested?
+I found this by read the code, pm_runtime_enable() is called in 
+sci_init_single(), but
+pm_runtime_disable() is only called when uart_add_one_port() fails, so I 
+add the
+pm_runtime_disable() in other error case. Please correct me if I am wrong.
+
+Thanks,
+Yang
 >
 > thanks,
 >
 > greg k-h
-
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
-
-Tested-by: Ron Economos <re@w6rz.net>
-
+> .
