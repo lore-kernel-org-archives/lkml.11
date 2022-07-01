@@ -2,116 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 450A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C500C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234437AbiGAKEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
+        id S234448AbiGAKFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiGAKEt (ORCPT
+        with ESMTP id S232586AbiGAKFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:04:49 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F0574DD6
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 03:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1656669884;
-  x=1688205884;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=C9yKLAcuZ5hnkYBCpoRQx1zMhVYu01vnHM+Lplb5HMc=;
-  b=BxifDh2c1kPEu3rm1uWBi2bGi5bTCS9kg/uE4xzOjT92oHFOlMDR1D/Z
-   IWBmJCDtu6BncqQHiRcTH+F8ziELcFgldto5cd8o6IQye5mVHg4fA91e5
-   spohbFvaQ+RfKqnXuN7+uc9/59MhEJVPfIj1eNlPNLPGN1+9k9ewdiOdV
-   rcaSrJlkY/rZhNA6l6Jb3XHDJ5dP9pghrwdEqrmJxo73+C5+qJYUNw94Z
-   RxHjBc+PdtgbzVUxV49SU/jLqd5BYmz5VFh5EjN783/Rx8xkOsXt5mOj8
-   WfR106TfTFYzuLfgpAhNzVk8+UpaQ9NaMANVPUBoWHZ701FR4igDc+DeN
-   Q==;
-Date:   Fri, 1 Jul 2022 12:04:41 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     David Gow <davidgow@google.com>
-CC:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Patricia Alfonso <trishalfonso@google.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        "anton.ivanov@cambridgegreys.com" <anton.ivanov@cambridgegreys.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "kunit-dev@googlegroups.com" <kunit-dev@googlegroups.com>
-Subject: Re: [PATCH v4 2/2] UML: add support for KASAN under x86_64
-Message-ID: <20220701100441.GA8082@axis.com>
-References: <20220630080834.2742777-1-davidgow@google.com>
- <20220630080834.2742777-2-davidgow@google.com>
- <CACT4Y+ZahTu0pGNSdZmx=4ZJHt4=mVuhxQnH_7ykDA5_fBJZVQ@mail.gmail.com>
- <20220630125434.GA20153@axis.com>
- <CA+fCnZe6zk8WQ7FkCsnMPLpDW2+wJcjdcrs5fxJRh+T=FvFDVA@mail.gmail.com>
- <CABVgOSmxnTc31C-gbmbns+8YOkpppK77sdXLzASZ-hspFYDwfA@mail.gmail.com>
- <20220701091653.GA7009@axis.com>
- <CABVgOSnEEWEe16O4YsyuiWttffdAAbkpuXehefGEEeYvjPqVkA@mail.gmail.com>
+        Fri, 1 Jul 2022 06:05:11 -0400
+Received: from m1345.mail.163.com (m1345.mail.163.com [220.181.13.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3CD574349
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 03:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=TQ/0V
+        3FsB0IRL01gxfRe7u0z1zjX3SDeyEwp6u9IufE=; b=IqSZnKWDBaUXA54ANKSng
+        v35VnZenyGJTXb2kikMZnp4HOMLO40Gx3WkdcmLbStCwbjTgNSJBWhVnBxs/Yfwa
+        xGw2qX6kI8hdrAr5aNa69zIx20WzaVbCfKDA28NrmPh7pOKNdThZjlomFSxrMcX/
+        PsCu2hBRvLsmabBrEiJ/rw=
+Received: from 15815827059$163.com ( [111.48.58.12] ) by
+ ajax-webmail-wmsvr45 (Coremail) ; Fri, 1 Jul 2022 18:04:53 +0800 (CST)
+X-Originating-IP: [111.48.58.12]
+Date:   Fri, 1 Jul 2022 18:04:53 +0800 (CST)
+From:   huhai <15815827059@163.com>
+To:     "Sudeep Holla" <sudeep.holla@arm.com>
+Cc:     cristian.marussi@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, luriwen@kylinos.cn,
+        liuyun01@kylinos.cn, huhai <huhai@kylinos.cn>,
+        k2ci <kernel-bot@kylinos.cn>
+Subject: Re:Re: [PATCH] firmware: arm_scpi: Fix error handle when scpi probe
+ failed
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <20220701094212.snsnbdjc7hia5oti@bogus>
+References: <20220701061606.151366-1-15815827059@163.com>
+ <20220701094212.snsnbdjc7hia5oti@bogus>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CABVgOSnEEWEe16O4YsyuiWttffdAAbkpuXehefGEEeYvjPqVkA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <1752bac0.5d05.181b93873da.Coremail.15815827059@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: LcGowACn2jnFxr5iMhkdAA--.3301W
+X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/1tbiwAUxhVXlv13c4QAAse
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 05:43:26PM +0800, David Gow wrote:
-> On Fri, Jul 1, 2022 at 5:16 PM Vincent Whitchurch
-> <vincent.whitchurch@axis.com> wrote:
-> > On Fri, Jul 01, 2022 at 11:08:27AM +0200, David Gow wrote:
-> > > On Thu, Jun 30, 2022 at 9:29 PM Andrey Konovalov <andreyknvl@gmail.com> wrote:
-> > > > Stack trace collection code might trigger KASAN splats when walking
-> > > > stack frames, but this can be resolved by using unchecked accesses.
-> > > > The main reason to disable instrumentation here is for performance
-> > > > reasons, see the upcoming patch for arm64 [1] for some details.
-> > > >
-> > > > [1] https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?id=802b91118d11
-> > >
-> > > Ah -- that does it! Using READ_ONCE_NOCHECK() in dump_trace() gets rid
-> > > of the nasty recursive KASAN failures we were getting in the tests.
-> > >
-> > > I'll send out v5 with those files instrumented again.
-> >
-> > Hmm, do we really want that?  In the patch Andrey linked to above he
-> > removed the READ_ONCE_NOCHECK() and added the KASAN_SANITIZE on the
-> > corresponding files for arm64, just like it's already the case in this
-> > patch for UML.
-> 
-> Personally, I'm okay with the performance overhead so far: in my tests
-> with a collection of ~350 KUnit tests, the total difference in runtime
-> was about ~.2 seconds, and was within the margin of error caused by
-> fluctuations in the compilation time.
-> 
-> As an example, without the stacktrace code instrumented:
-> [17:36:50] Testing complete. Passed: 364, Failed: 0, Crashed: 0,
-> Skipped: 47, Errors: 0
-> [17:36:50] Elapsed time: 15.114s total, 0.003s configuring, 8.518s
-> building, 6.433s running
-> 
-> versus with it instrumented:
-> [17:35:40] Testing complete. Passed: 364, Failed: 0, Crashed: 0,
-> Skipped: 47, Errors: 0
-> [17:35:40] Elapsed time: 15.497s total, 0.003s configuring, 8.691s
-> building, 6.640s running
-
-OK, good to know.
-
-> That being said, I'm okay with disabling it again and adding a comment
-> if it's slow enough in some other usecase to cause problems (or even
-> just be annoying). That could either be done in a v6 of this patchset,
-> or a follow-up patch, depending on what people would prefer. But I'd
-> not have a problem with leaving it instrumented for now.
-
-I don't have any strong opinion either way either, so you don't have to
-change it back on my account.  Thanks.
+Cj5PbiBGcmksIEp1bCAwMSwgMjAyMiBhdCAwMjoxNjowNlBNICswODAwLCBodWhhaSB3cm90ZToK
+Pj4gRnJvbTogaHVoYWkgPGh1aGFpQGt5bGlub3MuY24+Cj4+Cj4+IFdoZW4gc2NwaSBwcm9iZSBm
+YWlscywgZG8gbm90IGp1c3QgcmV0dXJuIHRoZSBlcnJvciBjb2RlLCBidXQgYWxzbyByZXNldAo+
+PiB0aGUgZ2xvYmFsIHNjcGlfaW5mbyB0byBOVUxMLCBvdGhlcndpc2Ugc2NwaV9od21vbl9wcm9i
+ZSgpIG1heSBnZXQgYSBVQUYKPj4gYW5kIGNhdXNlIHBhbmljOgo+Pgo+Cj5JbnRlcmVzdGluZywg
+d2hpY2ggcGxhdGZvcm0gYXJlIHlvdSB1c2luZyB0aGlzIG9uID8gU0NQSSBpcyBkZXByZWNhdGVk
+IGZvcgo+YSB3aGlsZSwgcGxlYXNlIHN3aXRjaCB0byBTQ01JIHdoaWNoIGlzIHdlbGwgbWFpbnRh
+aW5lZCBib3RoIGluIHRlcm1zIG9mCj5zcGVjaWZpY2F0aW9uIGFuZCBzdXBwb3J0IGluIHRoZSBr
+ZXJuZWwuIEkgYWxzbyBhc3N1bWUgdGhpcyBpcyA2NC1iaXQKPnBsYXRmb3JtLCBzbyBJIGRvbid0
+IHdhbnQgeW91IHRvIGdldCBzdHVjayBpbiBmdXR1cmUgYmVjYXVzZSBvZiBsYWNrCgo+b2Ygc29t
+ZSBmZWF0dXJlIGluIFNDUEkuIFBsZWFzZSBzZWUgaWYgeW91IGNhbiBtaWdyYXRlIHRvIFNDTUku
+CgoKVGhpbmtzIGZvciBzaGFyaW5nIHRoaXMgbWFzc2FnZSwgYW5kIG15IHBsYXRmb3JtIGlzIEZU
+MjAwMCsoQVJNNjQpLgoKPgo+PiAgIHNjcGlfcHJvdG9jb2wgRlRTQzAwMDE6MDA6IGluY29ycmVj
+dCBvciBubyBTQ1AgZmlybXdhcmUgZm91bmQKPj4gICAuLi4gLi4uCj4+ICAgVW5hYmxlIHRvIGhh
+bmRsZSBrZXJuZWwgTlVMTCBwb2ludGVyIGRlcmVmZXJlbmNlIGF0IHZpcnR1YWwgYWRkcmVzcyAw
+MDAwMDAwMDAwMDAwMDAwCj4+ICAgTWVtIGFib3J0IGluZm86Cj4+Cj4KPlsuLi5dCj4KCj5JIHRo
+aW5rIHdlIGRvbid0IHNlZSB0byBtYWtlIGl0IGNvbXBsZXguIENhbid0IGl0IGJlIGFzIHNpbXBs
+ZSBhczoKCnNjcGlfaW5mbyBpcyBhIGdsb2JhbCB2YXJpYWJsZaOsIHdlIG11c3Qgc2V0IGl0IHRv
+IE5VTEwgd2hlbiBpdCBpcyBub3QgdmFsaWQKCj5SZWdhcmRzLAo+U3VkZWVwCj4KPi0tPjgKPgo+
+ZGlmZiAtLWdpdCBpL2RyaXZlcnMvZmlybXdhcmUvYXJtX3NjcGkuYyB3L2RyaXZlcnMvZmlybXdh
+cmUvYXJtX3NjcGkuYwo+aW5kZXggZGRmMGI5ZmY5ZTE1Li42ZmExYTViMTkzYjggMTAwNjQ0Cj4t
+LS0gaS9kcml2ZXJzL2Zpcm13YXJlL2FybV9zY3BpLmMKPisrKyB3L2RyaXZlcnMvZmlybXdhcmUv
+YXJtX3NjcGkuYwo+QEAgLTc5OSw3ICs3OTksNyBAQCBzdGF0aWMgc3RydWN0IHNjcGlfb3BzIHNj
+cGlfb3BzID0gewo+Cj4gc3RydWN0IHNjcGlfb3BzICpnZXRfc2NwaV9vcHModm9pZCkKPiB7Cj4t
+ICAgICAgIHJldHVybiBzY3BpX2luZm8gPyBzY3BpX2luZm8tPnNjcGlfb3BzIDogTlVMTDsKCj4r
+ICAgICAgIHJldHVybiBzY3BpX2luZm8gJiYgc2NwaV9pbmZvLT5zY3BpX29wcyA/IHNjcGlfaW5m
+by0+c2NwaV9vcHMgOiBOVUxMOwoKCkkgZG9uJ3QgdGhpbmsgaXQgd29yayB3ZWxsLCBiZWNhdXNl
+IGl0J3MgYSBVQUYgYW5kIHNjcGlfaW5mby0+c2NwaV9vcHMgY291bGQgYmUgYW55IHZhbHVlIHNl
+dCBieSBvdGhlcnMuCgo+IH0KPiBFWFBPUlRfU1lNQk9MX0dQTChnZXRfc2NwaV9vcHMpOwo=
