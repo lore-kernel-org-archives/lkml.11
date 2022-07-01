@@ -2,98 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 149BAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 19:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63064C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 19:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiGATJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 15:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54258 "EHLO
+        id S230512AbiGATJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 15:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiGATJF (ORCPT
+        with ESMTP id S229572AbiGATJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 15:09:05 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027C73AA51
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 12:09:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656702543; x=1688238543;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0uGCuF379RS82NhV0F88IdWA9IGH3LNU3IMBNYsgfsk=;
-  b=TyG2MKw477f1d2yaR0HLJfkKXeGwv6k/4eS5x/CAd4iO1PdOStV28KcX
-   LfW2aw5erswTgfPGLIX5XUO1CCx/Z8m38iKt2MUtPZftrBmIdSVH4SsXV
-   X9AQ3GVZv4O5HPzEl/RLT5dcWpU/vlT5WXk8LJ0mgM9cD2hoAxsEgAlQ5
-   erKZlpUTGBfl//tK8IssBStq4uKDSzV50zb+IthQORQqa+TxKcJOsyoMp
-   CXwoXOlnpm6veKdcZv2CE9n1uzBwhz+Ho8RAikd71ZEPcqNKZ88JL+kLE
-   +795f/6CCth6pNz3arjRyvoTl+4IyhfS4iz8xTRuiLWreRlzac9hz1NNf
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10395"; a="271497024"
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="271497024"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 12:09:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="838154558"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 01 Jul 2022 12:09:00 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7M0h-000EGw-VO;
-        Fri, 01 Jul 2022 19:08:59 +0000
-Date:   Sat, 2 Jul 2022 03:08:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yupeng Li <liyupeng@zbhlos.com>, fweisbec@gmail.com,
-        tglx@linutronix.de, mingo@kernel.org
-Cc:     kbuild-all@lists.01.org, caizp2008@163.com,
-        linux-kernel@vger.kernel.org, Yupeng Li <liyupeng@zbhlos.com>
-Subject: Re: [PATCH 1/1] timers/nohz: fix build with CONFIG_NO_HZ_FULL
- warnning.
-Message-ID: <202207020218.PMbzdwKY-lkp@intel.com>
-References: <20220701033647.911334-1-liyupeng@zbhlos.com>
+        Fri, 1 Jul 2022 15:09:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 904843BBC0
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 12:09:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656702583;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0fTpQgJi583J8jUAwjwOMbnhXpGFLL7LTfUdXvC5nug=;
+        b=J4uqQOf2lTrsTwpQYogF5xNpi7tX1HyLbGzEz4XWqZ+RpMWEHU/AgFzjuPUPnTWvvdk75e
+        3AxD6KWm2qz5Ej+9NfIGDYlHQmdjTxJhw7QS6CMmWweifiWlnpZVnNE7ElWsEGjxBzz4Oh
+        /pkpFZ3MAtIMbyWsQYczrqgNYdOOE64=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-404-vTE2hw5tNCO5YajVQXNDNA-1; Fri, 01 Jul 2022 15:09:22 -0400
+X-MC-Unique: vTE2hw5tNCO5YajVQXNDNA-1
+Received: by mail-qv1-f70.google.com with SMTP id jv13-20020a05621429ed00b0047048fce5bdso3114874qvb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 12:09:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0fTpQgJi583J8jUAwjwOMbnhXpGFLL7LTfUdXvC5nug=;
+        b=TDjnb/yNn4JvxF0oiLyvHGch19v8Y3N8za6weceZ8AfgXBfr30kVfGElO2LN5Y44QV
+         Fdunof+PlMosWRBlESQRjmFyLSAK/304Me2SUUicLWr4yFrsO+aozZGEglfwXYG6QCKh
+         7TS9Wumg8bs8NsecJg8NmyZHUuLeie23wWsyvFFAEYm4vHrCs3hM35DbP7ZmX25tbKfq
+         V3fSF8miEiAB5boB6AlEg8sS1fNo53XvQtgmGCNOtDEjfJSbkbvt2nrxUaq24IvXF8uG
+         h9I+4/LvJctv3/tEEiYL/SA+rtSSWDs2OxHMXCZ6QVjOkNCR1Zo6NiefPcG9c9uz616V
+         zvjQ==
+X-Gm-Message-State: AJIora+9URvzCCZRX19ki2hm88aE09qzREzw7qk+ELhwmwp+aSlV7D8q
+        xRktBkKHoHA8pyZfJuz172Qb6ihB+n/S7eeClJr6ebCoSX9s3JO9gSDpP/O/mX/ESkWh2PK3u3G
+        62FxlIBTXaIua3A+uqvdbGFqJpULX+OpftsY83O4J
+X-Received: by 2002:ac8:4e8b:0:b0:31d:34c6:86a2 with SMTP id 11-20020ac84e8b000000b0031d34c686a2mr6376698qtp.526.1656702551835;
+        Fri, 01 Jul 2022 12:09:11 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vmSaEwZdRV22oe7QtV5IzenWy25OI2oIP1ZZYcQg8tltXD2qNQp+JMu8VFupmj1poaUi8ytsw36XaCQrSfliI=
+X-Received: by 2002:ac8:4e8b:0:b0:31d:34c6:86a2 with SMTP id
+ 11-20020ac84e8b000000b0031d34c686a2mr6376668qtp.526.1656702551575; Fri, 01
+ Jul 2022 12:09:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701033647.911334-1-liyupeng@zbhlos.com>
+References: <20220630135934.1799248-1-aahringo@redhat.com> <CAHk-=wjZfO9hGqJ2_hGQG3U_XzSh9_XaXze=HgPdvJbgrvASfA@mail.gmail.com>
+ <CAK-6q+jkNbotWK7cFsNGO+B+ApcdUd7+_4mdcF8=00YsDAATTA@mail.gmail.com>
+In-Reply-To: <CAK-6q+jkNbotWK7cFsNGO+B+ApcdUd7+_4mdcF8=00YsDAATTA@mail.gmail.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Fri, 1 Jul 2022 15:09:00 -0400
+Message-ID: <CAK-6q+i67rNeioq+=MzLyCJ_fh7DvDVWOHA02oOasKocvkhXSw@mail.gmail.com>
+Subject: Re: [RFC 0/2] refcount: attempt to avoid imbalance warnings
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        thunder.leizhen@huawei.com, jacob.e.keller@intel.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>,
+        cluster-devel <cluster-devel@redhat.com>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yupeng,
+Hi,
 
-Thank you for the patch! Perhaps something to improve:
+On Fri, Jul 1, 2022 at 8:07 AM Alexander Aring <aahringo@redhat.com> wrote:
+>
+> Hi,
+>
+> On Thu, Jun 30, 2022 at 12:34 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > On Thu, Jun 30, 2022 at 6:59 AM Alexander Aring <aahringo@redhat.com> wrote:
+> > >
+> > > I send this patch series as RFC because it was necessary to do a kref
+> > > change after adding __cond_lock() to refcount_dec_and_lock()
+> > > functionality.
+> >
+> > Can you try something like this instead?
+> >
+> > This is two separate patches - one for sparse, and one for the kernel.
+> >
+> > This is only *very* lightly tested (ie I tested it on a single kernel
+> > file that used refcount_dec_and_lock())
+> >
+>
+> yes that avoids the warnings for fs/dlm.c by calling unlock() when the
+> kref_put_lock() returns true.
+>
+> However there exists other users of kref_put_lock() which drops a
+> sparse warning now after those patches e.g.  net/sunrpc/svcauth.c.
+> I think I can explain why. It is that kref_put_lock() has a release
+> callback and it's _optional_ that this release callback calls the
+> unlock(). If the release callback calls unlock() then the user of
+> kref_put_lock() signals this with a releases() annotation of the
+> passed release callback.
+>
+> It seems that sparse is not detecting this annotation anymore when
+> it's passed as callback and the function pointer parameter declaration
+> of kref_put_lock() does not have such annotation. The annotation gets
+> "dropped" then.
+>
+> If I change the parameter order and add a annotation to the release
+> callback, like:
+>
+> __kref_put_lock(struct kref *kref, spinlock_t *lock,
+>                void (*release)(struct kref *kref) __releases(lock))
+> #define kref_put_lock(kref, release, lock) __kref_put_lock(kref, lock, release)
+>
+> the problem is gone but forces every user to release the lock in the
+> release callback which isn't required and also cuts the API because
+> the lock which you want to call unlock() on can be not part of your
+> container_of(kref) struct.
+>
+> Then I did a similar thing before which would solve it for every user
+> because there is simply no function pointer passed as parameter and
+> the annotation gets never "dropped":
+>
+> #define kref_put_lock(kref, release, lock) \
+> (refcount_dec_and_lock(&(kref)->refcount, lock) ? ({ release(kref); 1; }) : 0)
+>
+> Maybe a functionality of forwarding function annotation if passed as a
+> function pointer (function pointer declared without annotations) as in
+> e.g. kref_put_lock() can be added into sparse?
 
-[auto build test WARNING on tip/timers/nohz]
-[also build test WARNING on linus/master v5.19-rc4 next-20220701]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I think the explanation above is not quite right. I am questioning
+myself now why it was working before... and I guess the answer is that
+it was working for kref_put_lock() with the callback __releases()
+handling. It has somehow now an additional acquire() because the
+__cond_acquires() change.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yupeng-Li/timers-nohz-fix-build-with-CONFIG_NO_HZ_FULL-warnning/20220701-114723
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 09fe880ed7a160ebbffb84a0a9096a075e314d2f
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220702/202207020218.PMbzdwKY-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/d7397dd311be292d170c1fbd0f3bdc5104c06849
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yupeng-Li/timers-nohz-fix-build-with-CONFIG_NO_HZ_FULL-warnning/20220701-114723
-        git checkout d7397dd311be292d170c1fbd0f3bdc5104c06849
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Before the patch:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+no warnings:
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+void foo_release(struct kref *kref)
+__releases(&foo_lock)
+{
+        ...
+        unlock(foo_lock);
+}
 
->> WARNING: modpost: vmlinux.o(.text+0x5b7f13): Section mismatch in reference from the function tick_nohz_full_setup() to the function .init.text:alloc_bootmem_cpumask_var()
-The function tick_nohz_full_setup() references
-the function __init alloc_bootmem_cpumask_var().
-This is often because tick_nohz_full_setup lacks a __init
-annotation or the annotation of alloc_bootmem_cpumask_var is wrong.
+...
+kref_put_lock(&foo->kref, foo_release, &foo_lock);
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+shows context imbalance warnings:
+
+void foo_release(struct kref *kref) { }
+
+if (kref_put_lock(&foo->kref, foo_release, &foo_lock))
+        unlock(foo_lock);
+
+After the patch it's vice versa of showing warnings or not about
+context imbalances.
+
+- Alex
+
