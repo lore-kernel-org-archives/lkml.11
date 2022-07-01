@@ -2,236 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC49CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 18:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D410C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 18:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbiGASDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 14:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
+        id S229906AbiGASIc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 14:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbiGASDS (ORCPT
+        with ESMTP id S229508AbiGASIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 14:03:18 -0400
+        Fri, 1 Jul 2022 14:08:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9967CBBC;
-        Fri,  1 Jul 2022 11:03:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE32F5BA
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 11:08:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C8D561510;
-        Fri,  1 Jul 2022 18:03:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 701D9C3411E;
-        Fri,  1 Jul 2022 18:03:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656698596;
-        bh=vT02OD89nzqQeux3lU5PTLWSkuWwg2A4jl+fJzQTBiw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OpsbNbbk510jBveZFzWcSSjiVkKVJTicoM6YEoJBk1ulS2y1Tm3WhSS3AjU3/3CEo
-         sSm10aAOqVaIibxwGEI9O/Kh2yDNotegPTfD+GIq3yR00W3ElFJnGfYVn45r4RIjGK
-         3QWc83t6kxDPxlYSQ+MpMxRuZIdf29zjy3qHHXxvR4pyIqfviD9yEsgKMZ0UEXHKLj
-         v2oyc5jQL7+RH9QJO7bAnBUKk+QZXFNIsvSIXfLf4PTujxMJBw0UNPz3celydwz1mP
-         GxjzBUGBXVhbFpLTMHKfG6FVaMNyVfCU4+m45BrVPVYZy7GeK8UDfSBC7yj3bk7eqq
-         we9fOVXFrFS3Q==
-Date:   Fri, 1 Jul 2022 11:03:15 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Brian Foster <bfoster@redhat.com>
-Cc:     Dave Chinner <david@fromorbit.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        linux-xfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        linux-mm@kvack.org
-Subject: Re: Multi-page folio issues in 5.19-rc4 (was [PATCH v3 25/25] xfs:
- Support large folios)
-Message-ID: <Yr824zvJevO8/HH4@magnolia>
-References: <YrosM1+yvMYliw2l@magnolia>
- <20220628073120.GI227878@dread.disaster.area>
- <YrrlrMK/7pyZwZj2@casper.infradead.org>
- <Yrrmq4hmJPkf5V7s@casper.infradead.org>
- <Yrr/oBlf1Eig8uKS@casper.infradead.org>
- <20220628221757.GJ227878@dread.disaster.area>
- <YruNE72sW4Aizq8U@magnolia>
- <YrxMOgIvKVe6u/uR@bfoster>
- <Yry0bkQRN4sGgTbf@magnolia>
- <Yr8ay3FJiL+7q0bW@bfoster>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0D3D6157A
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 18:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C207C3411E;
+        Fri,  1 Jul 2022 18:08:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UhDWInTx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656698905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jdCiLAC4FvUP8qJ/lhyPKsJmgDkwue+uiuogss1k0Dg=;
+        b=UhDWInTxC+Ppsfec+axEpO+yf0UKeW7LvLKbs9phAvPuo+RF+PbrpKO1XYBChzemlNK9YE
+        W4hTHWRKtmSkvKn2HYEnFGdaOnrCU4jW0wqJ1M/o8FFQ3wHOu+zSzEVY7RGUIkPsPyhmtM
+        R7lqHI7Yh060zTC8iSW6gEGd3tXzWI4=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bcd0419d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 1 Jul 2022 18:08:24 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v5] x86/setup: Allow passing RNG seeds via e820 setup table
+Date:   Fri,  1 Jul 2022 19:58:08 +0200
+Message-Id: <20220701175808.188604-1-Jason@zx2c4.com>
+In-Reply-To: <20220630133106.35970-1-Jason@zx2c4.com>
+References: <20220630133106.35970-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yr8ay3FJiL+7q0bW@bfoster>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 12:03:23PM -0400, Brian Foster wrote:
-> On Wed, Jun 29, 2022 at 01:22:06PM -0700, Darrick J. Wong wrote:
-> > On Wed, Jun 29, 2022 at 08:57:30AM -0400, Brian Foster wrote:
-> > > On Tue, Jun 28, 2022 at 04:21:55PM -0700, Darrick J. Wong wrote:
-> > > > On Wed, Jun 29, 2022 at 08:17:57AM +1000, Dave Chinner wrote:
-> > > > > On Tue, Jun 28, 2022 at 02:18:24PM +0100, Matthew Wilcox wrote:
-> > > > > > On Tue, Jun 28, 2022 at 12:31:55PM +0100, Matthew Wilcox wrote:
-> > > > > > > On Tue, Jun 28, 2022 at 12:27:40PM +0100, Matthew Wilcox wrote:
-> > > > > > > > On Tue, Jun 28, 2022 at 05:31:20PM +1000, Dave Chinner wrote:
-> > > > > > > > > So using this technique, I've discovered that there's a dirty page
-> > > > > > > > > accounting leak that eventually results in fsx hanging in
-> > > > > > > > > balance_dirty_pages().
-> > > > > > > > 
-> > > > > > > > Alas, I think this is only an accounting error, and not related to
-> > > > > > > > the problem(s) that Darrick & Zorro are seeing.  I think what you're
-> > > > > > > > seeing is dirty pages being dropped at truncation without the
-> > > > > > > > appropriate accounting.  ie this should be the fix:
-> > > > > > > 
-> > > > > > > Argh, try one that actually compiles.
-> > > > > > 
-> > > > > > ... that one's going to underflow the accounting.  Maybe I shouldn't
-> > > > > > be writing code at 6am?
-> > > > > > 
-> > > > > > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> > > > > > index f7248002dad9..4eec6ee83e44 100644
-> > > > > > --- a/mm/huge_memory.c
-> > > > > > +++ b/mm/huge_memory.c
-> > > > > > @@ -18,6 +18,7 @@
-> > > > > >  #include <linux/shrinker.h>
-> > > > > >  #include <linux/mm_inline.h>
-> > > > > >  #include <linux/swapops.h>
-> > > > > > +#include <linux/backing-dev.h>
-> > > > > >  #include <linux/dax.h>
-> > > > > >  #include <linux/khugepaged.h>
-> > > > > >  #include <linux/freezer.h>
-> > > > > > @@ -2439,11 +2440,15 @@ static void __split_huge_page(struct page *page, struct list_head *list,
-> > > > > >  		__split_huge_page_tail(head, i, lruvec, list);
-> > > > > >  		/* Some pages can be beyond EOF: drop them from page cache */
-> > > > > >  		if (head[i].index >= end) {
-> > > > > > -			ClearPageDirty(head + i);
-> > > > > > -			__delete_from_page_cache(head + i, NULL);
-> > > > > > +			struct folio *tail = page_folio(head + i);
-> > > > > > +
-> > > > > >  			if (shmem_mapping(head->mapping))
-> > > > > >  				shmem_uncharge(head->mapping->host, 1);
-> > > > > > -			put_page(head + i);
-> > > > > > +			else if (folio_test_clear_dirty(tail))
-> > > > > > +				folio_account_cleaned(tail,
-> > > > > > +					inode_to_wb(folio->mapping->host));
-> > > > > > +			__filemap_remove_folio(tail, NULL);
-> > > > > > +			folio_put(tail);
-> > > > > >  		} else if (!PageAnon(page)) {
-> > > > > >  			__xa_store(&head->mapping->i_pages, head[i].index,
-> > > > > >  					head + i, 0);
-> > > > > > 
-> > > > > 
-> > > > > Yup, that fixes the leak.
-> > > > > 
-> > > > > Tested-by: Dave Chinner <dchinner@redhat.com>
-> > > > 
-> > > > Four hours of generic/522 running is long enough to conclude that this
-> > > > is likely the fix for my problem and migrate long soak testing to my
-> > > > main g/522 rig and:
-> > > > 
-> > > > Tested-by: Darrick J. Wong <djwong@kernel.org>
-> > > > 
-> > > 
-> > > Just based on Willy's earlier comment.. what I would probably be a
-> > > little careful/curious about here is whether the accounting fix leads to
-> > > an indirect behavior change that does impact reproducibility of the
-> > > corruption problem. For example, does artificially escalated dirty page
-> > > tracking lead to increased reclaim/writeback activity than might
-> > > otherwise occur, and thus contend with the fs workload? Clearly it has
-> > > some impact based on Dave's balance_dirty_pages() problem reproducer,
-> > > but I don't know if it extends beyond that off the top of my head. That
-> > > might make some sense if the workload is fsx, since that doesn't
-> > > typically stress cache/memory usage the way a large fsstress workload or
-> > > something might.
-> > > 
-> > > So for example, interesting questions might be... Do your corruption
-> > > events happen to correspond with dirty page accounting crossing some
-> > > threshold based on available memory in your test environment? Does
-> > > reducing available memory affect reproducibility? Etc.
-> > 
-> > Yeah, I wonder that too now.  I managed to trace generic/522 a couple of
-> > times before willy's patch dropped.  From what I could tell, a large
-> > folio X would get page P assigned to the fsx file's page cache to cover
-> > range R, dirtied, and written to disk.  At some point later, we'd
-> > reflink into part of the file range adjacent to P, but not P itself.
-> > I /think/ that should have caused the whole folio to get invalidated?
-> > 
-> > Then some more things happened (none of which dirtied R, according to
-> > fsx) and then suddenly writeback would trigger on some page (don't know
-> > which) that would write to the disk blocks backing R.  I'm fairly sure
-> > that's where the incorrect disk contents came from.
-> > 
-> > Next, we'd reflink part of the file range including R into a different
-> > part of the file (call it R2).  fsx would read R2, bringing a new page
-> > into cache, and it wouldn't match the fsxgood buffer, leading to fsx
-> > aborting.
-> > 
-> > After a umount/mount cycle, reading R and R2 would both reveal the
-> > incorrect contents that had caused fsx to abort.
-> > 
-> 
-> FWIW, I hadn't been able to reproduce this in my default environment to
-> this point. With the memory leak issue in the light, I was eventually
-> able to by reducing dirty_bytes to something the system would be more
-> likely to hit sooner (i.e. 16-32MB), but I also see stalling behavior
-> and whatnot due to the leak that requires backing off from the specified
-> dirty limit every so often.
-> 
-> If I apply the accounting patch to avoid the leak and set
-> dirty_background_bytes to something notably aggressive (1kB), the test
-> survived 100 iterations or so before I stopped it. If I then set
-> dirty_bytes to something similarly aggressive (1MB), I hit the failure
-> on the next iteration (assuming it's the same problem). It's spinning
-> again at ~25 or so iterations without a failure so far, so I'd have to
-> wait and see how reliable the reproducer really is. Though if it doesn't
-> reoccur soonish, perhaps I'll try reducing dirty_bytes a bit more...
-> 
-> My suspicion based on these characteristics would be that the blocking
-> limit triggers more aggressive reclaim/invalidation, and thus helps
-> detect the problem sooner. If reflink is involved purely as a cache
-> invalidation step (i.e. so a subsequent read will hit the disk and
-> detect a cache inconsistency), then it might be interesting to see if it
-> can still be reproduced without reflink operations enabled but instead
-> with some combination of the -f/-X fsx flags to perform more flush
-> invals and on-disk data checks..
+Currently the only way x86 can get an early boot RNG seed is via EFI,
+which is generally always used now for physical machines, but is very
+rarely used in VMs, especially VMs that are optimized for starting
+"instantaneously", such as Firecracker's MicroVM. For tiny fast booting
+VMs, EFI is not something you generally need or want.
 
-Hm.  I didn't try -f or lowering dirty_bytes, but with the reflink
-operations disabled, g522 ran for 3 hours before I gave up and killed
-it.  I would've thought that the fallocate zero/collapse/insert range
-functions (which use the same flush/unmap helper) would have sufficed to
-make the problem happen, but ... it didn't.
+Rather, here we want the ability for the image loader or firmware to
+pass a single random seed, exactly as device tree platforms do with the
+"rng-seed" property. Additionally, this is something that bootloaders
+can append, with their own seed file management, which is something
+every other major OS ecosystem has that we do not (yet).
 
-I think I'll try changing dirty_bytes next, to see if I can reproduce
-the problem that way.  I'm not surprised that you had to set dirty_bytes
-to 1MB, since 522 is only ever creating a 600K file anyway.
+This patch adds SETUP_RNG_SEED, similar to the other seven SETUP_*
+entries that are parsed from the e820 setup table. It also takes care to
+zero out the seed immediately after using, in order to retain forward
+secrecy. This all takes about 7 trivial lines of code.
 
-(Hopefully willy will be back next week to help us shed some light on
-this.)
+Then, on kexec_file_load(), a new fresh seed is generated and passed to
+the next kernel, just as is done on device tree architectures when
+using kexec. And, importantly, I've tested that QEMU is able to properly
+pass SETUP_RNG_SEED as well, making this work for every step of the way.
+This code too is pretty straight forward.
 
---D
+Together these measures ensure that VMs and nested kexec()'d kernels
+always are getting a proper boot time RNG seed at the earliest possible
+stage from their parents:
 
-> Brian
-> 
-> > Unfortunately the second ftrace attempt ate some trace data, so I was
-> > unable to figure out if the same thing happened again.
-> > 
-> > At this point I really need to get on reviewing patches for 5.20, so
-> > I'll try to keep poking at this (examining the trace data requires a lot
-> > of concentration which isn't really possible while sawzall construction
-> > is going on at home) but at worst I can ask Linus to merge a patch for
-> > 5.19 final that makes setting mapping_set_large_folio a
-> > Kconfig/CONFIG_XFS_DEBUG option.
-> > 
-> > --D
-> > 
-> > > 
-> > > Brian
-> > > 
-> > > > --D
-> > > > 
-> > > > > Cheers,
-> > > > > 
-> > > > > Dave.
-> > > > > -- 
-> > > > > Dave Chinner
-> > > > > david@fromorbit.com
-> > > > 
-> > > 
-> > 
-> 
+   - Host [already has strongly initialized RNG]
+     - QEMU [passes fresh seed in e820 SETUP_RNG_SEED field]
+       - Linux [uses parent's seed and gathers entropy of its own]
+         - kexec [passes this in e820 SETUP_RNG_SEED field]
+           - Linux [uses parent's seed and gathers entropy of its own]
+             - kexec [passes this in e820 SETUP_RNG_SEED field]
+               - Linux [uses parent's seed and gathers entropy of its own]
+                 - kexec [passes this in e820 SETUP_RNG_SEED field]
+		   - ...
+
+I've verified in several scenarios that this works quite well from a
+host kernel to QEMU and down inwards, mixing and matching loaders, with
+every layer providing a seed to the next.
+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+Another day, another patch revision. If you haven't noticed, I'm quite
+determined to make this work well and robustly. At some point I'd of
+course appreciate some review. Either way, I've got every intention of
+plugging away at this until it's perfect.
+
+Changes v4->v5:
+- Populate field when loading bzimages for kexec, just like device tree
+  platforms do.
+Changes v3->v4:
+- Zero out data after using, for forward secrecy.
+Changes v2->v3:
+- Actually memmap the right area with the random bytes in it. This
+  worked before because of page sizes, but the code wasn't right. Now
+  it's right.
+Changes v1->v2:
+- Fix small typo of data_len -> data->len.
+
+ arch/x86/include/uapi/asm/bootparam.h |  1 +
+ arch/x86/kernel/kexec-bzimage64.c     | 36 ++++++++++++++++++++++++---
+ arch/x86/kernel/setup.c               |  8 ++++++
+ 3 files changed, 42 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
+index bea5cdcdf532..a60676b8d1d4 100644
+--- a/arch/x86/include/uapi/asm/bootparam.h
++++ b/arch/x86/include/uapi/asm/bootparam.h
+@@ -11,6 +11,7 @@
+ #define SETUP_APPLE_PROPERTIES		5
+ #define SETUP_JAILHOUSE			6
+ #define SETUP_CC_BLOB			7
++#define SETUP_RNG_SEED			8
+ 
+ #define SETUP_INDIRECT			(1<<31)
+ 
+diff --git a/arch/x86/kernel/kexec-bzimage64.c b/arch/x86/kernel/kexec-bzimage64.c
+index 170d0fd68b1f..13b2c55ebbf0 100644
+--- a/arch/x86/kernel/kexec-bzimage64.c
++++ b/arch/x86/kernel/kexec-bzimage64.c
+@@ -18,6 +18,7 @@
+ #include <linux/mm.h>
+ #include <linux/efi.h>
+ #include <linux/verification.h>
++#include <linux/random.h>
+ 
+ #include <asm/bootparam.h>
+ #include <asm/setup.h>
+@@ -110,6 +111,27 @@ static int setup_e820_entries(struct boot_params *params)
+ 	return 0;
+ }
+ 
++enum { RNG_SEED_LENGTH = 32 };
++
++static void
++add_rng_seed_setup_data(struct boot_params *params,
++			unsigned long params_load_addr,
++			unsigned int rng_seed_setup_data_offset)
++{
++	struct setup_data *sd = (void *)params + rng_seed_setup_data_offset;
++	unsigned long setup_data_phys;
++
++	if (!rng_is_initialized())
++		return;
++
++	sd->type = SETUP_RNG_SEED;
++	sd->len = RNG_SEED_LENGTH;
++	get_random_bytes(sd->data, RNG_SEED_LENGTH);
++	setup_data_phys = params_load_addr + rng_seed_setup_data_offset;
++	sd->next = params->hdr.setup_data;
++	params->hdr.setup_data = setup_data_phys;
++}
++
+ #ifdef CONFIG_EFI
+ static int setup_efi_info_memmap(struct boot_params *params,
+ 				  unsigned long params_load_addr,
+@@ -190,7 +212,8 @@ static int
+ setup_boot_parameters(struct kimage *image, struct boot_params *params,
+ 		      unsigned long params_load_addr,
+ 		      unsigned int efi_map_offset, unsigned int efi_map_sz,
+-		      unsigned int efi_setup_data_offset)
++		      unsigned int efi_setup_data_offset,
++		      unsigned int rng_seed_setup_data_offset)
+ {
+ 	unsigned int nr_e820_entries;
+ 	unsigned long long mem_k, start, end;
+@@ -242,6 +265,8 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
+ 		}
+ 	}
+ 
++	add_rng_seed_setup_data(params, params_load_addr,
++				rng_seed_setup_data_offset);
+ #ifdef CONFIG_EFI
+ 	/* Setup EFI state */
+ 	setup_efi_state(params, params_load_addr, efi_map_offset, efi_map_sz,
+@@ -337,6 +362,7 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
+ 	void *stack;
+ 	unsigned int setup_hdr_offset = offsetof(struct boot_params, hdr);
+ 	unsigned int efi_map_offset, efi_map_sz, efi_setup_data_offset;
++	unsigned int rng_seed_setup_data_offset;
+ 	struct kexec_buf kbuf = { .image = image, .buf_max = ULONG_MAX,
+ 				  .top_down = true };
+ 	struct kexec_buf pbuf = { .image = image, .buf_min = MIN_PURGATORY_ADDR,
+@@ -401,13 +427,16 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
+ 	params_cmdline_sz = ALIGN(params_cmdline_sz, 16);
+ 	kbuf.bufsz = params_cmdline_sz + ALIGN(efi_map_sz, 16) +
+ 				sizeof(struct setup_data) +
+-				sizeof(struct efi_setup_data);
++				sizeof(struct efi_setup_data) +
++				sizeof(struct setup_data) +
++				RNG_SEED_LENGTH;
+ 
+ 	params = kzalloc(kbuf.bufsz, GFP_KERNEL);
+ 	if (!params)
+ 		return ERR_PTR(-ENOMEM);
+ 	efi_map_offset = params_cmdline_sz;
+ 	efi_setup_data_offset = efi_map_offset + ALIGN(efi_map_sz, 16);
++	rng_seed_setup_data_offset = efi_setup_data_offset + sizeof(struct efi_setup_data);
+ 
+ 	/* Copy setup header onto bootparams. Documentation/x86/boot.rst */
+ 	setup_header_size = 0x0202 + kernel[0x0201] - setup_hdr_offset;
+@@ -490,7 +519,8 @@ static void *bzImage64_load(struct kimage *image, char *kernel,
+ 
+ 	ret = setup_boot_parameters(image, params, bootparam_load_addr,
+ 				    efi_map_offset, efi_map_sz,
+-				    efi_setup_data_offset);
++				    efi_setup_data_offset,
++				    rng_seed_setup_data_offset);
+ 	if (ret)
+ 		goto out_free_params;
+ 
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index bd6c6fd373ae..6c807a4ae141 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -23,6 +23,7 @@
+ #include <linux/usb/xhci-dbgp.h>
+ #include <linux/static_call.h>
+ #include <linux/swiotlb.h>
++#include <linux/random.h>
+ 
+ #include <uapi/linux/mount.h>
+ 
+@@ -355,6 +356,13 @@ static void __init parse_setup_data(void)
+ 		case SETUP_EFI:
+ 			parse_efi_setup(pa_data, data_len);
+ 			break;
++		case SETUP_RNG_SEED:
++			data = early_memremap(pa_data, data_len);
++			add_bootloader_randomness(data->data, data->len);
++			memzero_explicit(data->data, data->len);
++			memzero_explicit(&data->len, sizeof(data->len));
++			early_memunmap(data, data_len);
++			break;
+ 		default:
+ 			break;
+ 		}
+-- 
+2.35.1
+
