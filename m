@@ -2,119 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 612D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E32BACCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235679AbiGAMo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 08:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
+        id S236300AbiGAMpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 08:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232260AbiGAMoz (ORCPT
+        with ESMTP id S236215AbiGAMpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 08:44:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A404A33A0E
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 05:44:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656679493;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I+o5MyxcdFm69IVhspSeG0AkjywTJdVF99yclwN4/5Q=;
-        b=Ijld7IVESORa/lyTsNOrWiwkyb1GdP/A/t2iP2tDe4iVQTSFfB2B/147LO/QdgqcwtDG+2
-        7NXsNy6olrtmoGdQesMLa+D4Lf/hkJu0azO6PfpGhfXcBmOGFhnnILWRgdqbzHZZ3IVC/i
-        KSF+kZJudyie1ovZ6rzAjtE2q4p2PZw=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-62-AHqt6j4NOG-fg9EjVYcZTA-1; Fri, 01 Jul 2022 08:44:52 -0400
-X-MC-Unique: AHqt6j4NOG-fg9EjVYcZTA-1
-Received: by mail-qk1-f198.google.com with SMTP id a68-20020a376647000000b006af6c4be635so2042459qkc.3
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 05:44:52 -0700 (PDT)
+        Fri, 1 Jul 2022 08:45:09 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B745533EB4;
+        Fri,  1 Jul 2022 05:45:06 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id l81so3337472oif.9;
+        Fri, 01 Jul 2022 05:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9fESupLsVibFBT9Jshx7sx492QNW1uXVHiFs4UY6jdo=;
+        b=B5NGKiRmAEpLNLEvQvABrUY2mlRFTJIghKa0CmaEprTgUg8P/bMLjDlC9kqySWbxX3
+         WbtV6Ly41oBeo7+bnVMbiOCtsCj+s21zCMaKWHKIFpxWvbGvSRgkZytYo2CDJHWX7CQy
+         H0Lo4IVoOLp0brhFmh1VLK5kNnbeepwvvprEWGPfumaQIQrTiQQpS1U3eI8UUCyg5qNj
+         rgDb2Uz9eLivrzgiR8dVP7NnivyIN7GwoT1+hvhiT42KM1qYWy4gvv0dLWk3Bk9eqgfm
+         vR0MqGdvIWq1A1Yz9vzd5RFkRMmaDB1AviyZo68aMlrOWiSCDjzcIXUTQ31msC+JBIbK
+         jC6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=I+o5MyxcdFm69IVhspSeG0AkjywTJdVF99yclwN4/5Q=;
-        b=TSihvkgtBt42XEMMxg0DwKyMTAA2bZR+Tf+WtR3/gW4rynAEo5RuexRv5ke0ROlFhK
-         AoxVH3l/nT7US3X+OANN0l1h64ioRDo6bGYjy0CQrmhffLxJXUd24Du/+9ZCN1peDTV/
-         w7phWWiLiL0yuWjdOUm2E++LcwG+I+JAZdjDe//oCNa3lg35enkZmePY3QfKNAbLuDAK
-         0IAZyGe7/Zi8rpoMOFfIl/MmFfjC8+hrxhKEodSgFwUaWwZef2HEUYYEjdRInyHa5Kcp
-         lSdRejupx8jxXsRti0IXl61NFa1N5nXdkkQ5ZFVD9ET14uXOOUHNEtVTLN7kGPgN0Fac
-         5bzg==
-X-Gm-Message-State: AJIora/DUVyvZvFMkwTTmQ9u/uUiI74yv94ys9GmoZMFY85m54q1PRVU
-        840l7rwLLghrXHSIOZoBc0CYiw2cQcsluhIW8ycEK+VeJiVVuN35KlyTxY5OWp0STsostEUwkMA
-        giVPfqXQG7wXsBXZ+e8ErP9/tv62D40Z0f5mcD9V7KP7JunYE7WModeUjKItA7XFA7Lj8k3Y=
-X-Received: by 2002:ad4:5bc2:0:b0:470:4c7d:db56 with SMTP id t2-20020ad45bc2000000b004704c7ddb56mr15998259qvt.90.1656679492093;
-        Fri, 01 Jul 2022 05:44:52 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1viqT6xeFd0NMURnXk6opeDjr9vD5bRyRLn8iOY+Kor2kuqlGnPO3IzIZsmjH53M8mj5JDEUA==
-X-Received: by 2002:ad4:5bc2:0:b0:470:4c7d:db56 with SMTP id t2-20020ad45bc2000000b004704c7ddb56mr15998236qvt.90.1656679491792;
-        Fri, 01 Jul 2022 05:44:51 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id bl34-20020a05620a1aa200b006af34a1a897sm11029924qkb.65.2022.07.01.05.44.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 05:44:51 -0700 (PDT)
-Subject: Re: [PATCH] HID: core: remove unneeded assignment in
- hid_process_report()
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220701112720.13452-1-lukas.bulwahn@gmail.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <fd94d2dc-04ed-f041-f148-8f361f215441@redhat.com>
-Date:   Fri, 1 Jul 2022 05:44:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9fESupLsVibFBT9Jshx7sx492QNW1uXVHiFs4UY6jdo=;
+        b=RtRLlPWyj3U/tlpw3Sz/bZ18Rx4FJnhzZwvTHLYx7AiQudjsXkpDMP3oOXLgTFD7IK
+         wQs2NcDoIz2sOEv/xOAy/BGL8bMKobMbIDPz9fjMS3sZf+g8H3vVnzqYFszLMhP/cIJA
+         xU5fvGAaZT4KsbH9w8m7ED6MtdakBlB1Cw00g/AZxTq1IyIAm8qWRbeCpjH8WpVsvMda
+         ONnn+oTtpI8BICbroZuKIYtoIJU3/+ARr+A2mr0RE7GT920p19RlhNyuOxOAr/fWve+p
+         RAj9vEuSg0Rf/1hrjBXcXxNBlQMPn2DLKxOc4AskmYDkqBiKXMqoh2ipBKNZq692uhNY
+         K3NA==
+X-Gm-Message-State: AJIora9uuE48gTxHrdkLlqS2sUlwQzVB2l7uT/nxyTE8XClkkWN3W7Lj
+        392DULjbvSTfRZZc4Tiz2O78NGbO1Tk0HXUW/AGtRUfJTQ2sOA==
+X-Google-Smtp-Source: AGRyM1uoR9RgXLNVs7iXQWGsEnvNo3LHdrJfhjDPo9OILGpE6veZNJc15raUa4vJXNYHDVShVhEAd7LSwSk5Ktr9zIc=
+X-Received: by 2002:a05:6808:30a8:b0:335:afc9:4a2c with SMTP id
+ bl40-20020a05680830a800b00335afc94a2cmr7811673oib.288.1656679505945; Fri, 01
+ Jul 2022 05:45:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220701112720.13452-1-lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20220630022317.15734-1-gch981213@gmail.com> <b84edc24-0a3a-a4d2-6481-fb3d4cee6dda@amd.com>
+In-Reply-To: <b84edc24-0a3a-a4d2-6481-fb3d4cee6dda@amd.com>
+From:   Chuanhong Guo <gch981213@gmail.com>
+Date:   Fri, 1 Jul 2022 20:44:54 +0800
+Message-ID: <CAJsYDVL=fgExYdw3JB-59rCwOqTbSt2N0Xw2WCmoTSzOQEMRRg@mail.gmail.com>
+Subject: Re: [PATCH v5] ACPI: skip IRQ1 override on 3 Ryzen 6000 laptops
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>
+Cc:     linux-acpi@vger.kernel.org, stable@vger.kernel.org,
+        Tighe Donnelly <tighe.donnelly@protonmail.com>,
+        Kent Hou Man <knthmn0@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jul 1, 2022 at 4:12 AM Limonciello, Mario
+<mario.limonciello@amd.com> wrote:
+> However I do want to point out that Windows doesn't care about legacy
+> format or not.  This bug where keyboard doesn't work only popped up on
+> Linux.
+>
+> Given the number of systems with the bug is appearing to grow I wonder
+> if the right answer is actually a new heuristic that doesn't apply the
+> kernel override for polarity inversion anymore.  Maybe if the system is
+> 2022 or newer?  Or on the ACPI version?
 
-On 7/1/22 4:27 AM, Lukas Bulwahn wrote:
-> Commit bebcc522fbee ("HID: core: for input reports, process the usages by
-> priority list") split the iteration into two distinct loops in
-> hid_process_report().
->
-> After this change, the variable field is only used while iterating in the
-> second loop and the assignment of values to this variable in the first loop
-> is simply not needed.
->
-> Remove the unneeded assignment during retrieval. No functional change and
-> no change in the resulting object code.
->
-> This was discovered as a dead store with clang-analyzer.
->
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
-> Benjamin, Jiri, please pick this minor non-urgent clean-up patch.
->
->   drivers/hid/hid-core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-> index 00154a1cd2d8..b7f5566e338d 100644
-> --- a/drivers/hid/hid-core.c
-> +++ b/drivers/hid/hid-core.c
-> @@ -1662,7 +1662,7 @@ static void hid_process_report(struct hid_device *hid,
->   
->   	/* first retrieve all incoming values in data */
->   	for (a = 0; a < report->maxfield; a++)
-> -		hid_input_fetch_field(hid, field = report->field[a], data);
-> +		hid_input_fetch_field(hid, report->field[a], data);
->   
->   	if (!list_empty(&report->field_entry_list)) {
->   		/* INPUT_REPORT, we have a priority list of fields */
-Reviewed-by: Tom Rix <trix@redhat.com>
+The previous attempt to limit the scope of IRQ override ends up
+breaking some other buggy devices:
+https://patchwork.kernel.org/project/linux-acpi/patch/20210728151958.15205-1-hui.wang@canonical.com/
 
+It's unfortunate that the original author of this IRQ override doesn't
+limit the scope to their exact devices.
+
+Hi, Rafael! What do you think? should we skip this IRQ override
+one-by-one or add a different matching logic to check the bios date
+instead?
+
+-- 
+Regards,
+Chuanhong Guo
