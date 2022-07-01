@@ -2,79 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D25C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 05:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AEF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 05:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232816AbiGAFrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 01:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
+        id S234262AbiGAFsj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 01:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234423AbiGAFrh (ORCPT
+        with ESMTP id S231426AbiGAFse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 01:47:37 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43CFD68A38;
-        Thu, 30 Jun 2022 22:47:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656654456; x=1688190456;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Isy2vf1MMMuyEw6FjN6hYjOB38jJmfhpCIoqFRQ0Z2M=;
-  b=BoyWNACy3TkB8QM/8y8DnC53BjKZaoJOJfotMhiVKUzWI5imZkDoJ/dW
-   C7O1ti+Eo1gKk9JykXt7M12TQcVcxA1PjlHWDUO3Vs/xP52J0kqEAN7j4
-   hJ/NBIfIvPVYZZv4ufmwVQuMg55+vWbiCDmZf1pvrWDm12NqP9MZGGQCk
-   oJ9FeH1mFbfI+oCP3BJqFNj7uF14FtysuXhyC9iDLTFAjBmUS+a6l4bIs
-   rtELxh0LGJqtfQPyVUQV3JkY4fZw8sQAfZTXxV1KI8WgVeGMKpVqDsGKO
-   ORu9j4BhFFLGq7+9oPz4wZvNlIEqIm6S9LIOPIVtm5x8pndi8NdlPHcS2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="281322763"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="281322763"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 22:47:36 -0700
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="566121503"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 22:47:31 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 01 Jul 2022 08:47:28 +0300
-Date:   Fri, 1 Jul 2022 08:47:28 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Wolfram Sang <wsa@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-pci@vger.kernel.org, ibm-acpi-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        Mark Gross <markgross@kernel.org>
-Subject: Re: [PATCH v1 1/5] ACPI: utils: Introduce
- acpi_match_video_device_handle() helper
-Message-ID: <Yr6KcPlC/3rYAtKE@lahna>
-References: <20220630212819.42958-1-andriy.shevchenko@linux.intel.com>
+        Fri, 1 Jul 2022 01:48:34 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3F32F2;
+        Thu, 30 Jun 2022 22:48:29 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id VCX00123;
+        Fri, 01 Jul 2022 13:48:23 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 1 Jul 2022 13:48:22 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <seanjc@google.com>, <pbonzini@redhat.com>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+        <x86@kernel.org>, <hpa@zytor.com>
+CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] KVM: x86/mmu: Return true/false from bool function
+Date:   Fri, 1 Jul 2022 00:21:22 -0400
+Message-ID: <20220701042122.5273-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630212819.42958-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   20227011348236a2f1c9ffd7be92f9e8e0b4b6e725e20
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Return boolean values ("true" or "false") instead of integer values
+from bool function.
 
-On Fri, Jul 01, 2022 at 12:28:15AM +0300, Andy Shevchenko wrote:
->  extern long acpi_is_video_device(acpi_handle handle);
-> +extern bool acpi_match_video_device_handle(acpi_handle handle);
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ arch/x86/kvm/mmu/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I think we can do slightly better here. The only caller of
-acpi_is_video_device() is in drivers/acpi/video_detect.c so we can move
-it there and make it static (is_video_device()).
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index bfb50262fd37..572e0c487376 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -1024,7 +1024,7 @@ static bool rmap_can_add(struct kvm_vcpu *vcpu)
+ 	struct kvm_mmu_memory_cache *mc;
+ 
+ 	mc = &vcpu->arch.mmu_pte_list_desc_cache;
+-	return kvm_mmu_memory_cache_nr_free_objects(mc);
++	return !!kvm_mmu_memory_cache_nr_free_objects(mc);
+ }
+ 
+ static void rmap_remove(struct kvm *kvm, u64 *spte)
+-- 
+2.27.0
 
-Then we can name this one acpi_is_video_device() instead and in addition
-make it take struct acpi_device as parameter instead of acpi_handle (I
-think we should not use acpi_handles in drivers if possible).
