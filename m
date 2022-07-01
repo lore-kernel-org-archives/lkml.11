@@ -2,50 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BACC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4221FCCA483
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 16:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbiGAQqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 12:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S231376AbiGAQqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 12:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiGAQqd (ORCPT
+        with ESMTP id S229544AbiGAQqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 12:46:33 -0400
+        Fri, 1 Jul 2022 12:46:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D3038DB2
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 09:46:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137C138DB2;
+        Fri,  1 Jul 2022 09:46:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BB85625DC
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 16:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E32C3411E;
-        Fri,  1 Jul 2022 16:46:30 +0000 (UTC)
-Date:   Fri, 1 Jul 2022 12:46:28 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Nachammai Karuppiah <nachukannan@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Tony Luck <tony.luck@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        Brian Norris <computersforpeace@gmail.com>
-Subject: Re: [RFC PATCH 0/7] Trace events to pstore
-Message-ID: <20220701124628.36009f4a@gandalf.local.home>
-In-Reply-To: <CAEXW_YREDKcgn9jkVeFMjBqjA51HGZ=1Tp4z4oUhngJ3Wyz8MA@mail.gmail.com>
-References: <cover.1599072725.git.nachukannan@gmail.com>
-        <CAEXW_YSt49yGH+Wc63zfm4i7n1M_YxETbAA8nxmfDH1B3WFQXg@mail.gmail.com>
-        <CAL_JsqK7QRgCcD01MfVermvTGgLPj8KC412kxSQg2zsp_46fgQ@mail.gmail.com>
-        <CAEXW_YTr9VaEY78S_C5iN1EH3hySZOED8F37t1A=7PNgbQK9CA@mail.gmail.com>
-        <20220630154847.134d3d67@gandalf.local.home>
-        <CAEXW_YREDKcgn9jkVeFMjBqjA51HGZ=1Tp4z4oUhngJ3Wyz8MA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C286625E4;
+        Fri,  1 Jul 2022 16:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F79C3411E;
+        Fri,  1 Jul 2022 16:46:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656694007;
+        bh=FLpSjTMwgYK01nyU2snZdBuhJwNNervY+onMcafn2Q8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KPKhOgvtshtWG18LD/2F88zR6sewXmcQHXjI+OH795z7+sCZxGz9cdGGe+glrnloS
+         ckuiQ/ghB1c64Jis0sBTpNDoGxNrylFzLTibhZHjc1f/020VZ8f5oeByEcvhADPL/H
+         C2afx5xF4nC2xMrc/X1ujaiJPkRklVs6zZj5GDG+FiOOSsJ10Y/uHYb9NvuDKpBZhI
+         6Lt0C9hEZJHCyQOVfZDSAg3gjRvAtZFX5P6NZAioLE+CMePGGBmmlFLruOzqJoTLHM
+         EsXAGcxZmMTEDwcEdQFPkt15K6uqx2G+FdweARFVFTmHIMzHo2bfmfR6nZRRQq3kdc
+         NAhYIbim0jJOg==
+Date:   Fri, 1 Jul 2022 17:56:17 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, sre@kernel.org,
+        lee.jones@linaro.org, lgirdwood@gmail.com, broonie@kernel.org,
+        lars@metafoo.de, quic_gurus@quicinc.com,
+        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
+        michael@walle.cc, rdunlap@infradead.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v4 09/15] iio: adc: axp20x_adc: Replace adc_en2 flag
+ with adc_en2_mask field
+Message-ID: <20220701175617.06d63c91@jic23-huawei>
+In-Reply-To: <20220629143046.213584-10-aidanmacdonald.0x0@gmail.com>
+References: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
+        <20220629143046.213584-10-aidanmacdonald.0x0@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,15 +58,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 12:37:35 -0400
-Joel Fernandes <joel@joelfernandes.org> wrote:
+On Wed, 29 Jun 2022 15:30:40 +0100
+Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
 
-> I am curious how this came on your radar after 2 years, did someone
-> tell you to prioritize improving performance of ftrace on pstore? I
-> could probably make time to work on it more if someone has a usecase
-> for this or something.
+> The adc_en2 flag is essentially specific to axp20x-compatible devices
+> because it hardcodes register values. Replace it with a mask field
+> so the register value can be specified in device match data.
+> 
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I'm looking into ways to extract the ftrace ring buffer from crashes, and
-it was brought up that pstore was used before.
+> ---
+>  drivers/iio/adc/axp20x_adc.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
+> index ab25e6e1ff65..75bda94dbce1 100644
+> --- a/drivers/iio/adc/axp20x_adc.c
+> +++ b/drivers/iio/adc/axp20x_adc.c
+> @@ -623,9 +623,9 @@ struct axp_data {
+>  	int				num_channels;
+>  	struct iio_chan_spec const	*channels;
+>  	unsigned long			adc_en1_mask;
+> +	unsigned long			adc_en2_mask;
+>  	int				(*adc_rate)(struct axp20x_adc_iio *info,
+>  						    int rate);
+> -	bool				adc_en2;
+>  	struct iio_map			*maps;
+>  };
+>  
+> @@ -634,8 +634,8 @@ static const struct axp_data axp20x_data = {
+>  	.num_channels = ARRAY_SIZE(axp20x_adc_channels),
+>  	.channels = axp20x_adc_channels,
+>  	.adc_en1_mask = AXP20X_ADC_EN1_MASK,
+> +	.adc_en2_mask = AXP20X_ADC_EN2_MASK,
+>  	.adc_rate = axp20x_adc_rate,
+> -	.adc_en2 = true,
+>  	.maps = axp20x_maps,
+>  };
+>  
+> @@ -645,7 +645,6 @@ static const struct axp_data axp22x_data = {
+>  	.channels = axp22x_adc_channels,
+>  	.adc_en1_mask = AXP22X_ADC_EN1_MASK,
+>  	.adc_rate = axp22x_adc_rate,
+> -	.adc_en2 = false,
+>  	.maps = axp22x_maps,
+>  };
+>  
+> @@ -655,7 +654,6 @@ static const struct axp_data axp813_data = {
+>  	.channels = axp813_adc_channels,
+>  	.adc_en1_mask = AXP22X_ADC_EN1_MASK,
+>  	.adc_rate = axp813_adc_rate,
+> -	.adc_en2 = false,
+>  	.maps = axp22x_maps,
+>  };
+>  
+> @@ -713,10 +711,10 @@ static int axp20x_probe(struct platform_device *pdev)
+>  	/* Enable the ADCs on IP */
+>  	regmap_write(info->regmap, AXP20X_ADC_EN1, info->data->adc_en1_mask);
+>  
+> -	if (info->data->adc_en2)
+> -		/* Enable GPIO0/1 and internal temperature ADCs */
+> +	if (info->data->adc_en2_mask)
+>  		regmap_update_bits(info->regmap, AXP20X_ADC_EN2,
+> -				   AXP20X_ADC_EN2_MASK, AXP20X_ADC_EN2_MASK);
+> +				   info->data->adc_en2_mask,
+> +				   info->data->adc_en2_mask);
+>  
+>  	/* Configure ADCs rate */
+>  	info->data->adc_rate(info, 100);
+> @@ -741,7 +739,7 @@ static int axp20x_probe(struct platform_device *pdev)
+>  fail_map:
+>  	regmap_write(info->regmap, AXP20X_ADC_EN1, 0);
+>  
+> -	if (info->data->adc_en2)
+> +	if (info->data->adc_en2_mask)
+>  		regmap_write(info->regmap, AXP20X_ADC_EN2, 0);
+>  
+>  	return ret;
+> @@ -757,7 +755,7 @@ static int axp20x_remove(struct platform_device *pdev)
+>  
+>  	regmap_write(info->regmap, AXP20X_ADC_EN1, 0);
+>  
+> -	if (info->data->adc_en2)
+> +	if (info->data->adc_en2_mask)
+>  		regmap_write(info->regmap, AXP20X_ADC_EN2, 0);
+>  
+>  	return 0;
 
--- Steve
