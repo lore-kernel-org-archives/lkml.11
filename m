@@ -2,136 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AE1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 20:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DE1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 20:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232222AbiGAUuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 16:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48486 "EHLO
+        id S231566AbiGAUx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 16:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiGAUtw (ORCPT
+        with ESMTP id S229541AbiGAUxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 16:49:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD08961D62;
-        Fri,  1 Jul 2022 13:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656708591; x=1688244591;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uLBjgbQwOwcGQ9N228n/YX+PJ1rvPTIAY79UfblshNM=;
-  b=bOZD8VgsK4lK4SObR9nkMeLbEb0CvpcQKu+AIi3oh9WRQSesoHQ9x7Sm
-   EOrghty1Nh9l/xKZHotxhHPFxLXM85iwFqsSwj97dSJD3ABaZlBm0RV2L
-   Hv3ybdoRpj8MrW4pfzV+B0u/KV0IHGI5eVX4ajKfCX4KM41WmLr1VBT8E
-   mAdOrBZe5N0RxUB9xSX5j0ul5wUzuxaUXyvoRpZVSbNlnDV/ggg/JrmJx
-   k62fP0ZXXVKfl2ZSDYasy0TRaVCBRPxdPumLJI30A2ElIiDUYHV2JwjNf
-   99xZOUoAyMTvaWcSmNRuUBsMJlyJYC9ZlhGdGlfrF3KQgxErVf+Gx/EX1
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="102710230"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 13:49:51 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 13:49:49 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 13:49:47 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 6/7] net: lan966x: Extend FDB to support also lag
-Date:   Fri, 1 Jul 2022 22:52:26 +0200
-Message-ID: <20220701205227.1337160-7-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
-References: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
+        Fri, 1 Jul 2022 16:53:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9139D31914;
+        Fri,  1 Jul 2022 13:53:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 383F2B83202;
+        Fri,  1 Jul 2022 20:53:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E896C3411E;
+        Fri,  1 Jul 2022 20:53:47 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WVCDR+HX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656708825;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JJUgAvEg59n4qTslnzMARg0Z7Fq1XNYlppr5mzNAEqY=;
+        b=WVCDR+HXhx1XepQGWMhNtkhfpF4VuKMPP6hDrrkRVJxJJgKwabfBDrQXToI77SR9UXBm3F
+        kLVpx3RB9+LYbBp2zHoJ97qA3TEMKLwsAvbGJdF3Zt4r0pmUB7vdHkgPGYFRu+T6oyyoSK
+        VAYIk/Cx+c27Cg+gExj3m+nb5RQIEeQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b51dea0b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 1 Jul 2022 20:53:44 +0000 (UTC)
+Date:   Fri, 1 Jul 2022 22:53:36 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     John Stultz <jstultz@google.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
+        android-kernel-team <android-kernel-team@google.com>,
+        Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+Message-ID: <Yr9e0JnUbu93Qq1p@zx2c4.com>
+References: <20220629163007.GA25279@lst.de>
+ <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
+ <YryNQvWGVwCjJYmB@zx2c4.com>
+ <Yryic4YG9X2/DJiX@google.com>
+ <Yry6XvOGge2xKx/n@zx2c4.com>
+ <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
+ <YrzaCRl9rwy9DgOC@zx2c4.com>
+ <CANDhNCpRzzULaGmEGCbbJgVinA0pJJB-gOP9AY0Hy488n9ZStA@mail.gmail.com>
+ <YrztOqBBll66C2/n@zx2c4.com>
+ <87a69slh0x.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87a69slh0x.fsf@meer.lwn.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Offload FDB entries when the original device is a lag interface. Because
-all the ports under the lag have the same chip id, which is the chip id
-of first port, then add the entries only for the first port.
+Hi Jon,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdb.c  | 30 +++++++++++++++++++
- .../microchip/lan966x/lan966x_switchdev.c     |  4 ++-
- 2 files changed, 33 insertions(+), 1 deletion(-)
+On Fri, Jul 01, 2022 at 02:22:38PM -0600, Jonathan Corbet wrote:
+> So please forgive the noise from the peanut gallery
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdb.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdb.c
-index 5142e7c0de31..2ea263e893ee 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdb.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdb.c
-@@ -199,6 +199,34 @@ static void lan966x_fdb_bridge_event_work(struct lan966x_fdb_event_work *fdb_wor
- 	}
- }
- 
-+static void lan966x_fdb_lag_event_work(struct lan966x_fdb_event_work *fdb_work)
-+{
-+	struct switchdev_notifier_fdb_info *fdb_info;
-+	struct lan966x_port *port;
-+	struct lan966x *lan966x;
-+
-+	if (!lan966x_lag_first_port(fdb_work->orig_dev, fdb_work->dev))
-+		return;
-+
-+	lan966x = fdb_work->lan966x;
-+	port = netdev_priv(fdb_work->dev);
-+	fdb_info = &fdb_work->fdb_info;
-+
-+	switch (fdb_work->event) {
-+	case SWITCHDEV_FDB_ADD_TO_DEVICE:
-+		if (!fdb_info->added_by_user)
-+			break;
-+		lan966x_mac_add_entry(lan966x, port, fdb_info->addr,
-+				      fdb_info->vid);
-+		break;
-+	case SWITCHDEV_FDB_DEL_TO_DEVICE:
-+		if (!fdb_info->added_by_user)
-+			break;
-+		lan966x_mac_del_entry(lan966x, fdb_info->addr, fdb_info->vid);
-+		break;
-+	}
-+}
-+
- static void lan966x_fdb_event_work(struct work_struct *work)
- {
- 	struct lan966x_fdb_event_work *fdb_work =
-@@ -208,6 +236,8 @@ static void lan966x_fdb_event_work(struct work_struct *work)
- 		lan966x_fdb_port_event_work(fdb_work);
- 	else if (netif_is_bridge_master(fdb_work->orig_dev))
- 		lan966x_fdb_bridge_event_work(fdb_work);
-+	else if (netif_is_lag_master(fdb_work->orig_dev))
-+		lan966x_fdb_lag_event_work(fdb_work);
- 
- 	kfree(fdb_work->fdb_info.addr);
- 	kfree(fdb_work);
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index 0cd53dca87ce..ced0194f6246 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -345,8 +345,10 @@ int lan966x_port_prechangeupper(struct net_device *dev,
- 	if (netif_is_lag_master(info->upper_dev) && info->linking)
- 		err = lan966x_lag_port_prechangeupper(dev, info);
- 
--	if (netif_is_lag_master(info->upper_dev) && !info->linking)
-+	if (netif_is_lag_master(info->upper_dev) && !info->linking) {
- 		switchdev_bridge_port_unoffload(brport_dev, port, NULL, NULL);
-+		lan966x_fdb_flush_workqueue(port->lan966x);
-+	}
- 
- 	return err;
- }
--- 
-2.33.0
+Yuh oh, I sure hope this isn't newsworthy for LWN. This has already
+consumed me for two days...
 
+> myself wondering...do you really need a knob for this?  The kernel
+> itself can observe how often (and for how long) the system is suspended,
+> and might well be able to do the right thing without explicit input from
+> user space.  If it works it would eliminate a potential configuration
+> problem and also perhaps respond correctly to changing workloads.
+> 
+> For example, rather than testing a knob, avoid resetting keys on resume
+> if the suspend time is less than (say) 30s?
+> 
+> Educate me on what I'm missing here, please :)
+
+What you're missing is that wireguard needs to do this before going to
+sleep, not when waking up, because one of the objectives is forward
+secrecy. See
+https://git.zx2c4.com/wireguard-linux/tree/drivers/net/wireguard/device.c#n63
+
+	if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
+		return 0;
+	if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
+		return 0;
+	[...]
+	wg_noise_handshake_clear(&peer->handshake);
+	wg_noise_keypairs_clear(&peer->keypairs);
+
+Somebody asked the same question on wgml here -
+https://lore.kernel.org/wireguard/CAHmME9p2OYSTX2C5M0faKtw2N8jiyohvRqnAPKa=e7BWynF7fQ@mail.gmail.com/T/
+- and then eventually suggested that I should wake up computers from
+sleep to clear that memory. No way jose.
+
+Anyway, this matter has been resolved in this thread here:
+https://lore.kernel.org/lkml/20220630191230.235306-1-kaleshsingh@google.com/T/
+And this Android change:
+https://android-review.googlesource.com/c/kernel/common/+/2142693/1
+Resulting in these two commits landing in Greg's tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/commit/?id=261e224d6a5c43e2bb8a07b7662f9b4ec425cfec
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/commit/?id=1045a06724f322ed61f1ffb994427c7bdbe64647
+So hopefully this thread can come to an end and I can get back to work.
+
+Jason
