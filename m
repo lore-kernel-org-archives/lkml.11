@@ -2,90 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF50C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F08AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235185AbiGAJDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S235315AbiGAJD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiGAJDc (ORCPT
+        with ESMTP id S233719AbiGAJD5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:03:32 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7FD2C109
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:03:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VI0CmfV_1656666208;
-Received: from 30.225.24.48(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VI0CmfV_1656666208)
-          by smtp.aliyun-inc.com;
-          Fri, 01 Jul 2022 17:03:29 +0800
-Message-ID: <d5cc413d-d32a-5612-fe7a-95b61892c363@linux.alibaba.com>
-Date:   Fri, 1 Jul 2022 17:03:28 +0800
+        Fri, 1 Jul 2022 05:03:57 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E68B41;
+        Fri,  1 Jul 2022 02:03:54 -0700 (PDT)
+Received: from dimapc.. (109-252-118-164.nat.spd-mgts.ru [109.252.118.164])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4702766015B2;
+        Fri,  1 Jul 2022 10:03:52 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656666233;
+        bh=oOZf0LBfOP2Mrd3kKdfyQSfqWEThXNW2359k+fuby8k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=g/ZoW+eXIu7Ti6gYKeb8pEQXflxFZnZtIgcDJCDmjroTBaTPeja2pKbeaIAjYymTd
+         KILCpbkQSCCJXeFo58JBWy7iHoru61NtEyGNJ2bbKudDblMl7ZQ3o6ld1kTArsXvnc
+         ukDXgP30Lea0adEDSIbT1mIAaj71TSffSXe6kNNPbumqNusmWLq84VCzKVf+fRvNE9
+         t3FqRFroAFay5VZ0jYDkAoQyEgI/7TXu7L4ob/oaSLlQN2ylLvojj33ljEkzIzP9DF
+         9YlSvXFkv2+VmP23itjJZgqQUsLsixQMR/XNII8UxlTU/Sanz/obTLqXGq84pk1tY0
+         KIpg5seL4xU5Q==
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas_os@shipmail.org>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-tegra@vger.kernel.org, kernel@collabora.com,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH v8 0/2] DRM GEM fixes
+Date:   Fri,  1 Jul 2022 12:02:38 +0300
+Message-Id: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [Linux-cachefs] [PATCH] fscache: Fix if condition in
- fscache_wait_on_volume_collision()
-Content-Language: en-US
-To:     Yue Hu <huyue2@coolpad.com>, dhowells@redhat.com,
-        linux-cachefs@redhat.com
-Cc:     zhangwen@coolpad.com, linux-kernel@vger.kernel.org,
-        zbestahu@gmail.com
-References: <20220525023212.32642-1-huyue2@coolpad.com>
-From:   JeffleXu <jefflexu@linux.alibaba.com>
-In-Reply-To: <20220525023212.32642-1-huyue2@coolpad.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This patchset fixes two problems in the common GEM code. First fixed problem
+is the bogus lockdep splat that complicates debugging of DRM drivers. Second
+problem is the inconsistency in behaviour and improper handling of mapping
+the imported GEMs by some drivers, to fix it we will prohibit to map the
+imported GEMs like majority of drivers already do.
 
+Changelog:
 
-On 5/25/22 10:32 AM, Yue Hu wrote:
-> After waiting for the volume to complete the acquisition with timeout,
-> the if condition under which potential volume collision occurs should be
-> acquire the volume is still pending rather than not pending so that we
-> will continue to wait until the pending flag is cleared. Also, use the
-> existing test pending wrapper directly instead of test_bit().
-> 
-> Signed-off-by: Yue Hu <huyue2@coolpad.com>
-> ---
->  fs/fscache/volume.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/fs/fscache/volume.c b/fs/fscache/volume.c
-> index 71d3a6d6d72c..f2009cc22002 100644
-> --- a/fs/fscache/volume.c
-> +++ b/fs/fscache/volume.c
-> @@ -143,7 +143,7 @@ static void fscache_wait_on_volume_collision(struct fscache_volume *candidate,
->  {
->  	wait_var_event_timeout(&candidate->flags,
->  			       !fscache_is_acquire_pending(candidate), 20 * HZ);
-> -	if (!fscache_is_acquire_pending(candidate)) {
-> +	if (fscache_is_acquire_pending(candidate)) {
->  		pr_notice("Potential volume collision new=%08x old=%08x",
->  			  candidate->debug_id, collidee_debug_id);
->  		fscache_stat(&fscache_n_volumes_collision);
+v8: - Dropped stable tag from the "Don't map imported GEMs" patch,
+      like was suggested by Thomas Hellström in the review comment to v7.
 
-Yeah, I also noticed that before.
+v7: - Factored out GEM patches from [1] since I'll be working on the
+      dma-buf locking in a separate patchset now.
 
+[1] https://lore.kernel.org/all/20220526235040.678984-1-dmitry.osipenko@collabora.com/
 
+    - Improved commit message and added fixes tag to the "Properly annotate
+      WW context" patch.
 
-> @@ -182,7 +182,7 @@ static bool fscache_hash_volume(struct fscache_volume *candidate)
->  	hlist_bl_add_head(&candidate->hash_link, h);
->  	hlist_bl_unlock(h);
->  
-> -	if (test_bit(FSCACHE_VOLUME_ACQUIRE_PENDING, &candidate->flags))
-> +	if (fscache_is_acquire_pending(candidate))
->  		fscache_wait_on_volume_collision(candidate, collidee_debug_id);
->  	return true;
->  
+    - Replaced "Move mapping of imported dma-bufs to drm_gem_mmap_obj()"
+      patch with "Don't map imported GEMs", like was suggested by
+      Thomas Hellström.
 
-LGTM.
+    - Added r-b and suggested-by from Thomas Hellström.
 
-Reviewed-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Dmitry Osipenko (2):
+  drm/gem: Properly annotate WW context on drm_gem_lock_reservations()
+    error
+  drm/gem: Don't map imported GEMs
+
+ drivers/gpu/drm/drm_gem.c              | 8 ++++++--
+ drivers/gpu/drm/drm_gem_shmem_helper.c | 9 ---------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
 
 -- 
-Thanks,
-Jeffle
+2.36.1
+
