@@ -2,103 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF3FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00025C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbiGAP3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
+        id S231547AbiGAPbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiGAP3H (ORCPT
+        with ESMTP id S229620AbiGAPbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:29:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E9F1F60D;
-        Fri,  1 Jul 2022 08:29:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39BC862414;
-        Fri,  1 Jul 2022 15:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C587C3411E;
-        Fri,  1 Jul 2022 15:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656689345;
-        bh=fg4rHu8CbbqFBxKzijEGmEDBRGujBS5oSTYCqS8ZW70=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HAGfJ701w0/wjeuqllH40r3iH05v/wKY7zEntWAJRSpPcG+9b8Q5miparWa6qm556
-         TnxIN4cuwNhjSmg+XwnEpBYcwuiOQrZgAZjVIW+Q8dBMkrlQYB88kM6c7LhbmiQIdc
-         0H0ZecFc5lF9ne4ISpiVbZPBhY7xCyZpJYnGSdh8=
-Date:   Fri, 1 Jul 2022 17:29:02 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>, tj@kernel.org,
-        viro@zeniv.linux.org.uk, m.szyprowski@samsung.com,
-        michael@walle.cc, robh@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, guillaume.tucker@collabora.com,
-        pmladek@suse.com
-Subject: Re: [PATCH] kernfs: Avoid re-adding kernfs_node into
- kernfs_notify_list.
-Message-ID: <Yr8SvqShBXZ/U6gk@kroah.com>
-References: <20220701145047.2206900-1-imran.f.khan@oracle.com>
- <Yr8OSxotW2VEUyKQ@dev-arch.thelio-3990X>
- <2c4bdc7a-b49f-c2ea-28d0-4ec838c3b26c@oracle.com>
+        Fri, 1 Jul 2022 11:31:05 -0400
+Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27BA2558A;
+        Fri,  1 Jul 2022 08:31:04 -0700 (PDT)
+Received: by mail-il1-f169.google.com with SMTP id h20so1599884ilj.13;
+        Fri, 01 Jul 2022 08:31:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DW6OoI9ck7pg2WGkEj/Pza3ljDH6aP6yay+QPKIoSAY=;
+        b=72I0nxI1hO1IiCezi2PYAB1+SRstq2UxhOTcoRy+HHDStwKz2ThfPDrpTdr6iu9YA5
+         at5oxKWASi+phjADd0bG3WCdcV76YkiMmXHCl9lXxjgQ8kPB+TWk1JZNiAXsezm+iMi+
+         iUexzr72AUH3ui1pfaha9lzEWHSNYRypORao0xzbOB1et7T4r+kzimFtgb9sZlwZ3rDG
+         QIPtivXOBqP7nCBiAHn5G2xqkmDkYYi/xEFl+fYSxPq3cMN8urSt0RZ2qF3wWxPKj4Ph
+         tLh1OMzo4PbfhAkOMgRQoe+a3j8JzzM0aWrMJZBO6dpIO+gSVyNOAphzFg0oLYC39Wu/
+         eIEQ==
+X-Gm-Message-State: AJIora+21RMgpnVKvQ4vqZdwpB6i4QluHH/ukk42omZ8GX3R/u9tBqX6
+        oPd/TxEygI9AI/8tj9lh3wtzQ31ADg==
+X-Google-Smtp-Source: AGRyM1vjWw9m4eWVGZ6vgiHQ5P0wZ0Ayk7sZG+ShF80xwbJewoL7/fwhv/c/x4vCvL2pv3kBenXPSw==
+X-Received: by 2002:a05:6e02:b44:b0:2da:7b63:34aa with SMTP id f4-20020a056e020b4400b002da7b6334aamr8922805ilu.281.1656689464065;
+        Fri, 01 Jul 2022 08:31:04 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id d137-20020a02628f000000b00339c5bff7c0sm9735893jac.134.2022.07.01.08.31.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 08:31:03 -0700 (PDT)
+Received: (nullmailer pid 984299 invoked by uid 1000);
+        Fri, 01 Jul 2022 15:31:02 -0000
+Date:   Fri, 1 Jul 2022 09:31:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Irui Wang <irui.wang@mediatek.com>
+Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        angelogioacchino.delregno@collabora.com,
+        nicolas.dufresne@collabora.com, wenst@chromium.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Tomasz Figa <tfiga@chromium.org>, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com, kyrie wu <kyrie.wu@mediatek.com>,
+        srv_heupstream@mediatek.com
+Subject: Re: [V10,1/7] dt-bindings: mediatek: Add mediatek, mt8195-jpgenc
+ compatible
+Message-ID: <20220701153102.GA981371-robh@kernel.org>
+References: <20220627025625.8956-1-irui.wang@mediatek.com>
+ <20220627025625.8956-2-irui.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2c4bdc7a-b49f-c2ea-28d0-4ec838c3b26c@oracle.com>
+In-Reply-To: <20220627025625.8956-2-irui.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 02, 2022 at 01:18:09AM +1000, Imran Khan wrote:
-> Hello Nathan,
+On Mon, Jun 27, 2022 at 10:56:19AM +0800, Irui Wang wrote:
+> From: kyrie wu <kyrie.wu@mediatek.com>
 > 
-> On 2/7/22 1:10 am, Nathan Chancellor wrote:
-> > On Sat, Jul 02, 2022 at 12:50:47AM +1000, Imran Khan wrote:
-> >> Kick fsnotify only if an event is not already scheduled for target
-> >> kernfs node. commit b8f35fa1188b ("kernfs: Change kernfs_notify_list to
-> >> llist.") changed kernfs_notify_list to a llist.
-> >> Prior to this list was a singly linked list, protected by
-> >> kernfs_notify_lock. Whenever a kernfs_node was added to the list
-> >> its ->attr.notify_next was set to head of the list and upon removal
-> >> ->attr.notify_next was reset to NULL. Addition to kernfs_notify_list
-> >> would only happen if kernfs_node was not already in the list i.e.
-> >> if ->attr.notify_next was NULL. commit b8f35fa1188b ("kernfs: Change
-> >> kernfs_notify_list to llist.") removed this checking and this was wrong
-> >> as it resulted in multiple additions for same kernfs_node.
-> >>
-> >> So far this bug only got reflected with some console related setting.
-> >> Nathan found this issue when console was specified both in DT and in
-> >> kernel command line and Marek found this issue when earlycon was enabled.
-> >>
-> >> This patch avoids adding an already added kernfs_node into notify list.
-> >>
-> >> Reported-by: Nathan Chancellor <nathan@kernel.org>
-> >> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> > 
-> > This should also include:
-> > 
-> > Reported-by: Michael Walle <michael@walle.cc>
-> > 
-> >> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >> Fixes: b8f35fa1188b ("kernfs: Change kernfs_notify_list to llist.")
-> >> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
-> > 
-> > For the ARCH=um case that I noticed:
-> > 
-> > Tested-by: Nathan Chancellor <nathan@kernel.org>
-> > 
+> Add mediatek,mt8195-jpgenc compatible to binding document.
+
+Same comments as the decoder.
+
 > 
-> I am really sorry about missing these tags. I was not sure if you have tested
-> the patch I sent this morning.
-> 
-> Could you please suggest me if I should send a v2 of this change with these tags
-> included or if this mail is enough. Sorry if I am asking something obvious but I
-> am encountering such situation for first time.
+> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
 
-Please resend with them added.
+Also, this needs your S-o-b too.
 
-thanks,
-
-greg k-h
+> ---
+>  .../media/mediatek,mt8195-jpegenc.yaml        | 154 ++++++++++++++++++
+>  1 file changed, 154 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
