@@ -2,145 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D40DAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 21:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2A2CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 21:45:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiGAVlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 17:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
+        id S231534AbiGAVpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 17:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbiGAVlJ (ORCPT
+        with ESMTP id S229570AbiGAVpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 17:41:09 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8C358FE1
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 14:41:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656711668; x=1688247668;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zyicbhnpwSBO58N7CjcObF3NGPBO7eS9T3qcunuEXMQ=;
-  b=X6adKtE6CQpp+uUKO/z5g8ATk0Yt1vODIhdGUlZP9fRfmk044CLiWA61
-   BWMYV0yoayvNE7hKoR3vGDKOgM1I4ZZBfZvCa/lrO58mDDaqKQyynZKSv
-   Ss3gQSTGjkvS53tBKauwmXA5q5qHp43iQbDYkFbYwy9FPplA35QUSAiHl
-   Bdep/CdohPjCTJQm85W3ZzCbnXThQNF0C+ASKOXY9cIaOyBo0smaVIgaQ
-   pqPFCkn/l+KCyWTLZAEk4Adv3b2d7wofMDik5RKNcPRvWFPKtTkyvaMK+
-   9v7OCdHjl58pSm2fMZ2yFbUcfs34BeiIPubKcZtP1Ap9xPZ2/Lbj5IofH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10395"; a="283481723"
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="283481723"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 14:41:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="596405867"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 01 Jul 2022 14:41:06 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7ONt-000ENo-EW;
-        Fri, 01 Jul 2022 21:41:05 +0000
-Date:   Sat, 2 Jul 2022 05:40:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [mcgrof-next:20220615-dm-zoned-npo2 13/13]
- drivers/md/dm-zoned-npo2-target.c:62:13: warning: variable 'ret' set but not
- used
-Message-ID: <202207020515.LhdrBdTo-lkp@intel.com>
+        Fri, 1 Jul 2022 17:45:05 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2088.outbound.protection.outlook.com [40.107.92.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A80E5C94C;
+        Fri,  1 Jul 2022 14:45:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jI9pn2CQa9tVt/zSVo7mys2gbuXO+DSJzWOl6PXjlIN0yJH2vR5Y1P6+lTVm4oC349Q66VXWoSvXsImmOaIJ/Qx24RzUopFkL6YNcR8y1uLH2A5MPgLrHxf3mDf69wutcIMjFJSxKFNXrQfHf7K2+ESau4dWORBB0Qw0Jst9VlqUUmUKLMXA+2ozllPuo7F+FqJ6sZBIolryhSQXlGqmDXfA4sYcmKak1y7cZODSySxB2dVIjT3+RoL7Pnju/Sra/KRxHQPFpf3iFlFGvJ+FclbjdDt6xWAoIWcu3KtR3WQ9MvsmmUDPvjOr7zCu9EGl5z97X09SiBY5796mnGnBhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VBSZ/8mCoG3UGXcMOCHLX5phuetsyzqVOcV/4EW2NGc=;
+ b=occ9A/aqGOLEniGSs5RVfKDEYNIigY2cdSuXIsi4qNPbiGX4NbwL2jUNuXbZ6aF7xBgJ9qKpMfrqbsZR6nEzE2oE7RcBrQoVuWoykAdESfkiGeQPYKP6EANb5xqgoqiCgPSDB+zIWg+grBe4yfSRJT+t3QKYoFxz0ePRkkkF7HQQan0MVtripoE0cYT6PWThpC1240GVhReuV28Rh/KGOKeivP9jfOCgGNkBr0IiS7pSheZSiO+yrkii3FStoSDeLQu3PDGNJHqHAjLgQOQVfsLSZghFGMYgL8owqCTpKIuVJIXELW3K2k526LiciFif7Z+acNSIxKgLQTqXyJCMzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VBSZ/8mCoG3UGXcMOCHLX5phuetsyzqVOcV/4EW2NGc=;
+ b=k8pG/fJCFUOLx+I8ynI7pEC7H/lQbxgIAh8DR5xVTImRjjzI/+rLzZmRct2GzDh1baxvIsi5P5OSmjJozRsPQhwRDWHIaPszh5pkZu14uOsiaff2kQRBC03ZzWYAMv3shrXNg/l05mj060+UXVVUGosZ18Lhdnxb5HpiGlaMliPUaX2pDCdkN5MP3LNaxNaheRdx52KGHlE9NU2HfTBBx29sH4XOI4BUWavkbJ2bGxddojzEWo0i+qgaMyoxK5zTAFj8Atsq9OvIVPbsHP0E7avmpYt7ChWV7WRH2QltbbJioSqbVOk+YG+f53wZltG8HvC/pGR9/GsuH6j1rxydBg==
+Received: from BN6PR13CA0063.namprd13.prod.outlook.com (2603:10b6:404:11::25)
+ by BL3PR12MB6547.namprd12.prod.outlook.com (2603:10b6:208:38e::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Fri, 1 Jul
+ 2022 21:45:02 +0000
+Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:11:cafe::6f) by BN6PR13CA0063.outlook.office365.com
+ (2603:10b6:404:11::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.11 via Frontend
+ Transport; Fri, 1 Jul 2022 21:45:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5395.14 via Frontend Transport; Fri, 1 Jul 2022 21:45:02 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 1 Jul
+ 2022 21:45:01 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Fri, 1 Jul 2022
+ 14:45:00 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server id 15.2.986.26 via Frontend
+ Transport; Fri, 1 Jul 2022 14:44:58 -0700
+From:   Nicolin Chen <nicolinc@nvidia.com>
+To:     <joro@8bytes.org>, <will@kernel.org>, <marcan@marcan.st>,
+        <sven@svenpeter.dev>, <robin.murphy@arm.com>,
+        <robdclark@gmail.com>, <baolu.lu@linux.intel.com>,
+        <orsonzhai@gmail.com>, <baolin.wang7@gmail.com>,
+        <zhang.lyra@gmail.com>, <jean-philippe@linaro.org>,
+        <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+        <kevin.tian@intel.com>
+CC:     <suravee.suthikulpanit@amd.com>, <alyssa@rosenzweig.io>,
+        <dwmw2@infradead.org>, <mjrosato@linux.ibm.com>,
+        <gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
+        <vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
+        <thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
+        <chenxiang66@hisilicon.com>, <john.garry@huawei.com>,
+        <yangyingliang@huawei.com>, <iommu@lists.linux-foundation.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>
+Subject: [PATCH v5 0/5] cover-letter: Simplify vfio_iommu_type1 attach/detach routine
+Date:   Fri, 1 Jul 2022 14:44:50 -0700
+Message-ID: <20220701214455.14992-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f14d8d5c-a732-4c23-06cf-08da5baaf447
+X-MS-TrafficTypeDiagnostic: BL3PR12MB6547:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?7zO5x+QGb3Zd5ZjZKBQKOhFjKUIYy5TCTTzdgh+ejGhsQUx6bBsj/LM6OUG7?=
+ =?us-ascii?Q?n+Hhs2AuSCSyQnVu5q6UHAa5bS5D5pbi+P4etUGyypBJvbPCZEDs2bS3zdpV?=
+ =?us-ascii?Q?Oanv+vjZrGmOFOCvfsbr96fZGC+pYjFwl/Y6jXVXxZomZaqhf+whpPAbw1R4?=
+ =?us-ascii?Q?CYRv8jYJJqMHoklq7+zOwxIfeQgj7a0JaDfYiiWqwTc62nXiYTifIVx8Amtz?=
+ =?us-ascii?Q?AEpUWgrCoCOvPIgfv7h2MwxxHoiyfZQo8Ou2QV5NkrF/0jfG1uBOgXB1Cx5j?=
+ =?us-ascii?Q?WDL6ag9lBplllEzEHv65FiEui3RSdLU5FMV81w5IaM7jDu3ek+xhUxDFUnFM?=
+ =?us-ascii?Q?zYRRrSwHU7MzFPj/eshZ9BM0jm5mhksn5AsNrSDcnjBi+jlQ5ctI4kPqp32I?=
+ =?us-ascii?Q?TBdyTgNlJ26cFV1SgFVG9PIykmrgzGjfoHY3gGtSlDowHAP71XCc+jW3vGzr?=
+ =?us-ascii?Q?hNJUtK9pmiOZ3/z31BWqvpy1jhzDsY0biIrKet4menfTrscKTKIXmYKws9NZ?=
+ =?us-ascii?Q?wIFEU3rwBPNll+3M4uZQ7QRiJWL03AoE3g3JdOHARDV0qQNkC4sCuFgoj+dn?=
+ =?us-ascii?Q?yzRaSoPrFioKNrbXzq1Pw1mE9U5uxMhKIQhoHodLyY2qdXodyyM/iA2OGluu?=
+ =?us-ascii?Q?3hxg9nSt0uEFXnsHP8RdNWLCaHwEmADHrbpW8iBnDzbXl968TzT4TJwQomCw?=
+ =?us-ascii?Q?9Pb99Lx6mJKiLKlVU0uhLwZTxnxF1ycztruf8dSMbSrRX2cNWOIGP0qVJKYD?=
+ =?us-ascii?Q?VsMUzKKttjv2lv+TcQdYG/7rQryAivdApfIArgJmAO1+E42WU3WiyZSPh0x3?=
+ =?us-ascii?Q?PWi/EKiRTIz40LaDtbQaPPD3G9BIq2ZiRjiahDPdWURmgY+03MqZYSWNBQMu?=
+ =?us-ascii?Q?hrYyP3yHEdaXpU0cF0WJFPZbwiPraAdfd9zufM1aDeWDlyadY5jvyCql+2EU?=
+ =?us-ascii?Q?h58tSJdsADRSAgxD2Z6cPMHlnsTJc8piRfQsLnZbMLVxgwRVuawbuOsYhsdF?=
+ =?us-ascii?Q?pMpXISYb4aaZZJalVIX301iqhXefaNwWC/9NOPY+HD1PQyk=3D?=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(136003)(396003)(39860400002)(46966006)(36840700001)(40470700004)(316002)(7696005)(7416002)(7406005)(26005)(86362001)(5660300002)(8936002)(478600001)(110136005)(70206006)(4326008)(70586007)(8676002)(82740400003)(356005)(6666004)(966005)(81166007)(54906003)(47076005)(336012)(426003)(83380400001)(40480700001)(40460700003)(36756003)(1076003)(186003)(921005)(82310400005)(41300700001)(2906002)(2616005)(36860700001)(83996005)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2022 21:45:02.5335
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f14d8d5c-a732-4c23-06cf-08da5baaf447
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6547
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git 20220615-dm-zoned-npo2
-head:   83ef82d1e5f86bc596bc3d9c02410465f0dfc26f
-commit: 83ef82d1e5f86bc596bc3d9c02410465f0dfc26f [13/13] dm: add non power of 2 zoned target
-config: csky-allmodconfig (https://download.01.org/0day-ci/archive/20220702/202207020515.LhdrBdTo-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git/commit/?id=83ef82d1e5f86bc596bc3d9c02410465f0dfc26f
-        git remote add mcgrof-next https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git
-        git fetch --no-tags mcgrof-next 20220615-dm-zoned-npo2
-        git checkout 83ef82d1e5f86bc596bc3d9c02410465f0dfc26f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash drivers/md/
+This is a preparatory series for IOMMUFD v2 patches. It enforces error
+code -EMEDIUMTYPE in iommu_attach_device() and iommu_attach_group() when
+an IOMMU domain and a device/group are incompatible. It also drops the
+useless domain->ops check since it won't fail in current environment.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+These allow VFIO iommu code to simplify its group attachment routine, by
+avoiding the extra IOMMU domain allocations and attach/detach sequences
+of the old code.
 
-All warnings (new ones prefixed by >>):
+Worths mentioning the exact match for enforce_cache_coherency is removed
+with this series, since there's very less value in doing that as KVM will
+not be able to take advantage of it -- this just wastes domain memory.
+Instead, we rely on Intel IOMMU driver taking care of that internally.
 
-   drivers/md/dm-zoned-npo2-target.c: In function 'dmz_npo2_ctr':
->> drivers/md/dm-zoned-npo2-target.c:62:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-      62 |         int ret = 0;
-         |             ^~~
+This is on github:
+https://github.com/nicolinc/iommufd/commits/vfio_iommu_attach
 
+Changelog
+v5:
+ * Rebased on top of Robin's "Simplify bus_type determination".
+ * Fixed a wrong change returning -EMEDIUMTYPE in arm-smmu driver.
+ * Added Baolu's "Reviewed-by".
+v4:
+ * Dropped -EMEDIUMTYPE change in mtk_v1 driver per Robin's input
+ * Added Baolu's and Kevin's Reviewed-by lines
+v3: https://lore.kernel.org/kvm/20220623200029.26007-1-nicolinc@nvidia.com/
+ * Dropped all dev_err since -EMEDIUMTYPE clearly indicates what error.
+ * Updated commit message of enforce_cache_coherency removing patch.
+ * Updated commit message of domain->ops removing patch.
+ * Replaced "goto out_unlock" with simply mutex_unlock() and return.
+ * Added a line of comments for -EMEDIUMTYPE return check.
+ * Moved iommu_get_msi_cookie() into alloc_attach_domain() as a cookie
+   should be logically tied to the lifetime of a domain itself.
+ * Added Kevin's "Reviewed-by".
+v2: https://lore.kernel.org/kvm/20220616000304.23890-1-nicolinc@nvidia.com/
+ * Added -EMEDIUMTYPE to more IOMMU drivers that fit the category.
+ * Changed dev_err to dev_dbg for -EMEDIUMTYPE to avoid kernel log spam.
+ * Dropped iommu_ops patch, and removed domain->ops in VFIO directly,
+   since there's no mixed-driver use case that would fail the sanity.
+ * Updated commit log of the patch removing enforce_cache_coherency.
+ * Fixed a misplace of "num_non_pinned_groups--" in detach_group patch.
+ * Moved "num_non_pinned_groups++" in PATCH-5 to the common path between
+   domain-reusing and new-domain pathways, like the code previously did.
+ * Fixed a typo in EMEDIUMTYPE patch.
+v1: https://lore.kernel.org/kvm/20220606061927.26049-1-nicolinc@nvidia.com/
 
-vim +/ret +62 drivers/md/dm-zoned-npo2-target.c
+Jason Gunthorpe (1):
+  vfio/iommu_type1: Prefer to reuse domains vs match enforced cache
+    coherency
 
-    53	
-    54	/*
-    55	 * <dev-path>
-    56	 * This target works on the complete zoned device. Partial mapping is not
-    57	 * supported
-    58	 */
-    59	static int dmz_npo2_ctr(struct dm_target *ti, unsigned int argc, char **argv)
-    60	{
-    61		struct dmz_npo2_target *dmh = NULL;
-  > 62		int ret = 0;
-    63		sector_t zsze;
-    64		sector_t disk_size;
-    65	
-    66		if (argc < 1)
-    67			return -EINVAL;
-    68	
-    69		dmh = kmalloc(sizeof(*dmh), GFP_KERNEL);
-    70		if (!dmh)
-    71			return -ENOMEM;
-    72	
-    73		ret = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
-    74				    &dmh->dev);
-    75	
-    76		zsze = blk_queue_zone_sectors(bdev_get_queue(dmh->dev->bdev));
-    77	
-    78		disk_size = get_capacity(dmh->dev->bdev->bd_disk);
-    79	
-    80		if (ti->len != disk_size || ti->begin) {
-    81			DMERR("%pg Partial mapping of the target not supported",
-    82			      dmh->dev->bdev);
-    83			return -EINVAL;
-    84		}
-    85	
-    86		if (is_power_of_2(zsze)) {
-    87			DMERR("%pg zone size is power of 2", dmh->dev->bdev);
-    88			return -EINVAL;
-    89		}
-    90	
-    91		dmh->zsze = zsze;
-    92		dmh->zsze_po2 = 1 << get_count_order_long(zsze);
-    93		dmh->zsze_diff = dmh->zsze_po2 - dmh->zsze;
-    94	
-    95		ti->private = dmh;
-    96		ti->num_flush_bios = 1;
-    97		ti->num_discard_bios = 1;
-    98		ti->num_secure_erase_bios = 1;
-    99		ti->num_write_zeroes_bios = 1;
-   100	
-   101		dmh->nr_zones = npo2_zone_no(dmh, ti->len);
-   102		ti->len = dmh->zsze_po2 * dmh->nr_zones;
-   103	
-   104		return 0;
-   105	}
-   106	
+Nicolin Chen (4):
+  iommu: Return -EMEDIUMTYPE for incompatible domain and device/group
+  vfio/iommu_type1: Remove the domain->ops comparison
+  vfio/iommu_type1: Clean up update_dirty_scope in detach_group()
+  vfio/iommu_type1: Simplify group attachment
+
+ drivers/iommu/amd/iommu.c                   |   2 +-
+ drivers/iommu/apple-dart.c                  |   4 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  15 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |   5 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |   9 +-
+ drivers/iommu/intel/iommu.c                 |  10 +-
+ drivers/iommu/iommu.c                       |  28 ++
+ drivers/iommu/ipmmu-vmsa.c                  |   4 +-
+ drivers/iommu/omap-iommu.c                  |   3 +-
+ drivers/iommu/s390-iommu.c                  |   2 +-
+ drivers/iommu/sprd-iommu.c                  |   6 +-
+ drivers/iommu/tegra-gart.c                  |   2 +-
+ drivers/iommu/virtio-iommu.c                |   3 +-
+ drivers/vfio/vfio_iommu_type1.c             | 352 ++++++++++----------
+ 14 files changed, 229 insertions(+), 216 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
