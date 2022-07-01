@@ -2,182 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A32AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC76C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234853AbiGAGS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
+        id S234819AbiGAGSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234792AbiGAGS2 (ORCPT
+        with ESMTP id S234737AbiGAGSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:18:28 -0400
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58FD17584
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:18:26 -0700 (PDT)
-Received: by mail-il1-x133.google.com with SMTP id k7so810534ils.8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Bdwz0tYqpNDBeePHz2QEf1aIGJX1PgK1kxd0heP96Lc=;
-        b=VWGWEZ+f/esEjS6qMTcvIIhVIjRk2ToZdpmNICJ8GOC2UpbqBEUoHs9xcs96ZrQsVW
-         ISy+Ya3GqpqtWvJ0HFGHGtH3PbCmPGLdMw2kWVdp06/3BZP5AG6x7rET+Y7helaIAs2Z
-         VPxuZ/O41PSVT8vHq2AbirK8+KKC/riDeT07d74YKjAXT9AEXgT7QHXdHZeiAeuU6FxP
-         7CF9V0GAVafMZl5zhT/4TZus2HsGhX1+2Ct04PrX5qYULrM1uqKNgODQCIJQU/2UKXvW
-         1j3wRPNsQ1p8mMutIK9+USsqE1VnLdCjYQ6vB+LRQIbjmJXrp+hA/nyriN+OVMKAuxY7
-         PhZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Bdwz0tYqpNDBeePHz2QEf1aIGJX1PgK1kxd0heP96Lc=;
-        b=KgkPRr+7eW1LD/JppdSa9Xs2r91y6AQvYXFydCrvA5nDu1yC/EYjYIVa3Ajxlje69K
-         oNKmXh7+3GUP8wzozJ2yaitYtduRb8Luo99HaGKUSv8oACXduhTQZzesINq0IruIUIvU
-         T42aeItWNhYm0vMejhZIo9zVyFg6WwiAvJKGrh4eiw7mJfve1MDCmHd3hOgE7tK9bGo2
-         eHgQaZ/VEPCAVLvlbrwOCSTAs6E6X5IwQ+tmiNI+6ozXOJ3Q6plQoSdfzO/Pz+blMOgh
-         C08IQZvS7y4NAarTKazbjfG41m9ke8VIr+fFI6f1d2+Ke7sSnuWnvrX98oGihJt9j3Cm
-         YV0Q==
-X-Gm-Message-State: AJIora/ZXrIUfFSH3Oe2Vfa1xagSIWVaPzh7N0NAdC+vgkzELwEoXIaj
-        TRfDlcq+0KehUVkabcvsUoin8cUfyC/SuB3/wMTg6Q==
-X-Google-Smtp-Source: AGRyM1t7T4d76Qu2AlQn8AGSEL1RDiUs1IGOGVVu7+nxP23ba3mV5D32I3xZd2A9jTqLWt2RpqLWNR5vY3x15Ub++tM=
-X-Received: by 2002:a05:6e02:1c27:b0:2d9:4d66:8541 with SMTP id
- m7-20020a056e021c2700b002d94d668541mr7436043ilh.176.1656656304863; Thu, 30
- Jun 2022 23:18:24 -0700 (PDT)
+        Fri, 1 Jul 2022 02:18:40 -0400
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAA2286C6
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:18:37 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20220701061834f70b533378467a6f70
+        for <linux-kernel@vger.kernel.org>;
+        Fri, 01 Jul 2022 08:18:35 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=msVhtJ7MhssN0SWIJ0WUSajK2zecw41Np+Pj8Y3EcwI=;
+ b=K30eoq9odHaBy7lhanVzkJnVVODLBI+02jEl+OX3eVdLfnpxWJTGIwxi1AdTAZcGpAeba2
+ ZStPtZotkjnm8jvD4qCi+Us8DSSpL7yywD34Yt2Bnfi50GyhmPefn22NUufOIWAtrkLl3hmg
+ Q9uxmXApvuofeNL9S2O3D8bvIOCOM=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v4 1/9] tty: n_gsm: fix user open not possible at responder until initiator open
+Date:   Fri,  1 Jul 2022 08:16:44 +0200
+Message-Id: <20220701061652.39604-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-References: <20220630133232.926711493@linuxfoundation.org>
-In-Reply-To: <20220630133232.926711493@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 1 Jul 2022 11:48:13 +0530
-Message-ID: <CA+G9fYuVx58oCN0_JCnUn8vUqdZfKkexOeGhumX1=qviP+vG2Q@mail.gmail.com>
-Subject: Re: [PATCH 5.15 00/28] 5.15.52-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 30 Jun 2022 at 19:25, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.52 release.
-> There are 28 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.52-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+From: Daniel Starke <daniel.starke@siemens.com>
 
+After setting up the control channel on both sides the responder side may
+want to open a virtual tty to listen on until the initiator starts an
+application on a user channel. The current implementation allows the
+open() but no other operation, like termios. These fail with EINVAL.
+The responder sided application has no means to detect an open by the
+initiator sided application this way. And the initiator sided applications
+usually expect the responder sided application to listen on the user
+channel upon open.
+Set the user channel into half-open state on responder side once a user
+application opens the virtual tty to allow IO operations on it.
+Furthermore, keep the user channel constipated until the initiator side
+opens it to give the responder sided application the chance to detect the
+new connection and to avoid data loss if the responder sided application
+starts sending before the user channel is open.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Stable backport remark has been removed compared to v3. No other changes applied.
 
-## Build
-* kernel: 5.15.52-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.15.y
-* git commit: 49249bfc4d1bc5a4f6c82471a12a13bcc78a40c4
-* git describe: v5.15.51-29-g49249bfc4d1b
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.51-29-g49249bfc4d1b
+Link: https://lore.kernel.org/all/20220530144512.2731-1-daniel.starke@siemens.com/
 
-## Test Regressions (compared to v5.15.51)
-No test regressions found.
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index fd8b86dde525..63314fe5e43b 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1493,6 +1493,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
+ 	if (debug & 8)
+ 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
+ 	dlci->state = DLCI_CLOSED;
++	/* Prevent us from sending data before the link is up again */
++	dlci->constipated = true;
+ 	if (dlci->addr != 0) {
+ 		tty_port_tty_hangup(&dlci->port, false);
+ 		spin_lock_irqsave(&dlci->lock, flags);
+@@ -1522,6 +1524,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 	del_timer(&dlci->t1);
+ 	/* This will let a tty open continue */
+ 	dlci->state = DLCI_OPEN;
++	dlci->constipated = false;
+ 	if (debug & 8)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	/* Send current modem state */
+@@ -1602,6 +1605,25 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
+ 	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ }
+ 
++/**
++ *	gsm_dlci_set_opening	-	change state to opening
++ *	@dlci: DLCI to open
++ *
++ *	Change internal state to wait for DLCI open from initiator side.
++ *	We set off timers and responses upon reception of an SABM.
++ */
++static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
++{
++	switch (dlci->state) {
++	case DLCI_CLOSED:
++	case DLCI_CLOSING:
++		dlci->state = DLCI_OPENING;
++		break;
++	default:
++		break;
++	}
++}
++
+ /**
+  *	gsm_dlci_begin_close	-	start channel open procedure
+  *	@dlci: DLCI to open
+@@ -1745,10 +1767,13 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
+ 	dlci->addr = addr;
+ 	dlci->adaption = gsm->adaption;
+ 	dlci->state = DLCI_CLOSED;
+-	if (addr)
++	if (addr) {
+ 		dlci->data = gsm_dlci_data;
+-	else
++		/* Prevent us from sending data before the link is up */
++		dlci->constipated = true;
++	} else {
+ 		dlci->data = gsm_dlci_command;
++	}
+ 	gsm->dlci[addr] = dlci;
+ 	return dlci;
+ }
+@@ -3163,6 +3188,8 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
+ 	/* Start sending off SABM messages */
+ 	if (gsm->initiator)
+ 		gsm_dlci_begin_open(dlci);
++	else
++		gsm_dlci_set_opening(dlci);
+ 	/* And wait for virtual carrier */
+ 	return tty_port_block_til_ready(port, tty, filp);
+ }
+-- 
+2.34.1
 
-## Metric Regressions (compared to v5.15.51)
-No metric regressions found.
-
-## Test Fixes (compared to v5.15.51)
-No test fixes found.
-
-## Metric Fixes (compared to v5.15.51)
-No metric fixes found.
-
-## Test result summary
-total: 132820, pass: 118669, fail: 310, skip: 12977, xfail: 864
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 308 total, 308 passed, 0 failed
-* arm64: 62 total, 62 passed, 0 failed
-* i386: 52 total, 49 passed, 3 failed
-* mips: 48 total, 48 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 54 total, 54 passed, 0 failed
-* riscv: 22 total, 22 passed, 0 failed
-* s390: 20 total, 20 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 56 total, 55 passed, 1 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
