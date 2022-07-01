@@ -2,100 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 947D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43897C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234876AbiGAHes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60290 "EHLO
+        id S235099AbiGAHfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbiGAHep (ORCPT
+        with ESMTP id S229808AbiGAHfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:34:45 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960AE4132B;
-        Fri,  1 Jul 2022 00:34:44 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LZ6NR3mhQz1L8fQ;
-        Fri,  1 Jul 2022 15:32:23 +0800 (CST)
-Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 15:34:42 +0800
-Received: from [10.67.111.186] (10.67.111.186) by
- dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 15:34:42 +0800
-Message-ID: <f0f55f89-14db-de29-c182-32539f8d4e4d@huawei.com>
-Date:   Fri, 1 Jul 2022 15:34:41 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: [Question] The system may be stuck if there is a cpu cgroup
- cpu.cfs_quato_us is very low
-To:     Tejun Heo <tj@kernel.org>
-CC:     <mingo@redhat.com>, <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
-        <cgroups@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        <vschneid@redhat.com>, <dietmar.eggemann@arm.com>,
-        <bristot@redhat.com>, <bsegall@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>, <mgorman@suse.de>
-References: <5987be34-b527-4ff5-a17d-5f6f0dc94d6d@huawei.com>
- <YrlrBmF3oOfS3+fq@mtj.duckdns.org>
-From:   Zhang Qiao <zhangqiao22@huawei.com>
-In-Reply-To: <YrlrBmF3oOfS3+fq@mtj.duckdns.org>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 1 Jul 2022 03:35:46 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7C56D559
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:35:46 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2617SUSF018572;
+        Fri, 1 Jul 2022 07:35:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=gLsIGt5mcqLwa6DnbQZyQAdiTpRMEIZyAyathQipuig=;
+ b=M75U/GR6ZmabZ+1tSIC/sttID+YgqPI7saYFMIPW5tJDg6mTOsnc1WVvP882nqzLf8Fx
+ g6ru0fQ2Otwjs8ve9zEzyrJWwhG3Pqtz02MsSva6T0etbNuVyEB8OYzQnwDKxGrnU/UT
+ QxSwH+Gx2RITDbO+HeMBqsec4p4sTAytkZKpadZeVxAQLuDQBbStDbvrSnFjmMtRMmMA
+ W0yGbQ2IllIBZVIIz87ChVHSsQTadMpiPQtZt/Eah/xgGPO2e63gRx8/l7jUnpiEQaqi
+ qt2cg6iV4xWj+ISXeEnZn2SR8ZM2FQzuPt086rrylG/L17lmxpr7VwQrVWnhBQ6rsyi5 dQ== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1vjpg751-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 07:35:40 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2617SSia010563;
+        Fri, 1 Jul 2022 07:35:38 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3gwt08y09u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 07:35:38 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2617Za3h22020394
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 1 Jul 2022 07:35:36 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5BEA14C04A;
+        Fri,  1 Jul 2022 07:35:36 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D29334C046;
+        Fri,  1 Jul 2022 07:35:34 +0000 (GMT)
+Received: from li-NotSettable.ibm.com.com (unknown [9.43.100.5])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  1 Jul 2022 07:35:34 +0000 (GMT)
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Eric Biederman <ebiederm@xmission.com>
+Cc:     <linux-kernel@vger.kernel.org>, kexec@lists.infradead.org
+Subject: [PATCH 0/2] kexec: Drop __weak attributes from functions
+Date:   Fri,  1 Jul 2022 13:04:03 +0530
+Message-Id: <cover.1656659357.git.naveen.n.rao@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.31.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: LBOsbtN09GJJq3kw3KNFbeGzH4JSd4IT
+X-Proofpoint-GUID: LBOsbtN09GJJq3kw3KNFbeGzH4JSd4IT
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.111.186]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500018.china.huawei.com (7.185.36.186)
-X-CFilter-Loop: Reflected
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-01_04,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=638 suspectscore=0 adultscore=0 mlxscore=0 priorityscore=1501
+ spamscore=0 malwarescore=0 phishscore=0 bulkscore=0 impostorscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207010024
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+As requested [1], this series converts weak functions in kexec to use 
+the #ifdef approach. I have compile-tested this series on arm64, 
+powerpc, s390 and x86_64.
 
-Hi, tejun
+- Naveen
 
-Thanks for your reply.
+[1] http://lkml.kernel.org/r/87ee0q7b92.fsf@email.froward.int.ebiederm.org
 
-在 2022/6/27 16:32, Tejun Heo 写道:
-> Hello,
-> 
-> On Mon, Jun 27, 2022 at 02:50:25PM +0800, Zhang Qiao wrote:
->> Becuase the task cgroup's cpu.cfs_quota_us is very small and
->> test_fork's load is very heavy, the test_fork may be throttled long
->> time, therefore, the cgroup_threadgroup_rw_sem read lock is held for
->> a long time, other processes will get stuck waiting for the lock:
-> 
-> Yeah, this is a known problem and can happen with other locks too. The
-> solution prolly is only throttling while in or when about to return to
-> userspace. There is one really important and wide-spread assumption in
-> the kernel:
-> 
->   If things get blocked on some shared resource, whatever is holding
->   the resource ends up using more of the system to exit the critical
->   section faster and thus unblocks others ASAP. IOW, things running in
->   kernel are work-conserving.
-> 
-> The cpu bw controller gives the userspace a rather easy way to break
-> this assumption and thus is rather fundamentally broken. This is
-> basically the same problem we had with the old cgroup freezer
-> implementation which trapped threads in random locations in the
-> kernel.
-> 
 
-so, if we want to completely slove this problem, is the best way to
-change the cfs bw controller throttle mechanism? for example, throttle
-tasks in a safe location.
+Naveen N. Rao (2):
+  kexec_file: Drop weak attribute from functions
+  kexec: Drop weak attribute from functions
 
-Thanks.
-    Qiao
+ arch/arm64/include/asm/kexec.h   | 18 +++++++-
+ arch/powerpc/include/asm/kexec.h | 14 ++++++
+ arch/s390/include/asm/kexec.h    | 14 ++++++
+ arch/x86/include/asm/kexec.h     | 12 +++++
+ include/linux/kexec.h            | 76 +++++++++++++++++++++++++++-----
+ kernel/kexec_core.c              | 27 ------------
+ kernel/kexec_file.c              | 35 +--------------
+ 7 files changed, 124 insertions(+), 72 deletions(-)
 
-> So, right now, it's rather broken and can easily be used as an dos
-> attack vector.
-> 
-> Thanks.
-> 
+
+base-commit: 13fa82df3449770de37197fa51b610ffc788f555
+-- 
+2.36.1
+
