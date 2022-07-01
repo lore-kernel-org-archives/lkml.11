@@ -2,145 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FE0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFD0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236107AbiGAIST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
+        id S236095AbiGAIS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbiGAISQ (ORCPT
+        with ESMTP id S234910AbiGAISw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:18:16 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4617CB1D1
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:18:15 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54B26106F;
-        Fri,  1 Jul 2022 01:18:15 -0700 (PDT)
-Received: from [10.57.85.162] (unknown [10.57.85.162])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63EE33F792;
-        Fri,  1 Jul 2022 01:18:13 -0700 (PDT)
-Message-ID: <1cf01e76-88d2-c65f-0b54-b85e6da0d720@arm.com>
-Date:   Fri, 1 Jul 2022 09:18:08 +0100
+        Fri, 1 Jul 2022 04:18:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804B43B036
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656663531; x=1688199531;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=73qOXj54mzh5bn7snpSdtNZbOJdj9TfQtRUWfAhQ1ss=;
+  b=nrW+xr0lrNdiCb7DiP5v/mObvXaqrg1tRZ24D+Aad3JIxwbrfUaekcGe
+   AK5yj9X20+fpOET8Htv3CsqPOTC190d0dDbqI340efRqDuJx/CFYl77m1
+   wu5imZiGolnazmTf6bAomPvwKaThcK0cbE4kE0vOU19Zl3KHicMpmVsKn
+   pqokcbGcYSV8BmxJ5MitoTZuAPkWkvAAguegGA8BH6L/icDedVKmEnbMf
+   d9K1PbhUF0/w9/II+oF2mR0qxFYiQwMAnTFA2dgFYZU1/0Bi2Yno1PS+r
+   MtctpKNbdpjYiyM9mZDVGWQXmFehZ9UMwfhOFstbqADvKjwBCPSjPeHGE
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271359089"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="271359089"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:18:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="768422848"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga005.jf.intel.com with ESMTP; 01 Jul 2022 01:18:50 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Fri, 1 Jul 2022 01:18:50 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.104)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UD+G2dqQLOOqQIoDrk2KbZkzAUxGy+vor/TP/ItHA3gYIIPCSTTQmbcGbb4tNrxT95toqdQZ6CHw9waOPBRm0sLwRpB7ftKV8xeSTQmJI8IMD6CD+3JrRMc+so/0bhLO6fOzLbF6TiVji8PKPW/vR5C0yP/maPIvIl9KpBUE7Vi9LtH85LaW+VpfhqpRq50qsDmCcTH7Wg24GN6ckYQz7t+GtfazQS/c1lgTPZNjUY/7OsGhkS8wAhQ44h9+2eefARAUXmfEkUiZ+h7uY5T1ql6ZN4AMh+43Ct8I/mnuoTcrbhhBsWIOM5VZUmlLgX/r8WF5Z5ZFiTX5za0oNToqsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=73qOXj54mzh5bn7snpSdtNZbOJdj9TfQtRUWfAhQ1ss=;
+ b=hWKLRJKUDelkaJ9+CXYMvItVgwNIdrg5heGtCgQp+Xzu8re0golK5LbNeQYNrRS+PpN1oJtAXybXBMp9+NLvWmSbB6x7nJnAYvRfArBbxvl4antlMN/AD+zEC0bcKjr4zpemurIWaaVuemS3ayxr7qZCsX+XuDdth5Okp3pShWIBaYZNPZGmg4US2Xt86e3u0M7C5Jwn8eCKZHwPtP9IPhlhp3kngQDy9H3UFF5cmIa2uAlsTPjJtWL9y5Dp7dqQWmVv7UyKBcZum8jSRz0EkzNtHTStPM79NN2iYgTk+V7xgOJ/mMgh8T90YclMBgcZB+IwmDCJHutCHGiLkjWgqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MW3PR11MB4762.namprd11.prod.outlook.com (2603:10b6:303:5d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 1 Jul
+ 2022 08:18:48 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5395.015; Fri, 1 Jul 2022
+ 08:18:48 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+CC:     "Raj, Ashok" <ashok.raj@intel.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per
+ domain lock
+Thread-Topic: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per
+ domain lock
+Thread-Index: AQHYi40tpDd6OUEG+UyFq7K+xVikta1pLxKw
+Date:   Fri, 1 Jul 2022 08:18:48 +0000
+Message-ID: <BN9PR11MB5276DA58D6BA7B1B366B0AC28CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+ <20220629074725.2331441-12-baolu.lu@linux.intel.com>
+In-Reply-To: <20220629074725.2331441-12-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a9e852e-0e97-4a9a-d496-08da5b3a52ee
+x-ms-traffictypediagnostic: MW3PR11MB4762:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QMvRSG5v3PSj+/NlLR/yQH+DGPN4Z30af37l6kkeGwxBAZ2z/odSSBgBGsDM8MoAVpZeZEBpr9eMRc9dRz4cRyBYVN12xcdqX/HM7k00M2oFD8iSPWLkqRvHifIvExvoNh+cO1UN9DCIQc0hZfkHalLre7C5MNwvyTygcBEjVYZB9MFaOBw7Yx2exHY7elTpm+22IYeP8EPFM+9mYBmhwuBUtVYYM4FfFoYr9lJe0+frrLGlMgHGKQSelLdodlKiK0C99YXJXKX8SrSHFQzUDDxb+tRvwwEqTKUNfMi4esdCC/XoRrShflbm+sRfmKI5tA5ML2attJVsJN2bpGBYc/xYmjqyKPxc7Q3cjbq0feKQBAbGw0Gza8T7Ypps677eLh+pLWpPV9JM6hEGAZqnBNNtS25Ts0XBS4h6k8FaZdvo5Ow09LWsuq4ks9a4juy2AlqDCW7Ymymq5yUEXCuPCburEotBpy0i4oGR52K5TBVBtXEqaxkPnfm2YgQHCjIzjjZgxDtWczxYJkC9gGFokRDPt6gZfz5vjtq1nzyzJkiNvM5k3N/aXFwA2jQvNfgy5jQkd6yeXRWogx/8BoxzcSDu7CRxgc0w7y9wUhV9CyxYEAOszA4N07A2KWYyA5tGwAaR5tyaQ9nhyULCzFVAPMGn/isCtm1znCCdTT+HMVdSAqvgu6LYJrqNYJ5CQ/kJbry8dwKuaWqJDKOpb1rKIgwDDpFSir4zULcYvwX778pD6QQtYBcvoWfIHu5lfyHL7aAo7xLkqysr/+gWKXuT+krIZ52+qpVcclFoDl7y6mtsefgJfgbqKR0gQ0GY9nSq
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(346002)(396003)(376002)(39860400002)(38100700002)(110136005)(41300700001)(66476007)(54906003)(186003)(33656002)(316002)(2906002)(478600001)(5660300002)(122000001)(7696005)(83380400001)(6506007)(38070700005)(86362001)(4744005)(26005)(82960400001)(8936002)(66556008)(64756008)(8676002)(4326008)(55016003)(66446008)(66946007)(52536014)(76116006)(9686003)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0Mha11no+cBDS2N4wGdhTdUbMUXZwAoCPjQM2g7hSZxtyGTxxAQTbDY4TCwk?=
+ =?us-ascii?Q?kTsYfOreFboHxMOLGzokaGjiOw5hiLILCCAVmYmbJBJG5du4ZcCr3gbOzpfk?=
+ =?us-ascii?Q?N4nGef4MyBuENavGmkXdqTrn/A1cPHfVBPS5bYN6xbzwPktqBhpuj8jcV/YV?=
+ =?us-ascii?Q?ZeYZcPVDF/FDqE/CeOrmWr6U+V9IYQgJojzODbcoW5JoyFjGMbzs5DjGxbhL?=
+ =?us-ascii?Q?iHQVoPwkb0O4i1sRakDoyTs7QPcxpLShu68o+U53B9yr3OZu9Mswsvll7a3z?=
+ =?us-ascii?Q?ptcexXZFjj84aVsi3Vxgl4ByH26k7kzXATZRrvjs0mypMk2qLnv05ZY+XFq9?=
+ =?us-ascii?Q?AapXdWkIO5nXRd/lCpfuX9aksOcuoBhfCoV2XGLspBeuMvAbiCwbf+wNky7o?=
+ =?us-ascii?Q?ByMzx5X2RhP46VqvGSPR+T24AS0erJ/uV9ToAepkWejLOFHbIHQOhO3yYIy8?=
+ =?us-ascii?Q?P24THaIvg6d8CKBKvb4RTadBX91v+EEANH+En33wgm7RT/XkWbk4BDGgZbg4?=
+ =?us-ascii?Q?EDQwLQq4hLWwFwVtsOIrzW3QWggsScGx3n+ZSP1EitnIxllUhwmOil14Dua7?=
+ =?us-ascii?Q?m49yd9haa+ZDG3EkTIjMlQBA4lHflbZGYq/l1MjSRxUJwUrxeFrhabSr1PKX?=
+ =?us-ascii?Q?E8WSDVL+BoKt8n2fBvk4aBoYC53dGJC3ZTnV6gTh773C6O04yQcAmDoqE8S0?=
+ =?us-ascii?Q?QlgTh8zUfi7m14m0v/+hph4o+ltgR93i/CN9InzSiNQJkVioiZCGIwkm3aQV?=
+ =?us-ascii?Q?OdDC3UuoS+OSeZ7zi+RRg4vqY2aB1e2vlWWGOqghAWc0omo/kmLR4tdCHUgB?=
+ =?us-ascii?Q?/pxUWAnAG3CNMdCyjNOHUGIuVa67t0DJCfgMPM+ifmtVbDYsPMNUJLLZo3P6?=
+ =?us-ascii?Q?WayCRvKm2tMUezN23bxsxaOjbqgeIIgiNbPktRGdI5wrfqlhFtDyATJOzNBx?=
+ =?us-ascii?Q?r6RM5i6q/PxKTvk/fFLH5qap7g3VCbyxekvtVcmcLySXvRRqcTDqzsx+p+Q8?=
+ =?us-ascii?Q?G+iBMtywBGCGr6jHBRD9lOVrPE3Q6EoJSqWWJTrCRQ9GA/gc8NNzjFItaAHS?=
+ =?us-ascii?Q?mudNUXCwbXE/EUBa5QORodeWmi8eYO9QAxqaxmV2GDo97xXKozPCLm9K3LZK?=
+ =?us-ascii?Q?+5aQRc3j5x0RY92swk4p3QgCsXsuWeojT05p0DfIHlNWXt5G+wCNwiIA4ttW?=
+ =?us-ascii?Q?vQvZVg0OEPyvqy8AsAjPxEqTlvQJfbvXoelaIEanbJRX+fW30HXlIT7RScat?=
+ =?us-ascii?Q?vRvzhKIwmKs819M43enZaXRV4PsPaeIuVY8d4mTW9vuEUnaoZLPz5qZboodL?=
+ =?us-ascii?Q?BEC2DRD9rIr4I91//bUX1IXpu708LTupnD3rjKULjcLigCS4iBxwE+0TunZc?=
+ =?us-ascii?Q?xB0/+lxylTJkC5QBt7K+6r4HOV4IUP+VtJ3nR75KMrEdWYemE6Zy3w7cxFXO?=
+ =?us-ascii?Q?SONAO2vLG1Rg/emSy3OpG1x7jKcTWP8C03bSpI3vFx7uPR20hqnVMTM0ZUmq?=
+ =?us-ascii?Q?yNVqTGi/wqyRTz7AQds7vMoVElyiCl4JPLfK0w1eO0iOwlNie03lXYz7sg9R?=
+ =?us-ascii?Q?cihnCDhszXKooW+k4UUm0w2zRbROqTX/ElnZnFYe?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 5/7] iommu/vt-d: Fix suspicious RCU usage in
- probe_acpi_namespace_devices()
-Content-Language: en-GB
-To:     Baolu Lu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>
-Cc:     kevin.tian@intel.com, ashok.raj@intel.com,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        cai@lca.pw, jacob.jun.pan@intel.com
-References: <20190612002851.17103-1-baolu.lu@linux.intel.com>
- <20190612002851.17103-6-baolu.lu@linux.intel.com>
- <f3619c80-14d3-d934-755a-4c3734bfde20@arm.com>
- <ffca1789-1e96-ae01-74a0-942fecb9caac@linux.intel.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ffca1789-1e96-ae01-74a0-942fecb9caac@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a9e852e-0e97-4a9a-d496-08da5b3a52ee
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 08:18:48.3492
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AqAvglG1p9Eq6GOZnNyxhQRciV3ZctU7sEvQ6H9ZGgtjMdRz32APGGcLS4ihHfRMzEGfFUtpPLo2OIfItcSQoA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4762
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-01 08:19, Baolu Lu wrote:
-> On 2022/6/29 21:03, Robin Murphy wrote:
->> On 2019-06-12 01:28, Lu Baolu wrote:
->>> The drhd and device scope list should be iterated with the
->>> iommu global lock held. Otherwise, a suspicious RCU usage
->>> message will be displayed.
->>>
->>> [    3.695886] =============================
->>> [    3.695917] WARNING: suspicious RCU usage
->>> [    3.695950] 5.2.0-rc2+ #2467 Not tainted
->>> [    3.695981] -----------------------------
->>> [    3.696014] drivers/iommu/intel-iommu.c:4569 suspicious 
->>> rcu_dereference_check() usage!
->>> [    3.696069]
->>>                 other info that might help us debug this:
->>>
->>> [    3.696126]
->>>                 rcu_scheduler_active = 2, debug_locks = 1
->>> [    3.696173] no locks held by swapper/0/1.
->>> [    3.696204]
->>>                 stack backtrace:
->>> [    3.696241] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc2+ 
->>> #2467
->>> [    3.696370] Call Trace:
->>> [    3.696404]  dump_stack+0x85/0xcb
->>> [    3.696441]  intel_iommu_init+0x128c/0x13ce
->>> [    3.696478]  ? kmem_cache_free+0x16b/0x2c0
->>> [    3.696516]  ? __fput+0x14b/0x270
->>> [    3.696550]  ? __call_rcu+0xb7/0x300
->>> [    3.696583]  ? get_max_files+0x10/0x10
->>> [    3.696631]  ? set_debug_rodata+0x11/0x11
->>> [    3.696668]  ? e820__memblock_setup+0x60/0x60
->>> [    3.696704]  ? pci_iommu_init+0x16/0x3f
->>> [    3.696737]  ? set_debug_rodata+0x11/0x11
->>> [    3.696770]  pci_iommu_init+0x16/0x3f
->>> [    3.696805]  do_one_initcall+0x5d/0x2e4
->>> [    3.696844]  ? set_debug_rodata+0x11/0x11
->>> [    3.696880]  ? rcu_read_lock_sched_held+0x6b/0x80
->>> [    3.696924]  kernel_init_freeable+0x1f0/0x27c
->>> [    3.696961]  ? rest_init+0x260/0x260
->>> [    3.696997]  kernel_init+0xa/0x110
->>> [    3.697028]  ret_from_fork+0x3a/0x50
->>>
->>> Fixes: fa212a97f3a36 ("iommu/vt-d: Probe DMA-capable ACPI name space 
->>> devices")
->>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>> ---
->>>   drivers/iommu/intel-iommu.c | 2 ++
->>>   1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>> index 19c4c387a3f6..84e650c6a46d 100644
->>> --- a/drivers/iommu/intel-iommu.c
->>> +++ b/drivers/iommu/intel-iommu.c
->>> @@ -4793,8 +4793,10 @@ int __init intel_iommu_init(void)
->>>       cpuhp_setup_state(CPUHP_IOMMU_INTEL_DEAD, "iommu/intel:dead", 
->>> NULL,
->>>                 intel_iommu_cpu_dead);
->>> +    down_read(&dmar_global_lock);
->>>       if (probe_acpi_namespace_devices())
->>>           pr_warn("ACPI name space devices didn't probe correctly\n");
->>> +    up_read(&dmar_global_lock);
->>
->> Doing a bit of archaeology here, is this actually broken? If any ANDD 
->> entries exist, we'd end up doing:
->>
->>    down_read(&dmar_global_lock)
->>    probe_acpi_namespace_devices()
->>    -> iommu_probe_device()
->>       -> iommu_create_device_direct_mappings()
->>          -> iommu_get_resv_regions()
->>             -> intel_iommu_get_resv_regions()
->>                -> down_read(&dmar_global_lock)
->>
->> I'm wondering whether this might explain why my bus_set_iommu series 
->> prevented Baolu's machine from booting, since "iommu: Move bus setup 
->> to IOMMU device registration" creates the same condition where we end 
->> up in get_resv_regions (via bus_iommu_probe() this time) from the same 
->> task that already holds dmar_global_lock. Of course that leaves me 
->> wondering how it *did* manage to boot OK on my Xeon box, but maybe 
->> there's a config difference or dumb luck at play?
-> 
-> This is really problematic. Where does the latest bus_set_iommu series
-> locate? I'd like to take a closer look at what happened here. Perhaps
-> two weeks later? I'm busy with preparing Intel IOMMU patches for v5.20
-> these days.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Wednesday, June 29, 2022 3:47 PM
+>=20
+> Using a global device_domain_lock spinlock to protect per-domain device
+> tracking lists is an inefficient way, especially considering this lock
+> is also needed in the hot paths. This optimizes the locking mechanism
+> by converting the global lock to per domain lock.
+>=20
+> On the other hand, as the device tracking lists are never accessed in
+> any interrupt context, there is no need to disable interrupts while
+> spinning. Replace irqsave variant with spinlock calls.
+>=20
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-I've prepared an up-to-date series here:
+except the previous comment on where to convert spin_lock_irqsave()
+the rest looks good to me.
 
-https://gitlab.arm.com/linux-arm/linux-rm/-/tree/bus-set-iommu-v3
-
-but I've been hesitant to post it without trying to make *some* progress 
-on your breakage. I think last time I was just testing with 
-x86_64_defconfig, so I'll double-check it with lockdep this afternoon.
-
-Thanks,
-Robin.
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
