@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235132AbiGAG6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        id S234874AbiGAG7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234035AbiGAG6t (ORCPT
+        with ESMTP id S233818AbiGAG6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:58:49 -0400
+        Fri, 1 Jul 2022 02:58:52 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3780A6759C;
-        Thu, 30 Jun 2022 23:58:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF0C599D3;
+        Thu, 30 Jun 2022 23:58:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656658726; x=1688194726;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9rml+Sm/loPs16VC7h+57zxkeT7atJLmjKj6lEjZoi0=;
-  b=YAH0/0OhYJ44r/EtSP0jzfoYhuCNvEvqC+6etKlLui5ioC3+oacj8CGA
-   vHbR+ts6fd492ogPjxGLNaA7moZEiO2bFTVpMSEdjn8XHj/BDFPA5Ti/c
-   zhiVOq3DUR5kY6VHHzqbnjaLrwG/etEoQ0HC7y+89rEP3OTYQ1ffAJ7tm
-   Nao4vHfWJb4GXrRneBIb2xzYRvB6/er7dBj2on3FJISrou3De/lgaTDyc
-   BQeZNvqVq/s+LSvaBrxdGJPlcu9/VPnhpt00ezZSlWGbdz79PJIoid1SB
-   iPix44ujl/dTghkwqO3UAXpPuKIac6tU+EsaAGgdgV8r4lDE2bOQvTs4C
-   Q==;
+  t=1656658731; x=1688194731;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QRztPqLPpCR+G/Am0XR/jSeACTyPFrOzNB1djYsPfM4=;
+  b=rZldqFEmUUNZAvciG0zKNL2UhQKsI/XBE2Qe4exxurbnwYh/lxZrZ5AF
+   3dKSS6WKi21sjuhaJX3gMGTb1fZuAkczRfxMfsQJk7qqDG3KhBdDkqAj8
+   5/QadE27mcjV0m8O13UZFAWP7ALAdLkKGtbwxF3Zyhldy6AWR4nCeiPUP
+   OT2oXD1cZTiA0Y7+LYJ1GferFF4eKh+HcL9P9XpniL55POP3myCZUi/pB
+   nYZ20gPAl8IghN4ULplzvSfPS0G1ENa2It8JYyzoL/Wt5KiPRtcVbgCTp
+   lx++bfIVn4F57ty7eXMtHmhGKUxyUaXZZ59CW1uI3HWO5pAikQMOgFgzY
+   w==;
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="165961228"
+   d="scan'208";a="102606166"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 23:58:44 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 23:58:50 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 23:58:44 -0700
+ 15.1.2375.17; Thu, 30 Jun 2022 23:58:50 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 23:58:41 -0700
+ Transport; Thu, 30 Jun 2022 23:58:47 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,10 +51,12 @@ To:     "David S . Miller" <davem@davemloft.net>,
 CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         "Conor Dooley" <conor.dooley@microchip.com>
-Subject: [net-next PATCH RESEND 0/2] PolarFire SoC macb reset support
-Date:   Fri, 1 Jul 2022 07:58:30 +0100
-Message-ID: <20220701065831.632785-1-conor.dooley@microchip.com>
+Subject: [net-next PATCH RESEND 2/2] net: macb: add polarfire soc reset support
+Date:   Fri, 1 Jul 2022 07:58:32 +0100
+Message-ID: <20220701065831.632785-3-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220701065831.632785-1-conor.dooley@microchip.com>
+References: <20220701065831.632785-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,30 +64,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey all,
-Jakub requested that these patches be split off from the series
-adding the reset controller itself that I sent yesterday [0].
+To date, the Microchip PolarFire SoC (MPFS) has been using the
+cdns,macb compatible, however the generic device does not have reset
+support. Add a new compatible & .data for MPFS to hook into the reset
+functionality added for zynqmp support (and make the zynqmp init
+function generic in the process).
 
-The Cadence MACBs on PolarFire SoC (MPFS) have reset capability and are
-compatible with the zynqmp's init function. I have removed the zynqmp
-specific comments from that function & renamed it to reflect what it
-does, since it is no longer zynqmp only.
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 25 +++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
-MPFS's MACB had previously used the generic binding, so I also added
-the required specific binding.
-
-Thanks,
-Conor.
-
-0 - https://lore.kernel.org/all/20220630080532.323731-1-conor.dooley@microchip.com/
-Conor Dooley (2):
-  dt-bindings: net: cdns,macb: document polarfire soc's macb
-  net: macb: add polarfire soc reset support
-
- .../devicetree/bindings/net/cdns,macb.yaml    |  1 +
- drivers/net/ethernet/cadence/macb_main.c      | 25 +++++++++++++------
- 2 files changed, 19 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d89098f4ede8..325f0463fd42 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4689,33 +4689,32 @@ static const struct macb_config np4_config = {
+ 	.usrio = &macb_default_usrio,
+ };
+ 
+-static int zynqmp_init(struct platform_device *pdev)
++static int init_reset_optional(struct platform_device *pdev)
+ {
+ 	struct net_device *dev = platform_get_drvdata(pdev);
+ 	struct macb *bp = netdev_priv(dev);
+ 	int ret;
+ 
+ 	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
+-		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
++		/* Ensure PHY device used in SGMII mode is ready */
+ 		bp->sgmii_phy = devm_phy_optional_get(&pdev->dev, NULL);
+ 
+ 		if (IS_ERR(bp->sgmii_phy)) {
+ 			ret = PTR_ERR(bp->sgmii_phy);
+ 			dev_err_probe(&pdev->dev, ret,
+-				      "failed to get PS-GTR PHY\n");
++				      "failed to get SGMII PHY\n");
+ 			return ret;
+ 		}
+ 
+ 		ret = phy_init(bp->sgmii_phy);
+ 		if (ret) {
+-			dev_err(&pdev->dev, "failed to init PS-GTR PHY: %d\n",
++			dev_err(&pdev->dev, "failed to init SGMII PHY: %d\n",
+ 				ret);
+ 			return ret;
+ 		}
+ 	}
+ 
+-	/* Fully reset GEM controller at hardware level using zynqmp-reset driver,
+-	 * if mapped in device tree.
++	/* Fully reset controller at hardware level if mapped in device tree
+ 	 */
+ 	ret = device_reset_optional(&pdev->dev);
+ 	if (ret) {
+@@ -4737,7 +4736,7 @@ static const struct macb_config zynqmp_config = {
+ 			MACB_CAPS_GEM_HAS_PTP | MACB_CAPS_BD_RD_PREFETCH,
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+-	.init = zynqmp_init,
++	.init = init_reset_optional,
+ 	.jumbo_max_len = 10240,
+ 	.usrio = &macb_default_usrio,
+ };
+@@ -4751,6 +4750,17 @@ static const struct macb_config zynq_config = {
+ 	.usrio = &macb_default_usrio,
+ };
+ 
++static const struct macb_config mpfs_config = {
++	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE |
++			MACB_CAPS_JUMBO |
++			MACB_CAPS_GEM_HAS_PTP,
++	.dma_burst_length = 16,
++	.clk_init = macb_clk_init,
++	.init = init_reset_optional,
++	.usrio = &macb_default_usrio,
++	.jumbo_max_len = 10240,
++};
++
+ static const struct macb_config sama7g5_gem_config = {
+ 	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_CLK_HW_CHG |
+ 		MACB_CAPS_MIIONRGMII,
+@@ -4787,6 +4797,7 @@ static const struct of_device_id macb_dt_ids[] = {
+ 	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
+ 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
+ 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
++	{ .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
+ 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
+ 	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
+ 	{ /* sentinel */ }
 -- 
 2.36.1
 
