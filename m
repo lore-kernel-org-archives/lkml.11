@@ -2,92 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C03C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FA0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233616AbiGAOkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
+        id S233631AbiGAOkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233331AbiGAOj6 (ORCPT
+        with ESMTP id S233554AbiGAOj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 1 Jul 2022 10:39:58 -0400
-X-Greylist: delayed 1801 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Jul 2022 07:39:06 PDT
-Received: from imap2.colo.codethink.co.uk (imap2.colo.codethink.co.uk [78.40.148.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6CA33E1B
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:39:05 -0700 (PDT)
-Received: from [167.98.27.226] (helo=[10.35.4.171])
-        by imap2.colo.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1o7Go9-00077s-ML; Fri, 01 Jul 2022 14:35:41 +0100
-Message-ID: <4570f6d8-251f-2cdb-1ea6-c3a8d6bb9fcf@codethink.co.uk>
-Date:   Fri, 1 Jul 2022 14:35:41 +0100
+Received: from m13133.mail.163.com (m13133.mail.163.com [220.181.13.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 144842F666
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=swt7X
+        SD1Pj95zYnGQ3uFn16uL8o+veS+G0r+lLy2ZmQ=; b=KmFHPN7pvnWE1J/gK/O7P
+        ys4A4VU3/s8nmcbOOUNsXY83r++eushVPL1NYPL4rWQvdvC8s1ZGp5nfOtpnGx17
+        uejRxZZ/vEe/9M35Sro96gt6AosC5XGjoF4fO8Zv/DNz/E8SM4HV0bHXrcbxh3he
+        o8tpr+htAbJ1VI9OgTXR/Y=
+Received: from 15815827059$163.com ( [175.0.208.135] ) by
+ ajax-webmail-wmsvr133 (Coremail) ; Fri, 1 Jul 2022 22:38:09 +0800 (CST)
+X-Originating-IP: [175.0.208.135]
+Date:   Fri, 1 Jul 2022 22:38:09 +0800 (CST)
+From:   huhai <15815827059@163.com>
+To:     "Sudeep Holla" <sudeep.holla@arm.com>
+Cc:     cristian.marussi@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, luriwen@kylinos.cn,
+        liuyun01@kylinos.cn, huhai <huhai@kylinos.cn>
+Subject: Re:Re: [PATCH] firmware: arm_scpi: Fix error handle when scpi probe
+ failed
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <20220701123450.rdqffbyubuu63iph@bogus>
+References: <20220701061606.151366-1-15815827059@163.com>
+ <20220701094212.snsnbdjc7hia5oti@bogus>
+ <1752bac0.5d05.181b93873da.Coremail.15815827059@163.com>
+ <20220701123450.rdqffbyubuu63iph@bogus>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC PATCH] crypto: flush poison data
-Content-Language: en-GB
-To:     Corentin Labbe <clabbe@baylibre.com>, herbert@gondor.apana.org.au,
-        hch@lst.de, heiko@sntech.de
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20220701132735.1594822-1-clabbe@baylibre.com>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-In-Reply-To: <20220701132735.1594822-1-clabbe@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <2f760d99.6a22.181ba32a108.Coremail.15815827059@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: hcGowAC3ivLSBr9ic+8cAA--.33665W
+X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/xtbBERgxhVaEJc70XQABss
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/07/2022 14:27, Corentin Labbe wrote:
-> On my Allwinner D1 nezha, the sun8i-ce fail self-tests due to:
-> alg: skcipher: cbc-des3-sun8i-ce encryption overran dst buffer on test vector 0
-> 
-> In fact the buffer is not overran by device but by the dma_map_single() operation.
-> 
-> To prevent any corruption of the poisoned data, simply flush them before
-> giving the buffer to the tested driver.
-> 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
-> 
-> Hello
-> 
-> I put this patch as RFC, since this behavour happen only on non yet merged RISCV code.
-> (Mostly riscv: implement Zicbom-based CMO instructions + the t-head variant)
-> 
-> Regards
-> 
->   crypto/testmgr.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-> index c59bd9e07978..187163e2e593 100644
-> --- a/crypto/testmgr.c
-> +++ b/crypto/testmgr.c
-> @@ -19,6 +19,7 @@
->   #include <crypto/aead.h>
->   #include <crypto/hash.h>
->   #include <crypto/skcipher.h>
-> +#include <linux/cacheflush.h>
->   #include <linux/err.h>
->   #include <linux/fips.h>
->   #include <linux/module.h>
-> @@ -205,6 +206,8 @@ static void testmgr_free_buf(char *buf[XBUFSIZE])
->   static inline void testmgr_poison(void *addr, size_t len)
->   {
->   	memset(addr, TESTMGR_POISON_BYTE, len);
-> +	/* Be sure data is written to prevent corruption from some DMA sync */
-> +	flush_icache_range((unsigned long)addr, (unsigned long)addr + len);
->   }
->   
->   /* Is the memory region still fully poisoned? */
-
-why are you flushing the instruction cache and not the data-cache?
-
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
-
-https://www.codethink.co.uk/privacy.html
+Cj5PbiBGcmksIEp1bCAwMSwgMjAyMiBhdCAwNjowNDo1M1BNICswODAwLCBodWhhaSB3cm90ZToK
+Pj4gCj4+IHNjcGlfaW5mbyBpcyBhIGdsb2JhbCB2YXJpYWJsZaOsIHdlIG11c3Qgc2V0IGl0IHRv
+IE5VTEwgd2hlbiBpdCBpcyBub3QgdmFsaWQKPgo+SG93IGFib3V0IG5vdCBhc3NpZ25pbmcgdGhl
+IGdsb2JhbCB2YXJpYWJsZSB1bnRpbCB0aGUgZW5kIG9mIHRoZSBwcm9iZSA/Cgo+U29tZXRoaW5n
+IGxpa2UgYmVsb3c6Pgo+UmVnYXJkcywKPlN1ZGVlcAo+Cj4tLT44Cj4KPmRpZmYgLS1naXQgaS9k
+cml2ZXJzL2Zpcm13YXJlL2FybV9zY3BpLmMgdy9kcml2ZXJzL2Zpcm13YXJlL2FybV9zY3BpLmMK
+PmluZGV4IGRkZjBiOWZmOWUxNS4uNTQ2MzUwMTczNWZmIDEwMDY0NAo+LS0tIGkvZHJpdmVycy9m
+aXJtd2FyZS9hcm1fc2NwaS5jCj4rKysgdy9kcml2ZXJzL2Zpcm13YXJlL2FybV9zY3BpLmMKPkBA
+IC05MTMsMTMgKzkxMywxNCBAQCBzdGF0aWMgaW50IHNjcGlfcHJvYmUoc3RydWN0IHBsYXRmb3Jt
+X2RldmljZSAqcGRldikKPiAgICAgICAgc3RydWN0IHJlc291cmNlIHJlczsKPiAgICAgICAgc3Ry
+dWN0IGRldmljZSAqZGV2ID0gJnBkZXYtPmRldjsKPiAgICAgICAgc3RydWN0IGRldmljZV9ub2Rl
+ICpucCA9IGRldi0+b2Zfbm9kZTsKPisgICAgICAgc3RydWN0IHNjcGlfZHJ2aW5mbyAqc2NwaV9k
+cnZpbmZvOwo+Cj4tICAgICAgIHNjcGlfaW5mbyA9IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigq
+c2NwaV9pbmZvKSwgR0ZQX0tFUk5FTCk7Cj4tICAgICAgIGlmICghc2NwaV9pbmZvKQo+KyAgICAg
+ICBzY3BpX2RydmluZm8gPSBkZXZtX2t6YWxsb2MoZGV2LCBzaXplb2YoKnNjcGlfZHJ2aW5mbyks
+IEdGUF9LRVJORUwpOwo+KyAgICAgICBpZiAoIXNjcGlfZHJ2aW5mbykKPiAgICAgICAgICAgICAg
+ICByZXR1cm4gLUVOT01FTTsKPgo+ICAgICAgICBpZiAob2ZfbWF0Y2hfZGV2aWNlKGxlZ2FjeV9z
+Y3BpX29mX21hdGNoLCAmcGRldi0+ZGV2KSkKPi0gICAgICAgICAgICAgICBzY3BpX2luZm8tPmlz
+X2xlZ2FjeSA9IHRydWU7Cj4rICAgICAgICAgICAgICAgc2NwaV9kcnZpbmZvLT5pc19sZWdhY3kg
+PSB0cnVlOwo+Cj4gICAgICAgIGNvdW50ID0gb2ZfY291bnRfcGhhbmRsZV93aXRoX2FyZ3MobnAs
+ICJtYm94ZXMiLCAiI21ib3gtY2VsbHMiKTsKPiAgICAgICAgaWYgKGNvdW50IDwgMCkgewo+QEAg
+LTkyNywxOSArOTI4LDE5IEBAIHN0YXRpYyBpbnQgc2NwaV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1f
+ZGV2aWNlICpwZGV2KQo+ICAgICAgICAgICAgICAgIHJldHVybiAtRU5PREVWOwo+ICAgICAgICB9
+Cj4KPi0gICAgICAgc2NwaV9pbmZvLT5jaGFubmVscyA9IGRldm1fa2NhbGxvYyhkZXYsIGNvdW50
+LCBzaXplb2Yoc3RydWN0IHNjcGlfY2hhbiksCj4tICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgR0ZQX0tFUk5FTCk7Cj4tICAgICAgIGlmICghc2NwaV9pbmZvLT5jaGFu
+bmVscykKPisgICAgICAgc2NwaV9kcnZpbmZvLT5jaGFubmVscyA9Cj4rICAgICAgICAgICAgICAg
+ZGV2bV9rY2FsbG9jKGRldiwgY291bnQsIHNpemVvZihzdHJ1Y3Qgc2NwaV9jaGFuKSwgR0ZQX0tF
+Uk5FTCk7Cj4rICAgICAgIGlmICghc2NwaV9kcnZpbmZvLT5jaGFubmVscykKPiAgICAgICAgICAg
+ICAgICByZXR1cm4gLUVOT01FTTsKPgo+LSAgICAgICByZXQgPSBkZXZtX2FkZF9hY3Rpb24oZGV2
+LCBzY3BpX2ZyZWVfY2hhbm5lbHMsIHNjcGlfaW5mbyk7Cj4rICAgICAgIHJldCA9IGRldm1fYWRk
+X2FjdGlvbihkZXYsIHNjcGlfZnJlZV9jaGFubmVscywgc2NwaV9kcnZpbmZvKTsKPiAgICAgICAg
+aWYgKHJldCkKPiAgICAgICAgICAgICAgICByZXR1cm4gcmV0Owo+Cj4tICAgICAgIGZvciAoOyBz
+Y3BpX2luZm8tPm51bV9jaGFucyA8IGNvdW50OyBzY3BpX2luZm8tPm51bV9jaGFucysrKSB7Cj4r
+ICAgICAgIGZvciAoOyBzY3BpX2RydmluZm8tPm51bV9jaGFucyA8IGNvdW50OyBzY3BpX2Rydmlu
+Zm8tPm51bV9jaGFucysrKSB7Cj4gICAgICAgICAgICAgICAgcmVzb3VyY2Vfc2l6ZV90IHNpemU7
+Cj4tICAgICAgICAgICAgICAgaW50IGlkeCA9IHNjcGlfaW5mby0+bnVtX2NoYW5zOwo+LSAgICAg
+ICAgICAgICAgIHN0cnVjdCBzY3BpX2NoYW4gKnBjaGFuID0gc2NwaV9pbmZvLT5jaGFubmVscyAr
+IGlkeDsKPisgICAgICAgICAgICAgICBpbnQgaWR4ID0gc2NwaV9kcnZpbmZvLT5udW1fY2hhbnM7
+Cj4rICAgICAgICAgICAgICAgc3RydWN0IHNjcGlfY2hhbiAqcGNoYW4gPSBzY3BpX2RydmluZm8t
+PmNoYW5uZWxzICsgaWR4Owo+ICAgICAgICAgICAgICAgIHN0cnVjdCBtYm94X2NsaWVudCAqY2wg
+PSAmcGNoYW4tPmNsOwo+ICAgICAgICAgICAgICAgIHN0cnVjdCBkZXZpY2Vfbm9kZSAqc2htZW0g
+PSBvZl9wYXJzZV9waGFuZGxlKG5wLCAic2htZW0iLCBpZHgpOwo+Cj5AQCAtOTg2LDQzICs5ODcs
+NDQgQEAgc3RhdGljIGludCBzY3BpX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
+Cj4gICAgICAgICAgICAgICAgcmV0dXJuIHJldDsKPiAgICAgICAgfQo+Cj4tICAgICAgIHNjcGlf
+aW5mby0+Y29tbWFuZHMgPSBzY3BpX3N0ZF9jb21tYW5kczsKPisgICAgICAgc2NwaV9kcnZpbmZv
+LT5jb21tYW5kcyA9IHNjcGlfc3RkX2NvbW1hbmRzOwo+Cj4tICAgICAgIHBsYXRmb3JtX3NldF9k
+cnZkYXRhKHBkZXYsIHNjcGlfaW5mbyk7Cj4rICAgICAgIHBsYXRmb3JtX3NldF9kcnZkYXRhKHBk
+ZXYsIHNjcGlfZHJ2aW5mbyk7Cj4KPi0gICAgICAgaWYgKHNjcGlfaW5mby0+aXNfbGVnYWN5KSB7
+Cj4rICAgICAgIGlmIChzY3BpX2RydmluZm8tPmlzX2xlZ2FjeSkgewo+ICAgICAgICAgICAgICAg
+IC8qIFJlcGxhY2Ugd2l0aCBsZWdhY3kgdmFyaWFudHMgKi8KPiAgICAgICAgICAgICAgICBzY3Bp
+X29wcy5jbGtfc2V0X3ZhbCA9IGxlZ2FjeV9zY3BpX2Nsa19zZXRfdmFsOwo+LSAgICAgICAgICAg
+ICAgIHNjcGlfaW5mby0+Y29tbWFuZHMgPSBzY3BpX2xlZ2FjeV9jb21tYW5kczsKPisgICAgICAg
+ICAgICAgICBzY3BpX2RydmluZm8tPmNvbW1hbmRzID0gc2NwaV9sZWdhY3lfY29tbWFuZHM7Cj4K
+PiAgICAgICAgICAgICAgICAvKiBGaWxsIHByaW9yaXR5IGJpdG1hcCAqLwo+ICAgICAgICAgICAg
+ICAgIGZvciAoaWR4ID0gMDsgaWR4IDwgQVJSQVlfU0laRShsZWdhY3lfaHByaW9yaXR5X2NtZHMp
+OyBpZHgrKykKPiAgICAgICAgICAgICAgICAgICAgICAgIHNldF9iaXQobGVnYWN5X2hwcmlvcml0
+eV9jbWRzW2lkeF0sCj4tICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNjcGlfaW5mby0+
+Y21kX3ByaW9yaXR5KTsKPisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2NwaV9kcnZp
+bmZvLT5jbWRfcHJpb3JpdHkpOwo+ICAgICAgICB9Cj4KPi0gICAgICAgcmV0ID0gc2NwaV9pbml0
+X3ZlcnNpb25zKHNjcGlfaW5mbyk7Cj4rICAgICAgIHJldCA9IHNjcGlfaW5pdF92ZXJzaW9ucyhz
+Y3BpX2RydmluZm8pOwo+ICAgICAgICBpZiAocmV0KSB7Cj4gICAgICAgICAgICAgICAgZGV2X2Vy
+cihkZXYsICJpbmNvcnJlY3Qgb3Igbm8gU0NQIGZpcm13YXJlIGZvdW5kXG4iKTsKPiAgICAgICAg
+ICAgICAgICByZXR1cm4gcmV0Owo+ICAgICAgICB9Cj4KPi0gICAgICAgaWYgKHNjcGlfaW5mby0+
+aXNfbGVnYWN5ICYmICFzY3BpX2luZm8tPnByb3RvY29sX3ZlcnNpb24gJiYKPi0gICAgICAgICAg
+ICFzY3BpX2luZm8tPmZpcm13YXJlX3ZlcnNpb24pCj4rICAgICAgIGlmIChzY3BpX2RydmluZm8t
+PmlzX2xlZ2FjeSAmJiAhc2NwaV9kcnZpbmZvLT5wcm90b2NvbF92ZXJzaW9uICYmCj4rICAgICAg
+ICAgICAhc2NwaV9kcnZpbmZvLT5maXJtd2FyZV92ZXJzaW9uKQo+ICAgICAgICAgICAgICAgIGRl
+dl9pbmZvKGRldiwgIlNDUCBQcm90b2NvbCBsZWdhY3kgcHJlLTEuMCBmaXJtd2FyZVxuIik7Cj4g
+ICAgICAgIGVsc2UKPiAgICAgICAgICAgICAgICBkZXZfaW5mbyhkZXYsICJTQ1AgUHJvdG9jb2wg
+JWx1LiVsdSBGaXJtd2FyZSAlbHUuJWx1LiVsdSB2ZXJzaW9uXG4iLAo+ICAgICAgICAgICAgICAg
+ICAgICAgICAgIEZJRUxEX0dFVChQUk9UT19SRVZfTUFKT1JfTUFTSywKPi0gICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgc2NwaV9pbmZvLT5wcm90b2NvbF92ZXJzaW9uKSwKPisgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2NwaV9kcnZpbmZvLT5wcm90b2NvbF92ZXJz
+aW9uKSwKPiAgICAgICAgICAgICAgICAgICAgICAgICBGSUVMRF9HRVQoUFJPVE9fUkVWX01JTk9S
+X01BU0ssCj4tICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNjcGlfaW5mby0+cHJv
+dG9jb2xfdmVyc2lvbiksCj4rICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNjcGlf
+ZHJ2aW5mby0+cHJvdG9jb2xfdmVyc2lvbiksCj4gICAgICAgICAgICAgICAgICAgICAgICAgRklF
+TERfR0VUKEZXX1JFVl9NQUpPUl9NQVNLLAo+LSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBzY3BpX2luZm8tPmZpcm13YXJlX3ZlcnNpb24pLAo+KyAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBzY3BpX2RydmluZm8tPmZpcm13YXJlX3ZlcnNpb24pLAo+ICAgICAgICAg
+ICAgICAgICAgICAgICAgIEZJRUxEX0dFVChGV19SRVZfTUlOT1JfTUFTSywKPi0gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgc2NwaV9pbmZvLT5maXJtd2FyZV92ZXJzaW9uKSwKPisg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2NwaV9kcnZpbmZvLT5maXJtd2FyZV92
+ZXJzaW9uKSwKPiAgICAgICAgICAgICAgICAgICAgICAgICBGSUVMRF9HRVQoRldfUkVWX1BBVENI
+X01BU0ssCj4tICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNjcGlfaW5mby0+Zmly
+bXdhcmVfdmVyc2lvbikpOwo+LSAgICAgICBzY3BpX2luZm8tPnNjcGlfb3BzID0gJnNjcGlfb3Bz
+Owo+KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzY3BpX2RydmluZm8tPmZpcm13
+YXJlX3ZlcnNpb24pKTsKPisgICAgICAgc2NwaV9kcnZpbmZvLT5zY3BpX29wcyA9ICZzY3BpX29w
+czsKCj4rICAgICAgIHNjcGlfaW5mbyA9IHNjcGlfZHJ2aW5mbzsKClllcywgSSB0aGluayB0aGlz
+IHBhdGNoIHdpbGwgd29yayB3ZWxsIHVudGlsIGl0IHJ1bnMgaGVyZS4KCj4KCj4gICAgICAgIHJl
+dHVybiBkZXZtX29mX3BsYXRmb3JtX3BvcHVsYXRlKGRldik7Cgp3ZSBzaG91bGQgbm90IHJldHVy
+biBkZXZtX29mX3BsYXRmb3JtX3BvcHVsYXRlKCkgZGlyZWN0bHksIGJlY2F1c2UgZGV2bV9vZl9w
+bGF0Zm9ybV9wb3B1bGF0ZSgpCm1heSBmYWlscywgIGlmIGl0IGZhaWxzLCAgdGhlIHNjcGlfaW5m
+byB3aWxsIHBvaW50aW5nIHRvIGZyZWUtZWQgbWVtb3J5LgoKYXMgeW91IHNhaWQgYmVmb3JlOgot
+ICAgICAgIHJldHVybiBkZXZtX29mX3BsYXRmb3JtX3BvcHVsYXRlKGRldik7CisgICAgICAgZGV2
+bV9vZl9wbGF0Zm9ybV9wb3B1bGF0ZShkZXYpOworCisgICAgICAgcmV0dXJuIHJldDsKd2lsbCB3
+b3JrIHdlbGwuCgp0aGFua3MKCj4gfQo=
