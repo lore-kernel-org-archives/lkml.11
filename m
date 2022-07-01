@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37229C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F64C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233057AbiGAO3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
+        id S233085AbiGAOaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232944AbiGAO3G (ORCPT
+        with ESMTP id S232970AbiGAO3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:29:06 -0400
-Received: from mail-wr1-x44a.google.com (mail-wr1-x44a.google.com [IPv6:2a00:1450:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B847868A12
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:15 -0700 (PDT)
-Received: by mail-wr1-x44a.google.com with SMTP id w17-20020a5d6811000000b0021ba89c2e27so421835wru.10
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:15 -0700 (PDT)
+        Fri, 1 Jul 2022 10:29:08 -0400
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A966B26D
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:20 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id x8-20020a056402414800b0042d8498f50aso1888069eda.23
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=l9HW4hvq2CQJApDpi6peUok9IhcNK11lvxcg04+BYhI=;
-        b=m0zQVBcwGsjkgBeyzji8njbsYom2zyjvffvZ6f53ygK/a73Sef45vu34Ym/f3GwiY6
-         24n4n5Tlgq2qKw2wFpgxSipNYxkrLnqPxJkpsZM0TLgQ2V+ISia+unOFzoAz0KadaQq4
-         AvfYtgG93hXBLXmtu/JrK/Ct51BvQc3+jnECwKhDga5fUg0X6Ao4l5Ye7I/3vzo4ftFo
-         GeOl93a20QvxkwE/6EI17QYzXpZVp27n/+oALgi5SCFfQ+HUJc4i0Oa+cDwovsuOxHTR
-         +8xmXrHToewGWfcV26T9eZU1Ic9Ws7op5A1NuDcoULUqufGrU4oSyUyGYH/L6tZRdLvq
-         YiQw==
+        bh=NuZxaTt6SuBtelFew5LXxi86pENufXvsmy2qQXyoE6c=;
+        b=tgfjQq+iQ/ysonFckb3Z2u6TJ9CEvDDKEzA5gkb+C4EKFnWD9TLdpPFWxQRtHD88Jg
+         RYLB2Yb0k9id72G7IVJ8H91BQ7wXcKdXZ0Azu48hd+fSPpcrnVbABx59b2la2dgB1ZDR
+         AAPr3HcC1/Yh4R+BkF5CNapSwZyhy3/pHIFwHkw79AVAJZ22Y8th2w7xgwft5pumnLsD
+         2R5Dmthk3JjdCZyOh+gBs/AieCejbEIH0zIdbihuM0GsaPffCE/o0zvm99bCYmyOaQgR
+         TMh+X88DvOG6cOtWBuy2Dm2xKw9NnmVgVGZuSBeVLfUcMKHQAVfKgpF+8OdRVLd3hmjI
+         vXVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=l9HW4hvq2CQJApDpi6peUok9IhcNK11lvxcg04+BYhI=;
-        b=GBUWa4GKcONrxg56mn2Qjcd6wePhBkpR4fKrCOY3ybdGeivARd3qFLoJ+M5geLbj2Z
-         8ReNAetamQSrL0nROgSOxXrDj68/Xrv0uPFChFd9o7pkHyZgXEdt4qIhdLS1MGfp+239
-         OfkaOauw86NyT0uM3slSz/uBe2X4IgMXMltlTKtPxV43AjbhOvk2Vi1KnrzI/WkS1Rc9
-         fRuYnwNPU2BHRQOEZ62xpeQs1VWIpzy4/mmGa+QBXuInyTwBw/0o9t2xgPUXJWSEtdKL
-         eDFqepA+hEDM4t4GzKyW19I4jtlMn1enEBs2FpI5lVOzxGiPfcdj+lle0xvVO314fG3k
-         n3/g==
-X-Gm-Message-State: AJIora/Ki607KcHLfEED4FZD3fUV2OBbn+GnaHAiYzkp56iHvsbdIovf
-        GnZ1B6Dl/2NoA1iLx8yauEneTDd12ws=
-X-Google-Smtp-Source: AGRyM1u2TNc3xlar4igzHbbMT3NVlXpY+dQRzXKImVUAgX/bRcfEAIkZdgH1TPrbfWv83OzrtLLw5K1VVl4=
+        bh=NuZxaTt6SuBtelFew5LXxi86pENufXvsmy2qQXyoE6c=;
+        b=E3f9ZH2/FLyWZ35Ided9DVVEsWSLr0GwinhyVu60ZquUEkLNV+it833p28u0UGdb/C
+         yAWahgAIQyeP+KKJBIuVxduHxhIrwH9GEqKnDN61qlsd8wOP8V05JxvJy/wtVj7neK10
+         IciE5Y0mgXeMpjxEkzKObPNEeY5UUuslfFumlJQFbAXRYoBwUtTNaBcT4eAcm2TxjeFp
+         9JBbaMTQwvWV4R8qnnA5FR80Z72m23KAGGa6OXF7Tm+9/xxAPsBhopwNG09ylAyFG8yn
+         J0PFzgII5ga6iTcu5Mp2a9h9PJ4oekqueFlXrnik0jQC5WU8L5hVtKgnb4NbVeNRqlXz
+         U1CQ==
+X-Gm-Message-State: AJIora/sKspKi53BCD2fNvoxMpwIGkHck0HQvEHZKrId+Ocrxdeo8YoP
+        phCLxEvDhWMK57m/OLV5IT+X9KEzk3Y=
+X-Google-Smtp-Source: AGRyM1spcb+a3miQij6KHvEFDixhz2AvZj0AcfEskbi1pdPvcSJdu4nWWmlOh1NQQeaAeMBr5KVjUAW0uyU=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:a6f5:f713:759c:abb6])
- (user=glider job=sendgmr) by 2002:a05:6000:10c4:b0:21b:8ea4:a27a with SMTP id
- b4-20020a05600010c400b0021b8ea4a27amr14086444wrx.575.1656685507805; Fri, 01
- Jul 2022 07:25:07 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:23:05 +0200
+ (user=glider job=sendgmr) by 2002:a17:907:2704:b0:72a:596f:8b9f with SMTP id
+ w4-20020a170907270400b0072a596f8b9fmr9611410ejk.761.1656685512839; Fri, 01
+ Jul 2022 07:25:12 -0700 (PDT)
+Date:   Fri,  1 Jul 2022 16:23:07 +0200
 In-Reply-To: <20220701142310.2188015-1-glider@google.com>
-Message-Id: <20220701142310.2188015-41-glider@google.com>
+Message-Id: <20220701142310.2188015-43-glider@google.com>
 Mime-Version: 1.0
 References: <20220701142310.2188015-1-glider@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 40/45] x86: kmsan: don't instrument stack walking functions
+Subject: [PATCH v4 42/45] bpf: kmsan: initialize BPF registers with zeroes
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,75 +91,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Upon function exit, KMSAN marks local variables as uninitialized.
-Further function calls may result in the compiler creating the stack
-frame where these local variables resided. This results in frame
-pointers being marked as uninitialized data, which is normally correct,
-because they are not stack-allocated.
+When executing BPF programs, certain registers may get passed
+uninitialized to helper functions. E.g. when performing a JMP_CALL,
+registers BPF_R1-BPF_R5 are always passed to the helper, no matter how
+many of them are actually used.
 
-However stack unwinding functions are supposed to read and dereference
-the frame pointers, in which case KMSAN might be reporting uses of
-uninitialized values.
-
-To work around that, we mark update_stack_state(), unwind_next_frame()
-and show_trace_log_lvl() with __no_kmsan_checks, preventing all KMSAN
-reports inside those functions and making them return initialized
-values.
+Passing uninitialized values as function parameters is technically
+undefined behavior, so we work around it by always initializing the
+registers.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I7001eaed630277e8d2ddaff1d6f223d54e997a6f
+Link: https://linux-review.googlesource.com/id/I40f39d26232b14816c14ba64a0ea4a8f336f2675
 ---
- arch/x86/kernel/dumpstack.c    |  6 ++++++
- arch/x86/kernel/unwind_frame.c | 11 +++++++++++
- 2 files changed, 17 insertions(+)
+ kernel/bpf/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/dumpstack.c b/arch/x86/kernel/dumpstack.c
-index afae4dd774951..476eb504084e4 100644
---- a/arch/x86/kernel/dumpstack.c
-+++ b/arch/x86/kernel/dumpstack.c
-@@ -177,6 +177,12 @@ static void show_regs_if_on_stack(struct stack_info *info, struct pt_regs *regs,
- 	}
- }
- 
-+/*
-+ * This function reads pointers from the stack and dereferences them. The
-+ * pointers may not have their KMSAN shadow set up properly, which may result
-+ * in false positive reports. Disable instrumentation to avoid those.
-+ */
-+__no_kmsan_checks
- static void show_trace_log_lvl(struct task_struct *task, struct pt_regs *regs,
- 			unsigned long *stack, const char *log_lvl)
- {
-diff --git a/arch/x86/kernel/unwind_frame.c b/arch/x86/kernel/unwind_frame.c
-index 8e1c50c86e5db..d8ba93778ae32 100644
---- a/arch/x86/kernel/unwind_frame.c
-+++ b/arch/x86/kernel/unwind_frame.c
-@@ -183,6 +183,16 @@ static struct pt_regs *decode_frame_pointer(unsigned long *bp)
- }
- #endif
- 
-+/*
-+ * While walking the stack, KMSAN may stomp on stale locals from other
-+ * functions that were marked as uninitialized upon function exit, and
-+ * now hold the call frame information for the current function (e.g. the frame
-+ * pointer). Because KMSAN does not specifically mark call frames as
-+ * initialized, false positive reports are possible. To prevent such reports,
-+ * we mark the functions scanning the stack (here and below) with
-+ * __no_kmsan_checks.
-+ */
-+__no_kmsan_checks
- static bool update_stack_state(struct unwind_state *state,
- 			       unsigned long *next_bp)
- {
-@@ -250,6 +260,7 @@ static bool update_stack_state(struct unwind_state *state,
- 	return true;
- }
- 
-+__no_kmsan_checks
- bool unwind_next_frame(struct unwind_state *state)
- {
- 	struct pt_regs *regs;
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 5f6f3f829b368..0ba7dd90a2ab3 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2039,7 +2039,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ static unsigned int PROG_NAME(stack_size)(const void *ctx, const struct bpf_insn *insn) \
+ { \
+ 	u64 stack[stack_size / sizeof(u64)]; \
+-	u64 regs[MAX_BPF_EXT_REG]; \
++	u64 regs[MAX_BPF_EXT_REG] = {}; \
+ \
+ 	FP = (u64) (unsigned long) &stack[ARRAY_SIZE(stack)]; \
+ 	ARG1 = (u64) (unsigned long) ctx; \
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
