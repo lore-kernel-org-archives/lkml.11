@@ -2,95 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB140CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237128AbiGAMMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 08:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        id S235168AbiGAMNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 08:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237088AbiGAMMo (ORCPT
+        with ESMTP id S229565AbiGAMNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 08:12:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2063F7E030;
-        Fri,  1 Jul 2022 05:12:38 -0700 (PDT)
-X-UUID: a18c87b5201645e3aaccf324d854c4e5-20220701
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:74abe947-27b3-430e-a3ba-86663b3d8ad9,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:87442a2,CLOUDID:7fc55ed6-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: a18c87b5201645e3aaccf324d854c4e5-20220701
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 242024085; Fri, 01 Jul 2022 20:12:32 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Fri, 1 Jul 2022 20:12:30 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 1 Jul 2022 20:12:30 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-remoteproc@vger.kernel.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v2 0/1] enable cache for mt8186 SCP
-Date:   Fri, 1 Jul 2022 20:12:28 +0800
-Message-ID: <20220701121229.22756-1-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Fri, 1 Jul 2022 08:13:33 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D8925C4B
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 05:13:31 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id d5so3725354yba.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 05:13:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=raIh12eX+zBsgeOrg6KaTPPoiUG+5/pHjCbiX0SCjhQ=;
+        b=vTDYKp5g/Z1DozMoTk0/+GCMZ3I/9S4XjITAWpPzhuNc2CuRju3N/ko0Ct8HyfByuY
+         S8gvWkg+oOV6SFeVLCPqz8XwpxCz+0eDs6bKTBs2U6B2tj8oQ8FDlirqN8fTYT6qqf6N
+         O21Yi/oF3mlJRb4V460e8sk1sriYOHK752uUsNUoCfT6r/ocrqovvkU+qxv/x9T9LDUk
+         MWtRNW+1okNEY5oKQwgzqYTranw8oNW4qTldHzMgoQ7aInWoDziVPS/wQiinO32RmN92
+         xV8TL4JEAzJU/x9mpOvpZEu7Org82uF4fmSwS54CadW5LENL3eCw+k+FWKul/GnSBc1x
+         kZIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=raIh12eX+zBsgeOrg6KaTPPoiUG+5/pHjCbiX0SCjhQ=;
+        b=yla9KqagxcZBv749iGUvGFRkxqXQ5Smyg0bjlkCLF+JdFOjkAFKu4i3A67L2Ch2a9+
+         FAtgGJdnE88jQL6KU0W/Y/7Kzf0JC10s61l1bfDlIeijH9wekstwPx2jZM2O4yncTPow
+         ayBTBd1XWU8ki/m/N9s75uVf7gU/fJis1kPQE0zMlvNeLU4jaXAMZY/6K6cBvFGolXIU
+         PgneVENBgGnpFUCtGGt13WVMSVMlkP22V2ay0VCrk3JIBPKFjD/4+0fLw+2AWNVaTfLo
+         XvwC238r1babH/7IunoXCIRzcBXdXiYbtc4IIluRAbXsua2ewMR9K+wqluUl4R3XLDxb
+         5ZMA==
+X-Gm-Message-State: AJIora9d4X45IAzyVhc+epwEsqkSI8m008QZuWSh/vcMXJ0JvpXPk6f4
+        0Tbulj0hJtM7WJejb5phvonW3ysUFcWxigdrh1/3RG2+ppI=
+X-Google-Smtp-Source: AGRyM1v4vIk10yNEC7mjc8X/muwtw++AdY4V8s2PjW3gHrXZeYeHljjnEJIPMcTuaThXjX4SatQg23AKGMVikNch+cY=
+X-Received: by 2002:a25:1f57:0:b0:669:b6fa:167e with SMTP id
+ f84-20020a251f57000000b00669b6fa167emr15927296ybf.295.1656677610498; Fri, 01
+ Jul 2022 05:13:30 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220613054310.21186-1-a-govindraju@ti.com> <CACRpkdZB1T1cKQcNDiriCdeQuHGMH-9BvV=a9mP21YENThA-bQ@mail.gmail.com>
+ <CAMRc=MfB2hNB+vbs4BXbV-StDyA++yoQP9HDBbMTx2JWJ9KRyA@mail.gmail.com>
+In-Reply-To: <CAMRc=MfB2hNB+vbs4BXbV-StDyA++yoQP9HDBbMTx2JWJ9KRyA@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 1 Jul 2022 14:13:19 +0200
+Message-ID: <CACRpkdaOtXJ09pY5rS-AaEXXfLjKkiZ-h1n5+gNMO99kxo5wiw@mail.gmail.com>
+Subject: Re: [PATCH v3] gpio: davinci: Add support for system suspend/resume PM
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Sekhar Nori <nsekhar@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>, Keerthy <j-keerthy@ti.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch is based on kernel/git/next/linux-next.git/#master and for
-enableing cache in SCP.
+On Fri, Jul 1, 2022 at 12:28 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+>
+> On Tue, Jun 28, 2022 at 3:52 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+> >
+> > On Mon, Jun 13, 2022 at 7:43 AM Aswath Govindraju <a-govindraju@ti.com> wrote:
+> >
+> > > From: Devarsh Thakkar <devarsht@ti.com>
+> > >
+> > > Add support for system suspend/resume PM hooks, save the
+> > > register context of all the required gpio registers on suspend
+> > > and restore context on the resume.
+> > >
+> > > Signed-off-by: Devarsh Thakkar <devarsht@ti.com>
+> > > Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> >
+> > Hijacking thread!
+> >
+> > Aswath, if you are testing DaVinci boards can you look at these two
+> > patches:
+> > https://lore.kernel.org/linux-gpio/20220507124536.171930-1-linus.walleij@linaro.org/
+> > https://lore.kernel.org/linux-gpio/20220507124536.171930-2-linus.walleij@linaro.org/
+> >
+> > I resend them every new kernel release but they never get merged :D
+> >
+> > If you can test them, maybe I can queue them directly for the SoC
+> > tree.
+>
+> Sekhar: do you still maintain DaVinci platforms? If so - could you
+> take these patches through yourtree?
 
-In mt8186 SCP, it provides parts of these features vedio encode/decode,
-camera, and CrOS EC host command. We don't have enough SRAM to support
-too many text segments, heap and stack, so SCP will use DRAM as execution
-space.·
+We concluded in parallell discussions that DM644x and DM646x are
+unused as far as we can tell so I just sent patches to delete these
+board files, that should do it.
 
-The DRAM power and latency is much larger than SRAM. cache is used to
-mitigate the negative effects for performace. Also it's designed in SCP
-bus architecture and does not affect implemenations where the application
-processor is using caches.
-
-We reserve 0x3C000 <-> 0x40000 in SRAM(SCP) to support cache and set
-I-cache and D-cache size before loading SCP FW. If there isn't no this
-patch, SCP still works with DRAM and SRAM.
-
-This driver was tested on mt8186 with below firmware
-
-This driver was tested on mt8186 with below firmware
-https://lore.kernel.org/linux-firmware/10ed0b2a78baa88f7fd1d466036c98de2f6d8e29.camel@mediatek.com/T/#t
-
-changes since v1:
- - rebase to linux-next
- - add more information in commit message
-
-Allen-KH Cheng (1):
-  remoteproc: mediatek: enable cache for mt8186 SCP
-
- drivers/remoteproc/mtk_scp.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
--- 
-2.18.0
-
+Yours,
+Linus Walleij
