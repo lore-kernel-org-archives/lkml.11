@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC17C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 904AACCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233771AbiGALZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54684 "EHLO
+        id S235366AbiGALZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234638AbiGALZQ (ORCPT
+        with ESMTP id S234888AbiGALZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:25:16 -0400
+        Fri, 1 Jul 2022 07:25:19 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7861C81487;
-        Fri,  1 Jul 2022 04:25:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E64A27971B;
+        Fri,  1 Jul 2022 04:25:17 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87F0C113E;
-        Fri,  1 Jul 2022 04:25:14 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0228D113E;
+        Fri,  1 Jul 2022 04:25:18 -0700 (PDT)
 Received: from donnerap.arm.com (donnerap.cambridge.arm.com [10.1.197.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 951983F66F;
-        Fri,  1 Jul 2022 04:25:12 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2E21A3F66F;
+        Fri,  1 Jul 2022 04:25:16 -0700 (PDT)
 From:   Andre Przywara <andre.przywara@arm.com>
 To:     Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -29,11 +29,10 @@ To:     Chen-Yu Tsai <wens@csie.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v12 5/7] dt-bindings: arm: sunxi: Add two H616 board compatible strings
-Date:   Fri,  1 Jul 2022 12:24:51 +0100
-Message-Id: <20220701112453.2310722-6-andre.przywara@arm.com>
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v12 7/7] arm64: dts: allwinner: h616: Add X96 Mate TV box support
+Date:   Fri,  1 Jul 2022 12:24:53 +0100
+Message-Id: <20220701112453.2310722-8-andre.przywara@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220701112453.2310722-1-andre.przywara@arm.com>
 References: <20220701112453.2310722-1-andre.przywara@arm.com>
@@ -43,57 +42,222 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds the two board compatible strings of two boards with the
-Allwinner H616 SoC. One is a development board from OrangePi, the other
-some TV box from some formerly unused vendor. Add that vendor to the
-vendor list on the way.
+The X96 Mate is an Allwinner H616 based TV box, featuring:
+  - Four ARM Cortex-A53 cores, Mali-G31 MP2 GPU
+  - 2GiB/4GiB RAM (fully usable!)
+  - 16/32/64GiB eMMC
+  - 100Mbps Ethernet (via embedded AC200 EPHY, not yet supported)
+  - Unsupported Allwinner WiFi chip
+  - 2 x USB 2.0 host ports
+  - HDMI port
+  - IR receiver
+  - 5V/2A DC power supply via barrel plug
+
+Add a basic devicetree for it, with SD card and eMMC working, as
+well as serial and the essential peripherals, like the AXP PMIC.
+
+This DT is somewhat minimal, and should work on many other similar TV
+boxes with the Allwinner H616 chip.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/arm/sunxi.yaml       | 10 ++++++++++
- Documentation/devicetree/bindings/vendor-prefixes.yaml |  2 ++
- 2 files changed, 12 insertions(+)
+ arch/arm64/boot/dts/allwinner/Makefile        |   1 +
+ .../dts/allwinner/sun50i-h616-x96-mate.dts    | 177 ++++++++++++++++++
+ 2 files changed, 178 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
 
-diff --git a/Documentation/devicetree/bindings/arm/sunxi.yaml b/Documentation/devicetree/bindings/arm/sunxi.yaml
-index 95278a6a9a8ec..0c2356778208a 100644
---- a/Documentation/devicetree/bindings/arm/sunxi.yaml
-+++ b/Documentation/devicetree/bindings/arm/sunxi.yaml
-@@ -863,6 +863,11 @@ properties:
-           - const: yones-toptech,bs1078-v2
-           - const: allwinner,sun6i-a31s
- 
-+      - description: X96 Mate TV box
-+        items:
-+          - const: hechuang,x96-mate
-+          - const: allwinner,sun50i-h616
+diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
+index df2214e6d946a..6a96494a2e0a3 100644
+--- a/arch/arm64/boot/dts/allwinner/Makefile
++++ b/arch/arm64/boot/dts/allwinner/Makefile
+@@ -39,3 +39,4 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64-model-b.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6-mini.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-orangepi-zero2.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-x96-mate.dtb
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+new file mode 100644
+index 0000000000000..30b76140b9c8a
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+@@ -0,0 +1,177 @@
++// SPDX-License-Identifier: (GPL-2.0+ or MIT)
++/*
++ * Copyright (C) 2021 Arm Ltd.
++ */
 +
-       - description: Xunlong OrangePi
-         items:
-           - const: xunlong,orangepi
-@@ -963,4 +968,9 @@ properties:
-           - const: xunlong,orangepi-zero-plus2-h3
-           - const: allwinner,sun8i-h3
- 
-+      - description: Xunlong OrangePi Zero 2
-+        items:
-+          - const: xunlong,orangepi-zero2
-+          - const: allwinner,sun50i-h616
++/dts-v1/;
 +
- additionalProperties: true
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 0496773a3c4d8..f0db732096941 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -510,6 +510,8 @@ patternProperties:
-     description: Haoyu Microelectronic Co. Ltd.
-   "^hardkernel,.*":
-     description: Hardkernel Co., Ltd
-+  "^hechuang,.*":
-+    description: Shenzhen Hechuang Intelligent Co.
-   "^hideep,.*":
-     description: HiDeep Inc.
-   "^himax,.*":
++#include "sun50i-h616.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++
++/ {
++	model = "X96 Mate";
++	compatible = "hechuang,x96-mate", "allwinner,sun50i-h616";
++
++	aliases {
++		serial0 = &uart0;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	reg_vcc5v: vcc5v {
++		/* board wide 5V supply directly from the DC input */
++		compatible = "regulator-fixed";
++		regulator-name = "vcc-5v";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++	};
++};
++
++&ir {
++	status = "okay";
++};
++
++&mmc0 {
++	vmmc-supply = <&reg_dcdce>;
++	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
++	bus-width = <4>;
++	status = "okay";
++};
++
++&mmc2 {
++	vmmc-supply = <&reg_dcdce>;
++	vqmmc-supply = <&reg_bldo1>;
++	bus-width = <8>;
++	non-removable;
++	cap-mmc-hw-reset;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&r_rsb {
++	status = "okay";
++
++	axp305: pmic@745 {
++		compatible = "x-powers,axp305", "x-powers,axp805",
++			     "x-powers,axp806";
++		interrupt-controller;
++		#interrupt-cells = <1>;
++		reg = <0x745>;
++
++		x-powers,self-working-mode;
++		vina-supply = <&reg_vcc5v>;
++		vinb-supply = <&reg_vcc5v>;
++		vinc-supply = <&reg_vcc5v>;
++		vind-supply = <&reg_vcc5v>;
++		vine-supply = <&reg_vcc5v>;
++		aldoin-supply = <&reg_vcc5v>;
++		bldoin-supply = <&reg_vcc5v>;
++		cldoin-supply = <&reg_vcc5v>;
++
++		regulators {
++			reg_aldo1: aldo1 {
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vcc-sys";
++			};
++
++			/* Enabled by the Android BSP */
++			reg_aldo2: aldo2 {
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vcc3v3-ext";
++				status = "disabled";
++			};
++
++			/* Enabled by the Android BSP */
++			reg_aldo3: aldo3 {
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vcc3v3-ext2";
++				status = "disabled";
++			};
++
++			reg_bldo1: bldo1 {
++				regulator-always-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-name = "vcc1v8";
++			};
++
++			/* Enabled by the Android BSP */
++			reg_bldo2: bldo2 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-name = "vcc1v8-2";
++				status = "disabled";
++			};
++
++			bldo3 {
++				/* unused */
++			};
++
++			bldo4 {
++				/* unused */
++			};
++
++			cldo1 {
++				regulator-min-microvolt = <2500000>;
++				regulator-max-microvolt = <2500000>;
++				regulator-name = "vcc2v5";
++			};
++
++			cldo2 {
++				/* unused */
++			};
++
++			cldo3 {
++				/* unused */
++			};
++
++			reg_dcdca: dcdca {
++				regulator-always-on;
++				regulator-min-microvolt = <810000>;
++				regulator-max-microvolt = <1080000>;
++				regulator-name = "vdd-cpu";
++			};
++
++			reg_dcdcc: dcdcc {
++				regulator-always-on;
++				regulator-min-microvolt = <810000>;
++				regulator-max-microvolt = <1080000>;
++				regulator-name = "vdd-gpu-sys";
++			};
++
++			reg_dcdcd: dcdcd {
++				regulator-always-on;
++				regulator-min-microvolt = <1360000>;
++				regulator-max-microvolt = <1360000>;
++				regulator-name = "vdd-dram";
++			};
++
++			reg_dcdce: dcdce {
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vcc-eth-mmc";
++			};
++
++			sw {
++				/* unused */
++			};
++		};
++	};
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_ph_pins>;
++	status = "okay";
++};
 -- 
 2.25.1
 
