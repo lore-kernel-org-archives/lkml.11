@@ -2,191 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20ACFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233925AbiGAHqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        id S235416AbiGAHrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235351AbiGAHqi (ORCPT
+        with ESMTP id S229689AbiGAHrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:46:38 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024F953D33;
-        Fri,  1 Jul 2022 00:46:38 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-1048b8a38bbso2458235fac.12;
-        Fri, 01 Jul 2022 00:46:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b36GzMWyZ+B5pJeIXpOWUar+t32MbUtjaNf9+EBzdK8=;
-        b=EFgo6LmCmfM6xn+qg3fV66RwzyzYyhWQba5go3m41dbIlGNZC35+ksncDTF9KbmPPG
-         CPVVb1OVJ2qpH6J0Y55TpaJQg+I6Mfdj8J18w0oE3U/oN/HmptkHwJzRbwP6RJu3tu+2
-         QvIKYW/NLfb4xGYEifMN3qUxXgfEUH3yQLIHO874KhwJF/Oh979/rPSupFTLVBIYEn06
-         07ilr3kFSzNEBx9z6ylPE2Z44WeuUoyAJaDkVM07JAq/MMM6G3cgcN0kmu1HcTCE4X3c
-         D2qzXooU3w0cPRLZp2FHv856Z59kOnDvVaF8J1rTIadV6jexnFMdY1GweVRfNZru2qRw
-         e9jw==
-X-Gm-Message-State: AJIora82VNKtYFiddkpb/BQkGA5EaoSrSNrNTAIvauczxB6ky7EPEtKc
-        jprgs/rFHDaXHtPRu49uVd8bptN1UZb0Rw==
-X-Google-Smtp-Source: AGRyM1tN+6Dp5ZyGr8q+dgO4YnyL8m6TaU4VBlEvV7wo5FDU/pwVSu7lr6iiDwUPjdwbX7zq4BIzAA==
-X-Received: by 2002:a05:6870:a115:b0:10b:b089:abb6 with SMTP id m21-20020a056870a11500b0010bb089abb6mr2376527oae.140.1656661596714;
-        Fri, 01 Jul 2022 00:46:36 -0700 (PDT)
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com. [209.85.210.52])
-        by smtp.gmail.com with ESMTPSA id x35-20020a056870a7a300b00101c9597c6fsm14168830oao.28.2022.07.01.00.46.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 00:46:36 -0700 (PDT)
-Received: by mail-ot1-f52.google.com with SMTP id q18-20020a9d7c92000000b00616b27cda7cso1247948otn.9;
-        Fri, 01 Jul 2022 00:46:36 -0700 (PDT)
-X-Received: by 2002:a81:1c4b:0:b0:31c:5f22:6bd3 with SMTP id
- c72-20020a811c4b000000b0031c5f226bd3mr1406855ywc.47.1656661147084; Fri, 01
- Jul 2022 00:39:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com> <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com> <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
-In-Reply-To: <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 1 Jul 2022 09:38:55 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW78nybK8LH2cDpM_0TCF-==QojaW8rKjudUhfJWNO0jA@mail.gmail.com>
-Message-ID: <CAMuHMdW78nybK8LH2cDpM_0TCF-==QojaW8rKjudUhfJWNO0jA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 1 Jul 2022 03:47:01 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8F053EC0
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:47:00 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220701074655epoutp022ba45f282b73086d60326fec2b91fa8c~9pPZCsdyZ1343213432epoutp02M
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:46:55 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220701074655epoutp022ba45f282b73086d60326fec2b91fa8c~9pPZCsdyZ1343213432epoutp02M
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1656661615;
+        bh=li0Fm7jz9++tP4h0OZi8Lif529Oa18Wa4gYGeXZesVw=;
+        h=Subject:Reply-To:From:To:In-Reply-To:Date:References:From;
+        b=YhJIRcLGxoNt4m9M/O0vVYPv0b0z8ZgWWQa8sOgzN96xSJ7er9Jto6KA8kpIxoLe8
+         f69iSWch4f+iawo4J5vvulFgyeXk1vx5cZpe68Hv22nQnK74pNYcuW9JSdVr1WlNf3
+         Sv+K1KNdJkQy3kVPRIfVWUy9U4kPeLmUqKQ7Rww8=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220701074655epcas2p3e7054afe48c45b02a4e82c93b4569431~9pPYoLr-j2225622256epcas2p3A;
+        Fri,  1 Jul 2022 07:46:55 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.98]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LZ6jB3cWPz4x9Q0; Fri,  1 Jul
+        2022 07:46:54 +0000 (GMT)
+X-AuditID: b6c32a46-0a3ff700000025b2-30-62bea66ec42d
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        96.92.09650.E66AEB26; Fri,  1 Jul 2022 16:46:54 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v3 1/2] scsi: ufs: wb: renaming & cleanups functions
+Reply-To: j-young.choi@samsung.com
+Sender: Jinyoung CHOI <j-young.choi@samsung.com>
+From:   Jinyoung CHOI <j-young.choi@samsung.com>
+To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <20220701074420epcms2p4c4a6a016c7070d5dfa279fc4607caa95@epcms2p4>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220701074654epcms2p5fcc0a8abe766fa00851b00dff98ad3c7@epcms2p5>
+Date:   Fri, 01 Jul 2022 16:46:54 +0900
+X-CMS-MailID: 20220701074654epcms2p5fcc0a8abe766fa00851b00dff98ad3c7
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprPJsWRmVeSWpSXmKPExsWy7bCmmW7esn1JBr92SFmcfLKGzeLBvG1s
+        Fi9/XmWzOPiwk8Vi2oefzBYvD2laLLqxjcni8q45bBbd13ewWSw//o/Jgcvj8hVvj8V7XjJ5
+        TFh0gNHj+/oONo+PT2+xePRtWcXo8XmTnEf7gW6mAI6obJuM1MSU1CKF1Lzk/JTMvHRbJe/g
+        eOd4UzMDQ11DSwtzJYW8xNxUWyUXnwBdt8wcoBOVFMoSc0qBQgGJxcVK+nY2RfmlJakKGfnF
+        JbZKqQUpOQXmBXrFibnFpXnpenmpJVaGBgZGpkCFCdkZE29tYi+YaF2xbsJ9lgbGTsMuRk4O
+        CQETiV071zB2MXJxCAnsYJQ48HgekMPBwSsgKPF3hzBIjbCAi8S/zl3sILaQgJLEuTWzwEqE
+        BQwkbvWag4TZBPQkfi6ZwQYyRkTgLLPEwodTmCDm80rMaH/KAmFLS2xfvpURxOYU8JM4P2kN
+        I0RcQ+LHsl5mCFtU4ubqt+ww9vtj86FqRCRa752FqhGUePBzN1RcUuLQoa9sIPdICORLbDgQ
+        CBGukXi7/ABUib7EtY6NYCfwCvhKvGjaAhZnEVCV+Dv5BStEjYvE6o/XwE5mFpCX2P52DjPI
+        SGYBTYn1u/QhpitLHLnFAvNUw8bf7OhsZgE+iY7Df+HiO+Y9YYJoVZNY1GQEEZaR+Hp4PvsE
+        RqVZiFCehWTtLIS1CxiZVzGKpRYU56anFhsVGMEjNjk/dxMjOKVque1gnPL2g94hRiYOxkOM
+        EhzMSiK8bPP2JgnxpiRWVqUW5ccXleakFh9iNAV6eCKzlGhyPjCp55XEG5pYGpiYmRmaG5ka
+        mCuJ83qlbEgUEkhPLEnNTk0tSC2C6WPi4JRqYEp597DoqGTvsvnbneSuJrnPqTi+XK1P7I31
+        q2tTF/1mZbLNfHQl+1LzxeXddmF65jN3dH/gPDjvj+fTaT4FxbaVpjKGuZN+OLw+/MIwNDRt
+        0qkHm94fucLO8LmqeYZi7+VpT3dc4vv9Vcngl9geiYNclhmyvren/wxedyNWWp/9xI8PrM7W
+        LTw71bIYm/r5owxW6uQXaNpk7fee197HIePHdzS5r/QtX6n0GceVMVYKiUdZTaTfJuSFPr7K
+        4xee9u7Ri2k3T6gUmJeXTZo9ge3DXJG7z/U7hHcGaW5zzuD99ss1IU34kEXyms0Vj9T6BNz2
+        uFnIOK/mX//Vb1L8it/bN669UJpQkHNiwdKLhkosxRmJhlrMRcWJAJNAkJ8yBAAA
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220701074420epcms2p4c4a6a016c7070d5dfa279fc4607caa95
+References: <20220701074420epcms2p4c4a6a016c7070d5dfa279fc4607caa95@epcms2p4>
+        <CGME20220701074420epcms2p4c4a6a016c7070d5dfa279fc4607caa95@epcms2p5>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saravana,
+The Function names were changed clearly, and the location of the
+comments was modified and added properly.
 
-On Fri, Jul 1, 2022 at 1:11 AM Saravana Kannan <saravanak@google.com> wrote:
-> On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
-> > * Saravana Kannan <saravanak@google.com> [220623 08:17]:
-> > > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
-> > > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > > > > > This issue is no directly related fw_devlink. It is a side effect of
-> > > > > > removing driver_deferred_probe_check_state(). We no longer return
-> > > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> > > > >
-> > > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > > > > was deleted because fw_devlink=on should have short circuited the
-> > > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > > > > probe function and hitting this -ENOENT failure. That's why I was
-> > > > > asking the other questions.
-> > > >
-> > > > OK. So where is the -EPROBE_DEFER supposed to happen without
-> > > > driver_deferred_probe_check_state() then?
-> > >
-> > > device_links_check_suppliers() call inside really_probe() would short
-> > > circuit and return an -EPROBE_DEFER if the device links are created as
-> > > expected.
-> >
-> > OK
-> >
-> > > > Hmm so I'm not seeing any supplier for the top level ocp device in
-> > > > the booting case without your patches. I see the suppliers for the
-> > > > ocp child device instances only.
-> > >
-> > > Hmmm... this is strange (that the device link isn't there), but this
-> > > is what I suspected.
-> >
-> > Yup, maybe it's because of the supplier being a device in the child
-> > interconnect for the ocp.
->
-> Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
-> isn't being created.
->
-> So the aggregated view is something like (I had to set tabs = 4 space
-> to fit it within 80 cols):
->
->     ocp: ocp {         <========================= Consumer
->         compatible = "simple-pm-bus";
->         power-domains = <&prm_per>; <=========== Supplier ref
->
->                 l4_wkup: interconnect@44c00000 {
->             compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
->
->             segment@200000 {  /* 0x44e00000 */
->                 compatible = "simple-pm-bus";
->
->                 target-module@0 { /* 0x44e00000, ap 8 58.0 */
->                     compatible = "ti,sysc-omap4", "ti,sysc";
->
->                     prcm: prcm@0 {
->                         compatible = "ti,am3-prcm", "simple-bus";
->
->                         prm_per: prm@c00 { <========= Actual Supplier
->                             compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
->                         };
->                     };
->                 };
->             };
->         };
->     };
->
-> The power-domain supplier is the great-great-great-grand-child of the
-> consumer. It's not clear to me how this is valid. What does it even
-> mean?
->
-> Rob, is this considered a valid DT?
->
-> Geert, thoughts on whether this is a correct use of simple-pm-bus device?
+In addition, the conditional test of the toggle functions was
+different, so it was modified.
 
-Well, if the hardware is wired that way...
+Unnecessary logs were removed and modified appropriately.
 
-It's not that dissimilar from CPU cores, and interrupt and GPIO
-controllers in power domains and clocked by controllable clocks:
-you can cut the branch you're sitting on, and you have to be careful
-when going to sleep, and make sure your wake-up sources are still
-functional.
+Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
+---
+ drivers/ufs/core/ufs-sysfs.c |  2 +-
+ drivers/ufs/core/ufshcd.c    | 69 +++++++++++++++++-------------------
+ include/ufs/ufshcd.h         |  7 ++++
+ 3 files changed, 40 insertions(+), 38 deletions(-)
 
-> Also, how is the power domain attach/get working in this case? As far
-> as I can tell, at least for "simple-pm-bus" devices, the pm domain
-> attachment is happening under:
-> really_probe() -> call_driver_probe -> platform_probe() ->
-> dev_pm_domain_attach()
->
-> So, how is the pm domain attach succeeding in the first place without
-> my changes?
-
-That's a software thing ;-)
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
+index 0a088b47d557..6253606b93b4 100644
+--- a/drivers/ufs/core/ufs-sysfs.c
++++ b/drivers/ufs/core/ufs-sysfs.c
+@@ -230,7 +230,7 @@ static ssize_t wb_on_store(struct device *dev, struct device_attribute *attr,
+ 		 * If the platform supports UFSHCD_CAP_CLK_SCALING, turn WB
+ 		 * on/off will be done while clock scaling up/down.
+ 		 */
+-		dev_warn(dev, "To control WB through wb_on is not allowed!\n");
++		dev_warn(dev, "It is not allowed to control WB!\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 1d3214e6b364..f98d023e44ae 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -268,8 +268,7 @@ static int ufshcd_setup_vreg(struct ufs_hba *hba, bool on);
+ static inline int ufshcd_config_vreg_hpm(struct ufs_hba *hba,
+ 					 struct ufs_vreg *vreg);
+ static int ufshcd_try_to_abort_task(struct ufs_hba *hba, int tag);
+-static void ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set);
+-static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool enable);
++static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba, bool set);
+ static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba);
+ static void ufshcd_hba_vreg_set_hpm(struct ufs_hba *hba);
+ 
+@@ -289,16 +288,16 @@ static inline void ufshcd_disable_irq(struct ufs_hba *hba)
+ 	}
+ }
+ 
+-static inline void ufshcd_wb_config(struct ufs_hba *hba)
++static void ufshcd_wb_set_default_flags(struct ufs_hba *hba)
+ {
+ 	if (!ufshcd_is_wb_allowed(hba))
+ 		return;
+ 
+ 	ufshcd_wb_toggle(hba, true);
++	ufshcd_wb_toggle_buf_flush_during_h8(hba, true);
+ 
+-	ufshcd_wb_toggle_flush_during_h8(hba, true);
+-	if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
+-		ufshcd_wb_toggle_flush(hba, true);
++	if (ufshcd_is_wb_buf_flush_allowed(hba))
++		ufshcd_wb_toggle_buf_flush(hba, true);
+ }
+ 
+ static void ufshcd_scsi_unblock_requests(struct ufs_hba *hba)
+@@ -1289,9 +1288,10 @@ static int ufshcd_devfreq_scale(struct ufs_hba *hba, bool scale_up)
+ 		}
+ 	}
+ 
+-	/* Enable Write Booster if we have scaled up else disable it */
+ 	downgrade_write(&hba->clk_scaling_lock);
+ 	is_writelock = false;
++
++	/* Enable Write Booster if we have scaled up else disable it */
+ 	ufshcd_wb_toggle(hba, scale_up);
+ 
+ out_unprepare:
+@@ -5715,6 +5715,9 @@ static int __ufshcd_wb_toggle(struct ufs_hba *hba, bool set, enum flag_idn idn)
+ 	enum query_opcode opcode = set ? UPIU_QUERY_OPCODE_SET_FLAG :
+ 				   UPIU_QUERY_OPCODE_CLEAR_FLAG;
+ 
++	if (!ufshcd_is_wb_allowed(hba))
++		return -EPERM;
++
+ 	index = ufshcd_wb_get_query_index(hba);
+ 	return ufshcd_query_flag_retry(hba, opcode, idn, index, NULL);
+ }
+@@ -5723,60 +5726,50 @@ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable)
+ {
+ 	int ret;
+ 
+-	if (!ufshcd_is_wb_allowed(hba))
+-		return 0;
+-
+-	if (!(enable ^ hba->dev_info.wb_enabled))
++	if (hba->dev_info.wb_enabled == enable)
+ 		return 0;
+ 
+ 	ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_EN);
+ 	if (ret) {
+-		dev_err(hba->dev, "%s Write Booster %s failed %d\n",
++		dev_err(hba->dev, "%s: failed to %s WB %d\n",
+ 			__func__, enable ? "enable" : "disable", ret);
+ 		return ret;
+ 	}
+ 
+ 	hba->dev_info.wb_enabled = enable;
+-	dev_info(hba->dev, "%s Write Booster %s\n",
+-			__func__, enable ? "enabled" : "disabled");
+ 
+ 	return ret;
+ }
+ 
+-static void ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set)
++static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
++						 bool enable)
+ {
+ 	int ret;
+ 
+-	ret = __ufshcd_wb_toggle(hba, set,
+-			QUERY_FLAG_IDN_WB_BUFF_FLUSH_DURING_HIBERN8);
+-	if (ret) {
+-		dev_err(hba->dev, "%s: WB-Buf Flush during H8 %s failed: %d\n",
+-			__func__, set ? "enable" : "disable", ret);
+-		return;
+-	}
+-	dev_dbg(hba->dev, "%s WB-Buf Flush during H8 %s\n",
+-			__func__, set ? "enabled" : "disabled");
++	ret = __ufshcd_wb_toggle(hba, enable,
++				 QUERY_FLAG_IDN_WB_BUFF_FLUSH_DURING_HIBERN8);
++	if (ret)
++		dev_err(hba->dev, "%s: failed to %s WB buf flush during H8 %d\n",
++			__func__, enable ? "enable" : "disable", ret);
+ }
+ 
+-static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool enable)
++int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable)
+ {
+ 	int ret;
+ 
+-	if (!ufshcd_is_wb_allowed(hba) ||
+-	    hba->dev_info.wb_buf_flush_enabled == enable)
+-		return;
++	if (hba->dev_info.wb_buf_flush_enabled == enable)
++		return 0;
+ 
+ 	ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_BUFF_FLUSH_EN);
+ 	if (ret) {
+-		dev_err(hba->dev, "%s WB-Buf Flush %s failed %d\n", __func__,
+-			enable ? "enable" : "disable", ret);
+-		return;
++		dev_err(hba->dev, "%s: failed to %s WB buf flush %d\n",
++			__func__, enable ? "enable" : "disable", ret);
++		return ret;
+ 	}
+ 
+ 	hba->dev_info.wb_buf_flush_enabled = enable;
+ 
+-	dev_dbg(hba->dev, "%s WB-Buf Flush %s\n",
+-			__func__, enable ? "enabled" : "disabled");
++	return ret;
+ }
+ 
+ static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
+@@ -5807,10 +5800,10 @@ static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
+ 
+ static void ufshcd_wb_force_disable(struct ufs_hba *hba)
+ {
+-	if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
+-		ufshcd_wb_toggle_flush(hba, false);
++	if (ufshcd_is_wb_buf_flush_allowed(hba))
++		ufshcd_wb_toggle_buf_flush(hba, false);
+ 
+-	ufshcd_wb_toggle_flush_during_h8(hba, false);
++	ufshcd_wb_toggle_buf_flush_during_h8(hba, false);
+ 	ufshcd_wb_toggle(hba, false);
+ 	hba->caps &= ~UFSHCD_CAP_WB_EN;
+ 
+@@ -8197,7 +8190,9 @@ static int ufshcd_probe_hba(struct ufs_hba *hba, bool init_dev_params)
+ 	 */
+ 	ufshcd_set_active_icc_lvl(hba);
+ 
+-	ufshcd_wb_config(hba);
++	/* Enable UFS Write Booster if supported */
++	ufshcd_wb_set_default_flags(hba);
++
+ 	if (hba->ee_usr_mask)
+ 		ufshcd_write_ee_control(hba);
+ 	/* Enable Auto-Hibernate if configured */
+diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
+index 7fe1a926cd99..78adc556444a 100644
+--- a/include/ufs/ufshcd.h
++++ b/include/ufs/ufshcd.h
+@@ -1017,6 +1017,12 @@ static inline bool ufshcd_is_wb_allowed(struct ufs_hba *hba)
+ 	return hba->caps & UFSHCD_CAP_WB_EN;
+ }
+ 
++static inline bool ufshcd_is_wb_buf_flush_allowed(struct ufs_hba *hba)
++{
++	return ufshcd_is_wb_allowed(hba) &&
++		!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL);
++}
++
+ #define ufshcd_writel(hba, val, reg)	\
+ 	writel((val), (hba)->mmio_base + (reg))
+ #define ufshcd_readl(hba, reg)	\
+@@ -1211,6 +1217,7 @@ int ufshcd_exec_raw_upiu_cmd(struct ufs_hba *hba,
+ 			     enum query_opcode desc_op);
+ 
+ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable);
++int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable);
+ int ufshcd_suspend_prepare(struct device *dev);
+ int __ufshcd_suspend_prepare(struct device *dev, bool rpm_ok_for_spm);
+ void ufshcd_resume_complete(struct device *dev);
+-- 
+2.25.1
