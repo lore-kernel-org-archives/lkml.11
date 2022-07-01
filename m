@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A42FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A785C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233112AbiGAOaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
+        id S233134AbiGAOaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232982AbiGAO3I (ORCPT
+        with ESMTP id S232849AbiGAO3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:29:08 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345626B25E
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:19 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-317a4c8a662so20274027b3.6
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:19 -0700 (PDT)
+        Fri, 1 Jul 2022 10:29:25 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB94661D5B
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:22 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id qf29-20020a1709077f1d00b00722e68806c4so835257ejc.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=kErHaO8c2VDyOovKMTTPjLnffjCar7lX0B4oxY8ZYJM=;
-        b=QikpwS8HSBicv3aiX5l18DFFItV5cAfTWljYQPRMj2W7svuU9foj5CYwNhPW5g1+1u
-         bB4glo+uMZCRum5mXol+jHpQv/lgXI3n7dJV/CM+AV/P8K/r9Gy2E3HtcxQY9ID9PHSC
-         wVw80I52aTXRRhG6Ci/za3zw0SD1eIdJQitn35q5f/DsJHwTzK0rEhzr2LJtogI15qw/
-         PNVnInhl+jBMMMMjNB1XrOY7EpC2Lh+bCIf6lfRBYGnQduk/EEoxldI491nxYD8nls9J
-         Xv49bFK0wQhLo1KkR4mkWE/FmlIpB/UN96BNNMS/ZsSyzjXx8nx8GEKrJFs5/vreJQ9A
-         EF9g==
+        bh=/n5egAWhgjqHJF7YploSYMAs3TFFsaM1JiTS0Bn58vA=;
+        b=Q64KAy7Oa2nU5QEGyiPc+WuoNDDnAlGeuwj9Gnp4CxbUOEi4OI3mY3DVAxjpBiKgfy
+         oa7qyOyW4RhD6IyTiejiC7YtXEPcWRYAw5gxMRCHiOP9br49u9DBYFU0wT8izXo989yb
+         SsJ683z3889b7saADkdB2NmfOQkA9W3PR5kSJXdTK6rlAIAn/matyXusT0WxYIYR1PdC
+         nsJAkTFlORzo0vstvDMrGlx6qd2DiIZ3JP81lA81CBvxEItVe4LQpcoX5OTFruunfhnn
+         6Il7stXu45y2U2bIykk0AFttgTTdTXs+YT4Idf4maBbQ8qhqqM+TVsUW/CeEtqqLOi3k
+         x6Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=kErHaO8c2VDyOovKMTTPjLnffjCar7lX0B4oxY8ZYJM=;
-        b=rypHKXL/BAGfj1MeJpWyvogbazG888fy15+3h5v8Rlwx+cxRepQB8GFfoO49HOzKGM
-         /iAcpi60+drsrQqiJDRuUg51RcN2W+gwX/XHBEP93wPVLk7Zt4G0VHzWGyjn0HleMdLP
-         2mKu6K0yD9/ytM/YvPBQynJMgJkO/qN1EqNpXbqHCTB7IVi8KE0HK84nytqaSalix+kh
-         0SvqBBney040cQD/N1xr5uKIb+VwXqwcwM3ThxNwEKmyuwH0BP+LoP4p7pefifIaspL9
-         kiCNRP35veDOTfi1gar8P7HUocry8ErBYnOk3w6312bEzkKP6jfioCje8QoOlibiY7lq
-         qgoA==
-X-Gm-Message-State: AJIora/XTOZhe3fWX9R3wZ5PUsXX0xqvbmSOyDCxgq9MEnT99jI/YFQY
-        Q6upNcBVpgi2RLoAPdp3X1BFRHg8bds=
-X-Google-Smtp-Source: AGRyM1sNDBrS8JsvaLtaQ5Nuve5a/xxYqM8vAs8mLC9hMfdeY1tED78m34uqRhiFnJFi3MqtOhAJlCD8K7A=
+        bh=/n5egAWhgjqHJF7YploSYMAs3TFFsaM1JiTS0Bn58vA=;
+        b=vEhIb/Bliezgrv5EMxYr4+hvXzVTcAXebx43H5cFyM+Mz15ZxdT/gbqrChpx0Ace3J
+         o1SYOm+aLfzCQyxzXNtznzrGtSm+MbjkGlVx1guVHt8jlL2zxuPAOpxufp+VE4XOC9cW
+         yUqADRufuN/fyEPlfJZG1EU/xwfVvTrcU4y8FCTAe0lYvkntbzNlbffMfkFlEgg2T+34
+         C5j74rMADVKMxCyc3wWkeuISRDHqQAQstfzYScxAckE4388jm4H1cZswF0XN8zzXVQYF
+         fbAeQr6lIg2JthKdmRfO9h5rPkAxXjGIKAm1g8ZV55WxC6TTb92ZGKPbWlvgoqU1vceK
+         uqiA==
+X-Gm-Message-State: AJIora/1OHl2c+30EtKnxCw4fzSv+wNKIpVNrx4OZKaEwettLf0A61Bd
+        ho7gj4aaak+sfbLyyTdCMyzpibqgm18=
+X-Google-Smtp-Source: AGRyM1vUh8ZooMqVrhXc2xeGCFSNfOoXJqVl3ZPA1oCNI4qUloUIWKz76DRGg3RXhdunivVizxxEE/eITwE=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:a6f5:f713:759c:abb6])
- (user=glider job=sendgmr) by 2002:a81:d82:0:b0:31b:fd6f:9005 with SMTP id
- 124-20020a810d82000000b0031bfd6f9005mr16667693ywn.389.1656685510371; Fri, 01
- Jul 2022 07:25:10 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:23:06 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:51ca:b0:437:79a9:4dd with SMTP id
+ r10-20020a05640251ca00b0043779a904ddmr19173589edd.319.1656685515729; Fri, 01
+ Jul 2022 07:25:15 -0700 (PDT)
+Date:   Fri,  1 Jul 2022 16:23:08 +0200
 In-Reply-To: <20220701142310.2188015-1-glider@google.com>
-Message-Id: <20220701142310.2188015-42-glider@google.com>
+Message-Id: <20220701142310.2188015-44-glider@google.com>
 Mime-Version: 1.0
 References: <20220701142310.2188015-1-glider@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 41/45] entry: kmsan: introduce kmsan_unpoison_entry_regs()
+Subject: [PATCH v4 43/45] namei: initialize parameters passed to step_into()
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -85,145 +85,79 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Vegard Nossum <vegard.nossum@oracle.com>,
         Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
         linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org,
+        Evgenii Stepanov <eugenis@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Vitaly Buka <vitalybuka@google.com>,
+        linux-toolchains@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-struct pt_regs passed into IRQ entry code is set up by uninstrumented
-asm functions, therefore KMSAN may not notice the registers are
-initialized.
+Under certain circumstances initialization of `unsigned seq` and
+`struct inode *inode` passed into step_into() may be skipped.
+In particular, if the call to lookup_fast() in walk_component()
+returns NULL, and lookup_slow() returns a valid dentry, then the
+`seq` and `inode` will remain uninitialized until the call to
+step_into() (see [1] for more info).
 
-kmsan_unpoison_entry_regs() unpoisons the contents of struct pt_regs,
-preventing potential false positives. Unlike kmsan_unpoison_memory(),
-it can be called under kmsan_in_runtime(), which is often the case in
-IRQ entry code.
+Right now step_into() does not use these uninitialized values,
+yet passing uninitialized values to functions is considered undefined
+behavior (see [2]). To fix that, we initialize `seq` and `inode` at
+definition.
 
+[1] https://github.com/ClangBuiltLinux/linux/issues/1648#issuecomment-1146608063
+[2] https://lore.kernel.org/linux-toolchains/CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com/
+
+Cc: Evgenii Stepanov <eugenis@google.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Marco Elver <elver@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Segher Boessenkool <segher@kernel.crashing.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Vitaly Buka <vitalybuka@google.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-toolchains@vger.kernel.org
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/Ibfd7018ac847fd8e5491681f508ba5d14e4669cf
+Link: https://linux-review.googlesource.com/id/I94d4e8cc1f0ecc7174659e9506ce96aaf2201d0a
 ---
- include/linux/kmsan.h | 15 +++++++++++++++
- kernel/entry/common.c |  5 +++++
- mm/kmsan/hooks.c      | 27 +++++++++++++++++++++++++++
- 3 files changed, 47 insertions(+)
+ fs/namei.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/kmsan.h b/include/linux/kmsan.h
-index e8b5c306c4aa1..c4412622b9a78 100644
---- a/include/linux/kmsan.h
-+++ b/include/linux/kmsan.h
-@@ -246,6 +246,17 @@ void kmsan_handle_dma_sg(struct scatterlist *sg, int nents,
-  */
- void kmsan_handle_urb(const struct urb *urb, bool is_out);
- 
-+/**
-+ * kmsan_unpoison_entry_regs() - Handle pt_regs in low-level entry code.
-+ * @regs:	struct pt_regs pointer received from assembly code.
-+ *
-+ * KMSAN unpoisons the contents of the passed pt_regs, preventing potential
-+ * false positive reports. Unlike kmsan_unpoison_memory(),
-+ * kmsan_unpoison_entry_regs() can be called from the regions where
-+ * kmsan_in_runtime() returns true, which is the case in early entry code.
-+ */
-+void kmsan_unpoison_entry_regs(const struct pt_regs *regs);
-+
- #else
- 
- static inline void kmsan_init_shadow(void)
-@@ -342,6 +353,10 @@ static inline void kmsan_handle_urb(const struct urb *urb, bool is_out)
+diff --git a/fs/namei.c b/fs/namei.c
+index 1f28d3f463c3b..6b39dfd3b41bc 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -1995,8 +1995,8 @@ static const char *handle_dots(struct nameidata *nd, int type)
+ static const char *walk_component(struct nameidata *nd, int flags)
  {
- }
+ 	struct dentry *dentry;
+-	struct inode *inode;
+-	unsigned seq;
++	struct inode *inode = NULL;
++	unsigned seq = 0;
+ 	/*
+ 	 * "." and ".." are special - ".." especially so because it has
+ 	 * to be able to know about the current root directory and
+@@ -3393,8 +3393,8 @@ static const char *open_last_lookups(struct nameidata *nd,
+ 	struct dentry *dir = nd->path.dentry;
+ 	int open_flag = op->open_flag;
+ 	bool got_write = false;
+-	unsigned seq;
+-	struct inode *inode;
++	unsigned seq = 0;
++	struct inode *inode = NULL;
+ 	struct dentry *dentry;
+ 	const char *res;
  
-+static inline void kmsan_unpoison_entry_regs(const struct pt_regs *regs)
-+{
-+}
-+
- #endif
- 
- #endif /* _LINUX_KMSAN_H */
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 032f164abe7ce..055d3bdb0442c 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -5,6 +5,7 @@
- #include <linux/resume_user_mode.h>
- #include <linux/highmem.h>
- #include <linux/jump_label.h>
-+#include <linux/kmsan.h>
- #include <linux/livepatch.h>
- #include <linux/audit.h>
- #include <linux/tick.h>
-@@ -24,6 +25,7 @@ static __always_inline void __enter_from_user_mode(struct pt_regs *regs)
- 	user_exit_irqoff();
- 
- 	instrumentation_begin();
-+	kmsan_unpoison_entry_regs(regs);
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
- }
-@@ -352,6 +354,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 		lockdep_hardirqs_off(CALLER_ADDR0);
- 		rcu_irq_enter();
- 		instrumentation_begin();
-+		kmsan_unpoison_entry_regs(regs);
- 		trace_hardirqs_off_finish();
- 		instrumentation_end();
- 
-@@ -367,6 +370,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	 */
- 	lockdep_hardirqs_off(CALLER_ADDR0);
- 	instrumentation_begin();
-+	kmsan_unpoison_entry_regs(regs);
- 	rcu_irq_enter_check_tick();
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
-@@ -452,6 +456,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- 	rcu_nmi_enter();
- 
- 	instrumentation_begin();
-+	kmsan_unpoison_entry_regs(regs);
- 	trace_hardirqs_off_finish();
- 	ftrace_nmi_enter();
- 	instrumentation_end();
-diff --git a/mm/kmsan/hooks.c b/mm/kmsan/hooks.c
-index 9aecbf2825837..c7528bcbb2f91 100644
---- a/mm/kmsan/hooks.c
-+++ b/mm/kmsan/hooks.c
-@@ -358,6 +358,33 @@ void kmsan_unpoison_memory(const void *address, size_t size)
- }
- EXPORT_SYMBOL(kmsan_unpoison_memory);
- 
-+/*
-+ * Version of kmsan_unpoison_memory() that can be called from within the KMSAN
-+ * runtime.
-+ *
-+ * Non-instrumented IRQ entry functions receive struct pt_regs from assembly
-+ * code. Those regs need to be unpoisoned, otherwise using them will result in
-+ * false positives.
-+ * Using kmsan_unpoison_memory() is not an option in entry code, because the
-+ * return value of in_task() is inconsistent - as a result, certain calls to
-+ * kmsan_unpoison_memory() are ignored. kmsan_unpoison_entry_regs() ensures that
-+ * the registers are unpoisoned even if kmsan_in_runtime() is true in the early
-+ * entry code.
-+ */
-+void kmsan_unpoison_entry_regs(const struct pt_regs *regs)
-+{
-+	unsigned long ua_flags;
-+
-+	if (!kmsan_enabled)
-+		return;
-+
-+	ua_flags = user_access_save();
-+	kmsan_internal_unpoison_memory((void *)regs, sizeof(*regs),
-+				       KMSAN_POISON_NOCHECK);
-+	user_access_restore(ua_flags);
-+}
-+EXPORT_SYMBOL(kmsan_unpoison_entry_regs);
-+
- void kmsan_check_memory(const void *addr, size_t size)
- {
- 	if (!kmsan_enabled)
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
