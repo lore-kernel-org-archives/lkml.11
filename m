@@ -2,103 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A142FCCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4308C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236058AbiGAJg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56780 "EHLO
+        id S235686AbiGAJhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:37:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiGAJgy (ORCPT
+        with ESMTP id S232405AbiGAJhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:36:54 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E1374DC7
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:36:53 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id sb34so2963506ejc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 02:36:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HqN6gsZLn+7W2GK3DI99kLZinpSFsebxTIv53VNrtsU=;
-        b=uDBz3d3kU2zdCx2lHgG5l7Tmm7TiRP7fNmRni+vyb0xyKi2uRe645kqaJ+4xN2BdcM
-         r2ahZAYgMhnzAqJX3hI60LJo71NTb0A0i9iHQrLEuRjcPilWkT34uRmEDldzQkjK0OOA
-         8XSy/OBHBWauzBLiN/ZnfceSpWSXTr0jAuDlwb1+o/F/w/HEMeWou2MCTn+R5OJYdG9w
-         m/RkzbVkZ7IYTg4PqGfLsmHn7YF55KPRpYpXzvlYRxL/uODqCPDM9xXKXxNyEMohL00n
-         0OElABHzxKkhqT4n9HbVrvkYe6H2YqhiUY9PlC4Pu4s9Tc5X5FFmMpW2DNQFLISgQoOs
-         1aCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HqN6gsZLn+7W2GK3DI99kLZinpSFsebxTIv53VNrtsU=;
-        b=NagyCc8b6QRbi2LdCcTFvpXfpCEWfaXpyAAr3wSMo6O93nVVtDycziZoKOWe0ci6HK
-         9jPveAunQIgz4Cj17/jmiDvBWI8HQtWPfE1DxlDaj6lam+kNj4MwC9+1V7F+OQtA2FRs
-         qBFPToO5dv0NIejdi/u5LT4BnZia13fFC1dHahLvXJ2oKMGV4nPB4aN+qZ7IbbOgvjxA
-         D39n7HFR/VUHSI4mMe7kBBQ0dDRFCxmm7ePmz0JFJfVf44S4O4NfBywnsVFbZ9RFobrS
-         lo8w0GqqTT3Ki/f0co2OKduM8qdCqI3IMKj1LHjoGonx+98k7jA+JTqZEMmCE8A1MltR
-         WXyw==
-X-Gm-Message-State: AJIora8WrYthr4t6lvEZRFgly9Xw0iYZTpifbLUJTQrGw7fDBX7CisnJ
-        URFyp6X//T2V/D7uNmX6WKrT2bx76yJ0ZGzw3n0uENv1kOg=
-X-Google-Smtp-Source: AGRyM1uqVf4QruzDeZcUxRarw0cJSku6NKTwUkQ90gaAQi/CQvLKiUmIhfla5jhN908dDp6/Ah79bIZv0T5TX1xzen0=
-X-Received: by 2002:a17:907:8a25:b0:726:c9f2:2f5e with SMTP id
- sc37-20020a1709078a2500b00726c9f22f5emr13106586ejc.286.1656668212022; Fri, 01
- Jul 2022 02:36:52 -0700 (PDT)
+        Fri, 1 Jul 2022 05:37:38 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDFE747A9
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 02:37:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656668257; x=1688204257;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3AnGG/FOhsP0yUX8a7hnUMYDr0ZLl1EY6ty6Bu60QrI=;
+  b=K0VyMSz24ymcevX3rwiEl9IKWz+cbVAbsMgQOYQT0DPUy3GHyUwaA1BW
+   yRLi3dDCaoSel1vV+ZcDf4MYoE7rBJaOfw9tASVXFmZw4hBLNelNGvNow
+   vdszFy7AVDcqtGjf/hFQ4GvcdwiIID3SrHRzuweawSIhwT8SQfVBJQ/Eh
+   Y9iiFweMCj9CaEqXJYb+rfEzfll1ZasPJcYF+zYFyS4fwPVCDBTL4OlG5
+   ESdJQ8p+vi2MLFSSQoUIO6+8d3RCPt3n2OGKgWQi0oaW0B9th8hkl1pe1
+   DemgB6qxA3QgQP2J3rVHFGQRYkqCUPvDD5AiYXYOWh2BRJyClgnfItCMH
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262410568"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="262410568"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 02:37:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="596195974"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 01 Jul 2022 02:37:36 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o7D5k-000DnF-0v;
+        Fri, 01 Jul 2022 09:37:36 +0000
+Date:   Fri, 01 Jul 2022 17:37:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:quic_neeraju.2022.06.30b] BUILD SUCCESS
+ f045c4f9ca1a62fdd97ccb817fac675335af11ba
+Message-ID: <62bec057.N+l13lxASKZSNry1%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20220628195913.36940-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220628195913.36940-1-andriy.shevchenko@linux.intel.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Fri, 1 Jul 2022 11:36:41 +0200
-Message-ID: <CAMRc=McB4XXpGK4=PwNX8n60r-2yC=hbN2fPjQTZ1SUh8dd9yA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] gpio: adnp: use simple i2c probe function
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 9:59 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/gpio/gpio-adnp.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-adnp.c b/drivers/gpio/gpio-adnp.c
-> index cc349d4e4973..075782831044 100644
-> --- a/drivers/gpio/gpio-adnp.c
-> +++ b/drivers/gpio/gpio-adnp.c
-> @@ -485,8 +485,7 @@ static int adnp_gpio_setup(struct adnp *adnp, unsigned int num_gpios,
->         return 0;
->  }
->
-> -static int adnp_i2c_probe(struct i2c_client *client,
-> -                                   const struct i2c_device_id *id)
-> +static int adnp_i2c_probe(struct i2c_client *client)
->  {
->         struct device_node *np = client->dev.of_node;
->         struct adnp *adnp;
-> @@ -535,7 +534,7 @@ static struct i2c_driver adnp_i2c_driver = {
->                 .name = "gpio-adnp",
->                 .of_match_table = adnp_of_match,
->         },
-> -       .probe = adnp_i2c_probe,
-> +       .probe_new = adnp_i2c_probe,
->         .id_table = adnp_i2c_id,
->  };
->  module_i2c_driver(adnp_i2c_driver);
-> --
-> 2.35.1
->
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git quic_neeraju.2022.06.30b
+branch HEAD: f045c4f9ca1a62fdd97ccb817fac675335af11ba  srcu: Reduce blocking agressiveness of expedited grace periods further
 
-Applied, thanks!
+elapsed time: 723m
 
-Bart
+configs tested: 52
+configs skipped: 2
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+ia64                             allmodconfig
+alpha                            allyesconfig
+arc                              allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+sh                               allmodconfig
+i386                                defconfig
+i386                             allyesconfig
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+x86_64                        randconfig-a015
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+arc                  randconfig-r043-20220629
+s390                 randconfig-r044-20220629
+riscv                randconfig-r042-20220629
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                          rhel-8.3-func
+x86_64                    rhel-8.3-kselftests
+x86_64                           rhel-8.3-syz
+
+clang tested configs:
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64                        randconfig-a012
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+hexagon              randconfig-r045-20220629
+hexagon              randconfig-r041-20220629
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
