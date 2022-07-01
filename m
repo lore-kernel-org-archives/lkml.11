@@ -2,231 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E02FCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC67CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236643AbiGALAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        id S236032AbiGALA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiGALAo (ORCPT
+        with ESMTP id S235661AbiGALA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:00:44 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E4F80481
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:00:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656673243; x=1688209243;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Am/H6IssyTtlHazdP9DirTJ2hU45qarEr8fJK99Adr4=;
-  b=Di+UlZ7SIUZ0WuPsflxMi08z2lurR8/bd7OUHBDMabN1TUHE8yJDkBMM
-   TNuaTdmwE6uBwCujCIDlG47RB2iQAo95ZuVkUM28twK+mQtoHZLG2SVnx
-   /Hsm4rcaOWAulok1ztshkvhm/Gd9A8W6I6HtNoAOGGkg5N4Q9a+/NRPO6
-   xnd0Wv+axjL+c4EDTilaQ1maR2pwbFX+lgRL8wDfOf3HNCfzN+e9wxqJz
-   nOQvoJAxGBNBQcO0tc6IulY9ISyLN5ngomvaLmYQEEBxfZCbeF7sXrYsP
-   gLtOwj96Uq5v74u2TmKHprAiXrkVdsmpH3jzWCOA15NsVWJW/o58ODASK
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="263025427"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="263025427"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 04:00:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="918441658"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 01 Jul 2022 04:00:41 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7EO8-000DsM-Os;
-        Fri, 01 Jul 2022 11:00:40 +0000
-Date:   Fri, 1 Jul 2022 18:59:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Sudeep Holla <sudeep.holla@arm.com>
-Subject: [sudeep-holla:for-next/scmi 16/23]
- include/linux/compiler_types.h:352:45: error: call to
- '__compiletime_assert_230' declared with attribute error: FIELD_PREP: mask
- is zero
-Message-ID: <202207011807.lirgFUyX-lkp@intel.com>
+        Fri, 1 Jul 2022 07:00:57 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A982F80481;
+        Fri,  1 Jul 2022 04:00:54 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 1 Jul 2022
+ 18:55:17 +0800 (GMT+08:00)
+X-Originating-IP: [182.148.13.66]
+Date:   Fri, 1 Jul 2022 18:55:17 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ipconfig: use strscpy to replace strlcpy
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <6635dc9f.d16.181b966989f.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwBHUW+V0r5iSPdFAA--.879W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvOAAHsO
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWUCw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git for-next/scmi
-head:   2e61c3a948060a0d3a3721cc7bb97f5a6a6c5bb8
-commit: 14e52757150274bc005ca64d2b26a7541b9f9161 [16/23] firmware: arm_scmi: Add SCMIv3.1 Powercap protocol basic support
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220701/202207011807.lirgFUyX-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/commit/?id=14e52757150274bc005ca64d2b26a7541b9f9161
-        git remote add sudeep-holla https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git
-        git fetch --no-tags sudeep-holla for-next/scmi
-        git checkout 14e52757150274bc005ca64d2b26a7541b9f9161
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                  ^~~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:29: note: in expansion of macro 'GENMASK'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                             ^~~~~~~
-   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-      75 |                                               (1ULL << __bf_shf(_mask))); \
-         |                                                        ^~~~~~~~
-   include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:18: note: in expansion of macro 'FIELD_PREP'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                  ^~~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:29: note: in expansion of macro 'GENMASK'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                             ^~~~~~~
-   In file included from drivers/firmware/arm_scmi/powercap.c:10:
-   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/bitfield.h:45:38: note: in definition of macro '__bf_shf'
-      45 | #define __bf_shf(x) (__builtin_ffsll(x) - 1)
-         |                                      ^
-   drivers/firmware/arm_scmi/powercap.c:477:18: note: in expansion of macro 'FIELD_PREP'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                  ^~~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:29: note: in expansion of macro 'GENMASK'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                             ^~~~~~~
-   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/bitfield.h:45:38: note: in definition of macro '__bf_shf'
-      45 | #define __bf_shf(x) (__builtin_ffsll(x) - 1)
-         |                                      ^
-   drivers/firmware/arm_scmi/powercap.c:477:18: note: in expansion of macro 'FIELD_PREP'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                  ^~~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:29: note: in expansion of macro 'GENMASK'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                             ^~~~~~~
-   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/bitfield.h:115:63: note: in definition of macro 'FIELD_PREP'
-     115 |                 ((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask);   \
-         |                                                               ^~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:29: note: in expansion of macro 'GENMASK'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                             ^~~~~~~
-   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/bitfield.h:115:63: note: in definition of macro 'FIELD_PREP'
-     115 |                 ((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask);   \
-         |                                                               ^~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:29: note: in expansion of macro 'GENMASK'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                             ^~~~~~~
-   In file included from <command-line>:
->> include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_230' declared with attribute error: FIELD_PREP: mask is zero
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:333:25: note: in definition of macro '__compiletime_assert'
-     333 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:67:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      67 |                 BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");    \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:114:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     114 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
-         |                 ^~~~~~~~~~~~~~~~
-   drivers/firmware/arm_scmi/powercap.c:477:18: note: in expansion of macro 'FIELD_PREP'
-     477 |                  FIELD_PREP(GENMASK(63, 32), power_thresh_high));
-         |                  ^~~~~~~~~~
-
-
-vim +/__compiletime_assert_230 +352 include/linux/compiler_types.h
-
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  338  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  339  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  340  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  341  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  342  /**
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  343   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  344   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  345   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  346   *
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  347   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  348   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  349   * compiler has support to do so.
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  350   */
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  351  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21 @352  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  353  
-
-:::::: The code at line 352 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
+dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
+WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIG5ldC9pcHY0L2lwY29uZmln
+LmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0IGRlbGV0
+aW9ucygtKQoKZGlmZiAtLWdpdCBhL25ldC9pcHY0L2lwY29uZmlnLmMgYi9uZXQvaXB2NC9pcGNv
+bmZpZy5jCmluZGV4IDIzNDJkZWJkNzA2Ni4uZTkwYmMwYWE4NWM3IDEwMDY0NAotLS0gYS9uZXQv
+aXB2NC9pcGNvbmZpZy5jCisrKyBiL25ldC9pcHY0L2lwY29uZmlnLmMKQEAgLTE3NjUsMTUgKzE3
+NjUsMTUgQEAgc3RhdGljIGludCBfX2luaXQgaXBfYXV0b19jb25maWdfc2V0dXAoY2hhciAqYWRk
+cnMpCiAJCQljYXNlIDQ6CiAJCQkJaWYgKChkcCA9IHN0cmNocihpcCwgJy4nKSkpIHsKIAkJCQkJ
+KmRwKysgPSAnXDAnOwotCQkJCQlzdHJsY3B5KHV0c25hbWUoKS0+ZG9tYWlubmFtZSwgZHAsCisJ
+CQkJCXN0cnNjcHkodXRzbmFtZSgpLT5kb21haW5uYW1lLCBkcCwKIAkJCQkJCXNpemVvZih1dHNu
+YW1lKCktPmRvbWFpbm5hbWUpKTsKIAkJCQl9Ci0JCQkJc3RybGNweSh1dHNuYW1lKCktPm5vZGVu
+YW1lLCBpcCwKKwkJCQlzdHJzY3B5KHV0c25hbWUoKS0+bm9kZW5hbWUsIGlwLAogCQkJCQlzaXpl
+b2YodXRzbmFtZSgpLT5ub2RlbmFtZSkpOwogCQkJCWljX2hvc3RfbmFtZV9zZXQgPSAxOwogCQkJ
+CWJyZWFrOwogCQkJY2FzZSA1OgotCQkJCXN0cmxjcHkodXNlcl9kZXZfbmFtZSwgaXAsIHNpemVv
+Zih1c2VyX2Rldl9uYW1lKSk7CisJCQkJc3Ryc2NweSh1c2VyX2Rldl9uYW1lLCBpcCwgc2l6ZW9m
+KHVzZXJfZGV2X25hbWUpKTsKIAkJCQlicmVhazsKIAkJCWNhc2UgNjoKIAkJCQlpZiAoaWNfcHJv
+dG9fbmFtZShpcCkgPT0gMCAmJgpAQCAtMTgyMCw3ICsxODIwLDcgQEAgX19zZXR1cCgibmZzYWRk
+cnM9IiwgbmZzYWRkcnNfY29uZmlnX3NldHVwKTsKIAogc3RhdGljIGludCBfX2luaXQgdmVuZG9y
+X2NsYXNzX2lkZW50aWZpZXJfc2V0dXAoY2hhciAqYWRkcnMpCiB7Ci0JaWYgKHN0cmxjcHkodmVu
+ZG9yX2NsYXNzX2lkZW50aWZpZXIsIGFkZHJzLAorCWlmIChzdHJzY3B5KHZlbmRvcl9jbGFzc19p
+ZGVudGlmaWVyLCBhZGRycywKIAkJICAgIHNpemVvZih2ZW5kb3JfY2xhc3NfaWRlbnRpZmllcikp
+CiAJICAgID49IHNpemVvZih2ZW5kb3JfY2xhc3NfaWRlbnRpZmllcikpCiAJCXByX3dhcm4oIkRI
+Q1A6IHZlbmRvcmNsYXNzIHRvbyBsb25nLCB0cnVuY2F0ZWQgdG8gXCIlc1wiXG4iLAotLSAKMi4y
+NS4xCg==
