@@ -2,141 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F17C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236491AbiGAIsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
+        id S236312AbiGAItF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236425AbiGAIsM (ORCPT
+        with ESMTP id S235911AbiGAIs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:48:12 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085D77390E
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:48:04 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id s194-20020a252ccb000000b00669b5702413so1460125ybs.22
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:48:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=fZhsQWUMRsqP4fT4YbqRmtPfIJ3qiGBySrh/88eLEVc=;
-        b=h47MjT9X36O0Dr/QUNMr44h8p/7VMC+LIl6ktx6l5nZUHLR6XZfIs7vt2fN5PFs7ca
-         yLPurqgqC3Jubn3FTuu/IxaEB5bubhCRpmpavHOZDaz5SDUhVGQgkFd9MeTpB+8U8ppv
-         /DDSdRuhBcfcoaIAz2GiQORZg6D2AP1Nn9PSnpH4tKkN2ICkYo4zPbMZ6UROvIJwLmQI
-         2K1M5u2MWwQKEbjo9f9bWwdOiIKThrMD3OsLpScaT+Ydhh5ikh6IfE94rhnUvIFsgPSg
-         D7rQ0hv0uoJwS1cAwI1kHV+ednhWq2jRo6h8iIKv1Ghzu08Fs+ZeCndkrkLNwZa7FYbg
-         PYvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=fZhsQWUMRsqP4fT4YbqRmtPfIJ3qiGBySrh/88eLEVc=;
-        b=GMpGMzQG92Bj9YXulL1mcf5XcKRW47W9t/D/vx0ofOy+3QB2O8X1o9CZd1IRmfC70E
-         a0SQ41HvPiTT58XynyOucnz0hYc2HyW+2t1Ut+8u5ag+neRVJMAaDXzSVfhLHarU/oAK
-         l8P+Cx6BAoYZNEIgL64W5gFR9KN6UbOES+LyGIqXfbdL+1YC6FfZPz7siWD0PjOgIVVn
-         /2123zfWJXTlmw+mO/lEWioOebmPYYDmcw8vriUf3CxvTHoaZuhyupnwHJz2r4VZsAuY
-         vd3k6DETIgRsoFxljf8WQZZZqxAGgL2TorCGiK8JYLJZJhquh1rgiuU9vCsfVcVYCsGx
-         tnFQ==
-X-Gm-Message-State: AJIora/RUi/Tkg0bb74eMY5IuEPhm60o0Y5qkhjun1P2ENq1DOuYJp+3
-        DzFj/ih//UwGtk6EjFOBQSEUpRh4rs3nrA==
-X-Google-Smtp-Source: AGRyM1spgZIN2lcHFWw0+ZQmMq5w3ZWXcntdQzIT8XqVLbGVBnJKK1cxu7PAMs/rUgKSf22SLLQoBtVsvGmTIw==
-X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
- (user=davidgow job=sendgmr) by 2002:a25:8b8b:0:b0:669:b37d:f9cd with SMTP id
- j11-20020a258b8b000000b00669b37df9cdmr13972189ybl.394.1656665283291; Fri, 01
- Jul 2022 01:48:03 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:47:44 +0800
-In-Reply-To: <20220701084744.3002019-1-davidgow@google.com>
-Message-Id: <20220701084744.3002019-4-davidgow@google.com>
-Mime-Version: 1.0
-References: <20220701084744.3002019-1-davidgow@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 4/4] selftest: Taint kernel when test module loaded
-From:   David Gow <davidgow@google.com>
-To:     Brendan Higgins <brendanhiggins@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
+        Fri, 1 Jul 2022 04:48:56 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91CD13D56;
+        Fri,  1 Jul 2022 01:48:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=mY2YJsRE/yBS43tn1f7s0RHEEaTIk2g/RfTS1WyV6ug=; b=XjrOE8lfVYBHTAJTCA/bOgOgZ/
+        wcYdChR/17ayscOYNFB9kP7t6BMY8Hs+uy3SJmVk9ki1DJwU/psjT3zoqOhOsPZfaaUKNw6xuMOHM
+        cYQLXky8QVnO4onSSxH14ebDP5e8U+OVkx1VdsSS73Il7FxFmg7xOfcDBHIglcYPAuE94KAtwQadt
+        8HwwDUdrc9uLWyi4zR1k3BEoRsK2EOVk3X8Rl5unreH0IupKaPG2iKQlluf1umazRub3W4APvZtWe
+        vFaHpqakVoTAfvDEqr2rotdjoiNtX368Edt4YRs8CAqILu1SUHIxFWDxIcYjmrzzlav6tGHM0R4mb
+        1m4uIzQg==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o7CJb-00FdrR-AC; Fri, 01 Jul 2022 08:47:52 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 63D90980017; Fri,  1 Jul 2022 10:47:49 +0200 (CEST)
+Date:   Fri, 1 Jul 2022 10:47:49 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        thunder.leizhen@huawei.com, jacob.e.keller@intel.com,
         Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     David Gow <davidgow@google.com>,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Joe Fradley <joefradley@google.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kbuild@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>,
+        cluster-devel <cluster-devel@redhat.com>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC 0/2] refcount: attempt to avoid imbalance warnings
+Message-ID: <Yr60tWxN4P568x3W@worktop.programming.kicks-ass.net>
+References: <20220630135934.1799248-1-aahringo@redhat.com>
+ <CAHk-=wjZfO9hGqJ2_hGQG3U_XzSh9_XaXze=HgPdvJbgrvASfA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjZfO9hGqJ2_hGQG3U_XzSh9_XaXze=HgPdvJbgrvASfA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make any kselftest test module (using the kselftest_module framework)
-taint the kernel with TAINT_TEST on module load.
+On Thu, Jun 30, 2022 at 09:34:10AM -0700, Linus Torvalds wrote:
 
-Note that several selftests use kernel modules which are not based on
-the kselftest_module framework, and so will not automatically taint the
-kernel.
+Not commenting on sparse, since I'm not much qualified there, however,
 
-This can be done in two ways:
-- Moving the module to the tools/testing directory. All modules under
-  this directory will taint the kernel.
-- Adding the 'test' module property with:
-  MODULE_INFO(test, "Y")
+>  include/linux/compiler_types.h | 2 ++
+>  include/linux/refcount.h       | 6 +++---
+>  2 files changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+> index d08dfcb0ac68..4f2a819fd60a 100644
+> --- a/include/linux/compiler_types.h
+> +++ b/include/linux/compiler_types.h
+> @@ -24,6 +24,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
+>  /* context/locking */
+>  # define __must_hold(x)	__attribute__((context(x,1,1)))
+>  # define __acquires(x)	__attribute__((context(x,0,1)))
+> +# define __cond_acquires(x) __attribute__((context(x,0,-1)))
+>  # define __releases(x)	__attribute__((context(x,1,0)))
+>  # define __acquire(x)	__context__(x,1)
+>  # define __release(x)	__context__(x,-1)
+> @@ -50,6 +51,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
+>  /* context/locking */
+>  # define __must_hold(x)
+>  # define __acquires(x)
+> +# define __cond_acquires(x)
+>  # define __releases(x)
+>  # define __acquire(x)	(void)0
+>  # define __release(x)	(void)0
+> diff --git a/include/linux/refcount.h b/include/linux/refcount.h
+> index b8a6e387f8f9..a62fcca97486 100644
+> --- a/include/linux/refcount.h
+> +++ b/include/linux/refcount.h
+> @@ -361,9 +361,9 @@ static inline void refcount_dec(refcount_t *r)
+>  
+>  extern __must_check bool refcount_dec_if_one(refcount_t *r);
+>  extern __must_check bool refcount_dec_not_one(refcount_t *r);
+> -extern __must_check bool refcount_dec_and_mutex_lock(refcount_t *r, struct mutex *lock);
+> -extern __must_check bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock);
+> +extern __must_check bool refcount_dec_and_mutex_lock(refcount_t *r, struct mutex *lock) __cond_acquires(lock);
+> +extern __must_check bool refcount_dec_and_lock(refcount_t *r, spinlock_t *lock) __cond_acquires(lock);
+>  extern __must_check bool refcount_dec_and_lock_irqsave(refcount_t *r,
+>  						       spinlock_t *lock,
+> -						       unsigned long *flags);
+> +						       unsigned long *flags) __cond_acquires(lock);
+>  #endif /* _LINUX_REFCOUNT_H */
 
-Similarly, selftests which do not load modules into the kernel generally
-should not taint the kernel (or possibly should only do so on failure),
-as it's assumed that testing from user-space should be safe. Regardless,
-they can write to /proc/sys/kernel/tainted if required.
 
-Signed-off-by: David Gow <davidgow@google.com>
----
-
-This still only covers a subset of selftest modules, but combined with
-the modpost check for the tools/testing path, it should catch many
-future tests. Others can be moved, adapted to use this framework, or
-have MODULE_INFO(test, "Y") added. (Alas, I don't have the time to hunt
-down all of the tests which don't do this at the moment.
-
-No changes since v3:
-https://lore.kernel.org/lkml/20220513083212.3537869-3-davidgow@google.com/
-
----
- tools/testing/selftests/kselftest_module.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/tools/testing/selftests/kselftest_module.h b/tools/testing/selftests/kselftest_module.h
-index e2ea41de3f35..226e616b82e0 100644
---- a/tools/testing/selftests/kselftest_module.h
-+++ b/tools/testing/selftests/kselftest_module.h
-@@ -3,6 +3,7 @@
- #define __KSELFTEST_MODULE_H
- 
- #include <linux/module.h>
-+#include <linux/panic.h>
- 
- /*
-  * Test framework for writing test modules to be loaded by kselftest.
-@@ -41,6 +42,7 @@ static inline int kstm_report(unsigned int total_tests, unsigned int failed_test
- static int __init __module##_init(void)			\
- {							\
- 	pr_info("loaded.\n");				\
-+	add_taint(TAINT_KUNIT, LOCKDEP_STILL_OK);	\
- 	selftest();					\
- 	return kstm_report(total_tests, failed_tests, skipped_tests);	\
- }							\
--- 
-2.37.0.rc0.161.g10f37bed90-goog
-
+YES!, thank you!
