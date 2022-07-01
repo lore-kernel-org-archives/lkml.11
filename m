@@ -2,59 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8712CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A43CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbiGAJN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
+        id S235258AbiGAJNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233002AbiGAJN1 (ORCPT
+        with ESMTP id S232319AbiGAJNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:13:27 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA75135DDE;
-        Fri,  1 Jul 2022 02:13:25 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VI0Z9O5_1656666803;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VI0Z9O5_1656666803)
-          by smtp.aliyun-inc.com;
-          Fri, 01 Jul 2022 17:13:23 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     peterhuewe@gmx.de
-Cc:     jarkko@kernel.org, jgg@ziepe.ca, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH -next] tpm: fix platform_no_drv_owner.cocci warning
-Date:   Fri,  1 Jul 2022 17:13:22 +0800
-Message-Id: <20220701091322.59384-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 1 Jul 2022 05:13:51 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9AA2440E68;
+        Fri,  1 Jul 2022 02:13:50 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id EBAE81E80D22;
+        Fri,  1 Jul 2022 17:12:20 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id KGUK4whbTKxV; Fri,  1 Jul 2022 17:12:18 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 3E7AF1E80D21;
+        Fri,  1 Jul 2022 17:12:18 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        shuah@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] net/cmsg_sender: Remove a semicolon
+Date:   Fri,  1 Jul 2022 17:13:45 +0800
+Message-Id: <20220701091345.2816-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the following coccicheck warning:
-./drivers/char/tpm/tpm_tis_i2c.c:379:3-8: No need to set .owner here.  The core will do it.
+Remove the repeated ';' from code.
 
-Remove .owner field if calls are used which set it automatically
-
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
 ---
- drivers/char/tpm/tpm_tis_i2c.c | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/net/cmsg_sender.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/tpm/tpm_tis_i2c.c b/drivers/char/tpm/tpm_tis_i2c.c
-index 8e0686fe4eb1..ba0911b1d1ff 100644
---- a/drivers/char/tpm/tpm_tis_i2c.c
-+++ b/drivers/char/tpm/tpm_tis_i2c.c
-@@ -376,7 +376,6 @@ MODULE_DEVICE_TABLE(of, of_tis_i2c_match);
+diff --git a/tools/testing/selftests/net/cmsg_sender.c b/tools/testing/selftests/net/cmsg_sender.c
+index bc2162909a1a..75dd83e39207 100644
+--- a/tools/testing/selftests/net/cmsg_sender.c
++++ b/tools/testing/selftests/net/cmsg_sender.c
+@@ -456,7 +456,7 @@ int main(int argc, char *argv[])
+ 		buf[1] = 0;
+ 	} else if (opt.sock.type == SOCK_RAW) {
+ 		struct udphdr hdr = { 1, 2, htons(opt.size), 0 };
+-		struct sockaddr_in6 *sin6 = (void *)ai->ai_addr;;
++		struct sockaddr_in6 *sin6 = (void *)ai->ai_addr;
  
- static struct i2c_driver tpm_tis_i2c_driver = {
- 	.driver = {
--		.owner = THIS_MODULE,
- 		.name = "tpm_tis_i2c",
- 		.pm = &tpm_tis_pm,
- 		.of_match_table = of_match_ptr(of_tis_i2c_match),
+ 		memcpy(buf, &hdr, sizeof(hdr));
+ 		sin6->sin6_port = htons(opt.sock.proto);
 -- 
-2.20.1.7.g153144c
+2.18.2
 
