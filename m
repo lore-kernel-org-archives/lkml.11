@@ -2,142 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C85D3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20131CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234690AbiGAI3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:29:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        id S235007AbiGAI3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237068AbiGAI2U (ORCPT
+        with ESMTP id S235337AbiGAI2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:28:20 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DB370AFE;
-        Fri,  1 Jul 2022 01:27:25 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LZ7Wq6kx8zTgHP;
-        Fri,  1 Jul 2022 16:23:51 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 16:27:23 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <mpe@ellerman.id.au>, <benh@kernel.crashing.org>,
-        <paulus@samba.org>, <npiggin@gmail.com>,
-        <christophe.leroy@csgroup.eu>, <tglx@linutronix.de>,
-        <mark.rutland@arm.com>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <linux-hardening@vger.kernel.org>
-Subject: [PATCH -next v3 2/2] powerpc: add support for syscall stack randomization
-Date:   Fri, 1 Jul 2022 16:24:35 +0800
-Message-ID: <20220701082435.126596-3-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220701082435.126596-1-xiujianfeng@huawei.com>
-References: <20220701082435.126596-1-xiujianfeng@huawei.com>
+        Fri, 1 Jul 2022 04:28:46 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18972F64E
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:28:44 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id q6so2651051eji.13
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KpRihbZiSTt9WSRfafM5Hr6SzD6WulPA9ejW+Q/RSW4=;
+        b=urqzcie5Vsin+uIl/jgbKt65PLgul2NzQXuJT76Fp6UK2Nk6X2m4bHrGffOW0JjmuE
+         bp3HklF/K6nR3d+yvEq1LonlPa4C73uWvY1875g2tmBhQ/PdioH6R/ArOhhJDOECD+bq
+         nMMzilAeWFUFDvsO45lhzLtFgGdjpJnUnF60WFOsm2gccwSmsWDjyjlx79q/Yd9/qMYh
+         qTUc2IrHfHMtOrWE3VCLxFa4AXGnAeimo4dqdLdrCUeqzu56YZ7SjQewdsEJj5inHQ/J
+         tJPSMqnL/N7HbQIJbl7uhQrOqtV1EyejR6AOOKZr/1swaQrJ8mGrNL9ZFlQXGVfhAsMD
+         Ng1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KpRihbZiSTt9WSRfafM5Hr6SzD6WulPA9ejW+Q/RSW4=;
+        b=csMP+VmJ9aE3R35H20SomnCjeNlER0GeSUTw6r6/gDW36HIUGZWo34eSkeRZavhnwJ
+         jPMY98SdmuqvdSL6ghGq1f7sg0OeKQFStPQ5tOeb/WJIQmFTgKCZGMin1v4QWxA/ifWQ
+         Ai2L8Uqd1s/grDXFyMU40zKxxN3tLmwgswYoybm7Y71Jpl+xRAN5EHWtDFcmN0CT61VA
+         /eKR2RbumNC3uVtg++CP1YaePoNrgBi797jT5DanPqM20autpZrH9iIZEGyFeD7u6Lhx
+         rs9p44BE9Dy6V7vKnG0bVZUbW3PrHSZ4zFjrLEOYNQQTrDiZvqnpxtA7twSuhDpOuufm
+         k36A==
+X-Gm-Message-State: AJIora84PusGm0XLwvguv+Z66/rlv76Wj9s9zZbHG7URJSyoUXT13FCg
+        2LqgwBlMW1vmZNDPRbwM5VmC5Q==
+X-Google-Smtp-Source: AGRyM1tsY/ZhfsK0nitrIZl9qMahGP5WendMPNYNOe5gVtJZkp37q6OwEpwydF354sR9EH6KMrEG0w==
+X-Received: by 2002:a17:907:7d8b:b0:726:aad6:f421 with SMTP id oz11-20020a1709077d8b00b00726aad6f421mr12821705ejc.80.1656664123249;
+        Fri, 01 Jul 2022 01:28:43 -0700 (PDT)
+Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id d16-20020a170906545000b006feb20b5235sm10202295ejp.84.2022.07.01.01.28.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 01:28:42 -0700 (PDT)
+Message-ID: <2d63cbf2-8e59-a8db-3faf-747b92d2eb66@linaro.org>
+Date:   Fri, 1 Jul 2022 10:28:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] MAINTAINERS: pinctrl: update qcom file list to include
+ yaml files
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        bjorn.andersson@linaro.org, linus.walleij@linaro.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220629092514.70752-1-srinivas.kandagatla@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220629092514.70752-1-srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for adding a random offset to the stack while handling
-syscalls. This patch uses mftb() instead of get_random_int() for better
-performance.
+On 29/06/2022 11:25, Srinivas Kandagatla wrote:
+> Currently Qualcomm pinctrl MAINTAINERS file list does not include yaml
+> files. Include this for correctness.
+> 
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index c4648e86dc14..71e7725aa574 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15765,6 +15765,7 @@ M:	Bjorn Andersson <bjorn.andersson@linaro.org>
+>  L:	linux-arm-msm@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/pinctrl/qcom,*.txt
+> +F:	Documentation/devicetree/bindings/pinctrl/qcom,*.yaml
 
-In order to avoid unconditional stack canaries on syscall entry (due to
-the use of alloca()), also disable stack protector to avoid triggering
-needless checks and slowing down the entry path. As there is no general
-way to control stack protector coverage with a function attribute, this
-must be disabled at the compilation unit level.
+Instead just:
+Documentation/devicetree/bindings/pinctrl/qcom,*
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- arch/powerpc/Kconfig          |  1 +
- arch/powerpc/kernel/Makefile  |  7 +++++++
- arch/powerpc/kernel/syscall.c | 19 ++++++++++++++++++-
- 3 files changed, 26 insertions(+), 1 deletion(-)
+>  F:	drivers/pinctrl/qcom/
+>  
+>  PIN CONTROLLER - RENESAS
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index c2ce2e60c8f0..a402b97abc9c 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -195,6 +195,7 @@ config PPC
- 	select HAVE_ARCH_KASAN			if PPC_RADIX_MMU
- 	select HAVE_ARCH_KASAN_VMALLOC		if HAVE_ARCH_KASAN
- 	select HAVE_ARCH_KFENCE			if PPC_BOOK3S_32 || PPC_8xx || 40x
-+	select HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
- 	select HAVE_ARCH_KGDB
- 	select HAVE_ARCH_MMAP_RND_BITS
- 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if COMPAT
-diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
-index ecfd333b95d1..c29a58ea6e31 100644
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -53,6 +53,13 @@ CFLAGS_cputable.o += -DDISABLE_BRANCH_PROFILING
- CFLAGS_btext.o += -DDISABLE_BRANCH_PROFILING
- endif
- 
-+#ifdef CONFIG_RANDOMIZE_KSTACK_OFFSET
-+# Remove stack protector to avoid triggering unneeded stack canary
-+# checks due to randomize_kstack_offset.
-+CFLAGS_REMOVE_syscall.o = -fstack-protector -fstack-protector-strong
-+CFLAGS_syscall.o += -fno-stack-protector
-+#endif
-+
- obj-y				:= cputable.o syscalls.o \
- 				   irq.o align.o signal_$(BITS).o pmc.o vdso.o \
- 				   process.o systbl.o idle.o \
-diff --git a/arch/powerpc/kernel/syscall.c b/arch/powerpc/kernel/syscall.c
-index 4d5689eeaf25..9a30fe0d3a93 100644
---- a/arch/powerpc/kernel/syscall.c
-+++ b/arch/powerpc/kernel/syscall.c
-@@ -2,6 +2,7 @@
- 
- #include <linux/compat.h>
- #include <linux/context_tracking.h>
-+#include <linux/randomize_kstack.h>
- 
- #include <asm/interrupt.h>
- #include <asm/kup.h>
-@@ -18,10 +19,12 @@ notrace long system_call_exception(long r3, long r4, long r5,
- 				   long r6, long r7, long r8,
- 				   unsigned long r0, struct pt_regs *regs)
- {
-+	long ret;
- 	syscall_fn f;
- 
- 	kuap_lock();
- 
-+	add_random_kstack_offset();
- 	regs->orig_gpr3 = r3;
- 
- 	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
-@@ -169,5 +172,19 @@ notrace long system_call_exception(long r3, long r4, long r5,
- 		f = (void *)sys_call_table[r0];
- 	}
- 
--	return f(r3, r4, r5, r6, r7, r8);
-+	ret = f(r3, r4, r5, r6, r7, r8);
-+	/*
-+	 * Ultimately, this value will get limited by KSTACK_OFFSET_MAX(),
-+	 * so the maximum stack offset is 1k bytes(10 bits).
-+	 *
-+	 * The actual entropy will be further reduced by the compiler when
-+	 * applying stack alignment constraints: the powerpc architecture
-+	 * may have two kinds of stack alignment(16-bytes and 8-bytes).
-+	 *
-+	 * So the resulting 6 or 7 bits of entropy is seen in SP[9:4] or SP[9:3].
-+	 *
-+	 */
-+	choose_random_kstack_offset(mftb());
-+
-+	return ret;
- }
--- 
-2.17.1
 
+Best regards,
+Krzysztof
