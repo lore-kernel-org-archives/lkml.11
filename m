@@ -2,101 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2383C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 17:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D83C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 17:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbiGARtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 13:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        id S231261AbiGARwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 13:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiGARtM (ORCPT
+        with ESMTP id S230504AbiGARwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 13:49:12 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E1A38DB1;
-        Fri,  1 Jul 2022 10:49:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=JKTGayWcHy1CRY5akoOpVqKPvu3lbbkaXvrXRBSaOY8=; b=D7BeEFa01MXEbrmVsMP7njCwS7
-        vwZubJZnPr6xb2EL/94sSz+dg0Cnhchm0ZVNk0uAJq6thBRmQ8IwCtIDhMqtNxaqG4zdExk9+6m4a
-        4GWXpfQ3s7CEce69EdP3XXG5wwFFYiBlMEUNKXnW14z37a3Am5JrfoFv7TPAxOeU7fi9UiDna906g
-        MxRG02tAKoYAdGEKnRd068+G0a8EPLYdY4b5m6s0mXyT55RYgxvSeOWpXfRO72P3hAf7SxuCVceFI
-        R8sdiKrcMfBUcXau93UyeC2kSRy/kqMLiIdB0jUc5A/rHAMpZShtXV3Pu362d1mm0aSPPHQo0lW1V
-        qJK09ulA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o7KlS-006HP9-8e; Fri, 01 Jul 2022 17:49:10 +0000
-Date:   Fri, 1 Jul 2022 10:49:10 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     linux-modules <linux-modules@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [ANNOUNCE] kmod 30
-Message-ID: <Yr8zlqicFErzw0dc@bombadil.infradead.org>
-References: <20220630153621.3fggpqrbyvunhwfu@ldmartin-desk2>
- <Yr4fHBR08VAVbs2E@bombadil.infradead.org>
- <20220630223323.2hko2imx62embtsj@ldmartin-desk2>
+        Fri, 1 Jul 2022 13:52:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC9523AA48
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 10:52:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656697956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=67MJyXaDqImTHwnOnH/GBMo2aZ3gIWFmeSkeeeT9284=;
+        b=dE6AyjtiQ1L2nPRgOgMpJ7gZgGSEKtloGwYpabyLng7ZFVSMWfRKqOGTlNSbkPnOB2677w
+        OfsbfzHjdJKCl4INLNYX1a0/yN+oTG/ewvQVL2YwY8P5T6xEUe26e94qqI2wBhzhzB/wiT
+        3BwuqbQGdJsbB0KS/PoqPel0UOHY6G8=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-177-cYzi1UYKMTyamxtDuGPDWw-1; Fri, 01 Jul 2022 13:52:35 -0400
+X-MC-Unique: cYzi1UYKMTyamxtDuGPDWw-1
+Received: by mail-pg1-f198.google.com with SMTP id a15-20020a65604f000000b00401a9baf7d5so1526904pgp.0
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 10:52:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=67MJyXaDqImTHwnOnH/GBMo2aZ3gIWFmeSkeeeT9284=;
+        b=Fc6QED3HoCrw+tm4cEvpbrZmK9MZHNaZqhsAZsvJ2YiiN8ZiESXye+DxKhcoAT9Kxm
+         PGLgxDXZYXDhNRN/hHhuoVOs8f4UImUj76JbJ+GuqDxsVeL2rLKuIM31fKVO4EpMr4Od
+         Jt6SjNkMIViR39rMzEOmYtPKEaER6g/kFAj9NOOUPBRrBqCVk7dCIdpujJNwMPbsIlCl
+         mILXmUehXv4h3C47xXpguYwaBq4t5NWzD0mgdfQzwW2KFeUkjXoFAw8XpSBAH8se4mmS
+         d7DfWCsD16JYpL7Dw5dfZ35wduRtmsFgLZyJ9JS9AB96UYjPXSNE1CXCjiZBJZCnMkCO
+         wlXg==
+X-Gm-Message-State: AJIora+0HvvSwOu9wkLHLK2+4/GKNWVyRobaUMnvtEbUmoIDKpCdP9cK
+        5lXQEsNTsZF0nJGILPcedWk2YpYsimTFgRCCGTL3BPHw8iiZfb892Q/TbLu2whxjeedvltjB2B0
+        UjRTEoJGqxsYON/6AeMo+rIfx
+X-Received: by 2002:a63:1809:0:b0:408:417a:6fa5 with SMTP id y9-20020a631809000000b00408417a6fa5mr13486189pgl.228.1656697954699;
+        Fri, 01 Jul 2022 10:52:34 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tiyDKemehCIPbCYtSalbzT9O2Eo+2uaZrA4LQQS6N4cxzBFgMrJZFlFqYmEd/iyq0Cd64CEA==
+X-Received: by 2002:a63:1809:0:b0:408:417a:6fa5 with SMTP id y9-20020a631809000000b00408417a6fa5mr13486167pgl.228.1656697954439;
+        Fri, 01 Jul 2022 10:52:34 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id p5-20020a1709026b8500b00163fbb1eec5sm15712052plk.229.2022.07.01.10.52.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 10:52:33 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 10:52:32 -0700
+From:   Jerry Snitselaar <jsnitsel@redhat.com>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     dmaengine@vger.kernel.org, Fenghua Yu <fenghua.yu@intel.com>,
+        linux-kernel@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>
+Subject: Re: [PATCH v3] dmaengine: idxd: Only call idxd_enable_system_pasid()
+ if succeeded in enabling SVA feature
+Message-ID: <20220701175232.e27zznvohnkzvjdq@cantor>
+References: <20220625221333.214589-1-jsnitsel@redhat.com>
+ <20220626051648.14249-1-jsnitsel@redhat.com>
+ <YrfwaC06wZfUTHjH@fyu1.sc.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220630223323.2hko2imx62embtsj@ldmartin-desk2>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <YrfwaC06wZfUTHjH@fyu1.sc.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 03:33:23PM -0700, Lucas De Marchi wrote:
-> On Thu, Jun 30, 2022 at 03:09:32PM -0700, Luis Chamberlain wrote:
-> > Sorry for the super late review, I was swamped. OK so the only issue
-> > I can think of is that rmmod *used* to support the kernel wait support
-> > with $(rmmod --wait) so wouldn't this be odd?
+On Sat, Jun 25, 2022 at 10:36:40PM -0700, Fenghua Yu wrote:
+> On Sat, Jun 25, 2022 at 10:16:48PM -0700, Jerry Snitselaar wrote:
+> > On a Sapphire Rapids system if boot without intel_iommu=on, the IDXD
+> > driver will crash during probe in iommu_sva_bind_device().
+> > Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
 > 
-> any reason not to use modprobe -r? 
-
-I was referring to old scripts which may have used $(rmmod --wait) before.
-But since support for that was ripped, then yeah I can see that should
-not be an issue.
-
-However I can think of *one* issue, did we ever support `modprobe--wait`?
-
-Because the way fstests / blktests would implement this feature
-detection is with something like this now:
-
-_has_modprobe_patient()
-{
-	modprobe --help >& /dev/null || return 1
-	modprobe --help | grep -q -1 "remove-patiently" || return 1
-	return 0
-}
-
-> > It is why I had gone with:
-> > 
-> > -p | --remove-patiently   patiently removes the module
-> > -t | --timeout            timeout in ms to remove the module
-> > 
-> > You would know better though.
-> > 
-> > Also just curious, is it really terrible to just support waiting
-> > forever?
+> Acked-by: Fenghua Yu <fenghua.yu@intel.com>
 > 
-> is there a use case for that? If we are trying to cover some races, I
-> imagine a small timeout would be sufficient. Also notice that if the
-> timeout is too big, so will be the interval between the retries.  On
-> your v2 I had suggested polling the refcnt so we would get notificed
-> on changes, but as you also noticed, that didn't work very well.  So I
-> went back to a time-based retry solution.
+> Thanks.
 > 
-> if there is a use-case, should we cap the interval between retries?
+> -Fenghua
 
-I really can't think of a use case except for catching glaring
-unexpected bugs in test suites where the kernel developer would
-really like to know something really bad happened, but even then
-a timeout is likely desirable.
+Hi Vinod,
 
-So just a heads up the timeout I'll use for fstests / blktests will be
-of 100 seconds.
+Should this get pulled into your fixes branch?
 
-Thanks for this work!
+Regards,
+Jerry
 
-  Luis
