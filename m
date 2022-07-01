@@ -2,210 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D648C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22499C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 12:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236169AbiGAMuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 08:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
+        id S231535AbiGAMv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 08:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234116AbiGAMuL (ORCPT
+        with ESMTP id S234116AbiGAMv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 08:50:11 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCACF31355
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 05:50:04 -0700 (PDT)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220701124959euoutp012316607ea9254cfe9fd74f90872e8432~9tYAZOcVX1177611776euoutp01O
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 12:49:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220701124959euoutp012316607ea9254cfe9fd74f90872e8432~9tYAZOcVX1177611776euoutp01O
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1656679799;
-        bh=lC7l7ShORdeHUR50h1I8x8Sjs+TM+jdEK7iT2+C8CLs=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=GEe3l+AoGjgkdoz4wkuJWLgwtIueavcmxM32e8Ud9p/N8qcfwZlhP9BKqBkL83Bhd
-         aBr9luGqerwgSmjp2bIaz3LkVsmkQwmG8Fb+rmFmOaRe0hJK89pbo3NIajTjRLjN7c
-         vv2B/WfNfUsH2cSq2nC34hiHnG7GD8x0zCd77ePk=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220701124958eucas1p29fe5870880a4116aec107527508c2d95~9tX-tU_I33066630666eucas1p25;
-        Fri,  1 Jul 2022 12:49:58 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id A7.02.10067.67DEEB26; Fri,  1
-        Jul 2022 13:49:58 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220701124958eucas1p16ded64c878c71f46b92955be0a95daea~9tX-XwZ030975709757eucas1p1j;
-        Fri,  1 Jul 2022 12:49:58 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220701124958eusmtrp2f4194b655761707b9274b3d06f7f6ea6~9tX-XH0jL0109401094eusmtrp2_;
-        Fri,  1 Jul 2022 12:49:58 +0000 (GMT)
-X-AuditID: cbfec7f4-dc1ff70000002753-4e-62beed7671cb
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id E1.60.09038.67DEEB26; Fri,  1
-        Jul 2022 13:49:58 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220701124958eusmtip29a18dfab9fcd5ec55964ec18a29f11d6~9tX-BfIwx0375103751eusmtip2Y;
-        Fri,  1 Jul 2022 12:49:58 +0000 (GMT)
-Message-ID: <ad06d3c3-7878-9106-e118-f89e2de91a1f@samsung.com>
-Date:   Fri, 1 Jul 2022 14:49:57 +0200
+        Fri, 1 Jul 2022 08:51:26 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1DC31920
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 05:51:25 -0700 (PDT)
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0150C3F1E0
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 12:51:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1656679884;
+        bh=SOG/VBC//rJ6Enw3YOndmECtgLMXa+sFIIC3B/W9Q0s=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=AU05GE0MHA7JLgEdJUp0bgVNRh8S2/Dkte/RZQ1hP2hQ4E2yZBYmBgGNWZU/z0FFd
+         StmeP83ZLDaRe7EmBUNyfZPM++lo/1LTkgu3JDpGvJS0OradcDL57Qq5mnqCqzf0q8
+         6akdi5HR8Utpjjyvs502mVpXfxB4RlQl90SzfjnPc16lbLgDNC09qk/AS7y3OyqK5y
+         0FdOIsFMjuTWyvhcSyFV/E3ie0Ij9QVFBNjU5ssW6Hbx3kRbP6Dwi4Z//cJrON2VrP
+         WPfuxFWiY7Xr2XMorX+RzhGyss/p5hOaNM6rTXfa3AytHycKx/cWDx1HljTJFgyEke
+         OxA8zdzudpLVA==
+Received: by mail-pg1-f200.google.com with SMTP id g67-20020a636b46000000b0040e64eee874so1242655pgc.4
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 05:51:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SOG/VBC//rJ6Enw3YOndmECtgLMXa+sFIIC3B/W9Q0s=;
+        b=siAN5NB6U/RqR2YU9iDwi4QoD+yCdCdbd9hcszGOm4FTzl2mu0rGSqfogs1o6XN9qv
+         jHJWqghvlpYbwNZYyjCMgQVFCWaC637pwlTk21KpLxe7R+9VP7W/UV4d3V6hLcpcnuq4
+         flIMCGuzcOXXcdIRHjl2Ym0ht1c1UVZR1bE3/OAvmtevmO3ZtL0knErIZ9VAHh3+jKzH
+         yvbHNL0FvwJD/P7zqDfsCyRqQkAlNpmZmHLW0aZ+fiP1vNXzU52+4lFpuP4vvut/Mf93
+         wN+pexR8BfFQTdMubBh5B9Tg8WJ2ITEYKYqoq9cnK7jGEfg+Ueg8PgQ4Tee7C9R4grSH
+         NC/Q==
+X-Gm-Message-State: AJIora/QOVi8R/s8/ppyd9XHfQDW8t15MCxYI5orzdYNvkx77xK1tfCb
+        +huASM+rEsjawIJ+PWEpieqq/YwmfytYwvOcwvfJcbqMTkrah3KCCUikS3urlrG0WQfNHQLuVkw
+        +P0l/yujzx2ay7k34YxLmxAxPUm79+EWXRFhwapsQBZOcBnfnhNQ0X5WN
+X-Received: by 2002:a17:90b:3b44:b0:1ec:d7a8:7528 with SMTP id ot4-20020a17090b3b4400b001ecd7a87528mr18493164pjb.231.1656679879891;
+        Fri, 01 Jul 2022 05:51:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u1Ie4n0kwk5q5OgJth6/oefXYVrmG3sbVp3cVySLsAEV7sjVKLA/tmnoU47zgjKdXY4iovOMA40oVR9GksqAU=
+X-Received: by 2002:a17:90b:3b44:b0:1ec:d7a8:7528 with SMTP id
+ ot4-20020a17090b3b4400b001ecd7a87528mr18493128pjb.231.1656679879459; Fri, 01
+ Jul 2022 05:51:19 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH v7 2/4] kernfs: Change kernfs_notify_list to llist.
-Content-Language: en-US
-To:     Imran Khan <imran.f.khan@oracle.com>, tj@kernel.org,
-        gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
-Cc:     linux-kernel@vger.kernel.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <9e95f138-9ec5-90fc-7ea9-cf8cff8bf180@oracle.com>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnleLIzCtJLcpLzFFi42LZduzned2yt/uSDHq7TS2aF69ns/g+6Smr
-        xeVdc9gsfi0/ymhx/u9xVgdWj02rOtk89s9dw+7x8ektFo/Pm+Q8Nj15yxTAGsVlk5Kak1mW
-        WqRvl8CV8a+vlbVglnzFgi7BBsaJkl2MnBwSAiYS/4/cZwOxhQRWMEos2QtkcwHZXxglvs18
-        xgjhfGaU2DZ5OStMx7UVK1ghEssZJWacuglV9ZFRYtGB8+wgVbwCdhLtl58wdTFycLAIqEg0
-        3y+BCAtKnJz5hAXEFhVIljh39irYamEBd4ml02+AxZkFxCVuPZnPBGKLCORJTJr7HCquIPHr
-        3iawI9gEDCW63naB9XICrfr2/DZUjbxE89bZzCD3SAgc4ZD4fXk/M8TVLhKnW2axQdjCEq+O
-        b2GHsGUk/u+cD3anhEC+xN8ZxhDhColrr9dAtVpL3Dn3iw2khFlAU2L9Ln2IsKPEpWeHGSE6
-        +SRuvBWEuIBPYtK26cwQYV6JjjYhiGo1iVnH18HtPHjhEvMERqVZSGEyC8nvs5D8Mgth7wJG
-        llWM4qmlxbnpqcVGeanlesWJucWleel6yfm5mxiBaeb0v+NfdjAuf/VR7xAjEwfjIUYJDmYl
-        EV62eXuThHhTEiurUovy44tKc1KLDzFKc7AoifMmZ25IFBJITyxJzU5NLUgtgskycXBKNTAZ
-        zfY++9GzamUKz6TlEtvnO1x1V7wQsTaH+YSbanrN7shlE/6XfVYUnlvPkLdkxZ4JSkc0U1f3
-        Npmm3fD2twpemGNULXf6St/KCFEPmaSNBxg3FfBObK1zXJVzKkujlJNrR9E/O92jTTVv1k1V
-        qE/4eu1mbc28huWrrbvvvcz9FuewL+HJpuezL2x9vCqwotrupeKxZZuS9py6Zuf2LHRJefk+
-        300c+6+0f0i+U6KxIfo4a6G9ze/u4pr1Uel7Vi5VnPDccWqBsV3Ek/u/C2uUH/IFOfibN/9p
-        /Jf3rrX6RunDy6aLHX5s5ZJY+OnVvH8cBg1GrJPuydQXsfbJtH6oeX9ucxFLh2fc42W3JS4r
-        sRRnJBpqMRcVJwIAc5u0iKIDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrCIsWRmVeSWpSXmKPExsVy+t/xe7plb/clGbxpUbZoXryezeL7pKes
-        Fpd3zWGz+LX8KKPF+b/HWR1YPTat6mTz2D93DbvHx6e3WDw+b5Lz2PTkLVMAa5SeTVF+aUmq
-        QkZ+cYmtUrShhZGeoaWFnpGJpZ6hsXmslZGpkr6dTUpqTmZZapG+XYJexr++VtaCWfIVC7oE
-        GxgnSnYxcnJICJhIXFuxgrWLkYtDSGApo8TrLavZIBIyEienNbBC2MISf651sUEUvWeUuPt4
-        NxNIglfATqL98hMgm4ODRUBFovl+CURYUOLkzCcsILaoQLJE85ZDYOXCAu4SS6ffAIszC4hL
-        3HoyH6xVRCBP4t26MIiwgsSve5ug7lnHJPGopYcRJMEmYCjR9bYL7DZOoLXfnt+GmmMm0bW1
-        ixHClpdo3jqbeQKj0CwkZ8xCsm4WkpZZSFoWMLKsYhRJLS3OTc8tNtIrTswtLs1L10vOz93E
-        CIyubcd+btnBuPLVR71DjEwcjIcYJTiYlUR42ebtTRLiTUmsrEotyo8vKs1JLT7EaAoMionM
-        UqLJ+cD4ziuJNzQzMDU0MbM0MLU0M1YS5/Us6EgUEkhPLEnNTk0tSC2C6WPi4JRqYCovuLX6
-        4Iw9dgcK7hVI5UrqPrhaeEntdryRG/+zf8YhDQ47NBKDbut8WuY4TfG1fzdfXZ1Yg/r9wpV8
-        WckLavSX8T2eLh8Xp9Ce65u4grOH0XzhFJbsXWcnafaqzWARM08V6qn311HqS7Pz8TJyLNyw
-        NGLRAavQT6osBvOeVfDNePX8iubyZZ6X2ax0H0zJ6eI1aKr4eX7hbu+oUx3C4qo7Vv2Ocj1S
-        v+zdDslpyz1LerZxx61p7uy5zifTtpldM/+molP0U79VDbdNF2wrWljHu/XeqcdP2yROzel2
-        /hYVFcfU8y5st9SFO/umxcSaSSqz7fvc4rXsduiiWenvT/x74NSYvvCKxYR4lXWlSizFGYmG
-        WsxFxYkAdbUEhDcDAAA=
-X-CMS-MailID: 20220701124958eucas1p16ded64c878c71f46b92955be0a95daea
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220701112210eucas1p2d2db45881086f41b73527f7536537aa5
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220701112210eucas1p2d2db45881086f41b73527f7536537aa5
-References: <20220615021059.862643-1-imran.f.khan@oracle.com>
-        <20220615021059.862643-3-imran.f.khan@oracle.com>
-        <CGME20220701112210eucas1p2d2db45881086f41b73527f7536537aa5@eucas1p2.samsung.com>
-        <270b640d-d5e8-b775-9a16-5d5d07f959ff@samsung.com>
-        <9e95f138-9ec5-90fc-7ea9-cf8cff8bf180@oracle.com>
+References: <20220429104052.345760505@linuxfoundation.org> <20220429104053.296096344@linuxfoundation.org>
+ <CAMy_GT9YbgqsoLbCDqhHpXNW6EejgK+YaE4YPxpxcmer+qn-1g@mail.gmail.com> <YrWbZi7jt1x83tRC@kroah.com>
+In-Reply-To: <YrWbZi7jt1x83tRC@kroah.com>
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+Date:   Fri, 1 Jul 2022 20:51:07 +0800
+Message-ID: <CAMy_GT_quYAnZBDx76TkjaDOH0jG6EL_Do0+MAc4VF4-189wEg@mail.gmail.com>
+Subject: Re: [PATCH 5.15 33/33] selftests/bpf: Add test for reg2btf_ids out of
+ bounds access
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 01.07.2022 14:20, Imran Khan wrote:
-> On 1/7/22 9:22 pm, Marek Szyprowski wrote:
->> On 15.06.2022 04:10, Imran Khan wrote:
->>> At present kernfs_notify_list is implemented as a singly linked
->>> list of kernfs_node(s), where last element points to itself and
->>> value of ->attr.next tells if node is present on the list or not.
->>> Both addition and deletion to list happen under kernfs_notify_lock.
->>>
->>> Change kernfs_notify_list to llist so that addition to list can heppen
->>> locklessly.
->>>
->>> Suggested by: Al Viro <viro@zeniv.linux.org.uk>
->>> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
->>> Acked-by: Tejun Heo <tj@kernel.org>
->> This patch landed in linux next-20220630 as commit b8f35fa1188b
->> ("kernfs: Change kernfs_notify_list to llist."). Unfortunately, it
->> causes serious regression on my test systems. It can be easily noticed
->> in the logs by the following warning:
->>
->> ------------[ cut here ]------------
->> WARNING: CPU: 1 PID: 34 at fs/kernfs/dir.c:531 kernfs_put.part.0+0x1a4/0x1d8
->> kernfs_put: console/active: released with incorrect active_ref 0
->> Modules linked in:
->> CPU: 1 PID: 34 Comm: kworker/1:4 Not tainted
->> 5.19.0-rc4-05465-g5732b42edfd1 #12317
->> Hardware name: Samsung Exynos (Flattened Device Tree)
->> Workqueue: events kernfs_notify_workfn
->>    unwind_backtrace from show_stack+0x10/0x14
->>    show_stack from dump_stack_lvl+0x40/0x4c
->>    dump_stack_lvl from __warn+0xc8/0x13c
->>    __warn from warn_slowpath_fmt+0x90/0xb4
->>    warn_slowpath_fmt from kernfs_put.part.0+0x1a4/0x1d8
->>    kernfs_put.part.0 from kernfs_notify_workfn+0x1a0/0x1d0
->>    kernfs_notify_workfn from process_one_work+0x1ec/0x4cc
->>    process_one_work from worker_thread+0x58/0x54c
->>    worker_thread from kthread+0xd0/0xec
->>    kthread from ret_from_fork+0x14/0x2c
->> Exception stack(0xf099dfb0 to 0xf099dff8)
->> ...
->> ---[ end trace 0000000000000000 ]---
->>
-> Thanks for reporting this issue. It has been reported earlier in [1] as well. I
-> am unable to reproduce it locally. Could you please test with following patch on
-> top of linux next-20220630 and let me know if it helps:
-
-Yes, this fixes the issue. Feel free to add:
-
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-Maybe it is related to the fact, that I have earlycon enabled on those 
-machines?
-
-> >From 6bf7f1adc4b091dc6d6c60e0dd0f16247f61f374 Mon Sep 17 00:00:00 2001
-> From: Imran Khan <imran.f.khan@oracle.com>
-> Date: Fri, 1 Jul 2022 14:27:52 +1000
-> Subject: [PATCH] kernfs: Avoid re-adding kernfs_node into kernfs_notify_list.
+On Fri, Jun 24, 2022 at 7:44 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> ---
->   fs/kernfs/file.c | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
+> On Fri, Jun 24, 2022 at 06:33:57PM +0800, Po-Hsu Lin wrote:
+> > On Fri, Apr 29, 2022 at 6:47 PM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > >
+> > > commit 13c6a37d409db9abc9c0bfc6d0a2f07bf0fff60e upstream.
+> > >
+> > > This test tries to pass a PTR_TO_BTF_ID_OR_NULL to the release functi=
+on,
+> > > which would trigger a out of bounds access without the fix in commit
+> > > 45ce4b4f9009 ("bpf: Fix crash due to out of bounds access into reg2bt=
+f_ids.")
+> > > but after the fix, it should only index using base_type(reg->type),
+> > > which should be less than __BPF_REG_TYPE_MAX, and also not permit any
+> > > type flags to be set for the reg->type.
+> > >
+> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > > Link: https://lore.kernel.org/bpf/20220220023138.2224652-1-memxor@gma=
+il.com
+> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > ---
+> > >  tools/testing/selftests/bpf/verifier/calls.c |   19 ++++++++++++++++=
++++
+> > >  1 file changed, 19 insertions(+)
+> > >
+> > > --- a/tools/testing/selftests/bpf/verifier/calls.c
+> > > +++ b/tools/testing/selftests/bpf/verifier/calls.c
+> > > @@ -108,6 +108,25 @@
+> > >         .errstr =3D "R0 min value is outside of the allowed memory ra=
+nge",
+> > >  },
+> > >  {
+> > > +       "calls: trigger reg2btf_ids[reg->type] for reg->type > __BPF_=
+REG_TYPE_MAX",
+> > > +       .insns =3D {
+> > > +       BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
+> > > +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
+> > > +       BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
+> > > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0,=
+ 0),
+> > > +       BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
+> > > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0,=
+ 0),
+> > > +       BPF_EXIT_INSN(),
+> > > +       },
+> > > +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
+> > > +       .result =3D REJECT,
+> > > +       .errstr =3D "arg#0 pointer type STRUCT prog_test_ref_kfunc mu=
+st point",
+> > > +       .fixup_kfunc_btf_id =3D {
+> > > +               { "bpf_kfunc_call_test_acquire", 3 },
+> > > +               { "bpf_kfunc_call_test_release", 5 },
+> > > +       },
+> > > +},
+> > > +{
+> > >         "calls: overlapping caller/callee",
+> > >         .insns =3D {
+> > >         BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 0),
+> > >
+> > >
+> >
+> > Hello Greg,
+> >
+> > When I tried to build the bpf selftest from 5.15.49 source tree on a
+> > Ubuntu Jammy instance running with 5.15.49-051549-generic, I got the
+> > following error message:
+> >
+> > In file included from
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/tests.h:21,
+> >                  from test_verifier.c:432:
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:124:10:
+> > error: =E2=80=98struct bpf_test=E2=80=99 has no member named =E2=80=98f=
+ixup_kfunc_btf_id=E2=80=99
+> >   124 |         .fixup_kfunc_btf_id =3D {
+> >       |          ^~~~~~~~~~~~~~~~~~
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:124:9:
+> > warning: braces around scalar initializer
+> >   124 |         .fixup_kfunc_btf_id =3D {
+> >       |         ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:124:9:
+> > note: (near initialization for =E2=80=98tests[150].errstr_unpriv=E2=80=
+=99)
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:17:
+> > warning: braces around scalar initializer
+> >   125 |                 { "bpf_kfunc_call_test_acquire", 3 },
+> >       |                 ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:17:
+> > note: (near initialization for =E2=80=98tests[150].errstr_unpriv=E2=80=
+=99)
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:50:
+> > warning: excess elements in scalar initializer
+> >   125 |                 { "bpf_kfunc_call_test_acquire", 3 },
+> >       |                                                  ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:125:50:
+> > note: (near initialization for =E2=80=98tests[150].errstr_unpriv=E2=80=
+=99)
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
+> > warning: braces around scalar initializer
+> >   126 |                 { "bpf_kfunc_call_test_release", 5 },
+> >       |                 ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
+> > note: (near initialization for =E2=80=98tests[150].errstr_unpriv=E2=80=
+=99)
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:50:
+> > warning: excess elements in scalar initializer
+> >   126 |                 { "bpf_kfunc_call_test_release", 5 },
+> >       |                                                  ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:50:
+> > note: (near initialization for =E2=80=98tests[150].errstr_unpriv=E2=80=
+=99)
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
+> > warning: excess elements in scalar initializer
+> >   126 |                 { "bpf_kfunc_call_test_release", 5 },
+> >       |                 ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/verifier/calls.c:126:17:
+> > note: (near initialization for =E2=80=98tests[150].errstr_unpriv=E2=80=
+=99)
+> > make: *** [Makefile:508:
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/test_verifier] Error 1
+> >
+> > Which is introduced by this commit f59e6886c "selftests/bpf: Add test
+> > for reg2btf_ids out of bounds access" on 5.15. With this commit
+> > reverted, there will be another error in progs/timer_crash.c like in
+> > 5.10 [1]:
+> >
+> > progs/timer_crash.c:8:19: error: field has incomplete type 'struct bpf_=
+timer'
+> >         struct bpf_timer timer;
+> >                          ^
+> > /home/ubuntu/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_he=
+lper_defs.h:39:8:
+> > note: forward declaration of 'struct bpf_timer'
+> > struct bpf_timer;
+> >        ^
+> > 1 error generated.
+> >
+> > Maybe commit "selftests/bpf: Add test for bpf_timer overwriting crash"
+> > should be reverted on 5.15 as well.
 >
-> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-> index bb933221b4bae..e8ec054e11c63 100644
-> --- a/fs/kernfs/file.c
-> +++ b/fs/kernfs/file.c
-> @@ -917,6 +917,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
->          if (free == NULL)
->                  return;
+> Should the test be fixed instead?
 >
-> +       free->next = NULL;
->          attr = llist_entry(free, struct kernfs_elem_attr, notify_next);
->          kn = attribute_to_node(attr, struct kernfs_node, attr);
->          root = kernfs_root(kn);
-> @@ -992,9 +993,11 @@ void kernfs_notify(struct kernfs_node *kn)
->          rcu_read_unlock();
->
->          /* schedule work to kick fsnotify */
-> -       kernfs_get(kn);
-> -       llist_add(&kn->attr.notify_next, &kernfs_notify_list);
-> -       schedule_work(&kernfs_notify_work);
-> +       if (kn->attr.notify_next.next != NULL) {
-> +               kernfs_get(kn);
-> +               llist_add(&kn->attr.notify_next, &kernfs_notify_list);
-> +               schedule_work(&kernfs_notify_work);
-> +       }
->   }
->   EXPORT_SYMBOL_GPL(kernfs_notify);
->
->
-> base-commit: 6cc11d2a1759275b856e464265823d94aabd5eaf
+OK!
+I will try if I can backport the fix. Otherwise will just go for the revert=
+.
+Thanks!
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> I'll take patches for either, thanks.
+>
+> greg k-h
