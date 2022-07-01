@@ -2,419 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9518CCCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B583FCCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235493AbiGAHyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50490 "EHLO
+        id S235529AbiGAHzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiGAHya (ORCPT
+        with ESMTP id S229808AbiGAHzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:54:30 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AA96D55A
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:54:26 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so3190983wmp.3
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 00:54:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=n2Zqxh7nSmgWYgW/ZD6J+5BG3tcyDdgubBYSFmnRv50=;
-        b=VyiBClpkPul60ENiNvZ3CZsGo0/nwPez+KfNBJc/iph5Ul6Vo5FwGCwPsBbfvOzwmI
-         MwPld6bHunEBH8snOQm8XE6OPwMRYlRcCXAlK715xmgJ8Y4vm8AUyeLWoL01Pbq7Rneo
-         F0YLZOoGqeGDPVJwbjb4T8iPXF7M50lhBnnuqHNXBe7btqzUObt0/BzgsqzCYrQbKxKc
-         Ltj28JaKKaaSH85iv3/w8T7aXtqqAFKWDJK4ADhqNS9uRcL7t3Vbh2xTwdzeTW0P6Rhi
-         inykgS2ag3DSWsV0UEAyYc722xzoDX8yETjwdNgP1QAOEJHjCzUSpOhw9lVnDeWJ/pv6
-         MvLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=n2Zqxh7nSmgWYgW/ZD6J+5BG3tcyDdgubBYSFmnRv50=;
-        b=6t4yaSda6Xzcw0WGlcDfRaXrVvBydQBg36zaw9OTiVg4Gne/JDlhjJO6Ucag8yupkp
-         Esr6zC/c4Gy0lCurT275lTH7FAKkoCoWZQ0e9lnfsRO9vbjS1y2P/aYboEQox2KnYRFo
-         NX8z/8hEZw+DONvH+HZUceHzYXODOhjQytrTVBm50KK6esgGSxrDcWXpojBbDIedOAif
-         z7+MlsgAU1qxT4aFrZpIAp8N63MMHbpDofrjCfIV+lwWYugsrVNuX/5wJePlIQ2URTsD
-         TLS+QZIFbnenkbBnkG1Glp8fyEEav3HwFb3hjlaZhRAJbYfPYzkc7RolOAiWGMX/wUmI
-         FRaw==
-X-Gm-Message-State: AJIora/gP/spdYgeALbuYSUI89tccFT14i6Nk4sQQ8ZctN1uKkDB/lLf
-        99QtIb6ualSPPC+FTE8sKOn3HG1O43iQ0Q==
-X-Google-Smtp-Source: AGRyM1t3BcsSsWdXuaRyrOnMhOxZWZjK/ro+zphNxno8y/aOin7lVbBd62DM3DDIgsQ39Xiefs6dEg==
-X-Received: by 2002:a05:600c:1c84:b0:3a0:69fe:18fe with SMTP id k4-20020a05600c1c8400b003a069fe18femr14946530wms.40.1656662065225;
-        Fri, 01 Jul 2022 00:54:25 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id m2-20020a05600c3b0200b0039c63f4bce0sm5646009wms.12.2022.07.01.00.54.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 00:54:24 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 08:54:22 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        swboyd@chromium.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Subject: Re: [PATCH V15 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
-Message-ID: <Yr6oLlmfWRkiAZG7@google.com>
-References: <a11732d6-a9b1-7ead-e89a-564a57a7192b@quicinc.com>
- <503f1a8b-eadb-d3a6-6e24-d60437f778b6@quicinc.com>
- <YrlfF+DMlGFsVBdk@google.com>
- <a1c6e3c9-962d-411e-7fbf-9e760e9dc8c0@quicinc.com>
- <Yrqw1YRyCGG+d4GL@google.com>
- <4112b5af-15de-007c-fcc2-c31ce9f9e426@quicinc.com>
- <YrxtXdOsIZ5LKhdV@google.com>
- <f8e70198-d0d8-5500-2869-be9e3a34f3c1@quicinc.com>
- <Yr18M9dzTOWL0m2c@google.com>
- <de1f3f33-0a8c-eb87-694c-16ebf2835720@quicinc.com>
+        Fri, 1 Jul 2022 03:55:10 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6036D56D;
+        Fri,  1 Jul 2022 00:55:09 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LZ6Sg1Cgpzl5Bv;
+        Fri,  1 Jul 2022 15:36:03 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgAXFWgIpL5igL73AA--.48972S10;
+        Fri, 01 Jul 2022 15:36:45 +0800 (CST)
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     tj@kernel.org, mkoutny@suse.com, axboe@kernel.dk,
+        ming.lei@redhat.com
+Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH v6 5/8] blk-throttle: use 'READ/WRITE' instead of '0/1'
+Date:   Fri,  1 Jul 2022 15:49:20 +0800
+Message-Id: <20220701074923.657426-7-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220701074923.657426-1-yukuai3@huawei.com>
+References: <20220701074923.657426-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <de1f3f33-0a8c-eb87-694c-16ebf2835720@quicinc.com>
+X-CM-TRANSID: _Ch0CgAXFWgIpL5igL73AA--.48972S10
+X-Coremail-Antispam: 1UD129KBjvdXoWrZFyfJFy5Aw4xXw17CFWfXwb_yoWkKrgEvF
+        yUGrWjvrs8Gwn3XFykG3WY9r95Ka13XFyIgay09F9rWF4UA3Z8A3W3Z3sIkr42kayIkr93
+        X34rG348Ar18tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbm8YFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I6I8E6xAIw20E
+        Y4v20xvaj40_Jr0_Jr4l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7IE14v26r126s
+        0DM28IrcIa0xkI8VCY1x0267AKxVW5JVCq3wA2ocxC64kIII0Yj41l84x0c7CEw4AK67xG
+        Y2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14
+        v26r4UJVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAF
+        wI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2
+        WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkE
+        bVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjsIEF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI
+        8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxAIw28IcVAKzI0EY4vE52x082I5
+        MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwV
+        AFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv2
+        0xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k26c
+        xKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAF
+        wI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UuuWdUUUUU=
+Sender: yukuai1@huaweicloud.com
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Jul 2022, Satya Priya Kakitapalli (Temp) wrote:
+Make the code easier to read, like everywhere else.
 
-> 
-> On 6/30/2022 4:04 PM, Lee Jones wrote:
-> > On Thu, 30 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
-> > 
-> > > On 6/29/2022 8:48 PM, Lee Jones wrote:
-> > > > On Wed, 29 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
-> > > > 
-> > > > > On 6/28/2022 1:12 PM, Lee Jones wrote:
-> > > > > > On Tue, 28 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
-> > > > > > 
-> > > > > > > On 6/27/2022 1:11 PM, Lee Jones wrote:
-> > > > > > > > On Mon, 27 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
-> > > > > > > > 
-> > > > > > > > > Hi Lee,
-> > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > > On 6/20/2022 4:37 PM, Satya Priya Kakitapalli (Temp) wrote:
-> > > > > > > > > > On 6/20/2022 1:50 PM, Lee Jones wrote:
-> > > > > > > > > > > On Mon, 20 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
-> > > > > > > > > > > 
-> > > > > > > > > > > > On 6/17/2022 2:27 AM, Lee Jones wrote:
-> > > > > > > > > > > > > On Tue, 14 Jun 2022, Satya Priya wrote:
-> > > > > > > > > > > > > 
-> > > > > > > > > > > > > > Use i2c_new_dummy_device() to register pm8008-regulator
-> > > > > > > > > > > > > > client present at a different address space, instead of
-> > > > > > > > > > > > > > defining a separate DT node. This avoids calling the probe
-> > > > > > > > > > > > > > twice for the same chip, once for each client pm8008-infra
-> > > > > > > > > > > > > > and pm8008-regulator.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > As a part of this define pm8008_regmap_init() to do regmap
-> > > > > > > > > > > > > > init for both the clients and define pm8008_get_regmap() to
-> > > > > > > > > > > > > > pass the regmap to the regulator driver.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> > > > > > > > > > > > > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-> > > > > > > > > > > > > > ---
-> > > > > > > > > > > > > > Changes in V15:
-> > > > > > > > > > > > > >        - None.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > Changes in V14:
-> > > > > > > > > > > > > >        - None.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > Changes in V13:
-> > > > > > > > > > > > > >        - None.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > >        drivers/mfd/qcom-pm8008.c       | 34
-> > > > > > > > > > > > > > ++++++++++++++++++++++++++++++++--
-> > > > > > > > > > > > > >        include/linux/mfd/qcom_pm8008.h |  9 +++++++++
-> > > > > > > > > > > > > >        2 files changed, 41 insertions(+), 2 deletions(-)
-> > > > > > > > > > > > > >        create mode 100644 include/linux/mfd/qcom_pm8008.h
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-> > > > > > > > > > > > > > index 569ffd50..55e2a8e 100644
-> > > > > > > > > > > > > > --- a/drivers/mfd/qcom-pm8008.c
-> > > > > > > > > > > > > > +++ b/drivers/mfd/qcom-pm8008.c
-> > > > > > > > > > > > > > @@ -9,6 +9,7 @@
-> > > > > > > > > > > > > >        #include <linux/interrupt.h>
-> > > > > > > > > > > > > >        #include <linux/irq.h>
-> > > > > > > > > > > > > >        #include <linux/irqdomain.h>
-> > > > > > > > > > > > > > +#include <linux/mfd/qcom_pm8008.h>
-> > > > > > > > > > > > > >        #include <linux/module.h>
-> > > > > > > > > > > > > >        #include <linux/of_device.h>
-> > > > > > > > > > > > > >        #include <linux/of_platform.h>
-> > > > > > > > > > > > > > @@ -57,6 +58,7 @@ enum {
-> > > > > > > > > > > > > >        struct pm8008_data {
-> > > > > > > > > > > > > >            struct device *dev;
-> > > > > > > > > > > > > > +    struct regmap *regulators_regmap;
-> > > > > > > > > > > > > >            int irq;
-> > > > > > > > > > > > > >            struct regmap_irq_chip_data *irq_data;
-> > > > > > > > > > > > > >        };
-> > > > > > > > > > > > > > @@ -150,6 +152,12 @@ static struct regmap_config
-> > > > > > > > > > > > > > qcom_mfd_regmap_cfg = {
-> > > > > > > > > > > > > >            .max_register    = 0xFFFF,
-> > > > > > > > > > > > > >        };
-> > > > > > > > > > > > > > +struct regmap *pm8008_get_regmap(const struct pm8008_data *chip)
-> > > > > > > > > > > > > > +{
-> > > > > > > > > > > > > > +    return chip->regulators_regmap;
-> > > > > > > > > > > > > > +}
-> > > > > > > > > > > > > > +EXPORT_SYMBOL_GPL(pm8008_get_regmap);
-> > > > > > > > > > > > > Seems like abstraction for the sake of abstraction.
-> > > > > > > > > > > > > 
-> > > > > > > > > > > > > Why not do the dereference inside the regulator driver?
-> > > > > > > > > > > > To derefer this in the regulator driver, we need to have the
-> > > > > > > > > > > > pm8008_data
-> > > > > > > > > > > > struct definition in the qcom_pm8008 header file.
-> > > > > > > > > > > > 
-> > > > > > > > > > > > I think it doesn't look great to have only that structure in
-> > > > > > > > > > > > header and all
-> > > > > > > > > > > > other structs and enum in the mfd driver.
-> > > > > > > > > > > Then why pass 'pm8008_data' at all?
-> > > > > > > > > > There is one more option, instead of passing the pm8008_data, we could
-> > > > > > > > > > pass the pdev->dev.parent and get the pm8008 chip data directly in the
-> > > > > > > > > > pm8008_get_regmap() like below
-> > > > > > > > > > 
-> > > > > > > > > > 
-> > > > > > > > > > struct regmap *pm8008_get_regmap(const struct device *dev)
-> > > > > > > > > >      {
-> > > > > > > > > >          const struct pm8008_data *chip = dev_get_drvdata(dev);
-> > > > > > > > > > 
-> > > > > > > > > >          return chip->regulators_regmap;
-> > > > > > > > > > }
-> > > > > > > > > > EXPORT_SYMBOL_GPL(pm8008_get_regmap);
-> > > > > > > > > > 
-> > > > > > > > > > 
-> > > > > > > > > > By doing this we can avoid having declaration of pm8008_data also in the
-> > > > > > > > > > header. Please let me know if this looks good.
-> > > > > > > > > > 
-> > > > > > > > > Could you please confirm on this?
-> > > > > > > > > 
-> > > > > > > > > > > What's preventing you from passing 'regmap'?
-> > > > > > > > > > I didn't get what you meant here, could you please elaborate a bit?
-> > > > > > > > Ah yes.  I authored you a patch, but became distracted. Here:
-> > > > > > > > 
-> > > > > > > > -----8<--------------------8<-------
-> > > > > > > > 
-> > > > > > > > From: Lee Jones <lee.jones@linaro.org>
-> > > > > > > > 
-> > > > > > > > mfd: pm8008: Remove driver data structure pm8008_data
-> > > > > > > > Maintaining a local driver data structure that is never shared
-> > > > > > > > outside of the core device is an unnecessary complexity.  Half of the
-> > > > > > > > attributes were not used outside of a single function, one of which
-> > > > > > > > was not used at all.  The remaining 2 are generic and can be passed
-> > > > > > > > around as required.
-> > > > > > > Okay, but we still need to store the regulators_regmap, which is required in
-> > > > > > > the pm8008 regulator driver. Could we use a global variable for it?
-> > > > > > Look down ...
-> > > > > > 
-> > > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > > > > > ---
-> > > > > > > >      drivers/mfd/qcom-pm8008.c | 53 ++++++++++++++++++-----------------------------
-> > > > > > > >      1 file changed, 20 insertions(+), 33 deletions(-)
-> > > > > > > > 
-> > > > > > > > diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-> > > > > > > > index c472d7f8103c4..4b8ff947762f2 100644
-> > > > > > > > --- a/drivers/mfd/qcom-pm8008.c
-> > > > > > > > +++ b/drivers/mfd/qcom-pm8008.c
-> > > > > > > > @@ -54,13 +54,6 @@ enum {
-> > > > > > > >      #define PM8008_PERIPH_OFFSET(paddr)	(paddr - PM8008_PERIPH_0_BASE)
-> > > > > > > > -struct pm8008_data {
-> > > > > > > > -	struct device *dev;
-> > > > > > > > -	struct regmap *regmap;
-> > > > > > > > -	int irq;
-> > > > > > > > -	struct regmap_irq_chip_data *irq_data;
-> > > > > > > > -};
-> > > > > > > > -
-> > > > > > > >      static unsigned int p0_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_0_BASE)};
-> > > > > > > >      static unsigned int p1_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_1_BASE)};
-> > > > > > > >      static unsigned int p2_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_2_BASE)};
-> > > > > > > > @@ -150,7 +143,7 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
-> > > > > > > >      	.max_register	= 0xFFFF,
-> > > > > > > >      };
-> > > > > > > > -static int pm8008_init(struct pm8008_data *chip)
-> > > > > > > > +static int pm8008_init(struct regmap *regmap)
-> > > > > > > >      {
-> > > > > > > >      	int rc;
-> > > > > > > > @@ -160,34 +153,31 @@ static int pm8008_init(struct pm8008_data *chip)
-> > > > > > > >      	 * This is required to enable the writing of TYPE registers in
-> > > > > > > >      	 * regmap_irq_sync_unlock().
-> > > > > > > >      	 */
-> > > > > > > > -	rc = regmap_write(chip->regmap,
-> > > > > > > > -			 (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET),
-> > > > > > > > -			 BIT(0));
-> > > > > > > > +	rc = regmap_write(regmap, (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
-> > > > > > > >      	if (rc)
-> > > > > > > >      		return rc;
-> > > > > > > >      	/* Do the same for GPIO1 and GPIO2 peripherals */
-> > > > > > > > -	rc = regmap_write(chip->regmap,
-> > > > > > > > -			 (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
-> > > > > > > > +	rc = regmap_write(regmap, (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
-> > > > > > > >      	if (rc)
-> > > > > > > >      		return rc;
-> > > > > > > > -	rc = regmap_write(chip->regmap,
-> > > > > > > > -			 (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
-> > > > > > > > +	rc = regmap_write(regmap, (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
-> > > > > > > >      	return rc;
-> > > > > > > >      }
-> > > > > > > > -static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
-> > > > > > > > +static int pm8008_probe_irq_peripherals(struct device *dev,
-> > > > > > > > +					struct regmap *regmap,
-> > > > > > > >      					int client_irq)
-> > > > > > > >      {
-> > > > > > > >      	int rc, i;
-> > > > > > > >      	struct regmap_irq_type *type;
-> > > > > > > >      	struct regmap_irq_chip_data *irq_data;
-> > > > > > > > -	rc = pm8008_init(chip);
-> > > > > > > > +	rc = pm8008_init(regmap);
-> > > > > > > >      	if (rc) {
-> > > > > > > > -		dev_err(chip->dev, "Init failed: %d\n", rc);
-> > > > > > > > +		dev_err(dev, "Init failed: %d\n", rc);
-> > > > > > > >      		return rc;
-> > > > > > > >      	}
-> > > > > > > > @@ -207,10 +197,10 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
-> > > > > > > >      				IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW);
-> > > > > > > >      	}
-> > > > > > > > -	rc = devm_regmap_add_irq_chip(chip->dev, chip->regmap, client_irq,
-> > > > > > > > +	rc = devm_regmap_add_irq_chip(dev, regmap, client_irq,
-> > > > > > > >      			IRQF_SHARED, 0, &pm8008_irq_chip, &irq_data);
-> > > > > > > >      	if (rc) {
-> > > > > > > > -		dev_err(chip->dev, "Failed to add IRQ chip: %d\n", rc);
-> > > > > > > > +		dev_err(dev, "Failed to add IRQ chip: %d\n", rc);
-> > > > > > > >      		return rc;
-> > > > > > > >      	}
-> > > > > > > > @@ -220,26 +210,23 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
-> > > > > > > >      static int pm8008_probe(struct i2c_client *client)
-> > > > > > > >      {
-> > > > > > > >      	int rc;
-> > > > > > > > -	struct pm8008_data *chip;
-> > > > > > > > -
-> > > > > > > > -	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
-> > > > > > > > -	if (!chip)
-> > > > > > > > -		return -ENOMEM;
-> > > > > > > > +	struct device *dev;
-> > > > > > > > +	struct regmap *regmap;
-> > > > > > > > -	chip->dev = &client->dev;
-> > > > > > > > -	chip->regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
-> > > > > > > > -	if (!chip->regmap)
-> > > > > > > > +	dev = &client->dev;
-> > > > > > > > +	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
-> > > > > > > > +	if (!regmap)
-> > > > > > > >      		return -ENODEV;
-> > > > > > > > -	i2c_set_clientdata(client, chip);
-> > > > > > > > +	i2c_set_clientdata(client, regmap);
-> > > > > > Here ^
-> > > > > I have added a dummy device and set the client data by passing regmap, see
-> > > > > below:
-> > > > > 
-> > > > > +       regulators_client = i2c_new_dummy_device(client->adapter,
-> > > > > client->addr + 1);
-> > > > > +       if (IS_ERR(regulators_client)) {
-> > > > > +               dev_err(dev, "can't attach client\n");
-> > > > > +               return PTR_ERR(regulators_client);
-> > > > > +       }
-> > > > > +
-> > > > > +       regulators_regmap = devm_regmap_init_i2c(regulators_client,
-> > > > > &qcom_mfd_regmap_cfg[1]);
-> > > > > +       if (!regmap)
-> > > > > +               return -ENODEV;
-> > > > > +
-> > > > > +       i2c_set_clientdata(client, regulators_regmap);
-> > > > > 
-> > > > > Now if i try to get this regmap from regulator driver by doing
-> > > > > 
-> > > > > struct regmap *regmap = dev_get_drvdata(pdev->dev.parent);
-> > > > > 
-> > > > > it still gets me the regmap of pm8008@8 device and not the regulator device
-> > > > > regmap (0x9). Not sure if I'm missing something here.
-> > > > So you need to pass 2 regmap pointers?
-> > > > 
-> > > > If you need to pass more than one item to the child devices, you do
-> > > > need to use a struct for that.
-> > > I need to pass only one regmap out of the two, but i am not able to retrieve
-> > > the correct regmap simply by doing i2c_set_clientdata
-> > > 
-> > > probably because we are having all the child nodes under same DT node and
-> > > thus not able to distinguish based on the dev pointer
-> > You can only pull out (get) the pointer that you put in (set).
-> > 
-> > Unless you over-wrote it later in the thread of execution, you are
-> > pulling out whatever regulators_regmap happens to be.
-> > 
-> > Is qcom_mfd_regmap_cfg[1] definitely the one you want?
-> 
-> 
-> Yes, I need qcom_mfd_regmap_cfg[1]
-> 
-> Pasting code snippet for reference:
-> 
-> static struct regmap_config qcom_mfd_regmap_cfg[2] = {
->      {
-> 
->          .name = "infra",
->          .reg_bits   = 16,
->          .val_bits   = 8,
->          .max_register   = 0xFFFF,
->      },
->      {
->          .name = "regulators",
->          .reg_bits   = 16,
->          .val_bits   = 8,
->          .max_register   = 0xFFFF,
->      },
-> 
-> };
-> 
-> 
-> Inside pm8008_probe:
-> 
-> 
->      regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg[0]);
->      if (!regmap)
->          return -ENODEV;
-> 
->      i2c_set_clientdata(client, regmap);
-> 
-> 
->      regulators_client = i2c_new_dummy_device(client->adapter, client->addr
-> + 1);
->      if (IS_ERR(regulators_client)) {
->          dev_err(dev, "can't attach client\n");
->          return PTR_ERR(regulators_client);
->      }
-> 
->      regulators_regmap = devm_regmap_init_i2c(regulators_client,
-> &qcom_mfd_regmap_cfg[1]);
->      if (!regmap)
->          return -ENODEV;
-> 
->      i2c_set_clientdata(regulators_client, regulators_regmap);
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-throttle.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-You can't call this twice.
-
-Doing so with over-write regmap with regulators_regmap.
-
-You said you only needed one?
-
-  "I need to pass only one regmap out of the two, but i am not able to retrieve"
-
-> In qcom-pm8008-regulator.c I tried to get the regmap using
-> 
-> dev_get_regmap(pdev->dev.parent, "regulators");
-
-I haven't looked at this API before.  I suggest that this would be
-used *instead* of passing the regmap pointer via driver_data.
-
-It looks like you're using different devices to init your regmaps;
-'client' and 'regulator_client' (derived from client->adapter).
-
-"regulators" is registered using regulators_regmap which was *not*
-init'ed with pdev->dev.parent (same as client->dev), so trying to
-dev_get_regmap() with that device pointer will not work.
-
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 7b09b48577ba..e690dc1c1cde 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -329,8 +329,8 @@ static struct bio *throtl_pop_queued(struct list_head *queued,
+ /* init a service_queue, assumes the caller zeroed it */
+ static void throtl_service_queue_init(struct throtl_service_queue *sq)
+ {
+-	INIT_LIST_HEAD(&sq->queued[0]);
+-	INIT_LIST_HEAD(&sq->queued[1]);
++	INIT_LIST_HEAD(&sq->queued[READ]);
++	INIT_LIST_HEAD(&sq->queued[WRITE]);
+ 	sq->pending_tree = RB_ROOT_CACHED;
+ 	timer_setup(&sq->pending_timer, throtl_pending_timer_fn, 0);
+ }
+@@ -1156,7 +1156,7 @@ static int throtl_select_dispatch(struct throtl_service_queue *parent_sq)
+ 		nr_disp += throtl_dispatch_tg(tg);
+ 
+ 		sq = &tg->service_queue;
+-		if (sq->nr_queued[0] || sq->nr_queued[1])
++		if (sq->nr_queued[READ] || sq->nr_queued[WRITE])
+ 			tg_update_disptime(tg);
+ 
+ 		if (nr_disp >= THROTL_QUANTUM)
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.31.1
+
