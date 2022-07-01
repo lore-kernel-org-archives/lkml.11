@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B380DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B2ECCA482
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:22:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233967AbiGAIWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50050 "EHLO
+        id S233604AbiGAIWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236280AbiGAIVi (ORCPT
+        with ESMTP id S234116AbiGAIV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:21:38 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BA871BC9
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:21:24 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id r1so1692409plo.10
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:21:24 -0700 (PDT)
+        Fri, 1 Jul 2022 04:21:57 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285FA71255
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:21:30 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so5686500pjl.5
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:21:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jb0snNKbqdGMcNSHmZUstipe/vA8ntyU7tLSAh8qCE4=;
-        b=EmWdXESfxTD6CClfgXeW3XMNSv/G8xk8QvfxlF5biP6edTuTajQaVQMVDMpOdy7Fuv
-         MwktxJ+WJTVnMxJhs1Gt4E6SyL9e0EQF3iWsiK/Aifv7j0qHi6OiVTmSQ1dunx/oI6ty
-         bY8yGaJDED/u5I76xENmYt5NI3WaoCl+80vM3DMnJWlKurKeE2tZ6SzpuqU3dfPSRHJh
-         E7NAgHUpWVjxfDsLEWGa636YIKIemPdqiFQEgVykN8HoNsjUSMcIIQPW5sDXdqkWtnmU
-         8+9h5nbQKWOjn7ZdmKio1PcWeIPAzY0nvAROsypuOs3sPOZvKhBZLZLJx4jsTf4+bhcg
-         sgmg==
+        bh=63pbLSKne9f5UCaDcrJmMmenMVeEUp+bxWKacPvU73Q=;
+        b=PRw8pWiNZY18pWGJgVJIoN7OQ1s2yw48mle6GY/4XbqXfOM8W+/dPuxPjnVsAfDGVD
+         A8m3pSEoZP2W9Wg38cQ0bbaNVAzWswoC+nKCFc5XCEUUvMoqG+yW9f+wcJB9/ETVNZdE
+         nKZmCNjpve7XuRAN7ahyVkdcfDMzxh43YpC8OXHMdkvtfaGo7J4qx9vShhtdTpHbehD5
+         wVHcFFMn7nLHFi/wvIRCCZVlt95Rq/qbO3FoUn/v11UMiq4rPMaLoG3T6vdbH0dMdE+P
+         8U33SaenNIGQFDAOssieTM5n/BXEZBYaAw6ptyOuBYLvlncREiMhWug52kkrzT9h7GP7
+         raLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jb0snNKbqdGMcNSHmZUstipe/vA8ntyU7tLSAh8qCE4=;
-        b=DHt2LsI0V0R4LeUNMxqkpVn+5j2tj+BYdRQ9j45rUTWbN4jL48J/WMAw7wK3tjCOh4
-         FoXg2918XjV6FLJyf57ivXSNwCt9+bKbtcTOYXpGcSHBHzt9aI0Mq+EKfKK5V2Sfhekd
-         tBD2O5mjh3jeQ1ew8SzVX2q+MwaNXaUPdHxU5yUb0Zimw9T/3AbEeO6DOy91LdGuJMGE
-         WXnAIristaK8Z8ACH3hgN7+fhS77rl7oF9sIgbUN3a8FTONhU5IONNZw2bPUhhyzT+h7
-         Z+jRIk/J08hLF/aC6jjiEakaz/F0SHlDrGh0Y5oce3OAQUmN4KPwTSoLGRaecGttyruu
-         az3w==
-X-Gm-Message-State: AJIora+8Mb5jDmroRdVt+H8rdLLCb3wtV1P2p8jlStnuP03x7uinNEl3
-        rsHiUBK2v8YGr8CpLfNTrcMFLQ==
-X-Google-Smtp-Source: AGRyM1u7YOcVYA6e7JC8Afc3cO0uF+FowHj00X8PP+5fdNddz6P/PTLix/S0GqoELPlK91hqfqoM/g==
-X-Received: by 2002:a17:90a:e2c5:b0:1ec:ea7f:a85c with SMTP id fr5-20020a17090ae2c500b001ecea7fa85cmr15486494pjb.232.1656663684098;
-        Fri, 01 Jul 2022 01:21:24 -0700 (PDT)
+        bh=63pbLSKne9f5UCaDcrJmMmenMVeEUp+bxWKacPvU73Q=;
+        b=te1y+ls96ybFXt1iKc4A6l8fdIrBt36AxKQOnI9R+X7QoxeQbLSw8q4KcfzOT0MDMg
+         yIsG6EsOfMTufQ9kq0wAWJ0idChZQKlVlFEUR6kCgoBc9lD9cBvY1+gZ+7Ic8616awEV
+         nBlgK0hxZAogRH24e6RGFvujGd/Z94r3JZAaIsygqyBx/eRqgmbBG78U3w+9iJnH00Ry
+         Vu1LoxYYSmYLkLWA6JDjBh/43vDF3xiuA41k2LHmhxAdFoaOzScdHqergwFQ4qs3JkkS
+         /OtGlYJxbVQnLblJ77W1ebwOUjR4MHnIFDtNm69RULh2T+Ty1rG383zpD48mwCk9Aiu7
+         DPpw==
+X-Gm-Message-State: AJIora/oBRfxuVZlPxI54+wUw7W0zpkoAhotJe03j754cpjOAydgMdDG
+        23D9SHMt+bhZKI6SF0bcIap0oA==
+X-Google-Smtp-Source: AGRyM1uxAmkNLUVQoSG5Xz0/hnQf267BwGjWNVZUTXaOfD1kC8GpNyCWX61Jw76VoQZ5wANEVlh6sw==
+X-Received: by 2002:a17:902:e84a:b0:16a:5435:b5fc with SMTP id t10-20020a170902e84a00b0016a5435b5fcmr20837549plg.119.1656663689707;
+        Fri, 01 Jul 2022 01:21:29 -0700 (PDT)
 Received: from localhost ([122.172.201.58])
-        by smtp.gmail.com with ESMTPSA id e12-20020a170902784c00b0016a35649186sm14830427pln.195.2022.07.01.01.21.23
+        by smtp.gmail.com with ESMTPSA id d59-20020a17090a6f4100b001ec7ba41fe7sm6182063pjk.48.2022.07.01.01.21.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 01:21:23 -0700 (PDT)
+        Fri, 01 Jul 2022 01:21:29 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>
 Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V2 14/30] drm/msm: Migrate to dev_pm_opp_set_config()
-Date:   Fri,  1 Jul 2022 13:50:09 +0530
-Message-Id: <31b74e43d3af263e1b943bca1dd3debe885521d8.1656660185.git.viresh.kumar@linaro.org>
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 16/30] drm/tegra: Migrate to dev_pm_opp_set_config()
+Date:   Fri,  1 Jul 2022 13:50:11 +0530
+Message-Id: <b77a02f0ceaeb252f554f5378c2407c6463caad1.1656660185.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1656660185.git.viresh.kumar@linaro.org>
 References: <cover.1656660185.git.viresh.kumar@linaro.org>
@@ -76,142 +75,36 @@ types, i.e. dev_pm_opp_set_config().
 
 Lets start using it.
 
+Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/gpu/drm/msm/adreno/a5xx_gpu.c   |  8 ++++++--
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 10 +++++-----
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c |  6 +++++-
- drivers/gpu/drm/msm/dp/dp_ctrl.c        |  6 +++++-
- drivers/gpu/drm/msm/dsi/dsi_host.c      |  6 +++++-
- 5 files changed, 26 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/tegra/gr3d.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-index c424e9a37669..6ebb5a28c501 100644
---- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-@@ -1723,10 +1723,14 @@ static void check_speed_bin(struct device *dev)
- {
- 	struct nvmem_cell *cell;
- 	u32 val;
+diff --git a/drivers/gpu/drm/tegra/gr3d.c b/drivers/gpu/drm/tegra/gr3d.c
+index a1fd3113ea96..05c45c104e13 100644
+--- a/drivers/gpu/drm/tegra/gr3d.c
++++ b/drivers/gpu/drm/tegra/gr3d.c
+@@ -389,6 +389,10 @@ static int gr3d_init_power(struct device *dev, struct gr3d *gr3d)
+ 	struct device_link *link;
+ 	unsigned int i;
+ 	int err;
 +	struct dev_pm_opp_config config = {
-+		.supported_hw = &val,
-+		.supported_hw_count = 1,
++		.genpd_names = opp_genpd_names,
++		.virt_devs = &opp_virt_devs,
 +	};
  
- 	/*
- 	 * If the OPP table specifies a opp-supported-hw property then we have
--	 * to set something with dev_pm_opp_set_supported_hw() or the table
-+	 * to set something with dev_pm_opp_set_config() or the table
- 	 * doesn't get populated so pick an arbitrary value that should
- 	 * ensure the default frequencies are selected but not conflict with any
- 	 * actual bins
-@@ -1748,7 +1752,7 @@ static void check_speed_bin(struct device *dev)
- 		nvmem_cell_put(cell);
- 	}
+ 	err = of_count_phandle_with_args(dev->of_node, "power-domains",
+ 					 "#power-domain-cells");
+@@ -421,7 +425,7 @@ static int gr3d_init_power(struct device *dev, struct gr3d *gr3d)
+ 	if (dev->pm_domain)
+ 		return 0;
  
--	devm_pm_opp_set_supported_hw(dev, &val, 1);
-+	devm_pm_opp_set_config(dev, &config);
- }
+-	err = devm_pm_opp_attach_genpd(dev, opp_genpd_names, &opp_virt_devs);
++	err = devm_pm_opp_set_config(dev, &config);
+ 	if (err)
+ 		return err;
  
- struct msm_gpu *a5xx_gpu_init(struct drm_device *dev)
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 42ed9a3c4905..82801311f7d4 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1800,6 +1800,10 @@ static int a6xx_set_supported_hw(struct device *dev, struct adreno_rev rev)
- 	u32 supp_hw = UINT_MAX;
- 	u32 speedbin;
- 	int ret;
-+	struct dev_pm_opp_config config = {
-+		.supported_hw = &supp_hw,
-+		.supported_hw_count = 1,
-+	};
- 
- 	ret = adreno_read_speedbin(dev, &speedbin);
- 	/*
-@@ -1818,11 +1822,7 @@ static int a6xx_set_supported_hw(struct device *dev, struct adreno_rev rev)
- 	supp_hw = fuse_to_supp_hw(dev, rev, speedbin);
- 
- done:
--	ret = devm_pm_opp_set_supported_hw(dev, &supp_hw, 1);
--	if (ret)
--		return ret;
--
--	return 0;
-+	return devm_pm_opp_set_config(dev, &config);
- }
- 
- static const struct adreno_gpu_funcs funcs = {
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index e23e2552e802..2213ce52d2fa 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -1215,12 +1215,16 @@ static int dpu_kms_init(struct drm_device *ddev)
- 	struct dev_pm_opp *opp;
- 	int ret = 0;
- 	unsigned long max_freq = ULONG_MAX;
-+	struct dev_pm_opp_config config = {
-+		.clk_names = (const char *[]){ "core" },
-+		.clk_count = 1,
-+	};
- 
- 	dpu_kms = devm_kzalloc(&pdev->dev, sizeof(*dpu_kms), GFP_KERNEL);
- 	if (!dpu_kms)
- 		return -ENOMEM;
- 
--	ret = devm_pm_opp_set_clkname(dev, "core");
-+	ret = devm_pm_opp_set_config(dev, &config);
- 	if (ret)
- 		return ret;
- 	/* OPP table is optional */
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index b7f5b8d3bbd6..0c8fc151b4be 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -2022,6 +2022,10 @@ struct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,
- {
- 	struct dp_ctrl_private *ctrl;
- 	int ret;
-+	struct dev_pm_opp_config config = {
-+		.clk_names = (const char *[]){ "ctrl_link" },
-+		.clk_count = 1,
-+	};
- 
- 	if (!dev || !panel || !aux ||
- 	    !link || !catalog) {
-@@ -2035,7 +2039,7 @@ struct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
--	ret = devm_pm_opp_set_clkname(dev, "ctrl_link");
-+	ret = devm_pm_opp_set_config(dev, &config);
- 	if (ret) {
- 		dev_err(dev, "invalid DP OPP table in device tree\n");
- 		/* caller do PTR_ERR(opp_table) */
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index a95d5df52653..35b6722d1cf9 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -2034,6 +2034,10 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
- 	struct msm_dsi_host *msm_host = NULL;
- 	struct platform_device *pdev = msm_dsi->pdev;
- 	int ret;
-+	struct dev_pm_opp_config config = {
-+		.clk_names = (const char *[]){ "byte" },
-+		.clk_count = 1,
-+	};
- 
- 	msm_host = devm_kzalloc(&pdev->dev, sizeof(*msm_host), GFP_KERNEL);
- 	if (!msm_host) {
-@@ -2095,7 +2099,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
- 		goto fail;
- 	}
- 
--	ret = devm_pm_opp_set_clkname(&pdev->dev, "byte");
-+	ret = devm_pm_opp_set_config(&pdev->dev, &config);
- 	if (ret)
- 		return ret;
- 	/* OPP table is optional */
 -- 
 2.31.1.272.g89b43f80a514
 
