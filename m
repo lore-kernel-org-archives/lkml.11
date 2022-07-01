@@ -2,107 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D57C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6529DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234816AbiGAIMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S234678AbiGAIOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236215AbiGAIMd (ORCPT
+        with ESMTP id S229957AbiGAIOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:12:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B6A070AE2
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:12:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656663151;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z/AmvOZyV6QrDA7wpE31jhK9NIwk6H7+U8kbekS2CX4=;
-        b=iUnRAoNiE1KAFhHRNCnNfvZyABa3m+0Ahijql50R4Z6WNDv1n2BLeMQ+zCfl30BK+My5/s
-        LWiBd9Ia7MLktE5wY7ybb+y0+FRgW2Jbk1t/EEDAYLf0toDeNTB4xacDXUkxJ17FeMe1lz
-        GtCRPEFY3WTB2UUxb2XBDoOy3NEaOS8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-363-zmlOjAhUNjq3momEdVCf8g-1; Fri, 01 Jul 2022 04:12:30 -0400
-X-MC-Unique: zmlOjAhUNjq3momEdVCf8g-1
-Received: by mail-wm1-f72.google.com with SMTP id z11-20020a05600c0a0b00b003a043991610so1028940wmp.8
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:12:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Z/AmvOZyV6QrDA7wpE31jhK9NIwk6H7+U8kbekS2CX4=;
-        b=OcmB32I6+8GxN6XezQUiVP/92GIrVCg8ypTy+v8RSIqx0RgEBn3p52c9YXbiPlo4uw
-         6p3UksTEJ0pVHe/PXIG3yI33a6rybes1JEioJTvZFWZVdT5pWc8aoCdnSzALNWOWkex4
-         2NP77rfMj5tqqxs6M92bcL4c8A7OASOGEi74jYtO5cnDFV8VPq9EmJmdISYHB895KpXI
-         ZzbmzXSILgVE9T7N7M95Ycdxba3P+/lTkGhEthkcVMvoH0zAlTtx+OUuGiegknbz7SLf
-         /DKhDakbWcfRvhy7avmk9Y2NmFUJz4c8dQufhViMjbUIAnEol09ff634Ykl8QEFNh+VU
-         yL1g==
-X-Gm-Message-State: AJIora+DC931WL6+6dA53V1FiY7S6JSqotqhMKAlx5w8/GfXVNJnU/iD
-        2EEWPh8Lqdov5mDkIDIz7qXnnawkKTCTaPm2Rh6rRPL4whNqZzB7XbhioXVkWinDyBjmXl6NndV
-        lubpYXth6qdxSukpgLaNYuA7kfvHRWr60xIZFn2qugZP5NNBlD4TtoKsPcNN8W8gdZeNrf+UdNI
-        ly
-X-Received: by 2002:a5d:48ce:0:b0:21b:9f34:f297 with SMTP id p14-20020a5d48ce000000b0021b9f34f297mr12409459wrs.351.1656663149041;
-        Fri, 01 Jul 2022 01:12:29 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uPWo0xmhO7Sqt29ZDdDqBVBiI91YlLkKsb9zDgKgODfne6Ky2CuYV/YqnDSO9FRwIJuR4dlQ==
-X-Received: by 2002:a5d:48ce:0:b0:21b:9f34:f297 with SMTP id p14-20020a5d48ce000000b0021b9f34f297mr12409431wrs.351.1656663148790;
-        Fri, 01 Jul 2022 01:12:28 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id l34-20020a05600c1d2200b003a03e63e428sm7220233wms.36.2022.07.01.01.12.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 01:12:28 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Jim Mattson <jmattson@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 15/28] KVM: VMX: Check
- CPU_BASED_{INTR,NMI}_WINDOW_EXITING in setup_vmcs_config()
-In-Reply-To: <CALMp9eSTv8e5=vwXRouhLubx8k6q9sH4X8z0CgFsKTv54VFdSA@mail.gmail.com>
-References: <20220629150625.238286-1-vkuznets@redhat.com>
- <20220629150625.238286-16-vkuznets@redhat.com>
- <CALMp9eSTv8e5=vwXRouhLubx8k6q9sH4X8z0CgFsKTv54VFdSA@mail.gmail.com>
-Date:   Fri, 01 Jul 2022 10:12:27 +0200
-Message-ID: <87edz5s13o.fsf@redhat.com>
+        Fri, 1 Jul 2022 04:14:09 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624CE48821;
+        Fri,  1 Jul 2022 01:14:08 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3FA956601974;
+        Fri,  1 Jul 2022 09:14:05 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656663247;
+        bh=oX88CugqBfAMEuhfwgO7WJ1IBMMlTDVxIs1zooaswFg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=OrhyVBuFvFKAcT64g3zBqktpN6W6lmU6Z7vqgOE+kfn63T3GUrTPJf1Brz6hpDrus
+         zY/MMpdHKye4D1rc5SHWwbNyJ/rM4S3NJsgL9538JL85q1d8o+KvsX4uW+bdplDH+d
+         k9wzv6YqD1Ac+hOJ016TwfphmemQzRLsXI8D91pJc4Sn9vzQZP+dGY0uouTZny/68V
+         gYpiHqbS/wmnq6esnVTOtYzOsdC73JJGMzMJ4FQKztfvN4ZgrbPK8DUFZ2w5/N7Tv3
+         Kt9ACJ1fKb8l8eYtcMzZVJIfKWPpuNCQkyR2LQ6yNw3U8qT3IHl2+GS5UFAuBCxHye
+         5WSCex46vm2uQ==
+Message-ID: <5971f465-9514-d830-8467-e722475ecc7f@collabora.com>
+Date:   Fri, 1 Jul 2022 10:14:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v13 06/10] drm/mediatek: Add MT8195 External DisplayPort
+ support
+Content-Language: en-US
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com, deller@gmx.de,
+        airlied@linux.ie
+Cc:     msp@baylibre.com, granquet@baylibre.com, jitao.shi@mediatek.com,
+        wenst@chromium.org, ck.hu@mediatek.com, liangxu.xu@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-fbdev@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220701062808.18596-1-rex-bc.chen@mediatek.com>
+ <20220701062808.18596-7-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220701062808.18596-7-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jim Mattson <jmattson@google.com> writes:
+Il 01/07/22 08:28, Bo-Chen Chen ha scritto:
+> From: Guillaume Ranquet <granquet@baylibre.com>
+> 
+> This patch adds External DisplayPort support to the mt8195 eDP driver.
+> 
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
+>   drivers/gpu/drm/mediatek/mtk_dp.c     | 197 +++++++++++++++++++++-----
+>   drivers/gpu/drm/mediatek/mtk_dp_reg.h |   1 +
+>   2 files changed, 161 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
+> index b672d5a6f5bd..c3be97dd055c 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dp.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
+> @@ -105,6 +105,7 @@ struct mtk_dp {
+>   	struct regmap *regs;
+>   
+>   	bool enabled;
+> +	bool has_fec;
 
-> On Wed, Jun 29, 2022 at 8:07 AM Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
->>
->> CPU_BASED_{INTR,NMI}_WINDOW_EXITING controls are toggled dynamically by
->> vmx_enable_{irq,nmi}_window, handle_interrupt_window(), handle_nmi_window()
->> but setup_vmcs_config() doesn't check their existence. Add the check and
->> filter the controls out in vmx_exec_control().
->>
->> No (real) functional change intended as all existing CPUs supporting
->> VMX are supposed to have these controls.
->
-> I'm pretty sure vIrtual NMIs and NMI-window exiting are not available
-> on Prescott or Yonah.
->
+You're introducing this has_fec variable here....
 
-I seemed to have questioned their existence :-) But you're right, I
-should've said something like "all CPUs supported by KVM" instead (as
-pre-patch KVM toggles these controls unconditionally).
+>   
+>   	struct drm_connector *conn;
+>   };
 
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Reviewed-by: Jim Mattson <jmattson@google.com>
->
 
-Thanks!
+> @@ -1018,6 +1074,8 @@ static void mtk_dp_initialize_priv_data(struct mtk_dp *mtk_dp)
+>   	mtk_dp->info.depth = DP_MSA_MISC_8_BPC;
+>   	memset(&mtk_dp->info.timings, 0, sizeof(struct mtk_dp_timings));
+>   	mtk_dp->info.timings.frame_rate = 60;
+> +
+> +	mtk_dp->has_fec = false;
 
--- 
-Vitaly
+.... setting it as false here ....
 
+>   }
+>   
+>   static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
+
+> @@ -1498,15 +1562,38 @@ static int mtk_dp_init_port(struct mtk_dp *mtk_dp)
+>   static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
+>   {
+>   	struct mtk_dp *mtk_dp = dev;
+> +	int event;
+>   	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
+>   
+> +	event = mtk_dp_plug_state(mtk_dp) ?
+> +		connector_status_connected : connector_status_disconnected;
+> +
+> +	if (event < 0)
+> +		return IRQ_HANDLED;
+> +
+> +	dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
+
+P.S.: This should be a dev_dbg().
+
+> +	drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
+> +
+>   	if (mtk_dp->train_info.cable_state_change) {
+>   		mtk_dp->train_info.cable_state_change = false;
+>   
+> -		mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
+> -				   DP_PWR_STATE_BANDGAP_TPLL_LANE,
+> -				   DP_PWR_STATE_MASK);
+> -		drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
+> +		if (!mtk_dp->train_info.cable_plugged_in) {
+> +			mtk_dp_video_mute(mtk_dp, true);
+> +
+> +			mtk_dp_initialize_priv_data(mtk_dp);
+> +			mtk_dp_set_idle_pattern(mtk_dp, true);
+> +			if (mtk_dp->has_fec)
+
+...and you're checking it here, but there's nothing ever setting that as true!
+
+Is there anything you forgot? :-)
+
+Cheers,
+Angelo
