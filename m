@@ -2,84 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4120C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:14:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D66C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 09:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbiGAJOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
+        id S235677AbiGAJOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235277AbiGAJOD (ORCPT
+        with ESMTP id S231298AbiGAJOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:14:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683C53ED20;
-        Fri,  1 Jul 2022 02:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=myLZG8Fxe2O1i1vWy67IytiAd7jdr/N9oCZa6x7j0I0=; b=GP62mLwq01G1gJMQGK4N5R3ehZ
-        dpxwXJclqNQfsMA+0LkxdldsKE2DPcyytkGkBrT/jaByY9FYa3mT2VVflo7pZ4iSWP0gJJhu6R/0N
-        9ZGBNiEdtdbimqRi61aReO7rF+3UX6QIUY0Uzevp2ZdZ37bcXDWuVvhK6hgrCx7BZJ5c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o7Cia-008v8d-Tw; Fri, 01 Jul 2022 11:13:40 +0200
-Date:   Fri, 1 Jul 2022 11:13:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        saravanak@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, git@amd.com
-Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
-Message-ID: <Yr66xEMB/ORr0Xcp@lunn.ch>
-References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
+        Fri, 1 Jul 2022 05:14:30 -0400
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20040.outbound.protection.outlook.com [40.107.2.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC7944757;
+        Fri,  1 Jul 2022 02:14:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aOENq+GjtyJTaKrhHQtMD3k4nwuwK+EXuV8aXOdqFQKFLHYJlpSkK5GHqYF9ygH1SQ8RhO/tF9dinPcS0NrQuQSvWRhL6zAJ6+CCfzAWPutc9DlBMI1MgcfYGbp4OkQZvgNqgdpfQYYpJrudEY7AxbgNnxuabxAl5cDg4iesHPO5EB5oL2yBfS8SyLzRAdLoHIo1+H1amkSKhbHeV1dbDvTJ/vfc5d2KHrgWJOIBXBsahC8dSdMaWeVcKMhKIsQ/F6+zOZfRxEPbxgEr99y2w4YD3+6RDbqWaZxk1ydTgAwypthqAvrvgAN666cnuT+LONFLzKdhwSBY8ploiAS2iQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fFn6xSNGn11Tw1reH3bwrNxGeWp4jj/ppeQHNJQVHR0=;
+ b=lYlWkiIj60czv/bIta+hL5WAs/WJs/uFGB+mwLWDdtwZALnnErLREHd0wdb0f3FZp3r3CXFGu5+5JJ/DygphbtVPfSB9phsi/YJ93RN1CYoCqw9QVxKmc0yHtAKp9gLV+FtN7Im7G/RN2msfsQlHBOd22J1+Mx8PlgrwJeHmglLhZxm2jc88JGKMA5bBY9dbE5ZXwm7TykQ2HBjXBTlrd8WKpu/5nbBwV9Yl98iPS4mSmIK8fv7glKGlTu6dSeFWTERW1rsFh4jgdgUYeWywr43RK+bQK0KTkAUSPOmu9yrKov8m+mwNvgvQM1zncUCBwAYfXvlxf6bAiginWI0l7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.72) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fFn6xSNGn11Tw1reH3bwrNxGeWp4jj/ppeQHNJQVHR0=;
+ b=MGlU90AoTcVTPUEHaDedJsHe0Lv/TxvLaGW3VNrA1IMdCiwQB/FXWSc9v5Pk78FWXQD1OqWlLInsU9hvsK31JSj2RtJLOZPpIssk0hvBqf8rVJ4ooIaaWeK1UUIclUfWQ0MdafL2qn7DvNJGZcuXFlurOBfLRhLqGHjGpp0tKJvEar8Ar9cJ1a8jsIPvOPkem/Zjh+JhnWVodoj3fDaxUJ3uVwCuwJ2GzKdRQ5xcaHL9S3IYUfnt0RmaonvflhcLZtqvDeISVMoLrWmMODlx70ASwM8h1yGpWcllsbTYHcnLa5pCcJ39pMl0bvnb4C4ht42cUcScoh7H5PIUOMMfOA==
+Received: from OL1P279CA0006.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:12::11)
+ by AS4PR10MB5545.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4ff::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Fri, 1 Jul
+ 2022 09:14:27 +0000
+Received: from HE1EUR01FT031.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:e10:12:cafe::3f) by OL1P279CA0006.outlook.office365.com
+ (2603:10a6:e10:12::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15 via Frontend
+ Transport; Fri, 1 Jul 2022 09:14:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.72; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.72) by
+ HE1EUR01FT031.mail.protection.outlook.com (10.152.0.177) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5395.14 via Frontend Transport; Fri, 1 Jul 2022 09:14:27 +0000
+Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
+ DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Fri, 1 Jul 2022 11:14:25 +0200
+Received: from md1za8fc.ad001.siemens.net (139.25.68.241) by
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Fri, 1 Jul 2022 11:14:25 +0200
+From:   Henning Schild <henning.schild@siemens.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        "Bartosz Golaszewski" <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>
+CC:     Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Kuan-Wei Ho <cwho@nuvoton.com>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: [PATCH 0/1] add device driver for Nuvoton SIO gpio function
+Date:   Fri, 1 Jul 2022 11:14:11 +0200
+Message-ID: <20220701091412.20718-1-henning.schild@siemens.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [139.25.68.241]
+X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
+ DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-AS-Result: No-10--14.762500-8.000000
+X-TMASE-MatchedRID: 7A6GU0Gm5XHZZee1+o5TZrKInvvcD/cTKBLfE09F1HJswYo64ufkVY35
+        bSBoWhq9H8jJDe3vPQOxVpcooiqIm30sLl6yOD1JdlqJAfns3+dXKa5mdWEgiSa1MaKuob8PYi1
+        nZ7WB6LEfmRnL8RBuBO0MuScTztGMkpsU2cOjMqF8XGXq+kYTkOq4eBfl/7E8CuDAUX+yO6YXiv
+        wflisSrFgLks93sG9tTBJ5VCdJL8UbP/eOGYK8VoAy6p60ZV62fJ5/bZ6npdg7AFczfjr/7PtfJ
+        60CTYV2pzmeonZHr9BMniG9LKahgayy8p2Vvqk2+TEEeBO+vyI=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--14.762500-8.000000
+X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
+X-TM-SNTS-SMTP: 42FA62E12592507C1E39F899CD506352F4D954EF8CAAB54915A059DADAD6BD382000:8
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: de934b1b-3e1d-4543-cf45-08da5b421922
+X-MS-TrafficTypeDiagnostic: AS4PR10MB5545:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CNrOrj06OcAeu3PH0y64aAxMwSE0m4CsLA9jrF8bWBSrHqXrSZ5L+ieDxh30sXVmQoEXf+Np4GVenXMeO/HwCjecnSIFpPkvqkh0VPB4+qOzlUz6m+bdcc/bNyhZ3z01THr8wwwdFSbm1TltQZ/scOX5mwciMYhLDAN4FX4v0j0bj71zuttMEgy4FWUuX1HU3U0Z8MFDH/xD5F/n9gDs6nex78PQvn5p2m0TFGacB/Hptd2eYmO6bjOQyq4KjM1I7/8IPwBtPANpdW2ZzebA1mMxi6DP3VxToWDyX4zn7O2I3TJ+RWKkX7fDlErEPI6T1CRMydiGnDhNfw4j30xl11ACwh3QaVCrdPu9Ogucr7Bs1hRlnyzqjOz8n0LfMnSrl53MY6slyWvol+QHh+FZMjRE2+dMXBlyCoFW7U3PYRpBfQ4w2wxuWjUFt2fHQK4nIj3nyzP3Ywk/xU87f8LY5C8r4/Pnt1uVJdbyZwfRHBaSPD6VW+5qBr9NWzJ0tx+dzCd8gdyDMoTbujFFlTjzCY3jlRiOf8ZBe6J8komd5AD1TDCeYA5mwqCJ965hSTa0fw9W2OaT+y86ULMLIifQX8OU2deOdlOHY+unx2An2/HxyrtRr1IagdWKSH6n+3zYDrECz5aSAwWt5OJ4wVrGuzb1a7E+tBKWJdGGGGXGbj/PZf4W5npXi2OBaJBhdXlpdmzPyV/2QUuzwyEOaNLyErt6LrVIcexkxYaiytajnAgBJconh+HPYKyNh09wuGprFaljUGtBAU+vlDAsT0FMcHvt/wJ42wHIpqil5XKiYa1H909p2tGS4ZfRaEmWnfMbDYZJwYo5p1+P+od6UcG3lNw9uZozU+nIj+2ndw3vsuE=
+X-Forefront-Antispam-Report: CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(136003)(39860400002)(396003)(40470700004)(46966006)(36840700001)(16526019)(26005)(5660300002)(54906003)(86362001)(47076005)(82960400001)(40480700001)(82740400003)(336012)(956004)(44832011)(2616005)(8936002)(36860700001)(82310400005)(478600001)(356005)(36756003)(83380400001)(70586007)(1076003)(2906002)(4326008)(70206006)(40460700003)(81166007)(41300700001)(316002)(8676002)(186003)(110136005)(107886003)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2022 09:14:27.3246
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: de934b1b-3e1d-4543-cf45-08da5b421922
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource: HE1EUR01FT031.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB5545
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 01:25:06AM +0530, Radhey Shyam Pandey wrote:
-> In shared MDIO suspend/resume usecase for ex. with MDIO producer
-> (0xff0c0000) eth1 and MDIO consumer(0xff0b0000) eth0 there is a
-> constraint that ethernet interface(ff0c0000) MDIO bus producer
-> has to be resumed before the consumer ethernet interface(ff0b0000).
-> 
-> However above constraint is not met when GEM0(ff0b0000) is resumed first.
-> There is phy_error on GEM0 and interface becomes non-functional on resume.
-> 
-> suspend:
-> [ 46.477795] macb ff0c0000.ethernet eth1: Link is Down
-> [ 46.483058] macb ff0c0000.ethernet: gem-ptp-timer ptp clock unregistered.
-> [ 46.490097] macb ff0b0000.ethernet eth0: Link is Down
-> [ 46.495298] macb ff0b0000.ethernet: gem-ptp-timer ptp clock unregistered.
-> 
-> resume:
-> [ 46.633840] macb ff0b0000.ethernet eth0: configuring for phy/sgmii link mode
-> macb_mdio_read -> pm_runtime_get_sync(GEM1) it return -EACCES error.
-> 
-> The suspend/resume is dependent on probe order so to fix this dependency
-> ensure that MDIO producer ethernet node is always probed first followed
-> by MDIO consumer ethernet node.
-> 
-> During MDIO registration find out if MDIO bus is shared and check if MDIO
-> producer platform node(traverse by 'phy-handle' property) is bound. If not
-> bound then defer the MDIO consumer ethernet node probe. Doing it ensures
-> that in suspend/resume MDIO producer is resumed followed by MDIO consumer
-> ethernet node.
+This adds gpio support for several Super IO chips from Nuvoton. The
+driver was originally developed by Nuvoton and i am just contributing it
+on behalf, because other patches i will send later will require access
+to the gpios. The driver is valid on its own.
 
-I don't think there is anything specific to MACB here. There are
-Freescale boards which have an MDIO bus shared by two interfaces etc.
+The driver supports several chips, of which i only managed to test one
+but did not want to drop the others.
 
-Please try to solve this in a generic way, not specific to one MAC and
-MDIO combination.
+I hope the original authors will help with the testing and addressing
+review feedback. The changes i did so far mainly are inspired by similar
+drivers and some just concern coding style. If more has to be done and
+the original authors do not jump in, we might start off with just that
+one chip i can test and add the others later on.
 
-     Andrew
+Henning Schild (1):
+  gpio: nct6116d: add new driver for several Nuvoton super io chips
+
+ drivers/gpio/Kconfig         |   9 +
+ drivers/gpio/Makefile        |   1 +
+ drivers/gpio/gpio-nct6116d.c | 401 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 411 insertions(+)
+ create mode 100644 drivers/gpio/gpio-nct6116d.c
+
+-- 
+2.35.1
+
