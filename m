@@ -2,69 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC67CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AA1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236032AbiGALA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
+        id S237165AbiGALCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235661AbiGALA5 (ORCPT
+        with ESMTP id S229553AbiGALCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:00:57 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A982F80481;
-        Fri,  1 Jul 2022 04:00:54 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 1 Jul 2022
- 18:55:17 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.13.66]
-Date:   Fri, 1 Jul 2022 18:55:17 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ipconfig: use strscpy to replace strlcpy
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Fri, 1 Jul 2022 07:02:38 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8C480484;
+        Fri,  1 Jul 2022 04:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656673357; x=1688209357;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=pe9vh1uyJgmG4VqwbDIu3cgOWmm2SU16n90rLgoPYMc=;
+  b=kxw3fEgogxgiJkDCDhY9P+L6UwuwI04EvWV1XMfa88XZ+yLvvuzFoTgm
+   UFB4jSGO29bhaTuFt9yqAFii1lY1w+jGir1EK53GFozwNthy3EMk7ubDQ
+   MZpcYBcbFhCQ0i6+gWJqdV5lvsJDEBVotvGP0HfNfdUo30dYOMUyh8jIK
+   Y=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 01 Jul 2022 04:02:36 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 04:02:36 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 1 Jul 2022 04:02:36 -0700
+Received: from [10.216.5.206] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 1 Jul 2022
+ 04:02:32 -0700
+Message-ID: <ec04538b-93e2-fa93-4043-c489a0f228e8@quicinc.com>
+Date:   Fri, 1 Jul 2022 16:32:28 +0530
 MIME-Version: 1.0
-Message-ID: <6635dc9f.d16.181b966989f.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwBHUW+V0r5iSPdFAA--.879W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvOAAHsO
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWUCw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 5/5] firmware: qcom: scm: Add wait-queue handling logic
+Content-Language: en-US
+To:     Guru Das Srinagesh <quic_gurus@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     David Heidelberg <david@ixit.cz>,
+        Robert Marko <robimarko@gmail.com>,
+        Elliot Berman <quic_eberman@quicinc.com>
+References: <1656359076-13018-1-git-send-email-quic_gurus@quicinc.com>
+ <1656359076-13018-6-git-send-email-quic_gurus@quicinc.com>
+From:   Rajendra Nayak <quic_rjendra@quicinc.com>
+In-Reply-To: <1656359076-13018-6-git-send-email-quic_gurus@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
-dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
-WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIG5ldC9pcHY0L2lwY29uZmln
-LmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0IGRlbGV0
-aW9ucygtKQoKZGlmZiAtLWdpdCBhL25ldC9pcHY0L2lwY29uZmlnLmMgYi9uZXQvaXB2NC9pcGNv
-bmZpZy5jCmluZGV4IDIzNDJkZWJkNzA2Ni4uZTkwYmMwYWE4NWM3IDEwMDY0NAotLS0gYS9uZXQv
-aXB2NC9pcGNvbmZpZy5jCisrKyBiL25ldC9pcHY0L2lwY29uZmlnLmMKQEAgLTE3NjUsMTUgKzE3
-NjUsMTUgQEAgc3RhdGljIGludCBfX2luaXQgaXBfYXV0b19jb25maWdfc2V0dXAoY2hhciAqYWRk
-cnMpCiAJCQljYXNlIDQ6CiAJCQkJaWYgKChkcCA9IHN0cmNocihpcCwgJy4nKSkpIHsKIAkJCQkJ
-KmRwKysgPSAnXDAnOwotCQkJCQlzdHJsY3B5KHV0c25hbWUoKS0+ZG9tYWlubmFtZSwgZHAsCisJ
-CQkJCXN0cnNjcHkodXRzbmFtZSgpLT5kb21haW5uYW1lLCBkcCwKIAkJCQkJCXNpemVvZih1dHNu
-YW1lKCktPmRvbWFpbm5hbWUpKTsKIAkJCQl9Ci0JCQkJc3RybGNweSh1dHNuYW1lKCktPm5vZGVu
-YW1lLCBpcCwKKwkJCQlzdHJzY3B5KHV0c25hbWUoKS0+bm9kZW5hbWUsIGlwLAogCQkJCQlzaXpl
-b2YodXRzbmFtZSgpLT5ub2RlbmFtZSkpOwogCQkJCWljX2hvc3RfbmFtZV9zZXQgPSAxOwogCQkJ
-CWJyZWFrOwogCQkJY2FzZSA1OgotCQkJCXN0cmxjcHkodXNlcl9kZXZfbmFtZSwgaXAsIHNpemVv
-Zih1c2VyX2Rldl9uYW1lKSk7CisJCQkJc3Ryc2NweSh1c2VyX2Rldl9uYW1lLCBpcCwgc2l6ZW9m
-KHVzZXJfZGV2X25hbWUpKTsKIAkJCQlicmVhazsKIAkJCWNhc2UgNjoKIAkJCQlpZiAoaWNfcHJv
-dG9fbmFtZShpcCkgPT0gMCAmJgpAQCAtMTgyMCw3ICsxODIwLDcgQEAgX19zZXR1cCgibmZzYWRk
-cnM9IiwgbmZzYWRkcnNfY29uZmlnX3NldHVwKTsKIAogc3RhdGljIGludCBfX2luaXQgdmVuZG9y
-X2NsYXNzX2lkZW50aWZpZXJfc2V0dXAoY2hhciAqYWRkcnMpCiB7Ci0JaWYgKHN0cmxjcHkodmVu
-ZG9yX2NsYXNzX2lkZW50aWZpZXIsIGFkZHJzLAorCWlmIChzdHJzY3B5KHZlbmRvcl9jbGFzc19p
-ZGVudGlmaWVyLCBhZGRycywKIAkJICAgIHNpemVvZih2ZW5kb3JfY2xhc3NfaWRlbnRpZmllcikp
-CiAJICAgID49IHNpemVvZih2ZW5kb3JfY2xhc3NfaWRlbnRpZmllcikpCiAJCXByX3dhcm4oIkRI
-Q1A6IHZlbmRvcmNsYXNzIHRvbyBsb25nLCB0cnVuY2F0ZWQgdG8gXCIlc1wiXG4iLAotLSAKMi4y
-NS4xCg==
+
+
+On 6/28/2022 1:14 AM, Guru Das Srinagesh wrote:
+> Add logic to handle QCOM_SCM_WAITQ_SLEEP or QCOM_SCM_WAITQ_WAKE return
+> codes.
+> 
+> Scenario 1: Requests made by 2 different VMs:
+> 
+>    VM_1                     VM_2                            Firmware
+>      │                        │                                 │
+>      │                        │                                 │
+>      │                        │                                 │
+>      │                        │                                 │
+>      │      REQUEST_1         │                                 │
+>      ├────────────────────────┼─────────────────────────────────┤
+>      │                        │                                 │
+>      │                        │                              ┌──┼──┐
+>      │                        │                              │  │  │
+>      │                        │     REQUEST_2                │  │  │
+>      │                        ├──────────────────────────────┼──┤  │
+>      │                        │                              │  │  │Resource
+>      │                        │                              │  │  │is busy
+>      │                        │       {WQ_SLEEP}             │  │  │
+>      │                        │◄─────────────────────────────┼──┤  │
+>      │                        │  wq_ctx, smc_call_ctx        │  │  │
+>      │                        │                              └──┼──┘
+>      │   REQUEST_1 COMPLETE   │                                 │
+>      │◄───────────────────────┼─────────────────────────────────┤
+>      │                        │                                 │
+>      │                        │         IRQ                     │
+>      │                        │◄─-------------------------------│
+>      │                        │                                 │
+>      │                        │      get_wq_ctx()               │
+>      │                        ├────────────────────────────────►│
+>      │                        │                                 │
+>      │                        │                                 │
+>      │                        │◄────────────────────────────────┤
+>      │                        │   wq_ctx, flags, and            │
+>      │                        │        more_pending             │
+>      │                        │                                 │
+>      │                        │                                 │
+>      │                        │ wq_resume(smc_call_ctx)         │
+>      │                        ├────────────────────────────────►│
+>      │                        │                                 │
+>      │                        │                                 │
+>      │                        │      REQUEST_2 COMPLETE         │
+>      │                        │◄────────────────────────────────┤
+>      │                        │                                 │
+>      │                        │                                 │
+> 
+> Scenario 2: Two Requests coming in from same VM:
+> 
+>    VM_1                                                     Firmware
+>      │                                                          │
+>      │                                                          │
+>      │                                                          │
+>      │                                                          │
+>      │      REQUEST_1                                           │
+>      ├──────────────────────────────────────────────────────────┤
+>      │                                                          │
+>      │                                                     ┌────┼───┐
+>      │                                                     │    │   │
+>      │                                                     │    │   │
+>      │                                                     │    │   │
+>      │      REQUEST_2                                      │    │   │
+>      ├─────────────────────────────────────────────────────┼───►│   │
+>      │                                                     │    │   │Resource
+>      │                                                     │    │   │is busy
+>      │      {WQ_SLEEP}                                     │    │   │
+>      │◄────────────────────────────────────────────────────┼────┤   │
+>      │      wq_ctx, req2_smc_call_ctx                      │    │   │
+>      │                                                     │    │   │
+>      │                                                     └────┼───┘
+>      │                                                          │
+>      │      {WQ_WAKE}                                           │
+>      │◄─────────────────────────────────────────────────────────┤
+>      │      wq_ctx, req1_smc_call_ctx, flags                    │
+
+
+This is perhaps the same thing I asked on the previous patch,
+I am guessing {WQ_WAKE} is returned in respone to REQUEST_1?
+How do you know in this case if REQUEST_1 was a success or failure?
+
+
+>      │                                                          │
+>      │                                                          │
+>      │      wq_wake_ack(req1_smc_call_ctx)                      │
+>      ├─────────────────────────────────────────────────────────►│
+>      │                                                          │
+>      │      REQUEST_1 COMPLETE                                  │
+>      │◄─────────────────────────────────────────────────────────┤
+>      │                                                          │
+>      │                                                          │
+>      │      wq_resume(req_2_smc_call_ctx)                       │
+>      ├─────────────────────────────────────────────────────────►│
+>      │                                                          │
+>      │      REQUEST_2 COMPLETE                                  │
+>      │◄─────────────────────────────────────────────────────────┤
+>      │                                                          │
+> 
+> With the exception of get_wq_ctx(), the other two newly-introduced SMC
+> calls, wq_ack() and wq_resume() can themselves return WQ_SLEEP (these
+> nested rounds of WQ_SLEEP are not shown in the above diagram for the
+> sake of simplicity). Therefore, introduce a new do-while loop to handle
+> multiple WQ_SLEEP return values for the same parent SCM call.
+> 
+> Request Completion in the above diagram refers to either a success
+> return value (zero) or error (and not SMC_WAITQ_SLEEP or
+> SMC_WAITQ_WAKE).
+> 
+> Signed-off-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
+> ---
+>   drivers/firmware/qcom_scm-smc.c | 79 +++++++++++++++++++++++++++++++++++++----
+>   1 file changed, 72 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/firmware/qcom_scm-smc.c b/drivers/firmware/qcom_scm-smc.c
+> index 4150da1..fe95cc3 100644
+> --- a/drivers/firmware/qcom_scm-smc.c
+> +++ b/drivers/firmware/qcom_scm-smc.c
+> @@ -53,6 +53,9 @@ static void __scm_smc_do_quirk(const struct arm_smccc_args *smc,
+>   	} while (res->a0 == QCOM_SCM_INTERRUPTED);
+>   }
+>   
+> +#define IS_WAITQ_SLEEP_OR_WAKE(res) \
+> +	(res->a0 == QCOM_SCM_WAITQ_SLEEP || res->a0 == QCOM_SCM_WAITQ_WAKE)
+> +
+>   static void fill_wq_resume_args(struct arm_smccc_args *resume, u32 smc_call_ctx)
+>   {
+>   	memset(resume->args, 0, ARRAY_SIZE(resume->args));
+> @@ -109,25 +112,80 @@ int scm_get_wq_ctx(u32 *wq_ctx, u32 *flags, u32 *more_pending)
+>   	return 0;
+>   }
+>   
+> -static void __scm_smc_do(const struct arm_smccc_args *smc,
+> +static int scm_smc_do_quirk(struct device *dev, struct arm_smccc_args *smc,
+> +			    struct arm_smccc_res *res)
+> +{
+> +	struct completion *wq = NULL;
+> +	struct qcom_scm *qscm;
+> +	u32 wq_ctx, smc_call_ctx, flags;
+> +
+> +	do {
+> +		__scm_smc_do_quirk(smc, res);
+> +
+> +		if (IS_WAITQ_SLEEP_OR_WAKE(res)) {
+> +			wq_ctx = res->a1;
+> +			smc_call_ctx = res->a2;
+> +			flags = res->a3;
+> +
+> +			if (!dev)
+> +				return -EPROBE_DEFER;
+> +
+> +			qscm = dev_get_drvdata(dev);
+> +			wq = qcom_scm_lookup_wq(qscm, wq_ctx);
+> +			if (IS_ERR_OR_NULL(wq)) {
+> +				pr_err("No waitqueue found for wq_ctx %d: %ld\n",
+> +						wq_ctx, PTR_ERR(wq));
+> +				return PTR_ERR(wq);
+> +			}
+> +
+> +			if (res->a0 == QCOM_SCM_WAITQ_SLEEP) {
+> +				wait_for_completion(wq);
+> +				fill_wq_resume_args(smc, smc_call_ctx);
+> +				wq = NULL;
+> +				continue;
+> +			} else {
+> +				fill_wq_wake_ack_args(smc, smc_call_ctx);
+> +				continue;
+> +			}
+> +		} else if ((long)res->a0 < 0) {
+> +			/* Error, simply return to caller */
+> +			break;
+> +		} else {
+> +			/*
+> +			 * Success.
+> +			 * wq will be set only if a prior WAKE happened.
+> +			 * Its value will be the one from the prior WAKE.
+> +			 */
+> +			if (wq)
+> +				scm_waitq_flag_handler(wq, flags);
+> +			break;
+> +		}
+> +	} while (IS_WAITQ_SLEEP_OR_WAKE(res));
+> +
+> +	return 0;
+> +}
+> +
+> +static int __scm_smc_do(struct device *dev, struct arm_smccc_args *smc,
+>   			 struct arm_smccc_res *res, bool atomic)
+>   {
+> -	int retry_count = 0;
+> +	int ret, retry_count = 0;
+>   
+>   	if (atomic) {
+>   		__scm_smc_do_quirk(smc, res);
+> -		return;
+> +		return 0;
+>   	}
+>   
+>   	do {
+>   		if (!qcom_scm_allow_multicall)
+>   			mutex_lock(&qcom_scm_lock);
+>   
+> -		__scm_smc_do_quirk(smc, res);
+> +		ret = scm_smc_do_quirk(dev, smc, res);
+>   
+>   		if (!qcom_scm_allow_multicall)
+>   			mutex_unlock(&qcom_scm_lock);
+>   
+> +		if (ret)
+> +			return ret;
+>   
+>   		if (res->a0 == QCOM_SCM_V2_EBUSY) {
+>   			if (retry_count++ > QCOM_SCM_EBUSY_MAX_RETRY)
+> @@ -135,6 +193,8 @@ static void __scm_smc_do(const struct arm_smccc_args *smc,
+>   			msleep(QCOM_SCM_EBUSY_WAIT_MS);
+>   		}
+>   	}  while (res->a0 == QCOM_SCM_V2_EBUSY);
+> +
+> +	return 0;
+>   }
+>   
+>   
+> @@ -143,7 +203,7 @@ int __scm_smc_call(struct device *dev, const struct qcom_scm_desc *desc,
+>   		   struct qcom_scm_res *res, bool atomic)
+>   {
+>   	int arglen = desc->arginfo & 0xf;
+> -	int i;
+> +	int i, ret;
+>   	dma_addr_t args_phys = 0;
+>   	void *args_virt = NULL;
+>   	size_t alloc_len;
+> @@ -195,19 +255,24 @@ int __scm_smc_call(struct device *dev, const struct qcom_scm_desc *desc,
+>   		smc.args[SCM_SMC_LAST_REG_IDX] = args_phys;
+>   	}
+>   
+> -	__scm_smc_do(&smc, &smc_res, atomic);
+> +	ret = __scm_smc_do(dev, &smc, &smc_res, atomic);
+> +	/* ret error check follows after args_virt cleanup*/
+>   
+>   	if (args_virt) {
+>   		dma_unmap_single(dev, args_phys, alloc_len, DMA_TO_DEVICE);
+>   		kfree(args_virt);
+>   	}
+>   
+> +	if (ret)
+> +		return ret;
+> +
+>   	if (res) {
+>   		res->result[0] = smc_res.a1;
+>   		res->result[1] = smc_res.a2;
+>   		res->result[2] = smc_res.a3;
+>   	}
+>   
+> -	return (long)smc_res.a0 ? qcom_scm_remap_error(smc_res.a0) : 0;
+> +	ret = (long)smc_res.a0 ? qcom_scm_remap_error(smc_res.a0) : 0;
+>   
+> +	return ret;
+>   }
