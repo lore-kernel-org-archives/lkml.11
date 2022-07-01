@@ -2,416 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3221C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235609AbiGAIsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
+        id S236452AbiGAIsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236329AbiGAIr7 (ORCPT
+        with ESMTP id S236031AbiGAIsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:47:59 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFEC735A5;
-        Fri,  1 Jul 2022 01:47:57 -0700 (PDT)
+        Fri, 1 Jul 2022 04:48:11 -0400
+Received: from mail-oa1-x4a.google.com (mail-oa1-x4a.google.com [IPv6:2001:4860:4864:20::4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FB673900
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 01:48:00 -0700 (PDT)
+Received: by mail-oa1-x4a.google.com with SMTP id 586e51a60fabf-101ce3522e7so1186422fac.21
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 01:48:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656665277; x=1688201277;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wsRGwE1+4MYukcnB7TzFkOlQUtnJSohqmaxAXlKx2U4=;
-  b=a5jKpYWZFck9eyr+zdGpZQ3vtCA9bVS6bxsDwqWy6Cp4vX9Lzh0Ztiv0
-   0bbIFlGN9K9JeVerEsclwTQWK17cTjd/Z86fl67eT9JYsd+JIF7VPGhW0
-   X9YWsOXHSiRwcnKl5Z/py4lkcevWEJOysRNDwLUiykjsr44WntcM0bN1X
-   c=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 01 Jul 2022 01:47:56 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:47:57 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 1 Jul 2022 01:47:55 -0700
-Received: from [10.50.62.167] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 1 Jul 2022
- 01:47:51 -0700
-Message-ID: <52c6ab15-1cd8-324e-4bcc-c449d8bceb19@quicinc.com>
-Date:   Fri, 1 Jul 2022 14:17:48 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V15 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>
-References: <a11732d6-a9b1-7ead-e89a-564a57a7192b@quicinc.com>
- <503f1a8b-eadb-d3a6-6e24-d60437f778b6@quicinc.com>
- <YrlfF+DMlGFsVBdk@google.com>
- <a1c6e3c9-962d-411e-7fbf-9e760e9dc8c0@quicinc.com>
- <Yrqw1YRyCGG+d4GL@google.com>
- <4112b5af-15de-007c-fcc2-c31ce9f9e426@quicinc.com>
- <YrxtXdOsIZ5LKhdV@google.com>
- <f8e70198-d0d8-5500-2869-be9e3a34f3c1@quicinc.com>
- <Yr18M9dzTOWL0m2c@google.com>
- <de1f3f33-0a8c-eb87-694c-16ebf2835720@quicinc.com>
- <Yr6oLlmfWRkiAZG7@google.com>
-From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-In-Reply-To: <Yr6oLlmfWRkiAZG7@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=+zs9McyspJyuL95L2dn0e+9NIxzA0pjwBmrT4ez5azk=;
+        b=HmwOyP6LrnIAWygRoWdFbVte/NF7Ah59SSg24ixrC26UeYUaKiYpQKfZwy2wWBmJFn
+         Xaomq42IBwaqcq3kDZB+l8s9M9DwICaR9OKfMsrGUuSUOfKrJ0D/IpWcOrKEQgKNNZQT
+         CQ0KByJB/jeS6aPe2d/KcOVERt2009aYYdIVwx6xDhdEYkPx4zUP3AAeYBVLDScapS7U
+         CGY9Nlc6mKCbptKcFKQgUJ6+uPeOCme/4epvAMbCz3TJ0+UkNPXU/N39sIdBxXdYASTF
+         sVP14pf/aoE4623J+BZz4m8+dDOv3Cssppe2cg7fSTZ+n6MMfxbKku+TM5hQn4WJ3o6n
+         9bMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=+zs9McyspJyuL95L2dn0e+9NIxzA0pjwBmrT4ez5azk=;
+        b=lN7T0DTL1tuemaUUsqZ0GnggooujQMAnmM7KkjYTBM1zrfwymhnJKe7YhB47sGaNzs
+         q9BJSiec7rPzLNLn+VgZfEO7ecu4Y80bw0b15zUP1wdhfseYYQ76BnzfM+7mDBRB1OSN
+         4duvnpCE00E3PS2jqSXwoTY0DUmY1KSgUgzV0PBpK2YEv/bMDCka8IPwA1QE1m9BBuZ7
+         bJrmk6m66Ujf2XM4+mOU92GOZK293R0mZzuzcuYCTrLwdvjwgYFoRLh7FECZkNS7Rq74
+         wJ1EEOD9GnHIx9ikFfkdHFxQse46HPZ4Pyn4ywgRNDAwOir6O5rCDBzBu4FB0t+Z3Gqs
+         94Nw==
+X-Gm-Message-State: AJIora88Lh8mdAy/2+6m6KYLVApXK6oa1+IlIkJ/K8BoVsoD6eZmtKXm
+        bLVfn8X/fWXgVNkWMh9uGP3DYxIooJuj+w==
+X-Google-Smtp-Source: AGRyM1uB137feo67oTb7/H8CK/WR5OXActRbYHb36UQgb0dyDSrNGYp9HMhU3C7dbaN7jOKGwmCf/p4tUTZgrw==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a05:6808:19a5:b0:335:cffd:b276 with SMTP
+ id bj37-20020a05680819a500b00335cffdb276mr3489043oib.226.1656665279047; Fri,
+ 01 Jul 2022 01:47:59 -0700 (PDT)
+Date:   Fri,  1 Jul 2022 16:47:43 +0800
+In-Reply-To: <20220701084744.3002019-1-davidgow@google.com>
+Message-Id: <20220701084744.3002019-3-davidgow@google.com>
+Mime-Version: 1.0
+References: <20220701084744.3002019-1-davidgow@google.com>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v4 3/4] kunit: Taint the kernel when KUnit tests are run
+From:   David Gow <davidgow@google.com>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Cc:     David Gow <davidgow@google.com>,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Joe Fradley <joefradley@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kbuild@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Make KUnit trigger the new TAINT_TEST taint when any KUnit test is run.
+Due to KUnit tests not being intended to run on production systems, and
+potentially causing problems (or security issues like leaking kernel
+addresses), the kernel's state should not be considered safe for
+production use after KUnit tests are run.
 
-On 7/1/2022 1:24 PM, Lee Jones wrote:
-> On Fri, 01 Jul 2022, Satya Priya Kakitapalli (Temp) wrote:
->
->> On 6/30/2022 4:04 PM, Lee Jones wrote:
->>> On Thu, 30 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
->>>
->>>> On 6/29/2022 8:48 PM, Lee Jones wrote:
->>>>> On Wed, 29 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
->>>>>
->>>>>> On 6/28/2022 1:12 PM, Lee Jones wrote:
->>>>>>> On Tue, 28 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
->>>>>>>
->>>>>>>> On 6/27/2022 1:11 PM, Lee Jones wrote:
->>>>>>>>> On Mon, 27 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
->>>>>>>>>
->>>>>>>>>> Hi Lee,
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> On 6/20/2022 4:37 PM, Satya Priya Kakitapalli (Temp) wrote:
->>>>>>>>>>> On 6/20/2022 1:50 PM, Lee Jones wrote:
->>>>>>>>>>>> On Mon, 20 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
->>>>>>>>>>>>
->>>>>>>>>>>>> On 6/17/2022 2:27 AM, Lee Jones wrote:
->>>>>>>>>>>>>> On Tue, 14 Jun 2022, Satya Priya wrote:
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Use i2c_new_dummy_device() to register pm8008-regulator
->>>>>>>>>>>>>>> client present at a different address space, instead of
->>>>>>>>>>>>>>> defining a separate DT node. This avoids calling the probe
->>>>>>>>>>>>>>> twice for the same chip, once for each client pm8008-infra
->>>>>>>>>>>>>>> and pm8008-regulator.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> As a part of this define pm8008_regmap_init() to do regmap
->>>>>>>>>>>>>>> init for both the clients and define pm8008_get_regmap() to
->>>>>>>>>>>>>>> pass the regmap to the regulator driver.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
->>>>>>>>>>>>>>> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
->>>>>>>>>>>>>>> ---
->>>>>>>>>>>>>>> Changes in V15:
->>>>>>>>>>>>>>>         - None.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Changes in V14:
->>>>>>>>>>>>>>>         - None.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Changes in V13:
->>>>>>>>>>>>>>>         - None.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>         drivers/mfd/qcom-pm8008.c       | 34
->>>>>>>>>>>>>>> ++++++++++++++++++++++++++++++++--
->>>>>>>>>>>>>>>         include/linux/mfd/qcom_pm8008.h |  9 +++++++++
->>>>>>>>>>>>>>>         2 files changed, 41 insertions(+), 2 deletions(-)
->>>>>>>>>>>>>>>         create mode 100644 include/linux/mfd/qcom_pm8008.h
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
->>>>>>>>>>>>>>> index 569ffd50..55e2a8e 100644
->>>>>>>>>>>>>>> --- a/drivers/mfd/qcom-pm8008.c
->>>>>>>>>>>>>>> +++ b/drivers/mfd/qcom-pm8008.c
->>>>>>>>>>>>>>> @@ -9,6 +9,7 @@
->>>>>>>>>>>>>>>         #include <linux/interrupt.h>
->>>>>>>>>>>>>>>         #include <linux/irq.h>
->>>>>>>>>>>>>>>         #include <linux/irqdomain.h>
->>>>>>>>>>>>>>> +#include <linux/mfd/qcom_pm8008.h>
->>>>>>>>>>>>>>>         #include <linux/module.h>
->>>>>>>>>>>>>>>         #include <linux/of_device.h>
->>>>>>>>>>>>>>>         #include <linux/of_platform.h>
->>>>>>>>>>>>>>> @@ -57,6 +58,7 @@ enum {
->>>>>>>>>>>>>>>         struct pm8008_data {
->>>>>>>>>>>>>>>             struct device *dev;
->>>>>>>>>>>>>>> +    struct regmap *regulators_regmap;
->>>>>>>>>>>>>>>             int irq;
->>>>>>>>>>>>>>>             struct regmap_irq_chip_data *irq_data;
->>>>>>>>>>>>>>>         };
->>>>>>>>>>>>>>> @@ -150,6 +152,12 @@ static struct regmap_config
->>>>>>>>>>>>>>> qcom_mfd_regmap_cfg = {
->>>>>>>>>>>>>>>             .max_register    = 0xFFFF,
->>>>>>>>>>>>>>>         };
->>>>>>>>>>>>>>> +struct regmap *pm8008_get_regmap(const struct pm8008_data *chip)
->>>>>>>>>>>>>>> +{
->>>>>>>>>>>>>>> +    return chip->regulators_regmap;
->>>>>>>>>>>>>>> +}
->>>>>>>>>>>>>>> +EXPORT_SYMBOL_GPL(pm8008_get_regmap);
->>>>>>>>>>>>>> Seems like abstraction for the sake of abstraction.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Why not do the dereference inside the regulator driver?
->>>>>>>>>>>>> To derefer this in the regulator driver, we need to have the
->>>>>>>>>>>>> pm8008_data
->>>>>>>>>>>>> struct definition in the qcom_pm8008 header file.
->>>>>>>>>>>>>
->>>>>>>>>>>>> I think it doesn't look great to have only that structure in
->>>>>>>>>>>>> header and all
->>>>>>>>>>>>> other structs and enum in the mfd driver.
->>>>>>>>>>>> Then why pass 'pm8008_data' at all?
->>>>>>>>>>> There is one more option, instead of passing the pm8008_data, we could
->>>>>>>>>>> pass the pdev->dev.parent and get the pm8008 chip data directly in the
->>>>>>>>>>> pm8008_get_regmap() like below
->>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> struct regmap *pm8008_get_regmap(const struct device *dev)
->>>>>>>>>>>       {
->>>>>>>>>>>           const struct pm8008_data *chip = dev_get_drvdata(dev);
->>>>>>>>>>>
->>>>>>>>>>>           return chip->regulators_regmap;
->>>>>>>>>>> }
->>>>>>>>>>> EXPORT_SYMBOL_GPL(pm8008_get_regmap);
->>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> By doing this we can avoid having declaration of pm8008_data also in the
->>>>>>>>>>> header. Please let me know if this looks good.
->>>>>>>>>>>
->>>>>>>>>> Could you please confirm on this?
->>>>>>>>>>
->>>>>>>>>>>> What's preventing you from passing 'regmap'?
->>>>>>>>>>> I didn't get what you meant here, could you please elaborate a bit?
->>>>>>>>> Ah yes.  I authored you a patch, but became distracted. Here:
->>>>>>>>>
->>>>>>>>> -----8<--------------------8<-------
->>>>>>>>>
->>>>>>>>> From: Lee Jones <lee.jones@linaro.org>
->>>>>>>>>
->>>>>>>>> mfd: pm8008: Remove driver data structure pm8008_data
->>>>>>>>> Maintaining a local driver data structure that is never shared
->>>>>>>>> outside of the core device is an unnecessary complexity.  Half of the
->>>>>>>>> attributes were not used outside of a single function, one of which
->>>>>>>>> was not used at all.  The remaining 2 are generic and can be passed
->>>>>>>>> around as required.
->>>>>>>> Okay, but we still need to store the regulators_regmap, which is required in
->>>>>>>> the pm8008 regulator driver. Could we use a global variable for it?
->>>>>>> Look down ...
->>>>>>>
->>>>>>>>> Signed-off-by: Lee Jones <lee.jones@linaro.org>
->>>>>>>>> ---
->>>>>>>>>       drivers/mfd/qcom-pm8008.c | 53 ++++++++++++++++++-----------------------------
->>>>>>>>>       1 file changed, 20 insertions(+), 33 deletions(-)
->>>>>>>>>
->>>>>>>>> diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
->>>>>>>>> index c472d7f8103c4..4b8ff947762f2 100644
->>>>>>>>> --- a/drivers/mfd/qcom-pm8008.c
->>>>>>>>> +++ b/drivers/mfd/qcom-pm8008.c
->>>>>>>>> @@ -54,13 +54,6 @@ enum {
->>>>>>>>>       #define PM8008_PERIPH_OFFSET(paddr)	(paddr - PM8008_PERIPH_0_BASE)
->>>>>>>>> -struct pm8008_data {
->>>>>>>>> -	struct device *dev;
->>>>>>>>> -	struct regmap *regmap;
->>>>>>>>> -	int irq;
->>>>>>>>> -	struct regmap_irq_chip_data *irq_data;
->>>>>>>>> -};
->>>>>>>>> -
->>>>>>>>>       static unsigned int p0_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_0_BASE)};
->>>>>>>>>       static unsigned int p1_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_1_BASE)};
->>>>>>>>>       static unsigned int p2_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_2_BASE)};
->>>>>>>>> @@ -150,7 +143,7 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
->>>>>>>>>       	.max_register	= 0xFFFF,
->>>>>>>>>       };
->>>>>>>>> -static int pm8008_init(struct pm8008_data *chip)
->>>>>>>>> +static int pm8008_init(struct regmap *regmap)
->>>>>>>>>       {
->>>>>>>>>       	int rc;
->>>>>>>>> @@ -160,34 +153,31 @@ static int pm8008_init(struct pm8008_data *chip)
->>>>>>>>>       	 * This is required to enable the writing of TYPE registers in
->>>>>>>>>       	 * regmap_irq_sync_unlock().
->>>>>>>>>       	 */
->>>>>>>>> -	rc = regmap_write(chip->regmap,
->>>>>>>>> -			 (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET),
->>>>>>>>> -			 BIT(0));
->>>>>>>>> +	rc = regmap_write(regmap, (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
->>>>>>>>>       	if (rc)
->>>>>>>>>       		return rc;
->>>>>>>>>       	/* Do the same for GPIO1 and GPIO2 peripherals */
->>>>>>>>> -	rc = regmap_write(chip->regmap,
->>>>>>>>> -			 (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
->>>>>>>>> +	rc = regmap_write(regmap, (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
->>>>>>>>>       	if (rc)
->>>>>>>>>       		return rc;
->>>>>>>>> -	rc = regmap_write(chip->regmap,
->>>>>>>>> -			 (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
->>>>>>>>> +	rc = regmap_write(regmap, (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
->>>>>>>>>       	return rc;
->>>>>>>>>       }
->>>>>>>>> -static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
->>>>>>>>> +static int pm8008_probe_irq_peripherals(struct device *dev,
->>>>>>>>> +					struct regmap *regmap,
->>>>>>>>>       					int client_irq)
->>>>>>>>>       {
->>>>>>>>>       	int rc, i;
->>>>>>>>>       	struct regmap_irq_type *type;
->>>>>>>>>       	struct regmap_irq_chip_data *irq_data;
->>>>>>>>> -	rc = pm8008_init(chip);
->>>>>>>>> +	rc = pm8008_init(regmap);
->>>>>>>>>       	if (rc) {
->>>>>>>>> -		dev_err(chip->dev, "Init failed: %d\n", rc);
->>>>>>>>> +		dev_err(dev, "Init failed: %d\n", rc);
->>>>>>>>>       		return rc;
->>>>>>>>>       	}
->>>>>>>>> @@ -207,10 +197,10 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
->>>>>>>>>       				IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW);
->>>>>>>>>       	}
->>>>>>>>> -	rc = devm_regmap_add_irq_chip(chip->dev, chip->regmap, client_irq,
->>>>>>>>> +	rc = devm_regmap_add_irq_chip(dev, regmap, client_irq,
->>>>>>>>>       			IRQF_SHARED, 0, &pm8008_irq_chip, &irq_data);
->>>>>>>>>       	if (rc) {
->>>>>>>>> -		dev_err(chip->dev, "Failed to add IRQ chip: %d\n", rc);
->>>>>>>>> +		dev_err(dev, "Failed to add IRQ chip: %d\n", rc);
->>>>>>>>>       		return rc;
->>>>>>>>>       	}
->>>>>>>>> @@ -220,26 +210,23 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
->>>>>>>>>       static int pm8008_probe(struct i2c_client *client)
->>>>>>>>>       {
->>>>>>>>>       	int rc;
->>>>>>>>> -	struct pm8008_data *chip;
->>>>>>>>> -
->>>>>>>>> -	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
->>>>>>>>> -	if (!chip)
->>>>>>>>> -		return -ENOMEM;
->>>>>>>>> +	struct device *dev;
->>>>>>>>> +	struct regmap *regmap;
->>>>>>>>> -	chip->dev = &client->dev;
->>>>>>>>> -	chip->regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
->>>>>>>>> -	if (!chip->regmap)
->>>>>>>>> +	dev = &client->dev;
->>>>>>>>> +	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
->>>>>>>>> +	if (!regmap)
->>>>>>>>>       		return -ENODEV;
->>>>>>>>> -	i2c_set_clientdata(client, chip);
->>>>>>>>> +	i2c_set_clientdata(client, regmap);
->>>>>>> Here ^
->>>>>> I have added a dummy device and set the client data by passing regmap, see
->>>>>> below:
->>>>>>
->>>>>> +       regulators_client = i2c_new_dummy_device(client->adapter,
->>>>>> client->addr + 1);
->>>>>> +       if (IS_ERR(regulators_client)) {
->>>>>> +               dev_err(dev, "can't attach client\n");
->>>>>> +               return PTR_ERR(regulators_client);
->>>>>> +       }
->>>>>> +
->>>>>> +       regulators_regmap = devm_regmap_init_i2c(regulators_client,
->>>>>> &qcom_mfd_regmap_cfg[1]);
->>>>>> +       if (!regmap)
->>>>>> +               return -ENODEV;
->>>>>> +
->>>>>> +       i2c_set_clientdata(client, regulators_regmap);
->>>>>>
->>>>>> Now if i try to get this regmap from regulator driver by doing
->>>>>>
->>>>>> struct regmap *regmap = dev_get_drvdata(pdev->dev.parent);
->>>>>>
->>>>>> it still gets me the regmap of pm8008@8 device and not the regulator device
->>>>>> regmap (0x9). Not sure if I'm missing something here.
->>>>> So you need to pass 2 regmap pointers?
->>>>>
->>>>> If you need to pass more than one item to the child devices, you do
->>>>> need to use a struct for that.
->>>> I need to pass only one regmap out of the two, but i am not able to retrieve
->>>> the correct regmap simply by doing i2c_set_clientdata
->>>>
->>>> probably because we are having all the child nodes under same DT node and
->>>> thus not able to distinguish based on the dev pointer
->>> You can only pull out (get) the pointer that you put in (set).
->>>
->>> Unless you over-wrote it later in the thread of execution, you are
->>> pulling out whatever regulators_regmap happens to be.
->>>
->>> Is qcom_mfd_regmap_cfg[1] definitely the one you want?
->>
->> Yes, I need qcom_mfd_regmap_cfg[1]
->>
->> Pasting code snippet for reference:
->>
->> static struct regmap_config qcom_mfd_regmap_cfg[2] = {
->>       {
->>
->>           .name = "infra",
->>           .reg_bits   = 16,
->>           .val_bits   = 8,
->>           .max_register   = 0xFFFF,
->>       },
->>       {
->>           .name = "regulators",
->>           .reg_bits   = 16,
->>           .val_bits   = 8,
->>           .max_register   = 0xFFFF,
->>       },
->>
->> };
->>
->>
->> Inside pm8008_probe:
->>
->>
->>       regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg[0]);
->>       if (!regmap)
->>           return -ENODEV;
->>
->>       i2c_set_clientdata(client, regmap);
->>
->>
->>       regulators_client = i2c_new_dummy_device(client->adapter, client->addr
->> + 1);
->>       if (IS_ERR(regulators_client)) {
->>           dev_err(dev, "can't attach client\n");
->>           return PTR_ERR(regulators_client);
->>       }
->>
->>       regulators_regmap = devm_regmap_init_i2c(regulators_client,
->> &qcom_mfd_regmap_cfg[1]);
->>       if (!regmap)
->>           return -ENODEV;
->>
->>       i2c_set_clientdata(regulators_client, regulators_regmap);
-> You can't call this twice.
->
-> Doing so with over-write regmap with regulators_regmap.
->
-> You said you only needed one?
->
->    "I need to pass only one regmap out of the two, but i am not able to retrieve"
+This both marks KUnit modules as test modules using MODULE_INFO() and
+manually taints the kernel when tests are run (which catches builtin
+tests).
 
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Tested-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: David Gow <davidgow@google.com>
+---
 
-I thought you asked whether we have to pass two regmaps to the child 
-regulator driver.
+Changes since v3:
+https://lore.kernel.org/lkml/20220513083212.3537869-2-davidgow@google.com/
+- Use MODULE_INFO() for KUnit modules.
+  - This is technically redundant, as the KUnit executor will taint the
+    kernel when _any_ KUnit tests are run, but may be useful if some
+    other tool will parse the 'test' property.
+- Add {Acked,Tested,Reviewed}-by tags.
 
+---
+ include/kunit/test.h | 3 ++-
+ lib/kunit/test.c     | 4 ++++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
->> In qcom-pm8008-regulator.c I tried to get the regmap using
->>
->> dev_get_regmap(pdev->dev.parent, "regulators");
-> I haven't looked at this API before.  I suggest that this would be
-> used *instead* of passing the regmap pointer via driver_data.
->
-> It looks like you're using different devices to init your regmaps;
-> 'client' and 'regulator_client' (derived from client->adapter).
->
-> "regulators" is registered using regulators_regmap which was *not*
-> init'ed with pdev->dev.parent (same as client->dev), so trying to
-> dev_get_regmap() with that device pointer will not work.
-
-
-Okay, So I will leave the driver as is then?
+diff --git a/include/kunit/test.h b/include/kunit/test.h
+index 8ffcd7de9607..ccae848720dc 100644
+--- a/include/kunit/test.h
++++ b/include/kunit/test.h
+@@ -277,7 +277,8 @@ static inline int kunit_run_all_tests(void)
+ 	{								\
+ 		return __kunit_test_suites_exit(__suites);		\
+ 	}								\
+-	module_exit(kunit_test_suites_exit)
++	module_exit(kunit_test_suites_exit)				\
++	MODULE_INFO(test, "Y");
+ #else
+ #define kunit_test_suites_for_module(__suites)
+ #endif /* MODULE */
+diff --git a/lib/kunit/test.c b/lib/kunit/test.c
+index a5053a07409f..8b11552dc215 100644
+--- a/lib/kunit/test.c
++++ b/lib/kunit/test.c
+@@ -11,6 +11,7 @@
+ #include <kunit/test-bug.h>
+ #include <linux/kernel.h>
+ #include <linux/moduleparam.h>
++#include <linux/panic.h>
+ #include <linux/sched/debug.h>
+ #include <linux/sched.h>
+ 
+@@ -501,6 +502,9 @@ int kunit_run_tests(struct kunit_suite *suite)
+ 	struct kunit_result_stats suite_stats = { 0 };
+ 	struct kunit_result_stats total_stats = { 0 };
+ 
++	/* Taint the kernel so we know we've run tests. */
++	add_taint(TAINT_TEST, LOCKDEP_STILL_OK);
++
+ 	if (suite->suite_init) {
+ 		suite->suite_init_err = suite->suite_init(suite);
+ 		if (suite->suite_init_err) {
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
