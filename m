@@ -2,193 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057B7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 309D0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235233AbiGAHDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
+        id S234519AbiGAHD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235169AbiGAHDB (ORCPT
+        with ESMTP id S229481AbiGAHDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:03:01 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E4B677F4
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:02:59 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-3176b6ed923so14527707b3.11
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 00:02:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
-        b=G4+aGmI06EueqwK7C5Qo4w/41Yp3wU/CWyAMnimOU3r1x56NK0xwWd5NnQsEtkPJT1
-         j1wWR6jutsCmi+xE7hxYUqJNrQrMI+GL07X5ZYgIgqDAqQnMWhF8y5nc40xNPfhYS3jC
-         0nJhLPxfL1eyodYvq4oKHJFLeueGwA5XPbFVGoQA05bmNWxXq8PGbVqamZrTZs9J6qBh
-         1fRZx/U4bPFmJBSVu1knm/cNESUDsxYs6X7kurTJA14GFNtyIPF26073epdL9z6eSE2L
-         X78efI4BN3icU+xkSEEQMO42kPgo3k8M7uVN2JrWdQyoK9p0Z0nOVmWHNbnRgASj9y0m
-         xe+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
-        b=vhlVM8Ew5TDDfbPV7AvqYvq6QXhUYYxpxqCJ+M0SeuqbrE0+6DqERJjT8InvWqEMDb
-         AiXuOi5liEYq9EClasL5H/+ud0Nz/TXzIT/hcj7ETo4U8IPzN4Cacg3ee5v09rgSSHLn
-         usDwqV6b93foqfjDx+wvf/d0AorAbHmiPo4uZRX0GFtJwrv0MFVaMhE4whLmV9eD5Cxj
-         fqcYi+47KCYWR2R6Y86Rnr6z9EZLnpiT3V1YktsVwlq/zu9/FW6zMu8mthzfy4e9pgk5
-         pGEv6ML9ishz/lJMJ2fQ5fY1yitpdGR0StfsmjZc1Ftd0nOfOx/rwGM5mjNndRpoFI+U
-         1Mtw==
-X-Gm-Message-State: AJIora/FiPkut/3UmnEUlxnyQ7c/Yot8Ui1BQazAH0c+0O3UCfE2nXwE
-        0CEIicIeDw3mWsiEfZcuuz1/MbukPp5NXf+KeJ7wgw==
-X-Google-Smtp-Source: AGRyM1sjHYE6b1ihEm8EzVroyoytiPu2X1qfGuWU3WGWHfolVcCLEjpB4ZdcYExvwYNCmCj3ip+B1gZf6PvcXiQN0KE=
-X-Received: by 2002:a81:4896:0:b0:317:f767:95f8 with SMTP id
- v144-20020a814896000000b00317f76795f8mr15214195ywa.218.1656658978077; Fri, 01
- Jul 2022 00:02:58 -0700 (PDT)
+        Fri, 1 Jul 2022 03:03:52 -0400
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB89564E5
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:03:48 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id VEE00141;
+        Fri, 01 Jul 2022 15:03:41 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 1 Jul 2022 15:03:44 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <jean-philippe@linaro.org>, <joro@8bytes.org>, <will@kernel.org>
+CC:     <virtualization@lists.linux-foundation.org>,
+        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] iommu/virtio: Handle return of iommu_device_register
+Date:   Fri, 1 Jul 2022 01:43:04 -0400
+Message-ID: <20220701054304.6434-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <4799738.LvFx2qVVIh@steina-w> <CAGETcx_1qa=gGT4LVkyPpcA1vFM9FzuJE+0DhL_nFyg5cbFjVg@mail.gmail.com>
- <5265491.31r3eYUQgx@steina-w>
-In-Reply-To: <5265491.31r3eYUQgx@steina-w>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 1 Jul 2022 00:02:22 -0700
-Message-ID: <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
-Subject: Re: (EXT) Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   20227011503418d5d708f5b31f05e32cd5086aa14c86f
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 11:02 PM Alexander Stein
-<alexander.stein@ew.tq-group.com> wrote:
->
-> Hi Saravana,
->
-> Am Freitag, 1. Juli 2022, 02:37:14 CEST schrieb Saravana Kannan:
-> > On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
-> >
-> > <alexander.stein@ew.tq-group.com> wrote:
-> > > Hi,
-> > >
-> > > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
-> > > > Hi,
-> > > >
-> > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > > "power-domains" property, the execution will never get to the point
-> > > > > where driver_deferred_probe_check_state() is called before the
-> > > > > supplier
-> > > > > has probed successfully or before deferred probe timeout has expired.
-> > > > >
-> > > > > So, delete the call and replace it with -ENODEV.
-> > > >
-> > > > Looks like this causes omaps to not boot in Linux next. With this
-> > > > simple-pm-bus fails to probe initially as the power-domain is not
-> > > > yet available. On platform_probe() genpd_get_from_provider() returns
-> > > > -ENOENT.
-> > > >
-> > > > Seems like other stuff is potentially broken too, any ideas on
-> > > > how to fix this?
-> > >
-> > > I think I'm hit by this as well, although I do not get a lockup.
-> > > In my case I'm using
-> > > arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts and probing of
-> > > 38320000.blk-ctrl fails as the power-domain is not (yet) registed.
-> >
-> > Ok, took a look.
-> >
-> > The problem is that there are two drivers for the same device and they
-> > both initialize this device.
-> >
-> >     gpc: gpc@303a0000 {
-> >         compatible = "fsl,imx8mq-gpc";
-> >     }
-> >
-> > $ git grep -l "fsl,imx7d-gpc" -- drivers/
-> > drivers/irqchip/irq-imx-gpcv2.c
-> > drivers/soc/imx/gpcv2.c
-> >
-> > IMHO, this is a bad/broken design.
-> >
-> > So what's happening is that fw_devlink will block the probe of
-> > 38320000.blk-ctrl until 303a0000.gpc is initialized. And it stops
-> > blocking the probe of 38320000.blk-ctrl as soon as the first driver
-> > initializes the device. In this case, it's the irqchip driver.
-> >
-> > I'd recommend combining these drivers into one. Something like the
-> > patch I'm attaching (sorry for the attachment, copy-paste is mangling
-> > the tabs). Can you give it a shot please?
->
-> I tried this patch and it delayed the driver initialization (those of UART as
-> well BTW). Unfortunately the driver fails the same way:
+iommu_device_register returns an error code and, although it currently
+never fails, we should check its return value anyway.
 
-Thanks for testing the patch!
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/iommu/virtio-iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> > [    1.125253] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed to
-> attach power domain "bus"
->
-> More than that it even introduced some more errors:
-> > [    0.008160] irq: no irq domain found for gpc@303a0000 !
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 25be4b822aa0..12e7d8364560 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -1144,7 +1144,9 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	if (ret)
+ 		goto err_free_vqs;
+ 
+-	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
++	ret = iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
++	if (ret)
++		goto err_remove_sysfs;
+ 
+ #ifdef CONFIG_PCI
+ 	if (pci_bus_type.iommu_ops != &viommu_ops) {
+@@ -1175,8 +1177,9 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	return 0;
+ 
+ err_unregister:
+-	iommu_device_sysfs_remove(&viommu->iommu);
+ 	iommu_device_unregister(&viommu->iommu);
++err_remove_sysfs:
++	iommu_device_sysfs_remove(&viommu->iommu);
+ err_free_vqs:
+ 	vdev->config->del_vqs(vdev);
+ 
+-- 
+2.27.0
 
-So the idea behind my change was that as long as the irqchip isn't the
-root of the irqdomain (might be using the terms incorrectly) like the
-gic, you can make it a platform driver. And I was trying to hack up a
-patch that's the equivalent of platform_irqchip_probe() (which just
-ends up eventually calling the callback you use in IRQCHIP_DECLARE().
-I probably made some mistake in the quick hack that I'm sure if
-fixable.
-
-> > [    0.013251] Failed to map interrupt for
-> > /soc@0/bus@30400000/timer@306a0000
-
-However, this timer driver also uses TIMER_OF_DECLARE() which can't
-handle failure to get the IRQ (because it's can't -EPROBE_DEFER). So,
-this means, the timer driver inturn needs to be converted to a
-platform driver if it's supposed to work with the IRQCHIP_DECLARE()
-being converted to a platform driver.
-
-But that's a can of worms not worth opening. But then I remembered
-this simpler workaround will work and it is pretty much a variant of
-the workaround that's already in the gpc's irqchip driver to allow two
-drivers to probe the same device (people really should stop doing
-that).
-
-Can you drop my previous hack patch and try this instead please? I'm
-99% sure this will work.
-
-diff --git a/drivers/irqchip/irq-imx-gpcv2.c b/drivers/irqchip/irq-imx-gpcv2.c
-index b9c22f764b4d..8a0e82067924 100644
---- a/drivers/irqchip/irq-imx-gpcv2.c
-+++ b/drivers/irqchip/irq-imx-gpcv2.c
-@@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
-device_node *node,
-         * later the GPC power domain driver will not be skipped.
-         */
-        of_node_clear_flag(node, OF_POPULATED);
-+       fwnode_dev_initialized(domain->fwnode, false);
-        return 0;
- }
-
--Saravana
