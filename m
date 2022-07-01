@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8CCCCA479
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232238AbiGAO3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40670 "EHLO
+        id S230414AbiGAO3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232915AbiGAO2l (ORCPT
+        with ESMTP id S232544AbiGAO2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:28:41 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EDD675B8
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:06 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id n8-20020a05640205c800b00434fb0c150cso1848952edx.19
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:06 -0700 (PDT)
+        Fri, 1 Jul 2022 10:28:48 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C34D677D1
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:25:10 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id g7-20020a056402424700b00435ac9c7a8bso1878598edb.14
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:25:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=J/zoX+mhuBfgzG0v9rZx6dvFzp5UyG4GyQqVH6m9IHs=;
-        b=ReTKlob9Qp/FLxAV1DvlHkuUYXTYWPxzPkj5a7irIhWUye1sNVXC5MtER1Ls2z92mp
-         8Wo25eNrT33XToY0e8nz5feDu3mHb7QFF4VgDm2uDBb8l81TfyIVkddhJcjSsD9ufnM1
-         Rv9mKSVb0IZG3XVbqV42jTmV3T2Pq2cwTiXOWbvBXBTxw7dePWe5s9bn8qm8wQ8Lt42Z
-         FJrd9KclhBhbHdq39ThpfJZtYbwUVP4vwFJvGlzf7CSyuOSqxyBQ2Qn2zplQeikVadq4
-         zV+wZJlGCyvmNqBwk6OsqxzwzJFz8qkWXt5LmJX5amCREhfg4UTcaupAIQUr4KVgADMB
-         h0og==
+        bh=Hs1LG4gEZrL61QQbW1yHjuo38dVFxHr6aTHqGRd2nIU=;
+        b=R1eUqKBbN6WzWIjXxRI2PDbx29b9tpJSiig3/YaznmdOIZ/neK78PvIj5Cl/JjgB/w
+         9SfdvW2BtOiP89nS8ThzmS35SU1A6VUk9hiJALgX6yvIEpuomqcW5bDLzgsEQ013f6rk
+         rFf3VUovNXoIf4KVP4MMfWUh7tsgq1WO5Pa9II9uYW0yZdgX2/mSo5GXmSL2H/ZwJwsd
+         uxM4RIZS+4NPzi2RYwgUcpKcS16h49QlGgoZ05LwFfkprgCDz5UPO4MlYHJZ5DPrqB+x
+         6AHtkpJzEpLuNlHTmvU9jllU2HKPHg+40cmHHxveZn6WEswHaMpjdduncEJv7l8ri3sA
+         Qcyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=J/zoX+mhuBfgzG0v9rZx6dvFzp5UyG4GyQqVH6m9IHs=;
-        b=lzLYgeEk4MtvJFS7mRmPdP+QwsXkZV4BZqUM7ZXqOSHhW5gIe9miwxbbjM5svm+pNq
-         tknCNx0D5urJoz/se/t2WNDKmPk31E4EER3tUV9S/R8uFJyE2QGPxoLFGpbKJLqZEEjj
-         u4IqE4fy8HYYyGLdvCkdO1vMsyUKZagKWk/XeVHTVorfOYkURSk+pAuRsncU6sSPGqPz
-         ClQLzg/wxasuZgIZSkQrb602Xsv1OHwU8AYXhgyEVFMMmm9tkY8sY1x03QYzO8s+w1yo
-         wka/X/QIVAPQ/WLktGYTUeqMvRjBcovQDedGIgc40oERJgC87A3nl9G9L24pAdn2Z6Wd
-         2y5Q==
-X-Gm-Message-State: AJIora95K7ocXjDmxnNTSwJ3yyQiNkQOLUTU0Ij8ACNM4t2xW+BulE8P
-        bmQRzyxTM3M0fvKZz0BK359tNElrmPs=
-X-Google-Smtp-Source: AGRyM1txu7w54o9DaeQXovmZ5qxDTEHTCqPpNip+hr7dMrgvfv9CAiY8ULpNYkP1mTZY+VlfmYuBRFUAtEM=
+        bh=Hs1LG4gEZrL61QQbW1yHjuo38dVFxHr6aTHqGRd2nIU=;
+        b=oUHTiMffRBKuuusPBO5Sa7v7Hq4etHBVRoDjevB13CggiAu0dcRgBQibW0hGKKpK0S
+         OJB6Uw7ZGrS3IQPfnWEM/VcvrxOlq1Cc5F6kMC5wrqzgIULGfAeUdPY6gzFrqHQpfBAj
+         /QtHkCD9SVhhD8PGyL8JqyOLF4gn7Ygus1MjpNjSF+iLLc9O/yhOvIzm6G4pd2i2Kl1s
+         AjgrmX8do/QWojyo7WhFM8NFHJyFZX2oNHhvrqlKrWOVm3sjZY8/HMjlG6Ydjpf3Z5EY
+         wxRWSZIu6EHymdc3fYG9QNEQA9dNKPpG4qg1T1IkZcMJE5Rz5ZgGmXGxSAruMvyzY1Eg
+         UdYA==
+X-Gm-Message-State: AJIora/EjCmxjv9Ha6R9ufLmw62ArqVM8dyXocg2FLrqKlYtRUWdYmMX
+        WRW+iD5sWb49SeOGBwomr9KTtUX/WL4=
+X-Google-Smtp-Source: AGRyM1sHhTsQ0hcpXEAMUmnlfkHECIs68+d9wOkDzkI+VoyBaJw2lW70YlMf+nBUJARdbRgd+2PdvDTFpog=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:a6f5:f713:759c:abb6])
- (user=glider job=sendgmr) by 2002:a17:907:a05c:b0:72a:3959:43db with SMTP id
- gz28-20020a170907a05c00b0072a395943dbmr13506354ejc.359.1656685490466; Fri, 01
- Jul 2022 07:24:50 -0700 (PDT)
-Date:   Fri,  1 Jul 2022 16:22:59 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:846c:b0:72a:4b4f:b1b1 with SMTP id
+ hx12-20020a170906846c00b0072a4b4fb1b1mr11506007ejc.255.1656685499239; Fri, 01
+ Jul 2022 07:24:59 -0700 (PDT)
+Date:   Fri,  1 Jul 2022 16:23:02 +0200
 In-Reply-To: <20220701142310.2188015-1-glider@google.com>
-Message-Id: <20220701142310.2188015-35-glider@google.com>
+Message-Id: <20220701142310.2188015-38-glider@google.com>
 Mime-Version: 1.0
 References: <20220701142310.2188015-1-glider@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4 34/45] x86: kmsan: skip shadow checks in __switch_to()
+Subject: [PATCH v4 37/45] x86: kmsan: sync metadata pages on page fault
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,57 +91,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When instrumenting functions, KMSAN obtains the per-task state (mostly
-pointers to metadata for function arguments and return values) once per
-function at its beginning, using the `current` pointer.
+KMSAN assumes shadow and origin pages for every allocated page are
+accessible. For pages between [VMALLOC_START, VMALLOC_END] those metadata
+pages start at KMSAN_VMALLOC_SHADOW_START and
+KMSAN_VMALLOC_ORIGIN_START, therefore we must sync a bigger memory
+region.
 
-Every time the instrumented function calls another function, this state
-(`struct kmsan_context_state`) is updated with shadow/origin data of the
-passed and returned values.
-
-When `current` changes in the low-level arch code, instrumented code can
-not notice that, and will still refer to the old state, possibly corrupting
-it or using stale data. This may result in false positive reports.
-
-To deal with that, we need to apply __no_kmsan_checks to the functions
-performing context switching - this will result in skipping all KMSAN
-shadow checks and marking newly created values as initialized,
-preventing all false positive reports in those functions. False negatives
-are still possible, but we expect them to be rare and impersistent.
-
-Suggested-by: Marco Elver <elver@google.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
-Link: https://linux-review.googlesource.com/id/Ib7d4d70946f08128ade207519c1ee405fd812839
 
 ---
+
 v2:
- -- This patch was previously called "kmsan: skip shadow checks in files
-    doing context switches". Per Mark Rutland's suggestion, we now only
-    skip checks in low-level arch-specific code, as context switches in
-    common code should be invisible to KMSAN. We also apply the checks
-    to precisely the functions performing the context switch instead of
-    the whole file.
+ -- addressed reports from kernel test robot <lkp@intel.com>
 
-v4:
- -- Replace KMSAN_ENABLE_CHECKS_process_64.o with __no_kmsan_checks
-
-Link: https://linux-review.googlesource.com/id/I45e3ed9c5f66ee79b0409d1673d66ae419029bcb
+Link: https://linux-review.googlesource.com/id/Ia5bd541e54f1ecc11b86666c3ec87c62ac0bdfb8
 ---
- arch/x86/kernel/process_64.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/mm/fault.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 1962008fe7437..6b3418bff3261 100644
---- a/arch/x86/kernel/process_64.c
-+++ b/arch/x86/kernel/process_64.c
-@@ -553,6 +553,7 @@ void compat_start_thread(struct pt_regs *regs, u32 new_ip, u32 new_sp, bool x32)
-  * Kprobes not supported here. Set the probe on schedule instead.
-  * Function graph tracer not supported too.
-  */
-+__no_kmsan_checks
- __visible __notrace_funcgraph struct task_struct *
- __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index fad8faa29d042..d07fe0801f203 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -260,7 +260,7 @@ static noinline int vmalloc_fault(unsigned long address)
+ }
+ NOKPROBE_SYMBOL(vmalloc_fault);
+ 
+-void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
++static void __arch_sync_kernel_mappings(unsigned long start, unsigned long end)
  {
+ 	unsigned long addr;
+ 
+@@ -284,6 +284,27 @@ void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
+ 	}
+ }
+ 
++void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
++{
++	__arch_sync_kernel_mappings(start, end);
++#ifdef CONFIG_KMSAN
++	/*
++	 * KMSAN maintains two additional metadata page mappings for the
++	 * [VMALLOC_START, VMALLOC_END) range. These mappings start at
++	 * KMSAN_VMALLOC_SHADOW_START and KMSAN_VMALLOC_ORIGIN_START and
++	 * have to be synced together with the vmalloc memory mapping.
++	 */
++	if (start >= VMALLOC_START && end < VMALLOC_END) {
++		__arch_sync_kernel_mappings(
++			start - VMALLOC_START + KMSAN_VMALLOC_SHADOW_START,
++			end - VMALLOC_START + KMSAN_VMALLOC_SHADOW_START);
++		__arch_sync_kernel_mappings(
++			start - VMALLOC_START + KMSAN_VMALLOC_ORIGIN_START,
++			end - VMALLOC_START + KMSAN_VMALLOC_ORIGIN_START);
++	}
++#endif
++}
++
+ static bool low_pfn(unsigned long pfn)
+ {
+ 	return pfn < max_low_pfn;
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
