@@ -2,108 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3E3CCA482
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D72C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237346AbiGALOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 07:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        id S237241AbiGALOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236609AbiGALOT (ORCPT
+        with ESMTP id S236921AbiGALOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 07:14:19 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF22E1E3FB;
-        Fri,  1 Jul 2022 04:14:18 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BE8FA1424;
-        Fri,  1 Jul 2022 04:14:18 -0700 (PDT)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 551EF3F66F;
-        Fri,  1 Jul 2022 04:14:13 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 12:14:10 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Niklas Cassel <Niklas.Cassel@wdc.com>,
-        Conor Dooley <mail@conchuod.ie>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH v3 00/15] Canaan devicetree fixes
-Message-ID: <20220701111410.mzfgmdabzmfubygm@bogus>
-References: <20220629184343.3438856-1-mail@conchuod.ie>
- <Yr3PKR0Uj1bE5Y6O@x1-carbon>
- <20220630175318.g2zmu6ek7l5iakve@bogus>
- <f228057b-7c17-e536-ce6f-6597e263f06d@opensource.wdc.com>
+        Fri, 1 Jul 2022 07:14:40 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BC1534650
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:14:38 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 1 Jul 2022
+ 19:09:15 +0800 (GMT+08:00)
+X-Originating-IP: [182.148.13.66]
+Date:   Fri, 1 Jul 2022 19:09:15 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     rostedt@goodmis.org, mingo@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] ftrace: use strscpy to replace strlcpy
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f228057b-7c17-e536-ce6f-6597e263f06d@opensource.wdc.com>
+Message-ID: <479ff932.d17.181b9735fdb.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwD3AG_b1b5irfdFAA--.864W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvOAAKsD
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 06:16:14AM +0900, Damien Le Moal wrote:
-> On 7/1/22 02:53, Sudeep Holla wrote:
-> > On Thu, Jun 30, 2022 at 04:28:26PM +0000, Niklas Cassel wrote:
-> >> On Wed, Jun 29, 2022 at 07:43:29PM +0100, Conor Dooley wrote:
-> >>> From: Conor Dooley <conor.dooley@microchip.com>
-> >>>
-> >>> Hey all,
-> >>> This series should rid us of dtbs_check errors for the RISC-V Canaan k210
-> >>> based boards. To make keeping it that way a little easier, I changed the
-> >>> Canaan devicetree Makefile so that it would build all of the devicetrees
-> >>> in the directory if SOC_CANAAN.
-> >>>
-> >>> I *DO NOT* have any Canaan hardware so I have not tested any of this in
-> >>> action. Since I sent v1, I tried to buy some since it's cheap - but could
-> >>> out of the limited stockists none seemed to want to deliver to Ireland :(
-> >>> I based the series on next-20220617.
-> >>>
-> >>
-> >> I first tried to apply your series on top of next-20220630,
-> >> but was greeted by a bunch of different warnings on boot,
-> >> including endless RCU stall warnings.
-> >> However, even when booting next-20220630 without your patches,
-> >> I got the same warnings and RCU stall.
-> >>
-> > 
-> > Is it possible to share the boot logs please ?
-> > Conor is having issues with my arch_topology/cacheinfo updates in -next.
-> > I would like to know if your issue is related to that or not ?
-> 
-> FYI, I see rcu warnings on boot on my dual-socket 8-cores Xeon system, but
-> the same kernel does not have the rcu warnings with an AMD Epyc single
-> socket 16-cores box.
-
-And any chances of seeing the logs ?
-
--- 
-Regards,
-Sudeep
+ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
+dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
+WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGtlcm5lbC90cmFjZS9mdHJh
+Y2UuYyB8IDE4ICsrKysrKysrKy0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9u
+cygrKSwgOSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9rZXJuZWwvdHJhY2UvZnRyYWNlLmMg
+Yi9rZXJuZWwvdHJhY2UvZnRyYWNlLmMKaW5kZXggNjAxY2NmMWIyZjA5Li44ZDJhZDE0NzJmY2Ig
+MTAwNjQ0Ci0tLSBhL2tlcm5lbC90cmFjZS9mdHJhY2UuYworKysgYi9rZXJuZWwvdHJhY2UvZnRy
+YWNlLmMKQEAgLTU5MDIsNyArNTkwMiw3IEBAIGJvb2wgZnRyYWNlX2ZpbHRlcl9wYXJhbSBfX2lu
+aXRkYXRhOwogc3RhdGljIGludCBfX2luaXQgc2V0X2Z0cmFjZV9ub3RyYWNlKGNoYXIgKnN0cikK
+IHsKIAlmdHJhY2VfZmlsdGVyX3BhcmFtID0gdHJ1ZTsKLQlzdHJsY3B5KGZ0cmFjZV9ub3RyYWNl
+X2J1Ziwgc3RyLCBGVFJBQ0VfRklMVEVSX1NJWkUpOworCXN0cnNjcHkoZnRyYWNlX25vdHJhY2Vf
+YnVmLCBzdHIsIEZUUkFDRV9GSUxURVJfU0laRSk7CiAJcmV0dXJuIDE7CiB9CiBfX3NldHVwKCJm
+dHJhY2Vfbm90cmFjZT0iLCBzZXRfZnRyYWNlX25vdHJhY2UpOwpAQCAtNTkxMCw3ICs1OTEwLDcg
+QEAgX19zZXR1cCgiZnRyYWNlX25vdHJhY2U9Iiwgc2V0X2Z0cmFjZV9ub3RyYWNlKTsKIHN0YXRp
+YyBpbnQgX19pbml0IHNldF9mdHJhY2VfZmlsdGVyKGNoYXIgKnN0cikKIHsKIAlmdHJhY2VfZmls
+dGVyX3BhcmFtID0gdHJ1ZTsKLQlzdHJsY3B5KGZ0cmFjZV9maWx0ZXJfYnVmLCBzdHIsIEZUUkFD
+RV9GSUxURVJfU0laRSk7CisJc3Ryc2NweShmdHJhY2VfZmlsdGVyX2J1Ziwgc3RyLCBGVFJBQ0Vf
+RklMVEVSX1NJWkUpOwogCXJldHVybiAxOwogfQogX19zZXR1cCgiZnRyYWNlX2ZpbHRlcj0iLCBz
+ZXRfZnRyYWNlX2ZpbHRlcik7CkBAIC01OTIyLDE0ICs1OTIyLDE0IEBAIHN0YXRpYyBpbnQgZnRy
+YWNlX2dyYXBoX3NldF9oYXNoKHN0cnVjdCBmdHJhY2VfaGFzaCAqaGFzaCwgY2hhciAqYnVmZmVy
+KTsKIAogc3RhdGljIGludCBfX2luaXQgc2V0X2dyYXBoX2Z1bmN0aW9uKGNoYXIgKnN0cikKIHsK
+LQlzdHJsY3B5KGZ0cmFjZV9ncmFwaF9idWYsIHN0ciwgRlRSQUNFX0ZJTFRFUl9TSVpFKTsKKwlz
+dHJzY3B5KGZ0cmFjZV9ncmFwaF9idWYsIHN0ciwgRlRSQUNFX0ZJTFRFUl9TSVpFKTsKIAlyZXR1
+cm4gMTsKIH0KIF9fc2V0dXAoImZ0cmFjZV9ncmFwaF9maWx0ZXI9Iiwgc2V0X2dyYXBoX2Z1bmN0
+aW9uKTsKIAogc3RhdGljIGludCBfX2luaXQgc2V0X2dyYXBoX25vdHJhY2VfZnVuY3Rpb24oY2hh
+ciAqc3RyKQogewotCXN0cmxjcHkoZnRyYWNlX2dyYXBoX25vdHJhY2VfYnVmLCBzdHIsIEZUUkFD
+RV9GSUxURVJfU0laRSk7CisJc3Ryc2NweShmdHJhY2VfZ3JhcGhfbm90cmFjZV9idWYsIHN0ciwg
+RlRSQUNFX0ZJTFRFUl9TSVpFKTsKIAlyZXR1cm4gMTsKIH0KIF9fc2V0dXAoImZ0cmFjZV9ncmFw
+aF9ub3RyYWNlPSIsIHNldF9ncmFwaF9ub3RyYWNlX2Z1bmN0aW9uKTsKQEAgLTY3MTQsOCArNjcx
+NCw4IEBAIHN0YXRpYyBpbnQgZnRyYWNlX2dldF90cmFtcG9saW5lX2thbGxzeW0odW5zaWduZWQg
+aW50IHN5bW51bSwKIAkJCWNvbnRpbnVlOwogCQkqdmFsdWUgPSBvcC0+dHJhbXBvbGluZTsKIAkJ
+KnR5cGUgPSAndCc7Ci0JCXN0cmxjcHkobmFtZSwgRlRSQUNFX1RSQU1QT0xJTkVfU1lNLCBLU1lN
+X05BTUVfTEVOKTsKLQkJc3RybGNweShtb2R1bGVfbmFtZSwgRlRSQUNFX1RSQU1QT0xJTkVfTU9E
+LCBNT0RVTEVfTkFNRV9MRU4pOworCQlzdHJzY3B5KG5hbWUsIEZUUkFDRV9UUkFNUE9MSU5FX1NZ
+TSwgS1NZTV9OQU1FX0xFTik7CisJCXN0cnNjcHkobW9kdWxlX25hbWUsIEZUUkFDRV9UUkFNUE9M
+SU5FX01PRCwgTU9EVUxFX05BTUVfTEVOKTsKIAkJKmV4cG9ydGVkID0gMDsKIAkJcmV0dXJuIDA7
+CiAJfQpAQCAtNzA0Niw3ICs3MDQ2LDcgQEAgZnRyYWNlX2Z1bmNfYWRkcmVzc19sb29rdXAoc3Ry
+dWN0IGZ0cmFjZV9tb2RfbWFwICptb2RfbWFwLAogCQlpZiAob2ZmKQogCQkJKm9mZiA9IGFkZHIg
+LSBmb3VuZF9mdW5jLT5pcDsKIAkJaWYgKHN5bSkKLQkJCXN0cmxjcHkoc3ltLCBmb3VuZF9mdW5j
+LT5uYW1lLCBLU1lNX05BTUVfTEVOKTsKKwkJCXN0cnNjcHkoc3ltLCBmb3VuZF9mdW5jLT5uYW1l
+LCBLU1lNX05BTUVfTEVOKTsKIAogCQlyZXR1cm4gZm91bmRfZnVuYy0+bmFtZTsKIAl9CkBAIC03
+MTAwLDggKzcxMDAsOCBAQCBpbnQgZnRyYWNlX21vZF9nZXRfa2FsbHN5bSh1bnNpZ25lZCBpbnQg
+c3ltbnVtLCB1bnNpZ25lZCBsb25nICp2YWx1ZSwKIAogCQkJKnZhbHVlID0gbW9kX2Z1bmMtPmlw
+OwogCQkJKnR5cGUgPSAnVCc7Ci0JCQlzdHJsY3B5KG5hbWUsIG1vZF9mdW5jLT5uYW1lLCBLU1lN
+X05BTUVfTEVOKTsKLQkJCXN0cmxjcHkobW9kdWxlX25hbWUsIG1vZF9tYXAtPm1vZC0+bmFtZSwg
+TU9EVUxFX05BTUVfTEVOKTsKKwkJCXN0cnNjcHkobmFtZSwgbW9kX2Z1bmMtPm5hbWUsIEtTWU1f
+TkFNRV9MRU4pOworCQkJc3Ryc2NweShtb2R1bGVfbmFtZSwgbW9kX21hcC0+bW9kLT5uYW1lLCBN
+T0RVTEVfTkFNRV9MRU4pOwogCQkJKmV4cG9ydGVkID0gMTsKIAkJCXByZWVtcHRfZW5hYmxlKCk7
+CiAJCQlyZXR1cm4gMDsKLS0gCjIuMjUuMQoKCg==
