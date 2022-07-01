@@ -2,281 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EABE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231985AbiGANph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
+        id S231727AbiGANpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231529AbiGANpL (ORCPT
+        with ESMTP id S231439AbiGANpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:45:11 -0400
-Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAD923179;
-        Fri,  1 Jul 2022 06:45:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1656683090; bh=EPRbWh0tzKYymsptHWHi5nsOsq0gpHqDa+CF9plfPgs=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        b=kM4AcPVCshUpZTW2lZ37tgWPya/NZsqIBTGNztoTAPsvazv83TNNThwmKZ4hOFjdC
-         BedZE/Jnlge+ZQGiZws/fC6hVmyv+Quvx0mLFOqPWiilr2nIVyHgIJjjuv8gBPwz+4
-         b4NumsSGs9D1XkrtUTsaidmh/hzvxSZkdzIuV6HI=
-Received: by b-3.in.mailobj.net [192.168.90.13] with ESMTP
-        via [213.182.55.207]
-        Fri,  1 Jul 2022 15:44:50 +0200 (CEST)
-X-EA-Auth: qaoKUwbs7hh/IYly2JMApoKz5jfmzeHGcFyBoM7IWQjWisitYWMWndSIpu0P7jO25vOwwROUSz9SkMn0xCM09SI++wjjVr9V5GslrsgOxGQ=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vincent Knecht <vincent.knecht@mailoo.org>
-Subject: [PATCH v2 6/6] leds: is31fl319x: Add support for is31fl319{0,1,3} chips
-Date:   Fri,  1 Jul 2022 15:44:13 +0200
-Message-Id: <20220701134415.4017794-7-vincent.knecht@mailoo.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220701134415.4017794-1-vincent.knecht@mailoo.org>
-References: <20220701134415.4017794-1-vincent.knecht@mailoo.org>
+        Fri, 1 Jul 2022 09:45:21 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2661423141;
+        Fri,  1 Jul 2022 06:45:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656683121; x=1688219121;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=iYv9Qezv4/lhS1d/VQNMLKO5WRrxcyJmyqSpvuWM0rU=;
+  b=DOBrGw82aTfsSXizdi/QiMTOv12oqv6j/2oomS60RFSJge5c3RfQ7JF5
+   VVkkhzSXZCXHwUVAG08xRSx4Cg01dnR6vm+ftVC/TXrEvbMpEg4zm4qLk
+   p5FSO5TgogjJe6efl0rJuZl+pyP6BQxi3kDlA1P/iR1s7c4+Gpy/odxU/
+   37+sQ8aOKi1DjwoM2QE53yA8vAZlqDWtiAM+1u4nBYYkqhcmr2/bampDX
+   kGBKJHA28ogqrUiTucjzMDi+q8rU7Jk/B3Z9tdbxSHWwPs+E4V2PkjB5r
+   FGDs5mY3MLiJO/qkXNEOCVBEQ3fivNmoGUsZOKFcWvILJWvdmB6ZdVFkj
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="263053329"
+X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
+   d="scan'208";a="263053329"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:45:20 -0700
+X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
+   d="scan'208";a="648351854"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.48.203])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:45:19 -0700
+Message-ID: <5463745a-4f62-095f-994c-982e8fcc85d9@intel.com>
+Date:   Fri, 1 Jul 2022 16:45:14 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCHv4] mmc: block: Add single read for 4k sector cards
+Content-Language: en-US
+To:     Christian Loehle <CLoehle@hyperstone.com>,
+        Avri Altman <Avri.Altman@wdc.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>
+References: <cf4f316274c5474586d0d99b17db4a4c@hyperstone.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <cf4f316274c5474586d0d99b17db4a4c@hyperstone.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set specific chipset structs values for is31fl319{0,1,3}
-so that those chips can actually work.
-Datasheets:
-https://lumissil.com/assets/pdf/core/IS31FL3190_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3191_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3193_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3196_DS.pdf
-https://lumissil.com/assets/pdf/core/IS31FL3199_DS.pdf
+On 1/07/22 15:43, Christian Loehle wrote:
+> Cards with 4k native sector size may only be read 4k-aligned,
+> accommodate for this in the single read recovery and use it.
+> 
+> Fixes: 81196976ed946 (mmc: block: Add blk-mq support)
+> Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
 
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
- drivers/leds/leds-is31fl319x.c | 164 ++++++++++++++++++++++++++++++---
- 1 file changed, 150 insertions(+), 14 deletions(-)
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 
-diff --git a/drivers/leds/leds-is31fl319x.c b/drivers/leds/leds-is31fl319x.c
-index eb8601a203a8..0260c28de96a 100644
---- a/drivers/leds/leds-is31fl319x.c
-+++ b/drivers/leds/leds-is31fl319x.c
-@@ -21,6 +21,31 @@
- 
- /* register numbers */
- #define IS31FL319X_SHUTDOWN		0x00
-+
-+/* registers for 3190, 3191 and 3193 */
-+#define IS31FL3190_BREATHING		0x01
-+#define IS31FL3190_LEDMODE		0x02
-+#define IS31FL3190_CURRENT		0x03
-+#define IS31FL3190_PWM(channel)		(0x04 + channel)
-+#define IS31FL3190_DATA_UPDATE		0x07
-+#define IS31FL3190_T0(channel)		(0x0a + channel)
-+#define IS31FL3190_T1T2(channel)	(0x10 + channel)
-+#define IS31FL3190_T3T4(channel)	(0x16 + channel)
-+#define IS31FL3190_TIME_UPDATE		0x1c
-+#define IS31FL3190_LEDCONTROL		0x1d
-+#define IS31FL3190_RESET		0x2f
-+
-+#define IS31FL3190_CURRENT_MIN		((u32)5000)
-+#define IS31FL3190_CURRENT_DEFAULT	((u32)42000)
-+#define IS31FL3190_CURRENT_MAX		((u32)42000)
-+#define IS31FL3190_CURRENT_MASK		GENMASK(4, 2)
-+#define IS31FL3190_CURRENT_5_mA		0x02
-+#define IS31FL3190_CURRENT_10_mA	0x01
-+#define IS31FL3190_CURRENT_17dot5_mA	0x04
-+#define IS31FL3190_CURRENT_30_mA	0x03
-+#define IS31FL3190_CURRENT_42_mA	0x00
-+
-+/* registers for 3196 and 3199 */
- #define IS31FL3196_CTRL1		0x01
- #define IS31FL3196_CTRL2		0x02
- #define IS31FL3196_CONFIG1		0x03
-@@ -92,6 +117,37 @@ static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
- 	return false;
- }
- 
-+static bool is31fl3190_volatile_reg(struct device *dev, unsigned int reg)
-+{ /* volatile registers are not cached */
-+	switch (reg) {
-+	case IS31FL3190_DATA_UPDATE:
-+	case IS31FL3190_TIME_UPDATE:
-+	case IS31FL3190_RESET:
-+		return true; /* always write-through */
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct reg_default is31fl3190_reg_defaults[] = {
-+	{ IS31FL3190_LEDMODE, 0x00},
-+	{ IS31FL3190_CURRENT, 0x00},
-+	{ IS31FL3190_PWM(0), 0x00},
-+	{ IS31FL3190_PWM(1), 0x00},
-+	{ IS31FL3190_PWM(2), 0x00},
-+};
-+
-+static struct regmap_config is31fl3190_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = IS31FL3190_RESET,
-+	.cache_type = REGCACHE_FLAT,
-+	.readable_reg = is31fl319x_readable_reg,
-+	.volatile_reg = is31fl3190_volatile_reg,
-+	.reg_defaults = is31fl3190_reg_defaults,
-+	.num_reg_defaults = ARRAY_SIZE(is31fl3190_reg_defaults),
-+};
-+
- static bool is31fl3196_volatile_reg(struct device *dev, unsigned int reg)
- { /* volatile registers are not cached */
- 	switch (reg) {
-@@ -129,6 +185,63 @@ static struct regmap_config is31fl3196_regmap_config = {
- 	.num_reg_defaults = ARRAY_SIZE(is31fl3196_reg_defaults),
- };
- 
-+static int is31fl3190_brightness_set(struct led_classdev *cdev,
-+				     enum led_brightness brightness)
-+{
-+	struct is31fl319x_led *led = container_of(cdev, struct is31fl319x_led,
-+						  cdev);
-+	struct is31fl319x_chip *is31 = led->chip;
-+	int chan = led - is31->leds;
-+	int ret;
-+	int i;
-+	u8 ctrl = 0;
-+
-+	dev_dbg(&is31->client->dev, "%s %d: %d\n", __func__, chan, brightness);
-+
-+	mutex_lock(&is31->lock);
-+
-+	/* update PWM register */
-+	ret = regmap_write(is31->regmap, IS31FL3190_PWM(chan), brightness);
-+	if (ret < 0)
-+		goto out;
-+
-+	/* read current brightness of all PWM channels */
-+	for (i = 0; i < is31->cdef->num_leds; i++) {
-+		unsigned int pwm_value;
-+		bool on;
-+
-+		/*
-+		 * since neither cdev nor the chip can provide
-+		 * the current setting, we read from the regmap cache
-+		 */
-+
-+		ret = regmap_read(is31->regmap, IS31FL3190_PWM(i), &pwm_value);
-+		dev_dbg(&is31->client->dev, "%s read %d: ret=%d: %d\n",
-+			__func__, i, ret, pwm_value);
-+		on = ret >= 0 && pwm_value > LED_OFF;
-+
-+		ctrl |= on << i;
-+	}
-+
-+	if (ctrl > 0) {
-+		dev_dbg(&is31->client->dev, "power up %02x\n", ctrl);
-+		regmap_write(is31->regmap, IS31FL3190_LEDCONTROL, ctrl);
-+		/* update PWMs */
-+		regmap_write(is31->regmap, IS31FL3190_DATA_UPDATE, 0x00);
-+		/* enable chip from shut down and enable all channels */
-+		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x20);
-+	} else {
-+		dev_dbg(&is31->client->dev, "power down\n");
-+		/* shut down (no need to clear LEDCONTROL) */
-+		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x01);
-+	}
-+
-+out:
-+	mutex_unlock(&is31->lock);
-+
-+	return ret;
-+}
-+
- static int is31fl3196_brightness_set(struct led_classdev *cdev,
- 				     enum led_brightness brightness)
- {
-@@ -195,24 +308,24 @@ static int is31fl3196_brightness_set(struct led_classdev *cdev,
- 
- static const struct is31fl319x_chipdef is31fl3190_cdef = {
- 	.num_leds = 1,
--	.reset_reg = IS31FL3196_RESET,
--	.is31fl319x_regmap_config = &is31fl3196_regmap_config,
--	.brightness_set = is31fl3196_brightness_set,
--	.current_default = IS31FL3196_CURRENT_DEFAULT,
--	.current_min = IS31FL3196_CURRENT_MIN,
--	.current_max = IS31FL3196_CURRENT_MAX,
--	.is_3196or3199 = true,
-+	.reset_reg = IS31FL3190_RESET,
-+	.is31fl319x_regmap_config = &is31fl3190_regmap_config,
-+	.brightness_set = is31fl3190_brightness_set,
-+	.current_default = IS31FL3190_CURRENT_DEFAULT,
-+	.current_min = IS31FL3190_CURRENT_MIN,
-+	.current_max = IS31FL3190_CURRENT_MAX,
-+	.is_3196or3199 = false,
- };
- 
- static const struct is31fl319x_chipdef is31fl3193_cdef = {
- 	.num_leds = 3,
--	.reset_reg = IS31FL3196_RESET,
--	.is31fl319x_regmap_config = &is31fl3196_regmap_config,
--	.brightness_set = is31fl3196_brightness_set,
--	.current_default = IS31FL3196_CURRENT_DEFAULT,
--	.current_min = IS31FL3196_CURRENT_MIN,
--	.current_max = IS31FL3196_CURRENT_MAX,
--	.is_3196or3199 = true,
-+	.reset_reg = IS31FL3190_RESET,
-+	.is31fl319x_regmap_config = &is31fl3190_regmap_config,
-+	.brightness_set = is31fl3190_brightness_set,
-+	.current_default = IS31FL3190_CURRENT_DEFAULT,
-+	.current_min = IS31FL3190_CURRENT_MIN,
-+	.current_max = IS31FL3190_CURRENT_MAX,
-+	.is_3196or3199 = false,
- };
- 
- static const struct is31fl319x_chipdef is31fl3196_cdef = {
-@@ -360,6 +473,26 @@ static int is31fl319x_parse_dt(struct device *dev,
- 	return ret;
- }
- 
-+static inline int is31fl3190_microamp_to_cs(struct device *dev, u32 microamp)
-+{
-+	switch (microamp) {
-+	case 5000:
-+		return IS31FL3190_CURRENT_5_mA;
-+	case 10000:
-+		return IS31FL3190_CURRENT_10_mA;
-+	case 17500:
-+		return IS31FL3190_CURRENT_17dot5_mA;
-+	case 30000:
-+		return IS31FL3190_CURRENT_30_mA;
-+	case 42000:
-+		return IS31FL3190_CURRENT_42_mA;
-+	default:
-+		dev_warn(dev, "Unsupported current value: %d, using 5000 µA!\n", microamp);
-+	}
-+
-+	return IS31FL3190_CURRENT_5_mA;
-+}
-+
- static inline int is31fl3196_microamp_to_cs(struct device *dev, u32 microamp)
- { /* round down to nearest supported value (range check done by caller) */
- 	u32 step = microamp / IS31FL3196_CURRENT_STEP;
-@@ -436,6 +569,9 @@ static int is31fl319x_probe(struct i2c_client *client,
- 		regmap_write(is31->regmap, IS31FL3196_CONFIG2,
- 			     is31fl3196_microamp_to_cs(dev, aggregated_led_microamp) |
- 			     is31fl3196_db_to_gain(is31->audio_gain_db));
-+	else
-+		regmap_update_bits(is31->regmap, IS31FL3190_CURRENT, IS31FL3190_CURRENT_MASK,
-+				   is31fl3190_microamp_to_cs(dev, aggregated_led_microamp));
- 
- 	for (i = 0; i < is31->cdef->num_leds; i++) {
- 		struct is31fl319x_led *led = &is31->leds[i];
--- 
-2.35.3
-
-
+> ---
+>  drivers/mmc/core/block.c | 28 ++++++++++++++--------------
+>  1 file changed, 14 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+> index f4a1281658db..912a398a9a76 100644
+> --- a/drivers/mmc/core/block.c
+> +++ b/drivers/mmc/core/block.c
+> @@ -176,7 +176,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
+>  				      unsigned int part_type);
+>  static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+>  			       struct mmc_card *card,
+> -			       int disable_multi,
+> +			       int recovery_mode,
+>  			       struct mmc_queue *mq);
+>  static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
+>  
+> @@ -1302,7 +1302,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
+>  }
+>  
+>  static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+> -			      int disable_multi, bool *do_rel_wr_p,
+> +			      int recovery_mode, bool *do_rel_wr_p,
+>  			      bool *do_data_tag_p)
+>  {
+>  	struct mmc_blk_data *md = mq->blkdata;
+> @@ -1368,12 +1368,12 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+>  			brq->data.blocks--;
+>  
+>  		/*
+> -		 * After a read error, we redo the request one sector
+> +		 * After a read error, we redo the request one (native) sector
+>  		 * at a time in order to accurately determine which
+>  		 * sectors can be read successfully.
+>  		 */
+> -		if (disable_multi)
+> -			brq->data.blocks = 1;
+> +		if (recovery_mode)
+> +			brq->data.blocks = queue_physical_block_size(mq->queue) >> 9;
+>  
+>  		/*
+>  		 * Some controllers have HW issues while operating
+> @@ -1590,7 +1590,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
+>  
+>  static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+>  			       struct mmc_card *card,
+> -			       int disable_multi,
+> +			       int recovery_mode,
+>  			       struct mmc_queue *mq)
+>  {
+>  	u32 readcmd, writecmd;
+> @@ -1599,7 +1599,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+>  	struct mmc_blk_data *md = mq->blkdata;
+>  	bool do_rel_wr, do_data_tag;
+>  
+> -	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
+> +	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
+>  
+>  	brq->mrq.cmd = &brq->cmd;
+>  
+> @@ -1690,7 +1690,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
+>  
+>  #define MMC_READ_SINGLE_RETRIES	2
+>  
+> -/* Single sector read during recovery */
+> +/* Single (native) sector read during recovery */
+>  static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+>  {
+>  	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
+> @@ -1698,6 +1698,7 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+>  	struct mmc_card *card = mq->card;
+>  	struct mmc_host *host = card->host;
+>  	blk_status_t error = BLK_STS_OK;
+> +	size_t bytes_per_read = queue_physical_block_size(mq->queue);
+>  
+>  	do {
+>  		u32 status;
+> @@ -1732,13 +1733,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+>  		else
+>  			error = BLK_STS_OK;
+>  
+> -	} while (blk_update_request(req, error, 512));
+> +	} while (blk_update_request(req, error, bytes_per_read));
+>  
+>  	return;
+>  
+>  error_exit:
+>  	mrq->data->bytes_xfered = 0;
+> -	blk_update_request(req, BLK_STS_IOERR, 512);
+> +	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
+>  	/* Let it try the remaining request again */
+>  	if (mqrq->retries > MMC_MAX_RETRIES - 1)
+>  		mqrq->retries = MMC_MAX_RETRIES - 1;
+> @@ -1879,10 +1880,9 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
+>  		return;
+>  	}
+>  
+> -	/* FIXME: Missing single sector read for large sector size */
+> -	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
+> -	    brq->data.blocks > 1) {
+> -		/* Read one sector at a time */
+> +	if (rq_data_dir(req) == READ && brq->data.blocks >
+> +			queue_physical_block_size(mq->queue) >> 9) {
+> +		/* Read one (native) sector at a time */
+>  		mmc_blk_read_single(mq, req);
+>  		return;
+>  	}
 
