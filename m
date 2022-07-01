@@ -2,103 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDCEC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 02:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 02:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233872AbiGACfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 22:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
+        id S233652AbiGACkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 22:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiGACfU (ORCPT
+        with ESMTP id S233336AbiGACkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 22:35:20 -0400
-X-Greylist: delayed 459 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 19:35:04 PDT
-Received: from mail4.tencent.com (mail12.tencent.com [61.241.47.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6104464D71
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 19:35:04 -0700 (PDT)
-Received: from EX-SZ018.tencent.com (unknown [10.28.6.39])
-        by mail4.tencent.com (Postfix) with ESMTP id 763EB64D89;
-        Fri,  1 Jul 2022 10:27:22 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tencent.com;
-        s=s202002; t=1656642442;
-        bh=hOumafnbFthRKnMSoqvzPmDkJbBf9FyR9c+E6SBh4Nw=;
-        h=From:To:Subject:Date;
-        b=d2eJ30+W5r5ds+qh4a+YhCVY3j07oJJ6FpeCalr8ZkHErIcLLadeJeuhQ1IvBMcJK
-         kN7nn6QituoMFgZS27o31c9C8Av5McmUZbfdYUnJsmx+P+2Fns86wUSPqYhKJVfSJG
-         H0dRz2c3a/q4bxdE+Y55W52yLglZeFTvP9KNZkxk=
-Received: from EX-SZ002.tencent.com (10.28.6.14) by EX-SZ018.tencent.com
- (10.28.6.39) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Fri, 1 Jul 2022
- 10:27:18 +0800
-Received: from EX-SZ006.tencent.com (10.28.6.30) by EX-SZ002.tencent.com
- (10.28.6.14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Fri, 1 Jul 2022
- 10:27:17 +0800
-Received: from EX-SZ006.tencent.com ([fe80::a84e:872e:7c90:2930]) by
- EX-SZ006.tencent.com ([fe80::a84e:872e:7c90:2930%2]) with mapi id
- 15.01.2242.008; Fri, 1 Jul 2022 10:27:17 +0800
-From:   =?gb2312?B?aGFpYmluemhhbmco1cW6o7HzKQ==?= <haibinzhang@tencent.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] arm64: fix oops in concurrently setting insn_emulation
- sysctls 
-Thread-Topic: [PATCH] arm64: fix oops in concurrently setting insn_emulation
- sysctls 
-Thread-Index: AQHYjPIVshOi9CmPrUqeRqqEIT98RQ==
-Date:   Fri, 1 Jul 2022 02:27:17 +0000
-Message-ID: <6C55A58E-6F30-4EDD-B943-421226DBC4AD@tencent.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.99.17.23]
-Content-Type: text/plain; charset="gb2312"
-Content-ID: <999E871D873A274F97854FD169000B87@tencent.com>
-Content-Transfer-Encoding: base64
+        Thu, 30 Jun 2022 22:40:11 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784313879A
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 19:40:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656643210; x=1688179210;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=edwKdOeVps2DTKJzwrZSMgChaL5jo07778euBqV1TM8=;
+  b=caRbIjGkd5t7pSm6fUCEoP7dQ6hFHn7wkIq5r0jVyoWcN6HwAERRgFTm
+   H/lGt2uAIQdi+4xVl6w42MBjW0XD5UKv3ufQTvIkNGtCRzAqo7iy6Cf8Q
+   ePkRcjIHlSMbj+EXize0F0TOVdMKoVJqpKOUcPCHfPTh+Bj4b7fngcMEw
+   tO3rNlDwUvJD0L8GxtSkrIz74EEowf+bIsbaKqnZu9GderfcIKAkTVhWm
+   0SL4gvFKaaIGQ0NNtbRbfzVuLPmXZfhbLbuS8q2J9Nn6uoWJgSS8P1RGE
+   wCXS6Fkzo6BVjNuyR1eDSDTAYEZShzfm5l79SjGIrcGV+t/EN9gAhD1Dr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="308044292"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="308044292"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 19:40:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="589059098"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 19:40:07 -0700
+Message-ID: <595c314b-2d16-aeef-d808-d1cb713ba175@linux.intel.com>
+Date:   Fri, 1 Jul 2022 10:35:50 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        "Anderson, Russ" <russ.anderson@hpe.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 3/6] iommu/vt-d: Refactor iommu information of each
+ domain
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>
+References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
+ <20220625125204.2199437-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SG93IHRvIHJlcHJvZHVjZToNCiAgICBsYXVuY2ggdHdvIHNoZWxsIGV4ZWN1dGlvbnM6DQogICAg
-ICAgIyEvYmluL2Jhc2gNCiAgICAgICB3aGlsZSBbIDEgXTsNCiAgICAgICBkbw0KICAgICAgICAg
-ICBlY2hvIDEgPiAvcHJvYy9zeXMvYWJpL3N3cA0KICAgICAgIGRvbmUNCg0KT29wcyBpbmZvOg0K
-ICAgIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBhdCB2
-aXJ0dWFsIGFkZHJlc3MgMDAwMDAwMDAwMDAwMDAxMA0KICAgIEludGVybmFsIGVycm9yOiBPb3Bz
-OiA5NjAwMDAwNiBbIzFdIFNNUA0KICAgIENhbGwgdHJhY2U6DQogICAgdXBkYXRlX2luc25fZW11
-bGF0aW9uX21vZGUrMHhjMC8weDE0OA0KICAgIGVtdWxhdGlvbl9wcm9jX2hhbmRsZXIrMHg2NC8w
-eGI4DQogICAgcHJvY19zeXNfY2FsbF9oYW5kbGVyKzB4OWMvMHhmOA0KICAgIHByb2Nfc3lzX3dy
-aXRlKzB4MTgvMHgyMA0KICAgIF9fdmZzX3dyaXRlKzB4MjAvMHg0OA0KICAgIHZmc193cml0ZSsw
-eGU0LzB4MWQwDQogICAga3N5c193cml0ZSsweDcwLzB4ZjgNCiAgICBfX2FybTY0X3N5c193cml0
-ZSsweDIwLzB4MjgNCiAgICBlbDBfc3ZjX2NvbW1vbi5jb25zdHByb3AuMCsweDdjLzB4MWMwDQog
-ICAgZWwwX3N2Y19oYW5kbGVyKzB4MmMvMHhhMA0KICAgIGVsMF9zdmMrMHg4LzB4MjAwDQoNCmVt
-dWxhdGlvbl9wcm9jX2hhbmRsZXIgY2hhbmdlcyB0YWJsZS0+ZGF0YSBmb3IgcHJvY19kb2ludHZl
-Y19taW5tYXgNCmFuZCBzbyBpdCBpc24ndCBhbGxvd2VkIHRvIHJlZW50ZXIgYmVmb3JlIHJlc3Rv
-cmluZyB0YWJsZS0+ZGF0YSwNCndoaWNoIGlzbid0IHJpZ2h0IG5vdy4NClRvIGZpeCB0aGlzIGlz
-c3VlLCBBZGQgbXV0YWwgZXhjbHVzaW9uIGNvdmVyaW5nIHJlbGF0ZWQgY29kZSBzZWN0aW9uLg0K
-DQpTaWduZWQtb2ZmLWJ5OiBIYWliaW4gWmhhbmcgPGhhaWJpbnpoYW5nQHRlbmNlbnQuY29tPg0K
-LS0tDQogYXJjaC9hcm02NC9rZXJuZWwvYXJtdjhfZGVwcmVjYXRlZC5jIHwgOSArKysrKysrLS0N
-CiAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KDQpkaWZm
-IC0tZ2l0IGEvYXJjaC9hcm02NC9rZXJuZWwvYXJtdjhfZGVwcmVjYXRlZC5jIGIvYXJjaC9hcm02
-NC9rZXJuZWwvYXJtdjhfZGVwcmVjYXRlZC5jDQppbmRleCA2ODc1YTE2Li5jNTE5NzkyIDEwMDY0
-NA0KLS0tIGEvYXJjaC9hcm02NC9rZXJuZWwvYXJtdjhfZGVwcmVjYXRlZC5jDQorKysgYi9hcmNo
-L2FybTY0L2tlcm5lbC9hcm12OF9kZXByZWNhdGVkLmMNCkBAIC0yMDcsOCArMjA3LDEyIEBAIHN0
-YXRpYyBpbnQgZW11bGF0aW9uX3Byb2NfaGFuZGxlcihzdHJ1Y3QgY3RsX3RhYmxlICp0YWJsZSwg
-aW50IHdyaXRlLA0KIAkJCQkgIGxvZmZfdCAqcHBvcykNCiB7DQogCWludCByZXQgPSAwOw0KLQlz
-dHJ1Y3QgaW5zbl9lbXVsYXRpb24gKmluc24gPSAoc3RydWN0IGluc25fZW11bGF0aW9uICopIHRh
-YmxlLT5kYXRhOw0KLQllbnVtIGluc25fZW11bGF0aW9uX21vZGUgcHJldl9tb2RlID0gaW5zbi0+
-Y3VycmVudF9tb2RlOw0KKwlzdHJ1Y3QgaW5zbl9lbXVsYXRpb24gKmluc247DQorCWVudW0gaW5z
-bl9lbXVsYXRpb25fbW9kZSBwcmV2X21vZGU7DQorDQorCXJhd19zcGluX2xvY2soJmluc25fZW11
-bGF0aW9uX2xvY2spOw0KKwlpbnNuID0gKHN0cnVjdCBpbnNuX2VtdWxhdGlvbiAqKSB0YWJsZS0+
-ZGF0YTsNCisJcHJldl9tb2RlID0gaW5zbi0+Y3VycmVudF9tb2RlOw0KIA0KIAl0YWJsZS0+ZGF0
-YSA9ICZpbnNuLT5jdXJyZW50X21vZGU7DQogCXJldCA9IHByb2NfZG9pbnR2ZWNfbWlubWF4KHRh
-YmxlLCB3cml0ZSwgYnVmZmVyLCBsZW5wLCBwcG9zKTsNCkBAIC0yMjQsNiArMjI4LDcgQEAgc3Rh
-dGljIGludCBlbXVsYXRpb25fcHJvY19oYW5kbGVyKHN0cnVjdCBjdGxfdGFibGUgKnRhYmxlLCBp
-bnQgd3JpdGUsDQogCX0NCiByZXQ6DQogCXRhYmxlLT5kYXRhID0gaW5zbjsNCisJcmF3X3NwaW5f
-dW5sb2NrKCZpbnNuX2VtdWxhdGlvbl9sb2NrKTsNCiAJcmV0dXJuIHJldDsNCiB9DQogDQotLSAN
-CjEuOC4zLjENCg0K
+On 6/30/22 4:28 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Saturday, June 25, 2022 8:52 PM
+>>
+>> +struct iommu_domain_info {
+>> +	struct intel_iommu *iommu;
+>> +	unsigned int refcnt;
+>> +	u16 did;
+>> +};
+>> +
+>>   struct dmar_domain {
+>>   	int	nid;			/* node id */
+>> -
+>> -	unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
+>> -					/* Refcount of devices per iommu */
+>> -
+>> -
+>> -	u16		iommu_did[DMAR_UNITS_SUPPORTED];
+>> -					/* Domain ids per IOMMU. Use u16
+>> since
+>> -					 * domain ids are 16 bit wide
+>> according
+>> -					 * to VT-d spec, section 9.3 */
+> 
+> It'd make sense to keep the comments when moving above fields.
+
+Sure. Updated.
+
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 56c3d1a9e155..fae45bbb0c7f 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -527,8 +527,10 @@ struct context_entry {
+
+  struct iommu_domain_info {
+         struct intel_iommu *iommu;
+-       unsigned int refcnt;
+-       u16 did;
++       unsigned int refcnt;            /* Refcount of devices per iommu */
++       u16 did;                        /* Domain ids per IOMMU. Use u16 
+since
++                                        * domain ids are 16 bit wide 
+according
++                                        * to VT-d spec, section 9.3 */
+  };
+
+
+> 
+>> +	spin_lock(&iommu->lock);
+>> +	curr = xa_load(&domain->iommu_array, iommu->seq_id);
+>> +	if (curr) {
+>> +		curr->refcnt++;
+>> +		kfree(info);
+>> +		goto success;
+> 
+> Not a fan of adding a label for success. Just putting two lines (unlock+
+> return) here is clearer.
+
+Updated.
+
+> 
+>> +	ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
+>> +			      info, GFP_ATOMIC));
+> 
+> check xa_err in separate line.
+
+Sure. Updated as below:
+
+@@ -1778,13 +1780,14 @@ static int domain_attach_iommu(struct 
+dmar_domain *domain,
+         info->did       = num;
+         info->iommu     = iommu;
+         domain->nid     = iommu->node;
+-       ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
+-                             info, GFP_ATOMIC));
+-       if (ret)
++       curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
++                         NULL, info, GFP_ATOMIC);
++       if (curr) {
++               ret = xa_err(curr) ? : -EBUSY;
+                 goto err_clear;
++       }
+         domain_update_iommu_cap(domain);
+
+> 
+>>
+>>   static void domain_detach_iommu(struct dmar_domain *domain,
+>>   				struct intel_iommu *iommu)
+>>   {
+>> -	int num;
+>> +	struct iommu_domain_info *info;
+>>
+>>   	spin_lock(&iommu->lock);
+>> -	domain->iommu_refcnt[iommu->seq_id] -= 1;
+>> -	if (domain->iommu_refcnt[iommu->seq_id] == 0) {
+>> -		num = domain->iommu_did[iommu->seq_id];
+>> -		clear_bit(num, iommu->domain_ids);
+>> +	info = xa_load(&domain->iommu_array, iommu->seq_id);
+>> +	if (--info->refcnt == 0) {
+>> +		clear_bit(info->did, iommu->domain_ids);
+>> +		xa_erase(&domain->iommu_array, iommu->seq_id);
+>>   		domain_update_iommu_cap(domain);
+>> -		domain->iommu_did[iommu->seq_id] = 0;
+>> +		kfree(info);
+> 
+> domain->nid may still point to the node of the removed iommu.
+
+Good catch! I should assign it to NUMA_NO_NODE, so that it could be
+updated in the next domain_update_iommu_cap(). Updated as below:
+
+@@ -1806,6 +1809,7 @@ static void domain_detach_iommu(struct dmar_domain 
+*domain,
+         if (--info->refcnt == 0) {
+                 clear_bit(info->did, iommu->domain_ids);
+                 xa_erase(&domain->iommu_array, iommu->seq_id);
++               domain->nid = NUMA_NO_NODE;
+                 domain_update_iommu_cap(domain);
+                 kfree(info);
+         }
+
+Best regards,
+baolu
