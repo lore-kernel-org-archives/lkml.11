@@ -2,136 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 668F6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6381EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbiGAPQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        id S230413AbiGAPRN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiGAPQ2 (ORCPT
+        with ESMTP id S230072AbiGAPRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:16:28 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BC430F7D;
-        Fri,  1 Jul 2022 08:16:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656688587; x=1688224587;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XFBVO6SXrO3FNt7nyhFxNsDwduLPRRwR8Ddld4oarBA=;
-  b=pO03cPW4b+OBmQTnv4drWTE/971ObouaPTu8Atnljj9izaY2pi1yx5xZ
-   mriUWBD5z3vzaChQQGjx2lHYAJVWYosQjJfpA4AT6GnDXDiRa3Gfw5nqQ
-   qS8JvSzM6APAv3/XFXKtJAHuO9IH3t0dVxdsJ50DffJDQgkxEysmvO6TG
-   +ltM91ajkzbgJmqmh8t+MYjG7OS9k+uPBXA76+J29r1W4dFcLXUbVUxpc
-   5hVbfPO3AAc9Z84Nb01txnMzScMEaZwTQH9AR3aDkv9rGqNMSQdx9QESC
-   BZLBCE8zpJ0i1u7Yo1RaD+T8GAtRLnMIY50xZVFmSHh6129Lbudc48i2u
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="102673275"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 08:16:26 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 08:16:25 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 08:16:06 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v15 13/13] net: dsa: microchip: add LAN937x in the ksz spi probe
-Date:   Fri, 1 Jul 2022 20:46:00 +0530
-Message-ID: <20220701151600.31805-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220701144652.10526-1-arun.ramadoss@microchip.com>
-References: <20220701144652.10526-1-arun.ramadoss@microchip.com>
+        Fri, 1 Jul 2022 11:17:09 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE0230F7D
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 08:17:07 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id k7so3648755wrc.12
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 08:17:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VMI/XAvmNko62zI8fR7xDBUzGEYZuQGMwppHrobM2Is=;
+        b=oWX6VMkvLKmdW/9AlOxqt7UN5ZjMxvJ9LXnTB0W79b4TrcLC76M8Ty5JcwoHGkyFjc
+         Ewdp5ce79ofLluNSBfpG/PaMZCKJxAN4x6E6x0ezwFlCsNQaZd8YlxnUmjx9BLvNH7HI
+         GcCy2lsk2hpTUm5IFEJEZd0w9F7QAmtmphJTyWKM0fH1zFhlBSgM1+n74pT48wm8d4sU
+         c4Z0rhQ7nMFPpD4GwS4zGjKjSo4v1Wb2QLdokKJZv3eOmkcrJkCBb8p1McPuyaptor7Z
+         49KbI6rLcfyxqsjW/I7iY2XNikbIWWFS8hQ+Lj2LKElttsdEKAZ2X3A/N7y8W4ClukC4
+         fWNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VMI/XAvmNko62zI8fR7xDBUzGEYZuQGMwppHrobM2Is=;
+        b=K23kUfjUNYZWW1AnO9kCksAqcW/ERA/3mH3GQoypME7iX3tc6l97HpbnMTTMKyUZjC
+         qaARHn7FWvHyV2P0REhJ8Uvw+EezqtL3tYRClE9/OTfTtvi37o7dt0Dm1BoDg294u+Rm
+         Ghw3KrQbcocUc/m8H8AYJdoQjgo9FAezMpE9qeiUbFRBKACI9x9vHTQopx6ZJRNaKOve
+         Yg3V78fre4anHlMjbNoce9JnxI8/utsXD7lFGJS4fdSPXN1cGwhfwt4CG0f3iGj+GmW/
+         BhivKkM6C+4LAd+A7zXTjXRsSOQI6X5z9wE8wG53g+DauqBB/jw9doUC93qQ0pCSag3w
+         dHZQ==
+X-Gm-Message-State: AJIora+frcu+JDbzHymMtOyByu2FE49Mq+ROwnG36nfMC8vw6ubU1StC
+        oO0B8NFTm4byNMNtzSgcGECxJI8b/tkKX/Qne6avHg==
+X-Google-Smtp-Source: AGRyM1tGdDWBegVkpV4Moi/BOVD8mnBFBtbY4t/nuGv2lIH4gznInl9qyg5ucQ5RCYpPDubZq1Eojl2qbsW+695TTqU=
+X-Received: by 2002:a5d:5983:0:b0:21b:b7cb:f84e with SMTP id
+ n3-20020a5d5983000000b0021bb7cbf84emr14645409wri.654.1656688625975; Fri, 01
+ Jul 2022 08:17:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220629034007.332804-1-irogers@google.com> <Yr1ozmP2E8Fer11e@worktop.programming.kicks-ass.net>
+ <CAP-5=fXRxvSB9WrcTEM+2rnALuzPBdPz=v+WGhvN_SS2Ba2MTw@mail.gmail.com> <Yr62go3Zx1ydlxpg@worktop.programming.kicks-ass.net>
+In-Reply-To: <Yr62go3Zx1ydlxpg@worktop.programming.kicks-ass.net>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 1 Jul 2022 08:16:53 -0700
+Message-ID: <CAP-5=fXdqr1F9Mm_0-OMCcvAWxTAChqfM91QAOkE4Dg9foTp6Q@mail.gmail.com>
+Subject: Re: [PATCH] perf test: Skip for paranoid 3
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Claire Jensen <cjense@google.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>, ben@decadent.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add the LAN937x part support in the existing ksz_spi_probe.
+On Fri, Jul 1, 2022 at 1:55 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Thu, Jun 30, 2022 at 01:59:54PM -0700, Ian Rogers wrote:
+> > On Thu, Jun 30, 2022 at 2:11 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > >
+> > > On Tue, Jun 28, 2022 at 08:40:07PM -0700, Ian Rogers wrote:
+> > > > Add skip tests for paranoid level being 3.
+> > > > Rather than skipping lines starting "Failed", skip lines containing
+> > > > "failed" - making the behavior consistent with the previous python
+> > > > version.
+> > >
+> > > paranoid 3 is an out of tree patch.
+> >
+> > Thanks, what is the right way to resolve this? My desktop appears to
+> > be carrying the patch and I'd like the tests to be as green as
+> > possible.
+>
+> Then you desktop is probably running a Debian or derivative distro
+> kernel. You can run your own kernel, or ask the Debian team to ditch
+> their hack and use the LSM hooks to further limit perf usage if they
+> feel this is required.
+>
+> The big advantage of the LSM hooks is that they can explicitly
+> white-list the perf binary while dis-allowing random users access to the
+> syscall. That way perf will still work but the possible exploit
+> potential is much reduced.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_spi.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+Thanks, neither rewriting Debian's security to use LSM or running a
+custom kernel are going to work in the environment I have. Presumably
+it is going to be a matter of policy not to allow this test fix to
+land, meaning Debian kernels are going to show failing tests? I can
+carry the patch privately but that's a tech-debt, merge-conflict mess.
 
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 69fabb190f26..4844830dca72 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -166,6 +166,26 @@ static const struct of_device_id ksz_dt_ids[] = {
- 		.compatible = "microchip,ksz9567",
- 		.data = &ksz_switch_chips[KSZ9567]
- 	},
-+	{
-+		.compatible = "microchip,lan9370",
-+		.data = &ksz_switch_chips[LAN9370]
-+	},
-+	{
-+		.compatible = "microchip,lan9371",
-+		.data = &ksz_switch_chips[LAN9371]
-+	},
-+	{
-+		.compatible = "microchip,lan9372",
-+		.data = &ksz_switch_chips[LAN9372]
-+	},
-+	{
-+		.compatible = "microchip,lan9373",
-+		.data = &ksz_switch_chips[LAN9373]
-+	},
-+	{
-+		.compatible = "microchip,lan9374",
-+		.data = &ksz_switch_chips[LAN9374]
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ksz_dt_ids);
-@@ -182,6 +202,11 @@ static const struct spi_device_id ksz_spi_ids[] = {
- 	{ "ksz9563" },
- 	{ "ksz8563" },
- 	{ "ksz9567" },
-+	{ "lan9370" },
-+	{ "lan9371" },
-+	{ "lan9372" },
-+	{ "lan9373" },
-+	{ "lan9374" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(spi, ksz_spi_ids);
-@@ -206,6 +231,7 @@ MODULE_ALIAS("spi:ksz9893");
- MODULE_ALIAS("spi:ksz9563");
- MODULE_ALIAS("spi:ksz8563");
- MODULE_ALIAS("spi:ksz9567");
-+MODULE_ALIAS("spi:lan937x");
- MODULE_AUTHOR("Tristram Ha <Tristram.Ha@microchip.com>");
- MODULE_DESCRIPTION("Microchip ksz Series Switch SPI Driver");
- MODULE_LICENSE("GPL");
--- 
-2.36.1
-
+Thanks,
+Ian
