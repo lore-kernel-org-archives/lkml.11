@@ -2,212 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F583C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 10:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB690C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 11:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236940AbiGAK7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 06:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
+        id S231218AbiGALAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 07:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiGAK7s (ORCPT
+        with ESMTP id S235015AbiGALAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 06:59:48 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6559D7E033;
-        Fri,  1 Jul 2022 03:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656673187; x=1688209187;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zwXiI7LNSRTMgOwPQ//yw+saai2jTHywEYViefmeQtg=;
-  b=x/Sl6nlPVwlq/3EJDPeyasqTl94pBIl/bv4cTUksmADoZMNUZGjJMOAy
-   oY8jPOu3FnH8gv3uvKX01erYHb3F45+0gjUdL0luz7r2P41yy62qXZk1+
-   4li22eb6GJZqBfWenQNiNd5Jiqu0TtYGMLNbRymrpQI47U3QXPlYHrEAj
-   A=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 01 Jul 2022 03:59:47 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 03:59:46 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 1 Jul 2022 03:59:46 -0700
-Received: from [10.216.5.206] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 1 Jul 2022
- 03:59:42 -0700
-Message-ID: <aa754d43-ec58-97c7-e50b-0459a850e302@quicinc.com>
-Date:   Fri, 1 Jul 2022 16:29:38 +0530
+        Fri, 1 Jul 2022 07:00:02 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE2776949
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 04:00:01 -0700 (PDT)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 28C6C842A3;
+        Fri,  1 Jul 2022 12:59:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1656673199;
+        bh=caWbH2gTPmvg+ZHM8fUB7WMbiQgfOorMSNksr0MrgMA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=IHdLjP+R4K/Ctg1PvG6kAJAqTU5yhBe3iyffkT5hoJ87gt+dL9PYYPBGTmmu8e2Zx
+         2+E2TEr6dugsQXb5xH6SNnAQhk8u57Kt4cMCUGzwrmrUxWZTDk42b6Bd34VT4VXFFE
+         zU+A0nDVQZltP60GObrCRCwJFvlbgX3TVhwtmnsX8rCNre3FLGpiARQOPf2OXnubOD
+         IfR1p0WeeB47BBcTLU7Ir0qePzbON8juhqzy74mJyA8u10CxSnXEFCPcALZHfe+/Wx
+         zmc/bebjkpbpkR0GZiqnRLn21AUlOxOUUcb6J0AXohmK44GdIXCLz0riDVaJxfXo4M
+         UGZFDtlXDXIbg==
+Message-ID: <201c6bb7-ad86-5b89-e9a1-20a5740b8869@denx.de>
+Date:   Fri, 1 Jul 2022 10:02:15 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 4/5] firmware: qcom: scm: Add wait-queue helper functions
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/3] drm/bridge: fsl-ldb: Fix mode clock rate validation
 Content-Language: en-US
-To:     Guru Das Srinagesh <quic_gurus@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     David Heidelberg <david@ixit.cz>,
-        Robert Marko <robimarko@gmail.com>,
-        Elliot Berman <quic_eberman@quicinc.com>
-References: <1656359076-13018-1-git-send-email-quic_gurus@quicinc.com>
- <1656359076-13018-5-git-send-email-quic_gurus@quicinc.com>
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-In-Reply-To: <1656359076-13018-5-git-send-email-quic_gurus@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Liu Ying <victor.liu@nxp.com>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, sam@ravnborg.org, linux-imx@nxp.com
+References: <20220701065634.4027537-1-victor.liu@nxp.com>
+ <20220701065634.4027537-2-victor.liu@nxp.com>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <20220701065634.4027537-2-victor.liu@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 7/1/22 08:56, Liu Ying wrote:
+> With LVDS dual link, up to 160MHz mode clock rate is supported.
+> With LVDS single link, up to 80MHz mode clock rate is supported.
+> Fix mode clock rate validation by swapping the maximum mode clock
+> rates of the two link modes.
+> 
+> Fixes: 463db5c2ed4a ("drm: bridge: ldb: Implement simple Freescale i.MX8MP LDB bridge")
+> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+> Cc: Neil Armstrong <narmstrong@baylibre.com>
+> Cc: Robert Foss <robert.foss@linaro.org>
+> Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+> Cc: Jonas Karlman <jonas@kwiboo.se>
+> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Marek Vasut <marex@denx.de>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
 
-On 6/28/2022 1:14 AM, Guru Das Srinagesh wrote:
-> When the firmware (FW) supports multiple requests per VM, and the VM also
-> supports it via the `enable-multi-call` device tree flag, the floodgates
-> are thrown open for them to all reach the firmware at the same time.
-> 
-> Since the firmware currently being used has limited resources, it guards
-> them with a resource lock and puts requests on a wait-queue internally
-> and signals to HLOS that it is doing so. It does this by returning two
-> new return values in addition to success or error: SCM_WAITQ_SLEEP and
-> SCM_WAITQ_WAKE.
-> 
->    1) SCM_WAITQ_SLEEP:
-> 
->    	When an SCM call receives this return value instead of success
->    	or error, FW has placed this call on a wait-queue and
->    	has signalled HLOS to put it to non-interruptible sleep. (The
-> 	mechanism to wake it back up will be described in detail in the
-> 	next patch for the sake of simplicity.)
-> 
-> 	Along with this return value, FW also passes to HLOS `wq_ctx` -
-> 	a unique number (UID) identifying the wait-queue that it has put
-> 	the call on, internally. This is to help HLOS with its own
-> 	bookkeeping to wake this sleeping call later.
-> 
-> 	Additionally, FW also passes to HLOS `smc_call_ctx` - a UID
-> 	identifying the SCM call thus being put to sleep. This is also
-> 	for HLOS' bookkeeping to wake this call up later.
-> 
-> 	These two additional values are passed via the a1 and a2
-> 	registers.
-> 
-> 	N.B.: The "ctx" in the above UID names = "context".
-> 
->    2) SCM_WAITQ_WAKE:
-> 
->    	When an SCM call receives this return value instead of success
->    	or error, FW wishes to signal HLOS to wake up a (different)
->    	previously sleeping call.
-
-What happens to this SCM call itself (The one which gets an SCM_WAITQ_WAKE returned
-instead of a success or failure)?
-is it processed? how does the firmware in that case return a success or error?
-
-> 
->    	FW tells HLOS which call to wake up via the additional return
->    	values `wq_ctx`, `smc_call_ctx` and `flags`. The first two have
->    	already been explained above.
-> 
->    	`flags` can be either WAKE_ONE or WAKE_ALL. Meaning, wake either
->    	one, or all, of the SCM calls that HLOS is associating with the
->    	given `wq_ctx`.
-> 
-> A sleeping SCM call can be woken up by either an interrupt that FW
-> raises, or via a SCM_WAITQ_WAKE return value for a new SCM call.
-> 
-> The handshake mechanism that HLOS uses to talk to FW about wait-queue
-> operations involves three new SMC calls. These are:
-> 
->    1) get_wq_ctx():
-> 
->      	Arguments: 	None
->      	Returns:	wq_ctx, flags, more_pending
-> 
->      	Get the wait-queue context, and wake up either one or all of the
->      	sleeping SCM calls associated with that wait-queue.
-> 
->      	Additionally, repeat this if there are more wait-queues that are
->      	ready to have their requests woken up (`more_pending`).
-> 
->    2) wq_resume(smc_call_ctx):
-> 
->    	Arguments:	smc_call_ctx
-> 
->    	HLOS needs to issue this in response to receiving an
->    	IRQ, passing to FW the same smc_call_ctx that FW
->    	receives from HLOS via the get_wq_ctx() call.
-> 
->    3) wq_wake_ack(smc_call_ctx):
-> 
->    	Arguments:	smc_call_ctx
-> 
->    	HLOS needs to issue this in response to receiving an
->    	SCM_WAITQ_WAKE, passing to FW the same smc_call_ctx that FW
->    	passed to HLOS via the SMC_WAITQ_WAKE call.
-> 
-> (Reminder that the full handshake mechanism will be detailed in the
-> subsequent patch.)
-> 
-> Also add the interrupt handler that wakes up a sleeping SCM call.
-> 
-> Signed-off-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
-
-[]...
-
-> +
->   static int qcom_scm_probe(struct platform_device *pdev)
->   {
->   	struct qcom_scm *scm;
->   	unsigned long clks;
-> -	int ret;
-> +	int irq, ret;
->   
->   	scm = devm_kzalloc(&pdev->dev, sizeof(*scm), GFP_KERNEL);
->   	if (!scm)
-> @@ -1333,12 +1432,28 @@ static int qcom_scm_probe(struct platform_device *pdev)
->   	if (ret)
->   		return ret;
->   
-> +	platform_set_drvdata(pdev, scm);
-> +
->   	__scm = scm;
->   	__scm->dev = &pdev->dev;
->   
-> +	spin_lock_init(&__scm->waitq.idr_lock);
-> +	idr_init(&__scm->waitq.idr);
->   	qcom_scm_allow_multicall = of_property_read_bool(__scm->dev->of_node,
->   							"allow-multi-call");
->   
-> +	INIT_WORK(&__scm->waitq.scm_irq_work, scm_irq_work);
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq) {
-> +		ret = devm_request_threaded_irq(__scm->dev, irq, NULL,
-> +			qcom_scm_irq_handler, IRQF_ONESHOT, "qcom-scm", __scm);
-> +		if (ret < 0) {
-> +			pr_err("Failed to request qcom-scm irq: %d\n", ret);
-
-idr_destroy()?
-
-> +			return ret;
-> +		}
-> +	}
-> +
->   	__get_convention();
->   
->   	/*
-> @@ -1354,6 +1469,7 @@ static int qcom_scm_probe(struct platform_device *pdev)
->   
->   static void qcom_scm_shutdown(struct platform_device *pdev)
->   {
-> +	idr_destroy(&__scm->waitq.idr);
->   	/* Clean shutdown, disable download mode to allow normal restart */
->   	if (download_mode)
->   		qcom_scm_set_download_mode(false);
+Reviewed-by: Marek Vasut <marex@denx.de>
