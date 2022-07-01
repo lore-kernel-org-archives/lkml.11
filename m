@@ -2,180 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71300C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 20:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB380C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 20:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232499AbiGAULj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 16:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
+        id S232445AbiGAULp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 16:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232246AbiGAULE (ORCPT
+        with ESMTP id S232432AbiGAUL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 16:11:04 -0400
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487C624A;
-        Fri,  1 Jul 2022 13:10:51 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id F1DE55802F6;
-        Fri,  1 Jul 2022 16:01:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 01 Jul 2022 16:01:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1656705706; x=1656712906; bh=SS
-        qXvxPvOnT181Alnoj0HfgL9fqTJVzreJxmfCVyBec=; b=hcAoBpvIf8eiMsWnHm
-        b6RJp+0UU2OILuy21U79vOjusxjAcQG94kzCl/SLOhhz8J4ASW+y84iY/hEL50ms
-        +t+80HjBAylZNEJe73yGhHSZF1RSQ8RBU9Nk62QyCXZpUC4CexurEGTlBgY/Xqfo
-        fnfCIqYMFwRBTgEwEckqi0Kl9E6cHZVfUrF5kxIWdFViA5bUJ11OHLJ7T0XapXw2
-        hQWKkSyPabF2oJi63qd5eTn9Zl4sQmG20eYW/wqRNYdW/SrAsFhGxn4LKFrrzqDC
-        C0MqxbtLaYxpKOf9o9kKWlf6yKvCjeXy1x18+k24AKggcDhNdzIH/iJu5OZQ3wo4
-        ssMA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1656705706; x=1656712906; bh=SSqXvxPvOnT18
-        1Alnoj0HfgL9fqTJVzreJxmfCVyBec=; b=HeWsMOcvIEpk7+MFtWHCXsiI6BlFC
-        2TQ2SkcGU6TjX/RAuIxgMoxDlrLAJRLOQUP5M4Vjn/Sk2LIfFF6zmyCdELkbAfiW
-        sNvfuqkLM1Vey2QklfYRRWjhcegVctGnxhxUwegYbB0z6YgklYBKnTe07fR9Aokx
-        OJk4Rl2PfNKRw931jKDBYNYjhcdhJJxhHzUaHJY1VFb0uXTx2Qq9+O7Z8+sDYq3K
-        dW+YTOeJLeT+EWHVFce25KHIXMDeukkeCTF05NMBW9QbVqWeENDneUsjCVRvIwS4
-        +pREO1Ryo1aq2EmzH+e4VaMl82vWzrZw+kMmsklRZow8dIJvLbZg3JAtQ==
-X-ME-Sender: <xms:qFK_YsIaYF4zQr4W2reW40ZCVdf18qMP0jUxBhRM2F9XT3OMoZE-fQ>
-    <xme:qFK_YsLMw7Ul-MFWvL5vjLl8kF8OII4_AxB68OblZjKrRy2kL3D-hexNKYm7eeilY
-    r3A0Nm-DvJnaB1bqw>
-X-ME-Received: <xmr:qFK_YsvSjEToVoJH77gEMjDuattqvftr9In9WoGGrsXJF0G4gbll_vSjSD0PfO7MeF139vM38mNTdntEoLC6DmjMwlneu3GzSMNeIsU0zW-j4HFzvCUiSUQZYQsfYrB4ht35Fw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehfedgudeggecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
-    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:qFK_YpaOX1fO-6TE3RDUrGUqEks9gqQTGKtyHpwS4EkpGFs3D_QX1g>
-    <xmx:qFK_YjY-VtD47ytaYrZ-MHfYlS9aFWa7-aZfO5UVVLGUS3nufnJ-2Q>
-    <xmx:qFK_YlCdS98PzzFa3RHRnOz63A6BS-YMIMrSNYdRpcIEip8IzR4YhQ>
-    <xmx:qlK_YnrH17XSu6_tw5n16RVzGLdNEhRKaiCIhf79YUHgEBSwJGS5nQ>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 1 Jul 2022 16:01:41 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Chris Zankel <chris@zankel.net>,
-        Colin Ian King <colin.king@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Juergen Gross <jgross@suse.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Kees Cook <keescook@chromium.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Maximilian Heyne <mheyne@amazon.de>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Rich Felker <dalias@libc.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@stackframe.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Wei Liu <wei.liu@kernel.org>, Wei Xu <xuwei5@hisilicon.com>,
-        Will Deacon <will@kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-        linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-hyperv@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        x86@kernel.org, xen-devel@lists.xenproject.org
-Subject: [PATCH v3 5/8] genirq: Refactor accessors to use irq_data_get_affinity_mask
-Date:   Fri,  1 Jul 2022 15:00:53 -0500
-Message-Id: <20220701200056.46555-6-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220701200056.46555-1-samuel@sholland.org>
-References: <20220701200056.46555-1-samuel@sholland.org>
+        Fri, 1 Jul 2022 16:11:29 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4471310FF6;
+        Fri,  1 Jul 2022 13:11:07 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id cv13so3607141pjb.4;
+        Fri, 01 Jul 2022 13:11:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pk0NGGb9r+FqmcTRJ1itk919b2sN93teEfpD3LNfJ/k=;
+        b=JI8XK8o3IXgKyr7Zb/eHZk7ebOpn14F1ePPsmVHX7GLCf/D+ZTYpQ5HIycB/I/i8kB
+         UpMpq0uS3tSs7VZn6XP/+Uqqaa4nn37kWfBZSN2yUZRokkLxJj3ieh5M5RSdah7bo6WX
+         NZF9tn+owkpy43KknU4pAxkVW3ZxskwyzzhexwwBuuh9RbmnVh/U306d5cP3tTRyEn+J
+         Fkz9WlRdMwegxfvnlhVjxgDvYJjrBxNUep/6oBKSidBB8aY5eZLuCYYAJwITT28O65rB
+         meLbWA8z1qD/9/UyjY+QEHEJKDAWV93AxhKkVnk8/SjybrdUtHY5V8f6HeE6QfTflAnS
+         OotA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=pk0NGGb9r+FqmcTRJ1itk919b2sN93teEfpD3LNfJ/k=;
+        b=zPmpd+p1Us2FsXAq6qLbzD52aDYaTTTisxkFrWKhWehuClrspULvoRYgKi51eHuQQa
+         zD+xWeTjXUArWtAkzIhBe/oYPvCZ1rlNq7edZ9CsLUvPI9IMCb7xhW5vfRfRzh+7V9y7
+         lGKl4hruK7+mHZCcSCvP144+gP01t8zacxEpdBTlxb8T+Z3yNNF5x3LTlqFst3tNwsGu
+         cJ9jtLOnCCjioGGy04j2BSvac3PSyyEEs6zMtODRMzZtVpJeTpXsHVeHwUfV7a4+c0D0
+         k65N17fD/hhRGjqamt0IYK1jCHTWfmll+EKxF0M/GyYj7+7mvU63ILgGx/bmkZmYDmht
+         BgKw==
+X-Gm-Message-State: AJIora8cDuFJL76JArGmI9w1rr2dWfvgryKk4regfTgOCo3FSCXX1QiY
+        3+ptiNMRJPmpOt/QEdkGSlA=
+X-Google-Smtp-Source: AGRyM1v5R46gGmBcDUcDE7DA8GNk8E2uqXjYXmJjkvDHPUF2NtotFdJKAS8mY4nvk0TGo4dcgncR5w==
+X-Received: by 2002:a17:902:6b42:b0:15d:3603:6873 with SMTP id g2-20020a1709026b4200b0015d36036873mr22533189plt.30.1656706266582;
+        Fri, 01 Jul 2022 13:11:06 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:b551])
+        by smtp.gmail.com with ESMTPSA id q8-20020a170902dac800b0016a3db5d608sm55226plx.289.2022.07.01.13.11.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 13:11:05 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Sat, 2 Jul 2022 05:11:02 +0900
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        m.szyprowski@samsung.com, nathan@kernel.org, michael@walle.cc,
+        robh@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, guillaume.tucker@collabora.com,
+        pmladek@suse.com
+Subject: Re: [RESEND PATCH] kernfs: Avoid re-adding kernfs_node into
+ kernfs_notify_list.
+Message-ID: <Yr9U1q0BBinCgyrT@mtj.duckdns.org>
+References: <20220701154604.2211008-1-imran.f.khan@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701154604.2211008-1-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A couple of functions directly reference the affinity mask. Route them
-through irq_data_get_affinity_mask so they will pick up any refactoring
-done there.
+Hello,
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+On Sat, Jul 02, 2022 at 01:46:04AM +1000, Imran Khan wrote:
+> @@ -992,9 +993,11 @@ void kernfs_notify(struct kernfs_node *kn)
+>  	rcu_read_unlock();
+>  
+>  	/* schedule work to kick fsnotify */
+> -	kernfs_get(kn);
+> -	llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> -	schedule_work(&kernfs_notify_work);
+> +	if (kn->attr.notify_next.next != NULL) {
+> +		kernfs_get(kn);
+> +		llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> +		schedule_work(&kernfs_notify_work);
+> +	}
 
-(no changes since v1)
+Aren't you just narrowing the race window here? What prevents two
+threads simultaneously testing for non NULL and then entering the
+addition block together?
 
- include/linux/irq.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Looked at the llist code and it doesn't support multiple producers
+trying to add the same node, unfortunately, so I'm not sure llist is
+gonna work here. For now, the right thing to do prolly is reverting
+it.
 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index 505308253d23..69ee4e2f36ce 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -879,16 +879,16 @@ static inline int irq_data_get_node(struct irq_data *d)
- 	return irq_common_data_get_node(d->common);
- }
- 
--static inline struct cpumask *irq_get_affinity_mask(int irq)
-+static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
- {
--	struct irq_data *d = irq_get_irq_data(irq);
--
--	return d ? d->common->affinity : NULL;
-+	return d->common->affinity;
- }
- 
--static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
-+static inline struct cpumask *irq_get_affinity_mask(int irq)
- {
--	return d->common->affinity;
-+	struct irq_data *d = irq_get_irq_data(irq);
-+
-+	return d ? irq_data_get_affinity_mask(d) : NULL;
- }
- 
- #ifdef CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK
-@@ -910,7 +910,7 @@ static inline void irq_data_update_effective_affinity(struct irq_data *d,
- static inline
- struct cpumask *irq_data_get_effective_affinity_mask(struct irq_data *d)
- {
--	return d->common->affinity;
-+	return irq_data_get_affinity_mask(d);
- }
- #endif
- 
+Al, is there something I'm missing about llist?
+
+Thanks.
+
 -- 
-2.35.1
-
+tejun
