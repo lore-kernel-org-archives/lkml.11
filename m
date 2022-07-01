@@ -2,78 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2331C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232168AbiGAOOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
+        id S231349AbiGAOQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbiGAONz (ORCPT
+        with ESMTP id S229562AbiGAOQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:13:55 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CBE38DAD;
-        Fri,  1 Jul 2022 07:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656684835; x=1688220835;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=fBOzsvR5JRD3AwA365AJxC5GtJB0Gphjxcl+Ez06QxM=;
-  b=NGWAL3MW8YlsjLwxtyruxAMGRCvW0QZi6VF5n8Uo2mKmbskWuQki9az+
-   RWH8NW4yh8UdoUeyfXnbwF+MA+k+jdLwCOtP04TVYcCqSfCa/FdFtv5/9
-   GgC9npFNHtfKenJbOhWgqkEcLYu3lPD9HfzlB3uirXLQ+c6LMo+8CsR0a
-   A=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 01 Jul 2022 07:13:55 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 01 Jul 2022 07:13:53 -0700
-X-QCInternal: smtphost
-Received: from hu-krichai-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.37])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 01 Jul 2022 19:43:31 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 4058933)
-        id 720BE424D; Fri,  1 Jul 2022 19:43:30 +0530 (+0530)
-From:   Krishna chaitanya chundru <quic_krichai@quicinc.com>
-To:     helgaas@kernel.org
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
-        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
-        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
-        swboyd@chromium.org, dmitry.baryshkov@linaro.org,
-        Krishna chaitanya chundru <quic_krichai@quicinc.com>
-Subject: [PATCH v3 0/2] PCI: Restrict pci transactions after pci suspend
-Date:   Fri,  1 Jul 2022 19:43:17 +0530
-Message-Id: <1656684800-31278-1-git-send-email-quic_krichai@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1656495214-4028-1-git-send-email-quic_krichai@quicinc.com>
-References: <1656495214-4028-1-git-send-email-quic_krichai@quicinc.com>
+        Fri, 1 Jul 2022 10:16:57 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7C839165;
+        Fri,  1 Jul 2022 07:16:55 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 886F71FFCE;
+        Fri,  1 Jul 2022 14:16:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1656685014; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t0biNoxFr1aDMPWz/5vBUkSHpR2jUX5N7DeLsTbNOZc=;
+        b=XysSLuJySInIdkK0lVZMUQF69iVx3McotBxqnEsRsWv+Nnr/qj/smghZpjL6MSpZq2Tds1
+        XB6Eux5k7QS4pQRo6NcrKGWSKk9x/IZ0yHQ7/kCZhQEU1rgvqfE8KCxStOkoKdb3tTHE01
+        J5GikShi2gBEJKbQcCFq7OJccBZzU7E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1656685014;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t0biNoxFr1aDMPWz/5vBUkSHpR2jUX5N7DeLsTbNOZc=;
+        b=tlTvbUzN4iqa0S0pMKOZWl68JFjFRiB1eilXyFsp6/U12zlkxte3RYeiEIdHSvzDPOTCgN
+        4yKtXZ4BB0vvbgDA==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 95AE92C141;
+        Fri,  1 Jul 2022 14:16:53 +0000 (UTC)
+Date:   Fri, 1 Jul 2022 16:16:53 +0200 (CEST)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     madvenka@linux.microsoft.com
+cc:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
+        mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 19/20] arm64: Miscellaneous changes required for
+ enabling livepatch
+In-Reply-To: <20220524001637.1707472-20-madvenka@linux.microsoft.com>
+Message-ID: <alpine.LSU.2.21.2207011609360.23331@pobox.suse.cz>
+References: <e81e773678f88f7c2ff7480e2eb096973ec198db> <20220524001637.1707472-1-madvenka@linux.microsoft.com> <20220524001637.1707472-20-madvenka@linux.microsoft.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the endpoint device state is D0 and irq's are not freed, then
-kernel try to mask interrupts in system suspend path by writing
-in to the vector table (for MSIX interrupts) and config space (for MSI's).
+Hi,
 
-These transactions are initiated in the pm suspend after pcie clocks got
-disabled as part of platform driver pm  suspend call. Due to it, these
-transactions are resulting in un-clocked access and eventually to crashes.
+sorry for the late reply...
 
-So added a logic in qcom driver to restrict these unclocked access.
-And updated the logic to check the link state before masking
-or unmasking the interrupts.
+On Mon, 23 May 2022, madvenka@linux.microsoft.com wrote:
 
-Krishna chaitanya chundru (2):
-  PCI: qcom: Add system PM support
-  PCI: qcom: Restrict pci transactions after pci suspend
+> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+> 
+> 	- Create arch/arm64/include/asm/livepatch.h and define
+> 	  klp_arch_set_pc() and klp_get_ftrace_location() which
+> 	  are required for livepatch.
+> 
+> 	- Define TIF_PATCH_PENDING in arch/arm64/include/asm/thread_info.h
+> 	  for livepatch.
+> 
+> 	- Check TIF_PATCH_PENDING in do_notify_resume() to patch the
+> 	  current task for livepatch.
+> 
+> Signed-off-by: Suraj Jitindar Singh <sjitindarsingh@gmail.com>
+> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+> ---
+>  arch/arm64/include/asm/livepatch.h   | 42 ++++++++++++++++++++++++++++
+>  arch/arm64/include/asm/thread_info.h |  4 ++-
+>  arch/arm64/kernel/signal.c           |  4 +++
+>  3 files changed, 49 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/arm64/include/asm/livepatch.h
+> 
+> diff --git a/arch/arm64/include/asm/livepatch.h b/arch/arm64/include/asm/livepatch.h
+> new file mode 100644
+> index 000000000000..72d7cd86f158
+> --- /dev/null
+> +++ b/arch/arm64/include/asm/livepatch.h
+> @@ -0,0 +1,42 @@
+> +/* SPDX-License-Identifier: GPL-2.0
+> + *
+> + * livepatch.h - arm64-specific Kernel Live Patching Core
+> + */
+> +#ifndef _ASM_ARM64_LIVEPATCH_H
+> +#define _ASM_ARM64_LIVEPATCH_H
+> +
+> +#include <linux/ftrace.h>
+> +
+> +static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+> +{
+> +	struct pt_regs *regs = ftrace_get_regs(fregs);
+> +
+> +	regs->pc = ip;
+> +}
 
- drivers/pci/controller/dwc/pcie-designware-host.c |  14 ++-
- drivers/pci/controller/dwc/pcie-qcom.c            | 114 +++++++++++++++++++++-
- 2 files changed, 124 insertions(+), 4 deletions(-)
+kernel/livepatch/ does not use klp_arch_set_pc() anymore. It was replaced 
+by ftrace_instruction_pointer_set() and 
+CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS.
 
--- 
-2.7.4
+> +/*
+> + * klp_get_ftrace_location is expected to return the address of the BL to the
+> + * relevant ftrace handler in the callsite. The location of this can vary based
+> + * on several compilation options.
+> + * CONFIG_DYNAMIC_FTRACE_WITH_REGS
+> + *	- Inserts 2 nops on function entry the second of which is the BL
+> + *	  referenced above. (See ftrace_init_nop() for the callsite sequence)
+> + *	  (this is required by livepatch and must be selected)
+> + * CONFIG_ARM64_BTI_KERNEL:
+> + *	- Inserts a hint #0x22 on function entry if the function is called
+> + *	  indirectly (to satisfy BTI requirements), which is inserted before
+> + *	  the two nops from above.
+> + */
+> +#define klp_get_ftrace_location klp_get_ftrace_location
+> +static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
+> +{
+> +	unsigned long addr = faddr + AARCH64_INSN_SIZE;
+> +
+> +#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
+> +	addr = ftrace_location_range(addr, addr + AARCH64_INSN_SIZE);
+> +#endif
+> +
+> +	return addr;
+> +}
 
+This is not needed either. peterz improved the ftrace code and livepatch 
+now uses ftrace_location() which gives the proper location directly.
+
+> diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
+> index e1317b7c4525..a1d8999dbdcc 100644
+> --- a/arch/arm64/include/asm/thread_info.h
+> +++ b/arch/arm64/include/asm/thread_info.h
+> @@ -68,6 +68,7 @@ int arch_dup_task_struct(struct task_struct *dst,
+>  #define TIF_UPROBE		4	/* uprobe breakpoint or singlestep */
+>  #define TIF_MTE_ASYNC_FAULT	5	/* MTE Asynchronous Tag Check Fault */
+>  #define TIF_NOTIFY_SIGNAL	6	/* signal notifications exist */
+> +#define TIF_PATCH_PENDING	7	/* pending live patching update */
+>  #define TIF_SYSCALL_TRACE	8	/* syscall trace active */
+>  #define TIF_SYSCALL_AUDIT	9	/* syscall auditing */
+>  #define TIF_SYSCALL_TRACEPOINT	10	/* syscall tracepoint for ftrace */
+> @@ -98,11 +99,12 @@ int arch_dup_task_struct(struct task_struct *dst,
+>  #define _TIF_SVE		(1 << TIF_SVE)
+>  #define _TIF_MTE_ASYNC_FAULT	(1 << TIF_MTE_ASYNC_FAULT)
+>  #define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
+> +#define _TIF_PATCH_PENDING	(1 << TIF_PATCH_PENDING)
+>  
+>  #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
+>  				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
+>  				 _TIF_UPROBE | _TIF_MTE_ASYNC_FAULT | \
+> -				 _TIF_NOTIFY_SIGNAL)
+> +				 _TIF_NOTIFY_SIGNAL | _TIF_PATCH_PENDING)
+>  
+>  #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
+>  				 _TIF_SYSCALL_TRACEPOINT | _TIF_SECCOMP | \
+> diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
+> index 4a4122ef6f39..cbec9597349f 100644
+> --- a/arch/arm64/kernel/signal.c
+> +++ b/arch/arm64/kernel/signal.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/sizes.h>
+>  #include <linux/string.h>
+>  #include <linux/resume_user_mode.h>
+> +#include <linux/livepatch.h>
+>  #include <linux/ratelimit.h>
+>  #include <linux/syscalls.h>
+>  
+> @@ -938,6 +939,9 @@ void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
+>  					       (void __user *)NULL, current);
+>  			}
+>  
+> +			if (thread_flags & _TIF_PATCH_PENDING)
+> +				klp_update_patch_state(current);
+> +
+>  			if (thread_flags & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL))
+>  				do_signal(regs);
+
+The rest should be fine.
+
+Regards
+
+Miroslav
