@@ -2,110 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D61AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F77CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234570AbiGAHJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
+        id S235048AbiGAHJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiGAHJS (ORCPT
+        with ESMTP id S235271AbiGAHJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:09:18 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93A6677DC;
-        Fri,  1 Jul 2022 00:09:16 -0700 (PDT)
+        Fri, 1 Jul 2022 03:09:38 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869E868A09;
+        Fri,  1 Jul 2022 00:09:36 -0700 (PDT)
 Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B45174000F;
-        Fri,  1 Jul 2022 07:09:10 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPA id 7A183100008;
+        Fri,  1 Jul 2022 07:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656659355;
+        t=1656659375;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PCiZVwpMAjyrnNZLMZl/YtqChDHV1AvFsK2kkBxNj8Q=;
-        b=jMoucgK6yX2WKScAnFiD+VFa53pnvw1EHQOQIx0hPWAYVVyTx/aLdZvkJTZVCrVVTxURgL
-        DVOwKogX0EUXhjqye4hOpQyTcgUl0mh/7JHUQRmCmOSB7gYoJDaUllJ/5wMHCOXgaBRDSv
-        pO76jxy/f3mNXbEex9enTUY5eTxKJCZOWYKEd/7AaNTepx6skSgpcpn7IcxQOaxmm+y2+A
-        xwLYjQxMGQChWE0gPzU9wrncRGDMiitCU0F3ENjjVtwa9m+pTAGhjZAwPoNfRGix2FngVw
-        WEW4gssTQR4bq0OY4QpE19htaCIYtpt8ch8w4qnEa/sleRcV7DUeB7KBrWeGog==
-Date:   Fri, 1 Jul 2022 09:09:09 +0200
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uykJuESLKoGztXK9aYx8peves7aizxm3hOTH9nKfMSU=;
+        b=firAHOqESXQ2o/Ulp+TSwtHzoj2Zw5biupcjCRSxoDzmZNXp+SBJavUHmslGjiSFbGt/E3
+        rINiMDJ029uiMS3BlcXgoVwL7mQH+Oo6VeskQjhnPYB500QEhxiu189nvXvIFAOVps0+G8
+        MR7rMHUZIiGtLQaTTsBOrx1IQF41SROJuv4tApprayq35jaKdWP5dxJhRXiWaJPgIORdNX
+        9G2bJbKZ5RN5CqeVmJRZELiLsfJr/W6UeUDlRHg7fP9s9f3QQXnVZYo4GMJcD7nPRp4j0g
+        VAyLcTM2efcVIeFvHKW9scqUqzPo2srk1Tver48j/97r60T21wMtWIl4JEdaqg==
 From:   Herve Codina <herve.codina@bootlin.com>
-To:     <Claudiu.Beznea@microchip.com>
-Cc:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <Nicolas.Ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <Horatiu.Vultur@microchip.com>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v3 3/3] ARM: dts: lan966x: Add UDPHS support
-Message-ID: <20220701090909.50654cb4@bootlin.com>
-In-Reply-To: <f4f14941-6839-5691-b2d1-adb049118a4d@microchip.com>
-References: <20220525071036.223396-1-herve.codina@bootlin.com>
-        <20220525071036.223396-4-herve.codina@bootlin.com>
-        <f4f14941-6839-5691-b2d1-adb049118a4d@microchip.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>
+Subject: [PATCH v4 0/3] Microchip LAN966x USB device support
+Date:   Fri,  1 Jul 2022 09:09:25 +0200
+Message-Id: <20220701070928.459135-1-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Claudiu,
+Hi,
 
-On Thu, 30 Jun 2022 09:31:00 +0000
-<Claudiu.Beznea@microchip.com> wrote:
+This series add support for the USB device controller available on
+the Microchip LAN966x SOCs (LAN9662 and LAN9668).
 
-> On 25.05.2022 10:10, Herve Codina wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know =
-the content is safe
-> >=20
-> > Add UDPHS (the USB High Speed Device Port controller) support.
-> >=20
-> > The both lan966x SOCs (LAN9662 and LAN9668) have the same UDPHS
-> > IP. This IP is also the same as the one present in the SAMA5D3
-> > SOC.
-> >=20
-> > Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> > ---
-> >  arch/arm/boot/dts/lan966x.dtsi | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> >=20
-> > diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x=
-.dtsi
-> > index 7d2869648050..e086df741f99 100644
-> > --- a/arch/arm/boot/dts/lan966x.dtsi
-> > +++ b/arch/arm/boot/dts/lan966x.dtsi
-> > @@ -196,6 +196,17 @@ watchdog: watchdog@e0090000 {
-> >                         status =3D "disabled";
-> >                 };
-> >=20
-> > +               udc: usb@e0808000 {
-> > +                       compatible =3D "microchip,lan9662-udc",
-> > +                                    "atmel,sama5d3-udc";
-> > +                       reg =3D <0x00200000 0x80000>,
-> > +                             <0xe0808000 0x400>;
-> > +                       interrupts =3D <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
-> > +                       clocks =3D <&clks GCK_GATE_UDPHS>, <&nic_clk>;
-> > +                       clock-names =3D "pclk", "hclk";
-> > +                       status =3D "disabled";
-> > +               };
-> > + =20
->=20
-> This doesn't apply clean on top of v5.19-rc1. Can you check and resend?
+Both SOCs have the same controller and this controller is also the
+same as the one present on the SAMAD3 SOC.
 
-Sure,
-I am going to send a rebased version of this series.
+Regards,
+Herve
 
-Thanks,
-Herv=C3=A9
+Changes v2:
+- Avoid wildcards in the DT compatible string
+- Rename the DT node
 
---=20
-Herv=C3=A9 Codina, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Changes v3:
+- Add Krzysztof's 'Acked-by' on patch 2/3
+- Change node insertion point (sort nodes by base addresses) on patch 3/3
+
+Changes v4:
+- rebase on top of v5.19-rc1
+
+Herve Codina (3):
+  clk: lan966x: Fix the lan966x clock gate register address
+  dt-bindings: usb: atmel: Add Microchip LAN9662 compatible string
+  ARM: dts: lan966x: Add UDPHS support
+
+ Documentation/devicetree/bindings/usb/atmel-usb.txt |  3 +++
+ arch/arm/boot/dts/lan966x.dtsi                      | 11 +++++++++++
+ drivers/clk/clk-lan966x.c                           |  2 +-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+-- 
+2.35.3
+
