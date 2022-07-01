@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6381EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3221DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230413AbiGAPRN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47284 "EHLO
+        id S231566AbiGAPSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbiGAPRJ (ORCPT
+        with ESMTP id S230334AbiGAPSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:17:09 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE0230F7D
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 08:17:07 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id k7so3648755wrc.12
-        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 08:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VMI/XAvmNko62zI8fR7xDBUzGEYZuQGMwppHrobM2Is=;
-        b=oWX6VMkvLKmdW/9AlOxqt7UN5ZjMxvJ9LXnTB0W79b4TrcLC76M8Ty5JcwoHGkyFjc
-         Ewdp5ce79ofLluNSBfpG/PaMZCKJxAN4x6E6x0ezwFlCsNQaZd8YlxnUmjx9BLvNH7HI
-         GcCy2lsk2hpTUm5IFEJEZd0w9F7QAmtmphJTyWKM0fH1zFhlBSgM1+n74pT48wm8d4sU
-         c4Z0rhQ7nMFPpD4GwS4zGjKjSo4v1Wb2QLdokKJZv3eOmkcrJkCBb8p1McPuyaptor7Z
-         49KbI6rLcfyxqsjW/I7iY2XNikbIWWFS8hQ+Lj2LKElttsdEKAZ2X3A/N7y8W4ClukC4
-         fWNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VMI/XAvmNko62zI8fR7xDBUzGEYZuQGMwppHrobM2Is=;
-        b=K23kUfjUNYZWW1AnO9kCksAqcW/ERA/3mH3GQoypME7iX3tc6l97HpbnMTTMKyUZjC
-         qaARHn7FWvHyV2P0REhJ8Uvw+EezqtL3tYRClE9/OTfTtvi37o7dt0Dm1BoDg294u+Rm
-         Ghw3KrQbcocUc/m8H8AYJdoQjgo9FAezMpE9qeiUbFRBKACI9x9vHTQopx6ZJRNaKOve
-         Yg3V78fre4anHlMjbNoce9JnxI8/utsXD7lFGJS4fdSPXN1cGwhfwt4CG0f3iGj+GmW/
-         BhivKkM6C+4LAd+A7zXTjXRsSOQI6X5z9wE8wG53g+DauqBB/jw9doUC93qQ0pCSag3w
-         dHZQ==
-X-Gm-Message-State: AJIora+frcu+JDbzHymMtOyByu2FE49Mq+ROwnG36nfMC8vw6ubU1StC
-        oO0B8NFTm4byNMNtzSgcGECxJI8b/tkKX/Qne6avHg==
-X-Google-Smtp-Source: AGRyM1tGdDWBegVkpV4Moi/BOVD8mnBFBtbY4t/nuGv2lIH4gznInl9qyg5ucQ5RCYpPDubZq1Eojl2qbsW+695TTqU=
-X-Received: by 2002:a5d:5983:0:b0:21b:b7cb:f84e with SMTP id
- n3-20020a5d5983000000b0021bb7cbf84emr14645409wri.654.1656688625975; Fri, 01
- Jul 2022 08:17:05 -0700 (PDT)
+        Fri, 1 Jul 2022 11:18:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC9542AC5C
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 08:18:33 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CCA9F113E;
+        Fri,  1 Jul 2022 08:18:33 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AC4CA3F66F;
+        Fri,  1 Jul 2022 08:18:31 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 16:18:29 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Cristian Marussi <cristian.marussi@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        james.quinlan@broadcom.com, Jonathan.Cameron@huawei.com,
+        f.fainelli@gmail.com, etienne.carriere@linaro.org,
+        vincent.guittot@linaro.org, daniel.lezcano@linaro.org,
+        tarek.el-sherbiny@arm.com, adrian.slatineanu@arm.com,
+        souvik.chakravarty@arm.com, wleavitt@marvell.com,
+        wbartczak@marvell.com, Sudeep Holla <sudeep.holla@arm.com>
+Subject: Re: [PATCH v3 8/9] firmware: arm_scmi: Add scmi_driver optional
+ setup/teardown callbacks
+Message-ID: <20220701151829.j2blytsgma5so6ox@bogus>
+References: <20220627123038.1427067-1-cristian.marussi@arm.com>
+ <20220627123038.1427067-9-cristian.marussi@arm.com>
+ <20220701140946.uar5ohadyjksf2ka@bogus>
+ <Yr8I6KHUrOfLSmEj@e120937-lin>
 MIME-Version: 1.0
-References: <20220629034007.332804-1-irogers@google.com> <Yr1ozmP2E8Fer11e@worktop.programming.kicks-ass.net>
- <CAP-5=fXRxvSB9WrcTEM+2rnALuzPBdPz=v+WGhvN_SS2Ba2MTw@mail.gmail.com> <Yr62go3Zx1ydlxpg@worktop.programming.kicks-ass.net>
-In-Reply-To: <Yr62go3Zx1ydlxpg@worktop.programming.kicks-ass.net>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 1 Jul 2022 08:16:53 -0700
-Message-ID: <CAP-5=fXdqr1F9Mm_0-OMCcvAWxTAChqfM91QAOkE4Dg9foTp6Q@mail.gmail.com>
-Subject: Re: [PATCH] perf test: Skip for paranoid 3
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Claire Jensen <cjense@google.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>, ben@decadent.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yr8I6KHUrOfLSmEj@e120937-lin>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 1:55 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Jun 30, 2022 at 01:59:54PM -0700, Ian Rogers wrote:
-> > On Thu, Jun 30, 2022 at 2:11 AM Peter Zijlstra <peterz@infradead.org> wrote:
+On Fri, Jul 01, 2022 at 04:09:05PM +0100, Cristian Marussi wrote:
+> On Fri, Jul 01, 2022 at 03:09:46PM +0100, Sudeep Holla wrote:
+> > On Mon, Jun 27, 2022 at 01:30:37PM +0100, Cristian Marussi wrote:
+> > > Add optional .setup and .teardown methods to the scmi_driver descriptor:
+> > > such callbacks, if provided, will be called by the SCIM core at driver
+> > > registration time, so that, an SCMI driver, registered as usual with the
+> > > module_scmi_driver() helper macro, can provide custom callbacks to be
+> > > run once for all at module load/unload time to perform specific setup
+> > > or teardown operations before/after .probe and .remove steps.
 > > >
-> > > On Tue, Jun 28, 2022 at 08:40:07PM -0700, Ian Rogers wrote:
-> > > > Add skip tests for paranoid level being 3.
-> > > > Rather than skipping lines starting "Failed", skip lines containing
-> > > > "failed" - making the behavior consistent with the previous python
-> > > > version.
-> > >
-> > > paranoid 3 is an out of tree patch.
+> > 
+> > What can't the driver call this setup/teardown on its own before/after
+> > calling scmi_driver_register/unregister ?
+> 
+> > 
+> > Based on the usage in 9/9, I guess it is mainly to use the
+> > module_scmi_driver ? If so, I would avoid using that or have another
+> > macro to manage this setup/teardown(once there are multiple users for that).
+> > IMO, it doesn't make sense to add callbacks to do things that are outside
+> > the scope of scmi drivers. No ?
 > >
-> > Thanks, what is the right way to resolve this? My desktop appears to
-> > be carrying the patch and I'd like the tests to be as green as
-> > possible.
->
-> Then you desktop is probably running a Debian or derivative distro
-> kernel. You can run your own kernel, or ask the Debian team to ditch
-> their hack and use the LSM hooks to further limit perf usage if they
-> feel this is required.
->
-> The big advantage of the LSM hooks is that they can explicitly
-> white-list the perf binary while dis-allowing random users access to the
-> syscall. That way perf will still work but the possible exploit
-> potential is much reduced.
+> 
+> This is exactly what I was doing in fact :D at first ... defining a normal
+> init/exit from where I called what I needed at first and then ivoke the
+> scmi_driver_register()...so bypassing/not using the module_scmi-driver macro
+> indeed...then I realized I needed something similar also for the SCMI Test
+> driver, so I tried to unify; in both cases indeed the required ops to be
+> done before the scmi_driver_register are NOT scmi related things.
+> 
+> So I can drop this if you prefer and use bare module_init/exit that
+> calls scmi_driver_register() after having setup what needed for the
+> specific driver initialization (before probe)...I was not really
+> convinced it was worth this level of unification.
+> 
 
-Thanks, neither rewriting Debian's security to use LSM or running a
-custom kernel are going to work in the environment I have. Presumably
-it is going to be a matter of policy not to allow this test fix to
-land, meaning Debian kernels are going to show failing tests? I can
-carry the patch privately but that's a tech-debt, merge-conflict mess.
+We can add macro for that too if there is another user for this. i.e.
+if and when we merge the test code using something similar, we can
+wrap them in a macro module_scmi_driver_setup_teardown(driver, setup, teardown)
+and simplify things for the users.
 
-Thanks,
-Ian
+-- 
+Regards,
+Sudeep
