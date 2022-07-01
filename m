@@ -2,152 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31460C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5044CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 15:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiGAPQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46372 "EHLO
+        id S230479AbiGAPQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiGAPP5 (ORCPT
+        with ESMTP id S229559AbiGAPQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:15:57 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48B63057F
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 08:15:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656688556; x=1688224556;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IisrVhGQr3wsDyXfA3p/+ZgwhBa3ZkRjgDDNl9MnuGg=;
-  b=QtM09OPCXn50bwpuN6YQoVzbQWyTcCMB6LUMY/nYdE5/NAGLMvEiHjhS
-   kdtyz2iqhk6j3d/0fWGOfzVVHAvzyc2u6Xh/pQpmA5MzxK43Ybk753iGM
-   PkvMPvoXIodkK7TfRR1XLgtK1QbZpAyOdnPhRz1EkX8Id2ob4QjY3GW6T
-   Fd7z48LpPsdyc4ELXl5LW+n7Y0iu4A9g0PncJBBbc0Dq5d9ZDVquTl+Na
-   7muDzgjHmBNLJY5FrubbfJ37idwmSYhwTWynHSF5WrxTdhLZy+B+xyJcf
-   spzwwTNb1qvR80VbZf8sXVjHnZKg9dcD4290Uqg8NcCpALnapNHiMu1lW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10395"; a="346659260"
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="346659260"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 08:15:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="648379650"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 01 Jul 2022 08:15:50 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7IN3-000E4k-Gr;
-        Fri, 01 Jul 2022 15:15:49 +0000
-Date:   Fri, 1 Jul 2022 23:15:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [netfilter-nf-next:testing 6/10] net/netfilter/core.c:271:26:
- warning: unused variable 'hook_bpf_prog'
-Message-ID: <202207012311.c24zBDoa-lkp@intel.com>
+        Fri, 1 Jul 2022 11:16:15 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6A73057F;
+        Fri,  1 Jul 2022 08:16:14 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 549FB3200684;
+        Fri,  1 Jul 2022 11:16:11 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 01 Jul 2022 11:16:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1656688570; x=
+        1656774970; bh=Tqwsov16Tb0O3xmHbTi4I+HfDNbMkRJRXqdUjVyems0=; b=f
+        IR3s4uS4yWZciAfs+E8sv1lP4+d4xh9McJaAh+lLsBBivpn4rTbX4iIe3lb9Jnv4
+        pfaUQPUMPss2tykJLQlt1OL4DF2c64giwSjAHzhb0Wmw4v09Kprw3Fgeic5/tiA7
+        Sg7ZN9QVaau7+pZYx0bHqG/aORhLS3XIl6AXBvZ8+NGs5aXl4VDseDZaPZj72ybe
+        G5HHazVhkg5Ev7WyPOkFn/lDYH+yDi/j014Kup4kjOLG0AkmVI6Rid1Y6t3i0+wM
+        PhXBM/NUcXPdgdUEmFC41D8QSh9b1HiiqEoVXWjrD1gg3m0oSxMNnhhlfrJO+K9K
+        AOg7iowiiRYEzQTRjmJCQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656688570; x=
+        1656774970; bh=Tqwsov16Tb0O3xmHbTi4I+HfDNbMkRJRXqdUjVyems0=; b=e
+        +Hdle0aD9T5q2Zxi+2LOdnfPs+A2JW2Owdfw1YtAZeD/8sJghUqhOM8eEmgKM21X
+        UQBDjK+I4xVJUUatNYt/MxTFONARP/lROXkldTXoV97sl6WDOl6uA2sYqiNuGzj2
+        57K/JMwf4k1P3kkYLDFrKPq3WNf3LgQPNXc0pcEiKqzlCR7nPZuyw6gxnCWNBNDS
+        wQ7+j6QNiVN7TJtKuFkzCx6Luf6X/5/qEjh4dTtlG1NtSu1L9ROgA2CU8RpAA9YS
+        +X6zA+RpAzhiPgnao/Q9Zf2a8ytHVlj/DwQrKmR4KTafONBd/xo2+03RP9+GdBGo
+        /xaFLFnnyBV0lbesMLlAg==
+X-ME-Sender: <xms:uQ-_Yuxb0GQMRCVEJJqp2RMZJk1ZedtGxiRbprHZfQLLCOz7ZkhiOw>
+    <xme:uQ-_YqRH08y6riR4f4Xji7XlN3emQmWe2QEoCeHP0JbLpvdLS9cOjCx0XXM3_bsjw
+    0HiVSIxN1cwRxKhcA>
+X-ME-Received: <xmr:uQ-_YgUx40LlBe6syWCBJHSz9acW7DQOROdgHAbxhiINJT_DtrWrZL-3sJh3O9LGITtvYScm5_Y-XLvD-pNegcmI0zkMphe5TyLaMGO9D6SdCxl4M368RWU1Jg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehfedgkeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpefftdevkedvgeekueeutefgteffieelvedukeeuhfehledvhfei
+    tdehudfhudehhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:uQ-_YkjJRWT8TPe9MP3hVekmyrt2oqD5kWCEG0eNuyxe03Z3SBI-0w>
+    <xmx:uQ-_YgAoMZ-uLUf8naXGiZfDwfFNGmsoXM9OmjdpSz0jcXAD6TnCTA>
+    <xmx:uQ-_YlKkxFLALD803MggfrKfXtcSSezkc8FKpUyRNor2v30eguH-uw>
+    <xmx:ug-_YpJv9AA1oHVjBlqdhJrv1b4xiOOu64EsUc5YsPzr2wQopcJQcQ>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 1 Jul 2022 11:16:08 -0400 (EDT)
+Subject: Re: [PATCH 6/6] pinctrl: sunxi: Add driver for Allwinner D1/D1s
+To:     Heiko Stuebner <heiko@sntech.de>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>, Ondrej Jirman <x@xff.cz>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+References: <20220626021148.56740-1-samuel@sholland.org>
+ <20220626021148.56740-7-samuel@sholland.org> <17090319.JCcGWNJJiE@phil>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <e6d2d4e8-b385-11d6-4d41-454542735269@sholland.org>
+Date:   Fri, 1 Jul 2022 10:16:07 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <17090319.JCcGWNJJiE@phil>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git testing
-head:   60925d2446cda41b60e41b29c2b4bb2c2b362901
-commit: 05ec4cfd58a3b43c47a56f39127dc0c7d1a1ce79 [6/10] netfilter: add bpf base hook program generator
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220701/202207012311.c24zBDoa-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git/commit/?id=05ec4cfd58a3b43c47a56f39127dc0c7d1a1ce79
-        git remote add netfilter-nf-next git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-        git fetch --no-tags netfilter-nf-next testing
-        git checkout 05ec4cfd58a3b43c47a56f39127dc0c7d1a1ce79
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/netfilter/
+Hi Heiko,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 7/1/22 8:13 AM, Heiko Stuebner wrote:
+> Am Sonntag, 26. Juni 2022, 04:11:47 CEST schrieb Samuel Holland:
+>> These SoCs contain a pinctrl with a new register layout. Use the variant
+>> parameter to set the right register offsets. This pinctrl also increases
+>> the number of functions per pin from 8 to 16, taking advantage of all 4
+>> bits in the mux config field (so far, only functions 0-8 and 14-15 are
+>> used). This increases the maximum possible number of functions.
+>>
+>> D1s is a low pin count version of the D1 SoC, with some pins omitted.
+>> The remaining pins have the same function assignments as D1.
+>>
+>> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> 
+> On a D1-Nezha
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> 
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> 
+> with one remark below
 
-All warnings (new ones prefixed by >>):
+Thanks for reviewing the series.
 
-   net/netfilter/core.c: In function '__nf_hook_entries_try_shrink':
->> net/netfilter/core.c:271:26: warning: unused variable 'hook_bpf_prog' [-Wunused-variable]
-     271 |         struct bpf_prog *hook_bpf_prog = NULL;
-         |                          ^~~~~~~~~~~~~
+>> diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+>> index ec7daaa5666b..350044d4c1b5 100644
+>> --- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+>> +++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+>> @@ -1297,11 +1297,11 @@ static int sunxi_pinctrl_build_state(struct platform_device *pdev)
+>>  
+>>  	/*
+>>  	 * Find an upper bound for the maximum number of functions: in
+>> -	 * the worst case we have gpio_in, gpio_out, irq and up to four
+>> +	 * the worst case we have gpio_in, gpio_out, irq and up to seven
+>>  	 * special functions per pin, plus one entry for the sentinel.
+>>  	 * We'll reallocate that later anyway.
+>>  	 */
+>> -	pctl->functions = kcalloc(4 * pctl->ngroups + 4,
+>> +	pctl->functions = kcalloc(7 * pctl->ngroups + 4,
+>>  				  sizeof(*pctl->functions),
+>>  				  GFP_KERNEL);
+>>  	if (!pctl->functions)
+>> @@ -1494,9 +1494,15 @@ int sunxi_pinctrl_init_with_variant(struct platform_device *pdev,
+>>  	pctl->dev = &pdev->dev;
+>>  	pctl->desc = desc;
+>>  	pctl->variant = variant;
+>> -	pctl->bank_mem_size = BANK_MEM_SIZE;
+>> -	pctl->pull_regs_offset = PULL_REGS_OFFSET;
+>> -	pctl->dlevel_field_width = DLEVEL_FIELD_WIDTH;
+>> +	if (pctl->variant >= PINCTRL_SUN20I_D1) {
+>> +		pctl->bank_mem_size = D1_BANK_MEM_SIZE;
+>> +		pctl->pull_regs_offset = D1_PULL_REGS_OFFSET;
+>> +		pctl->dlevel_field_width = D1_DLEVEL_FIELD_WIDTH;
+>> +	} else {
+>> +		pctl->bank_mem_size = BANK_MEM_SIZE;
+>> +		pctl->pull_regs_offset = PULL_REGS_OFFSET;
+>> +		pctl->dlevel_field_width = DLEVEL_FIELD_WIDTH;
+>> +	}
+> 
+> this is likely ok for _one_ variant (so for now this should be ok) but
+> will get ugly when there are more of them.
+> 
+> So in the long term it might make sense to pass these values in from
+> the soc-specific driver maybe?
 
+Yes, in the long term. It took 10 years before the first layout change, so I do
+not expect another layout change any time soon.
 
-vim +/hook_bpf_prog +271 net/netfilter/core.c
+For now, I did not want to deal with the overhead of passing in the offsets
+individually, nor coming up with a name for each layout to look up the offsets
+from a table. (The BSP calls the variants "SUNXI_PCTL_HW_TYPE_0" and
+"SUNXI_PCTL_HW_TYPE_1", which is... not descriptive.)
 
-   250	
-   251	/*
-   252	 * __nf_hook_entries_try_shrink - try to shrink hook array
-   253	 *
-   254	 * @old -- current hook blob at @pp
-   255	 * @pp -- location of hook blob
-   256	 *
-   257	 * Hook unregistration must always succeed, so to-be-removed hooks
-   258	 * are replaced by a dummy one that will just move to next hook.
-   259	 *
-   260	 * This counts the current dummy hooks, attempts to allocate new blob,
-   261	 * copies the live hooks, then replaces and discards old one.
-   262	 *
-   263	 * return values:
-   264	 *
-   265	 * Returns address to free, or NULL.
-   266	 */
-   267	static void *__nf_hook_entries_try_shrink(struct nf_hook_entries *old,
-   268						  struct nf_hook_entries __rcu **pp)
-   269	{
-   270		unsigned int i, j, skip = 0, hook_entries;
- > 271		struct bpf_prog *hook_bpf_prog = NULL;
-   272		struct nf_hook_entries *new = NULL;
-   273		struct nf_hook_ops **orig_ops;
-   274		struct nf_hook_ops **new_ops;
-   275	
-   276		if (WARN_ON_ONCE(!old))
-   277			return NULL;
-   278	
-   279		orig_ops = nf_hook_entries_get_hook_ops(old);
-   280		for (i = 0; i < old->num_hook_entries; i++) {
-   281			if (orig_ops[i] == &dummy_ops)
-   282				skip++;
-   283		}
-   284	
-   285		/* if skip == hook_entries all hooks have been removed */
-   286		hook_entries = old->num_hook_entries;
-   287		if (skip == hook_entries)
-   288			goto out_assign;
-   289	
-   290		if (skip == 0)
-   291			return NULL;
-   292	
-   293		hook_entries -= skip;
-   294		new = allocate_hook_entries_size(hook_entries);
-   295		if (!new) {
-   296	#if IS_ENABLED(CONFIG_NF_HOOK_BPF)
-   297			struct bpf_prog *old_prog = old->hook_prog;
-   298	
-   299			WRITE_ONCE(old->hook_prog, fallback_nf_hook_slow);
-   300			nf_hook_bpf_change_prog(BPF_DISPATCHER_PTR(nf_hook_base), old_prog, NULL);
-   301	#endif
-   302			return NULL;
-   303		}
-   304	
-   305		new_ops = nf_hook_entries_get_hook_ops(new);
-   306		for (i = 0, j = 0; i < old->num_hook_entries; i++) {
-   307			if (orig_ops[i] == &dummy_ops)
-   308				continue;
-   309			new->hooks[j] = old->hooks[i];
-   310			new_ops[j] = (void *)orig_ops[i];
-   311			j++;
-   312		}
-   313		hooks_validate(new);
-   314	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Samuel
