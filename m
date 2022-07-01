@@ -2,176 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8868CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D31C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 14:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232180AbiGAOek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
+        id S232748AbiGAOew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 10:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbiGAOe1 (ORCPT
+        with ESMTP id S229673AbiGAOed (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:34:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FE08F220;
-        Fri,  1 Jul 2022 07:29:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7207B60C17;
-        Fri,  1 Jul 2022 14:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7841BC3411E;
-        Fri,  1 Jul 2022 14:29:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656685784;
-        bh=rcuSJZpqu02xDnkLFRTdxft1jR3fDN9Dyq4Myc8opqk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ebLI2a9ZJspHU73fB8plU3g+5L9kFYiLJrxuS2Zdzx+oG44FsjxCOmGg4+z3wNVu+
-         ZfN4YiTGOJXCB4iM2Mxd9c/BnwmF259VY9dH9YdU6kXvI5xSlr0Q03rEPS2Pwt1WjZ
-         2VuNM3j0cDM3GO8IfzKoMWHnJ8FhG4+8YBMeKvkpURhOBrLhPoPaJOmh9kOc1hgolt
-         dge7eAWKtUe4e3nFVDSlrLGWrGvDLUhExx5ruf4P0SDGqa1RPBA1FdWGmsxjCmTL1O
-         VRD0LRFoWMOFcdB+nTGZEgrcE3NvWl7Q06wcp6v5x4HXZDjMNhsldCZp73qcymr1hQ
-         zwD0y5NKdTOGQ==
-Received: by pali.im (Postfix)
-        id 8FC92888; Fri,  1 Jul 2022 16:29:41 +0200 (CEST)
-Date:   Fri, 1 Jul 2022 16:29:41 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: mvebu: Use devm_request_irq() for registering
- interrupt handler
-Message-ID: <20220701142941.xww2xon2joth5ikq@pali>
-References: <20220524122817.7199-1-pali@kernel.org>
- <20220623162747.GA1455992@bhelgaas>
+        Fri, 1 Jul 2022 10:34:33 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231E4904C8
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 07:30:00 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id p128so2452908iof.1
+        for <linux-kernel@vger.kernel.org>; Fri, 01 Jul 2022 07:30:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=9cF5IqYxYj2InYMRmfggjddnYppc9EzlqbpJtswCFOc=;
+        b=HODcUQLIo0DHm2SWxvgselcLa4dqArEO92qCD/gdLMJVimUVw0vou6BSTzhmjWwMYF
+         1E+buAnE4rtwp0FAJX85qZ+3o2LqSI6tChHU9pxyTtzYtmhBpSp7owpv82dDVMtUeoYZ
+         sta4ytKhLwiQHRKRr4g0NyOUcuF6AebROFB/JemgbaMZ7IxhFV0eoXHhscnThyXgxm7u
+         eWXLEO4OiZIpuOIFJxbs1xuVlE15lZ1DdPobHLI+vafxbu0XsqKQjOZLH7Nl5FIyDwD6
+         DvjVXFKvIJpLg/tYtsORHUsApO76DV7qn3AJuU1/7gtrOOQLACHhxYvOhUOXCKWBZtJn
+         FOAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=9cF5IqYxYj2InYMRmfggjddnYppc9EzlqbpJtswCFOc=;
+        b=QqqbKIlqPxvkWQgEj0Xr6Z9NTHye9xt6GKgLrAjxq6wp9orWMvGQhOITKtPOh7htPu
+         L/eyW4mtPkpd0U5Ryc5pg3J4ZB3mwx8g69OTP7y/asT1xdxGT6gYpb7bjujUXSw5a1UG
+         BfxMxHaSbDTU6kXi74o1GWQjekg6XTT3KiV2QPq5KGXvqniEZM0qqPtB5xzCUKYvvxkd
+         ZXctoIl/NvirX3d5URXHPWvwlVI63YJblCHslghNVbUWtVyZvSMTlsF/B4TYFQECIpG3
+         5BSb9Xcf1HkjWd/FRtm3e1G6PPmTjpUyKCotDlzm8DlH9pk3ZzOmN50jqq+aYb6drTsg
+         Jknw==
+X-Gm-Message-State: AJIora+4aDH2sAZ4Tgfe1GoSLIxEpGgkY/czEYm0JN1mb6fp1IO7QbsA
+        aCybxAlLpDlin4GhpJ2r0Dq5PYwPXJSaPg==
+X-Google-Smtp-Source: AGRyM1sRv34EaaWYc7DQ/cybSSP4tt+pHpLB0OquCLm3mDR/BmnZSy7nB06i+Pl5+EtSLGZ2Xxh7qA==
+X-Received: by 2002:a05:6638:d86:b0:33c:cb7f:4ecc with SMTP id l6-20020a0566380d8600b0033ccb7f4eccmr8907108jaj.28.1656685799208;
+        Fri, 01 Jul 2022 07:29:59 -0700 (PDT)
+Received: from ArchLinux ([240e:390:a20:ece0:3ad5:47ff:feb5:73b2])
+        by smtp.gmail.com with ESMTPSA id b15-20020a056602218f00b00669b2ffad32sm10288981iob.54.2022.07.01.07.29.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 07:29:58 -0700 (PDT)
+References: <20220630161220.53449-1-schspa@gmail.com>
+ <87mtdu15ok.wl-maz@kernel.org> <m2bkua148a.fsf@gmail.com>
+ <a5ca4db3db9ef101258cab94d6b7e045@kernel.org> <m2sfnlvwup.fsf@gmail.com>
+ <87letd0wqm.wl-maz@kernel.org>
+User-agent: mu4e 1.7.5; emacs 28.1
+From:   Schspa Shi <schspa@gmail.com>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: arm64: Fix 64 bit mmio handle
+Date:   Fri, 01 Jul 2022 22:22:51 +0800
+In-reply-to: <87letd0wqm.wl-maz@kernel.org>
+Message-ID: <m2h740zz1i.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220623162747.GA1455992@bhelgaas>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 23 June 2022 11:27:47 Bjorn Helgaas wrote:
-> On Tue, May 24, 2022 at 02:28:17PM +0200, Pali Rohár wrote:
-> > Same as in commit a3b69dd0ad62 ("Revert "PCI: aardvark: Rewrite IRQ code to
-> > chained IRQ handler"") for pci-aardvark driver, use devm_request_irq()
-> > instead of chained IRQ handler in pci-mvebu.c driver.
-> >
-> > This change fixes affinity support and allows to pin interrupts from
-> > different PCIe controllers to different CPU cores.
-> 
-> Several other drivers use irq_set_chained_handler_and_data().  Do any
-> of them need similar changes?  The commit log suggests that using
-> chained IRQ handlers breaks affinity support.  But perhaps that's not
-> the case and the real culprit is some other difference between mvebu
-> and the other drivers.
 
-And there is another reason to not use irq_set_chained_handler_and_data
-and instead use devm_request_irq(). Armada XP has some interrupts
-shared and it looks like that irq_set_chained_handler_and_data() API
-does not handle shared interrupt sources too.
+Marc Zyngier <maz@kernel.org> writes:
 
-I can update commit message to mention also this fact.
+>> 
+>> I have running some static code analysis software upon Kernel 
+>> code.
+>> Seeing there is possible overflow.
+>> 
+>> maks << 1U << ((len * 8) -1);
+>> 
+>> The AI don't know, len is only the value of 1, 2, 4, and make 
+>> this
+>> a warnings
+>> 
+>> I tring to analysis this, but didn't realize the real scenario 
+>> of
+>> sign extension, and finally sent this problematic patch.
+>> 
+>> I do see some uninitialized memory reads (the values are not 
+>> used
+>> in the end, just as temporary space for API execution),
+>> do we need to fix these?
+>
+> You need to be more descriptive here. What uninitialised reads? 
+> In
+> general, pointing at the code and providing a full description 
+> of what
+> you think is incorrect would really help...
+>
+> 	M.
+One example is
+int vgic_v3_has_attr_regs(struct kvm_device *dev, struct 
+kvm_device_attr *attr)
+{
+	...
+    case KVM_DEV_ARM_VGIC_GRP_CPU_SYSREGS: {
+		u64 reg, id;
 
-> > Fixes: ec075262648f ("PCI: mvebu: Implement support for legacy INTx interrupts")
-> > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > ---
-> > Hello Bjorn! This is basically same issue as for pci-aardvark.c:
-> > https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
-> > 
-> > I tested this patch with pci=nomsi in cmdline (to force kernel to use
-> > legacy intx instead of MSI) on A385 and checked that I can set affinity
-> > via /proc/irq/XX/smp_affinity file for every mvebu pcie controller to
-> > different CPU and legacy interrupts from different cards/controllers
-> > were handled by different CPUs.
-> > 
-> > I think that this is important on Armada XP platforms which have many
-> > independent PCIe controllers (IIRC up to 10) and many cores (up to 4).
-> > ---
-> >  drivers/pci/controller/pci-mvebu.c | 30 +++++++++++++++++-------------
-> >  1 file changed, 17 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> > index 8f76d4bda356..de67ea39fea5 100644
-> > --- a/drivers/pci/controller/pci-mvebu.c
-> > +++ b/drivers/pci/controller/pci-mvebu.c
-> > @@ -1017,16 +1017,13 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
-> >  	return 0;
-> >  }
-> >  
-> > -static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> > +static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
-> >  {
-> > -	struct mvebu_pcie_port *port = irq_desc_get_handler_data(desc);
-> > -	struct irq_chip *chip = irq_desc_get_chip(desc);
-> > +	struct mvebu_pcie_port *port = arg;
-> >  	struct device *dev = &port->pcie->pdev->dev;
-> >  	u32 cause, unmask, status;
-> >  	int i;
-> >  
-> > -	chained_irq_enter(chip, desc);
-> > -
-> >  	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
-> >  	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-> >  	status = cause & unmask;
-> > @@ -1040,7 +1037,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> >  			dev_err_ratelimited(dev, "unexpected INT%c IRQ\n", (char)i+'A');
-> >  	}
-> >  
-> > -	chained_irq_exit(chip, desc);
-> > +	return status ? IRQ_HANDLED : IRQ_NONE;
-> >  }
-> >  
-> >  static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-> > @@ -1490,9 +1487,20 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
-> >  				mvebu_pcie_powerdown(port);
-> >  				continue;
-> >  			}
-> > -			irq_set_chained_handler_and_data(irq,
-> > -							 mvebu_pcie_irq_handler,
-> > -							 port);
-> > +
-> > +			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
-> > +					       IRQF_SHARED | IRQF_NO_THREAD,
-> > +					       port->name, port);
-> > +			if (ret) {
-> > +				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
-> > +					port->name, ret);
-> > +				irq_domain_remove(port->intx_irq_domain);
-> > +				pci_bridge_emul_cleanup(&port->bridge);
-> > +				devm_iounmap(dev, port->base);
-> > +				port->base = NULL;
-> > +				mvebu_pcie_powerdown(port);
-> > +				continue;
-> > +			}
-> >  		}
-> >  
-> >  		/*
-> > @@ -1599,7 +1607,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
-> >  
-> >  	for (i = 0; i < pcie->nports; i++) {
-> >  		struct mvebu_pcie_port *port = &pcie->ports[i];
-> > -		int irq = port->intx_irq;
-> >  
-> >  		if (!port->base)
-> >  			continue;
-> > @@ -1615,9 +1622,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
-> >  		/* Clear all interrupt causes. */
-> >  		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
-> >  
-> > -		if (irq > 0)
-> > -			irq_set_chained_handler_and_data(irq, NULL, NULL);
-> > -
-> >  		/* Remove IRQ domains. */
-> >  		if (port->intx_irq_domain)
-> >  			irq_domain_remove(port->intx_irq_domain);
-> > -- 
-> > 2.20.1
-> > 
+		id = (attr->attr & KVM_DEV_ARM_VGIC_SYSREG_INSTR_MASK);
+		return vgic_v3_has_cpu_sysregs_attr(vcpu, 0, id, &reg);
+	}
+
+}
+
+The funcion vgic_v3_has_cpu_sysregs_attr will read reg's value to
+params without initialization. There should have no problems,
+because the register value never used.
+
+-- 
+BRs
+Schspa Shi
