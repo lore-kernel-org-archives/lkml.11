@@ -2,132 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A988BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 08:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234835AbiGAIiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
+        id S235086AbiGAIj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 04:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233327AbiGAIip (ORCPT
+        with ESMTP id S233327AbiGAIj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 04:38:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E5E3CA53;
-        Fri,  1 Jul 2022 01:38:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5127A6214C;
-        Fri,  1 Jul 2022 08:38:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A280DC3411E;
-        Fri,  1 Jul 2022 08:38:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656664723;
-        bh=5eFFXT1JqKLVXe2jGRHGNyXspF/REaC2gxRb5M8apLo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ViMiP6TXBT06Rmk9M4S8gY06EImURRdD/2Gditmn0Kl8xzXEJZJjlZsRWUfEiqQda
-         I7gcPD5rPpOeelnV8B/rpUam4v9sYVuIGcMoLuE89oHdRYA+sra7+QfzzadPlEYWDY
-         OwVvEJia8w2LA7ZDWufFCKXfk1G5Mcl1XRQIyBxiYmkOUQt5QtUvIHglPSRzaMYh/1
-         hcdeEXxisXrW8j09KwHr4Bd9nObqfMZ1Xcm38+HLTZMSe1qi+sCI6Gsym4CAZj7Tm9
-         0xBfhHq6mem2DmJC3eC6LUTNeMgXVunKRPtBGRPbycmFu6qwC3kwsaSEKuS9C6BHTf
-         GcMDlSTaL8dNg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o7CAk-0001WF-D5; Fri, 01 Jul 2022 10:38:43 +0200
-Date:   Fri, 1 Jul 2022 10:38:42 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/10] dt-bindings: PCI: qcom: Enumerate platforms with
- single msi interrupt
-Message-ID: <Yr6ykvru52aDZhFm@hovoldconsulting.com>
-References: <20220629141000.18111-1-johan+linaro@kernel.org>
- <20220629141000.18111-4-johan+linaro@kernel.org>
- <c20ba06c-b37a-e91c-84c6-6d2147bb2478@linaro.org>
+        Fri, 1 Jul 2022 04:39:28 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D1071261;
+        Fri,  1 Jul 2022 01:39:26 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LZ7qZ0DZbzkWWL;
+        Fri,  1 Jul 2022 16:37:30 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 16:39:24 +0800
+Received: from huawei.com (10.175.112.208) by dggpemm500019.china.huawei.com
+ (7.185.36.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 1 Jul
+ 2022 16:39:23 +0800
+From:   Jian Zhang <zhangjian210@huawei.com>
+To:     <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <krzysztof.kozlowski@linaro.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <xuqiang36@huawei.com>
+Subject: [PATCH 3/5] drm/exynos/exynos7_drm_decon: free resources when clk_set_parent() failed.
+Date:   Fri, 1 Jul 2022 08:37:28 +0000
+Message-ID: <20220701083728.66975-1-zhangjian210@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c20ba06c-b37a-e91c-84c6-6d2147bb2478@linaro.org>
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 10:33:35AM +0200, Krzysztof Kozlowski wrote:
-> On 29/06/2022 16:09, Johan Hovold wrote:
-> > Explicitly enumerate the older platforms that have a single msi host
-> > interrupt. This allows for adding further platforms without resorting
-> > to nested conditionals.
-> > 
-> > Drop the redundant comment about older chipsets instead of moving it.
-> > 
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> 
-> This does not exist in linux-next, so it should be squashed it with the
-> previous series.
+In exynos7_decon_resume, When it fails, we must use clk_disable_unprepare()
+to free resource that have been used.
 
-As mentioned in the cover letter this depends on the MSI series that has
-unfortunately not yet been merged.
+Fixes: 6f83d20838c09 ("drm/exynos: use DRM_DEV_ERROR to print out error message")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jian Zhang <zhangjian210@huawei.com>
+---
+ drivers/gpu/drm/exynos/exynos7_drm_decon.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-That series is self-contained and ready to be merged, so this follow-up
-does not need to be squashed in.
+diff --git a/drivers/gpu/drm/exynos/exynos7_drm_decon.c b/drivers/gpu/drm/exynos/exynos7_drm_decon.c
+index c04264f70ad1..3c31405600f0 100644
+--- a/drivers/gpu/drm/exynos/exynos7_drm_decon.c
++++ b/drivers/gpu/drm/exynos/exynos7_drm_decon.c
+@@ -800,31 +800,40 @@ static int exynos7_decon_resume(struct device *dev)
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the pclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_pclk_enable;
+ 	}
+ 
+ 	ret = clk_prepare_enable(ctx->aclk);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the aclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_aclk_enable;
+ 	}
+ 
+ 	ret = clk_prepare_enable(ctx->eclk);
+ 	if  (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the eclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_eclk_enable;
+ 	}
+ 
+ 	ret = clk_prepare_enable(ctx->vclk);
+ 	if  (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the vclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_vclk_enable;
+ 	}
+ 
+ 	return 0;
++
++err_vclk_enable:
++	clk_disable_unprepare(ctx->eclk);
++err_eclk_enable:
++	clk_disable_unprepare(ctx->aclk);
++err_aclk_enable:
++	clk_disable_unprepare(ctx->pclk);
++err_pclk_enable:
++	return ret;
+ }
+ #endif
+ 
+-- 
+2.17.1
 
-> > ---
-> >  .../devicetree/bindings/pci/qcom,pcie.yaml      | 17 +++++++++++++++--
-> >  1 file changed, 15 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-> > index a1b4fc70e162..8560c65e6f0b 100644
-> > --- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-> > +++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-> > @@ -625,7 +625,6 @@ allOf:
-> >          - reset-names
-> >  
-> >      # On newer chipsets support either 1 or 8 msi interrupts
-> > -    # On older chipsets it's always 1 msi interrupt
-> >    - if:
-> >        properties:
-> >          compatible:
-> > @@ -660,7 +659,21 @@ allOf:
-> >                  - const: msi5
-> >                  - const: msi6
-> >                  - const: msi7
-> > -    else:
-> > +
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - qcom,pcie-apq8064
-> > +              - qcom,pcie-apq8084
-> > +              - qcom,pcie-ipq4019
-> > +              - qcom,pcie-ipq6018
-> > +              - qcom,pcie-ipq8064
-> > +              - qcom,pcie-ipq8064-v2
-> > +              - qcom,pcie-ipq8074
-> > +              - qcom,pcie-qcs404
-> 
-> Otherwise I cannot even check the context...
-
-Yeah, I realise that makes reviewing a bit harder, but hopefully the
-maintainer will pick up the MSI series soon.
-
-> 
-> > +    then:
-> >        properties:
-> >          interrupts:
-> >            maxItems: 1
-
-Johan
