@@ -2,151 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D969CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234440AbiGAG57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55760 "EHLO
+        id S234967AbiGAG6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234579AbiGAG54 (ORCPT
+        with ESMTP id S232809AbiGAG6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:57:56 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AEA67581
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:57:54 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 261637KB006173;
-        Fri, 1 Jul 2022 06:57:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=6290l+NgHjrty8aLnZBrt0cioXD/e+jyaJB8M2OYygk=;
- b=iUnAEzAc54CKZZxBjehi/edXAAhkMJyibtFxGnWodpZFzpPrcnoOQamdDsDNk0nxQogB
- H885kaJ9jcl1m/kJG8nqARS6FPrnBfme3wEP6VB4+z5E/IzzJkbA9ABRQc0P0x6VbQop
- eACPA2YKfJaRBQ6g+SYX9oIRfemEvyJJEuJo7c6M1+LUokPyYwk8i9YL6I6WwbSBs+9o
- ue15Q8Bs9Ca0XBJtGhrCFctT705feopuo4tbM30uzJ5vyWTh8jjYlBRk1rQ9SQRoZtdH
- TXqzahnCimPs6tJgMpysyATpFisyRKiXn2fcXvbOtbhdae55aJgefes3M5icTbCMJ8kA nQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1uan98nx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Jul 2022 06:57:00 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2616AQgC034287;
-        Fri, 1 Jul 2022 06:57:00 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1uan98mh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Jul 2022 06:57:00 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2616ZM9g007665;
-        Fri, 1 Jul 2022 06:56:58 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gwsmj9b46-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Jul 2022 06:56:57 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2616utpI22675730
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 1 Jul 2022 06:56:55 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8AB9511C05B;
-        Fri,  1 Jul 2022 06:56:55 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5234811C04A;
-        Fri,  1 Jul 2022 06:56:50 +0000 (GMT)
-Received: from [9.43.39.55] (unknown [9.43.39.55])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  1 Jul 2022 06:56:50 +0000 (GMT)
-Message-ID: <8787a12a-e84c-cb0e-abe0-6bd6093e359a@linux.vnet.ibm.com>
-Date:   Fri, 1 Jul 2022 12:26:49 +0530
+        Fri, 1 Jul 2022 02:58:14 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC04EB86;
+        Thu, 30 Jun 2022 23:58:12 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id e2so1775306edv.3;
+        Thu, 30 Jun 2022 23:58:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=3Ke8W2BSsmfzJ2fet5OSAhH+C4CUozy/ET/m/GnwveY=;
+        b=e0k+IywRcmdoghPPWyPP1jrLnj4xQv3ER/FL0yWFLAbj6HW69AHQ09kjYW8lPPJ75T
+         GmrJaS5y6CCHn7UKeKwB+Avs6TAlwHKAa8VEQEF3H3hgBqvaIduH/OdftHEdZdbEmyHq
+         ZeYlRfS+vHS+xyYVyTEvGJi7iZV6A+V+2yCYu8J5LJEP9N1vnLQvwHeL6XoKjLqcWWoy
+         2dx7Wo9ZEQkel14bF6Q1v2SqL4U1iaGXSaPJqy2kFv0gZWY+lRSlutFWhepZqq5LhzwB
+         dB1BuOd/IFqy6A1MLI026IRGoPNkPvuAsiLLhn9cnu3GBbFW5dc+LFFf5jvH8VlQHM3e
+         +6/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3Ke8W2BSsmfzJ2fet5OSAhH+C4CUozy/ET/m/GnwveY=;
+        b=wIMwrkw2n8LmtXeocVeAP2KSUM4O+fpkMhvsbw6yceR0VcNHyJkzwY2NSi+Wivt863
+         uONj7Xt9Gi9cmmSFbbNh9b/4kbL8Wr3rjzUjhFdp491nLikTiUDnLLn0JT8Vwkn8e434
+         rs1pJAS8IC12bZ0di0K5cMVNTA5VxhwVjtgyl/BJsgCbS7x2j0jzx27cDqqXmu0FR/BZ
+         nzsZjRdqqn5U2LNvmM+tZm3wLe995yDZ6NUlgwZ3q7Y+bf/lwuubopJdTp1AArREBWnX
+         XyxotdXNG4a5rl9ocrVSNt7CotJu2BFbrp/ZXoGcvP3nSnSjzYDDtJu+15rxy8n3Xioi
+         0I6g==
+X-Gm-Message-State: AJIora+GAi8gmpI4YSXCaylgjMLLNqosAGVSyVccirDkWEQzu5fTjPkZ
+        bzZDo0x/AU3uAadAJ4RvJFr49z0ozQH/WHOv5bo=
+X-Google-Smtp-Source: AGRyM1tMHwG4GVnv1Ul5esZA3/+W5n3oehl10Z2VQEGQR31sIAW5qxdWesoT9Jw6QcI6jnqLln+n4jAsRO0NSkiMFKA=
+X-Received: by 2002:a05:6402:2789:b0:435:ac82:e8c3 with SMTP id
+ b9-20020a056402278900b00435ac82e8c3mr16720643ede.250.1656658690705; Thu, 30
+ Jun 2022 23:58:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-Content-Language: en-US
-To:     Chen Zhongjin <chenzhongjin@huawei.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>
-References: <20220624183238.388144-1-sv@linux.ibm.com>
- <20220624183238.388144-12-sv@linux.ibm.com>
- <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
- <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
- <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
- <1656572413.pbaqjnrrcl.naveen@linux.ibm.com>
- <dcbc25df-ce0c-45bf-35af-4d694e09ad37@huawei.com>
-From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
-In-Reply-To: <dcbc25df-ce0c-45bf-35af-4d694e09ad37@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: yIinsZUEGvAFPMHkW16uRukE1xSVo4Pn
-X-Proofpoint-GUID: Aa-yPuWDFO0zzrnYi-bgtt-sr8lCNW3i
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-01_04,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 mlxscore=0 bulkscore=0 clxscore=1011 phishscore=0
- spamscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2207010023
+References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
+ <1655892104-10874-3-git-send-email-u0084500@gmail.com> <Yrm9ObaltUiQUTqS@google.com>
+ <CADiBU3802sLTPjrGiaQ-xw-2jep1UXo+t7pYc6bCC4MiJLhOyA@mail.gmail.com>
+In-Reply-To: <CADiBU3802sLTPjrGiaQ-xw-2jep1UXo+t7pYc6bCC4MiJLhOyA@mail.gmail.com>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Fri, 1 Jul 2022 14:57:59 +0800
+Message-ID: <CADiBU3838Mgi3sqv+R_=8g-ROTrbN45AKPaTS_9GCWVDYASMyg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] mfd: rt5120: Add Richtek PMIC support
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>, dmitry.torokhov@gmail.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        linux-input@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chen,
+HI, Lee:
 
-Thanks for pitching in and providing your inputs :-)
-
-On 01/07/22 07:43, Chen Zhongjin wrote:
-> Hi everyone,
+ChiYuan Huang <u0084500@gmail.com> =E6=96=BC 2022=E5=B9=B46=E6=9C=8827=E6=
+=97=A5 =E9=80=B1=E4=B8=80 =E6=99=9A=E4=B8=8A10:56=E5=AF=AB=E9=81=93=EF=BC=
+=9A
 >
-> Hope I'm not too late for this discussion.
+> Lee Jones <lee.jones@linaro.org> =E6=96=BC 2022=E5=B9=B46=E6=9C=8827=E6=
+=97=A5 =E9=80=B1=E4=B8=80 =E6=99=9A=E4=B8=8A10:22=E5=AF=AB=E9=81=93=EF=BC=
+=9A
+> >
+> > On Wed, 22 Jun 2022, cy_huang wrote:
+> >
+> > > From: ChiYuan Huang <cy_huang@richtek.com>
+> > >
+> > > Add Richtek RT5120 PMIC I2C driver.
+> >
+> > Why a whole new driver?
+> >
+> > How different is this to rt5033?
+> >
+> > Looks like this could easily be woven into this existing support?
+> >
+> It's different with the function domain.
+> RT5033 is most like as the SubPMIC that includes PMU (battery
+> charger/gauge/led/few buck and ldo)
+> RT5120 is a main PMIC with default-on power that follows the boot on sequ=
+ence.
+> RT5120 only integrates regulator and power key report module.
 >
-> I'm not familiar with ppc so it spent me some time to reproduce this. 
-> But at last I didn't make it.
->
-> What I did:
->
-> 1 checkout to tip/objtool/core
->
-> 2 apply this patch
->
-> 3 recover the unreachable() after WARN_ENTRY(..
->
-> 4 compile on defconfig/allyesconfig
->
-> If anyone can point out which file will generate this problem it will 
-> be perfect.
-
-To reproduce this problem, you may want to apply this patch series on 
-top of objtool/core branch of the tip tree, and compile on 
-ppc64le_defconfig.
-
-There are a couple of C files that are generating these warnings. One 
-such file is: arch/powerpc/kvm/../../../virt/kvm/kvm_main.o which gives
-*arch/powerpc/kvm/../../../virt/kvm/kvm_main.o: warning: objtool: 
-kvm_mmu_notifier_release+0x6c: unannotated intra-function call* warning.
-
-With unreachable() in __WARN_FLAGS(), we get unannotated intra-function 
-call warnings, but without unreachable() like in patch 11/12 or with 
-just the builtin variant of unreachable (__builtin_unreachable()) 
-instead of unreachable(), we do not get those warnings.
-
-
-- Sathvika
-
+Since I have explained the chip difference, do you still think it's
+better to merge this code into rt5033 mfd?
+> > > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> > > ---
+> > >  drivers/mfd/Kconfig  |  12 +++++
+> > >  drivers/mfd/Makefile |   1 +
+> > >  drivers/mfd/rt5120.c | 125 +++++++++++++++++++++++++++++++++++++++++=
+++++++++++
+> > >  3 files changed, 138 insertions(+)
+> > >  create mode 100644 drivers/mfd/rt5120.c
+> > >
+> > > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> > > index 3b59456..866619c 100644
+> > > --- a/drivers/mfd/Kconfig
+> > > +++ b/drivers/mfd/Kconfig
+> > > @@ -1127,6 +1127,18 @@ config MFD_RT5033
+> > >         sub-devices like charger, fuel gauge, flash LED, current sour=
+ce,
+> > >         LDO and Buck.
+> > >
+> > > +config MFD_RT5120
+> > > +     tristate "Richtek RT5120 Power Management IC"
+> > > +     depends on I2C
+> > > +     select MFD_CORE
+> > > +     select REGMAP_I2C
+> > > +     select REGMAP_IRQ
+> > > +     help
+> > > +       The enables support for Richtek RT5120 PMIC. It includes four=
+ high
+> > > +       efficiency buck converters and one LDO voltage regulator. The=
+ device
+> > > +       is targeted at providing the CPU voltage, memory, I/O and per=
+ipheral
+> > > +       power rails in home entertainment devices.
+> > > +
+> > >  config MFD_RC5T583
+> > >       bool "Ricoh RC5T583 Power Management system device"
+> > >       depends on I2C=3Dy
+> > > diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> > > index 858cacf..27e8add 100644
+> > > --- a/drivers/mfd/Makefile
+> > > +++ b/drivers/mfd/Makefile
+> > > @@ -234,6 +234,7 @@ obj-$(CONFIG_MFD_HI655X_PMIC)   +=3D hi655x-pmic.=
+o
+> > >  obj-$(CONFIG_MFD_DLN2)               +=3D dln2.o
+> > >  obj-$(CONFIG_MFD_RT4831)     +=3D rt4831.o
+> > >  obj-$(CONFIG_MFD_RT5033)     +=3D rt5033.o
+> > > +obj-$(CONFIG_MFD_RT5120)     +=3D rt5120.o
+> > >  obj-$(CONFIG_MFD_SKY81452)   +=3D sky81452.o
+> > >
+> > >  intel-soc-pmic-objs          :=3D intel_soc_pmic_core.o intel_soc_pm=
+ic_crc.o
+> > > diff --git a/drivers/mfd/rt5120.c b/drivers/mfd/rt5120.c
+> > > new file mode 100644
+> > > index 00000000..e7c5f3c
+> > > --- /dev/null
+> > > +++ b/drivers/mfd/rt5120.c
+> > > @@ -0,0 +1,125 @@
+> > > +// SPDX-License-Identifier: GPL-2.0+
+> > > +
+> > > +#include <linux/i2c.h>
+> > > +#include <linux/kernel.h>
+> > > +#include <linux/mfd/core.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/mod_devicetable.h>
+> > > +#include <linux/regmap.h>
+> > > +
+> > > +#define RT5120_REG_INTENABLE 0x1D
+> > > +#define RT5120_REG_INTSTAT   0x1E
+> > > +#define RT5120_REG_FZCMODE   0x44
+> > > +
+> > > +#define RT5120_INT_HOTDIE    0
+> > > +#define RT5120_INT_PWRKEY_REL        5
+> > > +#define RT5120_INT_PWRKEY_PRESS      6
+> > > +
+> > > +static const struct regmap_range rt5120_rd_yes_ranges[] =3D {
+> > > +     regmap_reg_range(0x03, 0x13),
+> > > +     regmap_reg_range(0x1c, 0x20),
+> > > +     regmap_reg_range(0x44, 0x44)
+> > > +};
+> > > +
+> > > +static const struct regmap_range rt5120_wr_yes_ranges[] =3D {
+> > > +     regmap_reg_range(0x06, 0x13),
+> > > +     regmap_reg_range(0x1c, 0x20),
+> > > +     regmap_reg_range(0x44, 0x44)
+> > > +};
+> > > +
+> > > +static const struct regmap_access_table rt5120_rd_table =3D {
+> > > +     .yes_ranges =3D rt5120_rd_yes_ranges,
+> > > +     .n_yes_ranges =3D ARRAY_SIZE(rt5120_rd_yes_ranges),
+> > > +};
+> > > +
+> > > +static const struct regmap_access_table rt5120_wr_table =3D {
+> > > +     .yes_ranges =3D rt5120_wr_yes_ranges,
+> > > +     .n_yes_ranges =3D ARRAY_SIZE(rt5120_wr_yes_ranges),
+> > > +};
+> > > +
+> > > +static const struct regmap_config rt5120_regmap_config =3D {
+> > > +     .reg_bits =3D 8,
+> > > +     .val_bits =3D 8,
+> > > +     .max_register =3D RT5120_REG_FZCMODE,
+> > > +
+> > > +     .wr_table =3D &rt5120_wr_table,
+> > > +     .rd_table =3D &rt5120_rd_table,
+> > > +};
+> > > +
+> > > +static const struct regmap_irq rt5120_irqs[] =3D {
+> > > +     REGMAP_IRQ_REG_LINE(RT5120_INT_HOTDIE, 8),
+> > > +     REGMAP_IRQ_REG_LINE(RT5120_INT_PWRKEY_REL, 8),
+> > > +     REGMAP_IRQ_REG_LINE(RT5120_INT_PWRKEY_PRESS, 8)
+> > > +};
+> > > +
+> > > +static const struct regmap_irq_chip rt5120_irq_chip =3D {
+> > > +     .name =3D "rt5120-pmic",
+> > > +     .status_base =3D RT5120_REG_INTSTAT,
+> > > +     .mask_base =3D RT5120_REG_INTENABLE,
+> > > +     .ack_base =3D RT5120_REG_INTSTAT,
+> > > +     .mask_invert =3D true,
+> > > +     .use_ack =3D true,
+> > > +     .num_regs =3D 1,
+> > > +     .irqs =3D rt5120_irqs,
+> > > +     .num_irqs =3D ARRAY_SIZE(rt5120_irqs),
+> > > +};
+> > > +
+> > > +static const struct resource rt5120_regulator_resources[] =3D {
+> > > +     DEFINE_RES_IRQ(RT5120_INT_HOTDIE)
+> > > +};
+> > > +
+> > > +static const struct resource rt5120_pwrkey_resources[] =3D {
+> > > +     DEFINE_RES_IRQ_NAMED(RT5120_INT_PWRKEY_PRESS, "pwrkey-press"),
+> > > +     DEFINE_RES_IRQ_NAMED(RT5120_INT_PWRKEY_REL, "pwrkey-release")
+> > > +};
+> > > +
+> > > +static const struct mfd_cell rt5120_devs[] =3D {
+> > > +     MFD_CELL_RES("rt5120-regulator", rt5120_regulator_resources),
+> > > +     MFD_CELL_OF("rt5120-pwrkey", rt5120_pwrkey_resources, NULL, 0, =
+0,
+> > > +                 "richtek,rt5120-pwrkey")
+> > > +};
+> > > +
+> > > +static int rt5120_probe(struct i2c_client *i2c)
+> > > +{
+> > > +     struct regmap *regmap;
+> > > +     struct regmap_irq_chip_data *irq_data;
+> > > +     int ret;
+> > > +
+> > > +     regmap =3D devm_regmap_init_i2c(i2c, &rt5120_regmap_config);
+> > > +     if (IS_ERR(regmap)) {
+> > > +             ret =3D PTR_ERR(regmap);
+> > > +             dev_err(&i2c->dev, "Failed to init regmap (%d)\n", ret)=
+;
+> > > +             return ret;
+> > > +     }
+> > > +
+> > > +     ret =3D devm_regmap_add_irq_chip(&i2c->dev, regmap, i2c->irq,
+> > > +                                    IRQF_ONESHOT, 0, &rt5120_irq_chi=
+p,
+> > > +                                    &irq_data);
+> > > +     if (ret) {
+> > > +             dev_err(&i2c->dev, "Failed to add irq chip (%d)\n", ret=
+);
+> > > +             return ret;
+> > > +     }
+> > > +
+> > > +     return devm_mfd_add_devices(&i2c->dev, PLATFORM_DEVID_AUTO, rt5=
+120_devs,
+> > > +                                 ARRAY_SIZE(rt5120_devs), NULL, 0,
+> > > +                                 regmap_irq_get_domain(irq_data));
+> > > +}
+> > > +
+> > > +static const struct of_device_id rt5120_device_match_table[] =3D {
+> > > +     { .compatible =3D "richtek,rt5120", },
+> > > +     {}
+> > > +};
+> > > +MODULE_DEVICE_TABLE(of, rt5120_device_match_table);
+> > > +
+> > > +static struct i2c_driver rt5120_driver =3D {
+> > > +     .driver =3D {
+> > > +             .name =3D "rt5120",
+> > > +             .of_match_table =3D rt5120_device_match_table,
+> > > +     },
+> > > +     .probe_new =3D rt5120_probe,
+> > > +};
+> > > +module_i2c_driver(rt5120_driver);
+> > > +
+> > > +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
+> > > +MODULE_DESCRIPTION("Richtek RT5120 I2C driver");
+> > > +MODULE_LICENSE("GPL v2");
+> >
+> > --
+> > Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
+> > Principal Technical Lead - Developer Services
+> > Linaro.org =E2=94=82 Open source software for Arm SoCs
+> > Follow Linaro: Facebook | Twitter | Blog
