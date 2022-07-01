@@ -2,106 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58626C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 13:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231237AbiGANfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 09:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S230370AbiGANoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 09:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiGANfl (ORCPT
+        with ESMTP id S229529AbiGANoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 09:35:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1775E15FD8
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 06:35:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD530B818DF
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 13:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E4FC3411E;
-        Fri,  1 Jul 2022 13:35:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656682536;
-        bh=ea6K3pTQyXz3luSTBcUsdGmrd/UJfdlEaIKBRM6wfRs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PPzEhyUW63VZry9s8gydtS7CB76QvSbkSy60jM9NWt0V48/yT7YEA+C0kYucE6ygt
-         RzaQX7ciJKV49e1xjDQpYwAEmW/CymNA0q/FvuMOWDz9nBfnTEdN0xq3pciYS6fxFV
-         QPIFAXzEq2pskBXUKDc2V2vVmTOxHP14lFUakavNmd0uC7ttADuoSF3iPKALdmrGzk
-         KxZfgOd6PCyi7+Ica/pKQBvxaUI8VED09OpXC5TRqdgn9qwqUEOgB5P4k2gL0P8MJQ
-         jBBzVZZDL2PfXuBp3Q61l+eJRWNbqPFghST6mt6oI/7R1ahkdNQKIqUMXn2bOeMLRa
-         5Zn+RicnudBJg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1o7Go2-004b9k-5o;
-        Fri, 01 Jul 2022 14:35:34 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Hector Martin <marcan@marcan.st>, Jamie Iles <jamie@jamieiles.com>,
-        Matt Ranostay <mranostay@ti.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        linux-kernel@vger.kernel.org, kernel-team@android.com
-Subject: [GIT PULL] irqchip fixes for 5.19, take #2
-Date:   Fri,  1 Jul 2022 14:35:31 +0100
-Message-Id: <20220701133531.1545319-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Fri, 1 Jul 2022 09:44:20 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F9422512;
+        Fri,  1 Jul 2022 06:44:20 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id lw20so4181796ejb.4;
+        Fri, 01 Jul 2022 06:44:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GjlrXgSVfip4RUERiLeIPiEhdykTYrOkMAgjg1op1mc=;
+        b=nlJNyqRjm4HaH7m5sfjgLw/CtWj5kx0oxnzWYDRqoRQtR2Cd7tZoLxi9FWMdVJmXkZ
+         aKu387eKzm+9U7hE+FFcMd5dAhDAZNWhDHIhsIUW3rahzykjEBydCNtreZN8ypg4vQus
+         kj8GOeiv7qgmgnnHKuwE6riw8VtnXFftb3K44bClPW1qSMDINo5JcxO6ZA1B0Ji4gDaK
+         oCEmQDcHia0Pwz8lSGP4CJwkpACb8I0K1cWjeBRvxRtLhm769iXBSbQBmpal6sPqePqJ
+         dXU7i6eOvLRhDdW1tsojm/PPG3RxCgBszKjWijcsw+DY5U1b0iNgTFAHDVY0UdK55/UV
+         0cOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GjlrXgSVfip4RUERiLeIPiEhdykTYrOkMAgjg1op1mc=;
+        b=vOyPxdD9MJZy+9p1MLGBIJVfkmyYQ1Fu23nDb6uiw79RwMQZy/WyWab3ihegUUC0dj
+         oHlRRJL7LmoBoLPqmPAHsspPQ+nMvlMPxGxIywot/dRho3OG/9xj6JtStgdjmjVTZ6E/
+         rUAovV6j5qEIMlKLovcTf/lzffovkYx7e9Y/z1n/qEQJEO0u5/79K8FGiCGk8WcePDCh
+         pfU5Tdgmupbt0i2+/eI72SLA7kZwCL90Vq2QPj+2jyx2qzEeYc3ijyinlSixUN/Cmo79
+         ZPZnSR/CPp/222SgkNm8RZ6nWpp5AtZWgs+lM/X1PJO327/NngIGRjTqsV/lG64x7Az4
+         dI6Q==
+X-Gm-Message-State: AJIora+OjPzVlHFmM4kmtx5CWY4+jcH8uForgH0Wf9EyKZRBH+29u4gJ
+        +92N26uB1igX+q1x1zsUZSE=
+X-Google-Smtp-Source: AGRyM1v1EvEsJAZzweGXnaZW5CIwk/ZPh7dZYGQ4CVU2YZ3BJ5bo0PShvbLQOmAhS3Q05MEjOAWybg==
+X-Received: by 2002:a17:906:29d:b0:6f0:18d8:7be0 with SMTP id 29-20020a170906029d00b006f018d87be0mr13750094ejf.561.1656683058468;
+        Fri, 01 Jul 2022 06:44:18 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id g4-20020a170906868400b006fee98045cdsm10698220ejx.10.2022.07.01.06.44.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 06:44:18 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Chanwoo Choi <cw00.choi@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>, stable@vger.kernel.org
+Subject: [PATCH v2] PM / devfreq: exynos-bus: Fix NULL pointer dereference
+Date:   Fri,  1 Jul 2022 15:31:26 +0200
+Message-Id: <20220701133126.26496-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: tglx@linutronix.de, marcan@marcan.st, jamie@jamieiles.com, mranostay@ti.com, michal.simek@amd.com, robin.murphy@arm.com, weiyongjun1@huawei.com, linux-kernel@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+Fix exynos-bus NULL pointer dereference by correctly using the local
+generated freq_table to output the debug values instead of using the
+profile freq_table that is not used in the driver.
 
-Here's a tiny set of fixes for 5.19. Most of it is on the cosmetic
-side of things, save for the GIC patch that fixes a regression on a
-platform with pretty funky firmware tables...
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Fixes: b5d281f6c16d ("PM / devfreq: Rework freq_table to be local to devfreq struct")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+---
+ drivers/devfreq/exynos-bus.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Please pull,
+diff --git a/drivers/devfreq/exynos-bus.c b/drivers/devfreq/exynos-bus.c
+index b5615e667e31..79725bbb4bb0 100644
+--- a/drivers/devfreq/exynos-bus.c
++++ b/drivers/devfreq/exynos-bus.c
+@@ -447,9 +447,9 @@ static int exynos_bus_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	max_state = bus->devfreq->profile->max_state;
+-	min_freq = (bus->devfreq->profile->freq_table[0] / 1000);
+-	max_freq = (bus->devfreq->profile->freq_table[max_state - 1] / 1000);
++	max_state = bus->devfreq->max_state;
++	min_freq = (bus->devfreq->freq_table[0] / 1000);
++	max_freq = (bus->devfreq->freq_table[max_state - 1] / 1000);
+ 	pr_info("exynos-bus: new bus device registered: %s (%6ld KHz ~ %6ld KHz)\n",
+ 			dev_name(dev), min_freq, max_freq);
+ 
+-- 
+2.36.1
 
-	M.
-
-The following changes since commit 6fac824f40987a54a08dfbcc36145869d02e45b1:
-
-  irqchip/loongson-liointc: Use architecture register to get coreid (2022-06-10 08:57:19 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git tags/irqchip-fixes-5.19-2
-
-for you to fetch changes up to 1357d2a65601bc0afb221672d5a8f1649063a141:
-
-  irqchip/apple-aic: Make symbol 'use_fast_ipi' static (2022-07-01 14:26:13 +0100)
-
-----------------------------------------------------------------
-irqchip fixes for 5.19, take #2
-
-- Gracefully handle failure to request MMIO resources in the GICv3 driver
-
-- Make a static key static in the Apple AIC driver
-
-- Fix the Xilinx intc driver dependency on OF_ADDRESS
-
-----------------------------------------------------------------
-Jamie Iles (1):
-      irqchip/xilinx: Add explicit dependency on OF_ADDRESS
-
-Robin Murphy (1):
-      irqchip/gicv3: Handle resource request failure consistently
-
-Wei Yongjun (1):
-      irqchip/apple-aic: Make symbol 'use_fast_ipi' static
-
- drivers/irqchip/Kconfig         |  2 +-
- drivers/irqchip/irq-apple-aic.c |  2 +-
- drivers/irqchip/irq-gic-v3.c    | 41 +++++++++++++++++++++++++++++++----------
- 3 files changed, 33 insertions(+), 12 deletions(-)
