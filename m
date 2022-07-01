@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DB5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1486DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:10:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbiGADKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 23:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59108 "EHLO
+        id S233669AbiGADK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 23:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231356AbiGADKS (ORCPT
+        with ESMTP id S233329AbiGADKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 23:10:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CBF248CC;
-        Thu, 30 Jun 2022 20:10:17 -0700 (PDT)
+        Thu, 30 Jun 2022 23:10:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C0B2497B;
+        Thu, 30 Jun 2022 20:10:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 313DF62258;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8B02B82E01;
         Fri,  1 Jul 2022 03:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 87430C341CF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 795F5C385A2;
         Fri,  1 Jul 2022 03:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656645016;
-        bh=8HEFfIhVligP5JQR/yO4wnOtAh+8LUCK5IsLvdGG7X0=;
+        bh=GsdXhb0rdWAgH4TRvTfT+WfsODySENUoDCln1R/hleM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SV6DVu9XwkmnfNZpPePDddMcx7slU3UfnUkL5xHXiQS2X5QgnROGHIdony69yHAvE
-         2w0ZNc0gAEHvy+sB1q2D3VA6amG+t9JH+/sPQAGsHAhd1XnkfFsQFmkpKHeQSEUisQ
-         t+4niLH/zr7mVjnS1iyXxE1gIbeLp+ZJhikr5mcCTOsf3SoMFG0+XrR8yDD03s2/CM
-         6kB9VKxJpR0IxBX9jSqVZtnfO50ltCEiekcoPtHQi/8ZzrIFIOv3h5nCvoZbkIKnai
-         d8i+bBPcO/ogOYIBjVJBJNAVM0XDrzMHIEcQGbYfw4ns3sIibpYZAKm1bRaJrvH177
-         4gWt6mQ/3DoWA==
+        b=hPOuE59GwDXCOuTIYzFLWvtCZ3nVtrsjZaKDVTSAT/80MDTcxVFDDvLPXWk84eLLA
+         5D94FZGoRYhdmkfiOb0W7T7meyzhmIybGpOiPo86O2V+6gS7YWfd4YRqWlgBNLFgPT
+         1Nr8D1JzkQVFcm3pTZRfpZK94D010pdUrcSnHhNYSmpR11ECFeR6T4d5tgZCs5CQYb
+         bI9tU8egvnJXwJRswdDtPk0jqCcWLJ48eHofMYpI2ydvlcMahddisABxUryzY93a0A
+         lCSG2wpnzTH3jgbp1JNMEBWAht4YWZltntanIWrk8TrO3J3akJEYDmIFiPeB+ZHWVl
+         /cjCFrcGJV3Jg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 60507E49FA0;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5693FE49FA1;
         Fri,  1 Jul 2022 03:10:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ethernet/emulex:fix repeated words in comments
+Subject: Re: [PATCH] atheros/atl1e:fix repeated words in comments
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165664501639.21670.3293352938618990469.git-patchwork-notify@kernel.org>
+Message-Id: <165664501635.21670.8690012228345013979.git-patchwork-notify@kernel.org>
 Date:   Fri, 01 Jul 2022 03:10:16 +0000
-References: <20220629123756.48860-1-yuanjilin@cdjrlc.com>
-In-Reply-To: <20220629123756.48860-1-yuanjilin@cdjrlc.com>
+References: <20220629092856.35678-1-yuanjilin@cdjrlc.com>
+In-Reply-To: <20220629092856.35678-1-yuanjilin@cdjrlc.com>
 To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     chris.snook@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -58,17 +57,17 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 29 Jun 2022 20:37:56 +0800 you wrote:
-> Delete the redundant word 'the'.
+On Wed, 29 Jun 2022 17:28:56 +0800 you wrote:
+> Delete the redundant word 'slot'.
 > 
 > Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 > ---
->  drivers/net/ethernet/emulex/benet/be_main.c | 2 +-
+>  drivers/net/ethernet/atheros/atl1e/atl1e_main.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Here is the summary with links:
-  - ethernet/emulex:fix repeated words in comments
-    https://git.kernel.org/netdev/net-next/c/4c2d6acd765f
+  - atheros/atl1e:fix repeated words in comments
+    https://git.kernel.org/netdev/net-next/c/8dcc8ab805b7
 
 You are awesome, thank you!
 -- 
