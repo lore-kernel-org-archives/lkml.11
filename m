@@ -2,111 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2CD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 20:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23314C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 20:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231804AbiGAUt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 16:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        id S232056AbiGAUuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 16:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbiGAUtq (ORCPT
+        with ESMTP id S231237AbiGAUts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 16:49:46 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC0D5C9F9;
-        Fri,  1 Jul 2022 13:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656708585; x=1688244585;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RoXeYRz7w7kbCp0HfQAIZMkKwYe+VPebd78KGDKCp2s=;
-  b=I4z+dHWM0h5N93yzSxahEGAHYqa8lqTxmuh01Oswklp7HjTvHfi7jGEi
-   xSJq2rdjmIsOMgwNRapcWmgGNzaUjwgeiMlSaX2fO2mJA9aLJy49rPBCK
-   0T6gySRhEZyIMX47KDb93Ct0pryADfb6QMG3TCADlc/GalgMWciPMy8bs
-   0ex2VY1WLeGWAevDBubJi3ffHg7f4brlzMFStGsfaay+gtaYTmMhFTkfh
-   K5e22MK4kPOhZfH+375GWRDMlQlYWchtj5hB+fV0gisfqphowlsTjTsif
-   cZgZ5m50AD7Nn7OpPTYGM2zwwsNK1LL5IKFTf1d62Rv/H68zK7euhQxcM
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="102710198"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 13:49:44 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 13:49:42 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 13:49:39 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 3/7] net: lan966x: Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb
-Date:   Fri, 1 Jul 2022 22:52:23 +0200
-Message-ID: <20220701205227.1337160-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
-References: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
+        Fri, 1 Jul 2022 16:49:48 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F516051C;
+        Fri,  1 Jul 2022 13:49:46 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id 194so987224ybc.4;
+        Fri, 01 Jul 2022 13:49:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L3xyYkVUb08ki16owDdwA0s6fxyBYTVKhzo/OZc4swY=;
+        b=Q2bHi8xGPVEu5bceVUNZYHpmzzugqU9zcEOTOg2MdUoxdlZMrh2dhUi/3V/yVyoP8T
+         7JZKoRSgqiX3kGpk6q8nfQN+YnjerSQKLRyC5wB9fCeMncQJ3qV6JNf2cjyYqUtH+8NM
+         pdl9uOadAWBK3qlpdDJd7bhS4ek7Jt+2teWEvzgDro4DgmMj/6UqIUVyrft2OnpZsIjb
+         valYyD/7fj2Fg3XZsjwz0WFbMBR4OJjKVoa+i9poO3QyMXjzjnCbuPxui6Unq14iapP6
+         HLgpXiF/htqOgwAORxZbk3vYkJwLJnrzVADBiTnCagwQpcjAD42LQfLIDiM/Jnv7p14Z
+         c5ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L3xyYkVUb08ki16owDdwA0s6fxyBYTVKhzo/OZc4swY=;
+        b=hoP3kRxZBoTr0SSee1gkWBKvlMMDQkwsoLbTU4sFhYYI/VF7RlnLQWs8AMcJd8bRyl
+         nIHeZIxVn+asVm/e963cFPup21Gm+vqOHatPbnwmizFewNPdOQMz4rcpLeJZDsMaMBiB
+         WQrj76oiDIzmM59BiYbt3yEfCoJcYn9vZo+gIXORLPXNyb6aG2q+LPJ1xU1lYbvzSCxW
+         uImUaQJQTTAIwYnRrJuVmtlh/GYhyuGoI1zLA00+um0dSHl5FS35I5vQNj+xg7wbBf6S
+         j1TrlK6IBWmaq9kONH/qBivIbEC0okFDNG6jOCY+gyG0pEycoeJ9IGuFxHYE05p8kEZ5
+         wPGQ==
+X-Gm-Message-State: AJIora9i/dBkJqzCeChptcyKzi0iYbykXMuN2X/00gH6e8fQCznK8nmn
+        kMXHl7S0so6L//fMCYVohNwXyNX9gG/2INnmKV8=
+X-Google-Smtp-Source: AGRyM1sSuMB2bm2+fgeAw4QBEbPXyLstIl8n4mXHDssuvKcqLX+xrURcZllP7cVih4dACkvtsUY4DWlFxSN1vsLxeLQ=
+X-Received: by 2002:a05:6902:1142:b0:66d:999a:81a7 with SMTP id
+ p2-20020a056902114200b0066d999a81a7mr13503264ybu.460.1656708586203; Fri, 01
+ Jul 2022 13:49:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220701134415.4017794-1-vincent.knecht@mailoo.org>
+ <20220701134415.4017794-5-vincent.knecht@mailoo.org> <CAHp75Vf1nMi6OAbksNMCEkq3snrtDQSwRcSnbkB=gPwS=WWz9A@mail.gmail.com>
+In-Reply-To: <CAHp75Vf1nMi6OAbksNMCEkq3snrtDQSwRcSnbkB=gPwS=WWz9A@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 1 Jul 2022 22:49:08 +0200
+Message-ID: <CAHp75VdpQ5J1nSONpM=C9YL1Qd6sJMLbrmGT_3uQHn8Um_0++w@mail.gmail.com>
+Subject: Re: [PATCH v2 4/6] leds: is31fl319x: Use non-wildcard names for vars,
+ structs and defines
+To:     Vincent Knecht <vincent.knecht@mailoo.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb to the
-lan966x_main.h file because they will be needed by the lag driver.
+On Fri, Jul 1, 2022 at 10:47 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Fri, Jul 1, 2022 at 3:45 PM Vincent Knecht <vincent.knecht@mailoo.org> wrote:
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_main.h      | 2 ++
- drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c | 6 ++----
- 2 files changed, 4 insertions(+), 4 deletions(-)
+...
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 0a4f4d27eaa7..f820b1c71c47 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -296,6 +296,8 @@ struct lan966x_port {
- extern const struct phylink_mac_ops lan966x_phylink_mac_ops;
- extern const struct phylink_pcs_ops lan966x_phylink_pcs_ops;
- extern const struct ethtool_ops lan966x_ethtool_ops;
-+extern struct notifier_block lan966x_switchdev_nb __read_mostly;
-+extern struct notifier_block lan966x_switchdev_blocking_nb __read_mostly;
- 
- bool lan966x_netdevice_check(const struct net_device *dev);
- 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index d9fc6a9a3da1..d9b3ca5f6214 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -6,8 +6,6 @@
- #include "lan966x_main.h"
- 
- static struct notifier_block lan966x_netdevice_nb __read_mostly;
--static struct notifier_block lan966x_switchdev_nb __read_mostly;
--static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly;
- 
- static void lan966x_port_set_mcast_ip_flood(struct lan966x_port *port,
- 					    u32 pgid_ip)
-@@ -572,11 +570,11 @@ static struct notifier_block lan966x_netdevice_nb __read_mostly = {
- 	.notifier_call = lan966x_netdevice_event,
- };
- 
--static struct notifier_block lan966x_switchdev_nb __read_mostly = {
-+struct notifier_block lan966x_switchdev_nb __read_mostly = {
- 	.notifier_call = lan966x_switchdev_event,
- };
- 
--static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly = {
-+struct notifier_block lan966x_switchdev_blocking_nb __read_mostly = {
- 	.notifier_call = lan966x_switchdev_blocking_event,
- };
- 
+> > +#define IS31FL3196_CURRENT_MIN         ((u32)5000)
+> > +#define IS31FL3196_CURRENT_MAX         ((u32)40000)
+> > +#define IS31FL3196_CURRENT_STEP                ((u32)5000)
+> > +#define IS31FL3196_CURRENT_DEFAULT     ((u32)20000)
+
+Also why no units as below, for example, has?
+
+> > +#define IS31FL3196_AUDIO_GAIN_DB_MAX   ((u32)21)
+> > +#define IS31FL3196_AUDIO_GAIN_DB_STEP  ((u32)3)
+
 -- 
-2.33.0
-
+With Best Regards,
+Andy Shevchenko
