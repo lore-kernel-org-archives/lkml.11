@@ -2,105 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0CA5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B72C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 03:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbiGADQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 30 Jun 2022 23:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
+        id S234027AbiGADRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 30 Jun 2022 23:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233948AbiGADQQ (ORCPT
+        with ESMTP id S234099AbiGADRd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 30 Jun 2022 23:16:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F7F43EFE;
-        Thu, 30 Jun 2022 20:16:15 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LZ0fB7580zhYv3;
-        Fri,  1 Jul 2022 11:13:54 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 11:16:13 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 11:16:12 +0800
-Subject: Re: [PATCH 5.10 00/12] 5.10.128-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
-References: <20220630133230.676254336@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <8189ef8c-0b17-9cf1-3fb4-9411fe104c77@huawei.com>
-Date:   Fri, 1 Jul 2022 11:16:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Thu, 30 Jun 2022 23:17:33 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8841764D51
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 20:17:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656645452; x=1688181452;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=X7KG6YEkiVYtWl6cE7h9dCi+akN1ajBggBxEmd4Yg2I=;
+  b=Aqba9e8BDGmOCeDqCSNshmmvVatgn6GTZJrGm03BNQ0GwwqLGbInS/zn
+   l0rb48Lztv3U3YEQM9rPXFB7ALKk8s7zv0iKLgWYCu/FmFNTxUzn4xtrE
+   oiQ2LSIWXlzlzn6Uu6VXhunUigr9Ek89xB4CJH/ynwdhmZuZxKUh/wsZi
+   XAd4atDXa1rWlAfJDrvptkZHtwPeIzxG5BPifIzEKzf8Mk+PMNEzqnBYl
+   d2zoXRTaFnYagBFIOINhEqZY3cZPscNdMipZPwWIDUwOWhd9zaH7PgwbU
+   90gzhJQhCGaUmY061eusdCgWD+9eacwMEfF1vMfimHQLhEApkqOxdqRSk
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="368856262"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="368856262"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 20:17:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="589066578"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 20:17:24 -0700
+Message-ID: <239cfd97-b381-f523-f149-e127f44a0780@linux.intel.com>
+Date:   Fri, 1 Jul 2022 11:13:07 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220630133230.676254336@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        "Anderson, Russ" <russ.anderson@hpe.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 4/6] iommu/vt-d: Add VTD_FLAG_IOMMU_PROBED flag
 Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>
+References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
+ <20220625125204.2199437-5-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276F90888CE86824251E5FC8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276F90888CE86824251E5FC8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/6/30 21:47, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.128 release.
-> There are 12 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 6/30/22 4:29 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Saturday, June 25, 2022 8:52 PM
+>>
+>> In the IOMMU hot-add path, there's a need to check whether an IOMMU
+>> has been probed. Instead of checking the IOMMU pointer in the global
+>> list, it's better to allocate a flag bit in iommu->flags for this
+>> purpose.
 > 
-> Responses should be made by Sat, 02 Jul 2022 13:32:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.128-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Sorry I didn't get the point of original check. This is the hotplug path
+> hence the caller of this function should already figure out it's a new
+> iommu before reaching this point?
 > 
 
-Tested on arm64 and x86 for 5.10.128-rc1,
+Either did I. It was added by below commit without any comments about
+this check.
 
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-5.10.y
-Version: 5.10.128-rc1
-Commit: 929b4759e471d567a6993b953bb85c5bb9f8fa7e
-Compiler: gcc version 7.3.0 (GCC)
+commit ffebeb46dd34736c90ffbca1ccb0bef8f4827c44
+Author: Jiang Liu <jiang.liu@linux.intel.com>
+Date:   Sun Nov 9 22:48:02 2014 +0800
 
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9093
-passed: 9093
-failed: 0
-timeout: 0
---------------------------------------------------------------------
+     iommu/vt-d: Enhance intel-iommu driver to support DMAR unit hotplug
 
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9093
-passed: 9093
-failed: 0
-timeout: 0
---------------------------------------------------------------------
+     Implement required callback functions for intel-iommu driver
+     to support DMAR unit hotplug.
 
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
+     Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+     Reviewed-by: Yijing Wang <wangyijing@huawei.com>
+     Signed-off-by: Joerg Roedel <jroedel@suse.de>
+
+I went through the whole hot-add process and found this check seemed to
+be duplicate.
+
+Hot-add process starts from dmar_device_hotplug(), it uses a rwlock to
+synchronize the hot-add paths.
+
+2386         down_write(&dmar_global_lock);
+2387         if (insert)
+2388                 ret = dmar_hotplug_insert(tmp);
+2389         else
+2390                 ret = dmar_hotplug_remove(tmp);
+2391         up_write(&dmar_global_lock);
+
+dmar_device_hotplug()
+->dmar_hotplug_insert()
+-->dmar_parse_one_drhd()   /* the added intel_iommu is allocated here*/
+-->dmar_hp_add_drhd()	   /* the intel_iommu is about to bring up */
+--->intel_iommu_add()
+
+The duplicate check here:
+
+         if (g_iommus[iommu->seq_id])
+                 return 0;
+
+All the iommu units are allocated and then initialized in the same
+synchronized path. There is no need to check a duplicate initialization.
+
+I would like to remove this check if no objection.
+
+Best regards,
+baolu
