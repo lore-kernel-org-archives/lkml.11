@@ -2,143 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D44C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A14FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 07:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235255AbiGAHhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 03:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
+        id S235358AbiGAHiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 03:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbiGAHhm (ORCPT
+        with ESMTP id S235222AbiGAHiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 03:37:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 485E86D551
-        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:37:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656661060;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7YSpU59gT8QB4BAcnl2JJyxyCcYteDUajcj+60eh/hA=;
-        b=EnnGxrdp/RBNO0bU6jA54V8zRof+PcCWpQGeyUnYUgM0luLb0hsv3zw18+iSOEa4axyjs/
-        VWzA8ERYcgBxRqh3Nn7e30OH32rGifkdf/WVuGtinkH0NCAIM810ZOzXlleVuNIlJckLR7
-        8aLjQgyW3KG9rPZvw/y28Y0R/VWm1VE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-575-0oeNBz39MeyGRLFmQh2JLg-1; Fri, 01 Jul 2022 03:37:38 -0400
-X-MC-Unique: 0oeNBz39MeyGRLFmQh2JLg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2BCF83C0D873;
-        Fri,  1 Jul 2022 07:37:38 +0000 (UTC)
-Received: from starship (unknown [10.40.194.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6ACB1121314;
-        Fri,  1 Jul 2022 07:37:35 +0000 (UTC)
-Message-ID: <53b6874517a76d8d046e665c1f2f378769b721a0.camel@redhat.com>
-Subject: Re: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Date:   Fri, 01 Jul 2022 10:37:34 +0300
-In-Reply-To: <CALMp9eSWkjHyer9CZL7UN4s8Ashc1svZsAnEgJDd2Q9voSz7HQ@mail.gmail.com>
-References: <20220614204730.3359543-1-seanjc@google.com>
-         <7e05e0befa13af05f1e5f0fd8658bc4e7bdf764f.camel@redhat.com>
-         <CALMp9eSkdj=kwh=4WHPsWZ1mKr9+0VSB527D5CMEx+wpgEGjGw@mail.gmail.com>
-         <f55889a50ba404381e3edc1a192770f2779d40f1.camel@redhat.com>
-         <CALMp9eSWkjHyer9CZL7UN4s8Ashc1svZsAnEgJDd2Q9voSz7HQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Fri, 1 Jul 2022 03:38:00 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310536D576
+        for <linux-kernel@vger.kernel.org>; Fri,  1 Jul 2022 00:37:58 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id VEM00054;
+        Fri, 01 Jul 2022 15:37:54 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 1 Jul 2022 15:37:53 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <joro@8bytes.org>, <will@kernel.org>,
+        <suravee.suthikulpanit@amd.com>
+CC:     <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] iommu/amd: Handle return of iommu_device_sysfs_add
+Date:   Fri, 1 Jul 2022 02:20:08 -0400
+Message-ID: <20220701062008.6988-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   2022701153754142284bb54b59ca6fffe76b63419a9b2
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-30 at 09:28 -0700, Jim Mattson wrote:
-> On Thu, Jun 30, 2022 at 1:22 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > On Wed, 2022-06-29 at 06:42 -0700, Jim Mattson wrote:
-> > > Unlike the AMD "INTn intercept," these trap intercepts *do not* happen
-> > > at the start of the instruction.
-> > 
-> > Are you sure about that?
-> 
-> I had been sure when I wrote that, but now that I see your response, I
-> have to question my memory. The SDM is definitely more authoritative
-> than I am.
+As iommu_device_sysfs_add() can fail, we should check the return value.
 
-x86 is like a fractal, the more I know it more I realize I don't.
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/iommu/amd/init.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-> 
-> > > When you say "ignores," do you mean that AMD ignores a data breakpoint
-> > > or single-step trap generated by MOV-SS, or it ignores the fact that
-> > > delivering such a #DB trap between the MOV-SS and the subsequent
-> > > MOV-ESP will create a stack frame in the wrong place?
-> > 
-> > Two things which can be infered from the SVM spec.
-> >         - AMD doesn't distinguish between MOV SS and STI int shadow.
-> >         - AMD has no 'pending debug exception field' in the vmcb.
-> > 
-> > I don't know what AMD does for #DB that happens on MOV SS, nor if it
-> > does distinguish these internally,
-> > probably just drops the #DB or something.
-> 
-> Without carrying pending debug exceptions, it seems that the only two
-> choices are to deliver the #DB, with the exception frame in an
-> unintended location or to drop the #DB. The latter seems preferable,
-> but neither one seems good. What I don't understand is why you claim
-> that AMD does this "rightfully." Are you saying that anyone with the
-> audacity to run a debugger on legacy code deserves to be thrown in
-> front of a moving train?
-
-I understand what you mean, its a tradeof of 100% compliant implementation
-vs complexity the corner cases introduce. #DB can already be missed in some
-cases I think, especially from my experience from debuggers, and even more especially
-when debugging an OS.
-
-It is a pain, as the OS naturally tries to switch tasks and process
-interrupts all the time, I even added that _BLOCKIRQ flag to KVM to make it a bit better.
-
-But still I understand what you mean, so maybe indeed VMX did it better.
-
-> 
-> > > Hence, the facility for injecting a "pending MTF"--so that it won't be "lost."
-> > Yes, though that is would be mostly useful for nesting.
-> > 
-> > For not nesting hypervisor, if the hypervisor figured out that a higher priority event overrode
-> > the MTF, it can just process the MTF - why to re-inject it?
-> 
-> You're right. The facility is probably just there to make MTF
-> virtualizable. Intel was paying much closer attention to
-> virtualizability by the time MTF came along.
-
-That makes sense.
-
-
-> 
-> > > These are single-step, I/O and data breakpoint traps.
-> > 
-> > I am not sure what you mean. single-step, IO, data breakpoints are indeed the trap #DB,
-> > while "general detect", code breakpoint are fault #DB, and we also have the task switch #DB, but since the hardware doesn't
-> > emulate the task switches, this has to be injected.
-> 
-> Just enumerating. No more, no less.
-> 
-
-All right, thank you very much for the help, especialy for the tables you provided,
-all of this should be enough now for me to review the patch series.
-
-Thanks,
-Best regards,
-	Maxim Levitsky
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 3c82d9c5f1c0..a3c4fdd40f04 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -2058,8 +2058,11 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 	amd_iommu_erratum_746_workaround(iommu);
+ 	amd_iommu_ats_write_check_workaround(iommu);
+ 
+-	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
++	ret = iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
+ 			       amd_iommu_groups, "ivhd%d", iommu->index);
++	if (ret)
++		return ret;
++
+ 	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
+ 
+ 	return pci_enable_device(iommu->dev);
+-- 
+2.27.0
 
