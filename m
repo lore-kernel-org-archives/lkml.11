@@ -2,194 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB2EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  1 Jul 2022 06:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234844AbiGAGd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 1 Jul 2022 02:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38442 "EHLO
+        id S235216AbiGAGi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234806AbiGAGd4 (ORCPT
+        with ESMTP id S235204AbiGAGi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 1 Jul 2022 02:33:56 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB651EEE8
-        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:33:55 -0700 (PDT)
-X-UUID: 2a33b42c465746d3b16209b88fa5e71e-20220701
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:9ce4ab06-5a24-4fff-af8e-5dc743d90deb,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:45
-X-CID-INFO: VERSION:1.1.7,REQID:9ce4ab06-5a24-4fff-af8e-5dc743d90deb,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:45
-X-CID-META: VersionHash:87442a2,CLOUDID:d3c94586-57f0-47ca-ba27-fe8c57fbf305,C
-        OID:142d0f4732a5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 2a33b42c465746d3b16209b88fa5e71e-20220701
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1672347802; Fri, 01 Jul 2022 14:33:51 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 1 Jul 2022 14:33:51 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Fri, 1 Jul 2022 14:33:51 +0800
-Message-ID: <81dd89d9b77b3a16068493269f400254f94c609f.camel@mediatek.com>
-Subject: Re: [PATCH 2/2] drm: mediatek: Adjust the dpi output format to
- MT8186
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>, <yongqiang.niu@mediatek.com>,
-        <enric.balletbo@collabora.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <jitao.shi@mediatek.com>
-Date:   Fri, 1 Jul 2022 14:33:51 +0800
-In-Reply-To: <1656645344-12062-3-git-send-email-xinlei.lee@mediatek.com>
-References: <1656645344-12062-1-git-send-email-xinlei.lee@mediatek.com>
-         <1656645344-12062-3-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 1 Jul 2022 02:38:27 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EC4193C8
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:38:25 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id q6so2197563eji.13
+        for <linux-kernel@vger.kernel.org>; Thu, 30 Jun 2022 23:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jSUhQ3rBFKJxU2LCa9Ql4GrsO3TLNvrpxzwTvNvCTBU=;
+        b=KR6dlzrqc5KAGSH9q86OuFL5a+BEdvq6u4BADqzj2u4IsWpTYBto01KpxaRquYf7o0
+         JtiDRx/EyAFV+Cgl87CMVn8WN8HIEmG9LenpcmVVzSOvx+64M2BMif34Ryj1EWc5AOFw
+         fYwxSBePaevTU7jMLWsvxwTKWDcn87aGdBdmm0sxLXhyzBwIBwpzD4KT7gyiC7VxyfNv
+         uHVB9jLUHzbOWpzFgjBqcmsnAnHklk34pQDS0rTbq2/FYY0HRtcx/JVWOP2N114fQYUZ
+         M4+c23OEagK0HqTdKz9FxEcJaQD4psedtmE5SHRxcA0KMZO2obWfzBbCZJRV9wn0TrIc
+         x3zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jSUhQ3rBFKJxU2LCa9Ql4GrsO3TLNvrpxzwTvNvCTBU=;
+        b=XRXGP2DblVEle56rHmJCJoPAspk9ejuQ3ocmEBK47nkhtu4oW2OVt3KaSghVganWw9
+         TVnlqZ0Hulnq6pcLaMHJ2RaX4UTxiYvQ8U+2fAxuuDaMnZ33mA//mXOU67GcrAx1fBj4
+         vv5mbiM6mEDsadcVVRhDLhj0PhTCecgk7cEnc5BVcPQdElFbx77OUdvYpzCQ05+G5L+4
+         HJuvXjMUeNSzshr/wIMhco110hgQhEHmJMJK4CL3PowFvxfbq/A2ItXhRHjvHx+qsT56
+         +q7Dk6VGAwav1WAl4fo/zD8dRYRqgGCKh/1uX4k896mJoOwd1pbhfaudUFw16+L6xcCN
+         Ts1A==
+X-Gm-Message-State: AJIora9QEWSFuiWz+9wTUBCPdbGXzrHXnjizYyE5bSGOTSWi83JTvIJy
+        opd7H7rXmI/n2yHP5rRgUOoFng==
+X-Google-Smtp-Source: AGRyM1u1+fKIC+2Zyq9jouPxdVF4hWeo0y+1sNSQER05/bn7i/qCLb8ToWpi8wtdaJkhU/0g3pvttA==
+X-Received: by 2002:a17:907:7636:b0:72a:9297:37d1 with SMTP id jy22-20020a170907763600b0072a929737d1mr293126ejc.349.1656657504110;
+        Thu, 30 Jun 2022 23:38:24 -0700 (PDT)
+Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id s27-20020a170906355b00b00702d8b37a03sm9951428eja.17.2022.06.30.23.38.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 23:38:23 -0700 (PDT)
+Message-ID: <5dbf57e4-7573-fa63-d8f1-6ecde08a0875@linaro.org>
+Date:   Fri, 1 Jul 2022 08:38:22 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: ti,adc128s052: Add adc08c and
+ adc10c family
+Content-Language: en-US
+To:     Nishanth Menon <nm@ti.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Florian Eckert <fe@dev.tdt.de>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+References: <20220701042919.18180-1-nm@ti.com>
+ <20220701042919.18180-2-nm@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220701042919.18180-2-nm@ti.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-01 at 11:15 +0800, xinlei.lee@mediatek.com wrote:
-> From: Xinlei Lee <xinlei.lee@mediatek.com>
+On 01/07/2022 06:29, Nishanth Menon wrote:
+> The adcxx4s communicates with a host processor via an SPI/Microwire Bus
+> interface. The device family responds with 12bit data, of which the LSB
+> bits are 0 for the lower resolution devices. I have been able to test
+> adc102s051, hence adding just the missing ones in that family.
 > 
-> Dpi output needs to adjust the output format to dual edge for MT8186.
+> Lets reuse the binding to support the family of devices with name
+> ADC<bb><c>S<sss>, where
+> * bb is the resolution in number of bits (8, 10, 12)
+> * c is the number of channels (1, 2, 4, 8)
+> * sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
+>   and 101 for 1 MSPS)
 > 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> Complete datasheets are available at TI's website here:
+>   https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
+> 
+> Handling of 8, 10 and 12 bits converters are the same, the
+> unavailable bits are 0 in LSB :)
+> 
+> Inspired-by: drivers/hwmon/adcxx.c
+> 
+> Signed-off-by: Nishanth Menon <nm@ti.com>
 > ---
->  drivers/gpu/drm/mediatek/mtk_dpi.c      | 21 +++++++++++++++++++++
->  drivers/gpu/drm/mediatek/mtk_dpi_regs.h |  5 +++++
->  2 files changed, 26 insertions(+)
 > 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> index e61cd67b978f..82a5209a1dd8 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> @@ -15,6 +15,7 @@
->  #include <linux/pinctrl/consumer.h>
->  #include <linux/platform_device.h>
->  #include <linux/types.h>
-> +#include <linux/soc/mediatek/mtk-mmsys.h>
->  
+> Checkpatch does complain with Inspired-by: insisting it to be an email
+> address.. but I was really inspired by the hwmon driver.. Don't know
+> what else to say here.. we could probably drop it?
 
-Please reorder this.
+Drop it or convert to just test.
 
->  #include <video/videomode.h>
->  
-> @@ -28,6 +29,7 @@
->  #include "mtk_disp_drv.h"
->  #include "mtk_dpi_regs.h"
->  #include "mtk_drm_ddp_comp.h"
-> +#include "mtk_drm_drv.h"
->  
->  enum mtk_dpi_out_bit_num {
->  	MTK_DPI_OUT_BIT_NUM_8BITS,
-> @@ -85,6 +87,7 @@ struct mtk_dpi {
->  	struct pinctrl_state *pins_dpi;
->  	u32 output_fmt;
->  	int refcount;
-> +	struct device *mmsys_dev;
->  };
->  
->  static inline struct mtk_dpi *bridge_to_dpi(struct drm_bridge *b)
-> @@ -125,6 +128,7 @@ struct mtk_dpi_conf {
->  	bool edge_sel_en;
->  	const u32 *output_fmts;
->  	u32 num_output_fmts;
-> +	bool rgb888_dual_enable;
->  };
->  
->  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val,
-> u32 mask)
-> @@ -393,6 +397,9 @@ static void mtk_dpi_dual_edge(struct mtk_dpi
-> *dpi)
->  		mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING,
->  			     dpi->output_fmt ==
-> MEDIA_BUS_FMT_RGB888_2X12_LE ?
->  			     EDGE_SEL : 0, EDGE_SEL);
-> +	if (dpi->conf->rgb888_dual_enable)
-> +		mtk_mmsys_ddp_dpi_confing(dpi->mmsys_dev,
-> DPI_RGB888_DDR_CON,
-> +					  DPI_FORMAT_MASK, NULL);
->  	} else {
->  		mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE,
-> 0);
->  	}
-> @@ -705,8 +712,10 @@ static int mtk_dpi_bind(struct device *dev,
-> struct device *master, void *data)
->  {
->  	struct mtk_dpi *dpi = dev_get_drvdata(dev);
->  	struct drm_device *drm_dev = data;
-> +	struct mtk_drm_private *priv = drm_dev->dev_private;
->  	int ret;
->  
-> +	dpi->mmsys_dev = priv->mmsys_dev;
->  	ret = drm_simple_encoder_init(drm_dev, &dpi->encoder,
->  				      DRM_MODE_ENCODER_TMDS);
->  	if (ret) {
-> @@ -823,6 +832,15 @@ static const struct mtk_dpi_conf mt8192_conf = {
->  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
->  };
->  
-> +static const struct mtk_dpi_conf mt8186_conf = {
-> +		.cal_factor = mt8183_calculate_factor,
-> +		.reg_h_fre_con = 0xe0,
-> +		.max_clock_khz = 150000,
-> +		.output_fmts = mt8183_output_fmts,
-> +		.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
-> +		.rgb888_dual_enable = true,
-> +};
-> +
+When passing checkpatch:
 
-please put this between 8183 and 8192.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
->  static int mtk_dpi_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
-> @@ -945,6 +963,9 @@ static const struct of_device_id mtk_dpi_of_ids[]
-> = {
->  	{ .compatible = "mediatek,mt8192-dpi",
->  	  .data = &mt8192_conf,
->  	},
-> +	{ .compatible = "mediatek,mt8186-dpi",
-> +	  .data = &mt8186_conf,
-> +	},
-
-ditto
-
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(of, mtk_dpi_of_ids);
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-> b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-> index 3a02fabe1662..24d4cdf3696b 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-> +++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-> @@ -217,4 +217,9 @@
->  
->  #define EDGE_SEL_EN			BIT(5)
->  #define H_FRE_2N			BIT(25)
-> +
-> +#define DPI_FORMAT_MASK			0x1
-> +#define DPI_RGB888_DDR_CON		BIT(0)
-> +#define DPI_RGB565_SDR_CON		BIT(1)
-> +
->  #endif /* __MTK_DPI_REGS_H */
-
+Best regards,
+Krzysztof
