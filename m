@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D541DC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAF8C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbiGBTGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 15:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
+        id S231382AbiGBTJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 15:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231634AbiGBTGO (ORCPT
+        with ESMTP id S229476AbiGBTJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 15:06:14 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BA4E0A9;
-        Sat,  2 Jul 2022 12:06:10 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id z41so6745608ede.1;
-        Sat, 02 Jul 2022 12:06:10 -0700 (PDT)
+        Sat, 2 Jul 2022 15:09:23 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AA3CE2D;
+        Sat,  2 Jul 2022 12:09:21 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id pk21so9710180ejb.2;
+        Sat, 02 Jul 2022 12:09:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N0yu1El6vOD8A0gSx756Jt25HtpMxiSxwi6fNvLtoxg=;
-        b=I4sXXmxDa/iZ225kkuLhwo9R+auGLloq99vC99wWuA7xov8rtKLRnD4nCrU8UbINB3
-         6xypnAMT5Waiixv3xn8tW1xeyEQ3+ClVhd81CjOcKXGVDOeUkT13SqX3XM6EoCl4mZNF
-         +gupnlPKVrv0MSsooUatuOJEyIqAypMd/4gRbTSOt3QzPcMyq7FsIVVW1SQM/uuDIXkZ
-         gVa6joh8wIdt8MOBwVgeGryWLGywj8xdbq7UKuJjQGapV49d7kXlcme/mY3W+5Sygbsf
-         ea11/cp1vHsccmOcFr8rrgx2yEulKEoC9ytXTXwOwDo4/zZTf5D1RGcoti6J8eK3cMXC
-         v4/Q==
+        bh=Z2CBJFGxLvkBWOdkPZxjACJXbe1IwaVXsAKYM/pk24g=;
+        b=dEFwEOfX45v0//GviVpjqq5IWtx1JSow/BIplvzXFHhJDfZVVZRwAFvjWMcuWljiDE
+         bY+mTufXRkY7HH/dmnUuqGxr4HTgrkmRR7CvEloZ3FosKcWTQs4XDmZigJTificdrYnJ
+         JdIHy5wLklKm5bHEkS6oKE4/tRCOPylZVN+Z92nKXuhZOUMJGN6JBQ8D+5Xsq+g8JYA0
+         FQAe3S0k/gZaI6Mly8W7ievBowHsieYDcnMcbbWsiasG90nkH52eWQasLnrSi228YPr3
+         c3cDBa9FxD7oFI/CMURip9xEpkFC7frMszXR/ulRdW2hEf7Z3Pnkqy300qkkPuixqd7Q
+         YmNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N0yu1El6vOD8A0gSx756Jt25HtpMxiSxwi6fNvLtoxg=;
-        b=fwRlD6I6AoT2eSzJHj+hkssMAQWFtLKwTMgQjzcb5me+TsWqyyjtJCw/X/rkuCnjeH
-         UksA4Idikl1C0W06lJsJbpx9bZa8XcgxHKvjG0DxmncM8tygKheESK4Cd5lWkmnkpf/7
-         cuMvsgQWjSHsySRK6LlpPZwC36NNr7S9zqaZG1GpiA3PjN+5sfnNwvoL7a6nd72tlMW6
-         BBrj68Jy80iddWnUsGYxSKgkY3/+OHTaR1EAu5MEr/+RqZ/nMz2/C92BRZHgWbOlDWdX
-         j3n7SRX/tva+3oqXAU355jbHoFcuDvrkWcId8nvr0ZIb2Kzj/6PUlBGEM2+e8ZqBEaQL
-         HHtg==
-X-Gm-Message-State: AJIora86g71g2nD1FLcelE7JzIsKVi72gyn5RThfmwNxSvkbGuSaLoJP
-        HeL3C83DKmAgzIjGVT3Ifps=
-X-Google-Smtp-Source: AGRyM1uMMhIQ4Yw/s8eXzx+VpJdxchNQa9w2WGeJr1Rl6GkGJCDIxVskSkBGawHb9dTWaD4Ev/CxTA==
-X-Received: by 2002:a05:6402:1774:b0:435:7fea:8c02 with SMTP id da20-20020a056402177400b004357fea8c02mr27136096edb.213.1656788769330;
-        Sat, 02 Jul 2022 12:06:09 -0700 (PDT)
+        bh=Z2CBJFGxLvkBWOdkPZxjACJXbe1IwaVXsAKYM/pk24g=;
+        b=2GoC07Hr74F6HT45xvtTqHg/9107x/QfVeJKLL12HU5gsC5S+uy+Eqq0UAUyOHaQ23
+         tazvIce/bxT7kXEcUiVksUfg6gTDp6vMcHIj/OWi42f9zCCkS9gW+CMRIzMoPjqOescX
+         teraR3sfPSkNPKk3FE/zm0xNJjv2mCqZTvV5LGA3TT1wUec83CDAvKp+A2yYm8GLhrVy
+         xPqvHezOVep3OHB9Dvd+DiZB1wC9TdqbLsDCCjdaJPydgj0rvXOQ0k27m6QCgKBhg7GU
+         1dC9qnNq4vloZ9BZeKsvZ5E5+6BR9/l2Qu1GOSfIRmX//CGFNQRkpun1kPTEMWC5cEmI
+         Fkig==
+X-Gm-Message-State: AJIora9gvEFpvupPUIoLkST3jvMXHXkJxwuU7ESrTanLgtdbDFqSo0sr
+        RK+tHrDYOxzfV0DJGp2pYzY=
+X-Google-Smtp-Source: AGRyM1uESLTbCkv6TAJWwQQ356i4TjdJ29Qc9KY9qG4xOoR5XnMumEy1l97XJOs4eG+Cz96I//bGkQ==
+X-Received: by 2002:a17:906:cc47:b0:72a:95bf:2749 with SMTP id mm7-20020a170906cc4700b0072a95bf2749mr6742877ejb.204.1656788960222;
+        Sat, 02 Jul 2022 12:09:20 -0700 (PDT)
 Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
-        by smtp.gmail.com with ESMTPSA id c22-20020aa7c756000000b00439c146efc9sm1244786eds.60.2022.07.02.12.06.08
+        by smtp.gmail.com with ESMTPSA id a27-20020a170906275b00b00722e57fa051sm12076348ejd.90.2022.07.02.12.09.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 12:06:09 -0700 (PDT)
+        Sat, 02 Jul 2022 12:09:19 -0700 (PDT)
 From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+To:     Chen-Yu Tsai <wens@csie.org>,
+        Emilio =?ISO-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
         Samuel Holland <samuel@sholland.org>
 Cc:     Samuel Holland <samuel@sholland.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] dt-bindings: display: sun4i: Fix D1 pipeline count
-Date:   Sat, 02 Jul 2022 21:06:07 +0200
-Message-ID: <3674367.kQq0lBPeGt@jernej-laptop>
-In-Reply-To: <20220702032921.22433-1-samuel@sholland.org>
-References: <20220702032921.22433-1-samuel@sholland.org>
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 1/2] clk: sunxi: Limit legacy clocks to 32-bit ARM
+Date:   Sat, 02 Jul 2022 21:09:18 +0200
+Message-ID: <8956393.CDJkKcVGEf@jernej-laptop>
+In-Reply-To: <20220702190135.51744-1-samuel@sholland.org>
+References: <20220702190135.51744-1-samuel@sholland.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
@@ -71,13 +69,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne sobota, 02. julij 2022 ob 05:29:21 CEST je Samuel Holland napisal(a):
-> When adding the bindings for the D1 display engine, I missed the
-> condition for the number of pipelines. D1 has two mixers, so it
-> will have two pipeline references.
+Dne sobota, 02. julij 2022 ob 21:01:34 CEST je Samuel Holland napisal(a):
+> The sunxi legacy clocks were never compatible with any 64-bit SoC,
+> so there is no point in building them as part of a 64-bit ARM kernel.
+> They make even less sense being built in to a 64-bit RISC-V kernel.
 > 
-> Fixes: ae5a5d26c15c ("dt-bindings: display: Add D1 display engine
-> compatibles") Signed-off-by: Samuel Holland <samuel@sholland.org>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
 Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
