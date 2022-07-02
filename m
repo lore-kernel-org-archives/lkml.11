@@ -2,97 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D937DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 16:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC00CCA47C
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 16:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232500AbiGBQI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 12:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57136 "EHLO
+        id S232322AbiGBQNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 12:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbiGBQIn (ORCPT
+        with ESMTP id S231243AbiGBQNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 12:08:43 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAD8E0BC
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 09:08:41 -0700 (PDT)
-Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 9066C2F29DD;
-        Sat,  2 Jul 2022 18:08:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1656778115;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y0kiPMKA4ub6TnlZjmYnLie9lce3w7s+m9C3Z6jYGD0=;
-        b=uDrZT02ukAUmPf33UOIX2YLgEXI2PXpReD2oh0xAHi0zQAy9q+i6Xa+no0+56IHpTyIObe
-        iif0HMFGU/gOi8lXZ6At1sEk2AUZ2vjZRps2vFJXGOUnDiYBW/RCjcqeQetyAvV3btVN/V
-        cimdA6JfsnUZT7zpDzVtA4BMRxW1V2mJ+gNBLDOJMX/NHavKYn1ukCJ6W5Kd5QrDMhoTAN
-        lT4QtQnWdBy3aFIlx+uDtx5EGrPgSjUwyQ+76FBpKV4UFaqpZs2XTQtldfiwZM61Bgi8Lz
-        /J8M9IqT/pKGRTQPW2CEWz5m0jQXDrPkbUd0HH3JBFMbNGTUM8h/Kje27DlheQ==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        elver@google.com, gregkh@linuxfoundation.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>, vschneid@redhat.com,
-        Yury Norov <yury.norov@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v4 4/5] cpumask: Add UP optimised for_each_*_cpu versions
-Date:   Sat,  2 Jul 2022 18:08:27 +0200
-Message-Id: <3a92869b902a075b97be5d1452c9c6badbbff0df.1656777646.git.sander@svanheule.net>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1656777646.git.sander@svanheule.net>
-References: <cover.1656777646.git.sander@svanheule.net>
+        Sat, 2 Jul 2022 12:13:06 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C04EE0A;
+        Sat,  2 Jul 2022 09:13:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656778385; x=1688314385;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oLFv5d9cpgU3oUv0ZYDAaDF+gUv+7iXr9g5H3SS0Y7o=;
+  b=TWFdxaFPL0CrywNFO7fnngdl8LzxMkffxlGC6zr3ynZBK9Meb8uQV+lK
+   h5yyFBv2ljcdtq+EAGcg7H3jwCxoOPyws/DefDvgrsGUVAAfbHZWZQsBi
+   ++FmxRI5HepUr9IH4ed75vPV5iKE+QHBPRiOLaHKkxqBUOGGJpRqSd876
+   jGYni1E55W92F/FtH/yER+cfOjjtbirbO/7c0plWW2Gd/0EnwV3F5mv0f
+   5fPMAG28v/PaMmV+FiGuZis5lSuhPnMZJC2j269AZSZhB6FevtFD5+DbF
+   soHst6Hl6VDIUWsuh2GBgTux7cNFMBSTJh8PAQySvY6LmKGNXfifPpBNG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10396"; a="344530083"
+X-IronPort-AV: E=Sophos;i="5.92,240,1650956400"; 
+   d="scan'208";a="344530083"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 09:13:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,240,1650956400"; 
+   d="scan'208";a="624596293"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 02 Jul 2022 09:13:00 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o7fjv-000FOZ-Qi;
+        Sat, 02 Jul 2022 16:12:59 +0000
+Date:   Sun, 3 Jul 2022 00:12:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa-dev@sang-engineering.com>,
+        Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Till Harbaum <till@harbaum.org>
+Subject: Re: [PATCH v1 2/2] i2c: Introduce i2c_str_read_write() and make use
+ of it
+Message-ID: <202207030039.I3q472GJ-lkp@intel.com>
+References: <20220702135925.73406-2-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220702135925.73406-2-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On uniprocessor builds, the following loops will always run over a mask
-that contains one enabled CPU (cpu0):
-    - for_each_possible_cpu
-    - for_each_online_cpu
-    - for_each_present_cpu
+Hi Andy,
 
-Provide uniprocessor-specific macros for these loops, that always run
-exactly once.
+I love your patch! Yet something to improve:
 
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
----
- include/linux/cpumask.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+[auto build test ERROR on wsa/i2c/for-next]
+[also build test ERROR on linus/master v5.19-rc4 next-20220701]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index 7fbef41b3093..6c5b4ee000f2 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -750,9 +750,16 @@ extern const DECLARE_BITMAP(cpu_all_bits, NR_CPUS);
- /* First bits of cpu_bit_bitmap are in fact unset. */
- #define cpu_none_mask to_cpumask(cpu_bit_bitmap[0])
- 
-+#if NR_CPUS == 1
-+/* Uniprocessor: the possible/online/present masks are always "1" */
-+#define for_each_possible_cpu(cpu)	for ((cpu) = 0; (cpu) < 1; (cpu)++)
-+#define for_each_online_cpu(cpu)	for ((cpu) = 0; (cpu) < 1; (cpu)++)
-+#define for_each_present_cpu(cpu)	for ((cpu) = 0; (cpu) < 1; (cpu)++)
-+#else
- #define for_each_possible_cpu(cpu) for_each_cpu((cpu), cpu_possible_mask)
- #define for_each_online_cpu(cpu)   for_each_cpu((cpu), cpu_online_mask)
- #define for_each_present_cpu(cpu)  for_each_cpu((cpu), cpu_present_mask)
-+#endif
- 
- /* Wrappers for arch boot code to manipulate normally-constant masks */
- void init_cpu_present(const struct cpumask *src);
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/lib-string_helpers-Add-str_read_write-helper/20220702-215944
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git i2c/for-next
+config: arc-randconfig-r043-20220702 (https://download.01.org/0day-ci/archive/20220703/202207030039.I3q472GJ-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/c9ef15ef6b2b2b51d33d68a8b92beb05771cc8c2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/lib-string_helpers-Add-str_read_write-helper/20220702-215944
+        git checkout c9ef15ef6b2b2b51d33d68a8b92beb05771cc8c2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/i2c/busses/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/i2c/busses/i2c-exynos5.c: In function 'exynos5_i2c_xfer_msg':
+>> drivers/i2c/busses/i2c-exynos5.c:960:26: error: unterminated argument list invoking macro "dev_warn"
+     960 | MODULE_LICENSE("GPL v2");
+         |                          ^
+>> drivers/i2c/busses/i2c-exynos5.c:747:25: error: 'dev_warn' undeclared (first use in this function); did you mean '_dev_warn'?
+     747 |                         dev_warn(i2c->dev, "%s timeout\n", i2c_str_read_write(msgs);
+         |                         ^~~~~~~~
+         |                         _dev_warn
+   drivers/i2c/busses/i2c-exynos5.c:747:25: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/i2c/busses/i2c-exynos5.c:747:33: error: expected ';' at end of input
+     747 |                         dev_warn(i2c->dev, "%s timeout\n", i2c_str_read_write(msgs);
+         |                                 ^
+         |                                 ;
+   ......
+   drivers/i2c/busses/i2c-exynos5.c:746:17: note: '-Wmisleading-indentation' is disabled from this point onwards, since column-tracking was disabled due to the size of the code/headers
+     746 |                 if (ret == -ETIMEDOUT)
+         |                 ^~
+   drivers/i2c/busses/i2c-exynos5.c:746:17: note: adding '-flarge-source-files' will allow for more column-tracking support, at the expense of compilation time and memory
+>> drivers/i2c/busses/i2c-exynos5.c:747:25: error: expected declaration or statement at end of input
+     747 |                         dev_warn(i2c->dev, "%s timeout\n", i2c_str_read_write(msgs);
+         |                         ^~~~~~~~
+>> drivers/i2c/busses/i2c-exynos5.c:747:25: error: expected declaration or statement at end of input
+   drivers/i2c/busses/i2c-exynos5.c:747:25: error: no return statement in function returning non-void [-Werror=return-type]
+   At top level:
+   drivers/i2c/busses/i2c-exynos5.c:716:12: warning: 'exynos5_i2c_xfer_msg' defined but not used [-Wunused-function]
+     716 | static int exynos5_i2c_xfer_msg(struct exynos5_i2c *i2c,
+         |            ^~~~~~~~~~~~~~~~~~~~
+   drivers/i2c/busses/i2c-exynos5.c:445:20: warning: 'exynos5_i2c_irq' defined but not used [-Wunused-function]
+     445 | static irqreturn_t exynos5_i2c_irq(int irqno, void *dev_id)
+         |                    ^~~~~~~~~~~~~~~
+   drivers/i2c/busses/i2c-exynos5.c:240:34: warning: 'exynos5_i2c_match' defined but not used [-Wunused-const-variable=]
+     240 | static const struct of_device_id exynos5_i2c_match[] = {
+         |                                  ^~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/dev_warn +960 drivers/i2c/busses/i2c-exynos5.c
+
+8a73cd4cfa1599 Naveen Krishna Ch 2013-10-16  956  
+8a73cd4cfa1599 Naveen Krishna Ch 2013-10-16  957  MODULE_DESCRIPTION("Exynos5 HS-I2C Bus driver");
+d790eeb3db6aef Jean Delvare      2020-06-11  958  MODULE_AUTHOR("Naveen Krishna Chatradhi <ch.naveen@samsung.com>");
+d790eeb3db6aef Jean Delvare      2020-06-11  959  MODULE_AUTHOR("Taekgyun Ko <taeggyun.ko@samsung.com>");
+8a73cd4cfa1599 Naveen Krishna Ch 2013-10-16 @960  MODULE_LICENSE("GPL v2");
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
