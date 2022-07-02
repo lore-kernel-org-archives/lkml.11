@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDEC2C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 11:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D22AC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 11:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232443AbiGBLIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 07:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S232462AbiGBLI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 07:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232160AbiGBLHw (ORCPT
+        with ESMTP id S232122AbiGBLHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 2 Jul 2022 07:07:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFE715A2B;
-        Sat,  2 Jul 2022 04:07:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A366C15A2A;
+        Sat,  2 Jul 2022 04:07:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A12D9B823FF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C7ECB820D7;
         Sat,  2 Jul 2022 11:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F014C341D1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E648C341D0;
         Sat,  2 Jul 2022 11:07:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656760068;
-        bh=RlxAXGPPXB8Zng+0XJtcVht/MUZbmaw3OOytm0zauQg=;
+        bh=2qqxIF8Unf8YQpcXVpRiAsjzATxAeYvcZlNIZEmxF/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tLu26mdS90n5KcO20qdF1lidYC71S1Yda+tQxqfRY0OTpDn4NWepHZemVM+xx+xp3
-         Ap/mq1hMvcZvY2fbHQHDQEdW5zJDVcN1HBFSLn4X/FgD8XhtFr+BvQgOFLEQZYw1pU
-         4hDlZZVNmY9LWXa0wgRrmNWtc+fuFvaGKsWjiW/m580tK/JptiaAL7D2LamlnTIyc0
-         SQiTngqwH8boEku50sAqKNhDbrKrEMjcdJfA1UnflXQkyef5i1Ap2m6EaFd6K+k8DJ
-         MKJ/HGzDFkq9UHezuQdByBuqMvdTbQJaiM2/Y+dMd7CBhaHS3Y+5T49e1WyJwuHjRm
-         Ps34PLWxVV0uw==
+        b=S8oYQ3l/Zu5P+SXkP1c6k5aspl/F6rVt/oGfwMBGKyGAk6zkti5aLJDrFKVtS34MM
+         1n9v8Gt2a0vn52r6j5XwhwVtu39uvxZA4ywO5wgo0BBTkE4VXSjUFWUzmo4zD9QdwZ
+         8+sTp0llwq+IvA1VBGw4nZhpzltWjY+ktdqa+JNJPgLzFx3MtMgm5H8WcuNf1YBQqA
+         jUYSy7gqTJCDkgtRp9DRs5qXZE+zkqsL1zdwc8AB+oVXkc+RQzFYGcYGB3caw6dfpb
+         +/rNA+DqhxvfrJzNrMfk6W2nEPSWwRsN0eIUIqJqay4M0yftU3JyFHedfEl/UFvr7n
+         mhIuwp7JPRlIA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o7ayX-007gsR-Rm;
+        id 1o7ayX-007gsF-PZ;
         Sat, 02 Jul 2022 12:07:45 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         "Jonathan Corbet" <corbet@lwn.net>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org
-Subject: [PATCH 12/12] docs: leds: index.rst: add leds-qcom-lpg to it
-Date:   Sat,  2 Jul 2022 12:07:44 +0100
-Message-Id: <9a221f19feed460966fd8e330ce1aeed2a2fb372.1656759989.git.mchehab@kernel.org>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 09/12] net: mac80211: fix a kernel-doc markup
+Date:   Sat,  2 Jul 2022 12:07:41 +0100
+Message-Id: <cee2e80b47939ce2ea9784368e136eb883eea98b.1656759989.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656759988.git.mchehab@kernel.org>
 References: <cover.1656759988.git.mchehab@kernel.org>
@@ -56,28 +59,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This document was added without placing it at leds index.
+The markup to reference a var should be just @foo, and not @foo[].
+Using the later causes a kernel-doc warning:
 
-Fixes: 24e2d05d1b68 ("leds: Add driver for Qualcomm LPG")
+	Documentation/driver-api/80211/mac80211:32: ./include/net/mac80211.h:4045: WARNING: Inline strong start-string without end-string.
+
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/12] at: https://lore.kernel.org/all/cover.1656759988.git.mchehab@kernel.org/
 
- Documentation/leds/index.rst | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/mac80211.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/leds/index.rst b/Documentation/leds/index.rst
-index e5d63b940045..014e009b0761 100644
---- a/Documentation/leds/index.rst
-+++ b/Documentation/leds/index.rst
-@@ -25,4 +25,5 @@ LEDs
-    leds-lp5562
-    leds-lp55xx
-    leds-mlxcpld
-+   leds-qcom-lpg
-    leds-sc27xx
+diff --git a/include/net/mac80211.h b/include/net/mac80211.h
+index 9d8b5b0ee1cb..3e19b0001b41 100644
+--- a/include/net/mac80211.h
++++ b/include/net/mac80211.h
+@@ -4045,7 +4045,7 @@ struct ieee80211_prep_tx_info {
+  *	removing the old link information is still valid (link_conf pointer),
+  *	but may immediately disappear after the function returns. The old or
+  *	new links bitmaps may be 0 if going from/to a non-MLO situation.
+- *	The @old[] array contains pointers to the old bss_conf structures
++ *	The @old array contains pointers to the old bss_conf structures
+  *	that were already removed, in case they're needed.
+  *	This callback can sleep.
+  * @change_sta_links: Change the valid links of a station, similar to
 -- 
 2.36.1
 
