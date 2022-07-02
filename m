@@ -2,140 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C89B3C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 17:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436E5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 17:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbiGBRLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 13:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
+        id S232449AbiGBR1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 13:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbiGBRLS (ORCPT
+        with ESMTP id S232302AbiGBR1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 13:11:18 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99FD6368;
-        Sat,  2 Jul 2022 10:11:16 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 262HAcAU130419;
-        Sat, 2 Jul 2022 12:10:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1656781838;
-        bh=1Q76WF7U3Bp00wTKSfteyk6bKtIsR9IszG3O/zUcWkU=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=sGuKCwF4BKmlacmXTEAgWCBr/A7iCxjr6QPfJ6rbgJWXeYqh6A9vnQzft4NUMjYeT
-         hHW4JFXQPOCVuz53d+oD3ToYpS6uu48y1XvbnV9kG9WOz++1edkHJ7uc6ULRjLqaXR
-         ELePHXEOfPtZjCdnbGAOptFkq/RdzIJQDsj+GqXc=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 262HAcPk075676
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 2 Jul 2022 12:10:38 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sat, 2
- Jul 2022 12:10:38 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Sat, 2 Jul 2022 12:10:38 -0500
-Received: from [10.250.234.35] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 262HAWSD004188;
-        Sat, 2 Jul 2022 12:10:33 -0500
-Message-ID: <75fee78a-f411-1c7e-a902-d28d02703c16@ti.com>
-Date:   Sat, 2 Jul 2022 22:40:31 +0530
+        Sat, 2 Jul 2022 13:27:32 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4E0E00D
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 10:27:31 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id f1-20020a056602070100b00674f8035487so2942376iox.17
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 10:27:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=dTAC6yIXCZBxw+p2OErqKUaqKTzBG5E7gPda2WRrS70=;
+        b=bf+vlKjbVJVx8mgCR2agal94HuqA5yRlsGRz9TjW/FhCY64HP1VCjU4121PVJazvuu
+         bdDvjN6Wu07FgGGvqyE2RXHse8GmG8CNd4dwDiZFOAhKIfAp7cQhgbkiC87+lyOYrktw
+         UccnWTJHyPX3V2bJqx/00lobsYpBaEL4laVSpRG0bQPiPETTPAC+QDRUygN3aGSzVdzy
+         981CBhJO7MHUcelEB1dSh7hkq7pi3SEMGE7TfUVlDlY+PquS83ZDGbdnV2AOO37g4MNH
+         HY783sQn9VwaW8zQfZFmNoE5/lpxa0/oNvomXJ7ZYFt0vFvFJQB0loHKBtg2vaKDbcBd
+         zuRw==
+X-Gm-Message-State: AJIora/3OAY3EasAKZNILPv9m3WP9Yfff8W7C1Ebq5mE/9BB1Usob8Nj
+        Ap0asGQUy3VRUFFxYkdOM4A+W7dzHqtjJD7erDYohgFrAnIn
+X-Google-Smtp-Source: AGRyM1upGQbN8M2U3E6dSGQcI8Sf0xsGM0IyEwcytHdaebO/6yBNpoAlUFJ8z0B8bOXAtCESh6FexaFKMm1MdyphULXdYZGq0uld
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH v8 3/5] mtd: Add support for HyperBus memory devices
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Boris Brezillon <bbrezillon@kernel.org>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Tokunori Ikegami <ikegami.t@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Mason Yang <masonccyang@mxic.com.tw>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <20190625075746.10439-1-vigneshr@ti.com>
- <20190625075746.10439-4-vigneshr@ti.com>
- <CAMuHMdUCdjfAoZm-cb4v+STt5C0T6OejdcCCQNBRqqAHL6JD=w@mail.gmail.com>
-From:   "Raghavendra, Vignesh" <vigneshr@ti.com>
-In-Reply-To: <CAMuHMdUCdjfAoZm-cb4v+STt5C0T6OejdcCCQNBRqqAHL6JD=w@mail.gmail.com>
+X-Received: by 2002:a05:6e02:1562:b0:2d9:434d:25b4 with SMTP id
+ k2-20020a056e02156200b002d9434d25b4mr12384635ilu.59.1656782850516; Sat, 02
+ Jul 2022 10:27:30 -0700 (PDT)
+Date:   Sat, 02 Jul 2022 10:27:30 -0700
+In-Reply-To: <00000000000067d24205c4d0e599@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000466f0d05e2d5d1d1@google.com>
+Subject: Re: [syzbot] possible deadlock in mnt_want_write (2)
+From:   syzbot <syzbot+b42fe626038981fb7bfa@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-fsdevel@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        miklos@szeredi.hu, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk, zohar@linux.ibm.com, zohar@us.ibm.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+syzbot has found a reproducer for the following issue on:
 
-On 6/27/2022 8:58 PM, Geert Uytterhoeven wrote:
-> Hi Vignesh,
-> 
-> On Tue, Jun 25, 2019 at 10:00 AM Vignesh Raghavendra <vigneshr@ti.com> wrote:
->> Cypress' HyperBus is Low Signal Count, High Performance Double Data Rate
->> Bus interface between a host system master and one or more slave
->> interfaces. HyperBus is used to connect microprocessor, microcontroller,
->> or ASIC devices with random access NOR flash memory (called HyperFlash)
->> or self refresh DRAM (called HyperRAM).
->>
->> Its a 8-bit data bus (DQ[7:0]) with  Read-Write Data Strobe (RWDS)
->> signal and either Single-ended clock(3.0V parts) or Differential clock
->> (1.8V parts). It uses ChipSelect lines to select b/w multiple slaves.
->> At bus level, it follows a separate protocol described in HyperBus
->> specification[1].
->>
->> HyperFlash follows CFI AMD/Fujitsu Extended Command Set (0x0002) similar
->> to that of existing parallel NORs. Since HyperBus is x8 DDR bus,
->> its equivalent to x16 parallel NOR flash with respect to bits per clock
->> cycle. But HyperBus operates at >166MHz frequencies.
->> HyperRAM provides direct random read/write access to flash memory
->> array.
->>
->> But, HyperBus memory controllers seem to abstract implementation details
->> and expose a simple MMIO interface to access connected flash.
->>
->> Add support for registering HyperFlash devices with MTD framework. MTD
->> maps framework along with CFI chip support framework are used to support
->> communicating with flash.
->>
->> Framework is modelled along the lines of spi-nor framework. HyperBus
->> memory controller (HBMC) drivers calls hyperbus_register_device() to
->> register a single HyperFlash device. HyperFlash core parses MMIO access
->> information from DT, sets up the map_info struct, probes CFI flash and
->> registers it with MTD framework.
->>
->> Some HBMC masters need calibration/training sequence[3] to be carried
->> out, in order for DLL inside the controller to lock, by reading a known
->> string/pattern. This is done by repeatedly reading CFI Query
->> Identification String. Calibration needs to be done before trying to detect
->> flash as part of CFI flash probe.
->>
->> HyperRAM is not supported at the moment.
-> 
-> Thanks for your patch, which is now commit dcc7d3446a0fa19b ("mtd:
-> Add support for HyperBus memory devices") in v5.3.
-> 
->> HyperBus specification can be found at[1]
->> HyperFlash datasheet can be found at[2]
->>
->> [1] https://www.cypress.com/file/213356/download
->> [2] https://www.cypress.com/file/213346/download
->> [3] http://www.ti.com/lit/ug/spruid7b/spruid7b.pdf
->>     Table 12-5741. HyperFlash Access Sequence
-> 
-> The last link no longer works.  Do you have a replacement?
+HEAD commit:    089866061428 Merge tag 'libnvdimm-fixes-5.19-rc5' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11dd91f0080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=75c9ff14e1db87c0
+dashboard link: https://syzkaller.appspot.com/bug?extid=b42fe626038981fb7bfa
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167bafc0080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11aad3e0080000
 
-Looks like I used a link point to specific version instead of top level
-redirector link. Please use:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b42fe626038981fb7bfa@syzkaller.appspotmail.com
 
-https://www.ti.com/lit/pdf/spruid7
+======================================================
+WARNING: possible circular locking dependency detected
+5.19.0-rc4-syzkaller-00187-g089866061428 #0 Not tainted
+------------------------------------------------------
+syz-executor450/3829 is trying to acquire lock:
+ffff88807e574460 (sb_writers#4){.+.+}-{0:0}, at: mnt_want_write+0x3b/0x80 fs/namespace.c:393
 
-Regards
-Vignesh
+but task is already holding lock:
+ffff888074de91a0 (&iint->mutex){+.+.}-{3:3}, at: process_measurement+0x7d2/0x1c10 security/integrity/ima/ima_main.c:260
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (&iint->mutex){+.+.}-{3:3}:
+       lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5665
+       __mutex_lock_common+0x1de/0x26c0 kernel/locking/mutex.c:603
+       __mutex_lock kernel/locking/mutex.c:747 [inline]
+       mutex_lock_nested+0x17/0x20 kernel/locking/mutex.c:799
+       process_measurement+0x7d2/0x1c10 security/integrity/ima/ima_main.c:260
+       ima_file_check+0xe7/0x160 security/integrity/ima/ima_main.c:517
+       do_open fs/namei.c:3522 [inline]
+       path_openat+0x2705/0x2ec0 fs/namei.c:3653
+       do_filp_open+0x277/0x4f0 fs/namei.c:3680
+       do_sys_openat2+0x13b/0x500 fs/open.c:1278
+       do_sys_open fs/open.c:1294 [inline]
+       __do_sys_open fs/open.c:1302 [inline]
+       __se_sys_open fs/open.c:1298 [inline]
+       __x64_sys_open+0x221/0x270 fs/open.c:1298
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+-> #0 (sb_writers#4){.+.+}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain+0x185c/0x65c0 kernel/locking/lockdep.c:3829
+       __lock_acquire+0x129a/0x1f80 kernel/locking/lockdep.c:5053
+       lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5665
+       percpu_down_read include/linux/percpu-rwsem.h:51 [inline]
+       __sb_start_write include/linux/fs.h:1699 [inline]
+       sb_start_write+0x4d/0x1a0 include/linux/fs.h:1774
+       mnt_want_write+0x3b/0x80 fs/namespace.c:393
+       ovl_maybe_copy_up+0x124/0x190 fs/overlayfs/copy_up.c:1078
+       ovl_open+0x106/0x2a0 fs/overlayfs/file.c:152
+       do_dentry_open+0x789/0x1040 fs/open.c:848
+       vfs_open fs/open.c:981 [inline]
+       dentry_open+0xc1/0x120 fs/open.c:997
+       ima_calc_file_hash+0x157/0x1cb0 security/integrity/ima/ima_crypto.c:557
+       ima_collect_measurement+0x3de/0x850 security/integrity/ima/ima_api.c:292
+       process_measurement+0xf87/0x1c10 security/integrity/ima/ima_main.c:337
+       ima_file_check+0xe7/0x160 security/integrity/ima/ima_main.c:517
+       do_open fs/namei.c:3522 [inline]
+       path_openat+0x2705/0x2ec0 fs/namei.c:3653
+       do_filp_open+0x277/0x4f0 fs/namei.c:3680
+       do_sys_openat2+0x13b/0x500 fs/open.c:1278
+       do_sys_open fs/open.c:1294 [inline]
+       __do_sys_open fs/open.c:1302 [inline]
+       __se_sys_open fs/open.c:1298 [inline]
+       __x64_sys_open+0x221/0x270 fs/open.c:1298
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&iint->mutex);
+                               lock(sb_writers#4);
+                               lock(&iint->mutex);
+  lock(sb_writers#4);
+
+ *** DEADLOCK ***
+
+1 lock held by syz-executor450/3829:
+ #0: ffff888074de91a0 (&iint->mutex){+.+.}-{3:3}, at: process_measurement+0x7d2/0x1c10 security/integrity/ima/ima_main.c:260
+
+stack backtrace:
+CPU: 1 PID: 3829 Comm: syz-executor450 Not tainted 5.19.0-rc4-syzkaller-00187-g089866061428 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x1e3/0x2cb lib/dump_stack.c:106
+ check_noncircular+0x2f7/0x3b0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain+0x185c/0x65c0 kernel/locking/lockdep.c:3829
+ __lock_acquire+0x129a/0x1f80 kernel/locking/lockdep.c:5053
+ lock_acquire+0x1a7/0x400 kernel/locking/lockdep.c:5665
+ percpu_down_read include/linux/percpu-rwsem.h:51 [inline]
+ __sb_start_write include/linux/fs.h:1699 [inline]
+ sb_start_write+0x4d/0x1a0 include/linux/fs.h:1774
+ mnt_want_write+0x3b/0x80 fs/namespace.c:393
+ ovl_maybe_copy_up+0x124/0x190 fs/overlayfs/copy_up.c:1078
+ ovl_open+0x106/0x2a0 fs/overlayfs/file.c:152
+ do_dentry_open+0x789/0x1040 fs/open.c:848
+ vfs_open fs/open.c:981 [inline]
+ dentry_open+0xc1/0x120 fs/open.c:997
+ ima_calc_file_hash+0x157/0x1cb0 security/integrity/ima/ima_crypto.c:557
+ ima_collect_measurement+0x3de/0x850 security/integrity/ima/ima_api.c:292
+ process_measurement+0xf87/0x1c10 security/integrity/ima/ima_main.c:337
+ ima_file_check+0xe7/0x160 security/integrity/ima/ima_main.c:517
+ do_open fs/namei.c:3522 [inline]
+ path_openat+0x2705/0x2ec0 fs/namei.c:3653
+ do_filp_open+0x277/0x4f0 fs/namei.c:3680
+ do_sys_openat2+0x13b/0x500 fs/open.c:1278
+ do_sys_open fs/open.c:1294 [inline]
+ __do_sys_open fs/open.c:1302 [inline]
+ __se_sys_open fs/open.c:1298 [inline]
+ __x64_sys_open+0x221/0x270 fs/open.c:1298
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7faf98402749
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 31 16 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007faf9838e2f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000002
+RAX: ffffffffffffffda RBX: 00007faf98491270 RCX: 00007faf98402749
+RDX: 0000000000000000 RSI: 000000000000000b RDI: 00000000200000c0
+RBP: 00007faf98458504 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0030656c69662f2e
+R13: 3d7269647265776f R14: 0079616c7265766f R15: 00007faf98491278
+ </TASK>
+
