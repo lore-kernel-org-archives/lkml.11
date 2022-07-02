@@ -2,84 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D04E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 18:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D3DC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 18:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbiGBS3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 14:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
+        id S232280AbiGBSkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 14:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232540AbiGBS3t (ORCPT
+        with ESMTP id S229620AbiGBSkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 14:29:49 -0400
-Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C69DED2
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 11:29:48 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 7hsIoTjZy4Ltq7hsIonixx; Sat, 02 Jul 2022 20:29:46 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 02 Jul 2022 20:29:46 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        almaz.alexandrovich@paragon-software.com, yury.norov@gmail.com,
-        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk
-Cc:     linux-s390@vger.kernel.org, ntfs3@lists.linux.dev,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH 4/4] bitmap: Use bitmap_size()
-Date:   Sat,  2 Jul 2022 20:29:44 +0200
-Message-Id: <a1d240070b58addae91aef9912925835ff09122d.1656785856.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1656785856.git.christophe.jaillet@wanadoo.fr>
-References: <cover.1656785856.git.christophe.jaillet@wanadoo.fr>
+        Sat, 2 Jul 2022 14:40:49 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DDEDF1A
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 11:40:48 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 481E35C0197;
+        Sat,  2 Jul 2022 14:40:45 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 02 Jul 2022 14:40:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1656787245; x=1656873645; bh=pfmmVMf+mB8FJ236qCWDsBxR6
+        Vdsvx3/s3O7TyTZeSk=; b=OCHejxF056CJYLXpUFdd1YU60NopgVCQy6pHo6Prq
+        RwrCocJIXWpxTOjycqrj8Za6qKUE01RyBvSju1010YG/vWe9QVmf8GUgpPEDHd8Z
+        LRnBiYmdhD4zJzE60a2V4haE21WNSLhk7FfPtMztABq+c6ysosf2s2PDNypMmtZt
+        QEKCv5v8mJxuTyy+ZplGpwlX4ou0FinxOpQL8aIqZnSTdQQh9msLb0M1b4dk4QUD
+        B6QqEZASWL/N3t1hofoH6tUlV5tdTGDSxay9yQAp1+t+nObslbIdR6umjUx/fCsi
+        xGK2bfpBr39JIseY9oWhRbfgrRb35/Z7T6D9paGnfUjvQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1656787245; x=1656873645; bh=pfmmVMf+mB8FJ236qCWDsBxR6Vdsvx3/s3O
+        7TyTZeSk=; b=PCUbmRrGYOHBMLSMWi0pQpDOsHlq9cyjr+FXEY1nqA6JXB0dun+
+        YIJxo6iCmh4zDYSnHddwvF6ODZ0LMWSdPL8r3nNqxLwlywcW5fmOLbzm0sD/agXI
+        L9KZzTDtlyeS5JW9s9MJJke1V0ifD60j4BMjGGqcSmEZpaZL2tsKPklyWV8QM2gF
+        J1lsHb51ogzv5NshqMuROLXXRTmgpF+a+DMLl7CRDgGEioLF6hqmW3q3uX3KrkCd
+        YCiN8cuCiauniKTYIBIH6KHttjmqDxte7Lo8EoMqAZU2h3zRRiqPJtvei9wZCaFU
+        c/ixK9Tc3Fme77NbO1IkK0OQ9KHqVz4CQfA==
+X-ME-Sender: <xms:LZHAYnO7pIdI3tbRkDtNJKW1AfMLb5tYrfECVQ0WQYytEsaeMvYKBA>
+    <xme:LZHAYh8-h5GVaKG2j5NNsjg3FwXrhPiy-WhFx7frpqzwqBd8pDHnbHb3ErBinjsWR
+    otZIshddHoK5-A7dQ>
+X-ME-Received: <xmr:LZHAYmSlWZY9mxCPDXAMoAzSquobBA6D8w7h_UOnNx7PwTNXxLUARkgXplYpfiEUUW08EdkzetNKD46nRaFYaldEaQAjA3UCBItkH6V_5nz6k9UT2wDJo212JzrC_ZfejoKYdA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehhedguddvkecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeeh
+    hffhkeekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:LZHAYruv1gMZ7tUfdpuW2dU8q8I7DtN3b084UMhhHl0u3zVogzuLzA>
+    <xmx:LZHAYveY8uop6AspiS5I9g2hy1iU8rtTmR0mcFYhsQARwacddH2T3g>
+    <xmx:LZHAYn2nU7Wa4aH2OvdBZRySdrcXxj0VHqBQbZRVlhbezzMSd1He1w>
+    <xmx:LZHAYm5XbIMYUlcUgy-uWBRWiB8IArVlaKcOM3aNJLPS77VG5elE3A>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 2 Jul 2022 14:40:44 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] mfd: sun6i-prcm: Update Kconfig description
+Date:   Sat,  2 Jul 2022 13:40:43 -0500
+Message-Id: <20220702184044.51144-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify code and take advantage of the new bitmap_size() function.
+This driver is used by a specific range of SoCs between when the PRCM
+hardware was introduced (A31) and when the PRCM CCU driver was added
+(A83T). It is unlikely to be extended to additional hardware. Update
+the description to include the full list of applicable SoCs.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
- include/linux/bitmap.h | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-index f66fb98a4126..668b47c1e5de 100644
---- a/include/linux/bitmap.h
-+++ b/include/linux/bitmap.h
-@@ -243,21 +243,18 @@ extern int bitmap_print_list_to_buf(char *buf, const unsigned long *maskp,
+ drivers/mfd/Kconfig | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 3b59456f5545..9e44a60e2308 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -1357,12 +1357,13 @@ config MFD_STA2X11
+ 	select REGMAP_MMIO
  
- static inline void bitmap_zero(unsigned long *dst, unsigned int nbits)
- {
--	unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
--	memset(dst, 0, len);
-+	memset(dst, 0, bitmap_size(nbits));
- }
+ config MFD_SUN6I_PRCM
+-	bool "Allwinner A31 PRCM controller"
++	bool "Allwinner A31/A23/A33 PRCM controller"
+ 	depends on ARCH_SUNXI || COMPILE_TEST
+ 	select MFD_CORE
+ 	help
+ 	  Support for the PRCM (Power/Reset/Clock Management) unit available
+-	  in A31 SoC.
++	  in the A31, A23, and A33 SoCs. Other Allwinner SoCs contain similar
++	  hardware, but they do not use this driver.
  
- static inline void bitmap_fill(unsigned long *dst, unsigned int nbits)
- {
--	unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
--	memset(dst, 0xff, len);
-+	memset(dst, 0xff, bitmap_size(nbits));
- }
- 
- static inline void bitmap_copy(unsigned long *dst, const unsigned long *src,
- 			unsigned int nbits)
- {
--	unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
--	memcpy(dst, src, len);
-+	memcpy(dst, src, bitmap_size(nbits));
- }
- 
- /*
+ config MFD_SYSCON
+ 	bool "System Controller Register R/W Based on Regmap"
 -- 
-2.34.1
+2.35.1
 
