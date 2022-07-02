@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 10:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17577C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 11:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbiGBKsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 06:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
+        id S232117AbiGBLHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 07:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiGBKso (ORCPT
+        with ESMTP id S231540AbiGBLHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 06:48:44 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AA1AE6F
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 03:48:42 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R371e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VI6ToP3_1656758915;
-Received: from 30.39.96.230(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VI6ToP3_1656758915)
-          by smtp.aliyun-inc.com;
-          Sat, 02 Jul 2022 18:48:37 +0800
-Message-ID: <6dc308db-3685-4df5-506a-71f9e3794ec8@linux.alibaba.com>
-Date:   Sat, 2 Jul 2022 18:48:35 +0800
+        Sat, 2 Jul 2022 07:07:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD91415A24;
+        Sat,  2 Jul 2022 04:07:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B4C860C7C;
+        Sat,  2 Jul 2022 11:07:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154D1C385A2;
+        Sat,  2 Jul 2022 11:07:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656760068;
+        bh=Jzw0fXE90LTUqdwEmGdDANbmLnU3nO//vKmbl/WQ7m4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=g+wAhT1D3Vaiq9Gz6DvG6+u4eoTHxpAF8VIjCg7mDw5FvSxwI3DIlBdPU6KGUUsiA
+         /aCbbIoCJupqNCTyQfLOdUmfYbl3amEm4gacdcqnedSY/s0e6KIG5O9ctaOMMwdmNE
+         M2ux8LF0YzjX0cIfBs+Jyr8zIfRcSTAPvcM33lvI2KCdT1Gh5vYkczdXsUcLbPf28d
+         2GU4BUscZ/Ed5qR+f9Md+4239kNfJc91dNNta2fG/LYVBLGtj3E6ve5hBs1sBEcEKo
+         nsZUAXOBANwy2InfavKDJu9oSIJQTjOm1z2/4IuFVJwQFjgPFIAn4Q6JLUKCnpQp1H
+         H9wYN6fu44GAQ==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1o7ayX-007gsI-QN;
+        Sat, 02 Jul 2022 12:07:45 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 10/12] docs: alsa: alsa-driver-api.rst: remove a kernel-doc file
+Date:   Sat,  2 Jul 2022 12:07:42 +0100
+Message-Id: <3cd6b93b36b32ad6ae160931aaa00b20688e241a.1656759989.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656759988.git.mchehab@kernel.org>
+References: <cover.1656759988.git.mchehab@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3] arm64: mm: fix linear mapping mem access performance
- degradation
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     baolin.wang@linux.alibaba.com, will@kernel.org,
-        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
-        james.morse@arm.com, quic_qiancai@quicinc.com,
-        christophe.leroy@csgroup.eu, jonathan@marek.ca,
-        mark.rutland@arm.com, thunder.leizhen@huawei.com,
-        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, rppt@kernel.org,
-        geert+renesas@glider.be, ardb@kernel.org, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-References: <1656586222-98555-1-git-send-email-guanghuifeng@linux.alibaba.com>
- <Yr8tzOJi5CGBl767@arm.com>
-From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <Yr8tzOJi5CGBl767@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks.
+This file:
+	sound/core/compress_offload.c
 
-在 2022/7/2 1:24, Catalin Marinas 写道:
-> On Thu, Jun 30, 2022 at 06:50:22PM +0800, Guanghui Feng wrote:
->> +static void init_pmd_remap(pud_t *pudp, unsigned long addr, unsigned long end,
->> +			   phys_addr_t phys, pgprot_t prot,
->> +			   phys_addr_t (*pgtable_alloc)(int), int flags)
->> +{
->> +	unsigned long next;
->> +	pmd_t *pmdp;
->> +	phys_addr_t map_offset;
->> +	pmdval_t pmdval;
->> +
->> +	pmdp = pmd_offset(pudp, addr);
->> +	do {
->> +		next = pmd_addr_end(addr, end);
->> +
->> +		if (!pmd_none(*pmdp) && pmd_sect(*pmdp)) {
->> +			phys_addr_t pte_phys = pgtable_alloc(PAGE_SHIFT);
->> +			pmd_clear(pmdp);
->> +			pmdval = PMD_TYPE_TABLE | PMD_TABLE_UXN;
->> +			if (flags & NO_EXEC_MAPPINGS)
->> +				pmdval |= PMD_TABLE_PXN;
->> +			__pmd_populate(pmdp, pte_phys, pmdval);
->> +			flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
-> 
-> This doesn't follow the architecture requirements for "break before
-> make" when changing live page tables. While it may work, it risks
-> triggering a TLB conflict abort. The correct sequence normally is:
-> 
-> 	pmd_clear();
-> 	flush_tlb_kernel_range();
-> 	__pmd_populate();
-> 
-> However, do we have any guarantees that the kernel doesn't access the
-> pmd range being unmapped temporarily? The page table itself might live
-> in one of these sections, so set_pmd() etc. can get a translation fault.
-Thanks.
-1. When reserving and remapping mem, there is only one boot cpu running, 
-no other cpu/thread/process running.
-At the same time, only the boot cpu remap and modify linear mem mapping 
-when there is no cpu access the same linear mapped mem(the boot cpu is 
-rebuilding it, and other cpu have't been booted).
+Doesn't define any docs, as everything is inside the header
+file. So, drop it, in order to remove a Sphinx warning.
 
-2.Because the kernel image and linear mem mapping are splited in two 
-method:  map_kernel and map_mem. When rebuilding the linear mem 
-mapping(mapped by map_mem), there is no effect to the kernle image mapping.
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-As a result, I thins there is no effect to the linear mem mapping and 
-kernel image mapping.
-> 
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 00/12] at: https://lore.kernel.org/all/cover.1656759988.git.mchehab@kernel.org/
+
+ Documentation/sound/kernel-api/alsa-driver-api.rst | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Documentation/sound/kernel-api/alsa-driver-api.rst b/Documentation/sound/kernel-api/alsa-driver-api.rst
+index d24c64df7069..3cf8eb4ecaf4 100644
+--- a/Documentation/sound/kernel-api/alsa-driver-api.rst
++++ b/Documentation/sound/kernel-api/alsa-driver-api.rst
+@@ -86,7 +86,6 @@ Compress Offload
+ 
+ Compress Offload API
+ --------------------
+-.. kernel-doc:: sound/core/compress_offload.c
+ .. kernel-doc:: include/uapi/sound/compress_offload.h
+ .. kernel-doc:: include/uapi/sound/compress_params.h
+ .. kernel-doc:: include/sound/compress_driver.h
+-- 
+2.36.1
+
