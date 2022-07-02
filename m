@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C86C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 23:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5972EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 23:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbiGBXMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 19:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58370 "EHLO
+        id S231211AbiGBXM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 19:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbiGBXMp (ORCPT
+        with ESMTP id S230426AbiGBXMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 19:12:45 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674F6BC1A;
-        Sat,  2 Jul 2022 16:12:43 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id h23so10244920ejj.12;
-        Sat, 02 Jul 2022 16:12:43 -0700 (PDT)
+        Sat, 2 Jul 2022 19:12:46 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461FBBC21;
+        Sat,  2 Jul 2022 16:12:45 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id z41so7188707ede.1;
+        Sat, 02 Jul 2022 16:12:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jtcfJDlBtIQgsJctsItB2jzUjAIsrPcb5sLRSibvewY=;
-        b=qed6BExX6r9RFcO7N/YaPXvv0CuF4LZlMKFRZXUeWaKTX/oo0mMQ0CtWdqXxVK/Pe8
-         tSmMt0syPx0daH/cypM0v17Kii6YdnDYYxAbqphyO7eHeuVf2CwcCNdXT+jIeKK5v/KG
-         gI2C/gfRJmZ09ZKXZE4nK0Kr8eAteRL76xpgvq1HTQxuKUFR7ZTTnwiou1W49TV2xFrQ
-         aVJr8Qdl4HOoixPdSH1HSkHp+qhQdFiLuF9ZUYnnoh7YtC+j7Oti5EtFatHJrSyvhYnQ
-         2L1ybUFJu2Y1KPwc3yfmnkGKC4LiyZO2YCD7imITIa8sdgVNjI92w+oFjLPSnVTJj+qW
-         Bo+g==
+        bh=DTaZ/9+DRnLhDSj0DOV2C+IIhpHfbKqhWacVmkOB7BY=;
+        b=WAh2tNKM0lRNF8UUHv4MaNqhtwRvQubb5330+ZE3Y2mae4IDnvy7linhak+uRdzDuL
+         fCnOAUVX4274xrZMmLilupQ2Z1rmJFGjBYLiBQuiV9sbuW+yfo2nF+9jAAxwZXGyXUiQ
+         mGhlewzANw11TbAAokn2DtuU28zUdub/OmqISYRxdUQf6mqAhq+SYB95psXCfnNz2VE7
+         4Tyts//6DcsvsM8fyorliVDkfQeEi5iRyVm6igDR6m4vjEA3BeXscWuVYmO7FPmZ+vez
+         b23iT/69ltBEHcXQWzut2ARq0z9pXxhcECQ/3Fn6s+6qdba7bMl67X5ssgJdadDriehm
+         g9yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jtcfJDlBtIQgsJctsItB2jzUjAIsrPcb5sLRSibvewY=;
-        b=VJVrQkkhzyPPeMOsb1CcLPvSiEJVBqfFXtQgBNvJxHWY0WyUckO32NnbFlmWVViZz2
-         qGooCIaONS5fC5Qb8cjRn7St+S/e18gNPIM2wBECrNELxdJFRhk5ri6I5UUBs6BtVcWT
-         2F8akYytf0gQ6HU2yRaOz9vzLZrc2EeK4jTk4HVqr+A9Ll2MNR5qxwEb2pFGgH05AaLf
-         VB6FTKuPbXo6vBAXtajztd04ZJOOeI0+18+LMGusKl5WMWY9Z6vQSX1g8BNfWJkZFJ2B
-         NtvWX9QEXlWZD+hp1PhdRK4A7rtYnFzClzIP6eds+FLJDH8CQrFwYE/z0ybFigmBhpvv
-         JnCQ==
-X-Gm-Message-State: AJIora+K7zD0HP1Jjt5b9lF+WFsniNJI85g9yX/6yZPYN49EmZN6lJ5/
-        hjWs/xRY9ia/eU7vdrFspnU=
-X-Google-Smtp-Source: AGRyM1uPubQUBkUKfCj6Pab0PNni4xlv9AST3IHTvB/EK4KaVO/XfMVh/qyaIxTVFiFgUYRv+RmQCw==
-X-Received: by 2002:a17:907:608b:b0:722:f954:6e3 with SMTP id ht11-20020a170907608b00b00722f95406e3mr21619271ejc.550.1656803561997;
-        Sat, 02 Jul 2022 16:12:41 -0700 (PDT)
+        bh=DTaZ/9+DRnLhDSj0DOV2C+IIhpHfbKqhWacVmkOB7BY=;
+        b=7rdLGvY1LrX+ja1b/hJfI9mjrJIRiP2ZpHvySqXD4tANn4kTFpP6haVs/r1LL48pZB
+         ty1oUo+Elbo56/RhcjCx1R3wzfKJKWTwfw5AovquyQIZ/7LLhjzkbjJTJt/1D5YXwYNP
+         jkFoHemW2vn8QzTga84xSZGqUesy7rW39WmZahKfQ+K7zo/6gkHrjxYBYtEp04muXu9t
+         y/sH3SLhyL/JuwP6E/ZUznusDCmqcXifirDPRiBWwoARGl5Nr4LIUmVfdAcyILihwBmh
+         TBNdiLI4QUXTGtIlVgBaxXnAHR3FWd7ui+X+DAHXZSX2f0DCoyhOjMCTebrXG/YjGoQC
+         hNkA==
+X-Gm-Message-State: AJIora84i4TBUP0ONBmeIWHiHy2+ZOjGJzDq9iSXDX3odBPE37ZxuBQP
+        hfGDezxsOhAVizVWuyA5kv4=
+X-Google-Smtp-Source: AGRyM1t0QOBr9erpyf7jmjLE/oOiBlNlr/q0V5DW66YddsJao3mqr3ZWGBJYQtA1HfnkFRmj1rVVmA==
+X-Received: by 2002:a05:6402:1e95:b0:437:ce7f:e17a with SMTP id f21-20020a0564021e9500b00437ce7fe17amr27711429edf.169.1656803563812;
+        Sat, 02 Jul 2022 16:12:43 -0700 (PDT)
 Received: from localhost.localdomain (dynamic-2a01-0c23-c4d4-2700-f22f-74ff-fe21-0725.c23.pool.telefonica.de. [2a01:c23:c4d4:2700:f22f:74ff:fe21:725])
-        by smtp.googlemail.com with ESMTPSA id uz12-20020a170907118c00b00711aed17047sm12234329ejb.28.2022.07.02.16.12.41
+        by smtp.googlemail.com with ESMTPSA id uz12-20020a170907118c00b00711aed17047sm12234329ejb.28.2022.07.02.16.12.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 16:12:41 -0700 (PDT)
+        Sat, 02 Jul 2022 16:12:43 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, tlanger@maxlinear.com,
         rtanwar@maxlinear.com, miquel.raynal@bootlin.com, richard@nod.at,
         vigneshr@ti.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 2/8] dt-bindings: mtd: intel: lgm-nand: Fix maximum chip select value
-Date:   Sun,  3 Jul 2022 01:12:21 +0200
-Message-Id: <20220702231227.1579176-3-martin.blumenstingl@googlemail.com>
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 4/8] mtd: rawnand: intel: Remove undocumented compatible string
+Date:   Sun,  3 Jul 2022 01:12:23 +0200
+Message-Id: <20220702231227.1579176-5-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220702231227.1579176-1-martin.blumenstingl@googlemail.com>
 References: <20220702231227.1579176-1-martin.blumenstingl@googlemail.com>
@@ -67,30 +66,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Intel LGM NAND IP only supports two chip selects: There's only two
-CS and ADDR_SEL register sets. Fix the maximum allowed chip select value
-according to the dt-bindings.
+The "intel,nand-controller" compatible string is not part of the
+dt-bindings. Remove it from the driver as it's not supposed to be used
+without any documentation for it.
 
-Fixes: 2f9cea8eae44f5 ("dt-bindings: mtd: Add Nand Flash Controller support for Intel LGM SoC")
-Acked-by: Rob Herring <robh@kernel.org>
+Fixes: 0b1039f016e8a3 ("mtd: rawnand: Add NAND controller support on Intel LGM SoC")
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- Documentation/devicetree/bindings/mtd/intel,lgm-ebunand.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/nand/raw/intel-nand-controller.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/mtd/intel,lgm-ebunand.yaml b/Documentation/devicetree/bindings/mtd/intel,lgm-ebunand.yaml
-index 763ee3e1faf3..04f26196c4c1 100644
---- a/Documentation/devicetree/bindings/mtd/intel,lgm-ebunand.yaml
-+++ b/Documentation/devicetree/bindings/mtd/intel,lgm-ebunand.yaml
-@@ -51,7 +51,7 @@ patternProperties:
-     properties:
-       reg:
-         minimum: 0
--        maximum: 7
-+        maximum: 1
+diff --git a/drivers/mtd/nand/raw/intel-nand-controller.c b/drivers/mtd/nand/raw/intel-nand-controller.c
+index 3df3f32423f9..056835fd4562 100644
+--- a/drivers/mtd/nand/raw/intel-nand-controller.c
++++ b/drivers/mtd/nand/raw/intel-nand-controller.c
+@@ -723,7 +723,6 @@ static int ebu_nand_remove(struct platform_device *pdev)
+ }
  
-       nand-ecc-mode: true
- 
+ static const struct of_device_id ebu_nand_match[] = {
+-	{ .compatible = "intel,nand-controller" },
+ 	{ .compatible = "intel,lgm-ebunand" },
+ 	{}
+ };
 -- 
 2.37.0
 
