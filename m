@@ -2,124 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 379FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 04:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E9DC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 04:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232060AbiGBEZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 00:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        id S231572AbiGBE0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 00:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbiGBEYx (ORCPT
+        with ESMTP id S231865AbiGBE0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 00:24:53 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEC828E31;
-        Fri,  1 Jul 2022 21:24:52 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 31CD45C020F;
-        Sat,  2 Jul 2022 00:24:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sat, 02 Jul 2022 00:24:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1656735891; x=1656822291; bh=LG
-        V0UgiQ5BsxhP6kl4zQXzxA4vF4AWjRJhvCPcjVLAA=; b=mTLu5+HMsxS/tj+kVe
-        0xH5f5Upim2cayZaeXIRca25FqAEFVsqJp0UFlZJ1m5M5of7cqYL39h0GRdXF78+
-        aYOYBmxk9/6ieCibKJSPIVx1a+8m8pbsryCRYlNDL5EWn8iqeoeiwGaVUhnhjlTR
-        bA7rsIZKAf79eXfFsUKLKQZe8k2wumK29lmnCVMpg8PPZczzh7hWNvm7VBTtQfDj
-        4s3NEpyrpiPrgRfkLxdpLGP69GC4HYShiTzkzSf0zEx5s5GgZdIhHFym5m4L9Gf1
-        mY7BW1IXNC56Strlv3KhitrniALbquDbVDV6c/AheeNDtlPgM7s2BnpZ2vqhd/ve
-        +Lhw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1656735891; x=1656822291; bh=LGV0UgiQ5Bsxh
-        P6kl4zQXzxA4vF4AWjRJhvCPcjVLAA=; b=vUGCkQ0awWg4+ubo+VMfiDcVKsFHx
-        Q5y1kUwg4zUVDyP2oo5trdlvTWcvSfkYMGoBBTL1F1TvBu7GquOnanSz8ImyBQuB
-        Ywr72cPHB4bIf3q5Q8lePoy3l/lMYSRFpLBk5hahmZWIf8z2vuwuIrR+Re+fGFV9
-        p6kjShPJua30vLSm2qlcY6q7exuLOL3+GGfCx9NHcWWEPLlHQ8Vx44ZKBngZPNbs
-        EiME5lyknBDaGs+xqJFtw325qaC3aCDUS3jyywinT2xRzadXwV3w6Gs4bdcw5jhc
-        lUoYtWuNkNQPjIiTYjLZX0Z+tUv4Aco5xHdW+drykQWZDeib04m0XpKFA==
-X-ME-Sender: <xms:ksi_Yjy__RLTikurpstx28oPU8GnXnKbctxpf_Vh-6Zh46qA1euMGw>
-    <xme:ksi_YrRwIKtuXJdGF7IOTl_a9go82GiqvKoYB5X8MMqe5tv7-xA3CyfsA2x6T2RHA
-    5tCT3XbBzjohZEzpA>
-X-ME-Received: <xmr:ksi_YtUMYvcNSPEzWO7dIdleiN82wxYywLI8JJLDd_cZJ6F4tWW_JFxq8NUiIczIiHX0fvA3ZPWu0TTth7cPIG-NuJcQgIP5tuun2o1EV8f6eJnsXfvlP24bCdFhhznpU0vcJA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehgedgkeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepudekteeuudehtdelteevgfduvddvjefhfedulefgudevgeeghefg
-    udefiedtveetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:ksi_YthAhjuCC0Bhc28NHmtZilEUn1WgoZiV8ccHUQVRMtxQQE5hzA>
-    <xmx:ksi_YlBwz0ksZrNN7GKcnw6bC2rZLlp2uNRThOBVzXiCxdFlliQ0rQ>
-    <xmx:ksi_YmJO4TbPU3LUggFt414FYJPu4SUxmoeOS-PadJPyM30_k3admA>
-    <xmx:k8i_YptHjajYOfLN6sHdWiwyDyR0oQzedWYtVXN2SNx7RhjE04snDA>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 2 Jul 2022 00:24:50 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: [PATCH 2/2] dt-bindings: arm: sunxi: Add several MBUS compatibles
-Date:   Fri,  1 Jul 2022 23:24:47 -0500
-Message-Id: <20220702042447.26734-2-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220702042447.26734-1-samuel@sholland.org>
-References: <20220702042447.26734-1-samuel@sholland.org>
+        Sat, 2 Jul 2022 00:26:19 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140C036172;
+        Fri,  1 Jul 2022 21:26:19 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so8249834pjl.5;
+        Fri, 01 Jul 2022 21:26:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CrnMX/y17RbreUUoQH2OPYzTSPe+shNvumhDkSBxTNs=;
+        b=LInhJ5lXc+MaW6MvH/aptxzQFWfdvB2UO8DR8Wjh7getx8C6dvqj7fq9wB0AmB7/dx
+         mF+WUddZfsr/Ganc9ugv2i4XUKCAkM1T58qtVDAlEl/zEPy6LyzXaeYZIzh/xBhLhtah
+         2p78/GKWWcbM82objPtgj9QK09v5PEHmyALrQWdRpD/yaqpQQ78KYShaG3+W5h5AANlq
+         Nuq+ycJkjmURk6R/Vnhqf315nazra3T/O4dMJ6TCwv1+U/XPDU/wyyJiKKjeXET/Qqjd
+         D4cVEnCibyOb1rwiVMogDwes71Jw3wyvgf0MLnyiWHVGt2RrsauJbF5VYvus4M/PP11S
+         rZZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CrnMX/y17RbreUUoQH2OPYzTSPe+shNvumhDkSBxTNs=;
+        b=uAgdgmOSi2s8KWgAg/v1hmpYGSUvRGYoR3drmj9i84/Qgn8z0c+SV9nQDFQlhJuTw6
+         Y04yFuroh0nJOKncZrAv1OMKPXZhSfZm13so7rm+l0lr8FolkQgggkzstJlO2dermBi4
+         6qW9u/Vd8Mf9QTwdWau53GC7t1seXggKB+VBtWb7mTFhKMQdOG+1SF/u9mDf/LvvQKhN
+         GQM2cVPU1c3aUFUOgIz/Dzth3WXmmPWITdG8zDsPSU/Jo6cGH35OHotnTcmbziQKnSlc
+         4Vr+GBaP8U3NZuN0qBuHSoS35cPzvPRxl6UR0uX0p6OnLl/788bNyAUPjiYs6b+F4ZWS
+         l/kQ==
+X-Gm-Message-State: AJIora/TFkhg2gtNXyHzhYEWfzHoeQUKX+D4TFvsEPkwFhD+9D5NWpav
+        c7jFQYvlU0GZ+C0in2xpiyo=
+X-Google-Smtp-Source: AGRyM1uZafyoF1S6AVLn7IBZsh2efEOnKLTPX84jcOmtzDIgrEzXdlwftEixQdfH+iRTZ0auN4LeFg==
+X-Received: by 2002:a17:902:d491:b0:16a:76c5:c1fa with SMTP id c17-20020a170902d49100b0016a76c5c1famr24976368plg.103.1656735978654;
+        Fri, 01 Jul 2022 21:26:18 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-9.three.co.id. [180.214.233.9])
+        by smtp.gmail.com with ESMTPSA id q6-20020a63cc46000000b0040d287f1378sm16246039pgi.7.2022.07.01.21.26.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 21:26:17 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 21DDF1038FC; Sat,  2 Jul 2022 11:23:53 +0700 (WIB)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Colin Ian King <colin.king@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        dm-devel@redhat.com, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Documentation: dm writecache: documentation fixes
+Date:   Sat,  2 Jul 2022 11:23:48 +0700
+Message-Id: <20220702042350.23187-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All of the sunxi SoCs since at least the A33 have a similar structure
-for the MBUS and DRAM controller, but they all have minor differences in
-MBUS port assignments and DRAM controller behavior. Give each SoC its
-own compatible.
+Two small documentation fixes for writecache functionality of device
+mapper. The shortlog below should be self-explanatory.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+Cc: Alasdair Kergon <agk@redhat.com>
+Cc: Mike Snitzer <snitzer@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Ross Zwisler <zwisler@kernel.org>
+Cc: Colin Ian King <colin.king@intel.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: dm-devel@redhat.com
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
- .../bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml   | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Bagas Sanjaya (2):
+  Documentation: dm writecache: Add missing blank line before optional
+    parameters
+  Documentation: dm writecache: Render status list as list
 
-diff --git a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml
-index 2b018feb56df..99566688d033 100644
---- a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml
-+++ b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml
-@@ -29,10 +29,20 @@ properties:
-   compatible:
-     enum:
-       - allwinner,sun5i-a13-mbus
-+      - allwinner,sun8i-a33-mbus
-+      - allwinner,sun8i-a50-mbus
-+      - allwinner,sun8i-a83t-mbus
-       - allwinner,sun8i-h3-mbus
-       - allwinner,sun8i-r40-mbus
-+      - allwinner,sun8i-v3s-mbus
-+      - allwinner,sun8i-v536-mbus
-+      - allwinner,sun20i-d1-mbus
-       - allwinner,sun50i-a64-mbus
-+      - allwinner,sun50i-a100-mbus
-       - allwinner,sun50i-h5-mbus
-+      - allwinner,sun50i-h6-mbus
-+      - allwinner,sun50i-h616-mbus
-+      - allwinner,sun50i-r329-mbus
- 
-   reg:
-     minItems: 1
+ Documentation/admin-guide/device-mapper/writecache.rst | 2 ++
+ 1 file changed, 2 insertions(+)
+
+
+base-commit: 089866061428ec9bf67221247c936792078c41a4
 -- 
-2.35.1
+An old man doll... just what I always wanted! - Clara
 
