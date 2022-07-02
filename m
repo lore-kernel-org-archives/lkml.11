@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 16:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 16:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbiGBQIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 12:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        id S232428AbiGBQIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 12:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiGBQIm (ORCPT
+        with ESMTP id S232394AbiGBQIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 12:08:42 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49104E0B0
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 09:08:38 -0700 (PDT)
+        Sat, 2 Jul 2022 12:08:43 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4058BE0C6
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 09:08:42 -0700 (PDT)
 Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 894C92F29D9;
-        Sat,  2 Jul 2022 18:08:33 +0200 (CEST)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 2B6492F29DE;
+        Sat,  2 Jul 2022 18:08:36 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1656778114;
+        s=mail1707; t=1656778116;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5skgPrJ9x2u3xnCYuEk8bAF9fVBu0gldzNJqqSQ5PUM=;
-        b=X4bILSnWGfijScSJsNRz7j0Ze47qwJ5AkI4aIVTo8gYzwcBWTk/SwFzD6qhhWgA7pKr42F
-        bAHlYOVA/Hah+/r9GaekI101LGDDQrvIWXjZAy/zLg2160eglDNBAGP2ZmUGn/94RDvxgc
-        MFnhIO6g96tMzfQPrYfoAFdZhXPWwciQr3WeMFRTDFlHy66IWWIDSKBcEvclHEBWB24lT9
-        phhjUudrmdLs+i1im2bEJH0jKhgxTfCz9MVFx8627Fj9bgc1GDX4o5wu6VFzZ9QzFSaJBv
-        Ad+k12HUyRxZRXCFZMjJkQCpFzqgA7zja/UvDqAEFW1mhNFGm6KW/bQqR3RFqw==
+        bh=9/sd1UNeYBxDZ/PxaUTdlpYf5mSD1eCp0bTuKG3MEE4=;
+        b=7xNwjdXJBs8aSZWdsKNKz6mIkDpg9yXrCQURvoiDC0XvxZMnQMnzSjmJZRlBHWpPCyez7q
+        L+j4tphaOO5xsdyGGfUnsnPvzRviiCe+WuxJV5S3+4piJH4RXDNsBsukAJyishTs7VVhsO
+        2CG4DK/nCDhmPLEVEcOtTTWjkdALaVKjeVAG9uhIUR/rs6+UkAF/oUZws5H2ZM65G+WkYZ
+        H60PmnD39Jx7lKfiOyZmTpCk7foS/W3cos6viYk2cDVvFOyBuToPuiaT2z/8UTZbL7C6+c
+        YQ94DXIVjlNu6vM/YmF7aMMTp+XrEKj5/fdfFBl9Lm4F12jTvGE5cXQ1Ltr5PQ==
 From:   Sander Vanheule <sander@svanheule.net>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -46,9 +46,9 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         "H . Peter Anvin" <hpa@zytor.com>,
         Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v4 1/5] x86/cacheinfo: move shared cache map definitions
-Date:   Sat,  2 Jul 2022 18:08:24 +0200
-Message-Id: <e8167ddb570f56744a3dc12c2149a660a324d969.1656777646.git.sander@svanheule.net>
+Subject: [PATCH v4 5/5] cpumask: Update cpumask_next_wrap() signature
+Date:   Sat,  2 Jul 2022 18:08:28 +0200
+Message-Id: <72ab755695b74bb5fbaa756ae4c0edd708d172f1.1656777646.git.sander@svanheule.net>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656777646.git.sander@svanheule.net>
 References: <cover.1656777646.git.sander@svanheule.net>
@@ -58,66 +58,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The maps to keep track of shared caches between CPUs on SMP systems are
-declared in asm/smp.h, among them specifically cpu_llc_shared_map.
-These maps are externally defined in cpu/smpboot.c. The latter is only
-compiled on CONFIG_SMP=y, which means the declared extern symbols from
-asm/smp.h do not have a corresponding definition on uniprocessor builds.
-
-The inline cpu_llc_shared_mask() function from asm/smp.h refers to the
-map declaration mentioned above. This function is referenced in
-cacheinfo.c inside for_each_cpu() loop macros, to provide cpumask for
-the loop. On uniprocessor builds, the symbol for the cpu_llc_shared_map
-does not exist. However, the current implementation of for_each_cpu()
-also (wrongly) ignores the provided mask.
-
-By sheer luck, the compiler thus optimises out this unused reference to
-cpu_llc_shared_map, and the linker therefore does not require the
-cpu_llc_shared_mask to actually exist on uniprocessor builds. Only on
-SMP bulids does smpboot.o exist to provide the required symbols.
-
-To no longer rely on compiler optimisations for successful uniprocessor
-builds, move the definitions of cpu_llc_shared_map and
-cpu_l2c_shared_map from smpboot.c to cacheinfo.c.
+The extern specifier is not needed for this declaration, so drop it. The
+function also depends only on the input parameters, and has no side
+effects, so it can be marked __pure like other functions in cpumask.h.
 
 Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- arch/x86/kernel/cpu/cacheinfo.c | 6 ++++++
- arch/x86/kernel/smpboot.c       | 4 ----
- 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/cacheinfo.c b/arch/x86/kernel/cpu/cacheinfo.c
-index fe98a1465be6..66556833d7af 100644
---- a/arch/x86/kernel/cpu/cacheinfo.c
-+++ b/arch/x86/kernel/cpu/cacheinfo.c
-@@ -29,6 +29,12 @@
- #define LVL_3		4
- #define LVL_TRACE	5
+Notes:
+    Changes since v3:
+    - Add Andy's Reviewed-by
+    
+    Changes since v1:
+    - Split off patch from other changes
+
+ include/linux/cpumask.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+index 6c5b4ee000f2..523857884ae4 100644
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -229,7 +229,7 @@ int cpumask_any_distribute(const struct cpumask *srcp);
+ 		(cpu) = cpumask_next_zero((cpu), (mask)),	\
+ 		(cpu) < nr_cpu_ids;)
  
-+/* Shared last level cache maps */
-+DEFINE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_llc_shared_map);
-+
-+/* Shared L2 cache maps */
-+DEFINE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_l2c_shared_map);
-+
- struct _cache_table {
- 	unsigned char descriptor;
- 	char cache_type;
-diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index 5e7f9532a10d..f24227bc3220 100644
---- a/arch/x86/kernel/smpboot.c
-+++ b/arch/x86/kernel/smpboot.c
-@@ -95,10 +95,6 @@ EXPORT_PER_CPU_SYMBOL(cpu_core_map);
- DEFINE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_die_map);
- EXPORT_PER_CPU_SYMBOL(cpu_die_map);
+-extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
++int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
  
--DEFINE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_llc_shared_map);
--
--DEFINE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_l2c_shared_map);
--
- /* Per CPU bogomips and other parameters */
- DEFINE_PER_CPU_READ_MOSTLY(struct cpuinfo_x86, cpu_info);
- EXPORT_PER_CPU_SYMBOL(cpu_info);
+ /**
+  * for_each_cpu_wrap - iterate over every cpu in a mask, starting at a specified location
 -- 
 2.36.1
 
