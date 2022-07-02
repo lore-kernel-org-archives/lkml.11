@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F294DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 11:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 11:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232366AbiGBLIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 07:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
+        id S232249AbiGBLII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 07:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231865AbiGBLHv (ORCPT
+        with ESMTP id S231882AbiGBLHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 2 Jul 2022 07:07:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F1215A2B;
-        Sat,  2 Jul 2022 04:07:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060DD15A2A;
+        Sat,  2 Jul 2022 04:07:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E11B60C8B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8657B60C86;
         Sat,  2 Jul 2022 11:07:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B9CC385A5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C1AFC341CD;
         Sat,  2 Jul 2022 11:07:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656760068;
-        bh=+yAOlbX8A26J9WzbSfl3wRbCKpuFUrq8Fa9yBKYeicw=;
+        bh=HoY8a1pQ8+QTg3PV6dYwn+Zs/t2wHp535PSOQzabaig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VM1iCrW2XRikhJ2c+5H0XB/XAM6njzsGfDa5VPbbv/nDcUSOzEdchhTP2fLP7TRDu
-         0bf+VKznG6405a8D01YjHbaJNj1bpyCu3UO+gZBaoxYRG/av5n/B+4GbDh0dr5i6Ka
-         E/8WxANuARzjiM53c0gOOUbEAz4LLYP/ZbpPCFn423cZJh5/qp8hUGIQlNicjwgp6R
-         AGkrHobGl2OvC+xLH+gkBP1xT2oP0E6T5yhCD5WEeF3EA2BKE3x6vHENGMuRYYDjoS
-         HSq1vgnBbUR0vWMXJ2Aihrq5Vm2RKdsXyosq3SsvxJIuMrcq9CPISGNWP1T335C0vz
-         By2b6k1dt4wAA==
+        b=ljA+otHbIs93lLzFjuRvfpFijXlQQUQ4yzwHyPDkgSHy3BzqpWVZNh+lpWqgzD3qz
+         LXqWTaIy3Tw9BJDIgG+1gTLV/eAbBkpjVLhyGIPDgn11u4hXhSAt+NElki04UHIQfa
+         wdw5dgBryi2nbaJOV/qzh74mbrFghYi1ybUbZluJR9D3NhRUTcAG688xWKPHy/k8vr
+         unFXRwMNPFaIZB1IxosKNBfD7DnYh2qQG/ezfJw3gML6NT4rE8a5+rAtImXTerMluB
+         ati0aQPV93/0KQp+R+0E5mWKzk8lfu7cUVDFOrItwfJJQp729M19Lugl1ojWgLasal
+         dB5qHRSpkoUfw==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o7ayX-007gs9-O4;
+        id 1o7ayX-007gs0-Lx;
         Sat, 02 Jul 2022 12:07:45 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jonathan Corbet" <corbet@lwn.net>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Madhavan Srinivasan <maddy@in.ibm.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 07/12] docs: ABI: sysfs-bus-nvdimm
-Date:   Sat,  2 Jul 2022 12:07:39 +0100
-Message-Id: <38a59ea8cc8581a3009d269c9f1cd4cf07b347dc.1656759989.git.mchehab@kernel.org>
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: [PATCH 04/12] docs: PCI: pci-vntb-function.rst: Properly include ascii artwork
+Date:   Sat,  2 Jul 2022 12:07:36 +0100
+Message-Id: <9eeaa329cc4fa64829ff0bdaf8f10e68f7283ac7.1656759989.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656759988.git.mchehab@kernel.org>
 References: <cover.1656759988.git.mchehab@kernel.org>
@@ -58,10 +58,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add blank lines, as this is required by code-block markup syntax.
+Adjust identation and add a "::" in order to properly mark the
+ascii artwork as a code block, fixing this warning:
 
-Fix this warning:
-	Documentation/ABI/testing/sysfs-bus-nvdimm:11: WARNING: Unexpected indentation.
+	Documentation/PCI/endpoint/pci-vntb-function.rst:82: WARNING: Unexpected indentation.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -69,25 +69,22 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/12] at: https://lore.kernel.org/all/cover.1656759988.git.mchehab@kernel.org/
 
- Documentation/ABI/testing/sysfs-bus-nvdimm | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/PCI/endpoint/pci-vntb-function.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-nvdimm b/Documentation/ABI/testing/sysfs-bus-nvdimm
-index 1c1f5acbf53d..eeabba807e4b 100644
---- a/Documentation/ABI/testing/sysfs-bus-nvdimm
-+++ b/Documentation/ABI/testing/sysfs-bus-nvdimm
-@@ -18,9 +18,11 @@ Description:	(RO) Attribute group to describe the magic bits
- 		Each attribute under this group defines a bit range of the
- 		perf_event_attr.config. Supported attribute is listed
- 		below::
-+
- 		  event  = "config:0-4"  - event ID
+diff --git a/Documentation/PCI/endpoint/pci-vntb-function.rst b/Documentation/PCI/endpoint/pci-vntb-function.rst
+index cad8013e8839..7b2ac70e2c57 100644
+--- a/Documentation/PCI/endpoint/pci-vntb-function.rst
++++ b/Documentation/PCI/endpoint/pci-vntb-function.rst
+@@ -58,7 +58,7 @@ It is same as PCI NTB Function driver
+ Scratchpad Registers:
+ ---------------------
  
- 		For example::
-+
- 			ctl_res_cnt = "event=0x1"
+-  It is appended after Config region.
++It is appended after Config region::
  
- What:           /sys/bus/event_source/devices/nmemX/events
+   +--------------------------------------------------+ Base
+   |                                                  |
 -- 
 2.36.1
 
