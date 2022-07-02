@@ -2,92 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83475C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0C7CCA485
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbiGBTuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 15:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
+        id S230517AbiGBTw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 15:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiGBTuE (ORCPT
+        with ESMTP id S229468AbiGBTwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 15:50:04 -0400
-Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6492B86E
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 12:50:03 -0700 (PDT)
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
-        id 1o7j7y-0008Us-Dh
-        for linux-kernel@vger.kernel.org; Sat, 02 Jul 2022 21:50:02 +0200
-X-Injected-Via-Gmane: http://gmane.org/
-To:     linux-kernel@vger.kernel.org
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH 1/4] s390/cio: Rename bitmap_size() as idset_bitmap_size()
-Date:   Sat, 2 Jul 2022 21:42:02 +0200
-Message-ID: <62d3cfcd-a32e-59d1-c376-c95e8da1049f@wanadoo.fr>
-References: <cover.1656785856.git.christophe.jaillet@wanadoo.fr>
- <3f2ad7fb91948525f6c52e0d36ec223cd3049c88.1656785856.git.christophe.jaillet@wanadoo.fr>
- <YsCUW6vT7LlAv2UE@smile.fi.intel.com>
- <6063ee97-1bbe-2391-78cb-57572851a52c@wanadoo.fr>
- <YsCdSkzSbVz9gnci@smile.fi.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Sat, 2 Jul 2022 15:52:54 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0523BF61;
+        Sat,  2 Jul 2022 12:52:53 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3C1AC5C013F;
+        Sat,  2 Jul 2022 15:52:51 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Sat, 02 Jul 2022 15:52:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1656791571; x=1656877971; bh=O8zr6Ut53pXgri28RQNnVr7KB
+        XQK2o9i+KBa+QeAQqw=; b=lEA/gbnvzdCuko010G+69STc1CEIPGeH+m2Ybdhsn
+        oYmcDl5MMgw8XXLSR74tBUvr2TKSpHYXpMVXCq+QN1UAMod1lUIv1BHjT1rWUFXD
+        FOBWfFIKD6M7osRvF4MLGenVn+gThvT1t03KVNeZ2wp8XiisdVtYDEJNKS0vrJ5c
+        WF1HxlUoRKS+93eE3JsjI4530L/Yj8k3FGU2J03MOtuN+HuZlAeC5bp9xpHZn2Gv
+        Pg9WLe6f852xY0e/ej/mR8qfZfmWq5CdP1RchFOK8vvVxtaGOnyH5g4VTbHTIxMF
+        bwZpupXbg85Y1TKP6eUfIVteFwQ+UhcT0Y7ooa7rstehg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1656791571; x=1656877971; bh=O8zr6Ut53pXgri28RQNnVr7KBXQK2o9i+KB
+        a+QeAQqw=; b=CdIH03UOQzAPjb2Cn+kFWBLoF9ohTbWiAbfvPulOcd0n4SrdhyC
+        sfXnLn+FhFgQQMx8CZKRHYad83D30httbNtqh0LXxBUYrwONGCVIOTce2iVOItwM
+        9mp81/bHjWjZSTHK8If6V1a9vy5MFvPcn2nxBUituISe5qbFW88maUcSXvw5UYnX
+        7pchSHGYBNt9SqgOmFZSvH4L1XV9ro5isI8QXPs/TZTZIJowV1cRGIv0s3T8fvJW
+        On/VpWLNDaPlOJrsYIQjxqLfmQCCorN/sHjvB+4Wquw7HcEaNpV3U20vLOzpk6pF
+        DtHC5MNwzrii27m/+tedPd3MrBcHpGA2bzQ==
+X-ME-Sender: <xms:E6LAYnfe248R6ZEz0DwRyLkTmewGen-UW0dzPMd4vuXJr79vO-vFbA>
+    <xme:E6LAYtO-JlqHSG6O3N4rYyXEjJN-WZ_tie8Dw59toUoDzFHJsHq8icgMdXeVTXN3E
+    9Ly-zkMEksDxxlAzQ>
+X-ME-Received: <xmr:E6LAYggq1Q1xubKhMvofGmkVEDwnvEyA5KWz4Si5NOfutXRRuAicLE8vmHgWhTITazogawww5XhzEWCGivDm_uMdX7CWY-hlsrMm7NhHmYJQNrKYMDw8oFDbGRh_BEiIFA8_DA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehhedgudegvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeeh
+    hffhkeekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:E6LAYo-ByVtrU1HPdwAsXUBP42zis6SL5JKgLB6MSpGnXxaC6AKQBw>
+    <xmx:E6LAYjtoSs1b3QnjVH7YaM1g750vz2feUYbhRorD14U0sjRGiLso3w>
+    <xmx:E6LAYnH_nQNRitzEGQdibG2NHtyyHaVLLtR-m8SUR3p3k7izPgXs5A>
+    <xmx:E6LAYkl_15_jgobRtDDO0mSqo_i5q87gTRDY9VualHtSadRZX9YX2Q>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 2 Jul 2022 15:52:50 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-usb@vger.kernel.org
+Subject: [PATCH 0/3] dt-bindings: usb: Document Allwinner D1 compatibles
+Date:   Sat,  2 Jul 2022 14:52:46 -0500
+Message-Id: <20220702195249.54160-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     kernel-janitors@vger.kernel.org, dm-devel@redhat.com
-Content-Language: en-US
-In-Reply-To: <YsCdSkzSbVz9gnci@smile.fi.intel.com>
-Cc:     dm-devel@redhat.com, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220702194202.qzqVSH3FTx2SAGCliHsG6gK_C0W1WvqQthPjzZ4RAVs@z>
 
-Le 02/07/2022 à 21:32, Andy Shevchenko a écrit :
-> On Sat, Jul 02, 2022 at 09:24:24PM +0200, Christophe JAILLET wrote:
->> Le 02/07/2022 à 20:54, Andy Shevchenko a écrit :
->>> On Sat, Jul 02, 2022 at 08:29:09PM +0200, Christophe JAILLET wrote:
-> 
-> ...
-> 
->>>> -		memset(set->bitmap, 0, bitmap_size(num_ssid, num_id));
->>>> +		memset(set->bitmap, 0, idset_bitmap_size(num_ssid, num_id));
->>>
->>> Why not to use bitmap_zero()?
-> 
-> ...
-> 
->>>> -	memset(set->bitmap, 0xff, bitmap_size(set->num_ssid, set->num_id));
->>>> +	memset(set->bitmap, 0xff, idset_bitmap_size(set->num_ssid, set->num_id));
->>>
->>> Why not to use bitmap_fill() ?
-> 
->> For this initial step, I wanted to keep changes as minimal as possible (i.e
->> just function renaming)
->>
->> In fact, I plan to send a follow-up patch on this file.
->> This would remove the newly renamed idset_bitmap_size() function, use the
->> bitmap API directly (as you pointed-out) with
->> "set->num_ssid * set->num_id" as size.
->>
->> It is already done this way in idset_is_empty(), so it would be more
->> consistent.
->>
->> If the serie needs a v2 (or if required), I can add an additional 5th patch
->> for it. Otherwise it will send separatly later.
-> 
-> If you use bitmap APIs as I suggested above as the first patch, the rest will
-> have less unneeded churn, no?
-> 
-> 
+These patches document the compatible strings for the USB controllers in
+the Allwinner D1 SoC, which require no special driver support.
 
-Makes sense.
 
-I'll wait for some other potential comments 1 day or 2 and send a v2 
-with the simplification you propose as an initial step.
+Samuel Holland (3):
+  dt-bindings: usb: sunxi-musb: Add Allwinner D1 compatible
+  dt-bindings: usb: generic-ehci: Add Allwinner D1 compatible
+  dt-bindings: usb: generic-ohci: Add Allwinner D1 compatible
 
-Thanks for your feed-back.
+ .../devicetree/bindings/usb/allwinner,sun4i-a10-musb.yaml        | 1 +
+ Documentation/devicetree/bindings/usb/generic-ehci.yaml          | 1 +
+ Documentation/devicetree/bindings/usb/generic-ohci.yaml          | 1 +
+ 3 files changed, 3 insertions(+)
 
-CJ
+-- 
+2.35.1
 
