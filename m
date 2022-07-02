@@ -2,75 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7478CC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 17:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C3FC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 17:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232463AbiGBRix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 13:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S232395AbiGBRiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 13:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiGBRir (ORCPT
+        with ESMTP id S232493AbiGBRiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 13:38:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837F0E038;
-        Sat,  2 Jul 2022 10:38:46 -0700 (PDT)
+        Sat, 2 Jul 2022 13:38:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26049E037
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 10:38:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2715560FD7;
-        Sat,  2 Jul 2022 17:38:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 78F19C34114;
-        Sat,  2 Jul 2022 17:38:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDC98B8068A
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 17:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A8CCC34114;
+        Sat,  2 Jul 2022 17:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656783525;
-        bh=1tvtsH1L8ob1eAsDQjuotliHWHjLqlUvgvWU1V639nw=;
+        s=k20201202; t=1656783529;
+        bh=iNbDC+O4df97kCA0R2yVWyePRF78hqPgYZFS+GXLCZE=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=QRAAeaIX/IBDmMzHacK1v3TOQUcxzi0FOtUIuG2KjDE5FnKT8zx8pFR59VpSFCh3P
-         AbrDeBbkMmizBuggfcp4bi+xYvMXKdQ0aZt1KKYvm1pylTlS0V0GA3YuoGASWI1mEk
-         c6jxw1vXVtysctuxKg8U/uP8/zZofq5t6j2q4mlhc8MMOZq4zWSQY27iGwiZNLqAaZ
-         7gdSurKgY4rdV43W0CKEceQ+Lf/0lUlo8tma3Mq25IzYIcRkRyavJeeg7YFjLnc86R
-         eV8vJyajnFqegPqqROBHTozFqhzsbiweixhNweb3nqxnUDq7RHhjZfzUpSIJv7YkIP
-         HMnDIz44HiR2g==
+        b=bSVrLBmQLd/PiM75ZCKeAaP5AE4K5j7IFC5XeqC3SCI63FBO4ToE2e7LQmNPUoOc2
+         6w9QkgwlL7MbzZCepTQDLqKdl4poRocySXkBwzXujnx6pUn1jREDZe6sUdjXomNycf
+         9Qz9gXGkTGtvF1WiZ4r9gZ7r3Vlww9MtAZVOVcmfL92FeWsFDT3vvLOgcbfLLc0iiS
+         3XaBi4nUDmJx8hZrLZRDGRjyRx+V+osB1dscFgymeluaLWUj5LPP7g4V0OqjZ6EieB
+         ljVSiBJcW01XEf4DUiLhqj42k6fZAKwWq06Uo/wUup9bHA8+DoMTyxGoifJjqblgRM
+         DvfZLi134gmDg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 65303E49BBC;
-        Sat,  2 Jul 2022 17:38:45 +0000 (UTC)
-Subject: Re: [GIT PULL] perf tools fixes for v5.19: 3rd batch
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 68FBDE49BBC;
+        Sat,  2 Jul 2022 17:38:49 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.19-4 tag
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220702144149.1415072-1-acme@kernel.org>
-References: <20220702144149.1415072-1-acme@kernel.org>
-X-PR-Tracked-List-Id: <linux-perf-users.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220702144149.1415072-1-acme@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.19-2022-07-02
-X-PR-Tracked-Commit-Id: ff898552fb32d255517fb0676f9fa500664c484d
+In-Reply-To: <87edz3aj9f.fsf@mpe.ellerman.id.au>
+References: <87edz3aj9f.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-List-Id: Linux on PowerPC Developers Mail List <linuxppc-dev.lists.ozlabs.org>
+X-PR-Tracked-Message-Id: <87edz3aj9f.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.19-4
+X-PR-Tracked-Commit-Id: ac790d09885d36143076e7e02825c541e8eee899
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: bb7c51268776941b7533374caabcaaed302b91e0
-Message-Id: <165678352540.3400.15357472689894905676.pr-tracker-bot@kernel.org>
-Date:   Sat, 02 Jul 2022 17:38:45 +0000
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+X-PR-Merge-Commit-Id: 5411de073362300d99bb35d46d77d656760e4606
+Message-Id: <165678352942.3400.15836912019951685406.pr-tracker-bot@kernel.org>
+Date:   Sat, 02 Jul 2022 17:38:49 +0000
+To:     Michael Ellerman <mpe@ellerman.id.au>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Ivan Babrou <ivan@cloudflare.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        nathanl@linux.ibm.com, aneesh.kumar@linux.ibm.com,
+        linux-kernel@vger.kernel.org, liam.howlett@oracle.com,
+        rppt@linux.ibm.com, naveen.n.rao@linux.vnet.ibm.com,
+        linuxppc-dev@lists.ozlabs.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat,  2 Jul 2022 11:41:49 -0300:
+The pull request you sent on Sat, 02 Jul 2022 20:42:04 +1000:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.19-2022-07-02
+> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.19-4
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/bb7c51268776941b7533374caabcaaed302b91e0
+https://git.kernel.org/torvalds/c/5411de073362300d99bb35d46d77d656760e4606
 
 Thank you!
 
