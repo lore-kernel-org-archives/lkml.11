@@ -2,112 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0724C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 10:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BF8CCA480
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 10:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbiGBKFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 06:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
+        id S232180AbiGBKLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 06:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiGBKE7 (ORCPT
+        with ESMTP id S229446AbiGBKLh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 06:04:59 -0400
-Received: from mga17.intel.com (unknown [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86835186C1;
-        Sat,  2 Jul 2022 03:04:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656756298; x=1688292298;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AZl8HN5oDnj9aknNKQSHbkKjT0Qvlv4fnPi+jb+GiQQ=;
-  b=Jb4vS8FXieNFrA1YDcAyeFC59Zyj5vtvhKIP2LkeS9kySti9k3ttuM6F
-   m0pU1MLrMXLG0DkPwldEz2D6hDgn2gHhiYQvRYZlygMsr58ukOlP0cqIf
-   yBBZOEqjx4rCkughh4PhY5RyalYOeT3LlHiH1wfLyC7AVLJ5B0UXFAm54
-   oMwfXrWDAV78JiYoUYPvBZFj2PzY+imy9QNB5/7XIkDBvyNo7kDOI7nW5
-   YgyaZkxknIQ1RpF42UwT2b+EqpXEh8YVXDr2G6conAJrafevpfJGlAFf6
-   4K2X8+GrrXOd2Hi0NP9ZV3H5qUVrAYupOQeFnWOgfFk18WECohBfBtwcR
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10395"; a="263209557"
-X-IronPort-AV: E=Sophos;i="5.92,239,1650956400"; 
-   d="scan'208";a="263209557"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 03:04:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,239,1650956400"; 
-   d="scan'208";a="596534543"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 02 Jul 2022 03:04:53 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7Zzb-000F7b-KF;
-        Sat, 02 Jul 2022 10:04:47 +0000
-Date:   Sat, 2 Jul 2022 18:04:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa-dev@sang-engineering.com>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [PATCH v12 net-next 9/9] mfd: ocelot: add support for the
- vsc7512 chip via spi
-Message-ID: <202207021703.v9TWwjUK-lkp@intel.com>
-References: <20220701192609.3970317-10-colin.foster@in-advantage.com>
+        Sat, 2 Jul 2022 06:11:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056D5186C1;
+        Sat,  2 Jul 2022 03:11:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A24A60C09;
+        Sat,  2 Jul 2022 10:11:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C21CCC341CE;
+        Sat,  2 Jul 2022 10:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656756694;
+        bh=wMdXq2y82GLiB6F6ppucYweW5DGaedV5+P83VXCnYMc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VwEvOgZZIv/S7hq91E0RU8y2CGQDZq1wliv9825COknHo1AR+bpXqQWp6ZcmYC/Nr
+         iTlriAk7SUEX2p32Xm00lXafO5HdrhRz5UQ3fkzoiliSDc4bttlnaXJyVk7FH+kYt5
+         rsDh+59Ir5KGBSQModfpKvE9UujjwteJRUNOnHOSK9Cm48EU21ggnPBHYvEyceY3Ce
+         8vq6V3ufFtyxxoBCb60ztBijNNYcrUZ/lqMMGqNXyWGL2+feskQEKZXJKu3L25BX4i
+         8RCtPzxs7SOwWqqzGiQlcR5PYPuLWGtN/YPHUDuXeNcoyzkBYoO0LrtE08zQUoOYvn
+         3RzRS39skKmDg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1o7a67-007cMm-Nb;
+        Sat, 02 Jul 2022 11:11:31 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
+        ksummit-discuss@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 4/5] scripts: sphinx-pre-install: provide both venv and package installs
+Date:   Sat,  2 Jul 2022 11:11:28 +0100
+Message-Id: <7c99d985df204c73e3daafd5fd2f30a31269405d.1656756450.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656756450.git.mchehab@kernel.org>
+References: <cover.1656756450.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701192609.3970317-10-colin.foster@in-advantage.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Colin,
+As it is not a consensus about installing sphinx using venv, and
+modern distributions are now shipping with Sphinx versions above
+the minimal requirements to build the docs, provide both venv
+and package install commands by default.
 
-I love your patch! Yet something to improve:
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-[auto build test ERROR on net-next/master]
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH v2 0/5] at: https://lore.kernel.org/all/cover.1656756450.git.mchehab@kernel.org/
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Colin-Foster/add-support-for-VSC7512-control-over-SPI/20220702-032824
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git dbdd9a28e1406ab8218a69e60f10a168b968c81d
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220702/202207021703.v9TWwjUK-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/86c3be9af85a12a7b190790d80944693dd07a132
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Colin-Foster/add-support-for-VSC7512-control-over-SPI/20220702-032824
-        git checkout 86c3be9af85a12a7b190790d80944693dd07a132
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+ scripts/sphinx-pre-install | 55 +++++++++++++++++++++++++++++---------
+ 1 file changed, 42 insertions(+), 13 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "ocelot_spi_init_regmap" [drivers/mfd/ocelot-core.ko] undefined!
-WARNING: modpost: module ocelot-spi uses symbol ocelot_chip_reset from namespace MFD_OCELOT, but does not import it.
-WARNING: modpost: module ocelot-spi uses symbol ocelot_core_init from namespace MFD_OCELOT, but does not import it.
-
+diff --git a/scripts/sphinx-pre-install b/scripts/sphinx-pre-install
+index 930a6d058c12..106d75425d3f 100755
+--- a/scripts/sphinx-pre-install
++++ b/scripts/sphinx-pre-install
+@@ -25,6 +25,7 @@ my $need_sphinx = 0;
+ my $need_pip = 0;
+ my $need_virtualenv = 0;
+ my $rec_sphinx_upgrade = 0;
++my $verbose_warn_install = 1;
+ my $install = "";
+ my $virtenv_dir = "";
+ my $python_cmd = "";
+@@ -103,10 +104,12 @@ sub check_missing(%)
+ 			next;
+ 		}
+ 
+-		if ($is_optional) {
+-			print "Warning: better to also install \"$prog\".\n";
+-		} else {
+-			print "ERROR: please install \"$prog\", otherwise, build won't work.\n";
++		if ($verbose_warn_install) {
++			if ($is_optional) {
++				print "Warning: better to also install \"$prog\".\n";
++			} else {
++				print "ERROR: please install \"$prog\", otherwise, build won't work.\n";
++			}
+ 		}
+ 		if (defined($map{$prog})) {
+ 			$install .= " " . $map{$prog};
+@@ -386,7 +389,8 @@ sub give_debian_hints()
+ 	check_missing(\%map);
+ 
+ 	return if (!$need && !$optional);
+-	printf("You should run:\n\n\tsudo apt-get install $install\n");
++	printf("You should run:\n") if ($verbose_warn_install);
++	printf("\n\tsudo apt-get install $install\n");
+ }
+ 
+ sub give_redhat_hints()
+@@ -458,10 +462,12 @@ sub give_redhat_hints()
+ 
+ 	if (!$old) {
+ 		# dnf, for Fedora 18+
+-		printf("You should run:\n\n\tsudo dnf install -y $install\n");
++		printf("You should run:\n") if ($verbose_warn_install);
++		printf("\n\tsudo dnf install -y $install\n");
+ 	} else {
+ 		# yum, for RHEL (and clones) or Fedora version < 18
+-		printf("You should run:\n\n\tsudo yum install -y $install\n");
++		printf("You should run:\n") if ($verbose_warn_install);
++		printf("\n\tsudo yum install -y $install\n");
+ 	}
+ }
+ 
+@@ -509,7 +515,8 @@ sub give_opensuse_hints()
+ 	check_missing(\%map);
+ 
+ 	return if (!$need && !$optional);
+-	printf("You should run:\n\n\tsudo zypper install --no-recommends $install\n");
++	printf("You should run:\n") if ($verbose_warn_install);
++	printf("\n\tsudo zypper install --no-recommends $install\n");
+ }
+ 
+ sub give_mageia_hints()
+@@ -553,7 +560,8 @@ sub give_mageia_hints()
+ 	check_missing(\%map);
+ 
+ 	return if (!$need && !$optional);
+-	printf("You should run:\n\n\tsudo $packager_cmd $install\n");
++	printf("You should run:\n") if ($verbose_warn_install);
++	printf("\n\tsudo $packager_cmd $install\n");
+ }
+ 
+ sub give_arch_linux_hints()
+@@ -583,7 +591,8 @@ sub give_arch_linux_hints()
+ 	check_missing(\%map);
+ 
+ 	return if (!$need && !$optional);
+-	printf("You should run:\n\n\tsudo pacman -S $install\n");
++	printf("You should run:\n") if ($verbose_warn_install);
++	printf("\n\tsudo pacman -S $install\n");
+ }
+ 
+ sub give_gentoo_hints()
+@@ -610,7 +619,8 @@ sub give_gentoo_hints()
+ 
+ 	return if (!$need && !$optional);
+ 
+-	printf("You should run:\n\n");
++	printf("You should run:\n") if ($verbose_warn_install);
++	printf("\n");
+ 
+ 	my $imagemagick = "media-gfx/imagemagick svg png";
+ 	my $cairo = "media-gfx/graphviz cairo pdf";
+@@ -700,7 +710,7 @@ sub check_distros()
+ 
+ sub deactivate_help()
+ {
+-	printf "\nIf you want to exit the virtualenv, you can use:\n";
++	printf "\n    If you want to exit the virtualenv, you can use:\n";
+ 	printf "\tdeactivate\n";
+ }
+ 
+@@ -863,7 +873,7 @@ sub recommend_sphinx_version($)
+ 			print "To upgrade Sphinx, use:\n\n";
+ 		}
+ 	} else {
+-		print "Sphinx needs to be installed either as a package or via pip/pypi with:\n";
++		print "\nSphinx needs to be installed either:\n1) via pip/pypi with:\n\n";
+ 	}
+ 
+ 	$python_cmd = find_python_no_venv();
+@@ -873,6 +883,25 @@ sub recommend_sphinx_version($)
+ 	printf "\t. $virtenv_dir/bin/activate\n";
+ 	printf "\tpip install -r $requirement_file\n";
+ 	deactivate_help();
++
++	printf "\n2) As a package with:\n";
++
++	my $old_need = $need;
++	my $old_optional = $optional;
++	%missing = ();
++	$pdf = 0;
++	$optional = 0;
++	$install = "";
++	$verbose_warn_install = 0;
++
++	add_package("python-sphinx", 0);
++	check_python_module("sphinx_rtd_theme", 1);
++
++	check_distros();
++
++	$need = $old_need;
++	$optional = $old_optional;
++
+ }
+ 
+ sub check_needs()
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
