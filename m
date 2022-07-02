@@ -2,155 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97567C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 18:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 034D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbiGBS5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 14:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
+        id S231299AbiGBTAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 15:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiGBS46 (ORCPT
+        with ESMTP id S229668AbiGBS77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 14:56:58 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD1ADF4A;
-        Sat,  2 Jul 2022 11:56:57 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id d2so9676726ejy.1;
-        Sat, 02 Jul 2022 11:56:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C7xyE5qz49wgabxWugJk/UHAJ0/y1arn6JSkY7GXrMI=;
-        b=HfbVlPQTO2dcpcwowQNh/BTUSjTccUmtgkT66l1e32q0iqoqpaqtBHJMGBBwbuk6YF
-         NRyh+7Rr7eabP3QYPXtTpjWfyczrlqX9FrMi3GVS40D3x3LFkr4x/PenKEPY7YC93JnR
-         C4h6LaSHKQKuZaIw7KMRipYviBWLcPBAdZqwJ/6lnZjcUpdXMqNZTs4GxXy9gDli76aN
-         1gt6EtS6Ysp7wxbdemuKD5yEVTUzdUALDzNRAZItv7MeYhCD7FhQsFo4hY6aOEP5ZTwI
-         r+MPPBAyyE1x93EUk4t5Y8RUx41Zdmraxmhn0P7YwWYNBQXs3ZhRjsgA841AxOxGGwFd
-         w/rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=C7xyE5qz49wgabxWugJk/UHAJ0/y1arn6JSkY7GXrMI=;
-        b=3Q8sqh61s6DHnpKLVg5TssuYqAgJGPFZHCdz/uU4ry22+7TdkCkhIFQ49HgMFOfE1M
-         5xno7h+y5WhyR0cgb9QhL5mQ4MGF3F8yOhmQp2uYPArJJCmVmIWIx4U7YzRGMj1C/w5u
-         r7nLfvIcpHQq6pwDKY4o/X8Y5UlUfjabL3kITGc3qoLN9mJ0OTel2J/Ee/jJOsM6QZjG
-         V1ulaoAxa63uf+TC+rA8MfDehdbqhNVlxVJakXaYx4/FzIhbslTezBzfwhuZidxwrIpO
-         8ijt8INUsAnsBfJx2YLM2vMVglKeXBqEcNA5rkKD1g4LO6mY/60PRiw2r/+llOaZye/d
-         t5Nw==
-X-Gm-Message-State: AJIora9oTVrZgh3CahctbXZQAuLgrhN1YAFaC5h5wxHY/JkXFdJn/mss
-        MYC8at/yqGOmVDTESQ7EXXM=
-X-Google-Smtp-Source: AGRyM1tHa7950NQtwqeVMRvlGkAnRtTpjmnLonvbbyIrJ1o8Ak1GK1+drfNXvGldvsx1y4V8LrYJvw==
-X-Received: by 2002:a17:907:86a7:b0:726:317f:aee0 with SMTP id qa39-20020a17090786a700b00726317faee0mr20495781ejc.229.1656788216191;
-        Sat, 02 Jul 2022 11:56:56 -0700 (PDT)
-Received: from skbuf ([188.25.231.173])
-        by smtp.gmail.com with ESMTPSA id z4-20020a1709060f0400b00722f069fd40sm12054959eji.159.2022.07.02.11.56.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 11:56:54 -0700 (PDT)
-Date:   Sat, 2 Jul 2022 21:56:52 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH net v1] net: dsa: lantiq_gswip: Fix FDB add/remove on the
- CPU port
-Message-ID: <20220702185652.dpzrxuitacqp6m3t@skbuf>
-References: <20220630212703.3280485-1-martin.blumenstingl@googlemail.com>
- <20220701130157.bwepfw2oeco6teyv@skbuf>
- <CAFBinCDqgQ1WWWPmfXykeZPsiwLNu+fPg6nCN7TMNNR_JL3gxQ@mail.gmail.com>
+        Sat, 2 Jul 2022 14:59:59 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F4C63CA;
+        Sat,  2 Jul 2022 11:59:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656788399; x=1688324399;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=liQng1oi5pVFzQvSZ7Grrfdjo3Vt/r0DpAmqCyflPt8=;
+  b=GmiEvPpzcgwd2MUqXiZa4kz9Kq0uAoz3/6ccp4S8NcAtv6n30wQqxuYQ
+   9KqNdccACtUVdgUxtX78PWGgcRjdGCnY/788BTV2hQohRxbu4IYwMUAF1
+   xcz5Rxm2oqvr2FXxHX1SqCIlHeBm76AiZ52KVSXL6HG45a+XmcM/Rfw6I
+   MKs//01fJLWV44xJQZZqnWrjBKEbqN9VPaAfVQ+sQk9t7Li+eoDV5K7uA
+   8ajf3ffUwGKhZ/Tv3+eFiFFgP9Nx/ObsKKXLru8L2uwlO2ksy6KMaMWI2
+   1vuoFEWY+cbweK8oB2G1/7wuJm9nd1cmUbXavHKRM0uc0l/NhXa2UPMDn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10396"; a="282893153"
+X-IronPort-AV: E=Sophos;i="5.92,240,1650956400"; 
+   d="scan'208";a="282893153"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 11:59:58 -0700
+X-IronPort-AV: E=Sophos;i="5.92,240,1650956400"; 
+   d="scan'208";a="718968459"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 11:59:54 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o7iLP-0013q3-0M;
+        Sat, 02 Jul 2022 21:59:51 +0300
+Date:   Sat, 2 Jul 2022 21:59:50 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        almaz.alexandrovich@paragon-software.com, yury.norov@gmail.com,
+        linux@rasmusvillemoes.dk, linux-s390@vger.kernel.org,
+        ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH 3/4] bitmap: Introduce bitmap_size()
+Message-ID: <YsCVpifccOebP3Ot@smile.fi.intel.com>
+References: <cover.1656785856.git.christophe.jaillet@wanadoo.fr>
+ <98f5d3d855a9c687ccc035edf62016b02a6876b7.1656785856.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFBinCDqgQ1WWWPmfXykeZPsiwLNu+fPg6nCN7TMNNR_JL3gxQ@mail.gmail.com>
+In-Reply-To: <98f5d3d855a9c687ccc035edf62016b02a6876b7.1656785856.git.christophe.jaillet@wanadoo.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 02, 2022 at 07:43:11PM +0200, Martin Blumenstingl wrote:
-> Hi Vladimir,
+On Sat, Jul 02, 2022 at 08:29:36PM +0200, Christophe JAILLET wrote:
+> The new bitmap_size() function returns the size, in bytes, of a bitmap.
 > 
-> On Fri, Jul 1, 2022 at 3:02 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> [...]
-> > > Use FID 0 (which is also the "default" FID) when adding/removing an FDB
-> > > entry for the CPU port.
-> >
-> > What does "default" FID even mean, and why is the default FID relevant?
-> The GSW140 datasheet [0] (which is for a newer IP than the one we are
-> targeting currently with the GSWIP driver - but I am not aware of any
-> older datasheets)
+> Remove the already existing bitmap_size() functions and macro in some
+> files.
+> These files already use the bitmap API and will use the new function
+> in bitmap.h automatically.
 
-Thanks for the document! Really useful.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-> page 78 mentions: "By default the FID is zero and all entries belong
-> to shared VLAN learning."
-
-Not talking about the hardware defaults when it's obvious the driver
-changes those, in an attempt to comply to Linux networking expectations...
-
-> > In any case, I recommend you to first set up a test bench where you
-> > actually see a difference between packets being flooded to the CPU vs
-> > matching an FDB entry targeting it. Then read up a bit what the provided
-> > dsa_db argument wants from port_fdb_add(). This conversation with Alvin
-> > should explain a few things.
-> > https://patchwork.kernel.org/project/netdevbpf/cover/20220302191417.1288145-1-vladimir.oltean@nxp.com/#24763870
-> I previously asked Hauke whether the RX tag (net/dsa/tag_gswip.c) has
-> some bit to indicate whether traffic is flooded - but to his knowledge
-> the switch doesn't provide this information.
-
-Yeah, you generally won't find quite that level of detail even in more
-advanced switches. Not that you need it...
-
-> So I am not sure what I can do in this case - do you have any pointers for me?
-
-Yes, I do.
-
-gswip_setup has:
-
-	/* Default unknown Broadcast/Multicast/Unicast port maps */
-	gswip_switch_w(priv, BIT(cpu_port), GSWIP_PCE_PMAP1);
-	gswip_switch_w(priv, BIT(cpu_port), GSWIP_PCE_PMAP2);
-	gswip_switch_w(priv, BIT(cpu_port), GSWIP_PCE_PMAP3); <- replace BIT(cpu_port) with 0
-
-If you can no longer ping, it means that flooding was how packets
-reached the system.
-
-It appears that what goes on is interesting.
-The switch is configured to flood traffic that's unknown to the FDB only
-to the CPU (notably not to other bridged ports).
-In software, the packet reaches tag_gswip.c, where unlike the majority
-of other DSA tagging protocols, we do not call dsa_default_offload_fwd_mark(skb).
-Then, the packet reaches the software bridge, and the switch has
-informed the bridge (via skb->offload_fwd_mark == 0) that the packet
-hasn't been already flooded in hardware, so the software bridge needs to
-do it (only if necessary, of course).
-
-The software bridge floods the packet according to its own FDB. In your
-case, the software bridge recognizes the MAC DA of the packet as being
-equal to the MAC address of br0 itself, and so, it doesn't flood it,
-just terminates it locally. This is true whether or not the switch
-learned that address in its FDB on the CPU port.
-
-> Also apologies if all of this is very obvious. So far I have only been
-> working on the xMII part of Ethernet drivers, meaning: I am totally
-> new to the FDB part.
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/md/dm-clone-metadata.c | 5 -----
+>  include/linux/bitmap.h         | 6 ++++++
+>  lib/math/prime_numbers.c       | 2 --
+>  3 files changed, 6 insertions(+), 7 deletions(-)
 > 
-> > Then have a patch (set) lifting the "return -EINVAL" from gswip *properly*.
-> > And only then do we get to ask the questions "how bad are things for
-> > linux-5.18.y? how bad are they for linux-5.15.y? what do we need to do?".
-> agreed
+> diff --git a/drivers/md/dm-clone-metadata.c b/drivers/md/dm-clone-metadata.c
+> index c43d55672bce..47c1fa7aad8b 100644
+> --- a/drivers/md/dm-clone-metadata.c
+> +++ b/drivers/md/dm-clone-metadata.c
+> @@ -465,11 +465,6 @@ static void __destroy_persistent_data_structures(struct dm_clone_metadata *cmd)
+>  
+>  /*---------------------------------------------------------------------------*/
+>  
+> -static size_t bitmap_size(unsigned long nr_bits)
+> -{
+> -	return BITS_TO_LONGS(nr_bits) * sizeof(long);
+> -}
+> -
+>  static int __dirty_map_init(struct dirty_map *dmap, unsigned long nr_words,
+>  			    unsigned long nr_regions)
+>  {
+> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+> index f091a1664bf1..f66fb98a4126 100644
+> --- a/include/linux/bitmap.h
+> +++ b/include/linux/bitmap.h
+> @@ -48,6 +48,7 @@ struct device;
+>   *  bitmap_equal(src1, src2, nbits)             Are *src1 and *src2 equal?
+>   *  bitmap_intersects(src1, src2, nbits)        Do *src1 and *src2 overlap?
+>   *  bitmap_subset(src1, src2, nbits)            Is *src1 a subset of *src2?
+> + *  bitmap_size(nbits)                          Size, in bytes, of a bitmap
+>   *  bitmap_empty(src, nbits)                    Are all bits zero in *src?
+>   *  bitmap_full(src, nbits)                     Are all bits set in *src?
+>   *  bitmap_weight(src, nbits)                   Hamming Weight: number set bits
+> @@ -124,6 +125,11 @@ unsigned long *bitmap_alloc_node(unsigned int nbits, gfp_t flags, int node);
+>  unsigned long *bitmap_zalloc_node(unsigned int nbits, gfp_t flags, int node);
+>  void bitmap_free(const unsigned long *bitmap);
+>  
+> +static __always_inline size_t bitmap_size(unsigned long nbits)
+> +{
+> +	return BITS_TO_LONGS(nbits) * sizeof(unsigned long);
+> +}
+> +
+>  /* Managed variants of the above. */
+>  unsigned long *devm_bitmap_alloc(struct device *dev,
+>  				 unsigned int nbits, gfp_t flags);
+> diff --git a/lib/math/prime_numbers.c b/lib/math/prime_numbers.c
+> index d42cebf7407f..d3b64b10da1c 100644
+> --- a/lib/math/prime_numbers.c
+> +++ b/lib/math/prime_numbers.c
+> @@ -6,8 +6,6 @@
+>  #include <linux/prime_numbers.h>
+>  #include <linux/slab.h>
+>  
+> -#define bitmap_size(nbits) (BITS_TO_LONGS(nbits) * sizeof(unsigned long))
+> -
+>  struct primes {
+>  	struct rcu_head rcu;
+>  	unsigned long last, sz;
+> -- 
+> 2.34.1
 > 
-> 
-> Thanks again for your time and all these valuable hints Vladimir!
-> Martin
-> 
-> 
-> [0] https://assets.maxlinear.com/web/documents/617930_gsw140_ds_rev1.11.pdf
 
-So if I'm right, the state of facts is quite "not broken" (quite the
-other way around, I'm really impressed), although there are still
-improvements to be made. Flooding could be offloaded to hardware, then
-flooding to CPU could be turned off and controlled via port promiscuity.
-This would save quite a few CPU cycles.
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
