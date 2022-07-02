@@ -2,84 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2655AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  2 Jul 2022 19:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbiGBTNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 15:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
+        id S230467AbiGBTV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 15:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232326AbiGBTNs (ORCPT
+        with ESMTP id S229497AbiGBTV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 15:13:48 -0400
-X-Greylist: delayed 398 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Jul 2022 12:13:46 PDT
-Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97DDE0D3
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 12:13:46 -0700 (PDT)
-Received: (wp-smtpd smtp.wp.pl 20668 invoked from network); 2 Jul 2022 21:07:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1656788824; bh=phIJgjbW9gbdsBNFT7abBY67sM/w1Sze6Xpin3JN2yg=;
-          h=From:To:Subject;
-          b=lPJnN5G0mEYZvYm3IZtGrZhhTtk8L/VLrNfIwoq18o1xT8zLGANmOBnTQB8WuRk3B
-           cxvDS2XORChZREMtzhYA7AeS+4XAx6N2KmK8VNU5kdlTgeY1szqn4O3mfehICR0bsE
-           2jqCMQysUddH+d8gfoCqdju0Pck0JQkhmNJ+QXiA=
-Received: from ip-137-21.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.21])
-          (envelope-sender <olek2@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <tsbogend@alpha.franken.de>; 2 Jul 2022 21:07:04 +0200
-From:   Aleksander Jan Bajkowski <olek2@wp.pl>
-To:     tsbogend@alpha.franken.de, olek2@wp.pl,
-        martin.blumenstingl@googlemail.com, hauke@hauke-m.de,
-        git@birger-koblitz.de, sander@svanheule.net,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second VPE
-Date:   Sat,  2 Jul 2022 21:07:05 +0200
-Message-Id: <20220702190705.5319-1-olek2@wp.pl>
-X-Mailer: git-send-email 2.30.2
+        Sat, 2 Jul 2022 15:21:57 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6A9DFBF;
+        Sat,  2 Jul 2022 12:21:54 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id r14so1927802wrg.1;
+        Sat, 02 Jul 2022 12:21:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:in-reply-to:date:message-id
+         :mime-version;
+        bh=ShPrvMVvs0iuePdOh13YlEW0US0KOGLiiTqD4zGCiNY=;
+        b=h+Qdn99o3gPmJiMNYJ8IJgMULL3Pew0pTISs4L2CeQQnyvSsIZ8aznyCoGBS9BGYi2
+         FxoO0AWZPRTt6nxQGAahmwr7IMbhBVnRJnEMhHkqtBMLFQqsvvwM4Y+V7FeGyZOeeYBl
+         mU9ZNByXO/UBhWkBUwLVlvM3AZ9KDIVq3CgNvYnaAkQPdPJXkC7mWyoTOb6y3VVcwhZK
+         gpUYPWYZA5ChcrdsKSH7aQlCviSaRTFlOtm51v28waZ83qHW/aOEV30Sr/+RCL4Dxrdg
+         T0V+G3YJHKHvZascKcwihEUX5TYVWMoK5B1QPlLHldc0QlJrbWuKZQ72ONJF7YtLldPs
+         TZLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=ShPrvMVvs0iuePdOh13YlEW0US0KOGLiiTqD4zGCiNY=;
+        b=rqeYQ0D/XcZ5vRXDdiJR9ByRan5mx9TANWyWLU+XkC9SdYH/AmwxN5R5HKrAzonOk8
+         Ol/DLlZz4fv8zcBaeqXhkx4P+Zjq9KQHj2yP2az6sac04jCxA/durDumvKuip+iWpXEY
+         p2PEQCdh+ZdeG9YL7Th8CVcaD3EvevEnJorNB/wt0LVfi4l1AVXTnodEbo9FqPcL/b5i
+         BTKk9boaJE2QgkeTuuClKcaiMpv2GrClA4C1Y/Mzx+pLmPh11B6oOTFe+iFl3Bf4l4S9
+         PmkJk5FKH4KH1qcK4dMM8b+Hpz35tOrzRq+GQSV7Fyf7dki+75ILJcIBn+zoSIrqm2BU
+         F/qQ==
+X-Gm-Message-State: AJIora8zXiEqmlA5WPZGBkY2Z8/WGMDHjyP98oatXj5na517CwUowOJG
+        MNUVzdqQBVb7Ov6aP3C5DaA=
+X-Google-Smtp-Source: AGRyM1tg3/+hgf9pDL8NRFCAQ4YOA7tn10T6UX7ijpnLqcxSD9+RqrDkEV/swdnxAMA8gwuref6OPw==
+X-Received: by 2002:adf:ed41:0:b0:210:20a5:26c2 with SMTP id u1-20020adfed41000000b0021020a526c2mr18660614wro.603.1656789712614;
+        Sat, 02 Jul 2022 12:21:52 -0700 (PDT)
+Received: from localhost (92.40.203.19.threembb.co.uk. [92.40.203.19])
+        by smtp.gmail.com with ESMTPSA id y15-20020a5d4acf000000b0021b9c520953sm25806153wrs.64.2022.07.02.12.21.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Jul 2022 12:21:52 -0700 (PDT)
+References: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
+ <20220629143046.213584-13-aidanmacdonald.0x0@gmail.com>
+ <CAHp75Vduv_fN=2DKbOwReRoPeAYjGqSANT7UhDaRifUJ4zf5XQ@mail.gmail.com>
+ <oMIjFujkw4ZeuMGoTkWq64BbfEejJF12@localhost>
+ <CAHp75VdVyJyOZCkLQgbDNC9bSWwF0ksLOvMG=96fH8dzmukE5g@mail.gmail.com>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, quic_gurus@quicinc.com,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Michael Walle <michael@walle.cc>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH v4 12/15] pinctrl: Add AXP192 pin control driver
+In-reply-to: <CAHp75VdVyJyOZCkLQgbDNC9bSWwF0ksLOvMG=96fH8dzmukE5g@mail.gmail.com>
+Date:   Sat, 02 Jul 2022 20:22:58 +0100
+Message-ID: <YhW7o8WJ6ptv6cU8GzuiBWbZt3kmczIL@localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: 8a917b0ca8e2bc46da9da215dae9b8bf
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [kXOU]                               
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch is needed to handle interrupts by the second VPE on
-the Lantiq xRX200, xRX300 and xRX330 SoCs. In these chips, 32 ICU
-interrupts are connected to each hardware line. The SoC supports
-a total of 160 interrupts. Currently changing smp_affinity to the
-second VPE hangs interrupts.
 
-This problem affects multithreaded SoCs with a custom interrupt
-controller. Chips with 1004Kc core and newer use the MIPS GIC.
+Andy Shevchenko <andy.shevchenko@gmail.com> writes:
 
-Also CC'ed Birger Koblitz and Sander Vanheule. Both are working
-on support for Realtek RTL930x chips with 34Kc core and Birger
-has added a patch in OpenWRT that also enables all interrupt
-lines. So it looks like this patch is useful for more SoCs.
+> On Fri, Jul 1, 2022 at 5:36 PM Aidan MacDonald
+> <aidanmacdonald.0x0@gmail.com> wrote:
+>> Andy Shevchenko <andy.shevchenko@gmail.com> writes:
+>> > On Wed, Jun 29, 2022 at 4:30 PM Aidan MacDonald
+>> > <aidanmacdonald.0x0@gmail.com> wrote:
+>
+> ...
+>
+>> >> +struct axp192_pctl_function {
+>> >> +       const char              *name;
+>> >> +       /* Mux value written to the control register to select the function (-1 if unsupported) */
+>> >> +       const u8                *muxvals;
+>> >> +       const char * const      *groups;
+>> >> +       unsigned int            ngroups;
+>> >> +};
+>> >
+>> > Can it be replaced by struct function_desc?
+>> > https://elixir.bootlin.com/linux/latest/source/drivers/pinctrl/pinmux.h#L130
+>>
+>> That'd work, but using the generic infrastructure doesn't allow me to
+>> simplify anything -- I can eliminate three trivial functions, but the
+>> generic code is higher overhead (extra allocations, radix trees, ...)
+>
+> I really don't see how it gets into extra allocations. Either way you
+> have a pointer to opaque data or in your current code it's called
+> muxvals. Other fields seem 1:1 what is in struct function_desc. The
+> code will be probably the same.
+>
+> I.o.w. I'm talking of eliminating data type, and not about simplifying
+> the code by fully switching to generic infrastructure.
 
-Tested on lantiq xRX200 and xRX330.
+struct function_desc is hidden behind an #ifdef, so I can't use it
+without enabling the generic pinmux helpers. It doesn't make a lot
+of sense to enable them if they're not going to be used.
 
-Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
----
- arch/mips/kernel/smp-mt.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/arch/mips/kernel/smp-mt.c b/arch/mips/kernel/smp-mt.c
-index 5f04a0141068..f21cd0eb1fa7 100644
---- a/arch/mips/kernel/smp-mt.c
-+++ b/arch/mips/kernel/smp-mt.c
-@@ -113,8 +113,7 @@ static void vsmp_init_secondary(void)
- 					 STATUSF_IP4 | STATUSF_IP5 |
- 					 STATUSF_IP6 | STATUSF_IP7);
- 	else
--		change_c0_status(ST0_IM, STATUSF_IP0 | STATUSF_IP1 |
--					 STATUSF_IP6 | STATUSF_IP7);
-+		set_c0_status(ST0_IM);
- }
- 
- static void vsmp_smp_finish(void)
--- 
-2.30.2
-
+More generally, why would I use a type from an API I'm not using just
+because it happens to look like a type I defined locally? That would
+be misleading. Given that the code is the same either way, a local type
+is preferable because it clearly communicates that I'm not using the
+generic API, and guarantees that the type isn't referenced elsewhere.
