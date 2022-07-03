@@ -2,301 +2,420 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1A5CCA47F
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 00:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B73C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 00:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbiGCAB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 20:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51028 "EHLO
+        id S230206AbiGCAaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 20:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGCABZ (ORCPT
+        with ESMTP id S229932AbiGCAaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 20:01:25 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C31EB4AD
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 17:01:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656806483; x=1688342483;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hpjHhvhq73GuDmTdo45BViQT/U+1yBagJoORAR5IZg8=;
-  b=nJGVagoFySx3AzmsKYonkiKgTZkrvbmQ1zRi0em053PjyeUNBR70XMlL
-   YkQJuSIGV4UsJQo2vW/clqoMnccu383ig6ZNU1qHiIA34U2Hbvq42rKM4
-   cllRht6NbLrlPfRZFyFyIMX5qoo10LbCWO4vqh1y0MxIKLaeJbyW+ugqY
-   go26QVEjHfZkyXos2Eq7BX8Dv61MRJFOTNcQ/dngrAmNukAP6vKhlwaTW
-   Y/W2Ji6j7GH/WGJE8YOPRchwlJp1bUIvOTqhicCNYOWNqE46H1/jYPDdg
-   O6ty3lbKEFyDaROfxDVWLTPn8Sn0rSNVjp5oZylCajXBn638WKYtTTW1x
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10396"; a="283990931"
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="283990931"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 17:01:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="719007139"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 02 Jul 2022 17:01:21 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o7n3A-000Frd-JC;
-        Sun, 03 Jul 2022 00:01:20 +0000
-Date:   Sun, 3 Jul 2022 08:01:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Sat, 2 Jul 2022 20:30:24 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74079FFE;
+        Sat,  2 Jul 2022 17:30:22 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id b26so8335484wrc.2;
+        Sat, 02 Jul 2022 17:30:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R00o61OzkDCWM/phMsT+E3U9y/KbpzXga3rwLBN2UGo=;
+        b=K7OrXvi5SfHGEJO0ns+EcfkxNyb3ZY4CgP2dbORVOlywAIoV+24N3k1UA6HrjQR7JJ
+         nssDwVYx27D3SqD3qz+cdBGroHJFK7pixzb+5lJ4i4+qQ6oVeCKBhsF7mYuEOdgwjPRy
+         TpN13esYE0TMUh4nAsAWjYMpNgVReaWQ78dHqaUOLYenAyALdBd4EA0bR5EvhVk/3x4h
+         2uwpSb3xz3QtvLu38jCytGl9jFv5ujrSEstVV+QU5mTg1M6RhCvEP/a9mQRq7n3ALtPA
+         c5e0nrPxAKJ95qWzjIyKJ1/tVLYJWYmn+g3Sx25x34Sske0IKbqAX6zFSj/KQUHmH7al
+         NTjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R00o61OzkDCWM/phMsT+E3U9y/KbpzXga3rwLBN2UGo=;
+        b=PBbY5/VheY0owFXiPE17b/IgfwhD2Dp7FipF46JLMwAquANryV63aOhPq4kf/lTraL
+         BPaQ8avW17ZqlWQlpcGi3H3UrpO+kICwQJSemAVnLhN6pQuhRhqps6h0k8pUqt9DjYtJ
+         WfOrjcSfzj+bOXvAi16MYZodbV0ZDHLSauMWpJMcaCLihWcSqt4+R0OUlMBAHn1ZWwYQ
+         fGN7xpRYJuSxGh2U6v1Vz7uUKPz41y5tCXmxY+1MSat0RwerOPyD3ZNYKhDCYy1Jg4qH
+         mPdCm6fqLOCTds8w6ycK3lViTUDfYN6cSi+AyreYR3iVjnwJzMm6CDkwSMaVvnjqDwL0
+         rRog==
+X-Gm-Message-State: AJIora8RIK3zJAU6/STY8P2Mex/GjKxSKjcPB8rMPHiYv7tNsdlVrQ3C
+        jth1ZP0GB6zkyaA5v2Qso5Q=
+X-Google-Smtp-Source: AGRyM1vyAOgOR4X4yWSTBM1B896tjyc6x5kPkLdW+ZN3DIrJjUiGXMtDT7cDXn5WtU+5IsjXi4V8Ng==
+X-Received: by 2002:a5d:588f:0:b0:21b:ba06:4d46 with SMTP id n15-20020a5d588f000000b0021bba064d46mr21654834wrf.58.1656808221125;
+        Sat, 02 Jul 2022 17:30:21 -0700 (PDT)
+Received: from javier-S1-WHL-Series.www.tendawifi.com ([45.158.103.138])
+        by smtp.googlemail.com with ESMTPSA id j19-20020a5d6e53000000b002102b16b9a4sm26180703wrz.110.2022.07.02.17.30.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Jul 2022 17:30:19 -0700 (PDT)
+From:   Javier Abrego <javier.abrego.lorente@gmail.com>
+To:     robert.moore@intel.com, rafael.j.wysocki@intel.com, lenb@kernel.org
+Cc:     linux-acpi@vger.kernel.org, devel@acpica.org,
         linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: drivers/gpio/gpio-virtio.c:23:8: warning: Excessive padding in
- 'struct virtio_gpio_line' (58 padding bytes, where 26 is optimal). Optimal
- fields order: res, rxlen, lock, completion, req, consider reordering the
- fields or adding explicit padding members [c...
-Message-ID: <202207030712.4FJHaNfk-lkp@intel.com>
+        Javier Abrego <javier.abrego.lorente@gmail.com>
+Subject: [PATCH] ACPI: acpica: acmacros: fixed linter issues
+Date:   Sun,  3 Jul 2022 02:30:14 +0200
+Message-Id: <20220703003014.52949-1-javier.abrego.lorente@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   69cb6c6556ad89620547318439d6be8bb1629a5a
-commit: 3a29355a22c0275fe864100794fee58a73175d93 gpio: Add virtio-gpio driver
-date:   10 months ago
-config: arm-randconfig-c002-20220629 (https://download.01.org/0day-ci/archive/20220703/202207030712.4FJHaNfk-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a9119143a2d1f4d0d0bc1fe0d819e5351b4e0deb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3a29355a22c0275fe864100794fee58a73175d93
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 3a29355a22c0275fe864100794fee58a73175d93
-        # save the config file
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer 
+Fixed a coding style issue with the linter.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Javier Abrego <javier.abrego.lorente@gmail.com>
+---
+ drivers/acpi/acpica/acmacros.h | 212 ++++++++++++++++-----------------
+ 1 file changed, 106 insertions(+), 106 deletions(-)
 
-
-clang-analyzer warnings: (new ones prefixed by >>)
-                   ^
-   include/linux/minmax.h:28:26: note: expanded from macro '__cmp'
-   #define __cmp(x, y, op) ((x) op (y) ? (x) : (y))
-                            ^
-   crypto/skcipher.c:354:10: note: Assuming '__UNIQUE_ID___x333' is >= '__UNIQUE_ID___y334'
-           bsize = min(walk->stride, max(n, walk->blocksize));
-                   ^
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:38:3: note: expanded from macro '__careful_cmp'
-                   __cmp_once(x, y, __UNIQUE_ID(__x), __UNIQUE_ID(__y), op))
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:33:3: note: expanded from macro '__cmp_once'
-                   __cmp(unique_x, unique_y, op); })
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:28:26: note: expanded from macro '__cmp'
-   #define __cmp(x, y, op) ((x) op (y) ? (x) : (y))
-                            ^~~~~~~~~~
-   crypto/skcipher.c:354:10: note: '?' condition is false
-           bsize = min(walk->stride, max(n, walk->blocksize));
-                   ^
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^
-   include/linux/minmax.h:38:3: note: expanded from macro '__careful_cmp'
-                   __cmp_once(x, y, __UNIQUE_ID(__x), __UNIQUE_ID(__y), op))
-                   ^
-   include/linux/minmax.h:33:3: note: expanded from macro '__cmp_once'
-                   __cmp(unique_x, unique_y, op); })
-                   ^
-   include/linux/minmax.h:28:26: note: expanded from macro '__cmp'
-   #define __cmp(x, y, op) ((x) op (y) ? (x) : (y))
-                            ^
-   crypto/skcipher.c:358:15: note: Assuming 'n' is < 'bsize'
-           if (unlikely(n < bsize)) {
-                        ^
-   include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                                               ^
-   crypto/skcipher.c:358:2: note: Taking true branch
-           if (unlikely(n < bsize)) {
-           ^
-   crypto/skcipher.c:359:22: note: Field 'total' is < field 'blocksize'
-                   if (unlikely(walk->total < walk->blocksize))
-                                      ^
-   crypto/skcipher.c:359:3: note: Taking true branch
-                   if (unlikely(walk->total < walk->blocksize))
-                   ^
-   crypto/skcipher.c:360:11: note: Calling 'skcipher_walk_done'
-                           return skcipher_walk_done(walk, -EINVAL);
-                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   crypto/skcipher.c:110:6: note: Assuming 'n' is not equal to 0
-           if (!n)
-               ^~
-   crypto/skcipher.c:110:2: note: Taking false branch
-           if (!n)
-           ^
-   crypto/skcipher.c:113:2: note: Taking false branch
-           if (likely(err >= 0)) {
-           ^
-   crypto/skcipher.c:118:13: note: Assuming the condition is false
-           if (likely(!(walk->flags & (SKCIPHER_WALK_PHYS |
-                      ^
-   include/linux/compiler.h:77:40: note: expanded from macro 'likely'
-   # define likely(x)      __builtin_expect(!!(x), 1)
-                                               ^
-   crypto/skcipher.c:118:2: note: Taking false branch
-           if (likely(!(walk->flags & (SKCIPHER_WALK_PHYS |
-           ^
-   crypto/skcipher.c:124:13: note: Assuming the condition is false
-           } else if (walk->flags & SKCIPHER_WALK_DIFF) {
-                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   crypto/skcipher.c:124:9: note: Taking false branch
-           } else if (walk->flags & SKCIPHER_WALK_DIFF) {
-                  ^
-   crypto/skcipher.c:127:13: note: Assuming the condition is true
-           } else if (walk->flags & SKCIPHER_WALK_COPY) {
-                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   crypto/skcipher.c:127:9: note: Taking true branch
-           } else if (walk->flags & SKCIPHER_WALK_COPY) {
-                  ^
-   crypto/skcipher.c:128:3: note: Calling 'skcipher_map_dst'
-                   skcipher_map_dst(walk);
-                   ^~~~~~~~~~~~~~~~~~~~~~
-   crypto/skcipher.c:67:1: note: Returning without writing to 'walk->page'
-   }
-   ^
-   crypto/skcipher.c:128:3: note: Returning from 'skcipher_map_dst'
-                   skcipher_map_dst(walk);
-                   ^~~~~~~~~~~~~~~~~~~~~~
-   crypto/skcipher.c:129:3: note: Null pointer passed as 2nd argument to memory copy function
-                   memcpy(walk->dst.virt.addr, walk->page, n);
-                   ^                           ~~~~~~~~~~
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
->> drivers/gpio/gpio-virtio.c:23:8: warning: Excessive padding in 'struct virtio_gpio_line' (58 padding bytes, where 26 is optimal). Optimal fields order: res, rxlen, lock, completion, req, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct virtio_gpio_line {
-   ~~~~~~~^~~~~~~~~~~~~~~~~~
-   drivers/gpio/gpio-virtio.c:23:8: note: Excessive padding in 'struct virtio_gpio_line' (58 padding bytes, where 26 is optimal). Optimal fields order: res, rxlen, lock, completion, req, consider reordering the fields or adding explicit padding members
-   struct virtio_gpio_line {
-   ~~~~~~~^~~~~~~~~~~~~~~~~~
-   1 warning generated.
-   drivers/pwm/core.c:818:13: warning: Access to field 'name' results in a dereference of a null pointer (loaded from variable 'np') [clang-analyzer-core.NullDereference]
-                           con_id = np->name;
-                                    ^
-   drivers/pwm/core.c:1150:6: note: Assuming the condition is true
-           if (is_of_node(fwnode))
-               ^~~~~~~~~~~~~~~~~~
-   drivers/pwm/core.c:1150:2: note: Taking true branch
-           if (is_of_node(fwnode))
-           ^
-   drivers/pwm/core.c:1151:25: note: Assuming the condition is false
-                   pwm = of_pwm_get(dev, to_of_node(fwnode), con_id);
-                                         ^
-   include/linux/of.h:164:3: note: expanded from macro 'to_of_node'
-                   is_of_node(__to_of_node_fwnode) ?                       \
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/pwm/core.c:1151:25: note: '?' condition is false
-                   pwm = of_pwm_get(dev, to_of_node(fwnode), con_id);
-                                         ^
-   include/linux/of.h:164:3: note: expanded from macro 'to_of_node'
-                   is_of_node(__to_of_node_fwnode) ?                       \
-                   ^
-   drivers/pwm/core.c:1151:25: note: Passing null pointer value via 2nd parameter 'np'
-                   pwm = of_pwm_get(dev, to_of_node(fwnode), con_id);
-                                         ^
-   include/linux/of.h:161:2: note: expanded from macro 'to_of_node'
-           ({                                                              \
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/pwm/core.c:1151:9: note: Calling 'of_pwm_get'
-                   pwm = of_pwm_get(dev, to_of_node(fwnode), con_id);
-                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/pwm/core.c:775:6: note: Assuming 'con_id' is null
-           if (con_id) {
-               ^~~~~~
-   drivers/pwm/core.c:775:2: note: Taking false branch
-           if (con_id) {
-           ^
-   drivers/pwm/core.c:783:6: note: Assuming 'err' is 0
-           if (err) {
-               ^~~
-   drivers/pwm/core.c:783:2: note: Taking false branch
-           if (err) {
-           ^
-   drivers/pwm/core.c:788:25: note: Assuming '__of_fwnode_handle_node' is null
-           pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
-                                  ^
-   include/linux/of.h:174:3: note: expanded from macro 'of_fwnode_handle'
-                   __of_fwnode_handle_node ?                               \
-                   ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/pwm/core.c:788:25: note: '?' condition is false
-           pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
-                                  ^
-   include/linux/of.h:174:3: note: expanded from macro 'of_fwnode_handle'
-                   __of_fwnode_handle_node ?                               \
-                   ^
-   drivers/pwm/core.c:789:2: note: Taking false branch
-           if (IS_ERR(pc)) {
-           ^
-   drivers/pwm/core.c:798:2: note: Taking false branch
-           if (IS_ERR(pwm))
-           ^
-   drivers/pwm/core.c:802:2: note: Taking false branch
-           if (IS_ERR(dl)) {
-           ^
-   drivers/pwm/core.c:814:7: note: 'con_id' is null
-           if (!con_id) {
-                ^~~~~~
-   drivers/pwm/core.c:814:2: note: Taking true branch
-           if (!con_id) {
-           ^
-   drivers/pwm/core.c:817:7: note: 'err' is < 0
-                   if (err < 0)
-                       ^~~
-   drivers/pwm/core.c:817:3: note: Taking true branch
-                   if (err < 0)
-                   ^
-   drivers/pwm/core.c:818:13: note: Access to field 'name' results in a dereference of a null pointer (loaded from variable 'np')
-                           con_id = np->name;
-                                    ^~
-   1 warning generated.
-   lib/crypto/chacha20poly1305-selftest.c:9027:7: warning: Value stored to 'total_len' is never read [clang-analyzer-deadcode.DeadStores]
-           for (total_len = POLY1305_DIGEST_SIZE; IS_ENABLED(DEBUG_CHACHA20POLY1305_SLOW_CHUNK_TEST)
-                ^
-   lib/crypto/chacha20poly1305-selftest.c:9027:7: note: Value stored to 'total_len' is never read
-   6 warnings generated.
-   drivers/video/fbdev/udlfb.c:370:6: warning: Value stored to 'identical' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
-           int identical = width;
-               ^~~~~~~~~   ~~~~~
-   drivers/video/fbdev/udlfb.c:370:6: note: Value stored to 'identical' during its initialization is never read
-           int identical = width;
-               ^~~~~~~~~   ~~~~~
-   drivers/video/fbdev/udlfb.c:564:3: warning: Value stored to 'back_start' is never read [clang-analyzer-deadcode.DeadStores]
-                   back_start += offset;
-                   ^             ~~~~~~
-   drivers/video/fbdev/udlfb.c:564:3: note: Value stored to 'back_start' is never read
-
-vim +23 drivers/gpio/gpio-virtio.c
-
-    22	
-  > 23	struct virtio_gpio_line {
-    24		struct mutex lock; /* Protects line operation */
-    25		struct completion completion;
-    26		struct virtio_gpio_request req ____cacheline_aligned;
-    27		struct virtio_gpio_response res ____cacheline_aligned;
-    28		unsigned int rxlen;
-    29	};
-    30	
-
+diff --git a/drivers/acpi/acpica/acmacros.h b/drivers/acpi/acpica/acmacros.h
+index 2f3e609df..597070cde 100644
+--- a/drivers/acpi/acpica/acmacros.h
++++ b/drivers/acpi/acpica/acmacros.h
+@@ -15,18 +15,18 @@
+  * get into potential alignment issues -- see the STORE macros below.
+  * Use with care.
+  */
+-#define ACPI_CAST8(ptr)                 ACPI_CAST_PTR (u8, (ptr))
+-#define ACPI_CAST16(ptr)                ACPI_CAST_PTR (u16, (ptr))
+-#define ACPI_CAST32(ptr)                ACPI_CAST_PTR (u32, (ptr))
+-#define ACPI_CAST64(ptr)                ACPI_CAST_PTR (u64, (ptr))
+-#define ACPI_GET8(ptr)                  (*ACPI_CAST8 (ptr))
+-#define ACPI_GET16(ptr)                 (*ACPI_CAST16 (ptr))
+-#define ACPI_GET32(ptr)                 (*ACPI_CAST32 (ptr))
+-#define ACPI_GET64(ptr)                 (*ACPI_CAST64 (ptr))
+-#define ACPI_SET8(ptr, val)             (*ACPI_CAST8 (ptr) = (u8) (val))
+-#define ACPI_SET16(ptr, val)            (*ACPI_CAST16 (ptr) = (u16) (val))
+-#define ACPI_SET32(ptr, val)            (*ACPI_CAST32 (ptr) = (u32) (val))
+-#define ACPI_SET64(ptr, val)            (*ACPI_CAST64 (ptr) = (u64) (val))
++#define ACPI_CAST8(ptr)                 ACPI_CAST_PTR(u8, (ptr))
++#define ACPI_CAST16(ptr)                ACPI_CAST_PTR(u16, (ptr))
++#define ACPI_CAST32(ptr)                ACPI_CAST_PTR(u32, (ptr))
++#define ACPI_CAST64(ptr)                ACPI_CAST_PTR(u64, (ptr))
++#define ACPI_GET8(ptr)                  (*ACPI_CAST8(ptr))
++#define ACPI_GET16(ptr)                 (*ACPI_CAST16(ptr))
++#define ACPI_GET32(ptr)                 (*ACPI_CAST32(ptr))
++#define ACPI_GET64(ptr)                 (*ACPI_CAST64(ptr))
++#define ACPI_SET8(ptr, val)             (*ACPI_CAST8(ptr) = (u8) (val))
++#define ACPI_SET16(ptr, val)            (*ACPI_CAST16(ptr) = (u16) (val))
++#define ACPI_SET32(ptr, val)            (*ACPI_CAST32(ptr) = (u32) (val))
++#define ACPI_SET64(ptr, val)            (*ACPI_CAST64(ptr) = (u64) (val))
+ 
+ /*
+  * printf() format helper. This macro is a workaround for the difficulties
+@@ -51,31 +51,31 @@
+ 	 /*  Hi...Lo                     Lo...Hi     */
+ /* 16-bit source, 16/32/64 destination */
+ 
+-#define ACPI_MOVE_16_TO_16(d, s)        {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[1];\
+-			  ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[0];}
++#define ACPI_MOVE_16_TO_16(d, s)        {((u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[1];\
++			  ((u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[0]; }
+ 
+-#define ACPI_MOVE_16_TO_32(d, s)        {(*(u32 *)(void *)(d))=0;\
++#define ACPI_MOVE_16_TO_32(d, s)        {(*(u32 *)(void *)(d)) = 0;\
+ 					  ((u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[1];\
+-					  ((u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[0];}
++					  ((u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[0]; }
+ 
+-#define ACPI_MOVE_16_TO_64(d, s)        {(*(u64 *)(void *)(d))=0;\
++#define ACPI_MOVE_16_TO_64(d, s)        {(*(u64 *)(void *)(d)) = 0;\
+ 							   ((u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[1];\
+-							   ((u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[0];}
++							   ((u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[0]; }
+ 
+ /* 32-bit source, 16/32/64 destination */
+ 
+ #define ACPI_MOVE_32_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)	/* Truncate to 16 */
+ 
+-#define ACPI_MOVE_32_TO_32(d, s)        {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[3];\
+-									  ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[2];\
+-									  ((  u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[1];\
+-									  ((  u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[0];}
++#define ACPI_MOVE_32_TO_32(d, s)        {((u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[3];\
++									  ((u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[2];\
++									  ((u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[1];\
++									  ((u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[0]; }
+ 
+-#define ACPI_MOVE_32_TO_64(d, s)        {(*(u64 *)(void *)(d))=0;\
++#define ACPI_MOVE_32_TO_64(d, s)        {(*(u64 *)(void *)(d)) = 0;\
+ 										   ((u8 *)(void *)(d))[4] = ((u8 *)(void *)(s))[3];\
+ 										   ((u8 *)(void *)(d))[5] = ((u8 *)(void *)(s))[2];\
+ 										   ((u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[1];\
+-										   ((u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[0];}
++										   ((u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[0]; }
+ 
+ /* 64-bit source, 16/32/64 destination */
+ 
+@@ -83,14 +83,14 @@
+ 
+ #define ACPI_MOVE_64_TO_32(d, s)        ACPI_MOVE_32_TO_32(d, s)	/* Truncate to 32 */
+ 
+-#define ACPI_MOVE_64_TO_64(d, s)        {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[7];\
+-										 ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[6];\
+-										 ((  u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[5];\
+-										 ((  u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[4];\
+-										 ((  u8 *)(void *)(d))[4] = ((u8 *)(void *)(s))[3];\
+-										 ((  u8 *)(void *)(d))[5] = ((u8 *)(void *)(s))[2];\
+-										 ((  u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[1];\
+-										 ((  u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[0];}
++#define ACPI_MOVE_64_TO_64(d, s)        {((u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[7];\
++										 ((u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[6];\
++										 ((u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[5];\
++										 ((u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[4];\
++										 ((u8 *)(void *)(d))[4] = ((u8 *)(void *)(s))[3];\
++										 ((u8 *)(void *)(d))[5] = ((u8 *)(void *)(s))[2];\
++										 ((u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[1];\
++										 ((u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[0]; }
+ #else
+ /*
+  * Macros for little-endian machines
+@@ -127,35 +127,35 @@
+ 
+ /* 16-bit source, 16/32/64 destination */
+ 
+-#define ACPI_MOVE_16_TO_16(d, s)        {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
+-										 ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1];}
++#define ACPI_MOVE_16_TO_16(d, s)        {((u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
++										 ((u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1]; }
+ 
+-#define ACPI_MOVE_16_TO_32(d, s)        {(*(u32 *)(void *)(d)) = 0; ACPI_MOVE_16_TO_16(d, s);}
+-#define ACPI_MOVE_16_TO_64(d, s)        {(*(u64 *)(void *)(d)) = 0; ACPI_MOVE_16_TO_16(d, s);}
++#define ACPI_MOVE_16_TO_32(d, s)        {(*(u32 *)(void *)(d)) = 0; ACPI_MOVE_16_TO_16(d, s); }
++#define ACPI_MOVE_16_TO_64(d, s)        {(*(u64 *)(void *)(d)) = 0; ACPI_MOVE_16_TO_16(d, s); }
+ 
+ /* 32-bit source, 16/32/64 destination */
+ 
+ #define ACPI_MOVE_32_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)	/* Truncate to 16 */
+ 
+-#define ACPI_MOVE_32_TO_32(d, s)        {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
+-										 ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1];\
+-										 ((  u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[2];\
+-										 ((  u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[3];}
++#define ACPI_MOVE_32_TO_32(d, s)        {((u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
++										 ((u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1];\
++										 ((u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[2];\
++										 ((u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[3]; }
+ 
+-#define ACPI_MOVE_32_TO_64(d, s)        {(*(u64 *)(void *)(d)) = 0; ACPI_MOVE_32_TO_32(d, s);}
++#define ACPI_MOVE_32_TO_64(d, s)        {(*(u64 *)(void *)(d)) = 0; ACPI_MOVE_32_TO_32(d, s); }
+ 
+ /* 64-bit source, 16/32/64 destination */
+ 
+ #define ACPI_MOVE_64_TO_16(d, s)        ACPI_MOVE_16_TO_16(d, s)	/* Truncate to 16 */
+ #define ACPI_MOVE_64_TO_32(d, s)        ACPI_MOVE_32_TO_32(d, s)	/* Truncate to 32 */
+-#define ACPI_MOVE_64_TO_64(d, s)        {((  u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
+-										 ((  u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1];\
+-										 ((  u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[2];\
+-										 ((  u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[3];\
+-										 ((  u8 *)(void *)(d))[4] = ((u8 *)(void *)(s))[4];\
+-										 ((  u8 *)(void *)(d))[5] = ((u8 *)(void *)(s))[5];\
+-										 ((  u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[6];\
+-										 ((  u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[7];}
++#define ACPI_MOVE_64_TO_64(d, s)        {((u8 *)(void *)(d))[0] = ((u8 *)(void *)(s))[0];\
++										 ((u8 *)(void *)(d))[1] = ((u8 *)(void *)(s))[1];\
++										 ((u8 *)(void *)(d))[2] = ((u8 *)(void *)(s))[2];\
++										 ((u8 *)(void *)(d))[3] = ((u8 *)(void *)(s))[3];\
++										 ((u8 *)(void *)(d))[4] = ((u8 *)(void *)(s))[4];\
++										 ((u8 *)(void *)(d))[5] = ((u8 *)(void *)(s))[5];\
++										 ((u8 *)(void *)(d))[6] = ((u8 *)(void *)(s))[6];\
++										 ((u8 *)(void *)(d))[7] = ((u8 *)(void *)(s))[7]; }
+ #endif
+ #endif
+ 
+@@ -164,7 +164,7 @@
+  */
+ #define _ACPI_DIV(value, power_of2)     ((u32) ((value) >> (power_of2)))
+ #define _ACPI_MUL(value, power_of2)     ((u32) ((value) << (power_of2)))
+-#define _ACPI_MOD(value, divisor)       ((u32) ((value) & ((divisor) -1)))
++#define _ACPI_MOD(value, divisor)       ((u32) ((value) & ((divisor) - 1)))
+ 
+ #define ACPI_DIV_2(a)                   _ACPI_DIV(a, 1)
+ #define ACPI_MUL_2(a)                   _ACPI_MUL(a, 1)
+@@ -232,64 +232,64 @@
+ 
+ #define __ACPI_FIND_LAST_BIT_2(a, r)        ((((u8)  (a)) & 0x02) ? (r)+1 : (r))
+ #define __ACPI_FIND_LAST_BIT_4(a, r)        ((((u8)  (a)) & 0x0C) ? \
+-											 __ACPI_FIND_LAST_BIT_2  ((a)>>2,  (r)+2) : \
+-											 __ACPI_FIND_LAST_BIT_2  ((a), (r)))
++											 __ACPI_FIND_LAST_BIT_2((a)>>2,  (r)+2) : \
++											 __ACPI_FIND_LAST_BIT_2((a), (r)))
+ #define __ACPI_FIND_LAST_BIT_8(a, r)        ((((u8)  (a)) & 0xF0) ? \
+-											 __ACPI_FIND_LAST_BIT_4  ((a)>>4,  (r)+4) : \
+-											 __ACPI_FIND_LAST_BIT_4  ((a), (r)))
++											 __ACPI_FIND_LAST_BIT_4((a)>>4,  (r)+4) : \
++											 __ACPI_FIND_LAST_BIT_4((a), (r)))
+ #define __ACPI_FIND_LAST_BIT_16(a, r)       ((((u16) (a)) & 0xFF00) ? \
+-											 __ACPI_FIND_LAST_BIT_8  ((a)>>8,  (r)+8) : \
+-											 __ACPI_FIND_LAST_BIT_8  ((a), (r)))
++											 __ACPI_FIND_LAST_BIT_8((a)>>8,  (r)+8) : \
++											 __ACPI_FIND_LAST_BIT_8((a), (r)))
+ #define __ACPI_FIND_LAST_BIT_32(a, r)       ((((u32) (a)) & 0xFFFF0000) ? \
+-											 __ACPI_FIND_LAST_BIT_16 ((a)>>16, (r)+16) : \
+-											 __ACPI_FIND_LAST_BIT_16 ((a), (r)))
++											 __ACPI_FIND_LAST_BIT_16((a)>>16, (r)+16) : \
++											 __ACPI_FIND_LAST_BIT_16((a), (r)))
+ #define __ACPI_FIND_LAST_BIT_64(a, r)       ((((u64) (a)) & 0xFFFFFFFF00000000) ? \
+-											 __ACPI_FIND_LAST_BIT_32 ((a)>>32, (r)+32) : \
+-											 __ACPI_FIND_LAST_BIT_32 ((a), (r)))
++											 __ACPI_FIND_LAST_BIT_32((a)>>32, (r)+32) : \
++											 __ACPI_FIND_LAST_BIT_32((a), (r)))
+ 
+-#define ACPI_FIND_LAST_BIT_8(a)             ((a) ? __ACPI_FIND_LAST_BIT_8 (a, 1) : 0)
+-#define ACPI_FIND_LAST_BIT_16(a)            ((a) ? __ACPI_FIND_LAST_BIT_16 (a, 1) : 0)
+-#define ACPI_FIND_LAST_BIT_32(a)            ((a) ? __ACPI_FIND_LAST_BIT_32 (a, 1) : 0)
+-#define ACPI_FIND_LAST_BIT_64(a)            ((a) ? __ACPI_FIND_LAST_BIT_64 (a, 1) : 0)
++#define ACPI_FIND_LAST_BIT_8(a)             ((a) ? __ACPI_FIND_LAST_BIT_8(a, 1) : 0)
++#define ACPI_FIND_LAST_BIT_16(a)            ((a) ? __ACPI_FIND_LAST_BIT_16(a, 1) : 0)
++#define ACPI_FIND_LAST_BIT_32(a)            ((a) ? __ACPI_FIND_LAST_BIT_32(a, 1) : 0)
++#define ACPI_FIND_LAST_BIT_64(a)            ((a) ? __ACPI_FIND_LAST_BIT_64(a, 1) : 0)
+ 
+ #define __ACPI_FIND_FIRST_BIT_2(a, r)       ((((u8) (a)) & 0x01) ? (r) : (r)+1)
+ #define __ACPI_FIND_FIRST_BIT_4(a, r)       ((((u8) (a)) & 0x03) ? \
+-											 __ACPI_FIND_FIRST_BIT_2  ((a), (r)) : \
+-											 __ACPI_FIND_FIRST_BIT_2  ((a)>>2, (r)+2))
++											 __ACPI_FIND_FIRST_BIT_2((a), (r)) : \
++											 __ACPI_FIND_FIRST_BIT_2((a)>>2, (r)+2))
+ #define __ACPI_FIND_FIRST_BIT_8(a, r)       ((((u8) (a)) & 0x0F) ? \
+-											 __ACPI_FIND_FIRST_BIT_4  ((a), (r)) : \
+-											 __ACPI_FIND_FIRST_BIT_4  ((a)>>4, (r)+4))
++											 __ACPI_FIND_FIRST_BIT_4((a), (r)) : \
++											 __ACPI_FIND_FIRST_BIT_4((a)>>4, (r)+4))
+ #define __ACPI_FIND_FIRST_BIT_16(a, r)      ((((u16) (a)) & 0x00FF) ? \
+-											 __ACPI_FIND_FIRST_BIT_8  ((a), (r)) : \
+-											 __ACPI_FIND_FIRST_BIT_8  ((a)>>8, (r)+8))
++											 __ACPI_FIND_FIRST_BIT_8((a), (r)) : \
++											 __ACPI_FIND_FIRST_BIT_8((a)>>8, (r)+8))
+ #define __ACPI_FIND_FIRST_BIT_32(a, r)      ((((u32) (a)) & 0x0000FFFF) ? \
+-											 __ACPI_FIND_FIRST_BIT_16 ((a), (r)) : \
+-											 __ACPI_FIND_FIRST_BIT_16 ((a)>>16, (r)+16))
++											 __ACPI_FIND_FIRST_BIT_16((a), (r)) : \
++											 __ACPI_FIND_FIRST_BIT_16((a)>>16, (r)+16))
+ #define __ACPI_FIND_FIRST_BIT_64(a, r)      ((((u64) (a)) & 0x00000000FFFFFFFF) ? \
+-											 __ACPI_FIND_FIRST_BIT_32 ((a), (r)) : \
+-											 __ACPI_FIND_FIRST_BIT_32 ((a)>>32, (r)+32))
++											 __ACPI_FIND_FIRST_BIT_32((a), (r)) : \
++											 __ACPI_FIND_FIRST_BIT_32((a)>>32, (r)+32))
+ 
+-#define ACPI_FIND_FIRST_BIT_8(a)            ((a) ? __ACPI_FIND_FIRST_BIT_8 (a, 1) : 0)
+-#define ACPI_FIND_FIRST_BIT_16(a)           ((a) ? __ACPI_FIND_FIRST_BIT_16 (a, 1) : 0)
+-#define ACPI_FIND_FIRST_BIT_32(a)           ((a) ? __ACPI_FIND_FIRST_BIT_32 (a, 1) : 0)
+-#define ACPI_FIND_FIRST_BIT_64(a)           ((a) ? __ACPI_FIND_FIRST_BIT_64 (a, 1) : 0)
++#define ACPI_FIND_FIRST_BIT_8(a)            ((a) ? __ACPI_FIND_FIRST_BIT_8(a, 1) : 0)
++#define ACPI_FIND_FIRST_BIT_16(a)           ((a) ? __ACPI_FIND_FIRST_BIT_16(a, 1) : 0)
++#define ACPI_FIND_FIRST_BIT_32(a)           ((a) ? __ACPI_FIND_FIRST_BIT_32(a, 1) : 0)
++#define ACPI_FIND_FIRST_BIT_64(a)           ((a) ? __ACPI_FIND_FIRST_BIT_64(a, 1) : 0)
+ 
+ #endif				/* ACPI_USE_NATIVE_BIT_FINDER */
+ 
+ /* Generic (power-of-two) rounding */
+ 
+ #define ACPI_ROUND_UP_POWER_OF_TWO_8(a)     ((u8) \
+-											(((u16) 1) <<  ACPI_FIND_LAST_BIT_8  ((a)  - 1)))
++											(((u16) 1) <<  ACPI_FIND_LAST_BIT_8((a)  - 1)))
+ #define ACPI_ROUND_DOWN_POWER_OF_TWO_8(a)   ((u8) \
+-											(((u16) 1) << (ACPI_FIND_LAST_BIT_8  ((a)) - 1)))
++											(((u16) 1) << (ACPI_FIND_LAST_BIT_8((a)) - 1)))
+ #define ACPI_ROUND_UP_POWER_OF_TWO_16(a)    ((u16) \
+-											(((u32) 1) <<  ACPI_FIND_LAST_BIT_16 ((a)  - 1)))
++											(((u32) 1) <<  ACPI_FIND_LAST_BIT_16((a)  - 1)))
+ #define ACPI_ROUND_DOWN_POWER_OF_TWO_16(a)  ((u16) \
+-											(((u32) 1) << (ACPI_FIND_LAST_BIT_16 ((a)) - 1)))
++											(((u32) 1) << (ACPI_FIND_LAST_BIT_16((a)) - 1)))
+ #define ACPI_ROUND_UP_POWER_OF_TWO_32(a)    ((u32) \
+-											(((u64) 1) <<  ACPI_FIND_LAST_BIT_32 ((a)  - 1)))
++											(((u64) 1) <<  ACPI_FIND_LAST_BIT_32((a)  - 1)))
+ #define ACPI_ROUND_DOWN_POWER_OF_TWO_32(a)  ((u32) \
+-											(((u64) 1) << (ACPI_FIND_LAST_BIT_32 ((a)) - 1)))
++											(((u64) 1) << (ACPI_FIND_LAST_BIT_32((a)) - 1)))
+ #define ACPI_IS_ALIGNED(a, s)               (((a) & ((s) - 1)) == 0)
+ #define ACPI_IS_POWER_OF_TWO(a)             ACPI_IS_ALIGNED(a, a)
+ 
+@@ -353,10 +353,10 @@
+ 
+ /* Macros to extract flag bits from position one and above */
+ 
+-#define ACPI_EXTRACT_1BIT_FLAG(field, position)     (ACPI_GET_1BIT_FLAG ((field) >> position))
+-#define ACPI_EXTRACT_2BIT_FLAG(field, position)     (ACPI_GET_2BIT_FLAG ((field) >> position))
+-#define ACPI_EXTRACT_3BIT_FLAG(field, position)     (ACPI_GET_3BIT_FLAG ((field) >> position))
+-#define ACPI_EXTRACT_4BIT_FLAG(field, position)     (ACPI_GET_4BIT_FLAG ((field) >> position))
++#define ACPI_EXTRACT_1BIT_FLAG(field, position)     (ACPI_GET_1BIT_FLAG((field) >> position))
++#define ACPI_EXTRACT_2BIT_FLAG(field, position)     (ACPI_GET_2BIT_FLAG((field) >> position))
++#define ACPI_EXTRACT_3BIT_FLAG(field, position)     (ACPI_GET_3BIT_FLAG((field) >> position))
++#define ACPI_EXTRACT_4BIT_FLAG(field, position)     (ACPI_GET_4BIT_FLAG((field) >> position))
+ 
+ /* ACPI Pathname helpers */
+ 
+@@ -379,7 +379,7 @@
+ /*
+  * Macros for the master AML opcode table
+  */
+-#if defined (ACPI_DISASSEMBLER) || defined (ACPI_DEBUG_OUTPUT)
++#if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG_OUTPUT)
+ #define ACPI_OP(name, Pargs, Iargs, obj_type, class, type, flags) \
+ 	{name, (u32)(Pargs), (u32)(Iargs), (u32)(flags), obj_type, class, type}
+ #else
+@@ -421,8 +421,8 @@
+  * the plist contains a set of parens to allow variable-length lists.
+  * These macros are used for both the debug and non-debug versions of the code.
+  */
+-#define ACPI_ERROR_NAMESPACE(s, p, e)       acpi_ut_prefixed_namespace_error (AE_INFO, s, p, e);
+-#define ACPI_ERROR_METHOD(s, n, p, e)       acpi_ut_method_error (AE_INFO, s, n, p, e);
++#define ACPI_ERROR_NAMESPACE(s, p, e)       acpi_ut_prefixed_namespace_error(AE_INFO, s, p, e);
++#define ACPI_ERROR_METHOD(s, n, p, e)       acpi_ut_method_error(AE_INFO, s, n, p, e);
+ #define ACPI_WARN_PREDEFINED(plist)         acpi_ut_predefined_warning plist
+ #define ACPI_INFO_PREDEFINED(plist)         acpi_ut_predefined_info plist
+ #define ACPI_BIOS_ERROR_PREDEFINED(plist)   acpi_ut_predefined_bios_error plist
+@@ -467,17 +467,17 @@
+ #ifdef ACPI_ASL_COMPILER
+ 
+ #define ASL_CV_LABEL_FILENODE(a)         cv_label_file_node(a);
+-#define ASL_CV_CAPTURE_COMMENTS_ONLY(a)   cv_capture_comments_only (a);
+-#define ASL_CV_CAPTURE_COMMENTS(a)       cv_capture_comments (a);
+-#define ASL_CV_TRANSFER_COMMENTS(a)      cv_transfer_comments (a);
+-#define ASL_CV_CLOSE_PAREN(a,b)          cv_close_paren_write_comment(a,b);
+-#define ASL_CV_CLOSE_BRACE(a,b)          cv_close_brace_write_comment(a,b);
+-#define ASL_CV_SWITCH_FILES(a,b)         cv_switch_files(a,b);
++#define ASL_CV_CAPTURE_COMMENTS_ONLY(a)   cv_capture_comments_only(a);
++#define ASL_CV_CAPTURE_COMMENTS(a)       cv_capture_comments(a);
++#define ASL_CV_TRANSFER_COMMENTS(a)      cv_transfer_comments(a);
++#define ASL_CV_CLOSE_PAREN(a, b)          cv_close_paren_write_comment(a, b);
++#define ASL_CV_CLOSE_BRACE(a, b)          cv_close_brace_write_comment(a, b);
++#define ASL_CV_SWITCH_FILES(a, b)         cv_switch_files(a, b);
+ #define ASL_CV_CLEAR_OP_COMMENTS(a)       cv_clear_op_comments(a);
+-#define ASL_CV_PRINT_ONE_COMMENT(a,b,c,d) cv_print_one_comment_type (a,b,c,d);
+-#define ASL_CV_PRINT_ONE_COMMENT_LIST(a,b) cv_print_one_comment_list (a,b);
++#define ASL_CV_PRINT_ONE_COMMENT(a, b, c, d) cv_print_one_comment_type (a, b, c, d);
++#define ASL_CV_PRINT_ONE_COMMENT_LIST(a, b) cv_print_one_comment_list (a, b);
+ #define ASL_CV_FILE_HAS_SWITCHED(a)       cv_file_has_switched(a)
+-#define ASL_CV_INIT_FILETREE(a,b)      cv_init_file_tree(a,b);
++#define ASL_CV_INIT_FILETREE(a, b)      cv_init_file_tree(a, b);
+ 
+ #else
+ 
+@@ -485,14 +485,14 @@
+ #define ASL_CV_CAPTURE_COMMENTS_ONLY(a)
+ #define ASL_CV_CAPTURE_COMMENTS(a)
+ #define ASL_CV_TRANSFER_COMMENTS(a)
+-#define ASL_CV_CLOSE_PAREN(a,b)          acpi_os_printf (")");
+-#define ASL_CV_CLOSE_BRACE(a,b)          acpi_os_printf ("}");
+-#define ASL_CV_SWITCH_FILES(a,b)
++#define ASL_CV_CLOSE_PAREN(a, b)          acpi_os_printf (")");
++#define ASL_CV_CLOSE_BRACE(a, b)          acpi_os_printf ("}");
++#define ASL_CV_SWITCH_FILES(a, b)
+ #define ASL_CV_CLEAR_OP_COMMENTS(a)
+-#define ASL_CV_PRINT_ONE_COMMENT(a,b,c,d)
+-#define ASL_CV_PRINT_ONE_COMMENT_LIST(a,b)
++#define ASL_CV_PRINT_ONE_COMMENT(a, b, c, d)
++#define ASL_CV_PRINT_ONE_COMMENT_LIST(a, b)
+ #define ASL_CV_FILE_HAS_SWITCHED(a)       0
+-#define ASL_CV_INIT_FILETREE(a,b)
++#define ASL_CV_INIT_FILETREE(a, b)
+ 
+ #endif
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
