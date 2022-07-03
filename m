@@ -2,143 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FE1CCA473
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 12:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2891C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 12:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232591AbiGCMbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 08:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
+        id S231966AbiGCMsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 08:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiGCMbQ (ORCPT
+        with ESMTP id S229739AbiGCMsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 08:31:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A349C26D7
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 05:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656851474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nK4ahcYY0WO5KebMw8df2u7hNaBerN6cj/QjBF2fJk4=;
-        b=hBbvjlGD2q4CYPLB5CJyCUU9YKxAfStjwkQykNtDWyhBj42ZVCOcnP5TY9bLv3oBy3bDrE
-        BXDK3AOsbY4QKEH85d2BJl4pwAwZC7XJW7pw1V8AxNm4z/Xv3kITmk4q/RA8Wh5QMuIACJ
-        gzqWLBI4f303KLVGIR5aPxzAi6YtyKA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-401-IxPgXsGEMEuEbq9eGr3ktA-1; Sun, 03 Jul 2022 08:31:12 -0400
-X-MC-Unique: IxPgXsGEMEuEbq9eGr3ktA-1
-Received: by mail-wm1-f70.google.com with SMTP id o7-20020a05600c510700b003a18addaaa9so4093665wms.4
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 05:31:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nK4ahcYY0WO5KebMw8df2u7hNaBerN6cj/QjBF2fJk4=;
-        b=V1P7DTmfWfqj76xBe+J9hgIBSZ+slkZtG08d8TbPM3NeMKNBaCPVzPoNAzOMLL/Q0s
-         CMQY7QHwNjoVl1lxrahCHIP322ZjmVzD87/lT3Gdbw5nzbtyRwSbht+uMwdjJPsa1Syt
-         ERfqmBpYmUfx2KJ4pzzEOFD7tf5hu6ao0zUko6OYswN+riLNQhHAQhdk0JggCsEek0Pz
-         4a9Go+it7r3q3Go7e59VR/wztQvyvLaoDJp0VP90IB7qkX9OMNtjgm7POjGBUNytyeBc
-         SGaYf2N7eNzuE3+JMFs1VR+8izF9t/RSg3iD3d1+XN3g7NtgfXbXiJ5JZcDEjyrVbsvm
-         CPiw==
-X-Gm-Message-State: AJIora/x5HGe7TlksCojR85/fXbVNSLcfpc0nuFgzgluW3I/cOgKQ+Ai
-        7p3g1PZTzZgibRqibFWdJj/29zgMps/qrh+ZoHAGAeDr7CUIxXWhXTKKrAoqY6U3/U/prljgDvC
-        Fnf9v4KFdya/ybFswDVXG6aA=
-X-Received: by 2002:a5d:48cf:0:b0:210:1229:2e7 with SMTP id p15-20020a5d48cf000000b00210122902e7mr22092834wrs.567.1656851471636;
-        Sun, 03 Jul 2022 05:31:11 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1swJauhVcRZc5PEe1i4cxgg4inMrv54zzjG82+59GDRFdfcac/oAFteoiFhrNgo5aPGUMZ6nA==
-X-Received: by 2002:a5d:48cf:0:b0:210:1229:2e7 with SMTP id p15-20020a5d48cf000000b00210122902e7mr22092817wrs.567.1656851471447;
-        Sun, 03 Jul 2022 05:31:11 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id l5-20020a05600c47c500b0039c693a54ecsm19314211wmo.23.2022.07.03.05.31.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Jul 2022 05:31:10 -0700 (PDT)
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     mcgrof@kernel.org, rostedt@goodmis.org
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, oleksandr@natalenko.name,
-        neelx@redhat.com, daniel.thompson@linaro.org, hch@infradead.org,
-        tglx@linutronix.de, linux-rt-users@vger.kernel.org
-Subject: [PATCH] module: kallsyms: Ensure preemption in add_kallsyms() with PREEMPT_RT
-Date:   Sun,  3 Jul 2022 13:31:09 +0100
-Message-Id: <20220703123109.3770204-1-atomlin@redhat.com>
-X-Mailer: git-send-email 2.34.3
+        Sun, 3 Jul 2022 08:48:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DD65FF4;
+        Sun,  3 Jul 2022 05:48:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19BE7612DC;
+        Sun,  3 Jul 2022 12:48:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D831C341C6;
+        Sun,  3 Jul 2022 12:48:09 +0000 (UTC)
+Date:   Sun, 3 Jul 2022 08:48:08 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] 9p fid refcount: add a 9p_fid_ref tracepoint
+Message-ID: <20220703084808.1d6a9989@rorschach.local.home>
+In-Reply-To: <20220702102913.2164800-1-asmadeus@codewreck.org>
+References: <20220702102913.2164800-1-asmadeus@codewreck.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looking at add_kallsyms(), there is absolutely no need to explicitly
-disable preemption. Before kallsyms-specific data is prepared/or set-up, we
-ensure that the unformed module is known to be unique i.e. does not already
-exist (see load_module()). Therefore, we can use the common RCU primitive
-as this section of code can be pre-empted. In other words, it is safe to be
-re-scheduled, in this context.
+On Sat,  2 Jul 2022 19:29:14 +0900
+Dominique Martinet <asmadeus@codewreck.org> wrote:
 
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Fixes: 08126db5ff73 ("module: kallsyms: Fix suspicious rcu usage")
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
----
- kernel/module/kallsyms.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+> This adds a tracepoint event for 9p fid lifecycle tracing: when a fid
+> is created, its reference count increased/decreased, and freed.
+> The new 9p_fid_ref tracepoint should help anyone wishing to debug any
+> fid problem such as missing clunk (destroy) or use-after-free.
+> 
+> Link: https://lkml.kernel.org/r/20220612085330.1451496-6-asmadeus@codewreck.org
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> ---
+> 
+> Just resending this single patch of the series as it's the only one
+> without a review tag.
+> 
+> Steven, is it ok to carry it in my tree as is or do I need blessings
+> from you or Ingo?
 
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index 3e11523bc6f6..b16ff36b4b71 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -174,14 +174,14 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	mod->kallsyms = (void __rcu *)mod->init_layout.base +
- 		info->mod_kallsyms_init_off;
- 
--	preempt_disable();
-+	rcu_read_lock();
- 	/* The following is safe since this pointer cannot change */
--	rcu_dereference_sched(mod->kallsyms)->symtab = (void *)symsec->sh_addr;
--	rcu_dereference_sched(mod->kallsyms)->num_symtab = symsec->sh_size / sizeof(Elf_Sym);
-+	rcu_dereference(mod->kallsyms)->symtab = (void *)symsec->sh_addr;
-+	rcu_dereference(mod->kallsyms)->num_symtab = symsec->sh_size / sizeof(Elf_Sym);
- 	/* Make sure we get permanent strtab: don't use info->strtab. */
--	rcu_dereference_sched(mod->kallsyms)->strtab =
-+	rcu_dereference(mod->kallsyms)->strtab =
- 		(void *)info->sechdrs[info->index.str].sh_addr;
--	rcu_dereference_sched(mod->kallsyms)->typetab = mod->init_layout.base + info->init_typeoffs;
-+	rcu_dereference(mod->kallsyms)->typetab = mod->init_layout.base + info->init_typeoffs;
- 
- 	/*
- 	 * Now populate the cut down core kallsyms for after init
-@@ -190,22 +190,22 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	mod->core_kallsyms.symtab = dst = mod->data_layout.base + info->symoffs;
- 	mod->core_kallsyms.strtab = s = mod->data_layout.base + info->stroffs;
- 	mod->core_kallsyms.typetab = mod->data_layout.base + info->core_typeoffs;
--	src = rcu_dereference_sched(mod->kallsyms)->symtab;
--	for (ndst = i = 0; i < rcu_dereference_sched(mod->kallsyms)->num_symtab; i++) {
--		rcu_dereference_sched(mod->kallsyms)->typetab[i] = elf_type(src + i, info);
-+	src = rcu_dereference(mod->kallsyms)->symtab;
-+	for (ndst = i = 0; i < rcu_dereference(mod->kallsyms)->num_symtab; i++) {
-+		rcu_dereference(mod->kallsyms)->typetab[i] = elf_type(src + i, info);
- 		if (i == 0 || is_livepatch_module(mod) ||
- 		    is_core_symbol(src + i, info->sechdrs, info->hdr->e_shnum,
- 				   info->index.pcpu)) {
- 			mod->core_kallsyms.typetab[ndst] =
--			    rcu_dereference_sched(mod->kallsyms)->typetab[i];
-+			    rcu_dereference(mod->kallsyms)->typetab[i];
- 			dst[ndst] = src[i];
- 			dst[ndst++].st_name = s - mod->core_kallsyms.strtab;
- 			s += strscpy(s,
--				     &rcu_dereference_sched(mod->kallsyms)->strtab[src[i].st_name],
-+				     &rcu_dereference(mod->kallsyms)->strtab[src[i].st_name],
- 				     KSYM_NAME_LEN) + 1;
- 		}
- 	}
--	preempt_enable();
-+	rcu_read_unlock();
- 	mod->core_kallsyms.num_symtab = ndst;
- }
- 
--- 
-2.34.3
+The addition of trace events do belong to the maintainers of where the
+trace events go.
 
+> (it depends on the previous patch so I'd carry it in my tree anyway,
+> but would be more comfortable with a reviewed-by tag)
+
+Yes, I prefer people Cc me on trace events just so that I can catch
+mistakes or find better ways to accomplish what is trying to be done.
+
+Especially for something that does changes like this patch, which are
+not just the trivial TRACE_EVENT() trace_*() procedure. Thanks for
+Cc'ing me.
+
+> 
+> 
+> v2 -> v3:
+>  - added EXPORT_TRACEPOINT_SYMBOL(9p_fid_ref) to have this work when
+>    built as module
+> 
+> v1 -> v2:
+>  - added rationale to commit message
+>  - adjusted to use DECLARE_TRACEPOINT + tracepoint_enable() in header
+> 
+>  include/net/9p/client.h   | 13 +++++++++++
+>  include/trace/events/9p.h | 48 +++++++++++++++++++++++++++++++++++++++
+>  net/9p/client.c           | 20 +++++++++++++++-
+>  3 files changed, 80 insertions(+), 1 deletion(-)
+> 
+
+The rest looks fine.
+
+For the tracing point of view:
+
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+
+-- Steve
