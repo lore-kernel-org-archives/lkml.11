@@ -2,97 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AADD7C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 15:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EEBCCA481
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 15:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232479AbiGCPAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 11:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
+        id S232607AbiGCPFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 11:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231528AbiGCPAS (ORCPT
+        with ESMTP id S231145AbiGCPFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 11:00:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B8E6395;
-        Sun,  3 Jul 2022 08:00:17 -0700 (PDT)
+        Sun, 3 Jul 2022 11:05:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D88A5F5E;
+        Sun,  3 Jul 2022 08:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BF61BCE0ED8;
-        Sun,  3 Jul 2022 15:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD1BC341C6;
-        Sun,  3 Jul 2022 15:00:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC49E60FD2;
+        Sun,  3 Jul 2022 15:05:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41BAAC341C6;
+        Sun,  3 Jul 2022 15:05:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656860414;
-        bh=9xoGh7FTIXdYCae7wfWJR5ibGEP1JE5frDaXf2XOqNI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=CnvLdU6diFe19rBYTseEwc/YVC+0lJ5422VKqJpr0Beu3D99iGEJ+17tzMIOVuOde
-         hVtJoFav7JO1GGopIvmvy8TIfyw47WIKFJRaf8YZGc24zLnc7/EMBsd6FwysYC3JcR
-         sAXcAY3Vn0Q+Fu7b1dslsS8+Q21TTVQ7+nq6MIc99OJYoevJrkaeLw6V/0FFYx8pQM
-         UoHBaRDML1fxp0uRYGG7pQoN6yOTSl+UpwzG/jigVq35chCqjx77ocMVR7OBS462kv
-         I5tZx0DxOwvpYOKiwQGu61brAyjxQd97p+smckxpNtviIsdmq5qDBsl3QP3jm8N5QC
-         6fephEpQyGVLQ==
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-31c86fe1dddso14054767b3.1;
-        Sun, 03 Jul 2022 08:00:14 -0700 (PDT)
-X-Gm-Message-State: AJIora976d36OHVhxEFWZYlekgs8YvMUb7kLDX9MRonx+vTMHtpsb6Eq
-        gcYJYbmJoJXRFUNzNdVT6o+7PaK2qXLhuaX0sls=
-X-Google-Smtp-Source: AGRyM1ukynLIgOiitvo7ArTq4Xp44i5t+uf5ktShtxOF0oujSdeNPWkJUrhyjr0mSQV9X5gT54Bbfgijakl169LwnEo=
-X-Received: by 2002:a0d:d757:0:b0:31c:87bb:d546 with SMTP id
- z84-20020a0dd757000000b0031c87bbd546mr4492672ywd.472.1656860413255; Sun, 03
- Jul 2022 08:00:13 -0700 (PDT)
+        s=k20201202; t=1656860735;
+        bh=ml13+lJ64hkDt+1Ct13RJqBJF6v3V7P/yEHeyrAHOeA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=bBtjHQaGEfthY5DMayH45IyAqUTbp/YmwR9fik/6KJvWbrI8oBBFjPmRa4hk617mH
+         ffqsPlr2mXvUW4oDLJF+aRXkj72qizkIdk5fms5cCvic8z1YeV7PAIfLhCd3NCFzq5
+         kRSKZTl/iZ++8ql5m3Jr1Uxi9uBam33GEzDTHVAR1jDbBHo8dgRVQS+5czb0m8OFiR
+         qKQgoj2yTdiAlvyBOruncG0lNl4k47nX3BMHSU84Cbd4Csepcr8+VrECqn1S9eKu6+
+         9HPCSpV5dcq+sgGSsO265cwgw31yeEzqQyLmRFnaShm4LGmXR8X7iGYs3m3soGH0yb
+         hCLFZx6xJB3Xw==
+Date:   Sun, 3 Jul 2022 08:05:34 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        david@fromorbit.com, linux-kernel@vger.kernel.org,
+        sandeen@sandeen.net, hch@lst.de, fstests <fstests@vger.kernel.org>
+Subject: [GIT PULL] xfs: bug fixes for 5.19-rc5
+Message-ID: <YsGwPqUYSW/IwgkN@magnolia>
 MIME-Version: 1.0
-References: <20220702015411.61522-1-jiaming@nfschina.com>
-In-Reply-To: <20220702015411.61522-1-jiaming@nfschina.com>
-From:   Song Liu <song@kernel.org>
-Date:   Sun, 3 Jul 2022 08:00:02 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW42y5JmQPLS59KFYr1GS=LVztyhhbQ1sbB9Ag4ugV1KSA@mail.gmail.com>
-Message-ID: <CAPhsuW42y5JmQPLS59KFYr1GS=LVztyhhbQ1sbB9Ag4ugV1KSA@mail.gmail.com>
-Subject: Re: [PATCH] md: Fix spelling mistake in comments
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     linux-raid <linux-raid@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 6:54 PM Zhang Jiaming <jiaming@nfschina.com> wrote:
->
-> There are 2 spelling mistakes in comments. Fix it.
->
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+Hi Linus,
 
-Applied to md-next.
+Please pull this branch containing bug fixes for XFS for 5.19-rc5.  The
+patches in this branch fix some stalling problems and correct the last
+of the problems (I hope) observed during testing of the new atomic xattr
+update feature.
 
-Thanks,
-Song
+As usual, I did a test-merge with upstream master as of a few minutes
+ago, and it completed flawlessly.  Please let me know if you encounter
+any problems.
 
-> ---
->  drivers/md/md-cluster.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/md/md-cluster.c b/drivers/md/md-cluster.c
-> index 37cbcce3cc66..742b2349fea3 100644
-> --- a/drivers/md/md-cluster.c
-> +++ b/drivers/md/md-cluster.c
-> @@ -40,7 +40,7 @@ struct resync_info {
->
->  /* Lock the send communication. This is done through
->   * bit manipulation as opposed to a mutex in order to
-> - * accomodate lock and hold. See next comment.
-> + * accommodate lock and hold. See next comment.
->   */
->  #define                MD_CLUSTER_SEND_LOCK                    4
->  /* If cluster operations (such as adding a disk) must lock the
-> @@ -689,7 +689,7 @@ static int lock_comm(struct md_cluster_info *cinfo, bool mddev_locked)
->         /*
->          * If resync thread run after raid1d thread, then process_metadata_update
->          * could not continue if raid1d held reconfig_mutex (and raid1d is blocked
-> -        * since another node already got EX on Token and waitting the EX of Ack),
-> +        * since another node already got EX on Token and waiting the EX of Ack),
->          * so let resync wake up thread in case flag is set.
->          */
->         if (mddev_locked && !test_bit(MD_CLUSTER_HOLDING_MUTEX_FOR_RECVD,
-> --
-> 2.25.1
->
+--D
+
+The following changes since commit e89ab76d7e2564c65986add3d634cc5cf5bacf14:
+
+  xfs: preserve DIFLAG2_NREXT64 when setting other inode attributes (2022-06-15 23:13:33 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.19-fixes-4
+
+for you to fetch changes up to 7561cea5dbb97fecb952548a0fb74fb105bf4664:
+
+  xfs: prevent a UAF when log IO errors race with unmount (2022-07-01 09:09:52 -0700)
+
+----------------------------------------------------------------
+Fixes for 5.19-rc5:
+ - Fix statfs blocking on background inode gc workers
+ - Fix some broken inode lock assertion code
+ - Fix xattr leaf buffer leaks when cancelling a deferred xattr update
+   operation
+ - Clean up xattr recovery to make it easier to understand.
+ - Fix xattr leaf block verifiers tripping over empty blocks.
+ - Remove complicated and error prone xattr leaf block bholding mess.
+ - Fix a bug where an rt extent crossing EOF was treated as "posteof"
+   blocks and cleaned unnecessarily.
+ - Fix a UAF when log shutdown races with unmount.
+
+----------------------------------------------------------------
+Darrick J. Wong (6):
+      xfs: always free xattri_leaf_bp when cancelling a deferred op
+      xfs: clean up the end of xfs_attri_item_recover
+      xfs: empty xattr leaf header blocks are not corruption
+      xfs: don't hold xattr leaf buffers across transaction rolls
+      xfs: dont treat rt extents beyond EOF as eofblocks to be cleared
+      xfs: prevent a UAF when log IO errors race with unmount
+
+Dave Chinner (2):
+      xfs: bound maximum wait time for inodegc work
+      xfs: introduce xfs_inodegc_push()
+
+Kaixu Xia (2):
+      xfs: factor out the common lock flags assert
+      xfs: use invalidate_lock to check the state of mmap_lock
+
+ fs/xfs/libxfs/xfs_attr.c      | 38 ++++++-------------------
+ fs/xfs/libxfs/xfs_attr.h      |  5 ----
+ fs/xfs/libxfs/xfs_attr_leaf.c | 35 ++++++++++++-----------
+ fs/xfs/libxfs/xfs_attr_leaf.h |  3 +-
+ fs/xfs/xfs_attr_item.c        | 27 ++++++++++--------
+ fs/xfs/xfs_bmap_util.c        |  2 ++
+ fs/xfs/xfs_icache.c           | 56 ++++++++++++++++++++++++-------------
+ fs/xfs/xfs_icache.h           |  1 +
+ fs/xfs/xfs_inode.c            | 64 +++++++++++++++++--------------------------
+ fs/xfs/xfs_log.c              |  9 ++++--
+ fs/xfs/xfs_mount.h            |  2 +-
+ fs/xfs/xfs_qm_syscalls.c      |  9 ++++--
+ fs/xfs/xfs_super.c            |  9 ++++--
+ fs/xfs/xfs_trace.h            |  1 +
+ 14 files changed, 130 insertions(+), 131 deletions(-)
