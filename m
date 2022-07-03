@@ -2,101 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6031CC43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232608AbiGCD7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 23:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
+        id S232648AbiGCD7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 23:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232346AbiGCD6d (ORCPT
+        with ESMTP id S232516AbiGCD6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 2 Jul 2022 23:58:33 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFB9BF5F
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:39 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id e14-20020a9d018e000000b00618ca3183a0so4448739ote.13
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:39 -0700 (PDT)
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1530DBF63
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:40 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-10bd7fbc0ddso2841943fac.1
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dQGA0bu3AQWCuC1GbwRKa+75S+e6lFO1n+xYI6b2Lfw=;
-        b=tZaTCT5agJ/W5MTY4ChPtc1XDLJKp4CctBpnrCUIhKNgpN1H67etzBdwWcVgqTh3p5
-         Rpws6+KCerTtj8KDgj208++uOAUUNYbZwIshCcigdKA1eDiRz/QItFe1rMw5+GiscOar
-         FrzEPYhzQinS0Z91zyAbjw85CcRTp2ENtnixsfT6WRN+TNRS0m0FM6MNH1rMOOCyJxsC
-         5P51RWagk0utaomYGvqdFoITuFnEhDzq2tWG4Glt2KJgrHX/T3lrPdg/lUIzBClJzInl
-         r208u28GA8/rpcp88qsLSJJlP4Ui0QQT6y6QxDAa5Nnm0OjV33BJKsy7H06YpCqUhiI8
-         y4EA==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=nWUbM1QO+xcB9DJ8bgLAmaBbOykL1mmTX4oz4sv5DMU=;
+        b=i5DSNyHZXPTWebDSN8WALRkLrbQ2w9ufTMW4wMGpaCjvY5jDk3vbHcYQsmP+dy6k7g
+         ELS5plsRe2pYZUkM/U4h4pQOzIeuGP2K++NaArenbUDKmwUMQQlq20lhmdMAtKWHhzds
+         vqOaupLzAHoJd9ULlRHhOJyBqW4KOfplvFIXk/bgl4wxmEjwxVtTajLDNbAvedbZelJQ
+         jRZluosCe+3v691ZnCdq77oKiW7/S+U6OMHF42mz8rd9+DHvWVMeaYaOo4T6EU34D4bb
+         dd080dLVA1xUoMoRO5/zMqbjr0ETcZKBHhiOnCwcAKuJ7XU6HtJ4Ztn4HutVqSjO1R4F
+         3gfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dQGA0bu3AQWCuC1GbwRKa+75S+e6lFO1n+xYI6b2Lfw=;
-        b=qbabKKZ1CtwumzQ8g5eCa2vtraPXo8EQHyCl8Pv9nKfYVylI+omuE2OnuAHoLPyEl3
-         nRlnEEYrBWI+qlsUTF7xFNMCJFZWeeOFoniop8mPyQmzmDIuPJ9c0/FXuJsCZ6Tf7P2u
-         SqRtPEDOmMKd19ru1LCEEc7gLxMSdWhvuGW2pXYXkhZoriTpLcpQ0bXRMPVQSKJimdHd
-         lR+pVgczgtPyIxY6UB8K96Q8iktTps/6RJh9Hg68R43itQov6kDpAWgGKNJ8MUzy+Bff
-         hR8zVCQJZuwBtwUYIyelpNZk2FkP2k5QmcF6+9e2bDaVCuAZiTjvFhDoYsYUa40eyAO9
-         ExCg==
-X-Gm-Message-State: AJIora9Wer513w5TVf/ab9bfALU34GDY8hHGg2VkiW8n1dwzB4WbMXRI
-        Lyvn13uSwMw7XzwDvvhyiOqhbA==
-X-Google-Smtp-Source: AGRyM1unb+4uUOF604hLcm6sxUx99v9VtXWGjmIJ3dnzzgB49ZjQEqsHZ3kaRUHP0jg6yWxEYqFcqQ==
-X-Received: by 2002:a05:6830:1b79:b0:616:af56:2fe7 with SMTP id d25-20020a0568301b7900b00616af562fe7mr9513926ote.262.1656820653608;
-        Sat, 02 Jul 2022 20:57:33 -0700 (PDT)
+        bh=nWUbM1QO+xcB9DJ8bgLAmaBbOykL1mmTX4oz4sv5DMU=;
+        b=cI5sZIcSRgnSP5i0egZ35BqgGF9Rg3jX5RecnQevS4338UmJlQ0ON83tDJwqcPgwGw
+         cC03idh8kgcE4cYf/2nNnOFQ4q2qhEkYiYi4jAfq8RLqk1pI+lCgHk7U6+5EMpLbO/S+
+         hJLqZYcLHah+QJ9Vktcb7BduFpvuhiLoiWnBGXcf2bC5ftfW+i61w2EcWa6t203M8xat
+         ZJPzRpn2ew28uhQHBKCvyKBW9M4zjFdHWyOVWvPlBPppuCnRrHrcQG2tiKpUi5Iyuay8
+         WYpZtIO7Wi0iMDSW8OnENxEnETt01ytaVUsATvqhCsVO7eORCX2PqJnuEqgUMrM91wvO
+         EIeQ==
+X-Gm-Message-State: AJIora+3Qr0wzhp3cnGS1uO5BaPEJ5j+0zenCzRYEeAuzW9mJERyOj1e
+        ShYZ5lb5tw7Eam6/hzScngpjVDh8xwiKfQ==
+X-Google-Smtp-Source: AGRyM1sqLexwtJnrzF1qOkUVOnpFuDcbGEEUApIdEyVUgA8qxlNS8eVMR2q8JzwPmWq7rFWu3Lkwjw==
+X-Received: by 2002:a05:6870:1601:b0:108:2d92:5494 with SMTP id b1-20020a056870160100b001082d925494mr13866510oae.109.1656820659840;
+        Sat, 02 Jul 2022 20:57:39 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.31
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:33 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:39 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Olof Johansson <olof@lixom.net>, soc@kernel.org,
-        arm@kernel.org, Arnd Bergmann <arnd@arndb.de>
-Cc:     Li Yang <leoyang.li@nxp.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tero Kristo <kristo@kernel.org>,
-        linux-rockchip@lists.infradead.org,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-tegra@vger.kernel.org,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        linux-gpio@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Heiko Stuebner <heiko@sntech.de>, Nishanth Menon <nm@ti.com>,
-        Peter Rosin <peda@axentia.se>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Wei Xu <xuwei5@hisilicon.com>, openbmc@lists.ozlabs.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-omap@vger.kernel.org, linux-input@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        devicetree@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Andy Gross <agross@kernel.org>,
-        linux-mediatek@lists.infradead.org, linux-aspeed@lists.ozlabs.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: Re: (subset) [PATCH v3 00/40] dt-bindings: input: gpio-keys: rework matching children
-Date:   Sat,  2 Jul 2022 22:56:27 -0500
-Message-Id: <165682055968.445910.13332143476289618470.b4-ty@linaro.org>
+To:     Thara Gopinath <thara.gopinath@linaro.org>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>
+Subject: Re: [PATCH] soc: qcom: aoss: Fix refcount leak in qmp_cooling_devices_register
+Date:   Sat,  2 Jul 2022 22:56:33 -0500
+Message-Id: <165682055970.445910.6550423116947481475.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220606064252.42595-1-linmq006@gmail.com>
+References: <20220606064252.42595-1-linmq006@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -104,21 +65,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 17:52:24 -0700, Krzysztof Kozlowski wrote:
-> Merging
-> =======
-> 1. dt-bindings: rebased on top of Rob's:
->    https://lore.kernel.org/all/20220608211207.2058487-1-robh@kernel.org/
+On Mon, 6 Jun 2022 10:42:52 +0400, Miaoqian Lin wrote:
+> Every iteration of for_each_available_child_of_node() decrements
+> the reference count of the previous node.
+> When breaking early from a for_each_available_child_of_node() loop,
+> we need to explicitly call of_node_put() on the child node.
+> Add missing of_node_put() to avoid refcount leak.
 > 
-> 2. DTS patches are independent. They can be picked up directly by sub-arch
->    maintainers, by Arnd or Olof, or eventually by me (if you wish).
 > 
 > [...]
 
 Applied, thanks!
 
-[25/40] ARM: dts: qcom: align gpio-key node names with dtschema
-        commit: 9c17baaa97c89379cbd89e36115b7fb6aba43518
+[1/1] soc: qcom: aoss: Fix refcount leak in qmp_cooling_devices_register
+      commit: e6e0951414a314e7db3e9e24fd924b3e15515288
 
 Best regards,
 -- 
