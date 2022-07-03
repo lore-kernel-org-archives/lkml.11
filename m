@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F198CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232865AbiGCEAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
+        id S232885AbiGCEAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232543AbiGCD6g (ORCPT
+        with ESMTP id S231937AbiGCD6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 2 Jul 2022 23:58:36 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D457BF7B
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82D2CE02
         for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:43 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10be7325c29so1566680fac.0
+Received: by mail-oi1-x230.google.com with SMTP id s188so8708132oib.6
         for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ywkPZufTnD1xHLiTv5IWpd6Pq71Ja3jgwwnqALPUIeY=;
-        b=XT7HWcqAnAn8cZm9UIgQQAPke8Mw/3lizgqKFx6p58hNuVvAqE+tVbtp80SqdvqoeG
-         yVeIu79eDZYxqE1tAkXXPWPY5bhm4K2yBkJwXgk3NuEgAf+tHoP33UkCl9hByBwBudSK
-         AcM0PxOY2doYuMO8RhMRpazTFNrCdn9eTrXxv2VFqdbftWeCTwbOMSejnMp7KrN/mvkE
-         IV9YIlSoC6X5Y869QmdQ4d3FVWddRjKMtMpQ4mCrzXXepIHXHOC92zTxhatPu2Es9e3B
-         H+IuHR/GLRoOQoeWE5mCYtaGr8vufPuCkEgIhwlYcIcRGDeG+ahy+XPj7m87eLjl32JF
-         ShmQ==
+        bh=VbM3m0wdaoXEDEWrc+MeHd1nc6KrRLPdYcLcN/HoqNA=;
+        b=ZWJmqKNly/PS/9lYuwxJQC2LOS80/9okwJQphsEBcdnwWOvD++o3Ov7T5GuImbXheh
+         qgFMhlmpW/ADhpxHuGH7XdAUz7Isf9baxswfXzeSweoFaXriWAHGPoeH8QWd57uz4CQ6
+         6CKLn4vMrbafTxB2W4c9XX8JsZEOw017fEI+PUUB+BC8Ta1jzIQjrf1X8sXcg5Kww8l8
+         ftfhwLdCSfNMck+3E+wmZWDY87kjc/y42r2cExlHl3jvTJgGPAPk+bWM2YWjEOs1GVY3
+         yxB2/YAisHCvl++n8a8Hi706DYcr/gtPINk9HPwAK7476mg/P9wjjqVhmSgRKHf/SFc7
+         2TXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ywkPZufTnD1xHLiTv5IWpd6Pq71Ja3jgwwnqALPUIeY=;
-        b=CSflT0cOWcyOBx8UQH9iFCWPnbdWL+otGZa08f311fhHypZle7vaqf2s4nF4+hhliM
-         NQst4TKy0AlIbDPVBg/DAm5dsbAz9fAKKVJjJPDcU0rmfP9t91dR7fI/bOJUpCWPaqp+
-         Z536bOKZIncp/5f8badB5B7T0U7KXLr0Sch9xGiyriDCNdeFtflJs5yGMJTHWMhJuLtp
-         +NHhMPC6c9ogcrsYE6rdbu+J+YmDKVg4weeq8wMUKboW499b3nLqaEJieUUKvv73IV5N
-         GbWwAAtGge9wTdR8OsHh5ePspS+5UUx8KHHnWou8qAOodcvHxJqx73QiPfb0nTmx00bw
-         UzCA==
-X-Gm-Message-State: AJIora/3TbAM43Fbo07GbLhN1VQgiJN4s19OvyQYWz1xloNgFec0tiMk
-        85ARPzNRJ9e3B7rkZBSydM3PKg==
-X-Google-Smtp-Source: AGRyM1vWHafWg3xMomiCjHCB4819Hr7lbc+AFHzVCFuyBw55VOA+C+R+jhRui83frtUIXuGbCXUiYg==
-X-Received: by 2002:a05:6871:4707:b0:108:a985:65f0 with SMTP id py7-20020a056871470700b00108a98565f0mr13668107oab.262.1656820662938;
-        Sat, 02 Jul 2022 20:57:42 -0700 (PDT)
+        bh=VbM3m0wdaoXEDEWrc+MeHd1nc6KrRLPdYcLcN/HoqNA=;
+        b=4HIQDEGYuOwQkjdsJunP5qP2GDDUsnZoeIwDssMJj4KhiEI2jqBpGR1Ov8tJBUb7Tr
+         Eez6kNQCu5ZTw/39eK+z3EEEbbFe2TjLksWtbDJVlVaNJaN14RXjsprqYnkhiRGL9+Er
+         v7hKpOI7kSTdkX/P1+K5Ohhj68n+bHSLmrQb/GafcJlO5Fy3bkV/F3buxtBE7BPWWi6z
+         OUE/LHEDmGSvFgTQshbLDnEPBflvRCg+yP+iDwcYwK4wZ3cVYeaQ7DR3afV/u1js3Ffm
+         Vfg9bVBGnzR7yBdmzitDxm8CUsuiyiWRlWr341FRxaCM7itZSwnn1ssx3xIynj5oqQXa
+         0Vvw==
+X-Gm-Message-State: AJIora93IlD56bMXKfYrX+DF3+sse5u08AXjjEAodnPBSP6EKpqdaKIQ
+        xAXvhYhdmZ37SingthkBnCm7pg==
+X-Google-Smtp-Source: AGRyM1t31R7c6ugSbVOmvIFW3uL+Pa9g1SphC7YtRDrqwQcvVZN8qZwwMhJYDzSzg7uWuR3q+vhINQ==
+X-Received: by 2002:a05:6808:6d4:b0:32e:fdb9:9c7b with SMTP id m20-20020a05680806d400b0032efdb99c7bmr12809151oih.287.1656820658832;
+        Sat, 02 Jul 2022 20:57:38 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.41
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:42 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:38 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+To:     devicetree@vger.kernel.org,
+        "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
+        linux-arm-msm@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH 1/2] ARM: dts: qcom: msm8974: re-add missing pinctrl
-Date:   Sat,  2 Jul 2022 22:56:36 -0500
-Message-Id: <165682055971.445910.5175604693918801698.b4-ty@linaro.org>
+Subject: Re: (subset) [RESEND PATCH] arm64: dts: qcom: msm8916-samsung-a2015: Add touchscreen pinctrl
+Date:   Sat,  2 Jul 2022 22:56:32 -0500
+Message-Id: <165682055971.445910.13695986393723902534.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220606160421.1641778-1-luca@z3ntu.xyz>
-References: <20220606160421.1641778-1-luca@z3ntu.xyz>
+In-Reply-To: <20220610175332.104154-1-linmengbo0689@protonmail.com>
+References: <20220610175332.104154-1-linmengbo0689@protonmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,19 +70,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 18:04:21 +0200, Luca Weiss wrote:
-> As part of a recent cleanup commit, the pinctrl for a few uart and i2c
-> nodes was removed. Adjust the names and/or add it back and assign it to
-> the uart and i2c nodes.
+On Fri, 10 Jun 2022 17:54:09 +0000, Lin, Meng-Bo wrote:
+> A3, A5 and most of the Samsung phones with MSM8916 SoC use GPIO pin 13 for
+> touchscreen interrupts. Add touchscreen pinctrl to a2015 common dtsi.
 > 
 > 
 
 Applied, thanks!
 
-[1/2] ARM: dts: qcom: msm8974: re-add missing pinctrl
-      commit: 03110b46c99bb0c712f46bec660b1c3f674ce100
-[2/2] ARM: dts: qcom: msm8974-*: re-add remoteproc supplies
-      (no commit info)
+[1/1] arm64: dts: qcom: msm8916-samsung-a2015: Add touchscreen pinctrl
+      commit: 7618a2de8121d5723c0fd68a381877c8f2e31826
 
 Best regards,
 -- 
