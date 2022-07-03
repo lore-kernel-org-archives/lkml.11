@@ -2,62 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9609C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 626C1C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232792AbiGCEAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
+        id S232628AbiGCEAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232312AbiGCD7W (ORCPT
+        with ESMTP id S231303AbiGCD7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:59:22 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EF9D131
+        Sat, 2 Jul 2022 23:59:21 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07B9B4B7
         for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:50 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id be10so8929459oib.7
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so8768665fac.13
         for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qWWrox9hbzmFQQNMV8H7cGw9tE6JCuANYb16JPAY5RQ=;
-        b=TdY2m1xMXxLALttKFVMlVbyvrcKTejEmqAwOmgnBbsPpPmZNWzR+q/bL8vllZ72vpd
-         v0V8my75dJ5j+moDx6ItsY3xWyrKIjRV0Je3nHpGDNLJRrtJJwlP4Gc/FDYxDkKowb8x
-         DqMHQDHrtt74DnyQ2SViB4uKS+6yxoYd8gvbdoIwXxAYCfjQP6iwOGrw3ZgGSdO4R2XS
-         ZqXr8a2NexwPDBjO/SNXxJbthBYJ5tko2yJ5itGuIfD3VOmZBx3HvcgWry7k1selTRTJ
-         zh/Zc1mKtwpEXIcRJXsvRNoiOol4RQC0X9ai5uWWbuMLfZPEI7+fRRPwSRNJeIOFGPdu
-         LV7w==
+        bh=7fjxhfrcAd5E9YXX10rRhBbkMnenLUuaD46OS0l1Bqk=;
+        b=uWchCE1orcy5/neOuZil7FgjuVZuAxDDpsvDYWcuJHRj08iJNlyst2+dTV8dicqqKb
+         bd21T+baWzKcQsu7Mdelx5LVLXLlJawCpM6YZSvW2mFKNlnw+sSb6ezyCcgwqhS+1SIE
+         cnN6J/xzSfr2MwwVC+fmUDPHGySDeUB3p6J2FQp/THNTqRgPXFXM3ygDLn5ePSdYidGt
+         FqkLfn7XvIv5z8iRWTY2IzyjzvwJsNjwucu4TAUoLc1As6wYq8gXUbJHjpPa5AhTe2tu
+         ioEwxhnTwgBhh4K+FbhCpOepF/Ti0K8N1TC8nQYfoljHvKEokzp8ZbqGC/qDz74NwAnp
+         AXQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qWWrox9hbzmFQQNMV8H7cGw9tE6JCuANYb16JPAY5RQ=;
-        b=4rP7WroNIaCMVxlKRWIWqdxVXyZ1gMbFM1en4GF1Kw6u5s6bIm9cpJeYlwuuyqnrht
-         GhtEaSAHMaAw1mzOhYMBmM4C2aeOE0J/CfPSJiqA0AAaPuevbVzZoOf78V01qzd0Ypcb
-         zK6HkbruNXnkKnEh9MGIDlLd4FIm6EfdELGpvKy+oe9P+Bl3zRrNswLC5twdSnLfTfNJ
-         E+vZHOgHxwCxtB/wn5UtaQ6mRUXDo798s4IVIB0hK5n/LtkgaF6UOsbphnXB28YuTbc0
-         aE/DdjpDOJKkpWwvp8g7jIYfA0ZCi8Maet1sRVbEggPv8rgloB6QmkDikWeBH5KiHK3D
-         iadw==
-X-Gm-Message-State: AJIora/QBelbafaubkq+D9SNXKs99K7K3i820+/i2WsLzzm1awhFi453
-        UNrbee+rU9vLLYpYS09FrqGV8g==
-X-Google-Smtp-Source: AGRyM1ubjkJj6s1/WK9aIWGEp+aBO1KZKIPK2Sgn/OfwZN2vq7LhjJI5f7iMuHm2ojMEPTZo9CG/LQ==
-X-Received: by 2002:a05:6808:2113:b0:335:510c:eec8 with SMTP id r19-20020a056808211300b00335510ceec8mr14417125oiw.152.1656820666793;
-        Sat, 02 Jul 2022 20:57:46 -0700 (PDT)
+        bh=7fjxhfrcAd5E9YXX10rRhBbkMnenLUuaD46OS0l1Bqk=;
+        b=BbmtVyd+d2kN3cGSTvHNRIquXVe+FTsPw0wY38ae+b+51snle3J1kvi+WAoZ9SEbQ9
+         O55Nvfz+tNT0pnXGQ6e/wwS92n/vVgcCgZb87aFhe7qrWwSnjg7UCay9iHidgb9bM8Hh
+         qvYM1si1JQm08kAUZqVGi1lYChkMywdDJd88TC+px6H2hfwMhddoajR8aazxRUAMGB54
+         sqwS4VyPahRHE6WZEwkDQQ7bvVPJ/Wf1N6J/MdME9wA1lqchRPeEC9BbmINjoTqdA0uA
+         tyOvtJl8C2fQmwmknoKJlgh+Jdiv9pUBN/unv8ge1JYy9zo6WRSMJkzkG2XjEin2OgkM
+         Kyfg==
+X-Gm-Message-State: AJIora8rv+2KSM5VpUEomNGkNvO6ac6d+YoEO3OX1/I+B1hgwlcwPqWK
+        rIXjp1UIAkR2ReSfTQRV31bK3g==
+X-Google-Smtp-Source: AGRyM1uitoAiFuzW3NKMABJ60JG++lOvVEFMB3qDmMddBY+/TLFF5+5GARAAGDpzP27XPjcG36x5bw==
+X-Received: by 2002:a05:6870:3482:b0:e2:d03a:41e8 with SMTP id n2-20020a056870348200b000e2d03a41e8mr15156839oah.79.1656820670055;
+        Sat, 02 Jul 2022 20:57:50 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.46
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:46 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:49 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     maz@kernel.org, tglx@linutronix.de,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH 2/3] arm64: dts: qcom: sm8450: Fix the IRQ trigger type for remoteproc nodes
-Date:   Sat,  2 Jul 2022 22:56:40 -0500
-Message-Id: <165682055970.445910.5187142422707164042.b4-ty@linaro.org>
+To:     Nikita Travkin <nikita@trvn.ru>, sboyd@kernel.org,
+        mturquette@baylibre.com, linus.walleij@linaro.org
+Cc:     linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tdas@codeaurora.org,
+        svarbanov@mm-sol.com, linux-gpio@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, agross@kernel.org,
+        joonwoop@codeaurora.org
+Subject: Re: (subset) [PATCH v2 0/4] Prepare general purpose clocks on msm8916
+Date:   Sat,  2 Jul 2022 22:56:43 -0500
+Message-Id: <165682055971.445910.1824989891242686339.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220530080842.37024-3-manivannan.sadhasivam@linaro.org>
-References: <20220530080842.37024-1-manivannan.sadhasivam@linaro.org> <20220530080842.37024-3-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20220612145955.385787-1-nikita@trvn.ru>
+References: <20220612145955.385787-1-nikita@trvn.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -65,16 +69,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022 13:38:41 +0530, Manivannan Sadhasivam wrote:
-> The watchdog IRQ trigger type should be EDGE_RISING. So fix all remoteproc
-> nodes.
+On Sun, 12 Jun 2022 19:59:51 +0500, Nikita Travkin wrote:
+> Some devices make use of general purpose clocks as PWM outputs by
+> controlling their duty cycle.
 > 
+> Notably, many devices (e.g. Samsung A3/A5, LG G Watch R and probably
+> many others) use clock based PWM to control the haptic feedback,
+> some other can control backlight or flash/torch LED brightness.
 > 
+> [...]
 
 Applied, thanks!
 
-[2/3] arm64: dts: qcom: sm8450: Fix the IRQ trigger type for remoteproc nodes
-      commit: 20402c94721a05fe3e581c1bfb88f0b45452766c
+[1/4] clk: qcom: clk-rcg2: Fail Duty-Cycle configuration if MND divider is not enabled.
+      commit: bdafb609c3bb848d710ad9cd4debd2ee9d6a4049
+[2/4] clk: qcom: clk-rcg2: Make sure to not write d=0 to the NMD register
+      commit: d0696770cef35a1fd16ea2167e2198c18aa6fbfe
+[4/4] clk: qcom: gcc-msm8916: Add rates to the GP clocks
+      commit: bf8bb8eaccf4e68d79743da631f61252753ca7cd
 
 Best regards,
 -- 
