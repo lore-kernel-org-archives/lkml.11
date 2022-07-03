@@ -2,66 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 626C1C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0F1C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232628AbiGCEAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S232774AbiGCEA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231303AbiGCD7V (ORCPT
+        with ESMTP id S232480AbiGCD7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:59:21 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07B9B4B7
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:50 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so8768665fac.13
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:50 -0700 (PDT)
+        Sat, 2 Jul 2022 23:59:08 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C32DD13A
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:48 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id q11so8907514oih.10
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7fjxhfrcAd5E9YXX10rRhBbkMnenLUuaD46OS0l1Bqk=;
-        b=uWchCE1orcy5/neOuZil7FgjuVZuAxDDpsvDYWcuJHRj08iJNlyst2+dTV8dicqqKb
-         bd21T+baWzKcQsu7Mdelx5LVLXLlJawCpM6YZSvW2mFKNlnw+sSb6ezyCcgwqhS+1SIE
-         cnN6J/xzSfr2MwwVC+fmUDPHGySDeUB3p6J2FQp/THNTqRgPXFXM3ygDLn5ePSdYidGt
-         FqkLfn7XvIv5z8iRWTY2IzyjzvwJsNjwucu4TAUoLc1As6wYq8gXUbJHjpPa5AhTe2tu
-         ioEwxhnTwgBhh4K+FbhCpOepF/Ti0K8N1TC8nQYfoljHvKEokzp8ZbqGC/qDz74NwAnp
-         AXQg==
+        bh=W92t9vb8RyuMAsngPIQE5DDwov75LnCzM9uTCriJUuE=;
+        b=dtBiwIUOP73p3Ub+FJgRTZULzSMWy19sIwUMCtfYLY3c9h6VZGqcvJnJ/lgru4/nJo
+         RTE2NkiqRdWnALkUIJHia2vIoF1GwyW9pvoHw52KKNblp1q9YnVZO873NN/bmUJXvXfS
+         X8ObHCBnHB0ebShNkloMz0cZ0ctDG86xJFS0jhZVIfqCGLYFuo4ReRKUAZbhY5M1z0Pq
+         wSYGADDJ1NGDg/gQ4PQjGlRyhj7IBqLs26WsEU+6QgyvDc4fmijJZlvmce+d19NvJEPE
+         NHI98XNiSl+S7FvCWog9h9RjvbmoIKmdEp9wCwRYpDeBn/VPB9u+z74UdkVkhGrTB1jA
+         tIvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7fjxhfrcAd5E9YXX10rRhBbkMnenLUuaD46OS0l1Bqk=;
-        b=BbmtVyd+d2kN3cGSTvHNRIquXVe+FTsPw0wY38ae+b+51snle3J1kvi+WAoZ9SEbQ9
-         O55Nvfz+tNT0pnXGQ6e/wwS92n/vVgcCgZb87aFhe7qrWwSnjg7UCay9iHidgb9bM8Hh
-         qvYM1si1JQm08kAUZqVGi1lYChkMywdDJd88TC+px6H2hfwMhddoajR8aazxRUAMGB54
-         sqwS4VyPahRHE6WZEwkDQQ7bvVPJ/Wf1N6J/MdME9wA1lqchRPeEC9BbmINjoTqdA0uA
-         tyOvtJl8C2fQmwmknoKJlgh+Jdiv9pUBN/unv8ge1JYy9zo6WRSMJkzkG2XjEin2OgkM
-         Kyfg==
-X-Gm-Message-State: AJIora8rv+2KSM5VpUEomNGkNvO6ac6d+YoEO3OX1/I+B1hgwlcwPqWK
-        rIXjp1UIAkR2ReSfTQRV31bK3g==
-X-Google-Smtp-Source: AGRyM1uitoAiFuzW3NKMABJ60JG++lOvVEFMB3qDmMddBY+/TLFF5+5GARAAGDpzP27XPjcG36x5bw==
-X-Received: by 2002:a05:6870:3482:b0:e2:d03a:41e8 with SMTP id n2-20020a056870348200b000e2d03a41e8mr15156839oah.79.1656820670055;
-        Sat, 02 Jul 2022 20:57:50 -0700 (PDT)
+        bh=W92t9vb8RyuMAsngPIQE5DDwov75LnCzM9uTCriJUuE=;
+        b=aqljBr0jdJ8oIqsX9shjpWjZ5WvlHE5/SSidkh9Q3Mx55hxv8WdyZn1gZXEo6CbKri
+         jyDYfxbdHVVVbr4LFjwbnNpwwQM1VVH8ApGgQ2PtlFn9ptz+Bhmxe4cMiPcjkktflvx9
+         GOGB5J5AKcO8dlG1z5QMS3NDH4r9P2FWuCvmQoYliJQNG5JlvwPh56X6WjGXbRP9gHD3
+         /R1j4dnTEsTmLMzW8B98zp02OGBO9ZUqeOZnkYGmqePqGTztKA+BtLcydcM+ucXud+dc
+         boCm0sK35FLCws3AUDxElUydHCNcn/G+VLG9y6Ilab/kGP5QeUsmugHsSMW69uClwvnc
+         dC/g==
+X-Gm-Message-State: AJIora8uHrvjlrT/vVW20yLj/aQqUOvRqX0Way7YnK87BX5J7iwgo6KH
+        /LRTbSJ7AL/Vu+BgBXYFJiHjuA==
+X-Google-Smtp-Source: AGRyM1uNAYPGQITKnJ9PX66/GdKmHQYcgLdvZwQy3L6b7FyJwRJV8X8tCMWB0wH2/SYsnFlxxGkKFg==
+X-Received: by 2002:a05:6808:148b:b0:335:8f41:3ab0 with SMTP id e11-20020a056808148b00b003358f413ab0mr13683198oiw.172.1656820667876;
+        Sat, 02 Jul 2022 20:57:47 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.49
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:49 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:47 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Nikita Travkin <nikita@trvn.ru>, sboyd@kernel.org,
-        mturquette@baylibre.com, linus.walleij@linaro.org
-Cc:     linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tdas@codeaurora.org,
-        svarbanov@mm-sol.com, linux-gpio@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, agross@kernel.org,
-        joonwoop@codeaurora.org
-Subject: Re: (subset) [PATCH v2 0/4] Prepare general purpose clocks on msm8916
-Date:   Sat,  2 Jul 2022 22:56:43 -0500
-Message-Id: <165682055971.445910.1824989891242686339.b4-ty@linaro.org>
+To:     phone-devel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        devicetree@vger.kernel.org,
+        Martin Botka <martin.botka@somainline.org>,
+        linux-leds@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: (subset) [PATCH v3 1/4] dt-bindings: leds: qcom-lpg: Add compatible for PM660L LPG block
+Date:   Sat,  2 Jul 2022 22:56:41 -0500
+Message-Id: <165682055969.445910.11818943864906447784.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220612145955.385787-1-nikita@trvn.ru>
-References: <20220612145955.385787-1-nikita@trvn.ru>
+In-Reply-To: <20220511190718.764445-1-marijn.suijten@somainline.org>
+References: <20220511190718.764445-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,24 +74,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 12 Jun 2022 19:59:51 +0500, Nikita Travkin wrote:
-> Some devices make use of general purpose clocks as PWM outputs by
-> controlling their duty cycle.
+On Wed, 11 May 2022 21:07:15 +0200, Marijn Suijten wrote:
+> Document the availability of an LPG configuration for the PM660L PMIC in
+> the Qualcomm Light Pulse Generator driver.
 > 
-> Notably, many devices (e.g. Samsung A3/A5, LG G Watch R and probably
-> many others) use clock based PWM to control the haptic feedback,
-> some other can control backlight or flash/torch LED brightness.
 > 
-> [...]
 
 Applied, thanks!
 
-[1/4] clk: qcom: clk-rcg2: Fail Duty-Cycle configuration if MND divider is not enabled.
-      commit: bdafb609c3bb848d710ad9cd4debd2ee9d6a4049
-[2/4] clk: qcom: clk-rcg2: Make sure to not write d=0 to the NMD register
-      commit: d0696770cef35a1fd16ea2167e2198c18aa6fbfe
-[4/4] clk: qcom: gcc-msm8916: Add rates to the GP clocks
-      commit: bf8bb8eaccf4e68d79743da631f61252753ca7cd
+[3/4] arm64: dts: qcom: pm660l: Add LPG node
+      commit: fc41893fe8289967d0aaffab25d8bb96334cc676
+[4/4] arm64: dts: qcom: sdm630-nile: Add RGB status LED on the PM660L LPG
+      commit: dd764e1a42367c93d1e8e3f9e1ce08752a6dbac2
 
 Best regards,
 -- 
