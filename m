@@ -2,81 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DADE3C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EC9CCA473
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:35:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbiGCEfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57004 "EHLO
+        id S231693AbiGCEfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiGCEfV (ORCPT
+        with ESMTP id S229994AbiGCEfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 3 Jul 2022 00:35:21 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C3B65F5
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 21:35:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656822921; x=1688358921;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pU3gfZt21o7N90tOYZMfEo8wFf2wBbFCrf4XK6NkYGQ=;
-  b=i0J6GW837YWpP1uSfhzYKdiTv5NMrelxhzfhho5XfUT2YFzQ2XS5jv4z
-   Aoo+iYRjvGTkVSsRiYzL/PtJ8TWqhZXIh8IVelF4zoAhBxkjn3XzDOJH6
-   ZtdGVMVNQLnDsjbFwL6DGPlyKVeNhDRf7Uz0EofKgxuDx3fVTkk+HsNTC
-   pN/RXex4UY0QRwo8qU7h0b9SSV4mQ34WlE+67ZxtJ6L9E/WchvWqbSLjK
-   loGgAZTNnJ6qJxpJCI6XSfLtRTAZgLbBD5Ao6kMv8OqxmHrZXiaHYTJrd
-   L/Isx3SUW0QE2yw9EBvjvxWQR240WtBvWJ0iSwAM5cUvS0vWIbD4ofcbG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10396"; a="283631377"
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="283631377"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 21:35:20 -0700
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="648966391"
-Received: from sunqi-mobl1.ccr.corp.intel.com (HELO [10.249.173.69]) ([10.249.173.69])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 21:35:18 -0700
-Message-ID: <49a1839a-c99d-258a-8f85-5a291c646038@linux.intel.com>
-Date:   Sun, 3 Jul 2022 12:35:17 +0800
+X-Greylist: delayed 767 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Jul 2022 21:35:20 PDT
+Received: from mx2.absolutedigital.net (mx2.absolutedigital.net [50.242.207.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A83D265F2
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 21:35:20 -0700 (PDT)
+Received: from lancer.cnet.absolutedigital.net (lancer.cnet.absolutedigital.net [10.7.5.10])
+        by luxor.inet.absolutedigital.net (8.14.4/8.14.4) with ESMTP id 2634MI5g014737
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Sun, 3 Jul 2022 00:22:19 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by lancer.cnet.absolutedigital.net (8.17.1/8.17.1) with ESMTPS id 2634MIq1005330
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Sun, 3 Jul 2022 00:22:18 -0400
+Date:   Sun, 3 Jul 2022 00:22:18 -0400 (EDT)
+From:   Cal Peake <cp@absolutedigital.net>
+To:     Kernel Mailing List <linux-kernel@vger.kernel.org>
+cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Huacai Chen <chenhuacai@kernel.org>
+Subject: [RFC] vgaarb: Add a module parm to use the first VGA device for
+ boot
+Message-ID: <5e3f182f-7b6e-5c7f-d9a9-7cd1417cc38d@absolutedigital.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, "Raj, Ashok" <ashok.raj@intel.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 10/11] iommu/vt-d: Use device_domain_lock accurately
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
- <20220629074725.2331441-11-baolu.lu@linux.intel.com>
- <BN9PR11MB52763F336B2535BC89E2C7498CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52763F336B2535BC89E2C7498CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/1 16:15, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Wednesday, June 29, 2022 3:47 PM
->>
->> +	spin_lock_irqsave(&device_domain_lock, flags);
->>   	list_for_each_entry(info, &domain->devices, link) {
->> -		if (!info->dev)
->> -			continue;
->> -
-> 
-> suppose you can replace all spin_lock_irqsave() with spin_lock()
-> in patch5 instead of leaving some replacement to next patch.
-> 
+Hi,
 
-Make sense to me. Will update this.
+I have a dual GPU system with the GPU in the first CPU PCIe slot for the 
+host and the GPU in the second CPU PCIe slot being passed through to a 
+virtual machine.
 
-Best regards,
-baolu
+Currently, the VGA arbiter enumerates through all VGA devices in the order 
+that they appear in on the bus with the last one ultimately getting the 
+assignment for boot device.
+
+This is a problem because once the VFIO PCI driver claims the second GPU, 
+all display output is lost -- just empty black screens on both cards.
+
+Setting VGA_ARB_MAX_GPUS to 1 helps a little: the X server will initialize 
+on the first GPU like it should, but there's no VTs to be found (i.e. 
+Alt-F1/F2/etc), just more black screens.
+
+Below is an attempt at a fix by creating a kernel param to have the VGA 
+arbiter use the first VGA device it finds for the boot device and then 
+subsequently ignore the rest for this task.
+
+-- 
+Cal Peake
+
+--- ./drivers/pci/vgaarb.c	2022-07-02 10:44:56.000000000 -0400
++++ ./drivers/pci/vgaarb.c	2022-07-02 22:55:24.291822548 -0400
+@@ -35,6 +35,10 @@
+ 
+ #include <linux/vgaarb.h>
+ 
++static bool use_first;
++module_param(use_first, bool, 0);
++MODULE_PARM_DESC(force, "Set to one to use the first VGA device for boot");
++
+ static void vga_arbiter_notify_clients(void);
+ /*
+  * We keep a list of all vga devices in the system to speed
+@@ -815,7 +819,8 @@ static bool vga_arbiter_add_pci_device(s
+ 		bus = bus->parent;
+ 	}
+ 
+-	if (vga_is_boot_device(vgadev)) {
++	if (vga_is_boot_device(vgadev) &&
++	    (!use_first || (use_first && !vga_default_device()))) {
+ 		vgaarb_info(&pdev->dev, "setting as boot VGA device%s\n",
+ 			    vga_default_device() ?
+ 			    " (overriding previous)" : "");
