@@ -2,64 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 038EAC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B65C4CCA480
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiGCD5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 23:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        id S231437AbiGCD5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 23:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230489AbiGCD5D (ORCPT
+        with ESMTP id S230504AbiGCD5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 2 Jul 2022 23:57:03 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB93B1E6
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAA2B1E4
         for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:02 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id 7-20020a9d0107000000b00616935dd045so5092907otu.6
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so8767361fac.13
         for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ReE+gYjejCgybMmC7KlaPA5PsLgtTo7V9X67NZ4pYAk=;
-        b=gp2XzifH+Zs8kldL7uO21jT+JDe4R8mUvI41QPX+iVOjNeUH1qB89P3ul9P4bFS7ME
-         TNyfQYdk9pyT3q8FdGqNcJBdrUP4uYwPnq9/I1xEch8quoIOVaISYl/Udle2pjiV1YPo
-         EUl9ON58sX1cr1GxGP/nAeeESr9Ve5DvfCIwow9kfguSIX0xNOeLnkY0ptu5umA+u/l3
-         0uO6+QqioL30GAqmyJF38311LVsk++YgZtFgKCPLuuliLmg63bPkJIcql/3XO7qAjsxz
-         +hhJ4BAkG3JEC6gxdB1WnNmPITP+CgNdX9CAnwlm2pJPXlerpQI/z6AUqYF66MZsYnLl
-         9gkA==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=qDb/1N5zpqr9xZng215zT4M8Xzp1EhvldHx4QoOpCZ0=;
+        b=FPBwIBQinMKOGLKxeAohMB9V0597+hB6PEPgGvLFX6BlEm/GePPpCVbaEzi0vO0juD
+         Ek4KJ0zxtNXHmHQLmR1fRcH76xZbUv1GWeX6VjMhCz5+VUQB/gCUkAYXPU0JigqwcOEC
+         BqfInsKt+KXQvBOGGh0/1aKs+fZfjvkL/QUGk9idWCBuKG9pUXeklkh3d7kDwN6Th1IJ
+         NFt0vPjWPug789FkTKfQ7UfqlpyAThHLVdLhsIgsp9wo0SVe/imk7Djr9AfjLheN+pAq
+         sZ9emcoAFRLiW59niXXWianCUtpDsZHcPekBJwGPV4KSbIPvNSo59M/ChD7DyDaiAXAf
+         73NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ReE+gYjejCgybMmC7KlaPA5PsLgtTo7V9X67NZ4pYAk=;
-        b=Lqumn4GbTnNjomVoRaa8/7ErDks43345TnUW0yLRrMqYH9MrbJel2NRFvoTUvWuDmj
-         9DpFOne/egZRS1otTwNQIQiZHWMTK5odBi77ocCU6J6LQkRfebPQeQdFsOj8g1ZsOT4o
-         DqL/V3mhnyfCzPGI5GZv1KFONkjRcDbfqt+kkL+gjgMfJozD3YTumVwTXeZgGqbgGhnM
-         HI0rRte/s3jB6G1SIh5tvMq2ByqavflU66P6mFm2zwOM5hUZNxlPONUC1zbSvLvkjw7W
-         Tnj70FXSEc46L/EM7dHjJL4PLkZT8pn1jEilDnDPXDfVv68WnJBqGv5sTMvcXmFpZY6W
-         RYFQ==
-X-Gm-Message-State: AJIora+oIYu7vw7ffU7mrUSLjcEuKEASacEsmBPBE5NZiqGuFb2XMt71
-        rFqqASmF4owSHi1zCgHEeO65+Q==
-X-Google-Smtp-Source: AGRyM1vfg6vhz+0ztl/DKpquzzFyeDA2GHkriXX2hTqqN44/oKBhzaV2duqjOigywYQkBOqIvyg3oA==
-X-Received: by 2002:a05:6830:2705:b0:618:ba52:86fb with SMTP id j5-20020a056830270500b00618ba5286fbmr6821792otu.202.1656820622072;
-        Sat, 02 Jul 2022 20:57:02 -0700 (PDT)
+        bh=qDb/1N5zpqr9xZng215zT4M8Xzp1EhvldHx4QoOpCZ0=;
+        b=0Izw97RXLNaMl9dC8WITlsb+9N3il9l9R4pwP4+Gv6a74H+TNsZrD46jLz4eNAjpQr
+         A8UF0FKZuLMNs98r9PVOCm9FSliXA9LiHuima8p2iHWIvKaZ9TCBMeIImIQbq+ggkdFz
+         tDXX7olDzvWX/4sRjZ/EccIBsUjnTTQ30k+lXZ29sS/iyA89h5mytImPqsB4rLV4hoNU
+         eIFNCfZRFp5X6MLsywImH/gxkq0RIpqkdSHDb025OX/nDYvLWG9M6yagLZGBG1ekp/0Y
+         Rf4rWWcZJNGZWxlg5VwAGD4yBaztQh3upCW+gUeXpf8L02OV5qkuvjUkF4/zvNZEL+SF
+         82JQ==
+X-Gm-Message-State: AJIora89CZmLnkTOL3WjiEewgha3WM+c+/8BVw4dulRytD0b0LINTUy1
+        x5EkCt31ZliouBem9IZNaL1Y4Q==
+X-Google-Smtp-Source: AGRyM1tquMf88SNyzNudD5NbUyjNeErwwVOPH28XjSSqWIaQhSKly1LDRrOqbiswMj04kCpOw9Si1g==
+X-Received: by 2002:a05:6870:c598:b0:108:b7e2:ac8 with SMTP id ba24-20020a056870c59800b00108b7e20ac8mr14380414oab.1.1656820619995;
+        Sat, 02 Jul 2022 20:56:59 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.01
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.56.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:01 -0700 (PDT)
+        Sat, 02 Jul 2022 20:56:59 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-arm-msm@vger.kernel.org,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, vkoul@kernel.org,
-        bhupesh.linux@gmail.com, robh@kernel.org,
-        linux-phy@lists.infradead.org, konrad.dybcio@somainline.org
-Subject: Re: (subset) [PATCH v4 4/4] arm64: dts: qcom: Remove unused 'vdda-max-microamp' & 'vdda-pll-max-microamp' properties
-Date:   Sat,  2 Jul 2022 22:55:58 -0500
-Message-Id: <165682055969.445910.18270347064167236555.b4-ty@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Ansuel Smith <ansuelsmth@gmail.com>
+Subject: Re: [PATCH v2 0/2] PXO fixes for ipq8064 dtsi
+Date:   Sat,  2 Jul 2022 22:55:56 -0500
+Message-Id: <165682055967.445910.7019272591811059456.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220516063155.1332683-5-bhupesh.sharma@linaro.org>
-References: <20220516063155.1332683-1-bhupesh.sharma@linaro.org> <20220516063155.1332683-5-bhupesh.sharma@linaro.org>
+In-Reply-To: <20220430055118.1947-1-ansuelsmth@gmail.com>
+References: <20220430055118.1947-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -67,20 +67,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 12:01:55 +0530, Bhupesh Sharma wrote:
-> As Bjorn noted in [1], since the qmp phy driver doesn't
-> use the 'vdda-max-microamp' & 'vdda-pll-max-microamp' properties
-> currently, let's remove them from the dts files as well.
+On Sat, 30 Apr 2022 07:51:16 +0200, Ansuel Smith wrote:
+> This small series is a fix for a long lasting error present in ipq8064
+> dtsi. At times the kpss-gcc driver was defined in the dts with
+> <&gcc PXO_SRC> a pxo clock. While PXO_SRC exist in the includes, the gcc
+> driver never expose it and if a driver try to actually use it the result
+> is a kernel panic even before any log is init.
 > 
-> Otherwise, it leads to the following '$ make dtbs_check'
-> warning(s):
+> To prepare for correct conversion of the different krait drivers to
+> parent data and to reflect what is defined in the Documentation with
+> actual driver and dts implementation, fix this error by using the now
+> defined pxo_board fixed clock.
 > 
 > [...]
 
 Applied, thanks!
 
-[4/4] arm64: dts: qcom: Remove unused 'vdda-max-microamp' & 'vdda-pll-max-microamp' properties
-      commit: ddc35664a38e31034c3519de71c2dea52005bc2a
+[1/2] ARM: dts: qcom: replace gcc PXO with pxo_board fixed clock
+      commit: eb9e93937756a05787977875830c0dc482cb57e0
+[2/2] ARM: dts: qcom: add syscon and cxo/pxo clock to gcc node for ipq8064
+      (no commit info)
 
 Best regards,
 -- 
