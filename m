@@ -2,71 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0F1C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928DEC43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232774AbiGCEA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56620 "EHLO
+        id S232814AbiGCEBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232480AbiGCD7I (ORCPT
+        with ESMTP id S232364AbiGCD7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:59:08 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C32DD13A
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:48 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id q11so8907514oih.10
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:48 -0700 (PDT)
+        Sat, 2 Jul 2022 23:59:23 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03F6B7DE
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:52 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so8768706fac.13
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=W92t9vb8RyuMAsngPIQE5DDwov75LnCzM9uTCriJUuE=;
-        b=dtBiwIUOP73p3Ub+FJgRTZULzSMWy19sIwUMCtfYLY3c9h6VZGqcvJnJ/lgru4/nJo
-         RTE2NkiqRdWnALkUIJHia2vIoF1GwyW9pvoHw52KKNblp1q9YnVZO873NN/bmUJXvXfS
-         X8ObHCBnHB0ebShNkloMz0cZ0ctDG86xJFS0jhZVIfqCGLYFuo4ReRKUAZbhY5M1z0Pq
-         wSYGADDJ1NGDg/gQ4PQjGlRyhj7IBqLs26WsEU+6QgyvDc4fmijJZlvmce+d19NvJEPE
-         NHI98XNiSl+S7FvCWog9h9RjvbmoIKmdEp9wCwRYpDeBn/VPB9u+z74UdkVkhGrTB1jA
-         tIvQ==
+        bh=q5OtR04fybFsxUx/Xm2C99XlL3i9hLz9bhXed4/LTMo=;
+        b=xCLNkykKiEhocfqtWfQcA7DuEzWvmeEe3LNvFh7tW81cRwsvSmwnlvFFDXVSKe35+H
+         86phum6Fa/QtWBXHSBkdyO02ShMehQAc3VBv1sVFjkr+G6zNCjQTJSPsOE3VqbwX19GS
+         s52nJZ9Nqsb35azupJ+TspbAjH4HLk1n2KDfnPWCHEWl663wd6IBonZKOghgy3TPIv9b
+         hv0qPma51kL0FP4SzFn/m2K252Ml73iheCZ0S3c9y5QzmU0qxor5WAhVOtrtuSzAWI2J
+         P7DS2EZ07bjKKuLf2mwI6kLZWaeOyn6RUXoeInZKT/lqVf5wKwRiYXZ2fJR8tIQveWOw
+         vUvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=W92t9vb8RyuMAsngPIQE5DDwov75LnCzM9uTCriJUuE=;
-        b=aqljBr0jdJ8oIqsX9shjpWjZ5WvlHE5/SSidkh9Q3Mx55hxv8WdyZn1gZXEo6CbKri
-         jyDYfxbdHVVVbr4LFjwbnNpwwQM1VVH8ApGgQ2PtlFn9ptz+Bhmxe4cMiPcjkktflvx9
-         GOGB5J5AKcO8dlG1z5QMS3NDH4r9P2FWuCvmQoYliJQNG5JlvwPh56X6WjGXbRP9gHD3
-         /R1j4dnTEsTmLMzW8B98zp02OGBO9ZUqeOZnkYGmqePqGTztKA+BtLcydcM+ucXud+dc
-         boCm0sK35FLCws3AUDxElUydHCNcn/G+VLG9y6Ilab/kGP5QeUsmugHsSMW69uClwvnc
-         dC/g==
-X-Gm-Message-State: AJIora8uHrvjlrT/vVW20yLj/aQqUOvRqX0Way7YnK87BX5J7iwgo6KH
-        /LRTbSJ7AL/Vu+BgBXYFJiHjuA==
-X-Google-Smtp-Source: AGRyM1uNAYPGQITKnJ9PX66/GdKmHQYcgLdvZwQy3L6b7FyJwRJV8X8tCMWB0wH2/SYsnFlxxGkKFg==
-X-Received: by 2002:a05:6808:148b:b0:335:8f41:3ab0 with SMTP id e11-20020a056808148b00b003358f413ab0mr13683198oiw.172.1656820667876;
-        Sat, 02 Jul 2022 20:57:47 -0700 (PDT)
+        bh=q5OtR04fybFsxUx/Xm2C99XlL3i9hLz9bhXed4/LTMo=;
+        b=Ql2FYYUUg5GKn6JDbVROapjTgasumA1E7psuLeYCb78W6tx5iJCDHomQpsZBSjtxcj
+         BLJwdwEN1wVYyHzXfBge87c3TavSzDGLHb4VHW8PnNO2gBIjhatbaJ2pVv3+CTr3Tayg
+         4Yk43+DvLhl5q8ECIHO5qSTFR3i7k8zb5gEKnTeViH8NA8gTsecLVQ+ehR24euiMRcri
+         3s8mykJhf3kq6gkS0AGPV43Mf/UlZ+1/e8E7aDsNEKE9o3fRJqQ6enFPcBsXDfmuJI6+
+         1w6wCokDVNt4O27rpuz+xIetsYGFFsYY2MliMjYwsXIg4SmBJZdtb2t4H/2HRfvI+NmK
+         haBA==
+X-Gm-Message-State: AJIora9s/llb1nvWI7TzR8ugfzbC0lUg4BMfIKQRBmEIqdxre2eDk4/b
+        HaELBtHdL2gf7TkMKdAxiiijYw==
+X-Google-Smtp-Source: AGRyM1sNdHjEWKFSpwuH3Osm+G11C0k92wmUOGkZcc1uo7lEIPXJ/wejiVsnRkute1h4R8sz6ACM2Q==
+X-Received: by 2002:a05:6870:2f15:b0:108:c28d:3304 with SMTP id qj21-20020a0568702f1500b00108c28d3304mr13754613oab.92.1656820672233;
+        Sat, 02 Jul 2022 20:57:52 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.46
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:47 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:51 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     phone-devel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Marijn Suijten <marijn.suijten@somainline.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        devicetree@vger.kernel.org,
-        Martin Botka <martin.botka@somainline.org>,
-        linux-leds@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: (subset) [PATCH v3 1/4] dt-bindings: leds: qcom-lpg: Add compatible for PM660L LPG block
-Date:   Sat,  2 Jul 2022 22:56:41 -0500
-Message-Id: <165682055969.445910.11818943864906447784.b4-ty@linaro.org>
+To:     Sibi Sankar <quic_sibis@quicinc.com>
+Cc:     quic_psodagud@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        eberman@codeaurora.org, krzysztof.kozlowski+dt@linaro.org,
+        agross@kernel.org, robh+dt@kernel.org
+Subject: Re: (subset) [RFC 0/3] Add interconnect support to the SCM interface
+Date:   Sat,  2 Jul 2022 22:56:45 -0500
+Message-Id: <165682055967.445910.14406038202679892253.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220511190718.764445-1-marijn.suijten@somainline.org>
-References: <20220511190718.764445-1-marijn.suijten@somainline.org>
+In-Reply-To: <1653289258-17699-1-git-send-email-quic_sibis@quicinc.com>
+References: <1653289258-17699-1-git-send-email-quic_sibis@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -74,18 +67,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 21:07:15 +0200, Marijn Suijten wrote:
-> Document the availability of an LPG configuration for the PM660L PMIC in
-> the Qualcomm Light Pulse Generator driver.
+On Mon, 23 May 2022 12:30:55 +0530, Sibi Sankar wrote:
+> Some of the SMC calls required by remoteproc PAS driver on SM8450 SoCs
+> get a performance benefit from having a max vote to the crypto->ddr path.
+> Add support for bandwidth (bw) voting for those SMC calls when the
+> interconnects property is specified. Marking this as an RFC since the path
+> could either be specified in the individual remoteprocs or directly in the
+> scm interface.
 > 
-> 
+> [...]
 
 Applied, thanks!
 
-[3/4] arm64: dts: qcom: pm660l: Add LPG node
-      commit: fc41893fe8289967d0aaffab25d8bb96334cc676
-[4/4] arm64: dts: qcom: sdm630-nile: Add RGB status LED on the PM660L LPG
-      commit: dd764e1a42367c93d1e8e3f9e1ce08752a6dbac2
+[3/3] arm64: dts: qcom: sm8450: Add interconnect requirements for SCM
+      commit: 4c9fb8e89849db0f12fbfd4ad6a6ce036251a200
 
 Best regards,
 -- 
