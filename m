@@ -2,64 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B65C4CCA480
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BADCCA480
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231437AbiGCD5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 23:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S231764AbiGCD5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 23:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiGCD5D (ORCPT
+        with ESMTP id S230497AbiGCD5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:57:03 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAA2B1E4
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:02 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so8767361fac.13
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:02 -0700 (PDT)
+        Sat, 2 Jul 2022 23:57:04 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A525DB1EC
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:03 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-10bd4812c29so3083070fac.11
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=qDb/1N5zpqr9xZng215zT4M8Xzp1EhvldHx4QoOpCZ0=;
-        b=FPBwIBQinMKOGLKxeAohMB9V0597+hB6PEPgGvLFX6BlEm/GePPpCVbaEzi0vO0juD
-         Ek4KJ0zxtNXHmHQLmR1fRcH76xZbUv1GWeX6VjMhCz5+VUQB/gCUkAYXPU0JigqwcOEC
-         BqfInsKt+KXQvBOGGh0/1aKs+fZfjvkL/QUGk9idWCBuKG9pUXeklkh3d7kDwN6Th1IJ
-         NFt0vPjWPug789FkTKfQ7UfqlpyAThHLVdLhsIgsp9wo0SVe/imk7Djr9AfjLheN+pAq
-         sZ9emcoAFRLiW59niXXWianCUtpDsZHcPekBJwGPV4KSbIPvNSo59M/ChD7DyDaiAXAf
-         73NA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=o46B19FxktOfir2N/Lld/Vj2B5nLPwXFWhiJi8mgvvs=;
+        b=cY0EM8oci2MQV6lsgVS5bpZ0tXcAVySC4Teynrm0XXk19QsST91TFlgKW3ZZ9Xfiw2
+         TDeb1A+OICa46TkBQTXx+uYkVvCpemjYURIoQlMqXE3t8OX0h6aehV+c9wVTHXa0EASL
+         YzF+WOqaBIftsM+cIOmT6/xkg9gJOzynw0Fk/EKes1ckM8nSAgME9mbInxqxdcCOkapX
+         dLjeVhBWqLLZjNRcpOmYoHLX4iGgYDGgdvE+ZAS9UdbZNBQUtzmr9EoLTZ1sR1WiCMgz
+         4irzWEhz4KJ342aKBqKmsvhRWjxVuMJl4JYDmlrdvs0Z+AHFEavsKabYvfvXJEvPj4e5
+         t++g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qDb/1N5zpqr9xZng215zT4M8Xzp1EhvldHx4QoOpCZ0=;
-        b=0Izw97RXLNaMl9dC8WITlsb+9N3il9l9R4pwP4+Gv6a74H+TNsZrD46jLz4eNAjpQr
-         A8UF0FKZuLMNs98r9PVOCm9FSliXA9LiHuima8p2iHWIvKaZ9TCBMeIImIQbq+ggkdFz
-         tDXX7olDzvWX/4sRjZ/EccIBsUjnTTQ30k+lXZ29sS/iyA89h5mytImPqsB4rLV4hoNU
-         eIFNCfZRFp5X6MLsywImH/gxkq0RIpqkdSHDb025OX/nDYvLWG9M6yagLZGBG1ekp/0Y
-         Rf4rWWcZJNGZWxlg5VwAGD4yBaztQh3upCW+gUeXpf8L02OV5qkuvjUkF4/zvNZEL+SF
-         82JQ==
-X-Gm-Message-State: AJIora89CZmLnkTOL3WjiEewgha3WM+c+/8BVw4dulRytD0b0LINTUy1
-        x5EkCt31ZliouBem9IZNaL1Y4Q==
-X-Google-Smtp-Source: AGRyM1tquMf88SNyzNudD5NbUyjNeErwwVOPH28XjSSqWIaQhSKly1LDRrOqbiswMj04kCpOw9Si1g==
-X-Received: by 2002:a05:6870:c598:b0:108:b7e2:ac8 with SMTP id ba24-20020a056870c59800b00108b7e20ac8mr14380414oab.1.1656820619995;
-        Sat, 02 Jul 2022 20:56:59 -0700 (PDT)
+        bh=o46B19FxktOfir2N/Lld/Vj2B5nLPwXFWhiJi8mgvvs=;
+        b=RrpY7c6jCVtt1ALHRgwccXUYjn5QC9+PQwO3WsW2bL9egzDPB6Y/2D+1TYT62IMggy
+         GXI1p1lqOGZMSGjEAdh8jfu/MUa8EVguhNvLkqNkY7LqNbxnytR/SHJQKEiBHp+4I3Nd
+         OQTe4IZqBWo64oz92GQdlsEB0U4/1hqRtC+5Rf8K57vNrcRcWatbt2+zI4mG4fmpaOcf
+         /6q8HfBr8wgazuPdSh5tYKZdHR10JbYowBFJCW9IkSzni1fa6zcVb5K1phRA9T4APTCZ
+         +/rai+COMn0Q9mTWOjqhFntf9BlOXwTQZDYLXCyPlCjXAxGCe8TGIIpWd0eRH+wsQThb
+         egMg==
+X-Gm-Message-State: AJIora/SVc5dDdiMfGtA3q2x66zprkjlOTRwL3DuA5zIIXfHE8BDjz7D
+        t9gVPVvHiVJppgf/Q6AxhuHYKA==
+X-Google-Smtp-Source: AGRyM1u2UrDXuVbfMAmVN/Do+AVtBEtgvx5iFTd1q75gjjLkQ7s29FhZPH0lSTVu4HKttFivqI2NCQ==
+X-Received: by 2002:a05:6870:5494:b0:10b:8bc9:38aa with SMTP id f20-20020a056870549400b0010b8bc938aamr12019006oan.20.1656820623055;
+        Sat, 02 Jul 2022 20:57:03 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.56.59
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:56:59 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:02 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        linux-kernel@vger.kernel.org,
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Ansuel Smith <ansuelsmth@gmail.com>
-Subject: Re: [PATCH v2 0/2] PXO fixes for ipq8064 dtsi
-Date:   Sat,  2 Jul 2022 22:55:56 -0500
-Message-Id: <165682055967.445910.7019272591811059456.b4-ty@linaro.org>
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>
+Subject: Re: [PATCH v3 0/5] arm64: dts: qcom: Introduce SC8280XP
+Date:   Sat,  2 Jul 2022 22:55:59 -0500
+Message-Id: <165682055967.445910.13013445534851803508.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220430055118.1947-1-ansuelsmth@gmail.com>
-References: <20220430055118.1947-1-ansuelsmth@gmail.com>
+In-Reply-To: <20220629041438.1352536-1-bjorn.andersson@linaro.org>
+References: <20220629041438.1352536-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -67,26 +71,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 30 Apr 2022 07:51:16 +0200, Ansuel Smith wrote:
-> This small series is a fix for a long lasting error present in ipq8064
-> dtsi. At times the kpss-gcc driver was defined in the dts with
-> <&gcc PXO_SRC> a pxo clock. While PXO_SRC exist in the includes, the gcc
-> driver never expose it and if a driver try to actually use it the result
-> is a kernel panic even before any log is init.
+On Tue, 28 Jun 2022 21:14:33 -0700, Bjorn Andersson wrote:
+> This series introduces the Qualcomm 8cx Gen 3 platform, with basic support for
+> the CRD reference device and the SA8295P automotive development platform.
 > 
-> To prepare for correct conversion of the different krait drivers to
-> parent data and to reflect what is defined in the Documentation with
-> actual driver and dts implementation, fix this error by using the now
-> defined pxo_board fixed clock.
+> The Lenovo Thinkpad X13s dts was part of this series, but Johan reposed a
+> polished version at [1], which I intend to merge on top of this series.
+> 
+> [1] https://lore.kernel.org/all/20220622132617.24604-1-johan+linaro@kernel.org/
 > 
 > [...]
 
 Applied, thanks!
 
-[1/2] ARM: dts: qcom: replace gcc PXO with pxo_board fixed clock
-      commit: eb9e93937756a05787977875830c0dc482cb57e0
-[2/2] ARM: dts: qcom: add syscon and cxo/pxo clock to gcc node for ipq8064
-      (no commit info)
+[1/5] dt-bindings: arm: qcom: Document additional sc8280xp devices
+      commit: 05b90d240409240cbc40c2eb4a0f2b206a513e13
+[2/5] dt-bindings: mailbox: qcom-ipcc: Add NSP1 client
+      commit: 36a7b63f069630e854beb305e99c151cddd3b8e5
+[3/5] arm64: dts: qcom: add SC8280XP platform
+      commit: 152d1faf1e2f32cfb1956c7e5e42e8cb2c95ff18
+[4/5] arm64: dts: qcom: sc8280xp: Add reference device
+      commit: ccd3517faf18330c051068f07dd8ef79853238c7
+[5/5] arm64: dts: qcom: add SA8540P and ADP
+      commit: 519183af39b2cac56614c14f5e710f8caa0bc32a
 
 Best regards,
 -- 
