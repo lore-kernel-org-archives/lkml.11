@@ -2,117 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1644CCCA473
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 16:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CE7C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 16:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232684AbiGCQvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 12:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40266 "EHLO
+        id S232801AbiGCQvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 12:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231179AbiGCQvV (ORCPT
+        with ESMTP id S232726AbiGCQvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 12:51:21 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01256313;
-        Sun,  3 Jul 2022 09:51:19 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 49EAE5C0080;
-        Sun,  3 Jul 2022 12:51:17 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sun, 03 Jul 2022 12:51:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1656867077; x=1656953477; bh=sx2V7qb2mC
-        RCN2UHEL7rClCbV0gR7Cm92ibBUoYCbAQ=; b=FAfwAIBEkeB72tNGFRpBk8RMIq
-        uOiIFtBsP9Eb7mopEpyG5AGahUmTJNfzbLPdec1JBL4FdFWe2chsrwETN4vSU2nr
-        Kp6ECDB/I3MxU1E7VhQQMOQIwbQCTsmV85iCTp5cvl38ziT7yXMxewTbwhxIhGbK
-        ST63j4MvNYb8c+J/WC5SII4i4px++HWTo6DngrJrJqmphZaA4kTRAMUYGRaClKRI
-        /Z33cKXueeyw4K9+8Cp52AuuQ0D4glQcw1HHYRX2G4WJMyEtg6wjqr2dfbbZskWG
-        KMfTKEy4ZJolaAnDO03WPmdOv0nAm/ugUJiS2+apAPGWYBCD8DioqwoSGrPA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1656867077; x=1656953477; bh=sx2V7qb2mCRCN2UHEL7rClCbV0gR
-        7Cm92ibBUoYCbAQ=; b=WH93qYTh1kemwAtyxLgmRgz7tk1c/u6AUB3WqNKIlvOJ
-        x0U7MGv7ZCgStUyab4qE/4EnPbMC31KfZAD65i4h3bbGStVi5BJQbVHRF5cv7vNL
-        u6mhx3D1RiqLTvnBg50l9+rpJEGMr/m74Ece6lKcD0TpRMjzv3GAa8DRbAeeS1Ug
-        Fb9TdsOiV2yJX6atHVyO8Lo+8x1IcSqtd+vipTQkHwNY2697XEmXz6gVbBhy6dqx
-        r1Vjuvn3qOvASnkTMMD3jf5df3HlTc9XVHoFnqasRmbMK1a5e5uFv47ddUIx51t5
-        s5pKHwTURbLemE46V50nvxOWjBq6iUCkWrZ859WdHA==
-X-ME-Sender: <xms:BMnBYu7JDqDJhnmAyvHusSdUktdpxFvZ6IOhIfE2OCzKop6ruWUohw>
-    <xme:BMnBYn7qFUPRKmPuX52OdZMQWbhkRSm6ohgv4Y4FC7jeWrbQUkzYQI4CJLX5S4Jl5
-    94dPk5dORtCySAw8g>
-X-ME-Received: <xmr:BMnBYtdjiqgNLbkZt7_09Isq0VEFjMxDB2gC3ueHyeE2ncSHYz4o5bTWS6d-AwEEgSneFusinPiyZxP39cn__Jztnd6SnYOIVXem0Tu0QNHZSM3GqSG7qkiAWgT4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehjedguddtkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:BMnBYrIYt9lV9MEEYBnes04FW69WZJn9sgv3V8s3tMK_WKGoGkFv9g>
-    <xmx:BMnBYiI0gY_gsn7NJsSiOk8jSMDtJWlULWPd12uG09iREK1FPOWKmg>
-    <xmx:BMnBYsxaGDvD_RhpBpafeyBcAZ5s2pMNndKOsdqzfJyqGve1muZkNg>
-    <xmx:BcnBYvASBWIMvFDYc7mJeXbpcErWVNC7SuFAyKpB1jlS8aOWD9nCGg>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 3 Jul 2022 12:51:16 -0400 (EDT)
-Date:   Sun, 3 Jul 2022 09:51:15 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        Namhyung Kim <namhyung@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [perf-tools] Build-error in tools/perf/util/annotate.c with
- LLVM-14
-Message-ID: <20220703165115.gox3hlwwdcnorcul@awork3.anarazel.de>
-References: <CA+icZUVVXq0Mh8=QuopF0tMZyZ0Tn8AiKEZoA3jfP47Q8B=x2A@mail.gmail.com>
- <CA+icZUW3VrDC8J4MnNb1H3nGYQggBwY4zOoaJkzSsNj7xKDvyQ@mail.gmail.com>
- <CA+icZUVcCMCGEaxytyJd_-Ur-Ey_gWyXx=tApo-SVUqbX_bhUA@mail.gmail.com>
- <CA+icZUVpr8ZeOKCj4zMMqbFT013KJz2T1csvXg+VSkdvJH1Ubw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+icZUVpr8ZeOKCj4zMMqbFT013KJz2T1csvXg+VSkdvJH1Ubw@mail.gmail.com>
+        Sun, 3 Jul 2022 12:51:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397356313;
+        Sun,  3 Jul 2022 09:51:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C35B96103E;
+        Sun,  3 Jul 2022 16:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 89B78C341CB;
+        Sun,  3 Jul 2022 16:51:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656867110;
+        bh=4y5p1F6d3LBQE85AO6rVtJeIalOdN8QNI2RXPd1PZrk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=MfoCOFclb3Tsz4v+2zk/fa2pTDQX055WHZKVjhna1eJcffMlfPWoBAfe0Cu6ZecLC
+         D1K3pa0q1c/3e/jdWUQT24YLcKi+9GdT+eUMMEcd3TbGfatn2In/DqPQoElT61BMaA
+         SmUkAp65+dH91LFiNfzI1me7F7rvzhPul23JvuYQYURd5zp2T9WOwl6t2pw7WguJ79
+         gys9v3fEaguWNlghG1gJqrT5ZsY2sXzuudrrrJattFJBwEHBL5ChtD9BdID9IwiG/n
+         d/TZ78UA98GKj0jMeR/kumvcNI9j9H4sHjn6UPipkPdgNGNlww7tFvRGTVx1lRhtRh
+         Nt79m3FfBjXsA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7591DE49BB8;
+        Sun,  3 Jul 2022 16:51:50 +0000 (UTC)
+Subject: Re: [GIT PULL] xfs: bug fixes for 5.19-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YsGwPqUYSW/IwgkN@magnolia>
+References: <YsGwPqUYSW/IwgkN@magnolia>
+X-PR-Tracked-List-Id: <linux-fsdevel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YsGwPqUYSW/IwgkN@magnolia>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.19-fixes-4
+X-PR-Tracked-Commit-Id: 7561cea5dbb97fecb952548a0fb74fb105bf4664
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 20855e4cb361adeabce3665f5174b09b4a6ebfe6
+Message-Id: <165686711046.30745.15607778543141737550.pr-tracker-bot@kernel.org>
+Date:   Sun, 03 Jul 2022 16:51:50 +0000
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        david@fromorbit.com, linux-kernel@vger.kernel.org,
+        sandeen@sandeen.net, hch@lst.de, fstests <fstests@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The pull request you sent on Sun, 3 Jul 2022 08:05:34 -0700:
 
-On 2022-07-03 13:54:41 +0200, Sedat Dilek wrote:
-> Andres, you have some test-cases how you verified the built perf is OK?
+> git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.19-fixes-4
 
-I ran an intentionally expensive workload, monitored it with bpftrace, then
-took a perf profile. Then annotated the bpf "function" and verified it looked
-the same before / after, using a perf built in a container (and thus
-compiling).
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/20855e4cb361adeabce3665f5174b09b4a6ebfe6
 
+Thank you!
 
-Similar with bpftool, I dumped a jited program with a bpftool built with /
-without the patches (inside the container using nsenter for the version
-without the patches, so I could build it, using nsenter -t $pid -m -p) and
-compared both the json and non-json output before / after.
-
-V=4; nsenter -t 847325 -m -p /usr/src/linux/tools/bpf/bpftool/bpftool -j -d prog dump jited id 22 > /tmp/22.jit.json.$V; nsenter -t 847325 -m -p /usr/src/linux/tools/bpf/bpftool/bpftool -d prog dump jited id 22 > /tmp/22.jit.txt.$V
-
-and then diffed the results.
-
-
-bpf_jit_disasm was harder, because bpf_jit_enable = 2 is broken currently. So
-I gathered output in a VM from an older kernel, and used bpf_jit_disasm -f ...
-before / after the patches.
-
-Greetings,
-
-Andres Freund
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
