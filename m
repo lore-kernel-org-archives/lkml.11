@@ -2,68 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C8FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA20C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232566AbiGCD67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 23:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
+        id S232588AbiGCD7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 23:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbiGCD5w (ORCPT
+        with ESMTP id S232182AbiGCD5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:57:52 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4540BC13
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:26 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-101b4f9e825so8838989fac.5
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:26 -0700 (PDT)
+        Sat, 2 Jul 2022 23:57:50 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD85B853
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:23 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-10be7325c29so1566171fac.0
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=VCyTfnH8NjSlB3wEmVmV8+vhbVUl0hOr4poBEopVoGU=;
-        b=ziliVqzxy9/dOwyks9UKmfls7XduSVgh+N+IrqkD3A0u3sXMbzU3JczzX6OH1WaANo
-         CB72tXVOYtCU+j1mqaWhM4IPQOq+14fuPISKLGGJkjyBQvngZPGhrTEqw6dt1fXm56LS
-         aVWn3H3aIyZBk4nvM0s2cdauUBXh2PHECe0oC9UWmmR538VZB94H39VvxLf18YU0eRzI
-         ykK6FW5hgOffY39yEUbCQwa5SOYPzYjVXvcsfUIZHYJ0wmIVkCedfNY4pD30gV/bXtST
-         kSwRIZ4S6nx90lkm4dxVMCM2kOceLEbljBQhh60YXB+yDnHL2u3w5n4MSVlabNX0euIh
-         LC9Q==
+        bh=QeMYTQee43CPE+lyq9lDuEr9WoYtQG0AVh8WQgK6jrc=;
+        b=tjkpbaUtd4Iyf1G5iukngfm5O3fKBtLsKbtSSgdPehNwDjMKBuQQR7i0Yk1M8uc7N+
+         FkrgyS5PfIqjmPIQP5CtECwKQfrT5F9rV/OWs8wOBoM70PDiCVYgoAN9BYOMeS/mYzZc
+         9ZBrA28nYwMVuBHNjv4YLCjkz1Fm9TSktGmE/CCxbGAjW5z+6HL8QmoUL/EpJSLzoTji
+         ywxC5JiDOgpd9ghfoYzk1yLMzskdWyTibFe6LsGfZ+dttVM+GU+hAiFuvpfziLvLWXVD
+         2M5LMUVsFdmm2PN38MCqpmRnd7SheX9p8yoIYCuJZR+0KLfJwQi5N1BVINY4v6DeGAg0
+         JrcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VCyTfnH8NjSlB3wEmVmV8+vhbVUl0hOr4poBEopVoGU=;
-        b=u1cEcSrhX1HlXfeexFoGwEa0xbAWSA4vC1Mv2F3t33r43Av8oW9x23we8z+LntK5Z1
-         j6ZQU0ct2rE04NIVjq15J3bbo7VEFqTOucWv4yygeHG8yoNa/C2It3yTlUVItX2dyeBc
-         Q4VczXRcE7Ql7cpOo9qCV2TL16W/H0tWRHnNzwFQwVg6mIboJqXVteW3dmaNjV3Z9rCU
-         8Q8IcAOaR6KP6P6whGjWthywMKeUBqsd5z1zpGbaYJRUMc984KKmqBU568LGyCb+Cmq4
-         j/52mRVwn4KviUEq5JLukbnBKZCokLzhJVN9AtNnv19gbV1ZSVdkHrUMlbGm9qhpjg1/
-         Mp9Q==
-X-Gm-Message-State: AJIora+Cr8s90Nk/PC16XjzfefPHR6T9CkYOjg2V1XgHI23Y4pIY9AuL
-        Q6vUddT6PCmwYCDtmyQGUqZJEQ==
-X-Google-Smtp-Source: AGRyM1tUe+bpIIrEEtZ/9Nb0bCXCTN+7KLHFUmOrWnqm3jYRBvbR6skQvCorgt/Z+fIn6n4ArzIUHg==
-X-Received: by 2002:a05:6870:7097:b0:101:229:eb1b with SMTP id v23-20020a056870709700b001010229eb1bmr14324564oae.121.1656820646368;
-        Sat, 02 Jul 2022 20:57:26 -0700 (PDT)
+        bh=QeMYTQee43CPE+lyq9lDuEr9WoYtQG0AVh8WQgK6jrc=;
+        b=GQTDSS+HKp2fF/JsgMqnLH3KMXR+geiWUOfJL+7Am7kmlMqQxLvAnfE9m5v+wb6LSp
+         z9cUKXWmDUFxIbkO7vmQTlwJaEcph1eIRUV06Xk15SBZzO6sGKlKMY0rp5gG0CRCEvK/
+         nuswv5Fr33qLGnQwlhFyzOP0qbmEs+Yj2T7GuaH70gn5A88jEq1Z6RbJctbfeKpMf8xb
+         clQMb3nXvlCAuEQ2Su1/wK6copc5TaTu+PKS639D2lqsxlrDxv2TC9IAEmHIk64DeCt7
+         KtPo96B2nA+wQW2XS+bfoUJBagnweCvBKKRgrS8pW2LG6gfTHtgJEOAMR2nFGwKi+qBP
+         5D2w==
+X-Gm-Message-State: AJIora+nvqhJrwqGIwBvpLs6jGo38dGIKrvtY0I74ES6/s4KJmTdjK+A
+        6MKY8dRHwwBblCX8aHt3Fc/hpw==
+X-Google-Smtp-Source: AGRyM1tI7JZsyB7A+5rq7qIzhfRVKp2IKNAORDrQG4rln5D7uFiR0yWiDqFPHXQsQwwW2MMZJDIXOw==
+X-Received: by 2002:a05:6870:2482:b0:101:52cf:d099 with SMTP id s2-20020a056870248200b0010152cfd099mr14525774oaq.44.1656820642102;
+        Sat, 02 Jul 2022 20:57:22 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.25
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:25 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:21 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Kiran Gunda <kgunda@codeaurora.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-leds@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>
-Subject: Re: (subset) [PATCH 2/2] arm64: dts: qcom: correct SPMI WLED register range encoding
-Date:   Sat,  2 Jul 2022 22:56:22 -0500
-Message-Id: <165682055968.445910.9322003122830573708.b4-ty@linaro.org>
+        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: (subset) [PATCH 11/12] arm64: dts: qcom: ipq6018-cp01-c1: fix Micron SPI NOR compatible
+Date:   Sat,  2 Jul 2022 22:56:18 -0500
+Message-Id: <165682055968.445910.715276604065969931.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220505154702.422108-2-krzysztof.kozlowski@linaro.org>
-References: <20220505154702.422108-1-krzysztof.kozlowski@linaro.org> <20220505154702.422108-2-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220521164550.91115-11-krzysztof.kozlowski@linaro.org>
+References: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org> <20220521164550.91115-11-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -71,16 +67,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 17:47:02 +0200, Krzysztof Kozlowski wrote:
-> On PM660L, PMI8994 and PMI8998, the WLED has two address spaces and with
-> size-cells=0, they should be encoded as two separate items.
+On Sat, 21 May 2022 18:45:49 +0200, Krzysztof Kozlowski wrote:
+> The proper compatible for Micron n25q128a11 SPI NOR flash should include
+> vendor-prefix.
 > 
 > 
 
 Applied, thanks!
 
-[2/2] arm64: dts: qcom: correct SPMI WLED register range encoding
-      commit: d66b1d2e4afc0c8a9eb267740825240b67f6b1d1
+[11/12] arm64: dts: qcom: ipq6018-cp01-c1: fix Micron SPI NOR compatible
+        commit: 693b6207fc7fbfe81aa9759ef82c3953245641d9
 
 Best regards,
 -- 
