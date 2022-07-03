@@ -2,201 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4186AC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 10:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F598C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 10:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231972AbiGCKrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 06:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
+        id S232385AbiGCKro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 06:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbiGCKrK (ORCPT
+        with ESMTP id S232373AbiGCKrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 06:47:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611CC63A0;
-        Sun,  3 Jul 2022 03:47:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D4E9B808BC;
-        Sun,  3 Jul 2022 10:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FF83C341C6;
-        Sun,  3 Jul 2022 10:47:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656845226;
-        bh=HD+UNn1IdHjZqXcbGKr/C+wHAxNFVwZfaVB9VK3fw1o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A2r/uOlGQPx0FB7KKElRAbOUdoy2cgyHjMRmgUWJsf73CTQwmc1S0Hr+tbSEteZnb
-         ME5IR0iEIDMs5u6ARwe7xYYu09zqKfC73Snw3lm46u+7tQTSwVzBqtrl83wVxmhR3h
-         /k6ecK0PeyDScj/qofo0OEB3/8TJiulkmZr9YO6EmzTV4fRzNkVzAN4eNA4OtwDJBT
-         Mr/51qx2UvZzpCZmz+47rMCUmiOGTm3LfI4UeTA9BRtyZezQamUMqS0FaC4UUbRhtS
-         u1KL/aYnOrzLysrA9295XrEojiCYiO1AtAdQnhGFl8VLRCr6KVMcvmkwxexVyXpIxm
-         Y3rZnsXisbYGw==
-Received: by pali.im (Postfix)
-        id 466A211B0; Sun,  3 Jul 2022 12:47:03 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI: pci-bridge-emul: Set position of PCI capabilities to real HW value
-Date:   Sun,  3 Jul 2022 12:46:27 +0200
-Message-Id: <20220703104627.27058-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Sun, 3 Jul 2022 06:47:31 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA986431;
+        Sun,  3 Jul 2022 03:47:22 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z41so8265369ede.1;
+        Sun, 03 Jul 2022 03:47:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=xtZe00jcrHCWayegr58xFfUp2h3js8Bof36AjGw58FU=;
+        b=LHTZ6sd9Ylw0mhtbQPt/yWf3J9vu7LgLvrQ2hPvUPpfNDO/Mv4xdqmhAlOM4oVSz9+
+         yP+pH7VDq5J0bfVfFX/4ofM9et9VoauQO6/67ZpO5wlZ7/nxqo8QY/sZW9qbGIMFESzJ
+         y2GhjpLU1+yjhJ3o7oruqb/tO9oUHnpq3BD1WJwxTuMrbGBwkysz2KQxInZkjmd2+HKo
+         9hnAbYIlJrkOlO7IkbhGKjceeqBoVi9MdS994NI3MopaLTCo2YpYK4VAArGhkCsc/AN0
+         scmcnr6I9vskBSXS5H3VqnLI42uKWD0fhbgUMkZD+dkgc7swGyy/1Rn/cwisYL3CB/z3
+         es1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=xtZe00jcrHCWayegr58xFfUp2h3js8Bof36AjGw58FU=;
+        b=uhnbO9nDdzmNSYNLVjvQZZnuj4lUUgGNwBnMG0yWpiia69iBsr3Sl9RYWh4S0L07g7
+         kHSDuCEHQcMapo026/pSsB3JaqAAhnmK/OhE4ZbzieSiRJGBjfZ36oaQhLfXNSvz7EpG
+         0+BK4nI2o32g2zYHOZc2ZakMfQNZBqvzYjWI8wq1rC9FiS1GttOnRkObVa2LxQEfc/7H
+         uo44e0LUOMsZnIp0xtHcET4X2XrYWCQ9trmRD6RFn7gcEx8xw+vTP1fZa44GkLwpoPNP
+         N5xebckXdwu1JHgwbDJNwG/ADHg28x2aGA7qwgfTtxm5wr1B31q2NCxJya4wgRV++3zc
+         9XKA==
+X-Gm-Message-State: AJIora+xFTipZ1fIVoKI5sW4CPJyhXq0jaifjL7t5YvXcVcprnQy9Sjx
+        Tf4w8p2nfSrgiwPPU5PUGuTkruDeAtQpOA==
+X-Google-Smtp-Source: AGRyM1tGVPJyIq3szdnRuDtIIMLXe+/hYDrptJIGBirIXbjThF7HJVmbD5r7tXNhzxzCPtbySChhdA==
+X-Received: by 2002:a05:6402:1e88:b0:435:bf05:f0f with SMTP id f8-20020a0564021e8800b00435bf050f0fmr31256381edf.2.1656845241327;
+        Sun, 03 Jul 2022 03:47:21 -0700 (PDT)
+Received: from ?IPv6:2a02:ab88:368f:2080:5d6e:322:57b6:5f03? ([2a02:ab88:368f:2080:5d6e:322:57b6:5f03])
+        by smtp.gmail.com with ESMTPSA id kw24-20020a170907771800b0072a3216c23asm5791972ejc.154.2022.07.03.03.47.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Jul 2022 03:47:20 -0700 (PDT)
+Message-ID: <67943ec4dcfe85d6d616a5507437d99f6c5638a2.camel@gmail.com>
+Subject: Re: [PATCH 0/4] iommu/exynos: Add basic support for SysMMU v7
+From:   David Virag <virag.david003@gmail.com>
+To:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Janghyuck Kim <janghyuck.kim@samsung.com>,
+        Cho KyongHo <pullip.cho@samsung.com>,
+        Daniel Mentz <danielmentz@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 03 Jul 2022 14:47:20 +0200
+In-Reply-To: <CAPLW+4kYbG7PRYo_L6N5xMa+F9DFBpyph4B+zb2R4kBbE3EKHg@mail.gmail.com>
+References: <20220702213724.3949-1-semen.protsenko@linaro.org>
+         <CAPLW+4kYbG7PRYo_L6N5xMa+F9DFBpyph4B+zb2R4kBbE3EKHg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mvebu and aardvark HW have PCIe capabilities on different offset in PCI
-config space. Extend pci-bridge-emul.c code to allow setting custom driver
-custom value where PCIe capabilities starts.
+On Sun, 2022-07-03 at 00:48 +0300, Sam Protsenko wrote:
+[...]
+> Hi Marek,
+>=20
+> As I understand, you have some board with SysMMU v7, which is not VM
+> capable (judging from the patches you shared earlier). Could you
+> please somehow verify if this series works fine for you? For example,
+> this testing driver [1] can be helpful.
+>=20
+> Thanks!
+>=20
+> [1]
+> https://github.com/joe-skb7/linux/commit/bbadd46fa525fe1fef2ccbdfff81f7d2=
+9caf0506
 
-With this change PCIe capabilities of both drivers are reported at the same
-location as where they are reported by U-Boot - in their real HW offset.
+Hi Sam,
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/pci/controller/pci-aardvark.c |  1 +
- drivers/pci/controller/pci-mvebu.c    |  1 +
- drivers/pci/pci-bridge-emul.c         | 46 +++++++++++++++++----------
- drivers/pci/pci-bridge-emul.h         |  2 ++
- 4 files changed, 33 insertions(+), 17 deletions(-)
+Not Marek here, but I wanted to try this on my jackpotlte (Exynos
+7885). The driver reports it's DPU sysmmu as version 7.2, and manually
+reading the capabilities registers it looks like it has the 2nd
+capability register but not the VM capability.
 
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index ffec82c8a523..32f97e71e0ca 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -984,6 +984,7 @@ static int advk_sw_pci_bridge_init(struct advk_pcie *pcie)
- 	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
- 
- 	bridge->has_pcie = true;
-+	bridge->pcie_start = PCIE_CORE_PCIEXP_CAP;
- 	bridge->data = pcie;
- 	bridge->ops = &advk_pci_bridge_emul_ops;
- 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index c1ffdb06c971..cb7cf3f4802f 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -946,6 +946,7 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
- 	bridge->subsystem_id = ssdev_id >> 16;
- 	bridge->has_pcie = true;
-+	bridge->pcie_start = PCIE_CAP_PCIEXP_OFF;
- 	bridge->data = port;
- 	bridge->ops = &mvebu_pci_bridge_emul_ops;
- 
-diff --git a/drivers/pci/pci-bridge-emul.c b/drivers/pci/pci-bridge-emul.c
-index 9c2ca28e3ecf..dfbbe43ef518 100644
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -22,11 +22,7 @@
- 
- #define PCI_BRIDGE_CONF_END	PCI_STD_HEADER_SIZEOF
- #define PCI_CAP_SSID_SIZEOF	(PCI_SSVID_DEVICE_ID + 2)
--#define PCI_CAP_SSID_START	PCI_BRIDGE_CONF_END
--#define PCI_CAP_SSID_END	(PCI_CAP_SSID_START + PCI_CAP_SSID_SIZEOF)
- #define PCI_CAP_PCIE_SIZEOF	(PCI_EXP_SLTSTA2 + 2)
--#define PCI_CAP_PCIE_START	PCI_CAP_SSID_END
--#define PCI_CAP_PCIE_END	(PCI_CAP_PCIE_START + PCI_CAP_PCIE_SIZEOF)
- 
- /**
-  * struct pci_bridge_reg_behavior - register bits behaviors
-@@ -324,7 +320,7 @@ pci_bridge_emul_read_ssid(struct pci_bridge_emul *bridge, int reg, u32 *value)
- 	switch (reg) {
- 	case PCI_CAP_LIST_ID:
- 		*value = PCI_CAP_ID_SSVID |
--			(bridge->has_pcie ? (PCI_CAP_PCIE_START << 8) : 0);
-+			((bridge->pcie_start > bridge->ssid_start) ? (bridge->pcie_start << 8) : 0);
- 		return PCI_BRIDGE_EMUL_HANDLED;
- 
- 	case PCI_SSVID_VENDOR_ID:
-@@ -365,12 +361,25 @@ int pci_bridge_emul_init(struct pci_bridge_emul *bridge,
- 	if (!bridge->pci_regs_behavior)
- 		return -ENOMEM;
- 
--	if (bridge->subsystem_vendor_id)
--		bridge->conf.capabilities_pointer = PCI_CAP_SSID_START;
--	else if (bridge->has_pcie)
--		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
--	else
--		bridge->conf.capabilities_pointer = 0;
-+	/* If ssid_start and pcie_start were not specified then choose the lowest possible value. */
-+	if (!bridge->ssid_start && !bridge->pcie_start) {
-+		if (bridge->subsystem_vendor_id)
-+			bridge->ssid_start = PCI_BRIDGE_CONF_END;
-+		if (bridge->has_pcie)
-+			bridge->pcie_start = bridge->ssid_start + PCI_CAP_SSID_SIZEOF;
-+	} else if (!bridge->ssid_start && bridge->subsystem_vendor_id) {
-+		if (bridge->pcie_start - PCI_BRIDGE_CONF_END >= PCI_CAP_SSID_SIZEOF)
-+			bridge->ssid_start = PCI_BRIDGE_CONF_END;
-+		else
-+			bridge->ssid_start = bridge->pcie_start + PCI_CAP_PCIE_SIZEOF;
-+	} else if (!bridge->pcie_start && bridge->has_pcie) {
-+		if (bridge->ssid_start - PCI_BRIDGE_CONF_END >= PCI_CAP_PCIE_SIZEOF)
-+			bridge->pcie_start = PCI_BRIDGE_CONF_END;
-+		else
-+			bridge->pcie_start = bridge->ssid_start + PCI_CAP_SSID_SIZEOF;
-+	}
-+
-+	bridge->conf.capabilities_pointer = min(bridge->ssid_start, bridge->pcie_start);
- 
- 	if (bridge->conf.capabilities_pointer)
- 		bridge->conf.status |= cpu_to_le16(PCI_STATUS_CAP_LIST);
-@@ -459,15 +468,17 @@ int pci_bridge_emul_conf_read(struct pci_bridge_emul *bridge, int where,
- 		read_op = bridge->ops->read_base;
- 		cfgspace = (__le32 *) &bridge->conf;
- 		behavior = bridge->pci_regs_behavior;
--	} else if (reg >= PCI_CAP_SSID_START && reg < PCI_CAP_SSID_END && bridge->subsystem_vendor_id) {
-+	} else if (reg >= bridge->ssid_start && reg < bridge->ssid_start + PCI_CAP_SSID_SIZEOF &&
-+		   bridge->subsystem_vendor_id) {
- 		/* Emulated PCI Bridge Subsystem Vendor ID capability */
--		reg -= PCI_CAP_SSID_START;
-+		reg -= bridge->ssid_start;
- 		read_op = pci_bridge_emul_read_ssid;
- 		cfgspace = NULL;
- 		behavior = NULL;
--	} else if (reg >= PCI_CAP_PCIE_START && reg < PCI_CAP_PCIE_END && bridge->has_pcie) {
-+	} else if (reg >= bridge->pcie_start && reg < bridge->pcie_start + PCI_CAP_PCIE_SIZEOF &&
-+		   bridge->has_pcie) {
- 		/* Our emulated PCIe capability */
--		reg -= PCI_CAP_PCIE_START;
-+		reg -= bridge->pcie_start;
- 		read_op = bridge->ops->read_pcie;
- 		cfgspace = (__le32 *) &bridge->pcie_conf;
- 		behavior = bridge->pcie_cap_regs_behavior;
-@@ -538,9 +549,10 @@ int pci_bridge_emul_conf_write(struct pci_bridge_emul *bridge, int where,
- 		write_op = bridge->ops->write_base;
- 		cfgspace = (__le32 *) &bridge->conf;
- 		behavior = bridge->pci_regs_behavior;
--	} else if (reg >= PCI_CAP_PCIE_START && reg < PCI_CAP_PCIE_END && bridge->has_pcie) {
-+	} else if (reg >= bridge->pcie_start && reg < bridge->pcie_start + PCI_CAP_PCIE_SIZEOF &&
-+		   bridge->has_pcie) {
- 		/* Our emulated PCIe capability */
--		reg -= PCI_CAP_PCIE_START;
-+		reg -= bridge->pcie_start;
- 		write_op = bridge->ops->write_pcie;
- 		cfgspace = (__le32 *) &bridge->pcie_conf;
- 		behavior = bridge->pcie_cap_regs_behavior;
-diff --git a/drivers/pci/pci-bridge-emul.h b/drivers/pci/pci-bridge-emul.h
-index 71392b67471d..2a0e59c7f0d9 100644
---- a/drivers/pci/pci-bridge-emul.h
-+++ b/drivers/pci/pci-bridge-emul.h
-@@ -131,6 +131,8 @@ struct pci_bridge_emul {
- 	struct pci_bridge_reg_behavior *pci_regs_behavior;
- 	struct pci_bridge_reg_behavior *pcie_cap_regs_behavior;
- 	void *data;
-+	u8 pcie_start;
-+	u8 ssid_start;
- 	bool has_pcie;
- 	u16 subsystem_vendor_id;
- 	u16 subsystem_id;
--- 
-2.20.1
+After applying your patches, adding your test driver (with SYSMMU_BASE
+corrected to 7885 value), and adding the sysmmu to dt, I tried to cat
+the test file that it creates in debugfs and I got an SError kernel
+panic.
 
+I tried tracing where the SError happens and it looks like it's this
+line:
+	/* Preload for emulation */
+	iowrite32(rw | vpn, obj->reg_base + MMU_EMU_PRELOAD);
+
+Trying to read the EMU registers using devmem results in a "Bus error".
+
+Could these emulation registers be missing from my SysMMU? Do you have
+any info on what version should have it? Or maybe some capability bit?
+I'll try testing it with DECON/DPP later and see if it works that way.
+
+Best regards,
+David
