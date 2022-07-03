@@ -2,96 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40874C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 17:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B48B0C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 17:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231561AbiGCRMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 13:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        id S232312AbiGCRrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 13:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiGCRMD (ORCPT
+        with ESMTP id S229549AbiGCRrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 13:12:03 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95C51173
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 10:12:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656868322; x=1688404322;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1RMrBydnMCqDBaCDu7NyIOK6ljIxzxEjuGFU03ZZty8=;
-  b=HZicX+c/AelYsd2qlVH+zPY2L5jrLn2xbCnCsuIqfCtN16APT8Y//AuB
-   4HR0y2f8HQPKPf5ZAZkr2+nliLsnE6q3nqD9r6HWmaVYWd97pIKkLLZpa
-   3M+LTQ4BQCvl1OrhSUPJO2DwaBxXiYMvooFDngoHA/euxusP2dy1eBimH
-   5yhDysI+wigcEBnbktC5Pa0ApVSEg8X8HwRMVCU3xGhBv967/EfDAdN/n
-   dHfKe0KAxUCvfzGz+MUcjEhS0PrZHFbqJvG/4t6kVaRafg0wJpwgOoOkM
-   mTxAoujah/Qz51PjAte/6sHkic23qIicoxN4dcSG8Vnh63rxsIjMlA8Gd
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="308498322"
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="308498322"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2022 10:12:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="624806966"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 03 Jul 2022 10:12:00 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o838a-000GjP-93;
-        Sun, 03 Jul 2022 17:12:00 +0000
-Date:   Mon, 4 Jul 2022 01:11:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Morse <james.morse@arm.com>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [morse:mpam/snapshot/v5.18 61/147] kismet: WARNING: unmet direct
- dependencies detected for RESCTRL_FS_PSEUDO_LOCK when selected by
- X86_CPU_RESCTRL
-Message-ID: <202207040100.eC9Wirg9-lkp@intel.com>
+        Sun, 3 Jul 2022 13:47:05 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD0C5587;
+        Sun,  3 Jul 2022 10:47:04 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-fe023ab520so10318135fac.10;
+        Sun, 03 Jul 2022 10:47:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:user-agent:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=jcDULdfwj57RqmfboKaVRHoy92XsNiPDdj230BX3SXM=;
+        b=F547fVI/SUbdG2s1x4Jq1gDFvisVCNF32MqWJcCk/7Xi0vtOenrZ9UYB1xThBQEqb3
+         VYr7y0Bp2dylwGK1mcfv84LhCrtny57e7qveYjuY7SC7A4cr1ygaD3Mg4SF8SL8YhCI3
+         6PT5G4Kji0VQWeK9x+lsZNuoQHu8IP/85ZvtwYib2e2jHiawumsUQ64mkj5jH7hl/sdg
+         g3C2jvjJl3bvTBCjUQ0ACtr308CNmPBsY8MGL0BV1DRhHBMTvjmyBqMUwYNdIiH0Ue24
+         HUFMQK1YsnFL7xmIGQDPVmD/SgB10OdnZfVbP2YHzAQXno9pQ2rIsLDB7QrvQXr4BFKq
+         R23g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
+         :references:message-id:mime-version:content-transfer-encoding;
+        bh=jcDULdfwj57RqmfboKaVRHoy92XsNiPDdj230BX3SXM=;
+        b=gTqwNqoMJGi0cCqHMP99qcsCQJCs3atgTEPuLDJBr0WTc7bmxxmDrBD7rVBQOUvYA/
+         rvIyTRH0J2Zuz3hSZFVT/6r1t9Ot31es9c2orjUK3F0dsSbfvxZCuaSzvSBp7iZRVlWc
+         8J8bK0ICSfR7RzV7ii32KvYQJjOJFZw99ivG2o01xjDLuWo+ILBQQ6OlFjG3bIAKB55+
+         uYQcX52mwj7ev40W8LDeqaaaUbW61SvUcoQH70h5XUb+ds1eEdmd4/9XXHCKNHZGqvXO
+         HK4U0telks5DmoIJz3ui74fuaX6L2ouzWJF1QNMleeDgVXfZo+eZFrmwdo35ziKGkh0U
+         nT8A==
+X-Gm-Message-State: AJIora/AGADJX1joRtYF1wYhTmqQiJK6Z0vO+0v33jz0YtOIG/zNr1J4
+        R3I906yh6048fAYjJ46K8FtmZ1ZsMcI=
+X-Google-Smtp-Source: AGRyM1tIN4j02Xkct2mDNk+YL9s0Zo2E8nu5GMBa5iZ48ivg5Fcvd8rpYyKU5t7bQCPZ9qkbiDyDqg==
+X-Received: by 2002:a05:6870:59d:b0:f3:627:e2b0 with SMTP id m29-20020a056870059d00b000f30627e2b0mr14665776oap.47.1656870424247;
+        Sun, 03 Jul 2022 10:47:04 -0700 (PDT)
+Received: from [127.0.0.1] (user.186-235-147-70.acesso10.net.br. [186.235.147.70])
+        by smtp.gmail.com with ESMTPSA id t6-20020a056870f20600b000f33ff285d8sm10381046oao.31.2022.07.03.10.47.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Jul 2022 10:47:02 -0700 (PDT)
+Date:   Sun, 03 Jul 2022 14:46:56 -0300
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+To:     Andres Freund <andres@anarazel.de>
+CC:     sedat.dilek@gmail.com, Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        Namhyung Kim <namhyung@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5Bperf-tools=5D_Build-error_in_too?= =?US-ASCII?Q?ls/perf/util/annotate=2Ec_with_LLVM-14?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20220703165448.7d2akxawzdvqigat@awork3.anarazel.de>
+References: <CA+icZUVVXq0Mh8=QuopF0tMZyZ0Tn8AiKEZoA3jfP47Q8B=x2A@mail.gmail.com> <CA+icZUW3VrDC8J4MnNb1H3nGYQggBwY4zOoaJkzSsNj7xKDvyQ@mail.gmail.com> <CA+icZUVcCMCGEaxytyJd_-Ur-Ey_gWyXx=tApo-SVUqbX_bhUA@mail.gmail.com> <CA+icZUVpr8ZeOKCj4zMMqbFT013KJz2T1csvXg+VSkdvJH1Ubw@mail.gmail.com> <1496A989-23D2-474D-B941-BA2D74761A7E@gmail.com> <20220703165448.7d2akxawzdvqigat@awork3.anarazel.de>
+Message-ID: <F7CCD284-0DEF-444F-B58F-930678EC2644@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.18
-head:   9d1850bbdc3c9b2b9b6fce8963cde5b0a38fb2d7
-commit: c9dff7096417b9a55969c2635516993871130e8a [61/147] fs/resctrl: Add boiler plate for external resctrl code
-config: (https://download.01.org/0day-ci/archive/20220704/202207040100.eC9Wirg9-lkp@intel.com/config)
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=c9dff7096417b9a55969c2635516993871130e8a
-        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
-        git fetch --no-tags morse mpam/snapshot/v5.18
-        git checkout c9dff7096417b9a55969c2635516993871130e8a
-        # 1. reproduce by kismet
-           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
-           kismet --linux-ksrc=linux --selectees CONFIG_RESCTRL_FS_PSEUDO_LOCK --selectors CONFIG_X86_CPU_RESCTRL -a=x86_64
-        # 2. reproduce by make
-           # save the config file to linux source tree
-           cd linux
-           make ARCH=x86_64 olddefconfig
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
 
 
-kismet warnings: (new ones prefixed by >>)
->> kismet: WARNING: unmet direct dependencies detected for RESCTRL_FS_PSEUDO_LOCK when selected by X86_CPU_RESCTRL
-   
-   WARNING: unmet direct dependencies detected for RESCTRL_FS_PSEUDO_LOCK
-     Depends on [n]: MISC_FILESYSTEMS [=n]
-     Selected by [y]:
-     - X86_CPU_RESCTRL [=y] && X86 [=y] && (CPU_SUP_INTEL [=y] || CPU_SUP_AMD [=y])
-   
-   WARNING: unmet direct dependencies detected for RESCTRL_FS
-     Depends on [n]: MISC_FILESYSTEMS [=n] && ARCH_HAS_CPU_RESCTRL [=y]
-     Selected by [y]:
-     - X86_CPU_RESCTRL [=y] && X86 [=y] && (CPU_SUP_INTEL [=y] || CPU_SUP_AMD [=y])
+On July 3, 2022 1:54:48 PM GMT-03:00, Andres Freund <andres@anarazel=2Ede>=
+ wrote:
+>Hi,
+>
+>On 2022-07-03 10:54:45 -0300, Arnaldo Carvalho de Melo wrote:
+>> That series should be split a bit further, so that the
+>> new features test is in a separate patch, i=2Ee=2E I don't process bpft=
+ool patches, but can process the feature test and the tools/perf part=2E
+>
+>Ok, will split it further=2E Should I do
+>
+>1) feature test
+>2) introduce compat header header
+>3) use feature test, use header in perf/
+>4) use feature test, use header in bpf/
+>
+>Or should 3, 4 be split to separately introduce the feature test and use =
+of
+>the compat header?
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I think 4 patches are ok,=20
+
+- Arnaldo
+
+>
+>Greetings,
+>
+>Andres Freund
