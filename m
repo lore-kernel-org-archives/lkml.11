@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C02FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 18:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D12BCCA480
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 18:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbiGCSfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 14:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
+        id S232625AbiGCSgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 14:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiGCSf2 (ORCPT
+        with ESMTP id S232139AbiGCSgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 14:35:28 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C709FB8D;
-        Sun,  3 Jul 2022 11:35:27 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id g4so13194699ybg.9;
-        Sun, 03 Jul 2022 11:35:27 -0700 (PDT)
+        Sun, 3 Jul 2022 14:36:51 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323E12E5
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 11:36:50 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id b19so8561750ljf.6
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 11:36:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y/XwvHrfAcaL5Dlg6DC44ZQayGB2ugp2yd+NGOlWjvk=;
-        b=VzRi0V+rSVmqkRF+3nZu+Hm467maGKd3WrNF6MQ+r8iRY0UIY3p3/2xtkOgh7DYchj
-         S8BQ4dj51XpgSljBDVznotY723aQiNU+2lM+Be73Z+HldVAjdrNTvQRssC0zrSlZ8wcJ
-         pHPNrfPEzvtg8kpT6PMlRkCeomVJwgfG2F5aytDECsSrXybMi97Q5KfuH6PXyZM3Aa/M
-         w5FuY21rDTWXH5EViS/GUQm8bVgodvYqFTV7Bs0IZ82yeHOWvlE5m5pBGbLiJAhm3VUU
-         T2mTY9RxOycAS0+znFfp9S+mrhkcYkYJ7/UmBOVXCYv2sfSf1kJTOczyheyOE3ChYCM2
-         EQ2g==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=TGT3kemIADeYuBglcNi+xV1YmiL3GEhdQWJAey+jFZs=;
+        b=IJHZjhEvjM7xn+M97PxbjLdIL1P8bn/vLB3QE/2+Exuo1PZlTtCalfXapjeebQ2bDS
+         rAxB8yPwIwHKYDfFMfxCrl/FKqtn9NUvb0WGsfaqU21vHErtUzwnLpg4crlhRUJLIpKG
+         7M1f06cyvAMOVLgmbR64boTZ47u0/iaGMWtRb3dXX/OJTYW4izJtWKOO7pLvMWswcd8k
+         pAor3sPsk8EXdZY7De+uzepLu6ZRUzs7i6wu5TXk3u4zbffXXehdHY2FXoQWz5u9B8uB
+         dClvJAsLck4o4SZhSpdNyPxHBO7GlQT9FWyLCOpRmQTBQBhciTBaP9s/oRIJipIiBmZo
+         OoaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y/XwvHrfAcaL5Dlg6DC44ZQayGB2ugp2yd+NGOlWjvk=;
-        b=XsNn86JTMLmwA1VkU+rm/yMVsiDp48NrpUUzycPEe86ihrDwVdt2FskqHXcOqfXT9c
-         /q7DnI7GlQq0ta8l0C2wIqsJARU/Y5rgMZFZvROcQACv7DjVKgAPiU+vUSm+tSoEcMfu
-         1tjFvVB+Gjyf6elB3/9Xni9xLN8sjGoBGGLG1RfvKFMRnOZkW3rnzxakmn3Ine2xwk0F
-         fQ7zl6vtwLClW2SZiw0Ov8prxqbo86wPh5dNLa6ilD1lfuHWCFTjgciNbtuAetMdKjfp
-         C1EumJ8x4MKLPzdWBHPc18877FIQTCL0Boj9UT3AH4mNwgk2tuTRcjYb9gkTjsfu68pS
-         BWRA==
-X-Gm-Message-State: AJIora9w1C3oS/PIPTrzYoo4yGHX/h8kBrjxUCSyHZXTupnLXoDIZLbQ
-        YkpFEkOWcYNhFkpT6cROTBSQMWdwe9HG38ZV2VB7yQot3sRp5g==
-X-Google-Smtp-Source: AGRyM1vi3g5NWtnrRvlcPZyNMhQ7MYLW6V0Ys7aF5nobfSZ5OuV+LupZZznhqTBvgwQQjZgzIMfbmge2aspS2VKIVFc=
-X-Received: by 2002:a5b:68a:0:b0:66e:472a:83f4 with SMTP id
- j10-20020a5b068a000000b0066e472a83f4mr1932094ybq.570.1656873326848; Sun, 03
- Jul 2022 11:35:26 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TGT3kemIADeYuBglcNi+xV1YmiL3GEhdQWJAey+jFZs=;
+        b=VmeSPRnisrcEIE4f5dVVnWqjaIyNSC/j+w7r2leenkcY4Gz7xmwtwnbnmnmmWqtHIX
+         RWH8Hmr6G1720FzYS9yXU2omT+Qj6lAjf48NHhekPL2Xkmsb/RzQIaOxPgvT1Ei7Ox+p
+         BXFyZXfI4rO5PoeFkoio3SToUd6+4CkUMj4IskAqmhqiyl8ErUXZ32uZVoP4zkCXKCXd
+         kOcx7FMVZyVBFNCFB5V0HJKBKX1XEUdQN1tA8jLRegjR8rkRjp8KuIvvb8jfwGv07PfO
+         XDmg/Aw0MRw62j7KUkmyfvDS7BGaWeGe0WpoE4oYSo5qGT/v1oKg2RapIvVUq1V6yWzZ
+         U+yg==
+X-Gm-Message-State: AJIora8AEfgiTW/zJgRXQALQPpDWB6KbECvF6+4r6zLKlR7OJwss9qTh
+        quRrJZlyGdWjlp04Xkxmpl6sYg==
+X-Google-Smtp-Source: AGRyM1tzYDkz4rWP9yNev9qT7Qcg6s33MZmMeeOloPJCJbSyqikwGGw6UR+ON582tM5uWIhDAbgxsA==
+X-Received: by 2002:a2e:54a:0:b0:25a:6e2b:1096 with SMTP id 71-20020a2e054a000000b0025a6e2b1096mr15028892ljf.456.1656873408568;
+        Sun, 03 Jul 2022 11:36:48 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id d7-20020a05651221c700b0047255d2111csm4818566lft.75.2022.07.03.11.36.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Jul 2022 11:36:47 -0700 (PDT)
+Message-ID: <badc0116-f9dd-bd02-1e6a-54cdfbde8ce1@linaro.org>
+Date:   Sun, 3 Jul 2022 20:36:46 +0200
 MIME-Version: 1.0
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-5-LinoSanfilippo@gmx.de>
-In-Reply-To: <20220703170039.2058202-5-LinoSanfilippo@gmx.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 Jul 2022 20:34:50 +0200
-Message-ID: <CAHp75VdvBfBM3Exm8BhJs7CzDaFwNYc7BLq-sLuwfzYTo4gyCA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/9] serial: core: sanitize RS485 delays read from
- device tree
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 0/2] dt-bindings: hwinfo: group devices and add
+ s5pv210-chipid
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Content-Type: text/plain; charset="UTF-8"
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20220703183449.12917-1-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220703183449.12917-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
->
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->
-> When setting the RS485 configuration from userspace via TIOCSRS485 the
-> delays are clamped to 100ms. Make this consistent with the values passed
-> in by means of device tree parameters.
+On 03/07/2022 20:34, Krzysztof Kozlowski wrote:
+> Hi,
+> 
+> As suggested by Rob [1], I organized a bit bindings for SoC devices having
+> similar purpose - chip identification.
+> 
+> These sometimes are put under nvmem directory, although in that case the
+> purpose is usually broader than just chipid.
 
-I'm not sure I got it right. Is the values from DT now clampet as well
-as user space does or other way around? In either way the commit
-message misses the explanation why it's not a problem if user
-previously passed bigger values either via user space or via DT,
-because it's an ABI change, right?
+And the missing [1] link is:
 
--- 
-With Best Regards,
-Andy Shevchenko
+https://lore.kernel.org/all/20220701173524.GA1185040-robh@kernel.org/
+
+
+Best regards,
+Krzysztof
