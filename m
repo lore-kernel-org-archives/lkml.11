@@ -2,138 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46ACBC43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbiGCEso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        id S230045AbiGCEyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230506AbiGCEsU (ORCPT
+        with ESMTP id S229782AbiGCEyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 00:48:20 -0400
+        Sun, 3 Jul 2022 00:54:08 -0400
 Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A494D6B
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 21:48:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C36958F
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 21:54:07 -0700 (PDT)
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 0088D3200901;
-        Sun,  3 Jul 2022 00:48:15 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 03 Jul 2022 00:48:16 -0400
+        by mailout.west.internal (Postfix) with ESMTP id 396F932007F1
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 00:54:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 03 Jul 2022 00:54:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1656823695; x=1656910095; bh=8z
-        hhLjJ89Qw5KLPBoM2NWX+z2yUV9FRU26MVhOWZvb0=; b=FShGDMdahrDjiEPIwF
-        jVQwZBnmhxwI+RNwrmf/n7TzocoKR62qY/LBRf1gX24BvI9WhY6Tn6xQY6bBpgie
-        90A1nLlL6ecW7hx6cb1BMcHjqnK2hRb6E37xerO/q4Dd06us9zg1xC3GHS53H24G
-        a25SpG4E+7IPKtAGth7uSTQ8DEZKBQq0JhKPlBDuNqkWg/NPOE7mJDdz1hhwiVcY
-        /W5ZanyQil5DkS0QIYNiMiNY/PipefJ90GEWcw6G95PQuQYBF9bsTpkezL4sclA5
-        fKX12BmMXHi4RBfMYElwgvmwuFAlWwC1PpenTZYkPF9+/qW6upb1XltUDrujRG/E
-        uJUA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        cc:content-type:date:date:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1656823695; x=1656910095; bh=8zhhLjJ89Qw5K
-        LPBoM2NWX+z2yUV9FRU26MVhOWZvb0=; b=hUB290MqM2JiQRKvBax6qf6BCXfw0
-        XLep+6Aoq+zBUqQxyIkha0zBx+I+PcG9/M+kuufZtUIiBisqIl7qxvcjwOvgfBGM
-        9R+XV3iWdpp2tZGAPYjS05UrnXQG6BcwWqYgBJKzKZZBe7AmzDRW2bTsbEAfM5G9
-        X9vYxqEGVVatnpbxHckjQ3jobCSlvernMkvZVCET+BVVfBHKZZXgfR551AGhj0L+
-        qT1NyXfNjhn6O/eedo7DTv7y8TNe3M7fbiOfRLAzShR7cmPuIgld5Wn8DB2lC4BV
-        /MUpDX0xnxoBd2JXpDbI5G9JaSOe2WwQ54yqT0x9MXief2JT6iDEsM23A==
-X-ME-Sender: <xms:jx_BYtcyLH90y7xmVm26vvlzeqhUdpgKx3H89XfTj0AEqisUc9nBEg>
-    <xme:jx_BYrPrqHMUeG5I48MkzMgNg6bEzEbEoEpj2Qm57KAP9hH9uHltke1KzKcSneTPd
-    JwToNTNJBhsuU2Npg>
-X-ME-Received: <xmr:jx_BYmiFE30qDrVZNbSiIV7SgKgNi9zN8-oT0fy6NdmzuUPxeEkyx_-RTzSk2XiFtaJrNbuCiosRj7hhKlgQYOhsEq1YD_dTqPVGdr6pVlA4RVok4Tkx3pG1ZuKB>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehiedgkeekucetufdoteggodetrfdotf
+        :subject:to:to; s=fm2; t=1656824046; x=1656910446; bh=hzP4xGj706
+        9U91lXmyFeTas+P5ASG2vvjmDOZM1+8qQ=; b=ryqgiVF0w82qSzJrOrJ6KulNyz
+        vlW8IUf3SXCDT/5ogfqsl3/3/w3A34wsRCydL5IebiGLIowCInHkNcLW0qbPEfDV
+        hVWvwUCx33DSlzLK5TCnpv9QjwZlC1IdiJmncvactOF2VpmZ9NMoBq5KpLfECQho
+        Yw1MdeMlhAP0H55hOKJSBXy1OPWGeeyO8JqWZHdb25tsUTZIP6l+sbXmLV4Ac8eg
+        7pCOQOuVwlQUCNvKJ+mrYjUSzLfMGxcfACUIizs/nO8RqMurqCqxitC76yW54z1W
+        lZrfVfNjuqbn+jDu5/LHkzp2xxZEWGXyh6VVJdxyBpbr2JUV8K++QYWTy5Kg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1656824046; x=1656910446; bh=hzP4xGj7069U91lXmyFeTas+P5AS
+        G2vvjmDOZM1+8qQ=; b=iFu6TocyRTvjQ2tZD6HKLnxrpV6rZzf57U2ueI3UHWbj
+        YR6IpRKnIwq4i/LmeBIcvU7PnFWkwnhiOu+fpMg6PGAa62ZbIICQP9e8vPQtml7c
+        iww4NWKelIs/7PW1/7h3Tq2Qq/oy973iibh49E8VsWqB7sFS+lLx700jpl46w/sH
+        qX9WybIalbZ4CLZbRR+vkadM/Qqi4JMRcadMw2xYQ7aEe5Z7m6hTPxQtz5sGOZAR
+        od4myiFsXRpUI268MYigXj64Idp8ptMPFiX34FJMV2v5A6lybHTBVSYtc7W+Ae12
+        a/1y8J3LqbsXGPBroGgMwZEMn85G22r778OMm84SnA==
+X-ME-Sender: <xms:7iDBYoWWdJ7Up_cINO8SnjKsCAV5o79XKV1JWgURynAAazjbecLLeA>
+    <xme:7iDBYsmwcZfWyAjbwpJOQ0Si4sRLV9yjtfzZLAl8vrAV2zwPswAL1HE5dN0Dqy3td
+    ZjxsPWqrxBpjYV5Pw>
+X-ME-Received: <xmr:7iDBYsYz6d7HLHAqRfIR8ZCED-EcjbHTbz7la8lCNQW9-z7cWE_17HdQVjbtXeuZ_GdZTiC2_fjomutl_ImKKF_Cq-fQfdOII22QH86gpYquz7evaQI2nHq0s3Nb>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehiedgledtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomheptehnughr
-    vghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghnrghrrgiivghlrdguvgeqnecuggftrf
-    grthhtvghrnhepteduuefhtdeuudejfefgteeivdeuheeiueelueehgffgvdefgfehgeel
-    geehvddtnecuffhomhgrihhnpehsohhurhgtvgifrghrvgdrohhrghenucevlhhushhtvg
-    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrnhgurhgvshesrghnrghr
-    rgiivghlrdguvg
-X-ME-Proxy: <xmx:jx_BYm-p7jvPCGHNWTfzQlTJx3iBhJM_DcQfMj90FBN8k9gb2Zk-JA>
-    <xmx:jx_BYpuib6GAt08P-rtHiVRoJoITnUmF1GVd2iMW0erh49nnssonCw>
-    <xmx:jx_BYlEaatqcdKoQOGifagKP8-dKaGGaK9ct3l6j9QGvqmFy_CXouA>
-    <xmx:jx_BYhIZYxA_SIVNk0kd1nZ5tdmKVzsrHLeKdbo5cZkF6zkPlbY-6A>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomheptehnughrvghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghn
+    rghrrgiivghlrdguvgeqnecuggftrfgrthhtvghrnhepuedvleffteffveehiedvhedvud
+    eiveekiefhledttdeiffeiieeuteeuheffteefnecuffhomhgrihhnpehsohhurhgtvgif
+    rghrvgdrohhrghdpkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomheprghnughrvghssegrnhgrrhgriigvlhdruggv
+X-ME-Proxy: <xmx:7iDBYnVbOiHQjLod_XpKt3h8EINK5VF-30gHEUa_AiqGgd511-k6Cg>
+    <xmx:7iDBYinTI5YSoy_7NlBgXA7ZrytOyTAEs_urvEEszoP2uHlHWF5rJQ>
+    <xmx:7iDBYsdaqtXzTEn2FuGJpXvrTsacMoO1Th29d2BqWuig0t9Y_VzUQQ>
+    <xmx:7iDBYsTTRfbiFSqnF2iI6Xudq63FZV-uEs8MnIDIe5QwQZuGH6W2Jw>
 Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 3 Jul 2022 00:48:15 -0400 (EDT)
+Received: by mail.messagingengine.com (Postfix) with ESMTPA for
+ <linux-kernel@vger.kernel.org>; Sun, 3 Jul 2022 00:54:06 -0400 (EDT)
+Date:   Sat, 2 Jul 2022 21:54:05 -0700
 From:   Andres Freund <andres@anarazel.de>
 To:     linux-kernel@vger.kernel.org
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: [PATCH v1 0/3] tools: fix compilation failure caused by init_disassemble_info API changes
-Date:   Sat,  2 Jul 2022 21:48:10 -0700
-Message-Id: <20220703044814.892617-1-andres@anarazel.de>
-X-Mailer: git-send-email 2.35.1.677.gabf474a5dd
-In-Reply-To: <20220622231624.t63bkmkzphqvh3kx@alap3.anarazel.de>
+Subject: Re: [PATCH v1 2/3] tools: introduce dis-asm.h wrapper to hide
+ version differences
+Message-ID: <20220703045405.mg6twnmghciek4y6@awork3.anarazel.de>
 References: <20220622231624.t63bkmkzphqvh3kx@alap3.anarazel.de>
+ <20220703044814.892617-1-andres@anarazel.de>
+ <20220703044814.892617-4-andres@anarazel.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220703044814.892617-4-andres@anarazel.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-binutils changed the signature of init_disassemble_info(), which now causes
-compilation failures for tools/{perf,bpf} on e.g. debian unstable. Relevant
-binutils commit:
-https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=60a3da00bd5407f07
+Hi,
 
-I first fixed this without introducing the compat header, as suggested by
-Quentin, but I thought the amount of repeated boilerplate was a bit too
-much. So instead I introduced a compat header to wrap the API changes. Even
-tools/bpf/bpftool/jit_disasm.c, which needs its own callbacks for json, imo
-looks nicer this way.
+On 2022-07-02 21:48:13 -0700, Andres Freund wrote:
+> binutils changed the signature of init_disassemble_info(), which now causes
+> perf and bpftool to fail to compile (e.g. on debian unstable). Relevant
+> binutils commit:
+> https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=60a3da00bd5407f07
+> 
+> This just wraps init_disassemble_info(), to avoid spreading #ifdef
+> DISASM_INIT_STYLED to a bunch of places. It likely is worth adding a
+> wrapper for disassember(), to avoid the already existing #ifdef
+> DISASM_FOUR_ARGS_SIGNATURE.
+> 
+> Link: http://lore.kernel.org/lkml/20220622181918.ykrs5rsnmx3og4sv@alap3.anarazel.de
+> Signed-off-by: Andres Freund <andres@anarazel.de>
 
-I'm not regular contributor, so it very well might be my procedures are a
-bit off...
+Argh, please disregard this version of 0002 - it's an older version that I
+somehow managed to send unintentionally. I don't use git send-email often...
 
-I wasn't sure whether the split of the commits conforms with the kernel
-habits should the changes to tools/bpf and tools/perf be split into
-separate commits?
+Greetings,
 
-Nor was I sure if I the right [number of] people to CC?
-
-WRT the feature test: Not sure what the point of the -DPACKAGE='"perf"' is,
-nor why tools/perf/Makefile.config sets some LDFLAGS/CFLAGS that are also
-in feature/Makefile and why -ldl isn't needed in the other places. But...
-
-Andres Freund (3):
-  tools build: add feature test for init_disassemble_info API changes
-  tools: add dis-asm-compat.h to centralize handling of version
-    differences
-  tools: Use tools/dis-asm-compat.h to fix compilation errors with new
-    binutils
-
-To: bpf@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Quentin Monnet <quentin@isovalent.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-
- tools/bpf/Makefile                            |  7 ++-
- tools/bpf/bpf_jit_disasm.c                    |  5 +-
- tools/bpf/bpftool/Makefile                    |  7 ++-
- tools/bpf/bpftool/jit_disasm.c                | 40 +++++++++++---
- tools/build/Makefile.feature                  |  4 +-
- tools/build/feature/Makefile                  |  4 ++
- tools/build/feature/test-all.c                |  4 ++
- .../feature/test-disassembler-init-styled.c   | 13 +++++
- tools/include/tools/dis-asm-compat.h          | 53 +++++++++++++++++++
- tools/perf/Makefile.config                    |  8 +++
- tools/perf/util/annotate.c                    |  7 +--
- 11 files changed, 135 insertions(+), 17 deletions(-)
- create mode 100644 tools/build/feature/test-disassembler-init-styled.c
- create mode 100644 tools/include/tools/dis-asm-compat.h
-
--- 
-2.35.1.677.gabf474a5dd
-
+Andres Freund
