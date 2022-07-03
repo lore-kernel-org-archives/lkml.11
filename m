@@ -2,100 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42500C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 16:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A82F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 16:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232793AbiGCQwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 12:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
+        id S232824AbiGCQyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 12:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232726AbiGCQwC (ORCPT
+        with ESMTP id S232747AbiGCQyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 12:52:02 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6096315
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 09:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656867122; x=1688403122;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cP/0Fsxio3K1+RJNipDDMsxZZwRQCXNoH3rPZtSX6GA=;
-  b=WmR2RWQbHQ4O9MZRK+K02RCNKA3bJH4tkuOtgq+QJ2ihbwLiEbDAaZ/o
-   RZnZYIPkn5zJ5oceOzMEgw8/CcjdZZpSIl3tapGbfzdYtLsUz60PrKTnm
-   lkoNF3kLAozcffCINyTgV6kARkVJPhytGGjTLijGj8OoNHmcpzUHELhIS
-   2sFVGZYcBrQKPLcEeikhvS5wjmmC9kayK3V5PGtf7awnHwLn6v9ioVXSw
-   B3sEtqvs9g91gwL1hr6HcS24b+imHgr3q0JwcgRbn+uq8TduFELhwEU50
-   T+y5d4A1nnhnAI8EIlatUQrSGZrdYCfEffkI8KufQU1fyyBnXhONC25KL
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="346945781"
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="346945781"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2022 09:52:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
-   d="scan'208";a="734577408"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 03 Jul 2022 09:52:00 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o82pD-000GiC-LX;
-        Sun, 03 Jul 2022 16:51:59 +0000
-Date:   Mon, 4 Jul 2022 00:51:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Morse <james.morse@arm.com>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [morse:mpam/snapshot/v5.18 131/147] kismet: WARNING: unmet direct
- dependencies detected for RESCTRL_FS when selected by ARM64_MPAM
-Message-ID: <202207040014.dB1KTsoy-lkp@intel.com>
+        Sun, 3 Jul 2022 12:54:50 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B676318;
+        Sun,  3 Jul 2022 09:54:50 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id A5E655C0095;
+        Sun,  3 Jul 2022 12:54:49 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Sun, 03 Jul 2022 12:54:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1656867289; x=1656953689; bh=3ltIySwpqZ
+        RwAe1IfAwY0jDdcMGav0coe6/K+BE81BM=; b=TnpEYX9PlEB8yfchOtozFoBEnr
+        KxKBxmVxz2v2x4h5LWsyIR3ClVq+Q7hbUZYlFhdoC21HsSH0OGvVnM4Wsnad2mwm
+        tsgfVES/dtrinGTTj0T5mrEHAu+ic5t+yA13BrvmeeyKnWSTcTIBrS6NaJadUku8
+        sm+El6gNwhFhgQhcY7u2L23ofhF32tTIzJuXOrWXSviTxbG3L9unmBBsni5nx49/
+        M3lZGHuxk6yMOT4MEQ2QLWn4aMltSFk2FR++3Qyw3reqMjUvXo+7FW+ZeXdcbZt2
+        h7wQHTHru4F/cPXlKIMuTurPPsfm4hGd3F0lRoQj/FbsNIy7RelmP9joKU6A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1656867289; x=1656953689; bh=3ltIySwpqZRwAe1IfAwY0jDdcMGa
+        v0coe6/K+BE81BM=; b=mauml8Y4piqJfl2CF5VivTT9uq4enas42nhnhp7HqUkE
+        m2Pv9ogU+53DepQV/tx0+D2ngpAdVww5aN2gLV0LiKDX9jEZMKmcvjHFnPXcZy1G
+        b2xsGuaYtLdzWYNXpF23ITwMGmNEVldyC79bEl0RUqjjm3Y7ixKrrDQyRgbTt2Fe
+        Oq9QHbGEmOTMrlEMJCZ9f1V8VZ7GQyxIK0XV3WpwuNzW+4gDUiMn4UDtxeFYY3kg
+        /SGHuUMag6QC+73yeRuG+Ml/eK02C7T1y4w5tg78klCJZoVWxyHEiU7lRTJDJO+c
+        10MxwA4qU5qOTmNjFLZH2wX+kor0LpVzsm3qS+aw1g==
+X-ME-Sender: <xms:2cnBYins9AoTF5zKEAsvlj8avcNtQPnzSfpeWAqdkwBHCCGYJddrMg>
+    <xme:2cnBYp1_N0JbTiLlWGfmTP5BAVtAII-n0sL_D0ucNOsjXP3ANe9Mf_f4uyGgVCvL1
+    O1hE44QOkIh5xP_oQ>
+X-ME-Received: <xmr:2cnBYgq8ZNB_0tyP2LOfKuUiyXJsGNcdIGxEZVVYdECFCqkmfips8B8K0Lljxe6BxTPL6cubykmXInChuc60921F0CuhlLUfVx33EnICBYxggRnXZ-lSTCcRML89>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehjedguddutdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
+    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
+    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
+    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
+X-ME-Proxy: <xmx:2cnBYml48IXug4gjRTZtZC6M6U0qiqoLMsE8HMira8Ac7TSgbHvDug>
+    <xmx:2cnBYg1foV4BaL-_sC6Fzom7hkgzwY3OJqdA9gkBzV_7SDlLUY_bbA>
+    <xmx:2cnBYtvC_awlok0CVivyK37trv0NxIz7HojBkE9F1aonZ5uXt8ITww>
+    <xmx:2cnBYltCxpH_SoNgzrCQIu8XjT7ZG3MPFgtKb57Uv_UTywvfD-e_RQ>
+Feedback-ID: id4a34324:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 3 Jul 2022 12:54:49 -0400 (EDT)
+Date:   Sun, 3 Jul 2022 09:54:48 -0700
+From:   Andres Freund <andres@anarazel.de>
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     sedat.dilek@gmail.com, Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        Namhyung Kim <namhyung@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [perf-tools] Build-error in tools/perf/util/annotate.c with
+ LLVM-14
+Message-ID: <20220703165448.7d2akxawzdvqigat@awork3.anarazel.de>
+References: <CA+icZUVVXq0Mh8=QuopF0tMZyZ0Tn8AiKEZoA3jfP47Q8B=x2A@mail.gmail.com>
+ <CA+icZUW3VrDC8J4MnNb1H3nGYQggBwY4zOoaJkzSsNj7xKDvyQ@mail.gmail.com>
+ <CA+icZUVcCMCGEaxytyJd_-Ur-Ey_gWyXx=tApo-SVUqbX_bhUA@mail.gmail.com>
+ <CA+icZUVpr8ZeOKCj4zMMqbFT013KJz2T1csvXg+VSkdvJH1Ubw@mail.gmail.com>
+ <1496A989-23D2-474D-B941-BA2D74761A7E@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <1496A989-23D2-474D-B941-BA2D74761A7E@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.18
-head:   9d1850bbdc3c9b2b9b6fce8963cde5b0a38fb2d7
-commit: f6b210f219ae4d7f5e18979ef80ecbc9c41c15f0 [131/147] arm64: mpam: Select ARCH_HAS_CPU_RESCTRL
-config: (https://download.01.org/0day-ci/archive/20220704/202207040014.dB1KTsoy-lkp@intel.com/config)
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=f6b210f219ae4d7f5e18979ef80ecbc9c41c15f0
-        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
-        git fetch --no-tags morse mpam/snapshot/v5.18
-        git checkout f6b210f219ae4d7f5e18979ef80ecbc9c41c15f0
-        # 1. reproduce by kismet
-           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
-           kismet --linux-ksrc=linux --selectees CONFIG_RESCTRL_FS --selectors CONFIG_ARM64_MPAM -a=arm64
-        # 2. reproduce by make
-           # save the config file to linux source tree
-           cd linux
-           make ARCH=arm64 olddefconfig
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 2022-07-03 10:54:45 -0300, Arnaldo Carvalho de Melo wrote:
+> That series should be split a bit further, so that the
+> new features test is in a separate patch, i.e. I don't process bpftool patches, but can process the feature test and the tools/perf part.
 
+Ok, will split it further. Should I do
 
-kismet warnings: (new ones prefixed by >>)
->> kismet: WARNING: unmet direct dependencies detected for RESCTRL_FS when selected by ARM64_MPAM
-   
-   WARNING: unmet direct dependencies detected for RESCTRL_FS
-     Depends on [n]: MISC_FILESYSTEMS [=n] && ARCH_HAS_CPU_RESCTRL [=y]
-     Selected by [y]:
-     - ARM64_MPAM [=y]
-   
-   WARNING: unmet direct dependencies detected for IIO_BUFFER_CB
-     Depends on [n]: IIO [=y] && IIO_BUFFER [=n]
-     Selected by [y]:
-     - JOYSTICK_ADC [=y] && INPUT [=y] && INPUT_JOYSTICK [=y] && IIO [=y]
-   
-   WARNING: unmet direct dependencies detected for RESCTRL_RMID_DEPENDS_ON_CLOSID
-     Depends on [n]: MISC_FILESYSTEMS [=n]
-     Selected by [y]:
-     - ARM_CPU_RESCTRL [=y] && ARM64 [=y] && ARCH_HAS_CPU_RESCTRL [=y]
+1) feature test
+2) introduce compat header header
+3) use feature test, use header in perf/
+4) use feature test, use header in bpf/
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Or should 3, 4 be split to separately introduce the feature test and use of
+the compat header?
+
+Greetings,
+
+Andres Freund
