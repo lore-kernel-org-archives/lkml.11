@@ -2,150 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F4E4C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiGCEFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S230419AbiGCE15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232735AbiGCEFX (ORCPT
+        with ESMTP id S229782AbiGCE14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 00:05:23 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1988113D6F;
-        Sat,  2 Jul 2022 21:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=LQzNJSrqoKMb8FMCvc/7lp2Km4cof1d6Hftc45fNj1g=; b=SlO+fKNyilPz+TVpOIzdYjMW8I
-        Hsqq6l0JUqmKZnzFIfvzTAUxDFekbW1Xjbq8aFbgAuxIsNiVPE0oNLXIPm359WVbU9Seg97M9+O7r
-        OojR6bi66spE6YIUgfO2Wu6DSNRFi+RBxtuotkAqiPYTj9usTSh8wTRcfL43lp3ajxi3TLHEA/12n
-        Y/F8O4V669jsNhJbuRbb9bPkk4FAB58VW1SMi3Rp9ILhYuca0CNGJvhv3GHuBQzPvPNX4V4l0rn2N
-        TJHAKEHb9PbmaIPNcrTdaKaLlrLK2KL2N2ui7v/i5dQvTkEUTppJSfvwBi0BvCcWXWFL7X/ISPBy0
-        SdFr/OuA==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o7qlz-007YYP-Mg;
-        Sun, 03 Jul 2022 03:59:51 +0000
-Date:   Sun, 3 Jul 2022 04:59:51 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Vitaly Buka <vitalybuka@google.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v4 43/45] namei: initialize parameters passed to
- step_into()
-Message-ID: <YsEUNyKcIiSowfIR@ZenIV>
-References: <20220701142310.2188015-1-glider@google.com>
- <20220701142310.2188015-44-glider@google.com>
- <CAHk-=wgbpot7nt966qvnSR25iea3ueO90RwC2DwHH=7ZyeZzvQ@mail.gmail.com>
+        Sun, 3 Jul 2022 00:27:56 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410CD655F;
+        Sat,  2 Jul 2022 21:27:53 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id f85so2259916pfa.3;
+        Sat, 02 Jul 2022 21:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=L3p41Hy2xkGcM9lCGDSD8Sj0lyHS0AKT+S1haQ42j0w=;
+        b=oStd8z+n+zb6l9ZMlyH6Awr7moCoXrpFVl9kRQZqRF1yRtSvbrzlfYOz9ou79dOYDE
+         0WMiLg+IdCvRY9OSJ9XgIp/sja810iXC9RBPPV8low9BTDfOZNZ9fmhEZMbPkBr9b+Nl
+         6bVraWKUe2HVjSfTOrMafabo8tRn8ej5wMupGn/YaHV344k+wKKJ1V2ScYkncx0UoL3T
+         RC5vxUtgaZ5XlMUpJSK+BAwueT3eH9COh4hM7Effx30Vdc88mYY2p9GTA+Ne5ZAp+lkt
+         u2Ehhi8M3vgxvXiS69q8qOklA2/Vnleauomi75difO0lg6ymA5H/JE8itNk5RjvDT5FJ
+         vxoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=L3p41Hy2xkGcM9lCGDSD8Sj0lyHS0AKT+S1haQ42j0w=;
+        b=MezbvqlhkDb5JQPFon5AC7SWr5K18Cs0NDVceGr7m3XMKf4mcpf0NaUiNqZ0Lccu5V
+         O0tgWDXKGuitBq3RNBzSaP/1STLX2HG612w+psjVYQSkNhu1/tw1fS5wWVGZTnXJKBeg
+         Sc3KdG2lZBgJ9Gks2iE3i9GZXy9i9GD9Jr0O91IR9QjDyWsO/083olV+U1o6QPFCImtL
+         7jxZdMPo6sRDp1VP8L5shl8B0ST0HE0vf2Cfja8hvx4W1oO8mXNIcwN1t1IJBhJViTB+
+         xNmTO664UUsXub/FWN9tKJ1ZY5I3FVX6+HA2lVkNfZEe4P4kkdYXecQ0F23IdkiBNJ9T
+         f26g==
+X-Gm-Message-State: AJIora837diWVKhoFEkavu5REM9B8fs8dy4Ij+s8Df1xIyLwqk03eTlk
+        RxNmluwFFH8AjntXlUE/29B/HSzZtac=
+X-Google-Smtp-Source: AGRyM1u3Pvdf9wOoKvmkYRg+h459H+ro5MrXSf9xRirGQpvhD0gpDFNaHFDtfIGU9XUUG+Z40piC4A==
+X-Received: by 2002:a63:4716:0:b0:410:ac39:868d with SMTP id u22-20020a634716000000b00410ac39868dmr18843643pga.347.1656822472792;
+        Sat, 02 Jul 2022 21:27:52 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id c13-20020a170902c1cd00b0016a276aada7sm18274477plc.20.2022.07.02.21.27.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Jul 2022 21:27:52 -0700 (PDT)
+Message-ID: <abcaa4f5-7a9b-56b5-c11a-a88fef9d1e0a@gmail.com>
+Date:   Sun, 3 Jul 2022 13:27:47 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgbpot7nt966qvnSR25iea3ueO90RwC2DwHH=7ZyeZzvQ@mail.gmail.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH] iio: proximity: sx9324: add empty line in front of bullet
+ list
+Content-Language: en-US
+To:     Gwendal Grignou <gwendal@chromium.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Stephen Boyd <swboyd@chromium.org>, linux-doc@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        kernel test robot <lkp@intel.com>, linux-iio@vger.kernel.org
+References: <202207021703.lEW6FLT1-lkp@intel.com>
+ <85c5fe48-90fd-6ad6-72d8-a3e7929f23e4@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <85c5fe48-90fd-6ad6-72d8-a3e7929f23e4@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 02, 2022 at 10:23:16AM -0700, Linus Torvalds wrote:
-> On Fri, Jul 1, 2022 at 7:25 AM Alexander Potapenko <glider@google.com> wrote:
-> >
-> > Under certain circumstances initialization of `unsigned seq` and
-> > `struct inode *inode` passed into step_into() may be skipped.
-> > In particular, if the call to lookup_fast() in walk_component()
-> > returns NULL, and lookup_slow() returns a valid dentry, then the
-> > `seq` and `inode` will remain uninitialized until the call to
-> > step_into() (see [1] for more info).
+"make htmldocs" emits a warning of:
 
-> So while I think this needs to be fixed, I think I'd really prefer to
-> make the initialization and/or usage rules stricter or at least
-> clearer.
+    Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected indentation.
 
-Disclaimer: the bits below are nowhere near what I consider a decent
-explanation; this might serve as the first approximation, but I really
-need to get some sleep before I get it into coherent shape.  4 hours
-of sleep today...
+This is due to a missing empty line in front of the bullet list.
+Fix it.
 
-The rules are
-	* no pathname resolution without successful path_init().
-IOW, path_init() failure is an instant fuck off.
-	* path_init() success sets nd->inode.  In all cases.
-	* nd->inode must be set - LOOKUP_RCU or not, we simply cannot
-proceed without it.
+Note: The line count of 2 in the warning is not exact in this case.
 
-	* in non-RCU mode nd->inode must be equal to nd->path.dentry->d_inode.
-	* in RCU mode nd->inode must be equal to a value observed in
-nd->path.dentry->d_inode while nd->path.dentry->d_seq had been equal to
-nd->seq.
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Fixes: 4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
+Link: https://lore.kernel.org/r/202207021703.lEW6FLT1-lkp@intel.com/
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Cc: Stephen Boyd <swboyd@chromium.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio-sx9324 | 1 +
+ 1 file changed, 1 insertion(+)
 
-	* step_into() gets a dentry/inode/seq triple.  In non-RCU
-mode inode and seq are ignored; in RCU mode they must satisfy the
-same relationship we have for nd->path.dentry/nd->inode/nd->seq.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sx9324 b/Documentation/ABI/testing/sysfs-bus-iio-sx9324
+index 632e3321f5a3..a8342770e7cb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-sx9324
++++ b/Documentation/ABI/testing/sysfs-bus-iio-sx9324
+@@ -5,6 +5,7 @@ Contact:	Gwendal Grignou <gwendal@chromium.org>
+ Description:
+ 		SX9324 has 3 inputs, CS0, CS1 and CS2. Hardware layout
+ 		defines if the input is
++
+ 		+ not connected (HZ),
+ 		+ grounded (GD),
+ 		+ connected to an antenna where it can act as a base
+-- 
+2.25.1
 
-> Of course, sometimes the "only get used for LOOKUP_RCU" is very very
-> unclear, because even without being an RCU lookup, step_into() will
-> save it into nd->inode/seq. So the values were "used", and
-> initializing them makes them valid, but then *that* copy must not then
-> be used unless RCU was set.
 
-You are misreading that (and I admit that it badly needs documentation).
-The whole point of step_into() is to move over to new place.  nd->inode
-*MUST* be set on success, no matter what.
-
->  - I look at that follow_dotdot*() caller case, and think "that looks
-> very similar to the lookup_fast() case, but then we have *very*
-> different initialization rules".
-
-follow_dotdot() might as well lose inodep and seqp arguments - everything
-would've worked just as well without those.  We would've gotten the same
-complaints about uninitialized values passed to step_into(), though.
-
-This
-                if (unlikely(!parent))
-                        error = step_into(nd, WALK_NOFOLLOW,
-                                         nd->path.dentry, nd->inode, nd->seq);
-in handle_dots() probably contributes to confusion - it's the "we
-have stepped on .. in the root, just jump into whatever's mounted on
-it" case.  In non-RCU case it looks like a use of nd->seq in non-RCU
-mode; however, in that case step_into() will end up ignoring the
-last two arguments.
-
-I'll post something more coherent after I get some sleep.  Sorry... ;-/
