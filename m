@@ -2,131 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D95DC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 18:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 191E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 18:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232388AbiGCSPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 14:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S232514AbiGCSRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 14:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232059AbiGCSPR (ORCPT
+        with ESMTP id S230063AbiGCSRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 14:15:17 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027E26273
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 11:15:15 -0700 (PDT)
-Received: from [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd] (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 4805C2F32A3;
-        Sun,  3 Jul 2022 20:15:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1656872113;
+        Sun, 3 Jul 2022 14:17:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4279627B
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 11:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656872267;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gk79OAFFVmN2f29WHrBi7N3syL3PzehyawGjDyoyBbk=;
-        b=W5L6aVKf16xAJRaRYBcNVxWVDklFYwFfdxcqq3XHlahQC2PhdfsAYKCBJUF4vYTpShKU5y
-        65Ci5Cvgt87bZEVXpm+OOWZsCf2DmCH7+9jliPfyJ2j1pTWPz1+J/a6cb1wO7Etq1wyQUI
-        amENVtWjKn97w4+5YgYoOuyTIa6B90Bv9vG8VLZ9gTJsh1JL6TQJAD/ifLAssczFzqajN5
-        12gkeEEv0FYVK2grIt293ywDvb+kNeEwKJR5UlAICFuo+CWCeIqCpLC3Y9roMWChtQLqp3
-        KWQPekcDIsca9EmGcFcvSwYwiDc73lnTBbzyP9H0s+B+AfnyesX3UObENZ49xg==
-Message-ID: <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
-Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second
- VPE
-From:   Sander Vanheule <sander@svanheule.net>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>
-Cc:     Marc Zyngier <maz@kernel.org>, tsbogend@alpha.franken.de,
-        martin.blumenstingl@googlemail.com, hauke@hauke-m.de,
-        git@birger-koblitz.de, linux-mips@vger.kernel.org,
+        bh=+VCKl9j7lixqYhrfaZVBrVSB6bBOfCLezxzbPVQjUoo=;
+        b=a0ngEOouFjwuo9Snt7+tMCIx+cx7/5oCQBqsC36wcnhpUEOp+JNT9hWwvgwid3WU7LW76L
+        p0BZePZ4329TmKpi0xLKiA5YPan46jeGH+8EKIFwcuwKP2LUjrQttyri5sPbSg1LEfh+Vx
+        Efw3WW6XJqPmoAt4cVvI/6Sg3X9HqxQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-488-nhXI8Lo0O6qnc4arpVHgJw-1; Sun, 03 Jul 2022 14:17:46 -0400
+X-MC-Unique: nhXI8Lo0O6qnc4arpVHgJw-1
+Received: by mail-ed1-f69.google.com with SMTP id y6-20020a056402270600b00433940d207eso2203598edd.1
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 11:17:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+VCKl9j7lixqYhrfaZVBrVSB6bBOfCLezxzbPVQjUoo=;
+        b=VW4eSawc58q4GRP5otiIa6sSrJA23zNEqE2fv6xRCwe1HP3ycOhTD+C5ODKRsQat1J
+         DQey1yWyKE/ZTY4bwaNIbabnjPlrL2elfKqJcGItqHvym3b6nfUg6loPhDQfl7vB5zAs
+         2KG0CmMzwtxy/KFjqKoB3f+cQ+vEQzN8Uq0ouRqUjbsU4Y9WYqgDuEKWyZsXuXME3BbU
+         z/JlhSwNDvj1LxPj5msNoimQOsjMrfNeW7qyHkQh/Ju7m2YAX5uEhPV5g2fD1I10QwpZ
+         CCNI0wzQmaSJbeLh8aPywba1lItlEvjdTOf1mcMIyZrrSLKII1wCirXPhvsr+PW5TTTy
+         37jw==
+X-Gm-Message-State: AJIora+4pdwZxqN+xxH7wSeGfzpIwI9ST8MuaOrqeBW14oSoYJr8EgAp
+        hZUfqdHfVTJ67+zzGAumkbPure1Ep0eWUdDRwNHwGwXbsVbBbubf3E8MzX2o4wGKlU96yLm0j/i
+        1wkpB4pBh82+2zGghemtLj4Sf
+X-Received: by 2002:a17:907:7639:b0:72a:98dd:58b9 with SMTP id jy25-20020a170907763900b0072a98dd58b9mr10377961ejc.614.1656872265244;
+        Sun, 03 Jul 2022 11:17:45 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tn30U8VpEG0/uAZ6YMxLWwj5KleLa3Q2L8vKMz5Ki6156+H1VAQyMdLwSjZs/vCGF6vVHHIw==
+X-Received: by 2002:a17:907:7639:b0:72a:98dd:58b9 with SMTP id jy25-20020a170907763900b0072a98dd58b9mr10377955ejc.614.1656872265097;
+        Sun, 03 Jul 2022 11:17:45 -0700 (PDT)
+Received: from pollux.. ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
+        by smtp.gmail.com with ESMTPSA id q21-20020aa7cc15000000b0042617ba638esm18959371edt.24.2022.07.03.11.17.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Jul 2022 11:17:44 -0700 (PDT)
+From:   Danilo Krummrich <dakr@redhat.com>
+To:     willy@infradead.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Sun, 03 Jul 2022 20:15:11 +0200
-In-Reply-To: <20220702190705.5319-1-olek2@wp.pl>
-References: <20220702190705.5319-1-olek2@wp.pl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+Cc:     Danilo Krummrich <dakr@redhat.com>
+Subject: [PATCH 2/2] doc/idr: adjust to new IDR allocation API
+Date:   Sun,  3 Jul 2022 20:17:39 +0200
+Message-Id: <20220703181739.387584-2-dakr@redhat.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220703181739.387584-1-dakr@redhat.com>
+References: <20220703181739.387584-1-dakr@redhat.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aleksander,
+The IDR API was adjusted to match the IDA API, adjust the
+documentation accordingly.
 
-Since this is IRQ related: +CC Marc Zyngier
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+---
+ Documentation/core-api/idr.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On Sat, 2022-07-02 at 21:07 +0200, Aleksander Jan Bajkowski wrote:
-> This patch is needed to handle interrupts by the second VPE on
-> the Lantiq xRX200, xRX300 and xRX330 SoCs. In these chips, 32 ICU
-> interrupts are connected to each hardware line. The SoC supports
-> a total of 160 interrupts. Currently changing smp_affinity to the
-> second VPE hangs interrupts.
->=20
-> This problem affects multithreaded SoCs with a custom interrupt
-> controller. Chips with 1004Kc core and newer use the MIPS GIC.
->=20
-> Also CC'ed Birger Koblitz and Sander Vanheule. Both are working
-> on support for Realtek RTL930x chips with 34Kc core and Birger
-> has added a patch in OpenWRT that also enables all interrupt
-> lines. So it looks like this patch is useful for more SoCs.
->=20
-> Tested on lantiq xRX200 and xRX330.
->=20
-> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
-
-Thanks for bringing up this issue. Like you say OpenWrt carries a similar p=
-atch, and I also carry a
-patch on my tree to enable all CPU IRQ lines.
-
-Indiscriminately enabling all IRQ lines doesn't sit quite right with me tho=
-ugh, since I would expect
-these to be enabled on-demand. I.e. when a peripheral requests an IRQ, or w=
-hen an IRQ controller is
-cascaded into one of the CPU's interrupt lines. If I understand correctly, =
-the IRQ mask/unmask
-functions in drivers/irqchip/irq-mips-cpu.c should do this.
-
-I haven't been able to achieve this (automatic) behaviour until now, so I t=
-hink I must be doing
-something wrong when trying to cascade the SoC IRQ driver for the RTL839x/R=
-TL930x chips into both
-VPEs. It is currently not clear to me how this should be made functional wi=
-thout a patch like this
-one, so I hope we'll be able to clear that up now.
-
-Best,
-Sander
-
-> ---
-> =C2=A0arch/mips/kernel/smp-mt.c | 3 +--
-> =C2=A01 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/arch/mips/kernel/smp-mt.c b/arch/mips/kernel/smp-mt.c
-> index 5f04a0141068..f21cd0eb1fa7 100644
-> --- a/arch/mips/kernel/smp-mt.c
-> +++ b/arch/mips/kernel/smp-mt.c
-> @@ -113,8 +113,7 @@ static void vsmp_init_secondary(void)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 STATUSF_IP4 | STATUSF_IP5 |
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 STATUSF_IP6 | STATUSF_IP7);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0change_c0_status(ST0_IM, STATUSF_IP0 | STATUSF_IP1 |
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 STATUSF_IP6 | STATUSF_IP7);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0set_c0_status(ST0_IM);
-> =C2=A0}
-> =C2=A0
-> =C2=A0static void vsmp_smp_finish(void)
+diff --git a/Documentation/core-api/idr.rst b/Documentation/core-api/idr.rst
+index 2eb5afdb9931..53310d1a2552 100644
+--- a/Documentation/core-api/idr.rst
++++ b/Documentation/core-api/idr.rst
+@@ -24,9 +24,9 @@ Start by initialising an IDR, either with DEFINE_IDR()
+ for statically allocated IDRs or idr_init() for dynamically
+ allocated IDRs.
+ 
+-You can call idr_alloc() to allocate an unused ID.  Look up
+-the pointer you associated with the ID by calling idr_find()
+-and free the ID by calling idr_remove().
++You can call idr_alloc(), idr_alloc_range(), idr_alloc_min() or idr_alloc_max()
++to allocate an unused ID, look up the pointer you associated with the ID by
++calling idr_find() and free the ID by calling idr_remove().
+ 
+ If you need to change the pointer associated with an ID, you can call
+ idr_replace().  One common reason to do this is to reserve an
+-- 
+2.36.1
 
