@@ -2,75 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F605C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20F8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Jul 2022 09:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232136AbiGFJDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Jul 2022 05:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42346 "EHLO
+        id S231812AbiGFJEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Jul 2022 05:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiGFJD3 (ORCPT
+        with ESMTP id S230115AbiGFJEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Jul 2022 05:03:29 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82B66323;
-        Wed,  6 Jul 2022 02:03:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=MQARnlMToRVEqeLEMG+9wozanL3J51GC/4ROL/yqQsA=; b=tz7RGCpugBXvVFqz6jl03wLVUe
-        OomVJj7+GmEelW2X4/5m9U1uYUtNL4A7HoDzyvoZZw9LUwgoC+hmtVGU0FXZEuqkn0obaHtMeKwcu
-        M9unWnQmfP02x9t+LJukCtXvxQ1XRcHdQaBaU+a9NC4I3YvGujXJR/NiIfJHu1MuItdCfuhUf88xo
-        lAsVQzRv7DRGqszQ6R5CqSkPoDI+uj3qnuDsmUWOD+4hYuMZ9Y9k4SE3ARyz/BR/PZs7geQ3pe5HY
-        UEt/C04JWGAUB/rKxaguwIb1tbE/Te0IMAFutJM8/MlDt+TNuTYBS9gs7JGMnbWr6zfFaclgfQv4P
-        YgEsPKeQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o90vx-007ayM-Oy; Wed, 06 Jul 2022 09:02:57 +0000
-Date:   Wed, 6 Jul 2022 02:02:57 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     Christoph Hellwig <hch@infradead.org>, corbet@lwn.net,
-        rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        m.szyprowski@samsung.com, robin.murphy@arm.com, paulmck@kernel.org,
-        akpm@linux-foundation.org, keescook@chromium.org,
-        songmuchun@bytedance.com, rdunlap@infradead.org,
-        damien.lemoal@opensource.wdc.com, michael.h.kelley@microsoft.com,
-        kys@microsoft.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        vkuznets@redhat.com, wei.liu@kernel.org, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
-        kirill.shutemov@intel.com, andi.kleen@intel.com,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH 2/2] x86/ACPI: Set swiotlb area according to the number
- of lapic entry in MADT
-Message-ID: <YsVPwYGHUoctAKjs@infradead.org>
-References: <20220627153150.106995-1-ltykernel@gmail.com>
- <20220627153150.106995-3-ltykernel@gmail.com>
- <YrxcCZKvFYjxLf9n@infradead.org>
- <a876f862-c005-108d-e6f9-68336a8d89f0@gmail.com>
- <YsVBKgxiQKfnCjvn@infradead.org>
- <10062b7d-f0a6-6724-4ccb-506da09a8533@gmail.com>
+        Wed, 6 Jul 2022 05:04:04 -0400
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD6FE24;
+        Wed,  6 Jul 2022 02:04:02 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id BIK00057;
+        Wed, 06 Jul 2022 17:03:57 +0800
+Received: from localhost.localdomain (10.200.104.82) by
+ jtjnmail201611.home.langchao.com (10.100.2.11) with Microsoft SMTP Server id
+ 15.1.2507.9; Wed, 6 Jul 2022 17:03:58 +0800
+From:   Deming Wang <wangdeming@inspur.com>
+To:     <seanjc@google.com>, <pbonzini@redhat.com>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+        <x86@kernel.org>
+CC:     <hpa@zytor.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Deming Wang <wangdeming@inspur.com>
+Subject: [PATCH] KVM: LAPIC: Separate the variable declaration and code logic
+Date:   Sun, 3 Jul 2022 00:54:10 -0400
+Message-ID: <20220703045410.9159-1-wangdeming@inspur.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10062b7d-f0a6-6724-4ccb-506da09a8533@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.200.104.82]
+tUid:   2022706170357e98e00458c131b46b68ac306b16c623e
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 04:57:33PM +0800, Tianyu Lan wrote:
-> Swiotlb_init() is called in the mem_init() of different architects and
-> memblock free pages are released to the buddy allocator just after
-> calling swiotlb_init() via memblock_free_all().
+The function apic_has_interrupt_for_ppr and the function
+kvm_apic_is_broadcast_dest should follow the same style as other codes.
 
-Yes.
+Signed-off-by: Deming Wang <wangdeming@inspur.com>
+---
+ arch/x86/kvm/lapic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> The mem_init() is called before smp_init().
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index f03facc2ee3e..d8940486878d 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -739,12 +739,14 @@ static bool pv_eoi_test_and_clr_pending(struct kvm_vcpu *vcpu)
+ static int apic_has_interrupt_for_ppr(struct kvm_lapic *apic, u32 ppr)
+ {
+ 	int highest_irr;
++
+ 	if (kvm_x86_ops.sync_pir_to_irr)
+ 		highest_irr = static_call(kvm_x86_sync_pir_to_irr)(apic->vcpu);
+ 	else
+ 		highest_irr = apic_find_highest_irr(apic);
+ 	if (highest_irr == -1 || (highest_irr & 0xF0) <= ppr)
+ 		return -1;
++
+ 	return highest_irr;
+ }
+ 
+@@ -932,6 +934,7 @@ static bool kvm_apic_is_broadcast_dest(struct kvm *kvm, struct kvm_lapic **src,
+ 			return true;
+ 	} else {
+ 		bool x2apic_ipi = src && *src && apic_x2apic_mode(*src);
++
+ 		if (irq->dest_id == (x2apic_ipi ?
+ 		                     X2APIC_BROADCAST : APIC_BROADCAST))
+ 			return true;
+-- 
+2.27.0
 
-But why would that matter?  cpu_possible_map is set up from
-setup_arch(), which is called before that.
