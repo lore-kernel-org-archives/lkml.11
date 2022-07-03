@@ -2,65 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F3B0CCA473
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 225ADCCA473
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbiGCD5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 23:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
+        id S231218AbiGCD5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 23:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiGCD5B (ORCPT
+        with ESMTP id S230467AbiGCD5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:57:01 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA24BB1E4
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:56:58 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id 73-20020a9d084f000000b00616b04c7656so5095790oty.3
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:56:58 -0700 (PDT)
+        Sat, 2 Jul 2022 23:57:03 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73A1B1DE
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:01 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id s188so8707090oib.6
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dc9vz6N7DKkZ82VTpYZZOu4EwmmX1IVNuq7aVvtCYLg=;
-        b=zeYDcxMXG3Bfc271hs/yW15xnm8oYQfvzRsUdXI5TYj4vcCfgVJ1Vd1MJ1KKEcv9/8
-         DfWE8j1e94BUq7mhLocGdLOjq+XO6qVMBgYN7NqzY9EPCJ2spjyhRsj4YCrJ85PxLv0G
-         hte7WfuK8DEsWkmw386OrAYRS8P9HDS08aOCJO26GoNBU1BDqxK9VIX8ALHUcDwSJtiS
-         YKkq+gLip8YUg3M4Tbv8lpoV5wSwXBGULIAfwdiv/1391ikt9LUOi2LnOGlCAAh8/SwX
-         7TGRqvPIP9Ny3ExzilHv6/zY94xH9QcJ4UXTkM7/T3pfo4HzrbPjUG5ARZoXSH3TZvMZ
-         +EJg==
+        bh=2q5yDngeaVXtBRHY8oUTYo4VOMxZ5qwHipj+5IYs+kI=;
+        b=ayEA/gzsU5xbA6BMZjqmbEUJw8Dn3G7BfxyOz1rNzHA7lAVEKIo+EO4T1dpqFwKBKn
+         mrx98Oil+BVXN8LvovgHwRSMn2pp1suxHWykdH01DkJ9+cIqeC27hRyPZHYATbwif/1K
+         51nxEZ8J6N26OhcXhxaJNDYNQmqumHMQt4tO7B3hc+CZp5t2jkgzgsDPLcTLTxUS1XLE
+         mlOGFEyELA2rRnGaE9x5WJPAmthJcrak1a8OyB9/c5NXqK+OBa4e/rIQN78HgJ6L9n+0
+         Pnsy/aV8v859ZJoCHuPS5pv5Rn7TmB1BYmj5pkU6m9+RZPH6yVQV2R5nSFmtDfksjr6Z
+         Lm8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dc9vz6N7DKkZ82VTpYZZOu4EwmmX1IVNuq7aVvtCYLg=;
-        b=Ko0fIHVLDzY/bi++ixwXVzDnjUJxj6zzD/yYLz6xOnX/x1OgkzMguq9dXZJC6Wqp+T
-         7qIRdh/IEKqbZDMvbiFj1aJkJJjjgyniV3TNfERLprI0/dmdR8q9MLJzEdhkXktz81bU
-         GthvO4LnyjoeaSLuXU3pGz1220FWoP5BNOZ/u2Wr0ERS7b96mqEE0Z6KDsvVuXCwtJ/K
-         1qSfbamV0uRHoir/OvH433ZOsrFcmzJrrP7gcApha5VuzR3OekN1Ljh2D9xQWkr9hqWs
-         W7j9UFavlAEjbs/GMJuYHqOG4rS1phkHlmBu64mAetmgjyRIIaX8sDhlQbZedYgURk2Y
-         Glpw==
-X-Gm-Message-State: AJIora+32K2J+dQrBeBP6JEqBhs922joBtqU5yvJbd/bCBtrKRwbByuh
-        OQSPXtqmRRCMgq/cNxrHg27EZA==
-X-Google-Smtp-Source: AGRyM1sjOW8+NcP1/yVgLxMiRkSjc3NeZ5dMm0JT1zZBUJC7qJ3DQ4yXTHeopv4w72le8rSgf0vFYA==
-X-Received: by 2002:a05:6830:3142:b0:617:131c:d671 with SMTP id c2-20020a056830314200b00617131cd671mr8612962ots.368.1656820617958;
-        Sat, 02 Jul 2022 20:56:57 -0700 (PDT)
+        bh=2q5yDngeaVXtBRHY8oUTYo4VOMxZ5qwHipj+5IYs+kI=;
+        b=x+bxpLC8vBxFF6A/XHe8d292wLHutGvbbn910AV+iRc7nsdM6Sm15Srqlyx2I4pDcz
+         ySLYCdpWZovCi2XTCvuU6pA3WtA+fk8ee57n9YrdyLdJqwsghlQlvaP+DQsv93ScFbVr
+         l2f0uUMXtr6nJLIuwwym5+bazQgLA2VxaIAmpEjIxVj5n6rwKPJOD1tfSacUF8zvO+bI
+         c71yq1C47ISWYYld1070Xmr/vB6xA+2fvT253RlvcdZWhb56hTvb5ZHPZMcxrrI/UCf2
+         8UrQvQdrP/gXYSyly8ITlqy32ODetuZnrrLl3Vc6HcX/Y8HZt7XCODGzBNdgF7cxb5Kc
+         tnng==
+X-Gm-Message-State: AJIora8CMji6cgHSI9jbptIoDq8RFop73/jSpdpugPT1teAbDJV9Uza2
+        55bZNuhC8sS38h0XpBnch3YP4nlgUSwYCg==
+X-Google-Smtp-Source: AGRyM1tlEHGR7z1guqXflw/ly96NNulGTaxySN2cM/F/SHfKo7+0zUn6XzIZnBFt/impytRHRkzd3A==
+X-Received: by 2002:a54:4e05:0:b0:32e:68e5:8606 with SMTP id a5-20020a544e05000000b0032e68e58606mr13354821oiy.102.1656820621059;
+        Sat, 02 Jul 2022 20:57:01 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.56.56
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:56:57 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:00 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     krzysztof.kozlowski+dt@linaro.org, agross@kernel.org,
-        robh+dt@kernel.org, Alec Su <ae40515@yahoo.com.tw>,
-        sboyd@codeaurora.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        y.oudjana@protonmail.com, phone-devel@vger.kernel.org,
-        devicetree@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH v4 0/2] Add support for Xiaomi Mi 5s Plus
-Date:   Sat,  2 Jul 2022 22:55:54 -0500
-Message-Id: <165682055970.445910.14607173848356967245.b4-ty@linaro.org>
+To:     linux-arm-msm@vger.kernel.org,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     robh@kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH v2 0/6] arm64: dts: qcom: Fix 'sdhci' nodes for 'make dtbs_check'
+Date:   Sat,  2 Jul 2022 22:55:57 -0500
+Message-Id: <165682055969.445910.12459477570300688258.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220606024706.22861-1-ae40515@yahoo.com.tw>
-References: <20220606024706.22861-1-ae40515.ref@yahoo.com.tw> <20220606024706.22861-1-ae40515@yahoo.com.tw>
+In-Reply-To: <20220514215424.1007718-1-bhupesh.sharma@linaro.org>
+References: <20220514215424.1007718-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,23 +66,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 02:47:04 +0000, Alec Su wrote:
-> This series adds the device tree for Xiaomi Mi 5s Plus (xiaomi-natrium)
-> smartphone which is based on Snapdragon 821 SoC.
-> 
-> Changes since v3:
-> - Remove the unnecessary properties in the device tree.
-> - Correct the supplies in "dsi0" node
-> - Add delay properties in "touchscreen" node
+On Sun, 15 May 2022 03:24:18 +0530, Bhupesh Sharma wrote:
+> Changes since v1:
+> ----------------
+> - v1 can be seen here: https://lore.kernel.org/linux-arm-msm/20220429214420.854335-1-bhupesh.sharma@linaro.org/
+> - Fixed Bjorn's comments received on v1.
+> - Added 3 more dts fix-up patches [PATCH 1/6], [PATCH 5/6]
+>   and [PATCH 6/6] in v2.
 > 
 > [...]
 
 Applied, thanks!
 
-[1/2] dt-bindings: arm: qcom: Document xiaomi,natrium board
-      commit: bb856fdf07f666686439b2c186fbb80a41e93277
-[2/2] arm64: dts: qcom: msm8996-xiaomi-natrium: Add support for Xiaomi Mi 5s Plus
-      commit: 13e75fe786a16c35bccc5e9d8890224fd38ad733
+[1/6] arm64: dts: qcom: Fix sdhci node names - use 'mmc@'
+      commit: 2477d81901a23ad80045798edbeb7f91b5ff6143
+[2/6] arm64: dts: qcom: sdm630: Fix 'interconnect-names' for sdhci nodes
+      commit: 40940823cb582acc13f5fda5688a5287893b3281
+[3/6] arm64: dts: qcom: Fix node names for sdhci 'opp-table' nodes (across dts files)
+      (no commit info)
+[4/6] arm64: dts: qcom: Fix ordering of 'clocks' & 'clock-names' for sdhci nodes
+      commit: 4ff12270dbbe245cf92c0247bcc1a2bfbc03639c
+[5/6] arm64: dts: qcom: Fix 'reg-names' for sdhci nodes
+      commit: afcbe252e9c19161e4d4c95f33faaf592f1de086
 
 Best regards,
 -- 
