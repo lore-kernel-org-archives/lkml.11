@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B31C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB33C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 03:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232404AbiGCD6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 2 Jul 2022 23:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S231439AbiGCD6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 2 Jul 2022 23:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbiGCD53 (ORCPT
+        with ESMTP id S232199AbiGCD5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:57:29 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0649B7E8
-        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:21 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-1048b8a38bbso8773514fac.12
-        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:21 -0700 (PDT)
+        Sat, 2 Jul 2022 23:57:50 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5E1B865
+        for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:25 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-10be0d7476aso1955574fac.2
+        for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=4gJephEWpQo2YAYUe5ZemM5pyNL41Styy55VtkH8kZQ=;
-        b=uKPUcNC2VjWhkAbFI/l7B5zRX2aW/+RtRrEezv3FRnK8jN2/x+Kkmh3HakX4UUJ6hq
-         1H8x3dPuLxM229iYHaG7lsD3yBjgiZ5wnD9QDtn5zOD9pFXzGI5Gek3AGcIPNelDy3N5
-         GT3V3Z7mrYgHhIgNvwaHnexCrEkZNZ2sV56SfxgZ2h5yiHoTP8oGk1V8qVxQMbirNfDQ
-         U2ysTJNRIYwnBB9ZgJIY0bqE8SYrhLY/yhujZXtPu0CIAspBk1S9+Hhrr5PmICrEro2m
-         hF/UxsEfLerczVoNbj7lsIKL31yAyt8nzt9O4EpGmo/YA56wOjjv5xH2XKaWUM+mOVc4
-         hJjQ==
+        bh=xRhocNAhDvGNwbuuItnMrHDN2U1jOPRZlUplDvj9+fU=;
+        b=B0FoFz3STbRhR+wfQKhQb8u6UNKQJDH2biXHjVyUR/rRXMJ5I4iNhaX6kA6vZu3T5u
+         K1dQeJaTrdP7RB8ND4hzSw2gYvwC38RSeYCFywKeAI1G57dC9OsQZ41Hj+85ngxgu0Qp
+         bKB92vtCe5+PANT8coIZnFQPSaoYIFyDYe5uO2LutofJ3TXE8HzSZ6ODQ4EisIWQDN2+
+         Z9pJkdkahu4XjCIGlQTeE2GSpZeg6y0Xt3FWRQydpFNOzY3pzpVOjtFe05vs269L5lyn
+         qT8Hr7BBBjg8XE834ETA3O18cUhYAugFAzKW+DfSxRRoI+YmMtjzpJ10GsEdts74S4+Y
+         d7PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4gJephEWpQo2YAYUe5ZemM5pyNL41Styy55VtkH8kZQ=;
-        b=SjVexbP9jfp/LKZcO1uRsbWF6yuI639fXmPPcxVvx/B9FXN9LpwPiAjTXWRhq+eSPo
-         NXgnng0P1rR0hbQbjmWdtlQ6yV0jFjS+gYIUGnjo3YPqUAWcLHBW2Kbrbo7ELxdMj1gf
-         1obMtoGGAjftWGcKa/xhhzZ7lgYBsr3UkIw35fegSew+h0EyYALh74Mc9WoobP/n58uy
-         tjskdUfjEtfYD1i2BlwuDuFCRcvBChAhEm/xQ/8rC0Nm3e05NF1gzIWkug3St/h6kx3q
-         U3YC8a4UccZJckaTdu+KKXmWVUMBPTRCPnNsNRzp4SAV2zGtwC9Tl9vmfgSPFjHdqJM8
-         dbVw==
-X-Gm-Message-State: AJIora9Qlf1lGhhKfGDC9e61+J2YRO7pOVxXYaJ6xN3kFqzVOVA8UnIV
-        JK58b+VTUpBeve2ubhp8u/1IMQ==
-X-Google-Smtp-Source: AGRyM1vw+rNI39bqyDfMI9VZmZqU3zf78r2zUwCJdmgIsk75UphAWfvQK/hrtIP4vglf1yXTy+vISw==
-X-Received: by 2002:a05:6870:c698:b0:101:fbdc:d044 with SMTP id cv24-20020a056870c69800b00101fbdcd044mr13724429oab.269.1656820641093;
-        Sat, 02 Jul 2022 20:57:21 -0700 (PDT)
+        bh=xRhocNAhDvGNwbuuItnMrHDN2U1jOPRZlUplDvj9+fU=;
+        b=Vmw6e0awbhNJy9omng0zlnFyt4Uwtw2wrOyiymFz4z5MNUgTaaMUHY2SkbqyjF5X3M
+         ZsnuF2f3MJIwBvddoJZVYNQ7VEZ6iW8fd3hEgs//ezUYv+Gb41TvWvIlKBCW015FmxrN
+         BUvR0i1wzkdaPBdN5OUJPhQhro0VafR/JHTbiq7rCFrGlDv6QA+6RZuPs8DrLNDtSnVA
+         6L58Tj84Z9HZMKfXZJbAjDlUHTipKMvaLFRCg8YFWVAEn52x3wnjSZ2b8MBb4B8PGiT1
+         lK0KG111OHBxKnu4R55dXuF3dk9IbD/SnZvJO1Ehjt3XVWmjgIQrBY9CBV2Af/cdth4v
+         fwcg==
+X-Gm-Message-State: AJIora+h5Sx7LxqYT5wZdzoMuHQZ3s3WS2DXZ7AQ5dm39jAv+Eqgp1A2
+        bpdmFEfbv0F4TZyWsb8gQEy9XA==
+X-Google-Smtp-Source: AGRyM1tzVHnXpUJwG3aHQGPDqY5g2l++X28JpJtExJQqRsISoTpveNiU5IL99YxtxfDYg2m/kjPLJA==
+X-Received: by 2002:a05:6870:d6a3:b0:10b:df7d:8243 with SMTP id z35-20020a056870d6a300b0010bdf7d8243mr2077326oap.68.1656820644160;
+        Sat, 02 Jul 2022 20:57:24 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.20
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:20 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:23 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Brian Masney <masneyb@onstation.org>,
+To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: (subset) [PATCH 01/14] dt-bindings: sram: qcom,ocmem: cleanup example coding style
-Date:   Sat,  2 Jul 2022 22:56:17 -0500
-Message-Id: <165682055971.445910.7675838409702902328.b4-ty@linaro.org>
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        Olof Johansson <olof@lixom.net>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        soc@kernel.org, Arnd Bergmann <arnd@arndb.de>, arm@kernel.org
+Subject: Re: (subset) [PATCH 1/2] arm64: dts: qcom: adjust whitespace around '='
+Date:   Sat,  2 Jul 2022 22:56:20 -0500
+Message-Id: <165682055968.445910.11189872964487810084.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
-References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220526204248.832139-1-krzysztof.kozlowski@linaro.org>
+References: <20220526204248.832139-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,28 +69,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 19:18:35 +0200, Krzysztof Kozlowski wrote:
-> Fix the indentation in the OCMEM example and use generic node name -
-> sram - to reflect the type of the device.
+On Thu, 26 May 2022 22:42:47 +0200, Krzysztof Kozlowski wrote:
+> Fix whitespace coding style: use single space instead of tabs or
+> multiple spaces around '=' sign in property assignment.  No functional
+> changes (same DTB).
 > 
 > 
 
 Applied, thanks!
 
-[08/14] arm64: dts: qcom: use generic sram as name for imem and ocmem nodes
-        commit: bed0855657afebbcdd9d8a29546c550848452cf1
-[09/14] arm64: dts: qcom: qcs404: add dedicated IMEM and syscon compatibles
-        commit: b2b86a2d89c26de048e44d3be439d9b2b1cb7ce5
-[10/14] arm64: dts: qcom: sc7180: add dedicated IMEM and syscon compatibles
-        commit: c220f33e03a0cc4136ef205513b2266faf025e2e
-[11/14] arm64: dts: qcom: sc7280: add simple-mfd to IMEM
-        commit: 2ffe4f99cbdd0639fc9a1254d39abd7b9dbe075e
-[12/14] arm64: dts: qcom: sdm630: add dedicated IMEM and syscon compatibles
-        commit: 616ab047bec7c47d881751bc537d3d6f6ae0c6d0
-[13/14] arm64: dts: qcom: sdm845: add dedicated IMEM and syscon compatibles
-        commit: 7cc60f6c09f49f0d8f8fa3083e7ff4fddec39ec0
-[14/14] arm64: dts: qcom: msm8994: add required ranges to OCMEM
-        commit: 07f3c7a11dadbead580b6d6e7d86bcc87119fe74
+[1/2] arm64: dts: qcom: adjust whitespace around '='
+      commit: 372cf591acbca3bd9a729742ea4c81d7f99f1b6e
 
 Best regards,
 -- 
