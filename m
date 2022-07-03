@@ -2,65 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A226EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A683C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 04:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230464AbiGCEBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 00:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S232732AbiGCEBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 00:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232684AbiGCD7X (ORCPT
+        with ESMTP id S232345AbiGCD7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 2 Jul 2022 23:59:23 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61726DE99
+        Sat, 2 Jul 2022 23:59:24 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2100DEA9
         for <linux-kernel@vger.kernel.org>; Sat,  2 Jul 2022 20:57:53 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id y185-20020a4a45c2000000b0041c1e737283so128246ooa.12
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-f2a4c51c45so8816198fac.9
         for <linux-kernel@vger.kernel.org>; Sat, 02 Jul 2022 20:57:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Nt2X+uNdLrpqdwW0aiTYtzYyC6r+nlmftQUdxFVU4Xo=;
-        b=BPMHef0X/UE+4gfLJA/7h77BuJDDzVheYqkpw++CWW1epTNRvaYvKEFhd47ROXcSsG
-         FxLj4ooKK5PwIH27TXSsHnONma/iG6enxCHozjekdUvETqDuLexD8kDRSHH70cQQifWq
-         SKga7najfdqZe9ox6b8qxJwrFeQH5adIMWau/iORHltnLhQt7C2uY+OBYNQrGIc7TKqL
-         iyfiMJ3kN4GgikvTXDcCjP0dtVloWvajjiLncFDaM+Veb7tXmMQtmj2IWwBmzmo0vcoU
-         Sc8jsv/EvLZT5Zab3DdKIfVJd+RwuJF4fLB+BNmEvI1tIANuQdyX1I/T3gE5yqRelPrL
-         Ezug==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=XGk9o4CaXeM4Zv7BheJ8u3eN+WYQ2lqAWMR1Z/PKwAA=;
+        b=gXLHw9uMhRGcQ7aXH3TBh+cGXibwTVy1Qlj1rJqwXGyGiV01NN8To5NBDEKsaFoNX/
+         Tl9DrqWujBNcq96A70uq7QIwP8ts/47IMcdKG139VImOcQCqZutjsXLdF2Kz0AMIwxd8
+         tFNTjL+afR8eypFCWs8ASX0WBxCp/DN/7tyBKzYboWJyzpBoLXID32YQn2QxIovuAzEw
+         YjHHSmoc9i5yRRkOs5uxgaQjD3a6tPR0ekbcfQ0gxc7N/3hAubOCut15BVYmkuqBu8YR
+         GlpvTZGEFkIzddxuEER8ZU0NVI1Bvvri0RYISyYsBsoCKN7hzld3bVqZCETt34cE6wj+
+         cxNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Nt2X+uNdLrpqdwW0aiTYtzYyC6r+nlmftQUdxFVU4Xo=;
-        b=2t33ajI4ZVM2HeQs1rmm/vJtN6TQGrKWAQoSAXYDviDygRD7gYCvH2Nm/J6uxC05Yy
-         tYL8X+wZpxr+oE1/ncLIsl/MYVbaDtVt2WFWQ1itz33G1XBLNhhBevkDS01vm8fikj2p
-         R15vgvW6k2WnbQgdFp0V39FVT8zIa+Hs2dgs7vKC5XjaSBXaRN6ilWSJZonx4PO1QGdE
-         RDHfoA+ecq8QMX07K1luGbWLtUoEfeSp8AuozH5Q4OwEVyEACXBWvnKVbIiQbYZm08qb
-         nSDIJ3t3/b+itDxktYt5ufWiYQdCizap9LwLFxRx8XOXj2dqURLGMf6gmuhcXr1wudjb
-         k1tQ==
-X-Gm-Message-State: AJIora+Jbk5SOvagiQ7qkxBE8mNRD3CIuEnBBaAuo8FmAzhuaLIjHyP9
-        DBSF4pvSanYOrqR6TTlvmj4AAA==
-X-Google-Smtp-Source: AGRyM1vE0ezP6iYXpSJ8kJRFJ+KDpplJyvj1NhwUowXIodyfRExwifaK97ELp5c/+kfnP67lB6y+Ew==
-X-Received: by 2002:a4a:3813:0:b0:425:8005:1289 with SMTP id c19-20020a4a3813000000b0042580051289mr9430592ooa.63.1656820671202;
-        Sat, 02 Jul 2022 20:57:51 -0700 (PDT)
+        bh=XGk9o4CaXeM4Zv7BheJ8u3eN+WYQ2lqAWMR1Z/PKwAA=;
+        b=dPfC03LvJvSGkP9t6DUiddJ+vb9daDfBQbL940arTJpmWXZHD2vOYIIpZzSS0r43pB
+         6xQbwYOW6ewYL+yOQZyTtAj0ZSsFQSTMWFn+K8KveluJBh6+Kk/KegxB9RTPtJSkJa1q
+         qffhW6IGw1PIrrPROau5Hpm6r0Xrw7KWeCsdhPNke1j+BnkZ32YDgIANsOmhL0DxBWwN
+         D08632QQuvhkEhZJ8IH0cruJ0VR+QdsyF7XH4lCwogMTVlfda71X9L30z7Ne04Z9y809
+         RcTljbwM7FXifz9mMmBVYGFMaN9fnJ6p5rkEe/cKHeF+ZxBqXcF6Wg91gDQVD0QNPOlh
+         tQ+g==
+X-Gm-Message-State: AJIora8t6PSuMuuJvrmNFpIBy2Pj3EB07C6ThwWNzGN4uTw+Ubxe+d9E
+        IQlFpXS+TjKMvv4axJZk9BuZ2Q==
+X-Google-Smtp-Source: AGRyM1u0JDtrb0WAItJ1s9OvdyIBoer8rLutGxJphR3t1C/NNku3OlMmvU4zwIX/N/V4AckOhu7bDQ==
+X-Received: by 2002:a05:6870:bf15:b0:108:ba9e:1b79 with SMTP id qh21-20020a056870bf1500b00108ba9e1b79mr14879564oab.233.1656820673224;
+        Sat, 02 Jul 2022 20:57:53 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.50
+        by smtp.gmail.com with ESMTPSA id 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:57:50 -0700 (PDT)
+        Sat, 02 Jul 2022 20:57:52 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     robh+dt@kernel.org, Sibi Sankar <quic_sibis@quicinc.com>,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        swboyd@chromium.org, ohad@wizery.com, mathieu.poirier@linaro.org,
-        mka@chromium.org, agross@kernel.org
-Subject: Re: (subset) [PATCH v4 1/3] arm64: dts: qcom: sc7280: Add proxy interconnect requirements for modem
-Date:   Sat,  2 Jul 2022 22:56:44 -0500
-Message-Id: <165682055969.445910.10978173770600627077.b4-ty@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        agross@kernel.org, robh+dt@kernel.org,
+        Robert Marko <robimarko@gmail.com>
+Subject: Re: (subset) [PATCH] arm64: dts: ipq8074: fix NAND node name
+Date:   Sat,  2 Jul 2022 22:56:46 -0500
+Message-Id: <165682055972.445910.7185503165217301075.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1652978825-5304-2-git-send-email-quic_sibis@quicinc.com>
-References: <1652978825-5304-1-git-send-email-quic_sibis@quicinc.com> <1652978825-5304-2-git-send-email-quic_sibis@quicinc.com>
+In-Reply-To: <20220621120642.518575-1-robimarko@gmail.com>
+References: <20220621120642.518575-1-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,16 +66,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 22:17:03 +0530, Sibi Sankar wrote:
-> Add interconnects that are required to be proxy voted upon during modem
-> bootup on SC7280 SoCs.
+On Tue, 21 Jun 2022 14:06:42 +0200, Robert Marko wrote:
+> Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
+> Fix it to match nand-controller.yaml requirements.
 > 
 > 
 
 Applied, thanks!
 
-[1/3] arm64: dts: qcom: sc7280: Add proxy interconnect requirements for modem
-      commit: a0cdc83fa89b3a53cf03ecd338832392be0dd4b3
+[1/1] arm64: dts: ipq8074: fix NAND node name
+      commit: b39961659ffc3c3a9e3d0d43b0476547b5f35d49
 
 Best regards,
 -- 
