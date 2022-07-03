@@ -2,121 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 730B3CCA473
-	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 14:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBDFCCA473
+	for <linux-kernel@archiver.kernel.org>; Sun,  3 Jul 2022 14:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232514AbiGCOAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 10:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
+        id S231849AbiGCOGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 10:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiGCOAm (ORCPT
+        with ESMTP id S232366AbiGCOGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 10:00:42 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8727E2185;
-        Sun,  3 Jul 2022 07:00:41 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id g4so12404635ybg.9;
-        Sun, 03 Jul 2022 07:00:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q4UT8rsZ3usHBxENgRzFNvJGhv2Wm97iAnFiDWdFYFk=;
-        b=XuWQQMavd1Eellhv+zHIDsVkPTuGUHLJvk6NPD+V3c13Sz1jqo/Dopgz5DR6IEcTZx
-         38eHA214J8RjRDSUVZTYRb+cgjlrK1O+T7Z1bgOIJP+UkbuGrL3tVp5hQUwJCfpcg1Kl
-         yhNUZeZ79/dQymmE7+8R4vPsgkMc7ew+5IxlpKWWvQsO/4+Xpm58GarS9D+9Euoy/N/V
-         Q7dkJEBU+s9NKsSJMLUQzKr0G/3ZJBjPnjciCTZ//iWvlpOfnL7Ma1NIhVByX+YLtllz
-         lxabVKkRhViOrKv1b/+HMET8wGt03/SoAHHut/EaP1uIAQ8pIUEln2Vbs0zjlHp6mseW
-         FnpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q4UT8rsZ3usHBxENgRzFNvJGhv2Wm97iAnFiDWdFYFk=;
-        b=J3F5BtBX1vFOXi4HGnylGXkCphtVAQ4T7QNcEugFrq6zJMuGq7BpCZKCK8XGoF9J0Q
-         g94qF1iyPByuJGxYPwqXhoPovr1Xr3JY3RA7hjmh9lG+LDD6hQTJOFgio+dQjBeDqrZB
-         naH8WsR/xxrJ/Ew2NXFoq+KrQrI9SJhf0/mF2DVS6JxyhZC48YqDcS6IckxTYcYuzh+v
-         YkeHPn9VNTOfhzU8N/U/ETsl6BqP6cCWdCv+NqAavFUJpiz/rCPz75WI1UuKBQPkuuLt
-         rh0xjbth9sW2RdChR0wHgIYsxRl3L+d9YCfQKbVxNBF8iebgzTzHsU1lKsF3n85679ry
-         mBRw==
-X-Gm-Message-State: AJIora9be7ca5tPbnHB15amVKESSuodFnRF/dhnMATu5qE2fFBNPsZG5
-        rmLuFzrOq4hGKBU/+xCf3tb8BkKV3fbKEKXlqIU=
-X-Google-Smtp-Source: AGRyM1vKt057dpiKMcFPH9HSDZJE+XEG1+tqdb5e+RqDVK7l7u+jZ0x1TjwdgmRNYqFQnj3TMcuPxQw+tk/eYJi3rA0=
-X-Received: by 2002:a05:6902:c4:b0:64b:4677:331b with SMTP id
- i4-20020a05690200c400b0064b4677331bmr25846878ybs.93.1656856839975; Sun, 03
- Jul 2022 07:00:39 -0700 (PDT)
+        Sun, 3 Jul 2022 10:06:49 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2989E6144
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 07:06:32 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VIBhorZ_1656857188;
+Received: from 30.0.187.160(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VIBhorZ_1656857188)
+          by smtp.aliyun-inc.com;
+          Sun, 03 Jul 2022 22:06:28 +0800
+Message-ID: <17df0d3c-caaf-ee34-f702-1d4e7674887f@linux.alibaba.com>
+Date:   Sun, 3 Jul 2022 22:06:32 +0800
 MIME-Version: 1.0
-References: <20220613120534.36991-15-andrea.merello@iit.it>
- <202207031509.DlBrHyaw-lkp@intel.com> <YsGVa8KFmdvGY92e@debian.me>
-In-Reply-To: <YsGVa8KFmdvGY92e@debian.me>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 Jul 2022 16:00:03 +0200
-Message-ID: <CAHp75VfDYRZMiz4j9KN5+ZJnudT0jfh-o_f7HBk5yc+FHqvXZg@mail.gmail.com>
-Subject: Re: [v6 14/14] docs: iio: add documentation for BNO055 driver
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Andrea Merello <andrea.merello@iit.it>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>, kbuild-all@lists.01.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v3 2/3] mm: Add PUD level pagetable account
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Mike Rapoport <rppt@linux.ibm.com>, akpm@linux-foundation.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <cover.1656586863.git.baolin.wang@linux.alibaba.com>
+ <6a6a768634b9ce8537154264e35e6a66a79b6ca8.1656586863.git.baolin.wang@linux.alibaba.com>
+ <Yr2wlqQkpsffTvd/@linux.ibm.com>
+ <1234a28a-dca0-5836-9066-4ab2d4fbcc95@linux.alibaba.com>
+ <YsEPwvgUd0sIjso/@casper.infradead.org>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YsEPwvgUd0sIjso/@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 3, 2022 at 3:11 PM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
-> On Sun, Jul 03, 2022 at 03:58:15PM +0800, kernel test robot wrote:
 
-Please, submit it properly.
-You may add my Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-(I deliberately put it on a wrong line so no tools will catch it up
-with improper commit message)
+On 7/3/2022 11:40 AM, Matthew Wilcox wrote:
+> On Fri, Jul 01, 2022 at 04:04:21PM +0800, Baolin Wang wrote:
+>>> Using pgtable_pud_page_ctor() and pgtable_pud_page_dtor() would be
+>>> consistent with what we currently have for PTEs and PMDs.
+>>>
+>>> This applies to all the additions of pgtable_page_dec() and
+>>> pgtable_page_inc().
+>>
+>> OK. I can add pgtable_pud_page_ctor() and pgtable_pud_page_dtor() helpers to
+>> keep consistent, which are just wrappers of pgtable_page_inc() and
+>> pgtable_page_dec().
+> 
+> I think you misunderstand Mike.
+> 
+> Don't add pgtable_page_inc() and pgtable_page_dec().  Just add
+> pgtable_pud_page_ctor() and pgtable_pud_page_dtor().  At least, that
+> was what I said last time yo uposted these patches.
 
-> From bb8524aa4719e54389065548c86155cbee638357 Mon Sep 17 00:00:00 2001
-> From: Bagas Sanjaya <bagasdotme@gmail.com>
-> Date: Sun, 3 Jul 2022 18:37:44 +0700
-> Subject: [PATCH] fixup for "docs: iio: add documentation for BNO055 driver"
->
-> kernel test robot reported htmldocs warning:
->
-> Documentation/iio/bno055.rst:2: WARNING: Explicit markup ends without a blank line; unexpected unindent.
->
-> Add missing blank between SPDX line and the page title to fix the warning.
->
-> Link: https://lore.kernel.org/lkml/202207031509.DlBrHyaw-lkp@intel.com/
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: lars@metafoo.de
-> Cc: robh+dt@kernel.org
-> Cc: andy.shevchenko@gmail.com
-> Cc: matt.ranostay@konsulko.com
-> Cc: ardeleanalex@gmail.com
-> Cc: jacopo@jmondi.org
-> Cc: Andrea Merello <andrea.merello@iit.it>
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> ---
->  Documentation/iio/bno055.rst | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/iio/bno055.rst b/Documentation/iio/bno055.rst
-> index af21376d7a2533..9a489a79d8f5a8 100644
-> --- a/Documentation/iio/bno055.rst
-> +++ b/Documentation/iio/bno055.rst
-> @@ -1,4 +1,5 @@
->  .. SPDX-License-Identifier: GPL-2.0
-> +
->  ==============================
->  BNO055 driver
->  ==============================
->
+My concern is that I need another helpers for kernel page table 
+allocation helpers, if only adding pgtable_pud_page_ctor() and 
+pgtable_pud_page_dtor() like below:
 
--- 
-With Best Regards,
-Andy Shevchenko
+static inline void pgtable_pud_page_ctor(struct page *page)
+{
+	__SetPageTable(page);
+	inc_lruvec_page_state(page, NR_PAGETABLE);
+}
+
+static inline void pgtable_pud_page_dtor(struct page *page)
+{
+	__ClearPageTable(page);
+	dec_lruvec_page_state(page, NR_PAGETABLE);
+}
+
+So for kernel pte page table allocation, I need another similar helpers 
+like below. However they do the samething with 
+pgtable_pud_page_ctor/pgtable_pud_page_dtor, so I am not sure this is 
+good for adding these duplicate code.
+
+static inline void pgtable_kernel_pte_page_ctor(struct page *page)
+{
+	__SetPageTable(page);
+	inc_lruvec_page_state(page, NR_PAGETABLE);
+}
+
+static inline void pgtable_kernel_pte_page_dtor(struct page *page)
+{
+	__ClearPageTable(page);
+	dec_lruvec_page_state(page, NR_PAGETABLE);
+}
+
+Instead adding a common helpers seems more readable to me, which can 
+also simplify original pgtable_pmd_page_dtor()/pgtable_pmd_page_ctor(). 
+Something like below.
+
+static inline void pgtable_page_inc(struct page *page)
+{
+	__SetPageTable(page);
+	inc_lruvec_page_state(page, NR_PAGETABLE);
+}
+
+static inline void pgtable_page_dec(struct page *page)
+{
+	__ClearPageTable(page);
+	dec_lruvec_page_state(page, NR_PAGETABLE);
+}
+
+static inline void pgtable_pud_page_ctor(struct page *page)
+{
+	pgtable_page_inc(page);
+}
+
+static inline void pgtable_pud_page_dtor(struct page *page)
+{
+	pgtable_page_dec(page);
+}
+
+For kernel pte page table, we can just use 
+pgtable_page_inc/pgtable_page_dec(), or adding 
+pgtable_kernel_pte_page_ctor/pgtable_kernel_pte_page_dtor, which just 
+wrappers of pgtable_page_inc() and pgtable_page_dec().
+
+Matthew and Mike, how do you think? Thanks.
