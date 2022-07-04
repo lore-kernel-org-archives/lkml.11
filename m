@@ -2,113 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6535CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233785AbiGDK6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
+        id S233903AbiGDK7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233601AbiGDK62 (ORCPT
+        with ESMTP id S233634AbiGDK7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:58:28 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FE2B2F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:58:26 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VIKu7Cb_1656932300;
-Received: from 30.225.28.131(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VIKu7Cb_1656932300)
-          by smtp.aliyun-inc.com;
-          Mon, 04 Jul 2022 18:58:21 +0800
-Message-ID: <73f0c53b-fd17-c5e9-3773-1d71e564eb50@linux.alibaba.com>
-Date:   Mon, 4 Jul 2022 18:58:20 +0800
+        Mon, 4 Jul 2022 06:59:01 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C96110D0
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:59:00 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o19-20020a05600c4fd300b003a0489f414cso5409486wmq.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 03:59:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LLYbxrZtIqfELBGb4abToz3pncc8eBo0EcrsRbqn6h4=;
+        b=E/BApPeUVGI9ICTP2Guwsd/BSF96qPqrw1LrbDKXmQPx/xE/ig3iSHH9yjwSQxCQF6
+         TaS750DYCNsRX19zIOvD18HYg3dfm4i5FDtgweNj3a/ksI81HJL45czbU9wn43ICs4EH
+         t7hc0LvBEJebbUgPC09uNlHHUlhWkrIkGu5Fr7IMhV73OjrwyI5AS02uZcMK6fOnWLM4
+         NHz2ZOHg2R117kAr3iK/paeworG0WrP3zxmacu7l7DV/i08n5lFCuBuSDxmf55ZVqdIw
+         8x7wwugGuGfunM0S7iaZR5PT8+W1o8t8cG/VJRyegt4ZjqcqqUdJOANn9lel30jnx3NL
+         yo4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LLYbxrZtIqfELBGb4abToz3pncc8eBo0EcrsRbqn6h4=;
+        b=48GJPh9WEKRRu48wmBgmPYFhX7ZCUFjpuyDJmZxjBGL+0dPXPVNR1LIdHpPwF11gQp
+         jDuW99JCpEHiAZr6AU/wu2nKu/gsE6NovGnQ+X+yYnSYqjjd12BW+5tTWpth5ydiwO9k
+         yXxAMCBK8MFFRRxONU2+OFH2kq0azJZGRvELafcFSTQPwblmi3PdcvRHS7Pi+P0iNVFJ
+         AOjmq5CfE4cJMnjANjH6BavL31dHADg9vTQVMCOjz738z0krvmWvG5alDOVG0hJhS72i
+         iSxJVl3y6g1jZJR76Dcp3TmX8m/Sgf5+QHyyGAH4q1ubZ+fjGu62x2hku228dFpHKLS4
+         mf2w==
+X-Gm-Message-State: AJIora+YyWKPcG7nOmR4BiNHyv6FcoHdIofefeI0dHtPEtnJzGlHIJGk
+        h8AWGwX36aRP0Xgw6K/m3LhSaQ==
+X-Google-Smtp-Source: AGRyM1sVgWrqJrM6Wz6XZqjJEMcIpjkNMYwcvTKHCtG3UbEwjJ7tiIlfsNRw9XaVGLgoWIX0Xt0YsA==
+X-Received: by 2002:a05:600c:203:b0:3a1:9726:ad85 with SMTP id 3-20020a05600c020300b003a19726ad85mr11247742wmi.180.1656932338677;
+        Mon, 04 Jul 2022 03:58:58 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id x2-20020adfdd82000000b0021d62e30a62sm5901474wrl.50.2022.07.04.03.58.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 03:58:58 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 11:58:56 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Fix spelling mistakes in documentation yaml
+ files "is is" -> "is"
+Message-ID: <YsLH8EOwVG+oqFGS@google.com>
+References: <20220704105307.552247-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
- degradation
-To:     Will Deacon <will@kernel.org>
-Cc:     baolin.wang@linux.alibaba.com, catalin.marinas@arm.com,
-        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
-        james.morse@arm.com, quic_qiancai@quicinc.com,
-        christophe.leroy@csgroup.eu, jonathan@marek.ca,
-        mark.rutland@arm.com, thunder.leizhen@huawei.com,
-        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, rppt@kernel.org,
-        geert+renesas@glider.be, ardb@kernel.org, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-References: <1656777473-73887-1-git-send-email-guanghuifeng@linux.alibaba.com>
- <20220704103523.GC31437@willie-the-truck>
-From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <20220704103523.GC31437@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220704105307.552247-1-colin.i.king@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 04 Jul 2022, Colin Ian King wrote:
 
-
-在 2022/7/4 18:35, Will Deacon 写道:
-> On Sat, Jul 02, 2022 at 11:57:53PM +0800, Guanghui Feng wrote:
->> The arm64 can build 2M/1G block/sectiion mapping. When using DMA/DMA32 zone
->> (enable crashkernel, disable rodata full, disable kfence), the mem_map will
->> use non block/section mapping(for crashkernel requires to shrink the region
->> in page granularity). But it will degrade performance when doing larging
->> continuous mem access in kernel(memcpy/memmove, etc).
+> There are several occurrances of duplicated words "is" on the documentation
+> yaml files. Fix these.
 > 
-> Hmm. It seems a bit silly to me that we take special care to unmap the
-> crashkernel from the linear map even when can_set_direct_map() is false, as
-> we won't be protecting the main kernel at all!
-> 
-> Why don't we just leave the crashkernel mapped if !can_set_direct_map()
-> and then this problem just goes away?
-> 
-> Will
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml   | 2 +-
 
-This question had been asked lask week.
+>  Documentation/devicetree/bindings/mfd/ti,lp87524-q1.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/ti,lp87561-q1.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/ti,lp87565-q1.yaml       | 2 +-
 
+Can you separate these out please Colin.
 
-1.Quoted messages from arch/arm64/mm/init.c
-
-"Memory reservation for crash kernel either done early or deferred
-depending on DMA memory zones configs (ZONE_DMA) --
-
-In absence of ZONE_DMA configs arm64_dma_phys_limit initialized
-here instead of max_zone_phys().  This lets early reservation of
-crash kernel memory which has a dependency on arm64_dma_phys_limit.
-Reserving memory early for crash kernel allows linear creation of block
-mappings (greater than page-granularity) for all the memory bank rangs.
-In this scheme a comparatively quicker boot is observed.
-
-If ZONE_DMA configs are defined, crash kernel memory reservation
-is delayed until DMA zone memory range size initialization performed in
-zone_sizes_init().  The defer is necessary to steer clear of DMA zone
-memory range to avoid overlap allocation.
-
-[[[
-So crash kernel memory boundaries are not known when mapping all bank 
-memory ranges, which otherwise means not possible to exclude crash 
-kernel range from creating block mappings so page-granularity mappings 
-are created for the entire memory range.
-]]]"
-
-Namely, the init order: memblock init--->linear mem mapping(4k mapping 
-for crashkernel, requirinig page-granularity changing))--->zone dma 
-limit--->reserve crashkernel.
-So when enable ZONE DMA and using crashkernel, the mem mapping using 4k 
-mapping.
-
-
-2.As mentioned above, when linear mem use 4k mapping simply, there is 
-high dtlb miss(degrade performance).
-This patch use block/section mapping as far as possible with performance 
-improvement.
-
-3.This patch reserve crashkernel as same as the history(ZONE DMA & 
-crashkernel reserving order), and only change the linear mem mapping to 
-block/section mapping.
-Init order: memblock init--->linear mem mapping(block/section mapping 
-for linear mem mapping))--->zone dma limit--->reserve 
-crashkernel--->[[[only]]] rebuild 4k pagesize mapping for crashkernel mem
-
-With this method, there will use block/section mapping as far as possible.
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
