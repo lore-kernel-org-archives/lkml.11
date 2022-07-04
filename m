@@ -2,65 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278EEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE599CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233389AbiGDNF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
+        id S233925AbiGDNG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233370AbiGDNFy (ORCPT
+        with ESMTP id S233370AbiGDNG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:05:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D4264C9;
-        Mon,  4 Jul 2022 06:05:53 -0700 (PDT)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lc5ZX6JgkzhZ4V;
-        Mon,  4 Jul 2022 21:03:00 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 21:05:23 +0800
-From:   Yuan Can <yuancan@huawei.com>
-To:     <linux-gpio@vger.kernel.org>
-CC:     <brgl@bgdev.pl>, <linus.walleij@linaro.org>,
-        <robert.jarzmik@free.fr>, <linux-kernel@vger.kernel.org>,
-        <yuancan@huawei.com>
-Subject: [PATCH -next] gpio: pxa: Add missing clk_disable_unprepare() in pxa_gpio_probe()
-Date:   Mon, 4 Jul 2022 13:03:23 +0000
-Message-ID: <20220704130323.104294-1-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 4 Jul 2022 09:06:26 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E83CE0E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:06:24 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id f39so15724129lfv.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gxXFR2A/Ag3USOyt1g5JtxN+lXj4+CuJbOFExrxBsx8=;
+        b=dsIPAzzAB5BLu4z0znbRAe5gDOdiEONnJgCr6D1Oqfvwah7/SX38NfpqBhg1LpqH8a
+         jNq9dXrItwoWDFSt6Phx2H2aZ/Ex8pTnpColQKqY/JI5jC1C8KjAU6lNlYGg0mx8IZud
+         OYtoLin7Ko3p7cR4iQVLowpFBNWvBKYZX/GldkV7qmld6xBV4CnljhxT9Mx4pvch2qmR
+         ZwkfP1w/Led98cL/v6SvHNgLSeoKS7A3GhenxZuLDkr3Qu2jxNTyFWttkZwv8/WtoeP3
+         futlahImOrCdJnHXqfi8N5gFcRsxOobn41HfDtjiqpRxzEBFf4Ao/zMBx6N+R2ll2jMt
+         epnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gxXFR2A/Ag3USOyt1g5JtxN+lXj4+CuJbOFExrxBsx8=;
+        b=NSYGeNdYre6HXOaIGEpA5C32Ej7TCE1RyaLyxrfJNl0PPR+obXfeGvMn8nFcTDV3Un
+         Rb+EfXlma4eL5vmZ6gay5lg/Zp9yXmzAivdrow8TSpaA++uksIrUw15IpnFl/B+CFYqY
+         9nPp2El+MqgBstiDB4AOY64fdBFEStetQ+W4ZfaYxezSEts1iYwtsmeFvOxsseFXqA4x
+         zhb0C5JtaRf97KgWaFZC/bjbzJxqTUvg7xIeOYjwoxSA3hzBXRzeQQU8m7eOyJyZVAE7
+         QCqlOLUryypF9YN9eZoci/L7DVFdvpmqme/+h18tPQaZoRe6ClAV86agCVwnh1q5siKG
+         izKQ==
+X-Gm-Message-State: AJIora/JGwNpE3qqvfFgzIC2BAX3SoHHLyq1xuqJTxsuOi1EglDjcrPI
+        MbuUg/kXg7AddOY7f+8u70CNUA==
+X-Google-Smtp-Source: AGRyM1upYqVora/1v2oA5cSs0dnUQ5gJMR2y82/3PByF0WNxBwiIrENqdJxD7jlXV2XiRhZi4G8Htw==
+X-Received: by 2002:ac2:4c42:0:b0:482:cb18:25ac with SMTP id o2-20020ac24c42000000b00482cb1825acmr471142lfk.643.1656939983042;
+        Mon, 04 Jul 2022 06:06:23 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id bt30-20020a056512261e00b0047861c163d0sm5115092lfb.37.2022.07.04.06.06.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 06:06:22 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Nobuhiro Iwamatsu <iwamatsu@nigauri.org>,
+        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/2] spi: dt-bindings: cadence: add missing 'required'
+Date:   Mon,  4 Jul 2022 15:06:17 +0200
+Message-Id: <20220704130618.199231-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clk_disable_unprepare() on error path in pxa_gpio_probe().
+During the conversion the bindings lost list of required properties.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yuan Can <yuancan@huawei.com>
+Fixes: aa7968682a2b ("spi: convert Cadence SPI bindings to YAML")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/gpio/gpio-pxa.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/spi/spi-cadence.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/gpio/gpio-pxa.c b/drivers/gpio/gpio-pxa.c
-index c7fbfa3ae43b..08963975dd1b 100644
---- a/drivers/gpio/gpio-pxa.c
-+++ b/drivers/gpio/gpio-pxa.c
-@@ -676,6 +676,7 @@ static int pxa_gpio_probe(struct platform_device *pdev)
- 	/* Initialize GPIO chips */
- 	ret = pxa_init_gpio_chip(pchip, pxa_last_gpio + 1, gpio_reg_base);
- 	if (ret) {
-+		clk_disable_unprepare(clk);
- 		clk_put(clk);
- 		return ret;
- 	}
+diff --git a/Documentation/devicetree/bindings/spi/spi-cadence.yaml b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+index 9787be21318e..82d0ca5c00f3 100644
+--- a/Documentation/devicetree/bindings/spi/spi-cadence.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+@@ -49,6 +49,13 @@ properties:
+     enum: [ 0, 1 ]
+     default: 0
+ 
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
++
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
-2.17.1
+2.34.1
 
