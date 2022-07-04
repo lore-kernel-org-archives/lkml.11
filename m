@@ -2,108 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233574AbiGDJ1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S233598AbiGDJ1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231339AbiGDJ1I (ORCPT
+        with ESMTP id S233652AbiGDJ1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:27:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAF5B874;
-        Mon,  4 Jul 2022 02:27:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09DC6613F9;
-        Mon,  4 Jul 2022 09:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9AECC3411E;
-        Mon,  4 Jul 2022 09:27:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656926826;
-        bh=hH3spFHQdwa+gBgAQj1zYN9yiX7A+GyWbQNkSUNtmqE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tPgH5MviYy9ljQGlgk2YGIiFgQ8NkEu/yXE76JqtS8NDw6dJRXw0NALaVYioW0QRv
-         sO7GRsJSFEvCL37fwZTrUV1KRtLzjUd1qcAjSbNHezIvUyPFhpNOdR7R65xhA1Bzna
-         xdh4ctJKv6zSFXk1dw18xyL9kStkntDYzzEnIPp/Gw4DO5bMUPhipv3D099StIfaYg
-         op2O9GNXgwghxWt0W6k1nPUVzGeYaifFqQdn7NcCRy5D7iijvfoOasn133QL4+KyD7
-         qdeWKZuMu8Hl5DMVRekLenYO0rMF8Cmq8lY0fT/jDIcYYM8DJiIfO1RJD7jq2fzpI6
-         aGn3RxHukrnKg==
-Date:   Mon, 4 Jul 2022 10:26:58 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Huacai Chen <chenhuacai@loongson.cn>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>
-Subject: Re: [PATCH V3 3/4] mm/sparse-vmemmap: Generalise
- vmemmap_populate_hugepages()
-Message-ID: <20220704092658.GA31220@willie-the-truck>
-References: <20220702080021.1167190-1-chenhuacai@loongson.cn>
- <20220702080021.1167190-4-chenhuacai@loongson.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220702080021.1167190-4-chenhuacai@loongson.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 4 Jul 2022 05:27:21 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A47DD128;
+        Mon,  4 Jul 2022 02:27:16 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id q9so12557505wrd.8;
+        Mon, 04 Jul 2022 02:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=8ajViNQRBuqUSn02uQYgcqcIAiyCQZm2aY6tb0Jvxow=;
+        b=FwV11uqFxCK4IkZ4zVZiQ64I4Ggdzep3kIDUZ2+1HDpOAhUlfzAYQJUacB1phfkN2X
+         B2HQRkjXpwoAcuKnts64swRREXrVL4xJrJZ9WYfFyoHRvfGx3SOlMfDHIoShfgM86eoE
+         AD6c8Vs5c95BaGGO/di2Xh5BNHGRZ6t1xKrPqwmbwreDxwQt9H7npJMcxNlxe16qrIxR
+         bSGh6dmLpgE6CclNjxAIPWG2Vn4Kr0YDJAPJw/xemQN/PnikqQrEvbPdL20O9C3DsSfV
+         41Y2ic/yf0dFgLd1K0r+o0E7pB2FuYAm4jbyeIXVo3hBUk4RtoVVAoJQ15c+5E4BZzlQ
+         V8Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8ajViNQRBuqUSn02uQYgcqcIAiyCQZm2aY6tb0Jvxow=;
+        b=MUlUWW5CCZ9rqhjSlUQy3F2aXFll7xiGI2x43XFtSpT3P3CPRG+eI+pSUSkMFD+8jb
+         02+PhlGUc9ggxuOGvVUspjOGynkzvmJbpOBc5ecNu6b815O4WvV5/2NzdIMefZsTBTwo
+         16LEo+CzdVB1IaoGEiHPGLe8mcUvPpoaogBh+CXbYRZyPcu3khxIRg3N8msV87yq8DOS
+         MM2UO5PXwBGuF7DwEVtL+bq4VwtaT+4+YQZuPEDnZtvi+e5887m5owklL6bYS6uiZLF8
+         7FaOWRQohlzYpXnYIiB+ftmipVqUmhnyjYNFfQju3M5ehGuBfJD+s4DLcPMSjkpE1iBB
+         lxlA==
+X-Gm-Message-State: AJIora9SeE/6plgSCpIWjgIZ5Kng3z6JR9kdbVAf/7N8JHwdAC7bh504
+        XFj3RZQNBB3qjeqKE1UHc0E=
+X-Google-Smtp-Source: AGRyM1toxERE0aCr4bhk9/9ushPcgnzqZmqbDSrQk4jk+lQaqJhem9chTZej0sQW5e9RrOi3uvfEsw==
+X-Received: by 2002:a5d:47c7:0:b0:21d:12f8:e0be with SMTP id o7-20020a5d47c7000000b0021d12f8e0bemr26419284wrc.432.1656926834593;
+        Mon, 04 Jul 2022 02:27:14 -0700 (PDT)
+Received: from felia.fritz.box (200116b826716b008998943ac77556e4.dip.versatel-1u1.de. [2001:16b8:2671:6b00:8998:943a:c775:56e4])
+        by smtp.gmail.com with ESMTPSA id d10-20020adff2ca000000b0021a38089e99sm29618815wrp.57.2022.07.04.02.27.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 02:27:14 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Mike Rapoport <rppt@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] secretmem: drop unneeded initialization in secretmem_file_create()
+Date:   Mon,  4 Jul 2022 11:26:05 +0200
+Message-Id: <20220704092605.19604-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 02, 2022 at 04:00:20PM +0800, Huacai Chen wrote:
-> From: Feiyang Chen <chenfeiyang@loongson.cn>
-> 
-> Generalise vmemmap_populate_hugepages() so ARM64 & X86 & LoongArch can
-> share its implementation.
-> 
-> Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> ---
->  arch/arm64/mm/mmu.c      | 53 ++++++-----------------
->  arch/loongarch/mm/init.c | 63 ++++++++-------------------
->  arch/x86/mm/init_64.c    | 92 ++++++++++++++--------------------------
->  include/linux/mm.h       |  6 +++
->  mm/sparse-vmemmap.c      | 54 +++++++++++++++++++++++
->  5 files changed, 124 insertions(+), 144 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-> index 626ec32873c6..b080a65c719d 100644
-> --- a/arch/arm64/mm/mmu.c
-> +++ b/arch/arm64/mm/mmu.c
-> @@ -1158,49 +1158,24 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
->  	return vmemmap_populate_basepages(start, end, node, altmap);
->  }
->  #else	/* !ARM64_KERNEL_USES_PMD_MAPS */
-> +void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
-> +			       unsigned long addr, unsigned long next)
-> +{
-> +	pmd_set_huge(pmd, __pa(p), __pgprot(PROT_SECT_NORMAL));
-> +}
-> +
-> +int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
-> +				unsigned long next)
-> +{
-> +	vmemmap_verify((pte_t *)pmd, node, addr, next);
-> +	return 1;
-> +}
+Drop the unneeded initialization of the local variable file in function
+secretmem_file_create().
 
-nit, but please can you use 'pmdp' instead of 'pmd' for the pointers? We're
-pretty consistent elsewhere for arch/arm64 and it makes the READ_ONCE()
-usage easier to follow once functions end up loading the entry.
+No functional change and no change in the resulting object code.
 
-Thanks,
+This unneeded initialization was already introduced with the introduction
+of secretmem in commit 1507f51255c9 ("mm: introduce memfd_secret system
+call to create "secret" memory areas"). This minor code-stylistic issue
+was discovered as a dead store with clang-analyzer.
 
-Will
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Mike, please ack.
+
+Andrew, please pick this minor stylistic clean-up patch. Thanks.
+
+ mm/secretmem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/secretmem.c b/mm/secretmem.c
+index 7584aab54d20..46b431d62761 100644
+--- a/mm/secretmem.c
++++ b/mm/secretmem.c
+@@ -171,7 +171,7 @@ static struct vfsmount *secretmem_mnt;
+ 
+ static struct file *secretmem_file_create(unsigned long flags)
+ {
+-	struct file *file = ERR_PTR(-ENOMEM);
++	struct file *file;
+ 	struct inode *inode;
+ 	const char *anon_name = "[secretmem]";
+ 	const struct qstr qname = QSTR_INIT(anon_name, strlen(anon_name));
+-- 
+2.17.1
+
