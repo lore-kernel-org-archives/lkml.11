@@ -2,264 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233628AbiGDLZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        id S233599AbiGDL0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233755AbiGDLZz (ORCPT
+        with ESMTP id S229848AbiGDL0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:25:55 -0400
+        Mon, 4 Jul 2022 07:26:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986D01054A;
-        Mon,  4 Jul 2022 04:25:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF54101F8
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:26:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F563B80EE8;
-        Mon,  4 Jul 2022 11:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17F2AC341CD;
-        Mon,  4 Jul 2022 11:25:45 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Min Zhou <zhoumin@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V4 2/4] LoongArch: Add sparse memory vmemmap support
-Date:   Mon,  4 Jul 2022 19:25:24 +0800
-Message-Id: <20220704112526.2492342-3-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220704112526.2492342-1-chenhuacai@loongson.cn>
-References: <20220704112526.2492342-1-chenhuacai@loongson.cn>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08322B80EDF
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 11:26:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A59C341D1;
+        Mon,  4 Jul 2022 11:26:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656933971;
+        bh=RxQ+WPdK+8ljus8FYxhhp+i2WQDSKsXRyAKp1y5aKuI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IQGCOcGNIg9srb3P060dF/JcdvLQ/lKKW6K9hBHhqg466hXnhrCkjy1p4RUerAbgJ
+         5yUA33dTMBD1n7hcjNKeLWR9JbW9PVxktu9AIbv2s9D9uDsfYTcRoXlkiYMiWfYwDO
+         eDdLIl94OCId2IpV75BVjmP18+5f0UGUJvgvOHF6S78uD5vucg9rMi3CnXMGeOKUfx
+         DFBAz2BbsxCOReoBFs0YSVOQCDCv7zocME3kAdw9MA7RXGnfpRJN8fwduw7177ARBL
+         QeGdUDDh/fvj4ZFWq1OuMdNFtMCC0np/LxxRjTUegOnbP+AXFV6djciJUuRmPqKLJd
+         /AwTNktqmdWaA==
+Date:   Mon, 4 Jul 2022 12:26:06 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LTP List <ltp@lists.linux.it>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>, brauner@kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: 5.19.0-rc5 : Raspberry Pi 4 : Unable to handle kernel paging
+ request at virtual address
+Message-ID: <20220704112605.GB31553@willie-the-truck>
+References: <CA+G9fYtu1G4oGtKZQ_g5VJbQoET8c7hN_Ds-O1-1HD3PwV4wkQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtu1G4oGtKZQ_g5VJbQoET8c7hN_Ds-O1-1HD3PwV4wkQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On Mon, Jul 04, 2022 at 01:28:30PM +0530, Naresh Kamboju wrote:
+> While running LTP controllers tests on arm64 Raspberry Pi 4 Model B
+> the following kernel crash noticed.
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> metadata:
+>   git_ref: master
+>   git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
+>   git_sha: 88084a3df1672e131ddc1b4e39eeacfd39864acf
+>   kernel_version: 5.19.0-rc5
+>   kernel-config: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh/config
+>   build-url: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline/-/pipelines/579007773
+>   artifact-location: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh
+>   vmlinux.xz: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh/vmlinux.xz
+>   System.map: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh/System.map
+>   toolchain: gcc-11
+> 
+> Steps to reproduce:
+> -------------------
+> ./runltp -p -q -f controllers
+> 
+> Test log:
+> ----------
+> cgroup_fj_stress_blkio_4_4_each 1 TPASS: All done!
+> cgroup_fj_stress_blkio_4_4_each 2 TINFO: Removing all ltp subgroups...
+> cgroup_fj_stress_blkio_2_9_each 1 TINFO: Subsystem blkio is mounted at
+> /sys/fs/cgroup/blkio
+> cgroup_fj_stress_blkio_2_9_each 1 TINFO: Creating subgroups ...
+> [ 2414.973441] Unable to handle kernel paging request at virtual
+> address 00620000090336a0
+> [ 2414.981581] Mem abort info:
+> [ 2414.984480]   ESR = 0x0000000086000004
+> [ 2414.988323]   EC = 0x21: IABT (current EL), IL = 32 bits
+> [ 2414.993765]   SET = 0, FnV = 0
+> [ 2414.996905]   EA = 0, S1PTW = 0
+> [ 2415.000124]   FSC = 0x04: level 0 translation fault
+> [ 2415.005118] [00620000090336a0] address between user and kernel address ranges
+> [ 2415.012393] Internal error: Oops: 86000004 [#1] PREEMPT SMP
+> [ 2415.018048] Modules linked in: btrfs blake2b_generic libcrc32c
+> raid6_pq zstd_compress xhci_pci snd_soc_hdmi_codec xhci_pci_renesas
+> raspberrypi_cpufreq hci_uart btqca brcmfmac brcmutil btbcm vc4
+> bluetooth cfg80211 cec drm_display_helper drm_cma_helper rfkill
+> clk_raspberrypi reset_raspberrypi drm_kms_helper crct10dif_ce
+> raspberrypi_hwmon drm i2c_bcm2835 iproc_rng200 rng_core pwm_bcm2835
+> bcm2711_thermal pcie_brcmstb fuse
+> [ 2415.055725] CPU: 0 PID: 11626 Comm: cgroup_fj_stres Not taintedlinu#1
+> [ 2415.062965] Hardware name: Raspberry Pi 4 Model B (DT)
+> [ 2415.068175] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [ 2415.075238] pc : 0x620000090336a0
+> [ 2415.078600] lr : ktime_get+0x50/0xac
+> [ 2415.082228] sp : ffff80000dfdbb90
+> [ 2415.085585] x29: ffff80000dfdbb90 x28: 00000000ffffffff x27: ffff00006405e580
+> [ 2415.092832] x26: ffff00006405e748 x25: 0000000001200000 x24: ffff00006405e180
+> [ 2415.100076] x23: ffff80000dfdbd68 x22: 0000000000000000 x21: 000002321545f201
+> [ 2415.107320] x20: 000000000012017e x19: ffff80000ae3b440 x18: ffff000000000000
+> [ 2415.114564] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000000000dc
+> [ 2415.121809] x14: 0000000001200011 x13: 0000000060000000 x12: 0000ffffa7b6c1e8
+> [ 2415.129052] x11: 0000000000000040 x10: ffff80000a96c5c0 x9 : ffff8000080990d4
+> [ 2415.136295] x8 : 0000000000000000 x7 : 0000000000a9c84a x6 : 4480001ec1769752
+> [ 2415.143538] x5 : 00ffbffeffffffff x4 : 0000000900000000 x3 : 0000000000000000
+> [ 2415.150781] x2 : ffff80000a94e000 x1 : ffff8000090336a0 x0 : ffff80000ad102f0
+> [ 2415.158025] Call trace:
+> [ 2415.160498]  0x620000090336a0
+> [ 2415.163505]  copy_process+0xe34/0x1534
 
-Add sparse memory vmemmap support for LoongArch. SPARSEMEM_VMEMMAP
-uses a virtually mapped memmap to optimise pfn_to_page and page_to_pfn
-operations. This is the most efficient option when sufficient kernel
-resources are available.
+Do you have the disassembly (and source:line infor) around
+copy_process+0xe34/0x1534? The faulting PC is like a messed up copy of x1
+where the upper bits have been corrupted somehow.
 
-Signed-off-by: Min Zhou <zhoumin@loongson.cn>
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig                 |  1 +
- arch/loongarch/include/asm/pgtable.h   |  5 +-
- arch/loongarch/include/asm/sparsemem.h |  8 +++
- arch/loongarch/mm/init.c               | 71 +++++++++++++++++++++++++-
- include/linux/mm.h                     |  2 +
- mm/sparse-vmemmap.c                    | 10 ++++
- 6 files changed, 95 insertions(+), 2 deletions(-)
-
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index dc19cf3071ea..55ab84fd70e5 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -422,6 +422,7 @@ config ARCH_FLATMEM_ENABLE
- 
- config ARCH_SPARSEMEM_ENABLE
- 	def_bool y
-+	select SPARSEMEM_VMEMMAP_ENABLE
- 	help
- 	  Say Y to support efficient handling of sparse physical memory,
- 	  for architectures which are either NUMA (Non-Uniform Memory Access)
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index 9c811c3f7572..b701ec7a0309 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -92,7 +92,10 @@ extern unsigned long zero_page_mask;
- #define VMALLOC_START	MODULES_END
- #define VMALLOC_END	\
- 	(vm_map_base +	\
--	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE)
-+	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE - VMEMMAP_SIZE)
-+
-+#define vmemmap		((struct page *)((VMALLOC_END + PMD_SIZE) & PMD_MASK))
-+#define VMEMMAP_END	((unsigned long)vmemmap + VMEMMAP_SIZE - 1)
- 
- #define pte_ERROR(e) \
- 	pr_err("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
-diff --git a/arch/loongarch/include/asm/sparsemem.h b/arch/loongarch/include/asm/sparsemem.h
-index 3d18cdf1b069..a1e440f6bec7 100644
---- a/arch/loongarch/include/asm/sparsemem.h
-+++ b/arch/loongarch/include/asm/sparsemem.h
-@@ -11,6 +11,14 @@
- #define SECTION_SIZE_BITS	29 /* 2^29 = Largest Huge Page Size */
- #define MAX_PHYSMEM_BITS	48
- 
-+#ifndef CONFIG_SPARSEMEM_VMEMMAP
-+#define VMEMMAP_SIZE	0
-+#else
-+#define VMEMMAP_SIZE	(sizeof(struct page) * (1UL << (cpu_pabits + 1 - PAGE_SHIFT)))
-+#endif
-+
-+#include <linux/mm_types.h>
-+
- #endif /* CONFIG_SPARSEMEM */
- 
- #ifdef CONFIG_MEMORY_HOTPLUG
-diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
-index 7094a68c9b83..35128229fe46 100644
---- a/arch/loongarch/mm/init.c
-+++ b/arch/loongarch/mm/init.c
-@@ -22,7 +22,7 @@
- #include <linux/pfn.h>
- #include <linux/hardirq.h>
- #include <linux/gfp.h>
--#include <linux/initrd.h>
-+#include <linux/hugetlb.h>
- #include <linux/mmzone.h>
- 
- #include <asm/asm-offsets.h>
-@@ -157,6 +157,75 @@ void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
- #endif
- #endif
- 
-+#ifdef CONFIG_SPARSEMEM_VMEMMAP
-+int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
-+					 int node, struct vmem_altmap *altmap)
-+{
-+	unsigned long addr = start;
-+	unsigned long next;
-+	pgd_t *pgd;
-+	p4d_t *p4d;
-+	pud_t *pud;
-+	pmd_t *pmd;
-+
-+	for (addr = start; addr < end; addr = next) {
-+		next = pmd_addr_end(addr, end);
-+
-+		pgd = vmemmap_pgd_populate(addr, node);
-+		if (!pgd)
-+			return -ENOMEM;
-+		p4d = vmemmap_p4d_populate(pgd, addr, node);
-+		if (!p4d)
-+			return -ENOMEM;
-+		pud = vmemmap_pud_populate(p4d, addr, node);
-+		if (!pud)
-+			return -ENOMEM;
-+
-+		pmd = pmd_offset(pud, addr);
-+		if (pmd_none(*pmd)) {
-+			void *p = NULL;
-+
-+			p = vmemmap_alloc_block_buf(PMD_SIZE, node, NULL);
-+			if (p) {
-+				pmd_t entry;
-+
-+				entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
-+				pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
-+				set_pmd_at(&init_mm, addr, pmd, entry);
-+
-+				continue;
-+			}
-+		} else if (pmd_val(*pmd) & _PAGE_HUGE) {
-+			vmemmap_verify((pte_t *)pmd, node, addr, next);
-+			continue;
-+		}
-+		if (vmemmap_populate_basepages(addr, next, node, NULL))
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+#if CONFIG_PGTABLE_LEVELS == 2
-+int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
-+		struct vmem_altmap *altmap)
-+{
-+	return vmemmap_populate_basepages(start, end, node, NULL);
-+}
-+#else
-+int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
-+		struct vmem_altmap *altmap)
-+{
-+	return vmemmap_populate_hugepages(start, end, node, NULL);
-+}
-+#endif
-+
-+void vmemmap_free(unsigned long start, unsigned long end,
-+		struct vmem_altmap *altmap)
-+{
-+}
-+#endif
-+
- /*
-  * Align swapper_pg_dir in to 64K, allows its address to be loaded
-  * with a single LUI instruction in the TLB handlers.  If we used
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index cf3d0d673f6b..f6ed6bc0a65f 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3203,6 +3203,8 @@ void *sparse_buffer_alloc(unsigned long size);
- struct page * __populate_section_memmap(unsigned long pfn,
- 		unsigned long nr_pages, int nid, struct vmem_altmap *altmap,
- 		struct dev_pagemap *pgmap);
-+void pmd_init(void *addr);
-+void pud_init(void *addr);
- pgd_t *vmemmap_pgd_populate(unsigned long addr, int node);
- p4d_t *vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node);
- pud_t *vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node);
-diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-index f4fa61dbbee3..33e2a1ceee72 100644
---- a/mm/sparse-vmemmap.c
-+++ b/mm/sparse-vmemmap.c
-@@ -587,6 +587,10 @@ pmd_t * __meminit vmemmap_pmd_populate(pud_t *pud, unsigned long addr, int node)
- 	return pmd;
- }
- 
-+void __weak __meminit pmd_init(void *addr)
-+{
-+}
-+
- pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
- {
- 	pud_t *pud = pud_offset(p4d, addr);
-@@ -594,11 +598,16 @@ pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
- 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
- 		if (!p)
- 			return NULL;
-+		pmd_init(p);
- 		pud_populate(&init_mm, pud, p);
- 	}
- 	return pud;
- }
- 
-+void __weak __meminit pud_init(void *addr)
-+{
-+}
-+
- p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
- {
- 	p4d_t *p4d = p4d_offset(pgd, addr);
-@@ -606,6 +615,7 @@ p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
- 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
- 		if (!p)
- 			return NULL;
-+		pud_init(p);
- 		p4d_populate(&init_mm, p4d, p);
- 	}
- 	return p4d;
--- 
-2.27.0
-
+Will
