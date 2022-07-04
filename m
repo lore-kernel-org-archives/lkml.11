@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E14DCCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E91CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbiGDA1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 20:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
+        id S233098AbiGDA2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 20:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiGDA1C (ORCPT
+        with ESMTP id S230245AbiGDA2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 20:27:02 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3306257;
-        Sun,  3 Jul 2022 17:26:59 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id r14so5371117wrg.1;
-        Sun, 03 Jul 2022 17:26:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BkcdMGU0kig+gsHzMagFBYfZudhco/uW4n7M1LjkF1o=;
-        b=WlhLsARN5Ah8xD7NZ0C8MzttUfgUqmdW0p3SHYQOjaI8ynZa1onWsIKtosZy+R3XGS
-         xom+9+qMCNcYpQnHFcLQBvdAgnQ27Akq7IfIwXpgBfFe+JREdnrX9qU/d4SoWfyPseGV
-         +0iI7ZKkSOTq70d8qkISnMd7EmdtS6D19+781k3iF3VqX743+o7LLA6wxqDL09tMZfO7
-         OWUUAaV/E4l96nKRg04Z6f1qztiHOI0ONEStU8wqF5EF1Y3C4qSiLZ2nR2yZuRuQiFb+
-         87KTCiFDr4GB6YXS+i/Dcbb1rEiV9l3tOTLfdg4DRmDo+3uGxAlAiCcX5yoLrWXpJ8KW
-         jW3A==
+        Sun, 3 Jul 2022 20:28:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9FC36276
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 17:28:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656894486;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KaOqL05Ps6uhrMzHuCOajL20Q0d9A5HdIZuOghHczsA=;
+        b=JIDx6Og8Gj6ddCslj/9+hSBi/N3OjNMkLVfDr5O5wVmFZSl5QMg1+CoLyOCSj5/IikGKsv
+        eDJfSHDgPpnjUkvun30Ew3FLYC0xfwubmxdeD2k+euGuD90clztNmuE9GdOyHkEvHuI8Sz
+        PcFjyDu8b5JLucHu/F+Ids/djoz4D60=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-357-qv5Rm-zuOvCvTDAA6QhQxQ-1; Sun, 03 Jul 2022 20:28:05 -0400
+X-MC-Unique: qv5Rm-zuOvCvTDAA6QhQxQ-1
+Received: by mail-ed1-f70.google.com with SMTP id h16-20020a05640250d000b00435bab1a7b4so6030523edb.10
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 17:28:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BkcdMGU0kig+gsHzMagFBYfZudhco/uW4n7M1LjkF1o=;
-        b=4zTNtxkIEYIogLZRhKYC0hRw1spubREGVYQHdzwN4yIvaGAvq+0Kq679jXJDWWnq6J
-         yy8Sh8zXk1IQxinrDS5MX28U8tTsHyWL5u/QepJa5shqjtDAI+u5lQ8RfgOV5mvVizHY
-         O0UHkqTZ+UtYHcmVawAwW8Eu4jZBAxMFiGajtDUr6oGdfMefIUDNurBcFeT4wMadWc3C
-         rLbHh87sYNccoCD/6t2vQV9iWKRUrKm+sV3cDxg6lwhLXMOy+bpdwNkQTnDB/EB4+A5A
-         JAplUC/+5K46u6v9tQeXgNwINs4LJgR03Y04sDurTnWLq0l54O9odnPAbNlRbklNX5AD
-         sf0g==
-X-Gm-Message-State: AJIora9k9NbW96bJwpbibsfd6q6q5fAtADO+CpXhLHRXihWKiYSSDz/n
-        vCEnMUSGp2LkOVmsqZjIonKk5+dFsVY=
-X-Google-Smtp-Source: AGRyM1uw09AFRC0KaQ5ziWVcLEicUBQ2W9BgH2JIknPXfmgH8Q1RbiYu5+89GqFbSothY7MvzLhPcw==
-X-Received: by 2002:a05:6000:1c0d:b0:21b:a62e:5760 with SMTP id ba13-20020a0560001c0d00b0021ba62e5760mr24492463wrb.112.1656894418059;
-        Sun, 03 Jul 2022 17:26:58 -0700 (PDT)
-Received: from xps-work.lan (214.red-83-37-4.dynamicip.rima-tde.net. [83.37.4.214])
-        by smtp.gmail.com with ESMTPSA id i206-20020a1c3bd7000000b003a03ae64f57sm18649180wma.8.2022.07.03.17.26.56
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KaOqL05Ps6uhrMzHuCOajL20Q0d9A5HdIZuOghHczsA=;
+        b=z33Q83egXltj6Wb4dbwEjqGEvlZnLvb39UcmnCg7aUh4naWoxb5UQk5Db/fJiQnYN9
+         GJP0WX88TPSQzoi1WUzcKINyCEbVTeMW3hyb3bLezhJfGxWVjpJMMfYN7Eu5UDBJFZE/
+         ar1EYNedmnh2yse3GozCooNhDZBU8wiGcQ+UJ5JjHcHe6ogQqufCLQ2N4TkY8CBW6Zzl
+         hg8AASisc+CjKut7kgQ17x+EoJlUMg5/grdbgx+/Vi4wu1x6sdyWu+tnfQd4KuBpSIDv
+         cLt5frhdn4vHpwt5jJe/kL0GUg9yPHHY+asw39HaE3SlCbmQGJqiNK4Q0SrduPNgaJv0
+         DRug==
+X-Gm-Message-State: AJIora+shOXlCObhg78LummE0J3K2juj1sthJn7zmFOQ7KxytDOrZDx1
+        OUqZL0VyK3p94jqfSBSDaQ2TrIx3KRChfprOvlJ5jlk69mbFa2JUKv5ljKz6zsZyaJo6e5BRJsC
+        hARWwAA28bIBP0iHrJmruZLOn
+X-Received: by 2002:a17:907:9488:b0:722:e5c8:c647 with SMTP id dm8-20020a170907948800b00722e5c8c647mr25659275ejc.291.1656894484452;
+        Sun, 03 Jul 2022 17:28:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tcUAU1lKCz9GNKy7EtOXC3/ZrGPSQpn7jqZTgAk6gvwW3u4/BpvwAo+0cmPpJ0xoClkP5dRw==
+X-Received: by 2002:a17:907:9488:b0:722:e5c8:c647 with SMTP id dm8-20020a170907948800b00722e5c8c647mr25659267ejc.291.1656894484297;
+        Sun, 03 Jul 2022 17:28:04 -0700 (PDT)
+Received: from pollux ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
+        by smtp.gmail.com with ESMTPSA id jz2-20020a170906bb0200b00726314d0655sm13524634ejb.39.2022.07.03.17.28.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Jul 2022 17:26:57 -0700 (PDT)
-From:   Angel Iglesias <ang.iglesiasg@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     Angel Iglesias <ang.iglesiasg@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andreas Klinger <ak@it-klinger.de>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/5] dt-bindings: iio: pressure: bmp085: Add BMP380 compatible string
-Date:   Mon,  4 Jul 2022 02:26:39 +0200
-Message-Id: <20220704002641.207169-1-ang.iglesiasg@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Sun, 03 Jul 2022 17:28:03 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 02:28:02 +0200
+From:   Danilo Krummrich <dakr@redhat.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] treewide: idr: align IDR and IDA APIs
+Message-ID: <YsIx4DSiaZPyMEMu@pollux>
+References: <20220703181739.387584-1-dakr@redhat.com>
+ <YsIAypeKXFg97xbG@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsIAypeKXFg97xbG@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bosch,bmp380 compatible string for the new family of sensors.
-This family includes the BMP380, BMP384 and BMP388. The register map
-in this family changes substantially and introduces new features
-but core concepts and operations carryover from the previous iterations
+On Sun, Jul 03, 2022 at 09:49:14PM +0100, Matthew Wilcox wrote:
+> On Sun, Jul 03, 2022 at 08:17:38PM +0200, Danilo Krummrich wrote:
+> > For allocating IDs the ID allocator (IDA) provides the following
+> > functions: ida_alloc(), ida_alloc_range(), ida_alloc_min() and
+> > ida_alloc_max() whereas for IDRs only idr_alloc() is available.
+> > 
+> > In contrast to ida_alloc(), idr_alloc() behaves like ida_alloc_range(),
+> > which takes MIN and MAX arguments to define the bounds within an ID
+> > should be allocated - ida_alloc() instead implicitly uses the maximal
+> > bounds possible for MIN and MAX without taking those arguments.
+> > 
+> > In order to align the IDR and IDA APIs this patch provides
+> > implementations for idr_alloc(), idr_alloc_range(), idr_alloc_min() and
+> > idr_alloc_max(), which are analogue to the IDA API.
+> 
+> I don't really want to make any changes to the IDR API.  I want to get
+> rid of the IDR API.
 
-Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
----
- Documentation/devicetree/bindings/iio/pressure/bmp085.yaml | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Forgot to mention, I noticed that there is even a new user of the IDR API in
+next/master: commit d8782ec59eb8 ("mlxsw: Add an initial PGT table support")
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
-index 49257f9251e8..72cd2c2d3f17 100644
---- a/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
-+++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
-@@ -4,7 +4,7 @@
- $id: http://devicetree.org/schemas/iio/pressure/bmp085.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: BMP085/BMP180/BMP280/BME280 pressure iio sensors
-+title: BMP085/BMP180/BMP280/BME280/BMP380 pressure iio sensors
- 
- maintainers:
-   - Andreas Klinger <ak@it-klinger.de>
-@@ -16,6 +16,7 @@ description: |
-     https://www.bosch-sensortec.com/bst/products/all_products/bmp180
-     https://www.bosch-sensortec.com/bst/products/all_products/bmp280
-     https://www.bosch-sensortec.com/bst/products/all_products/bme280
-+    https://www.bosch-sensortec.com/bst/products/all_products/bmp380
- 
- properties:
-   compatible:
-@@ -24,6 +25,7 @@ properties:
-       - bosch,bmp180
-       - bosch,bmp280
-       - bosch,bme280
-+      - bosch,bmp380
- 
-   reg:
-     maxItems: 1
--- 
-2.36.1
+Maybe it makes sense to point out that the IDR API is deprecated and XArray
+should be used instead at the beginning of the IDR documentation file, such
+that it's obvious for new potential users?
+
+- Danilo
 
