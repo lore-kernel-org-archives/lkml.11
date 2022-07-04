@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E19E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 574F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234330AbiGDKOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:14:15 -0400
+        id S234335AbiGDKOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:14:16 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234128AbiGDKNj (ORCPT
+        with ESMTP id S233712AbiGDKNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:13:39 -0400
+        Mon, 4 Jul 2022 06:13:41 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D0C5F6C;
-        Mon,  4 Jul 2022 03:13:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A9FD11F;
+        Mon,  4 Jul 2022 03:13:40 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 82A956601985;
-        Mon,  4 Jul 2022 11:13:36 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8ACA2660198D;
+        Mon,  4 Jul 2022 11:13:38 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656929617;
-        bh=cYCFPkI9Ox4t3aj8urLrA3wqMRp1z1bSxEhnMr1wUSY=;
+        s=mail; t=1656929619;
+        bh=F4XTdpmeLLBzARBbsr/g15mmfE1S0Zdj681HWBdHZeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qdw82P7jQP9czqM3dF4d1Az22FRnHzS7I6TPRQ0FQjKV5s/uF4Xv+aXHBbCZaAVRz
-         M/NPUhNyxdzPxVTQ/aRV/DQImMihGL5z8Te/Mvq80i8vmbkuhZK0CNmHH31wjOX9BO
-         pgUhcNm4BJQ5+LTT5TqQnG7eOseHxMrtBQEfu8VQZaxxDhx85x1s0RId39gPUrJHnn
-         yC5rBUEylLu5ipsxkbI2tx4wxPVqduJRbHTkka5bKOz6qL9xoNd1jpwUriDXqj6U1P
-         jS2jLzyv4ikQjA/Ft/ujbvcjVODGUbaybO0cxc+m69mfFMj7HxKui5b6rDzWhZU6+W
-         xgdT/4tFs0xUw==
+        b=BFRDuScIM3T486D9EEH82Z/qHJcrJPM/Lfi6d7nloU0tYn2zk67XnE6IGPu5Wc++1
+         dKHIgzZILXIhcrfwlpb/o8irqlQyCIzm4k0sx6XC+zZ/JHu1crgXt3lil6n8074sBB
+         /lDQU5u9uYrR9VzTZoUEuqS0yb3tm6Je5M6BDT9NoL7fd87XJTtFt/+Im/y/JMBbkT
+         FCTDpb8aCdpT/r0Gqqm2OVDokULmlZyOimXDL/i+eu+IrwJrjnrvSyOs3SSFiC8D6f
+         c4s2HFka0bjPcVZ9p9+pwkMaTP8/FJolTVH2io/ERk/0qVHf2Cjtlk3J9y3Ar8WwDf
+         IZstoYHSCp81w==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     robh+dt@kernel.org
@@ -42,63 +42,108 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         sean.wang@mediatek.com, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, wenst@chromium.org
-Subject: [PATCH v2 09/11] arm64: dts: mediatek: cherry: Enable MT6360 sub-pmic on I2C7
-Date:   Mon,  4 Jul 2022 12:13:19 +0200
-Message-Id: <20220704101321.44835-10-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 11/11] arm64: dts: mediatek: cherry: Add I2C-HID touchscreen on I2C4
+Date:   Mon,  4 Jul 2022 12:13:21 +0200
+Message-Id: <20220704101321.44835-12-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
 References: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All devices of the Cherry platform have a MT6360 sub-pmic,
-providing two LDOs. Add the required node to enable the PMIC
-but without regulators yet, as these will be added in a
-later commit.
+This platform carries a HID compatible I2C touchscreen on the i2c4 bus,
+but it may be at a different address, depending on the board model.
+Add the node for a touchscreen at 0x10, but enable it only in the
+final board dts.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 ---
- .../boot/dts/mediatek/mt8195-cherry.dtsi      | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ .../dts/mediatek/mt8195-cherry-tomato-r1.dts  |  4 +++
+ .../dts/mediatek/mt8195-cherry-tomato-r2.dts  |  4 +++
+ .../dts/mediatek/mt8195-cherry-tomato-r3.dts  |  4 +++
+ .../boot/dts/mediatek/mt8195-cherry.dtsi      | 28 +++++++++++++++++++
+ 4 files changed, 40 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+index 7ca344ccc225..3348ba69ff6c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+@@ -9,3 +9,7 @@ / {
+ 	model = "Acer Tomato (rev1) board";
+ 	compatible = "google,tomato-rev1", "google,tomato", "mediatek,mt8195";
+ };
++
++&ts_10 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts
+index eb80f23273aa..4669e9d917f8 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts
+@@ -29,3 +29,7 @@ pins-low-power-pcie0-disable {
+ 		bias-pull-down;
+ 	};
+ };
++
++&ts_10 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts
+index f9cdda07da88..5021edd02f7c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts
+@@ -30,3 +30,7 @@ pins-low-power-pcie0-disable {
+ 		bias-pull-down;
+ 	};
+ };
++
++&ts_10 {
++	status = "okay";
++};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-index f68d8ff05b4d..c07d3ac79f62 100644
+index 2c8b760d0da1..fcc600674339 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-@@ -161,6 +161,18 @@ &i2c7 {
+@@ -145,6 +145,18 @@ &i2c4 {
  	clock-frequency = <400000>;
  	pinctrl-names = "default";
- 	pinctrl-0 = <&i2c7_pins>;
+ 	pinctrl-0 = <&i2c4_pins>;
 +
-+	pmic@34 {
-+		#interrupt-cells = <1>;
-+		compatible = "mediatek,mt6360";
-+		reg = <0x34>;
-+		interrupt-controller;
-+		interrupts-extended = <&pio 130 IRQ_TYPE_EDGE_FALLING>;
-+		interrupt-names = "IRQB";
++	ts_10: touchscreen@10 {
++		compatible = "hid-over-i2c";
++		reg = <0x10>;
++		hid-descr-addr = <0x0001>;
++		interrupts-extended = <&pio 92 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&subpmic_default>;
-+		wakeup-source;
++		pinctrl-0 = <&touchscreen_pins>;
++		post-power-on-delay-ms = <10>;
++		vdd-supply = <&pp3300_s3>;
++		status = "disabled";
 +	};
  };
  
- &mmc0 {
-@@ -558,6 +570,14 @@ pins-miso {
- 			bias-pull-down;
+ &i2c5 {
+@@ -609,6 +621,22 @@ subpmic_pin_irq: pins-subpmic-int-n {
+ 			bias-pull-up;
  		};
  	};
 +
-+	subpmic_default: subpmic-default-pins {
-+		subpmic_pin_irq: pins-subpmic-int-n {
-+			pinmux = <PINMUX_GPIO130__FUNC_GPIO130>;
++	touchscreen_pins: touchscreen-default-pins {
++		pins-int-n {
++			pinmux = <PINMUX_GPIO92__FUNC_GPIO92>;
 +			input-enable;
-+			bias-pull-up;
++			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
++		};
++		pins-rst {
++			pinmux = <PINMUX_GPIO56__FUNC_GPIO56>;
++			output-high;
++		};
++		pins-report-sw {
++			pinmux = <PINMUX_GPIO57__FUNC_GPIO57>;
++			output-low;
 +		};
 +	};
  };
