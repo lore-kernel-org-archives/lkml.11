@@ -2,206 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B34AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB7F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233963AbiGDJeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
+        id S233689AbiGDJfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233882AbiGDJb7 (ORCPT
+        with ESMTP id S232943AbiGDJfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:31:59 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597FCDFD6
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:30:54 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id a15so8427692pfv.13
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 02:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mOcKN2QE8NoS+NlXFqyzvr6uXu60h5tTF9oQlF/WJLc=;
-        b=KILEUB0HZOxwkq5/XBeqjn/uei8YrkNrsJVZViPmOdE2EraFxs3gPVlS9vaVFq0XsV
-         xyilJcHWtyG1L6ky2NJLYlqtWCz5pz9rwz8N2XqcIN6xzN5JMbDz4j45LRocgI6xjf5Q
-         xPiPdfHH1DUNY6GGxTSz6SlQLuWWdgw7Md/KsLQ0v8utLsy0q+ZMkq+BbxntG8pZ+hSa
-         cd4cbVLrBZTXVniEh8tK7lRVrIPmjEqGB6bKca0jeduHPKZ/X1OTqn8CgHgtA4WWReS6
-         e1pUIl2I5ma9I2/6Mjx5WNsCc0XSG+gYr4I/GyOYsEdOj4FRn9hJR7qiqRpmf2nf2Db2
-         gegg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mOcKN2QE8NoS+NlXFqyzvr6uXu60h5tTF9oQlF/WJLc=;
-        b=3VN9X9ljx1q/tuuCgklXqTsYPZ5iArzesGdvbdhL63nx0iesZk0QKqRzX58XCOFiti
-         ELWoaH3XcPgGgBsbldQkJcF6Ibk2gyOI3s5XQ7Kl7YIxwYDV9Z5MPtfCMrp6pIiNib2W
-         z7BXgs6TXz6arIFS9MT28fCsK5Gfpf4v4qKh3zAzOxMLZN/f41CkZPN4+F1dnMbzcckU
-         iJMTPmhGyWf39A7SQNVGNLgTeP/MXEPvxD/JNM1v1Z2PPPIe2FFYDEElHAiopfIYtrmg
-         PFBGOpE3dHenJSbDxQY5NBbw/SoJ9ARiWjPCinQh6IvJA9wGETnnNB6YaOkTeAawFoZJ
-         DIqA==
-X-Gm-Message-State: AJIora9cLjCBrMdgoRiSmmyT/21fIp4cYxcc/FBOAq+/dslbBrX5zGZO
-        O1eStq4cMkUrnI92mTt4yvNoYQ==
-X-Google-Smtp-Source: AGRyM1vbOAdyX1y53+MovHgyFoSWwnefAVPm2My0x0WH3rIth0QFaye33BFc8w+KNPH6F45CqTuocg==
-X-Received: by 2002:a63:69c9:0:b0:411:994d:1e12 with SMTP id e192-20020a6369c9000000b00411994d1e12mr20645259pgc.383.1656927053749;
-        Mon, 04 Jul 2022 02:30:53 -0700 (PDT)
-Received: from leo-build-box.lan ([154.3.32.171])
-        by smtp.gmail.com with ESMTPSA id ms16-20020a17090b235000b001ef81bac701sm2926177pjb.42.2022.07.04.02.30.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 02:30:53 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v3 5/5] interconnect: qcom: icc-rpm: Set bandwidth and clock for bucket values
-Date:   Mon,  4 Jul 2022 17:30:29 +0800
-Message-Id: <20220704093029.1126609-6-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220704093029.1126609-1-leo.yan@linaro.org>
-References: <20220704093029.1126609-1-leo.yan@linaro.org>
+        Mon, 4 Jul 2022 05:35:39 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E94D136;
+        Mon,  4 Jul 2022 02:35:38 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2649LZWY026442;
+        Mon, 4 Jul 2022 09:35:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=pwrFsA7OsADVL/T7Jvh2iQ2XxsGOzZsRWNFYAGjNqjs=;
+ b=q3N56pRgYPCjYfjJHRZs1EfgE3HcepoK7qUnizq/XP+N1sDc9h5HMv2kXE0V3KBgDIhX
+ HMGjqPNtKjgYKrJ6G4wfMTh4nuAYEu6kJzNJ25KEt6A2fxJfwoHirI2pvgc7BytcQ6R4
+ 2pkv63erIAGbTRHz+0oQjtlAT1y5PJ9W+YIMqQWwUogdjdYSsM8KD/xC/OClGa2tVDx+
+ 571riHncdoOky4LEAqgAMtDB9G4WI+l1kyBKVSSo5GIbUpMZvYcXpyQco04Av6xpr6O4
+ DwW0EbMSnc3c2vWzjDBbkQ1GHy36+mrzvcQJHIn9GOmGLCyMB2fDjFmP93pe38GnRQEZ UQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3wgj88nr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 09:35:37 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2649OKXx032747;
+        Mon, 4 Jul 2022 09:35:36 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3wgj88mr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 09:35:36 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2649PULI013434;
+        Mon, 4 Jul 2022 09:35:34 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3h2dn8tfm1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 09:35:34 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2649ZdNB26870036
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jul 2022 09:35:39 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 556E942049;
+        Mon,  4 Jul 2022 09:35:31 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AD79B42041;
+        Mon,  4 Jul 2022 09:35:30 +0000 (GMT)
+Received: from [9.171.76.58] (unknown [9.171.76.58])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Jul 2022 09:35:30 +0000 (GMT)
+Message-ID: <d90e2aaa-05ad-6f3a-83f8-428677256673@linux.ibm.com>
+Date:   Mon, 4 Jul 2022 11:35:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v11 3/3] KVM: s390: resetting the Topology-Change-Report
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com, nrb@linux.ibm.com
+References: <20220701162559.158313-1-pmorel@linux.ibm.com>
+ <20220701162559.158313-4-pmorel@linux.ibm.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <20220701162559.158313-4-pmorel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: txEPyHidLenGci6sCYbN2SmmXFeXm1he
+X-Proofpoint-ORIG-GUID: S9QTTL7PeEhGCUiibfaJ0rA613ho6IHw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_08,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 adultscore=0
+ spamscore=0 mlxscore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
+ clxscore=1015 bulkscore=0 malwarescore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207040040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit uses buckets for support bandwidth and clock rates.  It
-introduces a new function qcom_icc_bus_aggregate() to calculate the
-aggregate average and peak bandwidths for every bucket, and also it
-calculates the maximum aggregate values across all buckets.
+On 7/1/22 18:25, Pierre Morel wrote:
+> During a subsystem reset the Topology-Change-Report is cleared.
+> 
+> Let's give userland the possibility to clear the MTCR in the case
+> of a subsystem reset.
+> 
+> To migrate the MTCR, we give userland the possibility to
+> query the MTCR state.
+> 
+> We indicate KVM support for the CPU topology facility with a new
+> KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
+> 
+> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+> ---
+>  Documentation/virt/kvm/api.rst   | 25 +++++++++++++++
+>  arch/s390/include/uapi/asm/kvm.h | 10 ++++++
+>  arch/s390/kvm/kvm-s390.c         | 53 ++++++++++++++++++++++++++++++++
+>  include/uapi/linux/kvm.h         |  1 +
+>  4 files changed, 89 insertions(+)
+> 
+> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> index 11e00a46c610..5e086125d8ad 100644
+> --- a/Documentation/virt/kvm/api.rst
+> +++ b/Documentation/virt/kvm/api.rst
+> @@ -7956,6 +7956,31 @@ should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
+>  When enabled, KVM will exit to userspace with KVM_EXIT_SYSTEM_EVENT of
+>  type KVM_SYSTEM_EVENT_SUSPEND to process the guest suspend request.
+>  
+> +8.37 KVM_CAP_S390_CPU_TOPOLOGY
+> +------------------------------
+> +
+> +:Capability: KVM_CAP_S390_CPU_TOPOLOGY
+> +:Architectures: s390
+> +:Type: vm
+> +
+> +This capability indicates that KVM will provide the S390 CPU Topology
+> +facility which consist of the interpretation of the PTF instruction for
+> +the function code 2 along with interception and forwarding of both the
+> +PTF instruction with function codes 0 or 1 and the STSI(15,1,x)
+> +instruction to the userland hypervisor.
+The latter only if the user STSI capability is also enabled.
+> +
+> +The stfle facility 11, CPU Topology facility, should not be indicated
+> +to the guest without this capability.
+> +
+> +When this capability is present, KVM provides a new attribute group
+> +on vm fd, KVM_S390_VM_CPU_TOPOLOGY.
+> +This new attribute allows to get, set or clear the Modified Change
+> +Topology Report (MTCR) bit of the SCA through the kvm_device_attr
+> +structure.
+> +
+> +When getting the Modified Change Topology Report value, the attr->addr
+> +must point to a byte where the value will be stored.
+> +
+>  9. Known KVM API problems
+>  =========================
+>  
+> diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
+> index 7a6b14874d65..df5e8279ffd0 100644
+> --- a/arch/s390/include/uapi/asm/kvm.h
+> +++ b/arch/s390/include/uapi/asm/kvm.h
+> @@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
+>  #define KVM_S390_VM_CRYPTO		2
+>  #define KVM_S390_VM_CPU_MODEL		3
+>  #define KVM_S390_VM_MIGRATION		4
+> +#define KVM_S390_VM_CPU_TOPOLOGY	5
+>  
+>  /* kvm attributes for mem_ctrl */
+>  #define KVM_S390_VM_MEM_ENABLE_CMMA	0
+> @@ -171,6 +172,15 @@ struct kvm_s390_vm_cpu_subfunc {
+>  #define KVM_S390_VM_MIGRATION_START	1
+>  #define KVM_S390_VM_MIGRATION_STATUS	2
+>  
+> +/* kvm attributes for cpu topology */
+> +#define KVM_S390_VM_CPU_TOPO_MTCR_CLEAR	0
+> +#define KVM_S390_VM_CPU_TOPO_MTCR_SET	1
+> +
+> +struct kvm_cpu_topology {
+> +	__u16 mtcr : 1;
+> +	__u16 reserved : 15;
+> +};
 
-The maximum aggregate values are used to calculate the final bandwidth
-requests.  And we can set the clock rate per bucket, we use SLEEP bucket
-as default bucket if a platform doesn't enable the interconnect path
-tags in DT binding; otherwise, we use WAKE bucket to set active clock
-and use SLEEP bucket for other clocks.  So far we don't use AMC bucket.
+This is no longer used, is it?
+> +
+>  /* for KVM_GET_REGS and KVM_SET_REGS */
+>  struct kvm_regs {
+>  	/* general purpose regs for s390 */
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index ee59b03f2e45..5029fe40adbd 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -606,6 +606,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+>  	case KVM_CAP_S390_PROTECTED:
+>  		r = is_prot_virt_host();
+>  		break;
+> +	case KVM_CAP_S390_CPU_TOPOLOGY:
+> +		r = test_facility(11);
+> +		break;
+>  	default:
+>  		r = 0;
+>  	}
+> @@ -817,6 +820,20 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm, struct kvm_enable_cap *cap)
+>  		icpt_operexc_on_all_vcpus(kvm);
+>  		r = 0;
+>  		break;
+> +	case KVM_CAP_S390_CPU_TOPOLOGY:
+> +		r = -EINVAL;
+> +		mutex_lock(&kvm->lock);
+> +		if (kvm->created_vcpus) {
+> +			r = -EBUSY;
+> +		} else if (test_facility(11)) {
+> +			set_kvm_facility(kvm->arch.model.fac_mask, 11);
+> +			set_kvm_facility(kvm->arch.model.fac_list, 11);
+> +			r = 0;
+> +		}
+> +		mutex_unlock(&kvm->lock);
+> +		VM_EVENT(kvm, 3, "ENABLE: CPU TOPOLOGY %s",
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
- drivers/interconnect/qcom/icc-rpm.c | 80 ++++++++++++++++++++++++-----
- 1 file changed, 67 insertions(+), 13 deletions(-)
+I still would go for consistency here, "ENABLE: CAP_S390_CPU_TOPOLOGY %s".
 
-diff --git a/drivers/interconnect/qcom/icc-rpm.c b/drivers/interconnect/qcom/icc-rpm.c
-index b025fc6b97c9..4b932eb807c7 100644
---- a/drivers/interconnect/qcom/icc-rpm.c
-+++ b/drivers/interconnect/qcom/icc-rpm.c
-@@ -302,18 +302,62 @@ static int qcom_icc_bw_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
- 	return 0;
- }
- 
-+/**
-+ * qcom_icc_bus_aggregate - aggregate bandwidth by traversing all nodes
-+ * @provider: generic interconnect provider
-+ * @agg_avg: an array for aggregated average bandwidth of buckets
-+ * @agg_peak: an array for aggregated peak bandwidth of buckets
-+ * @max_agg_avg: pointer to max value of aggregated average bandwidth
-+ * @max_agg_peak: pointer to max value of aggregated peak bandwidth
-+ */
-+static void qcom_icc_bus_aggregate(struct icc_provider *provider,
-+				   u64 *agg_avg, u64 *agg_peak,
-+				   u64 *max_agg_avg, u64 *max_agg_peak)
-+{
-+	struct icc_node *node;
-+	struct qcom_icc_node *qn;
-+	int i;
-+
-+	/* Initialise aggregate values */
-+	for (i = 0; i < QCOM_ICC_NUM_BUCKETS; i++) {
-+		agg_avg[i] = 0;
-+		agg_peak[i] = 0;
-+	}
-+
-+	*max_agg_avg = 0;
-+	*max_agg_peak = 0;
-+
-+	/*
-+	 * Iterate nodes on the interconnect and aggregate bandwidth
-+	 * requests for every bucket.
-+	 */
-+	list_for_each_entry(node, &provider->nodes, node_list) {
-+		qn = node->data;
-+		for (i = 0; i < QCOM_ICC_NUM_BUCKETS; i++) {
-+			agg_avg[i] += qn->sum_avg[i];
-+			agg_peak[i] = max_t(u64, agg_peak[i], qn->max_peak[i]);
-+		}
-+	}
-+
-+	/* Find maximum values across all buckets */
-+	for (i = 0; i < QCOM_ICC_NUM_BUCKETS; i++) {
-+		*max_agg_avg = max_t(u64, *max_agg_avg, agg_avg[i]);
-+		*max_agg_peak = max_t(u64, *max_agg_peak, agg_peak[i]);
-+	}
-+}
-+
- static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
- {
- 	struct qcom_icc_provider *qp;
- 	struct qcom_icc_node *src_qn = NULL, *dst_qn = NULL;
- 	struct icc_provider *provider;
--	struct icc_node *n;
- 	u64 sum_bw;
- 	u64 max_peak_bw;
- 	u64 rate;
--	u32 agg_avg = 0;
--	u32 agg_peak = 0;
-+	u64 agg_avg[QCOM_ICC_NUM_BUCKETS], agg_peak[QCOM_ICC_NUM_BUCKETS];
-+	u64 max_agg_avg, max_agg_peak;
- 	int ret, i;
-+	int bucket;
- 
- 	src_qn = src->data;
- 	if (dst)
-@@ -321,12 +365,11 @@ static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
- 	provider = src->provider;
- 	qp = to_qcom_provider(provider);
- 
--	list_for_each_entry(n, &provider->nodes, node_list)
--		provider->aggregate(n, 0, n->avg_bw, n->peak_bw,
--				    &agg_avg, &agg_peak);
-+	qcom_icc_bus_aggregate(provider, agg_avg, agg_peak, &max_agg_avg,
-+			       &max_agg_peak);
- 
--	sum_bw = icc_units_to_bps(agg_avg);
--	max_peak_bw = icc_units_to_bps(agg_peak);
-+	sum_bw = icc_units_to_bps(max_agg_avg);
-+	max_peak_bw = icc_units_to_bps(max_agg_peak);
- 
- 	ret = __qcom_icc_set(src, src_qn, sum_bw);
- 	if (ret)
-@@ -337,12 +380,23 @@ static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
- 			return ret;
- 	}
- 
--	rate = max(sum_bw, max_peak_bw);
--
--	do_div(rate, src_qn->buswidth);
--	rate = min_t(u64, rate, LONG_MAX);
--
- 	for (i = 0; i < qp->num_clks; i++) {
-+		/*
-+		 * Use WAKE bucket for active clock, otherwise, use SLEEP bucket
-+		 * for other clocks.  If a platform doesn't set interconnect
-+		 * path tags, by default use sleep bucket for all clocks.
-+		 *
-+		 * Note, AMC bucket is not supported yet.
-+		 */
-+		if (!strcmp(qp->bus_clks[i].id, "bus_a"))
-+			bucket = QCOM_ICC_BUCKET_WAKE;
-+		else
-+			bucket = QCOM_ICC_BUCKET_SLEEP;
-+
-+		rate = icc_units_to_bps(max(agg_avg[bucket], agg_peak[bucket]));
-+		do_div(rate, src_qn->buswidth);
-+		rate = min_t(u64, rate, LONG_MAX);
-+
- 		if (qp->bus_clk_rate[i] == rate)
- 			continue;
- 
--- 
-2.25.1
+> +			 r ? "(not available)" : "(success)");
+> +		break;
+>  	default:
+>  		r = -EINVAL;
+>  		break;
+> @@ -1716,6 +1733,33 @@ static void kvm_s390_update_topology_change_report(struct kvm *kvm, bool val)
+>  	read_unlock(&kvm->arch.sca_lock);
+>  }
+>  
+> +static int kvm_s390_set_topology(struct kvm *kvm, struct kvm_device_attr *attr)
+> +{
+> +	if (!test_kvm_facility(kvm, 11))
+> +		return -ENXIO;
+> +
+> +	kvm_s390_update_topology_change_report(kvm, !!attr->attr);
 
+Will this not be automatically clamped to 0,1 if the argument has type bool?
+> +	return 0;
+> +}
+> +
+> +static int kvm_s390_get_topology(struct kvm *kvm, struct kvm_device_attr *attr)
+> +{
+> +	union sca_utility utility;
+> +	struct bsca_block *sca = kvm->arch.sca;
+> +	__u8 topo;
+> +
+> +	if (!test_kvm_facility(kvm, 11))
+> +		return -ENXIO;
+> +
+        read_lock(&kvm->arch.sca_lock);
+        utility.val = READ_ONCE(kvm->arch.sca->utility.val);
+        read_unlock(&kvm->arch.sca_lock);
+
+And then get rid of the sca declaration.
+> +	topo = utility.mtcr;
+> +
+> +	if (copy_to_user((void __user *)attr->addr, &topo, sizeof(topo)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+[...]
