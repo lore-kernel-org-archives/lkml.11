@@ -2,81 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 203D9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3622C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbiGDJdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
+        id S233803AbiGDJd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233847AbiGDJcy (ORCPT
+        with ESMTP id S233943AbiGDJdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:32:54 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A0BFBC99
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:31:50 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 530D81E80CD1;
-        Mon,  4 Jul 2022 17:29:53 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id lDAh5dXbYv1W; Mon,  4 Jul 2022 17:29:50 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id CB6061E80C90;
-        Mon,  4 Jul 2022 17:29:49 +0800 (CST)
-From:   Yu Zhe <yuzhe@nfschina.com>
-To:     mathieu.desnoyers@efficios.com, paulmck@kernel.org,
-        mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, hannes@cmpxchg.org,
-        surenb@google.com
-Cc:     linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        Yu Zhe <yuzhe@nfschina.com>
-Subject: [PATCH] sched: remove unnecessary type castings.
-Date:   Mon,  4 Jul 2022 17:30:41 +0800
-Message-Id: <20220704093041.18697-1-yuzhe@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Mon, 4 Jul 2022 05:33:03 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564DADF49
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:32:05 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1o8IR1-00065d-Ll; Mon, 04 Jul 2022 11:32:03 +0200
+Message-ID: <b839da7c-9377-23b6-948c-371e079d978d@leemhuis.info>
+Date:   Mon, 4 Jul 2022 11:32:02 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: Boot stall regression from "printk for 5.19" merge #forregzbot
+Content-Language: en-US
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     linux-kernel@vger.kernel.org
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20220619204949.50d9154d@thinkpad>
+ <4457efae-2c74-4251-f0db-88cfc833b591@leemhuis.info>
+In-Reply-To: <4457efae-2c74-4251-f0db-88cfc833b591@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1656927125;5b61fe1a;
+X-HE-SMSGID: 1o8IR1-00065d-Ll
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-remove unnecessary void* type castings.
+TWIMC: this mail is primarily send for documentation purposes and for
+regzbot, my Linux kernel regression tracking bot. These mails usually
+contain '#forregzbot' in the subject, to make them easy to spot and filter.
 
-Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
----
- kernel/sched/membarrier.c | 2 +-
- kernel/sched/psi.c        | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On 21.06.22 11:39, Thorsten Leemhuis wrote:
+> [TLDR: I'm adding this regression report to the list of tracked
+> regressions; all text from me you find below is based on a few templates
+> paragraphs you might have encountered already already in similar form.]
+> 
+> Hi, this is your Linux kernel regression tracker.
+> 
+> On 19.06.22 20:49, Marek Behún wrote:
+>> Hello Linus, Petr, John,
+>>
+>> the series
+>> https://lore.kernel.org/linux-kernel/YouKQw72H7y9EJQK@alley/
+>> merged by commit 537e62c865dc ("Merge tag 'printk-for-5.19' of
+>> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux")
+>>
+>> and in particular the commit 09c5ba0aa2fc ("printk: add kthread console
+>> printers")
+>>
+>> causes a regression on arm64 (Marvell CN9130-CRB board) where the
+>> system boot freezes in most cases (and is unusable until restarted by
+>> watchdog), or, in some cases boots, but the console output gets mangled
+>> for a while (the serial console spits garbage characters).
+> [...]
+> #regzbot ^introduced v5.18..v5.19-rc3
 
-diff --git a/kernel/sched/membarrier.c b/kernel/sched/membarrier.c
-index 0c5be7ebb1dc..08b120f11180 100644
---- a/kernel/sched/membarrier.c
-+++ b/kernel/sched/membarrier.c
-@@ -198,7 +198,7 @@ static void ipi_rseq(void *info)
- 
- static void ipi_sync_rq_state(void *info)
- {
--	struct mm_struct *mm = (struct mm_struct *) info;
-+	struct mm_struct *mm = info;
- 
- 	if (current->mm != mm)
- 		return;
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index a337f3e35997..9a67538e4403 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -634,7 +634,7 @@ static void psi_poll_work(struct psi_group *group)
- 
- static int psi_poll_worker(void *data)
- {
--	struct psi_group *group = (struct psi_group *)data;
-+	struct psi_group *group = data;
- 
- 	sched_set_fifo_low(current);
- 
--- 
-2.11.0
-
+#regzbot fixed-by: 07a22b61946f0b80065b
