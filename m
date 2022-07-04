@@ -2,208 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D109C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 08:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 08:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233185AbiGDIcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 04:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
+        id S233208AbiGDIdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 04:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232580AbiGDIcr (ORCPT
+        with ESMTP id S231497AbiGDIdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 04:32:47 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A422DB4B5;
-        Mon,  4 Jul 2022 01:32:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656923561; x=1688459561;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SKOSvrvIla2F6prWk1w6EmMQnAI8EiyQXq/JXI5eSc8=;
-  b=zegXMNi4sYURPo20Cx1CQW0DQH1LG9CIDsDm94+pc8P4Dh/QT/3668Cb
-   /kt0GwhurNaj9qk41w/fv/5DgBayuD/eDDmwxEF8p9gbvpWGx3/H8o0X7
-   hWmzef4WYQmBVkEKGfNPf8TwEpsjj4bbPvvo4ogdpcrBKkkTdiKiEhyl1
-   pNj7Z/XEz/wa+Ne48S/WHNJ3HDQJqBvPOwBcBEXutxZ1d1H0q01a9bbEM
-   aTofhDMKGOkJeZhwDgPGiA4zOLlxNFJCrQ6dbQQNKFWFf0HC1XhwCiGEh
-   +u2K57t0HCUEMDAhQgM30qxIZ41h8wv85XKoUKHmhWU/Y3mZndrUGwOjy
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="102886476"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jul 2022 01:32:38 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 4 Jul 2022 01:32:34 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 4 Jul 2022 01:32:29 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>
-CC:     <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <Kavyasree.Kotagiri@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <tudor.ambarus@microchip.com>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH v2] spi: atmel: convert spi_atmel to json-schema
-Date:   Mon, 4 Jul 2022 11:31:43 +0300
-Message-ID: <20220704083143.56150-1-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Jul 2022 04:33:09 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C63CB49A
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 01:33:08 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3998623A;
+        Mon,  4 Jul 2022 01:33:08 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0324D3F792;
+        Mon,  4 Jul 2022 01:33:05 -0700 (PDT)
+Message-ID: <24c63730-2d6a-de14-57ca-919870b64323@arm.com>
+Date:   Mon, 4 Jul 2022 10:32:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] sched: fix rq lock recursion issue
+Content-Language: en-US
+To:     Qais Yousef <qais.yousef@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Satya Durga Srinivasu Prabhala <quic_satyap@quicinc.com>,
+        mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, rostedt@goodmis.org,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+References: <20220624074240.13108-1-quic_satyap@quicinc.com>
+ <20220630215310.wb3kab72tlh5pq2g@airbuntu>
+ <Yr6xPWOReXNuDQqh@worktop.programming.kicks-ass.net>
+ <20220701114846.42o2tkm5fqt325df@wubuntu>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <20220701114846.42o2tkm5fqt325df@wubuntu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert SPI DT binding for Atmel/Microchip SoCs to YAML schema.
+On 01/07/2022 13:48, Qais Yousef wrote:
+> On 07/01/22 10:33, Peter Zijlstra wrote:
+>> On Thu, Jun 30, 2022 at 10:53:10PM +0100, Qais Yousef wrote:
+>>> Hi Satya
+>>>
+>>> On 06/24/22 00:42, Satya Durga Srinivasu Prabhala wrote:
+>>>> Below recursion is observed in a rare scenario where __schedule()
+>>>> takes rq lock, at around same time task's affinity is being changed,
+>>>> bpf function for tracing sched_switch calls migrate_enabled(),
+>>>> checks for affinity change (cpus_ptr != cpus_mask) lands into
+>>>> __set_cpus_allowed_ptr which tries acquire rq lock and causing the
+>>>> recursion bug.
+>>>>
+>>>> Fix the issue by switching to preempt_enable/disable() for non-RT
+>>>> Kernels.
+>>>
+>>> Interesting bug. Thanks for the report. Unfortunately I can't see this being
+>>> a fix as it just limits the bug visibility to PREEMPT_RT kernels, but won't fix
+>>> anything, no? ie: Kernels compiled with PREEMPT_RT will still hit this failure.
+>>
+>> Worse, there's !RT stuff that grew to rely on the preemptible migrate
+>> disable stuff, so this actively breaks things.
+>>
+>>> I'm curious how the race with set affinity is happening. I would have thought
+>>> user space would get blocked as __schedule() will hold the rq lock.
+>>>
+>>> Do you have more details on that?
+>>
+>> Yeah, I'm not seeing how this works either, in order for
+>> migrate_enable() to actually call __set_cpus_allowed_ptr(), it needs to
+>> have done migrate_disable() *before* schedule, schedule() will then have
+>> to call migrate_disable_swich(), and *then* migrate_enable() does this.
+>>
+>> However, if things are nicely balanced (as they should be), then
+>> trace_call_bpf() using migrate_disable()/migrate_enable() should never
+>> hit this path.
+>>
+>> If, OTOH, migrate_disable() was called prior to schedule() and we did do
+>> migrate_disable_switch(), then it should be impossible for the
+>> tracepoint/bpf stuff to reach p->migration_disabled == 0.
+> 
+> I think it's worth to confirm which kernel Satya is on too. If it's GKI, then
+> worth checking first this is actually reproducible on/applicable to mainline.
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
+Satya, do you still have these lines from your spin_dump() output showing
+current, the kernel version and the hardware? Or a way to recreate this?
+I couldn't provoke it so far.
 
-v1 -> v2:
-- change subject headline prefix from "dt-bindings: spi" to "spi: atmel"
-- change maintainer
-- kept the compatbile as items (instead of switching to enums) and at91rm9200
-as fallback for sam9x60, since the evolution of IP's is incremental.
-- removed unnecessay "cs-gpios" property and descriptions
-- added min/max for fifo-size property.
-
-
- .../devicetree/bindings/spi/atmel,spi.yaml    | 77 +++++++++++++++++++
- .../devicetree/bindings/spi/spi_atmel.txt     | 36 ---------
- 2 files changed, 77 insertions(+), 36 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/atmel,spi.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
-
-diff --git a/Documentation/devicetree/bindings/spi/atmel,spi.yaml b/Documentation/devicetree/bindings/spi/atmel,spi.yaml
-new file mode 100644
-index 000000000000..d627fc9315bc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/spi/atmel,spi.yaml
-@@ -0,0 +1,77 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/spi/atmel,spi.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel SPI device
-+
-+maintainers:
-+  - Tudor Ambarus <tudor.ambarus@microchip.com>
-+
-+allOf:
-+  - $ref: spi-controller.yaml#
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - const: atmel,at91rm9200-spi
-+      - items:
-+          - const: microchip,sam9x60-spi
-+          - const: atmel,at91rm9200-spi
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clock-names:
-+    contains:
-+      const: spi_clk
-+
-+  clocks:
-+    maxItems: 1
-+
-+  atmel,fifo-size:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Maximum number of data the RX and TX FIFOs can store for FIFO
-+      capable SPI controllers.
-+    minimum: 16
-+    maximum: 32
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clock-names
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi1: spi@fffcc000 {
-+        compatible = "atmel,at91rm9200-spi";
-+        reg = <0xfffcc000 0x4000>;
-+        interrupts = <13 IRQ_TYPE_LEVEL_HIGH 5>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        clocks = <&spi1_clk>;
-+        clock-names = "spi_clk";
-+        cs-gpios = <&pioB 3 GPIO_ACTIVE_HIGH>;
-+        atmel,fifo-size = <32>;
-+
-+        mmc@0 {
-+            compatible = "mmc-spi-slot";
-+            reg = <0>;
-+            gpios = <&pioC 4 GPIO_ACTIVE_HIGH>;    /* CD */
-+            spi-max-frequency = <25000000>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/spi/spi_atmel.txt b/Documentation/devicetree/bindings/spi/spi_atmel.txt
-deleted file mode 100644
-index 5bb4a8f1df7a..000000000000
---- a/Documentation/devicetree/bindings/spi/spi_atmel.txt
-+++ /dev/null
-@@ -1,36 +0,0 @@
--Atmel SPI device
--
--Required properties:
--- compatible : should be "atmel,at91rm9200-spi" or "microchip,sam9x60-spi".
--- reg: Address and length of the register set for the device
--- interrupts: Should contain spi interrupt
--- cs-gpios: chipselects (optional for SPI controller version >= 2 with the
--  Chip Select Active After Transfer feature).
--- clock-names: tuple listing input clock names.
--	Required elements: "spi_clk"
--- clocks: phandles to input clocks.
--
--Optional properties:
--- atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
--  capable SPI controllers.
--
--Example:
--
--spi1: spi@fffcc000 {
--	compatible = "atmel,at91rm9200-spi";
--	reg = <0xfffcc000 0x4000>;
--	interrupts = <13 4 5>;
--	#address-cells = <1>;
--	#size-cells = <0>;
--	clocks = <&spi1_clk>;
--	clock-names = "spi_clk";
--	cs-gpios = <&pioB 3 0>;
--	atmel,fifo-size = <32>;
--
--	mmc-slot@0 {
--		compatible = "mmc-spi-slot";
--		reg = <0>;
--		gpios = <&pioC 4 0>;	/* CD */
--		spi-max-frequency = <25000000>;
--	};
--};
--- 
-2.25.1
-
+...
+[  212.196452] BUG: spinlock recursion on CPU#4, bpftrace/1662
+                                                 ^^^^^^^^^^^^^       
+[  212.196473]  lock: 0xffff00097ef7f500, .magic: dead4ead, .owner: bpftrace/1662, .owner_cpu: 4
+[  212.196500] CPU: 4 PID: 1662 Comm: bpftrace Not tainted 5.19.0-rc2-00018-gb7ce5b6b4622-dirty #96
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                             
+[  212.196513] Hardware name: ARM Juno development board (r0) (DT)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[  212.196520] Call trace:
+...
