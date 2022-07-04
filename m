@@ -2,61 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47943C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4555AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233863AbiGDMt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 08:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
+        id S233986AbiGDMuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 08:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiGDMt5 (ORCPT
+        with ESMTP id S234004AbiGDMuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 08:49:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDAE3101E3
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 05:49:56 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AFA5D23A;
-        Mon,  4 Jul 2022 05:49:56 -0700 (PDT)
-Received: from bogus (unknown [10.57.39.193])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 48AA53F66F;
-        Mon,  4 Jul 2022 05:49:54 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 13:48:43 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        huhai <huhai@kylinos.cn>,
-        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Olof Johansson <olof@lixom.net>
-Subject: Re: next-20220704: juno-r2: Unable to handle kernel NULL pointer
- dereference at virtual address - scpi_send_message
-Message-ID: <20220704124843.nu5jvdomxwwry35g@bogus>
-References: <CA+G9fYu0CajqiX5bQq-zmp1rpOW2eniH=fcPaJA+Wwi_XmKCWQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYu0CajqiX5bQq-zmp1rpOW2eniH=fcPaJA+Wwi_XmKCWQ@mail.gmail.com>
+        Mon, 4 Jul 2022 08:50:09 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2D2101F8
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 05:50:08 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2A1811F9A7;
+        Mon,  4 Jul 2022 12:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1656939007; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l27P01sluJi9msKGTbQ1i13qPlOaOBSFGP5emV5uzEA=;
+        b=aNIbdF0jPGSO0lXq5G92rDwVUSmRkFOrQBdfA/k3h7M6G2Uo/XalN+xWgRilxD2K5i5YIO
+        WmV9Yn/JtOxVFhNJJLknyfhDFVQX1k4gn93nV8ACt/AJw/8bwDb9/nT0z4uOHpvJRP81ok
+        I31FmjxmLa+Z1KWnp2d9X2zs6lkXhow=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1656939007;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l27P01sluJi9msKGTbQ1i13qPlOaOBSFGP5emV5uzEA=;
+        b=vaa/VgVfJW3R7P9vL9kP2aiGYO7z//+7cigJJDQisxwZ9Mu9hVi9wI91z4d7HJkR87pJKZ
+        JktfC34oJT/IV+Dg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0161D1342C;
+        Mon,  4 Jul 2022 12:50:06 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id AylVO/7hwmIgNQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 04 Jul 2022 12:50:06 +0000
+Date:   Mon, 04 Jul 2022 14:50:06 +0200
+Message-ID: <87zghpxcsh.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Mark Brown <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 00/14] ALSA: hda: cirrus: Add initial DSP support and firmware loading
+In-Reply-To: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
+References: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Naresh,
-
-On Mon, Jul 04, 2022 at 05:23:53PM +0530, Naresh Kamboju wrote:
-> [please ignore this if it is already reported]
+On Thu, 30 Jun 2022 02:23:21 +0200,
+Vitaly Rodionov wrote:
 > 
-> Following kernel crash noticed on arm64 juno-r2 device while booting
-> the Linux next-20220704 kernel.
+> The CS35L41 Amplifier contains a DSP, capable of running firmware.
+> The firmware can run algorithms such as Speaker Protection, to ensure
+> that playback at high gains do not harm the speakers.
+> Adding support for CS35L41 firmware into the CS35L41 HDA driver also
+> allows us to support several extra features, such as hiberation 
+> and interrupts.
 > 
+> The chain adds support in stages:
+> - General fixes to improve generalization and code re-use inside
+>   the CS35L41 HDA driver.
+> - Add support for interrupts into the driver, which is required
+>   for complete support of the firmware.
+> - Refactor ASoC CS35L41 code which deals with firmware to allow
+>   for code re-use inside the CS35L41 HDA driver.
+> - Add support for loading firmware and tuning files from file system,
+>   and creating alsa controls to control it.
+> - Support firmware load paths for different hardware systems.
+> - Support suspend/resume in the driver when using firmware. The firmware
+>   supports hibernation, which allows the CS35L41 to drop into a low
+>   power mode during suspend.
+> - Support the ability to unload firmware, swap and reload the firmware.
+>   This is to allow different firmware to run during calibration.
+> 
+> The intended use-case is to load the firmware once on boot, and the driver
+> autmatically tries to load the firmware after it binds to the HDA driver.
+> This behaviour can be switched off using a kconfig, if desired.
+> 
+> changes since v7:
+>  - Use private_data rather than private_value to save control info
+>  - Clean up alsa control memory allocation/deallocation
+>  - Remove unnecessary whitespace
+>  - Get subsystem id from codec, rather than saving it separately
+> 
+> changes since v6:
+>  - Fix warning by kernel test robot <lkp@intel.com>
+>  
+> changes since v5:
+>  - Fix warning by kernel test robot <lkp@intel.com>
+>  
+> changes since v4:
+> - Fully remove tlv remnants from control add apis
+> - Remove unnecessary debug
+> - Rename variable to be more generic
+> - Remove redundent length check from read/write control apis
+> 
+> 
+> - Use SNDRV_CTL_ELEM_IFACE_CARD for firmware load controls
+> - Make kcontrol add/remove synchronous
+> - Load firmware asynchronous when loading via control
+> - Used cached controls when reloading firmware; only delete
+> controls when removing the driver itself
+> 
+> 
+> - Improve kcontrol remove
+> - Fix control write + notify
+> - Cleanup of unnecessary code
+> - Fix race condition when loading firmware before playback
+> - Ensure errors are properly propogated
+> - Fix include for Module parameters
+> 
+> Stefan Binding (13):
+>   ALSA: hda: hda_cs_dsp_ctl: Add Library to support CS_DSP ALSA controls
+>   ALSA: hda: hda_cs_dsp_ctl: Add apis to write the controls directly
+>   ALSA: hda: cs35l41: Save codec object inside component struct
+>   ALSA: hda: cs35l41: Save Subsystem ID inside CS35L41 Driver
+>   ALSA: hda: cs35l41: Support reading subsystem id from ACPI
+>   ALSA: hda: cs35l41: Support multiple load paths for firmware
+>   ALSA: hda: cs35l41: Support Speaker ID for laptops
+>   ALSA: hda: cs35l41: Support Hibernation during Suspend
+>   ALSA: hda: cs35l41: Read Speaker Calibration data from UEFI variables
+>   ALSA: hda: hda_cs_dsp_ctl: Add fw id strings
+>   ALSA: hda: cs35l41: Add defaulted values into dsp bypass config
+>     sequence
+>   ALSA: hda: cs35l41: Support Firmware switching and reloading
+>   ALSA: hda: cs35l41: Add module parameter to control firmware load
+> 
+> Vitaly Rodionov (1):
+>   ALSA: hda: cs35l41: Add initial DSP support and firmware loading
 
-Thanks for the report. It is just me not pushing the right version of a
-particular patch. I will update it after testing once again.
+Thanks, this version looks better than previous ones, and I'm fine to
+apply as is, to make things going forward.  But this seems requiring
+the prerequisite in ASoC codec side.
 
--- 
-Regards,
-Sudeep
+Mark, could you send a PR to merge into my tree so that I can apply
+those series?
+
+
+And, one still uncertain thing is about the handling of system
+suspend/resume, especially about the firmware loading work.  e.g. what
+happens if a f/w work is in run and the system goes to suspend at the
+very same time?  Or does the S3/S4 work in general at all?
+
+
+Takashi
