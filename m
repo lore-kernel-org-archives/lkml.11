@@ -2,85 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A9DCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 986A1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233539AbiGDPmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        id S233903AbiGDPm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233708AbiGDPmv (ORCPT
+        with ESMTP id S233708AbiGDPmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:42:51 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1361146E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:42:49 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id i17so6750740ljj.12
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 08:42:49 -0700 (PDT)
+        Mon, 4 Jul 2022 11:42:55 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5EE11472
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:42:53 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id l68so5622822wml.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 08:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=EcZ5rQhAoacfdlYLguMbSs24JZeR+2Vf2FW6PLncyKQ=;
-        b=McfHBD7uZDzpFq0p7tCEt/hUOtzDLANUWL72At+to30fVSjPI8WYK+MOljH4tU6vce
-         9YU2YeO1g//ykXVxvn7LDrAf38/KbiX9YnvCQehKw2HpFN47IRtCdrcZpV7oHBvXZ/A2
-         1xJQfJpT3Zx9x25Jn+BtSM8h005wwNt5GTY1i8pXQAXPPsvIxZ2kXzJud3I7qxKCqXJr
-         ku/A+uoczH2BIZIIrXPZrWD/Jpb+TddDriflmt19SVih1U4oisV21JHfLTVld9dgEnyG
-         ngyXNg8ZJfaGLv5M44cGxljWijjyh456ZC/SJQ2gUgHNfthWvhz1F1XgufEZMj54J5Gx
-         V+kQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=cBYKztTgLIZXtAHXN6ufusaGqO1+qT245DniRkr75B0=;
+        b=hepq4twEffNi47SjGmYWEMPKiv48Idb7HIkctWFoQCcTYH+dJ2riBXTCfMc3lC7T/2
+         r5y+kCYWgBBMkrdlciqLySVUzVsfp2eo58FO56Ompno3USElgDd31cNkQtHc3ZZpip0C
+         6PUItynR1m2+n79fDN6oqvanY2rGiYUFf8FO5yx/B/hcypFf77WYDBm5VzeUjNYgLPeC
+         tw5JDui+nMq2GrbHokx/eyU+kg6CLUynN8o72q67168rYFWqnbMYZDN/JDljkpQAemut
+         o5gQmepoviq5a/EdV7i9kxOjHfzUHySiaj6SbjPXLa5j/zfy/sorMhqxBCih9D4N3h3j
+         X57Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EcZ5rQhAoacfdlYLguMbSs24JZeR+2Vf2FW6PLncyKQ=;
-        b=eSTmBigBBB6lGhgBkt/Zoy05u0cAwGvKiLP1KTgAdbyV93EtwzeHRX8Rm7/rgaOMSH
-         INbSXPy+/Hq+cwD+eeerXJQ8WLx2txSVsCPaYlXXIV89d/8J97Gx6R4+gp4vQltcctca
-         Rbfb07ncBSrAcrRwbo/XSnLdHoNUpnWUu7YowG7QMR8wjY2GWyWi0kzk/T13Z8h42vQx
-         SW7nn9A0nrj1J6LWvT/ShfWfwT7E4GhrUlWQV/ADrPzSkBVsVrLy53empkeMux/nX+c7
-         27S6p9j3AlYVurOrTXcEJ8zDajz4dN0vBEeUIUCuMC3RZ9Mha2YVLuclVezvwK1RHdFM
-         Spyw==
-X-Gm-Message-State: AJIora+ln1Ur6J/qw0m2MiZ20MWukpZF9cCR6pQL/SDCgQBFfDRLYCBa
-        VCeTBaN1DtFiSvTvefHXOREUtA==
-X-Google-Smtp-Source: AGRyM1sOChkfy4qCYFd1OxMV2pqpXME8Dth7bbMT8uv5pyETHqKQKM1J+eK6u3Uot0Sh5fa5/Xo8ww==
-X-Received: by 2002:a2e:844a:0:b0:255:46b9:5e86 with SMTP id u10-20020a2e844a000000b0025546b95e86mr16069055ljh.388.1656949368138;
-        Mon, 04 Jul 2022 08:42:48 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id g2-20020a056512118200b0047f701f6d09sm5189380lfr.184.2022.07.04.08.42.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 08:42:47 -0700 (PDT)
-Message-ID: <4ba83a27-08e3-dd43-1a37-9475ad60d202@linaro.org>
-Date:   Mon, 4 Jul 2022 17:42:46 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 2/2] arm64: dts: ipq8074: add reset to SDHCI
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, ulf.hansson@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, bhupesh.sharma@linaro.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <20220704143554.1180927-1-robimarko@gmail.com>
- <20220704143554.1180927-2-robimarko@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220704143554.1180927-2-robimarko@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=cBYKztTgLIZXtAHXN6ufusaGqO1+qT245DniRkr75B0=;
+        b=bSWOSZ70qStaYiq2i0vc0OWa0upB0DJ1P1DgyrrMGdH4ZthQVzSNLK5O6w0KsYs+/K
+         Li9A0V4yrdg6GrxXbVLcwdyMJ1RIugU7GtJyuOyyNn2v9njDo2YtgHbj/KzokCiGORyI
+         9fci3YVbEr4Rsxj6UfBSvjrGhSQtahWXSU+9vVz3WyPS6yjWAjEwKZVqWDxFWt0DSn51
+         97bx7Cqnl4ogV7n0dcvTjTo8kwrfShliB05GXMTVUh+eRkDOSoVwkvIW3z89U7NR/wWw
+         F8CYObOROpCi4BN2cWv1BejZIEFl+0qJIZhdV09IJrKHCo8KAQfz9pz4/vBdcCnVV742
+         oSJw==
+X-Gm-Message-State: AJIora+AiYpkJVJOkxnMcVYc83Fv3IKxGtNYCUrrWwrXpKCRgHqL/iru
+        CNZztCkTsfzXqOGzek0+fU1p8Q==
+X-Google-Smtp-Source: AGRyM1vYDL+f/RomUEcTuT8P9geDQbjGZlU+LWFvGlWZLsEo+pEMXr0ylTGtIPWD28n5FzP9ycbjtg==
+X-Received: by 2002:a05:600c:a47:b0:39e:f953:84e2 with SMTP id c7-20020a05600c0a4700b0039ef95384e2mr33582967wmq.202.1656949371714;
+        Mon, 04 Jul 2022 08:42:51 -0700 (PDT)
+Received: from linaro.org ([2a00:23c5:6809:2201:a9e8:9fdd:fa2d:1c72])
+        by smtp.gmail.com with ESMTPSA id j6-20020adfff86000000b0021d6b851ca1sm2763749wrr.111.2022.07.04.08.42.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 08:42:51 -0700 (PDT)
+From:   Mike Leach <mike.leach@linaro.org>
+To:     linux-arm-kernel@lists.infradead.org, coresight@lists.linaro.org,
+        linux-kernel@vger.kernel.org
+Cc:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        leo.yan@linaro.org, acme@kernel.org, james.clark@arm.com,
+        Mike Leach <mike.leach@linaro.org>
+Subject: [PATCH v4 0/7] coresight: syscfg: Extend configfs for config load
+Date:   Mon,  4 Jul 2022 16:42:42 +0100
+Message-Id: <20220704154249.11501-1-mike.leach@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/07/2022 16:35, Robert Marko wrote:
-> Add reset to SDHCI controller so it can be reset to avoid timeout issues
-> after software reset due to bootloader set configuration.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
+This set extends the configfs support to allow loading and unloading of
+configurations as binary files via configfs.
 
+Additional attributes - load and unload are provided to in the
+/config/cs-syscfg subsytem base group to implement the load functionality.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Routines to generate binary configuration files are supplied in
+./tools/coresight.
 
+Example generator and reader applications are provided.
 
-Best regards,
-Krzysztof
+Tools may be cross compiled or built for use on host system.
+
+Documentation is updated to describe feature usage.
+
+Changes since v3:
+1) Rebase & tested on coresight/next - 5.19-rc3 - which includes the
+fix patch for earlier configfs works.
+2) Lockdep investigations resulted in re-design of some of the code
+accessing configfs.
+3) moved load and unload attributes to root of cs-syscfg. (Mathieu)
+4) Additional minor fixes suggested by Mathieu.
+5) Memory for configfs loaded and unloaded configurations is now
+explicitly freed.
+6) LOCKDEP nesting fix for configfs base code (fs/configfs/dir.c)
+
+Changes since v2:
+1) Rebased & tested on coresight/next - 5.18-rc2
+2) Moved coresight config generator and reader programs from samples to
+tools/coresight. Docs updated to match. (suggested by Mathieu)
+3) userspace builds now use userspace headers from tools/...
+4) Other minor fixes from Mathieu's review.
+
+Changes since v1:
+1) Rebased to coresight/next - 5.16-rc1 with previous coresight config
+set applied.
+2) Makefile.host fixed to default to all target.
+
+Mike Leach (7):
+  coresight: configfs: Update memory allocation / free for configfs
+    elements
+  coresight: configfs: Add in functionality for load via configfs
+  coresight: configfs: Add in binary attributes to load files
+  coresight: configfs: Modify config files to allow userspace use
+  coresight: tools: Add config file write and reader tools
+  Documentation: coresight: docs for config load via configfs
+  configfs: Fix LOCKDEP nesting issues with fragment semaphores
+
+ .../trace/coresight/coresight-config.rst      | 202 +++++-
+ MAINTAINERS                                   |   1 +
+ drivers/hwtracing/coresight/Makefile          |   2 +-
+ .../coresight/coresight-config-file.c         | 583 ++++++++++++++++++
+ .../coresight/coresight-config-file.h         | 139 +++++
+ .../hwtracing/coresight/coresight-config.h    |  27 +
+ .../coresight/coresight-syscfg-configfs.c     | 300 +++++++--
+ .../coresight/coresight-syscfg-configfs.h     |   3 +
+ .../hwtracing/coresight/coresight-syscfg.c    | 107 ++++
+ .../hwtracing/coresight/coresight-syscfg.h    |   2 +
+ fs/configfs/configfs_internal.h               |   3 +
+ fs/configfs/dir.c                             |  45 ++
+ tools/coresight/Makefile                      |  52 ++
+ tools/coresight/coresight-cfg-bufw.c          | 309 ++++++++++
+ tools/coresight/coresight-cfg-bufw.h          |  26 +
+ tools/coresight/coresight-cfg-example1.c      |  62 ++
+ tools/coresight/coresight-cfg-example2.c      |  95 +++
+ tools/coresight/coresight-cfg-examples.h      |  22 +
+ tools/coresight/coresight-cfg-file-gen.c      |  61 ++
+ tools/coresight/coresight-cfg-file-read.c     | 227 +++++++
+ tools/coresight/coresight-config-uapi.h       |  76 +++
+ 21 files changed, 2298 insertions(+), 46 deletions(-)
+ create mode 100644 drivers/hwtracing/coresight/coresight-config-file.c
+ create mode 100644 drivers/hwtracing/coresight/coresight-config-file.h
+ create mode 100644 tools/coresight/Makefile
+ create mode 100644 tools/coresight/coresight-cfg-bufw.c
+ create mode 100644 tools/coresight/coresight-cfg-bufw.h
+ create mode 100644 tools/coresight/coresight-cfg-example1.c
+ create mode 100644 tools/coresight/coresight-cfg-example2.c
+ create mode 100644 tools/coresight/coresight-cfg-examples.h
+ create mode 100644 tools/coresight/coresight-cfg-file-gen.c
+ create mode 100644 tools/coresight/coresight-cfg-file-read.c
+ create mode 100644 tools/coresight/coresight-config-uapi.h
+
+-- 
+2.17.1
+
