@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564B4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A9DCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233528AbiGDPmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
+        id S233539AbiGDPmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231289AbiGDPml (ORCPT
+        with ESMTP id S233708AbiGDPmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:42:41 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABBD1115F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:42:40 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id o10so850654ljj.13
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 08:42:40 -0700 (PDT)
+        Mon, 4 Jul 2022 11:42:51 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1361146E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:42:49 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id i17so6750740ljj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 08:42:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :references:from:in-reply-to:content-transfer-encoding;
-        bh=jRnTm0+dhArAF8owZ/onzsDSwIYF8pxjVkdj1G3Cz5o=;
-        b=srzpyXDfFAOKz9xrgKk3U8OxFpXk5TyzbIYL0NMUfFcRRK04o7SPEVyh801/5rnz5e
-         ZL/ta0GZONJpuPnVEAm9/FUUTeQetAIshts9/9l1aj+EFs6zjrFIfjxANrL5/kZ9Fa4b
-         DJinEXFYO3FNmqfaDjWbWZyiYJx6GZ+j8oH2mR4GddbcOXVgLan4NDvI79VmezE4eMkl
-         LTjxe3a+vtNhWHO8BrUkbx+GOMruKUhZUBwZuBkhMrlZUndDjzrt9m0pMVLOHO/zZTOk
-         I+rIIaAVLiUdK6H1LPlnLlZuMN4xoMVlwmfTHQDgO/7BIlglVBBAfENwoA1nmbb99hZB
-         FBpQ==
+        bh=EcZ5rQhAoacfdlYLguMbSs24JZeR+2Vf2FW6PLncyKQ=;
+        b=McfHBD7uZDzpFq0p7tCEt/hUOtzDLANUWL72At+to30fVSjPI8WYK+MOljH4tU6vce
+         9YU2YeO1g//ykXVxvn7LDrAf38/KbiX9YnvCQehKw2HpFN47IRtCdrcZpV7oHBvXZ/A2
+         1xJQfJpT3Zx9x25Jn+BtSM8h005wwNt5GTY1i8pXQAXPPsvIxZ2kXzJud3I7qxKCqXJr
+         ku/A+uoczH2BIZIIrXPZrWD/Jpb+TddDriflmt19SVih1U4oisV21JHfLTVld9dgEnyG
+         ngyXNg8ZJfaGLv5M44cGxljWijjyh456ZC/SJQ2gUgHNfthWvhz1F1XgufEZMj54J5Gx
+         V+kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=jRnTm0+dhArAF8owZ/onzsDSwIYF8pxjVkdj1G3Cz5o=;
-        b=MxxS4hPQ+fNHPxbEDnBcxeboy+CuH7GoNZlfyJ8HYJSwHJgs9yNwCOk358ZK7T/7Z1
-         sSMi67ZvdJSb3wad4iEAI4b7q1EW3bhwYeTiou9lcPhM9+b4ScfV7hbkHYm+MZVeZihv
-         cdrhLtOm5XTuC8ozJPNj65gUMfyZJXwgROAg/41DGElL2jEZ0cwXOVG2vdvelUFbismf
-         Z0sVt/cVRF2qK8JQ4iE4e8tKI3EIVLIsuGG/ri21Xk3/73yosOthnkClq0+CXT+JZpQT
-         z6jKNZqNw4veD8/pkAzYwlvryUBq/rBJdw2KbIVG1EN+5mf4IpjwGt1aTto0OLsZjXBZ
-         PoIw==
-X-Gm-Message-State: AJIora+rjl1FNAmC4vAW/9uU3schc01aoge2/emW4mfUOkatVf/VRaFX
-        mWIrG2aU9HZqZp45e0lFIoz35g==
-X-Google-Smtp-Source: AGRyM1vZQoubZwD5PSegPGEQF1WuQ7CzAxwM+FuzlgVx4GryS2HKGicC/YzqczbrBsHc+rbZ34RyDA==
-X-Received: by 2002:a2e:4e09:0:b0:25a:8dd7:5c40 with SMTP id c9-20020a2e4e09000000b0025a8dd75c40mr16699694ljb.74.1656949359090;
-        Mon, 04 Jul 2022 08:42:39 -0700 (PDT)
+        bh=EcZ5rQhAoacfdlYLguMbSs24JZeR+2Vf2FW6PLncyKQ=;
+        b=eSTmBigBBB6lGhgBkt/Zoy05u0cAwGvKiLP1KTgAdbyV93EtwzeHRX8Rm7/rgaOMSH
+         INbSXPy+/Hq+cwD+eeerXJQ8WLx2txSVsCPaYlXXIV89d/8J97Gx6R4+gp4vQltcctca
+         Rbfb07ncBSrAcrRwbo/XSnLdHoNUpnWUu7YowG7QMR8wjY2GWyWi0kzk/T13Z8h42vQx
+         SW7nn9A0nrj1J6LWvT/ShfWfwT7E4GhrUlWQV/ADrPzSkBVsVrLy53empkeMux/nX+c7
+         27S6p9j3AlYVurOrTXcEJ8zDajz4dN0vBEeUIUCuMC3RZ9Mha2YVLuclVezvwK1RHdFM
+         Spyw==
+X-Gm-Message-State: AJIora+ln1Ur6J/qw0m2MiZ20MWukpZF9cCR6pQL/SDCgQBFfDRLYCBa
+        VCeTBaN1DtFiSvTvefHXOREUtA==
+X-Google-Smtp-Source: AGRyM1sOChkfy4qCYFd1OxMV2pqpXME8Dth7bbMT8uv5pyETHqKQKM1J+eK6u3Uot0Sh5fa5/Xo8ww==
+X-Received: by 2002:a2e:844a:0:b0:255:46b9:5e86 with SMTP id u10-20020a2e844a000000b0025546b95e86mr16069055ljh.388.1656949368138;
+        Mon, 04 Jul 2022 08:42:48 -0700 (PDT)
 Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id o4-20020a056512050400b004785b66a9a4sm1492621lfb.126.2022.07.04.08.42.38
+        by smtp.gmail.com with ESMTPSA id g2-20020a056512118200b0047f701f6d09sm5189380lfr.184.2022.07.04.08.42.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 08:42:38 -0700 (PDT)
-Message-ID: <fc5a5d36-ebaa-3300-287e-fdc2e0c547ce@linaro.org>
-Date:   Mon, 4 Jul 2022 17:42:37 +0200
+        Mon, 04 Jul 2022 08:42:47 -0700 (PDT)
+Message-ID: <4ba83a27-08e3-dd43-1a37-9475ad60d202@linaro.org>
+Date:   Mon, 4 Jul 2022 17:42:46 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: mmc: sdhci-msm: document resets
+Subject: Re: [PATCH v2 2/2] arm64: dts: ipq8074: add reset to SDHCI
 Content-Language: en-US
 To:     Robert Marko <robimarko@gmail.com>, ulf.hansson@linaro.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -63,8 +63,9 @@ To:     Robert Marko <robimarko@gmail.com>, ulf.hansson@linaro.org,
         linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
 References: <20220704143554.1180927-1-robimarko@gmail.com>
+ <20220704143554.1180927-2-robimarko@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220704143554.1180927-1-robimarko@gmail.com>
+In-Reply-To: <20220704143554.1180927-2-robimarko@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -72,12 +73,8 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 04/07/2022 16:35, Robert Marko wrote:
-> Commit "mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC" added
-> support for utilizing a hardware reset and parsing it from DT, however
-> the bindings were not updated along with it.
-> 
-> So, document the usage of "resets" property with the limit of only one
-> item.
+> Add reset to SDHCI controller so it can be reset to avoid timeout issues
+> after software reset due to bootloader set configuration.
 > 
 > Signed-off-by: Robert Marko <robimarko@gmail.com>
 
