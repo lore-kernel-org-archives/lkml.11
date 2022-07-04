@@ -2,82 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E353C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233953AbiGDJp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S233563AbiGDJti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233358AbiGDJpv (ORCPT
+        with ESMTP id S232644AbiGDJtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:45:51 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31645F7D;
-        Mon,  4 Jul 2022 02:45:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656927944; x=1688463944;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nrdI1aqCOmMQHJwk0uWLeNOFyiDw3uvCvQxr40EDQMU=;
-  b=NZzwjCV5S+RhuZEHRO5WRP0vJw1fsqjV0GZayW8VSohhkHC4A63fNITi
-   a7jwZoUAeMsYQTQRqWiAjpgI5GswdahjR3tPWjzout3yxNvBXy5Ejrynd
-   mA3/588n7oXvutZMOcu2XVgLR+WCaOhrSmlkZs+OUFc7Hg39LLbJo6duH
-   SY/Q3usuwqmcp0imA2OOZsxmAeo2kcgItliWtO1/q6sKvkvSs8M8gepB6
-   ocPdLv1JQ7BK+FJWQ3e56i3xTYDBwqLweVPTv5UfU6BtSvSwB/Mb/6Mm6
-   Y/n+QMX5ODGpZZB+REHBVjgmh5lgLig/ZMfaswUCTZZTsyWquROfoX3Fk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="266111813"
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="266111813"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:45:44 -0700
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="649508842"
-Received: from bclindho-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.49.27])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:45:41 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 2/2] serial: RS485 termination is supported if DT provides one
-Date:   Mon,  4 Jul 2022 12:45:15 +0300
-Message-Id: <20220704094515.6831-3-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220704094515.6831-1-ilpo.jarvinen@linux.intel.com>
-References: <20220704094515.6831-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 4 Jul 2022 05:49:36 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2081E2AD9;
+        Mon,  4 Jul 2022 02:49:35 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id l144so3426422ybl.5;
+        Mon, 04 Jul 2022 02:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=upxJ9MJ8gsVDlXDiuKX4+gbfevRMZmGiVadxBV+kpe8=;
+        b=qpHNh54MzgRw/unTs6ylIG6lsq0QzcEUzvY+KsDq+HVjI7Jeoy22/FDGFzk62XnWZq
+         pRXixYTwJaB2+72PZyhVEebJnEgQK/wovb6AB3Qi8YwUZ5x0mh8p+F8eUK9TIH/DeH+o
+         051TXq25MjKoz+zRqzBHqD9mZr/dYcVtzBjSGnXvYaejkZRfekks6tiRn33g6s1VMf6z
+         nHPP2a+YQ+/ZL6Vzaa3wntbjRl6pfO1dqTWZRUstwgyLbHozFt2CPubQ85gm5KNW5ech
+         yCRwCdu3KbbXoyjmYFxijPOj0lACMBnzlgB5rZrJ5qpxDXc+203vzEhNV5erIntoBmKf
+         zyOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=upxJ9MJ8gsVDlXDiuKX4+gbfevRMZmGiVadxBV+kpe8=;
+        b=76a2vQSYnG7xor+x2mYihYess3dvlwTVaZXUmpj7lnuLnl+R/gFxiJQPQmH4+xfmAA
+         Az1Vdq2MybC7G8M+crPPYkGow9Ool+CsV/oUQxCkAE6Z6zFY6urUwUZDXIuV6xx6glBL
+         I5+MKV1WtgEqM1iqaI3lrE9B9RMIFkXvl6znyq2m0fx8vmYFGM9XSRdqTYJM40ureIsQ
+         bXrs/o6CApMqKUIedzNucWKxQQWLMIyEUlRZ4G2NSwcQAev9UZpe8PeuX/qqWWGHvJpg
+         B46f3zG1SDNWE2+cLDz/3o/o1mymd7Ejj9L5gO5zYJd3SEO7zfNI0aGyRUZfBeIaGiIf
+         JR5w==
+X-Gm-Message-State: AJIora+fo9uladoZgWkKib6U+AuHC6aSuqA5zyRrexej4x6wjvVYYoTa
+        FHyXQ9XRlfWR79xQvM9oA666vEICQe/nImQ5gNo=
+X-Google-Smtp-Source: AGRyM1uuTnlo8UbsTNpCu9w7y6Imn3pGteU2AlhpEORjfZffq++K3qlqc72uL681GfWtLoni83k3M/c8Qd4oL79LzwE=
+X-Received: by 2002:a25:5809:0:b0:66c:8709:3611 with SMTP id
+ m9-20020a255809000000b0066c87093611mr28080763ybb.608.1656928174292; Mon, 04
+ Jul 2022 02:49:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220627151819.22694-1-lukas.bulwahn@gmail.com>
+ <20220627151819.22694-8-lukas.bulwahn@gmail.com> <20220628091647.xf5cygybqemwprgb@numero86.vaga.pv.it>
+In-Reply-To: <20220628091647.xf5cygybqemwprgb@numero86.vaga.pv.it>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Mon, 4 Jul 2022 11:49:23 +0200
+Message-ID: <CAKXUXMzAzT6c=Atwbnif0MQg50B9UpG6_rV65_OvkaJPTzaPcw@mail.gmail.com>
+Subject: Re: [RFC PATCH 07/11] docs: it_IT: align to submitting-drivers removal
+To:     Federico Vaga <federico.vaga@vaga.pv.it>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org,
+        kernel-janitors <kernel-janitors@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When DT provides rs485-term, set termination flag as supported.
+On Tue, Jun 28, 2022 at 11:16 AM Federico Vaga <federico.vaga@vaga.pv.it> w=
+rote:
+>
+> On Mon, Jun 27, 2022 at 05:18:15PM +0200, Lukas Bulwahn wrote:
+> >Adjust the Italian translation to the removal of submitting-drivers in t=
+he
+> >English kernel documentation.
+> >
+> >Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> >---
+> > .../it_IT/kernel-hacking/hacking.rst             |  3 +--
+> > .../translations/it_IT/process/5.Posting.rst     |  5 ++---
+> > .../translations/it_IT/process/8.Conclusion.rst  |  3 +--
+> > .../translations/it_IT/process/howto.rst         |  3 +--
+> > .../translations/it_IT/process/index.rst         |  1 -
+> > .../it_IT/process/submitting-drivers.rst         | 16 ----------------
+> > .../it_IT/process/submitting-patches.rst         |  6 ++----
+> > 7 files changed, 7 insertions(+), 30 deletions(-)
+> > delete mode 100644 Documentation/translations/it_IT/process/submitting-=
+drivers.rst
+> >
+> >diff --git a/Documentation/translations/it_IT/kernel-hacking/hacking.rst=
+ b/Documentation/translations/it_IT/kernel-hacking/hacking.rst
+> >index d5c521327f6a..4bec4669cf48 100644
+> >--- a/Documentation/translations/it_IT/kernel-hacking/hacking.rst
+> >+++ b/Documentation/translations/it_IT/kernel-hacking/hacking.rst
+> >@@ -795,8 +795,7 @@ anche per avere patch pulite, c'=C3=A8 del lavoro am=
+ministrativo da fare:
+> >    di un semplice impegno su una parte del codice.
+> >
+> > -  Infine, non dimenticatevi di leggere
+> >-   ``Documentation/process/submitting-patches.rst`` e possibilmente anc=
+he
+> >-   ``Documentation/process/submitting-drivers.rst``.
+> >+   ``Documentation/process/submitting-patches.rst``.
+> >
+> > Trucchetti del kernel
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >diff --git a/Documentation/translations/it_IT/process/5.Posting.rst b/Do=
+cumentation/translations/it_IT/process/5.Posting.rst
+> >index 1476d51eb5e5..a036f38fc82e 100644
+> >--- a/Documentation/translations/it_IT/process/5.Posting.rst
+> >+++ b/Documentation/translations/it_IT/process/5.Posting.rst
+> >@@ -16,9 +16,8 @@ e di procedure per la pubblicazione delle patch; segui=
+rle render=C3=A0 la vita
+> > pi=C3=B9 facile a tutti quanti.  Questo documento cercher=C3=A0 di copr=
+ire questi
+> > argomenti con un ragionevole livello di dettaglio; pi=C3=B9 informazion=
+i possono
+> > essere trovare nella cartella 'Documentation', nei file
+> >-:ref:`translations/it_IT/process/submitting-patches.rst <it_submittingp=
+atches>`,
+> >-:ref:`translations/it_IT/process/submitting-drivers.rst <it_submittingd=
+rivers>`, e
+> >-:ref:`translations/it_IT/process/submit-checklist.rst <it_submitcheckli=
+st>`.
+> >+:ref:`translations/it_IT/process/submitting-patches.rst <it_submittingp=
+atches>`
+> >+e :ref:`translations/it_IT/process/submit-checklist.rst <it_submitcheck=
+list>`.
+>
+> Fixing plural. The final correct statement must be:
+>
+> nel file :ref:`translations/it_IT/process/submitting-patches.rst <it_subm=
+ittingpatches>`.
+>
+> Notice 'nei file' -> 'nel file'
+>
+>
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/serial_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+Are you sure about this proposed change here? In my patch, I just
+changed the enumeration from three objects (submittingpatches,
+submittingdrivers, submitchecklist) to two objects (submittingpatches,
+submitchecklist).
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index a9cf1044a9fa..1db44cde76f6 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3409,6 +3409,8 @@ int uart_get_rs485_mode(struct uart_port *port)
- 		port->rs485_term_gpio = NULL;
- 		return dev_err_probe(dev, ret, "Cannot get rs485-term-gpios\n");
- 	}
-+	if (port->rs485_term_gpio)
-+		port->rs485_supported.flags |= SER_RS485_TERMINATE_BUS;
- 
- 	return 0;
- }
--- 
-2.30.2
+So, it should stay plural, right?
 
+Lukas
