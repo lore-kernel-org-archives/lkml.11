@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 04:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CB8CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 04:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232554AbiGDEHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 00:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
+        id S232881AbiGDEHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 00:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232164AbiGDEHR (ORCPT
+        with ESMTP id S232358AbiGDEHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 00:07:17 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708262BDA
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 21:07:13 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id i126so11599483oih.4
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 21:07:13 -0700 (PDT)
+        Mon, 4 Jul 2022 00:07:19 -0400
+Received: from mail-oa1-x42.google.com (mail-oa1-x42.google.com [IPv6:2001:4860:4864:20::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DAB64E2
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 21:07:18 -0700 (PDT)
+Received: by mail-oa1-x42.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so11663436fac.13
+        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 21:07:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xzFZy7EobE569rOuuG/ggjMqoyz7vEjB3IIrzWyAvt8=;
-        b=pDC6G+ylT6GCLesFQgbp2Ge9boWhnSINpjbk7Uo0/j4LFTOm8gEIUm6xkX6GQVswCF
-         zJgm8t1pBT/v0OKuu9kKkhGurvZ0Ej1IMbsMWe8ogMJC1ASs24GqKGUH/oDkKF9t6aJx
-         IUXW241TZB0XMoqTljoce/taPMGn6gRq7gavWHbFyzuaRc945V0ctrpvHv2a6t35iG/+
-         3ZvxU0SBL47O/B/SEXIMqnEu146FhR9M/dOFUvpchu8cq0d8ptBKiPxyb4XnIGIv5Xh8
-         9utZciN2Nte6s8VjtbhOq5FPRcv9xlKQLpBGrTx7gy0Cpewo+pwIlDpjpgL2liVayNjf
-         Dm1g==
+        bh=hDwC4vjOEjWZbqEneYaa93PfkH0X3bD2FesquY/4DR0=;
+        b=CXtFVVhDssmaMEMzB8Z9hwROe/lTo/9YrFugbUkaEbsF299VkRWWXBrf1an+OLxr4J
+         wcHrKwwGDbiqUROsxCAm0rsJPOvqYn3sUnKWMQbn2t4bs2TtoIg0RKNrtHlEKiRq7Kyn
+         gNqMxa+D5fGFjR3imUEPfszS1bkgtlVjsStaWzhtCO6Y5J7qZYCoNJcBAnjVudVvtBWR
+         c3JD5+zBUe6AsjbuCfYp4GbbvWiYa41gSRrjQC2VQQY4HuNYtoDQY90/FYM/NkVIq9uN
+         0JnmWdna2BSjEkt1BTszBVdU282Hio/R8graVy4fH4DL4DmN18RsPYhFxy9qyMjOy99z
+         V5EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xzFZy7EobE569rOuuG/ggjMqoyz7vEjB3IIrzWyAvt8=;
-        b=qbmwvfhIxl1FtlB5cl2iX6Xi/m+YzHi9y8O6z4BzqHafT/9WbmNNvlkyhE9F6vHXIG
-         W823YOK/qt3yvFHZf6Tho63F7iMDgofFW5pMcXztQA8sIub7E5uyK2xaIEdFYIAGP/+R
-         /X+EbI9zXlveowCYIjxZ1HHLueo0hE/Tb2CyTl8ivvzjfb8DOokBOEwo72L+o++zwCjv
-         PMZiN4xzC/OmlvM9GaaBgB5tF9s23QP1EW4NiYAStG9knz3NBs8RW+K0qS1SYoA0Y4gK
-         vYCGA2icae8ZMdCFkmDRwk5srHfwsDwNRU4KEH8Z3bgcpUkk7vkTABotyM+zcST+aNNh
-         MVBQ==
-X-Gm-Message-State: AJIora/1YxjZoVhursMCH0uw7mjpV8uTCzqRYKLkhx6IZjmsdANsGTla
-        g3hCmQF4X/HWaRTb01eHvEE=
-X-Google-Smtp-Source: AGRyM1t0Qd6auPky+T4yghJZafEwEdynJg6Upmpp/8MKTVj6y1IjCJxmJXdMmgdGxOFeSK34NeXhAA==
-X-Received: by 2002:a05:6808:23ce:b0:335:5aea:8e62 with SMTP id bq14-20020a05680823ce00b003355aea8e62mr16357426oib.253.1656907632601;
-        Sun, 03 Jul 2022 21:07:12 -0700 (PDT)
+        bh=hDwC4vjOEjWZbqEneYaa93PfkH0X3bD2FesquY/4DR0=;
+        b=twIP8tPHFctNqIQBkgE9gMLGOWkO9hQg07rjaIrwECKyJA/WpdS3P9yp0ooC4kHqKx
+         nHAqBrv7vvX6hRenYjO3tc5hSJMmaW94t7isZCmW+UU9VAiIFe2F9KGjUkHoya6bwCLN
+         nnAkxFB0alWOQrtBvPw0K1ngjli9g3vDYbWUcs/kuk+eYMFuizBmrQJgT4excGlpPZw0
+         JyF/KVw5vT49Le8d6TdDZjchdWDIGvv04JJnbUXLGnR2Ft6xzdEexx2AWH9zB0dUWqIr
+         IKUvgF53QJERGygoIYeGyQWje8hvh5kcKg5lXu++1vN+m/C4HqNBlrh4q3IGvV+SEBom
+         CFGA==
+X-Gm-Message-State: AJIora9FzaCWMrMGKAAZ33D0R4RevZ1Wo/BFkGdnlsrTT1BHF4kmD95E
+        CS7ps4k4BPW31kIin0aoBG4=
+X-Google-Smtp-Source: AGRyM1sSNUdCJUPdcclRZAW0PAMjcZtCijFce9D3FK1kJwjdVzPDFYA7+tZuyj6C/f42mntYYvmRMw==
+X-Received: by 2002:a05:6870:9711:b0:101:ae38:6c85 with SMTP id n17-20020a056870971100b00101ae386c85mr16792968oaq.50.1656907637845;
+        Sun, 03 Jul 2022 21:07:17 -0700 (PDT)
 Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id t5-20020a4aa3c5000000b0035ef3da8387sm15161005ool.4.2022.07.03.21.07.12
+        by smtp.gmail.com with ESMTPSA id l83-20020aca3e56000000b0032f0fd7e1f8sm14116545oia.39.2022.07.03.21.07.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Jul 2022 21:07:12 -0700 (PDT)
+        Sun, 03 Jul 2022 21:07:17 -0700 (PDT)
 From:   Rebecca Mckeever <remckee0@gmail.com>
 To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
 Cc:     David Hildenbrand <david@redhat.com>,
         Rebecca Mckeever <remckee0@gmail.com>
-Subject: [PATCH v5 1/4] memblock tests: Makefile: add arguments to control verbosity
-Date:   Sun,  3 Jul 2022 23:06:55 -0500
-Message-Id: <5503f3efe82ecef5c99961a1d53003c8ad06cf27.1656907314.git.remckee0@gmail.com>
+Subject: [PATCH v5 4/4] memblock tests: remove completed TODO items
+Date:   Sun,  3 Jul 2022 23:06:58 -0500
+Message-Id: <6a3e74fcb51a07e8d9fbbcbe84bdb8aa8b00e843.1656907314.git.remckee0@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1656907314.git.remckee0@gmail.com>
 References: <cover.1656907314.git.remckee0@gmail.com>
@@ -65,77 +65,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add VERBOSE and MEMBLOCK_DEBUG user-provided arguments. VERBOSE will
-enable verbose output from Memblock simulator. MEMBLOCK_DEBUG will enable
-memblock_dbg() messages.
+Remove completed items from TODO list.
 
-Update the help message to include VERBOSE and MEMBLOCK_DEBUG. Update
-the README to include VERBOSE. The README does not include all available
-options and refers to the help message for the remaining options.
-Therefore, omit MEMBLOCK_DEBUG from README.
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
 Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 ---
- tools/testing/memblock/Makefile                 |  4 ++++
- tools/testing/memblock/README                   | 10 +++++++++-
- tools/testing/memblock/scripts/Makefile.include | 10 ++++++++++
- 3 files changed, 23 insertions(+), 1 deletion(-)
+ tools/testing/memblock/TODO | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/memblock/Makefile b/tools/testing/memblock/Makefile
-index a698e24b35e7..9fde49ad73bd 100644
---- a/tools/testing/memblock/Makefile
-+++ b/tools/testing/memblock/Makefile
-@@ -45,6 +45,10 @@ help:
- 	@echo  '  clean		  - Remove generated files and symlinks in the directory'
- 	@echo  ''
- 	@echo  'Configuration:'
-+	@echo  '  make VERBOSE=1            - enable verbose output, which includes the'
-+	@echo  '                              names of functions being tested and the'
-+	@echo  '                              number of test cases passing'
-+	@echo  '  make MEMBLOCK_DEBUG=1     - enable memblock_dbg() messages'
- 	@echo  '  make NUMA=1               - simulate enabled NUMA'
- 	@echo  '  make MOVABLE_NODE=1       - override `movable_node_is_enabled`'
- 	@echo  '                              definition to simulate movable NUMA nodes'
-diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
-index ca6afcff013a..058146b528a5 100644
---- a/tools/testing/memblock/README
-+++ b/tools/testing/memblock/README
-@@ -34,7 +34,15 @@ To run the tests, build the main target and run it:
- $ make && ./main
+diff --git a/tools/testing/memblock/TODO b/tools/testing/memblock/TODO
+index cd1a30d5acc9..33044c634ea7 100644
+--- a/tools/testing/memblock/TODO
++++ b/tools/testing/memblock/TODO
+@@ -1,25 +1,17 @@
+ TODO
+ =====
  
- A successful run produces no output. It is also possible to override different
--configuration parameters. For example, to simulate enabled NUMA, use:
-+configuration parameters. For example, to include verbose output, specify the
-+VERBOSE flag when building the main target:
-+
-+$ make VERBOSE=1
-+
-+This will print information about which functions are being tested and the
-+number of test cases that passed.
-+
-+To simulate enabled NUMA, use:
+-1. Add verbose output (e.g., what is being tested and how many tests cases are
+-   passing)
+-
+-2. Add flags to Makefile:
+-   + verbosity level
+-   + enable memblock_dbg() messages (i.e. pass "-D CONFIG_DEBUG_MEMORY_INIT"
+-     flag)
+-
+-3. Add tests trying to memblock_add() or memblock_reserve() 129th region.
++1. Add tests trying to memblock_add() or memblock_reserve() 129th region.
+    This will trigger memblock_double_array(), make sure it succeeds.
+    *Important:* These tests require valid memory ranges, use dummy physical
+                 memory block from common.c to implement them. It is also very
+                 likely that the current MEM_SIZE won't be enough for these
+                 test cases. Use realloc to adjust the size accordingly.
  
- $ make NUMA=1
+-4. Add test cases using this functions (implement them for both directions):
++2. Add test cases using this functions (implement them for both directions):
+    + memblock_alloc_raw()
+    + memblock_alloc_exact_nid_raw()
+    + memblock_alloc_try_nid_raw()
  
-diff --git a/tools/testing/memblock/scripts/Makefile.include b/tools/testing/memblock/scripts/Makefile.include
-index 641569ccb7b0..4401f79bed4c 100644
---- a/tools/testing/memblock/scripts/Makefile.include
-+++ b/tools/testing/memblock/scripts/Makefile.include
-@@ -17,3 +17,13 @@ ifeq ($(32BIT_PHYS_ADDR_T), 1)
- 	CFLAGS += -m32 -U CONFIG_PHYS_ADDR_T_64BIT
- 	LDFLAGS += -m32
- endif
-+
-+# Enable verbose testing output
-+ifeq ($(VERBOSE), 1)
-+	CFLAGS += -D VERBOSE
-+endif
-+
-+# Enable memblock_dbg() messages
-+ifeq ($(MEMBLOCK_DEBUG), 1)
-+	CFLAGS += -D MEMBLOCK_DEBUG
-+endif
+-5. Add tests for memblock_alloc_node() to check if the correct NUMA node is set
++3. Add tests for memblock_alloc_node() to check if the correct NUMA node is set
+    for the new region
 -- 
 2.34.1
 
