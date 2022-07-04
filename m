@@ -2,174 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB517C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234782AbiGDOz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 10:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
+        id S234271AbiGDO4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 10:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbiGDOzm (ORCPT
+        with ESMTP id S234047AbiGDOzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 10:55:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5DBCEE3F;
-        Mon,  4 Jul 2022 07:55:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C28BA150C;
-        Mon,  4 Jul 2022 07:55:39 -0700 (PDT)
-Received: from e124483.cambridge.arm.com (e124483.cambridge.arm.com [10.1.29.145])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8CF6F3F792;
-        Mon,  4 Jul 2022 07:55:35 -0700 (PDT)
-From:   Andrew Kilroy <andrew.kilroy@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     Andrew Kilroy <andrew.kilroy@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Tom Rix <trix@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH 4/8] perf tools: arm64: Read ptrauth data from kernel
-Date:   Mon,  4 Jul 2022 15:53:28 +0100
-Message-Id: <20220704145333.22557-5-andrew.kilroy@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220704145333.22557-1-andrew.kilroy@arm.com>
-References: <20220704145333.22557-1-andrew.kilroy@arm.com>
+        Mon, 4 Jul 2022 10:55:46 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DFEFD09;
+        Mon,  4 Jul 2022 07:55:44 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264BGm04020004;
+        Mon, 4 Jul 2022 16:55:10 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=brTErhvCe4ShDsJ5IGo0sShNMnEReS02R6w4QHQj8JI=;
+ b=aWt7WlPKtlwzQZ5QWmym+oNhdOpJItxEg2SbEgE5Wlff2bM4JObo7SB/kbwed5Kejpmq
+ pyZtmcOuVbrclKVHkFwUzsM9xgbd81Z562DaDoQb4LIsmv5orD/Z1kNv9OEmdSDqc4uU
+ 2xKLrq/9v+KKxKOpAwUMpw3XeLBeGeQhCa+VYQJmPRExHthdHeg9MNUXwTpkQBHL0gqc
+ b3MZvStE+akRxMam7p3+5O96b0ydZzWIKEsAIz/lcwg0dJLr1kxvaQGGyJhi7GXliV+e
+ bKXQsyxEfVoJsQf+wFG17phgxVczcsZBV6Gmy54Bzf65SAElG30lI5XTj0zLeK5qMbqU 6A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h2cwhu32f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 16:55:10 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 82C73100034;
+        Mon,  4 Jul 2022 16:55:08 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6BD1921FE9C;
+        Mon,  4 Jul 2022 16:55:07 +0200 (CEST)
+Received: from [10.252.4.55] (10.75.127.45) by SHFDAG1NODE2.st.com
+ (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 4 Jul
+ 2022 16:55:06 +0200
+Message-ID: <ad2ad5b3-9cd4-d0a8-ddec-e078f0ad87a1@foss.st.com>
+Date:   Mon, 4 Jul 2022 16:55:05 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH V6 1/2] remoteproc: introduce rproc features
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Peng Fan <peng.fan@nxp.com>
+References: <20220701093702.265249-1-peng.fan@oss.nxp.com>
+ <20220701093702.265249-2-peng.fan@oss.nxp.com>
+From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
+In-Reply-To: <20220701093702.265249-2-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_14,2022-06-28_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch alters the userspace perf program to request the
-pointer authentication code masks using the PERF_SAMPLE_ARCH_1 sample
-field and write the data to perf.data file.
+Hello,
 
-A subsequent commit will make use of the masks in the data file to do
-the unwinding.
+On 7/1/22 11:37, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> remote processor may support:
+>  - firmware recovery with help from main processor
+>  - self recovery without help from main processor
+>  - iommu
+>  - etc
+> 
+> Introduce rproc features could simplify code to avoid adding more bool
+> flags
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  drivers/remoteproc/remoteproc_internal.h | 15 +++++++++++++++
+>  include/linux/remoteproc.h               | 15 +++++++++++++++
+>  2 files changed, 30 insertions(+)
+> 
+> diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
+> index 72d4d3d7d94d..82247cb5d0c2 100644
+> --- a/drivers/remoteproc/remoteproc_internal.h
+> +++ b/drivers/remoteproc/remoteproc_internal.h
+> @@ -24,6 +24,21 @@ struct rproc_debug_trace {
+>  	struct rproc_mem_entry trace_mem;
+>  };
+>  
+> +static inline bool rproc_has_feature(struct rproc *rproc, unsigned int feature)
+> +{
+> +	return test_bit(feature, rproc->features);
+> +}
+> +
+> +static inline int rproc_set_feature(struct rproc *rproc, unsigned int feature)
+> +{
+> +	if (feature >= RPROC_MAX_FEATURES)
+> +		return -EINVAL;
+> +
+> +	set_bit(feature, rproc->features);
+> +
+> +	return 0;
+> +}
+> +
+>  /* from remoteproc_core.c */
+>  void rproc_release(struct kref *kref);
+>  irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
+> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+> index aea79c77db0f..bbfb3affff32 100644
+> --- a/include/linux/remoteproc.h
+> +++ b/include/linux/remoteproc.h
+> @@ -489,6 +489,19 @@ struct rproc_dump_segment {
+>  	loff_t offset;
+>  };
+>  
+> +/**
+> + * enum rproc_features - features supported
+> + *
+> + * @RPROC_FEAT_ATTACH_ON_RECOVERY: remote processor no need help from Linux
+> + *                                 to recover, such as firmware loading.
+typo: 
+s/remote processor no need/ The remote processor does not need/
 
-Signed-off-by: Andrew Kilroy <andrew.kilroy@arm.com>
----
- tools/perf/tests/sample-parsing.c |  2 +-
- tools/perf/util/event.h           |  8 ++++++
- tools/perf/util/evsel.c           | 45 +++++++++++++++++++++++++++++++
- 3 files changed, 54 insertions(+), 1 deletion(-)
+> + *                                 Linux just need to attach after recovery.
+typo 
+s/need/needs/
 
-diff --git a/tools/perf/tests/sample-parsing.c b/tools/perf/tests/sample-parsing.c
-index 07f2411b0ad4..dd78ca279c01 100644
---- a/tools/perf/tests/sample-parsing.c
-+++ b/tools/perf/tests/sample-parsing.c
-@@ -381,7 +381,7 @@ static int test__sample_parsing(struct test_suite *test __maybe_unused, int subt
- 	 * were added.  Please actually update the test rather than just change
- 	 * the condition below.
- 	 */
--	if (PERF_SAMPLE_MAX > PERF_SAMPLE_WEIGHT_STRUCT << 1) {
-+	if (PERF_SAMPLE_MAX > PERF_SAMPLE_ARCH_1 << 1) {
- 		pr_debug("sample format has changed, some new PERF_SAMPLE_ bit was introduced - test needs updating\n");
- 		return -1;
- 	}
-diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
-index cdd72e05fd28..b99fc81dd37e 100644
---- a/tools/perf/util/event.h
-+++ b/tools/perf/util/event.h
-@@ -128,6 +128,13 @@ struct aux_sample {
- 	void *data;
- };
- 
-+
-+struct ptrauth_info {
-+	u64 enabled_keys;  // arm64 ptrauth is in use if this is non-zero.
-+	u64 insn_mask;
-+	u64 data_mask;
-+};
-+
- struct perf_sample {
- 	u64 ip;
- 	u32 pid, tid;
-@@ -163,6 +170,7 @@ struct perf_sample {
- 	struct stack_dump user_stack;
- 	struct sample_read read;
- 	struct aux_sample aux_sample;
-+	struct ptrauth_info ptrauth;
- };
- 
- #define PERF_MEM_DATA_SRC_NONE \
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index 25d8f804f49a..4627a68a7797 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -887,8 +887,22 @@ static void __evsel__config_callchain(struct evsel *evsel, struct record_opts *o
- 				    "Falling back to framepointers.\n");
- 	}
- 
-+#if defined(__aarch64__)
-+	/*
-+	 * We need to set ARM64_PTRAUTH in FP mode so that b9f6fbb3b2c2 ("perf arm64: Inject missing
-+	 * frames when using 'perf record --call-graph=fp'") continues to work in the presence of
-+	 * PACs.
-+	 */
-+	if (param->record_mode == CALLCHAIN_FP)
-+		evsel__set_sample_bit(evsel, ARM64_PTRAUTH);
-+
-+#endif
-+
- 	if (param->record_mode == CALLCHAIN_DWARF) {
- 		if (!function) {
-+#if defined(__aarch64__)
-+			evsel__set_sample_bit(evsel, ARM64_PTRAUTH);
-+#endif
- 			evsel__set_sample_bit(evsel, REGS_USER);
- 			evsel__set_sample_bit(evsel, STACK_USER);
- 			if (opts->sample_user_regs && DWARF_MINIMAL_REGS != PERF_REGS_MASK) {
-@@ -2344,6 +2358,17 @@ u64 evsel__bitfield_swap_branch_flags(u64 value)
- 	return new_val;
- }
- 
-+/*
-+ * To return the normalised arch that is recorded in a perf.data file
-+ */
-+static const char *recorded_normalized_arch(struct evsel *evsel)
-+{
-+	if (evsel && evsel->evlist && evsel->evlist->env)
-+		return perf_env__arch(evsel->evlist->env);
-+	else
-+		return NULL;
-+}
-+
- int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
- 			struct perf_sample *data)
- {
-@@ -2681,6 +2706,26 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
- 		array = (void *)array + sz;
- 	}
- 
-+	if (type & PERF_SAMPLE_ARCH_1) {
-+		const char *normlzd_arch = recorded_normalized_arch(evsel);
-+
-+		if (normlzd_arch)
-+			pr_debug4("PERF_SAMPLE_ARCH_1 is on, detected recorded arch as %s\n", normlzd_arch);
-+		else
-+			pr_debug4("PERF_SAMPLE_ARCH_1 is on, but arch not detected\n");
-+
-+		if (normlzd_arch && strcmp(normlzd_arch, "arm64") == 0) {
-+			OVERFLOW_CHECK(array, 3 * sizeof(u64), max_size);
-+
-+			data->ptrauth.enabled_keys = *array;
-+			array++;
-+			data->ptrauth.insn_mask = *array;
-+			array++;
-+			data->ptrauth.data_mask = *array;
-+			array++;
-+		}
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.17.1
+Regards,
+Arnaud
 
+> + */
+> +
+> +enum rproc_features {
+> +	RPROC_FEAT_ATTACH_ON_RECOVERY,
+> +	RPROC_MAX_FEATURES,
+> +};
+> +
+>  /**
+>   * struct rproc - represents a physical remote processor device
+>   * @node: list node of this rproc object
+> @@ -530,6 +543,7 @@ struct rproc_dump_segment {
+>   * @elf_machine: firmware ELF machine
+>   * @cdev: character device of the rproc
+>   * @cdev_put_on_release: flag to indicate if remoteproc should be shutdown on @char_dev release
+> + * @features: indicate remoteproc features
+>   */
+>  struct rproc {
+>  	struct list_head node;
+> @@ -570,6 +584,7 @@ struct rproc {
+>  	u16 elf_machine;
+>  	struct cdev cdev;
+>  	bool cdev_put_on_release;
+> +	DECLARE_BITMAP(features, RPROC_MAX_FEATURES);
+>  };
+>  
+>  /**
