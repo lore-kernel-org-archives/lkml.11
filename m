@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E509CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D39C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232911AbiGDAWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 20:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        id S232982AbiGDAWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 20:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiGDAWR (ORCPT
+        with ESMTP id S233062AbiGDAWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 20:22:17 -0400
+        Sun, 3 Jul 2022 20:22:18 -0400
 Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3FF2B6398;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4798E63E1;
         Sun,  3 Jul 2022 17:21:59 -0700 (PDT)
-Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
   by mx.socionext.com with ESMTP; 04 Jul 2022 09:21:39 +0900
 Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 01ABD2058456;
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 048A42011964;
         Mon,  4 Jul 2022 09:21:39 +0900 (JST)
 Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Mon, 4 Jul 2022 09:21:39 +0900
 Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 6BDC01DDD;
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id B90171EEF;
         Mon,  4 Jul 2022 09:21:38 +0900 (JST)
 From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 To:     Rob Herring <robh+dt@kernel.org>,
@@ -31,9 +31,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
         Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 4/9] arm64: dts: uniphier: Rename gpio-hog nodes
-Date:   Mon,  4 Jul 2022 09:21:09 +0900
-Message-Id: <1656894074-15751-5-git-send-email-hayashi.kunihiko@socionext.com>
+Subject: [PATCH 6/9] arm64: dts: uniphier: Add ahci controller and glue layer nodes for PXs3
+Date:   Mon,  4 Jul 2022 09:21:11 +0900
+Message-Id: <1656894074-15751-7-git-send-email-hayashi.kunihiko@socionext.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1656894074-15751-1-git-send-email-hayashi.kunihiko@socionext.com>
 References: <1656894074-15751-1-git-send-email-hayashi.kunihiko@socionext.com>
@@ -41,80 +41,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to gpio-hog schema, should add the suffix "-hog" to the node
-names including gpio-hog to fix the following warning.
-
-  uniphier-ld11-ref.dtb: gpio@55000000: 'xirq0' does not match any of the regexes: '^.+-hog(-[0-9+)?$', 'pinctrl-[0-9]+'
-      From schema: Documentation/devicetree/bindings/gpio/socionext,uniphier-gpio.yaml
-
-This applies to the devicetre for LD11, LD20 and PXs3 SoCs.
+Add ahci controller and glue layer nodes including reset and phy.
+This supports for PXs3 and the boards.
 
 Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 ---
- arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts     | 2 +-
- arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts | 4 ++--
- arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts     | 2 +-
- arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts     | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+ .../boot/dts/socionext/uniphier-pxs3-ref.dts  |  8 ++
+ .../boot/dts/socionext/uniphier-pxs3.dtsi     | 80 +++++++++++++++++++
+ 2 files changed, 88 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts b/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts
-index 617d2b1e9b1e..41b47f5d2ed7 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts
-@@ -51,7 +51,7 @@ &serial0 {
- };
- 
- &gpio {
--	xirq0 {
-+	xirq0-hog {
- 		gpio-hog;
- 		gpios = <UNIPHIER_GPIO_IRQ(0) 0>;
- 		input;
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts b/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts
-index aa159a11292c..b55b70ded015 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts
-@@ -168,12 +168,12 @@ &pcie {
- 
- &gpio {
- 	/* IRQs for Max3421 */
--	xirq0 {
-+	xirq0-hog {
- 		gpio-hog;
- 		gpios = <UNIPHIER_GPIO_IRQ(0) 1>;
- 		input;
- 	};
--	xirq10 {
-+	xirq10-hog {
- 		gpio-hog;
- 		gpios = <UNIPHIER_GPIO_IRQ(10) 1>;
- 		input;
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts b/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts
-index 39ee279a1eb9..8c111588c9a1 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts
-@@ -51,7 +51,7 @@ &serial0 {
- };
- 
- &gpio {
--	xirq0 {
-+	xirq0-hog {
- 		gpio-hog;
- 		gpios = <UNIPHIER_GPIO_IRQ(0) 0>;
- 		input;
 diff --git a/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts b/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
-index 086040306fb3..feb070f934e9 100644
+index 506c7b9ff50d..1ced6190ab2b 100644
 --- a/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
 +++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
-@@ -68,7 +68,7 @@ &serial3 {
+@@ -137,6 +137,14 @@ nand@0 {
+ 	};
  };
  
- &gpio {
--	xirq4 {
-+	xirq4-hog {
- 		gpio-hog;
- 		gpios = <UNIPHIER_GPIO_IRQ(4) 0>;
- 		input;
++&ahci0 {
++	status = "okay";
++};
++
++&ahci1 {
++	status = "okay";
++};
++
+ &pinctrl_ether_rgmii {
+ 	tx {
+ 		pins = "RGMII0_TXCLK", "RGMII0_TXD0", "RGMII0_TXD1",
+diff --git a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
+index 7304dee2e504..f49a8db3e918 100644
+--- a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
++++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
+@@ -596,6 +596,86 @@ mdio1: mdio {
+ 			};
+ 		};
+ 
++		ahci0: ahci@65600000 {
++			compatible = "socionext,uniphier-pxs3-ahci",
++				     "generic-ahci";
++			status = "disabled";
++			reg = <0x65600000 0x10000>;
++			interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&sys_clk 28>;
++			resets = <&sys_rst 28>, <&ahci0_rst 0>;
++			ports-implemented = <1>;
++			phys = <&ahci0_phy>;
++		};
++
++		ahci-glue@65700000 {
++			compatible = "socionext,uniphier-pxs3-ahci-glue",
++				     "simple-mfd";
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0 0x65700000 0x100>;
++
++			ahci0_rst: reset@0 {
++				compatible = "socionext,uniphier-pxs3-ahci-reset";
++				reg = <0x0 0x4>;
++				clock-names = "link";
++				clocks = <&sys_clk 28>;
++				reset-names = "link";
++				resets = <&sys_rst 28>;
++				#reset-cells = <1>;
++			};
++
++			ahci0_phy: phy@10 {
++				compatible = "socionext,uniphier-pxs3-ahci-phy";
++				reg = <0x10 0x10>;
++				clock-names = "link", "phy";
++				clocks = <&sys_clk 28>, <&sys_clk 30>;
++				reset-names = "link", "phy";
++				resets = <&sys_rst 28>, <&sys_rst 30>;
++				#phy-cells = <0>;
++			};
++		};
++
++		ahci1: ahci@65800000 {
++			compatible = "socionext,uniphier-pxs3-ahci",
++				     "generic-ahci";
++			status = "disabled";
++			reg = <0x65800000 0x10000>;
++			interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&sys_clk 29>;
++			resets = <&sys_rst 29>, <&ahci1_rst 0>;
++			ports-implemented = <1>;
++			phys = <&ahci1_phy>;
++		};
++
++		ahci-glue@65900000 {
++			compatible = "socionext,uniphier-pxs3-ahci-glue",
++				     "simple-mfd";
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0 0x65900000 0x100>;
++
++			ahci1_rst: reset@0 {
++				compatible = "socionext,uniphier-pxs3-ahci-reset";
++				reg = <0x0 0x4>;
++				clock-names = "link";
++				clocks = <&sys_clk 29>;
++				reset-names = "link";
++				resets = <&sys_rst 29>;
++				#reset-cells = <1>;
++			};
++
++			ahci1_phy: phy@10 {
++				compatible = "socionext,uniphier-pxs3-ahci-phy";
++				reg = <0x10 0x10>;
++				clock-names = "link", "phy";
++				clocks = <&sys_clk 29>, <&sys_clk 30>;
++				reset-names = "link", "phy";
++				resets = <&sys_rst 29>, <&sys_rst 30>;
++				#phy-cells = <0>;
++			};
++		};
++
+ 		usb0: usb@65a00000 {
+ 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
+ 			status = "disabled";
 -- 
 2.25.1
 
