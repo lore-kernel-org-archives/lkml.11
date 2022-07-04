@@ -2,101 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE46C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 18:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 760D1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 18:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiGDSjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 14:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S232186AbiGDSk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 14:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiGDSjN (ORCPT
+        with ESMTP id S229595AbiGDSkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 14:39:13 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5579B11A2A;
-        Mon,  4 Jul 2022 11:39:11 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 264INElF019868;
-        Mon, 4 Jul 2022 13:23:14 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 264INAKN019865;
-        Mon, 4 Jul 2022 13:23:10 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 4 Jul 2022 13:23:10 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Vitaly Buka <vitalybuka@google.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v4 43/45] namei: initialize parameters passed to step_into()
-Message-ID: <20220704182310.GQ25951@gate.crashing.org>
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-44-glider@google.com> <CAHk-=wgbpot7nt966qvnSR25iea3ueO90RwC2DwHH=7ZyeZzvQ@mail.gmail.com> <YsJWCREA5xMfmmqx@ZenIV> <CAG_fn=V_vDVFNSJTOErNhzk7n=GRjZ_6U6Z=M-Jdmi=ekbS5+g@mail.gmail.com> <YsLuoFtki01gbmYB@ZenIV> <CAG_fn=VTihJSzQ106WPaQNxwTuuB8iPQpZR4306v8KmXxQT_GQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG_fn=VTihJSzQ106WPaQNxwTuuB8iPQpZR4306v8KmXxQT_GQ@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        Mon, 4 Jul 2022 14:40:52 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D4111A1E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 11:40:51 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id r18so12655884edb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 11:40:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FxRBS06pE2CQHpTgzqatJymLAXpPxBjp9lWephyRcDY=;
+        b=ZzhWOBgJ0GXukDvteK8pJ1ErEi30xPBI7PuEbXANjYY+GfjMg8DGZmihDOeq55CeNv
+         B3EiHByVuVltQhnfQsGWQ6tM991OfExy7KSZm7UHWTy/AAlMJfLRe3S9xBf1Mu8+JvYE
+         6jlc7j6DzV70SzlqcJIeDFOI+9bgZcBZj48GnHQb1TJCKiJObYNEQpaTyHq4xVFnXTgs
+         Zb4oMM6tMTl/XzmH4/O+/jGX0nS2ogif4uIKXLt3Mgahojcge6y+TRPbPnxM+sTenBqt
+         mkEy00pY5fntyEdKWymMdJmhxCgNjgZzPSNUHc3CFQAye9q10oBCd3jprGZJJcQjwxWP
+         Vp4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FxRBS06pE2CQHpTgzqatJymLAXpPxBjp9lWephyRcDY=;
+        b=fJbKtqab49Bsq3iMLEDk8Nx5nLpKoZe/v1AxxxZPox73pAYDOt6vsEFc6vF5eUzF0R
+         vMKcQ7cOzMRXj72/yKj8B9a3q2Nnu4/Xn4+2274t4lqgPmyNttrBhKJzHXSLcIgMOYNx
+         kalr1Q2dfl3DICCaKgkHJujAAMxZ566XIpBHAq0xRM6u+24Gu08PxTxIIvdCgA/g8IXw
+         8ANJbWViW6McBdnpRWJnplTayqZ6p0rAUZd+EWN4p/Ty432dDXC4tnd9QXjB4XbvV/Hy
+         Vd79igL3SjUPYgfBIfyYBJO7KHsf/sQ7nKDToq8SoyBc08mT3sIqqIIjJK33iXwI2J5H
+         r33w==
+X-Gm-Message-State: AJIora8BAIE672H2wuGKr6RYMWhL39P+5zL4pGaYMCrvjTQzN+2F5bhI
+        xwjEhdHUBwzahXqharQPkNSUjQFMVjkzMv6OsVwqHvonashuTw==
+X-Google-Smtp-Source: AGRyM1v61sLa0Q+4hwdTmFbbx9mwGhQVVpp9ymXC4i+qg4KlnAe+6zmh0YCXopnDMl6JRzNEZMVijDCYhENkXwVUQC4=
+X-Received: by 2002:aa7:cdc2:0:b0:43a:7255:5274 with SMTP id
+ h2-20020aa7cdc2000000b0043a72555274mr1955839edw.159.1656960050072; Mon, 04
+ Jul 2022 11:40:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220518065856.18936-1-hbh25y@gmail.com> <dc52f807-f4bc-13d6-7b9e-81b4fe94a6e0@intel.com>
+ <fe6fe929-578e-5828-7886-3fe69b9d3a6a@gmail.com>
+In-Reply-To: <fe6fe929-578e-5828-7886-3fe69b9d3a6a@gmail.com>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 4 Jul 2022 20:40:38 +0200
+Message-ID: <CAG3jFytopyV+gN3QAVAZYd_HYWeAygTZkb7iQAA-jmSBMQexfw@mail.gmail.com>
+Subject: Re: [PATCH] drm: bridge: sii8620: fix possible off-by-one
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>, narmstrong@baylibre.com,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
+        architt@codeaurora.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 05:49:13PM +0200, Alexander Potapenko wrote:
-> One of the reasons to do so is standard compliance - passing an
-> uninitialized value to a function is UB in C11, as Segher pointed out
-> here: https://lore.kernel.org/linux-toolchains/20220614214039.GA25951@gate.crashing.org/
-> The compilers may not be smart enough to take advantage of this _yet_,
-> but I wouldn't underestimate their ability to evolve (especially that
-> of Clang).
+On Thu, 23 Jun 2022 at 04:55, Hangyu Hua <hbh25y@gmail.com> wrote:
+>
+> On 2022/5/18 15:57, Andrzej Hajda wrote:
+> >
+> >
+> > On 18.05.2022 08:58, Hangyu Hua wrote:
+> >> The next call to sii8620_burst_get_tx_buf will result in off-by-one
+> >> When ctx->burst.tx_count + size == ARRAY_SIZE(ctx->burst.tx_buf). The
+> >> same
+> >> thing happens in sii8620_burst_get_rx_buf.
+> >>
+> >> This patch also change tx_count and tx_buf to rx_count and rx_buf in
+> >> sii8620_burst_get_rx_buf. It is unreasonable to check tx_buf's size and
+> >> use rx_buf.
+> >>
+> >> Fixes: e19e9c692f81 ("drm/bridge/sii8620: add support for burst eMSC
+> >> transmissions")
+> >> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> > Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> >
+> > Regards
+> > Andrzej
+> >> ---
+> >>   drivers/gpu/drm/bridge/sil-sii8620.c | 4 ++--
+> >>   1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/bridge/sil-sii8620.c
+> >> b/drivers/gpu/drm/bridge/sil-sii8620.c
+> >> index ec7745c31da0..ab0bce4a988c 100644
+> >> --- a/drivers/gpu/drm/bridge/sil-sii8620.c
+> >> +++ b/drivers/gpu/drm/bridge/sil-sii8620.c
+> >> @@ -605,7 +605,7 @@ static void *sii8620_burst_get_tx_buf(struct
+> >> sii8620 *ctx, int len)
+> >>       u8 *buf = &ctx->burst.tx_buf[ctx->burst.tx_count];
+> >>       int size = len + 2;
+> >> -    if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
+> >> +    if (ctx->burst.tx_count + size >= ARRAY_SIZE(ctx->burst.tx_buf)) {
+> >>           dev_err(ctx->dev, "TX-BLK buffer exhausted\n");
+> >>           ctx->error = -EINVAL;
+> >>           return NULL;
+> >> @@ -622,7 +622,7 @@ static u8 *sii8620_burst_get_rx_buf(struct sii8620
+> >> *ctx, int len)
+> >>       u8 *buf = &ctx->burst.rx_buf[ctx->burst.rx_count];
+> >>       int size = len + 1;
+> >> -    if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
+> >> +    if (ctx->burst.rx_count + size >= ARRAY_SIZE(ctx->burst.rx_buf)) {
+> >>           dev_err(ctx->dev, "RX-BLK buffer exhausted\n");
+> >>           ctx->error = -EINVAL;
+> >>           return NULL;
+> >
+>
+> Hi guys,
+>
+> Another patches for this module that I submitted at the same time as
+> this one have been merged. Is this patch forgotten to merge?
 
-GCC doesn't currently detect this UB, and doesn't even warn or error for
-this, although that shouldn't be hard to do: it is all completely local.
-An error is warranted here, and you won't get UB ever either then.
-
-> I also believe it's fragile to rely on the callee to ignore certain
-> parameters: it may be doing so today, but if someone changes
-> step_into() tomorrow we may miss it.
-
-There isn't any choice usually, this is C, do you want varargs?  :-)
-
-But yes, you always should only pass "safe" values; callers should do
-their part, and not assume the callee will do in the future as it does
-now.  Defensive programming is mostly about defending your own sanity!
-
-
-Segher
+Applied to drm-misc-next.
