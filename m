@@ -2,115 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E29C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7912DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233204AbiGDJZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49874 "EHLO
+        id S233445AbiGDJZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiGDJZZ (ORCPT
+        with ESMTP id S230098AbiGDJZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:25:25 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C440A656D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:25:24 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lc0j81JWJzkWtR;
-        Mon,  4 Jul 2022 17:23:24 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Jul 2022 17:25:22 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 17:25:22 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <john.garry@huawei.com>,
-        <rafael@kernel.org>
-CC:     <andriy.shevchenko@linux.intel.com>, <gregkh@linuxfoundation.org>
-Subject: [PATCH v2] bus: hisi_lpc: fix missing platform_device_put() in hisi_lpc_acpi_probe()
-Date:   Mon, 4 Jul 2022 17:34:56 +0800
-Message-ID: <20220704093456.1405484-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 4 Jul 2022 05:25:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C5A656D;
+        Mon,  4 Jul 2022 02:25:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656926726;
+        bh=7AgtTeOCjKY42gITCNPqcj2Bze43f73q5a4PmTDg/EI=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=k7H9JiA61r612M/Og49HsCYUy2hEGIWOhLWpYhcXSy2SsrjnSXFHfbjEu6oObjK+M
+         s+IOddX7ONigdHAFlAtWrbJnjQG7ugp9p4xsTA5bsiQz4YWimK8p98Ajuy+R6L25z8
+         GFMmMLVNpvdMkoJuDgo/k9r/lm1OHnjgsT/uyj1c=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N0oG5-1nNC1j1c17-00wkAp; Mon, 04
+ Jul 2022 11:25:26 +0200
+Message-ID: <bb228b42-e175-513e-0972-57552ef52dc2@gmx.de>
+Date:   Mon, 4 Jul 2022 11:25:22 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
+ serial core
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
+ <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+ <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Dvsa0LVT82WeAEqY3B18IQwgHTM8am8FU0xKoRnYcHMxE1XxzeD
+ gM1jVLYerT8KrnpsYY73G8Pu/Yk6BGn7pUI1Y6h6AtLXvQZ319kg66HR+BmzJxIVj1OAnCZ
+ 8aHZBUbt3BG2ABnZG4XqQTuk2ty7TqpVLzSS12kD1Hgk8xUqDRV0dL7egd4uGzq06hPE0mK
+ 5g08PqVnazwNXh7s5IDcw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NWwClxxWj5I=:4NiUOBAjyjp7fBz9FmEYjy
+ g086C/Kg0BEdwt5nhrb/PI6x1IXjgnW4JNrtsMhshhDwIGRso54O43Xi8lNGYTZ0OKqLTVLw8
+ SCsnO9AGiCU9jSfqJ+K4J99ekKNd/rn+TDeZV9RZoJlN5od24A11POoHbxwM00yDFAoZSRVZY
+ 7vqjqwci7FKtBz9hrmzoxJk9dR+2hedibQQtpsKg8SBUwlyCyhL2krtGYLfQYbbI5RSRL5bdi
+ kBGBr/7TJz3+HyiT3Rchx3MC0P+4vUHQaYbxJlfiEENLsz/540Zv8F6ZZEHdjuvGgJfjhndWt
+ 7lbQWONX62l0DhOxqzfrOxmn3naTW8h2vAMf6wkGjhrQGS3dlMjyB+ms0+YNWYJ82Kq+ie9sE
+ WSsZbmCXkLUmvyFAGPyBLor/+uB+bAOBk5y5olkxwbOnwxT4O1mXlUF0pef8V2N0OSNoof1FQ
+ 74+RhKSvRtCitKCD/f4plyfDNzPsaqdCTC9D4IrO/GIC/LzHI31FnjWuozywR4p7j65pb/vjP
+ PrBCqWosDwx5jG5BK0Wt3gUIcCB8ukECbPOTf36JZRb8bwZlkHeTYTFO80Z2aP86vDC5oYUpP
+ Yf8TT5sVmAfKxrPfGiJXNy0DCtzieQGDhn1mxjPP144MvMUtTzYabs/xMaNtxaBrN1ur62TMt
+ 20aK1J/32fgG3Cw/5Kqa/yiKAuWcFkEUf4nzX4U3cDkGNxE4a8vBp95/IcY3mBqUoWIfWwvGp
+ OxP9OxUPcV0XmUwP5GQIiRYuATeyptzF5kRMRXgsP7WZA5iQoVsP3PgIjKgpW4jtAAkPDz6BL
+ aMysL6693f3w7ELI12IAETJ4ypvpeAnu/6Tnta4EFqHK+9RyMuBOBkGezx6hr6p/ZjYqMlhZX
+ p1uWxSVorgkusZngVbuXPLOWW/QHG140RZjHxVZemJhfNjTfuQLjH2R2XdjMKkivvxrv1VzD0
+ mp0Yn0R0E2QJKfXkDm+/z79uLK8wX0Qa8mUASCgQA1LBfMVsmTF09Zqi8EfZkPSutIUY6xyhM
+ Eg7DpNgT42jrRkPmiAt/Yjej8bn91UMTISSohG++v6pcqt5pwKwsAXOdS90kw3v9aJPw1B78X
+ 3KQ4uIhmLn2PM1TrjiPt+ZzxUgA8E9Zn/7K/woEdOe7+YLcRC0p9JFn1w==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In error case in hisi_lpc_acpi_probe() after calling platform_device_alloc(),
-if platform_device_add() is not called successfully, hisi_lpc_acpi_remove()
-can't release the failed 'pdev' including its resource and data, so they will
-be leaked, call platform_device_put() to put the refcount, then they will be
-freed in platform_device_release().
-I'v constructed this error case and tested this patch on D05 board.
 
-Fixes: 99c0228d6ff1 ("HISI LPC: Re-Add ACPI child enumeration support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  - keep declartion of pdev reverse-firtree ordering
-  - update commit message
----
- drivers/bus/hisi_lpc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 378f5d62a991..05e9357bf006 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -502,6 +502,7 @@ static void hisi_lpc_acpi_remove(struct device *hostdev)
- static int hisi_lpc_acpi_probe(struct device *hostdev)
- {
- 	struct acpi_device *adev = ACPI_COMPANION(hostdev);
-+	struct platform_device *pdev;
- 	struct acpi_device *child;
- 	int ret;
- 
-@@ -509,7 +510,6 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- 	list_for_each_entry(child, &adev->children, node) {
- 		const char *hid = acpi_device_hid(child);
- 		const struct hisi_lpc_acpi_cell *cell;
--		struct platform_device *pdev;
- 		const struct resource *res;
- 		bool found = false;
- 		int num_res;
-@@ -571,22 +571,24 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- 
- 		ret = platform_device_add_resources(pdev, res, num_res);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add_data(pdev, cell->pdata,
- 					       cell->pdata_size);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add(pdev);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		acpi_device_set_enumerated(child);
- 	}
- 
- 	return 0;
- 
-+fail_put_device:
-+	platform_device_put(pdev);
- fail:
- 	hisi_lpc_acpi_remove(hostdev);
- 	return ret;
--- 
-2.25.1
+On 03.07.22 20:31, Andy Shevchenko wrote:
+> On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> w=
+rote:
+>>
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> In serial8250_em485_config() the termination GPIO is set with the uart_=
+port
+>> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
+.
+>> since the concerning GPIO expander is connected via SPI or I2C).
+>>
+>> Fix this by setting the termination line outside of the uart_port spinl=
+ock
+>> in the serial core and using gpiod_set_value_cansleep() which instead o=
+f
+>> gpiod_set_value() allows to sleep.
+>
+> allows it to
+>
 
+Ok.
+
+>> Beside fixing the termination GPIO line setting for the 8250 driver thi=
+s
+>> change also makes setting the termination GPIO generic for all UART
+>> drivers.
+>
+> ...
+>
+>> +static void uart_set_rs485_termination(struct uart_port *port,
+>> +                                      const struct serial_rs485 *rs485=
+)
+>> +{
+>
+>> +       if (!port->rs485_term_gpio
+>
+> This duplicates the check the GPIO library does. Drop it.
+>
+
+Ok.
+
+>> || !(rs485->flags & SER_RS485_ENABLED))
+>> +               return;
+>> +
+>> +       gpiod_set_value_cansleep(port->rs485_term_gpio,
+>> +                                !!(rs485->flags & SER_RS485_TERMINATE_=
+BUS));
+>> +}
+>
+
+Thanks for the review!
+
+Regards,
+Lino
