@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E33ECC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20806C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbiGDHKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 03:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
+        id S233270AbiGDHKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233306AbiGDHJd (ORCPT
+        with ESMTP id S229660AbiGDHJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 03:09:33 -0400
+        Mon, 4 Jul 2022 03:09:36 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323746433
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:08:57 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2646kRnu001325;
-        Mon, 4 Jul 2022 07:08:46 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9DC9FCD
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:09:13 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2646LW6C020522;
+        Mon, 4 Jul 2022 07:09:01 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=A961FvOMvs+LQoQGAxd2mt9Of4qC3gvsVjeVM6KH7CY=;
- b=MkhwIOhHC9xe28yJHMfJ03w9gJhzXkGynHzhhSc3gBn+ajkJn3fmxkBE2icjaPb1BiiN
- x3HsGrNr/Z3BNnHVukXA0lIJtDFFxrSZy4yMWvPbxBofWKZNxXYgX2wI4pw1oKvYgcn1
- OFc0s6h6+eDcIn9uO/FEBU0oAzrqTBJgYf/xupYwl9nYQ+bny3OTyx5EduKd7fGaJNdR
- CsCDOuYLlXq7qokOIPCtubzET4Xzun1pT47UvYwAuxES/T6XigBJ+P/e+5ZrNIqPRuY/
- Or9h8wIFvRvUR7+E2ZLptV3QeL2JElxSbxNclNe9GV6L4GgKckwFEX19H/lDM2DJ07Lq Hg== 
+ bh=NGZ2uPuNeujMrax+f9oOnAHVXQVZnbiYUjZzi+sV9iE=;
+ b=ac4TdUhoB+LAat165uEXVscUrzDcjEDk0ayE5Gs0myWXhNjCFebC56kVjfNq+g5c71fT
+ I1Eil8quq1XRS5KFsavn/p7cTZmNrFSBCmQCXIIuPBtNA/SXyzgQejKwCYXkw9UGY1M3
+ Yz1kwHD7TamVNctHV6zV9No0WDqeizgX+H9EdZQtgE0uVU7+Mt7TaXTOm8P6f9qj2gwx
+ ZYCT4H3lvysS8OMcj7sfdqZYVPfk90U3HpY7YAklEZVgFUTKRhu9GqLTgLN/XtqNAovx
+ r3U9598DDpiGYs7FySBcjXxtoc03TDf/Mi1WYGaAm52YadBnWJkmKUgJ7WX8TZTlKjdh IA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3u7qrf0w-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3tva11bd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 07:08:46 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26475IrS014588;
-        Mon, 4 Jul 2022 07:08:45 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3u7qrf0b-1
+        Mon, 04 Jul 2022 07:09:01 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2646QgrP009661;
+        Mon, 4 Jul 2022 07:09:00 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3tva11ar-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 07:08:45 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26475RJd030714;
-        Mon, 4 Jul 2022 07:08:44 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma04wdc.us.ibm.com with ESMTP id 3h2dn9b4j2-1
+        Mon, 04 Jul 2022 07:09:00 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26475jZ6029113;
+        Mon, 4 Jul 2022 07:08:59 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma01dal.us.ibm.com with ESMTP id 3h2dn9kmqt-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 07:08:44 +0000
+        Mon, 04 Jul 2022 07:08:59 +0000
 Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26478hJF7799590
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26478wrf29688176
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Jul 2022 07:08:43 GMT
+        Mon, 4 Jul 2022 07:08:58 GMT
 Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4A042124052;
-        Mon,  4 Jul 2022 07:08:43 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 12766124053;
+        Mon,  4 Jul 2022 07:08:58 +0000 (GMT)
 Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D017C12405C;
-        Mon,  4 Jul 2022 07:08:35 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id EE08A124054;
+        Mon,  4 Jul 2022 07:08:50 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.74.198])
         by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Jul 2022 07:08:35 +0000 (GMT)
+        Mon,  4 Jul 2022 07:08:50 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -74,310 +74,262 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
         Jagdish Gediya <jvgediya@linux.ibm.com>,
         "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v8 09/12] mm/demotion: Demote pages according to allocation fallback order
-Date:   Mon,  4 Jul 2022 12:36:09 +0530
-Message-Id: <20220704070612.299585-10-aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v8 11/12] mm/demotion: Add documentation for memory tiering
+Date:   Mon,  4 Jul 2022 12:36:11 +0530
+Message-Id: <20220704070612.299585-12-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220704070612.299585-1-aneesh.kumar@linux.ibm.com>
 References: <20220704070612.299585-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: up_fBrZDVoaAp-fedvOsdfaLCBcS-zMO
-X-Proofpoint-ORIG-GUID: s2_ld_JrrYcYAGNY7E1zvuOvjLhGBvdy
+X-Proofpoint-GUID: 7mhYJ-DcNxH_Lgc-OJodmd7WOZGh40c8
+X-Proofpoint-ORIG-GUID: ROKvfK2qavM5QjPDZKEfgqjMg1ATy63e
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-04_05,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 malwarescore=0 bulkscore=0 mlxscore=0 phishscore=0
- mlxlogscore=999 adultscore=0 suspectscore=0 impostorscore=0
- priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2207040030
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ suspectscore=0 lowpriorityscore=0 adultscore=0 mlxlogscore=999 bulkscore=0
+ spamscore=0 impostorscore=0 malwarescore=0 clxscore=1015 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2207040030
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jagdish Gediya <jvgediya@linux.ibm.com>
 
-Currently, a higher tier node can only be demoted to selected
-nodes on the next lower tier as defined by the demotion path.
-This strict, hard-coded demotion order does not work in all
-use cases (e.g. some use cases may want to allow cross-socket
-demotion to another node in the same demotion tier as a fallback
-when the preferred demotion node is out of space). This demotion
-order is also inconsistent with the page allocation fallback order
-when all the nodes in a higher tier are out of space: The page
-allocation can fall back to any node from any lower tier, whereas
-the demotion order doesn't allow that currently.
+All N_MEMORY nodes are divided into 3 memory tiers with tier ID value
+MEMORY_TIER_HBM_GPU, MEMORY_TIER_DRAM and MEMORY_TIER_PMEM. By default,
+all nodes are assigned to default memory tier (MEMORY_TIER_DRAM).
 
-This patch adds support to get all the allowed demotion targets
-for a memory tier. demote_page_list() function is now modified
-to utilize this allowed node mask as the fallback allocation mask.
+Demotion path for all N_MEMORY nodes is prepared based on the tier ID value
+of memory tiers.
 
+This patch adds documention for memory tiering introduction, its sysfs
+interfaces and how demotion is performed based on memory tiers.
+
+[update doc format by Bagas Sanjaya <bagasdotme@gmail.com>]
+
+Suggested-by: Wei Xu <weixugc@google.com>
 Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
 Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-
-move allowed mask to memory tier
 ---
- include/linux/memory-tiers.h | 17 +++++++-
- mm/memory-tiers.c            | 76 +++++++++++++++++++++++++++++++++---
- mm/vmscan.c                  | 58 ++++++++++++++++++++-------
- 3 files changed, 129 insertions(+), 22 deletions(-)
+ Documentation/admin-guide/mm/index.rst        |   1 +
+ .../admin-guide/mm/memory-tiering.rst         | 192 ++++++++++++++++++
+ 2 files changed, 193 insertions(+)
+ create mode 100644 Documentation/admin-guide/mm/memory-tiering.rst
 
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 705b63ee31d5..335d21a30b2c 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -3,11 +3,12 @@
- #define _LINUX_MEMORY_TIERS_H
- 
- #include <linux/types.h>
-+#include <linux/nodemask.h>
-+#include <linux/mmzone.h>
- 
- #ifdef CONFIG_NUMA
- 
- #include <linux/device.h>
--#include <linux/nodemask.h>
- 
- #define MEMORY_TIER_HBM_GPU	300
- #define MEMORY_TIER_DRAM	200
-@@ -20,18 +21,25 @@ struct memory_tier {
- 	struct list_head list;
- 	struct device dev;
- 	nodemask_t nodelist;
-+	nodemask_t lower_tier_mask;
- };
- 
- extern bool numa_demotion_enabled;
- int node_create_and_set_memory_tier(int node, int tier);
- #ifdef CONFIG_MIGRATION
- int next_demotion_node(int node);
-+void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets);
- #else
- static inline int next_demotion_node(int node)
- {
- 	return NUMA_NO_NODE;
- }
--#endif
+diff --git a/Documentation/admin-guide/mm/index.rst b/Documentation/admin-guide/mm/index.rst
+index c21b5823f126..3f211cbca8c3 100644
+--- a/Documentation/admin-guide/mm/index.rst
++++ b/Documentation/admin-guide/mm/index.rst
+@@ -32,6 +32,7 @@ the Linux memory management.
+    idle_page_tracking
+    ksm
+    memory-hotplug
++   memory-tiering
+    nommu-mmap
+    numa_memory_policy
+    numaperf
+diff --git a/Documentation/admin-guide/mm/memory-tiering.rst b/Documentation/admin-guide/mm/memory-tiering.rst
+new file mode 100644
+index 000000000000..107599dbc952
+--- /dev/null
++++ b/Documentation/admin-guide/mm/memory-tiering.rst
+@@ -0,0 +1,192 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
-+static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
-+{
-+	*targets = NODE_MASK_NONE;
-+}
-+#endif /* CONFIG_MIGRATION */
- int node_get_memory_tier_id(int node);
- int node_update_memory_tier(int node, int tier);
- struct memory_tier *node_get_memory_tier(int node);
-@@ -49,5 +57,10 @@ static inline int next_demotion_node(int node)
- {
- 	return NUMA_NO_NODE;
- }
++.. _admin_guide_memory_tiering:
 +
-+static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
-+{
-+	*targets = NODE_MASK_NONE;
-+}
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index 6a2476faf13a..aecce987df7c 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -374,6 +374,24 @@ void node_put_memory_tier(struct memory_tier *memtier)
- }
- 
- #ifdef CONFIG_MIGRATION
-+void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
-+{
-+	struct memory_tier *memtier;
++============
++Memory tiers
++============
 +
-+	/*
-+	 * pg_data_t.memtier updates includes a synchronize_rcu()
-+	 * which ensures that we either find NULL or a valid memtier
-+	 * in NODE_DATA. protect the access via rcu_read_lock();
-+	 */
-+	rcu_read_lock();
-+	memtier = rcu_dereference(pgdat->memtier);
-+	if (memtier)
-+		*targets = memtier->lower_tier_mask;
-+	else
-+		*targets = NODE_MASK_NONE;
-+	rcu_read_unlock();
-+}
++This document describes explicit memory tiering support along with
++demotion based on memory tiers.
 +
- /**
-  * next_demotion_node() - Get the next node in the demotion path
-  * @node: The starting node to lookup the next node
-@@ -422,10 +440,19 @@ int next_demotion_node(int node)
- /* Disable reclaim-based migration. */
- static void __disable_all_migrate_targets(void)
- {
-+	struct memory_tier *memtier;
- 	int node;
- 
--	for_each_node_state(node, N_MEMORY)
-+	for_each_node_state(node, N_MEMORY) {
- 		node_demotion[node].preferred = NODE_MASK_NONE;
-+		/*
-+		 * We are holding memory_tier_lock, it is safe
-+		 * to access pgda->memtier.
-+		 */
-+		memtier = rcu_dereference_check(NODE_DATA(node)->memtier,
-+						lockdep_is_held(&memory_tier_lock));
-+		memtier->lower_tier_mask = NODE_MASK_NONE;
-+	}
- }
- 
- static void disable_all_migrate_targets(void)
-@@ -455,10 +482,26 @@ static void establish_migration_targets(void)
- 	struct demotion_nodes *nd;
- 	int target = NUMA_NO_NODE, node;
- 	int distance, best_distance;
--	nodemask_t used;
--
--	if (!node_demotion || !IS_ENABLED(CONFIG_MIGRATION))
--		return;
-+	nodemask_t used, lower_tier = NODE_MASK_NONE;
++Introduction
++============
 +
-+	if (!node_demotion || !IS_ENABLED(CONFIG_MIGRATION)) {
++Many systems have multiple types of memory devices e.g. GPU, DRAM and
++PMEM. The memory subsystem of these systems can be called a memory
++tiering system because the performance of the each types of
++memory is different. Memory tiers are defined based on the hardware
++capabilities of memory nodes. Each memory tier is assigned a tier ID
++value that determines the memory tier position in demotion order.
 +
-+		for_each_node_state(node, N_MEMORY) {
-+			/*
-+			 * We are holding memory_tier_lock, it is safe
-+			 * to access pgda->memtier.
-+			 */
-+			memtier = rcu_dereference_check(NODE_DATA(node)->memtier,
-+							lockdep_is_held(&memory_tier_lock));
-+			memtier->lower_tier_mask = NODE_MASK_NONE;
-+		}
-+		/*
-+		 * Wait for read side to work with old values
-+		 * or see the updated NODE_MASK_NONE;
-+		 */
-+		synchronize_rcu();
-+		goto build_lower_tier_mask;
-+	}
- 
- 	disable_all_migrate_targets();
- 
-@@ -501,6 +544,29 @@ static void establish_migration_targets(void)
- 			}
- 		} while (1);
- 	}
-+build_lower_tier_mask:
-+	/*
-+	 * Now build the lower_tier mask for each node collecting node mask from
-+	 * all memory tier below it. This allows us to fallback demotion page
-+	 * allocation to a set of nodes that is closer the above selected
-+	 * perferred node.
-+	 */
-+	list_for_each_entry(memtier, &memory_tiers, list)
-+		nodes_or(lower_tier, lower_tier, memtier->nodelist);
-+	/*
-+	 * Removes nodes not yet in N_MEMORY.
-+	 */
-+	nodes_and(lower_tier, node_states[N_MEMORY], lower_tier);
++The memory tier assignment of each node is independent of each
++other. Moving a node from one tier to another doesn't affect
++the tier assignment of any other node.
 +
-+	list_for_each_entry(memtier, &memory_tiers, list) {
-+		/*
-+		 * Keep removing current tier from lower_tier nodes,
-+		 * This will remove all nodes in current and above
-+		 * memory tier from the lower_tier mask.
-+		 */
-+		nodes_andnot(lower_tier, lower_tier, memtier->nodelist);
-+		memtier->lower_tier_mask = lower_tier;
-+	}
- }
- 
- static unsigned int default_memtier = DEFAULT_MEMORY_TIER;
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 3a8f78277f99..60a5235dd639 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -1460,21 +1460,34 @@ static void folio_check_dirty_writeback(struct folio *folio,
- 		mapping->a_ops->is_dirty_writeback(folio, dirty, writeback);
- }
- 
--static struct page *alloc_demote_page(struct page *page, unsigned long node)
-+static struct page *alloc_demote_page(struct page *page, unsigned long private)
- {
--	struct migration_target_control mtc = {
--		/*
--		 * Allocate from 'node', or fail quickly and quietly.
--		 * When this happens, 'page' will likely just be discarded
--		 * instead of migrated.
--		 */
--		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
--			    __GFP_THISNODE  | __GFP_NOWARN |
--			    __GFP_NOMEMALLOC | GFP_NOWAIT,
--		.nid = node
--	};
-+	struct page *target_page;
-+	nodemask_t *allowed_mask;
-+	struct migration_target_control *mtc;
++Memory tiers are used to build the demotion targets for nodes. A node
++can demote its pages to any node of any lower tiers.
 +
-+	mtc = (struct migration_target_control *)private;
++Memory tier ID
++=================
 +
-+	allowed_mask = mtc->nmask;
-+	/*
-+	 * make sure we allocate from the target node first also trying to
-+	 * reclaim pages from the target node via kswapd if we are low on
-+	 * free memory on target node. If we don't do this and if we have low
-+	 * free memory on the target memtier, we would start allocating pages
-+	 * from higher memory tiers without even forcing a demotion of cold
-+	 * pages from the target memtier. This can result in the kernel placing
-+	 * hotpages in higher memory tiers.
-+	 */
-+	mtc->nmask = NULL;
-+	mtc->gfp_mask |= __GFP_THISNODE;
-+	target_page = alloc_migration_target(page, (unsigned long)mtc);
-+	if (target_page)
-+		return target_page;
- 
--	return alloc_migration_target(page, (unsigned long)&mtc);
-+	mtc->gfp_mask &= ~__GFP_THISNODE;
-+	mtc->nmask = allowed_mask;
++Memory nodes are divided into 3 types of memory tiers with tier ID
++value as shown based on their hardware characteristics.
 +
-+	return alloc_migration_target(page, (unsigned long)mtc);
- }
- 
- /*
-@@ -1487,6 +1500,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
- {
- 	int target_nid = next_demotion_node(pgdat->node_id);
- 	unsigned int nr_succeeded;
-+	nodemask_t allowed_mask;
 +
-+	struct migration_target_control mtc = {
-+		/*
-+		 * Allocate from 'node', or fail quickly and quietly.
-+		 * When this happens, 'page' will likely just be discarded
-+		 * instead of migrated.
-+		 */
-+		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
-+			__GFP_NOMEMALLOC | GFP_NOWAIT,
-+		.nid = target_nid,
-+		.nmask = &allowed_mask
-+	};
- 
- 	if (list_empty(demote_pages))
- 		return 0;
-@@ -1494,10 +1520,12 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
- 	if (target_nid == NUMA_NO_NODE)
- 		return 0;
- 
-+	node_get_allowed_targets(pgdat, &allowed_mask);
++  * MEMORY_TIER_HBM_GPU
++  * MEMORY_TIER_DRAM
++  * MEMORY_TIER_PMEM
 +
- 	/* Demotion ignores all cpuset and mempolicy settings */
- 	migrate_pages(demote_pages, alloc_demote_page, NULL,
--			    target_nid, MIGRATE_ASYNC, MR_DEMOTION,
--			    &nr_succeeded);
-+		      (unsigned long)&mtc, MIGRATE_ASYNC, MR_DEMOTION,
-+		      &nr_succeeded);
- 
- 	if (current_is_kswapd())
- 		__count_vm_events(PGDEMOTE_KSWAPD, nr_succeeded);
++Memory tiers initialization and (re)assignments
++===============================================
++
++By default, all nodes are assigned to the memory tier with the default tier ID
++DEFAULT_MEMORY_TIER which is 200 (MEMORY_TIER_DRAM). The memory tier of
++the memory node can be either modified through sysfs or from the driver. On
++hotplug, the memory tier with default tier ID is assigned to the memory node.
++
++
++Sysfs interfaces
++================
++
++Nodes belonging to specific tier can be read from,
++/sys/devices/system/memtier/memtierN/nodelist (read-Only)
++
++Examples:
++
++1. On a system where Node 0 is CPU + DRAM nodes, Node 1 is HBM node and
++   node 2 is a PMEM node an ideal tier layout will be
++
++   .. code-block:: sh
++
++      $ cat /sys/devices/system/memtier/memtier0/nodelist
++      1
++      $ cat /sys/devices/system/memtier/memtier1/nodelist
++      0
++      $ cat /sys/devices/system/memtier/memtier2/nodelist
++      2
++
++2. On a system where Node 0 & 1 are CPU + DRAM nodes, node 2 & 3 are PMEM
++   nodes.
++
++   .. code-block:: sh
++
++      $ cat /sys/devices/system/memtier/memtier0/nodelist
++      cat: /sys/devices/system/memtier/memtier0/nodelist: No such file or directory
++      $ cat /sys/devices/system/memtier/memtier1/nodelist
++      0-1
++      $ cat /sys/devices/system/memtier/memtier2/nodelist
++      2-3
++
++Default memory tier can be read from,
++/sys/devices/system/memtier/default_tier (read-Only)
++
++   .. code-block:: sh
++
++      $ cat /sys/devices/system/memtier/default_tier
++      memtier200
++
++Max memory tier ID supported can be read from,
++/sys/devices/system/memtier/max_tier (read-Only)
++
++   .. code-block:: sh
++
++      $ cat /sys/devices/system/memtier/max_tier
++      400
++
++Individual node's memory tier can be read of set using,
++/sys/devices/system/node/nodeN/memtier	(read-write), where N = node id
++
++When this interface is written, node is moved from the old memory tier
++to new memory tier and demotion targets for all N_MEMORY nodes are
++built again.
++
++For example 1 mentioned above,
++   .. code-block:: sh
++
++      $ cat /sys/devices/system/node/node0/memtier
++      1
++      $ cat /sys/devices/system/node/node1/memtier
++      0
++      $ cat /sys/devices/system/node/node2/memtier
++      2
++
++Additional memory tiers can be created by writing a tier ID value to this file.
++This results in a new memory tier creation and moving the specific NUMA node to
++that memory tier.
++
++Demotion
++========
++
++In a system with DRAM and persistent memory, once DRAM
++fills up, reclaim will start and some of the DRAM contents will be
++thrown out even if there is a space in persistent memory.
++Consequently, allocations will, at some point, start falling over to the slower
++persistent memory.
++
++That has two nasty properties. First, the newer allocations can end up in
++the slower persistent memory. Second, reclaimed data in DRAM are just
++discarded even if there are gobs of space in persistent memory that could
++be used.
++
++Instead of a page being discarded during reclaim, it can be moved to
++persistent memory. Allowing page migration during reclaim enables
++these systems to migrate pages from fast (higher) tiers to slow (lower)
++tiers when the fast (higher) tier is under pressure.
++
++
++Enable/Disable demotion
++-----------------------
++
++By default demotion is disabled, it can be enabled/disabled using
++below sysfs interface,
++
++   .. code-block:: sh
++
++      $ echo 0/1 or false/true > /sys/kernel/mm/numa/demotion_enabled
++
++preferred and allowed demotion nodes
++------------------------------------
++
++Preferred nodes for a specific N_MEMORY node are the best nodes
++from the next possible lower memory tier. Allowed nodes for any
++node are all the nodes available in all possible lower memory
++tiers.
++
++For example on a system where Node 0 & 1 are CPU + DRAM nodes,
++node 2 & 3 are PMEM nodes,
++
++  * node distances:
++
++    ====  ==   ==   ==   ==
++    node   0    1    2    3
++    ====  ==   ==   ==   ==
++       0  10   20   30   40
++       1  20   10   40   30
++       2  30   40   10   40
++       3  40   30   40   10
++    ====  ==   ==   ==   ==
++
++
++   .. code-block:: none
++
++      memory_tiers[0] = <empty>
++      memory_tiers[1] = 0-1
++      memory_tiers[2] = 2-3
++
++      node_demotion[0].preferred = 2
++      node_demotion[0].allowed   = 2, 3
++      node_demotion[1].preferred = 3
++      node_demotion[1].allowed   = 3, 2
++      node_demotion[2].preferred = <empty>
++      node_demotion[2].allowed   = <empty>
++      node_demotion[3].preferred = <empty>
++      node_demotion[3].allowed   = <empty>
++
++Memory allocation for demotion
++------------------------------
++
++If a page needs to be demoted from any node, the kernel first tries
++to allocate a new page from the node's preferred node and fallbacks to
++node's allowed targets in allocation fallback order.
++
 -- 
 2.36.1
 
