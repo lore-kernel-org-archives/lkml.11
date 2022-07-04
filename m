@@ -2,130 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33F7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 16:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4735C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 16:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232382AbiGDQeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 12:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S234858AbiGDQeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 12:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234675AbiGDQd4 (ORCPT
+        with ESMTP id S234753AbiGDQd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 12:33:56 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA06A47B
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 09:33:55 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-31c8340a6f7so45842337b3.4
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 09:33:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uTJEKBpneiIbXMc3b2N5EXRSBaOvIi8yNaCS7kWKrlA=;
-        b=R52eKy4xAiav4e/HV+jayJLA2b8Sdq82fLJZWJR+bm325zxVmgQoXDLnAqFkzZMcPC
-         AKlyCKH0kOHc0Tz2AdGT4VRQEilaf8ohCIfP9CV2OwJZy8wNwuqCZsfawbn0haPAlP+8
-         WyVPxTiZbjHL8dyvE3WFdD0Eqdox0BKyGagKKzRPpK3qZWVitAxgBbC9NVnegpWBXFO9
-         YMFIMtBTxYxfmKjIGehB8wI6UrWsrOnBU7S6ediWsijCn1jpowC/htKyC5Algzmxe8J0
-         4DLcB4+QyhkDFgmpY9sj3fh8ntfcRXDdfUOerF3AlS3D8FbtjAP6zn+LkhrslzytmNup
-         MTnQ==
+        Mon, 4 Jul 2022 12:33:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E9EC95A1
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 09:33:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656952437;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nPN7O4yutTfR76QUYkCeWKTkYNzlpYj/Kwqr9wYgmXI=;
+        b=HeUrghCyRIi5mih2IIWe9fue3x/k5+qpM6pEoTXiwREp58+31k5R0pNP95kykRPSuE+UE9
+        UIOTDpna9qi9WZW+V/b6Gof3k+FIF9/OwDZaqvcCqFdHTqD/fseiXmJG9UumWg5ly/QgK+
+        wm7JDOei7kAeqdj0v21uwDueJ3n8MMU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-jtaN-09lNkiUCivnpcmIoA-1; Mon, 04 Jul 2022 12:33:56 -0400
+X-MC-Unique: jtaN-09lNkiUCivnpcmIoA-1
+Received: by mail-wm1-f72.google.com with SMTP id 6-20020a1c0206000000b003a02cd754d1so4279404wmc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 09:33:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uTJEKBpneiIbXMc3b2N5EXRSBaOvIi8yNaCS7kWKrlA=;
-        b=Z9LWFu351ron0WGUBRBClU+rGSuUcNFIGBza7nkq6yg5RMEC5VwXMtAUVlHSvQkDFX
-         JtoljhzLuEux1oqti0ZPTWh2KgwSqm1U/t8Pcwa+D926+t2T25KTya8/e0meMpMv2DfO
-         hpRwakkYoPXrAkC4BusdgfjPSfLKZXBf2+rJkKXq8MUg498G1dB/A0ZcYrkHTzAG5vsP
-         h/Y3O5lS4WnSSjZfDTayL/okSlVY6VTZ/3pRB8fo+XztfZc8zJwBc/UBwUVi47Ory/RO
-         mLI/ECRGayKo4f1aUzoIb2OS6DhYa39gBTjwWtaEZnh3sE/B7MAR6nvaKzlfGdsSiuTV
-         N1mA==
-X-Gm-Message-State: AJIora9SzTeHICz4M89l0zUGkUsSiW7BcxaU0eifLTyXPYKrdyiDq9UO
-        NHYHy5qVefPD1FgZpetX3sd9H2IDrQ4kZhBHK6LHYA==
-X-Google-Smtp-Source: AGRyM1s63YE2/xTgqt0oPZZQkusLgbG2t/58xXkztX16ZAIyPj87TDuKl8Uv6/qEf+3SpdiC1pugrIWRYD+I3KpDsM8=
-X-Received: by 2002:a81:a847:0:b0:31c:7dd5:6d78 with SMTP id
- f68-20020a81a847000000b0031c7dd56d78mr15980661ywh.50.1656952434098; Mon, 04
- Jul 2022 09:33:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-44-glider@google.com>
- <CAHk-=wgbpot7nt966qvnSR25iea3ueO90RwC2DwHH=7ZyeZzvQ@mail.gmail.com>
- <YsJWCREA5xMfmmqx@ZenIV> <CAG_fn=V_vDVFNSJTOErNhzk7n=GRjZ_6U6Z=M-Jdmi=ekbS5+g@mail.gmail.com>
- <YsLuoFtki01gbmYB@ZenIV> <CAG_fn=VTihJSzQ106WPaQNxwTuuB8iPQpZR4306v8KmXxQT_GQ@mail.gmail.com>
- <YsMPRuOdXJIuEe2s@kroah.com>
-In-Reply-To: <YsMPRuOdXJIuEe2s@kroah.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Mon, 4 Jul 2022 18:33:18 +0200
-Message-ID: <CAG_fn=VhRynRP_8dPH5gb28=LUU1O69GiX5JR24naJCLuamAEg@mail.gmail.com>
-Subject: Re: [PATCH v4 43/45] namei: initialize parameters passed to step_into()
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=nPN7O4yutTfR76QUYkCeWKTkYNzlpYj/Kwqr9wYgmXI=;
+        b=FvI2Ne3PSO/EGA/H+3CzKnbK5Qz3fMealg11jTyQ5lZzj5uZwNTKGOSGTavJq2O0tJ
+         DKrvyexx/4M4cx4+vz2uCoJCoEiIvJFiBnYdEsKsuuTkfNgqO/lAYIQLq3qAFgw42m9H
+         qZ5dXR8ecyg6cQFt1oDU8AEIJ57RzUMNUIeTGoX/doJgt4M8FIvxGPZVrDr/d1Mvug25
+         uu5Urg4aFOjWjc32gBzkeo15qRImQmERQIJRwSQHgXXvLQ47BlCfAK0+WEZSCzS5Qpts
+         dhjQa05b8g2NWkWRheaU4KZIrEW4xdc1Avad6GyCz1bRcmCEuU4gwk0f2xJ1mzKkMF7X
+         QHgA==
+X-Gm-Message-State: AJIora8oioLEa0sVxQMfnjKUQOgcZKRQinXsMmN7Q/mtvunRCtyEAAsP
+        skZo4kEFT1q5YOdkT81WYJQoU4FY5NOacidK2UYVlyzrXZY04v15CKHvG5Vf2hc3spHe0aIwA/H
+        QTG+ffiWUFvNC6LTxGHm+gMj/
+X-Received: by 2002:a5d:534e:0:b0:21b:adf3:dc19 with SMTP id t14-20020a5d534e000000b0021badf3dc19mr26822712wrv.543.1656952435241;
+        Mon, 04 Jul 2022 09:33:55 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uLhSWU8M2vNb4jyFr+doYws0qpQ2mbL5enVcLAf041KKQbSEGOxeoSAr/MZoztVPnyelvcfw==
+X-Received: by 2002:a5d:534e:0:b0:21b:adf3:dc19 with SMTP id t14-20020a5d534e000000b0021badf3dc19mr26822690wrv.543.1656952434992;
+        Mon, 04 Jul 2022 09:33:54 -0700 (PDT)
+Received: from ?IPv6:2a0c:5a80:1b12:b300:47b0:25ba:1a2e:72ac? ([2a0c:5a80:1b12:b300:47b0:25ba:1a2e:72ac])
+        by smtp.gmail.com with ESMTPSA id x1-20020a1c7c01000000b003a02b135747sm19910694wmc.46.2022.07.04.09.33.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 09:33:54 -0700 (PDT)
+Message-ID: <9de48555e9139c91289a48e9296c0af1a62811f3.camel@redhat.com>
+Subject: Re: [PATCH 7/7] mm/page_alloc: Replace local_lock with normal
+ spinlock
+From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
         Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Vitaly Buka <vitalybuka@google.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Date:   Mon, 04 Jul 2022 18:33:53 +0200
+In-Reply-To: <20220624125423.6126-8-mgorman@techsingularity.net>
+References: <20220624125423.6126-1-mgorman@techsingularity.net>
+         <20220624125423.6126-8-mgorman@techsingularity.net>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 6:03 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Jul 04, 2022 at 05:49:13PM +0200, Alexander Potapenko wrote:
-> > This e-mail is confidential. If you received this communication by
-> > mistake, please don't forward it to anyone else, please erase all
-> > copies and attachments, and please let me know that it has gone to the
-> > wrong person.
->
-> This is not compatible with Linux kernel development, sorry.
->
-> Now deleted.
+On Fri, 2022-06-24 at 13:54 +0100, Mel Gorman wrote:
+> struct per_cpu_pages is no longer strictly local as PCP lists can be
+> drained remotely using a lock for protection. While the use of local_lock
+> works, it goes against the intent of local_lock which is for "pure
+> CPU local concurrency control mechanisms and not suited for inter-CPU
+> concurrency control" (Documentation/locking/locktypes.rst)
+>=20
+> local_lock protects against migration between when the percpu pointer is
+> accessed and the pcp->lock acquired. The lock acquisition is a preemption
+> point so in the worst case, a task could migrate to another NUMA node
+> and accidentally allocate remote memory. The main requirement is to pin
+> the task to a CPU that is suitable for PREEMPT_RT and !PREEMPT_RT.
+>=20
+> Replace local_lock with helpers that pin a task to a CPU, lookup the
+> per-cpu structure and acquire the embedded lock. It's similar to local_lo=
+ck
+> without breaking the intent behind the API. It is not a complete API
+> as only the parts needed for PCP-alloc are implemented but in theory,
+> the generic helpers could be promoted to a general API if there was
+> demand for an embedded lock within a per-cpu struct with a guarantee
+> that the per-cpu structure locked matches the running CPU and cannot use
+> get_cpu_var due to RT concerns. PCP requires these semantics to avoid
+> accidentally allocating remote memory.
+>=20
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> ---
 
-Sorry, I shouldn't have added those to public emails.
-Apologies for the inconvenience.
+Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Tested-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+
+Thanks!
 
 --=20
-Alexander Potapenko
-Software Engineer
+Nicol=C3=A1s S=C3=A1enz
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
