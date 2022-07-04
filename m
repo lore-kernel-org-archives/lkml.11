@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 325B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3545CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234303AbiGDNXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
+        id S234500AbiGDNXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiGDNWl (ORCPT
+        with ESMTP id S234140AbiGDNWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:22:41 -0400
+        Mon, 4 Jul 2022 09:22:42 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C85F10A6
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:12 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lc5wX1FZqzTgWr;
-        Mon,  4 Jul 2022 21:18:36 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823C526F8
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:16 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lc5wb4tZ9zTgWf;
+        Mon,  4 Jul 2022 21:18:39 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 21:22:10 +0800
+ 2022 21:22:13 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
         <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 02/16] mm/huge_memory: access vm_page_prot with READ_ONCE in remove_migration_pmd
-Date:   Mon, 4 Jul 2022 21:21:47 +0800
-Message-ID: <20220704132201.14611-3-linmiaohe@huawei.com>
+Subject: [PATCH v3 08/16] mm/huge_memory: use helper macro __ATTR_RW
+Date:   Mon, 4 Jul 2022 21:21:53 +0800
+Message-ID: <20220704132201.14611-9-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220704132201.14611-1-linmiaohe@huawei.com>
 References: <20220704132201.14611-1-linmiaohe@huawei.com>
@@ -44,28 +44,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vma->vm_page_prot is read lockless from the rmap_walk, it may be updated
-concurrently. Using READ_ONCE to prevent the risk of reading intermediate
-values.
+Use helper macro __ATTR_RW to define use_zero_page_attr, defrag_attr and
+enabled_attr to make code more clear. Minor readability improvement.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 ---
- mm/huge_memory.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/huge_memory.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index f4e581eefb67..a010f9ba15ce 100644
+index 5f5123130b28..32a45a1e98b7 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
-@@ -3309,7 +3309,7 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+@@ -277,8 +277,8 @@ static ssize_t enabled_store(struct kobject *kobj,
+ 	}
+ 	return ret;
+ }
+-static struct kobj_attribute enabled_attr =
+-	__ATTR(enabled, 0644, enabled_show, enabled_store);
++
++static struct kobj_attribute enabled_attr = __ATTR_RW(enabled);
  
- 	entry = pmd_to_swp_entry(*pvmw->pmd);
- 	get_page(new);
--	pmde = pmd_mkold(mk_huge_pmd(new, vma->vm_page_prot));
-+	pmde = pmd_mkold(mk_huge_pmd(new, READ_ONCE(vma->vm_page_prot)));
- 	if (pmd_swp_soft_dirty(*pvmw->pmd))
- 		pmde = pmd_mksoft_dirty(pmde);
- 	if (is_writable_migration_entry(entry))
+ ssize_t single_hugepage_flag_show(struct kobject *kobj,
+ 				  struct kobj_attribute *attr, char *buf,
+@@ -367,8 +367,7 @@ static ssize_t defrag_store(struct kobject *kobj,
+ 
+ 	return count;
+ }
+-static struct kobj_attribute defrag_attr =
+-	__ATTR(defrag, 0644, defrag_show, defrag_store);
++static struct kobj_attribute defrag_attr = __ATTR_RW(defrag);
+ 
+ static ssize_t use_zero_page_show(struct kobject *kobj,
+ 				  struct kobj_attribute *attr, char *buf)
+@@ -382,8 +381,7 @@ static ssize_t use_zero_page_store(struct kobject *kobj,
+ 	return single_hugepage_flag_store(kobj, attr, buf, count,
+ 				 TRANSPARENT_HUGEPAGE_USE_ZERO_PAGE_FLAG);
+ }
+-static struct kobj_attribute use_zero_page_attr =
+-	__ATTR(use_zero_page, 0644, use_zero_page_show, use_zero_page_store);
++static struct kobj_attribute use_zero_page_attr = __ATTR_RW(use_zero_page);
+ 
+ static ssize_t hpage_pmd_size_show(struct kobject *kobj,
+ 				   struct kobj_attribute *attr, char *buf)
 -- 
 2.23.0
 
