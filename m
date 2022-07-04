@@ -2,72 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8C1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E42F1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232113AbiGDNYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
+        id S233588AbiGDN1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234346AbiGDNWm (ORCPT
+        with ESMTP id S233758AbiGDN0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:22:42 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432EFDFA7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:21 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lc5wh4FV5zTgXr;
-        Mon,  4 Jul 2022 21:18:44 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 21:22:18 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
-        <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 16/16] mm/huge_memory: use helper macro IS_ERR_OR_NULL in split_huge_pages_pid
-Date:   Mon, 4 Jul 2022 21:22:01 +0800
-Message-ID: <20220704132201.14611-17-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220704132201.14611-1-linmiaohe@huawei.com>
-References: <20220704132201.14611-1-linmiaohe@huawei.com>
+        Mon, 4 Jul 2022 09:26:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5CF012773
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:23:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656941021;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=++fJgtu1Gsy4nJVDDaNos/TBbdlOhBzdbNWHZ5EkqwY=;
+        b=BOkXi0UN+JdRgN032nBhIKmB2oaUzOytPqptCFcaSVM649wSYLMp53uXLiGi83SpCjAWfK
+        pRN0/NnaE/UPgFeEccDELgY/mibl135+pl124kr4mBIINyUe+2anKc4D+YeonC7deijtU4
+        Ssz4JVrky461j6zxEnQ6P7gCU0zqUrg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-648-3nFl5fS7Muay8tsTNh_jBQ-1; Mon, 04 Jul 2022 09:23:40 -0400
+X-MC-Unique: 3nFl5fS7Muay8tsTNh_jBQ-1
+Received: by mail-ed1-f69.google.com with SMTP id x21-20020a05640226d500b00435bd7f9367so7179070edd.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:23:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=++fJgtu1Gsy4nJVDDaNos/TBbdlOhBzdbNWHZ5EkqwY=;
+        b=dtj99vmZsTSSI5zW2cwYEqWN1imjBG4s+3ZupMLmChG507Ssz4HI1a38VCYVWRN8MW
+         W/4T0M8qRCMg161+JAcagOQqehq2C5KQlNIaN6n8X+8oUi/C3Q4A3tR9km6P8A8V2V+w
+         /NOKrqrPwJDc14amcSsQ0nbMnPydOx8wh4oCUcPEKlKU6Pbom9AKIw3+TQO5chFeYaH8
+         3J6aUbozbGBFpGmbd/7wqtGLj3cQJKQdmhG5w5NYnCb4fq43RTWEj8GrcKlBfM8N68aD
+         +Ie5s20GLrAywpM6rGVYDi8ait4mgKs8FTeEYUBhGUMrM9wd18vsBbzFC2NC0k1KB1Jk
+         VmdA==
+X-Gm-Message-State: AJIora9+/B1WR3yv74JDd1V30zib5Mqphhriac8wRQ2DR/0I5ccahYZe
+        g7sEnbbflCse9WoH1K9SccbH9cn34gvm8++0QvFzJGnzzsnmMmPd60zHMXfmElKGVqEYjV56Aq/
+        pw2Yni91mrfipJnaZWFIKd9hnakvoF/Kq0X+A7ZtF
+X-Received: by 2002:a17:907:1dea:b0:72a:6012:7bbc with SMTP id og42-20020a1709071dea00b0072a60127bbcmr22739731ejc.258.1656941019233;
+        Mon, 04 Jul 2022 06:23:39 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1us+BJZNsaBxoVlhuOHsDmDB0TuEnxFOGCQHinJXmpvFVRGrl2Z3hyJhPYMWd9HALphgmfV9qcRQ2n0jxT4UXk=
+X-Received: by 2002:a17:907:1dea:b0:72a:6012:7bbc with SMTP id
+ og42-20020a1709071dea00b0072a60127bbcmr22739720ejc.258.1656941019093; Mon, 04
+ Jul 2022 06:23:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220701142515.14800-1-code@siddh.me>
+In-Reply-To: <20220701142515.14800-1-code@siddh.me>
+From:   Vlad Dronov <vdronov@redhat.com>
+Date:   Mon, 4 Jul 2022 15:23:28 +0200
+Message-ID: <CAMusb+QLOyOmk-MQ=FJV7N19g17TUb0gyBi522Rna1uTR9S2+A@mail.gmail.com>
+Subject: Re: [RESEND PATCH] MAINTAINERS: Add tools/testing/crypto/chacha20-s390/
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use helper macro IS_ERR_OR_NULL to check the validity of page to simplify
-the code. Minor readability improvement.
+Hi,
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/huge_memory.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Fri, Jul 1, 2022 at 4:31 PM Siddh Raman Pant <code@siddh.me> wrote:
+>
+> This adds the maintainers' information for the
+> s390 ChaCha20 self-test module.
+>
+> Signed-off-by: Siddh Raman Pant <code@siddh.me>
+> ---
+> CC'd the maintainers in this enail which I had not
+> done last time.
+>
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index fe5daf141501..0fcacd715b1c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -17438,6 +17438,14 @@ F:     Documentation/s390/
+>  F:     arch/s390/
+>  F:     drivers/s390/
+>
+> +S390 CHACHA20 SELFTEST
+> +M:     Vladis Dronov <vdronov@redhat.com>
+> +M:     Herbert Xu <herbert@gondor.apana.org.au>
+> +R:     Harald Freudenberger <freude@linux.ibm.com>
+> +L:     linux-s390@vger.kernel.org
+> +S:     Supported
+> +F:     tools/testing/crypto/chacha20-s390/
+> +
+>  S390 COMMON I/O LAYER
+>  M:     Vineeth Vijayan <vneethv@linux.ibm.com>
+>  M:     Peter Oberparleiter <oberpar@linux.ibm.com>
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 8380912b39fd..fd9d502aadc4 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -3062,9 +3062,7 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
- 		/* FOLL_DUMP to ignore special (like zero) pages */
- 		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
- 
--		if (IS_ERR(page))
--			continue;
--		if (!page || is_zone_device_page(page))
-+		if (IS_ERR_OR_NULL(page) || is_zone_device_page(page))
- 			continue;
- 
- 		if (!is_transparent_hugepage(page))
--- 
-2.23.0
+Honestly, I'm not quite sure this is really needed. test-cipher.c is a
+"one-shot"
+thing quite exactly and it is not supposed to be changed / developed anyhow
+in the future.
+
+Best regards,
+Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
 
