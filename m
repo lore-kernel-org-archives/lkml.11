@@ -2,133 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2688FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8813DCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232856AbiGDPOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S233544AbiGDPUO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiGDPOO (ORCPT
+        with ESMTP id S229448AbiGDPUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:14:14 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ADEBC83;
-        Mon,  4 Jul 2022 08:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656947623;
-        bh=lw9l19cpkr4yCqcc6HT5BAREEapDuSh+BtMq4Z73ojA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=joU5t0cevbn9FI0a3XUrCa89xeWo84Gyc3+bVds9L2qAWszvbCKziivpG4hR6r7oB
-         m0dNdOh+uhTlrn3MmgupsNYjZWUz9xS3REe5+Hy2d34gM7NSFCRv+OhaHNl6z5iMx+
-         wQeOcrfhPoI0h6AGR585T0/XEYi1H3MvdPBWcaBA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mgeo8-1nh3Ep2wyy-00h9Fb; Mon, 04
- Jul 2022 17:13:43 +0200
-Message-ID: <576feae5-87f3-fbac-4349-126cf5244821@gmx.de>
-Date:   Mon, 4 Jul 2022 17:13:38 +0200
+        Mon, 4 Jul 2022 11:20:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7473755A3;
+        Mon,  4 Jul 2022 08:20:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ED1961730;
+        Mon,  4 Jul 2022 15:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FF2BC341CB;
+        Mon,  4 Jul 2022 15:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656948008;
+        bh=EKMqy9UhUzeu4UGTyaN4MYlGMawg+pU7MdD+1PduzY8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tn9T80KrveBPSIpC30H3aHzY9JVZzbOHOUaUFN2urhnRbPgKDu64h1sM7rWHxWeBL
+         dH1kB7BeN4Cvsr4VhNMPIl9B89BYXTNBI3+bYiw/++2y6iPc3o6cqw4B2dTfnVUKIX
+         ro0d138h5N8O6/2eUAOHT3aEqqipE6ccFGbGls//gbkY9OD1odiACsH2ZW8FB6CYVZ
+         lu2EhNo5gtkHywXkZn5LT7n2RCoz2AHU74AegOSrJSxeVlYAM6EzXxGwZiExMaR6lV
+         frG5Tyhjr14syoXU8oTfxgpzxjhgYPiXZ6lpERWRinwnbcw+o3/nJkfbPqluerPWqh
+         /M1bQPpsf9jcg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1o8Nrp-009fKW-3V;
+        Mon, 04 Jul 2022 16:20:05 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mika Kuoppala <mika.kuoppala@linux.intel.com>,
+        Thomas Hellstrom <thomas.hellstrom@intel.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        Bruce Chang <yu.bruce.chang@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        John Harrison <John.C.Harrison@Intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
+        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Andi Shyti <andi.shyti@intel.com>
+Subject: [PATCH v3 1/2] drm/i915/gt: Serialize GRDOM access between multiple engine resets
+Date:   Mon,  4 Jul 2022 16:20:03 +0100
+Message-ID: <ccc54757d89d38af35e5c5885edfb980c7b227f6.1656921701.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656921701.git.mchehab@kernel.org>
+References: <cover.1656921701.git.mchehab@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
- serial core
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
- <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
- <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7BLvkQ8Daoruut0OeY5prEW4I+47ILt1MxrQ+u1s/fM+oDJ3G5M
- bU/gqksPJ/AyAYj+2nJd1fnExnWNC9/G+8lOKaqIcdN0o5ssnKLE9PIjN0MUsjeb6+wdoXj
- TX+pNEdkIzjEUa2ZO21peLKT/Mf/pD3CXVPX7FxAXp2Blh7xic3KbOwVgyv2Sw3p9ydPqCG
- gj+B0zgEZm2dv1aMRZXlQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VKzmQ5Nig5Y=:Hu9TT4m/x7bFkXRNGtkvXi
- VEQsvAW6y0StxIsUHP9ibrObGi7xmCvpqp7nptXo6k/eJ2n+cRX6BQRndmCpqx675G7a9oQg0
- hpZ6IuKw8b3x5RKOOXBOVNejCFekRl1pfqgxBNI4N8IGv5UiUXHnhSzeRtUND4dHYzCDq/+DO
- s2CEr3O5t4H0ajc5xgSY7xO+7A9pa9PTZeLtwm3V890C8cN/cEkh1KY3AMP4ibFoU54W/qm1A
- Ecw1Ih3SMJ30cg/UAYfNaZ2RpaPGP6wGiyk4wVZSyua3EXfObaiNVRiPuk53roIylG1I0OCzZ
- j2FhUAhG2DMvl2tq5M0WXw9TdSN1E9bV3vEnChf3vmQFtqeddwl3A+5Q7igmn4IFruaYgyB6+
- /zjGAdWpqEv/jFTCgCPS73PbnUYtPrTBFyb4i5xUD0x7Yc/SqXwFLOgmt3SsggF49L3IqOZxy
- hcsEk/zTIjeR6apEVO990gHnPZJ/Hsxschu/1Cr4RUPHn+TT4N8vBMG5JEesWaCvbTTeaHhF2
- 0fkXz+0FXVO777VmZHUxLIl1PKg8di9gBYXpLrVCtRJ9qK33KAcMxNCF1ChWNpt5O+qfldL9N
- YnLocx5qSCyie5iX1QtfPElnPTl9X683qFED+vLL5NzhyaSafgfGyttbdWg/3w0XjmkhlQ2VL
- WO2BaJtgQaIcPA8dg8CDRsTz4IW98RCwnc3X1LqpzfzFs8EoNNOJnEdxNUxjGVvvbWQ/mgHUU
- UV8LvkfbtDM724J8gJhheZEd6CTfUYt2EgU5Pa+G8T1atE5uK4RZkZuIWNVeowRHUgtUcAC3f
- l7AmwgUJJo9J/M5sNJeFg0vxO3Nv5nWQBbOmZcmwOlW0z9Onudj3JDs87ZoYBXXL0me7WVjPy
- npO1ARNdrYRHokIAVmoxBnyyw2u9yCXaqfomjutlCg1cZFGQFzDlqoLHYndVQJS2uRK0NQ/lZ
- vv//o4SAoXC//ux4t7fJC+NXcIRkdJI0G70VxQe1dZaArlXSONgr2tHPxd44tBSOKRYz17Gij
- VQ0EOFYHHgo0opMIy0ZEoNJxhzXkyZGg0da7GL5a1wSoHGrWqF7iusMTgycLowjmc+ZuHWL/b
- l+49bBwS5aShZ8fs31cPGs1dspSVcxR+K28Z9PlIVkh+3PAXR4eZ7TDLw==
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220704152003.YmVDnUgAgQ1Q9EV58RGGUdtchs2FG5zhxw4Z9SsSUNY@z>
 
+From: Chris Wilson <chris.p.wilson@intel.com>
 
+Don't allow two engines to be reset in parallel, as they would both
+try to select a reset bit (and send requests to common registers)
+and wait on that register, at the same time. Serialize control of
+the reset requests/acks using the uncore->lock, which will also ensure
+that no other GT state changes at the same time as the actual reset.
 
-On 04.07.22 11:51, Ilpo J=C3=A4rvinen wrote:
-> On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
->
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> In serial8250_em485_config() the termination GPIO is set with the uart_=
-port
->> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
-.
->> since the concerning GPIO expander is connected via SPI or I2C).
->>
->> Fix this by setting the termination line outside of the uart_port spinl=
-ock
->> in the serial core and using gpiod_set_value_cansleep() which instead o=
-f
->> gpiod_set_value() allows to sleep.
->>
->> Beside fixing the termination GPIO line setting for the 8250 driver thi=
-s
->> change also makes setting the termination GPIO generic for all UART
->> drivers.
->>
->> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->> ---
->>  drivers/tty/serial/8250/8250_port.c |  3 ---
->>  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
->>  2 files changed, 12 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
->> index ed2a606f2da7..72252d956f17 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -676,9 +676,6 @@ int serial8250_em485_config(struct uart_port *port,=
- struct ktermios *termios,
->>  		rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->>  	}
->>
->> -	gpiod_set_value(port->rs485_term_gpio,
->> -			rs485->flags & SER_RS485_TERMINATE_BUS);
->> -
->
-> I sent a series to make .rs485_supported per uart_port and properly set
-> SER_RS485_TERMINATE_BUS according to DT config. With that series added
-> first, SER_RS485_TERMINATE_BUS should also be removed from
-> serial8250_em485_supported so that serial core can properly manage
-> it all.
->
+Cc: stable@vger.kernel.org # Up to 4.4
+Reported-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Reviewed-by: Andi Shyti <andi.shyti@intel.com>
+Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-Ok, I will rebase the next version of my patches on your series then.
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH v3 0/2] at: https://lore.kernel.org/all/cover.1656921701.git.mchehab@kernel.org/
 
-Regards,
-Lino
+ drivers/gpu/drm/i915/gt/intel_reset.c | 37 ++++++++++++++++++++-------
+ 1 file changed, 28 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/intel_reset.c b/drivers/gpu/drm/i915/gt/intel_reset.c
+index a5338c3fde7a..c68d36fb5bbd 100644
+--- a/drivers/gpu/drm/i915/gt/intel_reset.c
++++ b/drivers/gpu/drm/i915/gt/intel_reset.c
+@@ -300,9 +300,9 @@ static int gen6_hw_domain_reset(struct intel_gt *gt, u32 hw_domain_mask)
+ 	return err;
+ }
+ 
+-static int gen6_reset_engines(struct intel_gt *gt,
+-			      intel_engine_mask_t engine_mask,
+-			      unsigned int retry)
++static int __gen6_reset_engines(struct intel_gt *gt,
++				intel_engine_mask_t engine_mask,
++				unsigned int retry)
+ {
+ 	struct intel_engine_cs *engine;
+ 	u32 hw_mask;
+@@ -321,6 +321,20 @@ static int gen6_reset_engines(struct intel_gt *gt,
+ 	return gen6_hw_domain_reset(gt, hw_mask);
+ }
+ 
++static int gen6_reset_engines(struct intel_gt *gt,
++			      intel_engine_mask_t engine_mask,
++			      unsigned int retry)
++{
++	unsigned long flags;
++	int ret;
++
++	spin_lock_irqsave(&gt->uncore->lock, flags);
++	ret = __gen6_reset_engines(gt, engine_mask, retry);
++	spin_unlock_irqrestore(&gt->uncore->lock, flags);
++
++	return ret;
++}
++
+ static struct intel_engine_cs *find_sfc_paired_vecs_engine(struct intel_engine_cs *engine)
+ {
+ 	int vecs_id;
+@@ -487,9 +501,9 @@ static void gen11_unlock_sfc(struct intel_engine_cs *engine)
+ 	rmw_clear_fw(uncore, sfc_lock.lock_reg, sfc_lock.lock_bit);
+ }
+ 
+-static int gen11_reset_engines(struct intel_gt *gt,
+-			       intel_engine_mask_t engine_mask,
+-			       unsigned int retry)
++static int __gen11_reset_engines(struct intel_gt *gt,
++				 intel_engine_mask_t engine_mask,
++				 unsigned int retry)
+ {
+ 	struct intel_engine_cs *engine;
+ 	intel_engine_mask_t tmp;
+@@ -583,8 +597,11 @@ static int gen8_reset_engines(struct intel_gt *gt,
+ 	struct intel_engine_cs *engine;
+ 	const bool reset_non_ready = retry >= 1;
+ 	intel_engine_mask_t tmp;
++	unsigned long flags;
+ 	int ret;
+ 
++	spin_lock_irqsave(&gt->uncore->lock, flags);
++
+ 	for_each_engine_masked(engine, gt, engine_mask, tmp) {
+ 		ret = gen8_engine_reset_prepare(engine);
+ 		if (ret && !reset_non_ready)
+@@ -612,17 +629,19 @@ static int gen8_reset_engines(struct intel_gt *gt,
+ 	 * This is best effort, so ignore any error from the initial reset.
+ 	 */
+ 	if (IS_DG2(gt->i915) && engine_mask == ALL_ENGINES)
+-		gen11_reset_engines(gt, gt->info.engine_mask, 0);
++		__gen11_reset_engines(gt, gt->info.engine_mask, 0);
+ 
+ 	if (GRAPHICS_VER(gt->i915) >= 11)
+-		ret = gen11_reset_engines(gt, engine_mask, retry);
++		ret = __gen11_reset_engines(gt, engine_mask, retry);
+ 	else
+-		ret = gen6_reset_engines(gt, engine_mask, retry);
++		ret = __gen6_reset_engines(gt, engine_mask, retry);
+ 
+ skip_reset:
+ 	for_each_engine_masked(engine, gt, engine_mask, tmp)
+ 		gen8_engine_reset_cancel(engine);
+ 
++	spin_unlock_irqrestore(&gt->uncore->lock, flags);
++
+ 	return ret;
+ }
+ 
+-- 
+2.36.1
+
