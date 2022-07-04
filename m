@@ -2,192 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7439EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233455AbiGDLsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
+        id S233089AbiGDLsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiGDLre (ORCPT
+        with ESMTP id S233213AbiGDLrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:47:34 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C7412746;
-        Mon,  4 Jul 2022 04:47:02 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lc3pk1VhtzTgWJ;
-        Mon,  4 Jul 2022 19:43:26 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Jul 2022 19:47:00 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Jul 2022 19:46:59 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <yangjihong1@huawei.com>
-Subject: [PATCH] perf/core: Fix data race between perf_event_set_output and perf_mmap_close
-Date:   Mon, 4 Jul 2022 19:44:40 +0800
-Message-ID: <20220704114440.94617-1-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
+        Mon, 4 Jul 2022 07:47:52 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2CE1181B;
+        Mon,  4 Jul 2022 04:47:50 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id D60B4660198A;
+        Mon,  4 Jul 2022 12:47:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656935269;
+        bh=wLFTtd7NM2OiqRe3Wpx0kZo23G8XtTUE22e3isGy1cc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=akB1lSbnLVOLpjoz/BhcoNtVQjHxTEtX/W0EZ+Tjyi/LjvXczQQlQK/1y5RV4suCq
+         ShgaoIB92g1Ha69cx8aajDIyXSWIDAZI/ooFWX4V3KtYfco4gjcwvqxwnVhV5SdJ3M
+         YtsO64LoEF957q8pS/74l5DY22c/uzwoDPrWZZ+Ff69mqWavN3ZNe0ngXohvH5sBfE
+         zfXjpEwCWW0mkBvWoaIT5pCCvey/NdwDpLw3gI6AKEbnqAdSgRwOmfPvD/Jc6vsKe1
+         H6VLyCcbVAlAP6IXoe/IVz+Dud00BQFLpwsXDX2FI1QhVRpfZlwSOFvXyGT/ZnI4E3
+         KIezSVM0prezg==
+Message-ID: <1ceb790e-5b99-30a2-0d42-8b94c31d3eb6@collabora.com>
+Date:   Mon, 4 Jul 2022 13:47:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 5/6] arm64: dts: mt8192: Add dsi node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>
+References: <20220701090547.21429-1-allen-kh.cheng@mediatek.com>
+ <20220701090547.21429-6-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220701090547.21429-6-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Data race exists between 1 and 2. The scenario is as follows:
+Il 01/07/22 11:05, Allen-KH Cheng ha scritto:
+> Add dsi node for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-                  CPU1                                                              CPU2
-
-                                                                    perf_mmap_close(event2)
-                                                                      if (atomic_dec_and_test(&event2->rb->mmap_count)  // mmap_count 1 -> 0
-                                                                        detach_rest = true;
-ioctl(event1, PERF_EVENT_IOC_SET_OUTPUT, event2)
-  perf_event_set_output(event1, event2)
-    ring_buffer_attach(event1, event2->rb)
-      list_add_rcu(&event1->rb_entry, &event2->rb->event_list)
-                                                                      if (!detach_rest)
-                                                                        goto out_put;
-                                                                      list_for_each_entry_rcu(event, &event2->rb->event_list, rb_entry)
-                                                                        ring_buffer_attach(event, NULL)
-                                                                      // because event1 has not been added to event2->rb->event_list,
-                                                                      // event1->rb is not set to NULL in these loops
-
-The above data race causes a problem, that is, event1->rb is not NULL, but event1->rb->mmap_count is 0.
-If the perf_mmap interface is invoked for the fd of event1, the kernel keeps in the perf_mmap infinite loop:
-
-again:
-        mutex_lock(&event->mmap_mutex);
-        if (event->rb) {
-<SNIP>
-                if (!atomic_inc_not_zero(&event->rb->mmap_count)) {
-                        /*
-                         * Raced against perf_mmap_close() through
-                         * perf_event_set_output(). Try again, hope for better
-                         * luck.
-                         */
-                        mutex_unlock(&event->mmap_mutex);
-                        goto again;
-                }
-<SNIP>
-
-This problem has occurred on the Syzkaller, causing the softlockup. The call stack is as follows:
-[ 3666.984385][    C2] watchdog: BUG: soft lockup - CPU#2 stuck for 23s! [syz-executor.2:32404]
-[ 3666.986137][    C2] Modules linked in:
-[ 3666.989581][    C2] CPU: 2 PID: 32404 Comm: syz-executor.2 Not tainted 5.10.0+ #4
-[ 3666.990697][    C2] Hardware name: linux,dummy-virt (DT)
-[ 3666.992270][    C2] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO BTYPE=--)
-[ 3666.993787][    C2] pc : __kasan_check_write+0x0/0x40
-[ 3666.994841][    C2] lr : perf_mmap+0x3c8/0xf80
-[ 3666.995661][    C2] sp : ffff00001011f8f0
-[ 3666.996598][    C2] x29: ffff00001011f8f0 x28: ffff0000cf644868
-[ 3666.998488][    C2] x27: ffff000012cad2c0 x26: 0000000000000000
-[ 3666.999888][    C2] x25: 0000000000000001 x24: ffff000012cad298
-[ 3667.003511][    C2] x23: 0000000000000000 x22: ffff000012cad000
-[ 3667.005504][    C2] x21: ffff0000cf644818 x20: ffff0000cf6d2400
-[ 3667.006891][    C2] x19: ffff0000cf6d24c0 x18: 0000000000000000
-[ 3667.008295][    C2] x17: 0000000000000000 x16: 0000000000000000
-[ 3667.009528][    C2] x15: 0000000000000000 x14: 0000000000000000
-[ 3667.010658][    C2] x13: 0000000000000000 x12: ffff800002023f17
-[ 3667.012169][    C2] x11: 1fffe00002023f16 x10: ffff800002023f16
-[ 3667.013780][    C2] x9 : dfffa00000000000 x8 : ffff00001011f8b7
-[ 3667.015265][    C2] x7 : 0000000000000001 x6 : ffff800002023f16
-[ 3667.016683][    C2] x5 : ffff0000c0f36400 x4 : 0000000000000000
-[ 3667.018078][    C2] x3 : ffffa00010000000 x2 : ffffa000119a0000
-[ 3667.019343][    C2] x1 : 0000000000000004 x0 : ffff0000cf6d24c0
-[ 3667.021276][    C2] Call trace:
-[ 3667.022598][    C2]  __kasan_check_write+0x0/0x40
-[ 3667.023666][    C2]  __mmap_region+0x7a4/0xc90
-[ 3667.024679][    C2]  __do_mmap_mm+0x600/0xa20
-[ 3667.025700][    C2]  do_mmap+0x114/0x384
-[ 3667.026583][    C2]  vm_mmap_pgoff+0x138/0x230
-[ 3667.027532][    C2]  ksys_mmap_pgoff+0x1d8/0x570
-[ 3667.028537][    C2]  __arm64_sys_mmap+0xa4/0xd0
-[ 3667.029597][    C2]  el0_svc_common.constprop.0+0xf4/0x414
-[ 3667.030682][    C2]  do_el0_svc+0x50/0x11c
-[ 3667.031545][    C2]  el0_svc+0x20/0x30
-[ 3667.032368][    C2]  el0_sync_handler+0xe4/0x1e0
-[ 3667.033305][    C2]  el0_sync+0x148/0x180
-
-perf_mmap_close and ring_buffer_attach involve complicated lock recursion.
-The solution is to modify ring_buffer_attach function, that is,
-after new event is added to rb->event_list, check whether rb->mmap_count is 0,
-if the value is 0, another core performs perf_mmap_close operation
-on ring buffer during this period. In this case, we set event->rb to NULL.
-
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
----
- kernel/events/core.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 80782cddb1da..c67c070f7b39 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -5900,6 +5900,7 @@ static void ring_buffer_attach(struct perf_event *event,
- 			       struct perf_buffer *rb)
- {
- 	struct perf_buffer *old_rb = NULL;
-+	struct perf_buffer *new_rb = rb;
- 	unsigned long flags;
- 
- 	WARN_ON_ONCE(event->parent);
-@@ -5928,6 +5929,20 @@ static void ring_buffer_attach(struct perf_event *event,
- 
- 		spin_lock_irqsave(&rb->event_lock, flags);
- 		list_add_rcu(&event->rb_entry, &rb->event_list);
-+
-+		/*
-+		 * When perf_mmap_close traverses rb->event_list during
-+		 * detach all other events, new event may not be added to
-+		 * rb->event_list, let's check again, if rb->mmap_count is 0,
-+		 * it indicates that perf_mmap_close is executed.
-+		 * Manually delete event from rb->event_list and
-+		 * set event->rb to null.
-+		 */
-+		if (!atomic_read(&rb->mmap_count)) {
-+			list_del_rcu(&event->rb_entry);
-+			new_rb = NULL;
-+		}
-+
- 		spin_unlock_irqrestore(&rb->event_lock, flags);
- 	}
- 
-@@ -5944,7 +5959,7 @@ static void ring_buffer_attach(struct perf_event *event,
- 	if (has_aux(event))
- 		perf_event_stop(event, 0);
- 
--	rcu_assign_pointer(event->rb, rb);
-+	rcu_assign_pointer(event->rb, new_rb);
- 
- 	if (old_rb) {
- 		ring_buffer_put(old_rb);
-@@ -11883,6 +11898,13 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
- 			goto unlock;
- 	}
- 
-+	/*
-+	 * If rb->mmap_count is 0, perf_mmap_close is being executed,
-+	 * the ring buffer is about to be unmapped and cannot be attached.
-+	 */
-+	if (rb && !atomic_read(&rb->mmap_count))
-+		goto unlock;
-+
- 	ring_buffer_attach(event, rb);
- 
- 	ret = 0;
--- 
-2.30.GIT
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
