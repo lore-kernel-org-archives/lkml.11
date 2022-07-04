@@ -2,131 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44122C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDB9CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233925AbiGDL1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
+        id S233651AbiGDL1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233651AbiGDL1A (ORCPT
+        with ESMTP id S229448AbiGDL1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:27:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6656C1054A;
-        Mon,  4 Jul 2022 04:26:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EDFD61640;
-        Mon,  4 Jul 2022 11:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FDCC341CE;
-        Mon,  4 Jul 2022 11:26:53 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V4 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-Date:   Mon,  4 Jul 2022 19:25:26 +0800
-Message-Id: <20220704112526.2492342-5-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220704112526.2492342-1-chenhuacai@loongson.cn>
-References: <20220704112526.2492342-1-chenhuacai@loongson.cn>
+        Mon, 4 Jul 2022 07:27:49 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37AB101F8;
+        Mon,  4 Jul 2022 04:27:48 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id e28so13091515wra.0;
+        Mon, 04 Jul 2022 04:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nLBwX9kmE6hVcbXFLM7taHZTXSthvde/fcG/HY4cqc=;
+        b=L+lAr+nu0qFALxH31vzInvRfJqJnXaiYiC6WDHr9fb0COCPrFN8jAgMAi63RngWbdI
+         Fb6ZhEPEgaaA81dc4vQast4E8jf6kbG4V9bqCQBopfCcAwB/TOakzUaBw1fCm3udQPCU
+         386zFEKkoFyBrrT5RD/rRtkX2tVDfEHvGHkI4RvAZfmwte9RPQptFnShqrkn5z4Zseb9
+         rbng94Jjs9mgJg0cf4EM7nyyUcq/IRqATJSVZlqYMhpbGEMRkgC6L7x99WNUeeGZr78S
+         lT2V+4W49amnvoKdWgDvDvzAhhHO/XR/Pu2P1aMD4AUzwz0EW2jNcLP7/tMcoIRpbL1D
+         MEPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nLBwX9kmE6hVcbXFLM7taHZTXSthvde/fcG/HY4cqc=;
+        b=Qnb3Gc4HDw3vlbBbgj2x9kOMwtO+ftvGN4fh3TvemlMHKtgohRyJ1MUk9HLnrt/O+f
+         ETZzoPnVskJArqIepvZVv1kxNFoJiA3n6K65BnG/YFqOFs+CiVKLwXbJoTbL1uOm5lAo
+         z+6BecC19kE6sf73w9FRuUQ+LUXE+c+cXHuHqGCMB5j5lf+hLheZ7+83hyeATjj4Jtum
+         DapwZyhuplJGkox8VVCLoW0gQ0/zBSqZJkFHZ8VVK74veSpbDsqbyncW+1sxHvopjpC9
+         Mg3i6m8GlaB0aqYVikquDqcmNSap4bbF6/UdI3zTcsMkau21xBKGSQtQfkqOUSYnh6fH
+         BVRw==
+X-Gm-Message-State: AJIora/G/aCWsRNdDbVA0FceT55dkfJ2VETNnadswfrp8znWRMdX4NGT
+        481oi5bhjR0dp6ldGvzF8zOH4I/MJ2g=
+X-Google-Smtp-Source: AGRyM1v3/P4N+m+dpj/ZHDjm/AElzPHfA9AamezuYAQ02h/7nQPZZFlut747WmZcyWynZI6UK2Dz8g==
+X-Received: by 2002:a5d:5088:0:b0:21b:a045:972f with SMTP id a8-20020a5d5088000000b0021ba045972fmr26164695wrt.95.1656934067306;
+        Mon, 04 Jul 2022 04:27:47 -0700 (PDT)
+Received: from localhost (92.40.202.48.threembb.co.uk. [92.40.202.48])
+        by smtp.gmail.com with ESMTPSA id a2-20020adfbc42000000b0021ba1b6186csm33281671wrh.40.2022.07.04.04.27.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 04:27:46 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     broonie@kernel.org
+Cc:     andy.shevchenko@gmail.com, m.szyprowski@samsung.com,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Subject: [PATCH] regmap-irq: Fix bug in regmap_irq_get_irq_reg_linear()
+Date:   Mon,  4 Jul 2022 12:28:47 +0100
+Message-Id: <20220704112847.23844-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+irq_reg_stride in struct regmap_irq_chip is often 0, but that
+actually means to use the default stride of 1. The effective
+stride is stored in struct regmap_irq_chip_data->irq_reg_stride
+and will get the corrected default value.
 
-The feature of minimizing overhead of struct page associated with each
-HugeTLB page is implemented on x86_64. However, the infrastructure of
-this feature is already there, so just select ARCH_WANT_HUGETLB_PAGE_
-OPTIMIZE_VMEMMAP is enough to enable this feature for LoongArch.
+The default ->get_irq_reg() callback was using the stride from
+the chip definition, which is wrong; fix it to use the effective
+stride from the chip data instead.
 
-To avoid the following build error on LoongArch we should include linux/
-static_key.h in page-flags.h.
-
-In file included from ./include/linux/mmzone.h:22,
-from ./include/linux/gfp.h:6,
-from ./include/linux/mm.h:7,
-from arch/loongarch/kernel/asm-offsets.c:9:
-./include/linux/page-flags.h:208:1: warning: data definition has no
-type or storage class
-208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
-declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
-./include/linux/page-flags.h:209:26: warning: parameter names (without
-types) in function declaration
-209 | hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h: In function 'hugetlb_optimize_vmemmap_enabled':
-./include/linux/page-flags.h:213:16: error: implicit declaration of
-function 'static_branch_maybe' [-Werror=implicit-function-declaration]
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:213:36: error:
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON' undeclared (first
-use in this function); did you mean
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP'?
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-./include/linux/page-flags.h:213:36: note: each undeclared identifier
-is reported only once for each function it appears in
-./include/linux/page-flags.h:214:37: error:
-'hugetlb_optimize_vmemmap_key' undeclared (first use in this
-function); did you mean 'hugetlb_optimize_vmemmap_enabled'?
-214 | &hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| hugetlb_optimize_vmemmap_enabled
-
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Link: https://lore.kernel.org/lkml/acaaf77f-3282-8544-dd3c-7915fc1a6a4f@samsung.com/
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- arch/loongarch/Kconfig     | 1 +
- include/linux/page-flags.h | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/base/regmap/regmap-irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index 55ab84fd70e5..8e56ca28165e 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -49,6 +49,7 @@ config LOONGARCH
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_USE_QUEUED_SPINLOCKS
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
-+	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	select ARCH_WANTS_NO_INSTR
- 	select BUILDTIME_TABLE_SORT
- 	select COMMON_CLK
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index e66f7aa3191d..28a53ac7aa3e 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -9,6 +9,7 @@
- #include <linux/types.h>
- #include <linux/bug.h>
- #include <linux/mmdebug.h>
-+#include <linux/static_key.h>
- #ifndef __GENERATING_BOUNDS_H
- #include <linux/mm_types.h>
- #include <generated/bounds.h>
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index a691553a0d6f..4ef9488d05cd 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -636,7 +636,7 @@ unsigned int regmap_irq_get_irq_reg_linear(struct regmap_irq_chip_data *data,
+ 		return base + subreg->offset[0];
+ 	}
+ 
+-	return base + index * map->reg_stride * chip->irq_reg_stride;
++	return base + index * map->reg_stride * data->irq_reg_stride;
+ }
+ EXPORT_SYMBOL_GPL(regmap_irq_get_irq_reg_linear);
+ 
 -- 
-2.27.0
+2.35.1
 
