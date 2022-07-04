@@ -2,176 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 23:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D89D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 23:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbiGDXRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 19:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56070 "EHLO
+        id S229889AbiGDXRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 19:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233806AbiGDXRK (ORCPT
+        with ESMTP id S230149AbiGDXRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 19:17:10 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CDCFD34;
-        Mon,  4 Jul 2022 16:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3Krii5I77Jw+hei/sBgWu8KHpDCvwQjbHpsrcFH98j0=; b=uElzEPYgfvz4HqmD+jumc9o+co
-        4FBZ1pk6PQNTVkvgkjC3MG/06CMseIjjitUto8/QeQHUXagTnvCAb8W+wHbp1y+0PE25vMAraPymx
-        pBAJ4BMdkPHC4yk0lGril6Ldu8tC5JGT0Ml+TECjtL6OilAzpuMUAyPtb9cJUdoUTEvBCQtpjFquv
-        0ntqwDI+dNPzFIbuATQVwTTHzP/8gnaQgebhuvBNkx+pXafGftvZA1vS2d0sUaRd03mRrbJ/zdcOl
-        A9gsBQXfx0pOAYR+qkLXUUl3bc7YsHFODJwB0eH4w3dZ3PfPoU5deV+z1cNtvWmo/zpxgRyi7OsVt
-        1tUxiT6A==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o8VIs-008AbM-Q3;
-        Mon, 04 Jul 2022 23:16:31 +0000
-Date:   Tue, 5 Jul 2022 00:16:30 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Vitaly Buka <vitalybuka@google.com>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: [PATCH 6/7] lookup_fast(): don't bother with inode
-Message-ID: <YsN0zovcB+d26OcT@ZenIV>
-References: <YsJWCREA5xMfmmqx@ZenIV>
- <CAHk-=wjxqKYHu2-m1Y1EKVpi5bvrD891710mMichfx_EjAjX4A@mail.gmail.com>
- <YsM5XHy4RZUDF8cR@ZenIV>
- <CAHk-=wjeEre7eeWSwCRy2+ZFH8js4u22+3JTm6n+pY-QHdhbYw@mail.gmail.com>
- <YsNFoH0+N+KCt5kg@ZenIV>
- <CAHk-=whp8Npc+vMcgbpM9mrPEXkhV4YnhsPxbPXSu9gfEhKWmA@mail.gmail.com>
- <YsNRsgOl04r/RCNe@ZenIV>
- <CAHk-=wih_JHVPvp1qyW4KNK0ctTc6e+bDj4wdTgNkyND6tuFoQ@mail.gmail.com>
- <YsNVyLxrNRFpufn8@ZenIV>
- <YsN0GURKuaAqXB/e@ZenIV>
+        Mon, 4 Jul 2022 19:17:24 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD01101E4;
+        Mon,  4 Jul 2022 16:17:23 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LcMCP6cQNz4xTt;
+        Tue,  5 Jul 2022 09:17:21 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1656976642;
+        bh=1vLTo+qnd53//VVI0HxVN4P2k6b4rqQR/tYhThL5JLw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RXEF6WfAwx+fuUXYAjFKUQYacvxtqI4WCSuVEueqd5jmWRuivcxJjnEeP9ivDSUN5
+         RbksYaKwIUvT6Ijzdy8vTesXl4ePYUG8qwe7imCkfh3f14890SMujS6301zTH7XcIA
+         DlGxH0rBFoW3y/EKxyTqWrMjktyNxdryFHajJw8I1hqGFZjoC2YhSrOj+C7ip7zkt9
+         71UZI9Jz4j6/8/UkTxaeXtaUJ21M4Hxx8nleB4QjCBywklRMPrqwKOci4MTFKclf6o
+         heiaCNzcpoK0ZPfQOwnrv92kUOYo4oS12R4Slu5rxIEQ9GdzfJOCQ2iuHeZDRjUjog
+         rHCZVwfOe5okg==
+Date:   Tue, 5 Jul 2022 09:17:20 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the kunit-next tree
+Message-ID: <20220705091720.7b7e327c@canb.auug.org.au>
+In-Reply-To: <20220427161901.6522f1cf@canb.auug.org.au>
+References: <20220427161901.6522f1cf@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YsN0GURKuaAqXB/e@ZenIV>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Type: multipart/signed; boundary="Sig_/_xjPfU7g3QFOG_H94can3zI";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Note that validation of ->d_seq after ->d_inode fetch is gone, along
-with fetching of ->d_inode itself.
+--Sig_/_xjPfU7g3QFOG_H94can3zI
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
----
- fs/namei.c | 24 +++++-------------------
- 1 file changed, 5 insertions(+), 19 deletions(-)
+Hi all,
 
-diff --git a/fs/namei.c b/fs/namei.c
-index fe95fe39634c..cdb61d09df79 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -1617,8 +1617,7 @@ static struct dentry *__lookup_hash(const struct qstr *name,
- 	return dentry;
- }
- 
--static struct dentry *lookup_fast(struct nameidata *nd,
--				  struct inode **inode)
-+static struct dentry *lookup_fast(struct nameidata *nd)
- {
- 	struct dentry *dentry, *parent = nd->path.dentry;
- 	int status = 1;
-@@ -1636,22 +1635,11 @@ static struct dentry *lookup_fast(struct nameidata *nd,
- 			return NULL;
- 		}
- 
--		/*
--		 * This sequence count validates that the inode matches
--		 * the dentry name information from lookup.
--		 */
--		*inode = d_backing_inode(dentry);
--		if (unlikely(read_seqcount_retry(&dentry->d_seq, nd->next_seq)))
--			return ERR_PTR(-ECHILD);
--
--		/*
-+	        /*
- 		 * This sequence count validates that the parent had no
- 		 * changes while we did the lookup of the dentry above.
--		 *
--		 * The memory barrier in read_seqcount_begin of child is
--		 *  enough, we can use __read_seqcount_retry here.
- 		 */
--		if (unlikely(__read_seqcount_retry(&parent->d_seq, nd->seq)))
-+		if (unlikely(read_seqcount_retry(&parent->d_seq, nd->seq)))
- 			return ERR_PTR(-ECHILD);
- 
- 		status = d_revalidate(dentry, nd->flags);
-@@ -1993,7 +1981,6 @@ static const char *handle_dots(struct nameidata *nd, int type)
- static const char *walk_component(struct nameidata *nd, int flags)
- {
- 	struct dentry *dentry;
--	struct inode *inode;
- 	/*
- 	 * "." and ".." are special - ".." especially so because it has
- 	 * to be able to know about the current root directory and
-@@ -2004,7 +1991,7 @@ static const char *walk_component(struct nameidata *nd, int flags)
- 			put_link(nd);
- 		return handle_dots(nd, nd->last_type);
- 	}
--	dentry = lookup_fast(nd, &inode);
-+	dentry = lookup_fast(nd);
- 	if (IS_ERR(dentry))
- 		return ERR_CAST(dentry);
- 	if (unlikely(!dentry)) {
-@@ -3392,7 +3379,6 @@ static const char *open_last_lookups(struct nameidata *nd,
- 	struct dentry *dir = nd->path.dentry;
- 	int open_flag = op->open_flag;
- 	bool got_write = false;
--	struct inode *inode;
- 	struct dentry *dentry;
- 	const char *res;
- 
-@@ -3408,7 +3394,7 @@ static const char *open_last_lookups(struct nameidata *nd,
- 		if (nd->last.name[nd->last.len])
- 			nd->flags |= LOOKUP_FOLLOW | LOOKUP_DIRECTORY;
- 		/* we _can_ be in RCU mode here */
--		dentry = lookup_fast(nd, &inode);
-+		dentry = lookup_fast(nd);
- 		if (IS_ERR(dentry))
- 			return ERR_CAST(dentry);
- 		if (likely(dentry))
--- 
-2.30.2
+On Wed, 27 Apr 2022 16:19:01 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>=20
+> After merging the kunit-next tree, today's linux-next build (htmldocs)
+> produced this warning:
+>=20
+> Documentation/dev-tools/kunit/api/test:9: include/kunit/test.h:318: WARNI=
+NG: Inline interpreted text or phrase reference start-string without end-st=
+ring.
+>=20
+> Introduced by commit
+>=20
+>   9bf2eed995f9 ("kunit: add support for kunit_suites that reference init =
+code")
 
+I am still getting this warning. (Its on line 324 now)
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/_xjPfU7g3QFOG_H94can3zI
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLDdQAACgkQAVBC80lX
+0GwNzQf9EyNb+dpXE4IhX59F40w+9xlYDv1ykRnYuQpgPA6mPTrPsLjHDk2jx05F
+kUO3HIc41vHWNy3WOhathYu7hqdof/CmWSW1uGWOQyvKVS7GmOx7mMl34MbbNWx+
+GPAN8ul90IqJ9QN4knG93ofgyU9TC+pJHU7rDYm0RgZGOjgX74yaxpGwpuRldShU
+CU8bh0hVe+TUkumpZuuDv1H9tsrIIhq2FqNzdIScBgPzCXVZD5bYkgKhXp8Sgxt9
+CeWYmJbaqipuoICwWhRtIdx2kf7Z2h03CyGykVb1rnpgq5Vi1iVO5gGRO2qgqCuP
+ZQsEBF7uOIBKW/QPLfxxJI2ZK+CikA==
+=SD9c
+-----END PGP SIGNATURE-----
+
+--Sig_/_xjPfU7g3QFOG_H94can3zI--
