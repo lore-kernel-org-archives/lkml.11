@@ -2,130 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B13C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234330AbiGDN6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        id S233777AbiGDN6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233493AbiGDN6F (ORCPT
+        with ESMTP id S234167AbiGDN6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:58:05 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB43CBC34
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:58:02 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id eq6so11813276edb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:58:02 -0700 (PDT)
+        Mon, 4 Jul 2022 09:58:48 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD3465E9
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:58:46 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id t127so9070289vsb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:58:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UdZbdODkdHiKHKsoqfWT9gUyl7dOicXz4AledhbVmOg=;
-        b=BQD9qE6Jc/aN+K+kYEC06Dxf5ud8lhi5xUAhZi/1gwo8SGpNgrMQL4384J6s/MqoZK
-         PPVhzfjn5uS8ki/H3RIaKHGwmCm2Da2meA1rtS5VVzroAtcR8MW8IQbTyagiliagx1PT
-         ErEbiJaGNEhDLlyNBRLkhO0mlkP9YXqeWeU7UtREqEFp9D2/FxBRXUj1zmqm/urYaGog
-         n+2OgR9EGGmEvUiBLnzArqOhI7iYf8tTZA5ccZUIqAq3pnOv2EKGkLXXeZwj3BwQThqJ
-         HZc/E7Pz9+p2Wy9SUaJJ/v88fKPYfbrNSBZdb/AadjfnYXu6yMFi6+63/Ip9bZ8KqA+f
-         oyZA==
+        d=eclypsium.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ztA+AcW0Z5yxncYBDtWD6STNULe14Sk0EXcXnPOw+f4=;
+        b=fydK2EY08GUj6bqmi53Jl6xaXTvB65A9lj5bRNFxZeapv/tUcE4QN7t8PznT4jlW+e
+         0rDG6bJ0fMViPwfaDZiR/WIecntHzLs+ddCh3VrBeb4zitUcdM4x9plNiNeRTVIh0TvV
+         TCkTeM70nq5ZST24ywg8pMnTQH5Nr32Q5LoEisV+hSJlt5MkxVO1wZMYxq90Nc/hOK+Q
+         ZOfpFu0DI6+kpXPe2V9WmbXwON5GNop+xAneuw6eQB/d6b2Q8kRPFp0roAy+/AEX7cPj
+         PER7yvGdPFy4Zj+r4qgMqMHWyIRWibEKlqXWQwU+rttUX3ngf2alEHE/VenxQKdvwEGh
+         uU8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UdZbdODkdHiKHKsoqfWT9gUyl7dOicXz4AledhbVmOg=;
-        b=ATo0nhGTotrZRxtV/ocqH++lFlAcPXQ2K9D38fyemRmTN7UwpKFDlsFENHrX8fnNRz
-         j7FqsO0n9QBXchaYnFiNHiMefpUJXpo8wwu11lascSnoau2MaRdb9AotwyQ2STHDXjkU
-         ufF3KD8LTTSza75HDfwDEiwHziy2Evb0th6pXj6ZdU5KOojlLgbkKH7SmqE538LQty0s
-         nks1z40sS7eYbxiqMxdbfEGfmVmkRsn0KRTCI5ks9eDuAxYG2XZ0IV+ng4pzR6CVNyQb
-         +YSFl4BDEzLTunlDmICLJoaf/dsQD6maGMzQLoevOiAhUqFsdCw9zEEmcgnvES0ksLgb
-         rnSg==
-X-Gm-Message-State: AJIora9hiwiinEIKOutuM7SAn0VQ9ABTDYyXllGeBUNfirIfj/Dt4KPi
-        VoLtBI6j+TuNX2gIZGarRk9R
-X-Google-Smtp-Source: AGRyM1sv7B0XLkawGn0pM5mH2AtE/6QtQdKmYiP9ANzbpjK6RLAP7fvJ9OhxDdq5zCGmOD94BjDLkg==
-X-Received: by 2002:a05:6402:4144:b0:431:6ef0:bef7 with SMTP id x4-20020a056402414400b004316ef0bef7mr38225771eda.151.1656943081371;
-        Mon, 04 Jul 2022 06:58:01 -0700 (PDT)
-Received: from google.com (64.227.90.34.bc.googleusercontent.com. [34.90.227.64])
-        by smtp.gmail.com with ESMTPSA id b4-20020a1709065e4400b00706287ba061sm14271841eju.180.2022.07.04.06.58.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 06:58:00 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 13:57:56 +0000
-From:   Wedson Almeida Filho <wedsonaf@google.com>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        arnd@arndb.de, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH] char: misc: make misc_open() and misc_register() killable
-Message-ID: <YsLx5JckMbx/4V4/@google.com>
-References: <000000000000d9ff3a05bb37069e@google.com>
- <72e74af9-f1b6-e383-a2c3-6ee8a0aea5e0@I-love.SAKURA.ne.jp>
- <YsKW6VvWqvcMRBSl@kroah.com>
- <100f445e-9fa8-4f37-76aa-8359f0008c59@I-love.SAKURA.ne.jp>
- <YsLIepAXeBKT0AF/@kroah.com>
- <01a93294-e323-b9ca-7e95-a33d4b89dc47@I-love.SAKURA.ne.jp>
- <YsLkJ1LMMnM9Mo0K@google.com>
- <19598d43-de61-c663-25e8-17b6f5d5ef80@I-love.SAKURA.ne.jp>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ztA+AcW0Z5yxncYBDtWD6STNULe14Sk0EXcXnPOw+f4=;
+        b=CkgdOvPU8JwEwhVyLhJdcRq8STMRlSoXUzjoEj4ocVSn03hW2Bn9vrqJtlym2QiffS
+         VgiBU4Y/o3gbyOZoYlM91n2KmO/SiHKe9ZSrJzt16ZWt2aXXiyRe3N6h9KW+4kLl8VPx
+         tzJ31WynnuBmmGme8S2ETujRQybmA238f52G6Ib3fIbK+TVnz1bwJ5mGqitnifQo4+uY
+         Clf1xmyRrG216qH7O3mv/UTXJMmj0tvB+kZRIbz5xqQDYuw8jfnboK48hBDSlOFXYgaT
+         /eOTHijJJ1XI7hM7cK5kBFJoQj0fIy7BICIs6KgSq+z6EsWJrHzHIsTy4hWGfnVpxdTt
+         5YRA==
+X-Gm-Message-State: AJIora8dTVUdG56BWu9HktAm3UYqsuvQNyaFmC5iP+e5BR2MiHC1H8Hl
+        8wJunmt81D5uZJXCopZ+7wp11Dzcv+ahiIHCcu+nepaqkZRoaO5LN9C5t6KasXtsOLHxBEd4piZ
+        QG+ck3sMchctMsXED81LoloHX2lY61HfN5p24XytMWc+Ftj8K+n9UTSxv7+ZNQL3HmY6FySfa+4
+        zBlzKgdapNfKYjy7b/AGM=
+X-Google-Smtp-Source: AGRyM1sE6X+ncoLXgmaxZR7/g+iA8gyRtqST2d07S2Z+ia/JWZThIFFbyNf15t/vtifF0SiuZRjkgg==
+X-Received: by 2002:a05:6102:1504:b0:354:397f:51c5 with SMTP id f4-20020a056102150400b00354397f51c5mr17054790vsv.63.1656943125320;
+        Mon, 04 Jul 2022 06:58:45 -0700 (PDT)
+Received: from localhost ([181.97.174.128])
+        by smtp.gmail.com with ESMTPSA id bi44-20020a05612218ac00b0036bff0dc94esm4494942vkb.34.2022.07.04.06.58.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 06:58:45 -0700 (PDT)
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+To:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org,
+        Martin Fernandez <martin.fernandez@eclypsium.com>
+Subject: [PATCH v9 0/9] x86: Show in sysfs if a memory node is able to do encryption
+Date:   Mon,  4 Jul 2022 10:58:24 -0300
+Message-Id: <20220704135833.1496303-1-martin.fernandez@eclypsium.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <19598d43-de61-c663-25e8-17b6f5d5ef80@I-love.SAKURA.ne.jp>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 10:48:32PM +0900, Tetsuo Handa wrote:
-> On 2022/07/04 21:59, Wedson Almeida Filho wrote:
-> >> @@ -139,6 +139,10 @@ static int misc_open(struct inode *inode, struct file *file)
-> >>  
-> >>  	err = 0;
-> >>  	replace_fops(file, new_fops);
-> >> +	if (iter->unlocked_open && file->f_op->open) {
-> >> +		mutex_unlock(&misc_mtx);
-> >> +		return file->f_op->open(inode, file);
-> >> +	}
-> > 
-> > One of the invariants of miscdev is that once misc_deregister() returns,
-> > no new calls to f_op->open() are made. (Although, of course, you can
-> > still have open files but that's a whole different problem.)
-> 
-> The point of this change is that file->f_op after mutex_unlock(&misc_mtx) is
->  from new_fops which is guaranteed to hold a ref on "struct file_operations"
-> via new_fops = fops_get("struct miscdevice"->fops).
-> That is, a module ref remains valid even after mutex_unlock(&misc_mtx).
-> 
-> And as with major_names_lock case quoted below, this change assumes that
-> misc_deregister() is called from module's __exit function, and fops_get()
-> is preventing the module owning new_fops from calling __exit function.
+Show for each node if every memory descriptor in that node has the
+EFI_MEMORY_CPU_CRYPTO attribute.
 
-Your assumption is not sound. misc_deregister() can be (and is)
-legitimately called from other places, for example, a driver's remove()
-callback. In fact, when I grep for misc_deregister(), the second
-instance is such a case.
+fwupd project plans to use it as part of a check to see if the users
+have properly configured memory hardware encryption
+capabilities. fwupd's people have seen cases where it seems like there
+is memory encryption because all the hardware is capable of doing it,
+but on a closer look there is not, either because of system firmware
+or because some component requires updating to enable the feature.
 
-Anyway, I agree that something should be done about the issue you
-report, I'm just arguing that this proposal isn't a good one because it
-breaks an invariant that makes it really hard for drivers to properly
-cleanup.
+The MKTME/TME spec says that it will only encrypt those memory regions
+which are flagged with the EFI_MEMORY_CPU_CRYPTO attribute.
 
-> 
-> +		if ((*n)->major != major || !(*n)->probe)
-> +			continue;
-> +		if (!try_module_get((*n)->owner))
-> +			break;
-> +		/*
-> +		 * Calling probe function with major_names_lock held causes
-> +		 * circular locking dependency problem. Thus, call it after
-> +		 * releasing major_names_lock.
-> +		 */
-> +		probe_fn = (*n)->probe;
-> +		mutex_unlock(&major_names_lock);
-> +		/*
-> +		 * Assuming that unregister_blkdev() is called from module's
-> +		 * __exit function, a module refcount taken above allows us
-> +		 * to safely call probe function without major_names_lock held.
-> +		 */
-> +		probe_fn(devt);
-> +		module_put((*n)->owner);
-> +		return;
-> 
+If all nodes are capable of encryption and if the system have tme/sme
+on we can pretty confidently say that the device is actively
+encrypting all its memory.
+
+It's planned to make this check part of an specification that can be
+passed to people purchasing hardware
+
+These checks will run at every boot. The specification is called Host
+Security ID: https://fwupd.github.io/libfwupdplugin/hsi.html.
+
+We choosed to do it a per-node basis because although an ABI that
+shows that the whole system memory is capable of encryption would be
+useful for the fwupd use case, doing it in a per-node basis would make
+the path easier to give the capability to the user to target
+allocations from applications to NUMA nodes which have encryption
+capabilities in the future.
+
+
+Changes since v8:
+
+Add unit tests to e820_range_* functions
+
+
+Changes since v7:
+
+Less kerneldocs
+
+Less verbosity in the e820 code
+
+
+Changes since v6:
+
+Fixes in __e820__handle_range_update
+
+Const correctness in e820.c
+
+Correct alignment in memblock.h
+
+Rework memblock_overlaps_region
+
+
+Changes since v5:
+
+Refactor e820__range_{update, remove, set_crypto_capable} in order to
+avoid code duplication.
+
+Warn the user when a node has both encryptable and non-encryptable
+regions.
+
+Check that e820_table has enough size to store both current e820_table
+and EFI memmap.
+
+
+Changes since v4:
+
+Add enum to represent the cryptographic capabilities in e820:
+e820_crypto_capabilities.
+
+Revert __e820__range_update, only adding the new argument for
+__e820__range_add about crypto capabilities.
+
+Add a function __e820__range_update_crypto similar to
+__e820__range_update but to only update this new field.
+
+
+Changes since v3:
+
+Update date in Doc/ABI file.
+
+More information about the fwupd usecase and the rationale behind
+doing it in a per-NUMA-node.
+
+
+Changes since v2:
+
+e820__range_mark_crypto -> e820__range_mark_crypto_capable.
+
+In e820__range_remove: Create a region with crypto capabilities
+instead of creating one without it and then mark it.
+
+
+Changes since v1:
+
+Modify __e820__range_update to update the crypto capabilities of a
+range; now this function will change the crypto capability of a range
+if it's called with the same old_type and new_type. Rework
+efi_mark_e820_regions_as_crypto_capable based on this.
+
+Update do_add_efi_memmap to mark the regions as it creates them.
+
+Change the type of crypto_capable in e820_entry from bool to u8.
+
+Fix e820__update_table changes.
+
+Remove memblock_add_crypto_capable. Now you have to add the region and
+mark it then.
+
+Better place for crypto_capable in pglist_data.
+
+Martin Fernandez (9):
+  mm/memblock: Tag memblocks with crypto capabilities
+  mm/mmzone: Tag pg_data_t with crypto capabilities
+  x86/e820: Add infrastructure to refactor e820__range_{update,remove}
+  x86/e820: Refactor __e820__range_update
+  x86/e820: Refactor e820__range_remove
+  x86/e820: Tag e820_entry with crypto capabilities
+  x86/e820: Add unit tests for e820_range_* functions
+  x86/efi: Mark e820_entries as crypto capable from EFI memmap
+  drivers/node: Show in sysfs node's crypto capabilities
+
+ Documentation/ABI/testing/sysfs-devices-node |  10 +
+ arch/x86/Kconfig.debug                       |  10 +
+ arch/x86/include/asm/e820/api.h              |   1 +
+ arch/x86/include/asm/e820/types.h            |  12 +-
+ arch/x86/kernel/e820.c                       | 393 ++++++++++++++-----
+ arch/x86/kernel/e820_test.c                  | 249 ++++++++++++
+ arch/x86/platform/efi/efi.c                  |  37 ++
+ drivers/base/node.c                          |  10 +
+ include/linux/memblock.h                     |   5 +
+ include/linux/mmzone.h                       |   3 +
+ mm/memblock.c                                |  62 +++
+ mm/page_alloc.c                              |   1 +
+ 12 files changed, 695 insertions(+), 98 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-devices-node
+ create mode 100644 arch/x86/kernel/e820_test.c
+
+-- 
+2.30.2
+
