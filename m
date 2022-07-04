@@ -2,73 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 582F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 440C3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234685AbiGDNDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
+        id S233263AbiGDNEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiGDNDt (ORCPT
+        with ESMTP id S232735AbiGDNEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:03:49 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B3B5F51;
-        Mon,  4 Jul 2022 06:03:47 -0700 (PDT)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lc5Y71fJVzkWt9;
-        Mon,  4 Jul 2022 21:01:47 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 21:03:45 +0800
-From:   Yuan Can <yuancan@huawei.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <linux-crypto@vger.kernel.org>, <davem@davemloft.net>,
-        <herbert@gondor.apana.org.au>, <gilad@benyossef.com>,
-        <yuancan@huawei.com>
-Subject: [PATCH -next] crypto: ccree: Add missing clk_disable_unprepare() in cc_pm_resume()
-Date:   Mon, 4 Jul 2022 13:01:45 +0000
-Message-ID: <20220704130145.103520-1-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+        Mon, 4 Jul 2022 09:04:12 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5958C1DF
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:04:11 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1A2FC22485;
+        Mon,  4 Jul 2022 13:04:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1656939850; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hwisfMDxmbYLZKXTUgYRmnaFLzaHDoYdzCb/OJB895E=;
+        b=fzfjWcS/f5XP5d+mBP9ggehsUE+NBzoYhIKq3ZTgnzJreOniT/SCCa9BgeQAuAs8K22xcj
+        bSZzv0TvDd6+1h/15wwYtPWrAMhr/DLiV4JjMdTURCqOxfcfPl2tLeojSIbZNtvVU+ZnRH
+        FeTsjeS0PS9IqQG60yaCoQ6MD5q9AYg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1656939850;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hwisfMDxmbYLZKXTUgYRmnaFLzaHDoYdzCb/OJB895E=;
+        b=tHGgvEiCdKCQ61ptAjcaSyHpCJ+GFDhtFMxMObcYpI/r1s9JlxlpUxo8a8vtlHgxTmPpUb
+        5kNp3nE2CYFB19BA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EB98F1342C;
+        Mon,  4 Jul 2022 13:04:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id YA3AOEnlwmJ3OwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 04 Jul 2022 13:04:09 +0000
+Date:   Mon, 04 Jul 2022 15:04:09 +0200
+Message-ID: <87wnctxc52.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Li kunyu <kunyu@nfschina.com>
+Cc:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sound: It seems that the code format could be cleaner
+In-Reply-To: <20220627032521.259750-1-kunyu@nfschina.com>
+References: <20220627032521.259750-1-kunyu@nfschina.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clk_disable_unprepare() on error path in cc_pm_resume().
+On Mon, 27 Jun 2022 05:25:21 +0200,
+Li kunyu wrote:
+> 
+> It seems that the condition statement and return statement could be
+> tidied up by adding blank lines.
+> 
+> Signed-off-by: Li kunyu <kunyu@nfschina.com>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yuan Can <yuancan@huawei.com>
----
- drivers/crypto/ccree/cc_pm.c | 2 ++
- 1 file changed, 2 insertions(+)
+Thanks for the patch.
 
-diff --git a/drivers/crypto/ccree/cc_pm.c b/drivers/crypto/ccree/cc_pm.c
-index d5421b0c6831..6124fbbbed94 100644
---- a/drivers/crypto/ccree/cc_pm.c
-+++ b/drivers/crypto/ccree/cc_pm.c
-@@ -41,6 +41,7 @@ static int cc_pm_resume(struct device *dev)
- 	/* wait for Cryptocell reset completion */
- 	if (!cc_wait_for_reset_completion(drvdata)) {
- 		dev_err(dev, "Cryptocell reset not completed");
-+		clk_disable_unprepare(drvdata->clk);
- 		return -EBUSY;
- 	}
- 
-@@ -48,6 +49,7 @@ static int cc_pm_resume(struct device *dev)
- 	rc = init_cc_regs(drvdata);
- 	if (rc) {
- 		dev_err(dev, "init_cc_regs (%x)\n", rc);
-+		clk_disable_unprepare(drvdata->clk);
- 		return rc;
- 	}
- 	/* check if tee fips error occurred during power down */
--- 
-2.17.1
+But in general we don't take such white-space only changes alone,
+unless it's a cleanup work for the other real changes.
 
+i.e. if you really work on the code to fix or enhance something, we
+are glad to take such a white-space patch as prerequisite.
+
+
+Takashi
