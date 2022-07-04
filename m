@@ -2,74 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEC5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E36C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232741AbiGDHtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 03:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
+        id S232134AbiGDHuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232753AbiGDHtZ (ORCPT
+        with ESMTP id S230505AbiGDHum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 03:49:25 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEFE9FFA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:49:22 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lbybj6bt7z9t1Z;
-        Mon,  4 Jul 2022 15:48:33 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Jul 2022 15:49:18 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 15:49:18 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <iommu@lists.linux-foundation.org>
-CC:     <yong.wu@mediatek.com>, <joro@8bytes.org>
-Subject: [PATCH] iommu/mediatek: check return value after calling platform_get_resource()
-Date:   Mon, 4 Jul 2022 15:59:00 +0800
-Message-ID: <20220704075900.1294218-1-yangyingliang@huawei.com>
+        Mon, 4 Jul 2022 03:50:42 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DD09FFF
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:50:39 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by albert.telenet-ops.be with bizsmtp
+        id qvqd270064C55Sk06vqdLL; Mon, 04 Jul 2022 09:50:37 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o8Gqq-001xzO-Ri
+        for linux-kernel@vger.kernel.org; Mon, 04 Jul 2022 09:50:36 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o8Gqq-00EyTK-D3
+        for linux-kernel@vger.kernel.org; Mon, 04 Jul 2022 09:50:36 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     linux-kernel@vger.kernel.org
+Subject: Build regressions/improvements in v5.19-rc5
+Date:   Mon,  4 Jul 2022 09:50:36 +0200
+Message-Id: <20220704075036.3568980-1-geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAHk-=wgAOr-+OWLGo+aCMjGWiJ8xMYXUm0v5f-G+eizmPa3kKw@mail.gmail.com>
+References: <CAHk-=wgAOr-+OWLGo+aCMjGWiJ8xMYXUm0v5f-G+eizmPa3kKw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+Below is the list of build error/warning regressions/improvements in
+v5.19-rc5[1] compared to v5.18[2].
 
-Fixes: 42d57fc58aeb ("iommu/mediatek: Initialise/Remove for multi bank dev")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/iommu/mtk_iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
+Summarized:
+  - build errors: +8/-10
+  - build warnings: +11/-10
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b2ae84046249..b45b0c1cfff9 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1174,6 +1174,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 
- 	banks_num = data->plat_data->banks_num;
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	if (resource_size(res) < banks_num * MTK_IOMMU_BANK_SZ) {
- 		dev_err(dev, "banknr %d. res %pR is not enough.\n", banks_num, res);
- 		return -EINVAL;
--- 
-2.25.1
+JFYI, when comparing v5.19-rc5[1] to v5.19-rc4[3], the summaries are:
+  - build errors: +1/-0
+  - build warnings: +0/-0
 
+Note that there may be false regressions, as some logs are incomplete.
+Still, they're build errors/warnings.
+
+Happy fixing! ;-)
+
+Thanks to the linux-next team for providing the build service.
+
+[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/88084a3df1672e131ddc1b4e39eeacfd39864acf/ (all 135 configs)
+[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/4b0986a3613c92f4ec1bdc7f60ec66fea135991f/ (131 out of 135 configs)
+[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/03c765b0e3b4cb5063276b086c76f7a612856a9a/ (all 135 configs)
+
+
+*** ERRORS ***
+
+8 error regressions:
+  + /kisskb/src/arch/um/include/asm/page.h: error: too few arguments to function 'to_phys':  => 105:20
+  + /kisskb/src/drivers/mfd/asic3.c: error: unused variable 'asic' [-Werror=unused-variable]:  => 941:23
+  + /kisskb/src/drivers/nvdimm/pmem.c: error: conflicting types for 'to_phys':  => 48:20
+  + /kisskb/src/drivers/nvdimm/pmem.c: error: control reaches end of non-void function [-Werror=return-type]:  => 324:1
+  + /kisskb/src/drivers/tty/serial/sh-sci.c: error: unused variable 'sport' [-Werror=unused-variable]:  => 2655:26
+  + /kisskb/src/include/ufs/ufshci.h: error: initializer element is not constant:  => 245:36
+  + error: relocation truncated to fit: R_SPARC_WDISP22 against `.init.text':  => (.head.text+0x5040), (.head.text+0x5100)
+  + error: relocation truncated to fit: R_SPARC_WDISP22 against symbol `leon_smp_cpu_startup' defined in .text section in arch/sparc/kernel/trampoline_32.o:  => (.init.text+0xa4)
+
+10 error improvements:
+  - /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function): 149:37 => 
+  - /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor': 149:22 => 
+  - /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]: 150:1 => 
+  - /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size': 88:22 => 
+  - /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]: 89:1 => 
+  - /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]: 100:2 => 
+  - /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant: 4917:4 => 
+  - /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant: 1983:2 => 
+  - error: arch/sparc/kernel/head_32.o: relocation truncated to fit: R_SPARC_WDISP22 against `.init.text': (.head.text+0x5100), (.head.text+0x5040) => 
+  - error: arch/sparc/kernel/head_32.o: relocation truncated to fit: R_SPARC_WDISP22 against symbol `leon_smp_cpu_startup' defined in .text section in arch/sparc/kernel/trampoline_32.o: (.init.text+0xa4) => 
+
+
+*** WARNINGS ***
+
+11 warning regressions:
+  + .config: warning: override: ARCH_RV32I changes choice state:  => 3864
+  + arch/m68k/configs/multi_defconfig: warning: symbol value 'm' invalid for ZPOOL:  => 61
+  + arch/m68k/configs/sun3_defconfig: warning: symbol value 'm' invalid for ZPOOL:  => 37
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47b0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47e0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4810): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4828): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4840): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x52bc): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
+
+10 warning improvements:
+  - .config: warning: override: reassigning to symbol GCC_PLUGIN_RANDSTRUCT: 12475, 12253 => 
+  - /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]: 5400:40, 5396:40, 5403:43 => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4790): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47a8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47d8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4808): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4820): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45d4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
