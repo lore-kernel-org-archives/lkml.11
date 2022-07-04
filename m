@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDECCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234058AbiGDLfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        id S234180AbiGDLf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiGDLfv (ORCPT
+        with ESMTP id S233700AbiGDLf4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:35:51 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66930E88
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:35:50 -0700 (PDT)
+        Mon, 4 Jul 2022 07:35:56 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C7610547
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:35:55 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3dw1ksBz4xYV;
-        Mon,  4 Jul 2022 21:35:48 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3dy2YgLz4xRC;
+        Mon,  4 Jul 2022 21:35:50 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Haowen Bai <baihaowen@meizu.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Paul Mackerras <paulus@samba.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-In-Reply-To: <1653988790-19999-1-git-send-email-baihaowen@meizu.com>
-References: <1653988790-19999-1-git-send-email-baihaowen@meizu.com>
-Subject: Re: [PATCH] powerpc/papr_scm: use dev_get_drvdata
-Message-Id: <165693442926.9954.2853258065289183302.b4-ty@ellerman.id.au>
-Date:   Mon, 04 Jul 2022 21:33:49 +1000
+In-Reply-To: <e2454434992cc932a5a34b695ae981c0b2f4c28e.1652862729.git.christophe.leroy@csgroup.eu>
+References: <e2454434992cc932a5a34b695ae981c0b2f4c28e.1652862729.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH 1/2] powerpc/irq: Don't open code irq_soft_mask helpers
+Message-Id: <165693439495.9954.8279750224507948132.b4-ty@ellerman.id.au>
+Date:   Mon, 04 Jul 2022 21:33:14 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -39,14 +39,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 17:19:50 +0800, Haowen Bai wrote:
-> Eliminate direct accesses to the driver_data field.
+On Wed, 18 May 2022 10:32:27 +0200, Christophe Leroy wrote:
+> Use READ_ONCE() and WRITE_ONCE() instead of open coding
+> read and write of local PACA irq_soft_mask.
+> 
+> For the write, add a barrier to keep the memory clobber
+> that was there previously.
 > 
 > 
+> [...]
 
 Applied to powerpc/next.
 
-[1/1] powerpc/papr_scm: use dev_get_drvdata
-      https://git.kernel.org/powerpc/c/d9abe36df74976231baa5abc4d399d11b504ace2
+[1/2] powerpc/irq: Don't open code irq_soft_mask helpers
+      https://git.kernel.org/powerpc/c/ef5b570d3700fbb8628a58da0487486ceeb713cd
+[2/2] powerpc/irq: Replace #ifdefs by IS_ENABLED()
+      https://git.kernel.org/powerpc/c/78ffe6a7e2a169c4dcbbd08717a0a8d738659d15
 
 cheers
