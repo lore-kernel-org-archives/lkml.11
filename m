@@ -2,75 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C738FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 19:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 682F8CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 19:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234290AbiGDTFm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 15:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
+        id S234456AbiGDTHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 15:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiGDTFj (ORCPT
+        with ESMTP id S234089AbiGDTGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 15:05:39 -0400
-Received: from relay3.hostedemail.com (smtprelay0015.hostedemail.com [216.40.44.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62B294
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 12:05:37 -0700 (PDT)
-Received: from omf08.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay01.hostedemail.com (Postfix) with ESMTP id 4DFE460511;
-        Mon,  4 Jul 2022 19:05:36 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf08.hostedemail.com (Postfix) with ESMTPA id 16C822002A;
-        Mon,  4 Jul 2022 19:05:33 +0000 (UTC)
-Message-ID: <757323ceeb72b2d80acfae9ae4f384c27d731bbe.camel@perches.com>
-Subject: Re: [PATCH 1/6] staging: vt6655: Rename pbyEtherAddr to mac_addr
-From:   Joe Perches <joe@perches.com>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>,
-        Forest Bond <forest@alittletooquiet.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Date:   Mon, 04 Jul 2022 12:05:33 -0700
-In-Reply-To: <fcc66446a04c1ecb3c2b66cdd47e932c231b1b9d.1656835310.git.philipp.g.hortmann@gmail.com>
-References: <cover.1656835310.git.philipp.g.hortmann@gmail.com>
-         <fcc66446a04c1ecb3c2b66cdd47e932c231b1b9d.1656835310.git.philipp.g.hortmann@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Mon, 4 Jul 2022 15:06:50 -0400
+Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5119F
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 12:06:50 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 8RPEoGXnX6LCV8RPEo6YRC; Mon, 04 Jul 2022 21:06:48 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 04 Jul 2022 21:06:48 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Guo Ren <guoren@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-csky@vger.kernel.org
+Subject: [PATCH] csky: Use the bitmap API to allocate bitmaps
+Date:   Mon,  4 Jul 2022 21:06:46 +0200
+Message-Id: <07685c3184d2d9e3ee3b83e8f608e3a178cfabe3.1656961592.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 16C822002A
-X-Stat-Signature: 3boejniya1uhjmngqa3he4fw6y8gbd94
-X-Rspamd-Server: rspamout06
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18zAhJLb0W9bs/hqwmb/aR/H/Tx+6NjtOg=
-X-HE-Tag: 1656961533-813176
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-04 at 20:20 +0200, Philipp Hortmann wrote:
-> Fix name of a variable in two macros that use CamelCase which is not
-> accepted by checkpatch.pl
+Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 
-These might be nicer as functions with for loops
+It is less verbose and it improves the semantic.
 
-> diff --git a/drivers/staging/vt6655/mac.h b/drivers/staging/vt6655/mac.h
+While at it, turn a bitmap_clear() into an equivalent bitmap_zero(). It is
+also less verbose.
 
-maybe something like:
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ arch/csky/mm/asid.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-static inline void MACvWriteBSSIDAddress(void __iomem *iobase, u8 *addr)
-{
-	int i;
-
-	for (i = 0; i < ETH_ALEN; i++)
-		iowrite8(*addr++, iobase + MAC_REG_BSSID0 + i);
-}
-
-static inline void MACvReadEtherAddress(void __iomem *iobase, u8 *addr)
-{
-	int i;
-
-	iowrite8(1, iobase + MAC_REG_PAGE1SEL);
-	for (i = 0; i < ETH_ALEN; i++)
-		*addr++ = ioread8(iobase + MAC_REG_PAR0 + i);
-	iowrite8(0, iobase + MAC_REG_PAGE1SEL);
-}
+diff --git a/arch/csky/mm/asid.c b/arch/csky/mm/asid.c
+index b2e914745c1d..7fb6c417bbac 100644
+--- a/arch/csky/mm/asid.c
++++ b/arch/csky/mm/asid.c
+@@ -27,7 +27,7 @@ static void flush_context(struct asid_info *info)
+ 	u64 asid;
+ 
+ 	/* Update the list of reserved ASIDs and the ASID bitmap. */
+-	bitmap_clear(info->map, 0, NUM_CTXT_ASIDS(info));
++	bitmap_zero(info->map, NUM_CTXT_ASIDS(info));
+ 
+ 	for_each_possible_cpu(i) {
+ 		asid = atomic64_xchg_relaxed(&active_asid(info, i), 0);
+@@ -178,8 +178,7 @@ int asid_allocator_init(struct asid_info *info,
+ 	 */
+ 	WARN_ON(NUM_CTXT_ASIDS(info) - 1 <= num_possible_cpus());
+ 	atomic64_set(&info->generation, ASID_FIRST_VERSION(info));
+-	info->map = kcalloc(BITS_TO_LONGS(NUM_CTXT_ASIDS(info)),
+-			    sizeof(*info->map), GFP_KERNEL);
++	info->map = bitmap_zalloc(NUM_CTXT_ASIDS(info), GFP_KERNEL);
+ 	if (!info->map)
+ 		return -ENOMEM;
+ 
+-- 
+2.34.1
 
