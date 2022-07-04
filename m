@@ -2,128 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EACC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C014C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233140AbiGDM35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 08:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39664 "EHLO
+        id S232580AbiGDMaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 08:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233672AbiGDM3y (ORCPT
+        with ESMTP id S231339AbiGDMaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 08:29:54 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844F121B8;
-        Mon,  4 Jul 2022 05:29:53 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lc4qP3D0hzYd0m;
-        Mon,  4 Jul 2022 20:29:05 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 20:29:50 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <paskripkin@gmail.com>, <linux@rempel-privat.de>, <andrew@lunn.ch>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next] net: asix: change the type of asix_set_sw/hw_mii to static
-Date:   Mon, 4 Jul 2022 20:34:48 +0800
-Message-ID: <20220704123448.128980-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+        Mon, 4 Jul 2022 08:30:20 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5CFAF;
+        Mon,  4 Jul 2022 05:30:18 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9C7F61FA15;
+        Mon,  4 Jul 2022 12:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1656937817; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qv6D7iKxr+zbBMXioHD7kr/xe7z33Livi6hgTVcHD2I=;
+        b=kYtuwJzRz5LFRo4d4yuZp5TX3iJBZx0ZrtyPoZTNpADdAvj+TS5Zrwhi3j2hy4BBlXUUfw
+        HmYDQwT77EgChqyAoPelajKaO8NHfyoOm57nWOg1SmqlW/eGdNnj/kCenMiiZYevD8tVkA
+        pRK0BeDAaH82vk157bJ33hgqxRLmX20=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1656937817;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qv6D7iKxr+zbBMXioHD7kr/xe7z33Livi6hgTVcHD2I=;
+        b=p7fqaF/GmSu3xqbxe4UPgcJte+rI/lbZ83N716Je0Lb/WFpWMk3LKMpmc1UyU7YdkZAJL3
+        JYi5z+dJ8SrrbXCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 787031342C;
+        Mon,  4 Jul 2022 12:30:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id kJasHFndwmIKLQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 04 Jul 2022 12:30:17 +0000
+Date:   Mon, 04 Jul 2022 14:30:17 +0200
+Message-ID: <8735fhys9y.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: wavefront: remove redundant assignment to pointer end
+In-Reply-To: <20220629102744.139673-1-colin.i.king@gmail.com>
+References: <20220629102744.139673-1-colin.i.king@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The functions of asix_set_sw/hw_mii are not called in other files, so
-change them to static.
+On Wed, 29 Jun 2022 12:27:43 +0200,
+Colin Ian King wrote:
+> 
+> Pointer end is being re-assigned the same value as it was initialized
+> with in the previous statement. The re-assignment is redundant and
+> can be removed.
+> 
+> Cleans up clang scan-build warning:
+> sound/isa/wavefront/wavefront_synth.c:582:17: warning: Value stored
+> to 'end' during its initialization is never read
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- drivers/net/usb/asix.h        |  3 ---
- drivers/net/usb/asix_common.c | 40 ++++++++++++++++++-----------------
- 2 files changed, 21 insertions(+), 22 deletions(-)
+Thanks, applied now.
 
-diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-index 2c81236c6c7c..02d4096a9c9d 100644
---- a/drivers/net/usb/asix.h
-+++ b/drivers/net/usb/asix.h
-@@ -213,9 +213,6 @@ void asix_rx_fixup_common_free(struct asix_common_private *dp);
- struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 			      gfp_t flags);
- 
--int asix_set_sw_mii(struct usbnet *dev, int in_pm);
--int asix_set_hw_mii(struct usbnet *dev, int in_pm);
--
- int asix_read_phy_addr(struct usbnet *dev, bool internal);
- 
- int asix_sw_reset(struct usbnet *dev, u8 flags, int in_pm);
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index 632fa6c1d5e3..0c3a4d3d164f 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -68,6 +68,27 @@ void asix_write_cmd_async(struct usbnet *dev, u8 cmd, u16 value, u16 index,
- 			       value, index, data, size);
- }
- 
-+static int asix_set_sw_mii(struct usbnet *dev, int in_pm)
-+{
-+	int ret;
-+
-+	ret = asix_write_cmd(dev, AX_CMD_SET_SW_MII, 0x0000, 0, 0, NULL, in_pm);
-+
-+	if (ret < 0)
-+		netdev_err(dev->net, "Failed to enable software MII access\n");
-+	return ret;
-+}
-+
-+static int asix_set_hw_mii(struct usbnet *dev, int in_pm)
-+{
-+	int ret;
-+
-+	ret = asix_write_cmd(dev, AX_CMD_SET_HW_MII, 0x0000, 0, 0, NULL, in_pm);
-+	if (ret < 0)
-+		netdev_err(dev->net, "Failed to enable hardware MII access\n");
-+	return ret;
-+}
-+
- static int asix_check_host_enable(struct usbnet *dev, int in_pm)
- {
- 	int i, ret;
-@@ -297,25 +318,6 @@ struct sk_buff *asix_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 	return skb;
- }
- 
--int asix_set_sw_mii(struct usbnet *dev, int in_pm)
--{
--	int ret;
--	ret = asix_write_cmd(dev, AX_CMD_SET_SW_MII, 0x0000, 0, 0, NULL, in_pm);
--
--	if (ret < 0)
--		netdev_err(dev->net, "Failed to enable software MII access\n");
--	return ret;
--}
--
--int asix_set_hw_mii(struct usbnet *dev, int in_pm)
--{
--	int ret;
--	ret = asix_write_cmd(dev, AX_CMD_SET_HW_MII, 0x0000, 0, 0, NULL, in_pm);
--	if (ret < 0)
--		netdev_err(dev->net, "Failed to enable hardware MII access\n");
--	return ret;
--}
--
- int asix_read_phy_addr(struct usbnet *dev, bool internal)
- {
- 	int ret, offset;
--- 
-2.17.1
 
+Takashi
