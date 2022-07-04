@@ -2,186 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C5DCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8361FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233831AbiGDK4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
+        id S233563AbiGDK5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231544AbiGDK4Z (ORCPT
+        with ESMTP id S231709AbiGDK5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:56:25 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6FFF5B4
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:56:23 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 68so8609523pgb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 03:56:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CXQfpYTDQSPQk5n85TMF5Rtc8fjIvsWXa8Dgsig58ac=;
-        b=Bp2IHpgWFvsjVPLdIykEUTI6E62rNcXQ1Qqs+kBE0ofKgsRCSjGPqjUiszcAFTH8sk
-         srzUVlPKcuxjQuahsuvWr9Vp+Eoegd4/LBZrvv8mm/Iuq5yfReWHvWwKmp8M7I/Kt9k7
-         btxI7NFaYQbE5kkpesVGFRY+TCtBn130gljZFXT3XlzG3nWfQyMg4pCBfu4tGjqVgx3V
-         Epsbxi5Mi5ILXuhvvnngWCarZ+VLTWRlHQ6+UVUvp5ad/4oDaBf5Y0ZqzK6wVkV3Nugw
-         vB/QyqZLvCVUn0FJXiupvXPszkB98MVXCfwCFIuOIkyd6y6YgKAmAKt75CiToINptW7M
-         K/mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CXQfpYTDQSPQk5n85TMF5Rtc8fjIvsWXa8Dgsig58ac=;
-        b=gbF+tIBz3e5sgFZt3e9kiTCNjT7r7TOfuMMzlzEwcrJ5i1HAw8NsMCpfxo2v9Ny1QX
-         gOyBjUNAIG7FvmIwTETNd0oeppHzprHXVAFUnN29wOz0xYaKLqdMuO7gZ3yopO4l0Fqt
-         vLG1CWfjBrcnyMmHCL6C5Ve4i1LtYFn37jq8ye6NHWPQSdFlVCXCLy+h3SlRKD/cN0LL
-         Kf+B7iRhcWeD7E7YWpfR9etkdmHlkIWIb2vtVEzaJM5AgMVwu1VCcW2W4BfZLNm1DVvM
-         N1vsCcGmHK451PRGvUXK7jYjbS67IqrTvKjacGFNY7wD5T0tYl3IYfPTqDTQrF7LBk+S
-         cURg==
-X-Gm-Message-State: AJIora/0b5aWzbVTsxSAkS1xXkZFuMaZU6WiZEwfUb6LWfwz15KkOi9q
-        /GVOeFBFv0684mSo+meZCkg+xw==
-X-Google-Smtp-Source: AGRyM1tfnUur7TuwOQxmJlxXtmywkayWT23lDh1TS6mNt5d9dgW0FSIZYivIOlrTCPT21ttAkbBfaA==
-X-Received: by 2002:a05:6a00:1808:b0:528:3ec:543a with SMTP id y8-20020a056a00180800b0052803ec543amr27281869pfa.70.1656932183295;
-        Mon, 04 Jul 2022 03:56:23 -0700 (PDT)
-Received: from localhost ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id s23-20020a170902a51700b001690d283f52sm20554943plq.158.2022.07.04.03.56.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 03:56:23 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 18:56:19 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     akpm@linux-foundation.org, jgg@ziepe.ca, jhubbard@nvidia.com,
-        william.kucharski@oracle.com, dan.j.williams@intel.com,
-        jack@suse.cz, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev
-Subject: Re: [PATCH] mm: fix missing wake-up event for FSDAX pages
-Message-ID: <YsLHUxNjXLOumaIy@FVFYT0MHHV2J.usts.net>
-References: <20220704074054.32310-1-songmuchun@bytedance.com>
- <YsLDGEiVSHN3Xx/g@casper.infradead.org>
+        Mon, 4 Jul 2022 06:57:50 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F312B2F9;
+        Mon,  4 Jul 2022 03:57:49 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264ApZM7028898;
+        Mon, 4 Jul 2022 10:57:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=/JRU2GlMMJuPHWkVQ9EJtmnLuJ++GgsHr3lOZdHAhOI=;
+ b=Cfsi/1SYgtccocPN4PeMSVc5KgInllspCxB17SpP4igVA6AffKd7xgHpzp7ufwpxOvU9
+ bm/m5+YaJFg91igPX4MN1Fek13sraF53HdlVGKLbhrXLCInLFZuCt9M+Z6XJD8zqbeWD
+ i9Y0VjxBrs+R40qfq3XEmH5L0ZUM2Rvh8Um6tv1bYPn0MX0fzbLVjygdUDDi7/dbguZ9
+ EGRgwPeuqXDx/HpgsbK65FgMWEYPYCnmUuattwwZRmKAjn3DJds9RO0RRJJqFiBLL3e8
+ 4+OWP+SS3ZUWlZElbFEr5xV1mTTpwKHcafXDw5A3o9EGGEmHjhDH5khD1N/WnLHKi0J6 zw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3xtw039k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 10:57:49 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 264ArU95005776;
+        Mon, 4 Jul 2022 10:57:49 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3xtw038t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 10:57:48 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 264ApgDP013890;
+        Mon, 4 Jul 2022 10:57:46 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3h2d9jakqc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 10:57:46 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 264AvhTI19202438
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jul 2022 10:57:43 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 36918A4040;
+        Mon,  4 Jul 2022 10:57:43 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1FFF9A4053;
+        Mon,  4 Jul 2022 10:57:42 +0000 (GMT)
+Received: from [9.171.11.185] (unknown [9.171.11.185])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Jul 2022 10:57:42 +0000 (GMT)
+Message-ID: <038d7c59-0c9a-7667-cf74-83009e186b42@linux.ibm.com>
+Date:   Mon, 4 Jul 2022 13:02:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YsLDGEiVSHN3Xx/g@casper.infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v11 2/3] KVM: s390: guest support for topology function
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com, nrb@linux.ibm.com
+References: <20220701162559.158313-1-pmorel@linux.ibm.com>
+ <20220701162559.158313-3-pmorel@linux.ibm.com>
+ <579337ac-d040-197f-3553-7c8ff202623a@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <579337ac-d040-197f-3553-7c8ff202623a@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: gRdfwYnR0FSBK8ndMMQvx8Tr8Qqb2y4j
+X-Proofpoint-ORIG-GUID: trD3fL7zvRswHcyFLTTwFEiIVObUyRMK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ spamscore=0 priorityscore=1501 impostorscore=0 malwarescore=0
+ mlxlogscore=999 mlxscore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207040045
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 11:38:16AM +0100, Matthew Wilcox wrote:
-> On Mon, Jul 04, 2022 at 03:40:54PM +0800, Muchun Song wrote:
-> > FSDAX page refcounts are 1-based, rather than 0-based: if refcount is
-> > 1, then the page is freed.  The FSDAX pages can be pinned through GUP,
-> > then they will be unpinned via unpin_user_page() using a folio variant
-> > to put the page, however, folio variants did not consider this special
-> > case, the result will be to miss a wakeup event (like the user of
-> > __fuse_dax_break_layouts()).
+
+
+On 7/4/22 11:08, Janis Schoetterl-Glausch wrote:
+> On 7/1/22 18:25, Pierre Morel wrote:
+>> We report a topology change to the guest for any CPU hotplug.
+>>
+>> The reporting to the guest is done using the Multiprocessor
+>> Topology-Change-Report (MTCR) bit of the utility entry in the guest's
+>> SCA which will be cleared during the interpretation of PTF.
+>>
+>> On every vCPU creation we set the MCTR bit to let the guest know the
+>> next time he uses the PTF with command 2 instruction that the> topology changed and that he should use the STSI(15.1.x) instruction
+> s/he/it (twice)
+>> to get the topology details.
+>>
+>> STSI(15.1.x) gives information on the CPU configuration topology.
+>> Let's accept the interception of STSI with the function code 15 and
+>> let the userland part of the hypervisor handle it when userland
+>> support the CPU Topology facility.And the user STSI capability.
+> Also: supportS.
+>>
+>> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+>> Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
+>> ---
+>>   arch/s390/include/asm/kvm_host.h | 18 +++++++++++++---
+>>   arch/s390/kvm/kvm-s390.c         | 36 ++++++++++++++++++++++++++++++++
+>>   arch/s390/kvm/priv.c             | 16 ++++++++++----
+>>   arch/s390/kvm/vsie.c             |  8 +++++++
+>>   4 files changed, 71 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+>> index 766028d54a3e..ae6bd3d607de 100644
+>> --- a/arch/s390/include/asm/kvm_host.h
+>> +++ b/arch/s390/include/asm/kvm_host.h
+>> @@ -93,19 +93,30 @@ union ipte_control {
+>>   	};
+>>   };
+>>   
+> [...]
 > 
-> Argh, no.  The 1-based refcounts are a blight on the entire kernel.
-> They need to go away, not be pushed into folios as well.  I think
-
-I would be happy if this could go away.
-
-> we're close to having that fixed, but until then, this should do
-> the trick?
+>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>> index 8fcb56141689..ee59b03f2e45 100644
+>> --- a/arch/s390/kvm/kvm-s390.c
+>> +++ b/arch/s390/kvm/kvm-s390.c
+>> @@ -1691,6 +1691,31 @@ static int kvm_s390_get_cpu_model(struct kvm *kvm, struct kvm_device_attr *attr)
+>>   	return ret;
+>>   }
+>>   
+>> +/**
+>> + * kvm_s390_update_topology_change_report - update CPU topology change report
+>> + * @kvm: guest KVM description
+>> + * @val: set or clear the MTCR bit
+>> + *
+>> + * Updates the Multiprocessor Topology-Change-Report bit to signal
+>> + * the guest with a topology change.
+>> + * This is only relevant if the topology facility is present.
+>> + *
+>> + * The SCA version, bsca or esca, doesn't matter as offset is the same.
+>> + */
+>> +static void kvm_s390_update_topology_change_report(struct kvm *kvm, bool val)
+>> +{
+>> +	struct bsca_block *sca = kvm->arch.sca;
+>> +	union sca_utility new, old;
+>> +
+>> +	read_lock(&kvm->arch.sca_lock);
 > 
+> You forgot to put the assignment of sca under the lock.
 
-The following fix looks good to me since it lowers the overhead as
-much as possible
+Should I really?
+What we want to protect here is the content of the sca.
+The sca itself does not change during the life of the KVM AFAIK.
 
-Thanks.
-
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index cc98ab012a9b..4cef5e0f78b6 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -1129,18 +1129,18 @@ static inline bool is_zone_movable_page(const struct page *page)
->  #if defined(CONFIG_ZONE_DEVICE) && defined(CONFIG_FS_DAX)
->  DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
->  
-> -bool __put_devmap_managed_page(struct page *page);
-> -static inline bool put_devmap_managed_page(struct page *page)
-> +bool __put_devmap_managed_page(struct page *page, int refs);
-> +static inline bool put_devmap_managed_page(struct page *page, int refs)
->  {
->  	if (!static_branch_unlikely(&devmap_managed_key))
->  		return false;
->  	if (!is_zone_device_page(page))
->  		return false;
-> -	return __put_devmap_managed_page(page);
-> +	return __put_devmap_managed_page(page, refs);
->  }
->  
->  #else /* CONFIG_ZONE_DEVICE && CONFIG_FS_DAX */
-> -static inline bool put_devmap_managed_page(struct page *page)
-> +static inline bool put_devmap_managed_page(struct page *page, int refs)
->  {
->  	return false;
->  }
-> @@ -1246,7 +1246,7 @@ static inline void put_page(struct page *page)
->  	 * For some devmap managed pages we need to catch refcount transition
->  	 * from 2 to 1:
->  	 */
-> -	if (put_devmap_managed_page(&folio->page))
-> +	if (put_devmap_managed_page(&folio->page, 1))
->  		return;
->  	folio_put(folio);
->  }
-> diff --git a/mm/gup.c b/mm/gup.c
-> index d1132b39aa8f..28df02121c78 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -88,7 +88,8 @@ static inline struct folio *try_get_folio(struct page *page, int refs)
->  	 * belongs to this folio.
->  	 */
->  	if (unlikely(page_folio(page) != folio)) {
-> -		folio_put_refs(folio, refs);
-> +		if (!put_devmap_managed_page(&folio->page, refs))
-> +			folio_put_refs(folio, refs);
->  		goto retry;
->  	}
->  
-> @@ -177,6 +178,8 @@ static void gup_put_folio(struct folio *folio, int refs, unsigned int flags)
->  			refs *= GUP_PIN_COUNTING_BIAS;
->  	}
->  
-> +	if (put_devmap_managed_page(&folio->page, refs))
-> +		return;
->  	folio_put_refs(folio, refs);
->  }
->  
-> diff --git a/mm/memremap.c b/mm/memremap.c
-> index b870a659eee6..b25e40e3a11e 100644
-> --- a/mm/memremap.c
-> +++ b/mm/memremap.c
-> @@ -499,7 +499,7 @@ void free_zone_device_page(struct page *page)
->  }
->  
->  #ifdef CONFIG_FS_DAX
-> -bool __put_devmap_managed_page(struct page *page)
-> +bool __put_devmap_managed_page(struct page *page, int refs)
->  {
->  	if (page->pgmap->type != MEMORY_DEVICE_FS_DAX)
->  		return false;
-> @@ -509,7 +509,7 @@ bool __put_devmap_managed_page(struct page *page)
->  	 * refcount is 1, then the page is free and the refcount is
->  	 * stable because nobody holds a reference on the page.
->  	 */
-> -	if (page_ref_dec_return(page) == 1)
-> +	if (page_ref_sub_return(page, refs) == 1)
->  		wake_up_var(&page->_refcount);
->  	return true;
->  }
-> diff --git a/mm/swap.c b/mm/swap.c
-> index c6194cfa2af6..94e42a9bab92 100644
-> --- a/mm/swap.c
-> +++ b/mm/swap.c
-> @@ -960,7 +960,7 @@ void release_pages(struct page **pages, int nr)
->  				unlock_page_lruvec_irqrestore(lruvec, flags);
->  				lruvec = NULL;
->  			}
-> -			if (put_devmap_managed_page(&folio->page))
-> +			if (put_devmap_managed_page(&folio->page, 1))
->  				continue;
->  			if (folio_put_testzero(folio))
->  				free_zone_device_page(&folio->page);
 > 
+>> +	do {
+>> +		old = READ_ONCE(sca->utility);
+>> +		new = old;
+>> +		new.mtcr = val;
+>> +	} while (cmpxchg(&sca->utility.val, old.val, new.val) != old.val);
+>> +	read_unlock(&kvm->arch.sca_lock);
+>> +}
+>> +
+>>   static int kvm_s390_vm_set_attr(struct kvm *kvm, struct kvm_device_attr *attr)
+>>   {
+>>   	int ret;
+>> @@ -2877,6 +2902,7 @@ void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
+>>   	kvm_clear_async_pf_completion_queue(vcpu);
+>>   	if (!kvm_is_ucontrol(vcpu->kvm))
+>>   		sca_del_vcpu(vcpu);
+>> +	kvm_s390_update_topology_change_report(vcpu->kvm, 1);
+>>   
+>>   	if (kvm_is_ucontrol(vcpu->kvm))
+>>   		gmap_remove(vcpu->arch.gmap);
+>> @@ -3272,6 +3298,14 @@ static int kvm_s390_vcpu_setup(struct kvm_vcpu *vcpu)
+>>   		vcpu->arch.sie_block->ecb |= ECB_HOSTPROTINT;
+>>   	if (test_kvm_facility(vcpu->kvm, 9))
+>>   		vcpu->arch.sie_block->ecb |= ECB_SRSI;
+>> +	/*
+>> +	 * CPU Topology
+>> +	 * This facility only uses the utility field of the SCA and none
+>> +	 * of the cpu entries that are problematic with the other
+>> +	 * interpretation facilities so we can pass it through.
+>> +	 */
+> 
+> This is the comment for vsie.c
+
+right
+
+>> +	if (test_kvm_facility(vcpu->kvm, 11))
+>> +		vcpu->arch.sie_block->ecb |= ECB_PTF;
+>>   	if (test_kvm_facility(vcpu->kvm, 73))
+>>   		vcpu->arch.sie_block->ecb |= ECB_TE;
+>>   	if (!kvm_is_ucontrol(vcpu->kvm))
+>> @@ -3403,6 +3437,8 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+>>   	rc = kvm_s390_vcpu_setup(vcpu);
+>>   	if (rc)
+>>   		goto out_ucontrol_uninit;
+>> +
+>> +	kvm_s390_update_topology_change_report(vcpu->kvm, 1);
+>>   	return 0;
+>>   
+>>   out_ucontrol_uninit:
+>> diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
+>> index 12c464c7cddf..046afee1be94 100644
+>> --- a/arch/s390/kvm/priv.c
+>> +++ b/arch/s390/kvm/priv.c
+>> @@ -873,10 +873,13 @@ static int handle_stsi(struct kvm_vcpu *vcpu)
+>>   	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_PSTATE)
+>>   		return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
+>>   
+>> -	if (fc > 3) {
+>> -		kvm_s390_set_psw_cc(vcpu, 3);
+>> -		return 0;
+>> -	}
+>> +	/* Bailout forbidden function codes */
+>> +	if (fc > 3 && (fc != 15 || kvm_s390_pv_cpu_is_protected(vcpu)))
+>> +		goto out_no_data;
+>> +
+>> +	/* fc 15 is provided with PTF/CPU topology support */
+>> +	if (fc == 15 && !test_kvm_facility(vcpu->kvm, 11))
+>> +		goto out_no_data;
+>>   
+>>   	if (vcpu->run->s.regs.gprs[0] & 0x0fffff00
+>>   	    || vcpu->run->s.regs.gprs[1] & 0xffff0000)
+>> @@ -910,6 +913,11 @@ static int handle_stsi(struct kvm_vcpu *vcpu)
+>>   			goto out_no_data;
+>>   		handle_stsi_3_2_2(vcpu, (void *) mem);
+>>   		break;
+>> +	case 15: /* fc 15 is fully handled in userspace */
+>> +		if (vcpu->kvm->arch.user_stsi)
+>> +			insert_stsi_usr_data(vcpu, operand2, ar, fc, sel1, sel2);
+>> +		trace_kvm_s390_handle_stsi(vcpu, fc, sel1, sel2, operand2);
+>> +		return -EREMOTE;
+> 
+> This doesn't look right to me, you still return -EREMOTE if user_stsi is false.
+> The way I read the PoP here is that it is ok to set condition code 3 for the else case
+
+Yes it is what I wanted to do.
+I do not understand what I did here is stupid.
+
+
+-- 
+Pierre Morel
+IBM Lab Boeblingen
