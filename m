@@ -2,124 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48624C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E10EBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233625AbiGDK3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        id S234041AbiGDK3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233023AbiGDK3j (ORCPT
+        with ESMTP id S233588AbiGDK3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:29:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9EE2AED;
-        Mon,  4 Jul 2022 03:29:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B9BC61588;
-        Mon,  4 Jul 2022 10:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DE3C341CF;
-        Mon,  4 Jul 2022 10:29:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656930577;
-        bh=S1U7c4vumgaGxKIy+Le6U140pOZn3tAuCvMMwQCWlN8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=IZwvcqpOF372czI8gtJbB/SdCPkAimnJnkhBW/En4r1NZrW0u2J1+WHMwoUIu+wRU
-         wguCC2iT/oy0oRQ1ii2t/CWWWKkHT57+4BArh3EDutEZMnyVCRPY00KRRfMQQUAYfX
-         qZQMYBk0etV8ZOaN5iy1R5fxXvu4nayOuJEjCWOO7uOEg9eyp7ebCPkLXVQyYWEQ+E
-         Z7yxB0B8Acw5gw6xlxYGCOk6ZRqEc9wpMfy2e4QQBeunLjA6QR+wQ+uAQYE4zFgrE2
-         eqcM8lkUPX7Gykmyv77q5hBMcUWwCursu9QZ7OgG85O4u86lONwQ8TALs1vJWwcImb
-         m9Gt2xlVx7XSQ==
-Received: by mail-vs1-f54.google.com with SMTP id o13so8547966vsn.4;
-        Mon, 04 Jul 2022 03:29:37 -0700 (PDT)
-X-Gm-Message-State: AJIora9ZhLA4DMyRlI2VMdGsRs0PitE2q7m9xycMlSq62BbL8SDvkBgE
-        VBrpgjIgGwrOMwHPWrTGGDxlGJB7q5u77xxUEOo=
-X-Google-Smtp-Source: AGRyM1u6JhNTB0gLDTipOeQ1swPjdH1oGdRVztg+QzNFmuvStQcIc7FWyLglppo/lfxYQ9Nz+IHL4JIBdjCw/e1muuY=
-X-Received: by 2002:a67:f958:0:b0:354:3f56:8a2d with SMTP id
- u24-20020a67f958000000b003543f568a2dmr15408042vsq.59.1656930576462; Mon, 04
- Jul 2022 03:29:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220702080021.1167190-1-chenhuacai@loongson.cn>
- <20220702080021.1167190-4-chenhuacai@loongson.cn> <20220704092658.GA31220@willie-the-truck>
-In-Reply-To: <20220704092658.GA31220@willie-the-truck>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Mon, 4 Jul 2022 18:29:24 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H4qxBsbXN3Si+ovWSidA=GV8bg58cPTbp8Y4UzPwFhY0g@mail.gmail.com>
-Message-ID: <CAAhV-H4qxBsbXN3Si+ovWSidA=GV8bg58cPTbp8Y4UzPwFhY0g@mail.gmail.com>
-Subject: Re: [PATCH V3 3/4] mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages()
-To:     Will Deacon <will@kernel.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        loongarch@lists.linux.dev, linux-arch <linux-arch@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Feiyang Chen <chenfeiyang@loongson.cn>
+        Mon, 4 Jul 2022 06:29:42 -0400
+Received: from smtp2.tsag.net (smtp2.tsag.net [208.118.68.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93C526EF;
+        Mon,  4 Jul 2022 03:29:41 -0700 (PDT)
+Received: from linuxfromscratch.org (rivendell.linuxfromscratch.org [208.118.68.85])
+        (user=smtprelay@linuxfromscratch.org mech=PLAIN bits=0)
+        by smtp2.tsag.net  with ESMTP id 264ATNkm015395-264ATNko015395
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 4 Jul 2022 04:29:23 -0600
+Received: from [192.168.124.21] (unknown [113.140.29.6])
+        by linuxfromscratch.org (Postfix) with ESMTPSA id 818531C337B;
+        Mon,  4 Jul 2022 10:29:18 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfromscratch.org;
+        s=cert4; t=1656930563;
+        bh=7SlvoAQAjYIET8FUv/TvZB/zr4/2kz6Ntmih+ixegRU=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=Rs2RuGSRH+CHTLOWW5eDWDfS/3EN8u+a1+sbyEtoHwdTImGUqeS3N5SdZ1XVh9QkH
+         nS8z6ia/k27GR5pTeFY2RzigZX0NZgtL+EMR1BKvf9wqN0G5jOgTy8gVR2MhONDCDj
+         URBUO4UY/z8WWpCQwnHM7s3DOrmEqV9N9WoLGFqM9QiPrPUrVB0+zjolP5Uv/ObMZE
+         7SML8FxBKkY7dqpCEbUrYOx8c6WKSY/TXAUgOc+VG0wr0dcKmS4TiE4H0Foh7/jw3m
+         bGjmyvfZVx8NLiatbmx7CjueUftxyrgSrpOqhO6cWdEHi1+HBLcmjdL8TBKyLNODCa
+         QXBAl5bxWhMQQ==
+Message-ID: <61f2e4e2af40cb9d853504d0a6fe01829ff8ca60.camel@linuxfromscratch.org>
+Subject: Re: [PATCH v6 3/5] fbdev: Disable sysfb device registration when
+ removing conflicting FBs
+From:   Xi Ruoyao <xry111@linuxfromscratch.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Zack Rusin <zackr@vmware.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
+        "kraxel@redhat.com" <kraxel@redhat.com>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
+        "lersek@redhat.com" <lersek@redhat.com>
+Date:   Mon, 04 Jul 2022 18:29:00 +0800
+In-Reply-To: <64c753c98488a64b470009e45769ceab29fd8130.camel@linuxfromscratch.org>
+References: <20220607182338.344270-1-javierm@redhat.com>
+         <20220607182338.344270-4-javierm@redhat.com>
+         <de83ae8cb6de7ee7c88aa2121513e91bb0a74608.camel@vmware.com>
+         <38473dcd-0666-67b9-28bd-afa2d0ce434a@redhat.com>
+         <603e3613b9b8ff7815b63f294510d417b5b12937.camel@vmware.com>
+         <a633d605-4cb3-2e04-1818-85892cf6f7b0@redhat.com>
+         <97565fb5-cf7f-5991-6fb3-db96fe239ee8@redhat.com>
+         <711c88299ef41afd8556132b7c1dcb75ee7e6117.camel@vmware.com>
+         <aa144e20-a555-5c30-4796-09713c12ab0e@redhat.com>
+         <64c753c98488a64b470009e45769ceab29fd8130.camel@linuxfromscratch.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
+MIME-Version: 1.0
+X-FEAS-Auth-User: smtprelay@linuxfromscratch.org
+X-FEAS-DKIM: Valid
+Authentication-Results: smtp2.tsag.net;
+        dkim=pass header.i=@linuxfromscratch.org;
+        dmarc=pass header.from=linuxfromscratch.org
+X-FE-Policy-ID: 0:14:3:linuxfromscratch.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Will,
+On Mon, 2022-07-04 at 17:36 +0800, Xi Ruoyao wrote:
 
-On Mon, Jul 4, 2022 at 5:27 PM Will Deacon <will@kernel.org> wrote:
->
-> On Sat, Jul 02, 2022 at 04:00:20PM +0800, Huacai Chen wrote:
-> > From: Feiyang Chen <chenfeiyang@loongson.cn>
-> >
-> > Generalise vmemmap_populate_hugepages() so ARM64 & X86 & LoongArch can
-> > share its implementation.
-> >
-> > Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> > ---
-> >  arch/arm64/mm/mmu.c      | 53 ++++++-----------------
-> >  arch/loongarch/mm/init.c | 63 ++++++++-------------------
-> >  arch/x86/mm/init_64.c    | 92 ++++++++++++++--------------------------
-> >  include/linux/mm.h       |  6 +++
-> >  mm/sparse-vmemmap.c      | 54 +++++++++++++++++++++++
-> >  5 files changed, 124 insertions(+), 144 deletions(-)
-> >
-> > diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-> > index 626ec32873c6..b080a65c719d 100644
-> > --- a/arch/arm64/mm/mmu.c
-> > +++ b/arch/arm64/mm/mmu.c
-> > @@ -1158,49 +1158,24 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
-> >       return vmemmap_populate_basepages(start, end, node, altmap);
-> >  }
-> >  #else        /* !ARM64_KERNEL_USES_PMD_MAPS */
-> > +void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
-> > +                            unsigned long addr, unsigned long next)
-> > +{
-> > +     pmd_set_huge(pmd, __pa(p), __pgprot(PROT_SECT_NORMAL));
-> > +}
-> > +
-> > +int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
-> > +                             unsigned long next)
-> > +{
-> > +     vmemmap_verify((pte_t *)pmd, node, addr, next);
-> > +     return 1;
-> > +}
->
-> nit, but please can you use 'pmdp' instead of 'pmd' for the pointers? We're
-> pretty consistent elsewhere for arch/arm64 and it makes the READ_ONCE()
-> usage easier to follow once functions end up loading the entry.
-OK, I will change to pmdp for ARM64, thanks.
+> > Yes, please do. Either with CONFIG_SYSFB_SIMPLEFB disabled and CONFIG_F=
+B_EFI
+> > enabled (so that "efi-framebuffer" is registered and efifb probed) or w=
+ith
+> > CONFIG_SYSFB_SIMPLEFB but CONFIG_FB_SIMPLE enabled (so "simple-framebuf=
+fer
+> > is used too but with simplefb instead of simpledrm).
+> > =C2=A0
+> > I'm not able to reproduce, it would be useful to have another data poin=
+t.
+>=20
+> Also happening for me with CONFIG_SYSFB_SIMPLEFB, on a Intel Core i7-
+> 1065G7 (with iGPU).
+>=20
+> Reverting this commit on top of 5.19-rc5 "fixes" the issue.
 
-Huacai
->
-> Thanks,
->
-> Will
+With CONFIG_SYSFB_SIMPLEFB and CONFIG_FB_SIMPLE enabled, there is no
+issue.
+
+I guess it's something going wrong on a "drm -> drm" pass over.  For now
+I'll continue to use simpledrm with this commit reverted.
