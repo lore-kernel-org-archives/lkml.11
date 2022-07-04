@@ -2,113 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB41C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E4FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234192AbiGDLd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        id S234070AbiGDLfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233942AbiGDLdX (ORCPT
+        with ESMTP id S233350AbiGDLf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:33:23 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3F9E88;
-        Mon,  4 Jul 2022 04:33:21 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id r18so11301342edb.9;
-        Mon, 04 Jul 2022 04:33:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uISEbHJkHg+LEqbPo3bae9ouqkQHAUMU2B39TEtx3IM=;
-        b=dzmj2xWm6eSskZQBMCsfD48QgA7TdfhmhaOVbRJ2tfU6HQHxuDV/dUl2WUcjhUxvrC
-         gr6yLEcqCxUN5UYBsH1YRtYj9HGJJmGEoqyD5O3tgUtTnNRirlzw4jFRmVX7sMu3T6aa
-         wKCcWkWJrefr9dFaJx4FZwGZh0wZ/kghKazaPv/ox/+P/6UGBX69ybkrgk+TZVpOCBXD
-         2foxv9e+zqVyMPCG38J0dpw2lrAW7h1BGvUBp7Ro5Wq4M3hDMXhT930wExbYZCTRoJNc
-         IczFduVUPZ+Akl3mTYUHDYSyw65k+8y6DNbJlEJvPO+0SBaN7JLo5D2WPWQJ+JVk0e8k
-         No1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uISEbHJkHg+LEqbPo3bae9ouqkQHAUMU2B39TEtx3IM=;
-        b=qVIutjStFs26khSW6kFloYSBdgEjrU34WNGzraFR3lC8v9LPJI147R61nHspspWtCd
-         ARyZMK59NEz8DnG8ko2+2hD+tYTT1RX3wzbz+HVsO0nMwmt7NX+XlHPTgVAKTHrTufbO
-         oW1iKC63ZoDSQXIeWA8KQ/dIeeBZzRVzTu9m/D3dVRgJHQufW66vV78vE/B0QVBAxZN9
-         SsRYuzSowkILcL537yzd+OeQ9LpNzx+BeBunhrRGC+FanyoyCfDuGuddPFZdNqWynPuD
-         E6p2Y6QyrLTsMBtDoi4Bm6vUwbVbNJfHkhFt/FZvLGOiR1aZ5oWUisAE5mBI4MmMNzmF
-         bXzg==
-X-Gm-Message-State: AJIora9fSOYIPSS3bcKPQPjABfYoTpR6UPD8SXL80zf+HfrU7uTAiN1G
-        0HbTv4xOvv/ojW91ZDfkAgw=
-X-Google-Smtp-Source: AGRyM1t+ayVebEnERBQsS76YfAYD0xB3AMp9xItFk+buPPIwHLF0IGQtmV0R6+WVPDpM3l6Pyd2vPw==
-X-Received: by 2002:a50:fc15:0:b0:435:7897:e8ab with SMTP id i21-20020a50fc15000000b004357897e8abmr38380577edr.17.1656934400109;
-        Mon, 04 Jul 2022 04:33:20 -0700 (PDT)
-Received: from fedora.robimarko.hr (dh207-99-90.xnet.hr. [88.207.99.90])
-        by smtp.googlemail.com with ESMTPSA id x21-20020aa7dad5000000b0043a2338ca10sm3065443eds.92.2022.07.04.04.33.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 04:33:19 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH] arm64: dts: ipq8074: move ARMv8 timer out of SoC node
-Date:   Mon,  4 Jul 2022 13:33:18 +0200
-Message-Id: <20220704113318.623102-1-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 4 Jul 2022 07:35:29 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC555E88;
+        Mon,  4 Jul 2022 04:35:28 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264AkWRF023810;
+        Mon, 4 Jul 2022 11:35:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=j8n8QnNWxc6DqyHBFvfTXm1SINLsB982cPLlzWpJtlc=;
+ b=j66OKN5uwMVB7s/6u1riOvfh+ddIcPg+MgAJ04w7veGf3G/R87x1sLDpDyI0cawiJ4xT
+ gY1kz1USL2qOFnah5h+k2JwTZwpwSPYTESMXn+/o8kffRr45VpwKds8MPKrsJZz46Z66
+ 3U+bRum0CWK38VrktNoNeX7qOhua79d2q9jPaTMs0Si6I4VzXj+VeC+LEIYH3qoduoWR
+ SeqMsYY/Wa2yInGkXyQE2USxX4w4crN55I21UpXE2OM6lzv/LJF07rx/7irsz/la8+go
+ hLVGCBeEtf7G3C5W93BwP1eyBSEuusx6zQHJhwRXnQV1lCPib7Dz7Mz3dtyx/6Zdrev3 og== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3xrh92pn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 11:35:25 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 264BLK3h017554;
+        Mon, 4 Jul 2022 11:35:24 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3h2dn92mtp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 11:35:23 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 264BY8J124117668
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jul 2022 11:34:08 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A6793AE04D;
+        Mon,  4 Jul 2022 11:35:20 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4E14CAE053;
+        Mon,  4 Jul 2022 11:35:20 +0000 (GMT)
+Received: from [9.145.42.138] (unknown [9.145.42.138])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Jul 2022 11:35:20 +0000 (GMT)
+Message-ID: <7a4be6a8-6833-f049-3fef-48285a9fe40b@linux.ibm.com>
+Date:   Mon, 4 Jul 2022 13:35:20 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/2] s390/hwcaps: Add HWCAP_UV
+Content-Language: en-US
+To:     Heiko Carstens <hca@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, nrb@linux.ibm.com
+References: <20220701100210.5482-1-seiden@linux.ibm.com>
+ <20220701100210.5482-2-seiden@linux.ibm.com>
+ <1a2a885b-d408-0426-8e8c-ad1c56f4c215@linux.ibm.com>
+ <YsK6ViBvm/330a0i@osiris>
+From:   Steffen Eiden <seiden@linux.ibm.com>
+Organization: IBM
+In-Reply-To: <YsK6ViBvm/330a0i@osiris>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: yoadaJZBvzZJnBsB6S75yyigtsUkZyMC
+X-Proofpoint-ORIG-GUID: yoadaJZBvzZJnBsB6S75yyigtsUkZyMC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ adultscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 spamscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207040048
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ARM timer is usually considered not part of SoC node, just like
-other ARM designed blocks (PMU, PSCI).  This fixes dtbs_check warning:
 
-arch/arm64/boot/dts/qcom/ipq8072-ax9000.dtb: soc: timer: {'compatible': ['arm,armv8-timer'], 'interrupts': [[1, 2, 3848], [1, 3, 3848], [1, 4, 3848], [1, 1, 3848]]} should not be valid under {'type': 'object'}
-	From schema: dtschema/schemas/simple-bus.yaml
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+On 7/4/22 12:00, Heiko Carstens wrote:
+> On Fri, Jul 01, 2022 at 12:10:18PM +0200, Christian Borntraeger wrote:
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index e0bd202e4eae..9f5798f4825d 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -143,6 +143,14 @@ m3_dump_region: m3_dump@51000000 {
- 		};
- 	};
- 
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 3 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 4 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 1 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+
- 	firmware {
- 		scm {
- 			compatible = "qcom,scm-ipq8074", "qcom,scm";
-@@ -852,14 +860,6 @@ gic_v2m0: v2m@0 {
- 			};
- 		};
- 
--		timer {
--			compatible = "arm,armv8-timer";
--			interrupts = <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
--				     <GIC_PPI 3 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
--				     <GIC_PPI 4 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
--				     <GIC_PPI 1 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
--		};
--
- 		watchdog: watchdog@b017000 {
- 			compatible = "qcom,kpss-wdt";
- 			reg = <0xb017000 0x1000>;
--- 
-2.36.1
+[ snip ]
+
+>> Any preference from your side?
+> 
+> I mentioned already before this RFC that my preferred solution would
+> be to have a solution which extends the existing method to work (also)
+> with facility bits - haven't checked if all existing users could be
+> converted to facility bits, but making it more flexible would work
+> certainly.
+> 
+> If Steffen is willing to do that, that would be very welcome.
+> Otherwise I'll put that on my todo list.
+
+I'll have a look on that.
 
