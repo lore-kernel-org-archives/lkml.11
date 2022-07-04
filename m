@@ -2,104 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67BD2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231341AbiGDJvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S233145AbiGDJwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232403AbiGDJvh (ORCPT
+        with ESMTP id S231135AbiGDJwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:51:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EAA63FE;
-        Mon,  4 Jul 2022 02:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656928296; x=1688464296;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=NHDN/2lSyCT1GEduT2MlDHQYpJlzlmnBsu/bQ+QOiwY=;
-  b=lmG9yypPkV9Lasrb+xCHrXH0BqKGcHC+tjAdjgmVyd3WUy+UZPOiKxi0
-   HDK2hTfwQebWnP3ZHc34U2DWSquqzZzKAjuSJJ1FZJ2O0WLggpCEAJIt7
-   9IonfVhbA1piln5ZICEnZ5YJhEYvccjctBQt5fsaGJRUdmzEADp02u9kj
-   v2jW+154Wmni5bzfIdFG0LQllOKcv8wjnMqUTx5LpE8d6KR8URzeqEoLl
-   2Dj5nbecpHPxXyh3gmkJuVCJhG8WVW+MriN8nLYZxWROSZNPzLVaeHtxZ
-   kVlk8Mim8cjmQgw+OTJa74qaopVuZ1Y0bMz50RsabaB31Mi8zm4Nd0nR8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="369413044"
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="369413044"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:51:36 -0700
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="649511538"
-Received: from bclindho-mobl.ger.corp.intel.com ([10.252.49.27])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:51:31 -0700
-Date:   Mon, 4 Jul 2022 12:51:28 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio
- in serial core
-In-Reply-To: <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
-Message-ID: <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+        Mon, 4 Jul 2022 05:52:35 -0400
+X-Greylist: delayed 921 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Jul 2022 02:52:34 PDT
+Received: from smtp2.tsag.net (smtp2.tsag.net [208.118.68.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA9DDE87;
+        Mon,  4 Jul 2022 02:52:34 -0700 (PDT)
+Received: from linuxfromscratch.org (rivendell.linuxfromscratch.org [208.118.68.85])
+        (user=smtprelay@linuxfromscratch.org mech=PLAIN bits=0)
+        by smtp2.tsag.net  with ESMTP id 2649aqN7013971-2649aqN9013971
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 4 Jul 2022 03:36:53 -0600
+Received: from [192.168.124.21] (unknown [113.140.29.6])
+        by linuxfromscratch.org (Postfix) with ESMTPSA id C33161C33D0;
+        Mon,  4 Jul 2022 09:36:46 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfromscratch.org;
+        s=cert4; t=1656927412;
+        bh=3QkRAk/rtlLuT2thgUbQAE2edONMPQV0DJmdezwylNk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=osOSOfHtB0PqwShcsPEqL9Qe4l2l337q+dHrDoMqbi4409pHYoN71DCkQgHX/+Gl1
+         SBks7IioLmCWcklUuXVd68/tMa+g6ISl6aG/khyJdg5Bd3gkziP2leywa94HZw9ozV
+         AWfBHwmd3scuwftYLeRhj8HBUcSB2zXih0Pa66ieHVAJucr0rSacmH0eEzTSwe8DlT
+         CUQiFzAqClibOmxUUQVptOAoNISZaQ6XcCE2/+G4d6jWOBqtAXD5aLzn5vRcNEPIJb
+         3iPpP9slIt8AWxapoSwjXXXqxyikeUY4rYVuVqXsqXkHMLD59acMqD3D3Yqhfc6kCz
+         W57T/zTwQILRg==
+Message-ID: <64c753c98488a64b470009e45769ceab29fd8130.camel@linuxfromscratch.org>
+Subject: Re: [PATCH v6 3/5] fbdev: Disable sysfb device registration when
+ removing conflicting FBs
+From:   Xi Ruoyao <xry111@linuxfromscratch.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Zack Rusin <zackr@vmware.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
+        "kraxel@redhat.com" <kraxel@redhat.com>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
+        "lersek@redhat.com" <lersek@redhat.com>
+Date:   Mon, 04 Jul 2022 17:36:31 +0800
+In-Reply-To: <aa144e20-a555-5c30-4796-09713c12ab0e@redhat.com>
+References: <20220607182338.344270-1-javierm@redhat.com>
+         <20220607182338.344270-4-javierm@redhat.com>
+         <de83ae8cb6de7ee7c88aa2121513e91bb0a74608.camel@vmware.com>
+         <38473dcd-0666-67b9-28bd-afa2d0ce434a@redhat.com>
+         <603e3613b9b8ff7815b63f294510d417b5b12937.camel@vmware.com>
+         <a633d605-4cb3-2e04-1818-85892cf6f7b0@redhat.com>
+         <97565fb5-cf7f-5991-6fb3-db96fe239ee8@redhat.com>
+         <711c88299ef41afd8556132b7c1dcb75ee7e6117.camel@vmware.com>
+         <aa144e20-a555-5c30-4796-09713c12ab0e@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-FEAS-Auth-User: smtprelay@linuxfromscratch.org
+X-FEAS-DKIM: Valid
+Authentication-Results: smtp2.tsag.net;
+        dkim=pass header.i=@linuxfromscratch.org;
+        dmarc=pass header.from=linuxfromscratch.org
+X-FE-Policy-ID: 0:14:3:linuxfromscratch.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
+On Fri, 2022-06-17 at 08:46 +0200, Javier Martinez Canillas wrote:
+> Hello Zack,
+>=20
+> On 6/17/22 03:35, Zack Rusin wrote:
+> > On Fri, 2022-06-17 at 01:21 +0200, Javier Martinez Canillas wrote:
+> > > On 6/17/22 00:18, Javier Martinez Canillas wrote:
+> > > > On 6/16/22 23:03, Zack Rusin wrote:
+> > >=20
+> > > [snip]
+> > >=20
+> > > >=20
+> > > > I'll look at this tomorrow but in the meantime, could you please lo=
+ok if the following
+> > > > commits on top of drm-misc-next help ?
+> > > >=20
+> > > > d258d00fb9c7 fbdev: efifb: Cleanup fb_info in .fb_destroy rather th=
+an .remove
+> > > > 1b5853dfab7f fbdev: efifb: Fix a use-after-free due early fb_info c=
+leanup
+> > > >=20
+> > >=20
+> > > Scratch that. I see in your config now that you are not using efifb b=
+ut instead
+> > > simpledrm: CONFIG_DRM_SIMPLEDRM=3Dy, CONFIG_SYSFB_SIMPLEFB=3Dy and CO=
+NFIG_DRM_VMWGFX.
+> > >=20
+> > > Since you mentioned efifb I misunderstood that you are using it. Anyw=
+ays, as
+> > > said I'll investigate this tomorrow.
+> >=20
+> > Sounds good. Let me know if you'd like me to try it without SIMPLEFB.
+> >=20
+>=20
+> Yes, please do. Either with CONFIG_SYSFB_SIMPLEFB disabled and CONFIG_FB_=
+EFI
+> enabled (so that "efi-framebuffer" is registered and efifb probed) or wit=
+h
+> CONFIG_SYSFB_SIMPLEFB but CONFIG_FB_SIMPLE enabled (so "simple-framebuffe=
+r
+> is used too but with simplefb instead of simpledrm).
+> =C2=A0
+> I'm not able to reproduce, it would be useful to have another data point.
 
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> since the concerning GPIO expander is connected via SPI or I2C).
-> 
-> Fix this by setting the termination line outside of the uart_port spinlock
-> in the serial core and using gpiod_set_value_cansleep() which instead of
-> gpiod_set_value() allows to sleep.
-> 
-> Beside fixing the termination GPIO line setting for the 8250 driver this
-> change also makes setting the termination GPIO generic for all UART
-> drivers.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c |  3 ---
->  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
->  2 files changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index ed2a606f2da7..72252d956f17 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -676,9 +676,6 @@ int serial8250_em485_config(struct uart_port *port, struct ktermios *termios,
->  		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
->  	}
->  
-> -	gpiod_set_value(port->rs485_term_gpio,
-> -			rs485->flags & SER_RS485_TERMINATE_BUS);
-> -
+Also happening for me with CONFIG_SYSFB_SIMPLEFB, on a Intel Core i7-
+1065G7 (with iGPU).
 
-I sent a series to make .rs485_supported per uart_port and properly set 
-SER_RS485_TERMINATE_BUS according to DT config. With that series added 
-first, SER_RS485_TERMINATE_BUS should also be removed from 
-serial8250_em485_supported so that serial core can properly manage 
-it all.
-
--- 
- i.
+Reverting this commit on top of 5.19-rc5 "fixes" the issue.
