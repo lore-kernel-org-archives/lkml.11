@@ -2,37 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2B9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F00FCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234437AbiGDNX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
+        id S233357AbiGDNXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234159AbiGDNWm (ORCPT
+        with ESMTP id S233714AbiGDNWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:22:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0D962EE
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:18 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lc5z71SYCzkX8p;
-        Mon,  4 Jul 2022 21:20:51 +0800 (CST)
+        Mon, 4 Jul 2022 09:22:40 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B423BDEE
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:11 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lc5xt4ykQz1L8n0;
+        Mon,  4 Jul 2022 21:19:46 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 21:22:15 +0800
+ 2022 21:22:09 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
         <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 11/16] mm/huge_memory: try to free subpage in swapcache when possible
-Date:   Mon, 4 Jul 2022 21:21:56 +0800
-Message-ID: <20220704132201.14611-12-linmiaohe@huawei.com>
+Subject: [PATCH v3 00/16] A few cleanup patches for huge_memory
+Date:   Mon, 4 Jul 2022 21:21:45 +0800
+Message-ID: <20220704132201.14611-1-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220704132201.14611-1-linmiaohe@huawei.com>
-References: <20220704132201.14611-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -44,28 +42,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subpages in swapcache won't be freed even if it is the last user of the
-page until next time reclaim. It shouldn't hurt indeed, but we could try
-to free these pages to save more memory for system.
-
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Hi everyone,
+This series contains a few cleaup patches to remove duplicated codes,
+add/use helper functions, fix some obsolete comments and so on. More
+details can be found in the respective changelogs. Thanks!
 ---
- mm/huge_memory.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v3
+  Collect Reviewed-by tag per Muchun.
+  Add missing update to caller of touch_p[m|u]d in patch 4/16 and 5/16.
+v2
+  This patch set is rebased on linux-next-20220628.
+  Collect Reviewed-by tag and Acked-by per Muchun and Zach. Thanks.
+  fix typo in 3/16
+  replace last parameter of touch_p[u|m]d to bool
+  split "mm/huge_memory: minor cleanup for split_huge_pages_pid"
+  drop "mm/huge_memory: add helper __get_deferred_split_queue"
+  enhance comment of page_deferred_list
+v1
+  This patch set is based on linux-next-20220621.
+---
+Miaohe Lin (16):
+  mm/huge_memory: use flush_pmd_tlb_range in move_huge_pmd
+  mm/huge_memory: access vm_page_prot with READ_ONCE in
+    remove_migration_pmd
+  mm/huge_memory: fix comment of __pud_trans_huge_lock
+  mm/huge_memory: use helper touch_pud in huge_pud_set_accessed
+  mm/huge_memory: use helper touch_pmd in huge_pmd_set_accessed
+  mm/huge_memory: rename mmun_start to haddr in remove_migration_pmd
+  mm/huge_memory: use helper function vma_lookup in split_huge_pages_pid
+  mm/huge_memory: use helper macro __ATTR_RW
+  mm/huge_memory: fix comment in zap_huge_pud
+  mm/huge_memory: check pmd_present first in is_huge_zero_pmd
+  mm/huge_memory: try to free subpage in swapcache when possible
+  mm/huge_memory: minor cleanup for split_huge_pages_all
+  mm/huge_memory: fix comment of page_deferred_list
+  mm/huge_memory: correct comment of prep_transhuge_page
+  mm/huge_memory: comment the subtly logic in __split_huge_pmd
+  mm/huge_memory: use helper macro IS_ERR_OR_NULL in
+    split_huge_pages_pid
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 8a40dc8edb7a..6d95751ebfc9 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2643,7 +2643,7 @@ static void __split_huge_page(struct page *page, struct list_head *list,
- 		 * requires taking the lru_lock so we do the put_page
- 		 * of the tail pages after the split is complete.
- 		 */
--		put_page(subpage);
-+		free_page_and_swap_cache(subpage);
- 	}
- }
- 
+ include/linux/huge_mm.h |  6 +--
+ mm/huge_memory.c        | 96 +++++++++++++++++------------------------
+ 2 files changed, 43 insertions(+), 59 deletions(-)
+
 -- 
 2.23.0
 
