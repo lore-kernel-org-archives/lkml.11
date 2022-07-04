@@ -2,96 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEBCCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32981C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233877AbiGDJyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
+        id S233906AbiGDJyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbiGDJyI (ORCPT
+        with ESMTP id S233909AbiGDJyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:54:08 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411ABD12F;
-        Mon,  4 Jul 2022 02:54:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656928447; x=1688464447;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=lSh2EbbxhUgUat8Nrxc/d9fNoMjhwQg9R6qR3jGL+Ug=;
-  b=etdLVxMjDFb/UKPjtQGcTIFJFAjSwOPkNzXL8uLd++krQc0HvSKUpAVL
-   WaSf//U9/U223LyZcJ0gMTpv6au4MAdy2wgxb0SQbya7bKqrNR9l82DKO
-   Ae5ZyD02T1Bq6IOXT7C5ZLND3zBgs6bxnu/WOkHad1Gh6ltRnx59I8xHt
-   eSFb1XwNwW0YGJtqHRof36MocKARPSJcoLsIbzg1mCIQWh4PpUSW9NPTW
-   rjS3+So51Dv+0UUT0OKKboYPO0CCSY7kajBmoJQJfQE0WKD+DLleUHSqY
-   dgYc0c9hh+h/NjVr1+MBPDIzZKHy3EeX+pNHj7fxnyf/fsKxNjDB1LXw4
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="263511023"
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="263511023"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:54:07 -0700
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="649512912"
-Received: from bclindho-mobl.ger.corp.intel.com ([10.252.49.27])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:54:01 -0700
-Date:   Mon, 4 Jul 2022 12:53:58 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v2 7/9] serial: ar933x: Fix check for RS485 support
-In-Reply-To: <e000058a-0f19-a598-9fba-b745a2f2bca5@gmx.de>
-Message-ID: <f7c9acb6-ce8c-bd3-df12-f240115c6dbb@linux.intel.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-8-LinoSanfilippo@gmx.de> <CAHp75VfTYv51ZcBJHR3Ms9HQWjPccigrjUxHUq4NixKXdvm5Ew@mail.gmail.com> <e000058a-0f19-a598-9fba-b745a2f2bca5@gmx.de>
+        Mon, 4 Jul 2022 05:54:17 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB966DEC4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:54:14 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id f18-20020a056e020c7200b002d949d97ed9so3942646ilj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 02:54:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=sVvRetvU66viZg03zt42J481swUWQOVgkFgrLPfYY/8=;
+        b=5l7NfdVElle49DmkWlAIZ30THv/zEiBPD7v+ZyFkEZMsOXLgMolnH0nCzBbH0wU0Wu
+         3sFX00z/pMcRPJFqESN6jC/cXAVdOr4jU9Ev3drwQZq3ktSHSce5FA2ELg05w4gPKF4O
+         Svi2cogF0WE/ud730N4xJXKKNT+HN6S4r6aXC3f34a8tAvdnLiK3P4Yw+SA2akf2MpEc
+         LQ+7iuN+PVeE+PlBsd0ZRLCynl7Fl9yFo/7t0qYAqFOZ3ryPeGXANpXj8D+p+wFXdyRR
+         pO89sLCGCgdp2s3ERa+sv+bY4E8EB1jsJXBiTgC25kmmmtWgabtwefu+F5cOjwxGGhmn
+         /2JA==
+X-Gm-Message-State: AJIora/+Zh/6Mnd4fWO5Eej0SYFrIVY6kLsi/9b56XPYTGj8KfF9+1Fi
+        24tD1+twbf17In47D5V+CrpBaxeY9iCmEj1FfSn1KuKceJ8P
+X-Google-Smtp-Source: AGRyM1uVAx2t8fSOR2KLN2tAOPiUaRp3izLzYWRdEEBPt99xhRwEmPj9yiT6KWURtcER3vu/Lsr21nC1ku8Hk8QVAofPc1lwnppx
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-Received: by 2002:a05:6602:3689:b0:675:49c2:504e with SMTP id
+ bf9-20020a056602368900b0067549c2504emr15029553iob.201.1656928454096; Mon, 04
+ Jul 2022 02:54:14 -0700 (PDT)
+Date:   Mon, 04 Jul 2022 02:54:14 -0700
+In-Reply-To: <000000000000b960c00594598949@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ecc7e905e2f7b764@google.com>
+Subject: Re: KASAN: use-after-free Read in tc_chain_fill_node
+From:   syzbot <syzbot+5f229e48cccc804062c0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org, jiri@mellanox.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        stable-commits@vger.kernel.org, stable@vger.kernel.org,
+        syzkaller-lts-bugs@googlegroups.com, vladbu@mellanox.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Jul 2022, Lino Sanfilippo wrote:
-> On 03.07.22 20:39, Andy Shevchenko wrote:
-> > On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
-> >>
-> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>
-> >> Without an RTS GPIO RS485 is not possible so disable the support
-> >> regardless of whether RS485 is enabled at boottime or not. Also remove the
-> >
-> > boot time
-> >
-> >> now superfluous check for the RTS GPIO in ar933x_config_rs485().
-> >>
-> >> Fixes: e849145e1fdd ("serial: ar933x: Fill in rs485_supported")
-> >
-> > Is it an independent fix? If so, it should be the first patch in the
-> > series, otherwise if it's dependent on something from previous patches
-> > you need to mark all of them as a fix.
-> >
-> 
-> The fix is independent, patch 8 depends on the fix however. I was not
-> aware of this fixes-first rule for series with patches that are independent
-> from each other. I will change the order accordingly in the next version of the series.
-
-While at it, you could separate just the fix to own patch and the 
-->rs485_config() cleanup to own patch (or move it all to patch 8).
-
-Not that this fix is expected to go anywhere else besides tty-next.
-
--- 
- i.
-
+This bug is marked as fixed by commit:
+net: core: netlink: add helper refcount dec and lock function
+net: sched: add helper function to take reference to Qdisc
+net: sched: extend Qdisc with rcu
+net: sched: rename qdisc_destroy() to qdisc_put()
+net: sched: use Qdisc rcu API instead of relying on rtnl lock
+But I can't find it in any tested tree for more than 90 days.
+Is it a correct commit? Please update it by replying:
+#syz fix: exact-commit-title
+Until then the bug is still considered open and
+new crashes with the same signature are ignored.
