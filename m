@@ -2,830 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AC7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233170AbiGDAWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 20:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        id S232678AbiGDA0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 20:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232937AbiGDAWU (ORCPT
+        with ESMTP id S229673AbiGDA0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 20:22:20 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2685163F2;
-        Sun,  3 Jul 2022 17:21:59 -0700 (PDT)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 04 Jul 2022 09:21:39 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 04AAD2011974;
-        Mon,  4 Jul 2022 09:21:39 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Mon, 4 Jul 2022 09:21:39 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 903321DDD;
-        Mon,  4 Jul 2022 09:21:38 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 5/9] arm64: dts: uniphier: Use GIC interrupt definitions
-Date:   Mon,  4 Jul 2022 09:21:10 +0900
-Message-Id: <1656894074-15751-6-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1656894074-15751-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1656894074-15751-1-git-send-email-hayashi.kunihiko@socionext.com>
+        Sun, 3 Jul 2022 20:26:17 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9D66257;
+        Sun,  3 Jul 2022 17:26:16 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e28so11211056wra.0;
+        Sun, 03 Jul 2022 17:26:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rm/wsKHLdoBGUXxkaCIwfReie8Gr/C9tqwvrTejUwhM=;
+        b=Mm33WAeOV+jFHDO4K0kKOU2nWhdu2YCzzEbijtALUA8mx+WSfAvLQL4LiA4Sk023lQ
+         j9fjVqWUFXOuGYADo/WCrCzps5IGxU97baRI01f6cDMBjj0+1inkxYiK3Qpgz85ecUze
+         fLspiRKeb9dQxnGd+mx4mNYt7wHCjY61KjBT4tUaOa33I7brX04jktkqWVUdPJa/VcJP
+         /0Ml5NIIsmllx1evMTp+mV9WPknk6y1TZklmh2kiZuVw/KXrZBwSyrLYk36l7flUvsKu
+         hZF2Jrn1LDVvBYUhRbjKNRDEToix0QpbIcbnUEllXRCUqj8ZLw5mTWfSYb3/kH7id8YI
+         cC7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rm/wsKHLdoBGUXxkaCIwfReie8Gr/C9tqwvrTejUwhM=;
+        b=l6GYvtlyIcxg/x8etpY7XUzNLmbQqmlEscUNu0LvFtSu/EsmBgGIXQziblYLkwGoqN
+         47vlWf8RSpGUW+xAnakEsuTVXyMKW9ovJAwM3qJMAAs1UlKquzPaCGEkuiBLrTrsloZ3
+         Iu2E0hUk44ks53GzsFyBDRacTwVb4TT+dGam2DFz4HRfNIpnzrmnxdj1ChIcvCQRaZTb
+         VWiTkcH1iA1q0UTbNgwAY6LlMOUSpXmmntvWhuirNBGrz72CZl4eblyPIs7XgbakEA/r
+         Q/obeRgIEldITVrjUwS8Jvumv4+Ox9B5IL3Fz5h7oLsFfgpl3MPRzOBjZ5yDdyQZZ/5Y
+         98sQ==
+X-Gm-Message-State: AJIora9+3ACod1C8EyWqsMBlAUOV+RWbrN64KIu167tNcbanDo1iOBEp
+        SstTWyAmp8M/bfCacIlnJBjjzEi2kLM=
+X-Google-Smtp-Source: AGRyM1ti+zi7j6Hihaeakrpdin/l4yrfgyvV8M5M5Uc4rGKbhfBzYru2AuZITSDXyRNpwnFo0pmjnA==
+X-Received: by 2002:a5d:69ca:0:b0:21d:640c:79f6 with SMTP id s10-20020a5d69ca000000b0021d640c79f6mr6672645wrw.309.1656894374180;
+        Sun, 03 Jul 2022 17:26:14 -0700 (PDT)
+Received: from xps-work.lan (214.red-83-37-4.dynamicip.rima-tde.net. [83.37.4.214])
+        by smtp.gmail.com with ESMTPSA id ay14-20020a5d6f0e000000b0021b91ec8f6esm28722148wrb.67.2022.07.03.17.26.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Jul 2022 17:26:13 -0700 (PDT)
+From:   Angel Iglesias <ang.iglesiasg@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/5] Add support for pressure sensor Bosch BMP380
+Date:   Mon,  4 Jul 2022 02:26:00 +0200
+Message-Id: <20220704002602.207024-1-ang.iglesiasg@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use human-readable definitions for GIC interrupt type and flag, instead of
-hard-coding the numbers. No functional change.
+This patchset adds BMP380 variant to the already existing drivers for
+the Bosch BMP180/280 pressure sensors.
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
----
- .../boot/dts/socionext/uniphier-ld11-ref.dts  |  4 +-
- .../boot/dts/socionext/uniphier-ld11.dtsi     | 51 ++++++++--------
- .../dts/socionext/uniphier-ld20-akebi96.dts   |  2 +-
- .../boot/dts/socionext/uniphier-ld20-ref.dts  |  4 +-
- .../boot/dts/socionext/uniphier-ld20.dtsi     | 60 ++++++++++---------
- .../boot/dts/socionext/uniphier-pxs3-ref.dts  |  4 +-
- .../boot/dts/socionext/uniphier-pxs3.dtsi     | 56 ++++++++---------
- 7 files changed, 93 insertions(+), 88 deletions(-)
+Patch 1 adds references and sensor id to the devicetree bindings docs.
+Patch 2 adds references to the new sensors on the Kconfig file.
+Patch 3 is a minor refactoring simplifying driver initialization logic
+to facilitate the integration of the new sensor variant extending the
+information stored in the "chip_info" struct.
 
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts b/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts
-index 41b47f5d2ed7..414aeb99e68f 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld11-ref.dts
-@@ -39,11 +39,11 @@ memory@80000000 {
- };
- 
- &ethsc {
--	interrupts = <0 8>;
-+	interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
- };
- 
- &serialsc {
--	interrupts = <0 8>;
-+	interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
- };
- 
- &serial0 {
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld11.dtsi b/arch/arm64/boot/dts/socionext/uniphier-ld11.dtsi
-index 6fa4de24526a..6a7d7973e9dd 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld11.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld11.dtsi
-@@ -7,6 +7,7 @@
- 
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/gpio/uniphier-gpio.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
- 
- / {
- 	compatible = "socionext,uniphier-ld11";
-@@ -102,10 +103,10 @@ emmc_pwrseq: emmc-pwrseq {
- 
- 	timer {
- 		compatible = "arm,armv8-timer";
--		interrupts = <1 13 4>,
--			     <1 14 4>,
--			     <1 11 4>,
--			     <1 10 4>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
- 	reserved-memory {
-@@ -131,7 +132,7 @@ spi0: spi@54006000 {
- 			reg = <0x54006000 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 39 4>;
-+			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi0>;
- 			clocks = <&peri_clk 11>;
-@@ -144,7 +145,7 @@ spi1: spi@54006100 {
- 			reg = <0x54006100 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 216 4>;
-+			interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi1>;
- 			clocks = <&peri_clk 12>;
-@@ -155,7 +156,7 @@ serial0: serial@54006800 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006800 0x40>;
--			interrupts = <0 33 4>;
-+			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart0>;
- 			clocks = <&peri_clk 0>;
-@@ -166,7 +167,7 @@ serial1: serial@54006900 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006900 0x40>;
--			interrupts = <0 35 4>;
-+			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart1>;
- 			clocks = <&peri_clk 1>;
-@@ -177,7 +178,7 @@ serial2: serial@54006a00 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006a00 0x40>;
--			interrupts = <0 37 4>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart2>;
- 			clocks = <&peri_clk 2>;
-@@ -188,7 +189,7 @@ serial3: serial@54006b00 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006b00 0x40>;
--			interrupts = <0 177 4>;
-+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart3>;
- 			clocks = <&peri_clk 3>;
-@@ -223,7 +224,7 @@ gpio: gpio@55000000 {
- 		audio@56000000 {
- 			compatible = "socionext,uniphier-ld11-aio";
- 			reg = <0x56000000 0x80000>;
--			interrupts = <0 144 4>;
-+			interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_aout1>,
- 				    <&pinctrl_aoutiec1>;
-@@ -323,7 +324,7 @@ i2c0: i2c@58780000 {
- 			reg = <0x58780000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 41 4>;
-+			interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c0>;
- 			clocks = <&peri_clk 4>;
-@@ -337,7 +338,7 @@ i2c1: i2c@58781000 {
- 			reg = <0x58781000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 42 4>;
-+			interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c1>;
- 			clocks = <&peri_clk 5>;
-@@ -350,7 +351,7 @@ i2c2: i2c@58782000 {
- 			reg = <0x58782000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 43 4>;
-+			interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&peri_clk 6>;
- 			resets = <&peri_rst 6>;
- 			clock-frequency = <400000>;
-@@ -362,7 +363,7 @@ i2c3: i2c@58783000 {
- 			reg = <0x58783000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 44 4>;
-+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c3>;
- 			clocks = <&peri_clk 7>;
-@@ -376,7 +377,7 @@ i2c4: i2c@58784000 {
- 			reg = <0x58784000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 45 4>;
-+			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c4>;
- 			clocks = <&peri_clk 8>;
-@@ -389,7 +390,7 @@ i2c5: i2c@58785000 {
- 			reg = <0x58785000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 25 4>;
-+			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&peri_clk 9>;
- 			resets = <&peri_rst 9>;
- 			clock-frequency = <400000>;
-@@ -440,7 +441,7 @@ peri_rst: reset {
- 		emmc: mmc@5a000000 {
- 			compatible = "socionext,uniphier-sd4hc", "cdns,sd4hc";
- 			reg = <0x5a000000 0x400>;
--			interrupts = <0 78 4>;
-+			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_emmc>;
- 			clocks = <&sys_clk 4>;
-@@ -460,7 +461,7 @@ usb0: usb@5a800100 {
- 			compatible = "socionext,uniphier-ehci", "generic-ehci";
- 			status = "disabled";
- 			reg = <0x5a800100 0x100>;
--			interrupts = <0 243 4>;
-+			interrupts = <GIC_SPI 243 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>;
- 			clocks = <&sys_clk 8>, <&mio_clk 7>, <&mio_clk 8>,
-@@ -476,7 +477,7 @@ usb1: usb@5a810100 {
- 			compatible = "socionext,uniphier-ehci", "generic-ehci";
- 			status = "disabled";
- 			reg = <0x5a810100 0x100>;
--			interrupts = <0 244 4>;
-+			interrupts = <GIC_SPI 244 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb1>;
- 			clocks = <&sys_clk 8>, <&mio_clk 7>, <&mio_clk 9>,
-@@ -492,7 +493,7 @@ usb2: usb@5a820100 {
- 			compatible = "socionext,uniphier-ehci", "generic-ehci";
- 			status = "disabled";
- 			reg = <0x5a820100 0x100>;
--			interrupts = <0 245 4>;
-+			interrupts = <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb2>;
- 			clocks = <&sys_clk 8>, <&mio_clk 7>, <&mio_clk 10>,
-@@ -573,7 +574,7 @@ efuse@200 {
- 		xdmac: dma-controller@5fc10000 {
- 			compatible = "socionext,uniphier-xdmac";
- 			reg = <0x5fc10000 0x5300>;
--			interrupts = <0 188 4>;
-+			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
- 			dma-channels = <16>;
- 			#dma-cells = <2>;
- 		};
-@@ -591,7 +592,7 @@ gic: interrupt-controller@5fe00000 {
- 			      <0x5fe40000 0x80000>;	/* GICR */
- 			interrupt-controller;
- 			#interrupt-cells = <3>;
--			interrupts = <1 9 4>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
- 		sysctrl@61840000 {
-@@ -618,7 +619,7 @@ eth: ethernet@65000000 {
- 			compatible = "socionext,uniphier-ld11-ave4";
- 			status = "disabled";
- 			reg = <0x65000000 0x8500>;
--			interrupts = <0 66 4>;
-+			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
- 			clock-names = "ether";
- 			clocks = <&sys_clk 6>;
- 			reset-names = "ether";
-@@ -640,7 +641,7 @@ nand: nand-controller@68000000 {
- 			reg = <0x68000000 0x20>, <0x68100000 0x1000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 65 4>;
-+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_nand>;
- 			clock-names = "nand", "nand_x", "ecc";
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts b/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts
-index b55b70ded015..fba454adae7d 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dts
-@@ -110,7 +110,7 @@ usb-over-spi@0 {
- 		spi-max-frequency = <12500000>;
- 		interrupt-parent = <&gpio>;
- 		interrupt-names = "udc";
--		interrupts = <0 2>;
-+		interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts b/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts
-index 8c111588c9a1..a5f2083f8b75 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dts
-@@ -39,11 +39,11 @@ memory@80000000 {
- };
- 
- &ethsc {
--	interrupts = <0 8>;
-+	interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
- };
- 
- &serialsc {
--	interrupts = <0 8>;
-+	interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
- };
- 
- &serial0 {
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-ld20.dtsi b/arch/arm64/boot/dts/socionext/uniphier-ld20.dtsi
-index debab9f0e3e1..62e5892b4f8e 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-ld20.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-ld20.dtsi
-@@ -7,6 +7,7 @@
- 
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/gpio/uniphier-gpio.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/thermal/thermal.h>
- 
- / {
-@@ -176,10 +177,10 @@ emmc_pwrseq: emmc-pwrseq {
- 
- 	timer {
- 		compatible = "arm,armv8-timer";
--		interrupts = <1 13 4>,
--			     <1 14 4>,
--			     <1 11 4>,
--			     <1 10 4>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
- 	thermal-zones {
-@@ -236,7 +237,7 @@ spi0: spi@54006000 {
- 			reg = <0x54006000 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 39 4>;
-+			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi0>;
- 			clocks = <&peri_clk 11>;
-@@ -249,7 +250,7 @@ spi1: spi@54006100 {
- 			reg = <0x54006100 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 216 4>;
-+			interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi1>;
- 			clocks = <&peri_clk 12>;
-@@ -262,7 +263,7 @@ spi2: spi@54006200 {
- 			reg = <0x54006200 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 229 4>;
-+			interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi2>;
- 			clocks = <&peri_clk 13>;
-@@ -275,7 +276,7 @@ spi3: spi@54006300 {
- 			reg = <0x54006300 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 230 4>;
-+			interrupts = <GIC_SPI 230 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi3>;
- 			clocks = <&peri_clk 14>;
-@@ -286,7 +287,7 @@ serial0: serial@54006800 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006800 0x40>;
--			interrupts = <0 33 4>;
-+			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart0>;
- 			clocks = <&peri_clk 0>;
-@@ -297,7 +298,7 @@ serial1: serial@54006900 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006900 0x40>;
--			interrupts = <0 35 4>;
-+			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart1>;
- 			clocks = <&peri_clk 1>;
-@@ -308,7 +309,7 @@ serial2: serial@54006a00 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006a00 0x40>;
--			interrupts = <0 37 4>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart2>;
- 			clocks = <&peri_clk 2>;
-@@ -319,7 +320,7 @@ serial3: serial@54006b00 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006b00 0x40>;
--			interrupts = <0 177 4>;
-+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart3>;
- 			clocks = <&peri_clk 3>;
-@@ -348,7 +349,7 @@ gpio: gpio@55000000 {
- 		audio@56000000 {
- 			compatible = "socionext,uniphier-ld20-aio";
- 			reg = <0x56000000 0x80000>;
--			interrupts = <0 144 4>;
-+			interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_aout1>,
- 				    <&pinctrl_aoutiec1>;
-@@ -448,7 +449,7 @@ i2c0: i2c@58780000 {
- 			reg = <0x58780000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 41 4>;
-+			interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c0>;
- 			clocks = <&peri_clk 4>;
-@@ -462,7 +463,7 @@ i2c1: i2c@58781000 {
- 			reg = <0x58781000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 42 4>;
-+			interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c1>;
- 			clocks = <&peri_clk 5>;
-@@ -475,7 +476,7 @@ i2c2: i2c@58782000 {
- 			reg = <0x58782000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 43 4>;
-+			interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&peri_clk 6>;
- 			resets = <&peri_rst 6>;
- 			clock-frequency = <400000>;
-@@ -487,7 +488,7 @@ i2c3: i2c@58783000 {
- 			reg = <0x58783000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 44 4>;
-+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c3>;
- 			clocks = <&peri_clk 7>;
-@@ -501,7 +502,7 @@ i2c4: i2c@58784000 {
- 			reg = <0x58784000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 45 4>;
-+			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c4>;
- 			clocks = <&peri_clk 8>;
-@@ -514,7 +515,7 @@ i2c5: i2c@58785000 {
- 			reg = <0x58785000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 25 4>;
-+			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&peri_clk 9>;
- 			resets = <&peri_rst 9>;
- 			clock-frequency = <400000>;
-@@ -570,7 +571,7 @@ peri_rst: reset {
- 		emmc: mmc@5a000000 {
- 			compatible = "socionext,uniphier-sd4hc", "cdns,sd4hc";
- 			reg = <0x5a000000 0x400>;
--			interrupts = <0 78 4>;
-+			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_emmc>;
- 			clocks = <&sys_clk 4>;
-@@ -590,7 +591,7 @@ sd: mmc@5a400000 {
- 			compatible = "socionext,uniphier-sd-v3.1.1";
- 			status = "disabled";
- 			reg = <0x5a400000 0x800>;
--			interrupts = <0 76 4>;
-+			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_sd>;
- 			clocks = <&sd_clk 0>;
-@@ -675,7 +676,7 @@ usb_hs_i2: trim@5a,0 {
- 		xdmac: dma-controller@5fc10000 {
- 			compatible = "socionext,uniphier-xdmac";
- 			reg = <0x5fc10000 0x5300>;
--			interrupts = <0 188 4>;
-+			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
- 			dma-channels = <16>;
- 			#dma-cells = <2>;
- 		};
-@@ -693,7 +694,7 @@ gic: interrupt-controller@5fe00000 {
- 			      <0x5fe80000 0x80000>;	/* GICR */
- 			interrupt-controller;
- 			#interrupt-cells = <3>;
--			interrupts = <1 9 4>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
- 		sysctrl@61840000 {
-@@ -717,7 +718,7 @@ watchdog {
- 
- 			pvtctl: thermal-sensor {
- 				compatible = "socionext,uniphier-ld20-thermal";
--				interrupts = <0 3 4>;
-+				interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
- 				#thermal-sensor-cells = <0>;
- 				socionext,tmod-calibration = <0x0f22 0x68ee>;
- 			};
-@@ -727,7 +728,7 @@ eth: ethernet@65000000 {
- 			compatible = "socionext,uniphier-ld20-ave4";
- 			status = "disabled";
- 			reg = <0x65000000 0x8500>;
--			interrupts = <0 66 4>;
-+			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_ether_rgmii>;
- 			clock-names = "ether";
-@@ -749,7 +750,7 @@ usb: usb@65a00000 {
- 			status = "disabled";
- 			reg = <0x65a00000 0xcd00>;
- 			interrupt-names = "host";
--			interrupts = <0 134 4>;
-+			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb1>,
- 				    <&pinctrl_usb2>, <&pinctrl_usb3>;
-@@ -915,7 +916,8 @@ pcie: pcie@66000000 {
- 				<0x82000000 0 0x20000000 0x20000000 0 0x0ffe0000>;
- 			#interrupt-cells = <1>;
- 			interrupt-names = "dma", "msi";
--			interrupts = <0 224 4>, <0 225 4>;
-+			interrupts = <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-map-mask = <0 0 0 7>;
- 			interrupt-map = <0 0 0 1 &pcie_intc 0>,	/* INTA */
- 					<0 0 0 2 &pcie_intc 1>,	/* INTB */
-@@ -928,7 +930,7 @@ pcie_intc: legacy-interrupt-controller {
- 				interrupt-controller;
- 				#interrupt-cells = <1>;
- 				interrupt-parent = <&gic>;
--				interrupts = <0 226 4>;
-+				interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
- 			};
- 		};
- 
-@@ -950,7 +952,7 @@ nand: nand-controller@68000000 {
- 			reg = <0x68000000 0x20>, <0x68100000 0x1000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 65 4>;
-+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_nand>;
- 			clock-names = "nand", "nand_x", "ecc";
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts b/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
-index feb070f934e9..506c7b9ff50d 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
-+++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
-@@ -40,11 +40,11 @@ memory@80000000 {
- };
- 
- &ethsc {
--	interrupts = <4 8>;
-+	interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
- };
- 
- &serialsc {
--	interrupts = <4 8>;
-+	interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
- };
- 
- &spi0 {
-diff --git a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-index e96e7ed98717..7304dee2e504 100644
---- a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-@@ -7,6 +7,7 @@
- 
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/gpio/uniphier-gpio.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/thermal/thermal.h>
- 
- / {
-@@ -135,10 +136,10 @@ emmc_pwrseq: emmc-pwrseq {
- 
- 	timer {
- 		compatible = "arm,armv8-timer";
--		interrupts = <1 13 4>,
--			     <1 14 4>,
--			     <1 11 4>,
--			     <1 10 4>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
- 	thermal-zones {
-@@ -195,7 +196,7 @@ spi0: spi@54006000 {
- 			reg = <0x54006000 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 39 4>;
-+			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi0>;
- 			clocks = <&peri_clk 11>;
-@@ -208,7 +209,7 @@ spi1: spi@54006100 {
- 			reg = <0x54006100 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 216 4>;
-+			interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_spi1>;
- 			clocks = <&peri_clk 12>;
-@@ -219,7 +220,7 @@ serial0: serial@54006800 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006800 0x40>;
--			interrupts = <0 33 4>;
-+			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart0>;
- 			clocks = <&peri_clk 0>;
-@@ -230,7 +231,7 @@ serial1: serial@54006900 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006900 0x40>;
--			interrupts = <0 35 4>;
-+			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart1>;
- 			clocks = <&peri_clk 1>;
-@@ -241,7 +242,7 @@ serial2: serial@54006a00 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006a00 0x40>;
--			interrupts = <0 37 4>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart2>;
- 			clocks = <&peri_clk 2>;
-@@ -252,7 +253,7 @@ serial3: serial@54006b00 {
- 			compatible = "socionext,uniphier-uart";
- 			status = "disabled";
- 			reg = <0x54006b00 0x40>;
--			interrupts = <0 177 4>;
-+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_uart3>;
- 			clocks = <&peri_clk 3>;
-@@ -284,7 +285,7 @@ i2c0: i2c@58780000 {
- 			reg = <0x58780000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 41 4>;
-+			interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c0>;
- 			clocks = <&peri_clk 4>;
-@@ -298,7 +299,7 @@ i2c1: i2c@58781000 {
- 			reg = <0x58781000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 42 4>;
-+			interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c1>;
- 			clocks = <&peri_clk 5>;
-@@ -312,7 +313,7 @@ i2c2: i2c@58782000 {
- 			reg = <0x58782000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 43 4>;
-+			interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c2>;
- 			clocks = <&peri_clk 6>;
-@@ -326,7 +327,7 @@ i2c3: i2c@58783000 {
- 			reg = <0x58783000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 44 4>;
-+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_i2c3>;
- 			clocks = <&peri_clk 7>;
-@@ -340,7 +341,7 @@ i2c6: i2c@58786000 {
- 			reg = <0x58786000 0x80>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 26 4>;
-+			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&peri_clk 10>;
- 			resets = <&peri_rst 10>;
- 			clock-frequency = <400000>;
-@@ -396,7 +397,7 @@ peri_rst: reset {
- 		emmc: mmc@5a000000 {
- 			compatible = "socionext,uniphier-sd4hc", "cdns,sd4hc";
- 			reg = <0x5a000000 0x400>;
--			interrupts = <0 78 4>;
-+			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_emmc>;
- 			clocks = <&sys_clk 4>;
-@@ -416,7 +417,7 @@ sd: mmc@5a400000 {
- 			compatible = "socionext,uniphier-sd-v3.1.1";
- 			status = "disabled";
- 			reg = <0x5a400000 0x800>;
--			interrupts = <0 76 4>;
-+			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default", "uhs";
- 			pinctrl-0 = <&pinctrl_sd>;
- 			pinctrl-1 = <&pinctrl_sd_uhs>;
-@@ -505,7 +506,7 @@ usb_hs_i2: trim@5a,0 {
- 		xdmac: dma-controller@5fc10000 {
- 			compatible = "socionext,uniphier-xdmac";
- 			reg = <0x5fc10000 0x5300>;
--			interrupts = <0 188 4>;
-+			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
- 			dma-channels = <16>;
- 			#dma-cells = <2>;
- 		};
-@@ -523,7 +524,7 @@ gic: interrupt-controller@5fe00000 {
- 			      <0x5fe80000 0x80000>;	/* GICR */
- 			interrupt-controller;
- 			#interrupt-cells = <3>;
--			interrupts = <1 9 4>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
- 		sysctrl@61840000 {
-@@ -547,7 +548,7 @@ watchdog {
- 
- 			pvtctl: thermal-sensor {
- 				compatible = "socionext,uniphier-pxs3-thermal";
--				interrupts = <0 3 4>;
-+				interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
- 				#thermal-sensor-cells = <0>;
- 				socionext,tmod-calibration = <0x0f22 0x68ee>;
- 			};
-@@ -557,7 +558,7 @@ eth0: ethernet@65000000 {
- 			compatible = "socionext,uniphier-pxs3-ave4";
- 			status = "disabled";
- 			reg = <0x65000000 0x8500>;
--			interrupts = <0 66 4>;
-+			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_ether_rgmii>;
- 			clock-names = "ether";
-@@ -578,7 +579,7 @@ eth1: ethernet@65200000 {
- 			compatible = "socionext,uniphier-pxs3-ave4";
- 			status = "disabled";
- 			reg = <0x65200000 0x8500>;
--			interrupts = <0 67 4>;
-+			interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_ether1_rgmii>;
- 			clock-names = "ether";
-@@ -600,7 +601,7 @@ usb0: usb@65a00000 {
- 			status = "disabled";
- 			reg = <0x65a00000 0xcd00>;
- 			interrupt-names = "dwc_usb3";
--			interrupts = <0 134 4>;
-+			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
- 			clock-names = "ref", "bus_early", "suspend";
-@@ -702,7 +703,7 @@ usb1: usb@65c00000 {
- 			status = "disabled";
- 			reg = <0x65c00000 0xcd00>;
- 			interrupt-names = "dwc_usb3";
--			interrupts = <0 137 4>;
-+			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb1>, <&pinctrl_usb3>;
- 			clock-names = "ref", "bus_early", "suspend";
-@@ -812,7 +813,8 @@ pcie: pcie@66000000 {
- 				<0x82000000 0 0x20000000 0x20000000 0 0x0ffe0000>;
- 			#interrupt-cells = <1>;
- 			interrupt-names = "dma", "msi";
--			interrupts = <0 224 4>, <0 225 4>;
-+			interrupts = <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-map-mask = <0 0 0 7>;
- 			interrupt-map = <0 0 0 1 &pcie_intc 0>,	/* INTA */
- 					<0 0 0 2 &pcie_intc 1>,	/* INTB */
-@@ -825,7 +827,7 @@ pcie_intc: legacy-interrupt-controller {
- 				interrupt-controller;
- 				#interrupt-cells = <1>;
- 				interrupt-parent = <&gic>;
--				interrupts = <0 226 4>;
-+				interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
- 			};
- 		};
- 
-@@ -847,7 +849,7 @@ nand: nand-controller@68000000 {
- 			reg = <0x68000000 0x20>, <0x68100000 0x1000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			interrupts = <0 65 4>;
-+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_nand>;
- 			clock-names = "nand", "nand_x", "ecc";
+Patch 4 adds the basic logic to initialize and read measurements from
+the sensor
+Patch 5 adds advanced configurable features such as sampling frequency
+and IIR filter through the sysfs API
+
+Changes in v2:
+ - Added patch 2 updating Kconfig with references to new sensor
+ - Patch 3 adds changes proposed by Jonathan Cameron <jic23@kernel.org>
+   to declutter and unify configuration logic for the different sensors
+   extending "chip_info" struct with default configuration parameters.
+ - Patch 4: store temperature and pressure adc values on 3 byte array
+   instead of using the type __le32. Uses function get_unaligned_le24
+   to convert the little-endian encoded 3 byte value to an integer.
+ - Patch 4: drops custom macro le16_from_bytes and use get_unaligned_le16
+ - Patch 4: generate masks using GENMASK macro.
+ - Patch 4: use FIELD_PREP to generate bitfields for registries
+ - Patch 4: dropped stray formatting change.
+ - Patch 5: adds sanity checks in bmp280_read_raw for channel properties
+   only available in the BMP380.
+ - Patch 5: on bmp280_write_* checks if a problem ocurred committing new
+   configuration and tries to restore previous working configuration
+   to keep the sensor in a previous working state.
+ - Patch 5: refactored bmp380_chip_config to only check for configuration
+   errors when a configuration change is detected.
+ - Patch 5: improved invalid configuration detection on BMP380 restarting
+   measurement loop to force a new measurement after the configuration is
+   updated.
+
+
+Angel Iglesias (5):
+  dt-bindings: iio: pressure: bmp085: Add BMP380 compatible string
+  iio: pressure: Kconfig: Add references to BMP380
+  iio: pressure: bmp280: simplify driver initialization logic
+  iio: pressure: bmp280: Add support for BMP380 sensor family
+  iio: pressure: bmp280: Adds more tunable config parameters for BMP380
+
+ .../bindings/iio/pressure/bmp085.yaml         |   4 +-
+ drivers/iio/pressure/Kconfig                  |   4 +-
+ drivers/iio/pressure/bmp280-core.c            | 732 +++++++++++++++++-
+ drivers/iio/pressure/bmp280-i2c.c             |   5 +
+ drivers/iio/pressure/bmp280-regmap.c          |  55 ++
+ drivers/iio/pressure/bmp280-spi.c             |   5 +
+ drivers/iio/pressure/bmp280.h                 |  83 ++
+ 7 files changed, 845 insertions(+), 43 deletions(-)
+
+
+base-commit: 69cb6c6556ad89620547318439d6be8bb1629a5a
 -- 
-2.25.1
+2.36.1
 
