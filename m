@@ -2,87 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C16B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 19:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC052CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 19:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234410AbiGDTLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 15:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
+        id S234607AbiGDTPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 15:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbiGDTLu (ORCPT
+        with ESMTP id S229666AbiGDTPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 15:11:50 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CB81E4;
-        Mon,  4 Jul 2022 12:11:50 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so6239613wms.5;
-        Mon, 04 Jul 2022 12:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nYJdC2yjixYZ+kyoc4OE/b9ZX8JV+K3bG8EqjiFuHfE=;
-        b=fje1ujhgj4n/NClwNNLHrpiSj15S0MbR6wPpKmARyWcCqj7LnSnL192M+mQGvNyp1K
-         eZn+EjTBF/itc620E6fFsD0nau4Jlj4KhWv/HrRCYAYxwM4i5LTDj9sO3mbANvEVTRgi
-         zpLog+Yu5gRu2dZX7ASksMXWC31cdaFwl8R1qRhIzat35MWDvmhq6fHl12zIYGfAgP17
-         OasHWEyHzyyfxjvJBKllakT4ieCOTjaProgiMtiZQZWCIaTW32YD5OHa+FDNZ4plWfCB
-         gz58FwamG9Iv4FiyngWPEn3h2G3NDmOUGIYG3dVAhqh1/KBdexoTGeQFhbDiB8hLhvwe
-         uxpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nYJdC2yjixYZ+kyoc4OE/b9ZX8JV+K3bG8EqjiFuHfE=;
-        b=6BLTfviJgioaOy7jozc+CbMXHSpV5Ch0J99X1o2AWslxHC4jf7bluNbaIFSNvjRtwb
-         uufoAyfKrJwjAhbEzySJim1/iBkQsPkBvEDYqmrIVebqirGLvSmIAvVJpxNjN+3ca6VB
-         MJcuudn4LP9JNlWjMlyekaDYjGpHZ2iV3xYdOJz4Idj8BkDuDUuthae8N9vGJ3SPAAlw
-         yccZrxw0KZhOwl0e7wvfcA34Fy5OBWXtY/VjJoDmHP+QuqX5PMquErXeqXyjeKYFGCbS
-         0CWE26uFwk5ThShB8MuJa8M+6WiYLXj06z1lJXfL6E3m43iTJcMtXziSmqQtYj4ezmJN
-         oqEg==
-X-Gm-Message-State: AJIora9IuU1wGi+k/eIgD6QMSQkvuDobKcx1Mg1b+nKFdRxDpIrZrhik
-        +zcsFpqPk6ASs4CPTnXoMubItqreeQ+WSw==
-X-Google-Smtp-Source: AGRyM1sAc/Upb3IqdwlY5v1NzPeFFGkBDLEmAeR9nyVvA46bGnSTXTLOAUBZR/2RGb8Mfc+m9opcgQ==
-X-Received: by 2002:a05:600c:1d0e:b0:3a0:50bb:55e0 with SMTP id l14-20020a05600c1d0e00b003a050bb55e0mr33718555wms.89.1656961908597;
-        Mon, 04 Jul 2022 12:11:48 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05600c378400b003a2b708c26dsm122983wmr.40.2022.07.04.12.11.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 12:11:48 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     David Airlie <airlied@linux.ie>
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] x86/amd_nb: remove redundant initialization of variable i
-Date:   Mon,  4 Jul 2022 20:11:47 +0100
-Message-Id: <20220704191147.594032-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Mon, 4 Jul 2022 15:15:48 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BE76351;
+        Mon,  4 Jul 2022 12:15:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=9LEtZ7AeBNN6P70RAq3sG9bOAFlAYv5x5HPRLtRJ+C4=; b=pw1Zw0tibK+sD2iCiB4IwoFEFf
+        163lTNfUK64j7CDKzhzuYZXLNznA7TJNPEpD/Durtmk4qqNOgJc9x4ZxVHbRVRLv01kzuuB+f+cJ4
+        CxTZEczO/AytaFQOJ6uSUUM7SPESP1D4ks5M3ilbVCFydWe813COKbqRkuMemd6SVkLSsGV275lM6
+        2lNbhzRQrzy8B/7wgNNs7i/NTqVTgEnKlqXUuiSb8Y/4KLM++gwtn9I7LyMKFz1+OAaSLnLpaoXs5
+        No5yJ2kqN4nvlMFZvmcm4MAkpXJ2T2z+KqBjHgHoliz1+J5f+KNZvCHbxPep6YCfEQQG/R6odJIDx
+        LRz+mfoQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8RXr-00B9Ry-GN; Mon, 04 Jul 2022 19:15:43 +0000
+Message-ID: <d803c02c-1a9c-59be-969a-5e4daae5f59c@infradead.org>
+Date:   Mon, 4 Jul 2022 12:15:42 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 2/4] soc: qcom: icc-bwmon: Add bandwidth monitoring
+ driver
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Thara Gopinath <thara.gopinath@gmail.com>
+References: <20220704121730.127925-1-krzysztof.kozlowski@linaro.org>
+ <20220704121730.127925-3-krzysztof.kozlowski@linaro.org>
+ <3770bc6d-b3cc-9e49-a832-4c15af0b5f1a@infradead.org>
+ <9cd658cd-3b8c-89d1-651d-ce81794fb68c@linaro.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <9cd658cd-3b8c-89d1-651d-ce81794fb68c@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Variable i is initialized with a value and then re-assigned with
-the same value in the following for-loop. The first initialization
-is redundant and can be removed.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/char/agp/amd64-agp.c | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
-index 84a4aa9312cf..c7bf2c4bc0b0 100644
---- a/drivers/char/agp/amd64-agp.c
-+++ b/drivers/char/agp/amd64-agp.c
-@@ -333,7 +333,6 @@ static int cache_nbs(struct pci_dev *pdev, u32 cap_ptr)
- 	if (!amd_nb_has_feature(AMD_NB_GART))
- 		return -ENODEV;
- 
--	i = 0;
- 	for (i = 0; i < amd_nb_num(); i++) {
- 		struct pci_dev *dev = node_to_amd_nb(i)->misc;
- 		if (fix_northbridge(dev, pdev, cap_ptr) < 0) {
+On 7/4/22 08:22, Krzysztof Kozlowski wrote:
+> On 04/07/2022 17:20, Randy Dunlap wrote:
+>> Hi,
+>>
+>> On 7/4/22 05:17, Krzysztof Kozlowski wrote:
+>>> diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
+>>> index e718b8735444..2c8091535bf7 100644
+>>> --- a/drivers/soc/qcom/Kconfig
+>>> +++ b/drivers/soc/qcom/Kconfig
+>>> @@ -228,4 +228,19 @@ config QCOM_APR
+>>>  	  application processor and QDSP6. APR is
+>>>  	  used by audio driver to configure QDSP6
+>>>  	  ASM, ADM and AFE modules.
+>>> +
+>>> +config QCOM_ICC_BWMON
+>>> +	tristate "QCOM Interconnect Bandwidth Monitor driver"
+>>> +	depends on ARCH_QCOM || COMPILE_TEST
+>>> +	select PM_OPP
+>>> +	help
+>>> +	  Sets up driver monitoring bandwidth on various interconnects and
+>>
+>> 	  Sets up driver bandwidth monitoring
+>>
+>> would be better, I think.
+> 
+> It's a driver which monitors bandwidth, so your version sounds a bit
+> like monitoring of driver's bandwidth.
+> 
+> Maybe should be:
+>     Sets up driver which monitors bandwidth...
+> ?
+
+Yes, that's OK.
+Thanks.
+
 -- 
-2.35.3
-
+~Randy
