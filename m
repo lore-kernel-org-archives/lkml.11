@@ -2,176 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD483C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA1AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233476AbiGDHKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 03:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
+        id S233208AbiGDHKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233416AbiGDHJs (ORCPT
+        with ESMTP id S233350AbiGDHK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 03:09:48 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840D69FE2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:09:19 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2644I0xR009812;
-        Mon, 4 Jul 2022 07:09:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=wnJ02dPkWpDDGkvE7OaMnTSRCUZ/AidjIhYP6T2x91c=;
- b=Ub27WP/HbjQ2s5MNDk6ivID0OQCgPdwfNzhnoiWHNkVZhpTef02vxe5ikNHRcxeXHoCw
- /D51QIvUyQL/n1jhRQ7oWEqVH8BLj+uFkIq3gcu8eTAZ12Vq4/1TPhiiN2S0c71vHtF/
- CGcGz83+4/f0oXFfFycGalt8t2bhnCKshkn9evXvIvq1Cy1kKqmGBVIxXxor4iHdWnsf
- Bd9d+YJPVxSoHakq7UcqXD8fLI84XWkonRdLYV//5MBj7N0Flyy41JhLSOwSc4cftcHd
- m2s0D590InLVEcy+27xA6Xt7W0hLkdWgs6HqVauqVdzVgf9G/UwnmergcNi7C+PBMwnC ag== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3n2kyjk0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 07:09:07 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2646CbEr016057;
-        Mon, 4 Jul 2022 07:09:07 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3n2kyjj8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 07:09:06 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26475QEA030701;
-        Mon, 4 Jul 2022 07:09:05 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma04wdc.us.ibm.com with ESMTP id 3h2dn9b4m2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 07:09:05 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 264795bK29688228
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Jul 2022 07:09:05 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1BD1B124053;
-        Mon,  4 Jul 2022 07:09:05 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B9A89124052;
-        Mon,  4 Jul 2022 07:08:58 +0000 (GMT)
-Received: from skywalker.ibmuc.com (unknown [9.43.74.198])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Jul 2022 07:08:58 +0000 (GMT)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v8 12/12] mm/demotion: Add sysfs ABI documentation
-Date:   Mon,  4 Jul 2022 12:36:12 +0530
-Message-Id: <20220704070612.299585-13-aneesh.kumar@linux.ibm.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220704070612.299585-1-aneesh.kumar@linux.ibm.com>
-References: <20220704070612.299585-1-aneesh.kumar@linux.ibm.com>
-MIME-Version: 1.0
+        Mon, 4 Jul 2022 03:10:28 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01olkn2103.outbound.protection.outlook.com [40.92.52.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FC3B482;
+        Mon,  4 Jul 2022 00:09:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UXW+FZnKNaQRM0N8ISYwMfI7Ttpw+IXZ7P6kVg4Nq2YkWa8B/nyMgpxN6LSjml9RRQJEPsvTFWBPV2cmkfREoNBV88Wlt9OMudkrm/W5BeQTgodR3l1z2eiio56V4AiWMLhfM7tACwZvuwMV2Y81aoPHx53W13OsBauispuHTgfYa7NqxXnJZyEOpDzFq1kBD7L7c+sBvES1vyoyKI6c1HVtweB+ouYTBIs403+zdbppcBa2EJ7cZypAiwphiLC2mTS4Sy1TUWLwSXhVtYiIzeKJDxFlfVOhLKJKmuI6+J8mKNawPdpTgzIB5F6QEAn0yOhWhZYiZIIqQZKmxufq/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W8wYao++s4eDVfvjgMy50880h7EQadQEQKiiPd8rsbo=;
+ b=eefKiCJkxqM81IS9iBE0hNnWqth28tZrT3HIuqvX/OKnGUbpSK+r+Mh17Yc9Ry+c3rLCvLpyBNZzN4/L0jNeUiYciYox/xfInHomGuq+0vennqV/XC+R9yR1RX/Nb0VQv4P10H/TYMFUXarVMFh6ZfKKc6xQz1neFh9dHTARA4PhjwMsBOJSu0zwoD8SqBAr1DeZMdhs9wCJut9XTbLtDE5/WfSnnrikdyfagzw141TF49ymmlpi0QnmWaQE4DjrAbtKCi7fbrjKDcELbr9d3iiNn0A145dJ6McJ34UnfCtxD8/g84d379xuVCZdFjLLrkYSyuEGtNsr8SYUJKSVQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W8wYao++s4eDVfvjgMy50880h7EQadQEQKiiPd8rsbo=;
+ b=oLlnSyQ8I9y74LuhcxD1kJvgfkMDUQK3G4xY7C1z9+1uIVD/M3jIOLhFWzQWj/1LDBBf8nYr2P0kCP68QPHxUvmW0UQrE80KsTPd3DjZdikichQTT6hjDmrzrG+bzqxUEqLoWISL9rnH2VQZ45TUMrOn/DoLtxIjjdidtmOH7w4NV06Q9D86SqeiZZna+WxcUPKfgNX72kzoPXQlIrnPaqnHFuxE0Pw1XiR+PlKZ+n5YIR926HZ7bhi/52P1Zbc1KGgkEwsu5TcDUHpiVnEfLft9IzVQVNMd2W53R0hL5zBYZ3EwxF2qlkfNaYeqnKt6dYcfEBkdomA0APtUfX67hQ==
+Received: from SG2PR03MB5006.apcprd03.prod.outlook.com (2603:1096:4:df::10) by
+ PS1PR03MB4844.apcprd03.prod.outlook.com (2603:1096:300:87::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.12; Mon, 4 Jul 2022 07:09:39 +0000
+Received: from SG2PR03MB5006.apcprd03.prod.outlook.com
+ ([fe80::b96f:3a3b:5eef:e796]) by SG2PR03MB5006.apcprd03.prod.outlook.com
+ ([fe80::b96f:3a3b:5eef:e796%5]) with mapi id 15.20.5417.012; Mon, 4 Jul 2022
+ 07:09:39 +0000
+From:   Jimmy Chen <jinghung.chen3@hotmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>, Andy Gross <agross@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alan Huang <alan-huang@quanta.corp-partner.google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH 1/2] [V1,1/2] arm64: dts: qcom: Add LTE SKUs for sc7280-villager family
+Date:   Mon,  4 Jul 2022 15:09:24 +0800
+Message-ID: <SG2PR03MB50068F2314F65CAE43A9594ECCBE9@SG2PR03MB5006.apcprd03.prod.outlook.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gFkjoQ9kYnarDPTZN74KzO8drIqPM-Au
-X-Proofpoint-ORIG-GUID: 2qHVjEUxP0p1ktcTGHzKnDujegealXIJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-04_05,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- bulkscore=0 lowpriorityscore=0 suspectscore=0 spamscore=0 mlxscore=0
- priorityscore=1501 phishscore=0 mlxlogscore=999 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2207040030
+Content-Type: text/plain
+X-TMN:  [8p0iK/RgiPntaNRYGABZFt+fD23XWVpZ]
+X-ClientProxiedBy: TYCPR01CA0042.jpnprd01.prod.outlook.com
+ (2603:1096:405:1::30) To SG2PR03MB5006.apcprd03.prod.outlook.com
+ (2603:1096:4:df::10)
+X-Microsoft-Original-Message-ID: <20220704150825.1.Ib53c25c4a4fe2dce6531d56d64398bd5c13632ed@changeid>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: efe634fd-fdcd-4867-bfd5-08da5d8c27df
+X-MS-TrafficTypeDiagnostic: PS1PR03MB4844:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SJx0OKup8nPs6KPkraYNrLPvwAD1+MDSWctkvspY2Urs0UXv4bUoV4MOcQE3eSCQj0iJ2R199xqu/73J2jgSdJ3GyNrCBFspyVC9/45NQdGup+GQAQ7hW4IdhHX53CKuHjwqq+7AQC03f64VoGztHFVU/c3hPtuKfEDs0M+59mIZweJbaDICHCxonQC4Q7zsqB9xgRlD0wGYBfubzbITGZh/uTNNgNyHLZamH8b7Hd6jUZlGw+c96qJw7AVYLzjFhhNw/Qgq80bg7VSTy9Xp9fMABxDCWXuC15DPbuAZ2Y1r0gSW0m/Rd0HkywmNvct3XcCZ84HLK9VM3+wMJwPPaZMyWIfjupxKNWlj6SIbt8NEdfT6NqNPkot1nyjkvO2/nnGai/+kad3FldnVE6sUxAm0Nyx6ohlBPvcI2TVxmYZedR0FULsY6lolNxc0b5C0Z4QwvwAX1oqbj7lqpCKRqOTqrG6J6VSB1dgmk7bejYkklVuqjhmREWOWvB+SoSpZsCH9CzGHsER1O0EwVgxUuv2T6f9KEzn5K4vtjd6kFBl8jazHQ86EMShdJRlnmCMc5Ftajv3Kn/APiC0DZ2dH4itaD2lfsXQ2FsKmhVUovf487h97HnVR2A7y2e7fou0Q03ArYqL4E+riT+D8v0PXRQ==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZFhrYfe4Xi5dy1V4h8nC2t/Bm3o4O/ki21afO+SF6esCFx0+hIasHfQVxOAK?=
+ =?us-ascii?Q?RQiJiKCHsEs9sL9QEWIm3DFnI4Kul69Tu0728YFipQaCM0tLMz3rwQZ/9cCz?=
+ =?us-ascii?Q?v+hpQmeg30O7HR2AF3tgHEcZ7Q9nTtyyxCz2TV6ARPUPtr70Kbp2uRGwCKBO?=
+ =?us-ascii?Q?Jz8BXR4Dd22uvy5luiBMFnFEBU5n7da/8uYeYDcne/b90h7N28ozo7hUxlZm?=
+ =?us-ascii?Q?oLb0t+b4UIau5h6ttEbTqmGSQmb2vA6REdnpYb5NQkKvRMU9kDClOwLigpm/?=
+ =?us-ascii?Q?oLLzibNfOL3zSkMVimf37Ysg+tRKjpGvtDNBYEIT826JFEEag+6k9frKHzGW?=
+ =?us-ascii?Q?8OeXtyXc64GTvDK/c7+OZnGkiaaT+WjIblkAbfBPjpNd1MiHeeL2ll9rTGWN?=
+ =?us-ascii?Q?uemVZPY0G/fzX9Ld4HVHFVgYDmbWRC4y1gCoYzd3Vo+jFuKdHWqxlDfvn7/X?=
+ =?us-ascii?Q?Z4ruenCTL948XR6Fyop61JmPJY6gTheQQ+i4D/ZisIZW7oF0IB9g14QO09wa?=
+ =?us-ascii?Q?reslrKHKHJMxDUUxTGacUFDSzHzDaSTxI+A3cHxRTGLXeT2uwNxbPShEnfyL?=
+ =?us-ascii?Q?/WiRZBlNLlTiz+z1MiQ84dpaRTPXYt5qVAo8hCrlSo/iArv88ghL1iQ0jNnA?=
+ =?us-ascii?Q?usJHEx1FKhMjC9HN8QXK49z0pvL4719PauC0P/stewHNlxvxfNo+zFCtHvia?=
+ =?us-ascii?Q?A7b4cYxdQ/fp+cm9dOjqZYdBXPUawNVoKtGG5dxDfFoJHqX9Av4igqKe3Rrg?=
+ =?us-ascii?Q?ls13KdeJNE5rnEo8dup17e7x69RRw3gtt5oiDbHo00S0iZN77UMUl83X0udj?=
+ =?us-ascii?Q?eiN2dpsK00dToJqYA84PaZ6dkiJyfndCPCbqrPQ48+frQv/ISxO5udxw0PPp?=
+ =?us-ascii?Q?SDIPvb+bArHWJgIBM8O+59DqookqmCqaY+7okxF8ZOD9l3z1FzVu6WUnvJig?=
+ =?us-ascii?Q?IFTh6uiHlEzXa0jZPGsv7uQ5tJ95TAthLRMEzKYxdVIYrm2W0FfmnybsLHn2?=
+ =?us-ascii?Q?LwFBGRV7n5miAI1+UgboAH+uwVoKqG8QSUlnZZrRE54Q7fbmv03OimZBrpmU?=
+ =?us-ascii?Q?mcyLjSXwtxJqj9CBBLVwXMGhxMToG4y6WW4ulHjzYlHFD2+EAO9hwArRLNfH?=
+ =?us-ascii?Q?XWqK1oa1zVpCZWKdyRnHIynjRc3TyPwPKTCyWCF9N5Wx7sqJtjcFFwcpoUwH?=
+ =?us-ascii?Q?0MSYY/Jfe22btv7rqhEjF0909HvFq7Omok3KdDfhQJ/vTG2afMW0ammJdW6J?=
+ =?us-ascii?Q?cdVyF3ki3uZ2NKyTsoJhUjTlx+1UjbtH2h9zalwmUw=3D=3D?=
+X-OriginatorOrg: sct-15-20-4734-24-msonline-outlook-c0b75.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: efe634fd-fdcd-4867-bfd5-08da5d8c27df
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR03MB5006.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 07:09:39.4468
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS1PR03MB4844
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add sysfs ABI documentation.
+This adds yaml file for new a LTE skus for villager device.
 
-Signed-off-by: Wei Xu <weixugc@google.com>
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
 ---
- .../ABI/testing/sysfs-kernel-mm-memory-tiers  | 61 +++++++++++++++++++
- 1 file changed, 61 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
-new file mode 100644
-index 000000000000..843fb59d2f3d
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
-@@ -0,0 +1,61 @@
-+What:		/sys/devices/system/memtier/
-+Date:		June 2022
-+Contact:	Linux memory management mailing list <linux-mm@kvack.org>
-+Description:	Interface for tiered memory
+ Documentation/devicetree/bindings/arm/qcom.yaml | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 4dd18fbf20b68..a136b1389c2ac 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -529,11 +529,26 @@ properties:
+           - const: google,herobrine
+           - const: qcom,sc7280
+ 
++      - description: Google Villager (rev0)
++        items:
++          - const: google,villager-rev0
++          - const: qcom,sc7280
 +
-+		This is the directory containing the information about memory tiers.
+       - description: Google Villager (newest rev)
+         items:
+           - const: google,villager
+           - const: qcom,sc7280
+ 
++      - description: Google Villager with LTE (rev0)
++        items:
++          - const: google,villager-rev0-sku0
++          - const: qcom,sc7280
 +
-+		Each memory tier has its own subdirectory.
++      - description: Google Villager with LTE (newest rev)
++        items:
++          - const: google,villager-sku0
++          - const: qcom,sc7280
 +
-+		The order of memory tiers is determined by their tier ID value.
-+		A higher tier ID value means a higher tier. memtier300 is higher
-+		memory tier compared to memtier 100.
-+
-+What:		/sys/devices/system/memtier/default_tier
-+Date:		June 2022
-+Contact:	Linux memory management mailing list <linux-mm@kvack.org>
-+Description:	Default memory tier
-+
-+		The default memory tier to which memory would get added via hotplug
-+		if the NUMA node is not part of any memory tier
-+
-+What:		/sys/devices/system/memtier/max_tier
-+Date:		June 2022
-+Contact:	Linux memory management mailing list <linux-mm@kvack.org>
-+Description:	Maximum memory tier ID supported
-+
-+		The max memory tier device ID we can create. Users can create memory
-+		tiers in range [0 - max_tier]
-+
-+What:		/sys/devices/system/memtier/memtierN/
-+Date:		June 2022
-+Contact:	Linux memory management mailing list <linux-mm@kvack.org>
-+Description:	Directory with details of a specific memory tier
-+
-+		This is the directory containing the information about a particular
-+		memory tier, memtierN, where N is the memtier device ID (e.g. 0, 1).
-+
-+		The memtier device ID number itself is just an identifier and has no
-+		special meaning. Its value relative to other memtiers decides the level
-+		of this memtier in the tier hierarchy.
-+
-+
-+What:		/sys/devices/system/memtier/memtierN/nodelist
-+Date:		June 2022
-+Contact:	Linux memory management mailing list <linux-mm@kvack.org>
-+Description:	Memory tier nodelist
-+
-+
-+		When read, list the memory nodes in the specified tier.
-+
-+What:		/sys/devices/system/node/nodeN/memtier
-+Date:		June 2022
-+Contact:	Linux memory management mailing list <linux-mm@kvack.org>
-+Description:	Memory tier details for node N
-+
-+		When read, list the device ID of the memory tier that the node belongs
-+		to.  Its value is empty for a CPU-only NUMA node.
-+
-+		When written, the kernel moves the node into the specified memory
-+		tier if the move is allowed. The tier assignments of all other
-+		nodes are not affected.
+       - items:
+           - enum:
+               - lenovo,flex-5g
 -- 
-2.36.1
+2.25.1
 
