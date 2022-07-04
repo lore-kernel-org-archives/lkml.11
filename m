@@ -2,109 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9178CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F48CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234249AbiGDMLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 08:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S233561AbiGDMM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 08:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234190AbiGDMKf (ORCPT
+        with ESMTP id S234140AbiGDMMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 08:10:35 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7F012AC9
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 05:09:17 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so3226011pjn.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 05:09:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L3s7MTtQ+37mYaPsVyfqQKMNllwlxopGUK6y9ZwY5+E=;
-        b=qp7i48jxUwsTrAPfumImho5NNYkKE6TLsOMVx1WAFbStyAN7FX4XNDUbBKl5arAD3H
-         VhGwfhUW+P+LU8uwaMjw+qfuWXbpv4NIdplkdFlgXEkQiX7TUytlcqfXGuIp/waT2DaT
-         igDiYePmA79UeMNYr7GLzJqqr2Ni7aXrCzesSxhl/vl9BWu1bB/Mz7eCmQkHTYvwszHE
-         okjy/b8QsXG9WiLJu4VZARj76yLq0+YrU0HzfaDznYuTPTpS23pODKXpt+qn2ocYgsDH
-         67hch7G4WT/bVGjExuybiN893D0FJNwHHHiGvxbsafxPjR3WPck7wPXluElzRkfe+9Vh
-         Q6Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L3s7MTtQ+37mYaPsVyfqQKMNllwlxopGUK6y9ZwY5+E=;
-        b=RKXq106FrWGgtWqEFvsEHFB7tJ2YQifkwn1W2KIi3JKKxgfdsw5yD1NrCfPabIvFM+
-         BNAp2KmbTrSiENKGWt+SdcFGUz6rvx6LLgdA13SozvhsplgypQls2an8sHjucbfAXjD9
-         7Z55RjQ8B6DjjT6RKTm8pdOhbOENfH0tLqw4ik3KbinvFk5XOa5rSWQ8m9IOU2GuQYbP
-         VMBjjMQvyM8QQ4mm/81eD2ZgrLjOo5XSsC7oR9HXPaDIZkJbTgcr8A/XJEa3uB4n0Zqf
-         sijA39wHRTJ7Olv4RWs9ko2RsDBqRf1NPy2yQ1VSI8we4YSvdmAGwE9QLhXxc7znFFJ/
-         YsBA==
-X-Gm-Message-State: AJIora/HJUxNGhl6nZVPhD/WNqbF6okDgZHOdlwXG0Q9Zjhr910feBVD
-        /kcynJ/ObUNwQCLzwkW0QFQMYg==
-X-Google-Smtp-Source: AGRyM1srfQeMbT7RKSvocdoskMlrrLTplUGMbAePMCkIF4/ElRn63bIAwLus2lRO48dCtNHmO0F3QA==
-X-Received: by 2002:a17:902:ce83:b0:16a:4a3e:4f8b with SMTP id f3-20020a170902ce8300b0016a4a3e4f8bmr37297749plg.41.1656936557118;
-        Mon, 04 Jul 2022 05:09:17 -0700 (PDT)
-Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id ik24-20020a170902ab1800b0016bdf0032b9sm2832408plb.110.2022.07.04.05.09.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 05:09:16 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 17:39:15 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH 5/8] OPP: Allow multiple clocks for a device
-Message-ID: <20220704120915.s3ermueulcofg7nj@vireshk-i7>
-References: <8b29fa207024dc295639f9ba52c28e45782e3baa.1654849214.git.viresh.kumar@linaro.org>
- <55623c12-dda3-613f-5bc9-80b3b6fec5f9@nvidia.com>
- <20220622141511.yzg5itkdwirpavfj@vireshk-i7>
- <40e616eb-22f9-19c2-8d77-20cd3c7c518b@nvidia.com>
- <c6f100e4-8a35-ebf0-f833-06ff0d8a2fb6@collabora.com>
- <20220630005028.fddtcbkoksbygwc5@vireshk-i7>
- <8367c38b-8cd3-cde1-5833-874769ef3350@collabora.com>
- <20220630095245.otvo53ezd4avoujw@vireshk-i7>
- <b899ff5f-b424-5f44-7c94-deb013ff6bbc@collabora.com>
- <20220630101540.5dafkegrmcattt2c@vireshk-i7>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630101540.5dafkegrmcattt2c@vireshk-i7>
+        Mon, 4 Jul 2022 08:12:44 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E9511A09
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 05:12:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 13586225ED;
+        Mon,  4 Jul 2022 12:12:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1656936752; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ax8Is2DyCle/g94ag0zEkK1UqvD95AjNVHCt0WIOo34=;
+        b=WEiQUkeyZbfpf3/0QfLDGV+mDx/uuNPtYJYi3oemCMPMdxEK+CNoz5Kk2hofJ/j/0nkalt
+        k6C9C8LA5pSMiXkIgScIonmAhGkLyI6HLLmE+kAz8RDQBxKLDbXW8EV0JaF40n2+a005Du
+        rxPrOcM3MG9//aob2cCq6GDlbXVunjc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1656936752;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ax8Is2DyCle/g94ag0zEkK1UqvD95AjNVHCt0WIOo34=;
+        b=HTB+NYqfZ1jvEBlgB6ui+7dOl6e9CyeAF9OHifs3t9MJYBCbySa+X/xfNxwDjOCqcnM59t
+        VsJ+9qKao7aLuFBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D095E13451;
+        Mon,  4 Jul 2022 12:12:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id TBEuMi/ZwmIHJQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 04 Jul 2022 12:12:31 +0000
+Date:   Mon, 04 Jul 2022 14:12:31 +0200
+Message-ID: <875ykdyt3k.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Egor Vorontsov <sdoregor@sdore.me>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Jonas Hahnfeld <hahnjo@hahnjo.de>,
+        William Overton <willovertonuk@gmail.com>,
+        Brendan Grieve <brendan@grieve.com.au>,
+        Alexander Tsoy <alexander@tsoy.me>,
+        alsa-devel@alsa-project.org (moderated list:SOUND),
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH 1/2] ALSA: usb-audio: Add quirk for Fiero SC-01
+In-Reply-To: <20220627100041.2861494-1-sdoregor@sdore.me>
+References: <20220627100041.2861494-1-sdoregor@sdore.me>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30-06-22, 15:45, Viresh Kumar wrote:
-> On 30-06-22, 12:57, Dmitry Osipenko wrote:
-> > The set_freq_table() gets available freqs using
-> > dev_pm_opp_find_freq_ceil() iteration.
-> > 
-> > The first dev_pm_opp_find_freq_ceil(freq=0) succeeds and returns ceil
-> > freq=1.
+On Mon, 27 Jun 2022 12:00:34 +0200,
+Egor Vorontsov wrote:
 > 
-> I don't see how this can possibly happen. One possibility is that freq
-> is set to 0 and one the next loop you do freq++, which can make it 1.
+> Fiero SC-01 is a USB sound card with two mono inputs and a single
+> stereo output. The inputs are composed into a single stereo stream.
 > 
-> > The second dev_pm_opp_find_freq_ceil(freq=1) fails with -ERANGE.
+> The device uses a vendor-provided driver on Windows and does not work
+> at all without it. The driver mostly provides ASIO functionality, but
+> also alters the way the sound card is queried for sample rates and
+> clocks.
 > 
-> Even if we send freq = 1, I don't see how we can get ERANGE if the OPP
-> table is properly initialized.
+> ALSA queries those failing with an EPIPE (same as Windows 10 does).
+> Presumably, the vendor-provided driver does not query it at all, simply
+> matching by VID:PID. Thus, I consider this a buggy firmware and adhere
+> to a set of fixed endpoint quirks instead.
 > 
-> > I haven't looked yet at why freq is set to 1.
+> The soundcard has an internal clock. Implicit feedback mode is required
+> for the playback.
 > 
-> Thanks, but I would need some help to get it debugged.
+> I have updated my device to v1.1.0 from a Windows 10 VM using a vendor-
+> provided binary prior to the development, hoping for it to just begin
+> working. The device provides no obvious way to downgrade the firmware,
+> and regardless, there's no binary available for v1.0.0 anyway.
+> 
+> Thus, I will be getting another unit to extend the patch with support
+> for that. Expected to be a simple copy-paste of the existing one,
+> though.
+> 
+> There were no previous reports of that device in context of Linux
+> anywhere. Other issues have been reported though, but that's out of the
+> scope.
+> 
+> Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
 
-Hi Dmitry,
+Thanks, now applied both patches.
 
-I am looking to send another version of this now and soon merge this
-in for 5.20-rc1. Can you please help figure out what's going on here ?
 
-Thanks.
-
--- 
-viresh
+Takashi
