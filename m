@@ -2,100 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 02:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 02:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiGKCfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Jul 2022 22:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        id S229490AbiGKCgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Jul 2022 22:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiGKCfy (ORCPT
+        with ESMTP id S229463AbiGKCgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Jul 2022 22:35:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C63ADF36;
-        Sun, 10 Jul 2022 19:35:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2739261047;
-        Mon, 11 Jul 2022 02:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32143C341C8;
-        Mon, 11 Jul 2022 02:35:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657506952;
-        bh=U5JfLaTDMJDWXhQ3M7TBmA+YrHYx+pIWdYRWiHn/62s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hl+so+OY8l+S8nfO4wI8BzRze5s1P2/8/PTp6XOeZqE9XLTP4AECUZXa2huTZ93WB
-         KdXuF3v6WSDpbmNyb07syhNqQs5OholW21GjAYrpKACjyTFgMgxEICwOhpGqtKN/Y6
-         O1vI3six+4rbZDVkKe3vV2HntEQbmsoxYs4h5vIPBbr0Gz8bX/ay3DBupMUgOMeupN
-         TozBVqmT5KXJTP1dKMKKhgA8og6Q5KE0glP1xolHo9Cj9EttyrkBzdkBc8KlTnaEd3
-         AdWX0aSZxXQOaMHM2tIGtlxLvotsLp4RaS474tXLjS7mI2EB536uFr6XFoOxX0Sz5D
-         54Y3xamP6+8sQ==
-Date:   Mon, 11 Jul 2022 05:35:47 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Kristen Carlson Accardi <kristen@linux.intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH] x86/sgx: Drop 'page_index' from sgx_backingf
-Message-ID: <YsuMgzDtBP82bz5m@kernel.org>
-References: <20220708162124.8442-1-kristen@linux.intel.com>
+        Sun, 10 Jul 2022 22:36:20 -0400
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7951018382
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 19:36:18 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id FZV00112;
+        Mon, 11 Jul 2022 10:36:12 +0800
+Received: from localhost.localdomain (10.200.104.82) by
+ jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server id
+ 15.1.2507.9; Mon, 11 Jul 2022 10:36:12 +0800
+From:   Deming Wang <wangdeming@inspur.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Deming Wang <wangdeming@inspur.com>
+Subject: [PATCH] mm/gup: Fix the format of hugepte_addr_end and gup_hugepte
+Date:   Mon, 4 Jul 2022 08:34:58 -0400
+Message-ID: <20220704123458.14583-1-wangdeming@inspur.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708162124.8442-1-kristen@linux.intel.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.200.104.82]
+tUid:   20227111036121ff2bfb9d32b3b82230700b216496aed
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 09:21:24AM -0700, Kristen Carlson Accardi wrote:
-> From: Sean Christopherson <sean.j.christopherson@intel.com>
-> 
-> Storing the 'page_index' value in the sgx_backing struct is
-> dead code and no longer needed.
-> 
-> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
-> Cc: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kernel/cpu/sgx/encl.c | 1 -
->  arch/x86/kernel/cpu/sgx/encl.h | 1 -
->  2 files changed, 2 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-> index 19876ebfb504..fa93586a536c 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.c
-> +++ b/arch/x86/kernel/cpu/sgx/encl.c
-> @@ -735,7 +735,6 @@ static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
->  		return PTR_ERR(pcmd);
->  	}
->  
-> -	backing->page_index = page_index;
->  	backing->contents = contents;
->  	backing->pcmd = pcmd;
->  	backing->pcmd_offset = page_pcmd_off & (PAGE_SIZE - 1);
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-> index 332ef3568267..eeb1a53ddf48 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.h
-> +++ b/arch/x86/kernel/cpu/sgx/encl.h
-> @@ -78,7 +78,6 @@ struct sgx_va_page {
->  };
->  
->  struct sgx_backing {
-> -	pgoff_t page_index;
->  	struct page *contents;
->  	struct page *pcmd;
->  	unsigned long pcmd_offset;
-> -- 
-> 2.20.1
-> 
+Operators should be separated by spaces.
 
+Signed-off-by: Deming Wang <wangdeming@inspur.com>
+---
+ mm/gup.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+diff --git a/mm/gup.c b/mm/gup.c
+index 0fa09ac3cf2f..2fd09f0820a4 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -2522,7 +2522,7 @@ static int record_subpages(struct page *page, unsigned long addr,
+ static unsigned long hugepte_addr_end(unsigned long addr, unsigned long end,
+ 				      unsigned long sz)
+ {
+-	unsigned long __boundary = (addr + sz) & ~(sz-1);
++	unsigned long __boundary = (addr + sz) & ~(sz - 1);
+ 	return (__boundary - 1 < end - 1) ? __boundary : end;
+ }
+ 
+@@ -2536,7 +2536,7 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
+ 	pte_t pte;
+ 	int refs;
+ 
+-	pte_end = (addr + sz) & ~(sz-1);
++	pte_end = (addr + sz) & ~(sz - 1);
+ 	if (pte_end < end)
+ 		end = pte_end;
+ 
+-- 
+2.27.0
 
-BR, Jarkko
