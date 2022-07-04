@@ -2,2607 +2,524 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 757E9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 04:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C92CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 04:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbiGDEHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 00:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        id S230160AbiGDEIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 00:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiGDEHS (ORCPT
+        with ESMTP id S229698AbiGDEIW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 00:07:18 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAA664E0
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 21:07:15 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id q11so11553350oih.10
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 21:07:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pneehvQT3zpcYhuLvBZkR7wlhieswTz6ad4CjeEB0RU=;
-        b=Z287PWf1/HZH/sBUfxBUcJ/gmyAzXMyIP1kSn8dxliAFlpWMZ+cZSYGKyifG3TB8Xg
-         Nrbuv8z1yXzUHDDxIr3TvR74womsApQVE0jHz9t+KZX1baUfy/oBOamkuztUdIkwER80
-         +CAktfvMnxtC5wX9kIp4xh+qcO0AjkGoJmqR4/NGCoPQJWc4p4LyRXwEaLKGE1oH2BIK
-         uSyrhknFIf7hqv+cbV2Rz3FQHKxe+fwsJATB8jeb8iqZwRPUGKhsV9NhmgYw4xr9qvBT
-         ddIHXFKssdRG39cvTLjMWzs6uBC80NOwVaelnN1DLBUCiBmpXziKEm2f/fCy5bvWjL9r
-         Lb/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pneehvQT3zpcYhuLvBZkR7wlhieswTz6ad4CjeEB0RU=;
-        b=ZaEIKv9oF3KX3GbT9RuqpVNwqqjJ/TfKpuF8OHTl39WwXN3tgg1cGLuv3amq3z7Lsz
-         SaLkTgKzkEoBme6IWzLvLsOjIbCE+l4njIgAJQemDRyQXvVisATGaUB7F0fsYZFUoIDZ
-         PGBr1poZHn/21GQ89WJebL3BpnXtDcZ49QrQ072NygpdZfgmoCilkbD1aO4eMK9rurpG
-         oRHBltnTLNbybPH1do2hXbj03DwS7c6dAqnlZxw46rqvILY086VaTK1Cl4otEq32lu8N
-         aJRHeQOj19C7Muvg8ANbfK9TuzxgtxT/IUCCmoAVasz67pBY6iZt9leCgnNtlzGTk+TM
-         bfWA==
-X-Gm-Message-State: AJIora/+UPLGJl6RW3qO6IKhIwB4ZQPMVdSvWHirOKNTpj5w5KgT1FYP
-        ulAIcowwqAuADZow7Tm2vRc=
-X-Google-Smtp-Source: AGRyM1ssPtqxap7Ak75OtAItn88dfZEUMGzadOqGvnR3Cf5TrqBjMWezpZzVWPSBBmKIAm9kx2E0IQ==
-X-Received: by 2002:a05:6808:1b0b:b0:335:b0e4:a7c8 with SMTP id bx11-20020a0568081b0b00b00335b0e4a7c8mr15238704oib.53.1656907634408;
-        Sun, 03 Jul 2022 21:07:14 -0700 (PDT)
-Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id c16-20020a056870b29000b000fb46b45b8csm18799334oao.23.2022.07.03.21.07.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Jul 2022 21:07:14 -0700 (PDT)
-From:   Rebecca Mckeever <remckee0@gmail.com>
-To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     David Hildenbrand <david@redhat.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Shaoqin Huang <shaoqin.huang@intel.com>
-Subject: [PATCH v5 2/4] memblock tests: add verbose output to memblock tests
-Date:   Sun,  3 Jul 2022 23:06:56 -0500
-Message-Id: <f234d443fe154d5ae8d8aa07284aff69edfb6f61.1656907314.git.remckee0@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1656907314.git.remckee0@gmail.com>
-References: <cover.1656907314.git.remckee0@gmail.com>
+        Mon, 4 Jul 2022 00:08:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 536FFE70
+        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 21:08:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656907699;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yyoD9ICcSLqA7nMGmX4vOpZrp6WQEab//KDtY/05lpE=;
+        b=Or6ESZJfms3C2DKe8FPsLJZ29Ujs9NvgwSD4kIzWgBhgUSM4X0zDh1JY5UjlMv7S+Xf9vl
+        J3aar3ZYLfNzcOvogjIe5VcEYeltcITxvqKRy17P2cTGqK+VDIfu7Fnix27mMW4Z76OO+E
+        vVFM7lKqGtB+76HaUZU5ev8uNx5qF1c=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-272-W6yywczfOoC2bumQDxWjtQ-1; Mon, 04 Jul 2022 00:08:16 -0400
+X-MC-Unique: W6yywczfOoC2bumQDxWjtQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B260B101A588;
+        Mon,  4 Jul 2022 04:08:15 +0000 (UTC)
+Received: from T590 (ovpn-8-27.pek2.redhat.com [10.72.8.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E103841617E;
+        Mon,  4 Jul 2022 04:08:09 +0000 (UTC)
+Date:   Mon, 4 Jul 2022 12:08:03 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Ziyang Zhang <ZiyangZhang@linux.alibaba.com>
+Cc:     linux-block@vger.kernel.org, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        joseph.qi@linux.alibaba.com, ming.lei@redhat.com
+Subject: Re: [RFC] libubd: library for ubd(userspace block driver based on
+ io_uring passthrough)
+Message-ID: <YsJno65CzIei1K1X@T590>
+References: <fd926012-6845-05e4-077b-6c8cfbf3d3cc@linux.alibaba.com>
+ <YrnMwgW7TemVdbXv@T590>
+ <fada5140-077e-6904-f9b6-c7bfba7779eb@linux.alibaba.com>
+ <Yrw4gJq+NaX+TCDz@T590>
+ <b3ef9b0e-f24c-7867-91c8-2bf15c646b77@linux.alibaba.com>
+ <Yr1oMvYCqn5m2oLX@T590>
+ <4e4b0130-81a1-567c-0fd5-624f9d18ce85@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4e4b0130-81a1-567c-0fd5-624f9d18ce85@linux.alibaba.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add and use functions and macros for printing verbose testing output.
+On Thu, Jun 30, 2022 at 05:29:07PM +0800, Ziyang Zhang wrote:
+> On 2022/6/30 17:09, Ming Lei wrote:
+> > On Thu, Jun 30, 2022 at 03:16:21PM +0800, Ziyang Zhang wrote:
+> >> Hi, Ming
+> >>
+> >> On 2022/6/29 19:33, Ming Lei wrote:
+> >>> On Wed, Jun 29, 2022 at 11:22:23AM +0800, Ziyang Zhang wrote:
+> >>>> Hi Ming,
+> >>>>
+> >>>> On 2022/6/27 23:29, Ming Lei wrote:
+> >>>>> Hi Ziyang,
+> >>>>>
+> >>>>> On Mon, Jun 27, 2022 at 04:20:55PM +0800, Ziyang Zhang wrote:
+> >>>>>> Hi Ming,
+> >>>>>>
+> >>>>>> We are learning your ubd code and developing a library: libubd for ubd.
+> >>>>>> This article explains why we need libubd and how we design it.
+> >>>>>>
+> >>>>>> Related threads:
+> >>>>>> (1) https://lore.kernel.org/all/Yk%2Fn7UtGK1vVGFX0@T590/
+> >>>>>> (2) https://lore.kernel.org/all/YnDhorlKgOKiWkiz@T590/
+> >>>>>> (3) https://lore.kernel.org/all/20220509092312.254354-1-ming.lei@redhat.com/
+> >>>>>> (4) https://lore.kernel.org/all/20220517055358.3164431-1-ming.lei@redhat.com/
+> >>>>>>
+> >>>>>>
+> >>>>>> Userspace block driver(ubd)[1], based on io_uring passthrough,
+> >>>>>> allows users to define their own backend storage in userspace
+> >>>>>> and provides block devices such as /dev/ubdbX.
+> >>>>>> Ming Lei has provided kernel driver code: ubd_drv.c[2]
+> >>>>>> and userspace code: ubdsrv[3].
+> >>>>>>
+> >>>>>> ubd_drv.c simply passes all blk-mq IO requests
+> >>>>>> to ubdsrv through io_uring sqes/cqes. We think the kernel code
+> >>>>>> is pretty well-designed.
+> >>>>>>
+> >>>>>> ubdsrv is implemented by a single daemon
+> >>>>>> and target(backend) IO handling(null_tgt and loop_tgt) 
+> >>>>>> is embedded in the daemon. 
+> >>>>>> While trying ubdsrv, we find ubdsrv is hard to be used 
+> >>>>>> by our backend.
+> >>>>>
+> >>>>> ubd is supposed to provide one generic framework for user space block
+> >>>>> driver, and it can be used for doing lots of fun/useful thing.
+> >>>>>
+> >>>>> If I understand correctly, this isn't same with your use case:
+> >>>>>
+> >>>>> 1) your user space block driver isn't generic, and should be dedicated
+> >>>>> for Alibaba's uses
+> >>>>>
+> >>>>> 2) your case has been there for long time, and you want to switch from other
+> >>>>> approach(maybe tcmu) to ubd given ubd has better performance.
+> >>>>>
+> >>>>
+> >>>> Yes, you are correct :)
+> >>>> The idea of design libubd is actually from libtcmu.
+> >>>>
+> >>>> We do have some userspace storage system as the IO handling backend, 
+> >>>> and we need ubd to provide block drivers such as /dev/ubdbX for up layer client apps.
+> >>>>
+> >>>>
+> >>>> I think your motivation is that provides a complete user block driver to users
+> >>>> and they DO NOT change any code.
+> >>>> Users DO change their code using libubd for embedding libubd into the backend.
+> >>>>
+> >>>>
+> >>>>>> First is description of our backend:
+> >>>>>>
+> >>>>>> (1) a distributing system sends/receives IO requests 
+> >>>>>>     through network.
+> >>>>>>
+> >>>>>> (2) The system use RPC calls among hundreds of
+> >>>>>>      storage servers and RPC calls are associated with data buffers
+> >>>>>>      allocated from a memory pool.
+> >>>>>>
+> >>>>>> (3) On each server for each device(/dev/vdX), our backend runs
+> >>>>>>      many threads to handle IO requests and manage the device. 
+> >>>>>>
+> >>>>>> Second are reasons why ubdsrv is hard to use for us:
+> >>>>>>
+> >>>>>> (1) ubdsrv requires the target(backend) issues IO requests
+> >>>>>>     to the io_uring provided by ubdsrv but our backend 
+> >>>>>>     uses something like RPC and does not support io_uring.
+> >>>>>
+> >>>>> As one generic framework, the io command has to be io_uring
+> >>>>> passthrough, and the io doesn't have to be handled by io_uring.
+> >>>>
+> >>>> Yes, our backend define its own communicating method.
+> >>>>
+> >>>>>
+> >>>>> But IMO io_uring is much more efficient, so I'd try to make async io
+> >>>>> (io uring) as the 1st citizen in the framework, especially for new
+> >>>>> driver.
+> >>>>>
+> >>>>> But it can support other way really, such as use io_uring with eventfd,
+> >>>>> the other userspace context can handle io, then wake up io_uring context
+> >>>>> via eventfd. You may not use io_uring for handling io, but you still
+> >>>>> need to communicate with the context for handling io_uring passthrough
+> >>>>> command, and one mechanism(such as eventfd) has to be there for the
+> >>>>> communication.
+> >>>>
+> >>>> Ok, eventfd may be helpful. 
+> >>>> If you read my API, you may find ubdlib_complete_io_request().
+> >>>> I think the backend io worker thread can call this function to tell the 
+> >>>> ubd queue thread(the io_uring context in it) to commit the IO.
+> >>>
+> >>> The ubdlib_complete_io_request() has to be called in the same pthread
+> >>> context, that looks not flexible. When you handle IO via non-io_uring in the same
+> >>> context, the cpu utilization in submission/completion side should be
+> >>> higher than io_uring. And this way should be worse than the usage in
+> >>> ubd/loop, that is why I suggest to use one io_uring for handling both
+> >>> io command and io request if possible.
+> >>
+> >> ubdlib_complete_io_request() can be called in the io worker thread,
+> >> not in the ubdsrv queue thread(with the io_uring context for handling uring_cmd).
+> >>
+> >> You can find ubd_runner.c in my libubd repo. There are many io worker
+> >> threads for each ubdsrv queue to handle IO requests.
+> >>
+> >> Actually this idea comes from tcmu-runner. The data flow is:
+> >>
+> >> 1) in ubdsrv queue thread, io_uring_enter(): returns(IO reqs received from blk-mq)
+> >>
+> >> 2) in ubdsrv queue thread, ubdsrv_reap_requests(): iterate on each cqe(with an IO req),
+> >>    
+> >>    for READ/WRITE requests, ubd_aio_queue_io() to enqueue the IO req into a io_queue
+> >>    (each ubdsrv queue has one io_queue). This IO req's status is IO_HANDLING_ASYNC.
+> >>     
+> >>    for other simple(can be handled very quickly), 
+> >>    handle it right now and call ubdlib_complete_io_request()
+> >>
+> >> 3) in ubdsrv queue thread, ubdsrv_commit_and_fetch(): iterate on all IO slots per ubdsrv queue
+> >>    and setup sqe if one IO(IO completion) is ready to commit.
+> >>    
+> >>    Here, some IO slots are still IO_HANDLING_ASYNC so no sqe is generated for them.
+> >>
+> >>
+> >> 4)  in ubdsrv queue thread, io_uring_enter(): submit all sqes and wait for cqes
+> >>     (io_uring_enter() will return after at least one IO req is received from blk-mq)
+> >>    
+> >> 5) When 3) or 4) happens, at the same time in ubdsrv queue IO worker threads:
+> >>    each io worker thread try to deque and handle one IO req from io_queue per ubdsrv queue.
+> >>    
+> >>    After the IO worker handles the IO req(WRITE/READ), it calls ubdlib_complete_io_request()
+> >>    This function can mark this  IO req's status to ready to commit.
+> >>
+> >> IO handling/completion and io_uring_enter() can happen at the same time.
+> >>
+> >> Besides, io_uring_enter can:
+> >>
+> >> 1) block and wait for cqes until at least
+> >> one blk-mq req comes from queue_rq()
+> >>
+> >> 2) submit sqes(with last IO completion and next fetch)
+> >>
+> >> so I have to consider how to notify io_uring about io completion 
+> >> after io_uring_enter() is slept(block and wait for cqes).
+> > 
+> > Yeah, that was exactly my question, :-)
+> > 
+> >>
+> >> In current version of ubd_runner(an async libubd target), I try to use an "unblock"
+> >> io_uring_enter_timeout() and caller can set a timeout value for it.
+> >> So IO completions happen after io_uring_enter_timeout() call can be committed
+> >> by next io_uring_enter_timeout() call...
+> >>
+> >> But this is a very ugly implementation 
+> >> because I may waste CPU on useless loops in ubdsrv queue thread if
+> >> blk-mq reqs do not income frequently.
+> >>
+> >> You mentioned that eventfd may be helpful and I agree with you. :)
+> >> I can register an eventfd in io_uring after ubd_aio_queue_io() and write the eventfd
+> >> in  ubdlib_complete_io_request().
+> >>
+> >> I will fix my code.
+> > 
+> > FYI, there is one example about using eventfd to wakeup io_uring, which
+> > can be added to the library for your usecase:
+> > 
+> > https://gist.github.com/1Jo1/6496d1b8b6b363c301271340e2eab95b
+> 
+> Thanks, will take a view.
+> 
+> > 
+> >>
+> >>>
+> >>>>
+> >>>>
+> >>>>
+> >>>>>
+> >>>>>>
+> >>>>>> (2) ubdsrv forks a daemon and it takes over everything.
+> >>>>>>     Users should type "list/stop/del" ctrl-commands to interact with
+> >>>>>>     the daemon. It is inconvenient for our backend
+> >>>>>>     because it has threads(from a C++ thread library) running inside.
+> >>>>>
+> >>>>> No, list/stop/del won't interact with the daemon, and the per-queue
+> >>>>> pthread is only handling IO commands(io_uring passthrough) and IO request.
+> >>>>>
+> >>>>
+> >>>>
+> >>>> Sorry I made a mistake.
+> >>>>
+> >>>> I mean from user's view, 
+> >>>> he has to type list/del/stop from cmdlind to control the daemon.
+> >>>> (I know the control flow is cmdline-->ubd_drv.c-->ubdsrv daemon).
+> >>>>
+> >>>> This is a little weird if we try to make a ubd library.
+> >>>> So I actually provides APIs in libubd for users to do these list/del/stop works.
+> >>>
+> >>> OK, that is fine to export APIs for admin purpose.
+> >>>
+> >>>>
+> >>>>
+> >>>>>>
+> >>>>>> (3) ubdsrv PRE-allocates internal data buffers for each ubd device.
+> >>>>>>     The data flow is:
+> >>>>>>     bio vectors <-1-> ubdsrv data buffer <-2-> backend buffer(our RPC buffer).
+> >>>>>>     Since ubdsrv does not export its internal data buffer to backend,
+> >>>>>>     the second copy is unavoidable. 
+> >>>>>>     PRE-allocating data buffer may not be a good idea for wasting memory
+> >>>>>>     if there are hundreds of ubd devices(/dev/ubdbX).
+> >>>>>
+> >>>>> The preallocation is just virtual memory, which is cheap and not pinned, but
+> >>>>> ubdsrv does support buffer provided by io command, see:
+> >>>>>
+> >>>>> https://github.com/ming1/linux/commit/0a964a1700e11ba50227b6d633edf233bdd8a07d
+> >>>>
+> >>>> Actually I discussed on the design of pre-allocation in your RFC patch for ubd_drv
+> >>>> but you did not reply :)
+> >>>>
+> >>>> I paste it here:
+> >>>>
+> >>>> "I am worried about the fixed-size(size is max io size, 256KiB) pre-allocated data buffers in UBDSRV
+> >>>> may consume too much memory. Do you mean these pages can be reclaimed by sth like madvise()?
+> >>>> If (1)swap is not set and (2)madvise() is not called, these pages may not be reclaimed."
+> >>>>
+> >>>> I observed that your ubdsrv use posix_memalign() to pre-allocate data buffers, 
+> >>>> and I have already noticed the memory cost while testing your ubdsrv with hundreds of /dev/ubdbX.
+> >>>
+> >>> Usually posix_memalign just allocates virtual memory which is unlimited
+> >>> in 64bit arch, and pages should be allocated until the buffer is read or write.
+> >>> After the READ/WRITE is done, kernel still can reclaim the pages in this
+> >>> virtual memory.
+> >>>
+> >>> In future, we still may optimize the memory uses via madvise, such as
+> >>> MADV_DONTNEED, after the slot is idle for long enough.
+> >>
+> >> Ok, thanks for explanation. 
+> >>
+> >>>
+> >>>>
+> >>>> Another IMPORTANT problem is your commit:
+> >>>> https://github.com/ming1/linux/commit/0a964a1700e11ba50227b6d633edf233bdd8a07d
+> >>>> may be not helpful for WRITE requests if I understand correctly.
+> >>>>
+> >>>> Consider this data flow:
+> >>>>
+> >>>> 1. ubdsrv commits an IO req(req1, a READ req).
+> >>>>
+> >>>> 2. ubdsrv issues a sqe(UBD_IO_COMMIT_AND_FETCH_REQ), and sets io->addr to addr1.
+> >>>>    addr1 is the addr of buffer user passed.
+> >>>>    
+> >>>>
+> >>>> 3. ubd gets the sqe and commits req1, sets io->addr to addr1.
+> >>>>
+> >>>> 4. ubd gets IO req(req2, a WRITE req) from blk-mq(queue_rq) and commit a cqe.
+> >>>>
+> >>>> 5. ubd copys data to be written from biovec to addr1 in a task_work.
+> >>>>
+> >>>> 6. ubdsrv gets the cqe and tell the IO target to handle req2.
+> >>>>
+> >>>> 7. IO target handles req2. It is a WRITE req so target issues a io_uring write
+> >>>>    cmd(with buffer set to addr1).
+> >>>>
+> >>>>
+> >>>>
+> >>>> The problem happens in 5). You cannot know the actual data_len of an blk-mq req
+> >>>> until you get one in queue_rq. So length of addr1 may be less than data_len.
+> >>>
+> >>> So far, the actual length of buffer has to be set as at least rq_max_blocks, since
+> >>> we set it as ubd queue's max hw sectors. Yeah, you may argue memory
+> >>> waste, but process virtual address is unlimited for 64bit arch, and
+> >>> pages are allocated until actual read/write is started.
+> >>
+> >> Ok, since I allow users to config rq_max_blocks in libubd, 
+> >> it's users' responsibility to ensure length of user buffers
+> >> is at least rq_max_blocks.
+> >>
+> >> Now I agree on your commit:
+> >> https://github.com/ming1/linux/commit/0a964a1700e11ba50227b6d633edf233bdd8a07d
+> >>
+> >> Provide WRITE buffer in advance(when sending COMMIT_AND_FETCH) seems OK :)
+> >>
+> >>>
+> >>>>>
+> >>>>>>
+> >>>>>> To better use ubd in more complicated scenarios, we have developed libubd.
+> >>>>>> It does not assume implementation of backend and can be embedded into it.
+> >>>>>> We refer to the code structure of tcmu-runner[4], 
+> >>>>>> which includes a library(libtcmu) for users 
+> >>>>>> to embed tcmu-runner inside backend's code. 
+> >>>>>> It:
+> >>>>>>
+> >>>>>> (1) Does not fork/pthread_create but embedded in backend's threads
+> >>>>>
+> >>>>> That is because your backend may not use io_uring, I guess.
+> >>>>>
+> >>>>> But it is pretty easy to move the decision of creating pthread to target
+> >>>>> code, which can be done in the interface of .prepare_target().
+> >>>>
+> >>>> I think the library should not create any thread if we want a libubd.
+> >>>
+> >>> I Agree.
+> >>>
+> >>>>
+> >>>>>
+> >>>>>>
+> >>>>>> (2) Provides libubd APIs for backend to add/delete ubd devices 
+> >>>>>>     and fetch/commit IO requests
+> >>>>>
+> >>>>> The above could be the main job of libubd.
+> >>>>
+> >>>> indeed.
+> >>>>
+> >>>>>
+> >>>>>>
+> >>>>>> (3) simply passes backend-provided data buffers to ubd_drv.c in kernel,
+> >>>>>>     since the backend actually has no knowledge 
+> >>>>>>     on incoming data size until it gets an IO descriptor.
+> >>>>>
+> >>>>> I can understand your requirement, not look at your code yet, but libubd
+> >>>>> should be pretty thin from function viewpoint, and there are lots of common
+> >>>>> things to abstract/share among all drivers, please see recent ubdsrv change:
+> >>>>>
+> >>>>> https://github.com/ming1/ubdsrv/commits/master
+> >>>>>
+> >>>>> in which:
+> >>>>> 	- coroutine is added for handling target io
+> >>>>> 	- the target interface(ubdsrv_tgt_type) has been cleaned/improved for
+> >>>>> 	supporting complicated target
+> >>>>> 	- c++ support
+> >>>>
+> >>>> Yes, I have read your coroutine code but I am not an expert of C++ 20.:(
+> >>>> I think it is actually target(backend) design and ubd should not assume 
+> >>>> how the backend handle IOs. 
+> >>>>
+> >>>> The work ubd in userspace has to be done is:
+> >>>>
+> >>>> 1) give some IO descriptors to backend, such as ubd_get_io_requests()
+> >>>>
+> >>>> 2) get IO completion form backend, such as ubd_complete_io_requests()
+> >>>
+> >>> Or the user provides/registers two callbacks: handle_io_async() and
+> >>> io_complete(), the former is called when one request comes from ubd
+> >>> driver, the latter(optional) is called when one io is done.
+> >>>
+> >>> Also you didn't mention how you notify io_uring about io completion after
+> >>> io_uring_enter() is slept if your backend code doesn't use io_uring to
+> >>> handle io.
+> >>>
+> >>> I think one communication mechanism(such as eventfd) is needed for your
+> >>> case.
+> >>
+> >> Ok, I will try eventfd with io_uring.
+> >>
+> >>>
+> >>>>
+> >>>>
+> >>>>
+> >>>>>
+> >>>>> IMO, libubd isn't worth of one freshly new project, and it could be integrated
+> >>>>> into ubdsrv easily. The potential users could be existed usersapce
+> >>>>> block driver projects.
+> >>>>
+> >>>> Yes, so many userspace storage systems can use ubd!
+> >>>> You may look at tcmu-runner. It:
+> >>>>
+> >>>> 1) provides a library(libtcmu.c) for those who have a existing backend.
+> >>>>
+> >>>> 2) provides a runner(main.c in tcmu-runner) like your ubdsrv 
+> >>>>    for those who just want to run it. 
+> >>>>    And the runner is build on top of libtcmu.
+> >>>>
+> >>>>>
+> >>>>> If you don't object, I am happy to co-work with you to add the support
+> >>>>> for libubd in ubdsrv, then we can avoid to invent a wheel
+> >>>>
+> >>>> +1 :)
+> >>>
+> >>> Thinking of further, I'd suggest to split ubdsrv into two parts:
+> >>>
+> >>> 1) libubdsrv
+> >>> - provide APIs like what you did in libubd
+> >>> - provide API for notify io_uring(handling io command) that one io is
+> >>> completed, and the API should support handling IO from other context
+> >>> (not same with the io_uring context for handling io command).
+> >>>
+> >>> 2) ubd target
+> >>> - built on libubdsrv, such as ubd command is built on libubdsrv, and
+> >>> specific target implementation is built on the library too.
+> >>>
+> >>> It shouldn't be hard to work towards this direction, and I guess this
+> >>> way should make current target implementation more clean.
+> >>>
+> >>
+> >> Yes, this is like tcmu-runner's structure: a libtcmu and some target
+> >> Thanks, Ming.  Glad to co-work with you.
+> >>
+> >> I will take your advice and improve libubd(the communication mechanism, maybe eventfd).
+> > 
+> > I have added libublk branch for working towards this direction, if we
+> > cowork on libublk, please write patch against this branch, then I can
+> > apply your patch directly.
+> > 
+> > https://github.com/ming1/ubdsrv/tree/libublk
+> 
+> Ok, but It concerns me that libubdsrv may change current ubdsrv project's structure a lot
+> because:
+> 1) target implementation will be built on top of libubdsrv and the target
+>    should create pthread(ubdsrv loop) itself.
+> 
+> 2) have to remove pthread/process(daemon) in current ubdsrv to build libubdsrv.
+>    It was really a hard job. :-(
 
-If the Memblock simulator was compiled with VERBOSE=1:
-- prefix_push(): appends the given string to a prefix string that will be
-  printed in test_fail() and test_pass*().
+Both the two are not hard to do, and turns out that making libubdsrv is actually
+one big cleanup.
 
-- prefix_pop(): removes the last prefix from the prefix string.
+All these works[1] are basically done:
 
-- prefix_reset(): clears the prefix string.
+1) libublksrv
+- built .so and .a are under lib/
+- exported header file is include/ublksrv.h
+- so any other application can make ublk device against this library
+- eventfd notification is added too, so io handling doesn't have to
+be done via io_uring, one callback of ->handle_event(), and two APIs
+are added for this support
 
-- test_fail(): prints a message after a test fails containing the test
-  number of the failing test and the prefix.
+2) ublk/ubd utility
+- built against libublksrv, meantime it uses the private header of the
+library too, which is fine, since the two are in same project
 
-- test_pass(): prints a message after a test passes containing its test
-  number and the prefix.
+3) two examples
+- demo_null.c: one < 200 LOC standalone example to show how to make
+a ubd/null block device against libublksrv
 
-- test_print(): prints the given formatted output string.
+- demo_event.c: one simple standalone example(~300LOC) to make one ublk
+disk by handling io via another pthread(not by io_uring) against
+libublksrv
 
-- test_pass_pop(): runs test_pass() followed by prefix_pop().
+Any comments/feedback/tests are welcome.
 
-- PREFIX_PUSH(): runs prefix_push(__func__).
 
-If the Memblock simulator was not compiled with VERBOSE=1, these
-functions/macros do nothing.
+[1] libublk
+https://github.com/ming1/ubdsrv/tree/libublk
 
-Add the assert wrapper macros ASSERT_EQ(), ASSERT_NE(), and ASSERT_LT().
-If the assert condition fails, these macros call test_fail() before
-executing assert().
 
-Acked-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Shaoqin Huang <shaoqin.huang@intel.com>
-Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
----
- tools/testing/memblock/tests/alloc_api.c      | 225 +++++++----
- .../memblock/tests/alloc_helpers_api.c        | 129 ++++---
- tools/testing/memblock/tests/alloc_nid_api.c  | 351 +++++++++++-------
- tools/testing/memblock/tests/basic_api.c      | 337 +++++++++++------
- tools/testing/memblock/tests/common.c         |  57 +++
- tools/testing/memblock/tests/common.h         |  62 ++++
- 6 files changed, 817 insertions(+), 344 deletions(-)
-
-diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
-index d1aa7e15c18d..a14f38eb8a89 100644
---- a/tools/testing/memblock/tests/alloc_api.c
-+++ b/tools/testing/memblock/tests/alloc_api.c
-@@ -10,6 +10,8 @@ static int alloc_top_down_simple_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_2;
- 	phys_addr_t expected_start;
- 
-@@ -19,12 +21,14 @@ static int alloc_top_down_simple_check(void)
- 
- 	allocated_ptr = memblock_alloc(size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == size);
--	assert(rgn->base == expected_start);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, expected_start);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -55,6 +59,8 @@ static int alloc_top_down_disjoint_check(void)
- 	struct region r1;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r2_size = SZ_16;
- 	/* Use custom alignment */
- 	phys_addr_t alignment = SMP_CACHE_BYTES * 2;
-@@ -73,15 +79,17 @@ static int alloc_top_down_disjoint_check(void)
- 
- 	allocated_ptr = memblock_alloc(r2_size, alignment);
- 
--	assert(allocated_ptr);
--	assert(rgn1->size == r1.size);
--	assert(rgn1->base == r1.base);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn1->size, r1.size);
-+	ASSERT_EQ(rgn1->base, r1.base);
- 
--	assert(rgn2->size == r2_size);
--	assert(rgn2->base == expected_start);
-+	ASSERT_EQ(rgn2->size, r2_size);
-+	ASSERT_EQ(rgn2->base, expected_start);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -101,6 +109,8 @@ static int alloc_top_down_before_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	/*
- 	 * The first region ends at the aligned address to test region merging
- 	 */
-@@ -114,12 +124,14 @@ static int alloc_top_down_before_check(void)
- 
- 	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == total_size);
--	assert(rgn->base == memblock_end_of_DRAM() - total_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -141,6 +153,8 @@ static int alloc_top_down_after_check(void)
- 	struct region r1;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r2_size = SZ_512;
- 	phys_addr_t total_size;
- 
-@@ -158,12 +172,14 @@ static int alloc_top_down_after_check(void)
- 
- 	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == total_size);
--	assert(rgn->base == r1.base - r2_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, r1.base - r2_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -186,6 +202,8 @@ static int alloc_top_down_second_fit_check(void)
- 	struct region r1, r2;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_1K;
- 	phys_addr_t total_size;
- 
-@@ -204,12 +222,14 @@ static int alloc_top_down_second_fit_check(void)
- 
- 	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == r2.size + r3_size);
--	assert(rgn->base == r2.base - r3_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, r2.size + r3_size);
-+	ASSERT_EQ(rgn->base, r2.base - r3_size);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -231,6 +251,8 @@ static int alloc_in_between_generic_check(void)
- 	struct region r1, r2;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t gap_size = SMP_CACHE_BYTES;
- 	phys_addr_t r3_size = SZ_64;
- 	/*
-@@ -254,12 +276,14 @@ static int alloc_in_between_generic_check(void)
- 
- 	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == total_size);
--	assert(rgn->base == r1.base - r2.size - r3_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, r1.base - r2.size - r3_size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -281,6 +305,8 @@ static int alloc_small_gaps_generic_check(void)
- {
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t region_size = SZ_1K;
- 	phys_addr_t gap_size = SZ_256;
- 	phys_addr_t region_end;
-@@ -296,7 +322,9 @@ static int alloc_small_gaps_generic_check(void)
- 
- 	allocated_ptr = memblock_alloc(region_size, SMP_CACHE_BYTES);
- 
--	assert(!allocated_ptr);
-+	ASSERT_EQ(allocated_ptr, NULL);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -309,6 +337,8 @@ static int alloc_all_reserved_generic_check(void)
- {
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	setup_memblock();
- 
- 	/* Simulate full memory */
-@@ -316,7 +346,9 @@ static int alloc_all_reserved_generic_check(void)
- 
- 	allocated_ptr = memblock_alloc(SZ_256, SMP_CACHE_BYTES);
- 
--	assert(!allocated_ptr);
-+	ASSERT_EQ(allocated_ptr, NULL);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -338,6 +370,8 @@ static int alloc_no_space_generic_check(void)
- {
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	setup_memblock();
- 
- 	phys_addr_t available_size = SZ_256;
-@@ -348,7 +382,9 @@ static int alloc_no_space_generic_check(void)
- 
- 	allocated_ptr = memblock_alloc(SZ_1K, SMP_CACHE_BYTES);
- 
--	assert(!allocated_ptr);
-+	ASSERT_EQ(allocated_ptr, NULL);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -369,6 +405,8 @@ static int alloc_limited_space_generic_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t available_size = SZ_256;
- 	phys_addr_t reserved_size = MEM_SIZE - available_size;
- 
-@@ -379,12 +417,14 @@ static int alloc_limited_space_generic_check(void)
- 
- 	allocated_ptr = memblock_alloc(available_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == MEM_SIZE);
--	assert(rgn->base == memblock_start_of_DRAM());
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, MEM_SIZE);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, MEM_SIZE);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == MEM_SIZE);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -399,14 +439,18 @@ static int alloc_no_memory_generic_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 
- 	allocated_ptr = memblock_alloc(SZ_1K, SMP_CACHE_BYTES);
- 
--	assert(!allocated_ptr);
--	assert(rgn->size == 0);
--	assert(rgn->base == 0);
--	assert(memblock.reserved.total_size == 0);
-+	ASSERT_EQ(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, 0);
-+	ASSERT_EQ(rgn->base, 0);
-+	ASSERT_EQ(memblock.reserved.total_size, 0);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -421,16 +465,20 @@ static int alloc_bottom_up_simple_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	setup_memblock();
- 
- 	allocated_ptr = memblock_alloc(SZ_2, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == SZ_2);
--	assert(rgn->base == memblock_start_of_DRAM());
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, SZ_2);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == SZ_2);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, SZ_2);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -459,6 +507,8 @@ static int alloc_bottom_up_disjoint_check(void)
- 	struct region r1;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r2_size = SZ_16;
- 	/* Use custom alignment */
- 	phys_addr_t alignment = SMP_CACHE_BYTES * 2;
-@@ -477,16 +527,18 @@ static int alloc_bottom_up_disjoint_check(void)
- 
- 	allocated_ptr = memblock_alloc(r2_size, alignment);
- 
--	assert(allocated_ptr);
-+	ASSERT_NE(allocated_ptr, NULL);
- 
--	assert(rgn1->size == r1.size);
--	assert(rgn1->base == r1.base);
-+	ASSERT_EQ(rgn1->size, r1.size);
-+	ASSERT_EQ(rgn1->base, r1.base);
- 
--	assert(rgn2->size == r2_size);
--	assert(rgn2->base == expected_start);
-+	ASSERT_EQ(rgn2->size, r2_size);
-+	ASSERT_EQ(rgn2->base, expected_start);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -506,6 +558,8 @@ static int alloc_bottom_up_before_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_512;
- 	phys_addr_t r2_size = SZ_128;
- 	phys_addr_t total_size = r1_size + r2_size;
-@@ -516,12 +570,14 @@ static int alloc_bottom_up_before_check(void)
- 
- 	allocated_ptr = memblock_alloc(r1_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == total_size);
--	assert(rgn->base == memblock_start_of_DRAM());
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -542,6 +598,8 @@ static int alloc_bottom_up_after_check(void)
- 	struct region r1;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r2_size = SZ_512;
- 	phys_addr_t total_size;
- 
-@@ -559,12 +617,14 @@ static int alloc_bottom_up_after_check(void)
- 
- 	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == total_size);
--	assert(rgn->base == r1.base);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, r1.base);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -588,6 +648,8 @@ static int alloc_bottom_up_second_fit_check(void)
- 	struct region r1, r2;
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_1K;
- 	phys_addr_t total_size;
- 
-@@ -606,12 +668,14 @@ static int alloc_bottom_up_second_fit_check(void)
- 
- 	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == r2.size + r3_size);
--	assert(rgn->base == r2.base);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, r2.size + r3_size);
-+	ASSERT_EQ(rgn->base, r2.base);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -619,6 +683,7 @@ static int alloc_bottom_up_second_fit_check(void)
- /* Test case wrappers */
- static int alloc_simple_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_top_down_simple_check();
- 	memblock_set_bottom_up(true);
-@@ -629,6 +694,7 @@ static int alloc_simple_check(void)
- 
- static int alloc_disjoint_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_top_down_disjoint_check();
- 	memblock_set_bottom_up(true);
-@@ -639,6 +705,7 @@ static int alloc_disjoint_check(void)
- 
- static int alloc_before_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_top_down_before_check();
- 	memblock_set_bottom_up(true);
-@@ -649,6 +716,7 @@ static int alloc_before_check(void)
- 
- static int alloc_after_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_top_down_after_check();
- 	memblock_set_bottom_up(true);
-@@ -659,6 +727,7 @@ static int alloc_after_check(void)
- 
- static int alloc_in_between_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_in_between_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -669,6 +738,7 @@ static int alloc_in_between_check(void)
- 
- static int alloc_second_fit_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_top_down_second_fit_check();
- 	memblock_set_bottom_up(true);
-@@ -679,6 +749,7 @@ static int alloc_second_fit_check(void)
- 
- static int alloc_small_gaps_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_small_gaps_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -689,6 +760,7 @@ static int alloc_small_gaps_check(void)
- 
- static int alloc_all_reserved_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_all_reserved_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -699,6 +771,7 @@ static int alloc_all_reserved_check(void)
- 
- static int alloc_no_space_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_no_space_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -709,6 +782,7 @@ static int alloc_no_space_check(void)
- 
- static int alloc_limited_space_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_limited_space_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -719,6 +793,7 @@ static int alloc_limited_space_check(void)
- 
- static int alloc_no_memory_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_no_memory_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -729,6 +804,12 @@ static int alloc_no_memory_check(void)
- 
- int memblock_alloc_checks(void)
- {
-+	const char *func_testing = "memblock_alloc";
-+
-+	prefix_reset();
-+	prefix_push(func_testing);
-+	test_print("Running %s tests...\n", func_testing);
-+
- 	reset_memblock_attributes();
- 	dummy_physical_memory_init();
- 
-@@ -746,5 +827,7 @@ int memblock_alloc_checks(void)
- 
- 	dummy_physical_memory_cleanup();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
-diff --git a/tools/testing/memblock/tests/alloc_helpers_api.c b/tools/testing/memblock/tests/alloc_helpers_api.c
-index 963a966db461..1069b4bdd5fd 100644
---- a/tools/testing/memblock/tests/alloc_helpers_api.c
-+++ b/tools/testing/memblock/tests/alloc_helpers_api.c
-@@ -21,6 +21,8 @@ static int alloc_from_simple_generic_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_16;
- 	phys_addr_t min_addr;
- 
-@@ -31,14 +33,16 @@ static int alloc_from_simple_generic_check(void)
- 	allocated_ptr = memblock_alloc_from(size, SMP_CACHE_BYTES, min_addr);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, min_addr);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == min_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -64,6 +68,8 @@ static int alloc_from_misaligned_generic_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_32;
- 	phys_addr_t min_addr;
- 
-@@ -75,14 +81,16 @@ static int alloc_from_misaligned_generic_check(void)
- 	allocated_ptr = memblock_alloc_from(size, SMP_CACHE_BYTES, min_addr);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_end_of_DRAM() - SMP_CACHE_BYTES);
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - SMP_CACHE_BYTES);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -110,6 +118,8 @@ static int alloc_from_top_down_high_addr_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_32;
- 	phys_addr_t min_addr;
- 
-@@ -120,12 +130,14 @@ static int alloc_from_top_down_high_addr_check(void)
- 
- 	allocated_ptr = memblock_alloc_from(size, SMP_CACHE_BYTES, min_addr);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_end_of_DRAM() - SMP_CACHE_BYTES);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - SMP_CACHE_BYTES);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -151,6 +163,8 @@ static int alloc_from_top_down_no_space_above_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_64;
- 	phys_addr_t r2_size = SZ_2;
- 	phys_addr_t total_size = r1_size + r2_size;
-@@ -165,12 +179,14 @@ static int alloc_from_top_down_no_space_above_check(void)
- 
- 	allocated_ptr = memblock_alloc_from(r1_size, SMP_CACHE_BYTES, min_addr);
- 
--	assert(allocated_ptr);
--	assert(rgn->base == min_addr - r1_size);
--	assert(rgn->size == total_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->base, min_addr - r1_size);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -186,6 +202,8 @@ static int alloc_from_top_down_min_addr_cap_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_64;
- 	phys_addr_t min_addr;
- 	phys_addr_t start_addr;
-@@ -199,12 +217,14 @@ static int alloc_from_top_down_min_addr_cap_check(void)
- 
- 	allocated_ptr = memblock_alloc_from(r1_size, SMP_CACHE_BYTES, min_addr);
- 
--	assert(allocated_ptr);
--	assert(rgn->base == start_addr);
--	assert(rgn->size == MEM_SIZE);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->base, start_addr);
-+	ASSERT_EQ(rgn->size, MEM_SIZE);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, MEM_SIZE);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == MEM_SIZE);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -230,6 +250,8 @@ static int alloc_from_bottom_up_high_addr_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_32;
- 	phys_addr_t min_addr;
- 
-@@ -240,12 +262,14 @@ static int alloc_from_bottom_up_high_addr_check(void)
- 
- 	allocated_ptr = memblock_alloc_from(size, SMP_CACHE_BYTES, min_addr);
- 
--	assert(allocated_ptr);
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_start_of_DRAM());
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -270,6 +294,8 @@ static int alloc_from_bottom_up_no_space_above_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_64;
- 	phys_addr_t min_addr;
- 	phys_addr_t r2_size;
-@@ -284,12 +310,14 @@ static int alloc_from_bottom_up_no_space_above_check(void)
- 
- 	allocated_ptr = memblock_alloc_from(r1_size, SMP_CACHE_BYTES, min_addr);
- 
--	assert(allocated_ptr);
--	assert(rgn->base == memblock_start_of_DRAM());
--	assert(rgn->size == r1_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
-+	ASSERT_EQ(rgn->size, r1_size);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == r1_size + r2_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, r1_size + r2_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -304,6 +332,8 @@ static int alloc_from_bottom_up_min_addr_cap_check(void)
- 	struct memblock_region *rgn = &memblock.reserved.regions[0];
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_64;
- 	phys_addr_t min_addr;
- 	phys_addr_t start_addr;
-@@ -315,12 +345,14 @@ static int alloc_from_bottom_up_min_addr_cap_check(void)
- 
- 	allocated_ptr = memblock_alloc_from(r1_size, SMP_CACHE_BYTES, min_addr);
- 
--	assert(allocated_ptr);
--	assert(rgn->base == start_addr);
--	assert(rgn->size == r1_size);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(rgn->base, start_addr);
-+	ASSERT_EQ(rgn->size, r1_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == r1_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, r1_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -328,6 +360,7 @@ static int alloc_from_bottom_up_min_addr_cap_check(void)
- /* Test case wrappers */
- static int alloc_from_simple_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_from_simple_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -338,6 +371,7 @@ static int alloc_from_simple_check(void)
- 
- static int alloc_from_misaligned_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_from_misaligned_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -348,6 +382,7 @@ static int alloc_from_misaligned_check(void)
- 
- static int alloc_from_high_addr_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_from_top_down_high_addr_check();
- 	memblock_set_bottom_up(true);
-@@ -358,6 +393,7 @@ static int alloc_from_high_addr_check(void)
- 
- static int alloc_from_no_space_above_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_from_top_down_no_space_above_check();
- 	memblock_set_bottom_up(true);
-@@ -368,6 +404,7 @@ static int alloc_from_no_space_above_check(void)
- 
- static int alloc_from_min_addr_cap_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_from_top_down_min_addr_cap_check();
- 	memblock_set_bottom_up(true);
-@@ -378,6 +415,12 @@ static int alloc_from_min_addr_cap_check(void)
- 
- int memblock_alloc_helpers_checks(void)
- {
-+	const char *func_testing = "memblock_alloc_from";
-+
-+	prefix_reset();
-+	prefix_push(func_testing);
-+	test_print("Running %s tests...\n", func_testing);
-+
- 	reset_memblock_attributes();
- 	dummy_physical_memory_init();
- 
-@@ -389,5 +432,7 @@ int memblock_alloc_helpers_checks(void)
- 
- 	dummy_physical_memory_cleanup();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
-diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
-index 6390206e50e1..255fd514e9f5 100644
---- a/tools/testing/memblock/tests/alloc_nid_api.c
-+++ b/tools/testing/memblock/tests/alloc_nid_api.c
-@@ -21,6 +21,8 @@ static int alloc_try_nid_top_down_simple_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_128;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -36,15 +38,17 @@ static int alloc_try_nid_top_down_simple_check(void)
- 	b = (char *)allocated_ptr;
- 	rgn_end = rgn->base + rgn->size;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, max_addr - size);
-+	ASSERT_EQ(rgn_end, max_addr);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == max_addr - size);
--	assert(rgn_end == max_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -72,6 +76,8 @@ static int alloc_try_nid_top_down_end_misaligned_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_128;
- 	phys_addr_t misalign = SZ_2;
- 	phys_addr_t min_addr;
-@@ -88,15 +94,17 @@ static int alloc_try_nid_top_down_end_misaligned_check(void)
- 	b = (char *)allocated_ptr;
- 	rgn_end = rgn->base + rgn->size;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == max_addr - size - misalign);
--	assert(rgn_end < max_addr);
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, max_addr - size - misalign);
-+	ASSERT_LT(rgn_end, max_addr);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -122,6 +130,8 @@ static int alloc_try_nid_exact_address_generic_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_1K;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -137,15 +147,17 @@ static int alloc_try_nid_exact_address_generic_check(void)
- 	b = (char *)allocated_ptr;
- 	rgn_end = rgn->base + rgn->size;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, min_addr);
-+	ASSERT_EQ(rgn_end, max_addr);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == min_addr);
--	assert(rgn_end == max_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -173,6 +185,8 @@ static int alloc_try_nid_top_down_narrow_range_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_256;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -186,14 +200,16 @@ static int alloc_try_nid_top_down_narrow_range_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, max_addr - size);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == max_addr - size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -222,6 +238,8 @@ static int alloc_try_nid_low_max_generic_check(void)
- {
- 	void *allocated_ptr = NULL;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_1K;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -234,7 +252,9 @@ static int alloc_try_nid_low_max_generic_check(void)
- 	allocated_ptr = memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 
--	assert(!allocated_ptr);
-+	ASSERT_EQ(allocated_ptr, NULL);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -259,6 +279,8 @@ static int alloc_try_nid_min_reserved_generic_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_128;
- 	phys_addr_t r2_size = SZ_64;
- 	phys_addr_t total_size = r1_size + r2_size;
-@@ -278,14 +300,16 @@ static int alloc_try_nid_min_reserved_generic_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn->size == total_size);
--	assert(rgn->base == reserved_base);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, reserved_base);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -310,6 +334,8 @@ static int alloc_try_nid_max_reserved_generic_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r1_size = SZ_64;
- 	phys_addr_t r2_size = SZ_128;
- 	phys_addr_t total_size = r1_size + r2_size;
-@@ -327,14 +353,16 @@ static int alloc_try_nid_max_reserved_generic_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, min_addr);
- 
--	assert(rgn->size == total_size);
--	assert(rgn->base == min_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -364,6 +392,8 @@ static int alloc_try_nid_top_down_reserved_with_space_check(void)
- 	char *b;
- 	struct region r1, r2;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_64;
- 	phys_addr_t gap_size = SMP_CACHE_BYTES;
- 	phys_addr_t total_size;
-@@ -389,17 +419,19 @@ static int alloc_try_nid_top_down_reserved_with_space_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn1->size, r1.size + r3_size);
-+	ASSERT_EQ(rgn1->base, max_addr - r3_size);
- 
--	assert(rgn1->size == r1.size + r3_size);
--	assert(rgn1->base == max_addr - r3_size);
-+	ASSERT_EQ(rgn2->size, r2.size);
-+	ASSERT_EQ(rgn2->base, r2.base);
- 
--	assert(rgn2->size == r2.size);
--	assert(rgn2->base == r2.base);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -427,6 +459,8 @@ static int alloc_try_nid_reserved_full_merge_generic_check(void)
- 	char *b;
- 	struct region r1, r2;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_64;
- 	phys_addr_t total_size;
- 	phys_addr_t max_addr;
-@@ -451,14 +485,16 @@ static int alloc_try_nid_reserved_full_merge_generic_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn->size == total_size);
--	assert(rgn->base == r2.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+	ASSERT_EQ(rgn->base, r2.base);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -489,6 +525,8 @@ static int alloc_try_nid_top_down_reserved_no_space_check(void)
- 	char *b;
- 	struct region r1, r2;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_256;
- 	phys_addr_t gap_size = SMP_CACHE_BYTES;
- 	phys_addr_t total_size;
-@@ -514,17 +552,19 @@ static int alloc_try_nid_top_down_reserved_no_space_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn1->size, r1.size);
-+	ASSERT_EQ(rgn1->base, r1.base);
- 
--	assert(rgn1->size == r1.size);
--	assert(rgn1->base == r1.base);
-+	ASSERT_EQ(rgn2->size, r2.size + r3_size);
-+	ASSERT_EQ(rgn2->base, r2.base - r3_size);
- 
--	assert(rgn2->size == r2.size + r3_size);
--	assert(rgn2->base == r2.base - r3_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -554,6 +594,8 @@ static int alloc_try_nid_reserved_all_generic_check(void)
- 	void *allocated_ptr = NULL;
- 	struct region r1, r2;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_256;
- 	phys_addr_t gap_size = SMP_CACHE_BYTES;
- 	phys_addr_t max_addr;
-@@ -576,7 +618,9 @@ static int alloc_try_nid_reserved_all_generic_check(void)
- 	allocated_ptr = memblock_alloc_try_nid(r3_size, SMP_CACHE_BYTES,
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 
--	assert(!allocated_ptr);
-+	ASSERT_EQ(allocated_ptr, NULL);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -592,6 +636,8 @@ static int alloc_try_nid_top_down_cap_max_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_256;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -605,14 +651,16 @@ static int alloc_try_nid_top_down_cap_max_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - size);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_end_of_DRAM() - size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -628,6 +676,8 @@ static int alloc_try_nid_top_down_cap_min_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_1K;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -641,14 +691,16 @@ static int alloc_try_nid_top_down_cap_min_check(void)
- 					       min_addr, max_addr, NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_end_of_DRAM() - size);
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -673,6 +725,8 @@ static int alloc_try_nid_bottom_up_simple_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_128;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -689,15 +743,17 @@ static int alloc_try_nid_bottom_up_simple_check(void)
- 	b = (char *)allocated_ptr;
- 	rgn_end = rgn->base + rgn->size;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, min_addr);
-+	ASSERT_LT(rgn_end, max_addr);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == min_addr);
--	assert(rgn_end < max_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -725,6 +781,8 @@ static int alloc_try_nid_bottom_up_start_misaligned_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_128;
- 	phys_addr_t misalign = SZ_2;
- 	phys_addr_t min_addr;
-@@ -742,15 +800,17 @@ static int alloc_try_nid_bottom_up_start_misaligned_check(void)
- 	b = (char *)allocated_ptr;
- 	rgn_end = rgn->base + rgn->size;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, min_addr + (SMP_CACHE_BYTES - misalign));
-+	ASSERT_LT(rgn_end, max_addr);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == min_addr + (SMP_CACHE_BYTES - misalign));
--	assert(rgn_end < max_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -778,6 +838,8 @@ static int alloc_try_nid_bottom_up_narrow_range_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_256;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -792,14 +854,16 @@ static int alloc_try_nid_bottom_up_narrow_range_check(void)
- 					       NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_start_of_DRAM());
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -829,6 +893,8 @@ static int alloc_try_nid_bottom_up_reserved_with_space_check(void)
- 	char *b;
- 	struct region r1, r2;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_64;
- 	phys_addr_t gap_size = SMP_CACHE_BYTES;
- 	phys_addr_t total_size;
-@@ -855,17 +921,19 @@ static int alloc_try_nid_bottom_up_reserved_with_space_check(void)
- 					       NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
- 
--	assert(rgn1->size == r1.size);
--	assert(rgn1->base == max_addr);
-+	ASSERT_EQ(rgn1->size, r1.size);
-+	ASSERT_EQ(rgn1->base, max_addr);
- 
--	assert(rgn2->size == r2.size + r3_size);
--	assert(rgn2->base == r2.base);
-+	ASSERT_EQ(rgn2->size, r2.size + r3_size);
-+	ASSERT_EQ(rgn2->base, r2.base);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -899,6 +967,8 @@ static int alloc_try_nid_bottom_up_reserved_no_space_check(void)
- 	char *b;
- 	struct region r1, r2;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t r3_size = SZ_256;
- 	phys_addr_t gap_size = SMP_CACHE_BYTES;
- 	phys_addr_t total_size;
-@@ -925,20 +995,22 @@ static int alloc_try_nid_bottom_up_reserved_no_space_check(void)
- 					       NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn3->size, r3_size);
-+	ASSERT_EQ(rgn3->base, memblock_start_of_DRAM());
- 
--	assert(rgn3->size == r3_size);
--	assert(rgn3->base == memblock_start_of_DRAM());
-+	ASSERT_EQ(rgn2->size, r2.size);
-+	ASSERT_EQ(rgn2->base, r2.base);
- 
--	assert(rgn2->size == r2.size);
--	assert(rgn2->base == r2.base);
-+	ASSERT_EQ(rgn1->size, r1.size);
-+	ASSERT_EQ(rgn1->base, r1.base);
- 
--	assert(rgn1->size == r1.size);
--	assert(rgn1->base == r1.base);
-+	ASSERT_EQ(memblock.reserved.cnt, 3);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 3);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -954,6 +1026,8 @@ static int alloc_try_nid_bottom_up_cap_max_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_256;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -968,14 +1042,16 @@ static int alloc_try_nid_bottom_up_cap_max_check(void)
- 					       NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, min_addr);
- 
--	assert(rgn->size == size);
--	assert(rgn->base == min_addr);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -991,6 +1067,8 @@ static int alloc_try_nid_bottom_up_cap_min_check(void)
- 	void *allocated_ptr = NULL;
- 	char *b;
- 
-+	PREFIX_PUSH();
-+
- 	phys_addr_t size = SZ_1K;
- 	phys_addr_t min_addr;
- 	phys_addr_t max_addr;
-@@ -1005,14 +1083,16 @@ static int alloc_try_nid_bottom_up_cap_min_check(void)
- 					       NUMA_NO_NODE);
- 	b = (char *)allocated_ptr;
- 
--	assert(allocated_ptr);
--	assert(*b == 0);
-+	ASSERT_NE(allocated_ptr, NULL);
-+	ASSERT_EQ(*b, 0);
-+
-+	ASSERT_EQ(rgn->size, size);
-+	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
- 
--	assert(rgn->size == size);
--	assert(rgn->base == memblock_start_of_DRAM());
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -1020,6 +1100,7 @@ static int alloc_try_nid_bottom_up_cap_min_check(void)
- /* Test case wrappers */
- static int alloc_try_nid_simple_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_simple_check();
- 	memblock_set_bottom_up(true);
-@@ -1030,6 +1111,7 @@ static int alloc_try_nid_simple_check(void)
- 
- static int alloc_try_nid_misaligned_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_end_misaligned_check();
- 	memblock_set_bottom_up(true);
-@@ -1040,6 +1122,7 @@ static int alloc_try_nid_misaligned_check(void)
- 
- static int alloc_try_nid_narrow_range_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_narrow_range_check();
- 	memblock_set_bottom_up(true);
-@@ -1050,6 +1133,7 @@ static int alloc_try_nid_narrow_range_check(void)
- 
- static int alloc_try_nid_reserved_with_space_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_reserved_with_space_check();
- 	memblock_set_bottom_up(true);
-@@ -1060,6 +1144,7 @@ static int alloc_try_nid_reserved_with_space_check(void)
- 
- static int alloc_try_nid_reserved_no_space_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_reserved_no_space_check();
- 	memblock_set_bottom_up(true);
-@@ -1070,6 +1155,7 @@ static int alloc_try_nid_reserved_no_space_check(void)
- 
- static int alloc_try_nid_cap_max_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_cap_max_check();
- 	memblock_set_bottom_up(true);
-@@ -1080,6 +1166,7 @@ static int alloc_try_nid_cap_max_check(void)
- 
- static int alloc_try_nid_cap_min_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_top_down_cap_min_check();
- 	memblock_set_bottom_up(true);
-@@ -1090,6 +1177,7 @@ static int alloc_try_nid_cap_min_check(void)
- 
- static int alloc_try_nid_min_reserved_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_min_reserved_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -1100,6 +1188,7 @@ static int alloc_try_nid_min_reserved_check(void)
- 
- static int alloc_try_nid_max_reserved_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_max_reserved_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -1110,6 +1199,7 @@ static int alloc_try_nid_max_reserved_check(void)
- 
- static int alloc_try_nid_exact_address_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_exact_address_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -1120,6 +1210,7 @@ static int alloc_try_nid_exact_address_check(void)
- 
- static int alloc_try_nid_reserved_full_merge_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_reserved_full_merge_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -1130,6 +1221,7 @@ static int alloc_try_nid_reserved_full_merge_check(void)
- 
- static int alloc_try_nid_reserved_all_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_reserved_all_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -1140,6 +1232,7 @@ static int alloc_try_nid_reserved_all_check(void)
- 
- static int alloc_try_nid_low_max_check(void)
- {
-+	test_print("\tRunning %s...\n", __func__);
- 	memblock_set_bottom_up(false);
- 	alloc_try_nid_low_max_generic_check();
- 	memblock_set_bottom_up(true);
-@@ -1150,6 +1243,12 @@ static int alloc_try_nid_low_max_check(void)
- 
- int memblock_alloc_nid_checks(void)
- {
-+	const char *func_testing = "memblock_alloc_try_nid";
-+
-+	prefix_reset();
-+	prefix_push(func_testing);
-+	test_print("Running %s tests...\n", func_testing);
-+
- 	reset_memblock_attributes();
- 	dummy_physical_memory_init();
- 
-@@ -1170,5 +1269,7 @@ int memblock_alloc_nid_checks(void)
- 
- 	dummy_physical_memory_cleanup();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
-diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-index a7bc180316d6..66f46f261e66 100644
---- a/tools/testing/memblock/tests/basic_api.c
-+++ b/tools/testing/memblock/tests/basic_api.c
-@@ -4,21 +4,29 @@
- #include "basic_api.h"
- 
- #define EXPECTED_MEMBLOCK_REGIONS			128
-+#define FUNC_ADD					"memblock_add"
-+#define FUNC_RESERVE					"memblock_reserve"
-+#define FUNC_REMOVE					"memblock_remove"
-+#define FUNC_FREE					"memblock_free"
- 
- static int memblock_initialization_check(void)
- {
--	assert(memblock.memory.regions);
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
--	assert(strcmp(memblock.memory.name, "memory") == 0);
-+	PREFIX_PUSH();
- 
--	assert(memblock.reserved.regions);
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.memory.max == EXPECTED_MEMBLOCK_REGIONS);
--	assert(strcmp(memblock.reserved.name, "reserved") == 0);
-+	ASSERT_NE(memblock.memory.regions, NULL);
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
-+	ASSERT_EQ(strcmp(memblock.memory.name, "memory"), 0);
- 
--	assert(!memblock.bottom_up);
--	assert(memblock.current_limit == MEMBLOCK_ALLOC_ANYWHERE);
-+	ASSERT_NE(memblock.reserved.regions, NULL);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.memory.max, EXPECTED_MEMBLOCK_REGIONS);
-+	ASSERT_EQ(strcmp(memblock.reserved.name, "reserved"), 0);
-+
-+	ASSERT_EQ(memblock.bottom_up, false);
-+	ASSERT_EQ(memblock.current_limit, MEMBLOCK_ALLOC_ANYWHERE);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -40,14 +48,18 @@ static int memblock_add_simple_check(void)
- 		.size = SZ_4M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_add(r.base, r.size);
- 
--	assert(rgn->base == r.base);
--	assert(rgn->size == r.size);
-+	ASSERT_EQ(rgn->base, r.base);
-+	ASSERT_EQ(rgn->size, r.size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, r.size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == r.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -69,18 +81,22 @@ static int memblock_add_node_simple_check(void)
- 		.size = SZ_16M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_add_node(r.base, r.size, 1, MEMBLOCK_HOTPLUG);
- 
--	assert(rgn->base == r.base);
--	assert(rgn->size == r.size);
-+	ASSERT_EQ(rgn->base, r.base);
-+	ASSERT_EQ(rgn->size, r.size);
- #ifdef CONFIG_NUMA
--	assert(rgn->nid == 1);
-+	ASSERT_EQ(rgn->nid, 1);
- #endif
--	assert(rgn->flags == MEMBLOCK_HOTPLUG);
-+	ASSERT_EQ(rgn->flags, MEMBLOCK_HOTPLUG);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, r.size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == r.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -113,18 +129,22 @@ static int memblock_add_disjoint_check(void)
- 		.size = SZ_8K
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_add(r2.base, r2.size);
- 
--	assert(rgn1->base == r1.base);
--	assert(rgn1->size == r1.size);
-+	ASSERT_EQ(rgn1->base, r1.base);
-+	ASSERT_EQ(rgn1->size, r1.size);
-+
-+	ASSERT_EQ(rgn2->base, r2.base);
-+	ASSERT_EQ(rgn2->size, r2.size);
- 
--	assert(rgn2->base == r2.base);
--	assert(rgn2->size == r2.size);
-+	ASSERT_EQ(memblock.memory.cnt, 2);
-+	ASSERT_EQ(memblock.memory.total_size, r1.size + r2.size);
- 
--	assert(memblock.memory.cnt == 2);
--	assert(memblock.memory.total_size == r1.size + r2.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -162,17 +182,21 @@ static int memblock_add_overlap_top_check(void)
- 		.size = SZ_512M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = (r1.base - r2.base) + r1.size;
- 
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_add(r2.base, r2.size);
- 
--	assert(rgn->base == r2.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r2.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, total_size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -210,17 +234,21 @@ static int memblock_add_overlap_bottom_check(void)
- 		.size = SZ_1G
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = (r2.base - r1.base) + r2.size;
- 
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_add(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, total_size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -255,15 +283,19 @@ static int memblock_add_within_check(void)
- 		.size = SZ_1M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_add(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == r1.size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, r1.size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, r1.size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == r1.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -279,19 +311,27 @@ static int memblock_add_twice_check(void)
- 		.size = SZ_2M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 
- 	memblock_add(r.base, r.size);
- 	memblock_add(r.base, r.size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == r.size);
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, r.size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
- 
- static int memblock_add_checks(void)
- {
-+	prefix_reset();
-+	prefix_push(FUNC_ADD);
-+	test_print("Running %s tests...\n", FUNC_ADD);
-+
- 	memblock_add_simple_check();
- 	memblock_add_node_simple_check();
- 	memblock_add_disjoint_check();
-@@ -300,6 +340,8 @@ static int memblock_add_checks(void)
- 	memblock_add_within_check();
- 	memblock_add_twice_check();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
- 
-@@ -320,11 +362,15 @@ static int memblock_reserve_simple_check(void)
- 		.size = SZ_128M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_reserve(r.base, r.size);
- 
--	assert(rgn->base == r.base);
--	assert(rgn->size == r.size);
-+	ASSERT_EQ(rgn->base, r.base);
-+	ASSERT_EQ(rgn->size, r.size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -356,18 +402,22 @@ static int memblock_reserve_disjoint_check(void)
- 		.size = SZ_512M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_reserve(r2.base, r2.size);
- 
--	assert(rgn1->base == r1.base);
--	assert(rgn1->size == r1.size);
-+	ASSERT_EQ(rgn1->base, r1.base);
-+	ASSERT_EQ(rgn1->size, r1.size);
-+
-+	ASSERT_EQ(rgn2->base, r2.base);
-+	ASSERT_EQ(rgn2->size, r2.size);
- 
--	assert(rgn2->base == r2.base);
--	assert(rgn2->size == r2.size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, r1.size + r2.size);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == r1.size + r2.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -406,17 +456,21 @@ static int memblock_reserve_overlap_top_check(void)
- 		.size = SZ_1G
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = (r1.base - r2.base) + r1.size;
- 
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_reserve(r2.base, r2.size);
- 
--	assert(rgn->base == r2.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r2.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -455,17 +509,21 @@ static int memblock_reserve_overlap_bottom_check(void)
- 		.size = SZ_128K
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = (r2.base - r1.base) + r2.size;
- 
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_reserve(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -502,15 +560,19 @@ static int memblock_reserve_within_check(void)
- 		.size = SZ_64K
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_reserve(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == r1.size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, r1.size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, r1.size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == r1.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -527,19 +589,27 @@ static int memblock_reserve_twice_check(void)
- 		.size = SZ_2M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 
- 	memblock_reserve(r.base, r.size);
- 	memblock_reserve(r.base, r.size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == r.size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, r.size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
- 
- static int memblock_reserve_checks(void)
- {
-+	prefix_reset();
-+	prefix_push(FUNC_RESERVE);
-+	test_print("Running %s tests...\n", FUNC_RESERVE);
-+
- 	memblock_reserve_simple_check();
- 	memblock_reserve_disjoint_check();
- 	memblock_reserve_overlap_top_check();
-@@ -547,6 +617,8 @@ static int memblock_reserve_checks(void)
- 	memblock_reserve_within_check();
- 	memblock_reserve_twice_check();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
- 
-@@ -581,16 +653,20 @@ static int memblock_remove_simple_check(void)
- 		.size = SZ_4M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_add(r2.base, r2.size);
- 	memblock_remove(r1.base, r1.size);
- 
--	assert(rgn->base == r2.base);
--	assert(rgn->size == r2.size);
-+	ASSERT_EQ(rgn->base, r2.base);
-+	ASSERT_EQ(rgn->size, r2.size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == r2.size);
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, r2.size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -626,15 +702,19 @@ static int memblock_remove_absent_check(void)
- 		.size = SZ_1G
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_remove(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == r1.size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, r1.size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, r1.size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == r1.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -674,6 +754,8 @@ static int memblock_remove_overlap_top_check(void)
- 		.size = SZ_32M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	r1_end = r1.base + r1.size;
- 	r2_end = r2.base + r2.size;
- 	total_size = r1_end - r2_end;
-@@ -682,11 +764,13 @@ static int memblock_remove_overlap_top_check(void)
- 	memblock_add(r1.base, r1.size);
- 	memblock_remove(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base + r2.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r1.base + r2.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, total_size);
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -724,17 +808,22 @@ static int memblock_remove_overlap_bottom_check(void)
- 		.size = SZ_256M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = r2.base - r1.base;
- 
- 	reset_memblock_regions();
- 	memblock_add(r1.base, r1.size);
- 	memblock_remove(r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, total_size);
-+
-+	ASSERT_EQ(memblock.memory.cnt, 1);
-+	ASSERT_EQ(memblock.memory.total_size, total_size);
-+
-+	test_pass_pop();
- 
--	assert(memblock.memory.cnt == 1);
--	assert(memblock.memory.total_size == total_size);
- 	return 0;
- }
- 
-@@ -774,6 +863,8 @@ static int memblock_remove_within_check(void)
- 		.size = SZ_1M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	r1_size = r2.base - r1.base;
- 	r2_size = (r1.base + r1.size) - (r2.base + r2.size);
- 	total_size = r1_size + r2_size;
-@@ -782,26 +873,34 @@ static int memblock_remove_within_check(void)
- 	memblock_add(r1.base, r1.size);
- 	memblock_remove(r2.base, r2.size);
- 
--	assert(rgn1->base == r1.base);
--	assert(rgn1->size == r1_size);
-+	ASSERT_EQ(rgn1->base, r1.base);
-+	ASSERT_EQ(rgn1->size, r1_size);
-+
-+	ASSERT_EQ(rgn2->base, r2.base + r2.size);
-+	ASSERT_EQ(rgn2->size, r2_size);
- 
--	assert(rgn2->base == r2.base + r2.size);
--	assert(rgn2->size == r2_size);
-+	ASSERT_EQ(memblock.memory.cnt, 2);
-+	ASSERT_EQ(memblock.memory.total_size, total_size);
- 
--	assert(memblock.memory.cnt == 2);
--	assert(memblock.memory.total_size == total_size);
-+	test_pass_pop();
- 
- 	return 0;
- }
- 
- static int memblock_remove_checks(void)
- {
-+	prefix_reset();
-+	prefix_push(FUNC_REMOVE);
-+	test_print("Running %s tests...\n", FUNC_REMOVE);
-+
- 	memblock_remove_simple_check();
- 	memblock_remove_absent_check();
- 	memblock_remove_overlap_top_check();
- 	memblock_remove_overlap_bottom_check();
- 	memblock_remove_within_check();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
- 
-@@ -835,16 +934,20 @@ static int memblock_free_simple_check(void)
- 		.size = SZ_1M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_reserve(r2.base, r2.size);
- 	memblock_free((void *)r1.base, r1.size);
- 
--	assert(rgn->base == r2.base);
--	assert(rgn->size == r2.size);
-+	ASSERT_EQ(rgn->base, r2.base);
-+	ASSERT_EQ(rgn->size, r2.size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, r2.size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == r2.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -880,15 +983,19 @@ static int memblock_free_absent_check(void)
- 		.size = SZ_128M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_free((void *)r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == r1.size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, r1.size);
-+
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, r1.size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == r1.size);
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -928,17 +1035,21 @@ static int memblock_free_overlap_top_check(void)
- 		.size = SZ_8M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = (r1.size + r1.base) - (r2.base + r2.size);
- 
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_free((void *)r2.base, r2.size);
- 
--	assert(rgn->base == r2.base + r2.size);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r2.base + r2.size);
-+	ASSERT_EQ(rgn->size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -973,17 +1084,21 @@ static int memblock_free_overlap_bottom_check(void)
- 		.size = SZ_32M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	total_size = r2.base - r1.base;
- 
- 	reset_memblock_regions();
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_free((void *)r2.base, r2.size);
- 
--	assert(rgn->base == r1.base);
--	assert(rgn->size == total_size);
-+	ASSERT_EQ(rgn->base, r1.base);
-+	ASSERT_EQ(rgn->size, total_size);
- 
--	assert(memblock.reserved.cnt == 1);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 1);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
-@@ -1024,6 +1139,8 @@ static int memblock_free_within_check(void)
- 		.size = SZ_1M
- 	};
- 
-+	PREFIX_PUSH();
-+
- 	r1_size = r2.base - r1.base;
- 	r2_size = (r1.base + r1.size) - (r2.base + r2.size);
- 	total_size = r1_size + r2_size;
-@@ -1032,26 +1149,34 @@ static int memblock_free_within_check(void)
- 	memblock_reserve(r1.base, r1.size);
- 	memblock_free((void *)r2.base, r2.size);
- 
--	assert(rgn1->base == r1.base);
--	assert(rgn1->size == r1_size);
-+	ASSERT_EQ(rgn1->base, r1.base);
-+	ASSERT_EQ(rgn1->size, r1_size);
- 
--	assert(rgn2->base == r2.base + r2.size);
--	assert(rgn2->size == r2_size);
-+	ASSERT_EQ(rgn2->base, r2.base + r2.size);
-+	ASSERT_EQ(rgn2->size, r2_size);
- 
--	assert(memblock.reserved.cnt == 2);
--	assert(memblock.reserved.total_size == total_size);
-+	ASSERT_EQ(memblock.reserved.cnt, 2);
-+	ASSERT_EQ(memblock.reserved.total_size, total_size);
-+
-+	test_pass_pop();
- 
- 	return 0;
- }
- 
- static int memblock_free_checks(void)
- {
-+	prefix_reset();
-+	prefix_push(FUNC_FREE);
-+	test_print("Running %s tests...\n", FUNC_FREE);
-+
- 	memblock_free_simple_check();
- 	memblock_free_absent_check();
- 	memblock_free_overlap_top_check();
- 	memblock_free_overlap_bottom_check();
- 	memblock_free_within_check();
- 
-+	prefix_pop();
-+
- 	return 0;
- }
- 
-diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
-index 62d3191f7c9a..ebc06b4c3255 100644
---- a/tools/testing/memblock/tests/common.c
-+++ b/tools/testing/memblock/tests/common.c
-@@ -4,8 +4,12 @@
- 
- #define INIT_MEMBLOCK_REGIONS			128
- #define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
-+#define PREFIXES_MAX				15
-+#define DELIM					": "
- 
- static struct test_memory memory_block;
-+static const char __maybe_unused *prefixes[PREFIXES_MAX];
-+static int __maybe_unused nr_prefixes;
- 
- void reset_memblock_regions(void)
- {
-@@ -46,3 +50,56 @@ void dummy_physical_memory_cleanup(void)
- {
- 	free(memory_block.base);
- }
-+
-+#ifdef VERBOSE
-+void print_prefixes(const char *postfix)
-+{
-+	for (int i = 0; i < nr_prefixes; i++)
-+		test_print("%s%s", prefixes[i], DELIM);
-+	test_print(postfix);
-+}
-+
-+void test_fail(void)
-+{
-+	ksft_test_result_fail(": ");
-+	print_prefixes("failed\n");
-+}
-+
-+void test_pass(void)
-+{
-+	ksft_test_result_pass(": ");
-+	print_prefixes("passed\n");
-+}
-+
-+void test_print(const char *fmt, ...)
-+{
-+	int saved_errno = errno;
-+	va_list args;
-+
-+	va_start(args, fmt);
-+	errno = saved_errno;
-+	vprintf(fmt, args);
-+	va_end(args);
-+}
-+
-+void prefix_reset(void)
-+{
-+	memset(prefixes, 0, PREFIXES_MAX * sizeof(char *));
-+	nr_prefixes = 0;
-+}
-+
-+void prefix_push(const char *prefix)
-+{
-+	assert(nr_prefixes < PREFIXES_MAX);
-+	prefixes[nr_prefixes] = prefix;
-+	nr_prefixes++;
-+}
-+
-+void prefix_pop(void)
-+{
-+	if (nr_prefixes > 0) {
-+		prefixes[nr_prefixes - 1] = 0;
-+		nr_prefixes--;
-+	}
-+}
-+#endif /* VERBOSE */
-diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
-index 619054d03219..46de86a755f3 100644
---- a/tools/testing/memblock/tests/common.h
-+++ b/tools/testing/memblock/tests/common.h
-@@ -7,9 +7,49 @@
- #include <linux/types.h>
- #include <linux/memblock.h>
- #include <linux/sizes.h>
-+#include <linux/printk.h>
-+#include <../selftests/kselftest.h>
- 
- #define MEM_SIZE SZ_16K
- 
-+/**
-+ * ASSERT_EQ():
-+ * Check the condition
-+ * @_expected == @_seen
-+ * If false, print failed test message (if in VERBOSE mode) and then assert
-+ */
-+#define ASSERT_EQ(_expected, _seen) do { \
-+	if ((_expected) != (_seen)) \
-+		test_fail(); \
-+	assert((_expected) == (_seen)); \
-+} while (0)
-+
-+/**
-+ * ASSERT_NE():
-+ * Check the condition
-+ * @_expected != @_seen
-+ * If false, print failed test message (if in VERBOSE mode) and then assert
-+ */
-+#define ASSERT_NE(_expected, _seen) do { \
-+	if ((_expected) == (_seen)) \
-+		test_fail(); \
-+	assert((_expected) != (_seen)); \
-+} while (0)
-+
-+/**
-+ * ASSERT_LT():
-+ * Check the condition
-+ * @_expected < @_seen
-+ * If false, print failed test message (if in VERBOSE mode) and then assert
-+ */
-+#define ASSERT_LT(_expected, _seen) do { \
-+	if ((_expected) >= (_seen)) \
-+		test_fail(); \
-+	assert((_expected) < (_seen)); \
-+} while (0)
-+
-+#define PREFIX_PUSH() prefix_push(__func__)
-+
- /*
-  * Available memory registered with memblock needs to be valid for allocs
-  * test to run. This is a convenience wrapper for memory allocated in
-@@ -31,4 +71,26 @@ void setup_memblock(void);
- void dummy_physical_memory_init(void);
- void dummy_physical_memory_cleanup(void);
- 
-+#ifdef VERBOSE
-+void test_fail(void);
-+void test_pass(void);
-+void test_print(const char *fmt, ...);
-+void prefix_reset(void);
-+void prefix_push(const char *prefix);
-+void prefix_pop(void);
-+#else
-+static inline void test_fail(void) {}
-+static inline void test_pass(void) {}
-+static inline void test_print(const char *fmt, ...) {}
-+static inline void prefix_reset(void) {}
-+static inline void prefix_push(const char *prefix) {}
-+static inline void prefix_pop(void) {}
-+#endif /* VERBOSE */
-+
-+static inline void test_pass_pop(void)
-+{
-+	test_pass();
-+	prefix_pop();
-+}
-+
- #endif
--- 
-2.34.1
+Thanks,
+Ming
 
