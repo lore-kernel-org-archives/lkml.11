@@ -2,140 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF26C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 113EBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbiGDOUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 10:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
+        id S233983AbiGDOUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 10:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232622AbiGDOUk (ORCPT
+        with ESMTP id S233860AbiGDOUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 10:20:40 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72D7FF1
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 07:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=jc10IQJyl7R9z2Pi3/7y2+bfFKI3NYUFP6i+uQTAp2Y=; b=Bt1weozMWS50R4n+lfqxMxazHF
-        TveNDLTmiJEHKNHvQREVGPIKfrQGk3q9doqq/ABlctXEH2yoTOZr4BVCQ86p+X6CoJLJIhig2O5iZ
-        OeOaV1ZastaIdZ+ZIAKQji7p1zTeulZ35laz2ctdBLRr/zVAfIbZWSNQUarTzPe5y+SZC1yYTqW73
-        0ORHHqoORwfPsQ1r28ZMFDDIQxxpsec0odV3wyLtsOF7/DViK/0wpzxfxhnmnO4bdGVDc1T9u8E0Y
-        zN4W2azWNbDIpI4ERMla+djJ3+o1Il+7ALvE/YlMp9zKcFeoD+MRSCuL2hdE4REvqBjXRWhJYou7H
-        RcCHYwLw==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8MvM-00H9iI-Rf; Mon, 04 Jul 2022 14:19:41 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0FDEF980057; Mon,  4 Jul 2022 16:19:43 +0200 (CEST)
-Date:   Mon, 4 Jul 2022 16:19:42 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Sathvika Vasireddy <sv@linux.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "paulus@samba.org" <paulus@samba.org>
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-Message-ID: <YsL2/uwU6j8jbzpP@worktop.programming.kicks-ass.net>
-References: <20220624183238.388144-1-sv@linux.ibm.com>
- <20220624183238.388144-12-sv@linux.ibm.com>
- <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
- <YsLXkCMtQpxmDhVM@hirez.programming.kicks-ass.net>
- <1d0c5ebc-3f66-f6cb-998f-072bceb41c5c@csgroup.eu>
+        Mon, 4 Jul 2022 10:20:43 -0400
+Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCBBFF1
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 07:20:42 -0700 (PDT)
+Received: by mail-vk1-xa35.google.com with SMTP id b4so4509016vkh.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 07:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zAimGb9Is5JImE4nmMqSqzepBpLcg7BYaug+pTNW7Ek=;
+        b=hLeZI5XnlOVI8X5L1UsRnebsCf1j7iXTfxBBuxRT+gzb/yBxg87ImZU3389sdS5Pwe
+         1Gjr/7jZc1u4U0+3J1tKXL2XshtUtJe6bNdRZ6wK94gsFhYAeqm0GoHnkMj6mkWFc+5q
+         UN3HNPMRFJ/j5v07LNa0qGsLXa6MeGSZXL/+88XXOQ/rVEwfDlPltFyX4FsN+K+J4NYn
+         hhUdZKoMebVLH8zr17dFM9LigBPzNnJZXBjbrrPnukqZUu9svNpUmk38z6ypobkV8zrU
+         f20aFWSlvt9Da2JSHVLrcTiY2cSoraD9uILuP/PwsNtdK+T7f/5wo4H5CF64Mfj1hrxz
+         dhYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zAimGb9Is5JImE4nmMqSqzepBpLcg7BYaug+pTNW7Ek=;
+        b=XEd72G+0ZLzhlfUNRyumjkC/t0xeSF8YObBMiu50J1InhWOGr2RqOUpzxcpklL3Cpa
+         DneVYBxXgn6CxJDoHmA0Uxo1dS0nEEoGJZ/HrjX+oHqjopuXKiifR3p/undqhMmxpIaK
+         Ro+nu/IOB+QoxShoydYo1QRhbW3G9Ppu6XIUeF7qCROItfel/MuCMyMi0jMF51tXpm5V
+         BRsCcm5Qorh76CfVmtETrR9Ra9yeX4GUrgAfQn/rHKCjrzgm/LTV8NWRR/T8DarD3T6b
+         s09ojE4FydLjVmfIYg8poYJ5W3izPdm9fdNQGW6qh7Uxz51jVjJm6Npe1LxA5AOt+Bya
+         YyNg==
+X-Gm-Message-State: AJIora/vf5LOY7Pibd7YQk5BL4FETh/KuK7kT/mUguVPL+46NxNXJV7m
+        tIwFv461EwUlBQL22vGMkU++/K39vzLAkNizNfcwW/0ukxV5QC055RYMsMqCTEVHfyHoFvX6TRb
+        m+FwoHefRFMOuasQkCwfz2G+uGxm9HApjRWezdRk26NAEiM035GRmM79Kz0YNht3onvAuAfUU2t
+        XdA7frWvjHcIcQUBO6
+X-Google-Smtp-Source: AGRyM1vy7LDgVBkGg7LAYWrQ66F4nO8Kut0awFptJNvcDqPPNbBD2w0D+uVeNGJDv10T9MtT15G+Ew==
+X-Received: by 2002:a1f:7249:0:b0:370:c589:aa80 with SMTP id n70-20020a1f7249000000b00370c589aa80mr10221768vkc.34.1656944441875;
+        Mon, 04 Jul 2022 07:20:41 -0700 (PDT)
+Received: from localhost ([181.97.174.128])
+        by smtp.gmail.com with ESMTPSA id w41-20020a9f31ec000000b0038275916987sm1217904uad.14.2022.07.04.07.20.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 07:20:41 -0700 (PDT)
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        mingo@redhat.com, tglx@linutronix.de,
+        kirill.shutemov@linux.intel.com, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        Martin Fernandez <martin.fernandez@eclypsium.com>
+Subject: [PATCH] x86/cpuinfo: Clear X86_FEATURE_TME if TME/MKTME is disabled by BIOS
+Date:   Mon,  4 Jul 2022 11:20:34 -0300
+Message-Id: <20220704142034.1511271-1-martin.fernandez@eclypsium.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1d0c5ebc-3f66-f6cb-998f-072bceb41c5c@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 12:44:30PM +0000, Christophe Leroy wrote:
-> 
-> 
-> Le 04/07/2022 à 14:05, Peter Zijlstra a écrit :
-> > On Sat, Jun 25, 2022 at 06:46:54AM +0000, Christophe Leroy wrote:
-> >>
-> >>
-> >> Le 24/06/2022 à 20:32, Sathvika Vasireddy a écrit :
-> >>> objtool is throwing *unannotated intra-function call*
-> >>> warnings with a few instructions that are marked
-> >>> unreachable. Remove unreachable() from WARN_ON()
-> >>> to fix these warnings, as the codegen remains same
-> >>> with and without unreachable() in WARN_ON().
-> >>
-> >> Did you try the two exemples described in commit 1e688dd2a3d6
-> >> ("powerpc/bug: Provide better flexibility to WARN_ON/__WARN_FLAGS() with
-> >> asm goto") ?
-> >>
-> >> Without your patch:
-> >>
-> >> 00000640 <test>:
-> >>    640:	81 23 00 84 	lwz     r9,132(r3)
-> >>    644:	71 29 40 00 	andi.   r9,r9,16384
-> >>    648:	40 82 00 0c 	bne     654 <test+0x14>
-> >>    64c:	80 63 00 0c 	lwz     r3,12(r3)
-> >>    650:	4e 80 00 20 	blr
-> >>    654:	0f e0 00 00 	twui    r0,0
-> >>
-> >> 00000658 <test9w>:
-> >>    658:	2c 04 00 00 	cmpwi   r4,0
-> >>    65c:	41 82 00 0c 	beq     668 <test9w+0x10>
-> >>    660:	7c 63 23 96 	divwu   r3,r3,r4
-> >>    664:	4e 80 00 20 	blr
-> >>    668:	0f e0 00 00 	twui    r0,0
-> >>    66c:	38 60 00 00 	li      r3,0
-> >>    670:	4e 80 00 20 	blr
-> > 
-> > Per this construct you should do as x86 does and assume twui terminates
-> > control flow and explicitly annotate the WARN case. That is, given the
-> > fact that BUG as no instructions following it, you can't very well
-> > annotate that.
-> 
-> That exactly the problem I guess. I'm fine with replacing the 
-> unreachable() by __builtin_unreachable() with our __WARN_FLAGS() and 
-> BUG() but we will still have a problem with some of the unrachable() 
-> that are in core parts of the kernel.
-> 
-> Even the ones in arch/powerpc/, they are valid and should remain. The 
-> point seems that the generic annotate_unreachable() is wrong for powerpc 
-> as is, and activating CONFIG_OBJTOOL lead to bad code generation.
+Right now the only way to check this is by greping the kernel logs,
+which is inconvinient. This is currently checked for fwupd for
+example.
 
-Right; I'm not against making that depend on yet-another OBJTOOL_$config
-thing.
+I understand that cpuinfo is supposed to report every feature in the
+cpu but since AMD is doing the same for sme/sev I think is good to
+have this for Intel too.
 
-> By the way, for which functionnalities of objtool is that analysis 
-> necessary ? I understand it is not necessary to mcount accounting, so 
-> maybe the not empty annotate_unreachable() should be limited to those 
-> those functionnalities ?
+Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+---
+ arch/x86/kernel/cpu/intel.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-For all the things where it needs to follow control flow, so stack
-validation, ORC generation, unreachable instruction validation etc..
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index fd5dead8371c..7311172aceaf 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -570,6 +570,8 @@ static void detect_tme(struct cpuinfo_x86 *c)
 
-I'd need to double check code-gen on x86, but the way
-__builtin_unreachable() makes code-gen stop dead, I'm not entirely sure
-it's right for us either.
+ 	if (!TME_ACTIVATE_LOCKED(tme_activate) || !TME_ACTIVATE_ENABLED(tme_activate)) {
+ 		pr_info_once("x86/tme: not enabled by BIOS\n");
++		if (mktme_status == MKTME_UNINITIALIZED)
++			clear_cpu_cap(c, X86_FEATURE_TME);
+ 		mktme_status = MKTME_DISABLED;
+ 		return;
+ 	}
+--
+2.30.2
 
-> > Alternatively, you can teach objtool to look at __bug_table to
-> > distinguish these cases.
-> 
-> Isn't it enough to tell objtool that execution never go past twui, using 
-> INSN_BUG ?
-
-That should work I suppose.
-
-> By the way, for __WARN_FLAGS, we use the __extable for the continuation. 
-> Is objtools able to follow __extable ?
-
-Yes.
