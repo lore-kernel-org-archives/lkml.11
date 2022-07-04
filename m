@@ -2,80 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F9AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E799FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbiGDNzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
+        id S234410AbiGDNzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiGDNzj (ORCPT
+        with ESMTP id S233375AbiGDNzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:55:39 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8A5BC9F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:55:37 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id y141so9026224pfb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3BaWzCX2gs48m5o657dKNWJWxvbd6VVhJo20O9wNYbQ=;
-        b=k34J9jCFQXFgd75z8EpNYtm9nt4YtS6IddVzJjvAThdloBININOsCaRGt19bk+hEjL
-         DSqTC3h/vzmSHJC4P3069eoIumo2B1HK0WpkH8c/cibo8C00a9TE0sdLJcWuNkgYXpPD
-         oTuXQTKP5U7HGJjQrCxVgvAtCgIH6Q7UqFkEHaL8ihg7ChqbiebtmXp58gznbBSJwOTT
-         AjyLLGKjbli61c5azh7qDZLCPDBGxFUqyv8a6hyYG2rzgeeLBsjzHbOdZUX2DlcrMfgI
-         +YV+OdCpFL7pqRjdCj3A0YWI/YR6ByRzscSY+FfQ0YFCm5pIA6qLb+J75xvpZyv4eRco
-         fvCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3BaWzCX2gs48m5o657dKNWJWxvbd6VVhJo20O9wNYbQ=;
-        b=S41UF7+eX1mR+WBeidKf7qhFoce7VfTbyN6YiKUA8FI/L5atwt8Zx8iigV1NSnxWNO
-         +Jq0LWAqg15i5vEGMAcOkokhBf+0G7sNFtsU3jse0DErvLozLrprMC0og6vi/L2uA4Gl
-         3OGIZYc1Oztoc6OOeBt1YDz9XYDq9OT4U1QBETO7SoegamNYI3qSQ77OsqDf4RmoQJcE
-         ccq9NXpqQmkVV1Vnt1jM8hToS4CxdIB1Hv1zOouTnd9JaxRlGph0KwKIQmj3p1wZbV5r
-         WbjqXgemf21nPpObidZ2yd7QHciU9K29WCrpiZWMxcmh/yz1wqCcTAEKSUxXeJN75GDY
-         IMTA==
-X-Gm-Message-State: AJIora/UL6BI+M2FRzpQuSYHuoeG3SswmECY91ANi7JSiYAGz1+RRBLd
-        Y0cOHAlRK4UWLNFnnrCRDlwSIA==
-X-Google-Smtp-Source: AGRyM1vdAz3v/h9OadIpNWHBuh7HykTHQFAoZ7auI/S4hb+OgBx6vM+FYo/ta9/E1puKPzK+iXUiuQ==
-X-Received: by 2002:a63:854a:0:b0:40d:1d04:769 with SMTP id u71-20020a63854a000000b0040d1d040769mr25787540pgd.151.1656942936709;
-        Mon, 04 Jul 2022 06:55:36 -0700 (PDT)
-Received: from localhost ([2408:8207:18d5:ce0:b44a:d6ac:cbc5:89fd])
-        by smtp.gmail.com with ESMTPSA id b6-20020a170902d50600b0016bdabdf64fsm3600847plg.46.2022.07.04.06.55.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 06:55:36 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 21:55:33 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
-        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 13/16] mm/huge_memory: fix comment of
- page_deferred_list
-Message-ID: <YsLxVek1w194qGJt@FVFYT0MHHV2J.googleapis.com>
-References: <20220704132201.14611-1-linmiaohe@huawei.com>
- <20220704132201.14611-14-linmiaohe@huawei.com>
+        Mon, 4 Jul 2022 09:55:40 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00742720;
+        Mon,  4 Jul 2022 06:55:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=sFBRrsK/nUCO/qpurgOa37xWDf0Rw4TWhvCcPDzVFrw=; b=fGvBCBUUizUVOtp0n9eFyK6qEp
+        BlBJ2LXAd0hh4Ac/kOInhtYaicGuP0Wm+9RpmeAcNCveOfiNg2HalpF71G6tE0sxRAOoJnnnJ8jDo
+        LzrOgSbBh27d4lrinBT/6BTlPxLOemUmVcp9N08w+0hNimZQPMPk331algyiCyhqUh44lkkWpPmmY
+        R0/v2bo6OqfBLfb3ZP66/skFycQymC2OCzUed8HfkyDvpKdX2Zugr38vE288P/qWfhzbrVpgSoItW
+        lZComXKs5lJQWRJj/s21c22jLyTgHTbTtCNo+CUvRSFL+2Lib/Pig8sU6eh28YZ87NBq8C1awuPRj
+        X1SbUxKA==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1o8MXa-0081o6-IG;
+        Mon, 04 Jul 2022 13:55:06 +0000
+Date:   Mon, 4 Jul 2022 14:55:06 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Vitaly Buka <vitalybuka@google.com>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH v4 43/45] namei: initialize parameters passed to
+ step_into()
+Message-ID: <YsLxOkApqKPQ8Bep@ZenIV>
+References: <20220701142310.2188015-1-glider@google.com>
+ <20220701142310.2188015-44-glider@google.com>
+ <CAHk-=wgbpot7nt966qvnSR25iea3ueO90RwC2DwHH=7ZyeZzvQ@mail.gmail.com>
+ <YsJWCREA5xMfmmqx@ZenIV>
+ <CAG_fn=V_vDVFNSJTOErNhzk7n=GRjZ_6U6Z=M-Jdmi=ekbS5+g@mail.gmail.com>
+ <YsLuoFtki01gbmYB@ZenIV>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220704132201.14611-14-linmiaohe@huawei.com>
+In-Reply-To: <YsLuoFtki01gbmYB@ZenIV>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 09:21:58PM +0800, Miaohe Lin wrote:
-> The current comment is confusing because if global or memcg deferred list
-> in the second tail page is occupied by compound_head, why we still use
-> page[2].deferred_list here? I think it wants to say that Global or memcg
-> deferred list in the first tail page is occupied by compound_mapcount and
-> compound_pincount so we use the second tail page's deferred_list instead.
+On Mon, Jul 04, 2022 at 02:44:00PM +0100, Al Viro wrote:
+> On Mon, Jul 04, 2022 at 10:20:53AM +0200, Alexander Potapenko wrote:
 > 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> > What makes you think they are false positives? Is the scenario I
+> > described above:
+> > 
+> > """
+> > In particular, if the call to lookup_fast() in walk_component()
+> > returns NULL, and lookup_slow() returns a valid dentry, then the
+> > `seq` and `inode` will remain uninitialized until the call to
+> > step_into()
+> > """
+> > 
+> > impossible?
+> 
+> Suppose step_into() has been called in non-RCU mode.  The first
+> thing it does is
+> 	int err = handle_mounts(nd, dentry, &path, &seq);
+> 	if (err < 0) 
+> 		return ERR_PTR(err);
+> 
+> And handle_mounts() in non-RCU mode is
+> 	path->mnt = nd->path.mnt;
+> 	path->dentry = dentry;
+> 	if (nd->flags & LOOKUP_RCU) {
+> 		[unreachable code]
+> 	}
+> 	[code not touching seqp]
+> 	if (unlikely(ret)) {
+> 		[code not touching seqp]
+> 	} else {
+> 		*seqp = 0; /* out of RCU mode, so the value doesn't matter */
+> 	}
+> 	return ret;
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Make that
+ 	[code assigning ret a non-negative value and never using seqp]
+ 	if (unlikely(ret)) {
+ 		[code never using seqp or ret]
+ 	} else {
+ 		*seqp = 0; /* out of RCU mode, so the value doesn't matter */
+ 	}
+ 	return ret;
 
-Thanks.
+so if (err < 0) in the caller is equivalent to if (err).
