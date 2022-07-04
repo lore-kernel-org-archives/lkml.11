@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36CDC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB9BCCA479
 	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 20:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234042AbiGDURX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 16:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
+        id S234148AbiGDURZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 16:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233864AbiGDURO (ORCPT
+        with ESMTP id S233860AbiGDURO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 4 Jul 2022 16:17:14 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DF311A1C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE52311A12
         for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 13:17:13 -0700 (PDT)
 Received: from dslb-178-004-207-027.178.004.pools.vodafone-ip.de ([178.4.207.27] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1o8SVG-00007Y-L2; Mon, 04 Jul 2022 22:17:06 +0200
+        id 1o8SVJ-00007Y-W7; Mon, 04 Jul 2022 22:17:10 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 2/6] staging: r8188eu: don't set pattrib->dst again
-Date:   Mon,  4 Jul 2022 22:16:50 +0200
-Message-Id: <20220704201654.195574-3-martin@kaiser.cx>
+Subject: [PATCH 6/6] staging: r8188eu: use ieee80211 helper to check for nullfunc frame
+Date:   Mon,  4 Jul 2022 22:16:54 +0200
+Message-Id: <20220704201654.195574-7-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220704201654.195574-1-martin@kaiser.cx>
 References: <20220704201654.195574-1-martin@kaiser.cx>
@@ -40,30 +40,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not set pattrib->dst again in ap2sta_data_frame. This function is
-called by validate_recv_data_frame when the packet's ToDS==0 and
-FromDS==1.
-
-In this case, validate_recv_data_frame has already set pattrib->dst
-to addr1.
+Use the ieee80211_is_nullfunc function from ieee80211.h to check for a
+nullfunc frame. This is a data frame whose subtype has bit6 set.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_recv.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 9c63319a7d48..ea81501b3286 100644
+index 8b21ec8f111f..32cd452d1f3d 100644
 --- a/drivers/staging/r8188eu/core/rtw_recv.c
 +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -704,7 +704,6 @@ static int ap2sta_data_frame(
+@@ -649,6 +649,7 @@ static int ap2sta_data_frame(
+ 	struct sta_info **psta)
+ {
+ 	u8 *ptr = precv_frame->rx_data;
++	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)precv_frame->rx_data;
+ 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
+ 	int ret = _SUCCESS;
+ 	struct	sta_priv *pstapriv = &adapter->stapriv;
+@@ -693,8 +694,8 @@ static int ap2sta_data_frame(
+ 			goto exit;
  		}
- 	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) &&
- 		   check_fwstate(pmlmepriv, _FW_LINKED)) {
--		memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
- 		memcpy(pattrib->src, GetAddr2Ptr(ptr), ETH_ALEN);
- 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
- 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
+ 
+-		if (GetFrameSubType(ptr) & BIT(6)) {
+-			/* No data, will not indicate to upper layer, temporily count it here */
++		if (ieee80211_is_nullfunc(hdr->frame_control)) {
++			/* We count the nullfunc frame, but we'll not pass it on to higher layers. */
+ 			count_rx_stats(adapter, precv_frame, *psta);
+ 			ret = RTW_RX_HANDLED;
+ 			goto exit;
 -- 
 2.30.2
 
