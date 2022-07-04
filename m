@@ -2,148 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8486FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E559C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbiGDHbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 03:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        id S233396AbiGDHbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiGDHbG (ORCPT
+        with ESMTP id S230344AbiGDHbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 03:31:06 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F1963D3;
-        Mon,  4 Jul 2022 00:31:01 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2647Ujfx017888;
-        Mon, 4 Jul 2022 02:30:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1656919845;
-        bh=+dqs1AWPs7TNM8tyq5UTW4slhow/MyTsel0hdgWuYss=;
-        h=From:To:CC:Subject:Date;
-        b=vYxu2Jd6jf/CYAmrrO+i8YoBieUQWEOMXe6ceNheLar56JzXNwYRTRJF2ePN3loqv
-         /zrzFsE45p/xPaCG3J20VBrRH8/FerE1VdNgeocasxxVlF8D2FiSMvkPngoiU1FdL+
-         AHs19XAfAGIu4gXFNgDeTLKFEGesrNleAgf+QLHA=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2647UjYD079764
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 4 Jul 2022 02:30:45 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 4
- Jul 2022 02:30:45 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 4 Jul 2022 02:30:45 -0500
-Received: from ula0492258.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2647UfTW005566;
-        Mon, 4 Jul 2022 02:30:42 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <linux@armlinux.org.uk>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kishon@ti.com>, <vigneshr@ti.com>, <grygorii.strashko@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: [PATCH net v2] net: ethernet: ti: am65-cpsw: Fix devlink port register sequence
-Date:   Mon, 4 Jul 2022 13:00:40 +0530
-Message-ID: <20220704073040.7542-1-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 4 Jul 2022 03:31:08 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2DF65F3
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656919866; x=1688455866;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Ir0YeIg1QD17HDbXae1ShnLiqr2IQnnOCfkowLLq25M=;
+  b=VmoUuO1Bh0j+UDh9Bd7GpwZ69/JV2SrRyQpFZaEIgCYpxbJ8nsSniVsM
+   tx2k3+x8K5ZyG5D0TGi7xN6Bbc78YBxEMYpZvkaCHo5NWja1TMcn1jpPq
+   JUPXPpZr7aBf5jMgP60Pr0Qmpsv0lkghqZZLJEFwg3xwHxrk+5vnTgIkL
+   T1UmFXxphmLu8Qkm4Y3Qrm5trhNGvOHvclU81uF2CtnktbZKFEMyF3dW+
+   FGHPe42otRkNhxcO1W0tjZ7Znf8ewEseHt+me5SL4Wt75ZFCaEKIkB4Nw
+   +ZcCIP0XaAPd6L8am+c3gLah3+nOIK6VGYPymSnovDYbXTkQKy1I+GiVi
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="271830130"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="271830130"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 00:31:06 -0700
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="567075003"
+Received: from rogerior-mobl1.ger.corp.intel.com (HELO [10.249.254.21]) ([10.249.254.21])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 00:31:02 -0700
+Message-ID: <91f156ba-5d93-63d6-5fa0-86614bc370d3@linux.intel.com>
+Date:   Mon, 4 Jul 2022 10:31:48 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [PATCH v1 1/1] ASoC: SOF: Intel: bdw: remove duplicating driver
+ data retrieval
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+References: <20220703143533.62173-1-andriy.shevchenko@linux.intel.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
+In-Reply-To: <20220703143533.62173-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Renaming interfaces using udevd depends on the interface being registered
-before its netdev is registered. Otherwise, udevd reads an empty
-phys_port_name value, resulting in the interface not being renamed.
 
-Fix this by registering the interface before registering its netdev
-by invoking am65_cpsw_nuss_register_devlink() before invoking
-register_netdev() for the interface.
 
-Move the function call to devlink_port_type_eth_set(), invoking it after
-register_netdev() is invoked, to ensure that netlink notification for the
-port state change is generated after the netdev is completely initialized.
+On 03/07/2022 17:35, Andy Shevchenko wrote:
+> device_get_match_data() in ACPI case calls similar to acpi_match_device().
+> Hence there is no need to duplicate the call. Just assign what is in
+> the id->driver_data.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  sound/soc/sof/intel/bdw.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/sound/soc/sof/intel/bdw.c b/sound/soc/sof/intel/bdw.c
+> index 26df780c702e..346813aa3768 100644
+> --- a/sound/soc/sof/intel/bdw.c
+> +++ b/sound/soc/sof/intel/bdw.c
+> @@ -674,6 +674,7 @@ static int sof_broadwell_probe(struct platform_device *pdev)
+>  	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>  	if (!id)
+>  		return -ENODEV;
+> +	desc = (const struct sof_dev_desc *)id->driver_data;
+>  
+>  	ret = snd_intel_acpi_dsp_driver_probe(dev, id->id);
+>  	if (ret != SND_INTEL_DSP_DRIVER_ANY && ret != SND_INTEL_DSP_DRIVER_SOF) {
+> @@ -681,11 +682,7 @@ static int sof_broadwell_probe(struct platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+>  
+> -	desc = device_get_match_data(dev);
+> -	if (!desc)
+> -		return -ENODEV;
+> -
+> -	return sof_acpi_probe(pdev, device_get_match_data(dev));
+> +	return sof_acpi_probe(pdev, desc);
+>  }
 
-Fixes: 58356eb31d60 ("net: ti: am65-cpsw-nuss: Add devlink support")
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
-Changelog:
-v1 -> v2:
-1. Add Fixes tag in commit message.
-2. Update patch subject to include "net".
-3. Invoke devlink_port_type_eth_set() after register_netdev() is called.
-4. Update commit message describing the cause for moving the call to
-   devlink_port_type_eth_set().
+Would it not be simpler to just:
 
-v1: https://lore.kernel.org/r/20220623044337.6179-1-s-vadapalli@ti.com/
-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index fb92d4c1547d..f6ced040701f 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -2467,7 +2467,6 @@ static int am65_cpsw_nuss_register_devlink(struct am65_cpsw_common *common)
- 				port->port_id, ret);
- 			goto dl_port_unreg;
- 		}
--		devlink_port_type_eth_set(dl_port, port->ndev);
- 	}
- 	devlink_register(common->devlink);
- 	return ret;
-@@ -2511,6 +2510,7 @@ static void am65_cpsw_unregister_devlink(struct am65_cpsw_common *common)
- static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
+diff --git a/sound/soc/sof/intel/bdw.c b/sound/soc/sof/intel/bdw.c
+index 26df780c702e..2ee22c2772ba 100644
+--- a/sound/soc/sof/intel/bdw.c
++++ b/sound/soc/sof/intel/bdw.c
+@@ -668,7 +668,6 @@ static int sof_broadwell_probe(struct platform_device *pdev)
  {
- 	struct device *dev = common->dev;
-+	struct devlink_port *dl_port;
- 	struct am65_cpsw_port *port;
- 	int ret = 0, i;
+ 	struct device *dev = &pdev->dev;
+ 	const struct acpi_device_id *id;
+-	const struct sof_dev_desc *desc;
+ 	int ret;
  
-@@ -2527,6 +2527,10 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
- 		return ret;
+ 	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+@@ -681,11 +680,7 @@ static int sof_broadwell_probe(struct platform_device *pdev)
+ 		return -ENODEV;
  	}
  
-+	ret = am65_cpsw_nuss_register_devlink(common);
-+	if (ret)
-+		goto err_cleanup_ndev;
-+
- 	for (i = 0; i < common->port_num; i++) {
- 		port = &common->ports[i];
- 
-@@ -2539,23 +2543,21 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
- 				i, ret);
- 			goto err_cleanup_ndev;
- 		}
-+
-+		dl_port = &port->devlink_port;
-+		devlink_port_type_eth_set(dl_port, port->ndev);
- 	}
- 
- 	ret = am65_cpsw_register_notifiers(common);
- 	if (ret)
- 		goto err_cleanup_ndev;
- 
--	ret = am65_cpsw_nuss_register_devlink(common);
--	if (ret)
--		goto clean_unregister_notifiers;
+-	desc = device_get_match_data(dev);
+-	if (!desc)
+-		return -ENODEV;
 -
- 	/* can't auto unregister ndev using devm_add_action() due to
- 	 * devres release sequence in DD core for DMA
- 	 */
+-	return sof_acpi_probe(pdev, device_get_match_data(dev));
++	return sof_acpi_probe(pdev, (const struct sof_dev_desc *)id->driver_data);
+ }
  
- 	return 0;
--clean_unregister_notifiers:
--	am65_cpsw_unregister_notifiers(common);
-+
- err_cleanup_ndev:
- 	am65_cpsw_nuss_cleanup_ndev(common);
- 
--- 
-2.36.1
+ /* acpi_driver definition */
+---
+We don't use the desc in sof_broadwell_probe(), so we can just pass the id->driver_data
 
+-- 
+Péter
