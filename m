@@ -2,81 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2FC5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233811AbiGDNoG convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51068 "EHLO
+        id S233863AbiGDNo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234156AbiGDNn6 (ORCPT
+        with ESMTP id S232773AbiGDNox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:43:58 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FB52ADB
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:43:54 -0700 (PDT)
-Received: from mail-yb1-f176.google.com ([209.85.219.176]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MfHIZ-1nfM8I0Ah9-00grI3 for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022
- 15:43:53 +0200
-Received: by mail-yb1-f176.google.com with SMTP id 76so1370234ybd.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:43:52 -0700 (PDT)
-X-Gm-Message-State: AJIora8pPkO2gSZXCtyXJsOlIIiwOPRoyqG+gpyLxi/h8roAVyzx3Tjp
-        kkIB+IskU//9yIxJIyCioTJxaL2Afx62O7Hhfm0=
-X-Google-Smtp-Source: AGRyM1sl7ZhrdyDlr2pScNIVgZG3D4DXePFqgUbPtO3R2pdcjKLgl0+jlEAndq8SOJ1A5ZwWwducTiOPZWJ7gVrp92s=
-X-Received: by 2002:a25:8b8b:0:b0:669:b37d:f9cd with SMTP id
- j11-20020a258b8b000000b00669b37df9cdmr31378860ybl.394.1656942231974; Mon, 04
- Jul 2022 06:43:51 -0700 (PDT)
+        Mon, 4 Jul 2022 09:44:53 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40464271C;
+        Mon,  4 Jul 2022 06:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=L6wSaDv21i8IBXuOCFtPFoc5AHwc9orKajt9IjPXWew=; b=nQ/NIdPXtNBa1KvneVnc6Ud5sy
+        AWLprlY/lSUgAqO/wXcXY7jfFsKYSz3fHXyccL9RtCWjtEfSm/s389xh5h+jkRKIi1FdiCXhliL0f
+        8sz0JSaY9hIoeOYx+y5zBxWytVcq9KL7lCgnnw9faFOMcHEwPXGsB/i5Nty53v4nQ/imEIX8YU+K8
+        1st3oS9326bC1Q/y4IN6KDj9ND8o2Dcrclvc9TRD+Yf0/Y2NjQ2J6VpfAeIVwIEEKtKUGP/FJiDmR
+        LxPuicJhlwu/sL0iqNdztvcSN2PT86QPnT85mshLE0+o7ec+5Xb83LQmN8e7I+IlqHyY67Q7B1jfs
+        bmA/A14g==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1o8MMq-0081dA-Ie;
+        Mon, 04 Jul 2022 13:44:00 +0000
+Date:   Mon, 4 Jul 2022 14:44:00 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Vitaly Buka <vitalybuka@google.com>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH v4 43/45] namei: initialize parameters passed to
+ step_into()
+Message-ID: <YsLuoFtki01gbmYB@ZenIV>
+References: <20220701142310.2188015-1-glider@google.com>
+ <20220701142310.2188015-44-glider@google.com>
+ <CAHk-=wgbpot7nt966qvnSR25iea3ueO90RwC2DwHH=7ZyeZzvQ@mail.gmail.com>
+ <YsJWCREA5xMfmmqx@ZenIV>
+ <CAG_fn=V_vDVFNSJTOErNhzk7n=GRjZ_6U6Z=M-Jdmi=ekbS5+g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220524093939.30927-1-pali@kernel.org> <20220702094405.tp7eo4df7fjvn2ng@pali>
- <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au> <20220704103951.nm4m4kpgnus3ucqo@pali>
- <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com>
- <20220704131358.fy3z7tjcmk2m6pfh@pali> <CAK8P3a2hfnt+tHiqHrHAVyagSm73LJe4OV8ig=CKFcycfk4Zag@mail.gmail.com>
- <20220704132904.irvs4xefu4esgw6c@pali>
-In-Reply-To: <20220704132904.irvs4xefu4esgw6c@pali>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 4 Jul 2022 15:43:34 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a30ecxG-A0_YDSBJAaGjcXXVwSnc7z4k-nreO+0UfJJ3w@mail.gmail.com>
-Message-ID: <CAK8P3a30ecxG-A0_YDSBJAaGjcXXVwSnc7z4k-nreO+0UfJJ3w@mail.gmail.com>
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <michael@ellerman.id.au>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:sba96hj5QkOtmm45W32nw/kGITFYG8pdyVhpbB6iQKRoU4CXTFq
- HpGN6GTpy8EDBR3dxm9LkQQQOfgI76QagrqM0NMWvFXrmgSW/PTiDqVnptVZyOpEg+JhcDz
- hOhWsxaHBgLfNj8PnzP6F6sk2Fq1lDqt91NWWTpMq1oIzySh39B1h4vt9GRnkRsD36+Eg3z
- rznyelSGX5azWHLjfCqoA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:KPW5Zaei2E0=:sQPukXNVC6EhSCfQMP7p6z
- KyQUGAktX06i0av87XbyRJ6I6Ib2M13ACmasYx4PPxj29ylCe1yIgioheAsi7ZN/2Vnk50Usq
- 36sb2OtVPWWpLiv5/6FBEKM4eq6+AWDleFA3APMDop44Vw68FyCQL5mH3o6/u/L0/fEZn5Noq
- Eg2oSEWi7X8mWl350GANcsMflPV4W0H3z6gxaRprq6VGkZcNcfWLppjPlSuoahvOWrFalN7EL
- VsaH5skCpZy4MoDjv0v52zgw+FpmwOYnRxCu6ESMMfpD0ongrcywlaxb3hnDELmjSuBUrH9Dk
- Y9cbwuY8up7KLJAGjBL+6RG343iMbFfYIrbxsIMRAAKu6ZEn4PhNeGC885lfA8gDnqfmu+eAy
- NJkPZzzhBTMR7ToIvmqREOMVGWp2lQRaYSAnpRKE5oQT66k6VfU+t0kwYgfFTfiGY3BlbKbbq
- P9RhFdjvx2w4wOTTuSTFdicljwXRmORP5M68nxdlPcmVjEy9/ngCvoNsqj/EKjl4g6N6kTKHL
- ADQBI9Nd/6SqwHclzvAyJToRiLqU49K9Ivg95Lk/q6tlhIftpDBAZ2FxZHGW1owHKoidbmNDY
- 6j6UbEzbW6qvEtMpnFDa7YeaWjwikMWgWlqub0MgIOaGbTSMtKuGq/lSLx5cYrTdIGK6/fbYQ
- AJYPpE1kmORNuf7/vSgQ2+rC3aF0AfLUN0cb9vNSyssxQEx+ZYy6lY32GpGhDPMGhXXUuNzjO
- icQdop3f+wOZYWz5m7+UEcoil0IXOQr+u1WqipmXyN+Gtf1lbxteCIzKcIngzJmZCWDjEzqkl
- nwk1llYOI80MUO5Wm9iOUzF70X/vLruVdi3/tbT2zhGPCwFoAOuPycXb0Ns/uUVTwuC+V2+F4
- pZbdW4I7w6rkN70/SxlA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG_fn=V_vDVFNSJTOErNhzk7n=GRjZ_6U6Z=M-Jdmi=ekbS5+g@mail.gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 3:29 PM Pali Rohár <pali@kernel.org> wrote:
->
-> And still what to do with 4bf4f42a2feb ("powerpc/kbuild: Set default
-> generic machine type for 32-bit compile")? I'm somehow lost there...
+On Mon, Jul 04, 2022 at 10:20:53AM +0200, Alexander Potapenko wrote:
 
-As far as I can tell, that is not needed, as long as every configuration
-sets a specific -mcpu= option, the only reason it was required is that
-there were some configs that relied on the compiler default, which
-ended up being -mcpu=power8 or similar.
+> What makes you think they are false positives? Is the scenario I
+> described above:
+> 
+> """
+> In particular, if the call to lookup_fast() in walk_component()
+> returns NULL, and lookup_slow() returns a valid dentry, then the
+> `seq` and `inode` will remain uninitialized until the call to
+> step_into()
+> """
+> 
+> impossible?
 
-       Arnd
+Suppose step_into() has been called in non-RCU mode.  The first
+thing it does is
+	int err = handle_mounts(nd, dentry, &path, &seq);
+	if (err < 0) 
+		return ERR_PTR(err);
+
+And handle_mounts() in non-RCU mode is
+	path->mnt = nd->path.mnt;
+	path->dentry = dentry;
+	if (nd->flags & LOOKUP_RCU) {
+		[unreachable code]
+	}
+	[code not touching seqp]
+	if (unlikely(ret)) {
+		[code not touching seqp]
+	} else {
+		*seqp = 0; /* out of RCU mode, so the value doesn't matter */
+	}
+	return ret;
+
+In other words, the value seq argument of step_into() used to have ends up
+being never fetched and, in case step_into() gets past that if (err < 0)
+that value is replaced with zero before any further accesses.
+
+So it's a false positive; yes, strictly speaking compiler is allowd
+to do anything whatsoever if it manages to prove that the value is
+uninitialized.  Realistically, though, especially since unsigned int
+is not allowed any trapping representations...
+
+If you want an test stripped of VFS specifics, consider this:
+
+int g(int n, _Bool flag)
+{
+	if (!flag)
+		n = 0;
+	return n + 1;
+}
+
+int f(int n, _Bool flag)
+{
+	int x;
+
+	if (flag)
+		x = n + 2;
+	return g(x, flag);
+}
+
+Do your tools trigger on it?
