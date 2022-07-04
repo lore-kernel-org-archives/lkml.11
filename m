@@ -2,79 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B3EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233511AbiGDLpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S231810AbiGDLpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233194AbiGDLo5 (ORCPT
+        with ESMTP id S232583AbiGDLpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:44:57 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2C011445
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:44:56 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B65B06601606;
-        Mon,  4 Jul 2022 12:44:54 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656935095;
-        bh=jjo/dyeQs/GxvVIxuo7XEbbDAa6wk9DN2Its8ccnRJ0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=nbJnzWpIAwOdT1NnRPK3dzVlUURFg7owdJam04RFnvJ1M7R5J4KEmBvJsOP+V62Qh
-         cY5xqLdSoHcmUI1epUxuKG90LJlj5x7P9/YpS1EfHuyIYfayhQnnHzB9256yBDKyDP
-         M2ubH3i6prhjBmd1BXjyeoDFPIr+8Ccn1khWm1dNo6cRhlEz7hhqswvZxf/yFv8wM6
-         elWZfMriM/zOTb1xhCbkpKSl6ls0PEEQXcwEVLwMWnP8a71fKlm2EAr8VzXnKkUw2g
-         qj/elSmFNeBE3KTdMf4xaVV4bWxSfwIWabWi6niy/+tiqVJDzTFL/4QwFSbaxW7N+n
-         NedgxcEU4P/Xw==
-Message-ID: <e405bbc2-c1af-f445-5b78-021b8e88090a@collabora.com>
-Date:   Mon, 4 Jul 2022 13:44:52 +0200
+        Mon, 4 Jul 2022 07:45:51 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E8D11450
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:45:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4HrRuXuVA+Twe3QAd56nGmntiiPmbvBTaKZ1l1jeChc=; b=mSbUiv1/DRUA3lQIT0bPc7zWbu
+        hYIsn/1ueg4pM4xgnObmk/HNo4XDuGhlHlQoQ3FijYv1D9Wz9sF4JRv8sECoVcNbUoBrI2j5nNB16
+        Nhx3So2SdSRT4PWxWEpL2hOZzyZNk22odC2seMX4jYd+jvOgH/c0vjC3LF/dt3DR3Xv/BfU5vsdqn
+        TMjFNJjQueSZWfe9JcXAOWc4raiUkoEAM8TaUSzi204T5B/T7Et2DyFHWWuTHxZMZcg2Hs6xGrbWI
+        BQDraL1c4hIdfIa2nXqgvznU58iRnhuL+MNmPW8cqFSOa/haIukRZJtioNqImk/hZRwFqOBq+njBw
+        4VnrMlyg==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8KW5-00HE6L-Ke; Mon, 04 Jul 2022 11:45:25 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D81D8300362;
+        Mon,  4 Jul 2022 13:45:23 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id BE0B42028F029; Mon,  4 Jul 2022 13:45:23 +0200 (CEST)
+Date:   Mon, 4 Jul 2022 13:45:23 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Sathvika Vasireddy <sv@linux.vnet.ibm.com>,
+        Sathvika Vasireddy <sv@linux.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
+Message-ID: <YsLS02T6TAxN/HcL@hirez.programming.kicks-ass.net>
+References: <20220624183238.388144-1-sv@linux.ibm.com>
+ <20220624183238.388144-12-sv@linux.ibm.com>
+ <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
+ <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
+ <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] drm/mediatek: ensure bridge disable happends before
- suspend
-Content-Language: en-US
-To:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220629190545.478113-1-hsinyi@chromium.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220629190545.478113-1-hsinyi@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 29/06/22 21:05, Hsin-Yi Wang ha scritto:
-> Make sure bridge_disable will be called before suspend by calling
-> drm_mode_config_helper_suspend() in .prepare callback.
-> 
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: CK Hu <ck.hu@mediatek.com>
+On Wed, Jun 29, 2022 at 06:30:23PM +0000, Christophe Leroy wrote:
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-> ---
-> The issue is found if suspend is called via VT2 in several MTK SoC (eg.
-> MT8173, MT8183, MT8186) chromebook boards with eDP bridge:
-> bridge disable is called through mtk-drm's suspend, and it needs to be
-> called before bridge pm runtime suspend.
-> So we move the hook to .prepare() and .complete().
-> ---
->   drivers/gpu/drm/mediatek/mtk_drm_drv.c | 16 ++++++++--------
->   1 file changed, 8 insertions(+), 8 deletions(-)
+> The problem is that that function has size 0:
 > 
+> 00000000000003d0 l     F .text	0000000000000000 
+> qdisc_root_sleeping_lock.part.0
+
+I'm somewhat confused; how is an empty STT_FUNC a valid construct on
+Power?
