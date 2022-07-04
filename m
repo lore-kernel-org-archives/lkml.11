@@ -2,83 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AC5CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D4B5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbiGDOA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 10:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
+        id S233294AbiGDOBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 10:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234818AbiGDOAi (ORCPT
+        with ESMTP id S229448AbiGDOBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 10:00:38 -0400
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4FFDF54;
-        Mon,  4 Jul 2022 07:00:13 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id n4so6241166wru.11;
-        Mon, 04 Jul 2022 07:00:13 -0700 (PDT)
+        Mon, 4 Jul 2022 10:01:37 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E297AB1D7;
+        Mon,  4 Jul 2022 07:01:36 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id v14so13641190wra.5;
+        Mon, 04 Jul 2022 07:01:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0RwqG+scDxa5sBRqSdCikrVrH/DlHuQpNG6BogojNcw=;
+        b=odnnTUp/LoUmKOUyIJo7vEDZ9yAuctYKOVpNuGmulrP9ucSUIzulweZaGGyx5FAYjS
+         pKtpKxi4+NqK+MuIKSu9ZSW3m5/J4CZD6x12SiuRNc6W268Bu7bBLJedQSHalLOH3Dni
+         /gb6Juv9w3rHsvJs7EYOlL7HBPp+qP8HHhDiIWrqC70++0qmzhrOY0dZd8xJqIFFTi1d
+         GkOERF7j+9cILgoS2NHfS5QT0eU6lR/yhdvYRtMYRy9tXXaOcBsHeHsQacSPAJubQ+Jv
+         Z0JebS6MOLja+VT6KCC3MFDQkpbg2heGJIdBA1Pl7CUgL5ungJ1Q1Ed3BEzeIHHWe9AU
+         NvnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9ya4FqHqG3w7UGSD1/owDFfHZARYDJr0su8IHEw0uLY=;
-        b=u2W6OEJzurr1s0cM4gRNZuExODwYfJbbDNAhcWkWEQmVtOC8c9aWeVbCtywlVkFMHf
-         Z8kaPZNzO4+JbgF4hDuNp1QQO69BRJBTSFidurUZ3sZ/uxki2XsKa2LdntbvHA7avBC1
-         ntPSqgo+KFtIlAv+Oe4KstVna4m3bDtyUWUNHsbL9ZTNHWDo26BTQoPndEzVA+GKU8jk
-         3GxDks2whClFXqyUtxMjvW0sm3YU0B8Wcbve+WrN10oABMaQoHH31NyVuYjj1IOA5HRs
-         kEkoxUSjLrI+gQ9x0uTuvDo4Kfwfx68OTB1E15SmLvrAFhVEhC7hpC9xq5NNBpaNRH+T
-         fl9A==
-X-Gm-Message-State: AJIora9yaCFafEF59gBzoaEPKlQo2epfJP4UfkDDaFGkJcjQkIEcq5Bp
-        TxXTUYmVmmYWmRRiBKZF37k=
-X-Google-Smtp-Source: AGRyM1v1LYoyvj/v8X1NMSy3/FWqn7N3LsEjbrJF44Qf9HtE8RXp6cR/gCKtvcnH6TT0GuzulgcNLQ==
-X-Received: by 2002:a05:6000:2a4:b0:21d:1896:763e with SMTP id l4-20020a05600002a400b0021d1896763emr27354562wry.248.1656943212101;
-        Mon, 04 Jul 2022 07:00:12 -0700 (PDT)
-Received: from [192.168.64.180] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
-        by smtp.gmail.com with ESMTPSA id f7-20020a05600c4e8700b003a17ab4e7c8sm18418946wmq.39.2022.07.04.07.00.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 07:00:11 -0700 (PDT)
-Message-ID: <8cf1aef0-ea5b-a3df-266d-ae67674c96ae@grimberg.me>
-Date:   Mon, 4 Jul 2022 17:00:10 +0300
+        bh=0RwqG+scDxa5sBRqSdCikrVrH/DlHuQpNG6BogojNcw=;
+        b=ySMs09g5awH0MPHsCyP36pwzglULLh4DOOujaX7Jl88UwUmtAceI7ocrP1oJKv6utN
+         DgUyUEHCFWurgIcq9xqudsafXB4CeXLR5jVPvW79nd8qV6fAqDNWX0o+mHs2fK2zJLoL
+         A6/wFyuM+ksw4A8MBQrOKSsSts090GXoBoegEZPZKMMIj8zwrZj9G8G4a53UEMENwtCw
+         ryPOUabJO8U5A3FCM7UtgOVCMxZqvVnm3LcyYplOyw1ik3iCvISk/rkHtr6o8ytz8GE1
+         5QJERkkwZQ08M/c0ApcYvasj4+SOLsno2Dg+XnLiDJ0kiMloRTsCyooMlgz+ZQmmHkcG
+         AmEA==
+X-Gm-Message-State: AJIora+bYKnOt5tbF8QiqK7ppqYuyNlzb2ih87uLLYi48ZsxMGUqW9eZ
+        KD7K6VFkta8b9mqQEywoPYU=
+X-Google-Smtp-Source: AGRyM1smRSj3Ife5KLTAkAievRyKaIgwIO/zIdO2R0orYgNnwofMXGR9OfYzMd2s/lnJBQ5AknUp2w==
+X-Received: by 2002:a05:6000:1887:b0:21d:33c1:efd6 with SMTP id a7-20020a056000188700b0021d33c1efd6mr23299338wri.134.1656943295318;
+        Mon, 04 Jul 2022 07:01:35 -0700 (PDT)
+Received: from localhost.localdomain (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
+        by smtp.gmail.com with ESMTPSA id f7-20020a0560001b0700b0021d68e1fd42sm3963147wrz.89.2022.07.04.07.01.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 07:01:33 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [PATCH] ixgbe: Don't call kmap() on page allocated with GFP_ATOMIC
+Date:   Mon,  4 Jul 2022 16:01:29 +0200
+Message-Id: <20220704140129.6463-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH V3 1/1] ublk: add io_uring based userspace block driver
-Content-Language: en-US
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
-        Harris James R <james.r.harris@intel.com>,
-        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-References: <20220628160807.148853-1-ming.lei@redhat.com>
- <20220628160807.148853-2-ming.lei@redhat.com>
- <da861bbb-1506-7598-fa06-32201456967d@grimberg.me> <YsLeR1QWPmqfNAQY@T590>
-From:   Sagi Grimberg <sagi@grimberg.me>
-In-Reply-To: <YsLeR1QWPmqfNAQY@T590>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Pages allocated with GFP_ATOMIC cannot come from Highmem. This is why
+there is no need to call kmap() on them.
 
->>> diff --git a/drivers/block/Kconfig b/drivers/block/Kconfig
->>> index fdb81f2794cd..d218089cdbec 100644
->>> --- a/drivers/block/Kconfig
->>> +++ b/drivers/block/Kconfig
->>> @@ -408,6 +408,12 @@ config BLK_DEV_RBD
->>>    	  If unsure, say N.
->>> +config BLK_DEV_UBLK
->>> +	bool "Userspace block driver"
->>
->> Really? why compile this to the kernel and not tristate as loadable
->> module?
-> 
-> So far, this is only one reason: task_work_add() is required, which
-> isn't exported for modules.
+Therefore, don't call kmap() on rx_buffer->page() and instead use a
+plain page_address() to get the kernel address.
 
-So why not exporting it?
-Doesn't seem like a good justification to build it into the kernel.
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+index 628d0eb0599f..71196fd92f81 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+@@ -1966,15 +1966,13 @@ static bool ixgbe_check_lbtest_frame(struct ixgbe_rx_buffer *rx_buffer,
+ 
+ 	frame_size >>= 1;
+ 
+-	data = kmap(rx_buffer->page) + rx_buffer->page_offset;
++	data = page_address(rx_buffer->page) + rx_buffer->page_offset;
+ 
+ 	if (data[3] != 0xFF ||
+ 	    data[frame_size + 10] != 0xBE ||
+ 	    data[frame_size + 12] != 0xAF)
+ 		match = false;
+ 
+-	kunmap(rx_buffer->page);
+-
+ 	return match;
+ }
+ 
+-- 
+2.36.1
+
