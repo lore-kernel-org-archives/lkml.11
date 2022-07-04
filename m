@@ -2,196 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E09CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234741AbiGDNOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
+        id S234794AbiGDNOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234746AbiGDNOI (ORCPT
+        with ESMTP id S234753AbiGDNOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 4 Jul 2022 09:14:08 -0400
-Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0416310
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:14:01 -0700 (PDT)
-Received: by mail-wm1-x349.google.com with SMTP id bg6-20020a05600c3c8600b003a03d5d19e4so5343679wmb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:14:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ONCXgNCOtImX0AhNIxHUhslQR7t5rZ6vcHB5inKBUBs=;
-        b=b4CmB9R52qp6rkn3CJ5+u40v7Bk1hPNLw6ClXDSES56lC8aHfeOSI2Cy1YaCH58GKd
-         1GZs0WeWnhKcLTjjSYVe82JdqsdEmjRBnakZ3izLQiHWispiCIuCHuG4muUf7qsBDp9d
-         6AIwAyWdHT/lhM5XSPGAxR2t10G7VTu9xGkRBt2GMZK/YBf3q5EcqacDqmDqYtLqSZEc
-         2qiG2BbJKIFaXMAH3UNgzZkAezDf++ZJizQCdRKyKN+Y1BHyj7Mjbqt1vMZDobvxSoqk
-         pIZ1+XDEX9WI1XMNJwM3hWijB54tHL79x0QidSlsvl0aA8rUUNvtNBz4RKQqX2pmlBWb
-         Pe2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ONCXgNCOtImX0AhNIxHUhslQR7t5rZ6vcHB5inKBUBs=;
-        b=y6Gpbht9FLIcbGqZW+mo/UP9q2ibTofmP3zq2ybuT9PTCO2GxG7lqCGrqyn8DdlGu8
-         59c0WqLsZmG8LCmMo76iKQec+a3xw435uzUgHkE4Vulro4UU5jhxH3yeyOVQCT5sEG86
-         t13GwMwM20Na8mz4DUMLSBtcAu9TAD4r1CWNsygNBhILwVaoPds9S5Xwq8qGr238olZ0
-         3u6G9JWZ9GGmibxuTOSO+7XxWTz4ambEuYeEJAra+qninmE2en44DjF1x7Ep5Dc1Rjr4
-         3yfUuoKbfiK5vt/FMqJWTMJZlNAb8e0CJG8F+7PVI5zGpBGaUzsfINqUnQiwPk+shKYh
-         l0+g==
-X-Gm-Message-State: AJIora8v/LaMJhdBWuS+rxyVWn4uQPx9Ax2TVgYQlL9yjUTks1CLl/dM
-        NC8+5NSwQpzt/g7yY9cGTYj5wChCURu4AFha
-X-Google-Smtp-Source: AGRyM1sek8DA6kuVdp7drJ56jHIEwXnHAeq1PdUq74BIIsdk4xjWpHP+sP8zw+l450wkN8hNaasGDuwX4/8ukCwF
-X-Received: from vdonnefort.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2eea])
- (user=vdonnefort job=sendgmr) by 2002:a05:600c:1c0d:b0:3a0:503a:9c9c with
- SMTP id j13-20020a05600c1c0d00b003a0503a9c9cmr30997697wms.2.1656940440320;
- Mon, 04 Jul 2022 06:14:00 -0700 (PDT)
-Date:   Mon,  4 Jul 2022 14:13:46 +0100
-Message-Id: <20220704131346.2650163-1-vdonnefort@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v4] cpu/hotplug: Do not bail-out in DYING/STARTING sections
-From:   Vincent Donnefort <vdonnefort@google.com>
-To:     peterz@infradead.org, tglx@linutronix.de
-Cc:     linux-kernel@vger.kernel.org, vschneid@redhat.com,
-        regressions@leemhuis.info, kernel-team@android.com,
-        Vincent Donnefort <vdonnefort@google.com>,
-        Derek Dolney <z23@posteo.net>
-Content-Type: text/plain; charset="UTF-8"
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE45563E9
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:14:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48E3F61487
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 13:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C1EBC341C7;
+        Mon,  4 Jul 2022 13:14:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656940441;
+        bh=absJmAmdqt7XiszFOsAh/vphae1bYJibHDaFucdlIbw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eKbuqs1zF9TYYgBcxP/Wd2eTmm4950q4wfRQvi377PhwL/mYEBykuBrP0VQ8wSJ3v
+         PAdQzkl7QcgjVqc9JUHh9aFCpajVlu3Panm6xu8EcghEmgztHsyDVbjMrkqHgi/Mws
+         Fe8VnbqUzzRodH3afM7SU7MAG96z9ZKZXURd5IZXVOsjCddtbpZ2vF3M7f0fVu6XLs
+         RHVkAISiSbmWucyWsiyYcYg1TeA9sMwuqgVmH2NuyQaET2EPKUxtkbLwim+zw3Ezzz
+         nbEGSyJ2xvpoLk8XejWwH0BOz1/qIG0AQCoLuSa76CDYtH3xnnfdLg83XKaVJayHeR
+         GcU5dhr0WIKUw==
+Received: by pali.im (Postfix)
+        id 487F76E8; Mon,  4 Jul 2022 15:13:58 +0200 (CEST)
+Date:   Mon, 4 Jul 2022 15:13:58 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Michael Ellerman <michael@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
+Message-ID: <20220704131358.fy3z7tjcmk2m6pfh@pali>
+References: <20220524093939.30927-1-pali@kernel.org>
+ <20220702094405.tp7eo4df7fjvn2ng@pali>
+ <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au>
+ <20220704103951.nm4m4kpgnus3ucqo@pali>
+ <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DYING/STARTING callbacks are not expected to fail. However, as reported
-by Derek, drivers such as tboot are still free to return errors within
-those sections, which halts the hot(un)plug and leaves the CPU in an
-unrecoverable state.
+On Monday 04 July 2022 14:07:10 Arnd Bergmann wrote:
+> On Mon, Jul 4, 2022 at 12:39 PM Pali Rohár <pali@kernel.org> wrote:
+> > On Monday 04 July 2022 20:23:29 Michael Ellerman wrote:
+> > > On 2 July 2022 7:44:05 pm AEST, "Pali Rohár" <pali@kernel.org> wrote:
+> > > >On Tuesday 24 May 2022 11:39:39 Pali Rohár wrote:
+> > > >> gcc e500 compiler does not support -mcpu=powerpc option. When it is
+> > > >> specified then gcc throws compile error:
+> > > >>
+> > > >>   gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
+> > > >>   gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
+> > > >>
+> > > >> So do not set -mcpu=powerpc option when CONFIG_E500 is set. Correct option
+> > > >> -mcpu=8540 for CONFIG_E500 is set few lines below in that Makefile.
+> > > >>
+> > > >> Signed-off-by: Pali Rohár <pali@kernel.org>
+> > > >> Cc: stable@vger.kernel.org
+> > > >
+> > > >Michael, do you have any objections about this patch?
+> > >
+> > > I don't particularly like it :)
+> > >
+> > > From the discussion with Segher, it sounds like this is a problem with a specific build of gcc that you're using, not a general problem with gcc built with e500 support.
+> >
+> > Well, the "full" build of gcc for e500 cores with SPE does not support
+> > -mcpu=powerpc option. So I think this is a general problem. I do not
+> > think that this is "specific build" as this is the correct build of gcc
+> > for these processors with e500 cores.
+> >
+> > "stripped". build of gcc without SPE support for e500 cores does not
+> > have this problem...
+> 
+> I can see a couple of problems with the CPU selection, but I don't think
+> this is a major one, as nobody should be using those SPE compilers for
+> building the kernel. Just use a modern powerpc-gcc build.
 
-No rollback being possible there, let's only log the failures and proceed
-with the following steps. This restores the hotplug behaviour prior to
-commit 453e41085183 ("cpu/hotplug: Add cpuhp_invoke_callback_range()")
+The point is to use same compiler for building kernel as for the all
+other parts of the system.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215867
-Fixes: 453e41085183 ("cpu/hotplug: Add cpuhp_invoke_callback_range()")
-Reported-by: Derek Dolney <z23@posteo.net>
-Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
-Tested-by: Derek Dolney <z23@posteo.net>
+I just do not see reason why for kernel it is needed to build completely
+different toolchain and compiler.
 
----
-v3 -> v4:
-   - Sorry ... wrong commit description style ...
-v2 -> v3:
-   - Tested-by tag.
-   - Refine commit description.
-   - Bugzilla link.
-v1 -> v2:
-   - Commit message rewording.
-   - More details in the warnings.
-   - Some variable renaming
+> > > Keying it off CONFIG_E500 means it will fix your problem, but not anyone else who has a different non-e500 compiler that also doesn't support -mcpu=powerpc (for whatever reason).
+> > >
+> > > So I wonder if a better fix is to use cc-option when setting -mcpu=powerpc.
+> > >
+> >
+> > Comment for that code which adds -mpcu=powerpc says:
+> >
+> >   they are needed to set a sane 32-bit cpu target for the 64-bit cross
+> >   compiler which may default to the wrong ISA.
+> >
+> > So I'm not sure how to handle this in other way. GCC uses -mpcu=8540
+> > option for specifying to compile code for e500 cores and seems that
+> > -mcpu=8540 is supported by all e500 compilers...
+> >
+> > Few lines below is code
+> >
+> >   CFLAGS-$(CONFIG_E500) += $(call cc-option,-mcpu=8540 -msoft-float,-mcpu=powerpc)
+> >
+> > which for e500 kernel builds user either -mcpu=8540 or -mcpu=powerpc
+> > (probably as a fallback if -mcpu=8540 is not supported).
+> 
+> The -mcpu=powerpc fallback can probably be skipped here, that must have been
+> for compilers predating the addition of -mcpu=8540, and even the oldest ones
+> support that now.
 
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index bbad5e375d3b..c3617683459e 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -663,21 +663,51 @@ static bool cpuhp_next_state(bool bringup,
- 	return true;
- }
- 
--static int cpuhp_invoke_callback_range(bool bringup,
--				       unsigned int cpu,
--				       struct cpuhp_cpu_state *st,
--				       enum cpuhp_state target)
-+static int _cpuhp_invoke_callback_range(bool bringup,
-+					unsigned int cpu,
-+					struct cpuhp_cpu_state *st,
-+					enum cpuhp_state target,
-+					bool nofail)
- {
- 	enum cpuhp_state state;
--	int err = 0;
-+	int ret = 0;
- 
- 	while (cpuhp_next_state(bringup, &state, st, target)) {
-+		int err;
-+
- 		err = cpuhp_invoke_callback(cpu, state, bringup, NULL, NULL);
--		if (err)
-+		if (!err)
-+			continue;
-+
-+		if (nofail) {
-+			pr_warn("CPU %u %s state %s (%d) failed (%d)\n",
-+				cpu, bringup ? "UP" : "DOWN",
-+				cpuhp_get_step(st->state)->name,
-+				st->state, err);
-+			ret = -1;
-+		} else {
-+			ret = err;
- 			break;
-+		}
- 	}
- 
--	return err;
-+	return ret;
-+}
-+
-+static inline int cpuhp_invoke_callback_range(bool bringup,
-+					      unsigned int cpu,
-+					      struct cpuhp_cpu_state *st,
-+					      enum cpuhp_state target)
-+{
-+	return _cpuhp_invoke_callback_range(bringup, cpu, st, target, false);
-+}
-+
-+static inline void cpuhp_invoke_callback_range_nofail(bool bringup,
-+						      unsigned int cpu,
-+						      struct cpuhp_cpu_state *st,
-+						      enum cpuhp_state target)
-+{
-+	WARN_ON_ONCE(_cpuhp_invoke_callback_range(bringup, cpu, st, target, true));
- }
- 
- static inline bool can_rollback_cpu(struct cpuhp_cpu_state *st)
-@@ -999,7 +1029,6 @@ static int take_cpu_down(void *_param)
- 	struct cpuhp_cpu_state *st = this_cpu_ptr(&cpuhp_state);
- 	enum cpuhp_state target = max((int)st->target, CPUHP_AP_OFFLINE);
- 	int err, cpu = smp_processor_id();
--	int ret;
- 
- 	/* Ensure this CPU doesn't handle any more interrupts. */
- 	err = __cpu_disable();
-@@ -1012,13 +1041,11 @@ static int take_cpu_down(void *_param)
- 	 */
- 	WARN_ON(st->state != (CPUHP_TEARDOWN_CPU - 1));
- 
--	/* Invoke the former CPU_DYING callbacks */
--	ret = cpuhp_invoke_callback_range(false, cpu, st, target);
--
- 	/*
-+	 * Invoke the former CPU_DYING callbacks
- 	 * DYING must not fail!
- 	 */
--	WARN_ON_ONCE(ret);
-+	cpuhp_invoke_callback_range_nofail(false, cpu, st, target);
- 
- 	/* Give up timekeeping duties */
- 	tick_handover_do_timer();
-@@ -1296,16 +1323,14 @@ void notify_cpu_starting(unsigned int cpu)
- {
- 	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
- 	enum cpuhp_state target = min((int)st->target, CPUHP_AP_ONLINE);
--	int ret;
- 
- 	rcu_cpu_starting(cpu);	/* Enables RCU usage on this CPU. */
- 	cpumask_set_cpu(cpu, &cpus_booted_once_mask);
--	ret = cpuhp_invoke_callback_range(true, cpu, st, target);
- 
- 	/*
- 	 * STARTING must not fail!
- 	 */
--	WARN_ON_ONCE(ret);
-+	cpuhp_invoke_callback_range_nofail(true, cpu, st, target);
- }
- 
- /*
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+Ok, makes sense.
 
+> > So for me it looks like that problematic code
+> >
+> >   KBUILD_CFLAGS         += -mcpu=powerpc
+> >   KBUILD_AFLAGS         += -mcpu=powerpc
+> >
+> > needs to be somehow skipped when compiling for CONFIG_E500.
+> >> My change which skips that code base on ifndef CONFIG_E500 should be
+> > fine as when CONFIG_E500 is disabled it does nothing and when it is
+> > enabled then code
+> >
+> >   CFLAGS-$(CONFIG_E500) += $(call cc-option,-mcpu=8540 -msoft-float,-mcpu=powerpc)
+> >
+> > is called which sets -mcpu option suitable for e500.
+> 
+> I think this part is indeed fishy, but adding another special case for E500
+> seems to take it in the wrong direction.
+> 
+> Nick added this in 4bf4f42a2feb ("powerpc/kbuild: Set default generic
+> machine type
+> for 32-bit compile") as a compile-time fix to prevent the default target from
+> getting used when the compiler supports both 64-bit and 32-bit. This is the
+> right idea, but it's inconsistent to pass different flags depending on the type
+> of toolchain, and it loses the more specific options.
+> 
+> Another problem I see is that a kernel that is built for both E500 and E500MC
+> uses -mcpu=e500mc and may not actually work on the older ones either
+> (even with your patch).
+
+That is probably truth, -mcpu=8540 should have been chosen. (Anyway it
+should have been called -mcpu=e500, no idea why gcc still name it 8540.)
+
+> I think what you actually want is to set one option for each of the
+> possible CPU types:
+> 
+> CFLAGS_CPU-$(CONFIG_PPC_BOOK3S_32) := -mcpu=powerpc
+> CFLAGS_CPU-$(CONFIG_PPC_85xx) := -mcpu=8540
+> CFLAGS_CPU-$(CONFIG_PPC8xx) := -mcpu=860
+> CFLAGS_CPU-$(CONFIG_PPC44x) := -mcpu=440
+> CFLAGS_CPU-$(CONFIG_PPC40x) := -mcpu=405
+> ifdef CONFIG_CPU_LITTLE_ENDIAN
+> CFLAGS_CPU-$(CONFIG_BOOK3S_64) := -mcpu=power8
+> else
+> CFLAGS_CPU-$(CONFIG_BOOK3S_64) := -mcpu=power5
+> endif
+> CFLAGS_CPU-$(CONFIG_BOOK3E_64) := -mcpu=powerpc64
+
+Yes, this is something I would expect that in Makefile should be.
+
+But what to do with fallback value?
+
+> For the non-generic CPU types, there is also CONFIG_TARGET_CPU,
+> and the list above could just get folded into that instead.
+> 
+>        Arnd
