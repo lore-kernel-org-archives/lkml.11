@@ -2,90 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E6FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C4DCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234812AbiGDNcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
+        id S234927AbiGDNc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233618AbiGDNcI (ORCPT
+        with ESMTP id S233381AbiGDNcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:32:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B9711C03
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:29:11 -0700 (PDT)
+        Mon, 4 Jul 2022 09:32:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2D611A00;
+        Mon,  4 Jul 2022 06:28:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 565CFCE16AE
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 13:29:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67378C3411E;
-        Mon,  4 Jul 2022 13:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656941347;
-        bh=LxOgaJ9LSgEjVEuMAJUhVF/q8JAFuDeLHwegeV8kA+4=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B3CB614FE;
+        Mon,  4 Jul 2022 13:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539A5C3411E;
+        Mon,  4 Jul 2022 13:28:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656941331;
+        bh=XIwtnQ6NKPC0BfotMk1G0wnhG2C7UeF+3OA9DWRZ//g=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iNI+7QkpC3aLbGataolyMpLPtKEu8CKuclbUHURo1BxSe9EZvBggWafe9cc7MntHS
-         EMXFp45e3B0esnlKzSsBiW3ed0jhCGDmo3KCthIzh61k9EzvgMF0OAu3TBirp9WDzv
-         qKmmMeyZzkMcPqWemgD4B+BO3qIKEt7fKKtPENF+zmLJhQG4oGayeg93wrcaylA8Px
-         1s3SsNTho80QD/W9+MGqts9ub7DIDaBszIxuTfzX2IUDAKP3sRq6EzHdUwopwLOh7W
-         HxtreIXlyRUprjsnBINdTS60JYEuFsXqpSybaqjCWyRVvTCba314q8tTWzLy4hES8w
-         ZticA7DiamrvA==
-Received: by pali.im (Postfix)
-        id BBEE46E8; Mon,  4 Jul 2022 15:29:04 +0200 (CEST)
-Date:   Mon, 4 Jul 2022 15:29:04 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Michael Ellerman <michael@ellerman.id.au>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Message-ID: <20220704132904.irvs4xefu4esgw6c@pali>
-References: <20220524093939.30927-1-pali@kernel.org>
- <20220702094405.tp7eo4df7fjvn2ng@pali>
- <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au>
- <20220704103951.nm4m4kpgnus3ucqo@pali>
- <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com>
- <20220704131358.fy3z7tjcmk2m6pfh@pali>
- <CAK8P3a2hfnt+tHiqHrHAVyagSm73LJe4OV8ig=CKFcycfk4Zag@mail.gmail.com>
+        b=tcT4komz/hxh0ygo8sCYDhSPVVT+eRWQ/66Fml13ZZRD+jR8ATYL53Xe9E4Y5tpY1
+         uUqmREr/LbnFrqaEb2ZHAuQin+nuCUur3GirmiUpaYuyYXzIoHO/TBQFKaFYOY+NfL
+         uVhllpZSmwdH2pvxKJaGdA1x4VUjdro8CUiZvUZ8=
+Date:   Mon, 4 Jul 2022 15:27:01 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Zhang Zekun <zhangzekun11@huawei.com>
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        paskripkin@gmail.com, martin@kaiser.cx, straube.linux@gmail.com,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        xuqiang36@huawei.com
+Subject: Re: [PATCH -next] staging: r8188eu: use 'is_zero_ether_addr' to
+ identify an empty address
+Message-ID: <YsLqpSGHoehauWjs@kroah.com>
+References: <20220704123140.100128-1-zhangzekun11@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAK8P3a2hfnt+tHiqHrHAVyagSm73LJe4OV8ig=CKFcycfk4Zag@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20220704123140.100128-1-zhangzekun11@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Monday 04 July 2022 15:22:03 Arnd Bergmann wrote:
-> On Mon, Jul 4, 2022 at 3:13 PM Pali Rohár <pali@kernel.org> wrote:
-> > On Monday 04 July 2022 14:07:10 Arnd Bergmann wrote:
+On Mon, Jul 04, 2022 at 12:31:40PM +0000, Zhang Zekun wrote:
+> Use 'is_zero_ether_addr' to identify an empty ethernet address, intead
+> of using 'memcpy' directly.
 > 
-> > > CFLAGS_CPU-$(CONFIG_PPC_BOOK3S_32) := -mcpu=powerpc
-> > > CFLAGS_CPU-$(CONFIG_PPC_85xx) := -mcpu=8540
-> > > CFLAGS_CPU-$(CONFIG_PPC8xx) := -mcpu=860
-> > > CFLAGS_CPU-$(CONFIG_PPC44x) := -mcpu=440
-> > > CFLAGS_CPU-$(CONFIG_PPC40x) := -mcpu=405
-> > > ifdef CONFIG_CPU_LITTLE_ENDIAN
-> > > CFLAGS_CPU-$(CONFIG_BOOK3S_64) := -mcpu=power8
-> > > else
-> > > CFLAGS_CPU-$(CONFIG_BOOK3S_64) := -mcpu=power5
-> > > endif
-> > > CFLAGS_CPU-$(CONFIG_BOOK3E_64) := -mcpu=powerpc64
-> >
-> > Yes, this is something I would expect that in Makefile should be.
-> >
-> > But what to do with fallback value?
-> 
-> Most of the fallback values can just be removed because we don't support
-> building with gcc versions older than 5.1.0 any more. The only one
-> that I think still needs a fallback is mtune=power9, which requires gcc-6.1
-> or higher. CONFIG_POWER9_CPU could similarly use a
-> "depends on GCC_VERSION > 60100".
-> 
->         Arnd
+> Reported-by: Hulk Robot <hulkci@huawei.com>
 
-And still what to do with 4bf4f42a2feb ("powerpc/kbuild: Set default
-generic machine type for 32-bit compile")? I'm somehow lost there...
+I am now just going to ignore all patch submissions with this line in it
+based on a total lack of responses by the developers using it.  See
+https://lore.kernel.org/r/Yr7DQJTPrSWTOa0c@kroah.com for why.
+
+greg k-h
