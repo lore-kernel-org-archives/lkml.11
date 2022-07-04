@@ -2,96 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39835C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3478C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbiGDKLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S234152AbiGDKNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231948AbiGDKLs (ORCPT
+        with ESMTP id S234127AbiGDKNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:11:48 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE53CE26;
-        Mon,  4 Jul 2022 03:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656929503; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fdDfaJmsBBFfaFN5qYM4oBebDe0q1isIg/MbLGof6RY=;
-        b=tMaJAQYv7wevuKVSWdEwxe7ivU5gM+bbwl++b/klkCY80im+OELuHuxGt9D+1vlPKu4tWU
-        YUvtkWqP7/qdk419/HEs4f3qhOcprXxxBM+flL6wQYeqBG579/OcsbHOckiWsSlRGo/FBc
-        q0AYKUhe90gj0mdJ5eVssHmxmQms8go=
-Date:   Mon, 04 Jul 2022 11:11:34 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH] drm/ingenic: Use the highest possible DMA burst size
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, list@opendingux.net,
-        Christophe Branchereau <cbranchereau@gmail.com>,
-        stable@vger.kernel.org
-Message-Id: <AZQHER.2A0CO1CY2033@crapouillou.net>
-In-Reply-To: <YsE6mZanHLy9LpBd@ravnborg.org>
-References: <20220702230727.66704-1-paul@crapouillou.net>
-        <YsE6mZanHLy9LpBd@ravnborg.org>
+        Mon, 4 Jul 2022 06:13:34 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27174CE2A;
+        Mon,  4 Jul 2022 03:13:30 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 66AEF66017F7;
+        Mon,  4 Jul 2022 11:13:27 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656929608;
+        bh=HW6iJNpEd9bIAvKSJ5WiS1laYwYlZBUsBTzloi+AeCk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JeUh14jJtuzk8vMhxL1qPUCQRSyDEDuAfYWWNJ+JUfEkPwhGujQa6ZEcOAgcmChMj
+         sF/C3VFNwUmUI5wmpZavlmNrGauWmsC7nZVRwKEPPdK7AGJumqoCGB/z3CEEwk5Yhb
+         UOBWNVyOQ2OvwVp22PCTU7rI81cKoce64f42G/soZGHskID9S41YODFYn0KEoRSlMa
+         1IXzRAatF/XTub8UITdEpQyQvx8nlTy+WPA/dRX1gmzyvM3Gn6Z7HY7FB5fSJimadm
+         zNLRytmjOeRuzmmPWhGPB/bbNy0LomnX0q7AzLBfG2hUsfiU86Rf1mGJ4+wIwz1lfH
+         lHsxaw5IGIG4g==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, hsinyi@chromium.org,
+        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
+        gtk3@inbox.ru, luca@z3ntu.xyz, sam.shih@mediatek.com,
+        sean.wang@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wenst@chromium.org
+Subject: [PATCH v2 00/11] MT8195 Chromebooks devicetrees - Google Tomato
+Date:   Mon,  4 Jul 2022 12:13:10 +0200
+Message-Id: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sam,
+This is the first part for upstreaming Google's Cherry Tomato
+Chromebook (Acer Chromebook Spin 513): in this series, we introduce
+the devicetrees for the four revisions of this Chromebook and enable
+every controller and feature that can be added as per the current
+state of the main SoC devicetrees (mt8195.dtsi) and its PMIC
+devicetree (mt6359.dtsi).
 
-Le dim., juil. 3 2022 at 08:43:37 +0200, Sam Ravnborg=20
-<sam@ravnborg.org> a =E9crit :
-> Hi Paul,
->=20
-> On Sun, Jul 03, 2022 at 12:07:27AM +0100, Paul Cercueil wrote:
->>  Until now, when running at the maximum resolution of 1280x720 at=20
->> 32bpp
->>  on the JZ4770 SoC the output was garbled, the X/Y position of the
->>  top-left corner of the framebuffer warping to a random position with
->>  the whole image being offset accordingly, every time a new frame was
->>  being submitted.
->>=20
->>  This problem can be eliminated by using a bigger burst size for the=20
->> DMA.
->=20
-> Are there any alignment constraints of the framebuffer that depends on
-> the burst size? I am hit by this with some atmel IP - which is why I
-> ask.
+More parts will come as soon as more support will be added by
+MediaTek in the mt8195 devicetree.
 
-I verified this, and everything behaves correctly when the source=20
-address is not aligned to the burst size. So I believe in our case the=20
-DMA is smart enough to auto-select the best burst size, up to the=20
-configured value.
+Note: This series will introduce a dtbs_check warning about a failure
+      to match compatible for 'mediatek,mt6359': that's expected, as
+      this is defined in devicetree/bindings/mfd/mt6397.txt (so there
+      is no schema, yet).
 
-Cheers,
--Paul
+Changes in v2:
+ - Added changes from Nìcolas' review
+ - Changed board 'model' from 'MediaTek Tomato' to 'Acer Tomato'
 
->=20
-> Patch looks good and is a-b.
->=20
->>=20
->>  Set in each soc_info structure the maximum burst size supported by=20
->> the
->>  corresponding SoC, and use it in the driver.
->>=20
->>  Set the new value using regmap_update_bits() instead of
->>  regmap_set_bits(), since we do want to override the old value of the
->>  burst size. (Note that regmap_set_bits() wasn't really valid before=20
->> for
->>  the same reason, but it never seemed to be a problem).
->>=20
->>  Cc: <stable@vger.kernel.org>
->>  Fixes: 90b86fcc47b4 ("DRM: Add KMS driver for the Ingenic JZ47xx=20
->> SoCs")
->>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> Acked-by: Sam Ravnborg <sam@ravnborg.org>
+This series depends on the following fixes:
+[1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220630110453.186526-1-angelogioacchino.delregno@collabora.com/
+[2]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220630122334.216903-1-angelogioacchino.delregno@collabora.com/
+[3]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220630131543.225554-1-angelogioacchino.delregno@collabora.com/
 
+
+And it depends on Nìcolas' dt-bindings patch for the [01/11] to
+apply cleanly (this is done to keep mediatek.yaml ordered):
+[4]: https://lore.kernel.org/all/20220629155956.1138955-2-nfraprado@collabora.com/
+
+
+AngeloGioacchino Del Regno (11):
+  dt-bindings: arm: mediatek: Add MT8195 Cherry Tomato Chromebooks
+  arm64: dts: mediatek: Introduce MT8195 Cherry platform's Tomato
+  arm64: dts: mediatek: cherry: Add platform regulators layout and
+    config
+  arm64: dts: mediatek: cherry: Assign interrupt line to MT6359 PMIC
+  arm64: dts: mediatek: cherry: Add support for internal eMMC storage
+  arm64: dts: mediatek: cherry: Document gpios and add default pin
+    config
+  arm64: dts: mediatek: cherry: Enable I2C and SPI controllers
+  arm64: dts: mediatek: cherry: Enable T-PHYs and USB XHCI controllers
+  arm64: dts: mediatek: cherry: Enable MT6360 sub-pmic on I2C7
+  arm64: dts: mediatek: cherry: Enable support for the SPI NOR flash
+  arm64: dts: mediatek: cherry: Add I2C-HID touchscreen on I2C4
+
+ .../devicetree/bindings/arm/mediatek.yaml     |  13 +
+ arch/arm64/boot/dts/mediatek/Makefile         |   3 +
+ .../dts/mediatek/mt8195-cherry-tomato-r1.dts  |  15 +
+ .../dts/mediatek/mt8195-cherry-tomato-r2.dts  |  35 +
+ .../dts/mediatek/mt8195-cherry-tomato-r3.dts  |  36 +
+ .../boot/dts/mediatek/mt8195-cherry.dtsi      | 702 ++++++++++++++++++
+ 6 files changed, 804 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r1.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r2.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry-tomato-r3.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+
+-- 
+2.35.1
 
