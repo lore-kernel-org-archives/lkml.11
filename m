@@ -2,115 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA85C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 17:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 17:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiGDRJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 13:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
+        id S231221AbiGDROT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 13:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGDRJh (ORCPT
+        with ESMTP id S233028AbiGDROP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 13:09:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB23511A36
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 10:09:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 677D961521
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 17:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2FE1C341D1
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 17:09:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656954575;
-        bh=Um74VEI3JxHcz8FDRGAiWVUNuyk2Y2i4GBLAq54v5s0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=vH1ACDnAOIBP7LSR5Gway+gxOl7zbLOA2muLRdWKyn21uxTJs0bGcytHe0Ob6CQW/
-         MTRyzW6y8i7r4iWDGKJaWYHa2WIN4USUPc5IOp9mNItt7dU0Our6h3zXsTDaysKn7Q
-         1bCSHKvWh4dDURhYEW+BYKGwh1ky35dTZiUJDG1pzv9htFkbqRH2kHB94tXcUFOPsc
-         GNIHuvB1o7A0vJfKZWZ+QJlgRQcuVGlLuxTDWmli5tOBpiwyibpePsn4DaQXhq78Gf
-         gEPTWVtyqNfuMsGn7ifi6nb9qgx31IqTVl8m+YVj5LcC9APk+DYLsBvcjYGUlPTK41
-         NGK+Sz5DnQ+qw==
-Received: by mail-oi1-f175.google.com with SMTP id y77so13566472oia.3
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 10:09:35 -0700 (PDT)
-X-Gm-Message-State: AJIora/k1vmDVirb6btns1bwqciCQvWOzwyen55uPzdjWBkYBGLYPtVT
-        YKgfIseasxeMtT+SAetNxy6F0/uaAoPUBZ9brUM=
-X-Google-Smtp-Source: AGRyM1sahgoRXg4Rzbf0/gmHR3RNP37cUxpO88Ud1QW1I/Znw7jgxtkIkBfkP6ZcjDK/UZIkdHCwZeqw3SVjKPNYBPU=
-X-Received: by 2002:a05:6808:18a1:b0:337:5:30cf with SMTP id
- bi33-20020a05680818a100b00337000530cfmr11082396oib.228.1656954574851; Mon, 04
- Jul 2022 10:09:34 -0700 (PDT)
+        Mon, 4 Jul 2022 13:14:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29F991208B
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 10:14:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656954848;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=90xhSQDtM76aihPHt68+M5RcBuaIA4lDfnCcukO+uC4=;
+        b=RtovKlJMoO6yHzvssbz4ZymZ77xk0ve+VC3PW9K0B/VrNRXi+60EPAG2JNDYoBA4Li+92d
+        AxRsma0zM5k0L157jAdjW8MEMwhYIzH4z263dtQnK7AX1Tk9S3xH+BwrJ6jhuoSzVvxMEh
+        /Hh+1qQZfdK+XLtfougEn5Ob9F5ZmZM=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-361-BMajq41jPRuZupLrRoC9RA-1; Mon, 04 Jul 2022 13:14:07 -0400
+X-MC-Unique: BMajq41jPRuZupLrRoC9RA-1
+Received: by mail-ej1-f70.google.com with SMTP id sd14-20020a1709076e0e00b0072a7c5a08f4so2182666ejc.21
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 10:14:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=90xhSQDtM76aihPHt68+M5RcBuaIA4lDfnCcukO+uC4=;
+        b=GwCVST5nRMaDk3WCIH2PH6s8LA73lZP3xfzAtaVVlkeMgUL1ayMdwzpyXXYJW5dU/A
+         BMjGLC0uCG/FIC9hgWoh/fBAYoNg5eN2Kb6JFqjgBEw7EGTjibwcNUOqIlDOkMHnq01Q
+         ePvi97xhk8abAcfnVUx8jsV5zpCbwfVAZaTZ4OkIOLA/dsFFuekHZqgVH9bawSk57OyY
+         C1E9jcXPE3dDzF34A+PB9Ev5q317aUDm9u7fe8K3aqnmTx9BShLmN0aapFfb0IRPASut
+         YLtt1QzHgDBg9xIVAwL9sC9NMkY3NZOQtyL4o/iMcZIt92MSfWDXXeLbnMurwz2sR5IH
+         tQmA==
+X-Gm-Message-State: AJIora+JayAzHHG5tFzZwPHT+2kulNWzGyMaRxegGMSER3Fg4+D2ml9B
+        etVG4VR65IfYnwmYYeo+bKcE0n8s0tUghrCzrhr6VqRMddXfxtq/CJ32vgZlbpDYR8nMnox4lTn
+        NbgL3Q/TsWlI8JYhFPXOgy3z5
+X-Received: by 2002:a17:906:8479:b0:72a:5610:f151 with SMTP id hx25-20020a170906847900b0072a5610f151mr24224545ejc.125.1656954845685;
+        Mon, 04 Jul 2022 10:14:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uef8hLBR0Q8A/DXYG20gzUAR43ekM2eDQ/JQ9p555cPa3vQ0ljoKeKV71ISz2WBRNK3kOVWw==
+X-Received: by 2002:a17:906:8479:b0:72a:5610:f151 with SMTP id hx25-20020a170906847900b0072a5610f151mr24224508ejc.125.1656954845270;
+        Mon, 04 Jul 2022 10:14:05 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id by27-20020a0564021b1b00b004356112a8a2sm21023202edb.15.2022.07.04.10.14.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 10:14:04 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 14DE2477A3F; Mon,  4 Jul 2022 19:14:04 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
+ and use Generic Hints/metadata
+In-Reply-To: <20220704154440.7567-1-alexandr.lobakin@intel.com>
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+ <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk>
+ <20220704154440.7567-1-alexandr.lobakin@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 04 Jul 2022 19:14:04 +0200
+Message-ID: <87a69o94wz.fsf@toke.dk>
 MIME-Version: 1.0
-References: <1656777473-73887-1-git-send-email-guanghuifeng@linux.alibaba.com>
- <20220704103523.GC31437@willie-the-truck> <73f0c53b-fd17-c5e9-3773-1d71e564eb50@linux.alibaba.com>
- <20220704111402.GA31553@willie-the-truck> <4accaeda-572f-f72d-5067-2d0999e4d00a@linux.alibaba.com>
- <20220704131516.GC31684@willie-the-truck> <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
- <20220704142313.GE31684@willie-the-truck> <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
- <20220704163815.GA32177@willie-the-truck>
-In-Reply-To: <20220704163815.GA32177@willie-the-truck>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 4 Jul 2022 19:09:23 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
-Message-ID: <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance degradation
-To:     Will Deacon <will@kernel.org>
-Cc:     "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
-        baolin.wang@linux.alibaba.com, catalin.marinas@arm.com,
-        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
-        james.morse@arm.com, quic_qiancai@quicinc.com,
-        christophe.leroy@csgroup.eu, jonathan@marek.ca,
-        mark.rutland@arm.com, thunder.leizhen@huawei.com,
-        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, rppt@kernel.org,
-        geert+renesas@glider.be, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Jul 2022 at 18:38, Will Deacon <will@kernel.org> wrote:
->
-> On Mon, Jul 04, 2022 at 10:34:07PM +0800, guanghui.fgh wrote:
-> > Thanks.
-> >
-> > =E5=9C=A8 2022/7/4 22:23, Will Deacon =E5=86=99=E9=81=93:
-> > > On Mon, Jul 04, 2022 at 10:11:27PM +0800, guanghui.fgh wrote:
-...
-> > > > Namely, it's need to use non block/section mapping for crashkernel =
-mem
-> > > > before shringking.
-> > >
-> > > Well, yes, but we can change arch_kexec_[un]protect_crashkres() not t=
-o do
-> > > that if we're leaving the thing mapped, no?
-> > >
-> > I think we should use arch_kexec_[un]protect_crashkres for crashkernel =
-mem.
-> >
-> > Because when invalid crashkernel mem pagetable, there is no chance to r=
-d/wr
-> > the crashkernel mem by mistake.
-> >
-> > If we don't use arch_kexec_[un]protect_crashkres to invalid crashkernel=
- mem
-> > pagetable, there maybe some write operations to these mem by mistake wh=
-ich
-> > may cause crashkernel boot error and vmcore saving error.
->
-> I don't really buy this line of reasoning. The entire main kernel is
-> writable, so why do we care about protecting the crashkernel so much? The
-> _code_ to launch the crash kernel is writable! If you care about preventi=
-ng
-> writes to memory which should not be writable, then you should use
-> rodata=3Dfull.
->
+Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 
-This is not entirely true - the core kernel text and rodata are
-remapped r/o in the linear map, whereas all module code and rodata are
-left writable when rodata !=3D full.
+> From: Toke H??iland-J??rgensen <toke@redhat.com>
+> Date: Wed, 29 Jun 2022 15:43:05 +0200
+>
+>> John Fastabend <john.fastabend@gmail.com> writes:
+>> 
+>> > Alexander Lobakin wrote:
+>> >> This RFC is to give the whole picture. It will most likely be split
+>> >> onto several series, maybe even merge cycles. See the "table of
+>> >> contents" below.
+>> >
+>> > Even for RFC its a bit much. Probably improve the summary
+>> > message here as well I'm still not clear on the overall
+>> > architecture so not sure I want to dig into patches.
+>> 
+>> +1 on this, and piggybacking on your comment to chime in on the general
+>> architecture.
+>> 
+>> >> Now, a NIC driver, or even a SmartNIC itself, can put those params
+>> >> there in a well-defined format. The format is fixed, but can be of
+>> >> several different types represented by structures, which definitions
+>> >> are available to the kernel, BPF programs and the userland.
+>> >
+>> > I don't think in general the format needs to be fixed.
+>> 
+>> No, that's the whole point of BTF: it's not supposed to be UAPI, we'll
+>> use CO-RE to enable dynamic formats...
+>> 
+>> [...]
+>> 
+>> >> It is fixed due to it being almost a UAPI, and the exact format can
+>> >> be determined by reading the last 10 bytes of metadata. They contain
+>> >> a 2-byte magic ID to not confuse it with a non-compatible meta and
+>> >> a 8-byte combined BTF ID + type ID: the ID of the BTF where this
+>> >> structure is defined and the ID of that definition inside that BTF.
+>> >> Users can obtain BTF IDs by structure types using helpers available
+>> >> in the kernel, BPF (written by the CO-RE/verifier) and the userland
+>> >> (libbpf -> kernel call) and then rely on those ID when reading data
+>> >> to make sure whether they support it and what to do with it.
+>> >> Why separate magic and ID? The idea is to make different formats
+>> >> always contain the basic/"generic" structure embedded at the end.
+>> >> This way we can still benefit in purely generic consumers (like
+>> >> cpumap) while providing some "extra" data to those who support it.
+>> >
+>> > I don't follow this. If you have a struct in your driver name it
+>> > something obvious, ice_xdp_metadata. If I understand things
+>> > correctly just dump the BTF for the driver, extract the
+>> > struct and done you can use CO-RE reads. For the 'fixed' case
+>> > this looks easy. And I don't think you even need a patch for this.
+>> 
+>> ...however as we've discussed previously, we do need a bit of
+>> infrastructure around this. In particular, we need to embed the embed
+>> the BTF ID into the metadata itself so BPF can do runtime disambiguation
+>> between different formats (and add the right CO-RE primitives to make
+>> this easy). This is for two reasons:
+>> 
+>> - The metadata might be different per-packet (e.g., PTP packets with
+>>   timestamps interleaved with bulk data without them)
+>> 
+>> - With redirects we may end up processing packets from different devices
+>>   in a single XDP program (in devmap or cpumap, or on a veth) so we need
+>>   to be able to disambiguate at runtime.
+>> 
+>> So I think the part of the design that puts the BTF ID into the end of
+>> the metadata struct is sound; however, the actual format doesn't have to
+>> be fixed, we can use CO-RE to pick out the bits that a given BPF program
+>> needs; we just need a convention for how drivers report which format(s)
+>> they support. Which we should also agree on (and add core infrastructure
+>> around) so each driver doesn't go around inventing their own
+>> conventions.
+>> 
+>> >> The enablement of this feature is controlled on attaching/replacing
+>> >> XDP program on an interface with two new parameters: that combined
+>> >> BTF+type ID and metadata threshold.
+>> >> The threshold specifies the minimum frame size which a driver (or
+>> >> NIC) should start composing metadata from. It is introduced instead
+>> >> of just false/true flag due to that often it's not worth it to spend
+>> >> cycles to fetch all that data for such small frames: let's say, it
+>> >> can be even faster to just calculate checksums for them on CPU
+>> >> rather than touch non-coherent DMA zone. Simple XDP_DROP case loses
+>> >> 15 Mpps on 64 byte frames with enabled metadata, threshold can help
+>> >> mitigate that.
+>> >
+>> > I would put this in the bonus category. Can you do the simple thing
+>> > above without these extra bits and then add them later. Just
+>> > pick some overly conservative threshold to start with.
+>> 
+>> Yeah, I'd agree this kind of configuration is something that can be
+>> added later, and also it's sort of orthogonal to the consumption of the
+>> metadata itself.
+>> 
+>> Also, tying this configuration into the loading of an XDP program is a
+>> terrible interface: these are hardware configuration options, let's just
+>> put them into ethtool or 'ip link' like any other piece of device
+>> configuration.
+>
+> I don't believe it fits there, especially Ethtool. Ethtool is for
+> hardware configuration, XDP/AF_XDP is 95% software stuff (apart from
+> offload bits which is purely NFP's for now).
 
-But the conclusion is the same, imo: if you can't be bothered to
-protect a good chunk of the code and rodata that the kernel relies on,
-why should the crashkernel be treated any differently?
+But XDP-hints is about consuming hardware features. When you're
+configuring which metadata items you want, you're saying "please provide
+me with these (hardware) features". So ethtool is an excellent place to
+do that :)
+
+> I follow that way:
+>
+> 1) you pick a program you want to attach;
+> 2) usually they are written for special needs and usecases;
+> 3) so most likely that program will be tied with metadata/driver/etc
+>    in some way;
+> 4) so you want to enable Hints of a particular format primarily for
+>    this program and usecase, same with threshold and everything
+>    else.
+>
+> Pls explain how you see it, I might be wrong for sure.
+
+As above: XDP hints is about giving XDP programs (and AF_XDP consumers)
+access to metadata that is not currently available. Tying the lifetime
+of that hardware configuration (i.e., which information to provide) to
+the lifetime of an XDP program is not a good interface: for one thing,
+how will it handle multiple programs? What about when XDP is not used at
+all but you still want to configure the same features?
+
+In addition, in every other case where we do dynamic data access (with
+CO-RE) the BPF program is a consumer that modifies itself to access the
+data provided by the kernel. I get that this is harder to achieve for
+AF_XDP, but then let's solve that instead of making a totally
+inconsistent interface for XDP.
+
+I'm as excited as you about the prospect of having totally programmable
+hardware where you can just specify any arbitrary metadata format and
+it'll provide that for you. But that is an orthogonal feature: let's
+start with creating a dynamic interface for consuming the (static)
+hardware features we already have, and then later we can have a separate
+interface for configuring more dynamic hardware features. XDP-hints is
+about adding this consumption feature in a way that's sufficiently
+dynamic that we can do the other (programmable hardware) thing on top
+later...
+
+-Toke
+
