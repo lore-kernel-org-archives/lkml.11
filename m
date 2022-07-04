@@ -2,144 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01449C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 16:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C27C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 16:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235111AbiGDQTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 12:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
+        id S235110AbiGDQUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 12:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234818AbiGDQTG (ORCPT
+        with ESMTP id S235229AbiGDQUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 12:19:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FB0312AF7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 09:18:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656951484;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fFo1Gztfi7kgv8mceCsQUHgfH8ojypad3OlaiOUxnPI=;
-        b=GoLODNTkNvJ/rb1u9gPVPVGlj9HF54P0/YHZAdihSBEc8gZGxFchIWvkHNdGU2+4WxHIvP
-        b7SM74VhGcte6iB1qsKO0aJollOQGpzc40sP4QSa8HRUkeN+wQe51MVq4Mch5DLxdH+a7u
-        zqp91GNTZWgsFsgoFHPW4NAJWINABlQ=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-260-tZOa08yNOgufD5zMfjNO4A-1; Mon, 04 Jul 2022 12:17:55 -0400
-X-MC-Unique: tZOa08yNOgufD5zMfjNO4A-1
-Received: by mail-wm1-f72.google.com with SMTP id az35-20020a05600c602300b003a1867d09b5so3322204wmb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 09:17:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fFo1Gztfi7kgv8mceCsQUHgfH8ojypad3OlaiOUxnPI=;
-        b=2MDcCrEN3b011Q9OerEYqKavVSen8rpipy9LnAgXeggeNAlK+ta91eXJkkMySNqdko
-         VDEBLwaFJBhZrUAEyR8Y5HYDWhVkU4OWMKR/Uzv33FUk6F0DYijjiA9lZ7WedZBacE/b
-         mWokLwt7x+eegtTIzlqN+cWYywfkBqtE6eL1bSDYs9X6XswXTsSzXbCUfRfEM1tkdvis
-         Ne6LaB4MsZm+cepC4h7WJYOjDACZGWikTiNBO/k4+o+BpvZsoc0bWnc63NegnmWccqBk
-         3ho/bBF7g3bY1BmPJEWY/aMmVvwFtmVrWoc4YoxG+5O7z3Wy3zGyzCHd2MYBx1BDRxGU
-         V4YA==
-X-Gm-Message-State: AJIora9Hdk9r5V37oA9oLHQVSNwWqNq4WE0U2FzHeGvHg5WDOE0dXMoF
-        AF2i+KE3lLdAGC4RPPExFcQIBEXuuYNM1netvS9r3ARLk8iKJ7UeLlfJTWYOe3b5teEv+7gzYi5
-        pvEOW1fBiNVifZz36a700bnY=
-X-Received: by 2002:adf:f24c:0:b0:21d:31c5:ecdc with SMTP id b12-20020adff24c000000b0021d31c5ecdcmr24675475wrp.117.1656951474366;
-        Mon, 04 Jul 2022 09:17:54 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tyOteUULtuiy9WslLyjcSRKCS+ZDX9Lyu3zOkbMt/1zDWdYRgY+4fWxBLH6oXO9ryG6ChKLA==
-X-Received: by 2002:adf:f24c:0:b0:21d:31c5:ecdc with SMTP id b12-20020adff24c000000b0021d31c5ecdcmr24675458wrp.117.1656951474166;
-        Mon, 04 Jul 2022 09:17:54 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id i8-20020a05600c354800b0039c4e2ff7cfsm17019931wmq.43.2022.07.04.09.17.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 09:17:53 -0700 (PDT)
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     mcgrof@kernel.org, rostedt@goodmis.org
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, oleksandr@natalenko.name,
-        neelx@redhat.com, daniel.thompson@linaro.org, hch@infradead.org,
-        tglx@linutronix.de, linux-rt-users@vger.kernel.org
-Subject: [PATCH v2] module: kallsyms: Ensure preemption in add_kallsyms() with PREEMPT_RT
-Date:   Mon,  4 Jul 2022 17:17:53 +0100
-Message-Id: <20220704161753.4033684-1-atomlin@redhat.com>
-X-Mailer: git-send-email 2.34.3
+        Mon, 4 Jul 2022 12:20:01 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E0813E12
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 09:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=OaIZbZS8eO4iPkPnlV7Z9+YRb+HEbmihdIPppzUqvgk=; b=J3Tm7zzGSClf8m6gOOHtw7x93I
+        A1fHFYCKRhM3rDchyS++ZoN+DKWaQuq2Z4CoeKJaOn7A3EkguPXZ5FJJfzjNwppctjo3OmjuCVG75
+        HNi0lK/z87M/ApfSMa9E/L6rJoHqv7u6JbUFpWHZouJgOwsu4SEKkMxR+j7hSRmgmtQ6HkcrfDchg
+        06DoAliSmz0EbHRAmtD/gAaYRM9+MZ1JzRT4TtAYKPZIxFCYoMPAPVZWADxKVBNNezpkp1jplIbnu
+        IAGC+AmQZreOfKgzWf5r1eupZEcfXd5xqQF4YT2Gn9XjjfByMxOeJ2U7Iw/P9YyGsj8ckwKqpiWih
+        +LGZIybA==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8OmR-00HQIz-3E; Mon, 04 Jul 2022 16:18:35 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 140C798005D; Mon,  4 Jul 2022 18:18:33 +0200 (CEST)
+Date:   Mon, 4 Jul 2022 18:18:32 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Sathvika Vasireddy <sv@linux.ibm.com>,
+        "g@hirez.programming.kicks-ass.net" 
+        <g@hirez.programming.kicks-ass.net>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>
+Subject: Re: [RFC PATCH v3 07/12] objtool: Use macros to define arch specific
+ reloc types
+Message-ID: <YsMS2BImeTG4LrQC@worktop.programming.kicks-ass.net>
+References: <20220624183238.388144-1-sv@linux.ibm.com>
+ <20220624183238.388144-8-sv@linux.ibm.com>
+ <YsLLsE2oajICIYmq@hirez.programming.kicks-ass.net>
+ <47f7a3db-7b34-1991-11df-f0f7e1317614@csgroup.eu>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <47f7a3db-7b34-1991-11df-f0f7e1317614@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To disable preemption in the context of add_kallsyms() is incorrect.
+On Mon, Jul 04, 2022 at 03:53:50PM +0000, Christophe Leroy wrote:
+> 
+> 
+> Le 04/07/2022 à 13:14, Peter Zijlstra a écrit :
+> > On Sat, Jun 25, 2022 at 12:02:33AM +0530, Sathvika Vasireddy wrote:
+> >> Make relocation types architecture specific.
+> >>
+> >> Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
+> >> ---
+> >>   tools/objtool/arch/x86/include/arch/elf.h | 2 ++
+> >>   tools/objtool/check.c                     | 2 +-
+> >>   2 files changed, 3 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/tools/objtool/arch/x86/include/arch/elf.h b/tools/objtool/arch/x86/include/arch/elf.h
+> >> index 69cc4264b28a..ac14987cf687 100644
+> >> --- a/tools/objtool/arch/x86/include/arch/elf.h
+> >> +++ b/tools/objtool/arch/x86/include/arch/elf.h
+> >> @@ -2,5 +2,7 @@
+> >>   #define _OBJTOOL_ARCH_ELF
+> >>   
+> >>   #define R_NONE R_X86_64_NONE
+> >> +#define R_ABS64 R_X86_64_64
+> >> +#define R_ABS32 R_X86_64_32
+> >>   
+> >>   #endif /* _OBJTOOL_ARCH_ELF */
+> >> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+> >> index 98e869721bc4..88f68269860e 100644
+> >> --- a/tools/objtool/check.c
+> >> +++ b/tools/objtool/check.c
+> >> @@ -834,7 +834,7 @@ static int create_mcount_loc_sections(struct objtool_file *file)
+> >>   		memset(loc, 0, size);
+> >>   
+> >>   		if (elf_add_reloc_to_insn(file->elf, sec, idx,
+> >> -					  R_X86_64_64,
+> >> +					  size == sizeof(u64) ? R_ABS64 : R_ABS32,
+> >>   					  insn->sec, insn->offset))
+> >>   			return -1;
+> >>   
+> > 
+> > Given cross compiles, should this not also be elf dependent?
+> 
+> size is elf dependent (From the same series [RFC PATCH v3 03/12] 
+> objtool: Use target file class size instead of a compiled constant)
+> 
+> R_ABS64 and R_ABS32 are defined in the architecture elf.h, and this is 
+> the architecture for which you are building your kernel, not the 
+> architecture you cross compile on.
 
-Before kallsyms-specific data is prepared/or set-up, we ensure that
-the unformed module is known to be unique i.e. does not already exist
-(see load_module()). Therefore, we can fix this by using the common RCU
-primitive as this section of code can be safely preempted.
-
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Fixes: 08126db5ff73 ("module: kallsyms: Fix suspicious rcu usage")
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
----
- kernel/module/kallsyms.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index 3e11523bc6f6..0b6fd82d5898 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -174,14 +174,14 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	mod->kallsyms = (void __rcu *)mod->init_layout.base +
- 		info->mod_kallsyms_init_off;
- 
--	preempt_disable();
-+	rcu_read_lock();
- 	/* The following is safe since this pointer cannot change */
--	rcu_dereference_sched(mod->kallsyms)->symtab = (void *)symsec->sh_addr;
--	rcu_dereference_sched(mod->kallsyms)->num_symtab = symsec->sh_size / sizeof(Elf_Sym);
-+	rcu_dereference(mod->kallsyms)->symtab = (void *)symsec->sh_addr;
-+	rcu_dereference(mod->kallsyms)->num_symtab = symsec->sh_size / sizeof(Elf_Sym);
- 	/* Make sure we get permanent strtab: don't use info->strtab. */
--	rcu_dereference_sched(mod->kallsyms)->strtab =
-+	rcu_dereference(mod->kallsyms)->strtab =
- 		(void *)info->sechdrs[info->index.str].sh_addr;
--	rcu_dereference_sched(mod->kallsyms)->typetab = mod->init_layout.base + info->init_typeoffs;
-+	rcu_dereference(mod->kallsyms)->typetab = mod->init_layout.base + info->init_typeoffs;
- 
- 	/*
- 	 * Now populate the cut down core kallsyms for after init
-@@ -190,22 +190,22 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	mod->core_kallsyms.symtab = dst = mod->data_layout.base + info->symoffs;
- 	mod->core_kallsyms.strtab = s = mod->data_layout.base + info->stroffs;
- 	mod->core_kallsyms.typetab = mod->data_layout.base + info->core_typeoffs;
--	src = rcu_dereference_sched(mod->kallsyms)->symtab;
--	for (ndst = i = 0; i < rcu_dereference_sched(mod->kallsyms)->num_symtab; i++) {
--		rcu_dereference_sched(mod->kallsyms)->typetab[i] = elf_type(src + i, info);
-+	src = rcu_dereference(mod->kallsyms)->symtab;
-+	for (ndst = i = 0; i < rcu_dereference(mod->kallsyms)->num_symtab; i++) {
-+		rcu_dereference(mod->kallsyms)->typetab[i] = elf_type(src + i, info);
- 		if (i == 0 || is_livepatch_module(mod) ||
- 		    is_core_symbol(src + i, info->sechdrs, info->hdr->e_shnum,
- 				   info->index.pcpu)) {
- 			mod->core_kallsyms.typetab[ndst] =
--			    rcu_dereference_sched(mod->kallsyms)->typetab[i];
-+			    rcu_dereference(mod->kallsyms)->typetab[i];
- 			dst[ndst] = src[i];
- 			dst[ndst++].st_name = s - mod->core_kallsyms.strtab;
--			s += strscpy(s,
--				     &rcu_dereference_sched(mod->kallsyms)->strtab[src[i].st_name],
-+			s += strlcpy(s,
-+				     &rcu_dereference(mod->kallsyms)->strtab[src[i].st_name],
- 				     KSYM_NAME_LEN) + 1;
- 		}
- 	}
--	preempt_enable();
-+	rcu_read_unlock();
- 	mod->core_kallsyms.num_symtab = ndst;
- }
- 
--- 
-2.34.3
-
+Duh. Thanks!
