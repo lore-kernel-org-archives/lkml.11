@@ -2,133 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88770C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76540C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiGDPUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
+        id S234381AbiGDPUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbiGDPUM (ORCPT
+        with ESMTP id S234177AbiGDPUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:20:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7885F57
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:20:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80491B810C2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 15:20:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28C8EC3411E;
-        Mon,  4 Jul 2022 15:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656948008;
-        bh=D5q5Dno29GppKOQ4ew8H36+AhOTbVVxHP3lYtieRXwI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GuMul2XePRnR7RYnHMhIwS5z5XCiwMtSxgrtkQVCLbE28d+mb3262Ia/XdYoz2o4W
-         bL3FUJYTLe69tzoox6yV0hdWPtIsiYVAOqMx/FjwYTJhlSlCJwmZFUuBWK6/iAGRKQ
-         k5GjOCHStr1FGODKEhz5axE0dS7XoZwuVYkvKynbSfrMmW1fAgQ5CMZrDJPiWLFXOO
-         HneDbpSK5A4nQEinuLvXAw2eAGIy8QW7ynTT1e0Zm61spMmUmpNJjcYxdFv41CCamn
-         Uq9sBQX72T6B+K1m+LzLcWZEdQfNq7gIP+Lgr4rGUqERXFiDTL/D39mz3CVRjDhdTp
-         yMNXR0E8J5K9Q==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1o8Nro-009fKT-WA;
-        Mon, 04 Jul 2022 16:20:05 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Mika Kuoppala <mika.kuoppala@linux.intel.com>,
-        Thomas Hellstrom <thomas.hellstrom@intel.com>,
-        Chris Wilson <chris.p.wilson@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/2] Fix TLB invalidate issues with Broadwell
-Date:   Mon,  4 Jul 2022 16:20:02 +0100
-Message-ID: <cover.1656921701.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Mon, 4 Jul 2022 11:20:34 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7D910FE6;
+        Mon,  4 Jul 2022 08:20:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=GcBIE8F1Amhld86dWfigGM4Z1aJl6HhmPq0gymmt37g=; b=Y9uYw+EXJiWS8zl4Zcb6tlYkGl
+        d2PjqZGF64zWe7kTqQHg9Fzh1vuRY+Qsu6wLI21ezbQWf91+UTqUnV1E1/ZN9gz56acNlj0uMM++3
+        Az9GydpPSOv0hidBJnLbxULDj4ahiWUY+W8GXWYIINP67ue9B0uPRJwEf7L+II+9m1q2uc5QfdAsT
+        sB9vASPDwp6uX8bDAF5IK/AE6uhwyeTW6C2ReucCt5gCvMoeFwb02r6WeYbxAY2/ofQuzlWVh/elj
+        o8S9TIs9SbR8puNdkmYMNhmAO7tHw9iHduTFKxPEFVdvodJ10/lQS3Z2ucIYE1p3MYGTZZEXKwiZh
+        YzX+T9Sw==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8NsB-009fdZ-CO; Mon, 04 Jul 2022 15:20:27 +0000
+Message-ID: <3770bc6d-b3cc-9e49-a832-4c15af0b5f1a@infradead.org>
+Date:   Mon, 4 Jul 2022 08:20:24 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 2/4] soc: qcom: icc-bwmon: Add bandwidth monitoring
+ driver
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Thara Gopinath <thara.gopinath@gmail.com>
+References: <20220704121730.127925-1-krzysztof.kozlowski@linaro.org>
+ <20220704121730.127925-3-krzysztof.kozlowski@linaro.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220704121730.127925-3-krzysztof.kozlowski@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220704152002.74eJmHqhgMSrca7opYGqohpSYacfso5ClbShLajQww4@z>
 
-i915 selftest hangcheck is causing the i915 driver timeouts, as reported
-by Intel CI bot:
+Hi,
 
-http://gfx-ci.fi.intel.com/cibuglog-ng/issuefilterassoc/24297?query_key=42a999f48fa6ecce068bc8126c069be7c31153b4
+On 7/4/22 05:17, Krzysztof Kozlowski wrote:
+> diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
+> index e718b8735444..2c8091535bf7 100644
+> --- a/drivers/soc/qcom/Kconfig
+> +++ b/drivers/soc/qcom/Kconfig
+> @@ -228,4 +228,19 @@ config QCOM_APR
+>  	  application processor and QDSP6. APR is
+>  	  used by audio driver to configure QDSP6
+>  	  ASM, ADM and AFE modules.
+> +
+> +config QCOM_ICC_BWMON
+> +	tristate "QCOM Interconnect Bandwidth Monitor driver"
+> +	depends on ARCH_QCOM || COMPILE_TEST
+> +	select PM_OPP
+> +	help
+> +	  Sets up driver monitoring bandwidth on various interconnects and
 
-When such test runs, the only output is:
+	  Sets up driver bandwidth monitoring
 
-	[   68.811639] i915: Performing live selftests with st_random_seed=0xe138eac7 st_timeout=500
-	[   68.811792] i915: Running hangcheck
-	[   68.811859] i915: Running intel_hangcheck_live_selftests/igt_hang_sanitycheck
-	[   68.816910] i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
-	[   68.841597] i915: Running intel_hangcheck_live_selftests/igt_reset_nop
-	[   69.346347] igt_reset_nop: 80 resets
-	[   69.362695] i915: Running intel_hangcheck_live_selftests/igt_reset_nop_engine
-	[   69.863559] igt_reset_nop_engine(rcs0): 709 resets
-	[   70.364924] igt_reset_nop_engine(bcs0): 903 resets
-	[   70.866005] igt_reset_nop_engine(vcs0): 659 resets
-	[   71.367934] igt_reset_nop_engine(vcs1): 549 resets
-	[   71.869259] igt_reset_nop_engine(vecs0): 553 resets
-	[   71.882592] i915: Running intel_hangcheck_live_selftests/igt_reset_idle_engine
-	[   72.383554] rcs0: Completed 16605 idle resets
-	[   72.884599] bcs0: Completed 18641 idle resets
-	[   73.385592] vcs0: Completed 17517 idle resets
-	[   73.886658] vcs1: Completed 15474 idle resets
-	[   74.387600] vecs0: Completed 17983 idle resets
-	[   74.387667] i915: Running intel_hangcheck_live_selftests/igt_reset_active_engine
-	[   74.889017] rcs0: Completed 747 active resets
-	[   75.174240] intel_engine_reset(bcs0) failed, err:-110
-	[   75.174301] bcs0: Completed 525 active resets
+would be better, I think.
 
-After that, the machine just silently hangs.
-
-Bisecting the issue, the patch that introduced the regression is:
-
-    7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
-
-Reverting it fix the issues, but introduce other problems, as TLB
-won't be invalidated anymore. So, instead, let's fix the root cause.
-
-It turns that the TLB flush logic ends conflicting with i915 reset,
-which is called during selftest hangcheck. So, the TLB cache should
-be serialized together with i915 reset.
-
-Tested on an Intel NUC5i7RYB with an i7-5557U Broadwell CPU.
-
-v3:
-- Removed the logic that would check if the engine is awake before doing
-  TLB flush invalidation as backporting PM logic up to Kernel 4.x could be
-  too painful. After getting this one merged, I'll submit a separate patch
-  with the PM awake logic.
-
-v2:
-
-- Reduced to bare minimum fixes, as this shoud be backported deeply
-  into stable.
-
-
-Chris Wilson (2):
-  drm/i915/gt: Serialize GRDOM access between multiple engine resets
-  drm/i915/gt: Serialize TLB invalidates with GT resets
-
- drivers/gpu/drm/i915/gt/intel_gt.c    | 15 ++++++++++-
- drivers/gpu/drm/i915/gt/intel_reset.c | 37 ++++++++++++++++++++-------
- 2 files changed, 42 insertions(+), 10 deletions(-)
+> +	  based on that voting for interconnect bandwidth, adjusting their
+> +	  speed to current demand.
+> +	  Current implementation brings support for BWMON v4, used for example
+> +	  on SDM845 to measure bandwidth between CPU (gladiator_noc) and Last
+> +	  Level Cache (memnoc).  Usage of this BWMON allows to remove some of
+> +	  the fixed bandwidth votes from cpufreq (CPU nodes) thus achieve high
+> +	  memory throughput even with lower CPU frequencies.
 
 -- 
-2.36.1
-
-
+~Randy
