@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88846CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:21:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19737CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 00:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232813AbiGDAVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 20:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
+        id S232817AbiGDAVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 20:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiGDAU7 (ORCPT
+        with ESMTP id S231403AbiGDAVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 20:20:59 -0400
+        Sun, 3 Jul 2022 20:21:00 -0400
 Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F7992AD0;
-        Sun,  3 Jul 2022 17:20:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D4C95F76;
+        Sun,  3 Jul 2022 17:20:59 -0700 (PDT)
 Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
   by mx.socionext.com with ESMTP; 04 Jul 2022 09:20:55 +0900
 Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 05BD62058456;
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 7FA422058456;
         Mon,  4 Jul 2022 09:20:55 +0900 (JST)
 Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Mon, 4 Jul 2022 09:20:55 +0900
 Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id B99A11EEF;
-        Mon,  4 Jul 2022 09:20:54 +0900 (JST)
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 162771DDD;
+        Mon,  4 Jul 2022 09:20:55 +0900 (JST)
 From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -31,9 +31,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
         Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 1/9] ARM: dts: uniphier: Fix USB interrupts for PXs2 SoC
-Date:   Mon,  4 Jul 2022 09:20:18 +0900
-Message-Id: <1656894026-15707-2-git-send-email-hayashi.kunihiko@socionext.com>
+Subject: [PATCH 3/9] ARM: dts: uniphier: Rename usb-phy node to usb-glue
+Date:   Mon,  4 Jul 2022 09:20:20 +0900
+Message-Id: <1656894026-15707-4-git-send-email-hayashi.kunihiko@socionext.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1656894026-15707-1-git-send-email-hayashi.kunihiko@socionext.com>
 References: <1656894026-15707-1-git-send-email-hayashi.kunihiko@socionext.com>
@@ -41,42 +41,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An interrupt for USB device are shared with USB host. Set interrupt-names
-property to common "dwc_usb3" instead of "host" and "peripheral".
+Actual phy nodes are each child node. The parent node should be usb-glue
+node. This applies to the devicetre for Pro4 SoC.
 
-Fixes: 45be1573ad19 ("ARM: dts: uniphier: Add USB3 controller nodes")
-Reported-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
 Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 ---
- arch/arm/boot/dts/uniphier-pxs2.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/uniphier-pro4.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/uniphier-pxs2.dtsi b/arch/arm/boot/dts/uniphier-pxs2.dtsi
-index e81e5937a60a..03301ddb3403 100644
---- a/arch/arm/boot/dts/uniphier-pxs2.dtsi
-+++ b/arch/arm/boot/dts/uniphier-pxs2.dtsi
-@@ -597,8 +597,8 @@ usb0: usb@65a00000 {
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65a00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 134 4>, <0 135 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 134 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
- 			clock-names = "ref", "bus_early", "suspend";
-@@ -693,8 +693,8 @@ usb1: usb@65c00000 {
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65c00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 137 4>, <0 138 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 137 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb1>, <&pinctrl_usb3>;
- 			clock-names = "ref", "bus_early", "suspend";
+diff --git a/arch/arm/boot/dts/uniphier-pro4.dtsi b/arch/arm/boot/dts/uniphier-pro4.dtsi
+index a53b73ee93e9..cf62821c69ca 100644
+--- a/arch/arm/boot/dts/uniphier-pro4.dtsi
++++ b/arch/arm/boot/dts/uniphier-pro4.dtsi
+@@ -376,7 +376,7 @@ pinctrl: pinctrl {
+ 				compatible = "socionext,uniphier-pro4-pinctrl";
+ 			};
+ 
+-			usb-phy {
++			usb-glue {
+ 				compatible = "socionext,uniphier-pro4-usb2-phy";
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
 -- 
 2.25.1
 
