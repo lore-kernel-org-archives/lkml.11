@@ -2,88 +2,325 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99E5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 21:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F580C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 21:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbiGDV6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 17:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
+        id S232113AbiGDV7J convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 17:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiGDV6Q (ORCPT
+        with ESMTP id S229790AbiGDV7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 17:58:16 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7712312624;
-        Mon,  4 Jul 2022 14:58:15 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id b85so5540213yba.8;
-        Mon, 04 Jul 2022 14:58:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aX4msgN1b6B4E4WJ19/77nMyu3z3AuscBwv+NzJVFAs=;
-        b=pxocR5fcb/eN8OBfibNhCE8C51JiWomfEbeMlgefujdpH5XNv6i9nU0YoDEPq+UmL+
-         uwkb/0qFuGEQgkyQXb95m/T19xiLxZd5QK6/hFOLb1x3ezQJXo/l/71CEm71s0dn87PT
-         05vb4dU5Z4msXQJ0ojRC6NYCh8H7UjFgurCeYziZ+4S/reeW7HXxxJqan4y7yzuixbgx
-         lkbGdra3NXvtrZvxuP24Q/SjzrcNjK0ve+oP2IBeB0Gy/CzVjWYE//KzJYhqqGBDvrkg
-         B9mdZ8UqRgnAtNn6DGXAcD6Ydsa0xiLGn+5G6Zh3PAOWosT7wkqEiuihEfQ5DDm2ONRx
-         SlDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aX4msgN1b6B4E4WJ19/77nMyu3z3AuscBwv+NzJVFAs=;
-        b=q0j5LJzUFoXtu3CGx7pd5rPTuLBcgi/r7cRls48yMBztttuwSZu500B64/vLT6g86a
-         7U9fSS9gjMYQI1lcv0SWl0CBcQcQOw7a2PHPbZGPtBCtjL6qwxyjlYgeimg3SyGLNf3r
-         gYfJM0eraFNegwBcjhLDRrXglbYeRQOreP0D7UKh/Nx2VVdLcbuwg93Fmb4hanQJ+kso
-         8h7viPs1h9BjhEZJKz/sj1wLZDARxHnM72d1IiXxaC06f8/ENKR5qfO5xArd1juUwbu9
-         vaetPhnbz891cFhwS/gPuvWpZUgzmsutadfj0X4Z0EikGmmZxh+BwYFA5rhvN7XLzUOY
-         O3Ig==
-X-Gm-Message-State: AJIora8RbcaeMRbeBxEB3g8aA7//c2tiagcnwIiLxkcGExRs7dfBcNuE
-        rtLBrlD+2LmVKfX2xjYJPavbUx3GExHszvJTvpnqDyiFhhisUA==
-X-Google-Smtp-Source: AGRyM1t/9z9b6uGG5VgQIWg4GoZ+wA/U092ZWBOTi6Odm0JKng78m/z+5bkZVjP23n2tYU11nS7qu3LcXyVWbSKmgJ0=
-X-Received: by 2002:a05:6902:686:b0:66e:627f:4d29 with SMTP id
- i6-20020a056902068600b0066e627f4d29mr3662717ybt.385.1656971894641; Mon, 04
- Jul 2022 14:58:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704172116.195841-1-marcus.folkesson@gmail.com> <20220704172116.195841-7-marcus.folkesson@gmail.com>
-In-Reply-To: <20220704172116.195841-7-marcus.folkesson@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 4 Jul 2022 23:57:37 +0200
-Message-ID: <CAHp75VeqAJK_jBmF5zb3NACS0JJvzWQ8HAgpDFcXPAQiozp94g@mail.gmail.com>
-Subject: Re: [PATCH v3 6/9] iio: adc: mcp3911: add support for interrupts
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
+        Mon, 4 Jul 2022 17:59:08 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E62C22DFF;
+        Mon,  4 Jul 2022 14:59:05 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD8EB23A;
+        Mon,  4 Jul 2022 14:59:05 -0700 (PDT)
+Received: from slackpad.lan (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8F7D13F70D;
+        Mon,  4 Jul 2022 14:59:03 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 22:58:02 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+Cc:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Rob Herring <robh@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Icenowy Zheng <icenowy@aosc.io>,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 3/6] arm64: dts: allwinner: Add Allwinner H616 .dtsi
+ file
+Message-ID: <20220704225534.3e1a901a@slackpad.lan>
+In-Reply-To: <22699277.6Emhk5qWAg@kista>
+References: <20220428230933.15262-1-andre.przywara@arm.com>
+        <2985997.CbtlEUcBR6@jernej-laptop>
+        <20220704143057.76163208@donnerap.cambridge.arm.com>
+        <22699277.6Emhk5qWAg@kista>
+Organization: Arm Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.31; x86_64-slackware-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 7:21 PM Marcus Folkesson
-<marcus.folkesson@gmail.com> wrote:
+On Mon, 04 Jul 2022 20:42:47 +0200
+Jernej Škrabec <jernej.skrabec@gmail.com> wrote:
+
+Hi Jernej,
+
+> Dne ponedeljek, 04. julij 2022 ob 15:30:57 CEST je Andre Przywara napisal(a):
+> > On Sat, 02 Jul 2022 23:16:53 +0200
+> > Jernej Škrabec <jernej.skrabec@gmail.com> wrote:
+> > 
+> > Hi Jernej,
+> >   
+> > > Dne četrtek, 30. junij 2022 ob 02:04:10 CEST je Andre Przywara napisal(a):  
+> > > > On Tue, 03 May 2022 21:05:11 +0200
+> > > > Jernej Škrabec <jernej.skrabec@gmail.com> wrote:
+> > > > 
+> > > > Hi Jernej,
+> > > > 
+> > > > many thanks for taking the time to wade through this file!
+> > > >     
+> > > > > Dne petek, 29. april 2022 ob 01:09:30 CEST je Andre Przywara   
+> napisal(a):  
+> > > > > > This (relatively) new SoC is similar to the H6, but drops the   
+> (broken)
+> > > > > > PCIe support and the USB 3.0 controller. It also gets the management
+> > > > > > controller removed, which in turn removes *some*, but not all of the
+> > > > > > devices formerly dedicated to the ARISC (CPUS).
+> > > > > > And while there is still the extra sunxi interrupt controller, the
+> > > > > > package lacks the corresponding NMI pin, so no interrupts for the   
+> PMIC.
+> > > > > > 
+> > > > > > The reserved memory node is actually handled by Trusted Firmware   
+> now,
+> > > > > > but U-Boot fails to propagate this to a separately loaded DTB, so we
+> > > > > > keep it in here for now, until U-Boot learns to do this properly.
+> > > > > > 
+> > > > > > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> > > > > > ---
+> > > > > > 
+> > > > > >  .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 574 +++++++++++++++  
+> +++
+> > > > > >  1 file changed, 574 insertions(+)
+> > > > > >  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+> > > > > > 
+> > > > > > diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+> > > > > > b/arch/arm64/    
+> > > > > 
+> > > > > boot/dts/allwinner/sun50i-h616.dtsi
+> > > > >     
+> > > > > > new file mode 100644
+> > > > > > index 000000000000..cc06cdd15ba5
+> > > > > > --- /dev/null
+> > > > > > +++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+> > > > > > @@ -0,0 +1,574 @@
+> > > > > > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> > > > > > +// Copyright (C) 2020 Arm Ltd.
+> > > > > > +// based on the H6 dtsi, which is:
+> > > > > > +//   Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
+> > > > > > +
+> > > > > > +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> > > > > > +#include <dt-bindings/clock/sun50i-h616-ccu.h>
+> > > > > > +#include <dt-bindings/clock/sun50i-h6-r-ccu.h>
+> > > > > > +#include <dt-bindings/reset/sun50i-h616-ccu.h>
+> > > > > > +#include <dt-bindings/reset/sun50i-h6-r-ccu.h>
+> > > > > > +
+> > > > > > +/ {
+> > > > > > +	interrupt-parent = <&gic>;
+> > > > > > +	#address-cells = <2>;
+> > > > > > +	#size-cells = <2>;
+> > > > > > +
+> > > > > > +	cpus {
+> > > > > > +		#address-cells = <1>;
+> > > > > > +		#size-cells = <0>;
+> > > > > > +
+> > > > > > +		cpu0: cpu@0 {
+> > > > > > +			compatible = "arm,cortex-a53";
+> > > > > > +			device_type = "cpu";
+> > > > > > +			reg = <0>;
+> > > > > > +			enable-method = "psci";
+> > > > > > +			clocks = <&ccu CLK_CPUX>;
+> > > > > > +		};
+> > > > > > +
+> > > > > > +		cpu1: cpu@1 {
+> > > > > > +			compatible = "arm,cortex-a53";
+> > > > > > +			device_type = "cpu";
+> > > > > > +			reg = <1>;
+> > > > > > +			enable-method = "psci";
+> > > > > > +			clocks = <&ccu CLK_CPUX>;
+> > > > > > +		};
+> > > > > > +
+> > > > > > +		cpu2: cpu@2 {
+> > > > > > +			compatible = "arm,cortex-a53";
+> > > > > > +			device_type = "cpu";
+> > > > > > +			reg = <2>;
+> > > > > > +			enable-method = "psci";
+> > > > > > +			clocks = <&ccu CLK_CPUX>;
+> > > > > > +		};
+> > > > > > +
+> > > > > > +		cpu3: cpu@3 {
+> > > > > > +			compatible = "arm,cortex-a53";
+> > > > > > +			device_type = "cpu";
+> > > > > > +			reg = <3>;
+> > > > > > +			enable-method = "psci";
+> > > > > > +			clocks = <&ccu CLK_CPUX>;
+> > > > > > +		};
+> > > > > > +	};
+> > > > > > +
+> > > > > > +	reserved-memory {
+> > > > > > +		#address-cells = <2>;
+> > > > > > +		#size-cells = <2>;
+> > > > > > +		ranges;
+> > > > > > +
+> > > > > > +		/* 512KiB reserved for ARM Trusted Firmware (BL31) */
+> > > > > > +		secmon_reserved: secmon@40000000 {
+> > > > > > +			reg = <0x0 0x40000000 0x0 0x80000>;
+> > > > > > +			no-map;
+> > > > > > +		};
+> > > > > > +	};    
+> > > > > 
+> > > > > I'm not a fan of above. If anything changes in future in BL31, U-Boot
+> > > > > would
+> > > > > need to reconfigure it anyway. Can we just skip it?    
+> > > > 
+> > > > I am not a fan neither, but last time I checked this is needed to boot.
+> > > > Indeed TF-A inserts this node, with the right values, into U-Boot's DT.
+> > > > And that's nicely preserved if you use that DT ($fdtcontroladdr) for
+> > > > the kernel as well.
+> > > > But if someone *loads* a DTB into U-Boot (to $fdt_addr_r), then
+> > > > U-Boot fails to propagate the /reserved-memory node into that copy.
+> > > > There does not seem to be a global notion of reserved memory in U-Boot.
+> > > > Some commands (like tftp) explicitly parse the control DT to find and
+> > > > respect reserved memory regions. bootm does that also, but only to
+> > > > avoid placing the ramdisk or DTB into reserved memory. The information
+> > > > ends up in images->lmb, but is not used to generate or amend nodes in
+> > > > the target DT.
+> > > > So the bits and pieces are there, but it will require some code to be
+> > > > added to the generic U-Boot code.
+> > > > 
+> > > > So what do you think? Leaving this out will prevent loading DTBs into
+> > > > U-Boot, at the moment, which sounds bad. I suggest we keep it in, for
+> > > > now, it should not really hurt. U-Boot will hopefully start to do the
+> > > > right thing soon, then we can either phase it out here (maybe when we
+> > > > actually change something in TF-A), or let U-Boot fix it.    
+> > > 
+> > > TBH, if "soon" is really soon, I would rather wait with H616 DT until U-  
+> Boot 
+> > > supports carrying over reserved memory nodes.  
+> > 
+> > But this also carries compatibility issues. U-Boot support the H616 for
+> > more than a year now, and the earliest possible U-Boot release having that
+> > propagation code would be the one released in October.   
+> 
+> I was hoping you would say July (next U-Boot release) :).
+
+Well, 2022.07 was supposed to be released today, and even if that is
+delayed by a bit, that's obviously far too late ;-)
+
+> > And then people
+> > would still need to update first, so that's quite some months out.
+> > And I was actually hoping to get at least the H616 DT patches off my
+> > plate, and get them into the tree to have a stable and agreed upon base
+> > (before this series turns into a teenager ;-)  
+> 
+> Yeah, I would like that too.
+> 
+> > Then we could for instance update the U-Boot H616 support.
+> >   
+> > > Whatever we do now, it will have 
+> > > compatibility issues. If we introduce reserved memory node now, we can't 
+> > > easily drop it later. Bootloaders are not very often updated, but kernels   
+> and 
+> > > DTB files are, at least in my experience. So when we decide to drop the   
+> node?
+> > 
+> > I think of the three possibilities:
+> > - Drop the node now, and ask people to not load DTBs explicitly
+> > - Drop the node when U-Boot learned to propagate the reservation
+> > - Keep the node
+> > the last one is the least painful: having this node in does not really
+> > hurt, so we can be very relaxed with this removal decision:
+> > - If U-Boot does not add the reserved node, we are covered.
+> > - If U-Boot adds the node, it will do so in a way where it deals with
+> > existing reservations. So either it doesn't actually change anything, or
+> > it extends the reservation.
+> > - Should the TF-A location actually move (and we have no plans or needs to
+> > do that), people would only get this by updating the firmware, at which
+> > point the U-Boot part would surely be in place already. We don't really
+> > support updating just BL31 in an existing binary firmware image, so you
+> > would get an updated U-Boot as well.
+> > 
+> > I think the worst case scenario is that users end up with an unneeded 512K
+> > reservation. If they care, a firmware update should solve this problem.
+> > 
+> > As for the time to remove that node: we could do that at the time when
+> > (or rather: if) we actually change the TF-A reservation. At the moment
+> > there are no plans to do this, and the size reservation is more than
+> > generous (the current debug build is actually 77 KB or so only). If there
+> > is no change, and the node stays in the .dtsi, it doesn't really hurt, see
+> > above.  
+> 
+> I see your point, but I would like to get some input from Samuel first.
 >
-> Make it possible to read values upon interrupts.
-> Configure Data Ready Signal Output Pin to either HiZ or push-pull and
-> use it as interrupt source.
+> Samuel, what do you think?
+> 
+> >   
+> > > After 10 years? Alternatively, reserved memory node can be just dropped   
+> and 
+> > > anyone loading DTB file from outside would need to make sure it's patched.   
+> But 
+> > > that's unexpected from user perspective, although patching DT files is done   
+> by 
+> > > some distros.  
+> > 
+> > Yeah, let's not go there. As you know, I already dislike the idea of
+> > explicitly loading DTBs at all, but I understand this is what people, and
+> > distributions, do, so I'd rather have them covered. Hence the node to
+> > work with existing firmware.  
+> 
+> Reusing DTB from U-Boot is only useful when you're happy with completeness of 
+> DT and with the lack of bugs in it. Then you can save troubles with skipping 
+> external DTB load step and life is easier. But as you know, features and thus 
+> nodes are added in steps and sometimes some bugs are fixed, which means it's 
+> extremely handy to have easily updatable DTB file.
 
-...
+Yes, definitely, see my reply to Samuel. I just held back with the DT
+update in U-Boot because of the conflict between "we only take pure
+kernel tree DTs" and "there is a breaking change" (r_intc binding).
 
-> +               /*
-> +                * The device generates interrupts as long as it is powered up.
-> +                * Some platforms might not allow the option to power it down so
-> +                * don't enable the interrupt to avoid extra load on the system
+If we find a way forward with the DT stability problem, I am happy to
+push for a much more frequent DT update, or even update just the DT in
+an existing firmware installation. This can be automated, since the DTB
+is just a member in the FIT image, which can be re-assembled with an
+updated DTB by some tool or script. Or we use capsule updates, of just
+the DTB, separately (if this is possible)?
 
-Missed period.
+> Yes, U-Boot can be 
+> automated, but it's tedious for distro to maintain one bootloader package per 
+> board. Ideally, distro shouldn't care at all about that,
 
-> +                */
+Yes, I totally agree, distros should not ship firmware. Since leaving
+this to the board vendors is not realistic, I wonder if we (as "the
+sunxi community") should step up here, and provide binary builds (purely
+for convenience reasons) of board firmware? That could be updated from
+a running Linux, or put on an SD card, or fetched by distros to
+generate an installer? Wasn't there even some central storage offered
+lately by Linux, to hold (UEFI) firmware update files?
 
--- 
-With Best Regards,
-Andy Shevchenko
+> but many boards don't 
+> have designated bootloader storage (SPI NOR flash in AW case), so they have to 
+> be combined on same storage, partition even, as distro.
+
+Have you tried eMMC boot partitions? I found them equally convenient as
+SPI flash, and while not too many boards actually have SPI flash,
+quite some have eMMC (thinking about TV boxes). I recently even
+used "dual boot" with a BSP installation.
+And even the smallest eMMCs seem to have 4 MB per boot partition, so
+plenty of space for U-Boot (plus TF-A plus crust).
+
+> On the other hand, 
+> when building kernel, you automatically build all relevant DTB files, which you 
+> can then just copy to common place. No device specific handling needed. Also, 
+> U-Boot doesn't sync DT files every release, so latest U-Boot doesn't necessarly 
+> mean latest DT.
+
+Yes, for the compatibility reasons mentioned. I am more than happy to
+make this a regular exercise (say at each kernel's -rc3 or so).
+
+> Above is a bit off topic, but I hope you understand why distros opt to use 
+> external DTB files (speaking from my own experiences).
+
+Yes, I understand where they (including LE) are coming from, to provide
+a pragmatic solution to the users' problems. And that's why I wanted to
+still give the possibility to load a DTB, even though I think this
+should not be the standard way.
+
+Cheers,
+Andre
