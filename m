@@ -2,103 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEB3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233626AbiGDKas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        id S233830AbiGDKco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233092AbiGDKaq (ORCPT
+        with ESMTP id S233219AbiGDKcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:30:46 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6AE65A7;
-        Mon,  4 Jul 2022 03:30:43 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id BBF1C6601638;
-        Mon,  4 Jul 2022 11:30:41 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656930642;
-        bh=rJUpYok85LF+d4r9kSHGVbYT9gpDpxf7ez0bJa0iUh4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=MykPXsy3hmQ0Tz7tMuYaP/gOo2hMg00XcoeJg0/e6U+GPjf1TbXWAMx1gBKM1h17B
-         yNqw1MH4Mx3506V1Kree1XRVaR0UsALhVkUlHilNTvQod0XRho3tIjPgk9qOJJKITK
-         uyXSyXJZIiUr/0upV6kgqoOE2TiNbPN9MyNSVWOCwQGR9VptmBBDBLtm92UiajsAlq
-         QMof1O++d0KcxDdNBTsD+VRxyZ6dTrrm6/X2JYymLKGZAqLOJOiukPRIk6myjz/mf2
-         PgtaQZeiAtXoFIHJOROznwd9U7BCEWpl+VAKWK6PWYAq188/Y0LjQKmfVSB7js9/p2
-         e5vH6GIjDydqQ==
-Message-ID: <e01fad71-0d7b-e0a8-7ee5-5a64792ed579@collabora.com>
-Date:   Mon, 4 Jul 2022 12:30:39 +0200
+        Mon, 4 Jul 2022 06:32:43 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2677B65A7
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:32:41 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id u14so10554943ljh.2
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 03:32:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZuC/BxsRzBHEnJgc++FT5TZHprSw0ZRP3DxQz4hVV6c=;
+        b=flbdSgG6JFft7KYTaLOQHCBCILWeQswpD+m4dyx0WjwATSyrhVV4zlYj4+YkM+GgpC
+         GLHSbuwcMcKOi2SyJvWbAZyrIPg2pTsNxS/UC9wTyCSutQCwAkSi/CzzOAVoGTzSgeuu
+         pvO6J+dI9Z5zzw7uptFToRMShQ6MsdBJoE1bBWseQEaZeOiivSzWK5ibGLLuAbpy/5hn
+         ofksX+t0Gy5eHxR7NyH/cqjg3KDGlFyeupxtQ9UHJBvr0emQpMMW13RZhgtN6xKcwOsU
+         pdGNtbGKoo2RYyOA1XFwTgXOOB9zDLlRXSgEdh7WEE32YMWvbouudrMskHSW3nuLr5w7
+         MPrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZuC/BxsRzBHEnJgc++FT5TZHprSw0ZRP3DxQz4hVV6c=;
+        b=NU24ZuenwbsMpoxpMFjrNKfuToxLbRl1yZC8elKfqEZIYOXduKYI1+/Ql1QY1PjdKA
+         EXXogLdNGWsVeh90HjSvDRbngQkw4VAa9W4oClJ3HF095IrmfSNxC3InxkB4TTTZg3Hp
+         cjdMkIQaI2en5J3Dw64x9+ut5/9YoqbzPdRvXt5RXDpW8f/1Vw0X7koUbWSajzvGhv1J
+         QnODfTBWabxQtdFf7K/QyV69gJ3aLg/K0wmD1PmYRXDxb0xAB3JIwfB+c4QGXPpl9tsQ
+         rqodB0RSiy7IGbxiLfpLXewuikuZ+gtoj1Ot+nJ1K7ahGz9T2xf2cch/i1J9R4/hX3Lt
+         MCMw==
+X-Gm-Message-State: AJIora/589Opye7+KdXj9pXoyaqIV07+HlbPO4Z+s4PqPY79Z8tGrOeE
+        oFk9BK/uOXqm8jpLvi41Ttklew==
+X-Google-Smtp-Source: AGRyM1uDs/rZNSSzDRN0iLPPWK5ZC85Ls9o9LLev5JcVqgoxbgqg7+El3prkr0jLa0DXP8wJ+nP+7g==
+X-Received: by 2002:a2e:a58e:0:b0:25b:f7f2:eb45 with SMTP id m14-20020a2ea58e000000b0025bf7f2eb45mr11950056ljp.507.1656930759525;
+        Mon, 04 Jul 2022 03:32:39 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id f13-20020a2eb5ad000000b0025aa51b069esm4786661ljn.5.2022.07.04.03.32.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 03:32:38 -0700 (PDT)
+Message-ID: <6d01e993-cc0b-d7e4-b723-560d34524c2f@linaro.org>
+Date:   Mon, 4 Jul 2022 12:32:37 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v1 04/16] arm64: dts: mt8195: Disable watchdog external
- reset signal
+Subject: Re: [PATCH v2] dt-bindings: qcom: document preferred compatible
+ naming
 Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Weiyi Lu <weiyi.lu@mediatek.com>
-Cc:     iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Fengquan Chen <fengquan.chen@mediatek.com>
-References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
- <20220704100028.19932-5-tinghan.shen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220704100028.19932-5-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>
+References: <20220704101823.82122-1-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220704101823.82122-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 04/07/22 12:00, Tinghan Shen ha scritto:
-> Disable external output reset signal in first round of watchdog reset
-> to reserve wdt reset reason for debugging watchdog issue.
-
-If my understanding of the commit decription is right, then we can clarify
-that with something like: "[...] for debugging eventual watchdog issues".
-
-Otherwise, if this implies that disable-extrst is needed to avoid losing
-the reset reason stored in the WDT, you could say something like:
-
-"Disable external output reset signal in the first round of watchdog reset
-to avoid losing the reset reason stored in the watchdog registers"
-
-After which:
-
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
+On 04/07/2022 12:18, Krzysztof Kozlowski wrote:
+> Compatibles can come in two formats.  Either "vendor,ip-soc" or
+> "vendor,soc-ip".  Qualcomm bindings were mixing both of usages, so add a
+> DT schema file documenting preferred policy and enforcing it for all new
+> compatibles, except few existing patterns.
 > 
-> Signed-off-by: Fengquan Chen <fengquan.chen@mediatek.com>
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
 > ---
->   arch/arm64/boot/dts/mediatek/mt8195.dtsi | 1 +
->   1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> index 066c14989708..436687ba826f 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> @@ -327,6 +327,7 @@
->   		watchdog: watchdog@10007000 {
->   			compatible = "mediatek,mt8195-wdt",
->   				     "mediatek,mt6589-wdt";
-> +			mediatek,disable-extrst;
->   			reg = <0 0x10007000 0 0x100>;
->   		};
->   
+> Changes since v1:
+> 1. Add schema instead of readme (Rob).
+> 
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Alex Elder <elder@linaro.org>
+> Cc: Robert Foss <robert.foss@linaro.org>
+> Cc: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>  .../devicetree/bindings/arm/qcom-soc.yaml     | 55 +++++++++++++++++++
+>  1 file changed, 55 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/qcom-soc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/qcom-soc.yaml b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+> new file mode 100644
+> index 000000000000..1af1f16c13ab
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+> @@ -0,0 +1,55 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/qcom-soc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm SoC compatibles naming convention
+> +
+> +maintainers:
+> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> +
+> +description: |
+> +  Guidelines for new compatibles for SoC blocks/components.
+> +  When adding new compatibles in new bindings, use the format::
+> +    qcom,SoC-IP
+> +
+> +  For example::
+> +   qcom,sdm845-llcc-bwmon
+> +
+> +  When adding new compatibles to existing bindings, use the format in the
+> +  existing binding, even if it contradicts the above.
+> +
+> +select:
+> +  properties:
+> +    compatible:
+> +      pattern: "^qcom,.*(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
+> +  required:
+> +    - compatible
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - description: Preferred naming style for compatibles of SoC components
+> +        pattern: "^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$"
 
+This pattern should be stricter - followed by '-':
+"^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$"
 
+and additional pattern added for a variant (or maybe few):
+"^qcom,msm[0-9]+pro-.*$"
+
+This way also compatibles like "qcom,sdm630whatever" will be caught.
+
+Best regards,
+Krzysztof
