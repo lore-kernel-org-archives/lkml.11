@@ -2,118 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 21:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 21:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230498AbiGDVwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 17:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
+        id S230342AbiGDVxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 17:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiGDVwL (ORCPT
+        with ESMTP id S229554AbiGDVx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 17:52:11 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194B6BC2F;
-        Mon,  4 Jul 2022 14:52:10 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31cb2c649f7so17770087b3.11;
-        Mon, 04 Jul 2022 14:52:10 -0700 (PDT)
+        Mon, 4 Jul 2022 17:53:28 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F094F26C2;
+        Mon,  4 Jul 2022 14:53:27 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id j7so6043285wmp.2;
+        Mon, 04 Jul 2022 14:53:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=my4+DrJedrpU/mQg8JGhfRmIVUW7fXxN9fPtsnqMMtU=;
-        b=pUv3GqCAR076f7MQVe6wqNqK9r3m2Ew/RBH93+pa0aquynCK61nfHf0b7hL044eELB
-         6MmSG+bt0J6cDt0L4KhhdeX+HrXaDEgugMJrc9ysHoA9t/IFrLg4Wu1H81glivOLsbew
-         mlr/wudKWu8vUqDWWlVUn0lcjddrFhK56vkZAF3jRaoDsgDvM1vw/7j0gO4BrUPCuMAg
-         HOlOtbJ1Hm8Oom3xPPmA4ysQn28rgBejhqg86KfCu5Hleatkzi6FQtkE37VWB4ho3lI3
-         QGQT5b7/LXgMLuq9aHyRsUuOtysnsSWn5x2mXqLrYZ1v1a6aUKX7YGipnyA/rdHo8WnE
-         XgFw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=imQEOeZ0iRvWPIQHofWTbp8F/si96v+dyL8UJAbYtRE=;
+        b=MKjZQUbAoLeNcvfieU9aGAfdRCrCWwxRfzyvACl1W9FjRAfUrhoEqUT+RDENGG6adF
+         idab7kcmkHUPMgen0dIwlYeDguou4SQVHx7l59qhAWaRSYlbayl+40DgHBU/x97UppCn
+         cLCXSdGKEc5nELmxVDRbjraTp9NO/3l2EzB1ni2GPgb1XN+ZGawp/a8JbjBHTgqFjsVq
+         poKI/j5kJ/StD1WPsMCppaXgL4vZgARqsAlSv7cX99jFNv5g+U1aj0NWxlRQFsTP3Zxt
+         maahY7DjHZowjtoDpRVYYalxOxmN/wNppyfH7V3FKntQWVZA5GIMFJMAVyLNnMRlbR4O
+         saGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=my4+DrJedrpU/mQg8JGhfRmIVUW7fXxN9fPtsnqMMtU=;
-        b=CfkqBjEFA6l9sPKkaXvRctdjMrJte3aiaNptzvJVJarD+QNp225QKi+49Vc77PWLk1
-         athrF43JoY9WZBI4taIYl1lAjuA5gP22SrU9CcNnSmv2eTAh7P4TR688gR2wIZRlcOHm
-         /bCt/3i44+UuyWfpiiTTpOZu4cnc2OJpFOoEuIEoYpn/bUkwkubZc6IOkh3Cepaw3vww
-         XAU48IpKNz5A7gaKuF05OGui01TYHIj5TgVjyHUZ0zoRnqkcgyWXHC5y03SdfscyCD7R
-         4OzM6Z9agmyRS6l6bcJ5ChVC26YdsBCVnXX+HfAPM0JrjWbBY34xTvw8aIgirMhrFfxb
-         m5tg==
-X-Gm-Message-State: AJIora+e9wdOraoJ0SllYFju3VyOat+JBjr3+G+YTNt5YS4PmiQ5yRKB
-        Eb22i89UvcvauodGxq+2YBLJNfjfqJhhY1qb2hQ=
-X-Google-Smtp-Source: AGRyM1tncnebGXxmPlwNScVipoJpd0YMqdaueQM5CNpTc5n8/Snp7w17G1jrQVlMz/SY1v3bvQJi4Bq4N4FbmjQE16I=
-X-Received: by 2002:a81:5d88:0:b0:318:31c1:56f3 with SMTP id
- r130-20020a815d88000000b0031831c156f3mr35991617ywb.18.1656971529266; Mon, 04
- Jul 2022 14:52:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=imQEOeZ0iRvWPIQHofWTbp8F/si96v+dyL8UJAbYtRE=;
+        b=aiIFj1kcymvsquLLYaMb8Jt/fhRybr0/NWPNNxYSi3Fe7XEDSMcYOTNVzo0D+zgJnV
+         Q8gaHL0GEQuWpMKx3fKjDRqI9GEJQAQpjxQRS4rvNgzTb1GsGzYoPAfInC89M02B30fe
+         H5vvtu3dEHZhqrAgMnQhSoOQVcp2b6OJZiN20/QbE4bqFGR2tjxt48NZ27EYqBOxNTl8
+         rzbR/Pa68M8FX8S5BM9hnScTKL/QLXfFA2XDGnuHF+976zjCm3DLEuerKE9whIr/T7QC
+         bEK4UBBgdw/9NGQD8cI//3aDUDk5hs6l4BEqF6ZlU1oHmiXkxD0UFzljKvVE5z2RalqT
+         ha1w==
+X-Gm-Message-State: AJIora+pY8svJk3ALtnewyCiYSyab/P4fu++/GJt9mvxwqAaWBYQ9btk
+        qaT3MRaYA5Bi4G5MLiepyvY=
+X-Google-Smtp-Source: AGRyM1uF7pbf7t/2DGN0ONlAglZnl51cuT47+oqMVWri4eWm7nyJAtUyUB8bQKagaPxSxiZ0r2kkiQ==
+X-Received: by 2002:a05:600c:886:b0:3a0:49d7:d8b9 with SMTP id l6-20020a05600c088600b003a049d7d8b9mr36999301wmp.115.1656971606484;
+        Mon, 04 Jul 2022 14:53:26 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l14-20020a05600c4f0e00b003a199ed4f44sm9108066wmq.27.2022.07.04.14.53.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 14:53:25 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] lib/ts_bm.c: remove redundant store to variable consumed after addition
+Date:   Mon,  4 Jul 2022 22:53:25 +0100
+Message-Id: <20220704215325.600993-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <1656469212-12717-1-git-send-email-u0084500@gmail.com>
- <1656469212-12717-3-git-send-email-u0084500@gmail.com> <CAHp75Vd2bxFA5PmjEtgAjJfCf9YZENq_fb9b2VHmMmmHdqGJSw@mail.gmail.com>
- <CADiBU384ZwKL_+i1zRL9qfVt-NLo=pnf8zrGna4Sxt+toYZdWg@mail.gmail.com> <CADiBU3_sU8bj29x2Qs9y9fM2YDYcKvNBkBuzfpzuCkAjSeTu+Q@mail.gmail.com>
-In-Reply-To: <CADiBU3_sU8bj29x2Qs9y9fM2YDYcKvNBkBuzfpzuCkAjSeTu+Q@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 4 Jul 2022 23:51:32 +0200
-Message-ID: <CAHp75VeiuJjiPFFh0pEGGH4+UEn0g5902UhAJL93Ho2WvH0_gg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: adc: Add rtq6056 support
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        cy_huang <cy_huang@richtek.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 9:27 AM ChiYuan Huang <u0084500@gmail.com> wrote:
-> ChiYuan Huang <u0084500@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=9C=884=E6=
-=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8A=E5=8D=8811:16=E5=AF=AB=E9=81=93=EF=BC=
-=9A
-> > Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=
-=9C=881=E6=97=A5 =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=886:05=E5=AF=AB=E9=81=
-=93=EF=BC=9A
-> > > On Wed, Jun 29, 2022 at 4:23 AM cy_huang <u0084500@gmail.com> wrote:
+There is no need to store the result of the addition back to variable
+consumed after the addition. The store is redundant, replace += with
+just +
 
-...
+Cleans up clang scan build warning:
+lib/ts_bm.c:83:11: warning: Although the value stored to 'consumed' is
+used in the enclosing expression, the value is never actually read
+from 'consumed' [deadcode.DeadStores]
 
-> > > > +       *val =3D DIV_ROUND_UP(1000000, sample_time);
-> > >
-> > > USEC_PER_SEC ?
-> > >
-> > No, sample time is (vshunt convesion time + vbus conversion time) *
-> > average sample.
-> > And the sample freq returns the unit by HZ (sample frequency per second=
-)
-> >
-> The 'sample time' is unit by micro-second like as you mentioned.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ lib/ts_bm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ah, then it should be MICRO, so we will get Hz.
+diff --git a/lib/ts_bm.c b/lib/ts_bm.c
+index 4cf250031f0f..1f2234221dd1 100644
+--- a/lib/ts_bm.c
++++ b/lib/ts_bm.c
+@@ -80,7 +80,7 @@ static unsigned int bm_find(struct ts_config *conf, struct ts_state *state)
+ 
+ 			/* London calling... */
+ 			DEBUGP("found!\n");
+-			return consumed += (shift-(bm->patlen-1));
++			return consumed + (shift-(bm->patlen-1));
+ 
+ next:			bs = bm->bad_shift[text[shift-i]];
+ 
+-- 
+2.35.3
 
-> > > > +       return IIO_VAL_INT;
-> > > > +}
-
-...
-
-> > > > +       struct {
-> > > > +               u16 vals[RTQ6056_MAX_CHANNEL];
-> > > > +               int64_t timestamp;
-> > > > +       } data __aligned(8);
-> > >
-> > > Hmm... alignment of this struct will be at least 4 bytes, but
-> > > shouldn't we rather be sure that the timestamp member is aligned
-> > > properly? Otherwise this seems fragile and dependent on
-> > > RTQ6056_MAX_CHANNEL % 4 =3D=3D 0.
-> > >
-> > Yap, from the 'max channel', it already guarantee this struct will be
-> > aligned at lease 4.
-> > Actually, It can be removed.
-
-I think for the safest side it should be given to the timestamp member. No?
-
---=20
-With Best Regards,
-Andy Shevchenko
