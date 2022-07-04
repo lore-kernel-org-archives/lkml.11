@@ -2,94 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E06C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD58C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233494AbiGDHiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 03:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
+        id S231755AbiGDHl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232817AbiGDHiN (ORCPT
+        with ESMTP id S229581AbiGDHl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 03:38:13 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B3ADC23;
-        Mon,  4 Jul 2022 00:38:12 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3928F2B;
-        Mon,  4 Jul 2022 00:38:12 -0700 (PDT)
-Received: from [192.168.33.14] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 671053F792;
-        Mon,  4 Jul 2022 00:38:10 -0700 (PDT)
-Message-ID: <99526f90-f4c9-2785-f159-beace854b4a0@arm.com>
-Date:   Mon, 4 Jul 2022 08:38:09 +0100
+        Mon, 4 Jul 2022 03:41:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B73F43
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:41:54 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LbyPj4SJkzkWr2;
+        Mon,  4 Jul 2022 15:39:53 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 4 Jul 2022 15:41:51 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
+ 2022 15:41:50 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>
+Subject: [PATCH -next] ASoC: fsl: pcm030-audio-fabric: use platform_device_unregsiter()
+Date:   Mon, 4 Jul 2022 15:51:34 +0800
+Message-ID: <20220704075134.26230-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 01/12] thermal/core: Remove duplicate information when
- an error occurs
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
-        daniel.lezcano@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, abailon@baylibre.com,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, rafael@kernel.org
-References: <20220703183059.4133659-1-daniel.lezcano@linexp.org>
- <20220703183059.4133659-2-daniel.lezcano@linexp.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220703183059.4133659-2-daniel.lezcano@linexp.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Replace platform_device_del/put() with platform_device_unregsiter()
+to simplify code.
 
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ sound/soc/fsl/pcm030-audio-fabric.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-On 7/3/22 19:30, Daniel Lezcano wrote:
-> The pr_err already tells it is an error, it is pointless to add the
-> 'Error:' string in the messages. Remove them.
-> 
-> Cc: Alexandre Bailon <abailon@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc; Eduardo Valentin <eduval@amazon.com>
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-> ---
->   drivers/thermal/thermal_core.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index cdc0552e8c42..e22e7d939c54 100644
-> --- a/drivers/thermal/thermal_core.c
-> +++ b/drivers/thermal/thermal_core.c
-> @@ -1198,23 +1198,23 @@ thermal_zone_device_register(const char *type, int trips, int mask,
->   	struct thermal_governor *governor;
->   
->   	if (!type || strlen(type) == 0) {
-> -		pr_err("Error: No thermal zone type defined\n");
-> +		pr_err("No thermal zone type defined\n");
->   		return ERR_PTR(-EINVAL);
->   	}
->   
->   	if (type && strlen(type) >= THERMAL_NAME_LENGTH) {
-> -		pr_err("Error: Thermal zone name (%s) too long, should be under %d chars\n",
-> +		pr_err("Thermal zone name (%s) too long, should be under %d chars\n",
->   		       type, THERMAL_NAME_LENGTH);
->   		return ERR_PTR(-EINVAL);
->   	}
->   
->   	if (trips > THERMAL_MAX_TRIPS || trips < 0 || mask >> trips) {
-> -		pr_err("Error: Incorrect number of thermal trips\n");
-> +		pr_err("Incorrect number of thermal trips\n");
->   		return ERR_PTR(-EINVAL);
->   	}
->   
->   	if (!ops) {
-> -		pr_err("Error: Thermal zone device ops not defined\n");
-> +		pr_err("Thermal zone device ops not defined\n");
->   		return ERR_PTR(-EINVAL);
->   	}
->   
+diff --git a/sound/soc/fsl/pcm030-audio-fabric.c b/sound/soc/fsl/pcm030-audio-fabric.c
+index e4c805acc349..997c3e66c636 100644
+--- a/sound/soc/fsl/pcm030-audio-fabric.c
++++ b/sound/soc/fsl/pcm030-audio-fabric.c
+@@ -101,8 +101,7 @@ static int pcm030_fabric_probe(struct platform_device *op)
+ 	ret = snd_soc_register_card(card);
+ 	if (ret) {
+ 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
+-		platform_device_del(pdata->codec_device);
+-		platform_device_put(pdata->codec_device);
++		platform_device_unregister(pdata->codec_device);
+ 	}
+ 
+ 	platform_set_drvdata(op, pdata);
+-- 
+2.25.1
 
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
