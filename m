@@ -2,84 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26E5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 20:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 569B7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 20:17:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232178AbiGDUPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 16:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33548 "EHLO
+        id S233761AbiGDURM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 16:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiGDUPu (ORCPT
+        with ESMTP id S229525AbiGDURL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 16:15:50 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8352711172;
-        Mon,  4 Jul 2022 13:15:49 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id mf9so18445470ejb.0;
-        Mon, 04 Jul 2022 13:15:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Zq8nwhfZFDBdfn/duNmrPIOqKRSkTctWskb5xtCNo5k=;
-        b=lCYbp2cPEbm8M2iIKtY0ggEUvS2rJzHwBa/0wSQYVhYeBf1fhd6mUilSUA0/2LET5q
-         1IENQ9Fv1tojeq98CTDE0jAgrLlrWXh3SvlhiOt0fhAoIVB+hUVXbmuHUuWBsqHiEn+e
-         3hWMcm9x0EzoWP45559L4HjbR/vMq2JWKHZEnLr53p+TFhrfk9zu7xZfa8aPO1qAHu7j
-         c0kIdsrBhD9TC7YWcpxailb4bk9jWDkJ4ZbiVoZhVmPeNs3XknojiXBBMaYtHA56EYKD
-         lZvehRDguR5CmZEqXVS0O1MEUpPg49dZflyNjqU8Gf1ECoquk4U3gCey+fOzruNp1Pqk
-         07Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Zq8nwhfZFDBdfn/duNmrPIOqKRSkTctWskb5xtCNo5k=;
-        b=ZVrvD2q/bhGwtFPQ5riIs0arY5Uq8UMUR+1v+jw5Qn+RUlLY4TLEwjAwWWnSFGDt0d
-         E7MwayAt4iuagfvi5mV1pctfw3tXzlz55yMgKDRLPEcq6AFmOwQoV0YLDFaZe0WjBlA2
-         q4VThmo79gxy6R4ffpRboa9MeO+uGeaDTrFDcLtPJMgLOhSAine/kCtKcWukUljH8DfK
-         svTZsq3oCjOFgYp8y4nGTp8w6/jzcWr08jSVqX0wHfSA913oKZvrTaGQMcHRgdk32dwM
-         MAAt4yXzXXwidxFIQwI+6tNkBtD6sz42alxYYaY0Cp8coP1lCYPBNwQZXwHEn+kp8pPw
-         rekg==
-X-Gm-Message-State: AJIora+oUAxtJSqR9bEWgH57Ti65odMEyNyFPZl8sfkgvU93Lcu4Qwae
-        Y7qvoV8Norqb4jDHeL9TQhM=
-X-Google-Smtp-Source: AGRyM1tqc+U2aR3adyxagbWpNJk3jHnPtRzv+1Lv5ma/FMbfuO9AWx2uN37hw3RNVSGq2Y/qU5XXww==
-X-Received: by 2002:a17:907:971b:b0:72a:b002:7c87 with SMTP id jg27-20020a170907971b00b0072ab0027c87mr12113195ejc.393.1656965748104;
-        Mon, 04 Jul 2022 13:15:48 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id m11-20020a50ef0b000000b0043a6c9e50f4sm1917577eds.29.2022.07.04.13.15.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 13:15:47 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: Re: [PATCH] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
-Date:   Mon, 04 Jul 2022 22:15:46 +0200
-Message-ID: <3496901.R56niFO833@kista>
-In-Reply-To: <21517512.EfDdHjke4D@jernej-laptop>
-References: <20220702132816.46456-1-samuel@sholland.org> <21517512.EfDdHjke4D@jernej-laptop>
+        Mon, 4 Jul 2022 16:17:11 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9779311A0C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 13:17:10 -0700 (PDT)
+Received: from dslb-178-004-207-027.178.004.pools.vodafone-ip.de ([178.4.207.27] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1o8SVF-00007Y-Qd; Mon, 04 Jul 2022 22:17:05 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 1/6] staging: r8188eu: set bssid only once
+Date:   Mon,  4 Jul 2022 22:16:49 +0200
+Message-Id: <20220704201654.195574-2-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220704201654.195574-1-martin@kaiser.cx>
+References: <20220704201654.195574-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne sobota, 02. julij 2022 ob 21:03:14 CEST je Jernej =C5=A0krabec napisal(=
-a):
-> Dne sobota, 02. julij 2022 ob 15:28:15 CEST je Samuel Holland napisal(a):
-> > "status" does not match any pattern in the gpio-leds binding. Rename the
-> > node to the preferred pattern. This fixes a `make dtbs_check` error.
-> >=20
-> > Signed-off-by: Samuel Holland <samuel@sholland.org>
->=20
-> Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+In function ap2sta_data_frame, for WIFI_MP_STATE && _FW_LINKED, the code
+sets pattrib->bssid twice. Remove the first one of these assignments.
+Remove an empty comment before the second assignment.
 
-Applied, thanks!
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_recv.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Best regards,
-Jernej
-
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index 020bc212532f..9c63319a7d48 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -706,11 +706,9 @@ static int ap2sta_data_frame(
+ 		   check_fwstate(pmlmepriv, _FW_LINKED)) {
+ 		memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
+ 		memcpy(pattrib->src, GetAddr2Ptr(ptr), ETH_ALEN);
+-		memcpy(pattrib->bssid, GetAddr3Ptr(ptr), ETH_ALEN);
+ 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
+ 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
+ 
+-		/*  */
+ 		memcpy(pattrib->bssid,  mybssid, ETH_ALEN);
+ 
+ 		*psta = rtw_get_stainfo(pstapriv, pattrib->bssid); /*  get sta_info */
+-- 
+2.30.2
 
