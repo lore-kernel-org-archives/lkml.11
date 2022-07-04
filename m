@@ -2,142 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD57CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9942BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiGDKWR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39138 "EHLO
+        id S233787AbiGDKWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234146AbiGDKVq (ORCPT
+        with ESMTP id S234230AbiGDKVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 4 Jul 2022 06:21:46 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292A5DF08
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:20:04 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id b2so8169214plx.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 03:20:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ui6jM4ZYL95jFXsEJNqQO63PcH9wdj9Z4AxG9QKXlsk=;
-        b=GvSzH22gCSolN+ML/4454VuP5xi7hCqYh3iBNj7BsSKVgA4TpvBHywhPCeoApnfRAJ
-         0ECxw1MihfcLw8YnRZA2hPIX6zybx/LfAnow6UC98HULCRrJIRMUhuMoS5nlkRAun+FG
-         bB1h36cBBBOr0fRSVpvhyJEgIeKP4HnUobKaQ2XrC1ooQTJ2/xziCatTAD4DXPFWc+6u
-         GaaW5Hra03vyAhoYBG0C9oiTMZnow424UlLfLNBXqV7yRwF9m/s0ivRa5i2eSJUoAvEC
-         ZJnrPg/8HP347f5WAyhrBBmymSsT2L/XCgFhSUNTahFG4GshJPafSwasZB8Ep60E1n1i
-         ZbTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ui6jM4ZYL95jFXsEJNqQO63PcH9wdj9Z4AxG9QKXlsk=;
-        b=EJfVFlzQyYlgUTtpAho62KpOABPH+xuRPYvB+iTTkDg1g5hwsj3YMnu3AnyTPxwrSz
-         a9I9UX5IZSGxMXnwTOVHDkl9QrL1nLVccKDrNxgTbbppEtfsTSRdeP9t+3duVRdG6mDy
-         kX3bD0JczAQphZds2/lbR7j8QHJMtm0IVTFOOfkjrQPJbHwBeJDSyoZbj3YN6CG9frSK
-         BNj1XcrNJ+hl8kHTDk4I14jh6YeVshwptJ1buwKmYaM9UV6au137aI3oXZ6+F7TDNLiB
-         VcNbKc0FRtuyL6UmWJU/qYYjBH6v1q22p4OnJQ+5+yPGhHqHRigmkzwYXpJOeXmiixsT
-         CPqQ==
-X-Gm-Message-State: AJIora+tc/AhP8pNe6lvCT/sLffeX6Zr4+6KIAaHo1bQv7PVQ8iro6rN
-        WMjSSCYaAetblRiEmE/FXpiw
-X-Google-Smtp-Source: AGRyM1sZ6xYXHsOd/xbmmI/Ti9HJnupEePcXxzVWeGr7WZfxD0YPmcXQaXXzh9r+ytRnh49OAdR35g==
-X-Received: by 2002:a17:90b:4c0a:b0:1ec:e6b3:7690 with SMTP id na10-20020a17090b4c0a00b001ece6b37690mr35452668pjb.121.1656930003648;
-        Mon, 04 Jul 2022 03:20:03 -0700 (PDT)
-Received: from thinkpad ([220.158.158.244])
-        by smtp.gmail.com with ESMTPSA id u14-20020a170903124e00b0015ee60ef65bsm20742341plh.260.2022.07.04.03.19.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 03:20:01 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 15:49:55 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Tom Rix <trix@redhat.com>
-Cc:     kishon@ti.com, lpieralisi@kernel.org, kw@linux.com,
-        bhelgaas@google.com, Frank.Li@nxp.com, jdmason@kudzu.us,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] PCI: endpoint: reduce several globals to statics
-Message-ID: <20220704101955.GD6560@thinkpad>
-References: <20220630210517.1825677-1-trix@redhat.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67F0FDFE9
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:19:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 80C99152B;
+        Mon,  4 Jul 2022 03:19:52 -0700 (PDT)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E1DF3F792;
+        Mon,  4 Jul 2022 03:19:51 -0700 (PDT)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, f.fainelli@gmail.com,
+        vincent.guittot@linaro.org,
+        Cristian Marussi <cristian.marussi@arm.com>
+Subject: [PATCH v2 3/4] firmware: arm_scmi: Add devm_protocol_acquire helper
+Date:   Mon,  4 Jul 2022 11:19:32 +0100
+Message-Id: <20220704101933.2981635-4-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220704101933.2981635-1-cristian.marussi@arm.com>
+References: <20220704101933.2981635-1-cristian.marussi@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220630210517.1825677-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 05:05:17PM -0400, Tom Rix wrote:
-> sparse reports
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:956:10: warning: symbol 'pci_space' was not declared. Should it be static?
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: symbol 'pci_read' was not declared. Should it be static?
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: symbol 'pci_write' was not declared. Should it be static?
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:989:16: warning: symbol 'vpci_ops' was not declared. Should it be static?
-> 
-> These functions and variables are only used in pci-epf-vntb.c, so their storage
-> class specifiers should be static.
-> 
-> Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and EP connection")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+Add a method to get hold of a protocol, causing it to be initialized and
+its resource accounting updated, without getting access to its operations
+and handle.
 
-Commit subject should include "pci-epf-vntb" prefix. Otherwise it is not
-possible to guess which driver this patch touches (unless one reads commit
-description).
+Some protocols, like SCMI SystemPower, do not expose any protocol ops to
+the Kernel OSPM agent but still need to be at least initialized: this
+helper avoids the need to invoke a full devm_get_protocol() only to get
+the protocol initialized while throwing away unused the protocol ops and
+handle.
 
-With that fixed,
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+---
+ drivers/firmware/arm_scmi/driver.c | 70 +++++++++++++++++++++++-------
+ include/linux/scmi_protocol.h      |  5 +++
+ 2 files changed, 60 insertions(+), 15 deletions(-)
 
-Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-
-Thanks,
-Mani
-
-> ---
-> v2 : Change commit prefix
-> 
-> ---
->  drivers/pci/endpoint/functions/pci-epf-vntb.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> index ebf7e243eefa..6f0775b1fec3 100644
-> --- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> +++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
-> @@ -953,7 +953,7 @@ static struct config_group *epf_ntb_add_cfs(struct pci_epf *epf,
->  
->  #define VPCI_BUS_NUM 0x10
->  
-> -uint32_t pci_space[] = {
-> +static uint32_t pci_space[] = {
->  	(VNTB_VID | (VNTB_PID << 16)),	//DeviceID, Vendor ID
->  	0,		// status, Command
->  	0xffffffff,	// Class code, subclass, prog if, revision id
-> @@ -972,7 +972,7 @@ uint32_t pci_space[] = {
->  	0,		//Max Lat, Min Gnt, interrupt pin, interrupt line
->  };
->  
-> -int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 *val)
-> +static int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 *val)
->  {
->  	if (devfn == 0) {
->  		memcpy(val, ((uint8_t *)pci_space) + where, size);
-> @@ -981,12 +981,12 @@ int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 *
->  	return -1;
->  }
->  
-> -int pci_write(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 val)
-> +static int pci_write(struct pci_bus *bus, unsigned int devfn, int where, int size, u32 val)
->  {
->  	return 0;
->  }
->  
-> -struct pci_ops vpci_ops = {
-> +static struct pci_ops vpci_ops = {
->  	.read = pci_read,
->  	.write = pci_write,
->  };
-> -- 
-> 2.27.0
-> 
-
+diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+index 48392a8a8dcd..38600e320320 100644
+--- a/drivers/firmware/arm_scmi/driver.c
++++ b/drivers/firmware/arm_scmi/driver.c
+@@ -1667,6 +1667,30 @@ static void scmi_devm_release_protocol(struct device *dev, void *res)
+ 	scmi_protocol_release(dres->handle, dres->protocol_id);
+ }
+ 
++static struct scmi_protocol_instance __must_check *
++scmi_devres_protocol_instance_get(struct scmi_device *sdev, u8 protocol_id)
++{
++	struct scmi_protocol_instance *pi;
++	struct scmi_protocol_devres *dres;
++
++	dres = devres_alloc(scmi_devm_release_protocol,
++			    sizeof(*dres), GFP_KERNEL);
++	if (!dres)
++		return ERR_PTR(-ENOMEM);
++
++	pi = scmi_get_protocol_instance(sdev->handle, protocol_id);
++	if (IS_ERR(pi)) {
++		devres_free(dres);
++		return pi;
++	}
++
++	dres->handle = sdev->handle;
++	dres->protocol_id = protocol_id;
++	devres_add(&sdev->dev, dres);
++
++	return pi;
++}
++
+ /**
+  * scmi_devm_protocol_get  - Devres managed get protocol operations and handle
+  * @sdev: A reference to an scmi_device whose embedded struct device is to
+@@ -1690,32 +1714,47 @@ scmi_devm_protocol_get(struct scmi_device *sdev, u8 protocol_id,
+ 		       struct scmi_protocol_handle **ph)
+ {
+ 	struct scmi_protocol_instance *pi;
+-	struct scmi_protocol_devres *dres;
+-	struct scmi_handle *handle = sdev->handle;
+ 
+ 	if (!ph)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	dres = devres_alloc(scmi_devm_release_protocol,
+-			    sizeof(*dres), GFP_KERNEL);
+-	if (!dres)
+-		return ERR_PTR(-ENOMEM);
+-
+-	pi = scmi_get_protocol_instance(handle, protocol_id);
+-	if (IS_ERR(pi)) {
+-		devres_free(dres);
++	pi = scmi_devres_protocol_instance_get(sdev, protocol_id);
++	if (IS_ERR(pi))
+ 		return pi;
+-	}
+-
+-	dres->handle = handle;
+-	dres->protocol_id = protocol_id;
+-	devres_add(&sdev->dev, dres);
+ 
+ 	*ph = &pi->ph;
+ 
+ 	return pi->proto->ops;
+ }
+ 
++/**
++ * scmi_devm_protocol_acquire  - Devres managed helper to get hold of a protocol
++ * @sdev: A reference to an scmi_device whose embedded struct device is to
++ *	  be used for devres accounting.
++ * @protocol_id: The protocol being requested.
++ *
++ * Get hold of a protocol accounting for its usage, possibly triggering its
++ * initialization but without getting access to its protocol specific operations
++ * and handle.
++ *
++ * Being a devres based managed method, protocol hold will be automatically
++ * released, and possibly de-initialized on last user, once the SCMI driver
++ * owning the scmi_device is unbound from it.
++ *
++ * Return: 0 on SUCCESS
++ */
++static int __must_check scmi_devm_protocol_acquire(struct scmi_device *sdev,
++						   u8 protocol_id)
++{
++	struct scmi_protocol_instance *pi;
++
++	pi = scmi_devres_protocol_instance_get(sdev, protocol_id);
++	if (IS_ERR(pi))
++		return PTR_ERR(pi);
++
++	return 0;
++}
++
+ static int scmi_devm_protocol_match(struct device *dev, void *res, void *data)
+ {
+ 	struct scmi_protocol_devres *dres = res;
+@@ -2320,6 +2359,7 @@ static int scmi_probe(struct platform_device *pdev)
+ 	handle = &info->handle;
+ 	handle->dev = info->dev;
+ 	handle->version = &info->version;
++	handle->devm_protocol_acquire = scmi_devm_protocol_acquire;
+ 	handle->devm_protocol_get = scmi_devm_protocol_get;
+ 	handle->devm_protocol_put = scmi_devm_protocol_put;
+ 
+diff --git a/include/linux/scmi_protocol.h b/include/linux/scmi_protocol.h
+index 10b9c0e9fdf5..7f4f9df1b20f 100644
+--- a/include/linux/scmi_protocol.h
++++ b/include/linux/scmi_protocol.h
+@@ -734,6 +734,9 @@ struct scmi_notify_ops {
+  *
+  * @dev: pointer to the SCMI device
+  * @version: pointer to the structure containing SCMI version information
++ * @devm_protocol_acquire: devres managed method to get hold of a protocol,
++ *			   causing its initialization and related resource
++ *			   accounting
+  * @devm_protocol_get: devres managed method to acquire a protocol and get specific
+  *		       operations and a dedicated protocol handler
+  * @devm_protocol_put: devres managed method to release a protocol
+@@ -752,6 +755,8 @@ struct scmi_handle {
+ 	struct device *dev;
+ 	struct scmi_revision_info *version;
+ 
++	int __must_check (*devm_protocol_acquire)(struct scmi_device *sdev,
++						  u8 proto);
+ 	const void __must_check *
+ 		(*devm_protocol_get)(struct scmi_device *sdev, u8 proto,
+ 				     struct scmi_protocol_handle **ph);
 -- 
-மணிவண்ணன் சதாசிவம்
+2.32.0
+
