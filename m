@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C89BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233848AbiGDLgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S234293AbiGDLgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiGDLf6 (ORCPT
+        with ESMTP id S234177AbiGDLgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:35:58 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0C4FD08
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:35:57 -0700 (PDT)
+        Mon, 4 Jul 2022 07:36:01 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F7E11142
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:35:59 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3f41FjWz4xDB;
-        Mon,  4 Jul 2022 21:35:56 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3f54rVHz4xYn;
+        Mon,  4 Jul 2022 21:35:57 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
 To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         Paul Mackerras <paulus@samba.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-In-Reply-To: <6977314c823cfb728bc0273cea634b41807bfb64.1655202721.git.christophe.leroy@csgroup.eu>
-References: <6977314c823cfb728bc0273cea634b41807bfb64.1655202721.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH 1/3] powerpc/32: Remove the 'nobats' kernel parameter
-Message-Id: <165693440969.9954.7330946300172449990.b4-ty@ellerman.id.au>
-Date:   Mon, 04 Jul 2022 21:33:29 +1000
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc:     Mike Rapoport <rppt@kernel.org>, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1b416f8a8fe1bc3f4e01175680ce310b7eb3a1e4.1655974565.git.christophe.leroy@csgroup.eu>
+References: <1b416f8a8fe1bc3f4e01175680ce310b7eb3a1e4.1655974565.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH] powerpc/64e: Rewrite p4d_populate() as a static inline function
+Message-Id: <165693441307.9954.9463227776617482295.b4-ty@ellerman.id.au>
+Date:   Mon, 04 Jul 2022 21:33:33 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -39,20 +40,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 12:32:23 +0200, Christophe Leroy wrote:
-> Mapping without BATs doesn't bring any added value to the user.
+On Thu, 23 Jun 2022 10:56:57 +0200, Christophe Leroy wrote:
+> Rewrite p4d_populate() as a static inline function instead of
+> a macro.
 > 
-> Remove that option.
+> This change allows typechecking and would have helped detecting
+> a recently found bug in map_kernel_page().
 > 
 > 
+> [...]
 
 Applied to powerpc/next.
 
-[1/3] powerpc/32: Remove the 'nobats' kernel parameter
-      https://git.kernel.org/powerpc/c/1ce844973bb516e95d3f2bcb001a3992548def9d
-[2/3] powerpc/32: Remove 'noltlbs' kernel parameter
-      https://git.kernel.org/powerpc/c/56e54b4e6c477b2a7df43f9a320ae5f9a5bfb16c
-[3/3] powerpc/32: Remove __map_without_ltlbs
-      https://git.kernel.org/powerpc/c/513f5bbac7b9ca7046bc350dd6eb39b957e338a7
+[1/1] powerpc/64e: Rewrite p4d_populate() as a static inline function
+      https://git.kernel.org/powerpc/c/2db2008e636327a3caa648ef1e34a9d501d20e2e
 
 cheers
