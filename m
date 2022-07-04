@@ -2,154 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5023DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 08:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C829C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 08:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233219AbiGDIzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 04:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
+        id S233245AbiGDI4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 04:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233089AbiGDIzm (ORCPT
+        with ESMTP id S231790AbiGDI4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 04:55:42 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B771FBC85
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 01:55:40 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id c131-20020a1c3589000000b003a19b2bce36so1936654wma.4
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 01:55:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+WUk2xbSNyQngKIivfsXkipatMQggMur8+BOotuvHrc=;
-        b=I7qyhjG6jBNxmRdhxRv7bSrBYl/an7f47BUlAO4CoMaUp35DhiQc1WklO1A3X9KgFr
-         KgixjZCXScgpgzaAZTKNKUF1cafhKonSncRrH3Tlh86o8wAUhb0Ato6yf83K3VAmXjx+
-         yDuP7wLig/HBvvmwVl7lwSnaZZ6Wrcrwjz7DkS+076rrBPoIQCnPMdIQuwOboOlBhNH0
-         1Oj/xADDiskvpdMddxyqwDvL6LukZXR+ni+WBWM2EplzeT9W/UPrnBESCmTQzth0w36l
-         k/xRbN5Zbjmbb5Wk8PRLllsFeB2cTX65LYp8NuNXbg+yZZhPTjwipD6neU34NEAx8/xO
-         mKTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+WUk2xbSNyQngKIivfsXkipatMQggMur8+BOotuvHrc=;
-        b=YsM+GlrLo6la/dNENkybg+rYvgdRiIHz4a7wvYlIqMYerA0kSFyVLa0nak8NX/4IjU
-         IhggqnSZdfBhpGwUfUCfmnHIR6fptH0g3wcUrE7+0fDMcRCFD42xUbvZhxAwxRLiUjDx
-         h2xzOMmE3awc3rTR1zMwSAkrEOvrwPKTltMshIckgjqCbnw+ooBltot0NuXgzoa9dEPA
-         j8hRNr6iZbCEDs4I06aVk2Cu4gqSnpD2ELTTkFKCXwkVdNyVlT3Pwbokiu/NlbYe7skb
-         N37dbZgt0n6nHOFpn2OY246FIJj+I9uEGVpNJvzzk0MyNCX9n8PBcBCZlFNCflCHOXTq
-         /1jQ==
-X-Gm-Message-State: AJIora8nWxuf4wfv6NL62XQ3gtHOjmKy0pUFE4z6SPo6M906/wWcPSjA
-        b9HbTUhSwRNiEtYCFAvxOZym0geIAdaQM1Nrumg3oQ==
-X-Google-Smtp-Source: AGRyM1tAlyg1H8gH5YntBMpGkdfmwiBuamQeAqvrlLD4YmVGtiukeSDtVS5Eyf0W7mkd8HIXVdbklSWVanqziQ2dtJc=
-X-Received: by 2002:a05:600c:a192:b0:3a0:433a:9ca with SMTP id
- id18-20020a05600ca19200b003a0433a09camr31615081wmb.108.1656924939080; Mon, 04
- Jul 2022 01:55:39 -0700 (PDT)
+        Mon, 4 Jul 2022 04:56:37 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D04ABCAE;
+        Mon,  4 Jul 2022 01:56:35 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 130D966015BA;
+        Mon,  4 Jul 2022 09:56:33 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656924993;
+        bh=h88dIXJoIJXAQxMuEMOCRNyb0NRHhhEuFsKWrKzCZ3k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ddINcCtt3FLR1cEjg2qYn/7puGj6dmBsZ8y9bjU2xY9P2Y7mN6NRJDgC3SINCsBKK
+         svw7V5vK7wmw6+aiYfNm/vnz3GAYvOKwImKXVTKAbPFbqJEChqA4Kol+l3aMcn16O2
+         5aGBYhqIenzshT1ysarDFRpioFSWuSONc0jDJuSaLMfaFMTKalbgKSDsNGzgmAmtAg
+         25iv2hyM0PcfC9twPBz2AjHG5bpAYZO+06lvNA3rqK0YcGlmAQmCfjAVf1cRUkkRig
+         YxxvZl1IAbLVf1BEZlSM6NeP0N+iaZ+0FW/NcmodvQeVjEfXTjbb+C/mH1H9J7OhFN
+         VbD3TYvj1BlVg==
+Message-ID: <e846676e-11d7-1bdc-93e6-8999bb66b2a5@collabora.com>
+Date:   Mon, 4 Jul 2022 10:56:30 +0200
 MIME-Version: 1.0
-References: <20220701062838.6727-1-jiaming@nfschina.com>
-In-Reply-To: <20220701062838.6727-1-jiaming@nfschina.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 4 Jul 2022 14:25:26 +0530
-Message-ID: <CAAhSdy1_TVdvGEWQ=kTzp5_S_ACCuHxjYk3goe39V8YiwqUY_w@mail.gmail.com>
-Subject: Re: [PATCH] RISC-V: KVM: Fix variable spelling mistake
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        KVM General <kvm@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
-        <kvm-riscv@lists.infradead.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        liqiong@nfschina.com, renyu@nfschina.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 01/11] dt-bindings: arm: mediatek: Add MT8195 Cherry
+ Tomato Chromebooks
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, hsinyi@chromium.org,
+        allen-kh.cheng@mediatek.com, gtk3@inbox.ru, luca@z3ntu.xyz,
+        sam.shih@mediatek.com, sean.wang@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wenst@chromium.org
+References: <20220630153316.308767-1-angelogioacchino.delregno@collabora.com>
+ <20220630153316.308767-2-angelogioacchino.delregno@collabora.com>
+ <20220701220402.v4g6u75mzptb2fly@notapiano>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220701220402.v4g6u75mzptb2fly@notapiano>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 11:58 AM Zhang Jiaming <jiaming@nfschina.com> wrote:
->
-> There is a spelling mistake in mmu.c and vcpu_exit.c. Fix it.
->
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+Il 02/07/22 00:04, Nícolas F. R. A. Prado ha scritto:
+> On Thu, Jun 30, 2022 at 05:33:06PM +0200, AngeloGioacchino Del Regno wrote:
+>> Document board compatibles for the MT8195 Cherry platform's
+>> Tomato Chromebooks, at the time of writing composed of four
+>> revisions (r0, r1, r2, r3-r4).
+> 
+> Though r0 is not added in this series?
+> 
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   Documentation/devicetree/bindings/arm/mediatek.yaml | 13 +++++++++++++
+>>   1 file changed, 13 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+>> index dd6c6e8011f9..3e0afa17ed2e 100644
+>> --- a/Documentation/devicetree/bindings/arm/mediatek.yaml
+>> +++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+>> @@ -144,6 +144,19 @@ properties:
+>>             - const: google,spherion-rev0
+>>             - const: google,spherion
+>>             - const: mediatek,mt8192
+> 
+> Angelo, this patch is depending on the patch from the asurada-spherion series
+> [1] to apply. Since this isn't the case for patch 2 as well, I assume this was
+> a mistake. And it does seem better to keep them independent.
 
-Looks good to me.
+Yes, thanks for pointing that out - I forgot to advertise the dependency in the
+cover letter.
 
-I have queued this for 5.20
+Though, making this one independent from yours isn't really possible, as doing
+that would ruin the ordering in mediatek.yaml.
 
-Thanks,
-Anup
+I will advertise the dependency in v2.
 
-> ---
->  arch/riscv/kvm/mmu.c       | 8 ++++----
->  arch/riscv/kvm/vcpu_exit.c | 6 +++---
->  2 files changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
-> index 1c00695ebee7..2965284a490d 100644
-> --- a/arch/riscv/kvm/mmu.c
-> +++ b/arch/riscv/kvm/mmu.c
-> @@ -611,7 +611,7 @@ int kvm_riscv_gstage_map(struct kvm_vcpu *vcpu,
->  {
->         int ret;
->         kvm_pfn_t hfn;
-> -       bool writeable;
-> +       bool writable;
->         short vma_pageshift;
->         gfn_t gfn = gpa >> PAGE_SHIFT;
->         struct vm_area_struct *vma;
-> @@ -659,7 +659,7 @@ int kvm_riscv_gstage_map(struct kvm_vcpu *vcpu,
->
->         mmu_seq = kvm->mmu_notifier_seq;
->
-> -       hfn = gfn_to_pfn_prot(kvm, gfn, is_write, &writeable);
-> +       hfn = gfn_to_pfn_prot(kvm, gfn, is_write, &writable);
->         if (hfn == KVM_PFN_ERR_HWPOISON) {
->                 send_sig_mceerr(BUS_MCEERR_AR, (void __user *)hva,
->                                 vma_pageshift, current);
-> @@ -673,14 +673,14 @@ int kvm_riscv_gstage_map(struct kvm_vcpu *vcpu,
->          * for write faults.
->          */
->         if (logging && !is_write)
-> -               writeable = false;
-> +               writable = false;
->
->         spin_lock(&kvm->mmu_lock);
->
->         if (mmu_notifier_retry(kvm, mmu_seq))
->                 goto out_unlock;
->
-> -       if (writeable) {
-> +       if (writable) {
->                 kvm_set_pfn_dirty(hfn);
->                 mark_page_dirty(kvm, gfn);
->                 ret = gstage_map_page(kvm, pcache, gpa, hfn << PAGE_SHIFT,
-> diff --git a/arch/riscv/kvm/vcpu_exit.c b/arch/riscv/kvm/vcpu_exit.c
-> index dbb09afd7546..f4e569688619 100644
-> --- a/arch/riscv/kvm/vcpu_exit.c
-> +++ b/arch/riscv/kvm/vcpu_exit.c
-> @@ -417,17 +417,17 @@ static int gstage_page_fault(struct kvm_vcpu *vcpu, struct kvm_run *run,
->  {
->         struct kvm_memory_slot *memslot;
->         unsigned long hva, fault_addr;
-> -       bool writeable;
-> +       bool writable;
->         gfn_t gfn;
->         int ret;
->
->         fault_addr = (trap->htval << 2) | (trap->stval & 0x3);
->         gfn = fault_addr >> PAGE_SHIFT;
->         memslot = gfn_to_memslot(vcpu->kvm, gfn);
-> -       hva = gfn_to_hva_memslot_prot(memslot, gfn, &writeable);
-> +       hva = gfn_to_hva_memslot_prot(memslot, gfn, &writable);
->
->         if (kvm_is_error_hva(hva) ||
-> -           (trap->scause == EXC_STORE_GUEST_PAGE_FAULT && !writeable)) {
-> +           (trap->scause == EXC_STORE_GUEST_PAGE_FAULT && !writable)) {
->                 switch (trap->scause) {
->                 case EXC_LOAD_GUEST_PAGE_FAULT:
->                         return emulate_load(vcpu, run, fault_addr,
-> --
-> 2.25.1
->
+Cheers,
+Angelo
+
+> 
+> [1] https://lore.kernel.org/all/20220629155956.1138955-2-nfraprado@collabora.com/
+> 
+> Thanks,
+> Nícolas
+> 
+>> +      - description: Google Tomato (Acer Chromebook Spin 513)
+>> +        items:
+>> +          - enum:
+>> +              - google,tomato-rev2
+>> +              - google,tomato-rev1
+>> +          - const: google,tomato
+>> +          - const: mediatek,mt8195
+>> +      - description: Google Tomato (rev3 - 4)
+>> +        items:
+>> +          - const: google,tomato-rev4
+>> +          - const: google,tomato-rev3
+>> +          - const: google,tomato
+>> +          - const: mediatek,mt8195
+>>         - items:
+>>             - enum:
+>>                 - mediatek,mt8186-evb
+>> -- 
+>> 2.35.1
+>>
+
+
+
