@@ -2,148 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3536C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62866C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233130AbiGDJyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47986 "EHLO
+        id S233948AbiGDJ4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbiGDJyq (ORCPT
+        with ESMTP id S230136AbiGDJ4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:54:46 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05078DEB2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:54:44 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so5321639wmb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 02:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5OEPF06YG+R+5ZW0yjo5uKv8/e38xtFyRSfd8rSL5/U=;
-        b=iWnJOtER2NaaLsbBoB0+Px3zo6/Ay8a1Tx7Tpv0T77HJg7B6MTzuireRG0B9U+fuAJ
-         9UbuJNDuIh6p/REByNa+ODA5uMyc6Z63A+AwMzxBUb7wQDsfgW4ovI9iOEmEtOgoib2D
-         is4YPKL7me/MkEd38NaByuGbU2cubsRzIWe5So5A4CYnP6FjgSYE2tBg31ZzhvYU5BR1
-         Ylf1IWBeh40N7No/NiV2hAAYbAu1xe9+unEdAvOAof48LUiH6w/j8YMMxhwUshyabtfI
-         WLzI930mHrjXWi3NaMDxptGBkhSJCZmUUrjxhkbrrFA7thG42Q9wnTTV13m/pXU+O217
-         ANAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5OEPF06YG+R+5ZW0yjo5uKv8/e38xtFyRSfd8rSL5/U=;
-        b=nv5rkkjtyOEl8OIENwFXIi1dF1IDp6CopUS/W60AXTB1mJUkEX/pFGt27LKA2gSDUS
-         lacJO/g4GYq3TU9mFiOHt4WL/OwgKxAjhGJG+o3AejtYeqgaYo3zcpyxhdubUxTwJ7J2
-         4oC1GzSQfoizFoQaFkrPVU70tEPTKNBCJ5/dFcJ8HULFW/CPzngHdaJcOKujyHVmxeQM
-         ikewNFlsTcajtqYeJ45s9uIAMizhITSii3EKGLZmyag2ytU3jmKJ+dK852D5lbLrTr10
-         lAzWFlCgIkLueJLS4xYwvcX6u0lfhbuY6YDNvq9JkCqjHjyk2q11eEw3PzCil25vVVZm
-         ObSQ==
-X-Gm-Message-State: AJIora+Le+qUBlC/zLZiTtPzC8RZvTTMNv0MrOeDkMs7itDRnmVIg9CI
-        1/exOCUMfSh5thDYvpE+oOKbLQ==
-X-Google-Smtp-Source: AGRyM1svy/vCXA649RppIhdoxQ//h/2ofd0wM3BTvLiHTMabydo4tf4xJZ3LiMzhyn9E3gWku6ATSg==
-X-Received: by 2002:a05:600c:2298:b0:3a0:31a9:710b with SMTP id 24-20020a05600c229800b003a031a9710bmr30056672wmf.115.1656928483406;
-        Mon, 04 Jul 2022 02:54:43 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id n5-20020a1ca405000000b0039c587342d8sm15023400wme.3.2022.07.04.02.54.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 02:54:42 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 10:54:40 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>, dmitry.torokhov@gmail.com,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        cy_huang <cy_huang@richtek.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] mfd: rt5120: Add Richtek PMIC support
-Message-ID: <YsK44Dp3yZwqPi0H@google.com>
-References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
- <1655892104-10874-3-git-send-email-u0084500@gmail.com>
- <Yrm9ObaltUiQUTqS@google.com>
- <CADiBU3802sLTPjrGiaQ-xw-2jep1UXo+t7pYc6bCC4MiJLhOyA@mail.gmail.com>
- <CADiBU3838Mgi3sqv+R_=8g-ROTrbN45AKPaTS_9GCWVDYASMyg@mail.gmail.com>
- <Yr6kVg2OlHkm6+bB@google.com>
- <CADiBU396poOuzdGABzTazouM5MX=auZ9OdyT_sqWrKnZk3tFRw@mail.gmail.com>
- <CADiBU3_7MmPkfV7-B8rhxFRtZcrJ6BPocXzT4bs3cu36UR5XGw@mail.gmail.com>
+        Mon, 4 Jul 2022 05:56:08 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B0BDEC9;
+        Mon,  4 Jul 2022 02:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656928567; x=1688464567;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wqdKh+YT2kwmBentxY6WWvFarS1Y974WhBuHLSKpX8k=;
+  b=eOZsXb49Yf9yLqlbb9EKagxY4AOKv9qAdS7CmpFbjCRINgPslAzPeCjP
+   QtCWQnC/Jn0b6G2EnwfxgGKuKCv2/MPpTCN+HW2eZ9vJvny0uCFGl3ddH
+   LmJsDCkLxh6hQj8h0quOaaiYXPleFkGaMHBeaQTvGAa9rE3q1UZdJhsP7
+   H5FrO69hIsSDxj9B8fakPnzjjfjgmnbUVY5Y+bkeOYQ8giy0YR6QruosG
+   1wMXnFCv8OkyBk+/bVKCN78Zr57MKC4GTQlChBL4r40xOq4j44dTp5qzf
+   6CXbogZIyFHhFrXuL7x07OjH8rZaKXRFQz2bogNg8Si7j0FrRUJhx5Pol
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="347067904"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="347067904"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:56:06 -0700
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="649513813"
+Received: from bclindho-mobl.ger.corp.intel.com ([10.252.49.27])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:56:02 -0700
+Date:   Mon, 4 Jul 2022 12:55:59 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH v2 1/9] serial: core: only get RS485 termination GPIO if
+ supported
+In-Reply-To: <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
+Message-ID: <9bc128a9-7ce3-d1e-dad6-ca91a5564ea8@linux.intel.com>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CADiBU3_7MmPkfV7-B8rhxFRtZcrJ6BPocXzT4bs3cu36UR5XGw@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 04 Jul 2022, ChiYuan Huang wrote:
+On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
 
-> Hi, Lee:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 > 
-> ChiYuan Huang <u0084500@gmail.com> 於 2022年7月1日 週五 下午5:56寫道：
-> >
-> > Lee Jones <lee.jones@linaro.org> 於 2022年7月1日 週五 下午3:38寫道：
-> > >
-> > > On Fri, 01 Jul 2022, ChiYuan Huang wrote:
-> > >
-> > > > HI, Lee:
-> > > >
-> > > > ChiYuan Huang <u0084500@gmail.com> 於 2022年6月27日 週一 晚上10:56寫道：
-> > > > >
-> > > > > Lee Jones <lee.jones@linaro.org> 於 2022年6月27日 週一 晚上10:22寫道：
-> > > > > >
-> > > > > > On Wed, 22 Jun 2022, cy_huang wrote:
-> > > > > >
-> > > > > > > From: ChiYuan Huang <cy_huang@richtek.com>
-> > > > > > >
-> > > > > > > Add Richtek RT5120 PMIC I2C driver.
-> > > > > >
-> > > > > > Why a whole new driver?
-> > > > > >
-> > > > > > How different is this to rt5033?
-> > > > > >
-> > > > > > Looks like this could easily be woven into this existing support?
-> > > > > >
-> > > > > It's different with the function domain.
-> > > > > RT5033 is most like as the SubPMIC that includes PMU (battery
-> > > > > charger/gauge/led/few buck and ldo)
-> > > > > RT5120 is a main PMIC with default-on power that follows the boot on sequence.
-> > > > > RT5120 only integrates regulator and power key report module.
-> > > > >
-> > > > Since I have explained the chip difference, do you still think it's
-> > > > better to merge this code into rt5033 mfd?
-> > >
-> > > I think it's okay to group devices which are similar but not exactly
-> > > the same, if they can be.  The integration of this device into the
-> > > other looks trivial to my naive eyes.
-> > >
-> > > A PMIC is a PMIC, main or sub.
-> > >
-> > M.. ok. I will try to group all chip changes like as devices
-> > list/regmap_irq/regmap_config ..., etc.
-> > Treat it as one set of chip config and use 'of_device_get_match_data'
-> > to get the chip config data.
-> >
-> There's a question.
-> As I know, it's not the same chip series.
-> The rt5033 is submitted from Samsung at 2015.
-> The driver data is also defined in header file.
+> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
+> termination is supported by the driver. This prevents from allocating
+> and holding a GPIO descriptor for the drivers lifetimg that will never be
+> used.
 > 
-> Do you still suggest to do the merge?
-> Even in our internal, it's difficult to find a rt5033 EVB for testing.
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> ---
 > 
-> And one more question is the binding. If yes, for the binding, I need to add
-> rt5033 related.....
+> NOTE: 
+> This patch follows the design decision that "rs485_supported" is
+> set by the driver at initialization and cannot be modified
+> afterwards. However the better approach would be to let the serial
+> core modify the termination GPIO support setting based on the
+> existence of a termination GPIO. If "rs485_supported" is not a 
+> read-only value any more in future the logic implemented in this
+> patch should be adjusted accordingly.
 > 
-> Actually, it's a tough work.
+>  drivers/tty/serial/serial_core.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 85ef7ef00b82..3768663dfa4d 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -3404,6 +3404,16 @@ int uart_get_rs485_mode(struct uart_port *port)
+>  	 */
+>  	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
+>  							GPIOD_OUT_LOW);
+> +
+> +	if (port->rs485_term_gpio &&
+> +	    !(port->rs485_supported->flags & SER_RS485_TERMINATE_BUS)) {
+> +		dev_warn(port->dev,
+> +			"%s (%d): RS485 termination gpio not supported by driver\n",
+> +			port->name, port->line);
+> +		devm_gpiod_put(dev, port->rs485_term_gpio);
+> +		port->rs485_term_gpio = NULL;
+> +	}
+> +
+>  	if (IS_ERR(port->rs485_term_gpio)) {
+>  		ret = PTR_ERR(port->rs485_term_gpio);
+>  		port->rs485_term_gpio = NULL;
 
-If it's genuinely difficult to integrate, you can keep them separate.
+I sent a series to embed supported_rs485 to uart_port and manage 
+SER_RS485_TERMINATE_BUS properly so I think this won't be necessary 
+with that?
+
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+ i.
+
