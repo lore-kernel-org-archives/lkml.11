@@ -2,67 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D46C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F68FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234146AbiGDKZ3 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
+        id S233782AbiGDK1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234493AbiGDKZF (ORCPT
+        with ESMTP id S233627AbiGDK0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:25:05 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06E4EE32
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:23:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 4 Jul 2022 06:26:44 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB3AFD35;
+        Mon,  4 Jul 2022 03:25:53 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc22W5T6qz4xYN;
-        Mon,  4 Jul 2022 20:23:31 +1000 (AEST)
-Date:   Mon, 04 Jul 2022 20:23:29 +1000
-From:   Michael Ellerman <michael@ellerman.id.au>
-To:     =?ISO-8859-1?Q?Pali_Roh=E1r?= <pali@kernel.org>
-CC:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20220702094405.tp7eo4df7fjvn2ng@pali>
-References: <20220524093939.30927-1-pali@kernel.org> <20220702094405.tp7eo4df7fjvn2ng@pali>
-Message-ID: <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au>
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3A57B6601638;
+        Mon,  4 Jul 2022 11:25:51 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656930351;
+        bh=Wx8uEDF1bProsm5cSCfro4wBLSi7HbQPJbpg+8HNAJk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=d7/YGXQUpzeLCBjzJEd++c3yKJJusG7XpqrSsyP1cydEw53cmzb/alYIBHozWE92z
+         n0xh+tfKBjvPaJGRGp4SdksyaKV+/nusg//K71k4wsmExcHaTKA64lP91jf57qkJjU
+         beXodcg28++Vk6lGybLoeGHIKfSsVYf/7jRZOQPg6JCpUhZE/Rn/xpFFisEvp5rCql
+         ZtUN6wxxt5gacUsmYzREI4n+Oz3Y8WrIBWeAFHuU4S3G9qQLPf24EkHq/iPxbP3jBl
+         j0ZHUdpvbMYQIHTOzOisvblwj/qFN6SSHs/tcpg9FG4N0UBsbLZ1/KznRsIODrYrN5
+         ThyL3ne2mewzg==
+Message-ID: <6aafec78-2699-0cc9-bd2a-5ccd39262e38@collabora.com>
+Date:   Mon, 4 Jul 2022 12:25:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1 02/16] dt-bindings: memory: mediatek: Update condition
+ for mt8195 smi node
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+ <20220704100028.19932-3-tinghan.shen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220704100028.19932-3-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Il 04/07/22 12:00, Tinghan Shen ha scritto:
+> The max clock items for the dts node with compatible
+> 'mediatek,mt8195-smi-sub-common' should be 3.
+> 
+> However, the dtbs_check of such node will get following message,
+> arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names: ['apb', 'smi', 'gals0'] is too long
+>           From schema: Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> 
+> Remove the last 'else' checking to fix this error.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>   .../memory-controllers/mediatek,smi-common.yaml        | 10 +++++++++-
+>   1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> index a98b359bf909..e5f553e2e12a 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> @@ -143,7 +143,15 @@ allOf:
+>               - const: gals0
+>               - const: gals1
+>   
+> -    else:  # for gen2 HW that don't have gals
+> +  - if:  # for gen2 HW that don't have gals
+> +      properties:
+> +        compatible:
+> +          enum:
+> +            - mediatek,mt2712-smi-common
 
+MT6795 also doesn't have any GALS, please add it in here.
 
-On 2 July 2022 7:44:05 pm AEST, "Pali Rohár" <pali@kernel.org> wrote:
->On Tuesday 24 May 2022 11:39:39 Pali Rohár wrote:
->> gcc e500 compiler does not support -mcpu=powerpc option. When it is
->> specified then gcc throws compile error:
->> 
->>   gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
->>   gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
->> 
->> So do not set -mcpu=powerpc option when CONFIG_E500 is set. Correct option
->> -mcpu=8540 for CONFIG_E500 is set few lines below in that Makefile.
->> 
->> Signed-off-by: Pali Rohár <pali@kernel.org>
->> Cc: stable@vger.kernel.org
->
->Michael, do you have any objections about this patch?
+Regards,
+Angelo
 
-I don't particularly like it :)
+> +            - mediatek,mt8167-smi-common
+> +            - mediatek,mt8173-smi-common
+> +
+> +    then:
+>         properties:
+>           clocks:
+>             minItems: 2
 
-From the discussion with Segher, it sounds like this is a problem with a specific build of gcc that you're using, not a general problem with gcc built with e500 support.
-
-Keying it off CONFIG_E500 means it will fix your problem, but not anyone else who has a different non-e500 compiler that also doesn't support -mcpu=powerpc (for whatever reason).
-
-So I wonder if a better fix is to use cc-option when setting -mcpu=powerpc.
-
-cheers
