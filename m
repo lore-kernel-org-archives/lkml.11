@@ -2,115 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC2E7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E96C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234539AbiGDN4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
+        id S234223AbiGDN5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234530AbiGDN4Q (ORCPT
+        with ESMTP id S234528AbiGDN46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:56:16 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0986BCE32
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:56:15 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id a4so16022122lfm.0
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:56:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Y8tf/kMFYwfWY6Q9DD4JUxR8ogCCSX7lOhzrzkly/+E=;
-        b=eraqwl5pKrfGcSwpyEi/PH7EnjWcsUGqNVP3O0kENPxHo/1vcWL1yR3Sxp6+Cu0KMC
-         +uxtZJMDv4f96ABwguszkQcf/nrrYRd/Yd4bdQrh/EcE8C6dqloVoNUWUfSDsJsoVeJb
-         fZE/ip1mj67Jn/El6hZg8aLa+QZfwWlDnVJFp6ZJh7lWng3HaN7pk4+G/JEl/tzRm30b
-         ToAgaSHsup6I+VLHElFl0k2l3IahkSUaosIDB9XLcrsJb5FhIbaGwJ+LdIEpvGaQkTv0
-         0NkymntNXi21OQZcFkymlOcDjVR2btGigsokpu1yZTF06g4klXaiISWcKN3OdhaRscZx
-         J40w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Y8tf/kMFYwfWY6Q9DD4JUxR8ogCCSX7lOhzrzkly/+E=;
-        b=xBZBmq4+u5b6v+XXIcXhLb8/xVKqzPOcgTLPSoY6rYYQ3ulEp22cTSg9Rrlsk5rmLj
-         4ukuxaKmV+gZaEQujcFH8luSbnM8D3HEGvff+eZFIxoIad0996rSVb+uh6fzSE23Y5Jm
-         hrAcY3WSgAqgysVCnh8JSYQivQMYpTMDlIY2HhZjNo8hRkpZin+Ae5DVAXp0T7opEUb+
-         jdQpSJeq8SeN6Zlmz+wi9flqxJAhO8bOaXbJGUPKzH2s5sB90zv7qjETx0bD9IjwJ4h1
-         EdGxzJfrGQzRBvIUT7A4vfbkf7P9kXJ2Tq4n2ISLqe8y8P2drEfV9WB8escfnOcJxdsk
-         jNDw==
-X-Gm-Message-State: AJIora+LE6wH0o1UV44C0jtoPKgJkrdPjU9plndabssx74by2iQqRlfC
-        xi1ds7YLGRGlfnrDac45pHEQaw==
-X-Google-Smtp-Source: AGRyM1uiwmRvU31oLYiU1ECksd5NSlXwVDiXq8hQlLzcKKda91nB+pfaCbxy81niZoP6dlKPrekXPw==
-X-Received: by 2002:a05:6512:b1c:b0:481:618f:ec9 with SMTP id w28-20020a0565120b1c00b00481618f0ec9mr11690964lfu.217.1656942973396;
-        Mon, 04 Jul 2022 06:56:13 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id q17-20020ac246f1000000b00478ee191091sm5139288lfo.153.2022.07.04.06.56.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 06:56:12 -0700 (PDT)
-Message-ID: <181a5cc7-c274-06c0-908b-874d48e24913@linaro.org>
-Date:   Mon, 4 Jul 2022 15:56:11 +0200
+        Mon, 4 Jul 2022 09:56:58 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A820BCE30
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:56:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=PHZLOKqVexXpNMBlmQrkg97tWjTZZ5TZCu+Fx+IMbto=; b=tD/DC5wyjqIM8VotuVGbJy0+YY
+        H3WbZmLA13uLtM9uun3S0tHNrAhp6ytv6Z2H3d/H3MEzLS5OG9aH2Xo1d9etZaXdOPHlNNf2bU/9c
+        BQhQTZk+3zZz9f5kIHFEar3hCs15kiKVlHypW0T+7FRKFaHg4P5whDMKoZXR+c6zjj1csCt1mj5hs
+        3z72arWezxQ/s/Ln2BUDyDPogHx/j6bdtO4bppXPcHrRstc9jQYkKgQlfGiHpROxyEvrDv5RS6qn+
+        xCXgkPKbE6E3+uW/G0Wimg1GCinYisHgnEctjRSRgLakiNy6bJ8Wg9j7EqwmZ6TlsxvO+cciKeqTU
+        fwcxLq7tXDQ/Cq8Bm3RRF/2X6x7w8DIwQqwWS+i+SL8B7/dgwvukXITCPAQnqUzg7P0+LJajLBOFx
+        ggpBiTxkDJjBVGTKfTv4WAUfyqzXr7L7ceNkSrJ5x79GSoYlehQ48PU/ctjAzwfeojm+MFqXdP8zs
+        z9lY06Q2KcwAZYWRuOPPq7v1Xzlt3K7GH9i7ETg/PkwZAUcPNZe+Pdrpq+9OuD/mfhlErrPx+2VD3
+        +7YGC/d9/Rhk7IwHY/8nvvLSKAYdV3Y1DIJTp2f4J/eMX488Mhg9KmASplxeOyO3C+SA8iz0B3Qez
+        FSv31ulf93OfzBypolUJBvo/Kq4xQwGwVsOEBztZc=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>
+Subject: Re: [PATCH 3/3] 9p: Add mempools for RPCs
+Date:   Mon, 04 Jul 2022 15:56:55 +0200
+Message-ID: <72042449.h6Bkk5LDil@silver>
+In-Reply-To: <YsLluKb1v5SqN2xD@codewreck.org>
+References: <20220704010945.C230AC341C7@smtp.kernel.org> <2335194.JbyEHpbE5P@silver>
+ <YsLluKb1v5SqN2xD@codewreck.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] arm64: dts: ipq8074: add reset to SDHCI
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220704114430.625365-1-robimarko@gmail.com>
- <7cb6fd46-ac80-fbc5-67f7-920934bb801c@linaro.org>
- <CAOX2RU5UeeAh0hzYjANd5w+Y4NfxWN0uVtbjQLGOcTzT7ZRkQA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAOX2RU5UeeAh0hzYjANd5w+Y4NfxWN0uVtbjQLGOcTzT7ZRkQA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/07/2022 14:34, Robert Marko wrote:
-> On Mon, 4 Jul 2022 at 14:29, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 04/07/2022 13:44, Robert Marko wrote:
->>> Add reset to SDHCI controller so it can be reset to avoid timeout issues
->>> after software reset due to bootloader set configuration.
->>>
->>> Signed-off-by: Robert Marko <robimarko@gmail.com>
->>> ---
->>>  arch/arm64/boot/dts/qcom/ipq8074.dtsi | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
->>> index ddafc7de6c5f..d685ca1969a3 100644
->>> --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
->>> +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
->>> @@ -482,6 +482,7 @@ sdhc_1: mmc@7824900 {
->>>                                <&gcc GCC_SDCC1_APPS_CLK>,
->>>                                <&xo>;
->>>                       clock-names = "iface", "core", "xo";
->>> +                     resets = <&gcc GCC_SDCC1_BCR>;
->>
->> I looked at the bindings and they do not allow reset property, so does
->> it depend on anything?
+On Montag, 4. Juli 2022 15:06:00 CEST Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Mon, Jul 04, 2022 at 01:12:51PM +0200:
+> > On Montag, 4. Juli 2022 05:38:46 CEST Dominique Martinet wrote:
+[...]
+> > However that's exactly what I was going to address with my already posted
+> > patches (relevant patches regarding this issue here being 9..12):
+> > https://lore.kernel.org/all/cover.1640870037.git.linux_oss@crudebyte.com/
+> > And in the cover letter (section "STILL TODO" ... "3.") I was suggesting
+> > to
+> > subsequently subdivide kmem_cache_alloc() into e.g. 4 allocation size
+> > categories? Because that's what my already posted patches do anyway.
 > 
-> Hi Krzysztof,
-> It seems like the driver changes [1] were merged at the same time as
-> when bindings
-> were being converted and nobody ever follow up with documenting the property.
+> Yes, I hinted at that by asking if it'd be worth a second mempool for 8k
+> buffers, but I'm not sure it is -- I think kmalloc will just be as fast
+> for these in practice? That would need checking.
 > 
-> I can document the property and send a v2 if that's OK?
+> But I also took a fresh look just now and didn't remember we had so many
+> different cases there, and that msize is no longer really used -- now
+> this is just a gut feeling, but I think we'd benefit from rounding up to
+> some pooled sizes e.g. I assume it'll be faster to allocate 1MB from the
+> cache three times than try to get 500k/600k/1MB from kmalloc.
+> 
+> That's a lot of assuming though and this is going to need checking...
 
-Yes, please. Otherwise DTS change will fail checks so basically should
-not be accepted.
+Yeah, that's the reason why omitted this aspect so far, because I also thought 
+it deserves actual benchmarking how much cache granularity really makes sense, 
+instead of blindly subdividing them into random separate cache size 
+categories.
+
+> > Hoo, Dominique, please hold your horses. I currently can't keep up with
+> > reviewing and testing all pending 9p patches right now.
+> > 
+> > Personally I would hold these patches back for now. They would make sense
+> > on current situation on master, because ATM basically all 9p requests
+> > simply allocate exactly 'msize' for any 9p request.
+> 
+> So I think they're orthogonal really:
+> what mempool does is that it'll reserve the minimum amount of memory
+> required for x allocations (whatever min is set during init, so here 4
+> parallel RPCs) -- if normal allocation goes through it'll go through
+> normal slab allocation first, and if that fails we'll get a buffer from
+> the pool instead, and if there is none left it'll wait for a previous
+> request to be freed up possibly throttling the number of parallel
+> requests down but never failing like we currently do.
+
+Understood.
+
+> With this the worst that can happen is some RPCs will be delayed, and
+> the patch already falls back to allocating a msize buffer from pool even
+> if less is requrested if that kmalloc failed, so I think it should work
+> out ok as a first iteration.
+> 
+> (I appreciate the need for testing, but this feels much less risky than
+> the iovec series we've had recently... Famous last words?)
+
+Got it, consider my famous last words dropped. ;-)
+
+> For later iterations we might want to optimize with multiple sizes of
+> pools and pick the closest majoring size or something, but I think
+> that'll be tricky to get right so I'd rather not rush such an
+> optimization.
+> 
+> > How about I address the already discussed issues and post a v5 of those
+> > patches this week and then we can continue from there?
+> 
+> I would have been happy to rebase your patches 9..12 on top of Kent's
+> this weekend but if you want to refresh them this week we can continue
+> from there, sure.
+
+I'll rebase them on master and address what we discussed so far. Then we'll 
+see.
 
 Best regards,
-Krzysztof
+Christian Schoenebeck
+
+
