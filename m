@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B35C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B72A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234299AbiGDPnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        id S234444AbiGDPnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233983AbiGDPm6 (ORCPT
+        with ESMTP id S234011AbiGDPnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:42:58 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9BB1180D
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:42:56 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so5881492wmb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 08:42:56 -0700 (PDT)
+        Mon, 4 Jul 2022 11:43:00 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8593F1147C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 08:42:58 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so5962941wms.5
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 08:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=U/nQc9F2ybSBykdgEFS8tw/oKByW2ekwPZG/Qs1Xn9Q=;
-        b=eyUViZvvFjDQRPYHdqM1Ivukdx4hzI8IMQ8xguzmyDe3uvMew3y7Lc+Fbe2ZCb6jrR
-         5J+GemZlulcHl66lcY/lmNJgpksERwu/gOUeBTUjiUR8t7tSLKM79rYjmQFPpGpnOxvR
-         GwEOYUH7xmkHIBqBWnDhsdzXxcK6xbC/C0XQanrP8rVQ88ddQrHaz1S29O2VSlDgita4
-         NNjGhHmPqzdh1eXWaf1qCdzqgs3JC2ThmsrKyIFDS1eP0hniPeHhJ0f/XRSK4XjORCI6
-         +k7q7iWRZvrlwuhGdXVGZIf/gED9JggvJy2gnmsv0aF52Yb2/T6So4vZVY30W8JE6HpC
-         Kz4w==
+        bh=20URghUEhnd48vVWNIo4NcdPqwWP3OApoVFQSqBizbk=;
+        b=aI3lRra6RdQgQW5qVEVV5qlEQowVjQERD7fgGhTtzuE/AmB3oMX+os4xQAq386fKru
+         XFlR4A+6LCUB/3OaOFjnlTkqeI0S4M9m/ktLBvCfB7Y8rbT7ZHIBb8UgUeGm1gWgH6vj
+         N6W4bgFtoleVPetp9BFJmBq2/7CO1DfIO2SHjVIAfo8SVErRET/CKirJSEyDXTP47Nu/
+         MbW0yRNIOCIIncUQBpnKT3AKQHm9DN78X9rQAppvrpmScv1tSjAk2wpoZ/ztbaT5KYFb
+         OwU62eZcvq/RA1AlMNghv8jnZhTVuvx1Q1DpllIW4il0Ps37GQFka58CiZPn7CI6BCoo
+         U6Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=U/nQc9F2ybSBykdgEFS8tw/oKByW2ekwPZG/Qs1Xn9Q=;
-        b=qNaHWbXC0XoYde5FLqkopixvUVkQhn9UepU4xGBd1FIK/yxF7eoghkbiUttZnLJb7Q
-         j6LIBYnME2a1SzpSr7bg1I8OXKNxCDLy5XItCgGvw954kRUSzRtWqDM2t+kXyfi1cgjP
-         JD/8a9+dq7y5xpDVLSf60KCr8b5HAUmUIVm4a5IjPEjkRV/kdx6bF5fTSwYovIHa1MVz
-         uscVy2OV3T9nOf8SaoHeG1X82zTzGS8HQKYieZkaaz+ZWECwYCYptFSoi++3TVnrWkGW
-         4hrC3+BOUkQMGUV3HVpPK/STYv4MUkhlufrVyPOcIu3m8Ax03UJebUSsRxsS6DP4/0bq
-         b++g==
-X-Gm-Message-State: AJIora+6ljrVSd78cycafS+7lQSs5aGg2cD+5RLxTSUkDk8P0nHbyWy/
-        q641GPO9DjyIjpbtP8RhjgOeeg==
-X-Google-Smtp-Source: AGRyM1veMtv33VTPTrMB35ut1H+L7YBCkdZMGSx8GKqSuhDrh9LaSGZwrfEVJffFnCxLFU4pKE3WoQ==
-X-Received: by 2002:a05:600c:19c8:b0:3a1:792e:f913 with SMTP id u8-20020a05600c19c800b003a1792ef913mr28190562wmq.182.1656949375112;
-        Mon, 04 Jul 2022 08:42:55 -0700 (PDT)
+        bh=20URghUEhnd48vVWNIo4NcdPqwWP3OApoVFQSqBizbk=;
+        b=vY2cAbE0QpqRG/GOnQNzgVGib8MsRV5bpR4z0tlHDT5ryNL2ZS58szXrwX/VHc0809
+         Ik0AVGm27nHKqlPrlXHahUjMKQsSj4gnM2Gc7liBqc/bcbiGxFwjFblU+zqpI96Gc1PQ
+         6O7Omqjn+2J7CMAPmH8liK7hj09fRebqbSFJ5uJVgiON3t0jkx1wqqIIYZYf+IJWFt1Q
+         iPfsknbQamW7Rbb56h1NFi90Psx2BqG6qX99LriYPfn9BdRbLc4n4Wpetw9CiTzWZHUo
+         RUbAKTnfpwHBMv5Iy2t6WqhE/a10Ml7GPYqJW86+URBLTMbHVJ5NvL6RuY6L1MU4Sqgt
+         10tA==
+X-Gm-Message-State: AJIora8xO0sV17a3ZdGvjXoXVPo8Vr3GqH4oPkAhypAEj27syqRYZGa0
+        Ve6eT+OD6k5HV/BzkVgTZIIxHw==
+X-Google-Smtp-Source: AGRyM1vUjayhhF9itLimifgtEv6TFBAqsWs030GZ+veu/QlNS9RMYOI8pn0VnSnKvh+Jcj/nrXmwhw==
+X-Received: by 2002:a05:600c:3592:b0:3a0:4c17:5ec1 with SMTP id p18-20020a05600c359200b003a04c175ec1mr33230222wmq.4.1656949376903;
+        Mon, 04 Jul 2022 08:42:56 -0700 (PDT)
 Received: from linaro.org ([2a00:23c5:6809:2201:a9e8:9fdd:fa2d:1c72])
-        by smtp.gmail.com with ESMTPSA id j6-20020adfff86000000b0021d6b851ca1sm2763749wrr.111.2022.07.04.08.42.54
+        by smtp.gmail.com with ESMTPSA id j6-20020adfff86000000b0021d6b851ca1sm2763749wrr.111.2022.07.04.08.42.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 08:42:54 -0700 (PDT)
+        Mon, 04 Jul 2022 08:42:56 -0700 (PDT)
 From:   Mike Leach <mike.leach@linaro.org>
 To:     linux-arm-kernel@lists.infradead.org, coresight@lists.linaro.org,
         linux-kernel@vger.kernel.org
 Cc:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
         leo.yan@linaro.org, acme@kernel.org, james.clark@arm.com,
-        Mike Leach <mike.leach@linaro.org>
-Subject: [PATCH v4 4/7] coresight: configfs: Modify config files to allow userspace use
-Date:   Mon,  4 Jul 2022 16:42:46 +0100
-Message-Id: <20220704154249.11501-5-mike.leach@linaro.org>
+        Mike Leach <mike.leach@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: [PATCH v4 6/7] Documentation: coresight: docs for config load via configfs
+Date:   Mon,  4 Jul 2022 16:42:48 +0100
+Message-Id: <20220704154249.11501-7-mike.leach@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220704154249.11501-1-mike.leach@linaro.org>
 References: <20220704154249.11501-1-mike.leach@linaro.org>
@@ -63,290 +64,245 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update coresight-config.h and the coresight-config-file.c & .h
-to allow use in userspace programs.
+Add documentation covering the configfs updates that allow
+binary configuration files to be loaded and unloaded via configfs,
+along with the demonstration programs in samples.
 
-Use __KERNEL__ defines to filter out driver only structures and
-elements so that user space programs can use the descriptor structures.
-
-Abstract memory allocation in coresight-config-file.c to allow read
-file functions to be run in userspace and kernel drivers.
-
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: linux-doc@vger.kernel.org
 Signed-off-by: Mike Leach <mike.leach@linaro.org>
 ---
- .../coresight/coresight-config-file.c         | 117 +++++++++++++-----
- .../hwtracing/coresight/coresight-config.h    |  12 ++
- 2 files changed, 101 insertions(+), 28 deletions(-)
+ .../trace/coresight/coresight-config.rst      | 202 +++++++++++++++++-
+ 1 file changed, 195 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-config-file.c b/drivers/hwtracing/coresight/coresight-config-file.c
-index be11261e3a14..cf9f178eef97 100644
---- a/drivers/hwtracing/coresight/coresight-config-file.c
-+++ b/drivers/hwtracing/coresight/coresight-config-file.c
-@@ -7,6 +7,63 @@
- #include "coresight-config.h"
- #include "coresight-config-file.h"
+diff --git a/Documentation/trace/coresight/coresight-config.rst b/Documentation/trace/coresight/coresight-config.rst
+index 6d5ffa6f7347..109053eb1b93 100644
+--- a/Documentation/trace/coresight/coresight-config.rst
++++ b/Documentation/trace/coresight/coresight-config.rst
+@@ -141,11 +141,11 @@ Mount configfs as normal and the 'cs-syscfg' subsystem will appear::
+     $ ls /config
+     cs-syscfg  stp-policy
  
-+/*
-+ * To allow reuse of this source in tools, define memory allocation fns according
-+ * to build environment.
-+ */
+-This has two sub-directories::
++This has two sub-directories, with the load and unload attribute files::
+ 
+     $ cd cs-syscfg/
+     $ ls
+-    configurations  features
++    configurations features load  unload
+ 
+ The system has the configuration 'autofdo' built in. It may be examined as
+ follows::
+@@ -278,9 +278,16 @@ Creating and Loading Custom Configurations
+ ==========================================
+ 
+ Custom configurations and / or features can be dynamically loaded into the
+-system by using a loadable module.
++system by using a loadable module, or by loading a binary configuration
++file in configfs.
+ 
+-An example of a custom configuration is found in ./samples/coresight.
++Loaded configurations can use previously loaded features. The system will
++ensure that it is not possible to unload a feature that is currently in
++use, by enforcing the unload order as the strict reverse of the load order.
 +
-+#ifdef __KERNEL__
 +
-+static void *cscfg_calloc(size_t num, size_t size)
-+{
-+	return kcalloc(num, size, GFP_KERNEL);
-+}
++Using a Loadable Module
++-----------------------
+ 
+ This creates a new configuration that uses the existing built in
+ strobing feature, but provides a different set of presets.
+@@ -289,6 +296,187 @@ When the module is loaded, then the configuration appears in the configfs
+ file system and is selectable in the same way as the built in configuration
+ described above.
+ 
+-Configurations can use previously loaded features. The system will ensure
+-that it is not possible to unload a feature that is currently in use, by
+-enforcing the unload order as the strict reverse of the load order.
++The file 'coresight-cfg-sample.c' contains the configuration and module
++initialisation code needed to create the loadable module.
 +
-+static char *cscfg_strdup(const char *str)
-+{
-+	return kstrdup(str, GFP_KERNEL);
-+}
++This will be built alongside the kernel modules if select in KConfig.
 +
-+static void *cscfg_zalloc(size_t size)
-+{
-+	return kzalloc(size, GFP_KERNEL);
-+}
++An example of a custom configuration module is found in './samples/coresight'.
 +
-+static void cscfg_free(void *mem)
-+{
-+	kfree(mem);
-+}
-+#else
++Using a Binary Configuration File
++---------------------------------
 +
-+#include <stddef.h>
-+#include <string.h>
-+#include <stdlib.h>
++The './tools/coresight' directory contains example programs to generate and
++read and print binary configuration files.
 +
-+static void *cscfg_calloc(size_t num, size_t size)
-+{
-+	return calloc(num, size);
-+}
++Building the tools creates the 'coresight-cfg-file-gen' program that will
++generate a configuration binary 'example1.cscfg' that can be loaded into the
++system using configfs. The configuration declared in the source file
++'coresight-cfg-example1.c' is named 'autofdo3' - the name that will be used
++once loaded.
 +
-+static char *cscfg_strdup(const char *str)
-+{
-+	return strdup(str);
-+}
++The source files 'coresight-cfg-bufw.h' and 'coresight-cfg-bufw.c' provide a
++standard function to convert a configuration declared in 'C' into the correct
++binary buffer format. These files can be re-used to create new custom
++configurations. Alternatively, addition examples can be added to the
++'coresight-cfg-file-gen' program::
 +
-+static void *cscfg_zalloc(size_t size)
-+{
-+	void *ptr = malloc(size);
++    $ ./coresight-cfg-file-gen
++    Coresight Configuration file Generator
 +
-+	if (ptr)
-+		memset(ptr, 0, size);
-+	return ptr;
-+}
++    Generating example1 example
++    Generating example2 example
 +
-+static void cscfg_free(void *mem)
-+{
-+	free(mem);
-+}
-+#endif
++The program 'coresight-cfg-file-read' can read back and print a configuration
++binary. This is built using the file reader from the driver code
++(coresight-config-file.c), which is copied over into './tools/coresight' at
++build time.::
 +
- #define cscfg_extract_u64(val64) { \
- 	val64 = *(u64 *)(buffer + used); \
- 	used += sizeof(u64); \
-@@ -80,6 +137,7 @@ static int cscfg_file_read_elem_str(const u8 *buffer, const int buflen, int *buf
- 				    struct cscfg_file_elem_str *elem_str)
- {
- 	int used = *buf_used;
-+	const u8 *str;
- 
- 	if ((buflen - used) < sizeof(u16))
- 		return -EINVAL;
-@@ -89,11 +147,13 @@ static int cscfg_file_read_elem_str(const u8 *buffer, const int buflen, int *buf
- 	if ((buflen - used) < elem_str->str_len)
- 		return -EINVAL;
- 
-+	str = buffer + used;
++    ./coresight-cfg-file-read example1.cscfg
++    CoreSight Configuration file reader
++    ============================================
 +
- 	/* check for 0 termination */
--	if (buffer[used + (elem_str->str_len - 1)] != 0)
-+	if (str[elem_str->str_len - 1] != 0)
- 		return -EINVAL;
- 
--	elem_str->str = kstrdup((char *)(buffer + used),  GFP_KERNEL);
-+	elem_str->str = cscfg_strdup((char *)str);
- 	used += elem_str->str_len;
- 
- 	*buf_used = used;
-@@ -104,12 +164,13 @@ static int cscfg_file_alloc_desc_arrays(struct cscfg_fs_load_descs *desc_arrays,
- 					int nr_features, int nr_configs)
- {
- 	/* arrays are 0 terminated - nr_configs & nr_features elements */
--	desc_arrays->config_descs = kcalloc(nr_configs + 1,  sizeof(struct cscfg_config_desc *),
--					    GFP_KERNEL);
-+	desc_arrays->config_descs = cscfg_calloc(nr_configs + 1,
-+						 sizeof(struct cscfg_config_desc *));
- 	if (!desc_arrays->config_descs)
- 		return -ENOMEM;
--	desc_arrays->feat_descs = kcalloc(nr_features + 1, sizeof(struct cscfg_feature_desc *),
--					  GFP_KERNEL);
++    Configuration 1
++    Name:- autofdo3
++    Description:-
++    Setup ETMs with strobing for autofdo
++    Supplied presets allow experimentation with mark-space ratio for various loads
 +
-+	desc_arrays->feat_descs = cscfg_calloc(nr_features + 1,
-+					       sizeof(struct cscfg_feature_desc *));
- 	if (!desc_arrays->feat_descs)
- 		return -ENOMEM;
- 	return 0;
-@@ -124,24 +185,24 @@ static void cscfg_file_free_config_desc(struct cscfg_config_desc *config_desc)
- 		return;
- 
- 	/* free presets */
--	kfree(config_desc->presets);
-+	cscfg_free((void *)config_desc->presets);
- 
- 	/* free feat ref strings */
- 	if (config_desc->nr_feat_refs) {
- 		/* each string */
- 		for (i = 0; i < config_desc->nr_feat_refs; i++)
--			kfree(config_desc->feat_ref_names[i]);
-+			cscfg_free((void *)config_desc->feat_ref_names[i]);
- 
- 		/* and the char * array */
--		kfree(config_desc->feat_ref_names);
-+		cscfg_free((void *)config_desc->feat_ref_names);
- 	}
- 
- 	/* next the strings */
--	kfree(config_desc->name);
--	kfree(config_desc->description);
-+	cscfg_free((void *)config_desc->name);
-+	cscfg_free((void *)config_desc->description);
- 
- 	/* finally the struct itself */
--	kfree(config_desc);
-+	cscfg_free((void *)config_desc);
- }
- 
- static int cscfg_file_read_elem_config(const u8 *buffer, const int buflen, int *buf_used,
-@@ -166,7 +227,7 @@ static int cscfg_file_read_elem_config(const u8 *buffer, const int buflen, int *
- 		return 0;
- 
- 	/* we have a config - allocate the descriptor */
--	config_desc = kzalloc(sizeof(struct cscfg_config_desc), GFP_KERNEL);
-+	config_desc = cscfg_zalloc(sizeof(struct cscfg_config_desc));
- 	if (!config_desc)
- 		return -ENOMEM;
- 
-@@ -192,7 +253,7 @@ static int cscfg_file_read_elem_config(const u8 *buffer, const int buflen, int *
- 	/* read the array of 64bit presets if present */
- 	nr_preset_vals = config_desc->nr_total_params * config_desc->nr_presets;
- 	if (nr_preset_vals) {
--		presets = kcalloc(nr_preset_vals, sizeof(u64), GFP_KERNEL);
-+		presets = cscfg_calloc(nr_preset_vals, sizeof(u64));
- 		if (!presets)
- 			return -ENOMEM;
- 
-@@ -207,8 +268,8 @@ static int cscfg_file_read_elem_config(const u8 *buffer, const int buflen, int *
- 
- 	/* read the array of feature names referenced by the config */
- 	if (config_desc->nr_feat_refs) {
--		config_desc->feat_ref_names = kcalloc(config_desc->nr_feat_refs,
--						      sizeof(char *), GFP_KERNEL);
-+		config_desc->feat_ref_names = cscfg_calloc(config_desc->nr_feat_refs,
-+							   sizeof(char *));
- 		if (!config_desc->feat_ref_names)
- 			return -ENOMEM;
- 
-@@ -289,17 +350,17 @@ static void cscfg_file_free_feat_desc(struct cscfg_feature_desc *feat_desc)
- 		return;
- 
- 	/* free up the register descriptor array */
--	kfree(feat_desc->regs_desc);
-+	cscfg_free((void *)feat_desc->regs_desc);
- 
- 	/* free up the parameters array */
--	kfree(feat_desc->params_desc);
-+	cscfg_free((void *)feat_desc->params_desc);
- 
- 	/* name and description strings */
--	kfree(feat_desc->name);
--	kfree(feat_desc->description);
-+	cscfg_free((void *)feat_desc->name);
-+	cscfg_free((void *)feat_desc->description);
- 
- 	/* finally the struct itself */
--	kfree(feat_desc);
-+	cscfg_free((void *)feat_desc);
- }
- 
- static int cscfg_file_read_elem_feature(const u8 *buffer, const int buflen, int *buf_used,
-@@ -314,7 +375,7 @@ static int cscfg_file_read_elem_feature(const u8 *buffer, const int buflen, int
- 	u32 val32;
- 
- 	/* allocate the feature descriptor object */
--	feat_desc = kzalloc(sizeof(struct cscfg_feature_desc), GFP_KERNEL);
-+	feat_desc = cscfg_zalloc(sizeof(struct cscfg_feature_desc));
- 	if (!feat_desc)
- 		return -ENOMEM;
- 
-@@ -353,8 +414,8 @@ static int cscfg_file_read_elem_feature(const u8 *buffer, const int buflen, int
- 		nr_regs_bytes = ((sizeof(u32) + sizeof(u64)) * feat_desc->nr_regs);
- 		if ((buflen - used) < nr_regs_bytes)
- 			return -EINVAL;
--		feat_desc->regs_desc = kcalloc(feat_desc->nr_regs,
--					       sizeof(struct cscfg_regval_desc), GFP_KERNEL);
-+		feat_desc->regs_desc = cscfg_calloc(feat_desc->nr_regs,
-+						    sizeof(struct cscfg_regval_desc));
- 		if (!feat_desc->regs_desc)
- 			return -ENOMEM;
- 
-@@ -368,8 +429,8 @@ static int cscfg_file_read_elem_feature(const u8 *buffer, const int buflen, int
- 
- 	/* parameter descriptors - string + 64 bit value */
- 	if (feat_desc->nr_params) {
--		feat_desc->params_desc = kcalloc(feat_desc->nr_params,
--						 sizeof(struct cscfg_parameter_desc), GFP_KERNEL);
-+		feat_desc->params_desc = cscfg_calloc(feat_desc->nr_params,
-+						      sizeof(struct cscfg_parameter_desc));
- 		if (!feat_desc->params_desc)
- 			return -ENOMEM;
- 		for (i = 0; i < feat_desc->nr_params; i++) {
-@@ -515,6 +576,6 @@ void cscfg_file_free_load_descs(struct cscfg_fs_load_descs *desc_arrays)
- 	}
- 
- 	/* finally free up the load descs pointer arrays */
--	kfree(desc_arrays->config_descs);
--	kfree(desc_arrays->feat_descs);
-+	cscfg_free(desc_arrays->config_descs);
-+	cscfg_free(desc_arrays->feat_descs);
- }
-diff --git a/drivers/hwtracing/coresight/coresight-config.h b/drivers/hwtracing/coresight/coresight-config.h
-index ad212954f99e..58d4f179ff0d 100644
---- a/drivers/hwtracing/coresight/coresight-config.h
-+++ b/drivers/hwtracing/coresight/coresight-config.h
-@@ -7,7 +7,14 @@
- #ifndef _CORESIGHT_CORESIGHT_CONFIG_H
- #define _CORESIGHT_CORESIGHT_CONFIG_H
- 
-+/*
-+ * Filter out kernel only portions of the file to allow user space programs
-+ * to use the descriptor definitions.
-+ */
-+#ifdef __KERNEL__
- #include <linux/coresight.h>
-+#endif
++    Uses 1 features:-
++    Feature-1: strobing
 +
- #include <linux/types.h>
- 
- /* CoreSight Configuration Management - component and system wide configuration */
-@@ -100,6 +107,10 @@ struct cscfg_fs_load_descs {
- 	struct cscfg_feature_desc **feat_descs;
- };
- 
++    Provides 4 sets of preset values, 2 presets per set
++    set[0]: 0x7d0, 0x64,
++    set[1]: 0x7d0, 0x3e8,
++    set[2]: 0x7d0, 0x1388,
++    set[3]: 0x7d0, 0x2710,
 +
-+/* remainder of header is used by the kernel drivers only */
-+#ifdef __KERNEL__
++    ============================================
++    File contains no features
 +
- /**
-  * Device feature descriptor - combination of registers and parameters to
-  * program a device to implement a specific complex function.
-@@ -274,4 +285,5 @@ void cscfg_csdev_disable_config(struct cscfg_config_csdev *config_csdev);
- /* reset a feature to default values */
- void cscfg_reset_feat(struct cscfg_feature_csdev *feat_csdev);
- 
-+#endif /* __KERNEL__ */
- #endif /* _CORESIGHT_CORESIGHT_CONFIG_H */
++There are additional attributes in the cs-syscfg directory - load and
++unload that can be used to load and unload configuration binary files. To
++load, 'cat' the binary config into the load attribute::
++
++    $ ls /config/cs-syscfg
++    configurations features  load  unload
++    $ cat example1.cscfg > /config/cs-syscfg/load
++    $ ls /config/cs-syscfg/configurations/
++    autofdo  autofdo3
++
++To unload, use the same file in the unload attribute::
++
++    $ cat example1.cscfg > /config/cs-syscfg/unload
++    ls /config/cs-syscfg/configurations/
++    autofdo
++
++
++
++Binary Configuration File Format
++--------------------------------
++
++The file format is defined in the source file **coresight-config-file.h**
++
++The source reader and generator examples produce a binary of this format.
++
++This arrangement is reproduced below:-
++
++Overall File structure
++~~~~~~~~~~~~~~~~~~~~~~
++
++::
++
++   [cscfg_file_header]   // Mandatory
++   [CONFIG_ELEM]*        // Optional - multiple, defined by cscfg_file_header.nr_configs
++   [FEATURE_ELEM]*       // Optional - multiple, defined by cscfg_file_header.nr_features
++
++File is invalid if both [CONFIG_ELEM] and [FEATURE_ELEM] are omitted.
++
++A file that contains only [FEATURE_ELEM] may be loaded, and the features used
++by subsequently loaded files with [CONFIG_ELEM] elements.
++
++Element Name Strings
++~~~~~~~~~~~~~~~~~~~~
++
++Configuration name strings are required to consist of alphanumeric characters and '_' only. Other special characters are not permitted.
++
++::
++   my_config_2          // is a valid name.
++   this-bad-config#5    // this will not work
++
++This is in order to comply with the requirements of the perf command line.
++
++It is recommended that Feature and Parameter names use the same convention to allow for future enhancements to the command line syntax.
++
++CONFIG_ELEM element
++~~~~~~~~~~~~~~~~~~~
++
++::
++
++   [cscfg_file_elem_header]                // header length value to end of feature strings.
++   [cscfg_file_elem_str]                   // name of the configuration.
++                                           // (see element string name requirements)
++   [cscfg_file_elem_str]                   // description of configuration.
++   [u16 value](nr_presets)                 // number of defined sets presets values.
++   [u32 value](nr_total_params)            // total parameters defined by all used features.
++   [u16 value](nr_feat_refs)               // number of features referenced by the configuration
++   [u64 values] * (nr_presets * nr_total_params)     // the preset values.
++   [cscfg_file_elem_str] * (nr_feat_refs)  // names of features used in the configurations.
++
++FEATURE_ELEM element
++~~~~~~~~~~~~~~~~~~~~
++
++::
++
++   [cscfg_file_elem_header]                // header length is total bytes to end of param structures.
++   [cscfg_file_elem_str]                   // feature name.
++   [cscfg_file_elem_str]                   // feature description.
++   [u32 value](match_flags)                // flags to associate the feature with a device.
++   [u16 value](nr_regs)                    // number of registers.
++   [u16 value](nr_params)                  // number of parameters.
++   [cscfg_regval_desc struct] * (nr_regs)  // register definitions
++   [PARAM_ELEM] * (nr_params)              // parameters definitions
++
++PARAM_ELEM element
++~~~~~~~~~~~~~~~~~~
++
++::
++
++   [cscfg_file_elem_str]         // parameter name.
++   [u64 value](param_value)      // initial value.
++
++Additional definitions.
++~~~~~~~~~~~~~~~~~~~~~~~
++
++The following structures are defined in **coresight-config-file.h**
++
++ * **struct cscfg_file_header** : This structure contains an initial magic number, the total
++   length of the file, and the number of configurations and features in the file.
++ * **struct cscfg_file_elem_header**: This defines the total length and type of a CONFIG_ELEM
++   or a FEATURE_ELEM.
++ * **struct cscfg_file_elem_str**: This defines a string and its length.
++
++The magic number in cscfg_file_header is defined as two bitfields::
++
++   [31:8] Fixed magic number to identify file type.
++   [7:0]  Current file format version.
++
++The following defines determine the maximum overall file size and maximum individual
++string size::
++
++   CSCFG_FILE_MAXSIZE       // maximum overall file size.
++   CSCFG_FILE_STR_MAXSIZE   // maximum individual string size.
++
++Load Dependencies.
++~~~~~~~~~~~~~~~~~~
++
++Files may be unloaded only in the strict reverse order of loading. This is enforced by the
++configuration system.
++
++This is to ensure that any load dependencies are maintained.
++
++A configuration file that contains a CONFIG_ELEM that references named features "feat_A" and "feat_B" will load only if either:-
++a) "feat_A" and/or "feat_B" has been loaded previously, or are present as built-in / module loaded features.
++b) "feat_A" and/or "feat_B" are declared as FEAT_ELEM in the same file as the CONFIG_ELEM.
++
++Files that contain features or configurations with the same names as those already loaded will fail to load.
 -- 
 2.17.1
 
