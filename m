@@ -2,135 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF8FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 17:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 17:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbiGDROE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 13:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
+        id S231264AbiGDRPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 13:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiGDROB (ORCPT
+        with ESMTP id S229965AbiGDRPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 13:14:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47F6295B7
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 10:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656954838;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dNFZBk2MReDVOF2gT6UYM02hb0KdZvS6at3FbBoI3pM=;
-        b=PArGwWa2AIQ6Ws1O5kEobm8vkhA56MI4clSOkzrGxO95KE2Gq1cwLIstvzQBcdcLp5J0gv
-        gOvoUeytuZne1cFZtZVvRzkMet/xX64+OEELCNHWKn+ET7JdnoEp9yx3pQwdI7eW1buQGq
-        4D3EiAop7tfEcvq85JflVW/9YC2DXMU=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-scJy0KPNMn2Ckrm8bJ96Mg-1; Mon, 04 Jul 2022 13:13:57 -0400
-X-MC-Unique: scJy0KPNMn2Ckrm8bJ96Mg-1
-Received: by mail-lj1-f200.google.com with SMTP id w23-20020a2e9bd7000000b0025bd31b7fe7so2902722ljj.16
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 10:13:56 -0700 (PDT)
+        Mon, 4 Jul 2022 13:15:10 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA19267D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 10:15:09 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id a7so5919395ilj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 10:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SrjLN5AARoW5APe4/kjYq4KPlHCbgUUhCrG4GZXeuYs=;
+        b=XHqspk3iPbznRGRAGC35dqeQkskml4iS5i/1qp6qiFiHOBvK4Dm+hNK10gvwHHvxQw
+         uCt2niOFvgd0G70wgHa98XBZOxEtc3wpXU0IBP1NrrQY4zsoFVYjTeXGs2o3o7jQN6Xu
+         Rh5KxemRnCQbRz7P3oVQonH9HiI90cKjDtMU3grfC11j7lpZ7WgWkgEQJmMfwHw4yBve
+         nDmaye1pmOu92OWwaxHy4I/OzCETE2Phg6WsGs2F0PWi13z6aqByPlMcViIutBqo22GN
+         k0Uao8yWYeaMcZlxUmpRPb8q61uY4N9dM1sXX/RGJppP8/HH/HxAwRUFONh13nHjzAYI
+         pFuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=dNFZBk2MReDVOF2gT6UYM02hb0KdZvS6at3FbBoI3pM=;
-        b=KEwQwl4n0wJGNIwCUSxGR/2j5RI5+tTqSErSDScZti8uOIbxmY7edvSrlSFDU72FeE
-         QXTQSlFbI/+L0T5c0tKek6ex6Q+AcsiGsKhC+PJj6qhLU+KJXt8RilaD5zK8zyVKLfso
-         R6gSLw5aekDtebsw7yvQke+WGy0rLbz4h532mE1sUdihsS7dIjRJxbU2Y5UHTFGsfiKT
-         ZleDphJSfNDP+R9dqhySF/qVxybY+cXgPA6NQaPc6mHWRX7gOGxKnNznbnAx4eMSscwb
-         aVNeCZSwHybRKrQOQo4sK4irRTc/ZIt8aj1fsgy/f4svdXBJkDLQS6IeHGUdV6pmXuSu
-         9EmA==
-X-Gm-Message-State: AJIora+oXPlhzqBtbfY0eM54KfBztnu/iqeEpDOJt0A0jmvdlYfQSWUQ
-        dXlhso6IQLZ0IcuLQxVvD3qBvpL0ywjc3oJfMyhC1G9hrX2RY6/zlpOiS4meEGjB9UbeMrfcCBT
-        NMd4ii9sFRdg7hGI8FWHlCyAY
-X-Received: by 2002:a2e:b751:0:b0:25b:da59:96b9 with SMTP id k17-20020a2eb751000000b0025bda5996b9mr16564751ljo.176.1656954835665;
-        Mon, 04 Jul 2022 10:13:55 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tHu1DJfF7/r9dEXd50aOLye631DC1z4l08yWjIoREL+G9uEz5rjyOO5svoU/MfRlDuSC4GRQ==
-X-Received: by 2002:a2e:b751:0:b0:25b:da59:96b9 with SMTP id k17-20020a2eb751000000b0025bda5996b9mr16564722ljo.176.1656954835371;
-        Mon, 04 Jul 2022 10:13:55 -0700 (PDT)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id j13-20020ac253ad000000b0047f7f4cb583sm5200739lfh.288.2022.07.04.10.13.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 10:13:54 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <0cd3fd67-e179-7c27-a74f-255a05359941@redhat.com>
-Date:   Mon, 4 Jul 2022 19:13:53 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SrjLN5AARoW5APe4/kjYq4KPlHCbgUUhCrG4GZXeuYs=;
+        b=l3jKR0sNi/bMJAngtEAuRS1NZzyK9YDv7GNlcJEDZ3Uqee2Fxg9nahS9tRuAvTUrbN
+         +Hj6MOZ51EiJx+RIisIYlVCfvoCP4gKLmhPzTMu8unxDBm0yYsOuMLtWuictNK1k2sdY
+         3UNBD/DIuepmnulYCDL2m2NUS9/adjbXp7MX1SPYKD8BejyaYmmXfNObM5cthXtuiwBV
+         ze6lfBFs47+++iCkQd+C/e/kJwhciVRzK3QGmW5uv3Bn+VS3CrETgrXzT3VTwS4Raf/h
+         ibv6XyW0AG+k7RTg6wLBerRsQwkEzjZz+NPBkmZmFxDhTVMAl/ocVLlehRqEvyANyuAQ
+         rE/g==
+X-Gm-Message-State: AJIora/bLmW2d5GDz3+wnpISAs/8LXGUbkp2/b6kQNFXc4g5qHSeNHk/
+        IeXFhujwrjECCQcCMC63/ZVsnu/mkJ594S/T1M30XQ==
+X-Google-Smtp-Source: AGRyM1v+dNR4XAKHnXHhctboeigNfJC9zm3QJcSYtRaGLTsXhiOQPTWDBCR0k2uhRptNSE9SnF8nZ5fKrmlfj9eubJI=
+X-Received: by 2002:a05:6e02:1c27:b0:2d9:4d66:8541 with SMTP id
+ m7-20020a056e021c2700b002d94d668541mr17395300ilh.176.1656954909236; Mon, 04
+ Jul 2022 10:15:09 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Cc:     brouer@redhat.com, John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xdp-hints@xdp-project.net
-Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
- and use Generic Hints/metadata
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
- <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk>
- <20220704154440.7567-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220704154440.7567-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CA+G9fYtu1G4oGtKZQ_g5VJbQoET8c7hN_Ds-O1-1HD3PwV4wkQ@mail.gmail.com>
+ <20220704112605.GB31553@willie-the-truck> <aa641b98-98ca-14d3-2a28-2c0aef96ed0d@arm.com>
+ <20220704141945.GD31684@willie-the-truck>
+In-Reply-To: <20220704141945.GD31684@willie-the-truck>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 4 Jul 2022 22:44:57 +0530
+Message-ID: <CA+G9fYsD2oTZkWqVrVgJ1Y2p_3dt623vmOnGE8NDbBEXfwm3PQ@mail.gmail.com>
+Subject: Re: 5.19.0-rc5 : Raspberry Pi 4 : Unable to handle kernel paging
+ request at virtual address
+To:     Will Deacon <will@kernel.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LTP List <ltp@lists.linux.it>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>, brauner@kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 4 Jul 2022 at 19:49, Will Deacon <will@kernel.org> wrote:
+>
+> On Mon, Jul 04, 2022 at 02:37:52PM +0100, Robin Murphy wrote:
+> > On 2022-07-04 12:26, Will Deacon wrote:
+> > > On Mon, Jul 04, 2022 at 01:28:30PM +0530, Naresh Kamboju wrote:
+> > > > While running LTP controllers tests on arm64 Raspberry Pi 4 Model B
+> > > > the following kernel crash noticed.
+> > > >
+> > > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> > > >
+> > > > metadata:
+> > > >    git_ref: master
+> > > >    git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
+> > > >    git_sha: 88084a3df1672e131ddc1b4e39eeacfd39864acf
+> > > >    kernel_version: 5.19.0-rc5
+> > > >    kernel-config: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh/config
+> > > >    build-url: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline/-/pipelines/579007773
+> > > >    artifact-location: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh
+> > > >    vmlinux.xz: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh/vmlinux.xz
+> > > >    System.map: https://builds.tuxbuild.com/2BSEyt8Sb19HSj6SnBFiMo6kiQh/System.map
+> > > >    toolchain: gcc-11
+> > > >
+> > > > Steps to reproduce:
+> > > > -------------------
+> > > > ./runltp -p -q -f controllers
+> > > >
+> > > > Test log:
+> > > > ----------
+> > > > cgroup_fj_stress_blkio_4_4_each 1 TPASS: All done!
+> > > > cgroup_fj_stress_blkio_4_4_each 2 TINFO: Removing all ltp subgroups...
+> > > > cgroup_fj_stress_blkio_2_9_each 1 TINFO: Subsystem blkio is mounted at
+> > > > /sys/fs/cgroup/blkio
+> > > > cgroup_fj_stress_blkio_2_9_each 1 TINFO: Creating subgroups ...
+> > > > [ 2414.973441] Unable to handle kernel paging request at virtual
+> > > > address 00620000090336a0
+> > > > [ 2414.981581] Mem abort info:
+> > > > [ 2414.984480]   ESR = 0x0000000086000004
+> > > > [ 2414.988323]   EC = 0x21: IABT (current EL), IL = 32 bits
+> > > > [ 2414.993765]   SET = 0, FnV = 0
+> > > > [ 2414.996905]   EA = 0, S1PTW = 0
+> > > > [ 2415.000124]   FSC = 0x04: level 0 translation fault
+> > > > [ 2415.005118] [00620000090336a0] address between user and kernel address ranges
+> > > > [ 2415.012393] Internal error: Oops: 86000004 [#1] PREEMPT SMP
+> > > > [ 2415.018048] Modules linked in: btrfs blake2b_generic libcrc32c
+> > > > raid6_pq zstd_compress xhci_pci snd_soc_hdmi_codec xhci_pci_renesas
+> > > > raspberrypi_cpufreq hci_uart btqca brcmfmac brcmutil btbcm vc4
+> > > > bluetooth cfg80211 cec drm_display_helper drm_cma_helper rfkill
+> > > > clk_raspberrypi reset_raspberrypi drm_kms_helper crct10dif_ce
+> > > > raspberrypi_hwmon drm i2c_bcm2835 iproc_rng200 rng_core pwm_bcm2835
+> > > > bcm2711_thermal pcie_brcmstb fuse
+> > > > [ 2415.055725] CPU: 0 PID: 11626 Comm: cgroup_fj_stres Not taintedlinu#1
+> > > > [ 2415.062965] Hardware name: Raspberry Pi 4 Model B (DT)
+> > > > [ 2415.068175] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> > > > [ 2415.075238] pc : 0x620000090336a0
+> > > > [ 2415.078600] lr : ktime_get+0x50/0xac
+> > > > [ 2415.082228] sp : ffff80000dfdbb90
+> > > > [ 2415.085585] x29: ffff80000dfdbb90 x28: 00000000ffffffff x27: ffff00006405e580
+> > > > [ 2415.092832] x26: ffff00006405e748 x25: 0000000001200000 x24: ffff00006405e180
+> > > > [ 2415.100076] x23: ffff80000dfdbd68 x22: 0000000000000000 x21: 000002321545f201
+> > > > [ 2415.107320] x20: 000000000012017e x19: ffff80000ae3b440 x18: ffff000000000000
+> > > > [ 2415.114564] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000000000dc
+> > > > [ 2415.121809] x14: 0000000001200011 x13: 0000000060000000 x12: 0000ffffa7b6c1e8
+> > > > [ 2415.129052] x11: 0000000000000040 x10: ffff80000a96c5c0 x9 : ffff8000080990d4
+> > > > [ 2415.136295] x8 : 0000000000000000 x7 : 0000000000a9c84a x6 : 4480001ec1769752
+> > > > [ 2415.143538] x5 : 00ffbffeffffffff x4 : 0000000900000000 x3 : 0000000000000000
+> > > > [ 2415.150781] x2 : ffff80000a94e000 x1 : ffff8000090336a0 x0 : ffff80000ad102f0
+> > > > [ 2415.158025] Call trace:
+> > > > [ 2415.160498]  0x620000090336a0
+> > > > [ 2415.163505]  copy_process+0xe34/0x1534
+> > >
+> > > Do you have the disassembly (and source:line infor) around
+> > > copy_process+0xe34/0x1534? The faulting PC is like a messed up copy of x1
+> > > where the upper bits have been corrupted somehow.
+> >
+> > Even better, according to the vmlinux that LR value points right after a
+> > "blr x1". From the shape of it, looks like it's probably the tk_clock_read()
+> > call.
+>
+> System.map has:
+>
+> ffff8000090336a0 t arch_counter_read
+>
+> so yes, it looks like we want to call that via:
+>
+>         clock->read(clock);
+>
+> but the indirect branch goes wrong :/
+>
+> Naresh -- do you see this repeatably and on more than just one board?
 
-On 04/07/2022 17.44, Alexander Lobakin wrote:
->> Agreed. This incremental approach is basically what Jesper's
->> simultaneous series makes a start on, AFAICT? Would be nice if y'all
->> could converge the efforts :) >
-> I don't know why at some point Jesper decided to go on his own as he
-> for sure was using our tree as a base for some time, dunno what
-> happened then. Regarding these two particular submissions, I didn't
-> see Jesper's RFC when sending mine, only after when I went to read
-> some stuff.
-> 
+I have been trying to reproduce this problem on a pool of Raspberry Pi 4 boards
+but have not been successful yet.
 
-Well, I have written to you (offlist) that the git tree didn't compile,
-so I had a hard time getting it into a working state.  We had a
-ping-pong of stuff to fix, but it wasn't and you basically told me to
-switch to using LLVM to compile your kernel tree, I was not interested
-in doing that.
+- Naresh
 
-I have looked at the code in your GitHub tree, and decided that it was
-an over-engineered approach IMHO.  Also simply being 52 commits deep
-without having posted this incrementally upstream were also a
-non-starter for me, as this isn't the way-to-work upstream.
-
-To get the ball rolling, I have implemented the base XDP-hints support
-here[1] with only 9 patches (including support for two drivers).
-
-IMHO we need to start out small and not intermix these huge refactoring
-patches.  E.g. I'm not convinced renaming net/{core/xdp.c => bpf/core.c}
-is an improvement.
-
--Jesper
-
-[1] 
-https://lore.kernel.org/bpf/165643378969.449467.13237011812569188299.stgit@firesoul/
-
+>
+> Will
