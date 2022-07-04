@@ -2,156 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6646C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 21:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1AA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 21:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiGDVNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 17:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58852 "EHLO
+        id S230327AbiGDVOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 17:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiGDVNE (ORCPT
+        with ESMTP id S229473AbiGDVOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 17:13:04 -0400
-Received: from mx2.absolutedigital.net (mx2.absolutedigital.net [50.242.207.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BEB2B2BCA
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 14:13:00 -0700 (PDT)
-Received: from lancer.cnet.absolutedigital.net (lancer.cnet.absolutedigital.net [10.7.5.10])
-        by luxor.inet.absolutedigital.net (8.14.4/8.14.4) with ESMTP id 264LCUeD020275
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Mon, 4 Jul 2022 17:12:31 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by lancer.cnet.absolutedigital.net (8.17.1/8.17.1) with ESMTPS id 264LCi1X021531
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Mon, 4 Jul 2022 17:12:44 -0400
-Date:   Mon, 4 Jul 2022 17:12:44 -0400 (EDT)
-From:   Cal Peake <cp@absolutedigital.net>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Huacai Chen <chenhuacai@kernel.org>, linux-pci@vger.kernel.org
-Subject: [PATCHv2] vgaarb: Add module param to allow for choosing the boot
- VGA device
-Message-ID: <8498ea9f-2ba9-b5da-7dc4-1588363f1b62@absolutedigital.net>
+        Mon, 4 Jul 2022 17:14:19 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACFC626D
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 14:14:18 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id cl1so14946621wrb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 14:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linexp-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SQNaogcvrfpgtg7UQ9S2wlJiM9wxHzq7S9766wbvx3o=;
+        b=idWwdlKr/Jg63bwItDlgtWaz85etsChjYVlARgFoAdboxl7Ku5k4GD4bkLf9ioeACE
+         BpDt9lQU/bNZ4RCIEg23oUttSqFm/LNn1Sp7GSaYxYQHQhqaC8i/zOhRGpVUueQoEZHz
+         y1mydagupxaiqJyrKkqHRWEteedLM888WJNOwmGytqe1cLe4spQZmUuCuzAPacRIH35b
+         cx2ayqXuvvhvES85ElcKb80rAU4h64LUZ5bNB1fjJt/jjK+yQWfbkD30OLCS8Uy6P+2z
+         G5zn1dYGAPgA9OIdYs4Gfxx+2lbsww51UTMoEfNbJhn0yHXAt+tgQI3wadHLfPBIph21
+         bSrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SQNaogcvrfpgtg7UQ9S2wlJiM9wxHzq7S9766wbvx3o=;
+        b=MjMkoUviQC5eLyD87H9kvXygnPLnvyxXzZ1o5ufO0lvoeipjnnJsTjQyQhsShIw7mV
+         wjP/kKyHlpgqHpUoym9Pks6CsA7n8rtTGzXlgPLD3X2k0IGs5jLZki+gbIEVrvQolbdp
+         aTOv0foaR9t1HYiCz0HW7HKmAJuKDYakyBteulSp/ly9id3Et2yDenMBf/QRwY7QYc2h
+         lRBO3HwvMFgUGi1HOYP+hs4JocJk6NVlu5z9I3A6vUcwiVT1OLwlMltbsh2KTiEfN13L
+         4OGMHX4cDTXTzFBqCh6+vemJXlD6UDVOplCpKJOtOqKygvOjf88GjqABS0o5SzsG3rCk
+         fqDA==
+X-Gm-Message-State: AJIora9NJ8EfaMblvIn9o22GVniQLy4c/t7b3JPP8fNCAvTvoONKxeky
+        KiYqHtR7BhhGYExLaea9WRfuHQ==
+X-Google-Smtp-Source: AGRyM1vX5Oj5Ayx0OoJOY7mYDM2kf9xO+rHv+GaB0ejii7Qw0OtV9yhRWQfvqX4a9L8hkTJtRSw6uQ==
+X-Received: by 2002:a5d:468a:0:b0:21d:6dc8:9e60 with SMTP id u10-20020a5d468a000000b0021d6dc89e60mr4105543wrq.595.1656969257078;
+        Mon, 04 Jul 2022 14:14:17 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.gmail.com with ESMTPSA id y5-20020a056000108500b002167efdd549sm2885381wrw.38.2022.07.04.14.14.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 14:14:16 -0700 (PDT)
+Message-ID: <e2d81210-a969-fe9d-a4fb-1826c991fbce@linexp.org>
+Date:   Mon, 4 Jul 2022 23:14:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 05/12] thermal/core: Remove unneeded EXPORT_SYMBOLS
+Content-Language: en-US
+To:     Lukasz Luba <lukasz.luba@arm.com>, daniel.lezcano@linaro.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        khilman@baylibre.com, abailon@baylibre.com,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Todd Kjos <tkjos@google.com>,
+        Wei Wang <wvw@google.com>, rafael@kernel.org
+References: <20220703183059.4133659-1-daniel.lezcano@linexp.org>
+ <20220703183059.4133659-6-daniel.lezcano@linexp.org>
+ <ad8dd950-9260-16b3-2134-72984e2ba261@arm.com>
+From:   Daniel Lezcano <daniel.lezcano@linexp.org>
+In-Reply-To: <ad8dd950-9260-16b3-2134-72984e2ba261@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add module parameter 'bootdev' to the VGA arbiter to allow the user
-to choose which PCI device should be selected over any others as the
-boot VGA device.
+On 04/07/2022 09:35, Lukasz Luba wrote:
+> Hi Daniel,
+> 
+> (+Todd and Wei on CC)
+> 
+> 
+> On 7/3/22 19:30, Daniel Lezcano wrote:
 
-When using a multi-GPU system with one or more GPUs being used in
-conjunction with VFIO for passthrough to a virtual machine, if the
-VGA arbiter settles on a passthrough GPU as the boot VGA device,
-once the VFIO PCI driver claims that GPU, all display output is lost
-and the result is blank screens and no VT access.
+[ ... ]
 
-Signed-off-by: Cal Peake <cp@absolutedigital.net>
----
- .../admin-guide/kernel-parameters.txt         |  7 ++++
- drivers/pci/vgaarb.c                          | 40 +++++++++++++++++++
- 2 files changed, 47 insertions(+)
+>>   }
+>> -EXPORT_SYMBOL(get_tz_trend);
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2522b11e593f..21ac87f4a8a9 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6518,6 +6518,13 @@
- 			This is actually a boot loader parameter; the value is
- 			passed to the kernel using a special protocol.
- 
-+	vgaarb.bootdev=	[PCI] Specify the PCI ID (e.g. 0e:00.0) of the
-+			device to use as the boot VGA device, overriding
-+			the heuristic used to normally determine which
-+			of the eligible VGA devices to use. If the device
-+			specified is not valid or not eligible, then we
-+			fallback to the heuristic.
-+
- 	vm_debug[=options]	[KNL] Available with CONFIG_DEBUG_VM=y.
- 			May slow down system boot speed, especially when
- 			enabled on systems with a large amount of memory.
-diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
-index f80b6ec88dc3..d3689b7dc63d 100644
---- a/drivers/pci/vgaarb.c
-+++ b/drivers/pci/vgaarb.c
-@@ -35,6 +35,34 @@
- 
- #include <linux/vgaarb.h>
- 
-+static char *bootdev __initdata;
-+module_param(bootdev, charp, 0);
-+MODULE_PARM_DESC(bootdev, "Force boot device to the specified PCI ID");
-+
-+/*
-+ * Initialize to the last possible ID to have things work as normal
-+ * when no 'bootdev' option is supplied. We especially do not want
-+ * this to be zero (0) since that is a valid PCI ID (00:00.0).
-+ */
-+static u16 bootdev_id = 0xffff;
-+
-+static void __init parse_bootdev(char *input)
-+{
-+	unsigned int bus, dev, func;
-+	int ret;
-+
-+	if (input == NULL)
-+		return;
-+
-+	ret = sscanf(input, "%x:%x.%x", &bus, &dev, &func);
-+	if (ret != 3) {
-+		pr_warn("Improperly formatted PCI ID: %s\n", input);
-+		return;
-+	}
-+
-+	bootdev_id = PCI_DEVID(bus, PCI_DEVFN(dev, func));
-+}
-+
- static void vga_arbiter_notify_clients(void);
- /*
-  * We keep a list of all vga devices in the system to speed
-@@ -53,6 +81,7 @@ struct vga_device {
- 	bool bridge_has_one_vga;
- 	bool is_firmware_default;	/* device selected by firmware */
- 	unsigned int (*set_decode)(struct pci_dev *pdev, bool decode);
-+	bool is_chosen_one;		/* device specified on command line */
- };
- 
- static LIST_HEAD(vga_list);
-@@ -605,6 +634,7 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 
- 	/*
- 	 * We select the default VGA device in this order:
-+	 *   User specified device (see module param bootdev=)
- 	 *   Firmware framebuffer (see vga_arb_select_default_device())
- 	 *   Legacy VGA device (owns VGA_RSRC_LEGACY_MASK)
- 	 *   Non-legacy integrated device (see vga_arb_select_default_device())
-@@ -612,6 +642,14 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 	 *   Other device (see vga_arb_select_default_device())
- 	 */
- 
-+	if (boot_vga && boot_vga->is_chosen_one)
-+		return false;
-+
-+	if (bootdev_id == PCI_DEVID(pdev->bus->number, pdev->devfn)) {
-+		vgadev->is_chosen_one = true;
-+		return true;
-+	}
-+
- 	/*
- 	 * We always prefer a firmware default device, so if we've already
- 	 * found one, there's no need to consider vgadev.
-@@ -1544,6 +1582,8 @@ static int __init vga_arb_device_init(void)
- 	int rc;
- 	struct pci_dev *pdev;
- 
-+	parse_bootdev(bootdev);
-+
- 	rc = misc_register(&vga_arb_device);
- 	if (rc < 0)
- 		pr_err("error %d registering device\n", rc);
--- 
-2.35.3
+[ ... ]
+
+>>   }
+>> -EXPORT_SYMBOL(thermal_cdev_update);
+> 
+> I wouldn't remove that export. I can see in my Pixel6 modules dir, that
+> it's called in 7 places.
+> 
+> I assume that in Android world this is common use.
+
+It is not possible to do changes taking into consideration out of tree 
+code. Moreover there is logically no good reason to use the 
+thermal_cdev_update() function from outside of the thermal core code.
 
