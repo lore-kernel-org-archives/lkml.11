@@ -2,75 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E081C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C29D8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbiGDNYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S234396AbiGDNYQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233847AbiGDNWl (ORCPT
+        with ESMTP id S234423AbiGDNWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:22:41 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CAF10C5
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:13 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lc5xw0Rr4zhZ1F;
-        Mon,  4 Jul 2022 21:19:48 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Jul
- 2022 21:22:10 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <shy828301@gmail.com>, <willy@infradead.org>, <zokeefe@google.com>,
-        <songmuchun@bytedance.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 03/16] mm/huge_memory: fix comment of __pud_trans_huge_lock
-Date:   Mon, 4 Jul 2022 21:21:48 +0800
-Message-ID: <20220704132201.14611-4-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220704132201.14611-1-linmiaohe@huawei.com>
-References: <20220704132201.14611-1-linmiaohe@huawei.com>
+        Mon, 4 Jul 2022 09:22:42 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D89DFB3
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:22:23 -0700 (PDT)
+Received: from mail-yw1-f174.google.com ([209.85.128.174]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N3bnP-1nPqIQ1R6B-010h6U for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022
+ 15:22:21 +0200
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-31c8bb90d09so28265447b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:22:21 -0700 (PDT)
+X-Gm-Message-State: AJIora93epaUseXq7oTBxusWckNmDl6R0r4ZE7HzivEuxQgtpP7jjhDs
+        n4ZFiWb273t9krkG/JXrpjc/ETL5H7+vKHc0tg8=
+X-Google-Smtp-Source: AGRyM1vSNqE/dA73xomorsJNTCLKIKAarR3GdJzsZeQ0Unyn8Mqsmv6DIMqnbWDKeKL4LdHxnLOtas+QyAVTl9am/xA=
+X-Received: by 2002:a81:1d43:0:b0:318:638d:2ca with SMTP id
+ d64-20020a811d43000000b00318638d02camr34734313ywd.135.1656940940226; Mon, 04
+ Jul 2022 06:22:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220524093939.30927-1-pali@kernel.org> <20220702094405.tp7eo4df7fjvn2ng@pali>
+ <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au> <20220704103951.nm4m4kpgnus3ucqo@pali>
+ <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com> <20220704131358.fy3z7tjcmk2m6pfh@pali>
+In-Reply-To: <20220704131358.fy3z7tjcmk2m6pfh@pali>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 4 Jul 2022 15:22:03 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2hfnt+tHiqHrHAVyagSm73LJe4OV8ig=CKFcycfk4Zag@mail.gmail.com>
+Message-ID: <CAK8P3a2hfnt+tHiqHrHAVyagSm73LJe4OV8ig=CKFcycfk4Zag@mail.gmail.com>
+Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Michael Ellerman <michael@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:shB8lUHNzKotSzWyCHtF6VwOY3xFq+hJ8KMcGCYXpezozStPft2
+ KeTxiXEns3wEy0ZUD9haiKOwrATSi1X8q86Olfuv8qYnKdRJ9NA6tEZyVkDxthmpu3R0r7+
+ 0DDLsXF7AxFyh6grM5JwiJCSfQVRaHZEfkAJQrBHAEbYrsV1sPpnQ+TiMc5CQ5MIa0ZxHnX
+ Z6k3V892Sh2Lo+wrZDR9g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:odJOIFGuoNc=:t0ZnW9Iux2ZZizASvwBtOd
+ M1p8rAR8JIIUX7pFzn4ftdBajqreHknDBknSgSoJE2Gh/3975x5Ylp+8KE2Mj3adXSGZExd+I
+ Tz9VzxMU2mIkPNfxnncxUOXH5PhwhiqG78c5EfMHBgJBmFigHaxRezQX3ZMWK6p+8gUVbZpWm
+ neuNjyQ3HlEXgG/wbkU7BHTYN+I1yNqBfg1QgEa4I274wH/ljThEbYhqmTV2RAfpy0j0dLnM0
+ Pt7SSknNQPTZq8SofidMqQbqfKj3cwI+6Y4a062yw+AAZ7s+OtVEhZw4ff6uRTTDt3ptE2t0T
+ P+7o30qedFv8lYHDSLGYPXgoq4BcpIgVSfpKNjLRSZ6RnK6vSBqf0WS7s2u8QsBvyz/78oIjO
+ rAjqv5wYPJ8sqDhYD8nK6spbWFtxW778vyWgmjYTK/U3AUzCyLymwHEGqjEospjE1hWAKc8Os
+ Ri/mjKYtTwXtOBNo7fcGBMorN61SOtwNH4+5I9DPVbsyO8Oblt0PWYQJhTjlZIqbj3P/L3jPq
+ NEhVIugmTl79P/Q//rMIacy0yhky3fD54S7rZX1OOCzhHwNn88fnOJKLTOKBcHeZ8cFwUfVj7
+ kuOAunIGwhkntagc6udtKtEcSx/aUIR2DKAbDmwkJVpfTOFlhRCcJjB2Z0tjeXYGsb/CauwYo
+ dW0JGgeYSdAF7YeEDJyZFhIXU84ETD8jZI7Ona63dro1FUMcgTIbBh5RCUhLE3qigRfxGIYyF
+ NbwW2TRU1LcOcAQRA7hWGG/DCdPF6tFXv9qR3Bq70qg7KNA3U0f2TFpU025jvk+GKZoT1Uoug
+ YWQP6aF0ZrhCtt8ZIrypH0h9dyyDSRK4JNsq0ctEoQFf/rjQ+xGUr5SBRbHhf5qzx4Qq3wIst
+ 3ji03GvZ55K34cEDEEnd4kMUwytvfeq+xmH4FBekc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__pud_trans_huge_lock returns page table lock pointer if a given pud maps
-a thp instead of 'true' since introduced. Fix corresponding comments.
+On Mon, Jul 4, 2022 at 3:13 PM Pali Rohár <pali@kernel.org> wrote:
+> On Monday 04 July 2022 14:07:10 Arnd Bergmann wrote:
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/huge_memory.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> > CFLAGS_CPU-$(CONFIG_PPC_BOOK3S_32) := -mcpu=powerpc
+> > CFLAGS_CPU-$(CONFIG_PPC_85xx) := -mcpu=8540
+> > CFLAGS_CPU-$(CONFIG_PPC8xx) := -mcpu=860
+> > CFLAGS_CPU-$(CONFIG_PPC44x) := -mcpu=440
+> > CFLAGS_CPU-$(CONFIG_PPC40x) := -mcpu=405
+> > ifdef CONFIG_CPU_LITTLE_ENDIAN
+> > CFLAGS_CPU-$(CONFIG_BOOK3S_64) := -mcpu=power8
+> > else
+> > CFLAGS_CPU-$(CONFIG_BOOK3S_64) := -mcpu=power5
+> > endif
+> > CFLAGS_CPU-$(CONFIG_BOOK3E_64) := -mcpu=powerpc64
+>
+> Yes, this is something I would expect that in Makefile should be.
+>
+> But what to do with fallback value?
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index a010f9ba15ce..212e092d8ad0 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2007,10 +2007,10 @@ spinlock_t *__pmd_trans_huge_lock(pmd_t *pmd, struct vm_area_struct *vma)
- }
- 
- /*
-- * Returns true if a given pud maps a thp, false otherwise.
-+ * Returns page table lock pointer if a given pud maps a thp, NULL otherwise.
-  *
-- * Note that if it returns true, this routine returns without unlocking page
-- * table lock. So callers must unlock it.
-+ * Note that if it returns page table lock pointer, this routine returns without
-+ * unlocking page table lock. So callers must unlock it.
-  */
- spinlock_t *__pud_trans_huge_lock(pud_t *pud, struct vm_area_struct *vma)
- {
--- 
-2.23.0
+Most of the fallback values can just be removed because we don't support
+building with gcc versions older than 5.1.0 any more. The only one
+that I think still needs a fallback is mtune=power9, which requires gcc-6.1
+or higher. CONFIG_POWER9_CPU could similarly use a
+"depends on GCC_VERSION > 60100".
 
+        Arnd
