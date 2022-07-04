@@ -2,117 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C76C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146DEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234343AbiGDKOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34964 "EHLO
+        id S232620AbiGDKQq convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234213AbiGDKNk (ORCPT
+        with ESMTP id S233435AbiGDKQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:13:40 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1394D111;
-        Mon,  4 Jul 2022 03:13:39 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 856F06601987;
-        Mon,  4 Jul 2022 11:13:37 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656929618;
-        bh=AFxHTqlOyeK1LCtC1MqBh69cl8u6Qrdx+4RcZLmfPmc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E7EdQ3Y5HL0jzjaagGKq2QTQYuaMQoHax6OdhjdlYsNW5q/fERJI7bAs8Hip404j4
-         dSRxYanPBc5COovVCREukZCJMWyMFo/THiTmjugyDl73ZQ8YU/DK7UmeE612r0hwJG
-         uUVA2sxiJwVoXjOaKGJ5ngR02HxJAZMd2iYuaTeCtMHyJ2H3Y5otZagmSlRqj7xGWu
-         SCJ9dLjfAxVbnRl8yXxYxNBs7C19bPf7dG+64JQLlfrilHpGgCkdmGAWUaF1JRgXJP
-         MXYj0AS8+sM458Xnc3R+GMNB8ZxyRs7GpvdlNk8+u5AbE6tO77mrEUWAA2VSVS63q9
-         c+w7naWjDdjag==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, hsinyi@chromium.org,
-        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
-        gtk3@inbox.ru, luca@z3ntu.xyz, sam.shih@mediatek.com,
-        sean.wang@mediatek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wenst@chromium.org
-Subject: [PATCH v2 10/11] arm64: dts: mediatek: cherry: Enable support for the SPI NOR flash
-Date:   Mon,  4 Jul 2022 12:13:20 +0200
-Message-Id: <20220704101321.44835-11-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
-References: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
+        Mon, 4 Jul 2022 06:16:18 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24956DF71
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:15:52 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-214-MQlTZlhANB2wfXkNFnzPHQ-1; Mon, 04 Jul 2022 11:15:50 +0100
+X-MC-Unique: MQlTZlhANB2wfXkNFnzPHQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 4 Jul 2022 11:15:48 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 4 Jul 2022 11:15:48 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andy Shevchenko' <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+CC:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        "Till Harbaum" <till@harbaum.org>, Wolfram Sang <wsa@kernel.org>
+Subject: RE: [PATCH v1 2/2] i2c: Introduce i2c_str_read_write() and make use
+ of it
+Thread-Topic: [PATCH v1 2/2] i2c: Introduce i2c_str_read_write() and make use
+ of it
+Thread-Index: AQHYjhwAwyV0nbqJdEeAmmpcjNypRK1uAQFQ
+Date:   Mon, 4 Jul 2022 10:15:48 +0000
+Message-ID: <d19ac9827d064307910edab181b8813f@AcuMS.aculab.com>
+References: <20220702135925.73406-1-andriy.shevchenko@linux.intel.com>
+ <20220702135925.73406-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220702135925.73406-2-andriy.shevchenko@linux.intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This platform has a SPI NOR: enable support for it, completing the
-storage compartment enablement for the entire platform.
+From: Andy Shevchenko
+> Sent: 02 July 2022 14:59
+> 
+> str_read_write() returns a string literal "read" or "write" based
+> on the value. It also allows to unify usage of a such in the kernel.
+> 
+> For i2c case introduce a wrapper that takes struct i2c_msg as parameter.
+> 
+...
+> 
+> -	DEB2("=== SLAVE ADDRESS %#04x+%c=%#04x\n",
+> -	     msg->addr, msg->flags & I2C_M_RD ? 'R' : 'W', addr);
+> +	DEB2("=== SLAVE ADDRESS %#04x+%s=%#04x\n", msg->addr, i2c_str_read_write(msg), addr);
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
----
- .../boot/dts/mediatek/mt8195-cherry.dtsi      | 31 +++++++++++++++++++
- 1 file changed, 31 insertions(+)
+You should ask yourself whether this actually makes the code more readable.
+Imagine someone who is scan-reading the code to see what it does.
+They're not going to be impressed when they've chased through
+two searches to find out the code does.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-index c07d3ac79f62..2c8b760d0da1 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-@@ -231,6 +231,21 @@ &mt6359_vufs_ldo_reg {
- 	regulator-always-on;
- };
- 
-+&nor_flash {
-+	status = "okay";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&nor_pins_default>;
-+
-+	flash@0 {
-+		compatible = "jedec,spi-nor";
-+		reg = <0>;
-+		spi-max-frequency = <52000000>;
-+		spi-rx-bus-width = <2>;
-+		spi-tx-bus-width = <2>;
-+	};
-+};
-+
- &pio {
- 	mediatek,rsel-resistance-in-si-unit;
- 	pinctrl-names = "default";
-@@ -513,6 +528,22 @@ pins-rst {
- 		};
- 	};
- 
-+	nor_pins_default: nor-default-pins {
-+		pins-ck-io {
-+			pinmux = <PINMUX_GPIO142__FUNC_SPINOR_IO0>,
-+				 <PINMUX_GPIO141__FUNC_SPINOR_CK>,
-+				 <PINMUX_GPIO143__FUNC_SPINOR_IO1>;
-+			drive-strength = <6>;
-+			bias-pull-down;
-+		};
-+
-+		pins-cs {
-+			pinmux = <PINMUX_GPIO140__FUNC_SPINOR_CS>;
-+			drive-strength = <6>;
-+			bias-pull-up;
-+		};
-+	};
-+
- 	pio_default: pio-default-pins {
- 		pins-wifi-enable {
- 			pinmux = <PINMUX_GPIO58__FUNC_GPIO58>;
--- 
-2.35.1
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
