@@ -2,125 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4752C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233145AbiGDJwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45526 "EHLO
+        id S233836AbiGDJw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiGDJwf (ORCPT
+        with ESMTP id S229961AbiGDJw5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:52:35 -0400
-X-Greylist: delayed 921 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Jul 2022 02:52:34 PDT
-Received: from smtp2.tsag.net (smtp2.tsag.net [208.118.68.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA9DDE87;
-        Mon,  4 Jul 2022 02:52:34 -0700 (PDT)
-Received: from linuxfromscratch.org (rivendell.linuxfromscratch.org [208.118.68.85])
-        (user=smtprelay@linuxfromscratch.org mech=PLAIN bits=0)
-        by smtp2.tsag.net  with ESMTP id 2649aqN7013971-2649aqN9013971
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 4 Jul 2022 03:36:53 -0600
-Received: from [192.168.124.21] (unknown [113.140.29.6])
-        by linuxfromscratch.org (Postfix) with ESMTPSA id C33161C33D0;
-        Mon,  4 Jul 2022 09:36:46 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfromscratch.org;
-        s=cert4; t=1656927412;
-        bh=3QkRAk/rtlLuT2thgUbQAE2edONMPQV0DJmdezwylNk=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=osOSOfHtB0PqwShcsPEqL9Qe4l2l337q+dHrDoMqbi4409pHYoN71DCkQgHX/+Gl1
-         SBks7IioLmCWcklUuXVd68/tMa+g6ISl6aG/khyJdg5Bd3gkziP2leywa94HZw9ozV
-         AWfBHwmd3scuwftYLeRhj8HBUcSB2zXih0Pa66ieHVAJucr0rSacmH0eEzTSwe8DlT
-         CUQiFzAqClibOmxUUQVptOAoNISZaQ6XcCE2/+G4d6jWOBqtAXD5aLzn5vRcNEPIJb
-         3iPpP9slIt8AWxapoSwjXXXqxyikeUY4rYVuVqXsqXkHMLD59acMqD3D3Yqhfc6kCz
-         W57T/zTwQILRg==
-Message-ID: <64c753c98488a64b470009e45769ceab29fd8130.camel@linuxfromscratch.org>
-Subject: Re: [PATCH v6 3/5] fbdev: Disable sysfb device registration when
- removing conflicting FBs
-From:   Xi Ruoyao <xry111@linuxfromscratch.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Zack Rusin <zackr@vmware.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "deller@gmx.de" <deller@gmx.de>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
-        "kraxel@redhat.com" <kraxel@redhat.com>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
-        "lersek@redhat.com" <lersek@redhat.com>
-Date:   Mon, 04 Jul 2022 17:36:31 +0800
-In-Reply-To: <aa144e20-a555-5c30-4796-09713c12ab0e@redhat.com>
-References: <20220607182338.344270-1-javierm@redhat.com>
-         <20220607182338.344270-4-javierm@redhat.com>
-         <de83ae8cb6de7ee7c88aa2121513e91bb0a74608.camel@vmware.com>
-         <38473dcd-0666-67b9-28bd-afa2d0ce434a@redhat.com>
-         <603e3613b9b8ff7815b63f294510d417b5b12937.camel@vmware.com>
-         <a633d605-4cb3-2e04-1818-85892cf6f7b0@redhat.com>
-         <97565fb5-cf7f-5991-6fb3-db96fe239ee8@redhat.com>
-         <711c88299ef41afd8556132b7c1dcb75ee7e6117.camel@vmware.com>
-         <aa144e20-a555-5c30-4796-09713c12ab0e@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Mon, 4 Jul 2022 05:52:57 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C06DE87;
+        Mon,  4 Jul 2022 02:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=6JCXp2CTA6tebVlYfKnSGvd72D8VGQ9/1QrNl2Uu06U=; b=owjF/0SC014EElX4qJEISeY+Hi
+        NodSfpeuBnMDq+sFywN7UKljESOC/Tdrwmm5AbourGfPMiiQsiSr7vClvYXc06+EdE774duqyKDPo
+        9Qbk5h4+V1Q12i7wgiF/UCyzyyw39STd53R8F+fEF/J7arhksByymed85iWF8ZxwJJXVnmv+6zaig
+        pYWESxC5vf+x2K5dYTSovW9eYvj2iqjkgHRfXarjl3nPFm6AwsQ73tIJ6XkXA1xiKtvjIdxMrx/tR
+        EXkOBa0Sde2ZAUUbWnJ0G+RkqUDKrUl6qvTGq3YD3scUfdpMKGDSOTQXKu7kbuQD62hEi3UskrPV9
+        BcvTGSsQ==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8Ikz-00H9mA-A4; Mon, 04 Jul 2022 09:52:41 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9126930027E;
+        Mon,  4 Jul 2022 11:52:39 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 594B320295B20; Mon,  4 Jul 2022 11:52:39 +0200 (CEST)
+Date:   Mon, 4 Jul 2022 11:52:39 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     guoren@kernel.org
+Cc:     palmer@rivosinc.com, arnd@arndb.de, mingo@redhat.com,
+        will@kernel.org, longman@redhat.com, boqun.feng@gmail.com,
+        linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [PATCH V7 1/5] asm-generic: ticket-lock: Remove unnecessary
+ atomic_read
+Message-ID: <YsK4Z9w0tFtgkni8@hirez.programming.kicks-ass.net>
+References: <20220628081707.1997728-1-guoren@kernel.org>
+ <20220628081707.1997728-2-guoren@kernel.org>
 MIME-Version: 1.0
-X-FEAS-Auth-User: smtprelay@linuxfromscratch.org
-X-FEAS-DKIM: Valid
-Authentication-Results: smtp2.tsag.net;
-        dkim=pass header.i=@linuxfromscratch.org;
-        dmarc=pass header.from=linuxfromscratch.org
-X-FE-Policy-ID: 0:14:3:linuxfromscratch.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628081707.1997728-2-guoren@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-17 at 08:46 +0200, Javier Martinez Canillas wrote:
-> Hello Zack,
->=20
-> On 6/17/22 03:35, Zack Rusin wrote:
-> > On Fri, 2022-06-17 at 01:21 +0200, Javier Martinez Canillas wrote:
-> > > On 6/17/22 00:18, Javier Martinez Canillas wrote:
-> > > > On 6/16/22 23:03, Zack Rusin wrote:
-> > >=20
-> > > [snip]
-> > >=20
-> > > >=20
-> > > > I'll look at this tomorrow but in the meantime, could you please lo=
-ok if the following
-> > > > commits on top of drm-misc-next help ?
-> > > >=20
-> > > > d258d00fb9c7 fbdev: efifb: Cleanup fb_info in .fb_destroy rather th=
-an .remove
-> > > > 1b5853dfab7f fbdev: efifb: Fix a use-after-free due early fb_info c=
-leanup
-> > > >=20
-> > >=20
-> > > Scratch that. I see in your config now that you are not using efifb b=
-ut instead
-> > > simpledrm: CONFIG_DRM_SIMPLEDRM=3Dy, CONFIG_SYSFB_SIMPLEFB=3Dy and CO=
-NFIG_DRM_VMWGFX.
-> > >=20
-> > > Since you mentioned efifb I misunderstood that you are using it. Anyw=
-ays, as
-> > > said I'll investigate this tomorrow.
-> >=20
-> > Sounds good. Let me know if you'd like me to try it without SIMPLEFB.
-> >=20
->=20
-> Yes, please do. Either with CONFIG_SYSFB_SIMPLEFB disabled and CONFIG_FB_=
-EFI
-> enabled (so that "efi-framebuffer" is registered and efifb probed) or wit=
-h
-> CONFIG_SYSFB_SIMPLEFB but CONFIG_FB_SIMPLE enabled (so "simple-framebuffe=
-r
-> is used too but with simplefb instead of simpledrm).
-> =C2=A0
-> I'm not able to reproduce, it would be useful to have another data point.
+On Tue, Jun 28, 2022 at 04:17:03AM -0400, guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
+> 
+> Remove unnecessary atomic_read in arch_spin_value_unlocked(lock),
+> because the value has been in lock. This patch could prevent
+> arch_spin_value_unlocked contend spin_lock data again.
+> 
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Palmer Dabbelt <palmer@rivosinc.com>
+> ---
+>  include/asm-generic/spinlock.h | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+> index fdfebcb050f4..f1e4fa100f5a 100644
+> --- a/include/asm-generic/spinlock.h
+> +++ b/include/asm-generic/spinlock.h
+> @@ -84,7 +84,9 @@ static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
+>  
+>  static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+>  {
+> -	return !arch_spin_is_locked(&lock);
+> +	u32 val = lock.counter;
+> +
+> +	return ((val >> 16) == (val & 0xffff));
+>  }
 
-Also happening for me with CONFIG_SYSFB_SIMPLEFB, on a Intel Core i7-
-1065G7 (with iGPU).
+Wouldn't the right thing be to flip arch_spin_is_locked() and
+arch_spin_value_is_unlocked() ?
 
-Reverting this commit on top of 5.19-rc5 "fixes" the issue.
+
+diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+index fdfebcb050f4..63ab4da262f2 100644
+--- a/include/asm-generic/spinlock.h
++++ b/include/asm-generic/spinlock.h
+@@ -68,23 +68,25 @@ static __always_inline void arch_spin_unlock(arch_spinlock_t *lock)
+ 	smp_store_release(ptr, (u16)val + 1);
+ }
+ 
+-static __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)
++static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
+ {
+ 	u32 val = atomic_read(lock);
+ 
+-	return ((val >> 16) != (val & 0xffff));
++	return (s16)((val >> 16) - (val & 0xffff)) > 1;
+ }
+ 
+-static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
++static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+ {
+-	u32 val = atomic_read(lock);
++	u32 val = lock.counter;
+ 
+-	return (s16)((val >> 16) - (val & 0xffff)) > 1;
++	return ((val >> 16) == (val & 0xffff));
+ }
+ 
+-static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
++static __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)
+ {
+-	return !arch_spin_is_locked(&lock);
++	arch_spinlock_t val = READ_ONCE(*lock);
++
++	return !arch_spin_value_unlocked(val);
+ }
+ 
+ #include <asm/qrwlock.h>
+
