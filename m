@@ -2,124 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC63FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAECCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234194AbiGDKB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52214 "EHLO
+        id S234283AbiGDKCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234086AbiGDKAs (ORCPT
+        with ESMTP id S234196AbiGDKCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:00:48 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB573DF05;
-        Mon,  4 Jul 2022 03:00:46 -0700 (PDT)
-X-UUID: ffd65cceb9d34fbc865e8de69de3d55c-20220704
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.7,REQID:3ef2b95f-f484-4e8b-8234-70389ef818c7,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:87442a2,CLOUDID:15925b63-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: ffd65cceb9d34fbc865e8de69de3d55c-20220704
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1739505395; Mon, 04 Jul 2022 18:00:32 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 4 Jul 2022 18:00:30 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 4 Jul 2022 18:00:30 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Weiyi Lu <weiyi.lu@mediatek.com>
-CC:     <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v1 07/16] arm64: dts: mt8195: Add vdosys and vppsys clock nodes
-Date:   Mon, 4 Jul 2022 18:00:19 +0800
-Message-ID: <20220704100028.19932-8-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220704100028.19932-1-tinghan.shen@mediatek.com>
-References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+        Mon, 4 Jul 2022 06:02:08 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA87DF05;
+        Mon,  4 Jul 2022 03:01:04 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2648oLuv020555;
+        Mon, 4 Jul 2022 10:01:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=2BzKSpXBmQpnt6fwkumhu99xLkXdqwcbfqXENMnF3b8=;
+ b=gD3+22KHct1wurEPRIx8f/ad8CMD258WklUuINXHPUzcR4FmgLAvHXcd8R7Gj2YLP+uo
+ 9xTECXhPmdMct5hc3rCytk3cAC5GrEzYDoWLXCovTphZhJJYNOD8SoMIzZNOI0f4G9/o
+ cvFbbPHkt3Sf2SMZqFWak0BDM8PS505JHngpzi+g9br4NCBB6hq8eEZA40Vmr/SSErdl
+ jghNoZtQKa7t7ncpTNPhliU2AwuA0DPROnSLOtwSw5fiy9ldSZRCOq0J809inc60SU4C
+ U4vrf8sOAtcECATsj8WCbkgUGrS91s8jFMyQUcTdPFXtGY/4F2Jt7mUx1glEfejvLmTO Lw== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h3w22sjws-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 10:01:02 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2649pohB001815;
+        Mon, 4 Jul 2022 10:01:00 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 3h2dn8tgh6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 10:00:59 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2649xj0H18481618
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jul 2022 09:59:45 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C9403A4051;
+        Mon,  4 Jul 2022 10:00:56 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5F859A404D;
+        Mon,  4 Jul 2022 10:00:56 +0000 (GMT)
+Received: from osiris (unknown [9.145.48.28])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon,  4 Jul 2022 10:00:56 +0000 (GMT)
+Date:   Mon, 4 Jul 2022 12:00:54 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     Steffen Eiden <seiden@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, nrb@linux.ibm.com
+Subject: Re: [PATCH 1/2] s390/hwcaps: Add HWCAP_UV
+Message-ID: <YsK6ViBvm/330a0i@osiris>
+References: <20220701100210.5482-1-seiden@linux.ibm.com>
+ <20220701100210.5482-2-seiden@linux.ibm.com>
+ <1a2a885b-d408-0426-8e8c-ad1c56f4c215@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1a2a885b-d408-0426-8e8c-ad1c56f4c215@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: _CBYNs-CUDOcOwZNJgfqgpFW7Gs4BYQI
+X-Proofpoint-GUID: _CBYNs-CUDOcOwZNJgfqgpFW7Gs4BYQI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_08,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 adultscore=0
+ mlxlogscore=666 mlxscore=0 suspectscore=0 spamscore=0 clxscore=1015
+ phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2207040040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add display clock nodes.
+On Fri, Jul 01, 2022 at 12:10:18PM +0200, Christian Borntraeger wrote:
+> Am 01.07.22 um 12:02 schrieb Steffen Eiden:
+> > This patch adds a hardware capability for the Ultravisor.
+> > This capability will be present if facility 158 is enabled.
+> > 
+> > Signed-off-by: Steffen Eiden <seiden@linux.ibm.com>
+> > ---
+> >   arch/s390/include/asm/elf.h  | 2 ++
+> >   arch/s390/kernel/processor.c | 5 +++++
+> >   2 files changed, 7 insertions(+)
+> > 
+> > diff --git a/arch/s390/include/asm/elf.h b/arch/s390/include/asm/elf.h
+> > index 70a30ae258b7..3a5e89ce4fd0 100644
+> > --- a/arch/s390/include/asm/elf.h
+> > +++ b/arch/s390/include/asm/elf.h
+> > @@ -115,6 +115,7 @@ enum {
+> >   	HWCAP_NR_NNPA		= 20,
+> >   	HWCAP_NR_PCI_MIO	= 21,
+> >   	HWCAP_NR_SIE		= 22,
+> > +	HWCAP_NR_UV		= 23,
+> >   	HWCAP_NR_MAX
+> >   };
+> 
+> question for Heiko, Vasily, Alexander. This certainly works.
+> An alternative implementation would be to separate module_cpu_feature_match
+> from HWCAP. (so uv would not be shown in /proc/cpuinfo and it would be
+> seen in the aux vector). I would imagine that we might have more drivers
+> in the future that depend on a facility but this facility is not really
+> useful for userspace to know.
+> 
+> See arch/s390/include/asm/cpufeature.h
+>  * Restrict the set of exposed CPU features to ELF hardware capabilities for
+>  * now.  Additional machine flags can be indicated by values larger than
+>  * MAX_ELF_HWCAP_FEATURES.
+> 
+> Any preference from your side?
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+I mentioned already before this RFC that my preferred solution would
+be to have a solution which extends the existing method to work (also)
+with facility bits - haven't checked if all existing users could be
+converted to facility bits, but making it more flexible would work
+certainly.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 900aaa16f862..8d59a7da3271 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -983,6 +983,12 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		vppsys0: clock-controller@14000000 {
-+			compatible = "mediatek,mt8195-vppsys0";
-+			reg = <0 0x14000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
- 		wpesys: clock-controller@14e00000 {
- 			compatible = "mediatek,mt8195-wpesys";
- 			reg = <0 0x14e00000 0 0x1000>;
-@@ -1001,6 +1007,12 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		vppsys1: clock-controller@14f00000 {
-+			compatible = "mediatek,mt8195-vppsys1";
-+			reg = <0 0x14f00000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
- 		imgsys: clock-controller@15000000 {
- 			compatible = "mediatek,mt8195-imgsys";
- 			reg = <0 0x15000000 0 0x1000>;
-@@ -1108,5 +1120,17 @@
- 			reg = <0 0x1b000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
-+
-+		vdosys0: syscon@1c01a000 {
-+			compatible = "mediatek,mt8195-mmsys", "syscon";
-+			reg = <0 0x1c01a000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vdosys1: syscon@1c100000 {
-+			compatible = "mediatek,mt8195-mmsys", "syscon";
-+			reg = <0 0x1c100000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
- 	};
- };
--- 
-2.18.0
-
+If Steffen is willing to do that, that would be very welcome.
+Otherwise I'll put that on my todo list.
