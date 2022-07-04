@@ -2,116 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 090C1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D22FFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbiGDO24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 10:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
+        id S233777AbiGDObK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 10:31:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234428AbiGDO2x (ORCPT
+        with ESMTP id S229589AbiGDObI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 10:28:53 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9704BE49
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 07:28:52 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 4 Jul 2022 10:31:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2212C38A4;
+        Mon,  4 Jul 2022 07:31:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 544F822602;
-        Mon,  4 Jul 2022 14:28:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1656944931; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BR/SioYK/3UlUv+psIKKpEvMM12Z72hpn/Bf8OVfu1A=;
-        b=lZmJ++FuDv4OX+l34Cct/u+0+0eLoK3yxRaV75+WwNF0nIXQu7SOQS5hwugeqm3NVySo0J
-        xgpcYirdOpNFBQ+n1IpnGRqSAlfhZaGZIO0zXi3hZLPRVBxk91gTsXkvWRHhSRxRu39sUK
-        6jgFg4QuDajaJTpjWgyopYY8NshpvPo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1656944931;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BR/SioYK/3UlUv+psIKKpEvMM12Z72hpn/Bf8OVfu1A=;
-        b=rx1l78EaJzQbrKD5XpVcvRoDJo+4yg6br433Ny9OR5xV1RNs5WPw3R39DNsMpH8fbHWyi7
-        HKD6ea8MC4m8JDCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 28CE313451;
-        Mon,  4 Jul 2022 14:28:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id zhsbCSP5wmLbXwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 04 Jul 2022 14:28:51 +0000
-Message-ID: <2f9a95b8-d883-d5a3-3714-801bae36eec2@suse.cz>
-Date:   Mon, 4 Jul 2022 16:28:50 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B249B61667;
+        Mon,  4 Jul 2022 14:31:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D15C3411E;
+        Mon,  4 Jul 2022 14:31:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656945064;
+        bh=abX2vFyPPxtUJL8wR+WOgxjRHK6sRVK3yADC3+pFltw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=haqBElDu9pTENB2dVUV2nrZD5Uk0XFiKbqJc2LFiDC8sy+CbpiUEMZ43KKyPpqV1x
+         wDKhunuPle1p/Hsmj8Zbs1/T1Pr9JwbUFBtP4g9uE3vIjIg2iH4FfgWs918wPTj54n
+         AL0mouy/oyRePOLwILDmV2KyPST9gEVWWUnaPpuc=
+Date:   Mon, 4 Jul 2022 16:31:01 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        arnd@arndb.de, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH] char: misc: make misc_open() and misc_register() killable
+Message-ID: <YsL5pUuydMWJ9dSQ@kroah.com>
+References: <000000000000d9ff3a05bb37069e@google.com>
+ <72e74af9-f1b6-e383-a2c3-6ee8a0aea5e0@I-love.SAKURA.ne.jp>
+ <YsKW6VvWqvcMRBSl@kroah.com>
+ <100f445e-9fa8-4f37-76aa-8359f0008c59@I-love.SAKURA.ne.jp>
+ <YsLIepAXeBKT0AF/@kroah.com>
+ <01a93294-e323-b9ca-7e95-a33d4b89dc47@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 6/7] mm/page_alloc: Remotely drain per-cpu lists
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220624125423.6126-1-mgorman@techsingularity.net>
- <20220624125423.6126-7-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220624125423.6126-7-mgorman@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <01a93294-e323-b9ca-7e95-a33d4b89dc47@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/24/22 14:54, Mel Gorman wrote:
-> From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+On Mon, Jul 04, 2022 at 09:34:04PM +0900, Tetsuo Handa wrote:
+> On 2022/07/04 20:01, Greg KH wrote:
+> > On Mon, Jul 04, 2022 at 07:25:44PM +0900, Tetsuo Handa wrote:
+> >> On 2022/07/04 16:29, Greg KH wrote:
+> >>> On Mon, Jul 04, 2022 at 03:44:07PM +0900, Tetsuo Handa wrote:
+> >>>> syzbot is reporting hung task at misc_open() [1], for snapshot_open() from
+> >>>> misc_open() might sleep for long with misc_mtx held whereas userspace can
+> >>>> flood with concurrent misc_open() requests. Mitigate this problem by making
+> >>>> misc_open() and misc_register() killable.
+> >>>
+> >>> I do not understand, why not just fix snapshot_open()?  Why add this
+> >>> complexity to the misc core for a foolish individual misc device?  Why
+> >>> not add the fix there where it is spinning instead?
+> >>
+> >> Quoting an example from [1]. Multiple processes are calling misc_open() and
+> >> all but one processes are blocked at mutex_lock(&misc_mtx). The one which is
+> >> not blocked at mutex_lock(&misc_mtx) is also holding system_transition_mutex.
+> > 
+> > And that is because of that one misc device, right?  Why not fix that
+> > instead of papering over the issue in the misc core?
 > 
-> Some setups, notably NOHZ_FULL CPUs, are too busy to handle the per-cpu
-> drain work queued by __drain_all_pages().  So introduce a new mechanism to
-> remotely drain the per-cpu lists.  It is made possible by remotely locking
-> 'struct per_cpu_pages' new per-cpu spinlocks.  A benefit of this new
-> scheme is that drain operations are now migration safe.
+> Since "struct file_operations"->open() is allowed to sleep, calling
+> "struct file_operations"->open() via reassignment by "struct miscdevice"->fops
+> with locks held can cause problems.
 > 
-> There was no observed performance degradation vs.  the previous scheme.
-> Both netperf and hackbench were run in parallel to triggering the
-> __drain_all_pages(NULL, true) code path around ~100 times per second.  The
-> new scheme performs a bit better (~5%), although the important point here
-> is there are no performance regressions vs.  the previous mechanism.
-> Per-cpu lists draining happens only in slow paths.
+> Assuming that this is not a deadlock hidden by device_initialize(), current
+> mutex_lock(&misc_mtx) is as problematic as major_names_lock mentioned at
+> https://lkml.kernel.org/r/b2af8a5b-3c1b-204e-7f56-bea0b15848d6@i-love.sakura.ne.jp .
 > 
-> Minchan Kim tested an earlier version and reported;
+> >> If you don't like mutex_lock_killable(&misc_mtx), we will need to consider moving
+> >> file->f_op->open() from misc_open() to after mutex_unlock(&misc_mtx).
 > 
-> 	My workload is not NOHZ CPUs but run apps under heavy memory
-> 	pressure so they goes to direct reclaim and be stuck on
-> 	drain_all_pages until work on workqueue run.
+> Below is minimal changes for avoid calling "struct file_operations"->open() with
+> misc_mtx held. This would be nothing but moving hung task warning from misc_open()
+> to snapshot_open() (and therefore we would need to introduce killable version of
+> lock_system_sleep()), but we can avoid making misc_mtx like major_names_lock above.
 > 
-> 	unit: nanosecond
-> 	max(dur)        avg(dur)                count(dur)
-> 	166713013       487511.77786438033      1283
+> Greg, can you accept this minimal change?
 > 
-> 	From traces, system encountered the drain_all_pages 1283 times and
-> 	worst case was 166ms and avg was 487us.
-> 
-> 	The other problem was alloc_contig_range in CMA. The PCP draining
-> 	takes several hundred millisecond sometimes though there is no
-> 	memory pressure or a few of pages to be migrated out but CPU were
-> 	fully booked.
-> 
-> 	Your patch perfectly removed those wasted time.
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+>  drivers/char/misc.c        | 4 ++++
+>  include/linux/miscdevice.h | 1 +
+>  kernel/power/user.c        | 1 +
+>  3 files changed, 6 insertions(+)
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+I don't understand what you are trying to "fix" here.  What is userspace
+doing (as a normal user) that is causing a problem, and what problem is
+it causing and for what device/hardware/driver is this a problem?
+
+Yes, you can sleep in open(), but you shouldn't sleep long, if at all
+possible as it can be annoying.  So why not fix up the offending driver
+not to sleep to long?
+
+thanks,
+
+greg k-h
