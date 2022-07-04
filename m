@@ -2,148 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1233C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 01:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B299C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 02:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233118AbiGDBxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 3 Jul 2022 21:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
+        id S229565AbiGDCBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 3 Jul 2022 22:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiGDBxD (ORCPT
+        with ESMTP id S229461AbiGDCBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 3 Jul 2022 21:53:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3174164FF
-        for <linux-kernel@vger.kernel.org>; Sun,  3 Jul 2022 18:52:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656899576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sd8cjBSOdeaVjyH4f3lxl+0xYw15nzSjwpJw6bzSgLk=;
-        b=MXHOLjF+x/NNTpRql0vA4aCZLVnQEjTWA1vDnXHgxVGdQj+5try1+GCKBkm/9DX9JLT9yd
-        fz7Q0VhOcFe/UvgPMvL1zyp+nVuTUlcCsNXKT+8CQTp/Ok84J4lYoeeol8ZNh2fIxK3y16
-        wR4vJ2ABQsIieYH8Hfvssr+Y7rZFCc4=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-203-acHK8ogKNra4P023viJ7sQ-1; Sun, 03 Jul 2022 21:52:55 -0400
-X-MC-Unique: acHK8ogKNra4P023viJ7sQ-1
-Received: by mail-pf1-f200.google.com with SMTP id x8-20020aa78f08000000b00525957b1610so2028129pfr.10
-        for <linux-kernel@vger.kernel.org>; Sun, 03 Jul 2022 18:52:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Sd8cjBSOdeaVjyH4f3lxl+0xYw15nzSjwpJw6bzSgLk=;
-        b=M1lt8J7apdKYL3V7QKoNLgVdwujeD+ExtqI3+YssYOOOt5Ym4RSAu5PsM+7NeHS9J7
-         g7Dx7t/J+I6AwIfW9bmyamqzXwNfouK89vQn3sEQ7qVhZTV9NXQNynjUyvWXU14CViLx
-         o9w4Ag3QaSGdQkFYlye42bRqyiB7Cm2MGB46fiA5JrtKyWfX7z3j6Ag603g3N3JMkVcB
-         U+gFhIeyhccY69yTZqZEUdDKsh29oteJ6Hg4Vj/HQwwDI5bl8MLlUPOGWhM/KsjI3m/d
-         zWoYhclJ2EgajPnh73CYDE4hyoKw7T8oaD2F0vfhamcsxbWUQ9owwa+OMlvaTKFzPwt0
-         SIBg==
-X-Gm-Message-State: AJIora/FyowPViUIVlcnHK4073yfcm2Gu+weF2WUcxCINJwY7tXCFBEl
-        w3tOMAbTWovSB9u8Q+FD7hcbdEVv7P8jmrDVIPBPsrzoLAdhPYwyjBX7X+81IGF/lxfduLpcbHy
-        OzOYUuK8vNf0mrAIDeugMNbZA
-X-Received: by 2002:a17:90a:1485:b0:1ec:788e:a053 with SMTP id k5-20020a17090a148500b001ec788ea053mr31016142pja.16.1656899573986;
-        Sun, 03 Jul 2022 18:52:53 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u8Sm73HYl29mcEbEmk3Z6a37A8y2OdP5f3idLICxDPGrBoxyTSHxhDRsHAFrxMwDkh5wCuzQ==
-X-Received: by 2002:a17:90a:1485:b0:1ec:788e:a053 with SMTP id k5-20020a17090a148500b001ec788ea053mr31016116pja.16.1656899573776;
-        Sun, 03 Jul 2022 18:52:53 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p2-20020a1709027ec200b00168f08d0d12sm16841927plb.89.2022.07.03.18.52.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Jul 2022 18:52:53 -0700 (PDT)
-From:   Coiby Xu <coxu@redhat.com>
-To:     kexec@lists.infradead.org, linux-integrity@vger.kernel.org
-Cc:     Mimi Zohar <zohar@linux.ibm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Chun-Yi Lee <jlee@suse.com>, stable@vger.kernel.org,
-        Philipp Rudo <prudo@linux.ibm.com>, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        linux-s390@vger.kernel.org (open list:S390),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v9 4/4] kexec, KEYS, s390: Make use of built-in and secondary keyring for signature verification
-Date:   Mon,  4 Jul 2022 09:52:01 +0800
-Message-Id: <20220704015201.59744-5-coxu@redhat.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220704015201.59744-1-coxu@redhat.com>
-References: <20220704015201.59744-1-coxu@redhat.com>
+        Sun, 3 Jul 2022 22:01:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872EC2DCF;
+        Sun,  3 Jul 2022 19:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656900112; x=1688436112;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/TMS7XNA0yhB+IfbHBEwUp2g2vEsD03w9WFWtyG1M00=;
+  b=iVnOcobtVfLYWQv5SAFq/Gn97hnZMwMHVe/1M4XKmSSGvumOyN+wGGeS
+   QsQiUKBfP0zoyrwPKJvJdI0iQ/srGOqIBYkc+gXn/7QBx5mOx0zafsjd1
+   vhCMKd+VjpGlA+wd6f9stJyZuer58MqDNw0KXw2ehPBZ8f/QMt6DH3KvJ
+   KCynTm5m9U+iDYFwMtDj3QB4jLVdpEnw/AQjmN1BrAF6GO03p6iZTt2Zm
+   xSBMqvkcCkrzpjkJ0MEej/JV8ZPrdEQqZIuuvmhtU+qcvP7qZrtUj51KO
+   VIve7g+sEdvMlqPje18S+BU/nMao+jx0fXUFf3r2U38d2j92LavJBf+OT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="266036296"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="266036296"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2022 19:01:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="660031141"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 03 Jul 2022 19:01:49 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8BPI-000HKJ-Kv;
+        Mon, 04 Jul 2022 02:01:48 +0000
+Date:   Mon, 4 Jul 2022 10:01:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Dan Carpenter <error27@gmail.com>,
+        Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/5] iio: pressure: bmp280: Add support for BMP380
+ sensor family
+Message-ID: <202207040948.hfArdbs2-lkp@intel.com>
+References: <20220704003219.208409-1-ang.iglesiasg@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704003219.208409-1-ang.iglesiasg@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+Hi Angel,
 
-commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
-adds support for KEXEC_SIG verification with keys from platform keyring
-but the built-in keys and secondary keyring are not used.
+Thank you for the patch! Yet something to improve:
 
-Add support for the built-in keys and secondary keyring as x86 does.
+[auto build test ERROR on 69cb6c6556ad89620547318439d6be8bb1629a5a]
 
-Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
-Cc: stable@vger.kernel.org
-Cc: Philipp Rudo <prudo@linux.ibm.com>
-Cc: kexec@lists.infradead.org
-Cc: keyrings@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
-Acked-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Coiby Xu <coxu@redhat.com>
----
- arch/s390/kernel/machine_kexec_file.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Angel-Iglesias/Add-support-for-pressure-sensor-Bosch-BMP380/20220704-083456
+base:   69cb6c6556ad89620547318439d6be8bb1629a5a
+config: s390-randconfig-r031-20220703 (https://download.01.org/0day-ci/archive/20220704/202207040948.hfArdbs2-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 134363208b9272a967c911f7b56c255a72a6f0a0)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/3003e6a1c75431265ca5bc938166239ce722c2df
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Angel-Iglesias/Add-support-for-pressure-sensor-Bosch-BMP380/20220704-083456
+        git checkout 3003e6a1c75431265ca5bc938166239ce722c2df
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/iio/pressure/
 
-diff --git a/arch/s390/kernel/machine_kexec_file.c b/arch/s390/kernel/machine_kexec_file.c
-index 8f43575a4dd3..fc6d5f58debe 100644
---- a/arch/s390/kernel/machine_kexec_file.c
-+++ b/arch/s390/kernel/machine_kexec_file.c
-@@ -31,6 +31,7 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
- 	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
- 	struct module_signature *ms;
- 	unsigned long sig_len;
-+	int ret;
- 
- 	/* Skip signature verification when not secure IPLed. */
- 	if (!ipl_secure_flag)
-@@ -65,11 +66,18 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
- 		return -EBADMSG;
- 	}
- 
--	return verify_pkcs7_signature(kernel, kernel_len,
--				      kernel + kernel_len, sig_len,
--				      VERIFY_USE_PLATFORM_KEYRING,
--				      VERIFYING_MODULE_SIGNATURE,
--				      NULL, NULL);
-+	ret = verify_pkcs7_signature(kernel, kernel_len,
-+				     kernel + kernel_len, sig_len,
-+				     VERIFY_USE_SECONDARY_KEYRING,
-+				     VERIFYING_MODULE_SIGNATURE,
-+				     NULL, NULL);
-+	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))
-+		ret = verify_pkcs7_signature(kernel, kernel_len,
-+					     kernel + kernel_len, sig_len,
-+					     VERIFY_USE_PLATFORM_KEYRING,
-+					     VERIFYING_MODULE_SIGNATURE,
-+					     NULL, NULL);
-+	return ret;
- }
- #endif /* CONFIG_KEXEC_SIG */
- 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/iio/pressure/bmp280-core.c:23:
+   In file included from include/linux/regmap.h:20:
+   In file included from include/linux/iopoll.h:14:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/iio/pressure/bmp280-core.c:23:
+   In file included from include/linux/regmap.h:20:
+   In file included from include/linux/iopoll.h:14:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/iio/pressure/bmp280-core.c:23:
+   In file included from include/linux/regmap.h:20:
+   In file included from include/linux/iopoll.h:14:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/iio/pressure/bmp280-core.c:979:5: error: call to undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                                   FIELD_PREP(BMP380_MODE_MASK, BMP380_MODE_NORMAL));
+                                   ^
+   12 warnings and 1 error generated.
+
+
+vim +/FIELD_PREP +979 drivers/iio/pressure/bmp280-core.c
+
+   967	
+   968	static int bmp380_chip_config(struct bmp280_data *data)
+   969	{
+   970		u8 osrs;
+   971		unsigned int tmp;
+   972		int ret;
+   973	
+   974		/* configure power control register */
+   975		ret = regmap_write_bits(data->regmap, BMP380_REG_POWER_CONTROL,
+   976					BMP380_CTRL_SENSORS_MASK | BMP380_MODE_MASK,
+   977					BMP380_CTRL_SENSORS_PRESS_EN |
+   978					BMP380_CTRL_SENSORS_TEMP_EN |
+ > 979					FIELD_PREP(BMP380_MODE_MASK, BMP380_MODE_NORMAL));
+   980		if (ret < 0) {
+   981			dev_err(data->dev,
+   982				"failed to write operation control register\n");
+   983			return ret;
+   984		}
+   985	
+   986		/* configure oversampling */
+   987		osrs = FIELD_PREP(BMP380_OSRS_TEMP_MASK, data->oversampling_temp) |
+   988		       FIELD_PREP(BMP380_OSRS_PRESS_MASK, data->oversampling_press);
+   989	
+   990		ret = regmap_write_bits(data->regmap, BMP380_REG_OSR,
+   991					BMP380_OSRS_TEMP_MASK | BMP380_OSRS_PRESS_MASK,
+   992					osrs);
+   993		if (ret < 0) {
+   994			dev_err(data->dev, "failed to write oversampling register\n");
+   995			return ret;
+   996		}
+   997	
+   998		/* configure output data rate */
+   999		ret = regmap_write_bits(data->regmap, BMP380_REG_ODR,
+  1000					BMP380_ODRS_MASK, BMP380_ODRS_50HZ);
+  1001		if (ret < 0) {
+  1002			dev_err(data->dev, "failed to write ODR selection register\n");
+  1003			return ret;
+  1004		}
+  1005	
+  1006		/* set filter data */
+  1007		ret = regmap_update_bits(data->regmap, BMP380_REG_CONFIG,
+  1008					 BMP380_FILTER_MASK,
+  1009					 FIELD_PREP(BMP380_FILTER_MASK, BMP380_FILTER_3X));
+  1010		if (ret < 0) {
+  1011			dev_err(data->dev, "failed to write config register\n");
+  1012			return ret;
+  1013		}
+  1014	
+  1015		/* wait startup_time before verifying config changes */
+  1016		usleep_range(data->start_up_time, data->start_up_time + 100);
+  1017	
+  1018		/* check config error flag */
+  1019		ret = regmap_read(data->regmap, BMP380_REG_ERROR, &tmp);
+  1020		if (ret < 0) {
+  1021			dev_err(data->dev,
+  1022				"failed to read error register\n");
+  1023			return ret;
+  1024		}
+  1025		if (tmp & BMP380_ERR_CONF_MASK) {
+  1026			dev_warn(data->dev,
+  1027				 "sensor flagged configuration as incompatible\n");
+  1028			return -EINVAL;
+  1029		}
+  1030	
+  1031		return 0;
+  1032	}
+  1033	
+
 -- 
-2.35.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
