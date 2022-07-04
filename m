@@ -2,87 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAEAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C57C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 07:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbiGDHf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 03:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
+        id S232593AbiGDHfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiGDHfU (ORCPT
+        with ESMTP id S229477AbiGDHfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 03:35:20 -0400
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639F7CC4
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:35:19 -0700 (PDT)
-Received: by mail-qk1-f179.google.com with SMTP id n10so6254358qkn.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 00:35:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4uTcz29t3pg1C4YGaeQ71ecfCeed2MNypmoCrMjlf/c=;
-        b=BT0g3Kee97FhZaFTP8A3BIjnQCv0+VuKgq6ryzLN2BkfIs/EZBQhO7XKQHCJa19dn7
-         RfIcutpYb9I5YSQs1zfi8JgLEYDTmZH34JfReqpOqkRbbjSL3RD3Gdrn6lmLlTggh0is
-         hvhDbOxKxT0enkRQRw+3HXQHinbQsyAwNB5BjVS5+BY4vlSkNt7CkWbp5gNMwSYf5396
-         spwDptdRZCZyurzxN9qh+EoKeCxipjcdOzaXq/JuqLCBEKNrqUa+L5geS2AMKJ7AsI3b
-         gCN1KK83uIV7oCvVEy/6ZJH07RfjyEcIy/uia96GwoqYnkOFHU43nG690j/CjEkySfG6
-         nCrQ==
-X-Gm-Message-State: AJIora/NnyQj1qLBvqC3yF5xcF8YKkMM1k8yEF29mBranaOIJGCsnlg0
-        CctASpLTL/4VnmD3WTrbaCR6grW8NUUB7A==
-X-Google-Smtp-Source: AGRyM1s891dNfZs5vidcw3PvQNdStjlav8Mnfbt7MajL+mpnsN/VRac/vjShFuGgLPI+iGtjvK7EaQ==
-X-Received: by 2002:a05:620a:1712:b0:6af:665d:7687 with SMTP id az18-20020a05620a171200b006af665d7687mr19235525qkb.156.1656920117680;
-        Mon, 04 Jul 2022 00:35:17 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id r13-20020a05620a298d00b006afc53e0be2sm14823651qkp.117.2022.07.04.00.35.17
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 00:35:17 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id l144so2890663ybl.5
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 00:35:17 -0700 (PDT)
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr31448190ybh.36.1656920116950; Mon, 04
- Jul 2022 00:35:16 -0700 (PDT)
+        Mon, 4 Jul 2022 03:35:51 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3618B92
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 00:35:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656920150; x=1688456150;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Q0jhAfVtaXX/0rO/evIVGyVYSNPYOU8ggf+ALIBohTc=;
+  b=J6+Tb43RwF7wikl+VSnIbhC6Eb/TJxHU6WmwGeraFQbOZVqOaH6CDj4p
+   E5I4KiRaDoUeoANNwZOvfLpr+MLXChgcNgAVxI+zL3SdAyE8J3xWhtQf/
+   BjIDCBXbVQF6z4AKgICh7DkDBW3/q4C2Iqka9daRfI/lwKOEsuOndSGGR
+   0Tcy8FU1F0RKXkqb6LKTPz5YIVRPS3yDfm4/kduKn6Nf4kn0ZWOS588tR
+   l9zsh8+M2Ewvdlph6zrAkdVxm6xYUiJnQlF/+5siB0JSW6y6+xJLTfoP9
+   NHJy8vbYe8faRlctVDsieomCpIHOFlb0EdpEUoWp/YE3cG1YcgPEvj5wP
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="281819204"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="281819204"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 00:35:50 -0700
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="567076613"
+Received: from rogerior-mobl1.ger.corp.intel.com (HELO [10.249.254.21]) ([10.249.254.21])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 00:35:47 -0700
+Message-ID: <9c67d656-9990-7206-58b4-3de25d8341a0@linux.intel.com>
+Date:   Mon, 4 Jul 2022 10:36:33 +0300
 MIME-Version: 1.0
-References: <20220704073644.2384999-1-yangyingliang@huawei.com>
-In-Reply-To: <20220704073644.2384999-1-yangyingliang@huawei.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 4 Jul 2022 09:35:05 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUeCV9th=yc7d1OQ72wPUiSxrUFniyV4tJkVrNmRNcMaQ@mail.gmail.com>
-Message-ID: <CAMuHMdUeCV9th=yc7d1OQ72wPUiSxrUFniyV4tJkVrNmRNcMaQ@mail.gmail.com>
-Subject: Re: [PATCH] m68k/amiga: fix missing platform_device_unregister() on
- error in amiga_init_devices()
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/1] ASoC: Intel: catpt: remove duplicating driver data
+ retrieval
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+References: <20220703145152.62297-1-andriy.shevchenko@linux.intel.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
+In-Reply-To: <20220703145152.62297-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yang,
 
-On Mon, Jul 4, 2022 at 9:27 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
-> Add the missing platform_device_unregister() before return
-> from amiga_init_devices() in the error handling case.
->
-> Fixes: eeed227966da ("m68k/amiga: Add error checks when registering platform devices")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Thanks for your patch!
+On 03/07/2022 17:51, Andy Shevchenko wrote:
+> device_get_match_data() in ACPI case calls similar to acpi_match_device().
+> Hence there is no need to duplicate the call. Just assign what is in
+> the id->driver_data.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v2: dropped device_get_match_data() and rewrote commit message
+>  sound/soc/intel/catpt/device.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/sound/soc/intel/catpt/device.c b/sound/soc/intel/catpt/device.c
+> index 85a34e37316d..2eeaeb962532 100644
+> --- a/sound/soc/intel/catpt/device.c
+> +++ b/sound/soc/intel/catpt/device.c
+> @@ -247,6 +247,7 @@ static int catpt_acpi_probe(struct platform_device *pdev)
+>  	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>  	if (!id)
+>  		return -ENODEV;
+> +	spec = (const struct catpt_spec *)id->driver_data;
+>  
+>  	ret = snd_intel_acpi_dsp_driver_probe(dev, id->id);
+>  	if (ret != SND_INTEL_DSP_DRIVER_ANY && ret != SND_INTEL_DSP_DRIVER_SST) {
+> @@ -254,10 +255,6 @@ static int catpt_acpi_probe(struct platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+>  
+> -	spec = device_get_match_data(dev);
+> -	if (!spec)
+> -		return -ENODEV;
+> -
+>  	cdev = devm_kzalloc(dev, sizeof(*cdev), GFP_KERNEL);
+>  	if (!cdev)
+>  		return -ENOMEM;
 
-TBH, I don't think it's worth adding this code: this happens during early
-kernel startup.  If any of these devices fail to register, that must happen
-because the system ran out of memory, and thus won't work anyway.
+We could just pass the "(const struct catpt_spec *)id->driver_data" in
+place of spec to catpt_dev_init() and we can get rid of the local
+temporary pointer?
 
-Gr{oetje,eeting}s,
+If not, then I would cast out the spec before it's use:
+spec = (const struct catpt_spec *)id->driver_data;
+catpt_dev_init(cdev, dev, spec);
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Péter
