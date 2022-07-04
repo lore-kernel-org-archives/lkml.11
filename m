@@ -2,59 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2739C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 14:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234410AbiGDOSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 10:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        id S229892AbiGDOTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 10:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233915AbiGDORl (ORCPT
+        with ESMTP id S229743AbiGDOTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 10:17:41 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E99DAA476;
-        Mon,  4 Jul 2022 07:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=huYW5fOCoYaiUBbhRo6fWg29z4s9u/uhB0RtQtP9fR8=; b=S/zPSmDd4SjssIXtvMa1sEport
-        3orBKSAruqOvQ1OXIpQSfYfin4hO7my+1MGd+jWN6xXqQzZR10PqQgZeOwznxD6mPER2N3Nepoqoj
-        rEVnkAsFq+iSgmbUSqjzyJJIW2kDtqEaTUr1+Ces1ZUp+PC9RGrgJ7T3rRsywg+c9qwCWWPY+tUj+
-        Sw2NhDahbDNGD5pLk84KKA1Ud8CSfbagZH8PTyFj/71BaC4boySWruZur+f9FqIKEjz2xreno1KnF
-        CfZC1aAZ0+XfGhSdc/PceMmcZI57TzbD01JOnJ40+SPiT01LjLT5TP2Km0JZQ7ZLdr+tDX/VxXPBo
-        41QUBYbw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8MtN-00HM68-Ml; Mon, 04 Jul 2022 14:17:37 +0000
-Date:   Mon, 4 Jul 2022 15:17:37 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+2af3bc9585be7f23f290@syzkaller.appspotmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-Subject: Re: [syzbot] WARNING in mark_buffer_dirty (4)
-Message-ID: <YsL2gTVwHL0wFvmI@casper.infradead.org>
-References: <0000000000008f6f7405e2f81ce9@google.com>
- <YsLHQCvp8W5oObv2@casper.infradead.org>
- <CACT4Y+ZvK0Oxf=Hw7mznmFU=x_zCwC4Ev_Zxo2N0p79DNNi-jw@mail.gmail.com>
+        Mon, 4 Jul 2022 10:19:49 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC134E96
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 07:19:48 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id h19so10032339qtp.6
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 07:19:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sEJN53L6BzfWwRddod8bktU/FwcXRe3wrheKMHUBD0M=;
+        b=gzmCelenOs+wCtg9SR9PXcTu98xn8hlT6cjxHUdyNkLb92N0rc7GCxtoJiENNgjk/i
+         oZ2l5otI8zHMQRCfx8zua97F3TZw2xx02hcvb2sL+IlQN/1k6Mm0xQOlmifuam46CpAY
+         qPuLL1Oh9yjlXtiDGnPge1fB7XQvycM5ycp8L71I6+qd7u/zVqJe/rLeszDu10Qoc62f
+         QWMDvarZfEA3asWZKKAYbqu31ejs1wBhxFMIH28qK2lOFbjCJKj/hiMq7U5v0m5EUBlZ
+         H72aDNRWwkbsm2BfE3t1UEzLL8agYUwszUOKPljPC9Kt5sQF6hVnUWz+zPnhGztJzZHD
+         1jQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sEJN53L6BzfWwRddod8bktU/FwcXRe3wrheKMHUBD0M=;
+        b=PrbNeB9ddZez3jgmpV8kdjfFOUbLiVlTW/mg3hrvxFqjmAfLuoh6BEf9Anqu33pAuW
+         E4tgwP707Ky62RgTs6vf/8Wytyo5VWXopo0HZMAwVl2SQpIls1q8J9eH5iZCN6iZ6T2z
+         /6hThqdWrsRyl+6iVxTbL9iZVZsjHmKwyWdGnKcHGq6br9nIo8K5wsqvxi+IJ0x6kxKf
+         MF0fCJO/GxF9DQZnlrXAq2N39ULercu88P12lk5cokj1rLOqXoXzpIZ0jFSZC0NlKxZ7
+         5a+EIK2EBKwkDXrh2oCXPdiiFAmfAwK5hNu+iby9hVZnauQmmbqls377qOxIWVzhcASU
+         C72w==
+X-Gm-Message-State: AJIora9w245yDunzsSK1GiATy9t0rlTf0tRlPDMgNsywthUqG2dVECrJ
+        wNDy0IbV2ran/gzKdFohZLL3Wy6m0CB4BCk=
+X-Google-Smtp-Source: AGRyM1vGNT5DAaqpGF5lfdyet3EM+DFcR9G2Fp5/GjeGD7+0UTAZfWxJ0uk288PfxMm/sopnV1P8pQ==
+X-Received: by 2002:a05:622a:187:b0:319:b2d:4aff with SMTP id s7-20020a05622a018700b003190b2d4affmr24648682qtw.386.1656944387962;
+        Mon, 04 Jul 2022 07:19:47 -0700 (PDT)
+Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id g16-20020ae9e110000000b006aefa015c05sm23343969qkm.25.2022.07.04.07.19.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 07:19:47 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 10:19:46 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     Dominique Martinet <asmadeus@codewreck.org>,
+        linux-kernel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>
+Subject: Re: [PATCH 3/3] 9p: Add mempools for RPCs
+Message-ID: <20220704141946.4yqo2o6ih5zrqjmy@moria.home.lan>
+References: <20220704010945.C230AC341C7@smtp.kernel.org>
+ <2335194.JbyEHpbE5P@silver>
+ <20220704130631.eq5txpq62gwvbvts@moria.home.lan>
+ <1877940.0u7pHPiiHj@silver>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CACT4Y+ZvK0Oxf=Hw7mznmFU=x_zCwC4Ev_Zxo2N0p79DNNi-jw@mail.gmail.com>
+In-Reply-To: <1877940.0u7pHPiiHj@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 03:13:13PM +0200, Dmitry Vyukov wrote:
-> On Mon, 4 Jul 2022 at 12:56, Matthew Wilcox <willy@infradead.org> wrote:
-> > It's clearly none of those commits.  This is a bug in minix, afaict.
-> > Judging by the earlier errors, I'd say that it tried to read something,
-> > failed, then marked it dirty, at which point we hit an assertion that
-> > you shouldn't mark a !uptodate buffer as dirty.  Given that this is
-> > minix, I have no interest in pursuing this bug further.  Why is syzbot
-> > even testing with minix?
-> 
-> Shouldn't it? Why? It does not seem to depend on BROKEN.
+On Mon, Jul 04, 2022 at 03:39:32PM +0200, Christian Schoenebeck wrote:
+> So simple that it already had one obvious bug (at least). But as it seems that 
+> Dominique already supports your patch, I refrain from enumerating more 
+> reasons.
 
-There is no entry for minix in MAINTAINERS.  Nobody cares about it.
+So snippy.
+
+> 
+> > > However that's exactly what I was going to address with my already posted
+> > > patches (relevant patches regarding this issue here being 9..12):
+> > > https://lore.kernel.org/all/cover.1640870037.git.linux_oss@crudebyte.com/
+> > > And in the cover letter (section "STILL TODO" ... "3.") I was suggesting
+> > > to
+> > > subsequently subdivide kmem_cache_alloc() into e.g. 4 allocation size
+> > > categories? Because that's what my already posted patches do anyway.
+> > 
+> > Yeah that sounds like you're just reimplementing kmalloc.
+> 
+> Quite exaggerated statement.
+
+I'm just pointing out that kmalloc() is just a frontend around
+kmem_cache_alloc() that picks the cache based on the size parameter... so...
+still sounds like you are?
+
+Not that there's never a legitimate reason to do so, but it does raise an
+eyebrow.
