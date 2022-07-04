@@ -2,211 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA48FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 736CDC3F2D4
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiGDMSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 08:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S233317AbiGDMS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 08:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231339AbiGDMRR (ORCPT
+        with ESMTP id S234779AbiGDMR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 08:17:17 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8261263F;
-        Mon,  4 Jul 2022 05:17:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656937021; x=1688473021;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cyGVS60gG5sog/TGKIss/AIPg2gKY2XrIx5CQ4aywGs=;
-  b=gwezSYrjWskZteo+bCuFYllggWB7YGHOcp74CjCLUlukQUyPeH3j31EB
-   xcDGMdMFRvLBpQUM98qFdH+JOmMRo3q5CnA+1TPfOOV+LMnt2dq1rzzg5
-   1T0txSp3m1ybh5FfA2te96wsLHFKskxCp1G5C5An6pX2JfSzA/hDgaelt
-   6EOHkIp7xa6WaldTaoqp+H7O8eGRIH0fY+V2dWrhesD4CDfRM5dUjh+KR
-   xs/6N1lqR6xZDOEOIjG+dJimHtaSTzBgxSOkK3O3m1Iy7RJ2VdR5fdiUv
-   WUgXdtKlzFVJeULSLaFvb2uRdZhna2sfxkGf4a+6gToo8TS4EkC3x00Lq
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="102909278"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jul 2022 05:16:59 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 4 Jul 2022 05:16:53 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 4 Jul 2022 05:16:51 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Mon, 4 Jul 2022 08:17:56 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1826611C02
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 05:17:36 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id bx13so10874986ljb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 05:17:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bUHK7FLYbuKzqzrEAJR7c+KmgynCicbvnzdwq2sVmI8=;
+        b=qhGqzsRhvCQs96kxKr5liLm7CKnA5+AxQKaP7OUrSyE4miumGZmhLNRAY2bNN0cdG0
+         tbq1CKueAVpYgR8igSgddjOXqb/SFJYJ6Iibuw61vvhHQeMSnDmvUpnb+T606fX0f7IA
+         BJ1cOh1LCMp/yfnsjiipMNB5wf8ns7EZEGywTGDYeDrE39DlZrx5iD1AyL3QoxJ244cZ
+         ihoaXY+mlgrU556tQjtFi64zXHLkqUXYEZaLuneoNwkVmbeRWuxfmsaMQTMIiU4zfWEH
+         vaTCsQpX/xK9tBmMV10XgCArYaZXMJ8TCvXAhP9qZyR2cQAUHwVBV8oGnX7FjTNkAgcV
+         Cdsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bUHK7FLYbuKzqzrEAJR7c+KmgynCicbvnzdwq2sVmI8=;
+        b=snKwTWIdXq8McgTjz37U6QFttiIVFMmKUKUoUax7S+JZAbBnmKqYD8/H4siQg2L3Ji
+         TvxhUyYKnwbaUjiZlIlLp8eqp0zPO2KJdp6X/EzTfSe1GBdri8q3Dh+I2QdhTXWqDKoD
+         MZNCY+esrZKfjVO5JilNaemH7vXMK4E0UDJNFwo1QjlIEsDe4vIcuq1x6CmvsKr0Qqve
+         Fmm9ZT2KpNATkxzrCU6x31t7+hTH0ctMPYdlRFTsqsPUl5Ne10vUC33w93FUrNol6s49
+         loSDcEpi+AbuhjiOiXU0veqz0Rnb7hgnqLNWnQfFL8xZGHq3KbyAMk5FXb2BS1Lw8EsI
+         tinQ==
+X-Gm-Message-State: AJIora+DRo1+58WzrnxiNnfLrt0TSQogt/FVVfUw6bgABmvmhHG6qB+2
+        iRLa7e20EOMP59pJ7sF12Eix3A==
+X-Google-Smtp-Source: AGRyM1t47gezqmzrWMhZ7+1YcO1f62HYaF93Yupewcz7b4aXcA0k50BaEbcGuyttIrsyH+ED5YUW+w==
+X-Received: by 2002:a2e:a453:0:b0:25a:96d0:b15 with SMTP id v19-20020a2ea453000000b0025a96d00b15mr16015890ljn.228.1656937054339;
+        Mon, 04 Jul 2022 05:17:34 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id u11-20020a05651220cb00b0047faa01edd9sm5102149lfr.229.2022.07.04.05.17.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 05:17:33 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: [PATCH v2 11/12] clk: microchip: mpfs: convert cfg_clk to clk_divider
-Date:   Mon, 4 Jul 2022 13:15:58 +0100
-Message-ID: <20220704121558.2088698-12-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220704121558.2088698-1-conor.dooley@microchip.com>
-References: <20220704121558.2088698-1-conor.dooley@microchip.com>
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>
+Subject: [PATCH v8 0/4] soc/arm64: qcom: Add initial version of bwmon
+Date:   Mon,  4 Jul 2022 14:17:26 +0200
+Message-Id: <20220704121730.127925-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cfg_clk struct is now just a redefinition of the clk_divider struct
-with custom implentations of the ops, that implement an extra level of
-redirection. Remove the custom struct and replace it with clk_divider.
+Hi,
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/clk/microchip/clk-mpfs.c | 76 ++++----------------------------
- 1 file changed, 8 insertions(+), 68 deletions(-)
+Changes since v7
+================
+1. After discussions with Bjorn and Rajendra, go back to "SoC-bwmon"
+   compatible, so without "llcc".  The other bwmon instance - between
+   LLCC and DDR - should be called LLCC.
 
-diff --git a/drivers/clk/microchip/clk-mpfs.c b/drivers/clk/microchip/clk-mpfs.c
-index e58d0bc4669a..1d9e8c1e56b6 100644
---- a/drivers/clk/microchip/clk-mpfs.c
-+++ b/drivers/clk/microchip/clk-mpfs.c
-@@ -51,24 +51,13 @@ struct mpfs_msspll_hw_clock {
- 
- #define to_mpfs_msspll_clk(_hw) container_of(_hw, struct mpfs_msspll_hw_clock, hw)
- 
--struct mpfs_cfg_clock {
--	void __iomem *reg;
--	const struct clk_div_table *table;
--	u8 shift;
--	u8 width;
--	u8 flags;
--};
--
- struct mpfs_cfg_hw_clock {
--	struct mpfs_cfg_clock cfg;
--	struct clk_hw hw;
-+	struct clk_divider cfg;
- 	struct clk_init_data init;
- 	unsigned int id;
- 	u32 reg_offset;
- };
- 
--#define to_mpfs_cfg_clk(_hw) container_of(_hw, struct mpfs_cfg_hw_clock, hw)
--
- struct mpfs_periph_clock {
- 	void __iomem *reg;
- 	u8 shift;
-@@ -228,56 +217,6 @@ static int mpfs_clk_register_mssplls(struct device *dev, struct mpfs_msspll_hw_c
-  * "CFG" clocks
-  */
- 
--static unsigned long mpfs_cfg_clk_recalc_rate(struct clk_hw *hw, unsigned long prate)
--{
--	struct mpfs_cfg_hw_clock *cfg_hw = to_mpfs_cfg_clk(hw);
--	struct mpfs_cfg_clock *cfg = &cfg_hw->cfg;
--	u32 val;
--
--	val = readl_relaxed(cfg->reg) >> cfg->shift;
--	val &= clk_div_mask(cfg->width);
--
--	return divider_recalc_rate(hw, prate, val, cfg->table, cfg->flags, cfg->width);
--}
--
--static long mpfs_cfg_clk_round_rate(struct clk_hw *hw, unsigned long rate, unsigned long *prate)
--{
--	struct mpfs_cfg_hw_clock *cfg_hw = to_mpfs_cfg_clk(hw);
--	struct mpfs_cfg_clock *cfg = &cfg_hw->cfg;
--
--	return divider_round_rate(hw, rate, prate, cfg->table, cfg->width, 0);
--}
--
--static int mpfs_cfg_clk_set_rate(struct clk_hw *hw, unsigned long rate, unsigned long prate)
--{
--	struct mpfs_cfg_hw_clock *cfg_hw = to_mpfs_cfg_clk(hw);
--	struct mpfs_cfg_clock *cfg = &cfg_hw->cfg;
--	unsigned long flags;
--	u32 val;
--	int divider_setting;
--
--	divider_setting = divider_get_val(rate, prate, cfg->table, cfg->width, 0);
--
--	if (divider_setting < 0)
--		return divider_setting;
--
--	spin_lock_irqsave(&mpfs_clk_lock, flags);
--	val = readl_relaxed(cfg->reg);
--	val &= ~(clk_div_mask(cfg->width) << cfg_hw->cfg.shift);
--	val |= divider_setting << cfg->shift;
--	writel_relaxed(val, cfg->reg);
--
--	spin_unlock_irqrestore(&mpfs_clk_lock, flags);
--
--	return 0;
--}
--
--static const struct clk_ops mpfs_clk_cfg_ops = {
--	.recalc_rate = mpfs_cfg_clk_recalc_rate,
--	.round_rate = mpfs_cfg_clk_round_rate,
--	.set_rate = mpfs_cfg_clk_set_rate,
--};
--
- #define CLK_CFG(_id, _name, _parent, _shift, _width, _table, _flags, _offset) {		\
- 	.id = _id,									\
- 	.cfg.shift = _shift,								\
-@@ -285,7 +224,8 @@ static const struct clk_ops mpfs_clk_cfg_ops = {
- 	.cfg.table = _table,								\
- 	.reg_offset = _offset,								\
- 	.cfg.flags = _flags,								\
--	.hw.init = CLK_HW_INIT(_name, _parent, &mpfs_clk_cfg_ops, 0),			\
-+	.cfg.hw.init = CLK_HW_INIT(_name, _parent, &clk_divider_ops, 0),		\
-+	.cfg.lock = &mpfs_clk_lock,							\
- }
- 
- static struct mpfs_cfg_hw_clock mpfs_cfg_clks[] = {
-@@ -302,8 +242,8 @@ static struct mpfs_cfg_hw_clock mpfs_cfg_clks[] = {
- 		.cfg.table = mpfs_div_rtcref_table,
- 		.reg_offset = REG_RTC_CLOCK_CR,
- 		.cfg.flags = CLK_DIVIDER_ONE_BASED,
--		.hw.init =
--			CLK_HW_INIT_PARENTS_DATA("clk_rtcref", mpfs_ext_ref, &mpfs_clk_cfg_ops, 0),
-+		.cfg.hw.init =
-+			CLK_HW_INIT_PARENTS_DATA("clk_rtcref", mpfs_ext_ref, &clk_divider_ops, 0),
- 	}
- };
- 
-@@ -317,13 +257,13 @@ static int mpfs_clk_register_cfgs(struct device *dev, struct mpfs_cfg_hw_clock *
- 		struct mpfs_cfg_hw_clock *cfg_hw = &cfg_hws[i];
- 
- 		cfg_hw->cfg.reg = data->base + cfg_hw->reg_offset;
--		ret = devm_clk_hw_register(dev, &cfg_hw->hw);
-+		ret = devm_clk_hw_register(dev, &cfg_hw->cfg.hw);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register clock id: %d\n",
- 					     cfg_hw->id);
- 
- 		id = cfg_hw->id;
--		data->hw_data.hws[id] = &cfg_hw->hw;
-+		data->hw_data.hws[id] = &cfg_hw->cfg.hw;
- 	}
- 
- 	return 0;
-@@ -393,7 +333,7 @@ static const struct clk_ops mpfs_periph_clk_ops = {
- 				  _flags),					\
- }
- 
--#define PARENT_CLK(PARENT) (&mpfs_cfg_clks[CLK_##PARENT].hw)
-+#define PARENT_CLK(PARENT) (&mpfs_cfg_clks[CLK_##PARENT].cfg.hw)
- 
- /*
-  * Critical clocks:
+Changes since v6
+================
+1. Patch #2 (driver): use MSM8998 compatible.
+
+Changes since v5
+================
+1. Rename compatible (and files) to qcom,msm8998-llcc-bwmon as Rajendra suggested.
+   Keep the reviews/acks as the change is not significant.
+2. Update comment in DTS, update description in bindings and in Kconfig.
+
+Changes since v4
+================
+1. Patch #1 (binding): Use qcom,msm8998-cpu-bwmon fallback compatible, only one
+   interconnect. Rename to qcom,msm8998-cpu-bwmon.yaml. This reflects
+   discussion with Bjorn, about the proper fallback compatible. Driver was
+   tested only on SDM845, so only that one compatible is actually implemented.
+   Keep the reviews/acks as the change is not significant.
+2. Patch #4 (DTS): Use qcom,msm8998-cpu-bwmon fallback compatible, only one
+   interconnect, use the LLCC bandwidth in OPP.
+
+remove unused irq_enable (kbuild robot);
+Changes since v3
+================
+1. Patch #2 (bwmon): remove unused irq_enable (kbuild robot);
+   split bwmon_clear() into clearing counters and interrupts, so bwmon_start()
+   does not clear the counters twice.
+
+Changes since v2
+================
+1. Spent a lot of time on benchmarking and learning the BWMON behavior.
+2. Drop PM/OPP patch - applied.
+3. Patch #1: drop opp-avg-kBps.
+4. Patch #2: Add several comments explaining pieces of code and BWMON, extend
+   commit msg with measurements, extend help message, add new #defines to document
+   some magic values, reorder bwmon clear/disable/enable operations to match
+   downstream source and document this with comments, fix unit count from 1 MB
+   to 65 kB.
+5. Patch #4: drop opp-avg-kBps.
+6. Add accumulated Rb tags.
+
+Changes since v1
+================
+1. Add defconfig change.
+2. Fix missing semicolon in MODULE_AUTHOR.
+3. Add original downstream (msm-4.9 tree) copyrights to the driver.
+
+Description
+===========
+BWMON is a data bandwidth monitor providing throughput/bandwidth over certain
+interconnect links in a SoC.  It might be used to gather current bus usage and
+vote for interconnect bandwidth, thus adjusting the bus speed based on actual
+usage.
+
+The work is built on top of Thara Gopinath's patches with several cleanups,
+changes and simplifications.
+
+Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (4):
+  dt-bindings: interconnect: qcom,msm8998-cpu-bwmon: add BWMON device
+  soc: qcom: icc-bwmon: Add bandwidth monitoring driver
+  arm64: defconfig: enable Qualcomm Bandwidth Monitor
+  arm64: dts: qcom: sdm845: Add CPU BWMON
+
+ .../interconnect/qcom,msm8998-bwmon.yaml      |  86 ++++
+ MAINTAINERS                                   |   7 +
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |  37 ++
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/soc/qcom/Kconfig                      |  15 +
+ drivers/soc/qcom/Makefile                     |   1 +
+ drivers/soc/qcom/icc-bwmon.c                  | 421 ++++++++++++++++++
+ 7 files changed, 568 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
+ create mode 100644 drivers/soc/qcom/icc-bwmon.c
+
 -- 
-2.36.1
+2.34.1
 
