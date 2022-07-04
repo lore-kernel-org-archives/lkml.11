@@ -2,114 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3262ACCA479
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 08:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E24BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 08:03:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbiGDIBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 04:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
+        id S233037AbiGDIDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 04:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230505AbiGDIBp (ORCPT
+        with ESMTP id S232837AbiGDIDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 04:01:45 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CFDB5AE50;
-        Mon,  4 Jul 2022 01:01:44 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E76FE23A;
-        Mon,  4 Jul 2022 01:01:44 -0700 (PDT)
-Received: from [192.168.33.14] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1BEA93F792;
-        Mon,  4 Jul 2022 01:01:42 -0700 (PDT)
-Message-ID: <88ce3064-8a98-c7eb-a77b-fcd5b03db330@arm.com>
-Date:   Mon, 4 Jul 2022 09:01:42 +0100
+        Mon, 4 Jul 2022 04:03:40 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738B155B2
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 01:03:39 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id t21so8288060pfq.1
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 01:03:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f9ptmB3XGt31Pq8FBcI5MbA2yBypm+2JGBZYReeKeY8=;
+        b=Q9uOsaM9gkzoT9XZMryjeJeF4CqBEe4f122QMdyvIZ9OW46Gs7GZNeNtv9XtFxnCJJ
+         fJqRhw9DxUt5HANWF5eFN4LhPRwVHx/FispChp8KKIr9C6S/zq1dZ9KG9pK2KmbLIap8
+         uS3E0XSoWiw8KERhpzJsdlrcOYmCZE9mIS152hhNij8jcjSAnsvF0v726taSw+Dj8qt6
+         2pGaOxOcxT5Q98YX++uFB1kri4Vpa1ZLOLSXgZR6PtXp0jdOhRjRdMI8kPpt3zrDBKDe
+         Vy3YfYkRNeVmXc3niV/aK3gvgb6va+fJXbTRWgmK+kKE3xJvF326absJFF6oeeKY+VSS
+         cCvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f9ptmB3XGt31Pq8FBcI5MbA2yBypm+2JGBZYReeKeY8=;
+        b=fLH48Tl3MPhavckJTJyZKcB0sOigdFSH3wDKBr9o+9Goy1rH8FHueKdX14+U2u+zfQ
+         qEVtRQ4aCUdSRPM/9LSEUbi9FhpWBHlaueamx4gokJAqqHhbt4vZcPXgnpPGutdB8JZp
+         5noD9HgUP+3vMT5FHF36B4WHjIN0j6V+uc68WxE2w7ttaRqF0kfVC3vN4bDE6AjtqN2z
+         Oj3ciuCPxaVUP3dKTqZSohN2w632k0rEEn17PnL++NGrYtnDHKMBZMJLnZfDUMqF82os
+         mUaGr7WCL6zg192KM5kestmENd+NpPS+6Kq3cKQU8cTNdK1N8Q3AwaxmRYjlP/wox/Me
+         a7yw==
+X-Gm-Message-State: AJIora8Foiul2+vDlgfPBhy76khZXlTuw8SxcmDfrFkDVCFqq6iXhDzz
+        /pVd2cbReSA/X4fRbPFxnpoyuA==
+X-Google-Smtp-Source: AGRyM1svsqJoBsj5Q1XvMG+PjZFAD50xTrVz1dkapvyAi5JFA6rZcft884USVJUlz+5c+8OcIXlzng==
+X-Received: by 2002:a65:640e:0:b0:412:2906:bb25 with SMTP id a14-20020a65640e000000b004122906bb25mr6567449pgv.82.1656921818983;
+        Mon, 04 Jul 2022 01:03:38 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.229])
+        by smtp.gmail.com with ESMTPSA id s8-20020aa78d48000000b0052089e1b88esm20352965pfe.192.2022.07.04.01.03.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 01:03:38 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     akpm@linux-foundation.org, willy@infradead.org, jgg@ziepe.ca,
+        jhubbard@nvidia.com, william.kucharski@oracle.com,
+        dan.j.williams@intel.com, jack@suse.cz
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH] mm: fix missing wake-up event for FSDAX pages
+Date:   Mon,  4 Jul 2022 15:40:54 +0800
+Message-Id: <20220704074054.32310-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 03/12] thermal/of: Remove the device node pointer for
- thermal_trip
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
-        daniel.lezcano@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, abailon@baylibre.com,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, rafael@kernel.org
-References: <20220703183059.4133659-1-daniel.lezcano@linexp.org>
- <20220703183059.4133659-4-daniel.lezcano@linexp.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220703183059.4133659-4-daniel.lezcano@linexp.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+FSDAX page refcounts are 1-based, rather than 0-based: if refcount is
+1, then the page is freed.  The FSDAX pages can be pinned through GUP,
+then they will be unpinned via unpin_user_page() using a folio variant
+to put the page, however, folio variants did not consider this special
+case, the result will be to miss a wakeup event (like the user of
+__fuse_dax_break_layouts()).
 
+Fixes: d8ddc099c6b3 ("mm/gup: Add gup_put_folio()")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ include/linux/mm.h | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-On 7/3/22 19:30, Daniel Lezcano wrote:
-> The device node pointer is no longer needed in the thermal trip
-> structure, remove it.
-> 
-> Cc: Alexandre Bailon <abailon@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc; Eduardo Valentin <eduval@amazon.com>
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-> ---
->   drivers/thermal/thermal_core.h | 2 --
->   drivers/thermal/thermal_of.c   | 8 --------
->   2 files changed, 10 deletions(-)
-> 
-> diff --git a/drivers/thermal/thermal_core.h b/drivers/thermal/thermal_core.h
-> index 726e327b4205..ff10cdda056c 100644
-> --- a/drivers/thermal/thermal_core.h
-> +++ b/drivers/thermal/thermal_core.h
-> @@ -70,13 +70,11 @@ void __thermal_cdev_update(struct thermal_cooling_device *cdev);
->   
->   /**
->    * struct thermal_trip - representation of a point in temperature domain
-> - * @np: pointer to struct device_node that this trip point was created from
->    * @temperature: temperature value in miliCelsius
->    * @hysteresis: relative hysteresis in miliCelsius
->    * @type: trip point type
->    */
->   struct thermal_trip {
-> -	struct device_node *np;
->   	int temperature;
->   	int hysteresis;
->   	enum thermal_trip_type type;
-> diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-> index 04c910ca8623..16eb18c24430 100644
-> --- a/drivers/thermal/thermal_of.c
-> +++ b/drivers/thermal/thermal_of.c
-> @@ -867,10 +867,6 @@ static int thermal_of_populate_trip(struct device_node *np,
->   		return ret;
->   	}
->   
-> -	/* Required for cooling map matching */
-> -	trip->np = np;
-> -	of_node_get(np);
-> -
->   	return 0;
->   }
->   
-> @@ -1000,8 +996,6 @@ __init *thermal_of_build_thermal_zone(struct device_node *np)
->   
->   	kfree(tz->tbps);
->   free_trips:
-> -	for (i = 0; i < tz->ntrips; i++)
-> -		of_node_put(tz->trips[i].np);
->   	kfree(tz->trips);
->   	of_node_put(gchild);
->   free_tz:
-> @@ -1026,8 +1020,6 @@ static __init void of_thermal_free_zone(struct __thermal_zone *tz)
->   	}
->   
->   	kfree(tz->tbps);
-> -	for (i = 0; i < tz->ntrips; i++)
-> -		of_node_put(tz->trips[i].np);
->   	kfree(tz->trips);
->   	kfree(tz);
->   }
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 517f9deba56f..32aaa7b06f5a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1223,6 +1223,9 @@ static inline __must_check bool try_get_page(struct page *page)
+  */
+ static inline void folio_put(struct folio *folio)
+ {
++	if (put_devmap_managed_page(&folio->page))
++		return;
++
+ 	if (folio_put_testzero(folio))
+ 		__folio_put(folio);
+ }
+@@ -1243,8 +1246,13 @@ static inline void folio_put(struct folio *folio)
+  */
+ static inline void folio_put_refs(struct folio *folio, int refs)
+ {
+-	if (folio_ref_sub_and_test(folio, refs))
+-		__folio_put(folio);
++	/*
++	 * For fsdax managed pages we need to catch refcount transition
++	 * from 2 to 1:
++	 */
++	if (refs > 1)
++		folio_ref_sub(folio, refs - 1);
++	folio_put(folio);
+ }
+ 
+ void release_pages(struct page **pages, int nr);
+@@ -1268,15 +1276,7 @@ static inline void folios_put(struct folio **folios, unsigned int nr)
+ 
+ static inline void put_page(struct page *page)
+ {
+-	struct folio *folio = page_folio(page);
+-
+-	/*
+-	 * For some devmap managed pages we need to catch refcount transition
+-	 * from 2 to 1:
+-	 */
+-	if (put_devmap_managed_page(&folio->page))
+-		return;
+-	folio_put(folio);
++	folio_put(page_folio(page));
+ }
+ 
+ /*
+-- 
+2.11.0
 
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
