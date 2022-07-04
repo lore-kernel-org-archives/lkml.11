@@ -2,131 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B56BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 16:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3DEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 16:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233922AbiGDQaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 12:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
+        id S234358AbiGDQbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 12:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiGDQaO (ORCPT
+        with ESMTP id S233028AbiGDQbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 12:30:14 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE4F26E5
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 09:30:12 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id fw3so17559602ejc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 09:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qa+D4dQqiBNUy+is+Q6bf3LQA+gxHqJGFG1OJEKL5bs=;
-        b=z0EQ+27kM9xc0j0LImY4X+pRFKgSnisohyhBDU8Rq83T6Y87tCIzwknamSJh88V1Nj
-         VrlRGqFcKs074+VLAkLVUyDY9BKAJ5wSjrbIrlZBysGt4BdBQRinSrwWmIx7YAaCrO8A
-         xr9xih6bUdGOjPbAvOKb7BBvu8QRtgSvOv6GE0fzK/FTNtDES/OKwQt/50OeKCapGJw/
-         bK7y+PkTGoZbBz12BOrXoKW48xQkScMzHHH6YZ6LWbTP7CXxquy8Jp7L0BbCz9AdXwVG
-         z2INJJs2z0252YebDihETK9EMtVN5CCCTtMQX7JZBhEC1dFClw0n/JmvJRvNP3phoTyp
-         iwvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qa+D4dQqiBNUy+is+Q6bf3LQA+gxHqJGFG1OJEKL5bs=;
-        b=Gjw5Q8q9IS1YuMhVYjGrGRX7lQrHDo7YQ/KgBhRki/8GyfZqWN9wtU6u06lo4/2KU+
-         vWw3NLWcyhzSxnQ0/N8utKPVbeRNMPKqfhw1vkuL2ypiv3wIldBM7UkJ2VxQ8n3c+8Sq
-         02uLWTwMD+4434shvGp76yQxlPlQgrzl1u6UMSxwX65OW6dt1qFu3AjORRxQVgo6WDuS
-         ID22zbB9RireBJEALLxfZ7rl8SjJQ6mOPgSN3e7MyI1y9v7gJnANqp5W76AG1sbfJsrt
-         GI/GZHZNixevLegxV3u1dvUI3Kt/jztYdadE+BPjC05q754uniJBeIqdWgPpiYSh+58u
-         5BHA==
-X-Gm-Message-State: AJIora+DMjW/JW0AF3a17GRh+H15KoEDvIuqmlMevC0repfkx8EYpQne
-        mH8tQM63U5g/8NNjwiKORwMpsUsgwI4eC7whhI2FGQ==
-X-Google-Smtp-Source: AGRyM1tAvL9Q82zGIZW1hD00z0B2wNatH7drzCU8LGzRu6ig6mbuRx4O5Um+W8hO0Yo7sZwIQTJMgNI59Y2Qqw1ZJ6U=
-X-Received: by 2002:a17:907:a088:b0:726:dbb1:6aed with SMTP id
- hu8-20020a170907a08800b00726dbb16aedmr29386042ejc.407.1656952211401; Mon, 04
- Jul 2022 09:30:11 -0700 (PDT)
+        Mon, 4 Jul 2022 12:31:11 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C496404;
+        Mon,  4 Jul 2022 09:31:10 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264G2wcS023517;
+        Mon, 4 Jul 2022 16:30:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=pp1; bh=gJnL/G7O20Rd6U2Rbs8HerMEoRfqGWgNBlHNnsoKfbE=;
+ b=Kl8uHM6iasT3vuqppIAyjB4nBDdSIbUAoddnUZFhpqnVZSGqoFsmjT+tgZVkxoku2sG4
+ qQd4NbDpqiJLl/rdvYoZI2FXFHCsF4H872bPrGtVGSytOJ8rPfzyWfwNQq62r40Ofkc5
+ 1y57ob/MmM3vtlpswvDHol6XBUWqpghj88H/kFxB1KQ7yrCBBQ9tOBUjwAQx6DV2yuvJ
+ Czp4U7Q5oG+ZcowYxRl5Idzr0OF+r+iaMtLrRh8y95iIx4JRQvIfRDqCCFb6wRyPgpw+
+ wSyVlXvK9oPxKzcPmAtVOmtUaN6kn+NYEou8yV7qPDzFj5YqpmaehZceGe1Jf7036tuO bA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h43cu0hs6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 16:30:57 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 264G3tlW026793;
+        Mon, 4 Jul 2022 16:30:56 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h43cu0hrh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 16:30:56 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 264GMC97008512;
+        Mon, 4 Jul 2022 16:30:54 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3h2d9jaxbt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 16:30:54 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 264GTdaw20054430
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jul 2022 16:29:39 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 42A4A11C050;
+        Mon,  4 Jul 2022 16:30:52 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3422611C04A;
+        Mon,  4 Jul 2022 16:30:51 +0000 (GMT)
+Received: from linux.ibm.com (unknown [9.145.191.226])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon,  4 Jul 2022 16:30:51 +0000 (GMT)
+Date:   Mon, 4 Jul 2022 19:30:49 +0300
+From:   Mike Rapoport <rppt@linux.ibm.com>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] secretmem: drop unneeded initialization in
+ secretmem_file_create()
+Message-ID: <YsMVuVBoCVWUawsq@linux.ibm.com>
+References: <20220704092605.19604-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704092605.19604-1-lukas.bulwahn@gmail.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: eHOg46GdlyEixKN991psQ6ZIf0VubMuc
+X-Proofpoint-ORIG-GUID: gIlQ0z65uu7v642PDYHSFqXRCZenWHWt
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220701093702.265249-1-peng.fan@oss.nxp.com>
-In-Reply-To: <20220701093702.265249-1-peng.fan@oss.nxp.com>
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-Date:   Mon, 4 Jul 2022 10:30:00 -0600
-Message-ID: <CANLsYkyo304DWjNEv3GT4RJTA+HzZnS_tg0kci35X53E70pTjg@mail.gmail.com>
-Subject: Re: [PATCH V6 0/2] remoteproc: support self recovery
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_16,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ phishscore=0 priorityscore=1501 suspectscore=0 lowpriorityscore=0
+ clxscore=1011 mlxlogscore=999 adultscore=0 mlxscore=0 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207040069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 at 03:35, Peng Fan (OSS) <peng.fan@oss.nxp.com> wrote:
->
-> From: Peng Fan <peng.fan@nxp.com>
->
-> V6:
->  Rename rproc_firmware_recovery to rproc_boot_recovery
->  Drop the unlock/lock when do reproc_attach_recovery
+Hi Lukas,
 
-Dropped.
+On Mon, Jul 04, 2022 at 11:26:05AM +0200, Lukas Bulwahn wrote:
+> Drop the unneeded initialization of the local variable file in function
+> secretmem_file_create().
+> 
+> No functional change and no change in the resulting object code.
+> 
+> This unneeded initialization was already introduced with the introduction
+> of secretmem in commit 1507f51255c9 ("mm: introduce memfd_secret system
+> call to create "secret" memory areas"). This minor code-stylistic issue
+> was discovered as a dead store with clang-analyzer.
 
->
-> V5:
->  Rename RPROC_FEAT_ATTACH_RECOVERY to RPROC_FEAT_ATTACH_ON_RECOVERY
->  Add kerneldoc for rproc features
->  Change rproc_set_feature to return int type and add a max feature check
->  Use __rproc_detach and __rproc_attach when do attach recovery
->  https://patchwork.kernel.org/project/linux-remoteproc/cover/20220615032048.465486-1-peng.fan@oss.nxp.com/
->
-> V4:
->   Based on Bjorn's comments on V2-2
->   Move the rproc_has_feature/rproc_set_feature to remoteproc_internal.h and
->  Keep rproc_features still in remoteproc.h, because we use
->  RPROC_MAX_FEATURES to declare bitmap.
->   Update commit log for patch 2/2, and add comments
->
->   https://patchwork.kernel.org/project/linux-remoteproc/cover/20220323034405.976643-1-peng.fan@oss.nxp.com/
->
-> V3:
->  Resend the wrong labeled patchset
->  https://patchwork.kernel.org/project/linux-remoteproc/list/?series=621311
->
->  Write a cover-letter
->  To i.MX8QM/QXP, they have a M4 core self-recovery capability without
->  Linux loading firmware. The self recovery is done by
->  SCU(System Control Unit). Current remoteproc framework only support Linux
->  help recovery remote processor(stop, loading firmware, start). This
->  patchset is support remote processor self recovery(attach recovery).
->
->  In order to avoid introducing a new variable(bool support_self_recovery),
->  patch 1 introduce a new function, rproc_has_feature to make code easy to
->  extend, cleaner, such as we could move "bool has_iommu" to
->  rproc_has_feature(rproc, RPROC_FEAT_IOMMU).
->
->  Patch 2 is introduce a new function rproc_attach_recovery for
->  self recovery, the original logic move to rproc_firmware_recovery meaning
->  needs linux to help recovery.
->
->  V2-version 2:
->  https://patchwork.kernel.org/project/linux-remoteproc/list/?series=621311
->  Introduce rproc_has_feature
->
->  V2-version 1:
->  https://patchwork.kernel.org/project/linux-remoteproc/patch/20220126085120.3397450-1-peng.fan@oss.nxp.com/
->  Nothing change in V2.
->  Only move this patch out from
->  https://patchwork.kernel.org/project/linux-remoteproc/list/?series=604364
->
->
-> Peng Fan (2):
->   remoteproc: introduce rproc features
->   remoteproc: support attach recovery after rproc crash
->
->  drivers/remoteproc/remoteproc_core.c     | 62 ++++++++++++++++--------
->  drivers/remoteproc/remoteproc_internal.h | 15 ++++++
->  include/linux/remoteproc.h               | 15 ++++++
->  3 files changed, 73 insertions(+), 19 deletions(-)
->
-> --
-> 2.25.1
->
+You are right and in the current code the initialization is unneeded, but
+there's a pending patch that relies of this initialization:
+
+https://lore.kernel.org/all/Yr1jKwz2+SGxjcuW@kernel.org/
+
+Let's wait and see how that fix develops.
+
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
+> Mike, please ack.
+> 
+> Andrew, please pick this minor stylistic clean-up patch. Thanks.
+> 
+>  mm/secretmem.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/secretmem.c b/mm/secretmem.c
+> index 7584aab54d20..46b431d62761 100644
+> --- a/mm/secretmem.c
+> +++ b/mm/secretmem.c
+> @@ -171,7 +171,7 @@ static struct vfsmount *secretmem_mnt;
+>  
+>  static struct file *secretmem_file_create(unsigned long flags)
+>  {
+> -	struct file *file = ERR_PTR(-ENOMEM);
+> +	struct file *file;
+>  	struct inode *inode;
+>  	const char *anon_name = "[secretmem]";
+>  	const struct qstr qname = QSTR_INIT(anon_name, strlen(anon_name));
+> -- 
+> 2.17.1
+> 
+
+-- 
+Sincerely yours,
+Mike.
