@@ -2,199 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3005AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0267C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 15:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234970AbiGDPJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33310 "EHLO
+        id S234966AbiGDPKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234182AbiGDPJL (ORCPT
+        with ESMTP id S232403AbiGDPJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:09:11 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE4413CD8;
-        Mon,  4 Jul 2022 08:07:48 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264BGm2N020004;
-        Mon, 4 Jul 2022 17:07:43 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=+zRfghuFRHUHo1b772Ta7sUSNim87Ohn59ycNpVDF3Y=;
- b=OJE2Hcx1Yf1MGdGbxDHtEj46lWjiwbZNDcF4O8WpWThvF2YLLptM9kAXbccpga/oN1ue
- qbAj1LCPYWior9IjrAnvDXnff/IshyBVka4ZuwdY9Ap4+uKJ4xbtk+tiHnGJLW7d+6ot
- Ku+6q6yZDkSb+dJ+f/WEHTiWypWgAKh6fyksml32JxTG8f2sIlWH81Vm/pWC+VDrg/bh
- TuF+YczgGA9nmg0bakkdEmM2OxPYwIbnUy688OmkQSslEmQR1tJIAGCX0VaUS+bNaIyQ
- ayNF75goPekUokqWJXmbrrBsN7jz/TfUXwfae0m0jUxBb72fD+EWJYToblFW+a4D6zzE Uw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h2cwhu4xq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 17:07:02 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8C44010002A;
-        Mon,  4 Jul 2022 17:06:57 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 86927227895;
-        Mon,  4 Jul 2022 17:06:57 +0200 (CEST)
-Received: from [10.252.4.55] (10.75.127.44) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 4 Jul
- 2022 17:06:56 +0200
-Message-ID: <290a2840-a282-1e45-360f-348b827c60bf@foss.st.com>
-Date:   Mon, 4 Jul 2022 17:06:55 +0200
+        Mon, 4 Jul 2022 11:09:35 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A2811829;
+        Mon,  4 Jul 2022 08:08:17 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 0AF7922175;
+        Mon,  4 Jul 2022 17:08:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1656947295;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jEiYFjiGJRpd7Nt2gXQg7KVowP0EtL6VyOE2GTOzp1M=;
+        b=bPXFqHpxppnthK3zUNLL990q8DF+cXWviEqPZtqLu0epI5BS5ur7KQt3uyqBRjil5J47Uw
+        nlKzUqp19OfD9QeQ5b4tbOpfvpYY4Rp1/kIKxtgH6HEFdw+t5ixqmX6moVxMXIhPe3SkKu
+        qdrEB+mTcOp8qOsrtT5PChXlF6NUp6o=
+From:   Michael Walle <michael@walle.cc>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH] ARM: dts: kswitch-d10: use open drain mode for coma-mode pins
+Date:   Mon,  4 Jul 2022 17:08:08 +0200
+Message-Id: <20220704150808.1104295-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH V6 2/2] remoteproc: support attach recovery after rproc
- crash
-Content-Language: en-US
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>
-References: <20220701093702.265249-1-peng.fan@oss.nxp.com>
- <20220701093702.265249-3-peng.fan@oss.nxp.com>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-In-Reply-To: <20220701093702.265249-3-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-04_14,2022-06-28_01,2022-06-22_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The driver use the coma-mode pins as open-drain. Flag them in the device
+tree accordingly. This avoids the following error:
+[   14.114180] gpio-2007 (coma-mode): enforced open drain please flag it properly in DT/ACPI DSDT/board file
 
+Fixes: 46a9556d977e ("ARM: dts: kswitch-d10: enable networking")
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-On 7/1/22 11:37, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Current logic only support main processor to stop/start the remote
-> processor after rproc crash. However to SoC, such as i.MX8QM/QXP, the
-> remote processor could do attach recovery after crash and trigger watchdog
-> reboot. It does not need main processor to load image, or stop/start M4
-> core.
+diff --git a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
+index 949d49944a37..5a6c5f7c371a 100644
+--- a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
++++ b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
+@@ -87,22 +87,22 @@ &mdio0 {
+ 
+ 	phy4: ethernet-phy@5 {
+ 		reg = <5>;
+-		coma-mode-gpios = <&gpio 37 GPIO_ACTIVE_HIGH>;
++		coma-mode-gpios = <&gpio 37 GPIO_OPEN_DRAIN>;
+ 	};
+ 
+ 	phy5: ethernet-phy@6 {
+ 		reg = <6>;
+-		coma-mode-gpios = <&gpio 37 GPIO_ACTIVE_HIGH>;
++		coma-mode-gpios = <&gpio 37 GPIO_OPEN_DRAIN>;
+ 	};
+ 
+ 	phy6: ethernet-phy@7 {
+ 		reg = <7>;
+-		coma-mode-gpios = <&gpio 37 GPIO_ACTIVE_HIGH>;
++		coma-mode-gpios = <&gpio 37 GPIO_OPEN_DRAIN>;
+ 	};
+ 
+ 	phy7: ethernet-phy@8 {
+ 		reg = <8>;
+-		coma-mode-gpios = <&gpio 37 GPIO_ACTIVE_HIGH>;
++		coma-mode-gpios = <&gpio 37 GPIO_OPEN_DRAIN>;
+ 	};
+ };
+ 
+-- 
+2.30.2
 
-I would suppress "M4 core" to be generic.
-
-> 
-> Introduce two functions: rproc_attach_recovery, rproc_firmware_recovery
-
-rproc_boot_recovery
-
-> for the two cases. Firmware recovery is as before, let main processor to
-
-s/Firmware/Boot/ 
-
-> help recovery, while attach recovery is recover itself withou help.
-
-without
-
-> To attach recovery, we only do detach and attach.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/remoteproc/remoteproc_core.c | 62 +++++++++++++++++++---------
->  1 file changed, 43 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index ed374c8bf14a..ef5b9310bc83 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -1884,6 +1884,45 @@ static int __rproc_detach(struct rproc *rproc)
->  	return 0;
->  }
->  
-> +static int rproc_attach_recovery(struct rproc *rproc)
-> +{
-> +	int ret;
-> +
-> +	ret = __rproc_detach(rproc);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return __rproc_attach(rproc);
-> +}
-> +
-> +static int rproc_boot_recovery(struct rproc *rproc)
-> +{
-> +	const struct firmware *firmware_p;
-> +	struct device *dev = &rproc->dev;
-> +	int ret;
-> +
-> +	ret = rproc_stop(rproc, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* generate coredump */
-> +	rproc->ops->coredump(rproc);
-> +
-> +	/* load firmware */
-> +	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "request_firmware failed: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* boot the remote processor up again */
-> +	ret = rproc_start(rproc, firmware_p);
-> +
-> +	release_firmware(firmware_p);
-> +
-> +	return ret;
-> +}
-> +
->  /**
->   * rproc_trigger_recovery() - recover a remoteproc
->   * @rproc: the remote processor
-> @@ -1898,7 +1937,6 @@ static int __rproc_detach(struct rproc *rproc)
->   */
->  int rproc_trigger_recovery(struct rproc *rproc)
->  {
-> -	const struct firmware *firmware_p;
->  	struct device *dev = &rproc->dev;
->  	int ret;
->  
-> @@ -1912,24 +1950,10 @@ int rproc_trigger_recovery(struct rproc *rproc)
->  
->  	dev_err(dev, "recovering %s\n", rproc->name);
->  
-> -	ret = rproc_stop(rproc, true);
-> -	if (ret)
-> -		goto unlock_mutex;
-> -
-> -	/* generate coredump */
-> -	rproc->ops->coredump(rproc);
-> -
-> -	/* load firmware */
-> -	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "request_firmware failed: %d\n", ret);
-> -		goto unlock_mutex;
-> -	}
-> -
-> -	/* boot the remote processor up again */
-> -	ret = rproc_start(rproc, firmware_p);
-> -
-> -	release_firmware(firmware_p);
-> +	if (rproc_has_feature(rproc, RPROC_FEAT_ATTACH_ON_RECOVERY))
-> +		ret = rproc_attach_recovery(rproc);
-> +	else
-> +		ret = rproc_boot_recovery(rproc);
-
-I tested the series on stm32mp1 with success.
-
-With typo fixes:
-Acked-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-
-Thanks,
-Arnaud
-
->  
->  unlock_mutex:
->  	mutex_unlock(&rproc->lock);
