@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B3EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA37AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231810AbiGDLpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
+        id S233716AbiGDLqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232583AbiGDLpv (ORCPT
+        with ESMTP id S232519AbiGDLqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:45:51 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E8D11450
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:45:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4HrRuXuVA+Twe3QAd56nGmntiiPmbvBTaKZ1l1jeChc=; b=mSbUiv1/DRUA3lQIT0bPc7zWbu
-        hYIsn/1ueg4pM4xgnObmk/HNo4XDuGhlHlQoQ3FijYv1D9Wz9sF4JRv8sECoVcNbUoBrI2j5nNB16
-        Nhx3So2SdSRT4PWxWEpL2hOZzyZNk22odC2seMX4jYd+jvOgH/c0vjC3LF/dt3DR3Xv/BfU5vsdqn
-        TMjFNJjQueSZWfe9JcXAOWc4raiUkoEAM8TaUSzi204T5B/T7Et2DyFHWWuTHxZMZcg2Hs6xGrbWI
-        BQDraL1c4hIdfIa2nXqgvznU58iRnhuL+MNmPW8cqFSOa/haIukRZJtioNqImk/hZRwFqOBq+njBw
-        4VnrMlyg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8KW5-00HE6L-Ke; Mon, 04 Jul 2022 11:45:25 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D81D8300362;
-        Mon,  4 Jul 2022 13:45:23 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id BE0B42028F029; Mon,  4 Jul 2022 13:45:23 +0200 (CEST)
-Date:   Mon, 4 Jul 2022 13:45:23 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Sathvika Vasireddy <sv@linux.vnet.ibm.com>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "paulus@samba.org" <paulus@samba.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-Message-ID: <YsLS02T6TAxN/HcL@hirez.programming.kicks-ass.net>
-References: <20220624183238.388144-1-sv@linux.ibm.com>
- <20220624183238.388144-12-sv@linux.ibm.com>
- <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu>
- <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com>
- <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
+        Mon, 4 Jul 2022 07:46:08 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70911146B;
+        Mon,  4 Jul 2022 04:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656935164; x=1688471164;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bSictZZlQk8kvD6FBfESakih6SXoepE+d4RIMig+lpo=;
+  b=pXxG92xcd8hyUF/aEWzopEQKw+jfJzasopq5vlt1v/+mm1o55eYOr5yI
+   Z1+qowp/tGxaTB8N2vdhW7WdO6gM8HSvJ+KSmN5NoHtxin6rtHFCKvRa+
+   v5u4efGrCekR8Kfwt4NfT2XdaeBRy9OBv3ZgtFW9+vs3xDFZy9VwoByQJ
+   lVb0wfm07QwH9cYMzKcWr71Q7uVWPKXKc9ztxsCLZaa+bvYdRZ2HwSI80
+   N+mpn4waG+rbde4M7811ElakIQ7Bu59/ymGPzeqpUGb+SGPXSVKPwSoFu
+   5JiD4pFR4H7t3QVKBdPgnpbBFElKz3GJfLZWrt5dcdH7/BAmRHEDTFnzP
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="102905894"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jul 2022 04:46:03 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 4 Jul 2022 04:46:03 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 4 Jul 2022 04:46:00 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        "Conor Dooley" <conor.dooley@microchip.com>
+Subject: [net-next PATCH v2 0/5] PolarFire SoC macb reset support
+Date:   Mon, 4 Jul 2022 12:45:07 +0100
+Message-ID: <20220704114511.1892332-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 06:30:23PM +0000, Christophe Leroy wrote:
+Hey all,
+Jakub requested that these patches be split off from the series
+adding the reset controller itself that I sent ~yesterday~ last
+week [0].
 
+The Cadence MACBs on PolarFire SoC (MPFS) have reset capability and are
+compatible with the zynqmp's init function. I have removed the zynqmp
+specific comments from that function & renamed it to reflect what it
+does, since it is no longer zynqmp only.
 
-> The problem is that that function has size 0:
-> 
-> 00000000000003d0 l     F .text	0000000000000000 
-> qdisc_root_sleeping_lock.part.0
+MPFS's MACB had previously used the generic binding, so I also added
+the required specific binding.
 
-I'm somewhat confused; how is an empty STT_FUNC a valid construct on
-Power?
+For v2, I noticed some low hanging cleanup fruit so there are extra
+patches added for that:
+moving the init function out of the config structs, aligning the
+alignment of the zynqmp & default config structs with the other dozen
+or so structs & simplifing the error paths to use dev_err_probe().
+
+Feel free to apply as many or as few of those as you like.
+
+Thanks,
+Conor.
+
+Changes since v1:
+- added the 3 aforementioned cleanup patches
+- fixed two stylistic complaints from Claudiu
+
+Conor Dooley (5):
+  dt-bindings: net: cdns,macb: document polarfire soc's macb
+  net: macb: add polarfire soc reset support
+  net: macb: unify macb_config alignment style
+  net: macb: simplify error paths in init_reset_optional()
+  net: macb: sort init_reset_optional() with other init()s
+
+ .../devicetree/bindings/net/cdns,macb.yaml    |   1 +
+ drivers/net/ethernet/cadence/macb_main.c      | 106 +++++++++---------
+ 2 files changed, 56 insertions(+), 51 deletions(-)
+
+-- 
+2.36.1
+
