@@ -2,194 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7680C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC16C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234491AbiGDNrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53092 "EHLO
+        id S232161AbiGDNsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234839AbiGDNrY (ORCPT
+        with ESMTP id S231656AbiGDNsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:47:24 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EBB2DF9;
-        Mon,  4 Jul 2022 06:47:21 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264DFlYX009113;
-        Mon, 4 Jul 2022 13:47:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=+LjafqIl6ufNnZavIhZnTDAgjD5W0x75R45ESPFwwzM=;
- b=ZPOcqK9Zj6ok2FKojYrbNCVe0W64o7HpBZ32Ad6nZAxI9tN2ojA89PCJKPaFjr89F05x
- 4BhE60Y8Tnlm+Oa6kwv62AomVCck8nMzQBi4h/8vfBlVRnsP3eLmIECES8Pz9cToqMgy
- sWVKbpQevvB8C6E3VT6LfUss8YfVNzaFHxTZLUFFSZkKr87KWYNRVpBsD1sUbUkzlcnM
- SSdUjPj/CMEF/BIcGMYRcAcOj49CzhqKY+k42n+JMIVF/BadYYdipl1ogsK8yEQ4Fl9f
- tBgQ9xMJHx1SQj5rV2sYujcp5wKKz9HhWemrv64aty5Tg8ZWtMCix+xjzQZ6va3EwiFC QQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h40xfrtuh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 13:47:20 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 264DWZXg011764;
-        Mon, 4 Jul 2022 13:47:20 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h40xfrtth-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 13:47:20 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 264DhOTb000857;
-        Mon, 4 Jul 2022 13:47:18 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3h2dn92s48-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Jul 2022 13:47:18 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 264DlFT024445256
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 4 Jul 2022 13:47:15 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 317EAA4040;
-        Mon,  4 Jul 2022 13:47:15 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5C7DCA404D;
-        Mon,  4 Jul 2022 13:47:14 +0000 (GMT)
-Received: from [9.171.11.185] (unknown [9.171.11.185])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  4 Jul 2022 13:47:14 +0000 (GMT)
-Message-ID: <d0bfa9a5-0ca5-dc2e-061b-e88d713abe2f@linux.ibm.com>
-Date:   Mon, 4 Jul 2022 15:51:48 +0200
+        Mon, 4 Jul 2022 09:48:08 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CAA2734;
+        Mon,  4 Jul 2022 06:48:07 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id ay16so16866194ejb.6;
+        Mon, 04 Jul 2022 06:48:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=DuezbfYQsU3qAlG2AxqJIX7invg2mFOX4CCrrytmnWI=;
+        b=TvlAjzeC17n6fwvxmrdz+AxjF1IvjtYSWiEkoRkZ4yqDqhESkN5YdquUtdWvwfvA5m
+         pL/cK6b9ig8/s4q3rtOVVMwmvl9JlQ1G/KFac0kZZePNU6UAYGbk4PNC+ywqdxbwLyMt
+         tVkKVPQse+TTQ2/Hi0+JA/qYytY0q+y4tq/oYAKY4xLE27v9nIpyW3dMr+VP3g5xXbhP
+         QvWSQf5aEB7U7XpM5DT6Rnvl9LRNVjABc0uxxaO84ENPCkXaF+ounlcPkyr0XZnyx+HH
+         +tc+VLDDwxxXy8WqaJxPOLWwe456ylSmi9LfhssKnfzAdjOsufMunMFIFZQo90IKFRAy
+         O9sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DuezbfYQsU3qAlG2AxqJIX7invg2mFOX4CCrrytmnWI=;
+        b=S0ASJjxwbyX1jGfQ/9aVUY0+Lxw92UcMy9g4vNwzkIrX4LBrnZWx8GVN9nJtH4OS+s
+         IhPwgxBT2dRXb0q8hHEfyzViGsdBHzWsrAWC6uOrufB9PWV0+K/btEEBgKU+XtHHn9wB
+         cEjIHeIHiPjQ2PkdUCg22ab8wl975OvG5MhRbPAj2+sYr1Bd9H8DkMjUwA1uP0X4tRj1
+         gRWYZphRxSWQWD+9GGU2GRR8UdWund/ex+ClY6iDiI4hZdzT3cJwhC1rlx8p+IxRsNAw
+         qgHct8Ilc7XKzuo3A6jCBHvZmTeFWNkWsS/KLnDEoy4UGmnTduSgSlXR4MAUrqmxyIKf
+         W/AQ==
+X-Gm-Message-State: AJIora/9kRTBj0M4lDE25qtBo2WUr0qFVEeq9SMkZd3OpIY+8JCwt4ak
+        INPPXwYgZOlbX8NdEyeC9nw=
+X-Google-Smtp-Source: AGRyM1uI88ycJrc/hJ300rpJYQ5RUDcELFrq4VEsCVgtbZPW073pyy7a2yo6Tc+WoJSmxdOx2LMBYQ==
+X-Received: by 2002:a17:907:72d2:b0:722:f9c8:c3fa with SMTP id du18-20020a17090772d200b00722f9c8c3famr27113222ejc.608.1656942485452;
+        Mon, 04 Jul 2022 06:48:05 -0700 (PDT)
+Received: from ?IPV6:2a02:908:1256:79a0:601b:af42:6b18:b5ef? ([2a02:908:1256:79a0:601b:af42:6b18:b5ef])
+        by smtp.gmail.com with ESMTPSA id h18-20020a1709060f5200b006fe9e717143sm14340094ejj.94.2022.07.04.06.48.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 06:48:04 -0700 (PDT)
+Message-ID: <5eeefadd-7804-3876-c8da-3e6f1bcb9dc0@gmail.com>
+Date:   Mon, 4 Jul 2022 15:48:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v11 2/3] KVM: s390: guest support for topology function
+ Thunderbird/91.9.1
+Subject: Re: [Linaro-mm-sig] Re: DMA-buf and uncached system memory
 Content-Language: en-US
-To:     Janosch Frank <frankja@linux.ibm.com>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com
-References: <20220701162559.158313-1-pmorel@linux.ibm.com>
- <20220701162559.158313-3-pmorel@linux.ibm.com>
- <579337ac-d040-197f-3553-7c8ff202623a@linux.ibm.com>
- <038d7c59-0c9a-7667-cf74-83009e186b42@linux.ibm.com>
- <5e7848ff-f2d9-cf2c-ee5e-5c2765cb2d21@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <5e7848ff-f2d9-cf2c-ee5e-5c2765cb2d21@linux.ibm.com>
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        "Sharma, Shashank" <Shashank.Sharma@amd.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        linaro-mm-sig@lists.linaro.org,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-media <linux-media@vger.kernel.org>
+References: <4b69f9f542d6efde2190b73c87096e87fa24d8ef.camel@pengutronix.de>
+ <adc626ec-ff5a-5c06-44ce-09111be450cd@amd.com>
+ <fbb228cd78e9bebd7e7921c19e0c4c09d0891f23.camel@pengutronix.de>
+ <e691bccc-171d-f674-2817-13a945970f4a@amd.com>
+ <95cca943bbfda6af07339fb8d2dc7f4da3aa0280.camel@pengutronix.de>
+ <05814ddb-4f3e-99d8-025a-c31db7b2c46b@amd.com>
+ <708e27755317a7650ca08ba2e4c14691ac0d6ba2.camel@pengutronix.de>
+ <6287f5f8-d9af-e03d-a2c8-ea8ddcbdc0d8@amd.com>
+ <CAPj87rOykZv7bjNhHPT4StrsPz8Y_DWqab4Ryq=Qqh77LS2e=Q@mail.gmail.com>
+ <578953dd-6298-2bfe-a8fb-52004b84fd17@amd.com>
+ <YrY0cQY1BTL5H7Xp@phenom.ffwll.local>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <YrY0cQY1BTL5H7Xp@phenom.ffwll.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Z98G510iVWgOaf6T5tYTcrrDwavRTyYF
-X-Proofpoint-GUID: zRORlXp0vqfow-O5XdnkR9kpWeePnog8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-04_13,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 malwarescore=0 suspectscore=0 priorityscore=1501
- phishscore=0 adultscore=0 mlxscore=0 bulkscore=0 spamscore=0
- mlxlogscore=999 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2207040057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Daniel,
 
-
-On 7/4/22 13:17, Janosch Frank wrote:
-> On 7/4/22 13:02, Pierre Morel wrote:
+Am 25.06.22 um 00:02 schrieb Daniel Vetter:
+> On Thu, Jun 23, 2022 at 01:32:18PM +0200, Christian König wrote:
+>> Am 23.06.22 um 13:27 schrieb Daniel Stone:
+>>> [SNIP]
+>>> If it's really your belief that dmabuf requires universal snooping, I
+>>> recommend you send the patch to update the documentation, as well as
+>>> to remove DRIVER_PRIME from, realistically, most non-PCIE drivers.
+>> Well, to be honest I think that would indeed be necessary.
 >>
+>> What we have created are essentially two different worlds, one for PCI
+>> devices and one for the rest.
 >>
->> On 7/4/22 11:08, Janis Schoetterl-Glausch wrote:
->>> On 7/1/22 18:25, Pierre Morel wrote:
->>>> We report a topology change to the guest for any CPU hotplug.
->>>>
->>>> The reporting to the guest is done using the Multiprocessor
->>>> Topology-Change-Report (MTCR) bit of the utility entry in the guest's
->>>> SCA which will be cleared during the interpretation of PTF.
->>>>
->>>> On every vCPU creation we set the MCTR bit to let the guest know the
->>>> next time he uses the PTF with command 2 instruction that the> 
->>>> topology changed and that he should use the STSI(15.1.x) instruction
->>> s/he/it (twice)
->>>> to get the topology details.
->>>>
->>>> STSI(15.1.x) gives information on the CPU configuration topology.
->>>> Let's accept the interception of STSI with the function code 15 and
->>>> let the userland part of the hypervisor handle it when userland
->>>> support the CPU Topology facility.And the user STSI capability.
->>> Also: supportS.
->>>>
->>>> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
->>>> Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
->>>> ---
->>>>    arch/s390/include/asm/kvm_host.h | 18 +++++++++++++---
->>>>    arch/s390/kvm/kvm-s390.c         | 36 
->>>> ++++++++++++++++++++++++++++++++
->>>>    arch/s390/kvm/priv.c             | 16 ++++++++++----
->>>>    arch/s390/kvm/vsie.c             |  8 +++++++
->>>>    4 files changed, 71 insertions(+), 7 deletions(-)
->>>>
->>>> diff --git a/arch/s390/include/asm/kvm_host.h 
->>>> b/arch/s390/include/asm/kvm_host.h
->>>> index 766028d54a3e..ae6bd3d607de 100644
->>>> --- a/arch/s390/include/asm/kvm_host.h
->>>> +++ b/arch/s390/include/asm/kvm_host.h
->>>> @@ -93,19 +93,30 @@ union ipte_control {
->>>>        };
->>>>    };
->>> [...]
->>>
->>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->>>> index 8fcb56141689..ee59b03f2e45 100644
->>>> --- a/arch/s390/kvm/kvm-s390.c
->>>> +++ b/arch/s390/kvm/kvm-s390.c
->>>> @@ -1691,6 +1691,31 @@ static int kvm_s390_get_cpu_model(struct kvm 
->>>> *kvm, struct kvm_device_attr *attr)
->>>>        return ret;
->>>>    }
->>>> +/**
->>>> + * kvm_s390_update_topology_change_report - update CPU topology 
->>>> change report
->>>> + * @kvm: guest KVM description
->>>> + * @val: set or clear the MTCR bit
->>>> + *
->>>> + * Updates the Multiprocessor Topology-Change-Report bit to signal
->>>> + * the guest with a topology change.
->>>> + * This is only relevant if the topology facility is present.
->>>> + *
->>>> + * The SCA version, bsca or esca, doesn't matter as offset is the 
->>>> same.
->>>> + */
->>>> +static void kvm_s390_update_topology_change_report(struct kvm *kvm, 
->>>> bool val)
->>>> +{
->>>> +    struct bsca_block *sca = kvm->arch.sca;
->>>> +    union sca_utility new, old;
->>>> +
->>>> +    read_lock(&kvm->arch.sca_lock);
->>>
->>> You forgot to put the assignment of sca under the lock.
->>
->> Should I really?
->> What we want to protect here is the content of the sca.
->> The sca itself does not change during the life of the KVM AFAIK.
-> 
-> The SCA origin as well as the SCA contents can change within the 
-> lifetime of a KVM VM.
-> 
-> When we switch from bsca to esca we'll use new pages.
-> When we add/remove cpus we'll update the MCN and the CPU entry.
-> 
-> 
+>> This was indeed not the intention, but it's a fact that basically all
+>> DMA-buf based PCI drivers assume coherent access.
+> dma-buf does not require universal snooping.
+>
+> It does defacto require that all device access is coherent with all other
+> device access, and consistent with the exporters notion of how cpu
+> coherency is achieved. Not that coherent does not mean snooping, as long
+> as all devices do unsnooped access and the exporter either does wc/uc or
+> flushes caches that's perfectly fine, and how all the arm soc dma-buf
+> sharing works.
 
-Oh! then Yes, right.
-thanks
+We should probably start documenting that better.
+
+> We did originally have the wording in there that you have to map/unamp
+> around every device access, but that got dropped because no one was doing
+> that anyway.
+>
+> Now where this totally breaks down is how we make this work, because the
+> idea was that dma_buf_attach validates this all. Where this means all the
+> hilarious reasons buffer sharing might not work:
+> - wrong coherency mode (cpu cached or not)
+> - not contiguous (we do check that, but only once we get the sg from
+>    dma_buf_attachment_map, which strictly speaking is a bit too late but
+>    most drivers do attach&map as one step so not that bad in practice)
+> - whether the dma api will throw in bounce buffers or not
+> - random shit like "oh this is in the wrong memory bank", which I think
+>    never landed in upstream
+>
+> p2p connectivity is about the only one that gets this right, yay. And the
+> only reason we can even get it right is because all the information is
+> exposed to drivers fully.
+
+Yeah, that's why I designed P2P that way :)
+
+I also don't think it's that bad, at least for radeon, nouveau and 
+amdgpu all the migration restrictions are actually handled correctly.
+
+In other words when a DMA-buf is about to be used by another device we 
+use TTM to move the buffer around so that it can actually be accessed by 
+that device.
+
+What I haven't foreseen in here is that we need to deal with different 
+caching behaviors between exporter and importer.
 
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+> The issue is that the device dma api refuses to share this information
+> because it would "leak". Which sucks, because we have defacto build every
+> single cross-device use-case of dma-buf on the assumption we can check
+> this (up to gl/vk specs), but oh well.
+>
+> So in practice this gets sorted out by endless piles of hacks to make
+> individual use-cases work.
+>
+> Oh and: This is definitely not limited to arm socs. x86 socs with intel
+> at least have exactly all the same issues, and they get solved by adding
+> various shitty hacks to the involved drivers (like i915+amdgpu). Luckily
+> the intel camera driver isn't in upstream yet, since that would break a
+> bunch of the hacks since suddently there will be now 2 cpu cache
+> incoherent devices in an x86 system.
+>
+> Ideally someone fixes this, but I'm not hopeful.
+>
+> I recommend pouring more drinks.
+>
+> What is definitely not correct is claiming that dma-buf wasn't meant for
+> this. We discussed cache coherency issues endless in budapest 12 or so
+> years ago, I was there. It's just that the reality of the current
+> implementation is falling short, and every time someone tries to fix it we
+> get shouted down by dma api maintainers for looking behind their current.
+
+Well that explains this, I've joined the party a year later and haven't 
+witnessed all of this.
+
+> tldr; You have to magically know to not use cpu cached allocators on these
+> machines.
+
+Or reject the attachment. As far as I can see that is still the cleanest 
+option.
+
+Regards,
+Christian.
+
+>
+> Aside: This is also why vgem alloates wc memory on x86. It's the least
+> common denominator that works. arm unfortunately doesn't allow you to
+> allocate wc memory, so there stuff is simply somewhat broken.
+> -Daniel
+
