@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BE3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234303AbiGDLgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
+        id S232947AbiGDLgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233857AbiGDLgH (ORCPT
+        with ESMTP id S234231AbiGDLgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:36:07 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FD010FC9;
-        Mon,  4 Jul 2022 04:36:02 -0700 (PDT)
+        Mon, 4 Jul 2022 07:36:08 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A9411463
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:36:04 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3f90WZ5z4xYY;
-        Mon,  4 Jul 2022 21:36:00 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3fB4CwDz4xZh;
+        Mon,  4 Jul 2022 21:36:02 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
 To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     stable@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu>
-References: <0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
-Message-Id: <165693441432.9954.15776721624339561101.b4-ty@ellerman.id.au>
-Date:   Mon, 04 Jul 2022 21:33:34 +1000
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+In-Reply-To: <715e644fb3c7d992c0b71f6165ab6cf8c682055a.1655706069.git.christophe.leroy@csgroup.eu>
+References: <715e644fb3c7d992c0b71f6165ab6cf8c682055a.1655706069.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH] powerpc: Remove _PAGE_SAO stub for book3e/64
+Message-Id: <165693441123.9954.5396439090389348451.b4-ty@ellerman.id.au>
+Date:   Mon, 04 Jul 2022 21:33:31 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -40,21 +39,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 16:43:35 +0200, Christophe Leroy wrote:
-> On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
-> for supervisor. As soon as one of the two bits is set, the page has
-> to be display as RW. But the way it is implemented today requires both
-> bits to be set in order to display it as RW.
+On Mon, 20 Jun 2022 08:21:22 +0200, Christophe Leroy wrote:
+> Since commit 634093c59a12 ("powerpc/mm: enable
+> ARCH_HAS_VM_GET_PAGE_PROT"), _PAGE_SAO is used only in
+> arch/powerpc/mm/book3s64/pgtable.c
 > 
-> Instead of display RW when _PAGE_RW bits are set and R otherwise,
-> reverse the logic and display R when _PAGE_RW bits are all 0 and
-> RW otherwise.
+> The _PAGE_SAO stub defined as 0 for book3e/64 can be removed.
+> 
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/1] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
-      https://git.kernel.org/powerpc/c/dd8de84b57b02ba9c1fe530a6d916c0853f136bd
+[1/1] powerpc: Remove _PAGE_SAO stub for book3e/64
+      https://git.kernel.org/powerpc/c/12a9eddd239e14ccbf0ea50b3504a21bda002ba9
 
 cheers
