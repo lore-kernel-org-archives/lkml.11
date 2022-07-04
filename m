@@ -2,141 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A97C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550BBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 13:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233559AbiGDNvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 09:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
+        id S234077AbiGDNv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 09:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbiGDNvl (ORCPT
+        with ESMTP id S234041AbiGDNvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 09:51:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31C464EC
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 06:51:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 506646158E
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 13:51:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F75C341CE
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 13:51:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656942699;
-        bh=hAfuMRpk9TdhPZKHaCc+WuV8OqufS7bLGsHXotM88Ho=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jxq9RUGXnffQs7/NqBRif/E6Maxq+B+XEABUVLFoONhdTRJeiTn9q99B4qRUQbW/6
-         S6su4yTThCr+kM3+DjkYD/7RbOyE2vWp6tGTi0lHWF4dTvYyUTe/O8hA3qsFDfCcYl
-         H+4iC778OmdLvCYid6PETCJ9D9ia2f5CLaW+Xrq/KAZu11MiOGcwOJtr8pBhXu1xls
-         jZ0eWPyIqFgDfzIBf57zbOGqicaKXAkVTvo0OuH8yHIJnK4pXoPLjiu0Wt9IzQhoZI
-         cAz+FrN6WVLMgoZj76qfUB17Ld5rYZP1fR4Hq8hzPi2KZnDGl2eJJj9LfBfVYWOF5i
-         wPAIgNdUo0VvA==
-Received: by mail-wr1-f54.google.com with SMTP id s1so13588069wra.9
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 06:51:39 -0700 (PDT)
-X-Gm-Message-State: AJIora/FRiAmhJYGIOzETwS41O2D9f/3+GaR2+Yu6VDR2gcfpc6wpfFY
-        Uiy8wmapOWNjmYuWEfGOrz7kD7R48w5W4eSCCw==
-X-Google-Smtp-Source: AGRyM1uKp2lrpW6u+5cY6RUsSDjtF0VW1MATP4aMMyHLV7iUskweguBh2vAeN6OdOJ6Qu9KV7S3kduEtUTEV6H8/NnE=
-X-Received: by 2002:a5d:6c62:0:b0:21d:2235:d800 with SMTP id
- r2-20020a5d6c62000000b0021d2235d800mr27450391wrz.381.1656942697923; Mon, 04
- Jul 2022 06:51:37 -0700 (PDT)
+        Mon, 4 Jul 2022 09:51:54 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD9C7678;
+        Mon,  4 Jul 2022 06:51:53 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264DpbmC035401;
+        Mon, 4 Jul 2022 13:51:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=mxaoIx2YhOajfaYEPRFc/+V1Gkvv5/BhUpkx4qUEByM=;
+ b=p3QykuEQUUqMhg7aJWtLeHb6osiYFFleJCtoS/q4sPlujSHcxhDaosNoQllxwUXch1Rb
+ k0r0NXQkPMB/JhW6T2sGb54nfIVbn02m40+ze2TztNIYraql2OApMyHGGqEIEHU9VBTW
+ v4Zm8ByzKERwZYUq1rlFpRHVjSocX/ofYlN7a8pBvuvKt3dE+EDn61EbFH9HSyy8tnZN
+ GBOJfgjXsG911e3PmwJOSAcsFQtTw8j27Hd6MJOBBljUODndkekjbI73V/VgQgHYtcJq
+ gMnQxzaJnscvGyGIF+WBnGlAnsTusTd4XWd0YB7SHawKpyySDj9IkJKyyWbtmymag6RR Tg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h4188rer9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 13:51:52 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 264Dpqrk037462;
+        Mon, 4 Jul 2022 13:51:52 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h4188rdm3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 13:51:51 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 264Dh2ba004008;
+        Mon, 4 Jul 2022 13:49:41 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06fra.de.ibm.com with ESMTP id 3h2d9ht35n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jul 2022 13:49:40 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 264DnbHD23462332
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jul 2022 13:49:37 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 78EC2A4051;
+        Mon,  4 Jul 2022 13:49:37 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B33D1A404D;
+        Mon,  4 Jul 2022 13:49:36 +0000 (GMT)
+Received: from [9.171.11.185] (unknown [9.171.11.185])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Jul 2022 13:49:36 +0000 (GMT)
+Message-ID: <cb9f48e6-172b-4498-4595-940c26e36f48@linux.ibm.com>
+Date:   Mon, 4 Jul 2022 15:54:10 +0200
 MIME-Version: 1.0
-References: <20220629190545.478113-1-hsinyi@chromium.org>
-In-Reply-To: <20220629190545.478113-1-hsinyi@chromium.org>
-From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Mon, 4 Jul 2022 21:51:25 +0800
-X-Gmail-Original-Message-ID: <CAAOTY__F2Ms6tfYgU=5wXS==0qVivo6OT=8txq9yA3XQLfqh-A@mail.gmail.com>
-Message-ID: <CAAOTY__F2Ms6tfYgU=5wXS==0qVivo6OT=8txq9yA3XQLfqh-A@mail.gmail.com>
-Subject: Re: [PATCH] drm/mediatek: ensure bridge disable happends before suspend
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v11 2/3] KVM: s390: guest support for topology function
+Content-Language: en-US
+From:   Pierre Morel <pmorel@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com, nrb@linux.ibm.com
+References: <20220701162559.158313-1-pmorel@linux.ibm.com>
+ <20220701162559.158313-3-pmorel@linux.ibm.com>
+ <579337ac-d040-197f-3553-7c8ff202623a@linux.ibm.com>
+ <038d7c59-0c9a-7667-cf74-83009e186b42@linux.ibm.com>
+In-Reply-To: <038d7c59-0c9a-7667-cf74-83009e186b42@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: DDr7WBFJvFCeCKpx_A-baR_nDjzFGhou
+X-Proofpoint-GUID: UjrOSCgHkxeoosmIL0xUC44ZUnQocsfF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-04_13,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 priorityscore=1501 malwarescore=0 phishscore=0
+ clxscore=1015 mlxlogscore=999 mlxscore=0 adultscore=0 bulkscore=0
+ spamscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2207040057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Hsin-yi:
 
-Hsin-Yi Wang <hsinyi@chromium.org> =E6=96=BC 2022=E5=B9=B46=E6=9C=8830=E6=
-=97=A5 =E9=80=B1=E5=9B=9B =E5=87=8C=E6=99=A83:06=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> Make sure bridge_disable will be called before suspend by calling
-> drm_mode_config_helper_suspend() in .prepare callback.
 
-Applied to mediatek-drm-next [1], thanks.
+On 7/4/22 13:02, Pierre Morel wrote:
+> 
+> 
+> On 7/4/22 11:08, Janis Schoetterl-Glausch wrote:
+>> On 7/1/22 18:25, Pierre Morel wrote:
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/=
-log/?h=3Dmediatek-drm-next
+...
 
-Regards,
-Chun-Kuang.
+>>> +    if (test_kvm_facility(vcpu->kvm, 11))
+>>> +        vcpu->arch.sie_block->ecb |= ECB_PTF;
+>>>       if (test_kvm_facility(vcpu->kvm, 73))
+>>>           vcpu->arch.sie_block->ecb |= ECB_TE;
+>>>       if (!kvm_is_ucontrol(vcpu->kvm))
+>>> @@ -3403,6 +3437,8 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+>>>       rc = kvm_s390_vcpu_setup(vcpu);
+>>>       if (rc)
+>>>           goto out_ucontrol_uninit;
+>>> +
+>>> +    kvm_s390_update_topology_change_report(vcpu->kvm, 1);
+>>>       return 0;
+>>>   out_ucontrol_uninit:
+>>> diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
+>>> index 12c464c7cddf..046afee1be94 100644
+>>> --- a/arch/s390/kvm/priv.c
+>>> +++ b/arch/s390/kvm/priv.c
+>>> @@ -873,10 +873,13 @@ static int handle_stsi(struct kvm_vcpu *vcpu)
+>>>       if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_PSTATE)
+>>>           return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
+>>> -    if (fc > 3) {
+>>> -        kvm_s390_set_psw_cc(vcpu, 3);
+>>> -        return 0;
+>>> -    }
+>>> +    /* Bailout forbidden function codes */
+>>> +    if (fc > 3 && (fc != 15 || kvm_s390_pv_cpu_is_protected(vcpu)))
+>>> +        goto out_no_data;
+>>> +
+>>> +    /* fc 15 is provided with PTF/CPU topology support */
+>>> +    if (fc == 15 && !test_kvm_facility(vcpu->kvm, 11))
+>>> +        goto out_no_data;
+>>>       if (vcpu->run->s.regs.gprs[0] & 0x0fffff00
+>>>           || vcpu->run->s.regs.gprs[1] & 0xffff0000)
+>>> @@ -910,6 +913,11 @@ static int handle_stsi(struct kvm_vcpu *vcpu)
+>>>               goto out_no_data;
+>>>           handle_stsi_3_2_2(vcpu, (void *) mem);
+>>>           break;
+>>> +    case 15: /* fc 15 is fully handled in userspace */
+>>> +        if (vcpu->kvm->arch.user_stsi)
+>>> +            insert_stsi_usr_data(vcpu, operand2, ar, fc, sel1, sel2);
+>>> +        trace_kvm_s390_handle_stsi(vcpu, fc, sel1, sel2, operand2);
+>>> +        return -EREMOTE;
+>>
+>> This doesn't look right to me, you still return -EREMOTE if user_stsi 
+>> is false.
+>> The way I read the PoP here is that it is ok to set condition code 3 
+>> for the else case
+> 
+> Yes it is what I wanted to do.
+> I do not understand what I did here is stupid.
 
->
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> ---
-> The issue is found if suspend is called via VT2 in several MTK SoC (eg.
-> MT8173, MT8183, MT8186) chromebook boards with eDP bridge:
-> bridge disable is called through mtk-drm's suspend, and it needs to be
-> called before bridge pm runtime suspend.
-> So we move the hook to .prepare() and .complete().
-> ---
->  drivers/gpu/drm/mediatek/mtk_drm_drv.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/med=
-iatek/mtk_drm_drv.c
-> index 13a1bbe7ead7f..a42812e490007 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-> @@ -828,8 +828,7 @@ static int mtk_drm_remove(struct platform_device *pde=
-v)
->         return 0;
->  }
->
-> -#ifdef CONFIG_PM_SLEEP
-> -static int mtk_drm_sys_suspend(struct device *dev)
-> +static int mtk_drm_sys_prepare(struct device *dev)
->  {
->         struct mtk_drm_private *private =3D dev_get_drvdata(dev);
->         struct drm_device *drm =3D private->drm;
-> @@ -840,20 +839,21 @@ static int mtk_drm_sys_suspend(struct device *dev)
->         return ret;
->  }
->
-> -static int mtk_drm_sys_resume(struct device *dev)
-> +static void mtk_drm_sys_complete(struct device *dev)
->  {
->         struct mtk_drm_private *private =3D dev_get_drvdata(dev);
->         struct drm_device *drm =3D private->drm;
->         int ret;
->
->         ret =3D drm_mode_config_helper_resume(drm);
-> -
-> -       return ret;
-> +       if (ret)
-> +               dev_err(dev, "Failed to resume\n");
->  }
-> -#endif
->
-> -static SIMPLE_DEV_PM_OPS(mtk_drm_pm_ops, mtk_drm_sys_suspend,
-> -                        mtk_drm_sys_resume);
-> +static const struct dev_pm_ops mtk_drm_pm_ops =3D {
-> +       .prepare =3D mtk_drm_sys_prepare,
-> +       .complete =3D mtk_drm_sys_complete,
-> +};
->
->  static struct platform_driver mtk_drm_platform_driver =3D {
->         .probe  =3D mtk_drm_probe,
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+I thought again on this as I explain in another thread, I do not think 
+we need to check on user_stsi here.
+
+
+> 
+> 
+
+-- 
+Pierre Morel
+IBM Lab Boeblingen
