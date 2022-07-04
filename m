@@ -2,326 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7303BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E14CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234383AbiGDK1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S233496AbiGDK1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233672AbiGDK0r (ORCPT
+        with ESMTP id S234505AbiGDK1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:26:47 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9556D101C1
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:25:57 -0700 (PDT)
-Received: from fsav116.sakura.ne.jp (fsav116.sakura.ne.jp [27.133.134.243])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 264APnoR085785;
-        Mon, 4 Jul 2022 19:25:49 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav116.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp);
- Mon, 04 Jul 2022 19:25:49 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 264APmef085781
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 4 Jul 2022 19:25:49 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <100f445e-9fa8-4f37-76aa-8359f0008c59@I-love.SAKURA.ne.jp>
-Date:   Mon, 4 Jul 2022 19:25:44 +0900
+        Mon, 4 Jul 2022 06:27:07 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462261B7
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:27:06 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id e28so12853395wra.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 03:27:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=MNMbHzD5KJ2JcIG/LcIbHrbNKAV7LgAJDZBxOs+MMBg=;
+        b=xDRar0wJQ9XQz56re9IzVmxtqbfUAqTpqrFvPCBARJpDxuIfgvN6Fy+4mtKSCxUmfK
+         wfWvythZm9Vbwc834ew6Ndxa5/rQ5wnzBxMP6GvjO1B532xE1Te7AS8+iOI+bAY0Cswy
+         DfTEITQZABwbPx5SItE8bdl/iu0Ia/WNX9elACWdcHQIkySkKDQhdbgLkE3clnerLqdQ
+         oX1Kbjo8Z0YP4Q0dHb/zb1CuKB36+g3WgQgHMQl/dTKaOo1IHbnXx7HUHgcAtZAAYDhF
+         F1OXCaLVoY2C+HvLqFnBRUTLjf/9BoFLpNzLUK7k2GbyGkVwJklwtsOryCH2ck6rM2KN
+         oGNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=MNMbHzD5KJ2JcIG/LcIbHrbNKAV7LgAJDZBxOs+MMBg=;
+        b=B4ud5hODtwYYmXlopVx8Kl90BYxMmqVJ8ji7wsnXKYFUv3YLTj6XmJ1fJmZam/XblB
+         +asXlSpjN/doWBDI4T/q+Kgr3q532S9FioSWblKl1LVhBzPSrwDP9CEg2GIGcuEUP1fV
+         IG7zkhBOcPOII90WHs8MAZM+HE14TH5/IGpV4NYP6NH2acIV0pGsAjSXEIomSwKtXfb2
+         27YJidLiQvzJN657UgVXdnR1fu1zU85neZIuxwkpJAHwvuUD/HSJoIVNgJVeYhDEzUiK
+         6FbX9ZjZRBRePiOiHO1cVS+H74rVlWcUJwM/jgyg8OJcSa680gSmnKd1qITlahqjL6tn
+         Wq+A==
+X-Gm-Message-State: AJIora97xuxD7atKulZZoREAzM2/NbdOorbFySFKP7ttBRSjtJ1AeAwq
+        sgt9w29VYW36m3Vbu9ExXa+Qdw==
+X-Google-Smtp-Source: AGRyM1uPUOOvSF+3QtJTrc9fFHW7coliowWFbjsxeXjWAHdQgEuOMh+pCY7mH+x9RPCRyi6EZgjCZw==
+X-Received: by 2002:adf:db89:0:b0:21b:84a6:9cce with SMTP id u9-20020adfdb89000000b0021b84a69ccemr27149004wri.675.1656930424833;
+        Mon, 04 Jul 2022 03:27:04 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id h9-20020a05600c144900b0039ee51fda45sm19169045wmi.2.2022.07.04.03.27.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 03:27:04 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 11:27:02 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     Support Opensource <support.opensource@diasemi.com>,
+        linux-kernel@vger.kernel.org,
+        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
+        Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH v3 1/2] mfd: da9062: enable being a
+ system-power-controller
+Message-ID: <YsLAdjpBIYBda1Dv@google.com>
+References: <bafccf43111a24e20fb36c46740d650dedda04c0.1656418366.git.helmut.grohne@intenta.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] char: misc: make misc_open() and misc_register() killable
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org
-References: <000000000000d9ff3a05bb37069e@google.com>
- <72e74af9-f1b6-e383-a2c3-6ee8a0aea5e0@I-love.SAKURA.ne.jp>
- <YsKW6VvWqvcMRBSl@kroah.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <YsKW6VvWqvcMRBSl@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bafccf43111a24e20fb36c46740d650dedda04c0.1656418366.git.helmut.grohne@intenta.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/07/04 16:29, Greg KH wrote:
-> On Mon, Jul 04, 2022 at 03:44:07PM +0900, Tetsuo Handa wrote:
->> syzbot is reporting hung task at misc_open() [1], for snapshot_open() from
->> misc_open() might sleep for long with misc_mtx held whereas userspace can
->> flood with concurrent misc_open() requests. Mitigate this problem by making
->> misc_open() and misc_register() killable.
+On Tue, 28 Jun 2022, Helmut Grohne wrote:
+
+> The DA9062 can be the device used to power the CPU. In that case, it can
+> be used to power off the system. In the CONTROL_A register, the M_*_EN
+> bits must be zero for the corresponding *_EN bits to have an effect. We
+> zero them all to turn off the system.
 > 
-> I do not understand, why not just fix snapshot_open()?  Why add this
-> complexity to the misc core for a foolish individual misc device?  Why
-> not add the fix there where it is spinning instead?
+> Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+> ---
+>  drivers/mfd/da9062-core.c | 34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+> 
+> Compared to v2, this addresses the following concerns raised by Lee Jones:
+>  * Drop unnecessary comment.
+>  * Restructure da9062_power_off to avoid unnecessary assignments.
+>  * Make power off failure message user friendly while still including
+>    the error code for diagnostics.
+> 
+> Lee Jones also questioned the utility of warning about pm_power_off already
+> being assigned:
+> 
+> > Do we really mind/care?
+> >
+> > Is there anything we can do about it?
+> >
+> > Thus, do we really need to warn() about it?
+> 
+> I do think this is useful, because it only happens when two nodes decalare
+> being a system-power-controller. It is a misconfiguration of your device tree
+> that is being warned here. Other drivers (e.g. rn5t618.c, act8865-regulator.c,
+> rtc-jz4740.c, and bcm2835_wdt.c) issue a similar warning.
+> 
+> I note that Adam Thomson reviewed v2. Thank you. I did not include the
+> Reviewed-by, because noticeable code changed compared to what was reviewed.
+> 
+> As pointed out by Adam Thomson, this version still uses regmap (and possibly
+> mutexes) in pm_power_off (with irqs disabled). This is a fundamental problem
+> shared with many other pm_power_off hooks.
+> 
+> I've now included Rob Herring's Acked-by on the second patch as the rebase was
+> trivial.
+> 
+> Helmut
+> diff --git a/drivers/mfd/da9062-core.c b/drivers/mfd/da9062-core.c
+> index 2774b2cbaea6..0083a2756f28 100644
+> --- a/drivers/mfd/da9062-core.c
+> +++ b/drivers/mfd/da9062-core.c
+> @@ -620,6 +620,26 @@ static const struct of_device_id da9062_dt_ids[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, da9062_dt_ids);
+>  
+> +static struct i2c_client *da9062_i2c_client;
+> +
+> +static void da9062_power_off(void)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(
+> +		((struct
+> da9062*)i2c_get_clientdata(da9062_i2c_client))->regmap,
 
-Quoting an example from [1]. Multiple processes are calling misc_open() and
-all but one processes are blocked at mutex_lock(&misc_mtx). The one which is
-not blocked at mutex_lock(&misc_mtx) is also holding system_transition_mutex.
+This is ugly.  Please pull this out of the function args and separate
+the whole thing.  No func()->attribute craziness please.
 
-If you don't like mutex_lock_killable(&misc_mtx), we will need to consider moving
-file->f_op->open() from misc_open() to after mutex_unlock(&misc_mtx). However,
-since there might be misc devices which count on serialization currently provided
-by mutex_lock(&misc_mtx), I guess we will after all end up with adding
-"struct mutex" to "struct miscdevice" and call
-mutex_lock_killable(&"struct miscdevice"->mutex) before calling
-file->f_op->open() from misc_open().
+> +		DA9062AA_CONTROL_A,
+> +		DA9062AA_SYSTEM_EN_MASK | DA9062AA_POWER_EN_MASK |
+> +			DA9062AA_POWER1_EN_MASK | DA9062AA_M_SYSTEM_EN_MASK |
+> +			DA9062AA_M_POWER_EN_MASK | DA9062AA_M_POWER1_EN_MASK,
+> +		0
+> +	);
+> +
+> +	if (ret < 0)
+> +		dev_err(&da9062_i2c_client->dev,
+> +			"failed to power the system off (err=%d)\n", ret);
 
-----------------------------------------
-INFO: task syz-executor864:6907 blocked for more than 143 seconds.
-      Not tainted 5.15.0-rc7-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor864 state:D stack:27936 pid: 6907 ppid:  6545 flags:0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:4940 [inline]
- __schedule+0xb44/0x5960 kernel/sched/core.c:6287
- schedule+0xd3/0x270 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:669 [inline]
- __mutex_lock+0xa34/0x12f0 kernel/locking/mutex.c:729
- misc_open+0x55/0x4a0 drivers/char/misc.c:107
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4c8/0x11d0 fs/open.c:822
- do_open fs/namei.c:3428 [inline]
- path_openat+0x1c9a/0x2740 fs/namei.c:3561
- do_filp_open+0x1aa/0x400 fs/namei.c:3588
- do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
- do_sys_open fs/open.c:1216 [inline]
- __do_sys_openat fs/open.c:1232 [inline]
- __se_sys_openat fs/open.c:1227 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1227
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff261e34347
-RSP: 002b:00007ffe30328bb0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 0000000020000440 RCX: 00007ff261e34347
-RDX: 0000000000000002 RSI: 00007ff261eba03b RDI: 00000000ffffff9c
-RBP: 00007ff261eba03b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffe3032acdc R14: 0000000000000076 R15: 00007ffe3032ace0
-INFO: task syz-executor864:6922 blocked for more than 143 seconds.
-      Not tainted 5.15.0-rc7-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor864 state:D stack:28616 pid: 6922 ppid:  6546 flags:0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:4940 [inline]
- __schedule+0xb44/0x5960 kernel/sched/core.c:6287
- schedule+0xd3/0x270 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:669 [inline]
- __mutex_lock+0xa34/0x12f0 kernel/locking/mutex.c:729
- misc_open+0x55/0x4a0 drivers/char/misc.c:107
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4c8/0x11d0 fs/open.c:822
- do_open fs/namei.c:3428 [inline]
- path_openat+0x1c9a/0x2740 fs/namei.c:3561
- do_filp_open+0x1aa/0x400 fs/namei.c:3588
- do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
- do_sys_open fs/open.c:1216 [inline]
- __do_sys_openat fs/open.c:1232 [inline]
- __se_sys_openat fs/open.c:1227 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1227
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff261e34347
-RSP: 002b:00007ffe30328bb0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 0000000020000440 RCX: 00007ff261e34347
-RDX: 0000000000000002 RSI: 00007ff261eba03b RDI: 00000000ffffff9c
-RBP: 00007ff261eba03b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffe3032acdc R14: 0000000000000076 R15: 00007ffe3032ace0
-INFO: task syz-executor864:6936 blocked for more than 143 seconds.
-      Not tainted 5.15.0-rc7-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor864 state:D stack:27760 pid: 6936 ppid:  6548 flags:0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:4940 [inline]
- __schedule+0xb44/0x5960 kernel/sched/core.c:6287
- schedule+0xd3/0x270 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:669 [inline]
- __mutex_lock+0xa34/0x12f0 kernel/locking/mutex.c:729
- misc_open+0x55/0x4a0 drivers/char/misc.c:107
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4c8/0x11d0 fs/open.c:822
- do_open fs/namei.c:3428 [inline]
- path_openat+0x1c9a/0x2740 fs/namei.c:3561
- do_filp_open+0x1aa/0x400 fs/namei.c:3588
- do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
- do_sys_open fs/open.c:1216 [inline]
- __do_sys_openat fs/open.c:1232 [inline]
- __se_sys_openat fs/open.c:1227 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1227
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff261e34347
-RSP: 002b:00007ffe30328bb0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 0000000020000440 RCX: 00007ff261e34347
-RDX: 0000000000000002 RSI: 00007ff261eba03b RDI: 00000000ffffff9c
-RBP: 00007ff261eba03b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffe3032acdc R14: 0000000000000076 R15: 00007ffe3032ace0
-INFO: task syz-executor864:6954 blocked for more than 144 seconds.
-      Not tainted 5.15.0-rc7-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor864 state:D stack:28328 pid: 6954 ppid:  6549 flags:0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:4940 [inline]
- __schedule+0xb44/0x5960 kernel/sched/core.c:6287
- schedule+0xd3/0x270 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:669 [inline]
- __mutex_lock+0xa34/0x12f0 kernel/locking/mutex.c:729
- misc_open+0x55/0x4a0 drivers/char/misc.c:107
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4c8/0x11d0 fs/open.c:822
- do_open fs/namei.c:3428 [inline]
- path_openat+0x1c9a/0x2740 fs/namei.c:3561
- do_filp_open+0x1aa/0x400 fs/namei.c:3588
- do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
- do_sys_open fs/open.c:1216 [inline]
- __do_sys_openat fs/open.c:1232 [inline]
- __se_sys_openat fs/open.c:1227 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1227
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff261e34347
-RSP: 002b:00007ffe30328bb0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 0000000020000440 RCX: 00007ff261e34347
-RDX: 0000000000000002 RSI: 00007ff261eba03b RDI: 00000000ffffff9c
-RBP: 00007ff261eba03b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffe3032acdc R14: 0000000000000076 R15: 00007ffe3032ace0
-INFO: task syz-executor864:6972 blocked for more than 144 seconds.
-      Not tainted 5.15.0-rc7-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor864 state:D stack:28328 pid: 6972 ppid:  6547 flags:0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:4940 [inline]
- __schedule+0xb44/0x5960 kernel/sched/core.c:6287
- schedule+0xd3/0x270 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:669 [inline]
- __mutex_lock+0xa34/0x12f0 kernel/locking/mutex.c:729
- misc_open+0x55/0x4a0 drivers/char/misc.c:107
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4c8/0x11d0 fs/open.c:822
- do_open fs/namei.c:3428 [inline]
- path_openat+0x1c9a/0x2740 fs/namei.c:3561
- do_filp_open+0x1aa/0x400 fs/namei.c:3588
- do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
- do_sys_open fs/open.c:1216 [inline]
- __do_sys_openat fs/open.c:1232 [inline]
- __se_sys_openat fs/open.c:1227 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1227
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff261e34347
-RSP: 002b:00007ffe30328bb0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 0000000020000440 RCX: 00007ff261e34347
-RDX: 0000000000000002 RSI: 00007ff261eba03b RDI: 00000000ffffff9c
-RBP: 00007ff261eba03b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffe3032acdc R14: 0000000000000076 R15: 00007ffe3032ace0
+Either start with a uppercase char, or don't.  Please be consistent.
 
-Showing all locks held in the system:
-1 lock held by khungtaskd/27:
- #0: ffffffff8b97f0e0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6446
-5 locks held by kworker/1:2/1053:
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_one_work+0x8a3/0x16b0 kernel/workqueue.c:2268
- #1: ffffc900049ffdb0 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_one_work+0x8d7/0x16b0 kernel/workqueue.c:2272
- #2: ffff88801fed4220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #2: ffff88801fed4220 (&dev->mutex){....}-{3:3}, at: hub_event+0x1c1/0x4330 drivers/usb/core/hub.c:5662
- #3: ffff888022e64220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #3: ffff888022e64220 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
- #4: ffff8880781991a8 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #4: ffff8880781991a8 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
-5 locks held by kworker/0:2/1266:
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_one_work+0x8a3/0x16b0 kernel/workqueue.c:2268
- #1: ffffc900053efdb0 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_one_work+0x8d7/0x16b0 kernel/workqueue.c:2272
- #2: ffff888146d2f220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #2: ffff888146d2f220 (&dev->mutex){....}-{3:3}, at: hub_event+0x1c1/0x4330 drivers/usb/core/hub.c:5662
- #3: ffff88806fe79220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #3: ffff88806fe79220 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
- #4: ffff88801fe231a8 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #4: ffff88801fe231a8 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
-5 locks held by kworker/1:3/2969:
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_one_work+0x8a3/0x16b0 kernel/workqueue.c:2268
- #1: ffffc90001177db0 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_one_work+0x8d7/0x16b0 kernel/workqueue.c:2272
- #2: ffff888146d3d220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #2: ffff888146d3d220 (&dev->mutex){....}-{3:3}, at: hub_event+0x1c1/0x4330 drivers/usb/core/hub.c:5662
- #3: ffff8880750ec220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #3: ffff8880750ec220 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
- #4: ffff888078ab61a8 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #4: ffff888078ab61a8 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
-1 lock held by in:imklog/6253:
- #0: ffff88801b806db0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:990
-5 locks held by kworker/1:0/6557:
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_one_work+0x8a3/0x16b0 kernel/workqueue.c:2268
- #1: ffffc90002c37db0 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_one_work+0x8d7/0x16b0 kernel/workqueue.c:2272
- #2: ffff888146d23220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #2: ffff888146d23220 (&dev->mutex){....}-{3:3}, at: hub_event+0x1c1/0x4330 drivers/usb/core/hub.c:5662
- #3: ffff888079db5220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #3: ffff888079db5220 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
- #4: ffff88801a88f1a8 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #4: ffff88801a88f1a8 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
-5 locks held by kworker/0:1/6563:
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
- #0: ffff88801643cd38 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_one_work+0x8a3/0x16b0 kernel/workqueue.c:2268
- #1: ffffc90002cb7db0 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_one_work+0x8d7/0x16b0 kernel/workqueue.c:2272
- #2: ffff8880200b6220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #2: ffff8880200b6220 (&dev->mutex){....}-{3:3}, at: hub_event+0x1c1/0x4330 drivers/usb/core/hub.c:5662
- #3: ffff88806e962220 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #3: ffff88806e962220 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
- #4: ffff88806eba91a8 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:760 [inline]
- #4: ffff88806eba91a8 (&dev->mutex){....}-{3:3}, at: __device_attach+0x7a/0x4a0 drivers/base/dd.c:944
-1 lock held by syz-executor864/6907:
- #0: ffffffff8c3c4488 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x55/0x4a0 drivers/char/misc.c:107
-1 lock held by syz-executor864/6922:
- #0: ffffffff8c3c4488 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x55/0x4a0 drivers/char/misc.c:107
-1 lock held by syz-executor864/6936:
- #0: ffffffff8c3c4488 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x55/0x4a0 drivers/char/misc.c:107
-1 lock held by syz-executor864/6954:
- #0: ffffffff8c3c4488 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x55/0x4a0 drivers/char/misc.c:107
-1 lock held by syz-executor864/6972:
- #0: ffffffff8c3c4488 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x55/0x4a0 drivers/char/misc.c:107
-2 locks held by syz-executor864/6975:
- #0: ffffffff8c3c4488 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x55/0x4a0 drivers/char/misc.c:107
- #1: ffffffff8b84d408 (system_transition_mutex){+.+.}-{3:3}, at: snapshot_open+0x3b/0x2a0 kernel/power/user.c:54
+> +}
+> +
+>  static int da9062_i2c_probe(struct i2c_client *i2c,
+>  	const struct i2c_device_id *id)
+>  {
+> @@ -720,6 +740,15 @@ static int da9062_i2c_probe(struct i2c_client *i2c,
+>  		return ret;
+>  	}
+>  
+> +	if (of_device_is_system_power_controller(i2c->dev.of_node)) {
+> +		if (!pm_power_off) {
+> +			da9062_i2c_client = i2c;
+> +			pm_power_off = da9062_power_off;
+> +		} else {
+> +			dev_warn(&i2c->dev, "Poweroff callback already assigned\n");
+> +		}
+> +	}
+> +
+>  	return ret;
+>  }
+>  
+> @@ -727,6 +756,11 @@ static int da9062_i2c_remove(struct i2c_client *i2c)
+>  {
+>  	struct da9062 *chip = i2c_get_clientdata(i2c);
+>  
+> +	if (pm_power_off == da9062_power_off)
+> +		pm_power_off = NULL;
+> +	if (da9062_i2c_client)
+> +		da9062_i2c_client = NULL;
+> +
+>  	mfd_remove_devices(chip->dev);
+>  	regmap_del_irq_chip(i2c->irq, chip->regmap_irq);
+>  
 
-----------------------------------------
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
