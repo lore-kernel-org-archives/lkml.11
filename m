@@ -2,65 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577C0CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C0C8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 10:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233904AbiGDKdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 06:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58340 "EHLO
+        id S233928AbiGDKdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 06:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233285AbiGDKd2 (ORCPT
+        with ESMTP id S233514AbiGDKda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 06:33:28 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EE122DDD
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 03:33:24 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id EBAE81E80C95;
-        Mon,  4 Jul 2022 18:31:27 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id B6zNf4pYHTqg; Mon,  4 Jul 2022 18:31:25 +0800 (CST)
-Received: from node1.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: kunyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 3532F1E80C90;
-        Mon,  4 Jul 2022 18:31:25 +0800 (CST)
-From:   Li kunyu <kunyu@nfschina.com>
-To:     almaz.alexandrovich@paragon-software.com
-Cc:     ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Li kunyu <kunyu@nfschina.com>
-Subject: [PATCH] fs/ntfs3/indx: Remove unnecessary 'NULL' values from Pointer
-Date:   Mon,  4 Jul 2022 18:31:13 +0800
-Message-Id: <20220704103113.5529-1-kunyu@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Mon, 4 Jul 2022 06:33:30 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515555F80;
+        Mon,  4 Jul 2022 03:33:29 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0D6E1660198A;
+        Mon,  4 Jul 2022 11:33:27 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656930807;
+        bh=I6gNnNJ8NBeXTrc04WgTIwAxpwHfOlZ6YbGYUe7r+Cs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Rtt8qO/doUejrNnhHwGmINTEgS/5BBt2XaRGCqfDMLekT3eRdV1gDdqRKcSU9Uywu
+         BWDd1dlY/ptPHAPKhgj04EhO5HveCi5wDKKzYZh3zNJR2W8/xglREy/tLUjEpNH21G
+         K8zfRG9P/edWVraOOoU1UWRDGPX/qBRa57zgv7Dhdrd7mSlMCa+HVIPvP5wFX7twYD
+         GNpzF6s6ZlzlG9sEm5a9mTIRJoh+tZGoL2VjUo35ylUgzTrCliw1FVbAMkx8IOSn4E
+         HKALylVGamheS79f+zaHA+ISuP4UIjQoORPnGhcfInHHH9t1atweIP/1qDQSYCJ2pO
+         8bTI6xjPZZ9nA==
+Message-ID: <6a2e41ad-1722-1d93-33ff-4aec370856c4@collabora.com>
+Date:   Mon, 4 Jul 2022 12:33:24 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1 05/16] arm64: dts: mt8195: Disable I2C0 node
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Tzung-Bi Shih <tzungbi@chromium.org>
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+ <20220704100028.19932-6-tinghan.shen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220704100028.19932-6-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pointer variables allocate memory first, and then judge. There is no
-need to initialize the assignment.
+Il 04/07/22 12:00, Tinghan Shen ha scritto:
+> From: Tzung-Bi Shih <tzungbi@chromium.org>
+> 
+> The I2C0 node doesn't need to be enabled in dtsi.
+> 
 
-Signed-off-by: Li kunyu <kunyu@nfschina.com>
----
- fs/ntfs3/index.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+"The I2C0 node should not be enabled globally, as usage is board dependant:
+disable it in dtsi."
 
-diff --git a/fs/ntfs3/index.c b/fs/ntfs3/index.c
-index 6f81e3a49abf..b5c92b6ce01c 100644
---- a/fs/ntfs3/index.c
-+++ b/fs/ntfs3/index.c
-@@ -1685,8 +1685,8 @@ indx_insert_into_buffer(struct ntfs_index *indx, struct ntfs_inode *ni,
- {
- 	int err;
- 	const struct NTFS_DE *sp;
--	struct NTFS_DE *e, *de_t, *up_e = NULL;
--	struct indx_node *n2 = NULL;
-+	struct NTFS_DE *e, *de_t, *up_e;
-+	struct indx_node *n2;
- 	struct indx_node *n1 = fnd->nodes[level];
- 	struct INDEX_HDR *hdr1 = &n1->index->ihdr;
- 	struct INDEX_HDR *hdr2;
--- 
-2.18.2
+after which...
 
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+> Signed-off-by: Tzung-Bi Shih <tzungbi@chromium.org>
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8195.dtsi | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> index 436687ba826f..8032b839dfe8 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> @@ -829,7 +829,7 @@
+>   			clock-names = "main", "dma";
+>   			#address-cells = <1>;
+>   			#size-cells = <0>;
+> -			status = "okay";
+> +			status = "disabled";
+>   		};
+>   
+>   		i2c1: i2c@11e01000 {
