@@ -2,175 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 401A1CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3582CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 12:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233792AbiGDMl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 08:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
+        id S232209AbiGDMnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 08:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbiGDMly (ORCPT
+        with ESMTP id S233826AbiGDMnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 08:41:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC1C11177;
-        Mon,  4 Jul 2022 05:41:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B902BB80EF7;
-        Mon,  4 Jul 2022 12:41:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E86BC3411E;
-        Mon,  4 Jul 2022 12:41:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656938510;
-        bh=woMFBKGhZbbP6U8C9VLpfXm9CACfBtvBeAVHM0vUyw0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=t7MRw9ut8MceLs1bkRj2Y8T3OoJ/2PZ13T1oHMBYxpL7V8+ko2hNKInR8wT/2todk
-         OIMiBqlCnjJLFs2ZCT0eyussRy96qUoJ8QIMxv41VQuv2w04ACKDaU0E7t++KiushN
-         0p2cZU21o3ddsDVJUKy8XJGyqVqIMlp3mXbQG3XMroyAd3DYK0MCmEW0/cicTS/Snf
-         ftWa6nmUVqWYiZK5FZxFLs2aXYj9HQpKgPtvN2H7JevHqYeYZkKemWYTAo/YEmLBzz
-         lFY77WhZeC2pinH3sJ8XNsDgBzumIfC14xppbnqbMhXIzV4L7nCzdt4qgWtFANLhLU
-         ZoVWbrdyKazgA==
-Message-ID: <fe1c0bd0-303b-6758-a6fd-2eb5eeb5c0b8@kernel.org>
-Date:   Mon, 4 Jul 2022 14:41:43 +0200
+        Mon, 4 Jul 2022 08:43:49 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD6EE0DD
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 05:43:44 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id f39so15616927lfv.3
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 05:43:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C5JrFNsrdURrynIRcNZ5G8lGyEvwaVaUcx1O/DPUMCE=;
+        b=JjPXbMtWA9vv8tvadTWpTLKLbjayx2W7t+ABNkO1YA/UxRrfamtA/YmMlUg/w2z2js
+         9udkArH5j8quI+j9Ql9xioaDARBfnPc0bEstZ2hMmTc2oviNnO5Soa1ce6lbmehPpKcV
+         t4WXObEOkimkLSUmqXqbmbyKyK6P2OZtEQOIgV6zzzvvPWBdDPv31Ntw7RKeklOIfsLm
+         Q6slfXgeFvKe6nV+Pnl1YdcRKqaI17NX3rM9akGSpDb4OIBJ8+9swkD2L5skjWRB8gfM
+         7t6Lyaq4VaKxmGciBoLo6Ih+p7rJ0zUG6vjTd6FF+NUc89vbXdbsqvg4fdnCXXwha4Sp
+         QuWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C5JrFNsrdURrynIRcNZ5G8lGyEvwaVaUcx1O/DPUMCE=;
+        b=5TzodummqqT9EqjYifoW1W63u0noAfyL8jFA1fJ9P3yUAthlWiCOcrbzJmw0X26B/a
+         1oCzk22zdvUWOKshAjcS+KvBbZHnSi1m0lpnD9ieWnZo2Ck0OdYJKTvAq24pRmk3QnyZ
+         wqn6GGC/D678TUN8QVfCxhJ+BEyXnMnIUxtjwRQCCYrc+DRzkNaisAcAYfcsL/nHzkz+
+         QR1B1EKHttYKT0pCnaJ1rf/+JRFBD0GNuxpn0B/M8kh7IfPU0wJbEHZKiWYBRmA2GdPP
+         KuaqQq3v2e7fK84FAAIYEFEpCBx6xAN1+ekXVeCspyKqj1I236v9nbWUoyzvDTlKm6I2
+         qkdA==
+X-Gm-Message-State: AJIora9Q0YgahWLpdz9pfHr6z/3/COA6tomV5u+FVePY08AY+JIrDjkR
+        1Qre+YaPeZY1+S9AD7pDjCEAYg==
+X-Google-Smtp-Source: AGRyM1vteyLrUKmrJEdE96gqsOwiHpBoFFKT52joX+DoYuA8q+pmgAV06t9T0wuyGgrz7nqwUaAwiw==
+X-Received: by 2002:a19:4316:0:b0:481:484c:404c with SMTP id q22-20020a194316000000b00481484c404cmr16640237lfa.559.1656938622879;
+        Mon, 04 Jul 2022 05:43:42 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id bj16-20020a2eaa90000000b0025d254180d7sm284672ljb.113.2022.07.04.05.43.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 05:43:42 -0700 (PDT)
+Message-ID: <8c2e1b9e-9fbb-2593-912f-0893529748ed@linaro.org>
+Date:   Mon, 4 Jul 2022 14:43:41 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH V4 18/20] rv/monitor: Add safe watchdog monitor
+Subject: Re: [PATCH v2 01/11] dt-bindings: arm: mediatek: Add MT8195 Cherry
+ Tomato Chromebooks
 Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Gabriele Paoloni <gpaoloni@redhat.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-trace-devel@vger.kernel.org
-References: <cover.1655368610.git.bristot@kernel.org>
- <6366fdc89d65b8d9b14ccd1e42fa0d793fbe9f73.1655368610.git.bristot@kernel.org>
- <168af019-70d1-3237-dc9c-56a82beb5990@roeck-us.net>
- <04ca385b-47dc-5535-419e-1b814a383d1a@kernel.org>
- <CA+wEVJbvcMZbCroO2_rdVxLvYkUo-ePxCwsp5vbDpoqys4HGWQ@mail.gmail.com>
- <17ade9e2-8fbe-ea80-93c1-9f1e291805b6@roeck-us.net>
- <20220628153256.65dc84dd@gandalf.local.home>
- <56166be5-e30f-8f2a-e85a-09b993c7a8f0@roeck-us.net>
- <20220701113851.3167403e@gandalf.local.home>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220701113851.3167403e@gandalf.local.home>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        hsinyi@chromium.org, nfraprado@collabora.com,
+        allen-kh.cheng@mediatek.com, gtk3@inbox.ru, luca@z3ntu.xyz,
+        sam.shih@mediatek.com, sean.wang@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wenst@chromium.org
+References: <20220704101321.44835-1-angelogioacchino.delregno@collabora.com>
+ <20220704101321.44835-2-angelogioacchino.delregno@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220704101321.44835-2-angelogioacchino.delregno@collabora.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/1/22 17:38, Steven Rostedt wrote:
-> On Fri, 1 Jul 2022 07:45:50 -0700
-> Guenter Roeck <linux@roeck-us.net> wrote:
+On 04/07/2022 12:13, AngeloGioacchino Del Regno wrote:
+> Document board compatibles for the MT8195 Cherry platform's
+> Tomato Chromebooks, at the time of writing composed of four
+> revisions (r1, r2, r3-r4).
 > 
->>> Do not confuse this with static analyzers or other general purpose tooling
->>> to find bugs. This is not the purpose of the run time verify. It is just to
->>> prove that certain use cases will perform as expected, given a limited
->>> input.
->>>   
->>
->> ... this is, unfortunately, not explained in the patch. I would have much less
->> of a problem with the series if those details were included.
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
 > 
-> It's one of those cases where developers get so involved in their code that
-> they leave out the things that are so obvious to them, but not obvious to
-> others ;-)
-
-I agree that the main point here is that the documentation [patch 20/20] needs
-to be extended and correctly linked to the code.
-
-The goal of the model is to specify the minimum but obligatory steps to set a
-watchdog (start, set a safe timeout, ping...) so it can be used by
-"safety/heath" monitors in safety-critical systems.
-
-Another goal is to reduce the amount of code/dependencies that will require
-deeper inspections to qualify the subsystem for usage in a given context via
-monitoring (as steven mentioned - more about it here [1]), without having to
-reduce the generic subsystem.
-
-Although the method allows one to create a complete model of the watchdog device
-layer, covering all use cases, that is not the idea of this monitor. Moreover, a
-full model would not be the adequate model for this specific (but relevant) case
-raised and discussed in the Elisa workgroup [2].
-
-The goal of the monitor (that uses the model) is to verify that the interaction
-between the watchdog device layer and the "safety/heath" monitors follows this
-established model, at runtime.
-
-> My new saying is: "We work in a field where the obvious seldom is".
+> Note for Krzysztof:
 > 
-> Hmm, I think I'll go tweet that :-)
-
-/me liked the tweet... and yep, you clarified well the context in which this is
-being applied.
-
->>
->> Not that I would mind such a verifier, if it was possible to define one,
->> but it would have to be tested with a large number of watchdog drivers
->> to ensure that it addresses all use cases, or at least with a substantial
->> percentage of use cases. It would also require that the state machine is
->> readable to give people a chance to fix it if turns out to be broken.
-
-The patch 20/20 has the automaton in the ASCII art format. Both C and ASCII
-models were extracted from the same .dot file. I am not including the .dot file
-because there was a previous discussion with the doc people that prefer the
-ASCII format in the documentation. But I can add as well, not linked with the
-rst file. By reading the model in the ASCII format, it is possible to see that
-it is broad enough to cover many watchdogs as it uses simple/generic operations.
-
-The model (the .h) and the instrumentation (the .c) can be updated at any time.
-I am adding the tooling to facilitate that, like [patch 06/20].
-
-Patch 19/20 adds a safety application that enables the RV monitor, uses the
-watchdog, and collects feedback from the monitor to see if the requested actions
-are occurring in the model - and it can be used to test the RV monitor with
-any watchdog.
-
-The goal is the one I described above, so an exception generated by this monitor
-needs to be read accordingly: it does not imply that a watchdog driver is
-broken. It means the interaction between the safety/health monitor and the
-watchdog is not following specifications and must be checked at the development
-phase, or that something went really wrong at runtime phase.
-
-I will add that to the documentation and emphasize the context of this monitor.
-
->> It would also have to be robust, meaning it would have to reject invalid
->> (unsupported) settings from the start and not only during runtime.
+> I had to add the model number to the description in here, but I
+> wasn't sure whether I should've kept your Reviewed-by tag or not.
 > 
-> I would agree than any module would need to state up front exactly what it
-> is modeling. In safety critical systems, all the components that are used
-> are defined up front. Not sure if we can have the model not load if the
-> required drivers to test are not loaded or ones not part of the model are
-> (Daniel?).
+> Since I was in doubt, I decided to not keep it just to be on the safe side.
 
-I can add a check in the time in which the model is being enabled. But for this
-specific case, removing that part might be better and adding it later if it
-becomes fundamental.
+These were trivial changes, so keep the tag. Anyway no problem:
 
-In practice, selecting a watchdog device can assume that the get_timeleft
-implementation is a requirement - so that option was just an additional check.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[1] This is one use case for the broader goal of the strategy discussed here:
-https://www.youtube.com/watch?v=DkiwkAKOXNs
-
-[2] https://www.youtube.com/watch?v=qFSYlCbHCYk
-> Anyway, thanks for the feedback.
-> 
-> -- Steve
-
+Best regards,
+Krzysztof
