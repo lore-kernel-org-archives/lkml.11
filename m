@@ -2,36 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F870CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 11:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234215AbiGDLgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 07:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        id S234428AbiGDLgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 07:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234373AbiGDLgV (ORCPT
+        with ESMTP id S232972AbiGDLgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 07:36:21 -0400
+        Mon, 4 Jul 2022 07:36:23 -0400
 Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3165911150
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:36:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C9511A04
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 04:36:14 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3fK4N1Hz4xbN;
-        Mon,  4 Jul 2022 21:36:09 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3fM0X09z4xbT;
+        Mon,  4 Jul 2022 21:36:11 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
 To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-In-Reply-To: <adbe1c8315ec2d63259f41468e82e51677bb1eda.1654769775.git.christophe.leroy@csgroup.eu>
-References: <adbe1c8315ec2d63259f41468e82e51677bb1eda.1654769775.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH v2 1/3] powerpc/irq: Make __do_irq() static
-Message-Id: <165693440325.9954.5809893763159073489.b4-ty@ellerman.id.au>
-Date:   Mon, 04 Jul 2022 21:33:23 +1000
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Erhard Furtner <erhard_f@mailbox.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+In-Reply-To: <e8b4eb82a126c3c6c352173a544fe94609ff660b.1654261687.git.christophe.leroy@csgroup.eu>
+References: <e8b4eb82a126c3c6c352173a544fe94609ff660b.1654261687.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH v2] powerpc/irq: Increase stack_overflow detection limit when KASAN is enabled
+Message-Id: <165693439802.9954.361439982234083073.b4-ty@ellerman.id.au>
+Date:   Mon, 04 Jul 2022 21:33:18 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -39,23 +41,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 12:16:40 +0200, Christophe Leroy wrote:
-> Since commit 48cf12d88969 ("powerpc/irq: Inline call_do_irq() and
-> call_do_softirq()"), __do_irq() is not used outside irq.c
+On Fri, 3 Jun 2022 15:08:14 +0200, Christophe Leroy wrote:
+> When KASAN is enabled, as shown by the Oops below, the 2k limit is not
+> enough to allow stack dump after a stack overflow detection when
+> CONFIG_DEBUG_STACKOVERFLOW is selected:
 > 
-> Reorder functions and make __do_irq() static and
-> drop the declaration in irq.h.
-> 
+> 	do_IRQ: stack overflow: 1984
+> 	CPU: 0 PID: 126 Comm: systemd-udevd Not tainted 5.18.0-gentoo-PMacG4 #1
+> 	Call Trace:
+> 	Oops: Kernel stack overflow, sig: 11 [#1]
+> 	BE PAGE_SIZE=4K MMU=Hash SMP NR_CPUS=2 PowerMac
+> 	Modules linked in: sr_mod cdrom radeon(+) ohci_pci(+) hwmon i2c_algo_bit drm_ttm_helper ttm drm_dp_helper snd_aoa_i2sbus snd_aoa_soundbus snd_pcm ehci_pci snd_timer ohci_hcd snd ssb ehci_hcd 8250_pci soundcore drm_kms_helper pcmcia 8250 pcmcia_core syscopyarea usbcore sysfillrect 8250_base sysimgblt serial_mctrl_gpio fb_sys_fops usb_common pkcs8_key_parser fuse drm drm_panel_orientation_quirks configfs
+> 	CPU: 0 PID: 126 Comm: systemd-udevd Not tainted 5.18.0-gentoo-PMacG4 #1
+> 	NIP:  c02e5558 LR: c07eb3bc CTR: c07f46a8
+> 	REGS: e7fe9f50 TRAP: 0000   Not tainted  (5.18.0-gentoo-PMacG4)
+> 	MSR:  00001032 <ME,IR,DR,RI>  CR: 44a14824  XER: 20000000
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/3] powerpc/irq: Make __do_irq() static
-      https://git.kernel.org/powerpc/c/051bd351a2ef9c69753dc9cf6bd396986f27778c
-[2/3] powerpc/irq: Perform stack_overflow detection after switching to IRQ stack
-      https://git.kernel.org/powerpc/c/e90855be9e90e4a046d2be817a31fae6637415a4
-[3/3] powerpc/irq: Simplify __do_irq()
-      https://git.kernel.org/powerpc/c/78f1c24abd16952d383f34eefbb0af7bb53f9b0b
+[1/1] powerpc/irq: Increase stack_overflow detection limit when KASAN is enabled
+      https://git.kernel.org/powerpc/c/41f20d6db2b64677225bb0b97df956241c353ef8
 
 cheers
