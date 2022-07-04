@@ -2,98 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC25BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  4 Jul 2022 09:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233598AbiGDJ1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
+        id S233719AbiGDJ1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiGDJ1V (ORCPT
+        with ESMTP id S233725AbiGDJ10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:27:21 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A47DD128;
-        Mon,  4 Jul 2022 02:27:16 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q9so12557505wrd.8;
-        Mon, 04 Jul 2022 02:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=8ajViNQRBuqUSn02uQYgcqcIAiyCQZm2aY6tb0Jvxow=;
-        b=FwV11uqFxCK4IkZ4zVZiQ64I4Ggdzep3kIDUZ2+1HDpOAhUlfzAYQJUacB1phfkN2X
-         B2HQRkjXpwoAcuKnts64swRREXrVL4xJrJZ9WYfFyoHRvfGx3SOlMfDHIoShfgM86eoE
-         AD6c8Vs5c95BaGGO/di2Xh5BNHGRZ6t1xKrPqwmbwreDxwQt9H7npJMcxNlxe16qrIxR
-         bSGh6dmLpgE6CclNjxAIPWG2Vn4Kr0YDJAPJw/xemQN/PnikqQrEvbPdL20O9C3DsSfV
-         41Y2ic/yf0dFgLd1K0r+o0E7pB2FuYAm4jbyeIXVo3hBUk4RtoVVAoJQ15c+5E4BZzlQ
-         V8Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8ajViNQRBuqUSn02uQYgcqcIAiyCQZm2aY6tb0Jvxow=;
-        b=MUlUWW5CCZ9rqhjSlUQy3F2aXFll7xiGI2x43XFtSpT3P3CPRG+eI+pSUSkMFD+8jb
-         02+PhlGUc9ggxuOGvVUspjOGynkzvmJbpOBc5ecNu6b815O4WvV5/2NzdIMefZsTBTwo
-         16LEo+CzdVB1IaoGEiHPGLe8mcUvPpoaogBh+CXbYRZyPcu3khxIRg3N8msV87yq8DOS
-         MM2UO5PXwBGuF7DwEVtL+bq4VwtaT+4+YQZuPEDnZtvi+e5887m5owklL6bYS6uiZLF8
-         7FaOWRQohlzYpXnYIiB+ftmipVqUmhnyjYNFfQju3M5ehGuBfJD+s4DLcPMSjkpE1iBB
-         lxlA==
-X-Gm-Message-State: AJIora9SeE/6plgSCpIWjgIZ5Kng3z6JR9kdbVAf/7N8JHwdAC7bh504
-        XFj3RZQNBB3qjeqKE1UHc0E=
-X-Google-Smtp-Source: AGRyM1toxERE0aCr4bhk9/9ushPcgnzqZmqbDSrQk4jk+lQaqJhem9chTZej0sQW5e9RrOi3uvfEsw==
-X-Received: by 2002:a5d:47c7:0:b0:21d:12f8:e0be with SMTP id o7-20020a5d47c7000000b0021d12f8e0bemr26419284wrc.432.1656926834593;
-        Mon, 04 Jul 2022 02:27:14 -0700 (PDT)
-Received: from felia.fritz.box (200116b826716b008998943ac77556e4.dip.versatel-1u1.de. [2001:16b8:2671:6b00:8998:943a:c775:56e4])
-        by smtp.gmail.com with ESMTPSA id d10-20020adff2ca000000b0021a38089e99sm29618815wrp.57.2022.07.04.02.27.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 02:27:14 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Mike Rapoport <rppt@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, llvm@lists.linux.dev,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] secretmem: drop unneeded initialization in secretmem_file_create()
-Date:   Mon,  4 Jul 2022 11:26:05 +0200
-Message-Id: <20220704092605.19604-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 4 Jul 2022 05:27:26 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCF02CE0E
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 02:27:24 -0700 (PDT)
+Received: from [198.18.0.1] (unknown [192.168.200.1])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxWeBxssJi2E0IAA--.20655S3;
+        Mon, 04 Jul 2022 17:27:14 +0800 (CST)
+Message-ID: <7904571e-3ef4-5841-497d-6796c8c36c52@loongson.cn>
+Date:   Mon, 4 Jul 2022 17:27:13 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] LoongArch: Clean useless vcsr in loongarch_fpu.
+Content-Language: en-US
+To:     WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220704061402.683762-1-huqi@loongson.cn>
+ <1470d272-e148-c600-f759-a1e2dac776e1@xen0n.name>
+From:   huqi <huqi@loongson.cn>
+In-Reply-To: <1470d272-e148-c600-f759-a1e2dac776e1@xen0n.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9AxWeBxssJi2E0IAA--.20655S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxJFW7trW8ury8KF15trWxXrb_yoWrAryrpF
+        1kAr1kJFW5Gr1kJryUtr1UWryUJr1UGw12qF1UJFy8Jr4UXr1jgr18Xr1qgF1UJw48Jr10
+        qF1rXw17ZF1UJ3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pkxtxqxorr0wxvrqhubq/1tbiAQARCV3QvPwsxQADs+
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the unneeded initialization of the local variable file in function
-secretmem_file_create().
 
-No functional change and no change in the resulting object code.
+On 2022/7/4 15:28, WANG Xuerui wrote:
+> On 2022/7/4 14:14, huqi wrote:
+>> From: Qi Hu <huqi@loongson.cn>
+>>
+>> The `vcsr` do not use anymore. Remove this member from `loongarch_fpu`.
+> "The VCSR is not used any more."
+Thanks, this is incorrect to use `use`.
+>>
+>> Signed-off-by: Qi Hu <huqi@loongson.cn>
+>> ---
+>>   arch/loongarch/include/asm/fpregdef.h  |  1 -
+>>   arch/loongarch/include/asm/processor.h |  2 --
+>>   arch/loongarch/kernel/asm-offsets.c    |  1 -
+>>   arch/loongarch/kernel/fpu.S            | 10 ----------
+>>   4 files changed, 14 deletions(-)
+>>
+>> diff --git a/arch/loongarch/include/asm/fpregdef.h 
+>> b/arch/loongarch/include/asm/fpregdef.h
+>> index adb16e4b43b0..b6be527831dd 100644
+>> --- a/arch/loongarch/include/asm/fpregdef.h
+>> +++ b/arch/loongarch/include/asm/fpregdef.h
+>> @@ -48,6 +48,5 @@
+>>   #define fcsr1    $r1
+>>   #define fcsr2    $r2
+>>   #define fcsr3    $r3
+>> -#define vcsr16    $r16
+>>     #endif /* _ASM_FPREGDEF_H */
+>> diff --git a/arch/loongarch/include/asm/processor.h 
+>> b/arch/loongarch/include/asm/processor.h
+>> index 1d63c934b289..57ec45aa078e 100644
+>> --- a/arch/loongarch/include/asm/processor.h
+>> +++ b/arch/loongarch/include/asm/processor.h
+>> @@ -80,7 +80,6 @@ BUILD_FPR_ACCESS(64)
+>>     struct loongarch_fpu {
+>>       unsigned int    fcsr;
+>> -    unsigned int    vcsr;
+>>       uint64_t    fcc;    /* 8x8 */
+>>       union fpureg    fpr[NUM_FPU_REGS];
+>>   };
+>> @@ -161,7 +160,6 @@ struct thread_struct {
+>>        */                            \
+>>       .fpu            = {                \
+>>           .fcsr        = 0,                \
+>> -        .vcsr        = 0,                \
+>>           .fcc        = 0,                \
+>>           .fpr        = {{{0,},},},            \
+>>       },                            \
+>> diff --git a/arch/loongarch/kernel/asm-offsets.c 
+>> b/arch/loongarch/kernel/asm-offsets.c
+>> index bfb65eb2844f..20cd9e16a95a 100644
+>> --- a/arch/loongarch/kernel/asm-offsets.c
+>> +++ b/arch/loongarch/kernel/asm-offsets.c
+>> @@ -166,7 +166,6 @@ void output_thread_fpu_defines(void)
+>>         OFFSET(THREAD_FCSR, loongarch_fpu, fcsr);
+>>       OFFSET(THREAD_FCC,  loongarch_fpu, fcc);
+>> -    OFFSET(THREAD_VCSR, loongarch_fpu, vcsr);
+>>       BLANK();
+>>   }
+>>   diff --git a/arch/loongarch/kernel/fpu.S b/arch/loongarch/kernel/fpu.S
+>> index 75c6ce0682a2..a631a7137667 100644
+>> --- a/arch/loongarch/kernel/fpu.S
+>> +++ b/arch/loongarch/kernel/fpu.S
+>> @@ -146,16 +146,6 @@
+>>       movgr2fcsr    fcsr0, \tmp0
+>>       .endm
+>>   -    .macro sc_save_vcsr base, tmp0
+>> -    movfcsr2gr    \tmp0, vcsr16
+>> -    EX    st.w \tmp0, \base, 0
+>> -    .endm
+>> -
+>> -    .macro sc_restore_vcsr base, tmp0
+>> -    EX    ld.w \tmp0, \base, 0
+>> -    movgr2fcsr    vcsr16, \tmp0
+>> -    .endm
+>> -
+>>   /*
+>>    * Save a thread's fp context.
+>>    */
+>
+> The original code was written with future LSX/LASX support in mind; 
+> the code is dead currently, but expected to get utilized Soon (TM).
+>
+> So, I'd like to confirm if future LoongArch models would *not* feature 
+> LSX/LASX in its current form, and that the Loongson Corporation is not 
+> going to upstream LSX/LASX support, given you are apparently a 
+> Loongson employee with the first-hand information? We'd like to avoid 
+> code churn in general, so if the LSX/LASX support is to be eventually 
+> mainlined, removing them now would only lead to them being introduced 
+> later.
 
-This unneeded initialization was already introduced with the introduction
-of secretmem in commit 1507f51255c9 ("mm: introduce memfd_secret system
-call to create "secret" memory areas"). This minor code-stylistic issue
-was discovered as a dead store with clang-analyzer.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Mike, please ack.
-
-Andrew, please pick this minor stylistic clean-up patch. Thanks.
-
- mm/secretmem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/mm/secretmem.c b/mm/secretmem.c
-index 7584aab54d20..46b431d62761 100644
---- a/mm/secretmem.c
-+++ b/mm/secretmem.c
-@@ -171,7 +171,7 @@ static struct vfsmount *secretmem_mnt;
- 
- static struct file *secretmem_file_create(unsigned long flags)
- {
--	struct file *file = ERR_PTR(-ENOMEM);
-+	struct file *file;
- 	struct inode *inode;
- 	const char *anon_name = "[secretmem]";
- 	const struct qstr qname = QSTR_INIT(anon_name, strlen(anon_name));
--- 
-2.17.1
+`vcsr` is removed because it has been removed in hardware. What's more, 
+it will not be used to support LSX/LASX in the future.
 
