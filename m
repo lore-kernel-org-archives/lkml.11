@@ -2,159 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D74C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECEBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:18:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiGERR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39708 "EHLO
+        id S232182AbiGERSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229905AbiGERR5 (ORCPT
+        with ESMTP id S229905AbiGERSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:17:57 -0400
-Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7458E1CFD0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:17:56 -0700 (PDT)
-Received: by mail-vk1-xa33.google.com with SMTP id j15so125260vkn.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 10:17:56 -0700 (PDT)
+        Tue, 5 Jul 2022 13:18:17 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030C71EED0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:18:16 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id n8so16211993eda.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 10:18:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DibX9iQEUFrXxkIm9PYaQ+YczA5+PDT4pu/k9a93CZ4=;
-        b=nK5H+j5ZR39sYeXQoPrCBk/xTcXYb0lrGz/hZhHBtPek2kaE+xuCcYjTmZZBb5J4IZ
-         VFXFAj0a3LAS8jtJhbS4PtkPhPg1CjfV00iuEL+oI3k5WQYaDFov2C6t9uju9W509TwD
-         /5RBMO3qIpkp6DxPnVoIw5VeFwEi5JWiEJotw=
+        bh=KEQiJwLVIjyTlJf7HNAXyAoKFYo5LpiNnShf4EStzn8=;
+        b=pWseJXioZgMct7K8f+2RA7Qrdt5KhvujYt/kkV2zEGyUXuvW9+jmN61iN9A1mdwrs8
+         MII6aS2AkrvNf0Qv2ZMvvzS67ZZs5tFsnZuXtwBTr2MJaTA+YGuvlgHjaEW6GQL68s1v
+         e5dWtuQFl2WfbpM2wXUKyPYTIIxifxGp8ZhgdJrXb/4WeZjz1pbmN2zlQJjZx8geRFZY
+         uI1kReZIs07I5zTP6hRHzDydjwtZvH1M7QNcZrY5HbLuwbBdMSBEyEosAYA/1+Hq4P39
+         CsgvNvfsAO6l0rZdy7YTHT1Owp7+gZOlk47X3nmSPi9x3L5iqLKClb9oHD8zJJvcnCCc
+         lPYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DibX9iQEUFrXxkIm9PYaQ+YczA5+PDT4pu/k9a93CZ4=;
-        b=4/xnd39k26sbwxLDG/09tUQh1OWLf2lf7vDeCogfu5uOW8BXp1ISNsGFEjBExj5LSC
-         RVwiuo8cSfdKVkcGt8CmSXx82MtRAZkuob9Q/4NoR1KMe3JgdEvqG/arSzNBzAvJPgtW
-         OXnd44+sPTZPr1WJM8S1KAH+qErxXKvW04fU2BAY5N0efxX8NFHg9dndCtBOMbcXiNTp
-         Nj6Ayb9mwuNHYK8usFL41ujeWez5Su9F0KcxXUxeIQIUUhB6g+W2j3VEj24swtFRtDcQ
-         11QjeEUw5/WOu8rE9yD/RZZOFfhLLR31/AzQ0iQ9/iRiPcIyo/QN4atRgkTtWUiC2FSl
-         l/yQ==
-X-Gm-Message-State: AJIora9yRyaK/PWZG3q6PTIBW4mh5uuPtfIJ7IkV/K5eSFcYY2LBAAp8
-        e+B/rAD3af6FqnDCZuew7soW1FhYKOu1yaPp3usKJw==
-X-Google-Smtp-Source: AGRyM1vjE+XIl428JT5ISAnbg0EIoYJ+7JSRqA2pTtZa1SnDBKe7Cz1aIqj0GttScxh4Hat1teS3mBNopwWOIyHsf50=
-X-Received: by 2002:a05:6122:152b:b0:36c:2e3f:599b with SMTP id
- g11-20020a056122152b00b0036c2e3f599bmr21318514vkq.5.1657041475532; Tue, 05
- Jul 2022 10:17:55 -0700 (PDT)
+        bh=KEQiJwLVIjyTlJf7HNAXyAoKFYo5LpiNnShf4EStzn8=;
+        b=LhzZrp4X5MVOMoNG0iI4YgZbPRsl97JP0oXnJZHxM8ihxzRPL9MQLkdImV8bV9NBjJ
+         CzARDzoqJPGEHgReYcq3be6igxiHDo6m1MAfzH2JUVrPiFZ/Ln1OSsSalJVPxMoVX8Fb
+         swqWxNtgrvvm6I+1habURk33VNeEUfOQ3QhELnr0AA+HdWc9fCmKJpR6l87pKU6SY4ht
+         OdSA9Oz98MUp8ymMhV+DTsJCJXFcmdJrvzh1+od1mTLNx3d2LtcoNvsWuwEQrc9rtCyP
+         uoj5rQOg31vqrGdD8nh+4JCZjySGXCpLTriaJV7XoFyu3fgpxzqFVZe4yR4d3sJoaBjL
+         7bpQ==
+X-Gm-Message-State: AJIora8/7TTR33/Q3E/DzyVaWWcg7+2i/UT2rMkdQmRceDkgJactHPy2
+        CRAL6ZrM7dhVvvqtd82j0Fgpwn/a4EfEC63KEAkRwQz3ouQ=
+X-Google-Smtp-Source: AGRyM1sMx/jIeA9Ia9X4c5q9Q89VPxh0msPgXzDPU8gzggcCVWNOoY9hLnJRDLW04lV+CvnEpil743x1NoFPdPOVVYg=
+X-Received: by 2002:a05:6402:4518:b0:43a:3b90:7457 with SMTP id
+ ez24-20020a056402451800b0043a3b907457mr18494917edb.422.1657041494616; Tue, 05
+ Jul 2022 10:18:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220705094946.827697-1-hsinyi@chromium.org> <YsQUrXfugKT1IV75@kroah.com>
- <CAJMQK-jA-GWw=v1PGAfYBKq5KWyYXGbYk30jVx26b1HWiw5yTQ@mail.gmail.com>
- <YsQluCvLLRXSo3Oc@kroah.com> <CAJMQK-gtfCL3smM6EAm2bLsSWvuk1QzviCQ6de4k8wiphEKQHg@mail.gmail.com>
- <YsRmQVrcAuguv03U@kroah.com>
-In-Reply-To: <YsRmQVrcAuguv03U@kroah.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Wed, 6 Jul 2022 01:27:07 +0800
-Message-ID: <CAJMQK-gYjdWg8wXHMjzRSBvAPHO9aT08tqiviJ8O3jjYe8PV3g@mail.gmail.com>
-Subject: Re: [PATCH] PM: domains: Ensure genpd_debugfs_dir exists before remove
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Thierry Strudel <tstrudel@google.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Pin-yen Lin <treapking@chromium.org>
+References: <20220704130323.104294-1-yuancan@huawei.com>
+In-Reply-To: <20220704130323.104294-1-yuancan@huawei.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 5 Jul 2022 19:18:04 +0200
+Message-ID: <CAMRc=MfLxOd7kVTzFmjkxfSOssrFaW=ih=eNVeXUUUWTLv=oew@mail.gmail.com>
+Subject: Re: [PATCH -next] gpio: pxa: Add missing clk_disable_unprepare() in pxa_gpio_probe()
+To:     Yuan Can <yuancan@huawei.com>
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 12:26 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Mon, Jul 4, 2022 at 3:05 PM Yuan Can <yuancan@huawei.com> wrote:
 >
-> On Tue, Jul 05, 2022 at 11:58:52PM +0800, Hsin-Yi Wang wrote:
-> > On Tue, Jul 5, 2022 at 7:51 PM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Tue, Jul 05, 2022 at 07:06:41PM +0800, Hsin-Yi Wang wrote:
-> > > > On Tue, Jul 5, 2022 at 6:38 PM Greg Kroah-Hartman
-> > > > <gregkh@linuxfoundation.org> wrote:
-> > > > >
-> > > > > On Tue, Jul 05, 2022 at 05:49:47PM +0800, Hsin-Yi Wang wrote:
-> > > > > > genpd_debug_remove() may be indirectly called from others while
-> > > > > > genpd_debugfs_dir is not yet set. Make sure genpd_debugfs_dir exists
-> > > > > > before remove the sub components, otherwise components under
-> > > > > > /sys/kernel/debug may be accidentally removed.
-> > > > > >
-> > > > > > Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-> > > > > > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> > > > > > ---
-> > > > > > An example:
-> > > > > > scpsys_probe() in drivers/soc/mediatek/mtk-pm-domains.c indirectly calls
-> > > > > > genpd_debug_remove() on probe fail, causing /sys/kernel/debug/usb to be
-> > > > > > removed.
-> > > > > > ---
-> > > > > >  drivers/base/power/domain.c | 3 +++
-> > > > > >  1 file changed, 3 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> > > > > > index 3e86772d5fac5..5a2e0232862e0 100644
-> > > > > > --- a/drivers/base/power/domain.c
-> > > > > > +++ b/drivers/base/power/domain.c
-> > > > > > @@ -222,6 +222,9 @@ static void genpd_debug_remove(struct generic_pm_domain *genpd)
-> > > > > >  {
-> > > > > >       struct dentry *d;
-> > > > > >
-> > > > > > +     if (!genpd_debugfs_dir)
-> > > > > > +             return;
-> > > > > > +
-> > > > > >       d = debugfs_lookup(genpd->name, genpd_debugfs_dir);
-> > > > > >       debugfs_remove(d);
-> > > > >
-> > > > > Why not just change this to be:
-> > > > >         debugfs_remove(debugfs_lookup(genpd->name, debugfs_lookup("pm_genpd", NULL)));
-> > > > If pm_genpd hasn't been created yet,  debugfs_lookup("pm_genpd", NULL)
-> > > > will return null.
-> > >
-> > > And how is this codepath being called if pm_genpd is not created yet?
-> > > Surely you are not relying on the presence of a debugfs file to
-> > > determine that?
-> > >
-> >
-> > Caller didn't directly call genpd_debug_remove(). The flow is as follows:
-> >
-> > Normally, scpsys will create pm domain by:
-> > scpsys_probe()
-> >    --> scpsys_add_one_domain()
-> >      --> pm_genpd_init()
-> >        --> genpd_debug_add()
-> >
-> >
-> > If something fails, it will do the cleanup:
-> > scpsys_probe()
-> >   --> scpsys_domain_cleanup()
-> >      --> scpsys_remove_one_domain()
-> >        --> pm_genpd_remove()
-> >           --> genpd_remove()
-> >             --> genpd_debug_remove()
-> >
-> > genpd_debug_add() checks if genpd_debugfs_dir is init by a
-> > late_initcall genpd_debug_init(). If it's NULL, it will return
-> > directly without creating anything. Later when genpd_debug_init() is
-> > called, it will call genpd_debug_add() again.
-> >
-> > pm_genpd_remove() still needs to be called on the cleanup path to free
-> > other stuff, but if genpd_debug_init() hasn't happened,
-> > genpd_debug_remove() should be a no-op, or genpd_remove() shouldn't
-> > call it. (We can move the check there, but adding in
-> > genpd_debug_remove() is more similar to what genpd_debug_add()
-> > currently is.)
+> Add clk_disable_unprepare() on error path in pxa_gpio_probe().
 >
-> Thanks for the details.  You might want to include this in the changelog
-> text.  I'm ok with the change now if that information is in there, I
-> missed that there are paths to create devices before debugfs is
-> initialized.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
+> ---
+>  drivers/gpio/gpio-pxa.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-Done. Added in v2. Thanks for the review.
+> diff --git a/drivers/gpio/gpio-pxa.c b/drivers/gpio/gpio-pxa.c
+> index c7fbfa3ae43b..08963975dd1b 100644
+> --- a/drivers/gpio/gpio-pxa.c
+> +++ b/drivers/gpio/gpio-pxa.c
+> @@ -676,6 +676,7 @@ static int pxa_gpio_probe(struct platform_device *pdev)
+>         /* Initialize GPIO chips */
+>         ret = pxa_init_gpio_chip(pchip, pxa_last_gpio + 1, gpio_reg_base);
+>         if (ret) {
+> +               clk_disable_unprepare(clk);
+>                 clk_put(clk);
+>                 return ret;
+>         }
+> --
+> 2.17.1
+>
 
-> thanks,
->
-> greg k-h
+Hi Yuan!
+
+This patch is not wrong but it's incomplete. A quick glance at the
+driver is telling me that once probe succeeded, nobody ever disables
+or releases the clock on remove. There's no remove callback and no
+devm action set for that. Please take a look at the patch I just sent.
+
+Bart
