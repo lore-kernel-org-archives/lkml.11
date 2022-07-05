@@ -2,91 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AC7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiGEOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
+        id S232708AbiGEORx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233491AbiGEOP1 (ORCPT
+        with ESMTP id S233349AbiGEORW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:15:27 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D9B21A3;
-        Tue,  5 Jul 2022 07:09:57 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id z21so20689480lfb.12;
-        Tue, 05 Jul 2022 07:09:57 -0700 (PDT)
+        Tue, 5 Jul 2022 10:17:22 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751A51005
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 07:13:11 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id w83so16323545oiw.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 07:13:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mkpYMkRu/76pOOu+MHLe2oZToj5Yt5Dx7rgEtnCdrPQ=;
-        b=IKQoY/My2mvs2KygiBq4kvXiSv0KM+0Qeikhdsnx5XPID6cmubAFjIW0/HaD7POAY5
-         SsmKNSvgWfWg6VjKuWxZuE+KQS8WhIoy/i6vIWMrshxduSxnHjtRKOr5UkQttb5McMea
-         ki4r58st9mM8U7P/rRgKEw9QYn4mbhKQQ4DNcb8hL9HfvZEmVGjs+i8XWY1eE2jGOfOW
-         iYofhYXGteHTKOOSQNUopEfeMGP/9VR9FFZdu47Z6nPqeMtuVt1aTtAAPSij6x+IPXlA
-         ObmXDPU7XjGGtZQDYl501/GRpe00ttnaam5qB2wVso11bT+Pnp4Mw23E+f6j+1qWpXNj
-         /juA==
+         :cc;
+        bh=QI3B1vIlvYkplD/OGFLDNG9KjTXHUoGMSflSfPKXG5I=;
+        b=DfVQLNy96aUWYf+Jt0CfmE7H2lYMo7TQ0F5goqxT/ODcU4vuDqq+EKv0pC/J4mrPhK
+         ckjbHfhDcM5wrntYgLzgf4zdR7zfyhv8EjVmBawbawurUni6XstEXFQUYxjf1NYyODD6
+         JPzGBSjXAh7267svFQP1/88rAhJ9b46HIRC+vRsLsjkfBpF4DE0b+rjSZsyAN1p5kBe7
+         r30gzYYQP8a2ucHu2cTDVoEVEYJ3nmw3FmEew6OWMWC8nTEOWbFg2aiYec8ekbJVaFTy
+         +0Gqw+CHRpYHpNyO8unp5PRDhpgUZuluMmI8VlZbN3j3LhiyufpNrFpy5akiSIhVBsNi
+         PTzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mkpYMkRu/76pOOu+MHLe2oZToj5Yt5Dx7rgEtnCdrPQ=;
-        b=v58n3HVTQKtJbJsT0sBd/4cmBZ845aIbtkWWeuN7zrTCeVgEgNiiQDgMaCIaFRtlVI
-         96QyxPY9ihYaYMXpyFuTx4dcGNC9ORe2D2LQQDsmFL87+GAMXj9zj0h/9et/LRdS0TZE
-         8fdmXtUPl6IWbPvz2ksl/nK+WwEKZWHQAj6sP5n1kgnuORtgiKGaGyzrIWLQwmQhlHnc
-         Ay4T+9lB/fK+ndNCr13+/f8JTP6+RYBHXMXy62pJG3Ppdm2y4QWzh6Kb4eNLU0aQTSl0
-         dzrd+OOKh6qZsMIHuUogVyxIOMvBkWcPUvHS6D2/4+hXQahu8yo/7MhtZyngZZ1x6nBR
-         W78w==
-X-Gm-Message-State: AJIora/eq8FjRXGmH/Lhd+qriVPogirKZZXXWET5bM9rKJkc3hUNtzyv
-        mFc4O6PpTz8HDnutesco4K5BT5ESNF/PfDx0pWw=
-X-Google-Smtp-Source: AGRyM1tSIs7PI67WcqIU/JRHnYrMgswH/xmh7JqI+2SJSmBmNqBBi68lT4gRWIzylYRqVXC5Pn0RPBLpngzyVN3P5uw=
-X-Received: by 2002:a05:6512:b14:b0:482:a9b1:ea3 with SMTP id
- w20-20020a0565120b1400b00482a9b10ea3mr9893588lfu.353.1657030195926; Tue, 05
- Jul 2022 07:09:55 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=QI3B1vIlvYkplD/OGFLDNG9KjTXHUoGMSflSfPKXG5I=;
+        b=PdQ/DEED2WBj7YYk2hMj6SsL6zLG5osxx1wqkysiThHOUNejcCKe+J27jtFddWJGDa
+         zwPE+1jWfb3dU6GQhCh2dxkIV0QvjqzBvWmfKLymVRKJ084+b2Wo2hqonpeVSt1Ud7XV
+         UFUaM9fu6e5r11l5XZwlALxXb+OA7bhmLP6Us+B5rrE+LcORU5iSmo55Nk0LBbU+dmd9
+         un8+Pv1I47ec3Sdij3ro1i5tBoYs0ch22f5joQIM/tJ7bkrMDHeUFB18zK6FJNouA/mn
+         LLyWEDHKhksONRlsgjYWpM+wOIF12N2E9Af+aonTPFtS0UXpEI+nMJiLPyC9MtnmOo5+
+         tGaA==
+X-Gm-Message-State: AJIora+eEVxPlBIqsI3fHaOUIt9jfP0Z6sG4j9fYAYKCNtKHBKrAUE+5
+        4ocUVmi+ZmFxGxb2xtKdq0zUPh1rQNBHvjyBmJQ=
+X-Google-Smtp-Source: AGRyM1uKWnxIsrOjuSrESBMFHOOIgp08dNiqIPuvwPDUKe/GYZCd8M/st/cAl0YrkegNHZK4GxiYvRIkoO4isGqxnes=
+X-Received: by 2002:a05:6808:2099:b0:335:1606:2504 with SMTP id
+ s25-20020a056808209900b0033516062504mr19434401oiw.110.1657030389377; Tue, 05
+ Jul 2022 07:13:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220614181706.26513-1-max.oss.09@gmail.com> <1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl>
-In-Reply-To: <1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl>
-From:   Max Krummenacher <max.oss.09@gmail.com>
-Date:   Tue, 5 Jul 2022 16:09:44 +0200
-Message-ID: <CAEHkU3VEg=LU6U-rB6HWGy59=jZJkUe_qW5faLi+Xx4Ka+i5qg@mail.gmail.com>
-Subject: Re: [PATCH v1] Revert "Bluetooth: core: Fix missing power_on work
- cancel on HCI close"
-To:     =?UTF-8?Q?Mateusz_Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
-        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
+References: <00c521b5b872b06c9350145c7d39fe7c@mailhost.ics.forth.gr>
+ <CA+zEjCs0n8KA_oaFKJbaP6kNohDA=qJHvUKhePUK+hDFJSbHig@mail.gmail.com>
+ <CA+zEjCscL1dWASm7u20p1B7-JeJaGTXiWG=K1XiWtZj=VFX+WQ@mail.gmail.com>
+ <d75edc49681473bf8b88e474ae61b524@mailhost.ics.forth.gr> <CA+zEjCsc60mxPynL7DDGxfaUz7uif3uXPx3atnHbvM3ei_TETA@mail.gmail.com>
+ <2ec74f4bd0e7b7cb4b579e9e042fc035@mailhost.ics.forth.gr> <CALecT5gdqW9Na_s9PiFAZt0u=_uPCu0zYdUCb4UfuSV6fM_Q+w@mail.gmail.com>
+ <75409de5-2351-3ab2-5162-33ebd8d30749@ics.forth.gr>
+In-Reply-To: <75409de5-2351-3ab2-5162-33ebd8d30749@ics.forth.gr>
+From:   Yixun Lan <yixun.lan@gmail.com>
+Date:   Tue, 5 Jul 2022 14:12:58 +0000
+Message-ID: <CALecT5gA-h7p__BZT=okWJCANz9oHE8R4kwHC6hJOPKGMe+Fkg@mail.gmail.com>
+Subject: Re: RISC-V: patched kexec-tools on github for review/testing
+To:     Nick Kossifidis <mick@ics.forth.gr>
+Cc:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        ebiederm@xmission.com, kexec@lists.infradead.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Alexandre ghiti <alex@ghiti.fr>,
+        Mike Rapoport <rppt@kernel.org>, geert+renesas@glider.be,
+        Stephano Cetola <scetola@linuxfoundation.org>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 9:57 PM Mateusz Jo=C5=84czyk <mat.jonczyk@o2.pl> wro=
-te:
+HI Nick
+
+On Tue, Jul 5, 2022 at 12:24 PM Nick Kossifidis <mick@ics.forth.gr> wrote:
 >
-> W dniu 14.06.2022 o 20:17, Max Krummenacher pisze:
-> > From: Max Krummenacher <max.krummenacher@toradex.com>
+> Hello Yixun,
+>
+> On 7/2/22 14:35, Yixun Lan wrote:
+> > hi Nick
 > >
-> > This reverts commit ff7f2926114d3a50f5ffe461a9bce8d761748da5.
+> > ping, any update for this? any new patch for kexec-tools?
 > >
-> > The commit ff7f2926114d ("Bluetooth: core: Fix missing power_on work
-> > cancel on HCI close") introduced between v5.18 and v5.19-rc1 makes
-> > going to suspend freeze. v5.19-rc2 is equally affected.
+> > I'd also like to try kexec on unmatched board, and encounter the same error
+> > as Alexandre Ghiti reported, generally I'm using almost same cmdline
+> >
+> > Yixun Lan
+>
+> The kernel-side patches have already been merged upstream, for
+> kexec-tools there are some people working on fixes, I'm expecting pull
+> requests on the github before I do a pull request upstream. You should
+> be able to use kexec without initrd.
+>
+> Regards,
+> Nick
 
-The following follow up commit fixes the issue for me without the revert.
-https://lore.kernel.org/all/20220705125931.3601-1-vasyl.vavrychuk@opensyner=
-gy.com/
+Thanks for the reply and updated information
+I was looking forward to use "--initrd" in order to boot a complicated OS,
 
-Thanks
-Max
+Anyway, I will try kexec without initrd, and please keep me posted
+when there is PR
+
+Regards
+
+Yixun Lan
