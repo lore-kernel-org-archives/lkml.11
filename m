@@ -2,75 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106ADC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40906C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiGEWAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 18:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
+        id S232026AbiGEWCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 18:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiGEWAP (ORCPT
+        with ESMTP id S229452AbiGEWB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 18:00:15 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015531900E;
-        Tue,  5 Jul 2022 15:00:13 -0700 (PDT)
-Received: from zn.tnic (p200300ea970ff625329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f625:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7D98D1EC0513;
-        Wed,  6 Jul 2022 00:00:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1657058408;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=lOz+oyOsjcEjoVAd2V3Hhq+u+4OkEJ2jkFkxcvzXIp4=;
-        b=rFDWw5O9FPqZ2ZGYqsf0oadvjBlURlepN3Il5jgiRH6uCMr2vSxWAKsVvY2JWqML4mf/sj
-        K/RRPabIwevvNUNRlwHJPHF9g/MwhM4B9ks25BK+Z70zV3IxaYGx4hwS5Z15WYzM4SbxTQ
-        ksG6jTJzlhCJibf0zj16UVr1u6l+cOo=
-Date:   Wed, 6 Jul 2022 00:00:04 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "H. Peter Anvin" <hpa@zytor.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] random: remove CONFIG_ARCH_RANDOM and "nordrand"
-Message-ID: <YsS0ZLQw+QFA7XdJ@zn.tnic>
-References: <20220705190121.293703-1-Jason@zx2c4.com>
- <YsSStCQQf008hF2F@zn.tnic>
- <YsSUkapje04MP2a1@zx2c4.com>
- <YsSXkNBtB6Ciy9iN@zn.tnic>
- <11C903CC-22A7-48EE-AD63-E71CC8D28B88@zytor.com>
+        Tue, 5 Jul 2022 18:01:59 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE3119281
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 15:01:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657058518; x=1688594518;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1e2IMeE5kxwpwwtMoEumnSAn18EzevRBYEqGYl/Zlto=;
+  b=GgrKPVKowc+YPdLLRmLhPCxks+1FbToRTGZGJlrbCPWDueehMqBEdTGe
+   rGmxMmIRgj6b/RZAG3ve2/X8AUw+pZQF5k2MYCE4x1yLkGvtPB9KCNgEh
+   ZyuGwSCAwzNckGYdjPsv11EYzrKQifnaPvoB0RbXa3eX9ezh//BqbIYuo
+   Tlm0kvBHrYgOl/mMzcQwUQVYzn8yqBswriUxTb5DT0JXQyZ0/xgF0XVWD
+   FRQfZilKVmYB1muyfCG2jLe/dyEaqKqN4A400v1OC1CGuA0VGad/0NG58
+   3zXUrDMpvgqGgA1RZ4BwS/3g+TrEZkuzPhOxTW829YKlWfHl1D79nLWCG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284647604"
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="284647604"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 15:01:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="543127022"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 05 Jul 2022 15:01:57 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8qcG-000Jd7-Sd;
+        Tue, 05 Jul 2022 22:01:56 +0000
+Date:   Wed, 6 Jul 2022 06:01:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Coly Li <colyli@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [colyli-bcache:nvdimm-meta 14/16] drivers/md/bcache/nvmpg.c:103:5:
+ warning: no previous prototype for 'bkey_offset_to_nvmpg_ns_id'
+Message-ID: <202207060515.oVvT5Qjx-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <11C903CC-22A7-48EE-AD63-E71CC8D28B88@zytor.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 02:50:34PM -0700, H. Peter Anvin wrote:
-> It's just math. The only variable is your confidence level, i.e. at
-> what level do you decide that the likelihood of pure chance is way
-> smaller than the likelihood of hardware failure.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git nvdimm-meta
+head:   5c8259ab2129816fc49fd6d060206ba61b0594d1
+commit: 1a39b34e981ca6086a904c5522d700e149240c3f [14/16] bcache: add helper routines to convert bkey and nvmpg offset
+config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220706/202207060515.oVvT5Qjx-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git/commit/?id=1a39b34e981ca6086a904c5522d700e149240c3f
+        git remote add colyli-bcache https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git
+        git fetch --no-tags colyli-bcache nvdimm-meta
+        git checkout 1a39b34e981ca6086a904c5522d700e149240c3f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/md/bcache/
 
-That might be but the likelyhood of certain BIOSes dropping the ball
-after resume is 100%:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-7879fc4bdc75 ("x86/rdrand: Sanity-check RDRAND output")
+All warnings (new ones prefixed by >>):
+
+>> drivers/md/bcache/nvmpg.c:103:5: warning: no previous prototype for 'bkey_offset_to_nvmpg_ns_id' [-Wmissing-prototypes]
+     103 | int bkey_offset_to_nvmpg_ns_id(unsigned long bkey_offset)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/bkey_offset_to_nvmpg_ns_id +103 drivers/md/bcache/nvmpg.c
+
+   102	
+ > 103	int bkey_offset_to_nvmpg_ns_id(unsigned long bkey_offset)
+   104	{
+   105		return (bkey_offset >> BCH_BKEY_OFFSET_BITS) &
+   106			BCH_BKEY_OFFSET_NS_ID_MASK;
+   107	}
+   108	
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+0-DAY CI Kernel Test Service
+https://01.org/lkp
