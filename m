@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0594C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 622EDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238023AbiGEM1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36168 "EHLO
+        id S238032AbiGEM1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236977AbiGEMS1 (ORCPT
+        with ESMTP id S237018AbiGEMSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:27 -0400
+        Tue, 5 Jul 2022 08:18:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B14319C32;
-        Tue,  5 Jul 2022 05:13:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A4E1A3A1;
+        Tue,  5 Jul 2022 05:13:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A820B817DA;
-        Tue,  5 Jul 2022 12:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C0FC341CB;
-        Tue,  5 Jul 2022 12:13:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5B7DB817D3;
+        Tue,  5 Jul 2022 12:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D942C341C7;
+        Tue,  5 Jul 2022 12:13:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023225;
-        bh=VXNZnHRcm5Fh6+9sf6g8wx9wGuj2YCXXfVd+GM/Akmw=;
+        s=korg; t=1657023228;
+        bh=u2+qk0VaXt/xlaKih6IiscdsQz5E8o+kNEJq18d1LV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JLn6Adl6J16WE3r23+yg8JtUZXG14BIMr13K+J8r5bojoDb65GWfY42lwX7tWtGiX
-         BL6BSczpR1AQWPkbS5qlLeafSPmIZ6qsE0cYZH4vJ6Pwun2gz78q1E8wEjY2NszdC4
-         TLLSUXZT/QFUYK0bJ+IkCIjv3Pf6WgpLrm/zA5hQ=
+        b=p9yw6pAIvT33GawiFXnCJj9Qa0DZXw7OL8UgoCCgVUtdHbrsS+Ho5Yz7yKhxnZzUy
+         fCOdQsh4o+5pbRHWeGZ6NP4WjYk9hvfaeKcc+MiIF22Oryj9vUQ5QV9C3+bXUlaxLM
+         FOWSkUNHPEL3yRi/Dej+Crr17bbkK6R1wiI26DZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 41/98] net/dsa/hirschmann: Add missing of_node_get() in hellcreek_led_setup()
-Date:   Tue,  5 Jul 2022 13:57:59 +0200
-Message-Id: <20220705115618.755108434@linuxfoundation.org>
+Subject: [PATCH 5.15 42/98] net/sched: act_api: Notify user space if any actions were flushed before error
+Date:   Tue,  5 Jul 2022 13:58:00 +0200
+Message-Id: <20220705115618.782704663@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -48,31 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Victor Nogueira <victor@mojatatu.com>
 
-commit 16d584d2fc8f4ea36203af45a76becd7093586f1 upstream.
+commit 76b39b94382f9e0a639e1c70c3253de248cc4c83 upstream.
 
-of_find_node_by_name() will decrease the refcount of its first arg and
-we need a of_node_get() to keep refcount balance.
+If during an action flush operation one of the actions is still being
+referenced, the flush operation is aborted and the kernel returns to
+user space with an error. However, if the kernel was able to flush, for
+example, 3 actions and failed on the fourth, the kernel will not notify
+user space that it deleted 3 actions before failing.
 
-Fixes: 7d9ee2e8ff15 ("net: dsa: hellcreek: Add PTP status LEDs")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220622040621.4094304-1-windhl@126.com
+This patch fixes that behaviour by notifying user space of how many
+actions were deleted before flush failed and by setting extack with a
+message describing what happened.
+
+Fixes: 55334a5db5cd ("net_sched: act: refuse to remove bound action outside")
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/hirschmann/hellcreek_ptp.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/sched/act_api.c |   22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
---- a/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-@@ -300,6 +300,7 @@ static int hellcreek_led_setup(struct he
- 	const char *label, *state;
- 	int ret = -EINVAL;
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -350,7 +350,8 @@ static int tcf_idr_release_unsafe(struct
+ }
  
-+	of_node_get(hellcreek->dev->of_node);
- 	leds = of_find_node_by_name(hellcreek->dev->of_node, "leds");
- 	if (!leds) {
- 		dev_err(hellcreek->dev, "No LEDs specified in device tree!\n");
+ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+-			  const struct tc_action_ops *ops)
++			  const struct tc_action_ops *ops,
++			  struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *nest;
+ 	int n_i = 0;
+@@ -366,20 +367,25 @@ static int tcf_del_walker(struct tcf_idr
+ 	if (nla_put_string(skb, TCA_KIND, ops->kind))
+ 		goto nla_put_failure;
+ 
++	ret = 0;
+ 	mutex_lock(&idrinfo->lock);
+ 	idr_for_each_entry_ul(idr, p, tmp, id) {
+ 		if (IS_ERR(p))
+ 			continue;
+ 		ret = tcf_idr_release_unsafe(p);
+-		if (ret == ACT_P_DELETED) {
++		if (ret == ACT_P_DELETED)
+ 			module_put(ops->owner);
+-			n_i++;
+-		} else if (ret < 0) {
+-			mutex_unlock(&idrinfo->lock);
+-			goto nla_put_failure;
+-		}
++		else if (ret < 0)
++			break;
++		n_i++;
+ 	}
+ 	mutex_unlock(&idrinfo->lock);
++	if (ret < 0) {
++		if (n_i)
++			NL_SET_ERR_MSG(extack, "Unable to flush all TC actions");
++		else
++			goto nla_put_failure;
++	}
+ 
+ 	ret = nla_put_u32(skb, TCA_FCNT, n_i);
+ 	if (ret)
+@@ -400,7 +406,7 @@ int tcf_generic_walker(struct tc_action_
+ 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
+ 
+ 	if (type == RTM_DELACTION) {
+-		return tcf_del_walker(idrinfo, skb, ops);
++		return tcf_del_walker(idrinfo, skb, ops, extack);
+ 	} else if (type == RTM_GETACTION) {
+ 		return tcf_dump_walker(idrinfo, skb, cb);
+ 	} else {
 
 
