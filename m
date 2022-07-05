@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BD2CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC9ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232759AbiGEMBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
+        id S232983AbiGEMBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232943AbiGEMAc (ORCPT
+        with ESMTP id S232954AbiGEMAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:00:32 -0400
+        Tue, 5 Jul 2022 08:00:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE40817E25;
-        Tue,  5 Jul 2022 05:00:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F4118348;
+        Tue,  5 Jul 2022 05:00:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B7CC6174B;
-        Tue,  5 Jul 2022 12:00:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84832C341C7;
-        Tue,  5 Jul 2022 12:00:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D41F61800;
+        Tue,  5 Jul 2022 12:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6178AC341C7;
+        Tue,  5 Jul 2022 12:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022430;
-        bh=bqczC0954NPOOwFFOj5u/kLcD0QDMkBG40kqKIzBGJ0=;
+        s=korg; t=1657022433;
+        bh=3nJCu3XF3u1j7pd95g7zrXkSf3FjKVBZpQOXXQb5M68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Mtiv/uHuZi6KyL5t9fL4jGSxd6+4JCsCQ7p5ED7bE2c4KBh9Nn8Te7rmQGSSCCTU
-         M4v4jslwwofkA4y2iE7IHPdGEogBgSc/lWvIqJyxSjmGJ/Rld9MPM5YDlcGIly/u1a
-         jZEAvJHLPro8Ovz1CN88i5phA6OuVcy0sXb4y7Hg=
+        b=DTVxOEYpR8GehNKSs8GPQV4cQRJ73orOlyHgwOHtcG7xYCO87BXWHyTbhFaT6cVSW
+         sy8Fkn0+agFRT+vjA2Vr27nzZUqu1fMnhFmFa1zzk4GcHC1aBZ1x5NW0KS4YRJXdq0
+         f+UDA9314W0BS+Opk5JG0YOnUYfOFENLVyuOv4Xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
         =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Fabio Porcedda <fabio.porcedda@gmail.com>
-Subject: [PATCH 4.9 26/29] net: usb: qmi_wwan: add Telit 0x1260 and 0x1261 compositions
-Date:   Tue,  5 Jul 2022 13:58:07 +0200
-Message-Id: <20220705115606.518579727@linuxfoundation.org>
+Subject: [PATCH 4.9 27/29] net: usb: qmi_wwan: add Telit LE910Cx 0x1230 composition
+Date:   Tue,  5 Jul 2022 13:58:08 +0200
+Message-Id: <20220705115606.548189717@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115605.742248854@linuxfoundation.org>
 References: <20220705115605.742248854@linuxfoundation.org>
@@ -52,29 +52,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniele Palmas <dnlplm@gmail.com>
 
-commit b4e467c82f8c12af78b6f6fa5730cb7dea7af1b4 upstream.
+commit 5fd8477ed8ca77e64b93d44a6dae4aa70c191396 upstream.
 
-Added support for Telit LE910Cx 0x1260 and 0x1261 compositions.
+Add support for Telit LE910Cx 0x1230 composition:
+
+0x1230: tty, adb, rmnet, audio, tty, tty, tty, tty
 
 Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20201102110108.17244-1-dnlplm@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/qmi_wwan.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/usb/qmi_wwan.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/drivers/net/usb/qmi_wwan.c
 +++ b/drivers/net/usb/qmi_wwan.c
-@@ -932,6 +932,8 @@ static const struct usb_device_id produc
+@@ -932,6 +932,7 @@ static const struct usb_device_id produc
  	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
  	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
  	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1201, 2)},	/* Telit LE920, LE920A4 */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1260, 2)},	/* Telit LE910Cx */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1261, 2)},	/* Telit LE910Cx */
++	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1230, 2)},	/* Telit LE910Cx */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1260, 2)},	/* Telit LE910Cx */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1261, 2)},	/* Telit LE910Cx */
  	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1900, 1)},	/* Telit LN940 series */
- 	{QMI_FIXED_INTF(0x1c9e, 0x9801, 3)},	/* Telewell TW-3G HSPA+ */
- 	{QMI_FIXED_INTF(0x1c9e, 0x9803, 4)},	/* Telewell TW-3G HSPA+ */
 
 
