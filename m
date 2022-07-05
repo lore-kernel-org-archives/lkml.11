@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DC3CCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1367CCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239615AbiGEMaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        id S237120AbiGEMa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237713AbiGEMTj (ORCPT
+        with ESMTP id S237739AbiGEMTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D471DA4B;
-        Tue,  5 Jul 2022 05:16:09 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D031DA5C;
+        Tue,  5 Jul 2022 05:16:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 93A0DCE0B30;
-        Tue,  5 Jul 2022 12:16:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF0CEC341C7;
-        Tue,  5 Jul 2022 12:16:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21784B817CC;
+        Tue,  5 Jul 2022 12:16:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A0E6C341C8;
+        Tue,  5 Jul 2022 12:16:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023366;
-        bh=8bLMYHf95marlCqFhRmxPyQ53mIa89hnbdJuut+qldk=;
+        s=korg; t=1657023368;
+        bh=N4W8MqS03GqdSCzZcs5qa007DfigsM15g5FYh63Tv8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZL6+dTVglgVb6HY3gSHY8P+SgDeQe2Y+6gDpEk0CN79QX9HkVzsQzFZH8sHpiIhlt
-         9ExzNetswML5C/yEH73lLsmf2Njcr58PtKcuFUi/JfrIxsxfcFPB1S9Q5BURosi6t+
-         OcQ95TUYkbkmmE2f29U+IGYK9YfhB0dAsVQ1gSTY=
+        b=w2uwU+UgUW08DbgRPMwfkd58j9ElZxl8rbzW2oGIBtqp4M3CGpmLYIKJm2XKBpUNH
+         R4eLD6hGCzWV7Pdsqxxyr+E26cQL2SjXRXNBBzc3RzxniPg82OIbw4fBLAnNWHKU+7
+         wYr+ukAlWbLFC6FAWFJ/Har7py6v9oJRlMCniQiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH 5.18 033/102] RDMA/qedr: Fix reporting QP timeout attribute
-Date:   Tue,  5 Jul 2022 13:57:59 +0200
-Message-Id: <20220705115619.354704633@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.18 034/102] RDMA/cm: Fix memory leak in ib_cm_insert_listen
+Date:   Tue,  5 Jul 2022 13:58:00 +0200
+Message-Id: <20220705115619.382298693@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,55 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 118f767413ada4eef7825fbd4af7c0866f883441 upstream.
+commit 2990f223ffa7bb25422956b9f79f9176a5b38346 upstream.
 
-Make sure to save the passed QP timeout attribute when the QP gets modified,
-so when calling query QP the right value is reported and not the
-converted value that is required by the firmware. This issue was found
-while running the pyverbs tests.
+cm_alloc_id_priv() allocates resource for the cm_id_priv. When
+cm_init_listen() fails it doesn't free it, leading to memory leak.
 
-Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
-Link: https://lore.kernel.org/r/20220525132029.84813-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Add the missing error unwind.
+
+Fixes: 98f67156a80f ("RDMA/cm: Simplify establishing a listen cm_id")
+Link: https://lore.kernel.org/r/20220621052546.4821-1-linmq006@gmail.com
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/qedr/qedr.h  |    1 +
- drivers/infiniband/hw/qedr/verbs.c |    4 +++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/infiniband/core/cm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/infiniband/hw/qedr/qedr.h
-+++ b/drivers/infiniband/hw/qedr/qedr.h
-@@ -418,6 +418,7 @@ struct qedr_qp {
- 	u32 sq_psn;
- 	u32 qkey;
- 	u32 dest_qp_num;
-+	u8 timeout;
+--- a/drivers/infiniband/core/cm.c
++++ b/drivers/infiniband/core/cm.c
+@@ -1252,8 +1252,10 @@ struct ib_cm_id *ib_cm_insert_listen(str
+ 		return ERR_CAST(cm_id_priv);
  
- 	/* Relevant to qps created from kernel space only (ULPs) */
- 	u8 prev_wqe_size;
---- a/drivers/infiniband/hw/qedr/verbs.c
-+++ b/drivers/infiniband/hw/qedr/verbs.c
-@@ -2612,6 +2612,8 @@ int qedr_modify_qp(struct ib_qp *ibqp, s
- 					1 << max_t(int, attr->timeout - 8, 0);
- 		else
- 			qp_params.ack_timeout = 0;
-+
-+		qp->timeout = attr->timeout;
- 	}
+ 	err = cm_init_listen(cm_id_priv, service_id, 0);
+-	if (err)
++	if (err) {
++		ib_destroy_cm_id(&cm_id_priv->id);
+ 		return ERR_PTR(err);
++	}
  
- 	if (attr_mask & IB_QP_RETRY_CNT) {
-@@ -2771,7 +2773,7 @@ int qedr_query_qp(struct ib_qp *ibqp,
- 	rdma_ah_set_dgid_raw(&qp_attr->ah_attr, &params.dgid.bytes[0]);
- 	rdma_ah_set_port_num(&qp_attr->ah_attr, 1);
- 	rdma_ah_set_sl(&qp_attr->ah_attr, 0);
--	qp_attr->timeout = params.timeout;
-+	qp_attr->timeout = qp->timeout;
- 	qp_attr->rnr_retry = params.rnr_retry;
- 	qp_attr->retry_cnt = params.retry_cnt;
- 	qp_attr->min_rnr_timer = params.min_rnr_nak_timer;
+ 	spin_lock_irq(&cm_id_priv->lock);
+ 	listen_id_priv = cm_insert_listen(cm_id_priv, cm_handler);
 
 
