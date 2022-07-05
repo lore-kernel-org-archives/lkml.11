@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B170CCCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0835ACCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237506AbiGEMXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
+        id S237096AbiGEMWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235727AbiGEMQh (ORCPT
+        with ESMTP id S235706AbiGEMO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:16:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7FE1BE97;
-        Tue,  5 Jul 2022 05:12:04 -0700 (PDT)
+        Tue, 5 Jul 2022 08:14:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206801B78D;
+        Tue,  5 Jul 2022 05:11:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A17B4B817D3;
-        Tue,  5 Jul 2022 12:12:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F40E1C341CB;
-        Tue,  5 Jul 2022 12:12:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7186F619B0;
+        Tue,  5 Jul 2022 12:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D1BC341D0;
+        Tue,  5 Jul 2022 12:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023122;
-        bh=4wrempK14aI2Lwl5s7i72OMdEzbm8xpeW9Zz4Lk8IKY=;
+        s=korg; t=1657023102;
+        bh=4VffuFBxs2+Cw1NgmCBgYbNd/PCK0ylS0ls8k/lR60A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iRtR4udUrbFmhwjwUh129ELraV30j2IyRvWdePAuKWjyWEIhV0N0NcjY/FJGdGg27
-         GIScz6H6aLveaQDTMzDWFeMVOhc45H2wIbxDI0WV95BnF6CMCpDqmi5V8t8Emr8c5F
-         Yd+6dGdya4XvmWhEfXg4HZHnkZz65gb3/unzqx5U=
+        b=BxsC9StSwC9Q79FevEVDmS8Xrj/jK0O6S61jVOy4zoYc4VVd1k2yMMxIWoHIlWfBW
+         +oPPcG00ZwR8yvenPWm+91+mLU4XjzirlOBVgXmVjTXbSKZRcU0MOwNu+PtetvXhXS
+         4MI0zs0lAAedD3BiTT9Pjy0WRnE7XsfxjDkGhGok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 46/98] net: bonding: fix use-after-free after 802.3ad slave unbind
-Date:   Tue,  5 Jul 2022 13:58:04 +0200
-Message-Id: <20220705115618.894640564@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Greco <pgreco@centosproject.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.15 08/98] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA XPG SX6000LNP (AKA SPECTRIX S40G)
+Date:   Tue,  5 Jul 2022 13:57:26 +0200
+Message-Id: <20220705115617.815773044@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -51,63 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevhen Orlov <yevhen.orlov@plvision.eu>
+From: Pablo Greco <pgreco@centosproject.org>
 
-commit 050133e1aa2cb49bb17be847d48a4431598ef562 upstream.
+commit 1629de0e0373e04d68e88e6d9d3071fbf70b7ea8 upstream.
 
-commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection"),
-resolve case, when there is several aggregation groups in the same bond.
-bond_3ad_unbind_slave will invalidate (clear) aggregator when
-__agg_active_ports return zero. So, ad_clear_agg can be executed even, when
-num_of_ports!=0. Than bond_3ad_unbind_slave can be executed again for,
-previously cleared aggregator. NOTE: at this time bond_3ad_unbind_slave
-will not update slave ports list, because lag_ports==NULL. So, here we
-got slave ports, pointing to freed aggregator memory.
+ADATA XPG SPECTRIX S40G drives report bogus eui64 values that appear to
+be the same across drives in one system. Quirk them out so they are
+not marked as "non globally unique" duplicates.
 
-Fix with checking actual number of ports in group (as was before
-commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection") ),
-before ad_clear_agg().
+Before:
+[    2.258919] nvme nvme1: pci function 0000:06:00.0
+[    2.264898] nvme nvme2: pci function 0000:05:00.0
+[    2.323235] nvme nvme1: failed to set APST feature (2)
+[    2.326153] nvme nvme2: failed to set APST feature (2)
+[    2.333935] nvme nvme1: allocated 64 MiB host memory buffer.
+[    2.336492] nvme nvme2: allocated 64 MiB host memory buffer.
+[    2.339611] nvme nvme1: 7/0/0 default/read/poll queues
+[    2.341805] nvme nvme2: 7/0/0 default/read/poll queues
+[    2.346114]  nvme1n1: p1
+[    2.347197] nvme nvme2: globally duplicate IDs for nsid 1
+After:
+[    2.427715] nvme nvme1: pci function 0000:06:00.0
+[    2.427771] nvme nvme2: pci function 0000:05:00.0
+[    2.488154] nvme nvme2: failed to set APST feature (2)
+[    2.489895] nvme nvme1: failed to set APST feature (2)
+[    2.498773] nvme nvme2: allocated 64 MiB host memory buffer.
+[    2.500587] nvme nvme1: allocated 64 MiB host memory buffer.
+[    2.504113] nvme nvme2: 7/0/0 default/read/poll queues
+[    2.507026] nvme nvme1: 7/0/0 default/read/poll queues
+[    2.509467] nvme nvme2: Ignoring bogus Namespace Identifiers
+[    2.512804] nvme nvme1: Ignoring bogus Namespace Identifiers
+[    2.513698]  nvme1n1: p1
 
-The KASAN logs are as follows:
-
-[  767.617392] ==================================================================
-[  767.630776] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x13dc/0x1470
-[  767.638764] Read of size 2 at addr ffff00011ba9d430 by task kworker/u8:7/767
-[  767.647361] CPU: 3 PID: 767 Comm: kworker/u8:7 Tainted: G           O 5.15.11 #15
-[  767.655329] Hardware name: DNI AmazonGo1 A7040 board (DT)
-[  767.660760] Workqueue: lacp_1 bond_3ad_state_machine_handler
-[  767.666468] Call trace:
-[  767.668930]  dump_backtrace+0x0/0x2d0
-[  767.672625]  show_stack+0x24/0x30
-[  767.675965]  dump_stack_lvl+0x68/0x84
-[  767.679659]  print_address_description.constprop.0+0x74/0x2b8
-[  767.685451]  kasan_report+0x1f0/0x260
-[  767.689148]  __asan_load2+0x94/0xd0
-[  767.692667]  bond_3ad_state_machine_handler+0x13dc/0x1470
-
-Fixes: 0622cab0341c ("bonding: fix 802.3ad aggregator reselection")
-Co-developed-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Link: https://lore.kernel.org/r/20220629012914.361-1-yevhen.orlov@plvision.eu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Pablo Greco <pgreco@centosproject.org>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c |    3 ++-
+ drivers/nvme/host/pci.c |    3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2228,7 +2228,8 @@ void bond_3ad_unbind_slave(struct slave
- 				temp_aggregator->num_of_ports--;
- 				if (__agg_active_ports(temp_aggregator) == 0) {
- 					select_new_active_agg = temp_aggregator->is_active;
--					ad_clear_agg(temp_aggregator);
-+					if (temp_aggregator->num_of_ports == 0)
-+						ad_clear_agg(temp_aggregator);
- 					if (select_new_active_agg) {
- 						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
- 						/* select new active aggregator */
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3342,7 +3342,8 @@ static const struct pci_device_id nvme_i
+ 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE(0x10ec, 0x5762),   /* ADATA SX6000LNP */
+-		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
++				NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1cc1, 0x8201),   /* ADATA SX8200PNP 512GB */
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
 
 
