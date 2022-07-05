@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF36C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF18CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236512AbiGEM0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
+        id S236671AbiGEM0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236804AbiGEMSP (ORCPT
+        with ESMTP id S236863AbiGEMST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7704B1A040;
-        Tue,  5 Jul 2022 05:13:40 -0700 (PDT)
+        Tue, 5 Jul 2022 08:18:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E151A068;
+        Tue,  5 Jul 2022 05:13:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD41AB817D3;
-        Tue,  5 Jul 2022 12:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1A9C341C7;
-        Tue,  5 Jul 2022 12:13:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B95D2619E2;
+        Tue,  5 Jul 2022 12:13:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE00CC341D0;
+        Tue,  5 Jul 2022 12:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023217;
-        bh=fc03KRv4n05doHcwdHMzyIPbV+2wmIbCP3pcCivNDTA=;
+        s=korg; t=1657023223;
+        bh=k72HzVDHclsjuR7LjWeQkdL1aop7Rqwdft4saXofnRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VX+lNMgz9EigBGo67j9SyrQK/VBsWcDjn/miS0iSmgChR3upELJ1S2lUupASZte8m
-         lekcRr2ulFL1LXIkdrMkIDjQRiu41sgKFU3j57YIG3ey8SNyR6QNgBX2Qswre/t9QN
-         cycfsDsEBM9/ov/hZZCaBfZ19e2AipGXxU+nHOms=
+        b=lXCOCfvlwT7w6z+S0kDzyCMky+fedmbEnEii4+6cFGY1UQmKITnU2RJiRx9NQrhRZ
+         KraZ0EwHK404B6wfdDQtyX8Ul6Be0YllMeY0VWntlXowB8CSOZjmvpFsmbVeJUQqHy
+         rBlvuV82wDJOOFiA3L18wdTLU1v9r34z4nXmIoW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.15 38/98] vdpa/mlx5: Update Control VQ callback information
-Date:   Tue,  5 Jul 2022 13:57:56 +0200
-Message-Id: <20220705115618.671566885@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 40/98] netfilter: nft_dynset: restore set element counter when failing to update
+Date:   Tue,  5 Jul 2022 13:57:58 +0200
+Message-Id: <20220705115618.727912042@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -48,34 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 40f2f3e94178d45e4ee6078effba2dfc76f6f5ba upstream.
+commit 05907f10e235680cc7fb196810e4ad3215d5e648 upstream.
 
-The control VQ specific information is stored in the dedicated struct
-mlx5_control_vq. When the callback is updated through
-mlx5_vdpa_set_vq_cb(), make sure to update the control VQ struct.
+This patch fixes a race condition.
 
-Fixes: 5262912ef3cf ("vdpa/mlx5: Add support for control VQ and MAC setting")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Message-Id: <20220613075958.511064-1-elic@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com)
+nft_rhash_update() might fail for two reasons:
+
+- Element already exists in the hashtable.
+- Another packet won race to insert an entry in the hashtable.
+
+In both cases, new() has already bumped the counter via atomic_add_unless(),
+therefore, decrement the set element counter.
+
+Fixes: 22fe54d5fefc ("netfilter: nf_tables: add support for dynamic set updates")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c |    2 ++
+ net/netfilter/nft_set_hash.c |    2 ++
  1 file changed, 2 insertions(+)
 
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1698,6 +1698,8 @@ static void mlx5_vdpa_set_vq_cb(struct v
- 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+--- a/net/netfilter/nft_set_hash.c
++++ b/net/netfilter/nft_set_hash.c
+@@ -143,6 +143,7 @@ static bool nft_rhash_update(struct nft_
+ 	/* Another cpu may race to insert the element with the same key */
+ 	if (prev) {
+ 		nft_set_elem_destroy(set, he, true);
++		atomic_dec(&set->nelems);
+ 		he = prev;
+ 	}
  
- 	ndev->event_cbs[idx] = *cb;
-+	if (is_ctrl_vq_idx(mvdev, idx))
-+		mvdev->cvq.event_cb = *cb;
+@@ -152,6 +153,7 @@ out:
+ 
+ err2:
+ 	nft_set_elem_destroy(set, he, true);
++	atomic_dec(&set->nelems);
+ err1:
+ 	return false;
  }
- 
- static void mlx5_cvq_notify(struct vringh *vring)
 
 
