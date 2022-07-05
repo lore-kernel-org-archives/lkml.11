@@ -2,526 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79834C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FAE7CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233108AbiGETDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S233208AbiGETEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbiGETDQ (ORCPT
+        with ESMTP id S233166AbiGETEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:03:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7730012AC9;
-        Tue,  5 Jul 2022 12:03:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E07B0B8191D;
-        Tue,  5 Jul 2022 19:03:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E44C341C7;
-        Tue,  5 Jul 2022 19:03:09 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hkS9u6pr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1657047787;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=KUxxr0rh96dOi8Hwakl0sGw5JmZptFldhkKX6f1RCSY=;
-        b=hkS9u6prNJM+0+mxkj7SX7uVRelrKkcYemUdBaCZYMP0weu1Xt95YEj17DdXLM7t7XbwKS
-        nlZD26bOPqjLxZ6acjyqXObQq4MsMyl7MOKC5Qv2VFflMqE9i7Bn5n1a0+lRLGr7nf1NXy
-        2Jb1n6E5+R9fqBdXPsaRmlyBKgeHUaw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9d8851d3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 5 Jul 2022 19:03:06 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] random: remove CONFIG_ARCH_RANDOM and "nordrand"
-Date:   Tue,  5 Jul 2022 21:01:21 +0200
-Message-Id: <20220705190121.293703-1-Jason@zx2c4.com>
+        Tue, 5 Jul 2022 15:04:04 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37852DF18
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:04:02 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id z21so22076516lfb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 12:04:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=imjS4QUgcg1C7mxw8dCBqY4kJvs6MaFMcV0Y0kq1AcE=;
+        b=KM+OirbQib6vRRFbA1OkOtQZGofZIiEwU0xUW+eoj0/Zcl7IEgCI01Od12lua39zr0
+         CZLu8XI3K2b73F0yFGijV+YORnNpqY0XI0kwnl3siIwAVSGf54R9ZT6wae1D4+DglA8X
+         SCHzz7edIFyWzIqT8toqlatQgLOn/j3E98FAziVAz71E1ZlAhIKyDnnawKsaiPHbtT58
+         WdOcHcZaEM8FWwViG/bnQDhvr82l3JbtDi5c3VyZS84la6LT4eG+LwLQd5abbGSQxcBm
+         haT+V8EiOFOWuNk3X+iWfEkC14sdwWpRVtpAAAUL5q6Q2/OT1WS5N9OcrUuxk7p7MUUZ
+         CaOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=imjS4QUgcg1C7mxw8dCBqY4kJvs6MaFMcV0Y0kq1AcE=;
+        b=L0brbt6acdqrK6Y58tYnD0biUzsRmQGXKC5MI3cR9pmkVhYc+WPb7nKQjf9LZyyq9y
+         IfrQTk3UzWbTlx18VL5HcNNkaOf43eFUbsX5q7lmmnLsufcEymEjvejLKFoXU3MXOLZ8
+         v+vmFSlMona1IDbGM5DLSSW8vdsIxzoOKRGOK5pRSdsXXUxegVFwqGQHP9D+Pg5KsWx4
+         JOS0ORzCINo2MeR/ibBGvlaxxAJYl6CzpKYdkVU8pOBcplIMXzZcqzCw1B5nvew8ctql
+         R4OMPZqp1by1e1s1wFSTwz7o4vs0WHtFUQ+o3RMEvhUQO3lHWtf2Ib+UdZkMkoeg9/tA
+         2qGA==
+X-Gm-Message-State: AJIora/kjo7naLxk9pvN7OvtVY4E8zRn0L6HQzMR7zEu1NUP+mjTz8qm
+        2z1x5WlYWbPy3O9xhNRcTryHpg==
+X-Google-Smtp-Source: AGRyM1trbAKxG3+y4uZWEyK6u63pcSViIAGhEvfmkm3bF+nIaskdDzcRsMKMX/hYa8ZLzvfu/OpT8g==
+X-Received: by 2002:a05:6512:1192:b0:481:4ba:f14d with SMTP id g18-20020a056512119200b0048104baf14dmr23498243lfr.662.1657047840478;
+        Tue, 05 Jul 2022 12:04:00 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id q17-20020a056512211100b00482ae30fcc5sm1457244lfr.189.2022.07.05.12.03.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 12:03:59 -0700 (PDT)
+Message-ID: <5d469759-0619-eece-902d-df8ac6583f22@linaro.org>
+Date:   Tue, 5 Jul 2022 22:03:58 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 1/7] drm/msm/disp/dpu1: clear dpu_assign_crtc and get
+ crtc from drm_enc instead of dpu_enc
+Content-Language: en-GB
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dianders@chromium.org, swboyd@chromium.org,
+        quic_kalyant@quicinc.com, quic_khsieh@quicinc.com,
+        quic_vproddut@quicinc.com, bjorn.andersson@linaro.org,
+        quic_aravindh@quicinc.com, quic_abhinavk@quicinc.com,
+        quic_sbillaka@quicinc.com
+References: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
+ <1657040445-13067-2-git-send-email-quic_vpolimer@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1657040445-13067-2-git-send-email-quic_vpolimer@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When RDRAND was introduced, there was much discussion on whether it
-should be trusted and how the kernel should handle that. Initially, two
-mechanisms cropped up, CONFIG_ARCH_RANDOM, a compile time switch, and
-"nordrand", a boot-time switch.
+On 05/07/2022 20:00, Vinod Polimera wrote:
+> Update crtc retrieval from dpu_enc to drm_enc, since new links get set
+> as part of the update legacy mode set. The dpu_enc->crtc cache is no
+> more needed, hence cleaning it as part of this change.
 
-Later the thinking evolved. With a properly designed RNG, using RDRAND
-values alone won't harm anything, even if the outputs are malicious.
-Rather, the issue is whether those values are being *trusted* to be good
-or not. And so a new set of options were introduced as the real
-ones that people use -- CONFIG_RANDOM_TRUST_CPU and "random.trust_cpu".
-With these options, RDRAND is used, but it's not always credited. So in
-the worst case, it does nothing, and in the best case, maybe it helps.
+NAK. Quoting the documentation:
 
-Along the way, CONFIG_ARCH_RANDOM's meaning got sort of pulled into the
-center and became something certain platforms force-select.
+only really meaningful for non-atomic drivers. Atomic drivers should 
+instead check &drm_connector_state.crtc.
 
-The old options don't really help with much, and it's a bit odd to have
-special handling for these instructions when the kernel can deal fine
-with the existence or untrusted existence or broken existence or
-non-existence of that CPU capability.
+Please adjust according to the documentation.
 
-So this commit simplifies things down to the two options that are
-actually used, and removes the confusing old ones that aren't used or
-useful.
+> 
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+> ---
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  4 ----
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 18 +++---------------
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  8 --------
+>   3 files changed, 3 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> index b56f777..f91e3d1 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> @@ -972,7 +972,6 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
+>   		 */
+>   		if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
+>   			release_bandwidth = true;
+> -		dpu_encoder_assign_crtc(encoder, NULL);
+>   	}
+>   
+>   	/* wait for frame_event_done completion */
+> @@ -1042,9 +1041,6 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
+>   	trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
+>   	dpu_crtc->enabled = true;
+>   
+> -	drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
+> -		dpu_encoder_assign_crtc(encoder, crtc);
+> -
+>   	/* Enable/restore vblank irq handling */
+>   	drm_crtc_vblank_on(crtc);
+>   }
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> index 52516eb..5629c0b 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> @@ -1254,8 +1254,8 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+>   	dpu_enc = to_dpu_encoder_virt(drm_enc);
+>   
+>   	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> -	if (dpu_enc->crtc)
+> -		dpu_crtc_vblank_callback(dpu_enc->crtc);
+> +	if (drm_enc->crtc)
+> +		dpu_crtc_vblank_callback(drm_enc->crtc);
+>   	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+>   
+>   	atomic_inc(&phy_enc->vsync_cnt);
+> @@ -1280,18 +1280,6 @@ static void dpu_encoder_underrun_callback(struct drm_encoder *drm_enc,
+>   	DPU_ATRACE_END("encoder_underrun_callback");
+>   }
+>   
+> -void dpu_encoder_assign_crtc(struct drm_encoder *drm_enc, struct drm_crtc *crtc)
+> -{
+> -	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
+> -	unsigned long lock_flags;
+> -
+> -	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> -	/* crtc should always be cleared before re-assigning */
+> -	WARN_ON(crtc && dpu_enc->crtc);
+> -	dpu_enc->crtc = crtc;
+> -	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+> -}
+> -
+>   void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
+>   					struct drm_crtc *crtc, bool enable)
+>   {
+> @@ -1302,7 +1290,7 @@ void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
+>   	trace_dpu_enc_vblank_cb(DRMID(drm_enc), enable);
+>   
+>   	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> -	if (dpu_enc->crtc != crtc) {
+> +	if (drm_enc->crtc != crtc) {
+>   		spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+>   		return;
+>   	}
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> index 781d41c..edba815 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+> @@ -39,14 +39,6 @@ struct msm_display_info {
+>   };
+>   
+>   /**
+> - * dpu_encoder_assign_crtc - Link the encoder to the crtc it's assigned to
+> - * @encoder:	encoder pointer
+> - * @crtc:	crtc pointer
+> - */
+> -void dpu_encoder_assign_crtc(struct drm_encoder *encoder,
+> -			     struct drm_crtc *crtc);
+> -
+> -/**
+>    * dpu_encoder_toggle_vblank_for_crtc - Toggles vblank interrupts on or off if
+>    *	the encoder is assigned to the given crtc
+>    * @encoder:	encoder pointer
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: H. Peter Anvin <hpa@zytor.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- Documentation/admin-guide/kernel-parameters.txt   |  5 -----
- arch/arm64/Kconfig                                |  8 --------
- arch/arm64/include/asm/archrandom.h               | 10 ----------
- arch/arm64/kernel/cpufeature.c                    |  2 --
- arch/powerpc/Kconfig                              |  3 ---
- arch/powerpc/include/asm/archrandom.h             |  3 ---
- arch/powerpc/include/asm/machdep.h                |  2 --
- arch/powerpc/platforms/microwatt/Kconfig          |  1 -
- arch/powerpc/platforms/powernv/Kconfig            |  1 -
- arch/powerpc/platforms/pseries/Kconfig            |  1 -
- arch/s390/Kconfig                                 | 15 ---------------
- arch/s390/configs/zfcpdump_defconfig              |  1 -
- arch/s390/crypto/Makefile                         |  2 +-
- arch/s390/include/asm/archrandom.h                |  3 ---
- arch/x86/Kconfig                                  |  9 ---------
- arch/x86/include/asm/archrandom.h                 | 10 +---------
- arch/x86/kernel/cpu/amd.c                         |  2 +-
- arch/x86/kernel/cpu/rdrand.c                      | 13 +------------
- drivers/char/Kconfig                              |  1 -
- drivers/char/hw_random/s390-trng.c                |  9 ---------
- include/linux/random.h                            |  9 +--------
- .../selftests/wireguard/qemu/kernel.config        |  1 -
- 22 files changed, 5 insertions(+), 106 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2522b11e593f..a1dc4dbf74f6 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3733,11 +3733,6 @@
- 	noreplace-smp	[X86-32,SMP] Don't replace SMP instructions
- 			with UP alternatives
- 
--	nordrand	[X86] Disable kernel use of the RDRAND and
--			RDSEED instructions even if they are supported
--			by the processor.  RDRAND and RDSEED are still
--			available to user space applications.
--
- 	noresume	[SWSUSP] Disables resume and restores original swap
- 			space.
- 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1652a9800ebe..1880f71c2547 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -1858,14 +1858,6 @@ config ARM64_E0PD
- 
- 	  This option enables E0PD for TTBR1 where available.
- 
--config ARCH_RANDOM
--	bool "Enable support for random number generation"
--	default y
--	help
--	  Random number generation (part of the ARMv8.5 Extensions)
--	  provides a high bandwidth, cryptographically secure
--	  hardware random number generator.
--
- config ARM64_AS_HAS_MTE
- 	# Initial support for MTE went in binutils 2.32.0, checked with
- 	# ".arch armv8.5-a+memtag" below. However, this was incomplete
-diff --git a/arch/arm64/include/asm/archrandom.h b/arch/arm64/include/asm/archrandom.h
-index 3a6b6d38c5b8..c3b9fa56af67 100644
---- a/arch/arm64/include/asm/archrandom.h
-+++ b/arch/arm64/include/asm/archrandom.h
-@@ -2,8 +2,6 @@
- #ifndef _ASM_ARCHRANDOM_H
- #define _ASM_ARCHRANDOM_H
- 
--#ifdef CONFIG_ARCH_RANDOM
--
- #include <linux/arm-smccc.h>
- #include <linux/bug.h>
- #include <linux/kernel.h>
-@@ -167,12 +165,4 @@ arch_get_random_seed_long_early(unsigned long *v)
- }
- #define arch_get_random_seed_long_early arch_get_random_seed_long_early
- 
--#else /* !CONFIG_ARCH_RANDOM */
--
--static inline bool __init smccc_probe_trng(void)
--{
--	return false;
--}
--
--#endif /* CONFIG_ARCH_RANDOM */
- #endif /* _ASM_ARCHRANDOM_H */
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 8d88433de81d..0e9462abeb77 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -2416,7 +2416,6 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
- 		.cpu_enable = cpu_enable_e0pd,
- 	},
- #endif
--#ifdef CONFIG_ARCH_RANDOM
- 	{
- 		.desc = "Random Number Generator",
- 		.capability = ARM64_HAS_RNG,
-@@ -2428,7 +2427,6 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
- 		.sign = FTR_UNSIGNED,
- 		.min_field_value = 1,
- 	},
--#endif
- #ifdef CONFIG_ARM64_BTI
- 	{
- 		.desc = "Branch Target Identification",
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index c2ce2e60c8f0..0d5757c125c4 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -1248,9 +1248,6 @@ config PHYSICAL_START
- 	default "0x00000000"
- endif
- 
--config	ARCH_RANDOM
--	def_bool n
--
- config PPC_LIB_RHEAP
- 	bool
- 
-diff --git a/arch/powerpc/include/asm/archrandom.h b/arch/powerpc/include/asm/archrandom.h
-index 9a53e29680f4..25ba65df6b1a 100644
---- a/arch/powerpc/include/asm/archrandom.h
-+++ b/arch/powerpc/include/asm/archrandom.h
-@@ -2,8 +2,6 @@
- #ifndef _ASM_POWERPC_ARCHRANDOM_H
- #define _ASM_POWERPC_ARCHRANDOM_H
- 
--#ifdef CONFIG_ARCH_RANDOM
--
- #include <asm/machdep.h>
- 
- static inline bool __must_check arch_get_random_long(unsigned long *v)
-@@ -35,7 +33,6 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
- 
- 	return rc;
- }
--#endif /* CONFIG_ARCH_RANDOM */
- 
- #ifdef CONFIG_PPC_POWERNV
- int powernv_hwrng_present(void);
-diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
-index 358d171ae8e0..6c1002043367 100644
---- a/arch/powerpc/include/asm/machdep.h
-+++ b/arch/powerpc/include/asm/machdep.h
-@@ -200,9 +200,7 @@ struct machdep_calls {
- 	ssize_t (*cpu_release)(const char *, size_t);
- #endif
- 
--#ifdef CONFIG_ARCH_RANDOM
- 	int (*get_random_seed)(unsigned long *v);
--#endif
- };
- 
- extern void e500_idle(void);
-diff --git a/arch/powerpc/platforms/microwatt/Kconfig b/arch/powerpc/platforms/microwatt/Kconfig
-index 5e320f49583a..6af443a1db99 100644
---- a/arch/powerpc/platforms/microwatt/Kconfig
-+++ b/arch/powerpc/platforms/microwatt/Kconfig
-@@ -6,7 +6,6 @@ config PPC_MICROWATT
- 	select PPC_ICS_NATIVE
- 	select PPC_ICP_NATIVE
- 	select PPC_UDBG_16550
--	select ARCH_RANDOM
- 	help
-           This option enables support for FPGA-based Microwatt implementations.
- 
-diff --git a/arch/powerpc/platforms/powernv/Kconfig b/arch/powerpc/platforms/powernv/Kconfig
-index 161dfe024085..e1a05c5a9004 100644
---- a/arch/powerpc/platforms/powernv/Kconfig
-+++ b/arch/powerpc/platforms/powernv/Kconfig
-@@ -12,7 +12,6 @@ config PPC_POWERNV
- 	select EPAPR_BOOT
- 	select PPC_INDIRECT_PIO
- 	select PPC_UDBG_16550
--	select ARCH_RANDOM
- 	select CPU_FREQ
- 	select PPC_DOORBELL
- 	select MMU_NOTIFIER
-diff --git a/arch/powerpc/platforms/pseries/Kconfig b/arch/powerpc/platforms/pseries/Kconfig
-index f7fd91d153a4..f4a647c1f0b2 100644
---- a/arch/powerpc/platforms/pseries/Kconfig
-+++ b/arch/powerpc/platforms/pseries/Kconfig
-@@ -19,7 +19,6 @@ config PPC_PSERIES
- 	select PPC_UDBG_16550
- 	select PPC_DOORBELL
- 	select HOTPLUG_CPU
--	select ARCH_RANDOM
- 	select FORCE_SMP
- 	select SWIOTLB
- 	default y
-diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
-index 91c0b80a8bf0..28a958b900f1 100644
---- a/arch/s390/Kconfig
-+++ b/arch/s390/Kconfig
-@@ -508,21 +508,6 @@ config KEXEC_SIG
- 	  verification for the corresponding kernel image type being
- 	  loaded in order for this to work.
- 
--config ARCH_RANDOM
--	def_bool y
--	prompt "s390 architectural random number generation API"
--	help
--	  Enable the s390 architectural random number generation API
--	  to provide random data for all consumers within the Linux
--	  kernel.
--
--	  When enabled the arch_random_* functions declared in linux/random.h
--	  are implemented. The implementation is based on the s390 CPACF
--	  instruction subfunction TRNG which provides a real true random
--	  number generator.
--
--	  If unsure, say Y.
--
- config KERNEL_NOBP
- 	def_bool n
- 	prompt "Enable modified branch prediction for the kernel by default"
-diff --git a/arch/s390/configs/zfcpdump_defconfig b/arch/s390/configs/zfcpdump_defconfig
-index a87fcc45e307..f4976f611b94 100644
---- a/arch/s390/configs/zfcpdump_defconfig
-+++ b/arch/s390/configs/zfcpdump_defconfig
-@@ -15,7 +15,6 @@ CONFIG_TUNE_ZEC12=y
- # CONFIG_COMPAT is not set
- CONFIG_NR_CPUS=2
- CONFIG_HZ_100=y
--# CONFIG_ARCH_RANDOM is not set
- # CONFIG_RELOCATABLE is not set
- # CONFIG_CHSC_SCH is not set
- # CONFIG_SCM_BUS is not set
-diff --git a/arch/s390/crypto/Makefile b/arch/s390/crypto/Makefile
-index c63abfeb6d17..1b1cc478fa94 100644
---- a/arch/s390/crypto/Makefile
-+++ b/arch/s390/crypto/Makefile
-@@ -15,7 +15,7 @@ obj-$(CONFIG_CRYPTO_CHACHA_S390) += chacha_s390.o
- obj-$(CONFIG_S390_PRNG) += prng.o
- obj-$(CONFIG_CRYPTO_GHASH_S390) += ghash_s390.o
- obj-$(CONFIG_CRYPTO_CRC32_S390) += crc32-vx_s390.o
--obj-$(CONFIG_ARCH_RANDOM) += arch_random.o
-+obj-y += arch_random.o
- 
- crc32-vx_s390-y := crc32-vx.o crc32le-vx.o crc32be-vx.o
- chacha_s390-y := chacha-glue.o chacha-s390.o
-diff --git a/arch/s390/include/asm/archrandom.h b/arch/s390/include/asm/archrandom.h
-index 5dc712fde3c7..27a3ff021b96 100644
---- a/arch/s390/include/asm/archrandom.h
-+++ b/arch/s390/include/asm/archrandom.h
-@@ -11,8 +11,6 @@
- #ifndef _ASM_S390_ARCHRANDOM_H
- #define _ASM_S390_ARCHRANDOM_H
- 
--#ifdef CONFIG_ARCH_RANDOM
--
- #include <linux/static_key.h>
- #include <linux/atomic.h>
- 
-@@ -50,5 +48,4 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
- 	return false;
- }
- 
--#endif /* CONFIG_ARCH_RANDOM */
- #endif /* _ASM_S390_ARCHRANDOM_H */
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index be0b95e51df6..59b82135c814 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1833,15 +1833,6 @@ config ARCH_USES_PG_UNCACHED
- 	def_bool y
- 	depends on X86_PAT
- 
--config ARCH_RANDOM
--	def_bool y
--	prompt "x86 architectural random number generator" if EXPERT
--	help
--	  Enable the x86 architectural RDRAND instruction
--	  (Intel Bull Mountain technology) to generate random numbers.
--	  If supported, this is a high bandwidth, cryptographically
--	  secure hardware random number generator.
--
- config X86_UMIP
- 	def_bool y
- 	prompt "User Mode Instruction Prevention" if EXPERT
-diff --git a/arch/x86/include/asm/archrandom.h b/arch/x86/include/asm/archrandom.h
-index ebc248e49549..1d7bd74d2b44 100644
---- a/arch/x86/include/asm/archrandom.h
-+++ b/arch/x86/include/asm/archrandom.h
-@@ -65,10 +65,8 @@ static inline bool __must_check rdseed_int(unsigned int *v)
- 
- /*
-  * These are the generic interfaces; they must not be declared if the
-- * stubs in <linux/random.h> are to be invoked,
-- * i.e. CONFIG_ARCH_RANDOM is not defined.
-+ * stubs in <linux/random.h> are to be invoked.
-  */
--#ifdef CONFIG_ARCH_RANDOM
- 
- static inline bool __must_check arch_get_random_long(unsigned long *v)
- {
-@@ -92,10 +90,4 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
- 
- extern void x86_init_rdrand(struct cpuinfo_x86 *c);
- 
--#else  /* !CONFIG_ARCH_RANDOM */
--
--static inline void x86_init_rdrand(struct cpuinfo_x86 *c) { }
--
--#endif  /* !CONFIG_ARCH_RANDOM */
--
- #endif /* ASM_X86_ARCHRANDOM_H */
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index 0c0b09796ced..216fc2f53cbe 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -808,7 +808,7 @@ static void clear_rdrand_cpuid_bit(struct cpuinfo_x86 *c)
- 		return;
- 
- 	/*
--	 * The nordrand option can clear X86_FEATURE_RDRAND, so check for
-+	 * The self test can clear X86_FEATURE_RDRAND, so check for
- 	 * RDRAND support using the CPUID function directly.
- 	 */
- 	if (!(cpuid_ecx(1) & BIT(30)) || rdrand_force)
-diff --git a/arch/x86/kernel/cpu/rdrand.c b/arch/x86/kernel/cpu/rdrand.c
-index c4be62058dd9..d66480b17f26 100644
---- a/arch/x86/kernel/cpu/rdrand.c
-+++ b/arch/x86/kernel/cpu/rdrand.c
-@@ -11,14 +11,6 @@
- #include <asm/archrandom.h>
- #include <asm/sections.h>
- 
--static int __init x86_rdrand_setup(char *s)
--{
--	setup_clear_cpu_cap(X86_FEATURE_RDRAND);
--	setup_clear_cpu_cap(X86_FEATURE_RDSEED);
--	return 1;
--}
--__setup("nordrand", x86_rdrand_setup);
--
- /*
-  * RDRAND has Built-In-Self-Test (BIST) that runs on every invocation.
-  * Run the instruction a few times as a sanity check.
-@@ -26,7 +18,6 @@ __setup("nordrand", x86_rdrand_setup);
-  */
- #define SANITY_CHECK_LOOPS 8
- 
--#ifdef CONFIG_ARCH_RANDOM
- void x86_init_rdrand(struct cpuinfo_x86 *c)
- {
- 	unsigned int changed = 0;
-@@ -59,8 +50,6 @@ void x86_init_rdrand(struct cpuinfo_x86 *c)
- 	}
- 
- 	if (WARN_ON_ONCE(!changed))
--		pr_emerg(
--"RDRAND gives funky smelling output, might consider not using it by booting with \"nordrand\"");
-+		pr_emerg("RDRAND gives funky smelling output; update microcode or firmware.");
- 
- }
--#endif
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 0b6c03643ddc..30192e123e5f 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -431,7 +431,6 @@ config ADI
- config RANDOM_TRUST_CPU
- 	bool "Initialize RNG using CPU RNG instructions"
- 	default y
--	depends on ARCH_RANDOM
- 	help
- 	  Initialize the RNG using random numbers supplied by the CPU's
- 	  RNG instructions (e.g. RDRAND), if supported and available. These
-diff --git a/drivers/char/hw_random/s390-trng.c b/drivers/char/hw_random/s390-trng.c
-index 2beaa35c0d74..488808dc17a2 100644
---- a/drivers/char/hw_random/s390-trng.c
-+++ b/drivers/char/hw_random/s390-trng.c
-@@ -108,7 +108,6 @@ static ssize_t trng_counter_show(struct device *dev,
- {
- 	u64 dev_counter = atomic64_read(&trng_dev_counter);
- 	u64 hwrng_counter = atomic64_read(&trng_hwrng_counter);
--#if IS_ENABLED(CONFIG_ARCH_RANDOM)
- 	u64 arch_counter = atomic64_read(&s390_arch_random_counter);
- 
- 	return sysfs_emit(buf,
-@@ -118,14 +117,6 @@ static ssize_t trng_counter_show(struct device *dev,
- 			"total: %llu\n",
- 			dev_counter, hwrng_counter, arch_counter,
- 			dev_counter + hwrng_counter + arch_counter);
--#else
--	return sysfs_emit(buf,
--			"trng:  %llu\n"
--			"hwrng: %llu\n"
--			"total: %llu\n",
--			dev_counter, hwrng_counter,
--			dev_counter + hwrng_counter);
--#endif
- }
- static DEVICE_ATTR(byte_counter, 0444, trng_counter_show, NULL);
- 
-diff --git a/include/linux/random.h b/include/linux/random.h
-index 20e389a14e5c..865770e29f3e 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -106,14 +106,7 @@ declare_get_random_var_wait(long, unsigned long)
-  */
- #include <linux/prandom.h>
- 
--#ifdef CONFIG_ARCH_RANDOM
--# include <asm/archrandom.h>
--#else
--static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
--static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
--static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
--static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
--#endif
-+#include <asm/archrandom.h>
- 
- /*
-  * Called from the boot CPU during startup; not valid to call once
-diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
-index bad88f4b0a03..e1858ce7003f 100644
---- a/tools/testing/selftests/wireguard/qemu/kernel.config
-+++ b/tools/testing/selftests/wireguard/qemu/kernel.config
-@@ -58,7 +58,6 @@ CONFIG_NO_HZ_IDLE=y
- CONFIG_NO_HZ_FULL=n
- CONFIG_HZ_PERIODIC=n
- CONFIG_HIGH_RES_TIMERS=y
--CONFIG_ARCH_RANDOM=y
- CONFIG_FILE_LOCKING=y
- CONFIG_POSIX_TIMERS=y
- CONFIG_DEVTMPFS=y
 -- 
-2.35.1
-
+With best wishes
+Dmitry
