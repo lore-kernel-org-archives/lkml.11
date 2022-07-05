@@ -2,104 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB36CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B07BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232554AbiGEJvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        id S231659AbiGEJwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232145AbiGEJtr (ORCPT
+        with ESMTP id S232556AbiGEJvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:49:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648A013CCB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:49:35 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o8fBS-0001vI-75; Tue, 05 Jul 2022 11:49:30 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-a082-c20a-3b95-9158.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:a082:c20a:3b95:9158])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 041E8A8764;
-        Tue,  5 Jul 2022 09:49:27 +0000 (UTC)
-Date:   Tue, 5 Jul 2022 11:49:27 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Max Staudt <max@enpas.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org,
-        Vincent Mailhol <vincent.mailhol@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: Re: [PATCH v9] can, tty: can327 CAN/ldisc driver for ELM327 based
- OBD-II adapters
-Message-ID: <20220705094927.vgtxcjh4klw6dcg3@pengutronix.de>
-References: <20220618195031.10975-1-max@enpas.org>
- <20220627150557.qluqtejrddj5nfif@pengutronix.de>
- <20220627190126.4eb57a2b.max@enpas.org>
- <CAMuHMdUYCiRC+9UnQB6-2XGp+wOjYq1U_J3bDQT+WNm==mS4qg@mail.gmail.com>
+        Tue, 5 Jul 2022 05:51:00 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D338F13F58
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:49:53 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id a11so13829758ljb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 02:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=shv90DwYEPdUFHu8Cga4VYHWdDzItCMFq4BFSIFK8MQ=;
+        b=EXpa8/uKwzMzew+mn994GeiCVEwmKgmDVTf6C4LdMJ+ZQk8cTCli0GnR60hardY+1E
+         2hGVWntRvgBDlPyAcsp6OQmj7N/e6M4Hgxcw2fGTKTC+Bp/oiCKS5qzJnItCTn061LOY
+         SQBUqDi0P6GjkiiiFsahsD72ZRMFwmTOclakEWI5oU4astCcgkNAWbgv8BUbiASLsHdq
+         v0F9vGkr5cQkHGf0Co0+dum4XqEwgsLrwyR2DiFv49zAN+Nj0zl4f0Bd0iPx0+VGi8n5
+         el0lQ3Jms5CrugPf8sk6t+R+imFv9o7yHunVrhaDThCfvdIZmdhrQCd3g3oho3cSS0Ox
+         KXOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=shv90DwYEPdUFHu8Cga4VYHWdDzItCMFq4BFSIFK8MQ=;
+        b=m12egziapVYXfU8b1vWkYsGlhwFO4/TbJedEpE/oikLBcWIbpWeSAbspKDKMzY6VHD
+         D99kZHy1mfpm6yc61c0JNZm0QeoUfWuPRM3AE2O4daGeE4sH4ErNAIbN3CsAJgsmeKa1
+         pmaI69CrEKV7hRv4JfwICWLBF3c0VY2uF8do+4S1dzHr9E5Bl1uNb86YocwjhCpILuFD
+         Xoxq41herT5y0Q/4urHxWgcyeLQ5sQA9D78w0YLOTpIvyWHvveMZ3MnBbdHJMQnt5Tos
+         DbfxNbMiIzwHkS33050+fQLQuiw8e5WQoLdf3nUSr6q87CHwbwYxYZmLYdNc7b6/v4g9
+         DMNA==
+X-Gm-Message-State: AJIora9+fwT1R+UVbRuZkBO8XKEcvngiMzEyCvH1/pkr/ZzMFsX96AUn
+        C5X31tzst5Us2TN7M4eI0QFk2w==
+X-Google-Smtp-Source: AGRyM1uoZPMckUe4fDIWlkcjaMJ+OIVVYuinLeVA7VFD6UQOGHcf0Ahl4PkuVPIUrYneNnB79zWC3g==
+X-Received: by 2002:a2e:a54a:0:b0:25a:7010:4aee with SMTP id e10-20020a2ea54a000000b0025a70104aeemr19678705ljn.245.1657014592229;
+        Tue, 05 Jul 2022 02:49:52 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id k6-20020ac257c6000000b0047f665e2df8sm5591179lfo.257.2022.07.05.02.49.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 02:49:51 -0700 (PDT)
+Message-ID: <42f8f46f-e5e3-8e77-22e1-07fdbfb6d96a@linaro.org>
+Date:   Tue, 5 Jul 2022 11:49:49 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="upcj6ikityqz426n"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUYCiRC+9UnQB6-2XGp+wOjYq1U_J3bDQT+WNm==mS4qg@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 1/5] dt-bindings: interconnect: Update property for
+ icc-rpm path tag
+Content-Language: en-US
+To:     Leo Yan <leo.yan@linaro.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220705072336.742703-1-leo.yan@linaro.org>
+ <20220705072336.742703-2-leo.yan@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220705072336.742703-2-leo.yan@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/07/2022 09:23, Leo Yan wrote:
+> To support path tag in icc-rpm driver, the "#interconnect-cells"
+> property is updated as enumerate values: 1 or 2.  Setting to 1 means
+> it is compatible with old DT binding that interconnect path only
+> contains node id; if set to 2 for "#interconnect-cells" property, then
+> the second specifier is used as a tag (e.g. vote for which buckets).
+> 
+> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> ---
 
---upcj6ikityqz426n
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 05.07.2022 11:43:52, Geert Uytterhoeven wrote:
-> So development started before commit cd6484e1830be260 ("serdev:
-> Introduce new bus for serial attached devices").  I guess that is the
-> reason why this driver uses a line discipline, instead of the serial
-> bus?
->=20
-> I had a quick glance through the various revisions posted, and it
-> doesn't seem like anyone mentioned the serial bus.  Would there be
-> any advantage in migrating to the serial bus?
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Does serial bus work with hot plug devices like USB Serial Adapters
-and/or devices that are not described in the device tree?
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---upcj6ikityqz426n
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLECSUACgkQrX5LkNig
-013x8QgAlkzZNjplXmSkbzLnfp5FyxE2SofCqbRT/uaQoymqG4Yr2TNTfm6iA9p2
-vc/Dlp+91F+Efxp/Bx2ByYT0UA6Q23LZXF5m4l3b25fLy0HRGi9NiXNwFldbJNtg
-gyQdruRQJJrXxTmz1pZL0aAjgjX+TTrFRXpU0MYWVU9sB4Bbj7N3tnMLeOo88LLy
-+qNoFLQGodZI6Xfj/yvBrbnVtM8G/kkkcLCJyztht70gzacBT9X/xPadrwc1cA8J
-8t5gpBQ5lTAdTsI8AcW633FZhI1WGpGQM1/gy+RM7z2HtEsCy0Fm1Yk/WzgS0CKL
-7uyJOPsdXXL708fcrjyuo0yF3+ve/g==
-=Ke92
------END PGP SIGNATURE-----
-
---upcj6ikityqz426n--
+Best regards,
+Krzysztof
