@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246A6CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7226C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239920AbiGEMfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
+        id S239820AbiGEMfD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235601AbiGEM0h (ORCPT
+        with ESMTP id S237960AbiGEM02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:37 -0400
+        Tue, 5 Jul 2022 08:26:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834F115A25;
-        Tue,  5 Jul 2022 05:18:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520D9630D;
+        Tue,  5 Jul 2022 05:18:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F3B6B8170A;
-        Tue,  5 Jul 2022 12:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D487C341C7;
-        Tue,  5 Jul 2022 12:18:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 035FCB8170A;
+        Tue,  5 Jul 2022 12:18:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9E3C341C7;
+        Tue,  5 Jul 2022 12:18:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023515;
-        bh=do6yYSyQxfB6PbEl2YYs7ab3cyfGJYZV04POplKETk0=;
+        s=korg; t=1657023507;
+        bh=IyAY60xbrSdkFFbgrfZdUCHoU7VC9nCnMrRzTpbJl44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tLx9kWH1ZYMWtalyYt2T1bOQ7RPqtUeynaYkuWsvRto4Fn9x71cBqysZ54dW8+GJr
-         a1JSlvEcg7UWwWJvxiJrf0+37ywStz8JnW/K7MRX7DSUk7cjdiDfEuoDWkyv1+O5p0
-         Kz75M9p2ZaYrJFF9WmdWEcdNd4BECyk0+L0/qiXQ=
+        b=QIsFqeOO5tIZ7WaifPnHGGDvcKyNEJhFXCVj1HeTB2KWaJL+uZH2PhtfMdf7SvPH9
+         o6xcrDG3oQ9ROcutH7BTy33AFgnwccvAu8L0nHR1KXi6oUCH+FKlaZo/7MFz9yZ9Du
+         mUv+nxcYX9uNCHKcTiAgfZ9t7NitBcaXLeJdg/JM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 089/102] platform/x86: panasonic-laptop: sort includes alphabetically
-Date:   Tue,  5 Jul 2022 13:58:55 +0200
-Message-Id: <20220705115620.947890321@linuxfoundation.org>
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.18 044/102] NFS: restore module put when manager exits.
+Date:   Tue,  5 Jul 2022 13:58:10 +0200
+Message-Id: <20220705115619.661600798@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,57 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit fe4326c8d18dc8a54affdc9ab269ad92dafef659 ]
+commit 080abad71e99d2becf38c978572982130b927a28 upstream.
 
-Sort includes alphabetically, small cleanup patch in preparation of
-further changes.
+Commit f49169c97fce ("NFSD: Remove svc_serv_ops::svo_module") removed
+calls to module_put_and_kthread_exit() from threads that acted as SUNRPC
+servers and had a related svc_serv_ops structure.  This was correct.
 
-Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220624112340.10130-4-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It ALSO removed the module_put_and_kthread_exit() call from
+nfs4_run_state_manager() which is NOT a SUNRPC service.
+
+Consequently every time the NFSv4 state manager runs the module count
+increments and won't be decremented.  So the nfsv4 module cannot be
+unloaded.
+
+So restore the module_put_and_kthread_exit() call.
+
+Fixes: f49169c97fce ("NFSD: Remove svc_serv_ops::svo_module")
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/panasonic-laptop.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ fs/nfs/nfs4state.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
-index ca6137f4000f..26e31ac09dc6 100644
---- a/drivers/platform/x86/panasonic-laptop.c
-+++ b/drivers/platform/x86/panasonic-laptop.c
-@@ -119,20 +119,19 @@
-  *		- v0.1  start from toshiba_acpi driver written by John Belmonte
-  */
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -2743,5 +2743,6 @@ again:
+ 		goto again;
  
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/init.h>
--#include <linux/types.h>
-+#include <linux/acpi.h>
- #include <linux/backlight.h>
- #include <linux/ctype.h>
--#include <linux/seq_file.h>
--#include <linux/uaccess.h>
--#include <linux/slab.h>
--#include <linux/acpi.h>
-+#include <linux/init.h>
- #include <linux/input.h>
- #include <linux/input/sparse-keymap.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
- #include <linux/platform_device.h>
--
-+#include <linux/seq_file.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/uaccess.h>
- 
- MODULE_AUTHOR("Hiroshi Miura <miura@da-cha.org>");
- MODULE_AUTHOR("David Bronaugh <dbronaugh@linuxboxen.org>");
--- 
-2.35.1
-
+ 	nfs_put_client(clp);
++	module_put_and_kthread_exit(0);
+ 	return 0;
+ }
 
 
