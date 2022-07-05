@@ -2,428 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F24C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235848AbiGEMPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
+        id S235861AbiGEMPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235103AbiGEMId (ORCPT
+        with ESMTP id S235128AbiGEMIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:33 -0400
+        Tue, 5 Jul 2022 08:08:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A1C18E00;
-        Tue,  5 Jul 2022 05:07:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F84918E16;
+        Tue,  5 Jul 2022 05:07:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ED34617B1;
-        Tue,  5 Jul 2022 12:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50799C341C7;
-        Tue,  5 Jul 2022 12:07:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2156D6195F;
+        Tue,  5 Jul 2022 12:07:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30473C341C7;
+        Tue,  5 Jul 2022 12:07:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022865;
-        bh=OPjQfXvn8DWgTcYOQSz9VlcSpMkVMRFJmuOl3mmsbFI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RmJ8/unECRv9bMnHueDJVqAeoymxUjM7R/JCyZ43hoZcMhFSbv2oJPf98ilIVYITK
-         M3UAOJ+cSKA52vyGEwMc/VsTeJUyUwg2SC57apkB/t6w1O/HvJSzPMmf416FZJx0kk
-         Dwc7nBJybPhvO5xorfNzTuji+1urreiz3jWy7CAc=
+        s=korg; t=1657022868;
+        bh=snaK96aALbb1x0Qfg8o8GzPsW39d2VFEOVG4KwuAn+c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D/1o+n4jPBVRdFTy/VgAa66jDqriUCDUVMmHtYHnUOt0GaSkY2Me4oOxurjn7zcOB
+         Ah01AMYu5U8aEOQEis8w2WDrcyt63MoXnyTluUHI5qCZPkXbXWWQnm7B6xL2FUECKG
+         1yQq9ktqY/bxZdP2jIIt3eFyOFanWSZy8TyODB04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.10 00/84] 5.10.129-rc1 review
-Date:   Tue,  5 Jul 2022 13:57:23 +0200
-Message-Id: <20220705115615.323395630@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.10 32/84] net: bonding: fix possible NULL deref in rlb code
+Date:   Tue,  5 Jul 2022 13:57:55 +0200
+Message-Id: <20220705115616.261663282@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-MIME-Version: 1.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.129-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.10.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.10.129-rc1
-X-KernelTest-Deadline: 2022-07-07T11:56+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.10.129 release.
-There are 84 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
-
-Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.129-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.10.129-rc1
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    clocksource/drivers/ixp4xx: remove EXPORT_SYMBOL_GPL from ixp4xx_timer_setup()
-
-Daniele Palmas <dnlplm@gmail.com>
-    net: usb: qmi_wwan: add Telit 0x1070 composition
-
-Carlo Lobrano <c.lobrano@gmail.com>
-    net: usb: qmi_wwan: add Telit 0x1060 composition
-
-Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-    xen/arm: Fix race in RB-tree based P2M accounting
-
-Jan Beulich <jbeulich@suse.com>
-    xen-netfront: restore __skb_queue_tail() positioning in xennet_get_responses()
-
-Roger Pau Monne <roger.pau@citrix.com>
-    xen/blkfront: force data bouncing when backend is untrusted
-
-Roger Pau Monne <roger.pau@citrix.com>
-    xen/netfront: force data bouncing when backend is untrusted
-
-Roger Pau Monne <roger.pau@citrix.com>
-    xen/netfront: fix leaking data in shared pages
-
-Roger Pau Monne <roger.pau@citrix.com>
-    xen/blkfront: fix leaking data in shared pages
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Change type of rseq_offset to ptrdiff_t
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: x86-32: use %gs segment selector for accessing rseq thread area
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: x86-64: use %fs segment selector for accessing rseq thread area
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Fix: work-around asm goto compiler bugs
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Remove arm/mips asm goto compiler work-around
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Fix warnings about #if checks of undefined tokens
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Fix ppc32 offsets by using long rather than off_t
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Fix ppc32 missing instruction selection "u" and "x" for load/store
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Fix ppc32: wrong rseq_cs 32-bit field pointer on big endian
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Introduce thread pointer getters
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Introduce rseq_get_abi() helper
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Remove volatile from __rseq_abi
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: Remove useless assignment to cpu variable
-
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-    selftests/rseq: introduce own copy of rseq uapi header
-
-Shuah Khan <skhan@linuxfoundation.org>
-    selftests/rseq: remove ARRAY_SIZE define from individual tests
-
-Yang Yingliang <yangyingliang@huawei.com>
-    hwmon: (ibmaem) don't call platform_device_del() if platform_device_add() fails
-
-katrinzhou <katrinzhou@tencent.com>
-    ipv6/sit: fix ipip6_tunnel_get_prl return value
-
-kernel test robot <lkp@intel.com>
-    sit: use min
-
-Paolo Abeni <pabeni@redhat.com>
-    selftests: mptcp: more stable diag tests
-
-Paolo Abeni <pabeni@redhat.com>
-    selftests: mptcp: fix diag instability
-
-Matthieu Baerts <matthieu.baerts@tessares.net>
-    selftests: mptcp: launch mptcp_connect with timeout
-
-Geliang Tang <geliangtang@gmail.com>
-    selftests: mptcp: add ADD_ADDR IPv6 test cases
-
-Florian Westphal <fw@strlen.de>
-    selftests: mptcp: add link failure test case
-
-Geliang Tang <geliangtang@gmail.com>
-    selftests: mptcp: add ADD_ADDR timeout test case
-
-Liang He <windhl@126.com>
-    drivers: cpufreq: Add missing of_node_put() in qoriq-cpufreq.c
-
-Demi Marie Obenour <demi@invisiblethingslab.com>
-    xen/gntdev: Avoid blocking in unmap_grant_pages()
-
-Eric Dumazet <edumazet@google.com>
-    tcp: add a missing nf_reset_ct() in 3WHS handling
-
-Darrick J. Wong <djwong@kernel.org>
-    xfs: fix xfs_reflink_unshare usage of filemap_write_and_wait_range
-
-Dave Chinner <dchinner@redhat.com>
-    xfs: update superblock counters correctly for !lazysbcount
-
-Anthony Iliopoulos <ailiop@suse.com>
-    xfs: fix xfs_trans slab cache name
-
-Gao Xiang <hsiangkao@redhat.com>
-    xfs: ensure xfs_errortag_random_default matches XFS_ERRTAG_MAX
-
-Pavel Reichl <preichl@redhat.com>
-    xfs: Skip repetitive warnings about mount options
-
-Pavel Reichl <preichl@redhat.com>
-    xfs: rename variable mp to parsing_mp
-
-Dave Chinner <dchinner@redhat.com>
-    xfs: use current->journal_info for detecting transaction recursion
-
-Jakub Kicinski <kuba@kernel.org>
-    net: tun: avoid disabling NAPI twice
-
-Eric Dumazet <edumazet@google.com>
-    tunnels: do not assume mac header is set in skb_tunnel_check_pmtu()
-
-Jens Axboe <axboe@kernel.dk>
-    io_uring: ensure that send/sendmsg and recv/recvmsg check sqe->ioprio
-
-Tong Zhang <ztong0001@gmail.com>
-    epic100: fix use after free on rmmod
-
-Xin Long <lucien.xin@gmail.com>
-    tipc: move bc link creation back to tipc_node_create
-
-Michael Walle <michael@walle.cc>
-    NFC: nxp-nci: Don't issue a zero length i2c_master_read()
-
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-    nfc: nfcmrvl: Fix irq_of_parse_and_map() return value
-
-Yevhen Orlov <yevhen.orlov@plvision.eu>
-    net: bonding: fix use-after-free after 802.3ad slave unbind
-
-Eric Dumazet <edumazet@google.com>
-    net: bonding: fix possible NULL deref in rlb code
-
-Victor Nogueira <victor@mojatatu.com>
-    net/sched: act_api: Notify user space if any actions were flushed before error
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nft_dynset: restore set element counter when failing to update
-
-Masahiro Yamada <masahiroy@kernel.org>
-    s390: remove unneeded 'select BUILD_BIN2C'
-
-Miaoqian Lin <linmq006@gmail.com>
-    PM / devfreq: exynos-ppmu: Fix refcount leak in of_get_devfreq_events
-
-Jason Wang <jasowang@redhat.com>
-    caif_virtio: fix race between virtio_device_ready() and ndo_open()
-
-Alexey Khoroshilov <khoroshilov@ispras.ru>
-    NFSD: restore EINVAL error translation in nfsd_commit()
-
-YueHaibing <yuehaibing@huawei.com>
-    net: ipv6: unexport __init-annotated seg6_hmac_net_init()
-
-Oliver Neukum <oneukum@suse.com>
-    usbnet: fix memory allocation in helpers
-
-Tao Liu <thomas.liu@ucloud.cn>
-    linux/dim: Fix divide by 0 in RDMA DIM
-
-Miaoqian Lin <linmq006@gmail.com>
-    RDMA/cm: Fix memory leak in ib_cm_insert_listen
-
-Kamal Heib <kamalheib1@gmail.com>
-    RDMA/qedr: Fix reporting QP timeout attribute
-
-Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
-    net: dp83822: disable rx error interrupt
-
-Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
-    net: dp83822: disable false carrier interrupt
-
-Jakub Kicinski <kuba@kernel.org>
-    net: tun: stop NAPI when detaching queues
-
-Jakub Kicinski <kuba@kernel.org>
-    net: tun: unlink NAPI from device on destruction
-
-Doug Berger <opendmb@gmail.com>
-    net: dsa: bcm_sf2: force pause link settings
-
-Dimitris Michailidis <d.michailidis@fungible.com>
-    selftests/net: pass ipv6_args to udpgso_bench's IPv6 TCP test
-
-Jason Wang <jasowang@redhat.com>
-    virtio-net: fix race between ndo_open() and virtio_device_ready()
-
-Jose Alonso <joalonsof@gmail.com>
-    net: usb: ax88179_178a: Fix packet receiving
-
-Duoming Zhou <duoming@zju.edu.cn>
-    net: rose: fix UAF bugs caused by timer handler
-
-Chuck Lever <chuck.lever@oracle.com>
-    SUNRPC: Fix READ_PLUS crasher
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    s390/archrandom: simplify back to earlier design and initialize earlier
-
-Mikulas Patocka <mpatocka@redhat.com>
-    dm raid: fix KASAN warning in raid5_add_disks
-
-Heinz Mauelshagen <heinzm@redhat.com>
-    dm raid: fix accesses beyond end of raid member array
-
-Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-    powerpc/bpf: Fix use of user_pt_regs in uapi
-
-Christophe Leroy <christophe.leroy@csgroup.eu>
-    powerpc/book3e: Fix PUD allocation size in map_kernel_page()
-
-Liam Howlett <liam.howlett@oracle.com>
-    powerpc/prom_init: Fix kernel config grep
-
-Chris Ye <chris.ye@intel.com>
-    nvdimm: Fix badblocks clear off-by-one error
-
-Pablo Greco <pgreco@centosproject.org>
-    nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA XPG SX6000LNP (AKA SPECTRIX S40G)
-
-Nicolas Dichtel <nicolas.dichtel@6wind.com>
-    ipv6: take care of disable_policy when restoring routes
-
-Ruili Ji <ruiliji2@amd.com>
-    drm/amdgpu: To flush tlb for MMHUB of RAVEN series
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |   4 +-
- arch/arm/xen/p2m.c                                 |   6 +-
- arch/powerpc/include/asm/bpf_perf_event.h          |   9 +
- arch/powerpc/include/uapi/asm/bpf_perf_event.h     |   9 -
- arch/powerpc/kernel/prom_init_check.sh             |   2 +-
- arch/powerpc/mm/nohash/book3e_pgtable.c            |   6 +-
- arch/s390/Kconfig                                  |   1 -
- arch/s390/crypto/arch_random.c                     | 111 +--------
- arch/s390/include/asm/archrandom.h                 |  13 +-
- arch/s390/kernel/setup.c                           |   5 +
- drivers/block/xen-blkfront.c                       |  56 +++--
- drivers/clocksource/timer-ixp4xx.c                 |   1 -
- drivers/cpufreq/qoriq-cpufreq.c                    |   1 +
- drivers/devfreq/event/exynos-ppmu.c                |   8 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c         |   3 +-
- drivers/hwmon/ibmaem.c                             |  12 +-
- drivers/infiniband/core/cm.c                       |   4 +-
- drivers/infiniband/hw/qedr/qedr.h                  |   1 +
- drivers/infiniband/hw/qedr/verbs.c                 |   4 +-
- drivers/md/dm-raid.c                               |  34 +--
- drivers/md/raid5.c                                 |   1 +
- drivers/net/bonding/bond_3ad.c                     |   3 +-
- drivers/net/bonding/bond_alb.c                     |   2 +-
- drivers/net/caif/caif_virtio.c                     |  10 +-
- drivers/net/dsa/bcm_sf2.c                          |   5 +
- drivers/net/ethernet/smsc/epic100.c                |   4 +-
- drivers/net/phy/dp83822.c                          |   4 +-
- drivers/net/tun.c                                  |  15 +-
- drivers/net/usb/ax88179_178a.c                     | 101 ++++++--
- drivers/net/usb/qmi_wwan.c                         |   2 +
- drivers/net/usb/usbnet.c                           |   4 +-
- drivers/net/virtio_net.c                           |   8 +-
- drivers/net/xen-netfront.c                         |  56 ++++-
- drivers/nfc/nfcmrvl/i2c.c                          |   6 +-
- drivers/nfc/nfcmrvl/spi.c                          |   6 +-
- drivers/nfc/nxp-nci/i2c.c                          |   3 +
- drivers/nvdimm/bus.c                               |   4 +-
- drivers/nvme/host/pci.c                            |   3 +-
- drivers/xen/gntdev-common.h                        |   7 +
- drivers/xen/gntdev.c                               | 140 ++++++++----
- fs/io_uring.c                                      |   4 +
- fs/iomap/buffered-io.c                             |   7 -
- fs/nfsd/vfs.c                                      |   3 +-
- fs/xfs/libxfs/xfs_btree.c                          |  12 +-
- fs/xfs/libxfs/xfs_sb.c                             |  16 +-
- fs/xfs/xfs_aops.c                                  |  17 +-
- fs/xfs/xfs_error.c                                 |   2 +
- fs/xfs/xfs_reflink.c                               |   3 +-
- fs/xfs/xfs_super.c                                 | 120 +++++-----
- fs/xfs/xfs_trans.c                                 |  23 +-
- fs/xfs/xfs_trans.h                                 |  30 +++
- include/linux/dim.h                                |   2 +-
- net/ipv4/ip_tunnel_core.c                          |   2 +-
- net/ipv4/tcp_ipv4.c                                |   4 +-
- net/ipv6/addrconf.c                                |   4 -
- net/ipv6/route.c                                   |   9 +-
- net/ipv6/seg6_hmac.c                               |   1 -
- net/ipv6/sit.c                                     |  10 +-
- net/netfilter/nft_set_hash.c                       |   2 +
- net/rose/rose_timer.c                              |  34 +--
- net/sched/act_api.c                                |  22 +-
- net/sunrpc/xdr.c                                   |   2 +-
- net/tipc/node.c                                    |  41 ++--
- tools/testing/selftests/net/mptcp/config           |  10 +
- tools/testing/selftests/net/mptcp/diag.sh          | 131 ++++++++---
- tools/testing/selftests/net/mptcp/mptcp_connect.sh |  15 +-
- tools/testing/selftests/net/mptcp/mptcp_join.sh    | 254 ++++++++++++++++++---
- tools/testing/selftests/net/mptcp/simult_flows.sh  |  13 +-
- tools/testing/selftests/net/udpgso_bench.sh        |   2 +-
- tools/testing/selftests/rseq/Makefile              |   2 +-
- .../testing/selftests/rseq/basic_percpu_ops_test.c |   5 +-
- tools/testing/selftests/rseq/compiler.h            |  30 +++
- tools/testing/selftests/rseq/param_test.c          |   8 +-
- tools/testing/selftests/rseq/rseq-abi.h            | 151 ++++++++++++
- tools/testing/selftests/rseq/rseq-arm.h            | 110 ++++-----
- tools/testing/selftests/rseq/rseq-arm64.h          |  79 +++++--
- .../selftests/rseq/rseq-generic-thread-pointer.h   |  25 ++
- tools/testing/selftests/rseq/rseq-mips.h           |  71 ++----
- .../selftests/rseq/rseq-ppc-thread-pointer.h       |  30 +++
- tools/testing/selftests/rseq/rseq-ppc.h            | 128 +++++++----
- tools/testing/selftests/rseq/rseq-s390.h           |  55 +++--
- tools/testing/selftests/rseq/rseq-skip.h           |   2 +-
- tools/testing/selftests/rseq/rseq-thread-pointer.h |  19 ++
- .../selftests/rseq/rseq-x86-thread-pointer.h       |  40 ++++
- tools/testing/selftests/rseq/rseq-x86.h            | 200 ++++++++++------
- tools/testing/selftests/rseq/rseq.c                | 165 +++++++------
- tools/testing/selftests/rseq/rseq.h                |  30 ++-
- 87 files changed, 1781 insertions(+), 838 deletions(-)
+From: Eric Dumazet <edumazet@google.com>
+
+commit ab84db251c04d38b8dc7ee86e13d4050bedb1c88 upstream.
+
+syzbot has two reports involving the same root cause.
+
+bond_alb_initialize() must not set bond->alb_info.rlb_enabled
+if a memory allocation error is detected.
+
+Report 1:
+
+general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+CPU: 0 PID: 12276 Comm: kworker/u4:10 Not tainted 5.19.0-rc3-syzkaller-00132-g3b89b511ea0c #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+RIP: 0010:rlb_clear_slave+0x10e/0x690 drivers/net/bonding/bond_alb.c:393
+Code: 8e fc 83 fb ff 0f 84 74 02 00 00 e8 cc 2a 8e fc 48 8b 44 24 08 89 dd 48 c1 e5 06 4c 8d 34 28 49 8d 7e 14 48 89 f8 48 c1 e8 03 <42> 0f b6 14 20 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85
+RSP: 0018:ffffc90018a8f678 EFLAGS: 00010203
+RAX: 0000000000000002 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88803375bb00 RSI: ffffffff84ec4ac4 RDI: 0000000000000014
+RBP: 0000000000000000 R08: 0000000000000005 R09: 00000000ffffffff
+R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff8880ac889000 R14: 0000000000000000 R15: ffff88815a668c80
+FS: 0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005597077e10b0 CR3: 0000000026668000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+<TASK>
+bond_alb_deinit_slave+0x43c/0x6b0 drivers/net/bonding/bond_alb.c:1663
+__bond_release_one.cold+0x383/0xd53 drivers/net/bonding/bond_main.c:2370
+bond_slave_netdev_event drivers/net/bonding/bond_main.c:3778 [inline]
+bond_netdev_event+0x993/0xad0 drivers/net/bonding/bond_main.c:3889
+notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
+call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1945
+call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+call_netdevice_notifiers net/core/dev.c:1997 [inline]
+unregister_netdevice_many+0x948/0x18b0 net/core/dev.c:10839
+default_device_exit_batch+0x449/0x590 net/core/dev.c:11333
+ops_exit_list+0x125/0x170 net/core/net_namespace.c:167
+cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
+process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+</TASK>
+
+Report 2:
+
+general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+CPU: 1 PID: 5206 Comm: syz-executor.1 Not tainted 5.18.0-syzkaller-12108-g58f9d52ff689 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:rlb_req_update_slave_clients+0x109/0x2f0 drivers/net/bonding/bond_alb.c:502
+Code: 5d 18 8f fc 41 80 3e 00 0f 85 a5 01 00 00 89 d8 48 c1 e0 06 49 03 84 24 68 01 00 00 48 8d 78 30 49 89 c7 48 89 fa 48 c1 ea 03 <80> 3c 2a 00 0f 85 98 01 00 00 4d 39 6f 30 75 83 e8 22 18 8f fc 49
+RSP: 0018:ffffc9000300ee80 EFLAGS: 00010206
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffc90016c11000
+RDX: 0000000000000006 RSI: ffffffff84eb6bf3 RDI: 0000000000000030
+RBP: dffffc0000000000 R08: 0000000000000005 R09: 00000000ffffffff
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff888027c80c80
+R13: ffff88807d7ff800 R14: ffffed1004f901bd R15: 0000000000000000
+FS:  00007f6f46c58700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020010000 CR3: 00000000516cc000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ alb_fasten_mac_swap+0x886/0xa80 drivers/net/bonding/bond_alb.c:1070
+ bond_alb_handle_active_change+0x624/0x1050 drivers/net/bonding/bond_alb.c:1765
+ bond_change_active_slave+0xfa1/0x29b0 drivers/net/bonding/bond_main.c:1173
+ bond_select_active_slave+0x23f/0xa50 drivers/net/bonding/bond_main.c:1253
+ bond_enslave+0x3b34/0x53b0 drivers/net/bonding/bond_main.c:2159
+ do_set_master+0x1c8/0x220 net/core/rtnetlink.c:2577
+ rtnl_newlink_create net/core/rtnetlink.c:3380 [inline]
+ __rtnl_newlink+0x13ac/0x17e0 net/core/rtnetlink.c:3580
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3593
+ rtnetlink_rcv_msg+0x43a/0xc90 net/core/rtnetlink.c:6089
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
+ __sys_sendmsg net/socket.c:2575 [inline]
+ __do_sys_sendmsg net/socket.c:2584 [inline]
+ __se_sys_sendmsg net/socket.c:2582 [inline]
+ __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f6f45a89109
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f6f46c58168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f6f45b9c030 RCX: 00007f6f45a89109
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000006
+RBP: 00007f6f45ae308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffed99029af R14: 00007f6f46c58300 R15: 0000000000022000
+ </TASK>
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+Cc: Veaceslav Falico <vfalico@gmail.com>
+Cc: Andy Gospodarek <andy@greyhouse.net>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Link: https://lore.kernel.org/r/20220627102813.126264-1-edumazet@google.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/bonding/bond_alb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -1279,12 +1279,12 @@ int bond_alb_initialize(struct bonding *
+ 		return res;
+ 
+ 	if (rlb_enabled) {
+-		bond->alb_info.rlb_enabled = 1;
+ 		res = rlb_initialize(bond);
+ 		if (res) {
+ 			tlb_deinitialize(bond);
+ 			return res;
+ 		}
++		bond->alb_info.rlb_enabled = 1;
+ 	} else {
+ 		bond->alb_info.rlb_enabled = 0;
+ 	}
 
 
