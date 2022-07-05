@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B37CCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDA8CCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238394AbiGEM3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
+        id S238275AbiGEM2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237484AbiGEMTQ (ORCPT
+        with ESMTP id S237376AbiGEMTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AB41D0E3;
-        Tue,  5 Jul 2022 05:14:48 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A135E1A83B;
+        Tue,  5 Jul 2022 05:14:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECA58B8170A;
-        Tue,  5 Jul 2022 12:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64E03C341C7;
-        Tue,  5 Jul 2022 12:14:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D4EC619FC;
+        Tue,  5 Jul 2022 12:14:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49CE3C341C8;
+        Tue,  5 Jul 2022 12:14:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023285;
-        bh=UEpn1W2PAp7eXxcwCv1hzsFp3iPKn9SiSGCNO2ifE+c=;
+        s=korg; t=1657023266;
+        bh=0rKe4uWzpN82tpSDutmkRLrPOnVLFYSIZSRH479o06I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YOUtls4+sitOsh2EGFRzd2PelBDyG7Cr/C5RssbNSrpz+JpL0FBeeCqSFbF3tqRaj
-         Ma0pwJJLfcuPle2O5QkugUaeBU/RJ1PIm59waBLFt9y/LY4fpdB7T2mVq3twaByzEf
-         p+z2UUxYzxfi9T5+59WhrFUljqhnKHpzqCvZSGys=
+        b=mTQt+PPhoPvcr4huGlNxSa9dVPux3RFBEAwvOzypY83wmQ/+efQI/+urJJvI58ZDp
+         IvWU+IUfMdx9heTv6yf3q0Tq8glSFg2VvFpDfHwRrRDlGBRhKvtokSKcIvOUgVmYw/
+         0/++otwJ0SBHed/tVEcZ3GfUQ1OT2T+xMjFgqFQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH 5.15 85/98] clocksource/drivers/ixp4xx: remove EXPORT_SYMBOL_GPL from ixp4xx_timer_setup()
-Date:   Tue,  5 Jul 2022 13:58:43 +0200
-Message-Id: <20220705115619.984097480@linuxfoundation.org>
+        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 97/98] hwmon: (occ) Prevent power cap command overwriting poll response
+Date:   Tue,  5 Jul 2022 13:58:55 +0200
+Message-Id: <20220705115620.326725674@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -48,34 +49,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Eddie James <eajames@linux.ibm.com>
 
-ixp4xx_timer_setup is exported, and so can not be an __init function.
-But it does not need to be exported as it is only called from one
-in-kernel function, so just remove the EXPORT_SYMBOL_GPL() marking to
-resolve the build warning.
+[ Upstream commit 1bbb2809040a1f9c7c53c9f06c21aa83275ed27b ]
 
-This is fixed "properly" in commit 41929c9f628b
-("clocksource/drivers/ixp4xx: Drop boardfile probe path") but that can
-not be backported to older kernels as the reworking of the IXP4xx
-codebase is not suitable for stable releases.
+Currently, the response to the power cap command overwrites the
+first eight bytes of the poll response, since the commands use
+the same buffer. This means that user's get the wrong data between
+the time of sending the power cap and the next poll response update.
+Fix this by specifying a different buffer for the power cap command
+response.
 
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5b5513b88002 ("hwmon: Add On-Chip Controller (OCC) hwmon driver")
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220628203029.51747-1-eajames@linux.ibm.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-ixp4xx.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/hwmon/occ/common.c |  5 +++--
+ drivers/hwmon/occ/common.h |  3 ++-
+ drivers/hwmon/occ/p8_i2c.c | 13 +++++++------
+ drivers/hwmon/occ/p9_sbe.c |  7 +++----
+ 4 files changed, 15 insertions(+), 13 deletions(-)
 
---- a/drivers/clocksource/timer-ixp4xx.c
-+++ b/drivers/clocksource/timer-ixp4xx.c
-@@ -282,7 +282,6 @@ void __init ixp4xx_timer_setup(resource_
- 	}
- 	ixp4xx_timer_register(base, timer_irq, timer_freq);
- }
--EXPORT_SYMBOL_GPL(ixp4xx_timer_setup);
+diff --git a/drivers/hwmon/occ/common.c b/drivers/hwmon/occ/common.c
+index 0cb4a0a6cbc1..bbe5e4ef4113 100644
+--- a/drivers/hwmon/occ/common.c
++++ b/drivers/hwmon/occ/common.c
+@@ -145,7 +145,7 @@ static int occ_poll(struct occ *occ)
+ 	cmd[6] = 0;			/* checksum lsb */
  
- #ifdef CONFIG_OF
- static __init int ixp4xx_of_timer_init(struct device_node *np)
+ 	/* mutex should already be locked if necessary */
+-	rc = occ->send_cmd(occ, cmd, sizeof(cmd));
++	rc = occ->send_cmd(occ, cmd, sizeof(cmd), &occ->resp, sizeof(occ->resp));
+ 	if (rc) {
+ 		occ->last_error = rc;
+ 		if (occ->error_count++ > OCC_ERROR_COUNT_THRESHOLD)
+@@ -182,6 +182,7 @@ static int occ_set_user_power_cap(struct occ *occ, u16 user_power_cap)
+ {
+ 	int rc;
+ 	u8 cmd[8];
++	u8 resp[8];
+ 	__be16 user_power_cap_be = cpu_to_be16(user_power_cap);
+ 
+ 	cmd[0] = 0;	/* sequence number */
+@@ -198,7 +199,7 @@ static int occ_set_user_power_cap(struct occ *occ, u16 user_power_cap)
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = occ->send_cmd(occ, cmd, sizeof(cmd));
++	rc = occ->send_cmd(occ, cmd, sizeof(cmd), resp, sizeof(resp));
+ 
+ 	mutex_unlock(&occ->lock);
+ 
+diff --git a/drivers/hwmon/occ/common.h b/drivers/hwmon/occ/common.h
+index 5020117be740..7abf19102062 100644
+--- a/drivers/hwmon/occ/common.h
++++ b/drivers/hwmon/occ/common.h
+@@ -96,7 +96,8 @@ struct occ {
+ 
+ 	int powr_sample_time_us;	/* average power sample time */
+ 	u8 poll_cmd_data;		/* to perform OCC poll command */
+-	int (*send_cmd)(struct occ *occ, u8 *cmd, size_t len);
++	int (*send_cmd)(struct occ *occ, u8 *cmd, size_t len, void *resp,
++			size_t resp_len);
+ 
+ 	unsigned long next_update;
+ 	struct mutex lock;		/* lock OCC access */
+diff --git a/drivers/hwmon/occ/p8_i2c.c b/drivers/hwmon/occ/p8_i2c.c
+index 9e61e1fb5142..c35c07964d85 100644
+--- a/drivers/hwmon/occ/p8_i2c.c
++++ b/drivers/hwmon/occ/p8_i2c.c
+@@ -111,7 +111,8 @@ static int p8_i2c_occ_putscom_be(struct i2c_client *client, u32 address,
+ 				      be32_to_cpu(data1));
+ }
+ 
+-static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
++static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
++			       void *resp, size_t resp_len)
+ {
+ 	int i, rc;
+ 	unsigned long start;
+@@ -120,7 +121,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
+ 	const long wait_time = msecs_to_jiffies(OCC_CMD_IN_PRG_WAIT_MS);
+ 	struct p8_i2c_occ *ctx = to_p8_i2c_occ(occ);
+ 	struct i2c_client *client = ctx->client;
+-	struct occ_response *resp = &occ->resp;
++	struct occ_response *or = (struct occ_response *)resp;
+ 
+ 	start = jiffies;
+ 
+@@ -151,7 +152,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
+ 			return rc;
+ 
+ 		/* wait for OCC */
+-		if (resp->return_status == OCC_RESP_CMD_IN_PRG) {
++		if (or->return_status == OCC_RESP_CMD_IN_PRG) {
+ 			rc = -EALREADY;
+ 
+ 			if (time_after(jiffies, start + timeout))
+@@ -163,7 +164,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
+ 	} while (rc);
+ 
+ 	/* check the OCC response */
+-	switch (resp->return_status) {
++	switch (or->return_status) {
+ 	case OCC_RESP_CMD_IN_PRG:
+ 		rc = -ETIMEDOUT;
+ 		break;
+@@ -192,8 +193,8 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	data_length = get_unaligned_be16(&resp->data_length);
+-	if (data_length > OCC_RESP_DATA_BYTES)
++	data_length = get_unaligned_be16(&or->data_length);
++	if ((data_length + 7) > resp_len)
+ 		return -EMSGSIZE;
+ 
+ 	/* fetch the rest of the response data */
+diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
+index 9709f2b9c052..14923e78e1f3 100644
+--- a/drivers/hwmon/occ/p9_sbe.c
++++ b/drivers/hwmon/occ/p9_sbe.c
+@@ -16,18 +16,17 @@ struct p9_sbe_occ {
+ 
+ #define to_p9_sbe_occ(x)	container_of((x), struct p9_sbe_occ, occ)
+ 
+-static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
++static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
++			       void *resp, size_t resp_len)
+ {
+-	struct occ_response *resp = &occ->resp;
+ 	struct p9_sbe_occ *ctx = to_p9_sbe_occ(occ);
+-	size_t resp_len = sizeof(*resp);
+ 	int rc;
+ 
+ 	rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	switch (resp->return_status) {
++	switch (((struct occ_response *)resp)->return_status) {
+ 	case OCC_RESP_CMD_IN_PRG:
+ 		rc = -ETIMEDOUT;
+ 		break;
+-- 
+2.35.1
+
 
 
