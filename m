@@ -2,136 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAADEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84407C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbiGEO2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53368 "EHLO
+        id S232824AbiGEO2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232892AbiGEO2E (ORCPT
+        with ESMTP id S232238AbiGEO2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:28:04 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07ADFF64;
-        Tue,  5 Jul 2022 07:28:03 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14034152B;
-        Tue,  5 Jul 2022 07:28:03 -0700 (PDT)
-Received: from [10.32.33.51] (e121896.warwick.arm.com [10.32.33.51])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AA1A23F66F;
-        Tue,  5 Jul 2022 07:28:01 -0700 (PDT)
-Message-ID: <13803152-48c9-4db0-7ff8-2f34dde53cbc@arm.com>
-Date:   Tue, 5 Jul 2022 15:28:00 +0100
+        Tue, 5 Jul 2022 10:28:42 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645B21122;
+        Tue,  5 Jul 2022 07:28:41 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so7372160wmb.1;
+        Tue, 05 Jul 2022 07:28:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:date:in-reply-to:message-id
+         :mime-version;
+        bh=EXGRsUwQV8pvCL3786uZw0zAn6EurTKPfXnceiDNHOg=;
+        b=RITL+RwED/KE5IlUrS9wwoEoYkndhIaAJm7NNIo1bdNtKgyqBPH4m1ceJOG6CO4uoq
+         w02d9O+i7I6dOCAIIFYCGcEUVbwV41GZrynCay8YOIO73ZeaGAF8uFGfnXRPntEN+Xfs
+         ZUPR5EEuOzqbkkS8OoUKQ6OxKhywkKQTRToZqmG7BIUyE3hx9AGG/2+da6KJ6n3NwRCP
+         zi+qVbUj8tzyA/ylYrUP8Y/+snBG6kMvRqnTftMg1sgbVyAM2iJpycUE3xiz3inYanh/
+         mjdI9z73qWpwSXktH8FResKy8QZ+d7kR/rEsvhMBg/sk6J6Cxqr9Tvhll8kVaQuP7Qgh
+         IL8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=EXGRsUwQV8pvCL3786uZw0zAn6EurTKPfXnceiDNHOg=;
+        b=zpw+vagDF3v1YsEdsf+yXxsiyJKnofn5N8tFSihllomMOBv4l4iiY40KUP324sP4j5
+         hVXjCa6zweQNNIPKaQUGa/ReedCJJxt/gb8OFDAVYkUHp81zO7LWt17u4J+NpBTtj2Ob
+         OOyYzWQ+bJfo6pUsBpqDEXQ04L0WuSvRkxP/C5/McTqr49tt0D31oO7q/FgQArFZdPZr
+         dpvmd1ejJCsG8LbAXWA4ibZEOz/fOdPa79BBV9YGujuXdO9AWDdbO9oTOAMQ2bGe8beE
+         n4FH4aEOgyO4IzZm1g9YC1jV1o6FW/ItNM3Cxz6A94AZkr6mQvUWAa2ZDkdqSFenKORE
+         FMGw==
+X-Gm-Message-State: AJIora9NpqQpwL9AhbEMNAAwRxcptK0tUEzfQEepYV3x9yNIgSQte40j
+        M+C5CWuXn90SsXqMc0sK/J8=
+X-Google-Smtp-Source: AGRyM1sGJ2QZk0b8/Vdrhrq+x/YHFQY1wrT7fYYTeW2gA0XPN5xJWZxYgHf1cRt0ML9q/4LugxeBEg==
+X-Received: by 2002:a7b:ce8a:0:b0:3a1:8ead:2ae5 with SMTP id q10-20020a7bce8a000000b003a18ead2ae5mr23325867wmj.100.1657031319889;
+        Tue, 05 Jul 2022 07:28:39 -0700 (PDT)
+Received: from localhost (92.40.203.109.threembb.co.uk. [92.40.203.109])
+        by smtp.gmail.com with ESMTPSA id f18-20020adfb612000000b002185631adf0sm34394500wre.23.2022.07.05.07.28.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 07:28:39 -0700 (PDT)
+References: <20220705115439.5a189cde@canb.auug.org.au>
+ <YsQvbia3TXHe/CYS@google.com>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the mfd tree
+Date:   Tue, 05 Jul 2022 15:26:59 +0100
+In-reply-to: <YsQvbia3TXHe/CYS@google.com>
+Message-ID: <KkVMxAUKFH8DtV5pcfrzcMIPidvJj2Ei@localhost>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 08/14] perf test: Add memcpy thread test shell script
-Content-Language: en-US
-From:   James Clark <james.clark@arm.com>
-To:     carsten.haitzler@foss.arm.com, linux-kernel@vger.kernel.org
-Cc:     coresight@lists.linaro.org, mathieu.poirier@linaro.org,
-        mike.leach@linaro.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Suzuki K Poulose <suzuki.poulose@arm.com>
-References: <20220701120804.3226396-1-carsten.haitzler@foss.arm.com>
- <20220701120804.3226396-9-carsten.haitzler@foss.arm.com>
- <f6b21fa9-7e0b-cb0d-d708-cfd7f3f53087@arm.com>
-In-Reply-To: <f6b21fa9-7e0b-cb0d-d708-cfd7f3f53087@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+Lee Jones <lee.jones@linaro.org> writes:
 
-On 05/07/2022 15:25, James Clark wrote:
-> 
-> 
-> On 01/07/2022 13:07, carsten.haitzler@foss.arm.com wrote:
->> From: "Carsten Haitzler (Rasterman)" <raster@rasterman.com>
->>
->> Add a script to drive the threaded memcpy test that gathers data so
->> it passes a minimum bar for amount and quality of content that we
->> extract from the kernel's perf support.
->>
-> 
-> On this one I get a failure about 1/50 times on N1SDP (I ran it about 150
-> times and saw 3 failures so it's quite consistent). Usually it records
-> about a 1.4MB file with one aux record. But when it fails the file is
-> only 20K and has one small aux record:
-> 
->    0 0 0x1a10 [0x30]: PERF_RECORD_AUXTRACE size: 0x1820  offset: 0  ref: 0x1c23126d7ff3d2ab  idx: 3  tid: 682799  cpu: 3
-> 
-> Nothing was dropped, and the load on the system wasn't any different
-> to when it passes. So I'm not sure if this is a real coresight bug
-> or that the test is flaky. There was a bug in SPE before where
-> threads weren't followed after forking, but only very rarely. It feels
-> a bit like that.
-> 
-> It could also be some contention issue because 10 threads are launched
-> but the machine only has 4 cores.
-> 
-> The failure message from the test looks like this:
-> 
->    77: CoreSight / Memcpy 16k 10 Threads                               :
->    --- start ---
->    Couldn't synthesize bpf events.
->    [ perf record: Woken up 1 times to write data ]
->    [ perf record: Captured and wrote 0.012 MB ./perf-memcpy_thread-16k_10.data ]
->    Sanity check number of ASYNC is too low (3 < 10)
->     ---- end ----
->    CoreSight / Memcpy 16k 10 Threads: FAILED!
-> 
-> I didn't see this issue on any of the other tests. Sometimes very small
-> files were made if I loaded the system, but the tests still passed.
+> On Tue, 05 Jul 2022, Stephen Rothwell wrote:
+>
+>> Hi all,
+>> 
+>> After merging the mfd tree, today's linux-next build (arm
+>> multi_v7_defconfig) failed like this:
+>> 
+>> drivers/mfd/axp20x.c:634:35: error: initialization of 'unsigned int (*)(struct regmap_irq_chip_data *, unsigned int,  int)' from incompatible pointer type 'int (*)(unsigned int,  int)' [-Werror=incompatible-pointer-types]
+>>   634 |         .get_irq_reg            = axp192_get_irq_reg,
+>>       |                                   ^~~~~~~~~~~~~~~~~~
+>> drivers/mfd/axp20x.c:634:35: note: (near initialization for 'axp192_regmap_irq_chip.get_irq_reg')
+>> 
+>> Caused by commit
+>> 
+>>   8c7d8aa029a3 ("mfd: axp20x: Add support for AXP192")
+>> 
+>> I have used the mfd tree from next-20220704 for today.
+>
+> Aidan, what are your plans?
 
-Spoke too soon, same thing on another test with an unloaded system. It's
-just a bit more rare:
+This is missing the prerequisite regmap-irq patches, sorry if it wasn't
+clear from the cover letter.
 
-  80: CoreSight / Unroll Loop Thread 10                               :
-  --- start ---
-  Couldn't synthesize bpf events.
-  [ perf record: Woken up 1 times to write data ]
-  [ perf record: Captured and wrote 0.041 MB ./perf-unroll_loop_thread-10.data ]
-  Sanity check number of ASYNC is too low (6 < 10)
-  ---- end ----
-  CoreSight / Unroll Loop Thread 10: FAILED!
-
-> 
-> Thanks
-> James
-> 
->> Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
->> ---
->>  .../shell/coresight/memcpy_thread_16k_10.sh    | 18 ++++++++++++++++++
->>  1 file changed, 18 insertions(+)
->>  create mode 100755 tools/perf/tests/shell/coresight/memcpy_thread_16k_10.sh
->>
->> diff --git a/tools/perf/tests/shell/coresight/memcpy_thread_16k_10.sh b/tools/perf/tests/shell/coresight/memcpy_thread_16k_10.sh
->> new file mode 100755
->> index 000000000000..d21ba8545938
->> --- /dev/null
->> +++ b/tools/perf/tests/shell/coresight/memcpy_thread_16k_10.sh
->> @@ -0,0 +1,18 @@
->> +#!/bin/sh -e
->> +# CoreSight / Memcpy 16k 10 Threads
->> +
->> +# SPDX-License-Identifier: GPL-2.0
->> +# Carsten Haitzler <carsten.haitzler@arm.com>, 2021
->> +
->> +TEST="memcpy_thread"
->> +. $(dirname $0)/../lib/coresight.sh
->> +ARGS="16 10 1"
->> +DATV="16k_10"
->> +DATA="$DATD/perf-$TEST-$DATV.data"
->> +
->> +perf record $PERFRECOPT -o "$DATA" "$BIN" $ARGS
->> +
->> +perf_dump_aux_verify "$DATA" 10 10 10
->> +
->> +err=$?
->> +exit $err
-> _______________________________________________
-> CoreSight mailing list -- coresight@lists.linaro.org
-> To unsubscribe send an email to coresight-leave@lists.linaro.org
+Link: https://lore.kernel.org/lkml/20220623211420.918875-1-aidanmacdonald.0x0@gmail.com/
