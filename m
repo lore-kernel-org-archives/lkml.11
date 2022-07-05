@@ -2,212 +2,349 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A04D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B5FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232039AbiGEUs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 16:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
+        id S231882AbiGEUsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 16:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbiGEUsR (ORCPT
+        with ESMTP id S231865AbiGEUsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 16:48:17 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2113.outbound.protection.outlook.com [40.107.92.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6029CE0E0;
-        Tue,  5 Jul 2022 13:48:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e8J2U7AjDNXpKMlXqYpxuW800S8qbfLNxbcPfimlUFinaBVB4NbPlSituMLXJjOxjkcU1fE8nVkegEi06o8+4LOJXHVy14hHRvZGjPvff954LofEcd3hubQ2G1VG5/YTOvOIGnPyJN5CyavJ0B4a2pkFkSPXEr37CKK0nYkGxwghe09CzaIKNppnA4jM9kx79cKvO91JK/T4YVM1/gknbuBvm6aMz3nU8YPj0t3Dmu8GmBweFGySdnLwL892H1HpffnYaR++yOcpoF2vMg7Vc4eWFBQ7MhLTj8cKKeR6A/0De5NrvuRSgjxKgBrIe/a2AK33k0w7mqLXQD3r3yMEyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dwid5gbAmrVLO1DsOBJPrp/TZJ4S/RFMHJKxGCpjVi0=;
- b=bvVQtb/oNm6zBlMod9woa7fPcOkbOFJfFpOG+pZ7xQDk+KmUzNb3UhDxwnJfrwSjQHAiRE0QPH9sgjHdoFEb1BxdGqdzN41NZ6CVd6Ev6zfGeAqXNXABLkwoVj/tDuEAX0sEkU+1OUlJiKaX0vCSWpmOxiD3Vg+M2Du+r+InKMUwc0CJU+xCluOgXhrmbuq93PFf7WY/+LMhVO7djKAyUuW/wsR3u8uwjDPZN3eTZGgbIn9BEgrU/WcoPd+V2XUptdewiVY2GgxRy4KzQOl31SLnrmysLvJDJaTPLEGGuCTwSTsKM5B1/FGGBrWX9n/0xRu/D9INq7Pl4NBxquhR0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7A7DFC9;
+        Tue,  5 Jul 2022 13:48:13 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z41so16851513ede.1;
+        Tue, 05 Jul 2022 13:48:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dwid5gbAmrVLO1DsOBJPrp/TZJ4S/RFMHJKxGCpjVi0=;
- b=fpCx0FiPMuJUM3cXmY7+m9WJfMKUBIgnpb66JoSPK8jLAjmY668LtKSE6IAf9bl856NaTTUHmL8p/ujbSB5Ek9HgHByvLBGinqsgyzup/b0Jldam9G8cAjgv31u6O/glYPmGeeu81RUCZ0RQYNvGIJbDjvOiBZ2swpgyHdMLyQM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by BL0PR10MB2898.namprd10.prod.outlook.com
- (2603:10b6:208:75::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Tue, 5 Jul
- 2022 20:48:11 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::712f:6916:3431:e74e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::712f:6916:3431:e74e%6]) with mapi id 15.20.5395.020; Tue, 5 Jul 2022
- 20:48:11 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MRsqnkg6Sw0lDh66QHOBAyWH6VLBpScway/9RQJ7qxU=;
+        b=H3lXiY+EIjJMVj7CScumQ/Cd6ayOLJ5AtrfmyqAoq11ZFqrbrxGepYeoTbSc8iW1RP
+         QqdKU3CAhCX1ZgHzzgXi1v+YZ/Zipe5Bsb+23k5h0wBqGC7/QRM87djSI6Fxwk0ZEo3A
+         PKCmKIdwkcZ01LrgXoIRNkUUVS47EhhKEdy5ADw3P8ooBig5YUEsAFGF5iaIvRNXDyG/
+         2bMb4EGr1bAmVA1odYQ+bJHGnO6tjTCvfDBeKOTeMcy/KUSRuZrgE4pzP0h6pephrthb
+         5l8KZXHoPmSNvmVPEFN76Yn7aq02kCsnIWVgl0jrXMddCbhyLuIE3M1ZNjlotmVqSiKP
+         XUoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MRsqnkg6Sw0lDh66QHOBAyWH6VLBpScway/9RQJ7qxU=;
+        b=DJmYV1fW1bUhtz29QfvnLrBAxggvPDr4w1XMfvuQGJt0kzrZoDrUgBGeI8Q0QYN3JB
+         0a9KqxSFfEyOcj4CSSq1ppkP+KgwzokfR7+qIsUVJHnWB4BIgrxzrI6Cx07HTz0w/Sa+
+         w6qOdy7Gj1PtSqllEDnGXh6JNYxpzjPb3p+gyutkfILDJF3ZE1UyRuMUL8T0O1jvJfyP
+         u0dF3HgoOiO8T8S/ZgZEjeiKZHI0VSFTP4AHdbrIltsnVBNhNs1Q8U9e1U3zdtZK15wx
+         gFgP+sbMmmjKnE7TGmo1mXzP/j/13KMtnk8u0VDNEcm0WyeG45rPpi6wMhb8pAzjBFm3
+         X0eQ==
+X-Gm-Message-State: AJIora83CkBw1mVcdXyNkEs7vt3z9lIs7vuvG6cp0CFL0tg2qTAjvl7a
+        D9bAV0lrTzzsH/iWtPbWHJs=
+X-Google-Smtp-Source: AGRyM1uJhz9IaRkKTfd0o3g3oAhpbPpOmCNTXEaMtw2mOYL9lRYjzcPipB6Gikg3DUrxyj8Cmz4HTw==
+X-Received: by 2002:a05:6402:b9b:b0:43a:5aac:ed6 with SMTP id cf27-20020a0564020b9b00b0043a5aac0ed6mr16203459edb.131.1657054091833;
+        Tue, 05 Jul 2022 13:48:11 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id hx23-20020a170906847700b00722e84c3d44sm16227104ejc.118.2022.07.05.13.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 13:48:11 -0700 (PDT)
+Message-ID: <62c4a38b.1c69fb81.4d58e.ce99@mx.google.com>
+X-Google-Original-Message-ID: <YsSdPdW8zTSL3nki@Ansuel-xps.>
+Date:   Tue, 5 Jul 2022 22:21:17 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        katie.morris@in-advantage.com
-Subject: [PATCH v13 net-next 2/9] net: mdio: mscc-miim: add ability to be used in a non-mmio configuration
-Date:   Tue,  5 Jul 2022 13:47:36 -0700
-Message-Id: <20220705204743.3224692-3-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220705204743.3224692-1-colin.foster@in-advantage.com>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MW2PR2101CA0001.namprd21.prod.outlook.com
- (2603:10b6:302:1::14) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] clk: qcom: lcc-ipq806x: convert to parent data
+References: <20220621163326.16858-1-ansuelsmth@gmail.com>
+ <20220621163326.16858-3-ansuelsmth@gmail.com>
+ <CAA8EJpqQTTevQa4pQg3E+x4_AOjYo8ajOqUrfwGsVtC8N=bpOw@mail.gmail.com>
+ <62b228b6.1c69fb81.e4673.34a2@mx.google.com>
+ <CAA8EJprb=xV9+gZMANAYrt_JnKAtC89h1RAosL+g517_-Ugd2g@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c7c81cee-c9ad-46e2-a700-08da5ec7ac69
-X-MS-TrafficTypeDiagnostic: BL0PR10MB2898:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sB4T2SbMofxxuWHfd890qmyPjAYcZ/lvT40tAcaUoMQ41C1Dhfa2y2w8vzKeksHMSFX/ieFil2rvcpKEqsTpZdnAs9Qq0yqdrjv1FS3yvO5QJ4CDTPt93ZmmkA+ugkcHF0yOajDDjblvGtZ/v3Ia9VKyTweobvpe/0cJ7yOEHh6Xi5dm7hNUUoGr75Fx9/an2tDC7mLWBZahTP2j4LmVVnbaq5W5sGHdiDMbWwoOJFGkIs27QtiaJrqHycA2evbAZsy55q7c2l8MX/+arPQV4Yrgw/z78d9zYwvVYcW86x+FK13Sn6uvpYITglsiRBiPQ+uXMRFeNowOeAsRA90ydJoGtgi6jCRHgGhhuF5Ef1f7dmUKe4p3RLIDxtzTDgB2OdFociItwvkSiBt2BDGtcXp32ei/nPzRZ8isFt8/1b743PudsrmTapaD6LlsZe7YpaRqzuh3HVWoltaQQtinopnYdMVNfZNrE3zRlj2IHbrhS+xA6SCLyXzGVzTot0S6NijJ8gNb/TQDMj7AIWSQdeqSOXj9/hJkwHSIZHriZCUIBSrACwGULm2uc7/OX6mCBnTqAT2HX4LNzdaB04Ri19yWYz20RG5p16nG9oyRboSdil9L28Ci8bvHObAMaHqiY3VVHkpD+DVM4RpuNkd0xiLGPCfS+AuwxNWffi+AJMfwP/muDL/QPp2o7uskG0Gu9ZnLbKeZyVtWXvlP1kL+I0tAeCQjVz034w/77nMx8DvH9eItpBYLRyuAzwF9DMMBAcrOHVOFe5YHUvVbxDqfL8sgnqHo/rGunsI2Ah+/Agx4R3QW0bbm5s3579PSj2a7
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39830400003)(376002)(346002)(136003)(396003)(366004)(478600001)(38350700002)(66556008)(66476007)(8676002)(66946007)(4326008)(316002)(38100700002)(186003)(107886003)(2616005)(1076003)(6486002)(41300700001)(26005)(6506007)(6666004)(52116002)(6512007)(54906003)(83380400001)(5660300002)(86362001)(2906002)(44832011)(7416002)(36756003)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?l1QVqBQUX6ImZz470NPXtULX1CfjOeeW0+APouiNDaJGh/6TKN/1NVy7bAHr?=
- =?us-ascii?Q?oJjmNOQa1bY+5BTjQ96onx6qBtF1xxxAw1kmyoljGmD7qFUSr+7VGCAhlucu?=
- =?us-ascii?Q?OxGEjMu7h+uP37OSMeFFwlmu/sHWGzRI9I7ZBP7I5z6QhPqHnSCEkV2varXz?=
- =?us-ascii?Q?/GBKkDuUnnb6y6LvbPSGUYa12mjYp6ch9GPuDJZHyKftJWw6j6mbr5LS6iks?=
- =?us-ascii?Q?OhVtOeNrYzGoQBJy3+/tFbOwJSOAV+LFCiL44ijcV/VN55BdfTOjYCgD3yTP?=
- =?us-ascii?Q?GPBXxBOe5B93jnYcn433NQKQVUmgWdkAOlKQQfOWYgX5uo/HhuUkVE4Tn76J?=
- =?us-ascii?Q?tjdnhtwqLI6GWppisFYx/WB+P/IjZAA+DcxggXHuL2ams08b8kEWKEH+H27r?=
- =?us-ascii?Q?PfNv21b/c8g8erVFXbkygqVqC19EM9tplCqEOEuRB0npRMs8UwNWQX7YuT8a?=
- =?us-ascii?Q?/LG1sW9eiqhOOQ15Orv8M96X0egjvGQgPKYXQhTaInEfDIDhyu5lzKIr6Rv/?=
- =?us-ascii?Q?yZ5g8XcJ2fOzoykC4S0MrzOSBhpAcgk6bGC1tTwrO4fpG/h99r0n0R7NfysM?=
- =?us-ascii?Q?dp4gTLoUdcGEdEGUrMJKUXU8cC97Zwtj2w/Jg0Hj4uruRfWbHR/C5DbO5fBP?=
- =?us-ascii?Q?X+Hfaon4U3oRil50cheKoL0tFt6GEZMS//FYYReabsmf4rBlRHioc+qj0iqr?=
- =?us-ascii?Q?6frBJ4xj2vhvA+qPbn2lxdTM/Ovd/i1hesYzrACCl3PZaymxJhCE3+3aobZu?=
- =?us-ascii?Q?/A7Dv/ekc5DM83mlb0SGc2aI79/HfUU4KV2fXbl7nL/s2MQSuJLWAiYpjY5Q?=
- =?us-ascii?Q?9z79pyhrtGaFMoiPG6sBq2Dgq1eT9F6WmFHFnPAmpPMytNECi1Ns00PVM+6a?=
- =?us-ascii?Q?aX/EVRsfpRzlzkw86zF/1ZQhgc8yZCkjRswFLDnTKivq2XhhmiRSp5vlMrdn?=
- =?us-ascii?Q?hSTPWMr8I2YWoQtNAeQ2u4dJA+9dnaXTJOFcFX8irBSNfRKzqfbwWLj848mR?=
- =?us-ascii?Q?P7tDCxUekcdTkXsMW9S0nUfssH2bXNaPLZDPblVn58S0EuWdDutg+yEIzZUQ?=
- =?us-ascii?Q?0ZR2V8Zl7vzwO3svDp/dJkzOoQtd2jIhnPJe+lkZnPyst0jnHk38vyBJhh0i?=
- =?us-ascii?Q?y0TGs4Q7+WKgjqnMCg7d6swOfzT7i98w93UFDQl6m9JAlnAxW4IaxjOZRcL2?=
- =?us-ascii?Q?XVNY8wyKsa6YQS214P7NiJxiS8CdBVcxk/VDHmN3EB8Y/yss64+616FVpiav?=
- =?us-ascii?Q?eXXjPk0Vq5+AFX3PDZ/qoNxFw8ZxbRMuWKBHCQczeI2SDHaOUM9oZc4dSg10?=
- =?us-ascii?Q?Ct4vQ2Q+pE6hr0JtMi1miZv0o8bUeV5bGaHvrpR7Z5fy6LyfZxPACRwrqBDB?=
- =?us-ascii?Q?NRJRi89KXoSJasQopQCuEmQl9p+XDI/DC+DZyb9LMBjLMHmXzcMEsTdz7rlU?=
- =?us-ascii?Q?RRcGsSqUnnbqFufwSfcgJLCK09ZZXpDwR7ePDych+Ql4IkrqcLdEmQ4xizpT?=
- =?us-ascii?Q?kD4EZK+XxwNwnWsa5zH/aNj64pD0gopbC1Qc9ZDfv0ALZoBXgVPBWImAFStT?=
- =?us-ascii?Q?G3hkXPHii4x/meACNaomadRO3JYLWD+sgLd2ZxP7YACR3NUtq1QX/JmsWtGd?=
- =?us-ascii?Q?7Q=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7c81cee-c9ad-46e2-a700-08da5ec7ac69
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 20:48:11.2954
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IwIoEmYw//RYOPKQ9oGgMC8ZIi25Knr13iitT2KwFFQxrgYVgKIvkv6tNwLRKOPJT81Y4J8r+Dvq1YFT7gg1kgpYrTeXMmjlvtTH5gA2l9M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR10MB2898
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAA8EJprb=xV9+gZMANAYrt_JnKAtC89h1RAosL+g517_-Ugd2g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are a few Ocelot chips that contain the logic for this bus, but are
-controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-the externally controlled configurations these registers are not
-memory-mapped.
+On Tue, Jun 21, 2022 at 11:43:10PM +0300, Dmitry Baryshkov wrote:
+> On Tue, 21 Jun 2022 at 23:23, Christian Marangi <ansuelsmth@gmail.com> wrote:
+> >
+> > On Tue, Jun 21, 2022 at 08:15:57PM +0300, Dmitry Baryshkov wrote:
+> > > On Tue, 21 Jun 2022 at 19:33, Christian Marangi <ansuelsmth@gmail.com> wrote:
+> > > >
+> > > > Convert lcc-ipq806x driver to parent_data API.
+> > > >
+> > > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > > > ---
+> > > > v2:
+> > > > - Fix Sob tag
+> > > >
+> > > >  drivers/clk/qcom/lcc-ipq806x.c | 79 +++++++++++++++++++---------------
+> > > >  1 file changed, 44 insertions(+), 35 deletions(-)
+> > > >
+> > > > diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
+> > > > index ba90bebba597..c07ca8dc6e3a 100644
+> > > > --- a/drivers/clk/qcom/lcc-ipq806x.c
+> > > > +++ b/drivers/clk/qcom/lcc-ipq806x.c
+> > > > @@ -24,6 +24,10 @@
+> > > >  #include "clk-regmap-mux.h"
+> > > >  #include "reset.h"
+> > > >
+> > > > +static const struct clk_parent_data gcc_pxo[] = {
+> > > > +       { .fw_name = "pxo", .name = "pxo" },
+> > >
+> > > I think you'd use .name = "pxo_board" here. You don't need to use the
+> > > interim clock.
+> > >
+> >
+> > In gcc and in the rest of this driver we use pxo. Wonder what is right?
+> 
+> I'd use .fw_name = "pxo", .name = "pxo_board", like the rest of drivers do.
+>
 
-Add support for these non-memory-mapped configurations.
+Will do the change, but I need an explaination... Is the use of
+pxo_board correct?
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
----
- drivers/net/mdio/mdio-mscc-miim.c | 42 +++++++++----------------------
- 1 file changed, 12 insertions(+), 30 deletions(-)
+I'm sending a patch that sets the pxo_board fixed clock in dts to output
+"pxo". The only clock that still use pxo_board is rpm, everything else
+at least for ipq806x use pxo and i'm sending a patch to use pxo for rpm.
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 08541007b18a..51f68daac152 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -12,6 +12,7 @@
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/mdio/mdio-mscc-miim.h>
-+#include <linux/mfd/ocelot.h>
- #include <linux/module.h>
- #include <linux/of_mdio.h>
- #include <linux/phy.h>
-@@ -270,44 +271,25 @@ static int mscc_miim_clk_set(struct mii_bus *bus)
- 
- static int mscc_miim_probe(struct platform_device *pdev)
- {
--	struct regmap *mii_regmap, *phy_regmap = NULL;
- 	struct device_node *np = pdev->dev.of_node;
-+	struct regmap *mii_regmap, *phy_regmap;
- 	struct device *dev = &pdev->dev;
--	void __iomem *regs, *phy_regs;
- 	struct mscc_miim_dev *miim;
--	struct resource *res;
- 	struct mii_bus *bus;
- 	int ret;
- 
--	regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
--	if (IS_ERR(regs)) {
--		dev_err(dev, "Unable to map MIIM registers\n");
--		return PTR_ERR(regs);
--	}
--
--	mii_regmap = devm_regmap_init_mmio(dev, regs, &mscc_miim_regmap_config);
--
--	if (IS_ERR(mii_regmap)) {
--		dev_err(dev, "Unable to create MIIM regmap\n");
--		return PTR_ERR(mii_regmap);
--	}
-+	mii_regmap = ocelot_regmap_from_resource(pdev, 0,
-+						 &mscc_miim_regmap_config);
-+	if (IS_ERR(mii_regmap))
-+		return dev_err_probe(dev, PTR_ERR(mii_regmap),
-+				     "Unable to create MIIM regmap\n");
- 
- 	/* This resource is optional */
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	if (res) {
--		phy_regs = devm_ioremap_resource(dev, res);
--		if (IS_ERR(phy_regs)) {
--			dev_err(dev, "Unable to map internal phy registers\n");
--			return PTR_ERR(phy_regs);
--		}
--
--		phy_regmap = devm_regmap_init_mmio(dev, phy_regs,
--						   &mscc_miim_phy_regmap_config);
--		if (IS_ERR(phy_regmap)) {
--			dev_err(dev, "Unable to create phy register regmap\n");
--			return PTR_ERR(phy_regmap);
--		}
--	}
-+	phy_regmap = ocelot_regmap_from_resource_optional(pdev, 1,
-+						 &mscc_miim_phy_regmap_config);
-+	if (IS_ERR(phy_regmap))
-+		return dev_err_probe(dev, PTR_ERR(phy_regmap),
-+				     "Unable to create phy register regmap\n");
- 
- 	ret = mscc_miim_setup(dev, &bus, "mscc_miim", mii_regmap, 0);
- 	if (ret < 0) {
+Considering pxo is always present and pxo_board should be dropped
+because every ipq806x driver use "pxo".
+
+What is correct naming pxo or pxo_board? I assume pxo right?
+
+> >
+> > > > +};
+> > > > +
+> > > >  static struct clk_pll pll4 = {
+> > > >         .l_reg = 0x4,
+> > > >         .m_reg = 0x8,
+> > > > @@ -34,7 +38,7 @@ static struct clk_pll pll4 = {
+> > > >         .status_bit = 16,
+> > > >         .clkr.hw.init = &(struct clk_init_data){
+> > > >                 .name = "pll4",
+> > > > -               .parent_names = (const char *[]){ "pxo" },
+> > > > +               .parent_data = gcc_pxo,
+> > > >                 .num_parents = 1,
+> > >
+> > > Could you please either inline the gcc_pxo here (yes, it's ugly, but
+> > > it works for small arrays) or use ARRAY_SIZE here.
+> > >
+> >
+> > Yes will inline gcc_pxo.
+> >
+> > > >                 .ops = &clk_pll_ops,
+> > > >         },
+> > > > @@ -64,9 +68,9 @@ static const struct parent_map lcc_pxo_pll4_map[] = {
+> > > >         { P_PLL4, 2 }
+> > > >  };
+> > > >
+> > > > -static const char * const lcc_pxo_pll4[] = {
+> > > > -       "pxo",
+> > > > -       "pll4_vote",
+> > > > +static const struct clk_parent_data lcc_pxo_pll4[] = {
+> > > > +       { .fw_name = "pxo", .name = "pxo" },
+> > > > +       { .fw_name = "pll4_vote", .name = "pll4_vote" },
+> > > >  };
+> > > >
+> > > >  static struct freq_tbl clk_tbl_aif_mi2s[] = {
+> > > > @@ -131,18 +135,14 @@ static struct clk_rcg mi2s_osr_src = {
+> > > >                 .enable_mask = BIT(9),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "mi2s_osr_src",
+> > > > -                       .parent_names = lcc_pxo_pll4,
+> > > > -                       .num_parents = 2,
+> > > > +                       .parent_data = lcc_pxo_pll4,
+> > > > +                       .num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+> > > >                         .ops = &clk_rcg_ops,
+> > > >                         .flags = CLK_SET_RATE_GATE,
+> > > >                 },
+> > > >         },
+> > > >  };
+> > > >
+> > > > -static const char * const lcc_mi2s_parents[] = {
+> > > > -       "mi2s_osr_src",
+> > > > -};
+> > > > -
+> > > >  static struct clk_branch mi2s_osr_clk = {
+> > > >         .halt_reg = 0x50,
+> > > >         .halt_bit = 1,
+> > > > @@ -152,7 +152,9 @@ static struct clk_branch mi2s_osr_clk = {
+> > > >                 .enable_mask = BIT(17),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "mi2s_osr_clk",
+> > > > -                       .parent_names = lcc_mi2s_parents,
+> > > > +                       .parent_hws = (const struct clk_hw*[]){
+> > > > +                               &mi2s_osr_src.clkr.hw,
+> > > > +                       },
+> > > >                         .num_parents = 1,
+> > > >                         .ops = &clk_branch_ops,
+> > > >                         .flags = CLK_SET_RATE_PARENT,
+> > > > @@ -167,7 +169,9 @@ static struct clk_regmap_div mi2s_div_clk = {
+> > > >         .clkr = {
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "mi2s_div_clk",
+> > > > -                       .parent_names = lcc_mi2s_parents,
+> > > > +                       .parent_hws = (const struct clk_hw*[]){
+> > > > +                               &mi2s_osr_src.clkr.hw,
+> > > > +                       },
+> > > >                         .num_parents = 1,
+> > > >                         .ops = &clk_regmap_div_ops,
+> > > >                 },
+> > > > @@ -183,7 +187,9 @@ static struct clk_branch mi2s_bit_div_clk = {
+> > > >                 .enable_mask = BIT(15),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "mi2s_bit_div_clk",
+> > > > -                       .parent_names = (const char *[]){ "mi2s_div_clk" },
+> > > > +                       .parent_hws = (const struct clk_hw*[]){
+> > > > +                               &mi2s_div_clk.clkr.hw,
+> > > > +                       },
+> > > >                         .num_parents = 1,
+> > > >                         .ops = &clk_branch_ops,
+> > > >                         .flags = CLK_SET_RATE_PARENT,
+> > > > @@ -191,6 +197,10 @@ static struct clk_branch mi2s_bit_div_clk = {
+> > > >         },
+> > > >  };
+> > > >
+> > > > +static const struct clk_parent_data lcc_mi2s_bit_div_codec_clk[] = {
+> > > > +       { .hw = &mi2s_bit_div_clk.clkr.hw, },
+> > > > +       { .fw_name = "mi2s_codec_clk", .name = "mi2s_codec_clk" },
+> > > > +};
+> > > >
+> > > >  static struct clk_regmap_mux mi2s_bit_clk = {
+> > > >         .reg = 0x48,
+> > > > @@ -199,11 +209,8 @@ static struct clk_regmap_mux mi2s_bit_clk = {
+> > > >         .clkr = {
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "mi2s_bit_clk",
+> > > > -                       .parent_names = (const char *[]){
+> > > > -                               "mi2s_bit_div_clk",
+> > > > -                               "mi2s_codec_clk",
+> > > > -                       },
+> > > > -                       .num_parents = 2,
+> > > > +                       .parent_data = lcc_mi2s_bit_div_codec_clk,
+> > > > +                       .num_parents = ARRAY_SIZE(lcc_mi2s_bit_div_codec_clk),
+> > > >                         .ops = &clk_regmap_mux_closest_ops,
+> > > >                         .flags = CLK_SET_RATE_PARENT,
+> > > >                 },
+> > > > @@ -245,8 +252,8 @@ static struct clk_rcg pcm_src = {
+> > > >                 .enable_mask = BIT(9),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "pcm_src",
+> > > > -                       .parent_names = lcc_pxo_pll4,
+> > > > -                       .num_parents = 2,
+> > > > +                       .parent_data = lcc_pxo_pll4,
+> > > > +                       .num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+> > > >                         .ops = &clk_rcg_ops,
+> > > >                         .flags = CLK_SET_RATE_GATE,
+> > > >                 },
+> > > > @@ -262,7 +269,9 @@ static struct clk_branch pcm_clk_out = {
+> > > >                 .enable_mask = BIT(11),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "pcm_clk_out",
+> > > > -                       .parent_names = (const char *[]){ "pcm_src" },
+> > > > +                       .parent_hws = (const struct clk_hw*[]){
+> > > > +                               &pcm_src.clkr.hw,
+> > > > +                       },
+> > > >                         .num_parents = 1,
+> > > >                         .ops = &clk_branch_ops,
+> > > >                         .flags = CLK_SET_RATE_PARENT,
+> > > > @@ -270,6 +279,11 @@ static struct clk_branch pcm_clk_out = {
+> > > >         },
+> > > >  };
+> > > >
+> > > > +static const struct clk_parent_data lcc_pcm_clk_out_codec_clk[] = {
+> > > > +       { .hw = &pcm_clk_out.clkr.hw, },
+> > > > +       { .fw_name = "pcm_codec_clk", .name = "pcm_codec_clk" },
+> > > > +};
+> > > > +
+> > > >  static struct clk_regmap_mux pcm_clk = {
+> > > >         .reg = 0x54,
+> > > >         .shift = 10,
+> > > > @@ -277,11 +291,8 @@ static struct clk_regmap_mux pcm_clk = {
+> > > >         .clkr = {
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "pcm_clk",
+> > > > -                       .parent_names = (const char *[]){
+> > > > -                               "pcm_clk_out",
+> > > > -                               "pcm_codec_clk",
+> > > > -                       },
+> > > > -                       .num_parents = 2,
+> > > > +                       .parent_data = lcc_pcm_clk_out_codec_clk,
+> > > > +                       .num_parents = ARRAY_SIZE(lcc_pcm_clk_out_codec_clk),
+> > > >                         .ops = &clk_regmap_mux_closest_ops,
+> > > >                         .flags = CLK_SET_RATE_PARENT,
+> > > >                 },
+> > > > @@ -325,18 +336,14 @@ static struct clk_rcg spdif_src = {
+> > > >                 .enable_mask = BIT(9),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "spdif_src",
+> > > > -                       .parent_names = lcc_pxo_pll4,
+> > > > -                       .num_parents = 2,
+> > > > +                       .parent_data = lcc_pxo_pll4,
+> > > > +                       .num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+> > > >                         .ops = &clk_rcg_ops,
+> > > >                         .flags = CLK_SET_RATE_GATE,
+> > > >                 },
+> > > >         },
+> > > >  };
+> > > >
+> > > > -static const char * const lcc_spdif_parents[] = {
+> > > > -       "spdif_src",
+> > > > -};
+> > > > -
+> > > >  static struct clk_branch spdif_clk = {
+> > > >         .halt_reg = 0xd4,
+> > > >         .halt_bit = 1,
+> > > > @@ -346,7 +353,9 @@ static struct clk_branch spdif_clk = {
+> > > >                 .enable_mask = BIT(12),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "spdif_clk",
+> > > > -                       .parent_names = lcc_spdif_parents,
+> > > > +                       .parent_hws = (const struct clk_hw*[]){
+> > > > +                               &spdif_src.clkr.hw,
+> > > > +                       },
+> > > >                         .num_parents = 1,
+> > > >                         .ops = &clk_branch_ops,
+> > > >                         .flags = CLK_SET_RATE_PARENT,
+> > > > @@ -384,8 +393,8 @@ static struct clk_rcg ahbix_clk = {
+> > > >                 .enable_mask = BIT(11),
+> > > >                 .hw.init = &(struct clk_init_data){
+> > > >                         .name = "ahbix",
+> > > > -                       .parent_names = lcc_pxo_pll4,
+> > > > -                       .num_parents = 2,
+> > > > +                       .parent_data = lcc_pxo_pll4,
+> > > > +                       .num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+> > > >                         .ops = &clk_rcg_lcc_ops,
+> > > >                 },
+> > > >         },
+> > > > --
+> > > > 2.36.1
+> > > >
+> > >
+> > >
+> > > --
+> > > With best wishes
+> > > Dmitry
+> >
+> > --
+> >         Ansuel
+> 
+> 
+> 
+> -- 
+> With best wishes
+> Dmitry
+
 -- 
-2.25.1
-
+	Ansuel
