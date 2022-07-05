@@ -2,224 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5411FCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 192E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiGEU4D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 16:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33500 "EHLO
+        id S231154AbiGEU4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 16:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbiGEU4A (ORCPT
+        with ESMTP id S229582AbiGEU4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 16:56:00 -0400
-Received: from hobbes.mraw.org (hobbes.mraw.org [195.154.31.160])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8579A13FBB;
-        Tue,  5 Jul 2022 13:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mraw.org;
-        s=mail2022; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=IMDw5cu1s4DvVXN1/rOltSNRmEohjKczRaIEqn7FbJM=; b=rlN5KVoQM0WYnzmev/AXq5zAKu
-        ZTrho6IJ2AItZ/aq9tcygI0GwpfIBd6GvWp4PNhtYCPe8BIJuQ8pDgmuQZFm3J7q9pC6/+8cCUqeN
-        fzs+8CMHgeauxMLr1saKgIQ8MWurwNKwTmp/OjWBrB6AY9X7DD0r8uo7uAeremUhhs7IgJMvU+XoQ
-        D8LWyf1Ma9zq6N9eSVSy4WMwRKAQGSnPIybNNUpJC1dZ0J2dqWq0Qha7p4TK8Ibg6de9eoyu4rUk4
-        Sq66ph+U7MHxUu4Lx5E82CINpC0AD4/oWovmfqz09QbjGB+y/2c85qJhHa3QwzkHm2khQz/RSMmAz
-        TWP4tcvw==;
-Received: from 82-64-171-251.subs.proxad.net ([82.64.171.251] helo=mraw.org)
-        by hobbes.mraw.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <kibi@debian.org>)
-        id 1o8paK-000vMG-LO; Tue, 05 Jul 2022 22:55:52 +0200
-Date:   Tue, 5 Jul 2022 22:55:51 +0200
-From:   Cyril Brulebois <kibi@debian.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jim Quinlan <jim2101024@gmail.com>, linux-pci@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v1 0/4] PCI: brcmstb: Re-submit reverted patchset
-Message-ID: <20220705205551.phbaqqpgyg3pvtv7@mraw.org>
-Organization: Debian
-References: <20220701162726.31346-1-jim2101024@gmail.com>
- <1a50e8b0-1453-4561-bc3d-c428bb65288a@gmail.com>
+        Tue, 5 Jul 2022 16:56:04 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29C013FBB;
+        Tue,  5 Jul 2022 13:56:01 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id y8so11084833eda.3;
+        Tue, 05 Jul 2022 13:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LsXRox3KLxWxIanaGD+qUnujzqKGqHw2gDkP62Qede0=;
+        b=cry1CMJRpd3NzNdhwKau+KGhKMcqM+4IHaXv/ucAHHgIbCVRIe2fQOfvkaYk6ksFJ9
+         CQgHChzmkk6t19ebrUpIv0abR39WYI6TO9cIlLR0Aop8+j1fcNF5rYQTNoK19ceFVxsu
+         kxjaT95fAy5UTWP3D4DTZ7+25OJvZKXePuCwJ6PnfPbSv0MhOOYvxyLpvt7VVLtemwgg
+         I55ly82Cq2B6KFkkoYtSvrOOru//H8R95LNWOD0FnOIv9gXxaML1F8knAULj0l6SR/Cw
+         BhgIq/65t1joaq6lzilIh1OB7ElaJ/2Z9vsuDoS40Il/NzErOQbYFE50qT7ULaC8n1pM
+         TVIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LsXRox3KLxWxIanaGD+qUnujzqKGqHw2gDkP62Qede0=;
+        b=v70GGUIg9vELE2mWnokgBX9bpbhU5Sjo6tq1Zm+6mAojuZuN7VZWEfMT0+82RYIO/L
+         QI8yHx+tOUCd4sRODmkBOWpjXBLKjZxxQ/7C3PEe/kxnN9zoq7nifh46gTffRDsf/HPs
+         PMk9ffajN9o8j5VdhZWknzbw2FfHtKwSxyS0VLf9HvcB7IADFnjxEokTXQsq5pSnNy7l
+         EVMD1p1mHSmM1V3XdPHf9+f1ohBphcXMYy9lLPJIoXTpcgm09X5aDx8iClUzv3kCL5e4
+         WPbypgbIFyMdM9ykoGNEBHkkWrQPnPIpyHe4LqGQw4PU2unm8O9YaJ8tcFOd9/jA+eZy
+         9Ktg==
+X-Gm-Message-State: AJIora/PS/TezSbPnL8T4ia/yfCHLh648+gBDrP/Nf/LRYIac8/91yBo
+        rYofc5CiYiRqNg/6x7dIquQOf1aBwYQ=
+X-Google-Smtp-Source: AGRyM1tNxsoA71taKrbmhWq2cicsD6xbEUyVUnmsiCUvKvGw0sve6B2QkKeAQWBgkZPP0dHO33m7vg==
+X-Received: by 2002:a05:6402:2812:b0:437:6235:adbe with SMTP id h18-20020a056402281200b004376235adbemr48635901ede.416.1657054560214;
+        Tue, 05 Jul 2022 13:56:00 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id dm3-20020a05640222c300b0043a70c51470sm3836956edb.55.2022.07.05.13.55.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 13:55:59 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH 0/5] clk: qcom: Drop use of pxo/cxo_board for rpm devices
+Date:   Tue,  5 Jul 2022 22:28:32 +0200
+Message-Id: <20220705202837.667-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="56o5nyaljsegk6fh"
-Content-Disposition: inline
-In-Reply-To: <1a50e8b0-1453-4561-bc3d-c428bb65288a@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Trying to convert every driver used by ipq806x to parent_data api, I notice
+RPM was still using pxo_board clk.
 
---56o5nyaljsegk6fh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+pxo and pxo_board are the same clock and are defined just to handle old
+clock definition. It was discovered that rpm is the last driver using
+pxo_board instead of pxo.
 
-Florian Fainelli <f.fainelli@gmail.com> (2022-07-01):
-> On 7/1/22 09:27, Jim Quinlan wrote:
-> > A submission [1] was made to enable a PCIe root port to turn on regulat=
-ors
-> > for downstream devices.  It was accepted.  Months later, a regression w=
-as
-> > discovered on an RPi CM4 [2].  The patchset was reverted [3] as the fix
-> > came too late in the release cycle.  The regression in question is
-> > triggered only when the PCIe RC DT node has no root port subnode, which=
- is
-> > a perfectly reasonsable configuration.
-> >=20
-> > The original commits are now being resubmitted with some modifications =
-to
-> > fix the regression.  The modifcations on the original commits are
-> > described below (the SHA is that of the original commit):
-> >=20
-> > [830aa6f29f07  PCI: brcmstb: Split brcm_pcie_setup() into two funcs]
-> >      NOTE: In the originally submitted patchset, this commit introduced=
- a
-> >      regression that was corrected by a subsequent commit in the same
-> >      patchset.  Let's not do this again.
-> >=20
-> >      @@ -1411,6 +1411,10 @@ static int brcm_pcie_probe(struct platform_=
-device *pdev)
-> > 	    if (ret)
-> > 		    goto fail;
-> >=20
-> >      +       ret =3D brcm_pcie_linkup(pcie);
-> >      +       if (ret)
-> >      +               goto fail;
-> >=20
-> >=20
-> > [67211aadcb4b  PCI: brcmstb: Add mechanism to turn on subdev regulators]
-> >      NOTE: Not related to the regression, the regulators must be freed =
-whenever
-> >      the PCIe tree is dismantled:
-> >=20
-> >      @@ -507,6 +507,7 @@ static void pci_subdev_regulators_remove_bus(s=
-truct pci_bus *bus)
-> >=20
-> >      if (regulator_bulk_disable(sr->num_supplies, sr->supplies))
-> > 		    dev_err(dev, "failed to disable regulators for downstream device\=
-n");
-> >      +       regulator_bulk_free(sr->num_supplies, sr->supplies);
-> > 	    dev->driver_data =3D NULL;
-> >=20
-> >=20
-> > [93e41f3fca3d  PCI: brcmstb: Add control of subdevice voltage regulator=
-s]
-> >      NOTE: If the PCIe RC DT node was missing a Root Port subnode, the =
-PCIe
-> >      link-up was skipped.  This is the regression.  Fix it by attempting
-> >      link-up even if the Root Port DT subnode is missing.
-> >=20
-> >      @@ -503,11 +503,10 @@ static int pci_subdev_regulators_add_bus(str=
-uct pci_bus *bus)
-> >=20
-> >       static int brcm_pcie_add_bus(struct pci_bus *bus)
-> >       {
-> >      -       struct device *dev =3D &bus->dev;
-> > 	    struct brcm_pcie *pcie =3D (struct brcm_pcie *) bus->sysdata;
-> > 	    int ret;
-> >=20
-> >      -       if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus-=
->parent))
-> >      +       if (!bus->parent || !pci_is_root_bus(bus->parent))
-> > 		    return 0;
-> >=20
-> > 	    ret =3D pci_subdev_regulators_add_bus(bus);
-> >=20
-> > [1] https://lore.kernel.org/r/20220106160332.2143-1-jim2101024@gmail.com
-> > [2] https://bugzilla.kernel.org/show_bug.cgi?id=3D215925
-> > [3] https://lore.kernel.org/linux-pci/20220511201856.808690-1-helgaas@k=
-ernel.org/
->=20
-> On a Raspberry Pi 4B:
->=20
-> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+While updating the rpm driver I notice the documentation was also wrong,
+so this series also fix that.
 
-As it stands, CM4 support in master is less than ideal: the mmc issues
-I've mentioned in some earlier discussion are making it very hard to
-draw any definitive conclusions. Soft reboots or cold boots don't seem
-to make a difference: the storage might not show up at all, leading to
-getting dropped into an initramfs shell, or it might show up but further
-accesses can be delayed so much that the system proceeds to booting but
-very slowly, and it might even lead to getting dropped into some
-emergency/maintenance mode.
+Christian Marangi (5):
+  dt-bindings: clock: fix wrong clock documentation for qcom,rpmcc
+  ARM: DTS: qcom: fix dtbs_check warning with new rpmcc clocks
+  clk: qcom: clk-rpm: convert to parent_data API
+  ARM: dts: qcom: add pxo/cxo clock-output-names for ipq8064
+  clk: qcom: gcc-ipq806x: remove cc_register_board for pxo and cxo
 
-This affects both the CM4 Lite variant (no internal storage =3D SD card in
-the CM4 IO slot) and some CM4 non-Lite variant (with internal storage),
-with messages like this one getting repeated:
+ .../devicetree/bindings/clock/qcom,rpmcc.yaml | 77 ++++++++++++++++++-
+ arch/arm/boot/dts/qcom-apq8064.dtsi           |  2 +
+ arch/arm/boot/dts/qcom-ipq8064.dtsi           |  4 +
+ arch/arm/boot/dts/qcom-msm8660.dtsi           |  4 +-
+ drivers/clk/qcom/clk-rpm.c                    | 24 ++++--
+ drivers/clk/qcom/gcc-ipq806x.c                |  8 --
+ 6 files changed, 98 insertions(+), 21 deletions(-)
 
-    [  310.105020] mmc0: Timeout waiting for hardware cmd interrupt.
-    [  310.110864] mmc0: sdhci: =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D SDHCI =
-REGISTER DUMP =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-    [  310.117390] mmc0: sdhci: Sys addr:  0x00000000 | Version:  0x00009902
-    [  310.123918] mmc0: sdhci: Blk size:  0x00000000 | Blk cnt:  0x00000000
-    [  310.130445] mmc0: sdhci: Argument:  0x000001aa | Trn mode: 0x00000000
-    [  310.136971] mmc0: sdhci: Present:   0x01ff0001 | Host ctl: 0x00000001
-    [  310.143496] mmc0: sdhci: Power:     0x0000000f | Blk gap:  0x00000000
-    [  310.150021] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00007187
-    [  310.156548] mmc0: sdhci: Timeout:   0x00000000 | Int stat: 0x00018000
-    [  310.163074] mmc0: sdhci: Int enab:  0x00ff0003 | Sig enab: 0x00ff0003
-    [  310.169600] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
-    [  310.176126] mmc0: sdhci: Caps:      0x00000000 | Caps_1:   0x00000000
-    [  310.182652] mmc0: sdhci: Cmd:       0x0000081a | Max curr: 0x00000001
-    [  310.189178] mmc0: sdhci: Resp[0]:   0x00000000 | Resp[1]:  0x00000000
-    [  310.195704] mmc0: sdhci: Resp[2]:   0x00000000 | Resp[3]:  0x00000000
-    [  310.202230] mmc0: sdhci: Host ctl2: 0x00000000
-    [  310.206728] mmc0: sdhci: =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
+-- 
+2.36.1
 
-That happens with current master (v5.19-rc5-56-ge35e5b6f695d2), with or
-without this patchset.
-
-That being said, I'm not able to reproduce the showstopper regression
-that I reported against the initial patchset (booting was breaking in
-the very first few seconds), so I suppose it's fine to propose the
-following even if that's somewhat tainted by those mmc issues.
-
-
-With Raspberry Pi CM4 (Lite and non-Lite), mounted on a CM4 IO Board:
- - with a PCIe to quad-USB board, USB storage and USB keyboard;
- - without anything in the PCIe slot.
-
-Tested-by: Cyril Brulebois <cyril@debamax.com>
-
-
-Cheers,
---=20
-Cyril Brulebois (kibi@debian.org)            <https://debamax.com/>
-D-I release manager -- Release team member -- Freelance Consultant
-
---56o5nyaljsegk6fh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEtg6/KYRFPHDXTPR4/5FK8MKzVSAFAmLEpVQACgkQ/5FK8MKz
-VSDhORAAwP9kv4QhHbbkxl+smQ34WckE+NL0Iiaf6zW7D/XHQnMXO9goHKbhltsu
-lf5YTyEH69CFI1vVxxDq79FYHGHFFyurOBy4wizMkgDt0SobymWBgfN7h4STYzq1
-rvP9l7pu5K4TD2e1CmoTXNOOBiTVaAUWtk3l/MS6UA3JAbIVK4QkzwWRAxgw93rl
-KX24NseAM27mgh7noQPAuYrD5RRhGFoH+uBV+kjK4JDk/dc6ow23KTX8Ui0euiEi
-x8yZjxuKyFCjRJWolROc0IYXetyBesH3D9Xq2OMj6WQZX2QaogwD1BqFzAE42Udf
-G4gBCUPYrOsaF8wJfIcSLDXF094PvImKx/vm3VVW+6UO/rX5M5A3rzXOiuvSS2xm
-Gjj6sve07USNE+YjG+qV4O/ATvSY3QZKnm5CJFfSBjyNF1Zs8iExdUqRBTgKY1X6
-7EQd9N4qJaPaMF1r3qfOSaO3gyvOAjPcEm750LhA9eUCKMVw/Nj4dhTBKnHLXJr7
-la0egHgrmlM6sD514pkOws/XYk5ro8x1ckOsJv/XDprtFH6Zx9Lf9QJ/h+p0T4jW
-pcsB7MG6n6KXcublCWVMvqEoEd5wJWClqX4oxKhrO2GtH1jolHl/ARUKsY0ebj2F
-SWnTD48lJilPI4reKTVzWP4WB3ixdTgGCQ7G4/h2UPa5mxzi1Nc=
-=7Mn5
------END PGP SIGNATURE-----
-
---56o5nyaljsegk6fh--
