@@ -2,132 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA795CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E48C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235617AbiGEMOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
+        id S235650AbiGEMOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234912AbiGEMIK (ORCPT
+        with ESMTP id S234923AbiGEMIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:10 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D101A046
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:07:13 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VISK1LP_1657022828;
-Received: from 30.225.28.170(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VISK1LP_1657022828)
-          by smtp.aliyun-inc.com;
-          Tue, 05 Jul 2022 20:07:09 +0800
-Message-ID: <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
-Date:   Tue, 5 Jul 2022 20:07:07 +0800
+        Tue, 5 Jul 2022 08:08:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8461A04C;
+        Tue,  5 Jul 2022 05:07:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28EDD61964;
+        Tue,  5 Jul 2022 12:07:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ADEAC341C7;
+        Tue,  5 Jul 2022 12:07:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022835;
+        bh=o9wFnSjris8ibElMDNV0VbhJ19NMBcbZ8ctLxZIfb5U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BlEbjf7XFgE2Jgd7ABRnKNOLYJEYvl7o2DM4ndZKoz2UszTqSxfft4LxKp8o6RqhM
+         powxGT0EcSdDNUgGPUtTs5/TdxfhN9qJ3OGL/OOeotzj6X64Nyu/1nMcL5bE6tZ/vA
+         vZgKdk+6jUULFOiNbqG4Ll3PdcTI6ClR54GAkAz8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.10 27/84] caif_virtio: fix race between virtio_device_ready() and ndo_open()
+Date:   Tue,  5 Jul 2022 13:57:50 +0200
+Message-Id: <20220705115616.118925414@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
- degradation
-To:     Will Deacon <will@kernel.org>, Ard Biesheuvel <ardb@kernel.org>
-Cc:     baolin.wang@linux.alibaba.com, catalin.marinas@arm.com,
-        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
-        james.morse@arm.com, quic_qiancai@quicinc.com,
-        christophe.leroy@csgroup.eu, jonathan@marek.ca,
-        mark.rutland@arm.com, thunder.leizhen@huawei.com,
-        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, rppt@kernel.org,
-        geert+renesas@glider.be, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-References: <20220704103523.GC31437@willie-the-truck>
- <73f0c53b-fd17-c5e9-3773-1d71e564eb50@linux.alibaba.com>
- <20220704111402.GA31553@willie-the-truck>
- <4accaeda-572f-f72d-5067-2d0999e4d00a@linux.alibaba.com>
- <20220704131516.GC31684@willie-the-truck>
- <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
- <20220704142313.GE31684@willie-the-truck>
- <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
- <20220704163815.GA32177@willie-the-truck>
- <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
- <20220705095231.GB552@willie-the-truck>
-From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <20220705095231.GB552@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jason Wang <jasowang@redhat.com>
+
+commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
+
+We currently depend on probe() calling virtio_device_ready() -
+which happens after netdev
+registration. Since ndo_open() can be called immediately
+after register_netdev, this means there exists a race between
+ndo_open() and virtio_device_ready(): the driver may start to use the
+device (e.g. TX) before DRIVER_OK which violates the spec.
+
+Fix this by switching to use register_netdevice() and protect the
+virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
+only be called after virtio_device_ready().
+
+Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/caif/caif_virtio.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/caif/caif_virtio.c
++++ b/drivers/net/caif/caif_virtio.c
+@@ -723,13 +723,21 @@ static int cfv_probe(struct virtio_devic
+ 	/* Carrier is off until netdevice is opened */
+ 	netif_carrier_off(netdev);
+ 
++	/* serialize netdev register + virtio_device_ready() with ndo_open() */
++	rtnl_lock();
++
+ 	/* register Netdev */
+-	err = register_netdev(netdev);
++	err = register_netdevice(netdev);
+ 	if (err) {
++		rtnl_unlock();
+ 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
+ 		goto err;
+ 	}
+ 
++	virtio_device_ready(vdev);
++
++	rtnl_unlock();
++
+ 	debugfs_init(cfv);
+ 
+ 	return 0;
 
 
-在 2022/7/5 17:52, Will Deacon 写道:
-> On Mon, Jul 04, 2022 at 07:09:23PM +0200, Ard Biesheuvel wrote:
->> On Mon, 4 Jul 2022 at 18:38, Will Deacon <will@kernel.org> wrote:
->>>
->>> On Mon, Jul 04, 2022 at 10:34:07PM +0800, guanghui.fgh wrote:
->>>> Thanks.
->>>>
->>>> 在 2022/7/4 22:23, Will Deacon 写道:
->>>>> On Mon, Jul 04, 2022 at 10:11:27PM +0800, guanghui.fgh wrote:
->> ...
->>>>>> Namely, it's need to use non block/section mapping for crashkernel mem
->>>>>> before shringking.
->>>>>
->>>>> Well, yes, but we can change arch_kexec_[un]protect_crashkres() not to do
->>>>> that if we're leaving the thing mapped, no?
->>>>>
->>>> I think we should use arch_kexec_[un]protect_crashkres for crashkernel mem.
->>>>
->>>> Because when invalid crashkernel mem pagetable, there is no chance to rd/wr
->>>> the crashkernel mem by mistake.
->>>>
->>>> If we don't use arch_kexec_[un]protect_crashkres to invalid crashkernel mem
->>>> pagetable, there maybe some write operations to these mem by mistake which
->>>> may cause crashkernel boot error and vmcore saving error.
->>>
->>> I don't really buy this line of reasoning. The entire main kernel is
->>> writable, so why do we care about protecting the crashkernel so much? The
->>> _code_ to launch the crash kernel is writable! If you care about preventing
->>> writes to memory which should not be writable, then you should use
->>> rodata=full.
->>>
->>
->> This is not entirely true - the core kernel text and rodata are
->> remapped r/o in the linear map, whereas all module code and rodata are
->> left writable when rodata != full.
-> 
-> Yes, sorry, you're quite right. The kernel text is only writable if
-> rodata=off.
-> 
-> But I still think it makes sense to protect the crashkernel only if
-> rodata=full (which is the default on arm64) as this allows us to rely
-> on page mappings and I think fits well with what we do for modules.
-> 
->> But the conclusion is the same, imo: if you can't be bothered to
->> protect a good chunk of the code and rodata that the kernel relies on,
->> why should the crashkernel be treated any differently?
-> 
-> Thanks.
-> 
-> Will
-Thanks.
-
-1.The rodata full is harm to the performance and has been disabled in-house.
-
-2.When using crashkernel with rodata non full, the kernel also will use 
-non block/section mapping which cause high d-TLB miss and degrade 
-performance greatly.
-This patch fix it to use block/section mapping as far as possible.
-
-bool can_set_direct_map(void)
-{
-	return rodata_full || debug_pagealloc_enabled();
-}
-
-map_mem:
-if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
-	flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
-
-3.When rodata full is disabled, crashkernel also need protect(keep 
-arch_kexec_[un]protect_crashkres using).
-I think crashkernel should't depend on radata full(Maybe other 
-architecture don't support radata full now).
-
-Thanks.
