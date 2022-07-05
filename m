@@ -2,199 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0177AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1336CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbiGEPBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52688 "EHLO
+        id S232064AbiGEPB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiGEPBs (ORCPT
+        with ESMTP id S231307AbiGEPBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:01:48 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54081140F8;
-        Tue,  5 Jul 2022 08:01:46 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 75E7C6601942;
-        Tue,  5 Jul 2022 16:01:43 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657033304;
-        bh=7dtkO8dKzSBEwSst0VDFjIf/IrxOZjXKOGrdhYNUMhs=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=fa8YbXeEA22ARE8Gt66rR7VDYWziyJUa0DuNZEFX+8Z0Kfw3T3xNWcoRwKjia/3Vk
-         VFa556wih1Hwvt9Mw5U3v4HIUITRHJbLEDK/04ybrSeAJbaqa5VNXRiHzPcQZrYXkx
-         +OM/edmkCMiGvH4vvCFDW5NflyCnwlcR+PNjM7UBmkwLGUer3ExlES6MhD5/6Icmyj
-         Yn7FcBN0nJE85U+9IuErpPjFQBVv9Ag6ij2btLkcUhFIR4RJLXeUdjl9Sof2+bNBvy
-         dDg4rp8fbpum/S6brzpPGBUuz3ihDwq9mmGmHWQAqKEx7w3xJcmgtrTu9+Q1BI07Ju
-         FOJwyiVZHkUMg==
-Message-ID: <bffad9a5-6154-3b9a-c39c-680ed3350a5f@collabora.com>
-Date:   Tue, 5 Jul 2022 17:01:41 +0200
+        Tue, 5 Jul 2022 11:01:50 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3725140F8;
+        Tue,  5 Jul 2022 08:01:48 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id m184so7223333wme.1;
+        Tue, 05 Jul 2022 08:01:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k8doTZH0uHPouLnAYumMUTnWYzvf/OOelwfmnhTubXY=;
+        b=W+NStBQLWXIGoemzIBzrNwwIJKixdg/7SZw4ramY1DdU2iAxiXjQAyxromMljbDt/W
+         zPUdlwKjwrTygg/Ga4IzdvS4T1I1OAVLieVP/3XgTKYxFc8r4ftk5NXzBR5a8FZ5b7qb
+         BrVCz3pdke0YEm5VLaOGZXiS5QCWqYO5VuNhsp19grocOcohizuL254My2DmLMOOOz+K
+         ULs0BSJ++2pJ1ayubRTr/QTx3y+i7Q+CmSOxpSP2mkUPPgJYrw6mrdGrK9WODr8XDocQ
+         ba27Hl6R/iHf+GXVnFnMXNw78GUNDSxPTn18Lw3m2cgCloxsQAhD2KSSvrHo3vb46jqC
+         uBMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k8doTZH0uHPouLnAYumMUTnWYzvf/OOelwfmnhTubXY=;
+        b=jRcKS3R2DTGW1DAb23VrW4NSRVKTq2QhCrhziDnLbf1lvQvcjMNAr4cj+ISME8XG0u
+         q7jercSkS4SvkLV/kM768VTrAUimzjt/MecIfcRBN+BKg0wcvnvTSFs5kGTXedfUm3rP
+         /5YESJDktfudpL8FdnMptrRzuWzSJm/uY42eTVH2CwZfuOT7p1+jGwvW5bD6WWuREgiu
+         EkAYgA/YveY/v4JKeTDMdXziZ/j/v+DvR0+HGypaK5YA2jF1R2unoxVcXXOTRQKO2bqo
+         7LsOYYu6+KoD7NNmoJ2V+qs1zVpzyrNzTSC9ryYgYMwZmzB3k9Dcd5mNIbRknOPJh8Mc
+         q2Kw==
+X-Gm-Message-State: AJIora/tzpoYGmTVr1G4LwtknuX/EJ5Kd/34I3Srb40/VygtjEcJf1ug
+        bWeMgMWhIkuOIoHtJ3KHuz3LQ8um1x5rLQ==
+X-Google-Smtp-Source: AGRyM1t9Y9ETUe84X5xEdo61ZYaQg2jaW5+Ym3J5PbSY2MDFmbogOjZM1LEgs210V+KAEhY7hoeQuQ==
+X-Received: by 2002:a05:600c:4e49:b0:3a0:4c17:c67f with SMTP id e9-20020a05600c4e4900b003a04c17c67fmr39910449wmq.1.1657033306794;
+        Tue, 05 Jul 2022 08:01:46 -0700 (PDT)
+Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
+        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 08:01:46 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
+        kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH net-next v3 00/25] io_uring zerocopy send
+Date:   Tue,  5 Jul 2022 16:01:00 +0100
+Message-Id: <cover.1656318994.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 00/19] Introduce support for MediaTek MT8192 Google
- Chromebooks
-Content-Language: en-US
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>, kernel@collabora.com,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luca Weiss <luca@z3ntu.xyz>, Maxim Kutnij <gtk3@inbox.ru>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Shih <sam.shih@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220629155956.1138955-1-nfraprado@collabora.com>
- <CAGXv+5Epmo1=DZvoFkqj57hiO8nim=cuP1v3i9b2diZwqBe3Mw@mail.gmail.com>
- <20220701150145.2myyk2o3vxydyhql@notapiano>
- <CAGXv+5FsTNKgWG75eSKt4ngnhmSekWNT+oS1ke+P4tazHDdnzQ@mail.gmail.com>
- <20220705135611.jlfltaormhcpuutc@notapiano>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220705135611.jlfltaormhcpuutc@notapiano>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 05/07/22 15:56, Nícolas F. R. A. Prado ha scritto:
-> On Tue, Jul 05, 2022 at 12:03:08PM +0800, Chen-Yu Tsai wrote:
->> On Fri, Jul 1, 2022 at 11:01 PM Nícolas F. R. A. Prado
->> <nfraprado@collabora.com> wrote:
->>>
->>> On Fri, Jul 01, 2022 at 08:44:53PM +0800, Chen-Yu Tsai wrote:
->>>> On Thu, Jun 30, 2022 at 12:00 AM Nícolas F. R. A. Prado
->>>> <nfraprado@collabora.com> wrote:
->>>>>
->>>>>
->>>>> This series introduces Devicetrees for the MT8192-based Asurada platform
->>>>> as well as Asurada Spherion and Asurada Hayato boards.
->>>>>
->>>>> Support for the boards is added to the extent that is currently enabled
->>>>> in the mt8192.dtsi, and using only properties already merged in the
->>>>> dt-bindings, as to not add any dependencies to this series.
->>>>>
->>>>> This series was peer-reviewed internally before submission.
->>>>>
->>>>> Series tested on next-20220629.
->>>>
->>>> Just FYI I also got the internal display to work after some fixes to
->>>> the dtsi [1] and copying the stuff over from the ChromeOS kernel tree.
->>>>
->>>> It might be harder to enable the external display, given that we don't
->>>> have a good way of describing the weird design of using the DP bridge
->>>> also as a mux. See [2] for ongoing discussion.
->>>
->>> Hi ChenYu,
->>>
->>> I actually have both the internal and external display working on my local
->>> branch [1], but the commits there aren't final, and I'm also following the
->>> Type-C switch discussion to update my commits whenever the binding is settled
->>> on.
->>
->> I see. I think the internal display part is more or less final. It should
->> be worth including it, as it is a fairly visible indication that things
->> are working.
-> 
-> Yeah, it is final, but not all of the display-related nodes in mt8192.dtsi have
-> been merged yet [1] and I didn't want to introduce dependencies to the series.
-> 
-> If that series gets merged before this one, I could add the display to this
-> series as well, but I'm just worried that by introducing new commits with almost
-> every new series version, this series might never get reviewed and merged, and
-> this series is pretty big already. So I'd prefer to leave the display for a
-> following series.
-> 
-> Thanks,
-> Nícolas
-> 
-> [1] https://lore.kernel.org/all/20220701090547.21429-1-allen-kh.cheng@mediatek.com
-> 
+The patchset implements io_uring zerocopy send. It works with both registered
+and normal buffers, mixing is allowed but not recommended. Apart from usual
+request completions, just as with MSG_ZEROCOPY, io_uring separately notifies
+the userspace when buffers are freed and can be reused (see API design below),
+which is delivered into io_uring's Completion Queue. Those "buffer-free"
+notifications are not necessarily per request, but the userspace has control
+over it and should explicitly attaching a number of requests to a single
+notification. The series also adds some internal optimisations when used with
+registered buffers like removing page referencing.
 
-Matthias, can you please give an advice on that?
+From the kernel networking perspective there are two main changes. The first
+one is passing ubuf_info into the network layer from io_uring (inside of an
+in kernel struct msghdr). This allows extra optimisations, e.g. ubuf_info
+caching on the io_uring side, but also helps to avoid cross-referencing
+and synchronisation problems. The second part is an optional optimisation
+removing page referencing for requests with registered buffers.
 
-Thank you,
-Angelo
+Benchmarking with an optimised version of the selftest (see [1]), which in a
+loop sends a bunch of requests and then waits for their completions. "+ flush"
+column posts one additional "buffer-free" notification per request, and
+just "zc" doesn't post buffer notifications at all.
 
+NIC (requests / second):
+IO size | non-zc    | zc             | zc + flush
+4000    | 495134    | 606420 (+22%)  | 558971 (+12%)
+1500    | 551808    | 577116 (+4.5%) | 565803 (+2.5%)
+1000    | 584677    | 592088 (+1.2%) | 560885 (-4%)
+600     | 596292    | 598550 (+0.4%) | 555366 (-6.7%)
 
->>
->> ChenYu
->>
->>> I noticed the lack of the mandatory display aliases in the mt8192 series but
->>> somehow missed mentioning that in the review, so thanks for adding that.
->>>
->>> Thanks,
->>> Nícolas
->>>
->>> [1] https://gitlab.collabora.com/nfraprado/linux/-/commits/mt8192-asurada
->>>
->>>>
->>>> ChenYu
->>>>
->>>> [1] https://lore.kernel.org/linux-mediatek/CAGXv+5F_Gi_=vV1NSk0AGRVYCa3Q8+gBaE+nv3OJ1AKe2voOwg@mail.gmail.com/
->>>> [2] https://lore.kernel.org/dri-devel/20220622173605.1168416-1-pmalani@chromium.org/
->>>>
->>>>> v3: https://lore.kernel.org/all/20220512205602.158273-1-nfraprado@collabora.com/
->>>>> v2: https://lore.kernel.org/all/20220505194550.3094656-1-nfraprado@collabora.com/
->>>>> v1: https://lore.kernel.org/all/20220316151327.564214-1-nfraprado@collabora.com/
->>>>>
->>>>> Changes in v4:
->>>>> - Added patches 17-19 enabling MMC, SCP and SPI NOR flash
->>>>> - Switched mediatek,drive-strength-adv for drive-strength-microamp
->>>>> - Switched mediatek,pull-up-adv for bias-pull-up
->>>>> - Updated Vgpu minimum voltage to appropriate value
->>>>>
->>>>> Changes in v3:
->>>>> - Renamed regulator nodes to be generic
->>>>> - Fixed keyboard layout for Hayato
->>>>>
->>>>> Changes in v2:
->>>>> - Added patches 1-2 for Mediatek board dt-bindings
->>>>> - Added patches 13-16 enabling hardware for Asurada that has since been
->>>>>    enabled on mt8192.dtsi
->>>>>
->>>>> Nícolas F. R. A. Prado (19):
->>>>>    dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-spherion
->>>>>    dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-hayato
->>>>>    arm64: dts: mediatek: Introduce MT8192-based Asurada board family
->>>>>    arm64: dts: mediatek: asurada: Document GPIO names
->>>>>    arm64: dts: mediatek: asurada: Add system-wide power supplies
->>>>>    arm64: dts: mediatek: asurada: Enable and configure I2C and SPI busses
->>>>>    arm64: dts: mediatek: asurada: Add ChromeOS EC
->>>>>    arm64: dts: mediatek: asurada: Add keyboard mapping for the top row
->>>>>    arm64: dts: mediatek: asurada: Add Cr50 TPM
->>>>>    arm64: dts: mediatek: asurada: Add Elan eKTH3000 I2C trackpad
->>>>>    arm64: dts: mediatek: asurada: Add I2C touchscreen
->>>>>    arm64: dts: mediatek: spherion: Add keyboard backlight
->>>>>    arm64: dts: mediatek: asurada: Enable XHCI
->>>>>    arm64: dts: mediatek: asurada: Enable PCIe and add WiFi
->>>>>    arm64: dts: mediatek: asurada: Add MT6359 PMIC
->>>>>    arm64: dts: mediatek: asurada: Add SPMI regulators
->>>>>    arm64: dts: mediatek: asurada: Enable MMC
->>>>>    arm64: dts: mediatek: asurada: Enable SCP
->>>>>    arm64: dts: mediatek: asurada: Add SPI NOR flash memory
->>>>>
->>>>>   .../devicetree/bindings/arm/mediatek.yaml     |  13 +
->>>>>   arch/arm64/boot/dts/mediatek/Makefile         |   2 +
->>>>>   .../dts/mediatek/mt8192-asurada-hayato-r1.dts |  47 +
->>>>>   .../mediatek/mt8192-asurada-spherion-r0.dts   |  62 ++
->>>>>   .../boot/dts/mediatek/mt8192-asurada.dtsi     | 959 ++++++++++++++++++
->>>>>   5 files changed, 1083 insertions(+)
->>>>>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
->>>>>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
->>>>>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
->>>>>
->>>>> --
->>>>> 2.36.1
->>>>>
+dummy (requests / second):
+IO size | non-zc    | zc             | zc + flush
+8000    | 1299916   | 2396600 (+84%) | 2224219 (+71%)
+4000    | 1869230   | 2344146 (+25%) | 2170069 (+16%)
+1200    | 2071617   | 2361960 (+14%) | 2203052 (+6%)
+600     | 2106794   | 2381527 (+13%) | 2195295 (+4%)
+
+Previously it also brought a massive performance speedup compared to the
+msg_zerocopy tool (see [3]), which is probably not super interesting.
+
+There is an additional bunch of refcounting optimisations that was omitted from
+the series for simplicity and as they don't change the picture drastically,
+they will be sent as follow up, as well as flushing optimisations closing the
+performance gap b/w two last columns.
+
+Note: the series is based on net-next + for-5.20/io_uring, but as vanilla
+net-next fails for me the repo (see [2]) is on top of for-5.20/io_uring.
+
+Links:
+
+  liburing (benchmark + some tests):
+  [1] https://github.com/isilence/liburing/tree/zc_v3
+
+  kernel repo:
+  [2] https://github.com/isilence/linux/tree/zc_v3
+
+  RFC v1:
+  [3] https://lore.kernel.org/io-uring/cover.1638282789.git.asml.silence@gmail.com/
+
+  RFC v2:
+  https://lore.kernel.org/io-uring/cover.1640029579.git.asml.silence@gmail.com/
+
+API design overview:
+
+  The series introduces an io_uring concept of notifactors. From the userspace
+  perspective it's an entity to which it can bind one or more requests and then
+  requesting to flush it. Flushing a notifier makes it impossible to attach new
+  requests to it, and instructs the notifier to post a completion once all
+  requests attached to it are completed and the kernel doesn't need the buffers
+  anymore.
+
+  Notifications are stored in notification slots, which should be registered as
+  an array in io_uring. Each slot stores only one notifier at any particular
+  moment. Flushing removes it from the slot and the slot automatically replaces
+  it with a new notifier. All operations with notifiers are done by specifying
+  an index of a slot it's currently in.
+
+  When registering a notification the userspace specifies a u64 tag for each
+  slot, which will be copied in notification completion entries as
+  cqe::user_data. cqe::res is 0 and cqe::flags is equal to wrap around u32
+  sequence number counting notifiers of a slot.
+
+Changelog:
+
+  RFC v2 -> v3:
+    mem accounting for non-registered buffers
+    allow mixing registered and normal requests per notifier
+    notification flushing via IORING_OP_RSRC_UPDATE
+    TCP support
+    fix buffer indexing
+    fix io-wq ->uring_lock locking
+    fix bugs when mixing with MSG_ZEROCOPY
+    fix managed refs bugs in skbuff.c
+
+  RFC -> RFC v2:
+    remove additional overhead for non-zc from skb_release_data()
+    avoid msg propagation, hide extra bits of non-zc overhead
+    task_work based "buffer free" notifications
+    improve io_uring's notification refcounting
+    added 5/19, (no pfmemalloc tracking)
+    added 8/19 and 9/19 preventing small copies with zc
+    misc small changes
+
+Pavel Begunkov (25):
+  ipv4: avoid partial copy for zc
+  ipv6: avoid partial copy for zc
+  skbuff: add SKBFL_DONT_ORPHAN flag
+  skbuff: carry external ubuf_info in msghdr
+  net: bvec specific path in zerocopy_sg_from_iter
+  net: optimise bvec-based zc page referencing
+  net: don't track pfmemalloc for managed frags
+  skbuff: don't mix ubuf_info of different types
+  ipv4/udp: support zc with managed data
+  ipv6/udp: support zc with managed data
+  tcp: support zc with managed data
+  io_uring: add zc notification infrastructure
+  io_uring: export task put
+  io_uring: cache struct io_notif
+  io_uring: complete notifiers in tw
+  io_uring: add notification slot registration
+  io_uring: wire send zc request type
+  io_uring: account locked pages for non-fixed zc
+  io_uring: allow to pass addr into sendzc
+  io_uring: add rsrc referencing for notifiers
+  io_uring: sendzc with fixed buffers
+  io_uring: flush notifiers after sendzc
+  io_uring: rename IORING_OP_FILES_UPDATE
+  io_uring: add zc notification flush requests
+  selftests/io_uring: test zerocopy send
+
+ include/linux/io_uring_types.h                |  37 ++
+ include/linux/skbuff.h                        |  59 +-
+ include/linux/socket.h                        |   7 +
+ include/uapi/linux/io_uring.h                 |  43 +-
+ io_uring/Makefile                             |   2 +-
+ io_uring/io_uring.c                           |  40 +-
+ io_uring/io_uring.h                           |  21 +
+ io_uring/net.c                                | 134 ++++
+ io_uring/net.h                                |   4 +
+ io_uring/notif.c                              | 215 +++++++
+ io_uring/notif.h                              |  87 +++
+ io_uring/opdef.c                              |  24 +-
+ io_uring/rsrc.c                               |  55 +-
+ io_uring/rsrc.h                               |  16 +-
+ io_uring/tctx.h                               |  26 -
+ net/compat.c                                  |   2 +
+ net/core/datagram.c                           |  53 +-
+ net/core/skbuff.c                             |  35 +-
+ net/ipv4/ip_output.c                          |  63 +-
+ net/ipv4/tcp.c                                |  52 +-
+ net/ipv6/ip6_output.c                         |  62 +-
+ net/socket.c                                  |   6 +
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/io_uring_zerocopy_tx.c      | 605 ++++++++++++++++++
+ .../selftests/net/io_uring_zerocopy_tx.sh     | 131 ++++
+ 25 files changed, 1652 insertions(+), 128 deletions(-)
+ create mode 100644 io_uring/notif.c
+ create mode 100644 io_uring/notif.h
+ create mode 100644 tools/testing/selftests/net/io_uring_zerocopy_tx.c
+ create mode 100755 tools/testing/selftests/net/io_uring_zerocopy_tx.sh
+
+-- 
+2.36.1
 
