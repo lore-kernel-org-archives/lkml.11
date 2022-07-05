@@ -2,119 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A39CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EAFCCA480
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbiGEMhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
+        id S239614AbiGEMhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237996AbiGEM0y (ORCPT
+        with ESMTP id S239442AbiGEMal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711A115727;
-        Tue,  5 Jul 2022 05:19:34 -0700 (PDT)
+        Tue, 5 Jul 2022 08:30:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0BC1F63B;
+        Tue,  5 Jul 2022 05:22:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D09E61A94;
-        Tue,  5 Jul 2022 12:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13214C341C7;
-        Tue,  5 Jul 2022 12:19:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023573;
-        bh=4dh2pOBs11NMVfHJBFXiMNBaUlkDzW5wZrYtXujrxOc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RilFHX+h7SAifGJku+mqvsnImpQvbhaI2BBLB4TAVZ23VL9cH3BjJkaIzhwy2xYMj
-         3EG5ON8nG8yzpDrVqYAfe3PBtHZuEjJhqx/ihfn82kNl5jnsTGp/bcrKhuHpWHm80S
-         2WFiISCespnfqswyxcY/+FWCF94B0O5JPZx4lVcY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Seyfried <seife+kernel@b1-systems.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 088/102] platform/x86: panasonic-laptop: de-obfuscate button codes
-Date:   Tue,  5 Jul 2022 13:58:54 +0200
-Message-Id: <20220705115620.919805596@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92BC7B816A4;
+        Tue,  5 Jul 2022 12:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03C6BC341C8;
+        Tue,  5 Jul 2022 12:22:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657023761;
+        bh=Hl6oQo9fBaw8lhEcoZN8z4oGgTIORkI///LPXaadh+8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SGQ+VMDCiVJPI4dlqjm6Uv2sKZm0+joTht54YfW3He8Z4TXCbeHtiJKZdcs1VujQB
+         XAA2SxR6GNjQtjJKLXg7y0JYM5Pz/vsfXtRkhyGy6LKLQqz3Np79+MNzF60ClPJoQ2
+         ooyBc3m5oTtSEMv4OJbpNAiQA7yu3QQxnc+nMB3uvPwmV563psN5lrHm3fRSrJPqe9
+         vWttuvEoEvZ8wLAsrNvAc7KAS4SfQC4GJa9ZKpY7Vcf86/dBvakGk9dyVc6ouR9k69
+         XLfGDOgNuwErrygPnknj+3tPXCpXiczR2VNMUTBkvimKnSi34NCzhkDHzteL5aOhsu
+         Z/fKTCx/OnzZg==
+Received: by pali.im (Postfix)
+        id 3564ACBF; Tue,  5 Jul 2022 14:22:38 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 14:22:38 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] leds: Add support for Turris 1.x LEDs
+Message-ID: <20220705122238.ul3cctrxkkttge3m@pali>
+References: <20220705000448.14337-1-pali@kernel.org>
+ <20220705000448.14337-2-pali@kernel.org>
+ <20220705123705.0a9caead@thinkpad>
+ <20220705105609.cpabhrwozyeejwqe@pali>
+ <20220705135227.6380d6d5@thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220705135227.6380d6d5@thinkpad>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Seyfried <seife+kernel@b1-systems.com>
+On Tuesday 05 July 2022 13:52:27 Marek Behún wrote:
+> On Tue, 5 Jul 2022 12:56:09 +0200
+> Pali Rohár <pali@kernel.org> wrote:
+> 
+> > > 
+> > > I don't consider this a problem  
+> > 
+> > I think it is a problem, to ensure that 'cat multi_intensity' for every
+> 
+> Misunderstanding. I meant that I don't consider the eventual
+> inconsistency a problem, i.e. I agree with your code.
+> 
+> > > Or maybe just write the value?
+> > > Is the register write expensive on the CPLD or why are you trying to
+> > > avoid it if unnecessary?  
+> > 
+> > I just do not see any reason to do unnecessary writes.
+> 
+> But now you do an unnecessary check.
 
-[ Upstream commit 65a3e6c8d3f7c346813a05f3d76fc46b640d76d6 ]
+I think that testing if some bit is set in 32-bit general purpose
+processor register is something which really does not play role here.
 
-In the definition of panasonic_keymap[] the key codes are given in
-decimal, later checks are done with hexadecimal values, which does
-not help in understanding the code.
-Additionally use two helper variables to shorten the code and make
-the logic more obvious.
+Note that readb() is always needed to do because it is required to
+modify just one bit and this cannot be done without read-modify-write
+operations.
 
-Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
-Signed-off-by: Stefan Seyfried <seife+kernel@b1-systems.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220624112340.10130-3-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/platform/x86/panasonic-laptop.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+> Unless the writeb() is slower than
+> that check. Since this isn't i2c, I am wondering how fast that writeb()
+> is... But this is just me wondering, we can keep it the way you wrote
+> it...
+> 
+> > > 
+> > > Hmm. Wouldn't it make more sense to simply have the global brightness
+> > > accept values from 0 to 7, instead of mapping it to 256 values? And
+> > > call it something like selected_brightness_index?  
+> > 
+> > All other drivers have brightness entry which operates on monotone
+> > brightness property.
+> > Brightness levels do not have to be monotone and by default are
+> > decreasing: 0 = brightness with higher intensity; 7 = no intensity (off)
+> 
+> What do you mean all other drivers? AFAIK only one driver does this
+> global brightness thing, and that is Omnia. The global brightness is
+> something different from LED cdev brightness property, the same names
+> are just coincidental (in fact it caused confusion when Pavel was
+> first reviewing Turris Omnia driver). Maybe it should have been called
+> global_intensity, to avoid the confusion...
 
-diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
-index 37850d07987d..ca6137f4000f 100644
---- a/drivers/platform/x86/panasonic-laptop.c
-+++ b/drivers/platform/x86/panasonic-laptop.c
-@@ -762,6 +762,8 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
- 	struct input_dev *hotk_input_dev = pcc->input_dev;
- 	int rc;
- 	unsigned long long result;
-+	unsigned int key;
-+	unsigned int updown;
- 
- 	rc = acpi_evaluate_integer(pcc->handle, METHOD_HKEY_QUERY,
- 				   NULL, &result);
-@@ -770,18 +772,22 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
- 		return;
- 	}
- 
-+	key = result & 0xf;
-+	updown = result & 0x80; /* 0x80 == key down; 0x00 = key up */
-+
- 	/* hack: some firmware sends no key down for sleep / hibernate */
--	if ((result & 0xf) == 0x7 || (result & 0xf) == 0xa) {
--		if (result & 0x80)
-+	if (key == 7 || key == 10) {
-+		if (updown)
- 			sleep_keydown_seen = 1;
- 		if (!sleep_keydown_seen)
- 			sparse_keymap_report_event(hotk_input_dev,
--					result & 0xf, 0x80, false);
-+					key, 0x80, false);
- 	}
- 
--	if ((result & 0xf) == 0x7 || (result & 0xf) == 0x9 || (result & 0xf) == 0xa) {
-+	/* for the magic values, see panasonic_keymap[] above */
-+	if (key == 7 || key == 9 || key == 10) {
- 		if (!sparse_keymap_report_event(hotk_input_dev,
--						result & 0xf, result & 0x80, false))
-+						key, updown, false))
- 			pr_err("Unknown hotkey event: 0x%04llx\n", result);
- 	}
- }
--- 
-2.35.1
+Ok. I thought "brightness" == "brightness" too.
 
+Anyway, as Omnia has this API it makes sense to use same API for other
+devices, this allows userspace software to be compatible with more
+devices.
 
+> > I cannot image who would like or prefer usage of such API.
+> 
+> One file that represents the index of the selected global intensity (as
+> is stored internally in the CPLD) and another file that represents the
+> configured intensities between which the button switches makes sense,
+> IMO.
 
+And this is the issue. If you want to get current brightness, you need
+to read two files and then do non-trivial logic to derive current
+brightness.
+
+> > Just stick with existing APIs. "brightness" entry takes intensity value
+> > which is monotone, 0 the lowest, MAX (=255) the highest.
+> 
+> Again, the name "brightness" does not imply that it is the same thing
+> as "brightness" of a LED cdev. And since it even doesn't live in
+> /sys/class/<led>/ directory, we are proposing new API and can use
+> whatever makes sense.
+> 
+> I am not saying that the way you did it doesn't make sense. I am just
+> wondering if it wouldn't make more sense to be able to read the index
+> of what the user selected by button pressing.
+> 
+> Marek
+
+So what about exporting another sysfs file which controls current level (0-7)?
