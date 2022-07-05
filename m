@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2977CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A6CCCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238984AbiGEM35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S239075AbiGEMaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237636AbiGEMTc (ORCPT
+        with ESMTP id S237653AbiGEMTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8861D32F;
-        Tue,  5 Jul 2022 05:15:44 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3291AF01;
+        Tue,  5 Jul 2022 05:15:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B55461A3E;
-        Tue,  5 Jul 2022 12:15:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F19CC341C7;
-        Tue,  5 Jul 2022 12:15:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64FD3B8170A;
+        Tue,  5 Jul 2022 12:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C52C3C341C7;
+        Tue,  5 Jul 2022 12:15:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023343;
-        bh=tBysG5slX1gmz22KZWHuypWFecdUfpb8HUCfdcMG+6Y=;
+        s=korg; t=1657023352;
+        bh=YiCygZYgHmwf26uNvEy1H53XouYE1er55VWdDFhki7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zAmQqa7gjkx8I/F6fNyjAG7wb6Sx3jsZLAeKA177uXuSkudBr1KEGNgiM3kaxeOae
-         VztrE0lzC/JWjmqvNFORKFQMTFgIlQjbrdzLJnp+zXqQsl2aZ/RX9KaDFRrs+kHAF5
-         Jyv6Dzcvn7agCfMQDX0pU6HnNFNnMIvUWB+eIMDA=
+        b=MS0MAvDPkLJ5taB/C81abG0gbthvnMetAf8DPpJhaEm/7EdRERHAhVlUysU5/73Hw
+         1MO7qjrf8inh2RmgFOzUFOxJVQx/+PBADfYfidlEjz7T7+CXFp74UW+pdkyZ9uQHUH
+         8LF1uwtb5rFMhfIwyD3TZYJS68R9T+JkAfiL5mCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, willemb@google.com,
-        Dimitris Michailidis <dmichail@fungible.com>,
+        stable@vger.kernel.org, Petar Penkov <ppenkov@aviatrix.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 026/102] selftests/net: pass ipv6_args to udpgso_benchs IPv6 TCP test
-Date:   Tue,  5 Jul 2022 13:57:52 +0200
-Message-Id: <20220705115619.159777729@linuxfoundation.org>
+Subject: [PATCH 5.18 029/102] net: tun: stop NAPI when detaching queues
+Date:   Tue,  5 Jul 2022 13:57:55 +0200
+Message-Id: <20220705115619.243481507@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,34 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dimitris Michailidis <d.michailidis@fungible.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit b968080808f7f28b89aa495b7402ba48eb17ee93 upstream.
+commit a8fc8cb5692aebb9c6f7afd4265366d25dcd1d01 upstream.
 
-udpgso_bench.sh has been running its IPv6 TCP test with IPv4 arguments
-since its initial conmit. Looks like a typo.
+While looking at a syzbot report I noticed the NAPI only gets
+disabled before it's deleted. I think that user can detach
+the queue before destroying the device and the NAPI will never
+be stopped.
 
-Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-Cc: willemb@google.com
-Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20220623000234.61774-1-dmichail@fungible.com
+Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
+Acked-by: Petar Penkov <ppenkov@aviatrix.com>
+Link: https://lore.kernel.org/r/20220623042105.2274812-1-kuba@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/udpgso_bench.sh |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/tun.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/net/udpgso_bench.sh
-+++ b/tools/testing/selftests/net/udpgso_bench.sh
-@@ -120,7 +120,7 @@ run_all() {
- 	run_udp "${ipv4_args}"
- 
- 	echo "ipv6"
--	run_tcp "${ipv4_args}"
-+	run_tcp "${ipv6_args}"
- 	run_udp "${ipv6_args}"
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -274,6 +274,12 @@ static void tun_napi_init(struct tun_str
+ 	}
  }
  
++static void tun_napi_enable(struct tun_file *tfile)
++{
++	if (tfile->napi_enabled)
++		napi_enable(&tfile->napi);
++}
++
+ static void tun_napi_disable(struct tun_file *tfile)
+ {
+ 	if (tfile->napi_enabled)
+@@ -654,8 +660,10 @@ static void __tun_detach(struct tun_file
+ 		if (clean) {
+ 			RCU_INIT_POINTER(tfile->tun, NULL);
+ 			sock_put(&tfile->sk);
+-		} else
++		} else {
+ 			tun_disable_queue(tun, tfile);
++			tun_napi_disable(tfile);
++		}
+ 
+ 		synchronize_net();
+ 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
+@@ -809,6 +817,7 @@ static int tun_attach(struct tun_struct
+ 
+ 	if (tfile->detached) {
+ 		tun_enable_queue(tfile);
++		tun_napi_enable(tfile);
+ 	} else {
+ 		sock_hold(&tfile->sk);
+ 		tun_napi_init(tun, tfile, napi, napi_frags);
 
 
