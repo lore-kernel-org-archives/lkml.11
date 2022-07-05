@@ -2,108 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E35C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB881C3F2D4
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:45:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbiGEPos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
+        id S232251AbiGEPpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbiGEPor (ORCPT
+        with ESMTP id S231480AbiGEPo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:44:47 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F0F2ADB;
-        Tue,  5 Jul 2022 08:44:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=YXOVzFNFx/d0xO77KJVr1MjwZXUfSymtjaW6FSuQCgs=; b=LXfa0kxtypFYqAtz+ojoxkj2bC
-        +f7Cu/r/v7GhDmDWwCzjMIPo4ImZKRT61WTDT3D78htU9DjT6vOW/UeiBzTgUpZghUQRRXc6eXVGP
-        N8lpG1SWaf0COY/QIHkE7bxsFQ5unFRtVVnpQWOMP1mhDVGKHZx4UxbPGO99o9l8g97A4W40GkWt7
-        Xh4viabMZIqjgavSLmk/yKDDvrp5cA8si92fSOAHQWEAaDqqmUrIAQgJXZ6w7L5dU3se0x8NN9bhX
-        7WOEYEKQHoJP5BH7MW6Ju5uv11pwPQgySNe7v5iObTO2hcNxO5+0UhFgU07WuP8rxtttT+/gD/FjX
-        il3sMmrg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8kie-000hUT-JP; Tue, 05 Jul 2022 15:44:08 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 91A01980059; Tue,  5 Jul 2022 17:44:06 +0200 (CEST)
-Date:   Tue, 5 Jul 2022 17:44:06 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        svens@linux.ibm.com
-Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
- TASK_STOPPED state
-Message-ID: <YsRcRgfZFl0K4L9h@worktop.programming.kicks-ass.net>
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
- <20220505182645.497868-12-ebiederm@xmission.com>
- <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
- <877d5ajesi.fsf@email.froward.int.ebiederm.org>
- <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
- <87y1xk8zx5.fsf@email.froward.int.ebiederm.org>
- <YrtKReO2vIiX8VVU@tuxmaker.boeblingen.de.ibm.com>
- <87czess94h.fsf@email.froward.int.ebiederm.org>
- <20220628184850.05f60d1e@gandalf.local.home>
- <87pmisqgs0.fsf@email.froward.int.ebiederm.org>
+        Tue, 5 Jul 2022 11:44:59 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastus2azon11021016.outbound.protection.outlook.com [52.101.57.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FAD15FF6;
+        Tue,  5 Jul 2022 08:44:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KQ3IdZ9p7q5gDWLLxx0GKlM3h0uziltXE1hggWwmpS5mD6OH6Djk9nIrPdk1mKvJ7TLjgm+JlWjSb3V0/lS6Wck6Im/jeOCMGj6auvDECgXVcN/C3AaXirLzUvmBnm7OMJYsMndOGMvmXFKY3xZuy3aTGC5eAN9Lkua2fNWbQ5m1xQrKaEJdAj4NrhPT/YLQ17TgZXNxYt0pvmbAre98Go03q4vQw8zgAFGLgLCGdvNmb4j9a6jEYylUwJ/dv6xqt0Of5lvbWspbeJbFsZLkcCEpNG/mkR+TQajEd5JvXJrorG2AyrJpjfz1SJYzwzErxqTbdL+7vQKjepkpZlG0rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DNcllGzmWWIudTIpKdRwJSsDHDemRdnOdiTEd0ddrWs=;
+ b=MpzBiBxl9bj1dP2l/tqPBKn8KI64vAG0caAphe7JBE3ctmpi7o5KOeFvn9DwMXwB2PFFHUloLlJ89ylPxjGoByjjsMMGXkGgvDB0ttO3gz0CCAD1rCb9sofWl9WHRcCb3bvIjU0gFx6l2PBP+AtUnVsmz2r4Qn8znuOCcSHsOLC2RJd2zWi+dgSMWmtakBzm64A5rMb0f+BUKMZrC/bc+OW3u1L+Y0msrDLRu1kz/gUJw1+jJj0WcfyJPmoz6n7Ep5Ua3gauiKirIW976Nubob7Ifm3Y/faVspreSSNQPgUVzJcxt6mF+hwvUZr0NuubTw0ecPkoTDlltHkgfRtkXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DNcllGzmWWIudTIpKdRwJSsDHDemRdnOdiTEd0ddrWs=;
+ b=g+Z8J9PhwDjMjlBkbIYfN+LheSUR97ozwVOvOSPtrMoyCX4Jw0EtmGYj+xu4+WBhtAIAgb0IyG4rfmb44SY2kVvG50ZSiiPHaQLCge+3CFJHh/qg1z/Y8Yr1kwEvhxS8wjUgk+mjdoI/Cw1Yuf4G/eVS94KLhDtgVndj1bTpYRs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
+ by DM6PR21MB1322.namprd21.prod.outlook.com (2603:10b6:5:175::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.3; Tue, 5 Jul
+ 2022 15:44:55 +0000
+Received: from DM6PR21MB1370.namprd21.prod.outlook.com
+ ([fe80::684f:525a:aab1:bba6]) by DM6PR21MB1370.namprd21.prod.outlook.com
+ ([fe80::684f:525a:aab1:bba6%4]) with mapi id 15.20.5417.010; Tue, 5 Jul 2022
+ 15:44:55 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, corbet@lwn.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Cc:     mikelley@microsoft.com
+Subject: [PATCH 0/3] Documentation: hyperv: Add basic info on Hyper-V enlightenments
+Date:   Tue,  5 Jul 2022 08:43:39 -0700
+Message-Id: <1657035822-47950-1-git-send-email-mikelley@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR14CA0014.namprd14.prod.outlook.com
+ (2603:10b6:300:ae::24) To DM6PR21MB1370.namprd21.prod.outlook.com
+ (2603:10b6:5:16b::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pmisqgs0.fsf@email.froward.int.ebiederm.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 31bb6b49-1417-4159-9d18-08da5e9d4ee8
+X-MS-TrafficTypeDiagnostic: DM6PR21MB1322:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cNn9qYbCI1Mg5ZzPdtCRmbg9CHZNMZx0ktF4UhOAJpHzmeGVxaKkVAqLnll0z2leiftuKqVezp2mrb0/2P7xbNSG+UKKpSdIl4PlkC/z/77v924/LavZ2WTjDaMYfRtY7l4NAfmuSn1wUiP15sZg7gkOnqVbsDA13x1yvPs87k+HZXY0TZiokCOgzlY23W6tt9hef+kS3Psbgr8Qch8stA6GGkfIokhknBEOW6tjZ80KyXtSQdfLed419jVOzQyBX9ZzfyUeP3c4ClUlkkw+T9XMO5CmthmqInZnR/dfyn2QBvSWSX5uLGzTq7yVuBVycNuCgwFhtLwLpaLbMh46cIURbjyH//Jk/fpHuTUHmhRzpNiZG/cvSB0Eo8Y3PzwoSLPd47Gh5SGUmZyM9XO1Iu3JHzkbT1gXbrIZj3AJ3zmljtwdmcTvrtBGfSuiv+uN5En4DgvBduhjHF/ri5+rOssvXVpplNkE/g11iSEKspmr9/utkCISfFa8O0I7pJ1nYmxJ+MYT1B6lHK5nXuwE5Y8Fi4mTbYPExB2MMnkM9cJUYDZU5/Y3NsHZMo8F/FLGaBvb4EEJYCU/t3NBdjlePYVytW4NVQVmqdNzf9tJw0GHmSBu3N+nxGg553e776JZQy5vJzgZpb9BvHxhFN1SUJZiOBe+cp+v0hCpWt6Rji22ky86fVE5rbdvuDSL8kOPwOMgu1j/BJQHK7OjQixaqyTny5fsJhEZTEXC8Ad1XoZfiYex+bQIteBOn1SW9bcD6oW6ts7q/jFJbcKHCFriQpll3hQQGgfQZbA3WBjeEtmDQBbrR+wZS4N+grGqOcDM++S31Ai8xUWJk57iuVaj4k6Ag1nGHy2UFMpopZm8dcM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(376002)(39860400002)(396003)(366004)(451199009)(26005)(41300700001)(6506007)(2616005)(2906002)(6666004)(107886003)(66476007)(186003)(52116002)(83380400001)(6512007)(478600001)(6486002)(86362001)(5660300002)(8936002)(4326008)(36756003)(38100700002)(38350700002)(82960400001)(66556008)(316002)(82950400001)(10290500003)(8676002)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5prJv/XIuTuhozIT72rFFyx3dJTZFNvYzw4y9qXoL9/mPLYfP01B99Two9ii?=
+ =?us-ascii?Q?0zDwGxm4OMcn0V9gq1+A1lpDHjosmz16/ChW01two16/DVwuVKVIXDv0MEBd?=
+ =?us-ascii?Q?o+fYCZCOM2SM+1KVwzGiO1jq5rEA1CmsN6dtDV0oVXcMjJASbudAG5ZpwL5R?=
+ =?us-ascii?Q?AzIJ7tyOdPjkLwt9ua0QjN8wlFrpXiQ0CxKRw1cF09k+xDxgOKDTJdkk/Gt/?=
+ =?us-ascii?Q?BewIxsMqYl2EQVeLKgfEkGHhiODx6Yr2r2fU0LcGr6vRcdxEWclc08lVOBuP?=
+ =?us-ascii?Q?uJIBvEFSJOTDJ3azf3N2FUduHLSWOLa+1oLK9BjLI3HOrnPzoCqMAol5yWwJ?=
+ =?us-ascii?Q?PMpd8XBQ7hqpJJ/oJGJ/gJ6q8sTMS4aB+O5osMJhGxz1hd44lQY/M8I7ufKO?=
+ =?us-ascii?Q?oeS3Z2nVxOhD6RhhYJEi1gvG+9Ng9THBiMcNX6YS9iRVlhAU7f1v8AkF26LN?=
+ =?us-ascii?Q?2JPqJZqQQYU20oTlIEH4tRUtCpeUvyYToE/bMepe1zhtOvTHhhlz5PlxHW+k?=
+ =?us-ascii?Q?AevpI16iJcPkD6joDtxorg+MlTztWdWO4KVFGzavgkdV9b4KlNp+DiVtAO5d?=
+ =?us-ascii?Q?zcvPzQirEb2NpOaJCvPOOsWHY/et5ATFEAK5+UrQ1oKeG+o0pBM0GHFewB3a?=
+ =?us-ascii?Q?pqRL9rSYjBZfslyetOJ/cUSbNfOtJ1+Rd/TiUStThWKtNkXf7wMXqSUJvaxH?=
+ =?us-ascii?Q?4VMBXNzFqWLpY2ngv2ysacsE5Af74pwBU6Ii0+DkzQf2lz7Zkgn9YAfnf22Q?=
+ =?us-ascii?Q?Q64byzJqXvth0uZiwibSwy4nBDfS1zhgNSbOzSNYvK8zKNTcUdQxiitj958D?=
+ =?us-ascii?Q?OSb6nGF5qbQZVhXRMHhriByC1ziZ84EdYobFE4oci6MvPcX477SOrrJm3OAO?=
+ =?us-ascii?Q?mrQfeBpczhoKaT03vTHTWD+JrQbeKvzeOa1BMCwYZC5Y/5xawY+3Kfh2dqlr?=
+ =?us-ascii?Q?+UXNBEUWYlfLx93Mk2pFdYGvT99qPLjkrOzp3gl234lfbY5vaznNYYpqUgxi?=
+ =?us-ascii?Q?tsLha45+6Ac50Jgh+H1Y6+TVZB3H8K/D8pTan/s/0vDMqnpqD+7Rj9VQ7rW8?=
+ =?us-ascii?Q?X4D8ZaucwSwftMAzTnlppkD8vN2Mhzz8tt8JWl8jX5/uZShce7XjqqJ0B9Q8?=
+ =?us-ascii?Q?WtKYvrSCLr4m+DAl8ea2AN/M8AyKOgtL4Y43ROvZ17nghoxXgEmTEnHVs+QI?=
+ =?us-ascii?Q?gIQp4zfHi+2D7+QRA7JtrOGdSa1KvzVNl2iRmkpVP/gbG7VtYkxHNnY7JM+P?=
+ =?us-ascii?Q?ZjKnrVQY4lF7Q+WTPI5a5lbbrzCcYEJeyaCXbe+m8t/tQzaF2biW/+gZ8x6Z?=
+ =?us-ascii?Q?z0QI5NJ4rhzPo8hLLhdssr8KwLB/ePDMXtX+dg5+5oJUnfrzq1rusWYraPNE?=
+ =?us-ascii?Q?x4Xvd8Kr7im/Gh+eR9Xi/yhraeySe0OH9Pg6YbIryvyd2mdAl1d07+UWZRJN?=
+ =?us-ascii?Q?fssknuppe1RbPrH00SnogajOiqX8cBh7z0XgLCDD4ItoEKtEkn9qIYCjrlpT?=
+ =?us-ascii?Q?3556nEtfh7/uPLvyNUhaUqHIpwwxxkk5CrCY+8nOIZEb2YBTyxud3qMX8L2o?=
+ =?us-ascii?Q?qFo/by8DCNCvV0WbcGoGpEErNbocxkhMjK/Y4MHoGHHGlzUfoG9vErWROHfU?=
+ =?us-ascii?Q?hQ=3D=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31bb6b49-1417-4159-9d18-08da5e9d4ee8
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 15:44:55.6383
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Zfbh/dliHJd4lxPEI96qm5qTTdZtI0PDM+dsIQuzMiNF3WWxWVLIefwN5fohQDguzO4Fw4ZXSzqFmXVCey697g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1322
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 10:39:59PM -0500, Eric W. Biederman wrote:
+This documentation is a high level overview to explain the basics
+of Linux running as a guest on Hyper-V. The intent is to document
+the forest, not the trees. The Hyper-V Top Level Functional Spec
+provides conceptual material and API details for the core Hyper-V
+hypervisor, and this documentation provides additional info on
+how that functionality is applied to Linux. Also, there's no
+public documentation on VMbus or the VMbus synthetic devices, so
+this documentation helps fill that gap at a conceptual level. This
+documentation is not API-level documentation, which can be seen
+in the code and associated comments.
 
-> > That is, the two paths should already be synchronized, and the memory
-> > barriers will not help anything inside the locks. The locking should (and
-> > must) handle all that.
-> 
-> I would presume so to.  However the READ_ONCE that is going astray
-> does not look like it is honoring that.
-> 
-> So perhaps there is a bug in the s390 spin_lock barriers?  Perhaps there
-> is a subtle detail in the barriers that spin locks provide that we are
-> overlooking?
+More topics will be added in future patches, including:
 
-So the thing is, s390 is, like x86, a TSO architecture with SC atomics.
-Or at least it used to be; I'm not entirely solid on the Z196 features.
+* Miscellaneous synthetic devices like KVP, timesync, VSS, etc.
+* Virtual PCI support
+* Isolated/Confidential VMs
 
-I've been looking at this and I can't find anything obviously wrong.
-arch_spin_trylock_once() has what seems a spurious barrier() but that's
-not going to cause this.
+If you think I'm missing a topic that fits into the overall
+approach as described, feel free to suggest text, or let me
+know and I can add it to my list.
 
-Specifically, s390 is using a simple test-and-set spinlock based on
-their Compare-and-Swap (CS) instruction (so no Z196 funnies around).
+Michael Kelley (3):
+  Documentation: hyperv: Add overview of Hyper-V enlightenments
+  Documentation: hyperv: Add overview of VMbus
+  Documentation: hyperv: Add overview of clocks and timers
 
-Except perhaps arch_spin_unlock(), I can't grok the magic there. It does
-something weird before the presumably regular TSO store of 0 into the
-lock word.
+ Documentation/virt/hyperv/clocks.rst   |  73 ++++++++
+ Documentation/virt/hyperv/index.rst    |  12 ++
+ Documentation/virt/hyperv/overview.rst | 207 ++++++++++++++++++++++
+ Documentation/virt/hyperv/vmbus.rst    | 303 +++++++++++++++++++++++++++++++++
+ Documentation/virt/index.rst           |   1 +
+ MAINTAINERS                            |   1 +
+ 6 files changed, 597 insertions(+)
+ create mode 100644 Documentation/virt/hyperv/clocks.rst
+ create mode 100644 Documentation/virt/hyperv/index.rst
+ create mode 100644 Documentation/virt/hyperv/overview.rst
+ create mode 100644 Documentation/virt/hyperv/vmbus.rst
 
-Ooohh.. /me finds arch_spin_lock_queued().. *urfh* because obviously a
-copy of queued spinlocks is what we need.
+-- 
+1.8.3.1
 
-rwlock_t OTOH is using __atomic_add_*() and that's all Z196 magic.
-
-Sven, does all this still reproduce if you take out
-CONFIG_HAVE_MARCH_Z196_FEATURES ? Also, could you please explain the
-Z196 bits or point me to the relevant section in the PoO. Additionally,
-what's that _niai[48] stuff?
-
-And I'm assuming s390 has hardware fairness on competing CS ?
