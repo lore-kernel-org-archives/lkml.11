@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3ED9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1EEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235701AbiGEMQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
+        id S236103AbiGEMQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235285AbiGEMIu (ORCPT
+        with ESMTP id S235284AbiGEMIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:08:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200D6E07;
-        Tue,  5 Jul 2022 05:08:47 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5BEE2D;
+        Tue,  5 Jul 2022 05:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B71EAB817D2;
-        Tue,  5 Jul 2022 12:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 077FEC341CB;
-        Tue,  5 Jul 2022 12:08:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C132661856;
+        Tue,  5 Jul 2022 12:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6499C341C7;
+        Tue,  5 Jul 2022 12:08:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022924;
-        bh=gDNm9VkZhtxww4I2NnBeE9/UzhtLtDxB4AKiTkuqLKY=;
+        s=korg; t=1657022927;
+        bh=KLewugvlQfnHhOK3fgli2q9qbyOzLhQxzieXn0BcCdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VY9ow9+R3Pj6Elnzras0eOl9Sv2Jg0WU95SM9ZmK6ENF+BuVnBUdK6zPoY0alqPQA
-         NY60VBjYxMP9E6iI7pJK22ziISLs/cBCnkdWgSRfhNcuCptJcRvytYVhmjKq2E2tjh
-         KW/CLKFmmoKqiL/ii0c3Zf+o5L9wv/xRIxnoUzc4=
+        b=d50aWw66FRSYOP+tzIeGDiTN7n/I0fO/9BT99lP88siXnNbiNyvqHm1W8Mm9l0Bnl
+         UEcGx/7ZAfSYU4bLaBr9DCu9GDVuo70FP6X7sBd9/bAx+h+2aQ5TqYKi+0Ermv5HO5
+         dpKafEylOe7YoP8GFUfhkTSh93wi+jyPaiFE6UWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 59/84] hwmon: (ibmaem) dont call platform_device_del() if platform_device_add() fails
-Date:   Tue,  5 Jul 2022 13:58:22 +0200
-Message-Id: <20220705115617.045351103@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH 5.10 60/84] selftests/rseq: remove ARRAY_SIZE define from individual tests
+Date:   Tue,  5 Jul 2022 13:58:23 +0200
+Message-Id: <20220705115617.074191918@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -50,70 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-[ Upstream commit d0e51022a025ca5350fafb8e413a6fe5d4baf833 ]
+commit 07ad4f7629d4802ff0d962b0ac23ea6445964e2a upstream.
 
-If platform_device_add() fails, it no need to call platform_device_del(), split
-platform_device_unregister() into platform_device_del/put(), so platform_device_put()
-can be called separately.
+ARRAY_SIZE is defined in several selftests. Remove definitions from
+individual test files and include header file for the define instead.
+ARRAY_SIZE define is added in a separate patch to prepare for this
+change.
 
-Fixes: 8808a793f052 ("ibmaem: new driver for power/energy/temp meters in IBM System X hardware")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220701074153.4021556-1-yangyingliang@huawei.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Remove ARRAY_SIZE from rseq tests and pickup the one defined in
+kselftest.h.
+
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/ibmaem.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ tools/testing/selftests/rseq/basic_percpu_ops_test.c |    3 +--
+ tools/testing/selftests/rseq/rseq.c                  |    3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hwmon/ibmaem.c b/drivers/hwmon/ibmaem.c
-index a4ec85207782..2e6d6a5cffa1 100644
---- a/drivers/hwmon/ibmaem.c
-+++ b/drivers/hwmon/ibmaem.c
-@@ -550,7 +550,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
+--- a/tools/testing/selftests/rseq/basic_percpu_ops_test.c
++++ b/tools/testing/selftests/rseq/basic_percpu_ops_test.c
+@@ -9,10 +9,9 @@
+ #include <string.h>
+ #include <stddef.h>
  
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
++#include "../kselftest.h"
+ #include "rseq.h"
  
- 	platform_set_drvdata(data->pdev, data);
+-#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
+-
+ struct percpu_lock_entry {
+ 	intptr_t v;
+ } __attribute__((aligned(128)));
+--- a/tools/testing/selftests/rseq/rseq.c
++++ b/tools/testing/selftests/rseq/rseq.c
+@@ -27,10 +27,9 @@
+ #include <signal.h>
+ #include <limits.h>
  
-@@ -598,7 +598,9 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
-@@ -690,7 +692,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
++#include "../kselftest.h"
+ #include "rseq.h"
  
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
- 
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -738,7 +740,9 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
--- 
-2.35.1
-
+-#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
+-
+ __thread volatile struct rseq __rseq_abi = {
+ 	.cpu_id = RSEQ_CPU_ID_UNINITIALIZED,
+ };
 
 
