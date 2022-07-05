@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4FEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B12EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234171AbiGEMG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
+        id S234178AbiGEMG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233703AbiGEMEC (ORCPT
+        with ESMTP id S233719AbiGEMEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:04:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D33186DB;
-        Tue,  5 Jul 2022 05:03:58 -0700 (PDT)
+        Tue, 5 Jul 2022 08:04:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532BB186E5;
+        Tue,  5 Jul 2022 05:04:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17F98618C9;
-        Tue,  5 Jul 2022 12:03:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF7FC341C7;
-        Tue,  5 Jul 2022 12:03:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E330261876;
+        Tue,  5 Jul 2022 12:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9C35C341C7;
+        Tue,  5 Jul 2022 12:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022637;
-        bh=my5J7/gLwd31s1TtO9p++bDJAfDpik74zoOIihK3y4I=;
+        s=korg; t=1657022640;
+        bh=SBGXnzZvGHHwCV+Kok1/N8kVkHOVldkENMvkMEhVYh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PT0uqw+AHP+D0aR81YPOh2bfuYhkZc20by07yrg0qo9Uxp7v6WUwgHdZQ6APc8BbP
-         1+eY2Za7BEXY/KFfq+SoH8VFIK8qWVObgz6xNEvVPTZFlUfPtR6aCTY2gZAf4E9/qf
-         7BasHy1bkhWQk+9sXHtgDFd/pxMrRAitXLKItqTo=
+        b=qB1l+Ujp6K2mjduK8ljS/GzuMq42E75odaZOH2pNC260T3iMwzNjoF6n2wwL0wkmH
+         Lis8lplvjQwMBXB7VCXHJ6HsUjXG3gMBioeWKU2QM6SmQaXQhqIdUoxJuDhjrqwvLo
+         euaDIUN17UoIQ8wsS4sFi/UwvUxo4Gb4KJNrdAew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH 5.4 15/58] RDMA/qedr: Fix reporting QP timeout attribute
-Date:   Tue,  5 Jul 2022 13:57:51 +0200
-Message-Id: <20220705115610.692516709@linuxfoundation.org>
+        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.4 16/58] linux/dim: Fix divide by 0 in RDMA DIM
+Date:   Tue,  5 Jul 2022 13:57:52 +0200
+Message-Id: <20220705115610.721038328@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -49,55 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Tao Liu <thomas.liu@ucloud.cn>
 
-commit 118f767413ada4eef7825fbd4af7c0866f883441 upstream.
+commit 0fe3dbbefb74a8575f61d7801b08dbc50523d60d upstream.
 
-Make sure to save the passed QP timeout attribute when the QP gets modified,
-so when calling query QP the right value is reported and not the
-converted value that is required by the firmware. This issue was found
-while running the pyverbs tests.
+Fix a divide 0 error in rdma_dim_stats_compare() when prev->cpe_ratio ==
+0.
 
-Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
-Link: https://lore.kernel.org/r/20220525132029.84813-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+CallTrace:
+  Hardware name: H3C R4900 G3/RS33M2C9S, BIOS 2.00.37P21 03/12/2020
+  task: ffff880194b78000 task.stack: ffffc90006714000
+  RIP: 0010:backport_rdma_dim+0x10e/0x240 [mlx_compat]
+  RSP: 0018:ffff880c10e83ec0 EFLAGS: 00010202
+  RAX: 0000000000002710 RBX: ffff88096cd7f780 RCX: 0000000000000064
+  RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000001
+  RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000000 R12: 000000001d7c6c09
+  R13: ffff88096cd7f780 R14: ffff880b174fe800 R15: 0000000000000000
+  FS:  0000000000000000(0000) GS:ffff880c10e80000(0000)
+  knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00000000a0965b00 CR3: 000000000200a003 CR4: 00000000007606e0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  PKRU: 55555554
+  Call Trace:
+   <IRQ>
+   ib_poll_handler+0x43/0x80 [ib_core]
+   irq_poll_softirq+0xae/0x110
+   __do_softirq+0xd1/0x28c
+   irq_exit+0xde/0xf0
+   do_IRQ+0x54/0xe0
+   common_interrupt+0x8f/0x8f
+   </IRQ>
+   ? cpuidle_enter_state+0xd9/0x2a0
+   ? cpuidle_enter_state+0xc7/0x2a0
+   ? do_idle+0x170/0x1d0
+   ? cpu_startup_entry+0x6f/0x80
+   ? start_secondary+0x1b9/0x210
+   ? secondary_startup_64+0xa5/0xb0
+  Code: 0f 87 e1 00 00 00 8b 4c 24 14 44 8b 43 14 89 c8 4d 63 c8 44 29 c0 99 31 d0 29 d0 31 d2 48 98 48 8d 04 80 48 8d 04 80 48 c1 e0 02 <49> f7 f1 48 83 f8 0a 0f 86 c1 00 00 00 44 39 c1 7f 10 48 89 df
+  RIP: backport_rdma_dim+0x10e/0x240 [mlx_compat] RSP: ffff880c10e83ec0
+
+Fixes: f4915455dcf0 ("linux/dim: Implement RDMA adaptive moderation (DIM)")
+Link: https://lore.kernel.org/r/20220627140004.3099-1-thomas.liu@ucloud.cn
+Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/qedr/qedr.h  |    1 +
- drivers/infiniband/hw/qedr/verbs.c |    4 +++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ include/linux/dim.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/infiniband/hw/qedr/qedr.h
-+++ b/drivers/infiniband/hw/qedr/qedr.h
-@@ -416,6 +416,7 @@ struct qedr_qp {
- 	u32 sq_psn;
- 	u32 qkey;
- 	u32 dest_qp_num;
-+	u8 timeout;
+--- a/include/linux/dim.h
++++ b/include/linux/dim.h
+@@ -17,7 +17,7 @@
+  * We consider 10% difference as significant.
+  */
+ #define IS_SIGNIFICANT_DIFF(val, ref) \
+-	(((100UL * abs((val) - (ref))) / (ref)) > 10)
++	((ref) && (((100UL * abs((val) - (ref))) / (ref)) > 10))
  
- 	/* Relevant to qps created from kernel space only (ULPs) */
- 	u8 prev_wqe_size;
---- a/drivers/infiniband/hw/qedr/verbs.c
-+++ b/drivers/infiniband/hw/qedr/verbs.c
-@@ -2259,6 +2259,8 @@ int qedr_modify_qp(struct ib_qp *ibqp, s
- 					1 << max_t(int, attr->timeout - 8, 0);
- 		else
- 			qp_params.ack_timeout = 0;
-+
-+		qp->timeout = attr->timeout;
- 	}
- 
- 	if (attr_mask & IB_QP_RETRY_CNT) {
-@@ -2418,7 +2420,7 @@ int qedr_query_qp(struct ib_qp *ibqp,
- 	rdma_ah_set_dgid_raw(&qp_attr->ah_attr, &params.dgid.bytes[0]);
- 	rdma_ah_set_port_num(&qp_attr->ah_attr, 1);
- 	rdma_ah_set_sl(&qp_attr->ah_attr, 0);
--	qp_attr->timeout = params.timeout;
-+	qp_attr->timeout = qp->timeout;
- 	qp_attr->rnr_retry = params.rnr_retry;
- 	qp_attr->retry_cnt = params.retry_cnt;
- 	qp_attr->min_rnr_timer = params.min_rnr_nak_timer;
+ /**
+  * Calculate the gap between two values.
 
 
