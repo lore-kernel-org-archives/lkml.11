@@ -2,139 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11104C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB738C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232958AbiGETsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S233032AbiGETtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiGETsK (ORCPT
+        with ESMTP id S230079AbiGETtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:48:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583671A835
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:48:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657050489; x=1688586489;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to;
-  bh=YcyaUw46qwZYJmbyw8c4O2pxaPI/Doz2nUpJKZcvnQc=;
-  b=c7OQGQ3bgh7Fg4lTrj7xVs6QfNoZtzxl06UY+Qgfvt+afbE+gQW+YBZc
-   jz99eTbOa9/Km8f5TUJqj6OKqk0BJkhMPMUNqSNe2fw+Xz8C1WX5CKXno
-   GGSPY/QXlp4zZWHXap9mgugRrqpQ8XeoIhKKaIkf/QDAspaa1u7voxFon
-   N24rj0uYbxo1bvxSLDeJVzVpAXhA2GeikmQxXEHn7euhmXdqOgNinj6LP
-   SRGqMlXVIPbxEaSCWBpGBS2u+FY+DXw27fffL0mAUKq+qh3WrNsb+Vld9
-   DHhbksISkFl9s4Bi8E7WZqdBa8ug+g9dGEwMtM/FLf0taTxtvtt+S3OmA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="263258510"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="263258510"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 12:48:09 -0700
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="839250395"
-Received: from tdisanx-mobl.amr.corp.intel.com (HELO [10.209.16.32]) ([10.209.16.32])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 12:48:08 -0700
-Content-Type: multipart/mixed; boundary="------------s14tG07WmhEwdC3tgylz9P4X"
-Message-ID: <b19da294-ef38-9c78-8c5c-03e3d1cb555d@intel.com>
-Date:   Tue, 5 Jul 2022 12:46:10 -0700
+        Tue, 5 Jul 2022 15:49:11 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8021D3;
+        Tue,  5 Jul 2022 12:49:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ONPWuHGAM6kWNFap3DXPBrwE41N3WuQAN/EYPstEIcM=; b=LgkaiVQa6B8YDlpE26jrvbc4Vh
+        FPJfILIydT2k1fCP+6v0qOZXrb6dcK6NzD1fDwr0D25lLfApKwXaHg8uJq6Ob3VdK972eJW3UjUuX
+        DWcpP+xhZYMxT4pkhBeISJKQ9hyrymziBESry2GIuhi4BM9+ini6zgoeUX4HZipSP8E0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o8oXa-009PZu-CM; Tue, 05 Jul 2022 21:48:58 +0200
+Date:   Tue, 5 Jul 2022 21:48:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "git (AMD-Xilinx)" <git@amd.com>
+Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
+ producer ethernet node to probe first
+Message-ID: <YsSVqknDQxdWqfds@lunn.ch>
+References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
+ <Yr66xEMB/ORr0Xcp@lunn.ch>
+ <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
+ <CAGETcx_BUR3EPDLgp9v0Uk9N=8BtYRjFyhpJTQa9kEMHtkgdwQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] x86/split_lock: Enable the split lock detect feature on
- Raptor Lake P and Alder Lake N CPUs
-Content-Language: en-US
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Tony Luck <tony.luck@intel.com>
-Cc:     x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
-References: <20220701131958.687066-1-fenghua.yu@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220701131958.687066-1-fenghua.yu@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_BUR3EPDLgp9v0Uk9N=8BtYRjFyhpJTQa9kEMHtkgdwQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------s14tG07WmhEwdC3tgylz9P4X
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+> > Thanks for the review.  I want to get your thoughts on the outline of
+> > the generic solution. Is the current approach fine and we can extend it
+> > for all shared MDIO use cases/ or do we see any limitations?
+> >
+> > a) Figure out if the MDIO bus is shared.  (new binding or reuse existing)
+> > b) If the MDIO bus is shared based on DT property then figure out if the
+> > MDIO producer platform device is probed. If not, defer MDIO consumer
+> > MDIO bus registration.
+> 
+> Radhey,
+> 
+> I think Andrew added me because he's pointing you towards fw_devlink.
+> 
+> Andrew,
+> 
+> I have intentionally not added phy-handle support to fw_devlink
+> because it would also prevent the generic driver from binding/cause
+> issues with DSA. I have some high level ideas on fixing that but
+> haven't gotten around to it yet.
 
-I have an alternative patch.
+I took a quick look at macb, and i think it is actually broken in
+other ways. If you where to use NFS root, i suspect it would also
+fail.
 
-Let's just consider the MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT bit to be
-architectural.  Are there *ACTUAL* implementations where this is wrong?
- If not, let's just make it part of the architecture.  Intel can then
-keep it true forever.
+This also has nothing to do with shared MDIO busses as such. All it
+requires is some other MDIO bus, not the MACs own MDIO bus.
 
-Some documentation which says:
+It is also that we cannot return -EPROBE_DEFER when trying to connect
+the PHY, because it is not performed in the context of the probe, but
+the open.
 
-	All processors that enumerate support for MSR_IA32_CORE_CAPS and
-	set MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT support split lock 	
-	detection.
+fw_dewlink might help solve this, bit it is not going to be easy. We
+can also split this into two problems;
 
-would suffice, I think.  Just look at the diffstat.  What's not to love?
---------------s14tG07WmhEwdC3tgylz9P4X
-Content-Type: text/x-patch; charset=UTF-8; name="split-lock-arch.patch"
-Content-Disposition: attachment; filename="split-lock-arch.patch"
-Content-Transfer-Encoding: base64
+1) probe time
+2) suspend/resume
 
-CgotLS0KCiBiL2FyY2gveDg2L2tlcm5lbC9jcHUvaW50ZWwuYyB8ICAgNTUgKysrKysrKysr
-KysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTgg
-aW5zZXJ0aW9ucygrKSwgMzcgZGVsZXRpb25zKC0pCgpkaWZmIC1wdU4gYXJjaC94ODYva2Vy
-bmVsL2NwdS9pbnRlbC5jfnNwbGl0LWxvY2stYXJjaCBhcmNoL3g4Ni9rZXJuZWwvY3B1L2lu
-dGVsLmMKLS0tIGEvYXJjaC94ODYva2VybmVsL2NwdS9pbnRlbC5jfnNwbGl0LWxvY2stYXJj
-aAkyMDIyLTA3LTA1IDEyOjM3OjIxLjI5NDAzNDE4MiAtMDcwMAorKysgYi9hcmNoL3g4Ni9r
-ZXJuZWwvY3B1L2ludGVsLmMJMjAyMi0wNy0wNSAxMjo0Mzo0MC40ODM4NDI0NzggLTA3MDAK
-QEAgLTEyNjUsMzEgKzEyNjUsMTQgQEAgdm9pZCBoYW5kbGVfYnVzX2xvY2soc3RydWN0IHB0
-X3JlZ3MgKnJlZwogfQogCiAvKgotICogQml0cyBpbiB0aGUgSUEzMl9DT1JFX0NBUEFCSUxJ
-VElFUyBhcmUgbm90IGFyY2hpdGVjdHVyYWwsIHNvIHRoZXkgc2hvdWxkCi0gKiBvbmx5IGJl
-IHRydXN0ZWQgaWYgaXQgaXMgY29uZmlybWVkIHRoYXQgYSBDUFUgbW9kZWwgaW1wbGVtZW50
-cyBhCi0gKiBzcGVjaWZpYyBmZWF0dXJlIGF0IGEgcGFydGljdWxhciBiaXQgcG9zaXRpb24u
-Ci0gKgotICogVGhlIHBvc3NpYmxlIGRyaXZlciBkYXRhIGZpZWxkIHZhbHVlczoKLSAqCi0g
-KiAtIDA6IENQVSBtb2RlbHMgdGhhdCBhcmUga25vd24gdG8gaGF2ZSB0aGUgcGVyLWNvcmUg
-c3BsaXQtbG9jayBkZXRlY3Rpb24KLSAqCWZlYXR1cmUgZXZlbiB0aG91Z2ggdGhleSBkbyBu
-b3QgZW51bWVyYXRlIElBMzJfQ09SRV9DQVBBQklMSVRJRVMuCi0gKgotICogLSAxOiBDUFUg
-bW9kZWxzIHdoaWNoIG1heSBlbnVtZXJhdGUgSUEzMl9DT1JFX0NBUEFCSUxJVElFUyBhbmQg
-aWYgc28gdXNlCi0gKiAgICAgIGJpdCA1IHRvIGVudW1lcmF0ZSB0aGUgcGVyLWNvcmUgc3Bs
-aXQtbG9jayBkZXRlY3Rpb24gZmVhdHVyZS4KKyAqIE5vdCBhbGwgYml0cyBpbiBNU1JfSUEz
-Ml9DT1JFX0NBUFMgYXJlIGFyY2hpdGVjdHVyYWwsIGJ1dAorICogTVNSX0lBMzJfQ09SRV9D
-QVBTX1NQTElUX0xPQ0tfREVURUNUIGlzLiAgQWxsIENQVXMgdGhhdCBzZXQKKyAqIGl0IGhh
-dmUgc3BsaXQgbG9jayBkZXRlY3Rpb24uCiAgKi8KIHN0YXRpYyBjb25zdCBzdHJ1Y3QgeDg2
-X2NwdV9pZCBzcGxpdF9sb2NrX2NwdV9pZHNbXSBfX2luaXRjb25zdCA9IHsKLQlYODZfTUFU
-Q0hfSU5URUxfRkFNNl9NT0RFTChJQ0VMQUtFX1gsCQkwKSwKLQlYODZfTUFUQ0hfSU5URUxf
-RkFNNl9NT0RFTChJQ0VMQUtFX0wsCQkwKSwKLQlYODZfTUFUQ0hfSU5URUxfRkFNNl9NT0RF
-TChJQ0VMQUtFX0QsCQkwKSwKLQlYODZfTUFUQ0hfSU5URUxfRkFNNl9NT0RFTChBVE9NX1RS
-RU1PTlQsCTEpLAotCVg4Nl9NQVRDSF9JTlRFTF9GQU02X01PREVMKEFUT01fVFJFTU9OVF9E
-LAkxKSwKLQlYODZfTUFUQ0hfSU5URUxfRkFNNl9NT0RFTChBVE9NX1RSRU1PTlRfTCwJMSks
-Ci0JWDg2X01BVENIX0lOVEVMX0ZBTTZfTU9ERUwoVElHRVJMQUtFX0wsCQkxKSwKLQlYODZf
-TUFUQ0hfSU5URUxfRkFNNl9NT0RFTChUSUdFUkxBS0UsCQkxKSwKLQlYODZfTUFUQ0hfSU5U
-RUxfRkFNNl9NT0RFTChTQVBQSElSRVJBUElEU19YLAkxKSwKLQlYODZfTUFUQ0hfSU5URUxf
-RkFNNl9NT0RFTChBTERFUkxBS0UsCQkxKSwKLQlYODZfTUFUQ0hfSU5URUxfRkFNNl9NT0RF
-TChBTERFUkxBS0VfTCwJCTEpLAotCVg4Nl9NQVRDSF9JTlRFTF9GQU02X01PREVMKFJBUFRP
-UkxBS0UsCQkxKSwKKwlYODZfTUFUQ0hfSU5URUxfRkFNNl9NT0RFTChJQ0VMQUtFX1gsCTEp
-LAorCVg4Nl9NQVRDSF9JTlRFTF9GQU02X01PREVMKElDRUxBS0VfTCwJMSksCisJWDg2X01B
-VENIX0lOVEVMX0ZBTTZfTU9ERUwoSUNFTEFLRV9ELAkxKSwKIAl7fQogfTsKIApAQCAtMTMw
-MSwyNCArMTI4NCwyMiBAQCBzdGF0aWMgdm9pZCBfX2luaXQgc3BsaXRfbG9ja19zZXR1cChz
-dHJ1CiAJaWYgKGJvb3RfY3B1X2hhcyhYODZfRkVBVFVSRV9IWVBFUlZJU09SKSkKIAkJcmV0
-dXJuOwogCisJLyogQ2hlY2sgZm9yIENQVXMgdGhhdCBoYXZlIHN1cHBvcnQgYnV0IGRvIG5v
-dCBlbnVtZXJhdGUgaXQ6ICovCiAJbSA9IHg4Nl9tYXRjaF9jcHUoc3BsaXRfbG9ja19jcHVf
-aWRzKTsKLQlpZiAoIW0pCi0JCXJldHVybjsKKwlpZiAobSkKKwkJZ290byBzdXBwb3J0ZWQ7
-CiAKLQlzd2l0Y2ggKG0tPmRyaXZlcl9kYXRhKSB7Ci0JY2FzZSAwOgotCQlicmVhazsKLQlj
-YXNlIDE6Ci0JCWlmICghY3B1X2hhcyhjLCBYODZfRkVBVFVSRV9DT1JFX0NBUEFCSUxJVElF
-UykpCi0JCQlyZXR1cm47Ci0JCXJkbXNybChNU1JfSUEzMl9DT1JFX0NBUFMsIGlhMzJfY29y
-ZV9jYXBzKTsKLQkJaWYgKCEoaWEzMl9jb3JlX2NhcHMgJiBNU1JfSUEzMl9DT1JFX0NBUFNf
-U1BMSVRfTE9DS19ERVRFQ1QpKQotCQkJcmV0dXJuOwotCQlicmVhazsKLQlkZWZhdWx0Ogor
-CWlmICghY3B1X2hhcyhjLCBYODZfRkVBVFVSRV9DT1JFX0NBUEFCSUxJVElFUykpCiAJCXJl
-dHVybjsKLQl9CiAKKwlyZG1zcmwoTVNSX0lBMzJfQ09SRV9DQVBTLCBpYTMyX2NvcmVfY2Fw
-cyk7CisJaWYgKGlhMzJfY29yZV9jYXBzICYgTVNSX0lBMzJfQ09SRV9DQVBTX1NQTElUX0xP
-Q0tfREVURUNUKQorCQlnb3RvIHN1cHBvcnRlZDsKKworCS8qIENQVSBpcyBub3QgaW4gdGhl
-IG1vZGVsIGxpc3QgYW5kIGRvZXMgbm90IGhhdmUgdGhlIE1TUiBiaXQ6ICovCisJcmV0dXJu
-OworCitzdXBwb3J0ZWQ6CiAJY3B1X21vZGVsX3N1cHBvcnRzX3NsZCA9IHRydWU7CiAJX19z
-cGxpdF9sb2NrX3NldHVwKCk7CiB9Cl8K
+macb does seem to probe, for most use cases. So we can probably ignore
+that for now. So we can concentrate on suspend/resume. You say
+suspend/resume is based on probe order. So it must build some sort of
+tree. Can we make phy_attach_direct add an additional link to this
+tree when a MAC device is link to a PHY? Is this what
+device_link_add() is about?
 
---------------s14tG07WmhEwdC3tgylz9P4X--
+     Andrew
