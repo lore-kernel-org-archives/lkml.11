@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E15CEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC824CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233163AbiGEMBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
+        id S230248AbiGEMBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232999AbiGEMAs (ORCPT
+        with ESMTP id S232906AbiGEMAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:00:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3427318376;
-        Tue,  5 Jul 2022 05:00:48 -0700 (PDT)
+        Tue, 5 Jul 2022 08:00:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9421582A;
+        Tue,  5 Jul 2022 05:00:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6527617B9;
-        Tue,  5 Jul 2022 12:00:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4AA5C341C7;
-        Tue,  5 Jul 2022 12:00:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43818B817D6;
+        Tue,  5 Jul 2022 12:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A57C341C7;
+        Tue,  5 Jul 2022 12:00:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022447;
-        bh=onAYcPnbBE6j4IvOJKB4XBG4btFllbiMF11hZ6/oNsw=;
+        s=korg; t=1657022450;
+        bh=v40g/hBBeQmr4W1jpD2WWBoeCsbWUBpQuUMf2B4Nk+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J9gr7FLBgtp+RpopTzRhDfRQaLRq1v4RUsFsUl6lpbA5c/c0esqWu4Ts7mtLW0EwV
-         H11rLyBHOT7mBOAPZ32eoX4SXvedvUTf/kP9DQU3xTsQm1c4uhc0ROd960cU4Ielmx
-         QjqY3Q6kuJeCjUCUoQiVoH+wvmlAocvFREPQic18=
+        b=w/MvqmlVg21K862aYaNaM7oCo1AKs0XPifoAulMSIf3EFGUQrBXdephxWByfCIT+A
+         srvDo/WLNTs3lKsueqV0Vds+lj5Y6BQ2oQreTDiBJlu+sS+svLKFtoG692y42GkpNc
+         0DKKJ6EeShr1OEUnOD/aP9cHiQpzsU9S5lY+YmYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 10/29] net: ipv6: unexport __init-annotated seg6_hmac_net_init()
-Date:   Tue,  5 Jul 2022 13:57:58 +0200
-Message-Id: <20220705115606.647493871@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 4.14 11/29] caif_virtio: fix race between virtio_device_ready() and ndo_open()
+Date:   Tue,  5 Jul 2022 13:57:59 +0200
+Message-Id: <20220705115606.676585095@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
 References: <20220705115606.333669144@linuxfoundation.org>
@@ -49,41 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Jason Wang <jasowang@redhat.com>
 
-commit 53ad46169fe2996fe1b623ba6c9c4fa33847876f upstream.
+commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
 
-As of commit 5801f064e351 ("net: ipv6: unexport __init-annotated seg6_hmac_init()"),
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+We currently depend on probe() calling virtio_device_ready() -
+which happens after netdev
+registration. Since ndo_open() can be called immediately
+after register_netdev, this means there exists a race between
+ndo_open() and virtio_device_ready(): the driver may start to use the
+device (e.g. TX) before DRIVER_OK which violates the spec.
 
-This remove the EXPORT_SYMBOL to fix modpost warning:
+Fix this by switching to use register_netdevice() and protect the
+virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
+only be called after virtio_device_ready().
 
-WARNING: modpost: vmlinux.o(___ksymtab+seg6_hmac_net_init+0x0): Section mismatch in reference from the variable __ksymtab_seg6_hmac_net_init to the function .init.text:seg6_hmac_net_init()
-The symbol seg6_hmac_net_init is exported and annotated __init
-Fix this by removing the __init annotation of seg6_hmac_net_init or drop the export.
-
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Link: https://lore.kernel.org/r/20220628033134.21088-1-yuehaibing@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/seg6_hmac.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/caif/caif_virtio.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/seg6_hmac.c
-+++ b/net/ipv6/seg6_hmac.c
-@@ -414,7 +414,6 @@ int __net_init seg6_hmac_net_init(struct
+--- a/drivers/net/caif/caif_virtio.c
++++ b/drivers/net/caif/caif_virtio.c
+@@ -727,13 +727,21 @@ static int cfv_probe(struct virtio_devic
+ 	/* Carrier is off until netdevice is opened */
+ 	netif_carrier_off(netdev);
+ 
++	/* serialize netdev register + virtio_device_ready() with ndo_open() */
++	rtnl_lock();
++
+ 	/* register Netdev */
+-	err = register_netdev(netdev);
++	err = register_netdevice(netdev);
+ 	if (err) {
++		rtnl_unlock();
+ 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
+ 		goto err;
+ 	}
+ 
++	virtio_device_ready(vdev);
++
++	rtnl_unlock();
++
+ 	debugfs_init(cfv);
  
  	return 0;
- }
--EXPORT_SYMBOL(seg6_hmac_net_init);
- 
- void seg6_hmac_exit(void)
- {
 
 
