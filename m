@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5B3CCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D82FCCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237097AbiGEMSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        id S236973AbiGEMS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234488AbiGEMJf (ORCPT
+        with ESMTP id S234389AbiGEMJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3107518B19;
-        Tue,  5 Jul 2022 05:09:34 -0700 (PDT)
+        Tue, 5 Jul 2022 08:09:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48260186F0;
+        Tue,  5 Jul 2022 05:09:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF32BB817CC;
-        Tue,  5 Jul 2022 12:09:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 560F3C341D2;
-        Tue,  5 Jul 2022 12:09:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6A89617B1;
+        Tue,  5 Jul 2022 12:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C616DC341C7;
+        Tue,  5 Jul 2022 12:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022971;
-        bh=j36jchCM8ILfEg2ys9QtiIQAKWlq+mioJDKE0WBqCYM=;
+        s=korg; t=1657022963;
+        bh=Re8s28P1byiwhi9zFf438s/wOl1yD4U+xdQBclhNQVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RYxjFbAHZE6kGAYoKsJ6vcZE+4xIX96URD2MT0ZvbWxMFO0LE54H9N2KMXAhTbLE8
-         tidXn8YPzYgPj/YQxGIcLOFeflkj6i70buQ+RdUZ0SCaRyI+Y1yuDoOpbJ1Eftzb5o
-         ANQxBDIEsXHlwWZIlr7dOPuD/WMHwEQBn9EGZDy4=
+        b=OTi1HpUyOiAlD59uYHdOY6MKFbL0bTp+gyv50zGHN1uW4QbpgknrkIhQhE6UheLtv
+         HhQ8aZ3bvgfoqJW7QO5nmEGKHnXB862u+3TWTUspw0i7lRg933ghVj3GzrKyGWOWBY
+         8dBgeZvi4R2GjYasmOL+gMdosIZwg788Q3uxDV3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuang Li <shuali@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>, Jon Maloy <jmaloy@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 36/84] tipc: move bc link creation back to tipc_node_create
-Date:   Tue,  5 Jul 2022 13:57:59 +0200
-Message-Id: <20220705115616.376873020@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.10 71/84] selftests/rseq: Remove arm/mips asm goto compiler work-around
+Date:   Tue,  5 Jul 2022 13:58:34 +0200
+Message-Id: <20220705115617.395151726@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -49,123 +49,435 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-commit cb8092d70a6f5f01ec1490fce4d35efed3ed996c upstream.
+commit 94c5cf2a0e193afffef8de48ddc42de6df7cac93 upstream.
 
-Shuang Li reported a NULL pointer dereference crash:
+The arm and mips work-around for asm goto size guess issues are not
+properly documented, and lack reference to specific compiler versions,
+upstream compiler bug tracker entry, and reproducer.
 
-  [] BUG: kernel NULL pointer dereference, address: 0000000000000068
-  [] RIP: 0010:tipc_link_is_up+0x5/0x10 [tipc]
-  [] Call Trace:
-  []  <IRQ>
-  []  tipc_bcast_rcv+0xa2/0x190 [tipc]
-  []  tipc_node_bc_rcv+0x8b/0x200 [tipc]
-  []  tipc_rcv+0x3af/0x5b0 [tipc]
-  []  tipc_udp_recv+0xc7/0x1e0 [tipc]
+I can only find a loosely documented patch in my original LKML rseq post
+refering to gcc < 7 on ARM, but it does not appear to be sufficient to
+track the exact issue. Also, I am not sure MIPS really has the same
+limitation.
 
-It was caused by the 'l' passed into tipc_bcast_rcv() is NULL. When it
-creates a node in tipc_node_check_dest(), after inserting the new node
-into hashtable in tipc_node_create(), it creates the bc link. However,
-there is a gap between this insert and bc link creation, a bc packet
-may come in and get the node from the hashtable then try to dereference
-its bc link, which is NULL.
+Therefore, remove the work-around until we can properly document this.
 
-This patch is to fix it by moving the bc link creation before inserting
-into the hashtable.
-
-Note that for a preliminary node becoming "real", the bc link creation
-should also be called before it's rehashed, as we don't create it for
-preliminary nodes.
-
-Fixes: 4cbf8ac2fe5a ("tipc: enable creating a "preliminary" node")
-Reported-by: Shuang Li <shuali@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/lkml/20171121141900.18471-17-mathieu.desnoyers@efficios.com/
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/node.c |   41 ++++++++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 19 deletions(-)
+ tools/testing/selftests/rseq/rseq-arm.h  |   37 -------------------------------
+ tools/testing/selftests/rseq/rseq-mips.h |   37 -------------------------------
+ 2 files changed, 74 deletions(-)
 
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -456,8 +456,8 @@ struct tipc_node *tipc_node_create(struc
- 				   bool preliminary)
+--- a/tools/testing/selftests/rseq/rseq-arm.h
++++ b/tools/testing/selftests/rseq/rseq-arm.h
+@@ -147,14 +147,11 @@ do {									\
+ 		teardown						\
+ 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
+ 
+-#define rseq_workaround_gcc_asm_size_guess()	__asm__ __volatile__("")
+-
+ static inline __attribute__((always_inline))
+ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
  {
- 	struct tipc_net *tn = net_generic(net, tipc_net_id);
-+	struct tipc_link *l, *snd_l = tipc_bc_sndlink(net);
- 	struct tipc_node *n, *temp_node;
--	struct tipc_link *l;
- 	unsigned long intv;
- 	int bearer_id;
- 	int i;
-@@ -472,6 +472,16 @@ struct tipc_node *tipc_node_create(struc
- 			goto exit;
- 		/* A preliminary node becomes "real" now, refresh its data */
- 		tipc_node_write_lock(n);
-+		if (!tipc_link_bc_create(net, tipc_own_addr(net), addr, peer_id, U16_MAX,
-+					 tipc_link_min_win(snd_l), tipc_link_max_win(snd_l),
-+					 n->capabilities, &n->bc_entry.inputq1,
-+					 &n->bc_entry.namedq, snd_l, &n->bc_entry.link)) {
-+			pr_warn("Broadcast rcv link refresh failed, no memory\n");
-+			tipc_node_write_unlock_fast(n);
-+			tipc_node_put(n);
-+			n = NULL;
-+			goto exit;
-+		}
- 		n->preliminary = false;
- 		n->addr = addr;
- 		hlist_del_rcu(&n->hash);
-@@ -551,7 +561,16 @@ update:
- 	n->signature = INVALID_NODE_SIG;
- 	n->active_links[0] = INVALID_BEARER_ID;
- 	n->active_links[1] = INVALID_BEARER_ID;
--	n->bc_entry.link = NULL;
-+	if (!preliminary &&
-+	    !tipc_link_bc_create(net, tipc_own_addr(net), addr, peer_id, U16_MAX,
-+				 tipc_link_min_win(snd_l), tipc_link_max_win(snd_l),
-+				 n->capabilities, &n->bc_entry.inputq1,
-+				 &n->bc_entry.namedq, snd_l, &n->bc_entry.link)) {
-+		pr_warn("Broadcast rcv link creation failed, no memory\n");
-+		kfree(n);
-+		n = NULL;
-+		goto exit;
-+	}
- 	tipc_node_get(n);
- 	timer_setup(&n->timer, tipc_node_timeout, 0);
- 	/* Start a slow timer anyway, crypto needs it */
-@@ -1128,7 +1147,7 @@ void tipc_node_check_dest(struct net *ne
- 			  bool *respond, bool *dupl_addr)
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -198,14 +195,11 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -221,7 +215,6 @@ int rseq_cmpnev_storeoffp_load(intptr_t
  {
- 	struct tipc_node *n;
--	struct tipc_link *l, *snd_l;
-+	struct tipc_link *l;
- 	struct tipc_link_entry *le;
- 	bool addr_match = false;
- 	bool sign_match = false;
-@@ -1148,22 +1167,6 @@ void tipc_node_check_dest(struct net *ne
- 		return;
+ 	RSEQ_INJECT_C(9)
  
- 	tipc_node_write_lock(n);
--	if (unlikely(!n->bc_entry.link)) {
--		snd_l = tipc_bc_sndlink(net);
--		if (!tipc_link_bc_create(net, tipc_own_addr(net),
--					 addr, peer_id, U16_MAX,
--					 tipc_link_min_win(snd_l),
--					 tipc_link_max_win(snd_l),
--					 n->capabilities,
--					 &n->bc_entry.inputq1,
--					 &n->bc_entry.namedq, snd_l,
--					 &n->bc_entry.link)) {
--			pr_warn("Broadcast rcv link creation failed, no mem\n");
--			tipc_node_write_unlock_fast(n);
--			tipc_node_put(n);
--			return;
--		}
--	}
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -270,14 +263,11 @@ int rseq_cmpnev_storeoffp_load(intptr_t
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -292,7 +282,6 @@ int rseq_addv(intptr_t *v, intptr_t coun
+ {
+ 	RSEQ_INJECT_C(9)
  
- 	le = &n->links[b->identity];
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ #ifdef RSEQ_COMPARE_TWICE
+@@ -328,10 +317,8 @@ int rseq_addv(intptr_t *v, intptr_t coun
+ 		  , error1
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ #ifdef RSEQ_COMPARE_TWICE
+@@ -347,7 +334,6 @@ int rseq_cmpeqv_trystorev_storev(intptr_
+ {
+ 	RSEQ_INJECT_C(9)
  
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -398,14 +384,11 @@ int rseq_cmpeqv_trystorev_storev(intptr_
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -422,7 +405,6 @@ int rseq_cmpeqv_trystorev_storev_release
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -474,14 +456,11 @@ int rseq_cmpeqv_trystorev_storev_release
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -498,7 +477,6 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -554,14 +532,11 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
+ 		  , error1, error2, error3
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -582,7 +557,6 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
+ 
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -678,21 +652,16 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("cpu_id comparison failed");
+ error2:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("expected value comparison failed");
+ #endif
+ }
+@@ -706,7 +675,6 @@ int rseq_cmpeqv_trymemcpy_storev_release
+ 
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -803,21 +771,16 @@ int rseq_cmpeqv_trymemcpy_storev_release
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("cpu_id comparison failed");
+ error2:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("expected value comparison failed");
+ #endif
+ }
+--- a/tools/testing/selftests/rseq/rseq-mips.h
++++ b/tools/testing/selftests/rseq/rseq-mips.h
+@@ -154,14 +154,11 @@ do {									\
+ 		teardown \
+ 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
+ 
+-#define rseq_workaround_gcc_asm_size_guess()	__asm__ __volatile__("")
+-
+ static inline __attribute__((always_inline))
+ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -203,14 +200,11 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -226,7 +220,6 @@ int rseq_cmpnev_storeoffp_load(intptr_t
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -273,14 +266,11 @@ int rseq_cmpnev_storeoffp_load(intptr_t
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -295,7 +285,6 @@ int rseq_addv(intptr_t *v, intptr_t coun
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ #ifdef RSEQ_COMPARE_TWICE
+@@ -331,10 +320,8 @@ int rseq_addv(intptr_t *v, intptr_t coun
+ 		  , error1
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ #ifdef RSEQ_COMPARE_TWICE
+@@ -350,7 +337,6 @@ int rseq_cmpeqv_trystorev_storev(intptr_
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -399,14 +385,11 @@ int rseq_cmpeqv_trystorev_storev(intptr_
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -423,7 +406,6 @@ int rseq_cmpeqv_trystorev_storev_release
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -473,14 +455,11 @@ int rseq_cmpeqv_trystorev_storev_release
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -497,7 +476,6 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
+ {
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -549,14 +527,11 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
+ 		  , error1, error2, error3
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+@@ -577,7 +552,6 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
+ 
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -670,21 +644,16 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("cpu_id comparison failed");
+ error2:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("expected value comparison failed");
+ #endif
+ }
+@@ -698,7 +667,6 @@ int rseq_cmpeqv_trymemcpy_storev_release
+ 
+ 	RSEQ_INJECT_C(9)
+ 
+-	rseq_workaround_gcc_asm_size_guess();
+ 	__asm__ __volatile__ goto (
+ 		RSEQ_ASM_DEFINE_TABLE(9, 1f, 2f, 4f) /* start, commit, abort */
+ 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[cmpfail])
+@@ -792,21 +760,16 @@ int rseq_cmpeqv_trymemcpy_storev_release
+ 		  , error1, error2
+ #endif
+ 	);
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 0;
+ abort:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	RSEQ_INJECT_FAILED
+ 	return -1;
+ cmpfail:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	return 1;
+ #ifdef RSEQ_COMPARE_TWICE
+ error1:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("cpu_id comparison failed");
+ error2:
+-	rseq_workaround_gcc_asm_size_guess();
+ 	rseq_bug("expected value comparison failed");
+ #endif
+ }
 
 
