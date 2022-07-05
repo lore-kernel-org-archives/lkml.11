@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47936CCA49A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D88CCA49F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237422AbiGEMTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
+        id S237590AbiGEMT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235065AbiGEMLJ (ORCPT
+        with ESMTP id S235040AbiGEMMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:11:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AADF19032;
-        Tue,  5 Jul 2022 05:10:02 -0700 (PDT)
+        Tue, 5 Jul 2022 08:12:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3271192BC;
+        Tue,  5 Jul 2022 05:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC5FAB817E0;
-        Tue,  5 Jul 2022 12:10:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D673C341CB;
-        Tue,  5 Jul 2022 12:09:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 012BCCE1A19;
+        Tue,  5 Jul 2022 12:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12502C341C8;
+        Tue,  5 Jul 2022 12:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022999;
-        bh=eWVmvTj5FYfLOQdbQ5upeKE6I172mc81eY8132aThhM=;
+        s=korg; t=1657023011;
+        bh=TI+uH4AjrhFuWtninI2ggg5238AFSf4/6jULfW/YWoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K9Zyy44K8t3P33zM/9lvuoWAX9HidouH+u66EbVxNY3fn9a3tavKROdu1n2FIhQ0a
-         buFtHyo2S/qr9ksiXvDmqgtNTq/HQv0dESSACNYbkWT5caiVK5qleBXle0KsK1+psk
-         0UxPWYd47dCPzqXL31dJAQME/LRKo1VFoOL07RPE=
+        b=PJ2sfBoajhbdw58UKQqBuzfySz+nkzdP0Lgx3KkdrkVQ6BV71Ev3AifEsGxmnS/EX
+         eBd7+CVnbfnQed6AG3ITP7TPkRyvm1A4tfKyrxg5TsvyYDL+9GB44wyzCR3tt2tlql
+         Xn2uQ7UdQgWiTrB6Lifxbqs5KwyEkLwNpbxSsRQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.10 78/84] xen/netfront: force data bouncing when backend is untrusted
-Date:   Tue,  5 Jul 2022 13:58:41 +0200
-Message-Id: <20220705115617.596411488@linuxfoundation.org>
+        stable@vger.kernel.org, Carlo Lobrano <c.lobrano@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Porcedda <fabio.porcedda@gmail.com>
+Subject: [PATCH 5.10 82/84] net: usb: qmi_wwan: add Telit 0x1060 composition
+Date:   Tue,  5 Jul 2022 13:58:45 +0200
+Message-Id: <20220705115617.712327799@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -49,124 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roger Pau Monne <roger.pau@citrix.com>
+From: Carlo Lobrano <c.lobrano@gmail.com>
 
-commit 4491001c2e0fa69efbb748c96ec96b100a5cdb7e upstream.
+commit 8d17a33b076d24aa4861f336a125c888fb918605 upstream.
 
-Bounce all data on the skbs to be transmitted into zeroed pages if the
-backend is untrusted. This avoids leaking data present in the pages
-shared with the backend but not part of the skb fragments.  This
-requires introducing a new helper in order to allocate skbs with a
-size multiple of XEN_PAGE_SIZE so we don't leak contiguous data on the
-granted pages.
+This patch adds support for Telit LN920 0x1060 composition
 
-Reporting whether the backend is to be trusted can be done using a
-module parameter, or from the xenstore frontend path as set by the
-toolstack when adding the device.
+0x1060: tty, adb, rmnet, tty, tty, tty, tty
 
-This is CVE-2022-33741, part of XSA-403.
-
-Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/xen-netfront.c |   49 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 47 insertions(+), 2 deletions(-)
+ drivers/net/usb/qmi_wwan.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -66,6 +66,10 @@ module_param_named(max_queues, xennet_ma
- MODULE_PARM_DESC(max_queues,
- 		 "Maximum number of queues per virtual interface");
- 
-+static bool __read_mostly xennet_trusted = true;
-+module_param_named(trusted, xennet_trusted, bool, 0644);
-+MODULE_PARM_DESC(trusted, "Is the backend trusted");
-+
- #define XENNET_TIMEOUT  (5 * HZ)
- 
- static const struct ethtool_ops xennet_ethtool_ops;
-@@ -175,6 +179,9 @@ struct netfront_info {
- 	/* Is device behaving sane? */
- 	bool broken;
- 
-+	/* Should skbs be bounced into a zeroed buffer? */
-+	bool bounce;
-+
- 	atomic_t rx_gso_checksum_fixup;
- };
- 
-@@ -670,6 +677,33 @@ static int xennet_xdp_xmit(struct net_de
- 	return n - drops;
- }
- 
-+struct sk_buff *bounce_skb(const struct sk_buff *skb)
-+{
-+	unsigned int headerlen = skb_headroom(skb);
-+	/* Align size to allocate full pages and avoid contiguous data leaks */
-+	unsigned int size = ALIGN(skb_end_offset(skb) + skb->data_len,
-+				  XEN_PAGE_SIZE);
-+	struct sk_buff *n = alloc_skb(size, GFP_ATOMIC | __GFP_ZERO);
-+
-+	if (!n)
-+		return NULL;
-+
-+	if (!IS_ALIGNED((uintptr_t)n->head, XEN_PAGE_SIZE)) {
-+		WARN_ONCE(1, "misaligned skb allocated\n");
-+		kfree_skb(n);
-+		return NULL;
-+	}
-+
-+	/* Set the data pointer */
-+	skb_reserve(n, headerlen);
-+	/* Set the tail pointer and length */
-+	skb_put(n, skb->len);
-+
-+	BUG_ON(skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len));
-+
-+	skb_copy_header(n, skb);
-+	return n;
-+}
- 
- #define MAX_XEN_SKB_FRAGS (65536 / XEN_PAGE_SIZE + 1)
- 
-@@ -723,9 +757,13 @@ static netdev_tx_t xennet_start_xmit(str
- 
- 	/* The first req should be at least ETH_HLEN size or the packet will be
- 	 * dropped by netback.
-+	 *
-+	 * If the backend is not trusted bounce all data to zeroed pages to
-+	 * avoid exposing contiguous data on the granted page not belonging to
-+	 * the skb.
- 	 */
--	if (unlikely(PAGE_SIZE - offset < ETH_HLEN)) {
--		nskb = skb_copy(skb, GFP_ATOMIC);
-+	if (np->bounce || unlikely(PAGE_SIZE - offset < ETH_HLEN)) {
-+		nskb = bounce_skb(skb);
- 		if (!nskb)
- 			goto drop;
- 		dev_consume_skb_any(skb);
-@@ -2249,6 +2287,10 @@ static int talk_to_netback(struct xenbus
- 
- 	info->netdev->irq = 0;
- 
-+	/* Check if backend is trusted. */
-+	info->bounce = !xennet_trusted ||
-+		       !xenbus_read_unsigned(dev->nodename, "trusted", 1);
-+
- 	/* Check if backend supports multiple queues */
- 	max_queues = xenbus_read_unsigned(info->xbdev->otherend,
- 					  "multi-queue-max-queues", 1);
-@@ -2415,6 +2457,9 @@ static int xennet_connect(struct net_dev
- 		return err;
- 	if (np->netback_has_xdp_headroom)
- 		pr_info("backend supports XDP headroom\n");
-+	if (np->bounce)
-+		dev_info(&np->xbdev->dev,
-+			 "bouncing transmitted data to zeroed pages\n");
- 
- 	/* talk_to_netback() sets the correct number of queues */
- 	num_queues = dev->real_num_tx_queues;
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1293,6 +1293,7 @@ static const struct usb_device_id produc
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1031, 3)}, /* Telit LE910C1-EUX */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
++	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
 
 
