@@ -2,90 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E555C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEE1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232936AbiGEOGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        id S232406AbiGEOGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232495AbiGEOGV (ORCPT
+        with ESMTP id S232568AbiGEOGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:06:21 -0400
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2100237E3;
-        Tue,  5 Jul 2022 06:54:35 -0700 (PDT)
-Received: by mail-io1-f54.google.com with SMTP id z191so11148684iof.6;
-        Tue, 05 Jul 2022 06:54:35 -0700 (PDT)
+        Tue, 5 Jul 2022 10:06:24 -0400
+Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549C7237ED;
+        Tue,  5 Jul 2022 06:54:38 -0700 (PDT)
+Received: by mail-io1-f41.google.com with SMTP id d3so11123085ioi.9;
+        Tue, 05 Jul 2022 06:54:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=lTyedAFkYCMRnxsVgj2lGtfLlmacjsmd+UHWQbblE0g=;
-        b=uhMclJKrlNfIbRhq3RkYg3fRrWAvbvjwPYds2Ugjam7jazAdoG/87IBqk/EERfLPBm
-         5A6UeZqbd7/wJHlMmxX7CCp0R/CdgNrqTgTFMiO1N4yZTHGGi+l5aVs8VSOcwyGTlMsP
-         pqIu2pGkh6QLzytnbHglrZnlpuvNjgBpyPjV0AJsz0E/2+a4qlX7agw2B+krG+T4HUFf
-         FhXiY5uNjCK6VROA4/HllWozPp5yY4xM149l2xpSkK3Fipw3aOyEf28H62qc65bezyQT
-         UytKUkLzCYQse8xbxLwt6w6EVteRxR+EH+rTy5nWrgxE0saYqk/qrqAPjYOhARF4oOwJ
-         umIw==
-X-Gm-Message-State: AJIora+YE5nSdPUJuLTkaZnocsnOp0otM4AV3gNbhBCz6OddlAfvDaFz
-        F6oVwmNgKWFx8f+tTJjRgQ==
-X-Google-Smtp-Source: AGRyM1tPDtMiMEWiV5K9UuTKrIsnPvaN6PBgV9T35MDcykItXZe8or12GzDVpnV+C0m1DaqWbVfOQQ==
-X-Received: by 2002:a05:6638:4806:b0:339:c232:928b with SMTP id cp6-20020a056638480600b00339c232928bmr20140250jab.213.1657029275232;
-        Tue, 05 Jul 2022 06:54:35 -0700 (PDT)
+        bh=SVsLZEe5BnYjKDdkTWEax2PEfd2hiz0v1bklZx5sOQ4=;
+        b=4lnWkN/nAIYdC9IVupRPD+mhwtlljyHwWGTE/gh75lx0wRLifB/zBQvOenxgGr9JcD
+         sl4+CvLdqVIUGVesiGgG2wxxG+AMFD6gzG2REJAOWfAMtViBbDccbjuQxe0azhWEXuOw
+         o+kbdbDFu5J3q6S+172SDo7YX3XT0CabfiMA7ACXp0ihFBjLZs9tShQLODx3/bRTqXpo
+         C1YoKiFbGXZBgZsrTNYbPA+6dok6r1TfraGAZy5xR4veBeXToOntRfpfolYERdenVR7y
+         uv8GPqeFTNtFoY2shn9A1k3T8qBo8FpM2HZIDl1vprWczs0F+hk7pD+7agPa1ilL/eJm
+         ow3g==
+X-Gm-Message-State: AJIora9esYc76MksskE3Nv0g+2p9nITSCxNI2AUamOFWe5Cqv2p5oXX5
+        gmFKgLYxxWGcVWxigjWIOKglnaHD3w==
+X-Google-Smtp-Source: AGRyM1v/DwWCTKgv+WGdNip5B1iJlh9JTa0R2/Ur7WNceHwzS/Nj4LgZKRe3g6I4PY92bnYE7fI3CQ==
+X-Received: by 2002:a05:6638:34a5:b0:33e:df05:ea29 with SMTP id t37-20020a05663834a500b0033edf05ea29mr4842766jal.167.1657029277531;
+        Tue, 05 Jul 2022 06:54:37 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id f9-20020a056e0204c900b002dc0d2f7c7bsm2703020ils.4.2022.07.05.06.54.34
+        by smtp.gmail.com with ESMTPSA id d93-20020a0285e6000000b0033efe01c20esm117097jai.42.2022.07.05.06.54.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 06:54:34 -0700 (PDT)
-Received: (nullmailer pid 1999991 invoked by uid 1000);
+        Tue, 05 Jul 2022 06:54:37 -0700 (PDT)
+Received: (nullmailer pid 1999997 invoked by uid 1000);
         Tue, 05 Jul 2022 13:54:31 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-Cc:     nicolas.ferre@microchip.com, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        krzysztof.kozlowski+dt@linaro.org, UNGLinuxDriver@microchip.com,
-        devicetree@vger.kernel.org, Kavyasree.Kotagiri@microchip.com,
-        claudiu.beznea@microchip.com, robh+dt@kernel.org,
-        alexandre.belloni@bootlin.com, linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20220705065758.17051-2-kavyasree.kotagiri@microchip.com>
-References: <20220705065758.17051-1-kavyasree.kotagiri@microchip.com> <20220705065758.17051-2-kavyasree.kotagiri@microchip.com>
-Subject: Re: [PATCH v6 1/3] dt-bindings: mfd: atmel,flexcom: Convert to json-schema
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, linux-arm-msm@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        devicetree@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220705092846.66731-1-krzysztof.kozlowski@linaro.org>
+References: <20220705092846.66731-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v3] dt-bindings: qcom: document preferred compatible naming
 Date:   Tue, 05 Jul 2022 07:54:31 -0600
-Message-Id: <1657029271.199284.1999990.nullmailer@robh.at.kernel.org>
+Message-Id: <1657029271.217856.1999993.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Jul 2022 04:57:56 -0200, Kavyasree Kotagiri wrote:
-> Convert the Atmel flexcom device tree bindings to json schema.
+On Tue, 05 Jul 2022 11:28:46 +0200, Krzysztof Kozlowski wrote:
+> Compatibles can come in two formats.  Either "vendor,ip-soc" or
+> "vendor,soc-ip".  Qualcomm bindings were mixing both of usages, so add a
+> DT schema file documenting preferred policy and enforcing it for all new
+> compatibles, except few existing patterns.
 > 
-> Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
 > ---
-> v5 -> v6:
->  - Removed spi node from example as suggested by Rob and
->    also pattern properties(spi dt-bindings conversion to yaml patch is under review).
->    Once that is accepted, I will add back spi example through new patch.
 > 
-> v4 -> v5:
->  - Fixed indentations.
+> Changes since v2:
+> 1. Narrow the expected pattern to be followed by dash '-' after model
+>    number (msm8996-) or by two letters and a dash (sc8280xp-).
+> 2. Add qcom,apss-wdt-xxx to list of exceptions.
+> 3. Use comment instead of description in the oneOf list.
 > 
-> v3 -> v4:
->  - Corrected format of enum used for compatible string.
+> Changes since v1:
+> 1. Add schema instead of readme (Rob).
 > 
-> v2 -> v3:
->  - used enum for compatible string.
->  - changed irq flag to IRQ_TYPE_LEVEL_HIGH in example.
->  - fixed dtschema errors.
-> 
-> v1 -> v2:
->  - Fix title.
-> 
->  .../bindings/mfd/atmel,flexcom.yaml           | 72 +++++++++++++++++++
->  .../devicetree/bindings/mfd/atmel-flexcom.txt | 63 ----------------
->  2 files changed, 72 insertions(+), 63 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
->  delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Alex Elder <elder@linaro.org>
+> Cc: Robert Foss <robert.foss@linaro.org>
+> Cc: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>  .../devicetree/bindings/arm/qcom-soc.yaml     | 57 +++++++++++++++++++
+>  1 file changed, 57 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/qcom-soc.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -94,11 +99,61 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dts:24.13-45: Warning (ranges_format): /example-0/flexcom@f8034000:ranges: "ranges" property has invalid length (12 bytes) (parent #address-cells == 1, child #address-cells == 2, #size-cells == 1)
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dtb: flexcom@f8034000: '#address-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dtb: flexcom@f8034000: '#size-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/watchdog/qcom-wdt.example.dtb: watchdog@208a038: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,apss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,kpss-wdt-ipq8064' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,kpss-wdt-ipq8064' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.example.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,qcs404' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+	'qcom,qcs404' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+	'qcom,qcs404' does not match '^qcom,apss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/qcom,nandc.example.dtb: nand-controller@1ac00000: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,ipq806x-nand' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,apss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-nand' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-nand' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/qcom,ipq806x-usb-phy-ss.example.dtb: phy@110f8830: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,apss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-ss' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-ss' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/qcom,ipq806x-usb-phy-hs.example.dtb: phy@110f8800: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,apss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-hs' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,ipq806x-usb-phy-hs' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
 
 doc reference errors (make refcheckdocs):
 
