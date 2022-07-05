@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D50CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC37CCA494
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239506AbiGEMap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
+        id S239448AbiGEMal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237641AbiGEMTc (ORCPT
+        with ESMTP id S237621AbiGEMTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:32 -0400
+        Tue, 5 Jul 2022 08:19:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1571C18E34;
-        Tue,  5 Jul 2022 05:15:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EE718E2B;
+        Tue,  5 Jul 2022 05:15:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1A86B817AC;
-        Tue,  5 Jul 2022 12:15:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25CD9C341C7;
-        Tue,  5 Jul 2022 12:15:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 377FFB817D3;
+        Tue,  5 Jul 2022 12:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748FFC341C7;
+        Tue,  5 Jul 2022 12:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023346;
-        bh=kJfIhz1MbFCtHCCyIxQau5cdpBkkb3G3HYrZO935vYc=;
+        s=korg; t=1657023332;
+        bh=bQxN3bh++1R1mBIbbNcGTPNamM2kdxz0RwMIs1cqQhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nh/913kgqQ/jpENi6dP7wXCk7u7ZeK0dNQwQBsPcmSesF9U7+4LXPr6OstI1SSQmM
-         /r9ElM4a0yTq8brlDz+2yMINU42WKAp3OO/zETQGi21fW6HFrn3ttxZU1QSzbLZQFL
-         uxs5cswDOtIRrb25ugcO/wLWE+Buu7RLzPevb0A4=
+        b=dXKcYJwxadFGHp0JPou6AvR7SL4pc7Feqw9lTE8GlrVyJai9TPmaTMbOHuJHZgrp0
+         7VfYjN67bzWh3V7meZ8oWQbndPztF9CRCWDT77SBNfwaEHIzyE6eOYNlMg/xB8qKJN
+         JTQLVBzCwEkzuYN+F06zq2K/9PDt3HcutWnIssvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 027/102] net: dsa: bcm_sf2: force pause link settings
-Date:   Tue,  5 Jul 2022 13:57:53 +0200
-Message-Id: <20220705115619.187823503@linuxfoundation.org>
+        stable@vger.kernel.org, Bruce Fields <bfields@fieldses.org>,
+        Zorro Lang <zlang@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.18 022/102] SUNRPC: Fix READ_PLUS crasher
+Date:   Tue,  5 Jul 2022 13:57:48 +0200
+Message-Id: <20220705115619.047664900@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,37 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
+commit a23dd544debcda4ee4a549ec7de59e85c3c8345c upstream.
 
-The pause settings reported by the PHY should also be applied to the GMII port
-status override otherwise the switch will not generate pause frames towards the
-link partner despite the advertisement saying otherwise.
+Looks like there are still cases when "space_left - frag1bytes" can
+legitimately exceed PAGE_SIZE. Ensure that xdr->end always remains
+within the current encode buffer.
 
-Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Bruce Fields <bfields@fieldses.org>
+Reported-by: Zorro Lang <zlang@redhat.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216151
+Fixes: 6c254bf3b637 ("SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/bcm_sf2.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ net/sunrpc/xdr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -878,6 +878,11 @@ static void bcm_sf2_sw_mac_link_up(struc
- 		if (duplex == DUPLEX_FULL)
- 			reg |= DUPLX_MODE;
- 
-+		if (tx_pause)
-+			reg |= TXFLOW_CNTL;
-+		if (rx_pause)
-+			reg |= RXFLOW_CNTL;
-+
- 		core_writel(priv, reg, offset);
- 	}
- 
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -979,7 +979,7 @@ static __be32 *xdr_get_next_encode_buffe
+ 	 */
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	if (space_left - nbytes >= PAGE_SIZE)
++	if (space_left - frag1bytes >= PAGE_SIZE)
+ 		xdr->end = (void *)p + PAGE_SIZE;
+ 	else
+ 		xdr->end = (void *)p + space_left - frag1bytes;
 
 
