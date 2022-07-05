@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4945FCCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247EECCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238221AbiGEM2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
+        id S238185AbiGEM23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237357AbiGEMTD (ORCPT
+        with ESMTP id S237269AbiGEMS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA721CFF1;
-        Tue,  5 Jul 2022 05:14:24 -0700 (PDT)
+        Tue, 5 Jul 2022 08:18:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6921A826;
+        Tue,  5 Jul 2022 05:14:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50FC2619B9;
-        Tue,  5 Jul 2022 12:14:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B6D7C341C7;
-        Tue,  5 Jul 2022 12:14:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 241F7B817AC;
+        Tue,  5 Jul 2022 12:14:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84007C341C7;
+        Tue,  5 Jul 2022 12:14:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023263;
-        bh=pyhdauLBoqSjSiGXmzPG8RWnckzy4jcB2XZZJLH8K1Y=;
+        s=korg; t=1657023252;
+        bh=mXwYS3tDZj+FB8MJFc//EosuhjiE1AeB0xL3ixvneEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jmxTF0ZZoO7KCybPUd7fNTO7UdeKRENRCU4ckWrUtqqPXy90/XBbP62NNgp4pyuHf
-         aixOxXrEis+URQ5k1LboP3RISQJMbcMBw4MnuKf9ZVL2A5BMopwwCzCngNkYniN0A9
-         XA4E7rzH58Htbp+kh2JRzMOFnV8XVmFpSI51VkYs=
+        b=1WlQpC99RsFo/8cFcy38UmcQP+yhojFob9TCI7ZWjCzHrd5j6j8ZrRXNmpxFwqe9R
+         XIL0ICWasSu0icxGLC2IVaA7woOZLTR9yGBDSULb9dPd/Wc5iiWKDufZChIhttI84C
+         bd6ZKXrmCBsPOS+u518ZI9elCmx0F9YV23GgIok0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.15 79/98] xen/netfront: fix leaking data in shared pages
-Date:   Tue,  5 Jul 2022 13:58:37 +0200
-Message-Id: <20220705115619.815256649@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Stefan Seyfried <seife+kernel@b1-systems.com>,
+        Kenneth Chan <kenneth.t.chan@gmail.com>
+Subject: [PATCH 5.15 93/98] platform/x86: panasonic-laptop: dont report duplicate brightness key-presses
+Date:   Tue,  5 Jul 2022 13:58:51 +0200
+Message-Id: <20220705115620.207967081@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,36 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roger Pau Monne <roger.pau@citrix.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 307c8de2b02344805ebead3440d8feed28f2f010 upstream.
+[ Upstream commit 1f2c9de83a50447a2d7166f6273ab0c0e97cd68e ]
 
-When allocating pages to be used for shared communication with the
-backend always zero them, this avoids leaking unintended data present
-on the pages.
+The brightness key-presses might also get reported by the ACPI video bus,
+check for this and in this case don't report the presses to avoid reporting
+2 presses for a single key-press.
 
-This is CVE-2022-33740, part of XSA-403.
-
-Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
+Reported-and-tested-by: Stefan Seyfried <seife+kernel@b1-systems.com>
+Reported-and-tested-by: Kenneth Chan <kenneth.t.chan@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220624112340.10130-6-hdegoede@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netfront.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/platform/x86/Kconfig            | 1 +
+ drivers/platform/x86/panasonic-laptop.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -273,7 +273,8 @@ static struct sk_buff *xennet_alloc_one_
- 	if (unlikely(!skb))
- 		return NULL;
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index e21ea3d23e6f..50a5c4f3cefd 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -871,6 +871,7 @@ config PANASONIC_LAPTOP
+ 	tristate "Panasonic Laptop Extras"
+ 	depends on INPUT && ACPI
+ 	depends on BACKLIGHT_CLASS_DEVICE
++	depends on ACPI_VIDEO=n || ACPI_VIDEO
+ 	select INPUT_SPARSEKMAP
+ 	help
+ 	  This driver adds support for access to backlight control and hotkeys
+diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
+index cd3c23593eee..65ca863ffb9f 100644
+--- a/drivers/platform/x86/panasonic-laptop.c
++++ b/drivers/platform/x86/panasonic-laptop.c
+@@ -132,6 +132,7 @@
+ #include <linux/slab.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
++#include <acpi/video.h>
  
--	page = page_pool_dev_alloc_pages(queue->page_pool);
-+	page = page_pool_alloc_pages(queue->page_pool,
-+				     GFP_ATOMIC | __GFP_NOWARN | __GFP_ZERO);
- 	if (unlikely(!page)) {
- 		kfree_skb(skb);
- 		return NULL;
+ MODULE_AUTHOR("Hiroshi Miura <miura@da-cha.org>");
+ MODULE_AUTHOR("David Bronaugh <dbronaugh@linuxboxen.org>");
+@@ -783,6 +784,13 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
+ 					key, 0x80, false);
+ 	}
+ 
++	/*
++	 * Don't report brightness key-presses if they are also reported
++	 * by the ACPI video bus.
++	 */
++	if ((key == 1 || key == 2) && acpi_video_handles_brightness_key_presses())
++		return;
++
+ 	if (!sparse_keymap_report_event(hotk_input_dev, key, updown, false))
+ 		pr_err("Unknown hotkey event: 0x%04llx\n", result);
+ }
+-- 
+2.35.1
+
 
 
