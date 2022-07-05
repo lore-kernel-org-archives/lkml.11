@@ -2,65 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FD0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5380ACCA480
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232403AbiGEPrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S230427AbiGEPsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiGEPq0 (ORCPT
+        with ESMTP id S232526AbiGEPr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:46:26 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5903D1AF12
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:46:17 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id j21so21310451lfe.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xkMFJ9e/M/8FH5vULBoMdVfYBlSipo+Mnlcab8yEpFg=;
-        b=mMoKrWFu0bgZpac13H/84hzwWoqgWmKxO2hEBDKUhwZIHj31yIR+saZxCj143TMwqW
-         gipoCf8VbbbW2/Gil68hs9XMQ2J311QUimFP9g0oSCGfo/bqRgWJlbYSXnhBp1ntvAbG
-         uGrF414qQg5Z6gap/wqQuqUER7bb48YYGTmEquX5vKVprV4DCcGCGnpVFgRea+43wi4b
-         vQJHJQq0uTH8F0E4ePniUBMwMSxH9rmT8h+6BNtxVM3Av6EX8MFz098eExNEaMtiav6g
-         VxLvf4klmYL1NBqSHK+CITUqsOcvSG1QCTiwR10cK1UR4yxqF8SfC9zh+6ldPQLdg7Gq
-         CGxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xkMFJ9e/M/8FH5vULBoMdVfYBlSipo+Mnlcab8yEpFg=;
-        b=gssOnGbiys6DxB9Wk6Xh9Ax9voTOYLmnu0u84v+ueGGpFaLpONW5wR5/ZD6+OTjn38
-         9yI3OcOgWjnZdMYWlVLCvecLdUIKXG5/sFROPupF4x13DZ+waVBRN7WSl7NRup++Qdwj
-         Wd0YiTbxwyPMmqTp6FM8fNSrQui7r1fbesagvgy2nWT2XVnikvtgqjvuvsf6wGtJHXbm
-         PkXIOvlQiwEeKPaDPHr31dkQuAb8hJdOGG7mMrW6RQ7rD1jrozCvzJglyHcJeJCH1VjT
-         Z/RSYgp9r1uQmexS9MiNQBbGtbBQ8E3RGVFTatJcxS8VNM5mVvDPBVDFuxNyhLJRSHYA
-         Eq8A==
-X-Gm-Message-State: AJIora8i8XJRb3MumEqwrGuhgmtK5cBbt3aWzt60bII4dEca0mpE4RTz
-        KQz1+XqvEGK/QGvh6finF8LBqQ==
-X-Google-Smtp-Source: AGRyM1twqbwiJrhztHRnbJro19dpHakGQPtOrL06UtRH56H3CVrHq/DKVEw/QwzNFnsWm+XXs6xsGw==
-X-Received: by 2002:a05:6512:c24:b0:47f:7351:379b with SMTP id z36-20020a0565120c2400b0047f7351379bmr24402449lfu.328.1657035975638;
-        Tue, 05 Jul 2022 08:46:15 -0700 (PDT)
-Received: from krzk-bin.home ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id y14-20020a19750e000000b0047f78ad78bdsm5738394lfe.218.2022.07.05.08.46.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:46:15 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 1/2] dt-bindings: hwinfo: group Chip ID-like devices
-Date:   Tue,  5 Jul 2022 17:46:12 +0200
-Message-Id: <20220705154613.453096-1-krzysztof.kozlowski@linaro.org>
+        Tue, 5 Jul 2022 11:47:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D068E1AF12;
+        Tue,  5 Jul 2022 08:47:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B47361B36;
+        Tue,  5 Jul 2022 15:47:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2BAC341C7;
+        Tue,  5 Jul 2022 15:47:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657036044;
+        bh=MAwV2W5idFBX6tA4mFmUeryIPp9vRIvaZ2oUFLz+ILg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VsoVBJwGEAVr7lyMU2UWLMiBj8A6/xWMBUP/ndaVU1MRaOkLlkP1nesTGcJb7AaC6
+         vI/AAaL038aGyT/D3Z/YOLMNoCzswsQyjskKn1ZqhlvTqQv0DOrWh0+a7AehLjsLdg
+         YkHCdgBG9k6EcIYAMvNo9G4kuBUl9uc2x3+Y5SO5Y3Tr3Efh4BsLBrivMEwEe8UQEH
+         LUA8aEdRw50wbnpP4ZfBnjJAiD97Ylep61jPYtfkaQCsIbmvDLHXO/EeHvslosxVGj
+         reQJoxTxZFSGWTw/3KGLMQTo0noo1LFG6mnk+W3wclGNxxJq4w5epT2UogqZW+cU8f
+         PgmAYjFGAMM9A==
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Dinh Nguyen <dinguyen@kernel.org>,
+        Guo Ren <guoren@kernel.org>, Helge Deller <deller@gmx.de>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        WANG Xuerui <kernel@xen0n.name>, linux-arch@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-mm@kvack.org,
+        linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org,
+        loongarch@lists.linux.dev
+Subject: [PATCH v2 00/15] arch: make PxD_ORDER generically available
+Date:   Tue,  5 Jul 2022 18:46:53 +0300
+Message-Id: <20220705154708.181258-1-rppt@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -68,77 +59,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Group devices like Chip ID or SoC information under "hwinfo" directory.
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+v2 changes:
+* Drop extra blank line in arch/loongarch/kernel/asm-offsets.c (patch 12)
+* Add patch 15 that renames PMD_ORDER to PMD_ENTRY_ORDER in
+  arch/arm/kernel/head.S
+v1: https://lore.kernel.org/all/20220703141203.147893-1-rppt@kernel.org 
 
----
+v1 cover letter:
 
-Changes since v2:
-1. Spllit renesas,prr.yaml into separate patchset.
+The question what does PxD_ORDER define raises from time to time and
+there is still a conflict between MIPS and DAX definitions.
 
-Changes since v1:
-1. New patch
----
- .../exynos-chipid.yaml => hwinfo/samsung,exynos-chipid.yaml}    | 2 +-
- .../{soc/ti/k3-socinfo.yaml => hwinfo/ti,k3-socinfo.yaml}       | 2 +-
- MAINTAINERS                                                     | 2 ++
- 3 files changed, 4 insertions(+), 2 deletions(-)
- rename Documentation/devicetree/bindings/{soc/samsung/exynos-chipid.yaml => hwinfo/samsung,exynos-chipid.yaml} (92%)
- rename Documentation/devicetree/bindings/{soc/ti/k3-socinfo.yaml => hwinfo/ti,k3-socinfo.yaml} (92%)
+Some time ago Matthew Wilcox suggested to use PMD_TABLE_ORDER to define
+the order of page table allocation: 
 
-diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-chipid.yaml b/Documentation/devicetree/bindings/hwinfo/samsung,exynos-chipid.yaml
-similarity index 92%
-rename from Documentation/devicetree/bindings/soc/samsung/exynos-chipid.yaml
-rename to Documentation/devicetree/bindings/hwinfo/samsung,exynos-chipid.yaml
-index 4bb8efb83ac1..95cbdcb56efe 100644
---- a/Documentation/devicetree/bindings/soc/samsung/exynos-chipid.yaml
-+++ b/Documentation/devicetree/bindings/hwinfo/samsung,exynos-chipid.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/soc/samsung/exynos-chipid.yaml#
-+$id: http://devicetree.org/schemas/hwinfo/samsung,exynos-chipid.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Samsung Exynos SoC series Chipid driver
-diff --git a/Documentation/devicetree/bindings/soc/ti/k3-socinfo.yaml b/Documentation/devicetree/bindings/hwinfo/ti,k3-socinfo.yaml
-similarity index 92%
-rename from Documentation/devicetree/bindings/soc/ti/k3-socinfo.yaml
-rename to Documentation/devicetree/bindings/hwinfo/ti,k3-socinfo.yaml
-index a1a8423b2e2e..dada28b47ea0 100644
---- a/Documentation/devicetree/bindings/soc/ti/k3-socinfo.yaml
-+++ b/Documentation/devicetree/bindings/hwinfo/ti,k3-socinfo.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/soc/ti/k3-socinfo.yaml#
-+$id: http://devicetree.org/schemas/hwinfo/ti,k3-socinfo.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Texas Instruments K3 Multicore SoC platforms chipid module
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b21af94149fe..1d99d54fa881 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2665,6 +2665,7 @@ B:	mailto:linux-samsung-soc@vger.kernel.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git
- F:	Documentation/arm/samsung/
- F:	Documentation/devicetree/bindings/arm/samsung/
-+F:	Documentation/devicetree/bindings/hwinfo/samsung,*
- F:	Documentation/devicetree/bindings/power/pd-samsung.yaml
- F:	Documentation/devicetree/bindings/soc/samsung/
- F:	arch/arm/boot/dts/exynos*
-@@ -2898,6 +2899,7 @@ M:	Tero Kristo <kristo@kernel.org>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Supported
- F:	Documentation/devicetree/bindings/arm/ti/k3.yaml
-+F:	Documentation/devicetree/bindings/hwinfo/ti,k3-socinfo.yaml
- F:	arch/arm64/boot/dts/ti/Makefile
- F:	arch/arm64/boot/dts/ti/k3-*
- F:	include/dt-bindings/pinctrl/k3.h
+[1] https://lore.kernel.org/linux-arch/YPCJftSTUBEnq2lI@casper.infradead.org/
+
+The parisc patch made it in, but mips didn't. 
+Now mips defines from asm/include/pgtable.h were copied to loongarch which
+made it worse.
+
+Let's deal with it once and for all and rename PxD_ORDER defines to
+PxD_TABLE_ORDER or just drop them when the only possible order of page
+table is 0.
+
+I think the best way to merge this via mm tree with acks from arch
+maintainers.
+
+Matthew Wilcox (Oracle) (1):
+  mips: Rename PMD_ORDER to PMD_TABLE_ORDER
+
+Mike Rapoport (14):
+  csky: drop definition of PTE_ORDER
+  csky: drop definition of PGD_ORDER
+  mips: Rename PUD_ORDER to PUD_TABLE_ORDER
+  mips: drop definitions of PTE_ORDER
+  mips: Rename PGD_ORDER to PGD_TABLE_ORDER
+  nios2: drop definition of PTE_ORDER
+  nios2: drop definition of PGD_ORDER
+  loongarch: drop definition of PTE_ORDER
+  loongarch: drop definition of PMD_ORDER
+  loongarch: drop definition of PUD_ORDER
+  loongarch: drop definition of PGD_ORDER
+  parisc: Rename PGD_ORDER to PGD_TABLE_ORDER
+  xtensa: drop definition of PGD_ORDER
+  ARM: head.S: rename PMD_ORDER to PMD_ENTRY_ORDER
+
+ arch/arm/kernel/head.S               | 34 ++++++++--------
+ arch/csky/include/asm/pgalloc.h      |  2 +-
+ arch/csky/include/asm/pgtable.h      |  6 +--
+ arch/loongarch/include/asm/pgalloc.h |  6 +--
+ arch/loongarch/include/asm/pgtable.h | 27 +++++-------
+ arch/loongarch/kernel/asm-offsets.c  |  6 ---
+ arch/loongarch/mm/pgtable.c          |  2 +-
+ arch/loongarch/mm/tlbex.S            |  6 +--
+ arch/mips/include/asm/pgalloc.h      |  8 ++--
+ arch/mips/include/asm/pgtable-32.h   | 19 ++++-----
+ arch/mips/include/asm/pgtable-64.h   | 61 +++++++++++++---------------
+ arch/mips/kernel/asm-offsets.c       |  5 ---
+ arch/mips/kvm/mmu.c                  |  2 +-
+ arch/mips/mm/pgtable.c               |  2 +-
+ arch/mips/mm/tlbex.c                 | 14 +++----
+ arch/nios2/include/asm/pgtable.h     |  7 +---
+ arch/nios2/mm/init.c                 |  5 +--
+ arch/nios2/mm/pgtable.c              |  2 +-
+ arch/parisc/include/asm/pgalloc.h    |  6 +--
+ arch/parisc/include/asm/pgtable.h    |  8 ++--
+ arch/xtensa/include/asm/pgalloc.h    |  2 +-
+ arch/xtensa/include/asm/pgtable.h    |  1 -
+ 22 files changed, 101 insertions(+), 130 deletions(-)
+
+
+base-commit: 03c765b0e3b4cb5063276b086c76f7a612856a9a
 -- 
 2.34.1
 
