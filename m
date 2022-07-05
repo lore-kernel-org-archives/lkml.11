@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7CCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8A9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232203AbiGEJuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
+        id S232417AbiGEJu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231450AbiGEJtI (ORCPT
+        with ESMTP id S231448AbiGEJtI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 05:49:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45054DFB9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B04612D03;
         Tue,  5 Jul 2022 02:49:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D807661912;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED3B861922;
         Tue,  5 Jul 2022 09:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 877B0C36AED;
-        Tue,  5 Jul 2022 09:49:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2090C53FCA;
+        Tue,  5 Jul 2022 09:49:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657014544;
-        bh=UrYmxKcokEnipCFXZY2m8O/HJdO0TM/Sq4azmTPuAaU=;
+        s=k20201202; t=1657014543;
+        bh=b/KbY0N+WoeNCbG0GvZvLkXdY81Ccwg9+JZzrfr1k9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iQqjtqPny9cqTsIHgU4mHdOGRQJ7xcomfXr5Wuwp50wD/izzGcRLFD0pGmrXX7S7s
-         pVfmOcDMj+VIo5A2UyaHPKWUbm/uh5AKQQbxiOq4DjSQEJ1fRlliGkdvYvAPteWfiV
-         h2i24xDDWmDMJ76wJ1XLOvpZGurmBOQgHmIck2qFf9DXis7Zqf4QPkaIAr0MMyoEPk
-         1oygL4rf6KCb0LzBz9ZLqm3ZVigxgokB8v9Y9rHh4q8Z5Y9oHg3viAmH6x4bKIBrYJ
-         vFv06/s9qHUR77oOOWL1lRzH4k3BLeTClL623+yHkyOiwiaismjEeR5rNwgnDOFhoJ
-         UQEKqeqrAR3rw==
+        b=oBtDTv5/Am4jEJ35H02D41V4KHT+KZCSChQ5ANQ7jMPaIP63a9KUGcmdMi5Cpfve6
+         sQJH7QjIwEyytzrjZCU7nDmtJ6de4XgAgwQl7c6X3u6uJYKIur+6P5So3BHp5a56rA
+         AyZPd7I0TcPhgKhrbQ8alCuDvvGy/PGYQozaS8VDwi3Cq6FlkHlbHl0Cue/RlExvk0
+         gLDYaycIVo+bYqOqrlH5EyL76sEdCuHOkWG1Q3JwbZWNdm1H0on6+K/uGD9z54iS/W
+         J+dcru77Js1o5I0Tb2CJwdNZmhKsa7QOteizUmPjrftgfAEfU5V2mVePcC4cdY0J9A
+         6a2VgcDgvsrhg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8fB3-0004YV-KC; Tue, 05 Jul 2022 11:49:05 +0200
+        id 1o8fB2-0004Xw-IT; Tue, 05 Jul 2022 11:49:04 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,9 +44,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 35/43] dt-bindings: phy: qcom,qmp-usb: deprecate PIPE clock name
-Date:   Tue,  5 Jul 2022 11:42:31 +0200
-Message-Id: <20220705094239.17174-36-johan+linaro@kernel.org>
+Subject: [PATCH 23/43] dt-bindings: phy: qcom,qmp-ufs: clean up clock constraints
+Date:   Tue,  5 Jul 2022 11:42:19 +0200
+Message-Id: <20220705094239.17174-24-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220705094239.17174-1-johan+linaro@kernel.org>
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
@@ -56,42 +56,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the bogus "lane" suffix from the PHY PIPE clock name and mark the
-old name as deprecated.
+The UFS PHY binding requires one or two clocks.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/phy/qcom,qmp-usb-phy.yaml      | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-index c9a6765708cc..279b8823bc17 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
-@@ -88,8 +88,12 @@ patternProperties:
-           - description: PIPE clock
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+index b84511f02221..732518d0427c 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+@@ -45,11 +45,11 @@ properties:
  
-       clock-names:
--        items:
--          - const: pipe0
-+        oneOf:
-+          - items:
-+              - const: pipe
-+          - items:
-+              - const: pipe0
-+            deprecated: true
+   clocks:
+     minItems: 1
+-    maxItems: 4
++    maxItems: 2
  
-       "#clock-cells":
-         const: 0
-@@ -403,7 +407,7 @@ examples:
-                       <0x600 0x70>;
+   clock-names:
+     minItems: 1
+-    maxItems: 4
++    maxItems: 2
  
-                 clocks = <&gcc GCC_USB3_SEC_PHY_PIPE_CLK>;
--                clock-names = "pipe0";
-+                clock-names = "pipe";
- 
-                 #clock-cells = <0>;
-                 clock-output-names = "usb3_uni_phy_pipe_clk_src";
+   resets:
+     items:
 -- 
 2.35.1
 
