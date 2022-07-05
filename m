@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1EEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EEDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236103AbiGEMQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
+        id S236111AbiGEMQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235284AbiGEMIu (ORCPT
+        with ESMTP id S235281AbiGEMIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5BEE2D;
-        Tue,  5 Jul 2022 05:08:48 -0700 (PDT)
+        Tue, 5 Jul 2022 08:08:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5540CEC;
+        Tue,  5 Jul 2022 05:08:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C132661856;
-        Tue,  5 Jul 2022 12:08:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6499C341C7;
-        Tue,  5 Jul 2022 12:08:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40A4E61967;
+        Tue,  5 Jul 2022 12:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40095C341C7;
+        Tue,  5 Jul 2022 12:08:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022927;
-        bh=KLewugvlQfnHhOK3fgli2q9qbyOzLhQxzieXn0BcCdI=;
+        s=korg; t=1657022921;
+        bh=4Enehw5wGC95sMNR+U+t4HM8jXp329nqCaZZ6QrRrSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d50aWw66FRSYOP+tzIeGDiTN7n/I0fO/9BT99lP88siXnNbiNyvqHm1W8Mm9l0Bnl
-         UEcGx/7ZAfSYU4bLaBr9DCu9GDVuo70FP6X7sBd9/bAx+h+2aQ5TqYKi+0Ermv5HO5
-         dpKafEylOe7YoP8GFUfhkTSh93wi+jyPaiFE6UWI=
+        b=fsRjIKMC3Zem2/fc5GqmyVic5li8Usmf9zCga/lf3bjf8IZrdchW8GfzLeIHqRdO+
+         6PzI8RFYWMJyGHP7Bxbm9jZ1caqzQmMYQFPOGkleFFl68zIFxAyAUR6veGIHOIvbuY
+         lbqYN8lyaJJWDDs2cjq0uj1rLl+tQ9KGI+kM/o/U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 5.10 60/84] selftests/rseq: remove ARRAY_SIZE define from individual tests
-Date:   Tue,  5 Jul 2022 13:58:23 +0200
-Message-Id: <20220705115617.074191918@linuxfoundation.org>
+        stable@vger.kernel.org, katrinzhou <katrinzhou@tencent.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 58/84] ipv6/sit: fix ipip6_tunnel_get_prl return value
+Date:   Tue,  5 Jul 2022 13:58:21 +0200
+Message-Id: <20220705115617.016648134@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -47,52 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: katrinzhou <katrinzhou@tencent.com>
 
-commit 07ad4f7629d4802ff0d962b0ac23ea6445964e2a upstream.
+[ Upstream commit adabdd8f6acabc0c3fdbba2e7f5a2edd9c5ef22d ]
 
-ARRAY_SIZE is defined in several selftests. Remove definitions from
-individual test files and include header file for the define instead.
-ARRAY_SIZE define is added in a separate patch to prepare for this
-change.
+When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
+Move the position of label "out" to return correctly.
 
-Remove ARRAY_SIZE from rseq tests and pickup the one defined in
-kselftest.h.
-
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Addresses-Coverity: ("Unused value")
+Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
+Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+Reviewed-by: Eric Dumazet<edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220628035030.1039171-1-zys.zljxml@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/rseq/basic_percpu_ops_test.c |    3 +--
- tools/testing/selftests/rseq/rseq.c                  |    3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ net/ipv6/sit.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
---- a/tools/testing/selftests/rseq/basic_percpu_ops_test.c
-+++ b/tools/testing/selftests/rseq/basic_percpu_ops_test.c
-@@ -9,10 +9,9 @@
- #include <string.h>
- #include <stddef.h>
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index 0be82586ce32..3c92e8cacbba 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -321,8 +321,6 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ifreq *ifr)
+ 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL | __GFP_NOWARN) :
+ 		NULL;
  
-+#include "../kselftest.h"
- #include "rseq.h"
- 
--#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
+-	rcu_read_lock();
 -
- struct percpu_lock_entry {
- 	intptr_t v;
- } __attribute__((aligned(128)));
---- a/tools/testing/selftests/rseq/rseq.c
-+++ b/tools/testing/selftests/rseq/rseq.c
-@@ -27,10 +27,9 @@
- #include <signal.h>
- #include <limits.h>
+ 	ca = min(t->prl_count, cmax);
  
-+#include "../kselftest.h"
- #include "rseq.h"
+ 	if (!kp) {
+@@ -338,7 +336,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ifreq *ifr)
+ 		}
+ 	}
  
--#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
+-	c = 0;
++	rcu_read_lock();
+ 	for_each_prl_rcu(t->prl) {
+ 		if (c >= cmax)
+ 			break;
+@@ -350,7 +348,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ifreq *ifr)
+ 		if (kprl.addr != htonl(INADDR_ANY))
+ 			break;
+ 	}
+-out:
++
+ 	rcu_read_unlock();
+ 
+ 	len = sizeof(*kp) * c;
+@@ -359,7 +357,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ifreq *ifr)
+ 		ret = -EFAULT;
+ 
+ 	kfree(kp);
 -
- __thread volatile struct rseq __rseq_abi = {
- 	.cpu_id = RSEQ_CPU_ID_UNINITIALIZED,
- };
++out:
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
+
 
 
