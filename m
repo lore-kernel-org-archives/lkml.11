@@ -2,108 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E74C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:29:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbiGEN3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        id S231352AbiGENaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231969AbiGEN31 (ORCPT
+        with ESMTP id S231834AbiGENaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:29:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC923897;
-        Tue,  5 Jul 2022 05:51:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C51D760C38;
-        Tue,  5 Jul 2022 12:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CEADC341C7;
-        Tue,  5 Jul 2022 12:51:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657025461;
-        bh=/wZNkLMQ8f+ZI2REJC8guWCA/5+Cuw84Q5nJ99AIcHw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dltjLfCNk82lbByxTujjWM7+9d44kyeRnLamAQVgTy3q5zVutAq9ESsCPfXPdl25N
-         YEYgDMfLzUQ5ugYwr2AFh2AuRQqKI5luhJ6xrgXA8rUApup0KivbD1wvLoaY2/GdW9
-         IHOBoCeRcE7IcNy59A1+Qf/Oc2eM+4ToUk6f+NRhG/d5H3H8K+XDJOA7y3P+vcap0a
-         4E20zmfdnEjP4pvxm7FSPIIHqMj4h0bPZL8nBoYiBMRoRRJq+ccNgBR15GqNeQVFtJ
-         HgkA3vba3QG1bQPHaAo0x3QT3Wj8E+1UPggDjcv0+EIpdzh9yYWMeqZVFAQzFhCLZt
-         u/+18q8MD/TlQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o8i18-0006yd-1j; Tue, 05 Jul 2022 14:51:02 +0200
-Date:   Tue, 5 Jul 2022 14:51:02 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/14] arm64: dts: qcom: sc7280: drop PCIe PHY clock index
-Message-ID: <YsQztl9KHS5csu4A@hovoldconsulting.com>
-References: <20220705114032.22787-1-johan+linaro@kernel.org>
- <20220705114032.22787-2-johan+linaro@kernel.org>
- <e3b344e7-4100-e0d4-0dcd-aeef4893ad43@linaro.org>
+        Tue, 5 Jul 2022 09:30:07 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0AF4578E;
+        Tue,  5 Jul 2022 05:51:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657025502; x=1688561502;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zZ9kSIwpfSMKUXpyfeQrdAkf/rdUOV3WkmiPoqtFBuQ=;
+  b=VB3g3rIf4JwrvxzD3O657wAYq7Fci2KOyPE7t6hfB7toICHnHlVSn/Yq
+   p9KFgXPLSBwNZ9CbJJ9OwHme/dRA7o53q4yYyMpH0l4nM5dMvkt4HJAJs
+   enODaWPyZ32GHC1aMouK0Kxahr2LMd0m1NW2NB/1YuKSH55nkNMrH4ReJ
+   ktRbab9wqOuwxjfmWFQj2j2tHeMREksmYW+oPth3KyEI8ZkoK+QH3gZ5g
+   lzPpYotEpXR8Xbu/bBQEPS7lgeW1NS/MOFmFjFlYdej4HdjWDIlblbJUQ
+   o1gYKd4XDD6EX6Eq7rys+ezYPKQzDJMyII5xSZ368/iijjSjdtWzRwzPo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="369666747"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="369666747"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:50:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="660545802"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 05 Jul 2022 05:50:48 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8i0u-000J5d-AG;
+        Tue, 05 Jul 2022 12:50:48 +0000
+Date:   Tue, 5 Jul 2022 20:50:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Isaku Yamahata <isaku.yamahata@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [intel-tdx:kvm-upstream-workaround 313/442] htmldocs:
+ Documentation/ABI/testing/sysfs-firmware-tdx:2: WARNING: Unexpected
+ indentation.
+Message-ID: <202207052017.miU9soWY-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e3b344e7-4100-e0d4-0dcd-aeef4893ad43@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 03:42:08PM +0300, Dmitry Baryshkov wrote:
-> On 05/07/2022 14:40, Johan Hovold wrote:
-> > The QMP PCIe PHY provides a single clock so drop the redundant clock
-> > index.
-> > 
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> 
-> Hmm. After checking the source code, the clocks entry of the phy@1c0e000 
-> node also needs to be fixed.
+tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
+head:   8af973ebaf30642129fc1ca63f155a469f9615ed
+commit: 38171b7e61218ed34ba38f00c6503ffa3ee1a806 [313/442] x86/virt/tdx: Export TDX keyid number and status of TDX module via sysfs
+reproduce: make htmldocs
 
-I assume you meant pci@1c08000 here? Thanks for catching that!
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> And also maybe:
-> 
-> Fixes: bd7d507935ca ("arm64: dts: qcom: sc7280: Add pcie clock support")
-> Fixes: 92e0ee9f83b3 ("arm64: dts: qcom: sc7280: Add PCIe and PHY related 
-> nodes")
+All warnings (new ones prefixed by >>):
 
-Maybe, I'm a bit reluctant to add a Fixes tags for these even if they do
-violate the binding. But sure, why not.
+>> Documentation/ABI/testing/sysfs-firmware-tdx:2: WARNING: Unexpected indentation.
+>> Documentation/ABI/testing/sysfs-firmware-tdx:2: WARNING: Block quote ends without a blank line; unexpected unindent.
+>> Documentation/ABI/testing/sysfs-firmware-tdx:2: WARNING: Malformed table.
+>> Documentation/ABI/testing/sysfs-firmware-tdx:22: WARNING: Blank line required after table.
+>> Documentation/ABI/testing/sysfs-firmware-tdx:22: WARNING: Definition list ends without a blank line; unexpected unindent.
+>> Documentation/ABI/testing/sysfs-firmware-tdx:1: WARNING: undefined label: abi_sys_firmware_tdx_tdx_module (if the link has no caption the label must precede a section header)
 
-> > ---
-> >   arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > index e66fc67de206..b0ae2dbba50f 100644
-> > --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > @@ -818,7 +818,7 @@ gcc: clock-controller@100000 {
-> >   			reg = <0 0x00100000 0 0x1f0000>;
-> >   			clocks = <&rpmhcc RPMH_CXO_CLK>,
-> >   				 <&rpmhcc RPMH_CXO_CLK_A>, <&sleep_clk>,
-> > -				 <0>, <&pcie1_lane 0>,
-> > +				 <0>, <&pcie1_lane>,
-> >   				 <0>, <0>, <0>, <0>;
-> >   			clock-names = "bi_tcxo", "bi_tcxo_ao", "sleep_clk",
-> >   				      "pcie_0_pipe_clk", "pcie_1_pipe_clk",
-> > @@ -2110,7 +2110,7 @@ pcie1_lane: phy@1c0e200 {
-> >   				clock-names = "pipe0";
-> >   
-> >   				#phy-cells = <0>;
-> > -				#clock-cells = <1>;
-> > +				#clock-cells = <0>;
-> >   				clock-output-names = "pcie_1_pipe_clk";
-> >   			};
-> >   		};
+vim +2 Documentation/ABI/testing/sysfs-firmware-tdx
 
-Johan
+   > 1	What:           /sys/firmware/tdx/
+   > 2	Date:           March 2022
+     3	KernelVersion:  5.17
+     4	Contact:        Isaku Yamahata <isaku.yamahata@intel.com>, kvm@vger.kernel.org
+     5	Description:
+     6	                Intel's Trust Domain Extensions (TDX) protect guest VMs from
+     7	                malicious hosts and some physical attacks.  This directory
+     8	                represents the entry point directory for the TDX.
+     9	
+    10	                the TDX requires the TDX firmware to load into an isolated
+    11	                memory region.  It requires a two-step loading process.  It uses
+    12	                the first phase firmware loader (a.k.a NP-SEAMLDR) that loads
+    13	                the next loader and the second phase firmware loader(a.k.a
+    14	                P-SEAMLDR) that loads the TDX firmware(a.k.a the "TDX module").
+    15	                =============== ================================================
+    16	                keyid_num       the number of SEAM keyid as an hexadecimal
+    17	                                number with the "0x" prefix.
+    18	                =============== ================================================
+    19	Users:          libvirt
+    20	
+    21	What:           /sys/firmware/tdx/tdx_module/
+  > 22	Date:           March 2022
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
