@@ -2,78 +2,428 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012F8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C32C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbiGENnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
+        id S233245AbiGENnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233569AbiGENmm (ORCPT
+        with ESMTP id S233570AbiGENmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 09:42:42 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27DE2C106;
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BA82C109;
         Tue,  5 Jul 2022 06:06:46 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id AA7ED22248;
-        Tue,  5 Jul 2022 15:06:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657026404;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e1hHCNj4Kb675988zlx5BDvAHEpRvATkmiKil1lNsdY=;
-        b=LD2GMfZiP3JP7EE7cr2hKLIwIP5IkoJeSjdhwmw09repIc55h3Jz6MWIBOIXlBZEewXqS1
-        wshFCzEs0bUvExctbfbgHH2yhDS3r0v/5QaiRIopU7pEHvJYTMSWvlfc9ErpQNpAVg8Dn/
-        ASZ4tUAUz1OHkISgnvswN1kfMZLfHXM=
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH 2/2] ARM: dts: kswitch-d10: enable the USB device port
-Date:   Tue,  5 Jul 2022 15:06:37 +0200
-Message-Id: <20220705130637.1386120-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220705130637.1386120-1-michael@walle.cc>
-References: <20220705130637.1386120-1-michael@walle.cc>
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265D6Klx008413;
+        Tue, 5 Jul 2022 08:06:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657026380;
+        bh=OCLl2efvQJbg1gKEYvQy4DKv/FH6mV4UXDxc5GoIxbU=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=r/vESOEpmSALGb4RS/Cr1gJCQz7PkXc427MeGgwqNDvPmLpaoJcCrxciM2GCZhWSA
+         5FlY2p4H5zsdxJ9VeG6sV4xXrYHGFL5TLv5ykFOAbk7jZDA4ayr6m68i0lJk81WAX4
+         4Xn2mfmxI4SR2aXHP/s/3NI4YZpOAg5mumtgxLII=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265D6JvG091840
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 08:06:19 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 08:06:19 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 08:06:19 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265D6ION101572;
+        Tue, 5 Jul 2022 08:06:19 -0500
+Date:   Tue, 5 Jul 2022 18:36:18 +0530
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <andrzej.hajda@intel.com>,
+        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
+        <jonas@kwiboo.se>, <jernej.skrabec@gmail.com>, <airlied@linux.ie>,
+        <daniel@ffwll.ch>, <p.zabel@pengutronix.de>,
+        <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>
+Subject: Re: [PATCH v3 1/4] dt-bindings: display: bridge: Convert
+ cdns,dsi.txt to yaml
+Message-ID: <20220705130617.whrs2icf4bvs7zwg@uda0490373>
+References: <20220620205403.31744-1-r-ravikumar@ti.com>
+ <20220620205403.31744-2-r-ravikumar@ti.com>
+ <7768c848-e91d-12d2-d960-196b47778e85@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7768c848-e91d-12d2-d960-196b47778e85@linaro.org>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that there is driver support for the USB device, enable it.
+Hi Krzysztof,
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+On 17:43-20220624, Krzysztof Kozlowski wrote:
+> On 20/06/2022 22:54, Rahul T R wrote:
+> > Convert cdns,dsi.txt binding to yaml format
+> > 
+> > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> > ---
+> >  .../bindings/display/bridge/cdns,dsi.txt      | 112 ----------
+> >  .../bindings/display/bridge/cdns,dsi.yaml     | 193 ++++++++++++++++++
+> >  2 files changed, 193 insertions(+), 112 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
+> >  create mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
+> > deleted file mode 100644
+> > index 525a4bfd8634..000000000000
+> > --- a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
+> > +++ /dev/null
+> > @@ -1,112 +0,0 @@
+> > -Cadence DSI bridge
+> > -==================
+> > -
+> > -The Cadence DSI bridge is a DPI to DSI bridge supporting up to 4 DSI lanes.
+> > -
+> > -Required properties:
+> > -- compatible: should be set to "cdns,dsi".
+> > -- reg: physical base address and length of the controller's registers.
+> > -- interrupts: interrupt line connected to the DSI bridge.
+> > -- clocks: DSI bridge clocks.
+> > -- clock-names: must contain "dsi_p_clk" and "dsi_sys_clk".
+> > -- phys: phandle link to the MIPI D-PHY controller.
+> > -- phy-names: must contain "dphy".
+> > -- #address-cells: must be set to 1.
+> > -- #size-cells: must be set to 0.
+> > -
+> > -Optional properties:
+> > -- resets: DSI reset lines.
+> > -- reset-names: can contain "dsi_p_rst".
+> > -
+> > -Required subnodes:
+> > -- ports: Ports as described in Documentation/devicetree/bindings/graph.txt.
+> > -  2 ports are available:
+> > -  * port 0: this port is only needed if some of your DSI devices are
+> > -	    controlled through  an external bus like I2C or SPI. Can have at
+> > -	    most 4 endpoints. The endpoint number is directly encoding the
+> > -	    DSI virtual channel used by this device.
+> > -  * port 1: represents the DPI input.
+> > -  Other ports will be added later to support the new kind of inputs.
+> > -
+> > -- one subnode per DSI device connected on the DSI bus. Each DSI device should
+> > -  contain a reg property encoding its virtual channel.
+> > -
+> > -Example:
+> > -	dsi0: dsi@fd0c0000 {
+> > -		compatible = "cdns,dsi";
+> > -		reg = <0x0 0xfd0c0000 0x0 0x1000>;
+> > -		clocks = <&pclk>, <&sysclk>;
+> > -		clock-names = "dsi_p_clk", "dsi_sys_clk";
+> > -		interrupts = <1>;
+> > -		phys = <&dphy0>;
+> > -		phy-names = "dphy";
+> > -		#address-cells = <1>;
+> > -		#size-cells = <0>;
+> > -
+> > -		ports {
+> > -			#address-cells = <1>;
+> > -			#size-cells = <0>;
+> > -
+> > -			port@1 {
+> > -				reg = <1>;
+> > -				dsi0_dpi_input: endpoint {
+> > -					remote-endpoint = <&xxx_dpi_output>;
+> > -				};
+> > -			};
+> > -		};
+> > -
+> > -		panel: dsi-dev@0 {
+> > -			compatible = "<vendor,panel>";
+> > -			reg = <0>;
+> > -		};
+> > -	};
+> > -
+> > -or
+> > -
+> > -	dsi0: dsi@fd0c0000 {
+> > -		compatible = "cdns,dsi";
+> > -		reg = <0x0 0xfd0c0000 0x0 0x1000>;
+> > -		clocks = <&pclk>, <&sysclk>;
+> > -		clock-names = "dsi_p_clk", "dsi_sys_clk";
+> > -		interrupts = <1>;
+> > -		phys = <&dphy1>;
+> > -		phy-names = "dphy";
+> > -		#address-cells = <1>;
+> > -		#size-cells = <0>;
+> > -
+> > -		ports {
+> > -			#address-cells = <1>;
+> > -			#size-cells = <0>;
+> > -
+> > -			port@0 {
+> > -				reg = <0>;
+> > -				#address-cells = <1>;
+> > -				#size-cells = <0>;
+> > -
+> > -				dsi0_output: endpoint@0 {
+> > -					reg = <0>;
+> > -					remote-endpoint = <&dsi_panel_input>;
+> > -				};
+> > -			};
+> > -
+> > -			port@1 {
+> > -				reg = <1>;
+> > -				dsi0_dpi_input: endpoint {
+> > -					remote-endpoint = <&xxx_dpi_output>;
+> > -				};
+> > -			};
+> > -		};
+> > -	};
+> > -
+> > -	i2c@xxx {
+> > -		panel: panel@59 {
+> > -			compatible = "<vendor,panel>";
+> > -			reg = <0x59>;
+> > -
+> > -			port {
+> > -				dsi_panel_input: endpoint {
+> > -					remote-endpoint = <&dsi0_output>;
+> > -				};
+> > -			};
+> > -		};
+> > -	};
+> > diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+> > new file mode 100644
+> > index 000000000000..3da47c01dca8
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+> > @@ -0,0 +1,193 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/display/bridge/cdns,dsi.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Cadence DSI bridge
+> > +
+> > +maintainers:
+> > +  - Boris Brezillon <boris.brezillon@bootlin.com>
+> > +
+> > +description: |
+> > +   CDNS DSI is a bridge device which converts DPI to DSI
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - cdns,dsi
+> > +      - ti,j721e-dsi
+> 
+> It wasn't here before, so this is not a conversion. Split adding new
+> compatibles and features from actual conversion.
+> 
+> > +
+> > +  reg:
+> > +    minItems: 1
+> > +    items:
+> > +      - description:
+> > +          Register block for controller's registers.
+> > +      - description:
+> > +          Register block for wrapper settings registers in case of TI J7 SoCs.
+> 
+> This needs allOf with if:then:else constraining number of items per variant.
+> 
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: PSM clock, used by the IP
+> > +      - description: sys clock, used by the IP
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: dsi_p_clk
+> > +      - const: dsi_sys_clk
+> > +
+> > +  phys:
+> > +    minItems: 1
+> 
+> instead maxItems: 1
+> 
+> > +    description: phandle link to the MIPI D-PHY controller.
+> > +
+> > +  phy-names:
+> > +    const: dphy
+> > +
+> > +  power-domains:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  resets:
+> > +    minItems: 1
+> 
+> instead maxItems: 1
+> 
+> > +    description: PHY reset.
+> > +
+> > +  reset-names:
+> > +    const: dsi_p_rst
+> > +
+> > +  ports:
+> > +    $ref: /schemas/graph.yaml#/properties/ports
+> 
+> additionalProperties: false
+> 
+> > +
+> > +    properties:
+> > +      port@0:
+> > +        $ref: /schemas/graph.yaml#/properties/port
+> > +        description:
+> > +          Output port representing the DSI output. It can have
+> > +          most 4 endpoints. The endpoint number is directly encoding
+> > +          the DSI virtual channel used by this device.
+> > +
+> > +      port@1:
+> > +        $ref: /schemas/graph.yaml#/properties/port
+> > +        description:
+> > +          Input port representing the DP bridge input.
+> > +
+> > +    required:
+> > +      - port@1
+> > +
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +  - clock-names
+> > +  - phys
+> > +  - phy-names
+> > +  - ports
+> > +
+> > +allOf:
+> > +  - $ref: ../dsi-controller.yaml#
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    dsi@fd0c0000 {
+> > +        compatible = "cdns,dsi";
+> > +        reg = <0x0 0xfd0c0000 0x0 0x1000>;
+> > +        clocks = <&pclk>, <&sysclk>;
+> > +        clock-names = "dsi_p_clk", "dsi_sys_clk";
+> > +        interrupts = <1>;
+> > +        phys = <&dphy0>;
+> > +        phy-names = "dphy";
+> > +
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        ports {
+> > +            #address-cells = <1>;
+> > +            #size-cells = <0>;
+> > +
+> > +            port@1 {
+> > +                reg = <1>;
+> > +                endpoint {
+> > +                    remote-endpoint = <&xxx_dpi_output>;
+> > +                };
+> > +            };
+> > +        };
+> > +
+> > +        panel@0 {
+> > +            compatible = "panasonic,vvx10f034n00";
+> > +            reg = <0>;
+> > +            power-supply = <&vcc_lcd_reg>;
+> > +        };
+> > +    };
+> > +
+> > +  - |
+> > +    dsi@fd0c0000 {
+> > +        compatible = "cdns,dsi";
+> > +        reg = <0x0 0xfd0c0000 0x0 0x1000>;
+> > +        clocks = <&pclk>, <&sysclk>;
+> > +        clock-names = "dsi_p_clk", "dsi_sys_clk";
+> > +        interrupts = <1>;
+> > +        phys = <&dphy1>;
+> > +        phy-names = "dphy";
+> > +
+> > +        ports {
+> > +            #address-cells = <1>;
+> > +            #size-cells = <0>;
+> > +
+> > +            port@0 {
+> > +                reg = <0>;
+> > +                #address-cells = <1>;
+> > +                #size-cells = <0>;
+> > +
+> > +                dsi0_output: endpoint@0 {
+> > +                    reg = <0>;
+> > +                    remote-endpoint = <&dsi_panel_input>;
+> > +                };
+> > +            };
+> > +
+> > +            port@1 {
+> > +                reg = <1>;
+> > +                endpoint {
+> > +                    remote-endpoint = <&xxx_dpi_output>;
+> > +                };
+> > +            };
+> > +        };
+> > +    };
+> > +
+> > +    i2c {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        bridge@2d {
+> > +            compatible = "ti,sn65dsi86";
+> > +            reg = <0x2d>;
+> > +
+> > +            vpll-supply = <&src_pp1800_s4a>;
+> > +            vccio-supply = <&src_pp1800_s4a>;
+> > +            vcca-supply = <&src_pp1200_l2a>;
+> > +            vcc-supply = <&src_pp1200_l2a>;
+> > +
+> > +            ports {
+> > +                #address-cells = <1>;
+> > +                #size-cells = <0>;
+> > +
+> > +                port@0 {
+> > +                    reg = <0>;
+> > +                    dsi_panel_input: endpoint {
+> > +                        remote-endpoint = <&dsi0_output>;
+> > +                    };
+> > +                };
+> > +
+> > +                port@1 {
+> > +                    reg = <1>;
+> > +                    endpoint {
+> > +                        remote-endpoint = <&panel_in_edp>;
+> > +                    };
+> > +                };
+> > +            };
+> > +        };
+> > +    };
+Thanks for the review !
+I have set a v4 addressing the comments
+please review
 
-diff --git a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-index 5a6c5f7c371a..d0d26e136c38 100644
---- a/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-+++ b/arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi
-@@ -200,6 +200,11 @@ &switch {
- 	status = "okay";
- };
- 
-+&udc {
-+	atmel,vbus-gpio = <&gpio 66 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+};
-+
- &watchdog {
- 	status = "okay";
- };
--- 
-2.30.2
-
+Regards
+Rahul T R
+> 
+> 
+> Best regards,
+> Krzysztof
