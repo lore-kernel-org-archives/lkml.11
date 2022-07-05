@@ -2,137 +2,1010 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3514CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A81F2CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235547AbiGEMY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37216 "EHLO
+        id S237837AbiGEMYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236410AbiGEMRo (ORCPT
+        with ESMTP id S236292AbiGEMRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C47919284;
-        Tue,  5 Jul 2022 05:12:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20FDE619A6;
-        Tue,  5 Jul 2022 12:12:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29B32C341C7;
-        Tue,  5 Jul 2022 12:12:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023147;
-        bh=wuKprzqAZy3bD4LW+rLujthQcKFLaJ9Nym7b1Qb579A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KcPrHdt/3vPCmsT5xI0bWhxzYQeRV+d9psJa5J4Yi96AlspTMSXPQNxNERuSteQ/J
-         URw33KFAaJymkxpcil3Ue2w4gCc+xSlkAqFHxhm/3L+GXXs5uPA9PviJJjdpK/1fo4
-         hpHzxZEDaPLantrIDlIqA+0On5oaervRsR1EMMdg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 54/98] tunnels: do not assume mac header is set in skb_tunnel_check_pmtu()
-Date:   Tue,  5 Jul 2022 13:58:12 +0200
-Message-Id: <20220705115619.117158778@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:17:32 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A032719033;
+        Tue,  5 Jul 2022 05:12:17 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBZsh012676;
+        Tue, 5 Jul 2022 07:11:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657023095;
+        bh=vajIlJ1UzjBtushIafK578+2I5NZl6kPYOdoMCZJxRw=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Yi7gLlQHzbTbCJljqYDBqy5uwCiMHmoYs+M7TbzisvCgsIzkwnG82Bsyn90qDr3s6
+         m3Z4RQ9o+Uw2Dh/EWDaMgw8msPGEmkVPlwPKcuv/PhD7G0k11W9hs5WjuhAHJKp5Pq
+         qSZaHa7INSB2v7QnI0wgNDt6xYQCMYbrtsXrV05o=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBZC5009012
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 07:11:35 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 07:11:34 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 07:11:34 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBXMo023395;
+        Tue, 5 Jul 2022 07:11:34 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v4 4/5] drm/bridge: cdns-dsi: Create a header file
+Date:   Tue, 5 Jul 2022 17:41:15 +0530
+Message-ID: <20220705121116.24121-5-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
+References: <20220705121116.24121-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Create a header file for cdns dsi and move
+register offsets and structure to header,
+to prepare for adding j721e wrapper support
 
-commit 853a7614880231747040cada91d2b8d2e995c51a upstream.
-
-Recently added debug in commit f9aefd6b2aa3 ("net: warn if mac header
-was not set") caught a bug in skb_tunnel_check_pmtu(), as shown
-in this syzbot report [1].
-
-In ndo_start_xmit() paths, there is really no need to use skb->mac_header,
-because skb->data is supposed to point at it.
-
-[1] WARNING: CPU: 1 PID: 8604 at include/linux/skbuff.h:2784 skb_mac_header_len include/linux/skbuff.h:2784 [inline]
-WARNING: CPU: 1 PID: 8604 at include/linux/skbuff.h:2784 skb_tunnel_check_pmtu+0x5de/0x2f90 net/ipv4/ip_tunnel_core.c:413
-Modules linked in:
-CPU: 1 PID: 8604 Comm: syz-executor.3 Not tainted 5.19.0-rc2-syzkaller-00443-g8720bd951b8e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:skb_mac_header_len include/linux/skbuff.h:2784 [inline]
-RIP: 0010:skb_tunnel_check_pmtu+0x5de/0x2f90 net/ipv4/ip_tunnel_core.c:413
-Code: 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 80 3c 02 00 0f 84 b9 fe ff ff 4c 89 ff e8 7c 0f d7 f9 e9 ac fe ff ff e8 c2 13 8a f9 <0f> 0b e9 28 fc ff ff e8 b6 13 8a f9 48 8b 54 24 70 48 b8 00 00 00
-RSP: 0018:ffffc90002e4f520 EFLAGS: 00010212
-RAX: 0000000000000324 RBX: ffff88804d5fd500 RCX: ffffc90005b52000
-RDX: 0000000000040000 RSI: ffffffff87f05e3e RDI: 0000000000000003
-RBP: ffffc90002e4f650 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000000 R12: 000000000000ffff
-R13: 0000000000000000 R14: 000000000000ffcd R15: 000000000000001f
-FS: 00007f3babba9700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000080 CR3: 0000000075319000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-geneve_xmit_skb drivers/net/geneve.c:927 [inline]
-geneve_xmit+0xcf8/0x35d0 drivers/net/geneve.c:1107
-__netdev_start_xmit include/linux/netdevice.h:4805 [inline]
-netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-__dev_direct_xmit+0x500/0x730 net/core/dev.c:4309
-dev_direct_xmit include/linux/netdevice.h:3007 [inline]
-packet_direct_xmit+0x1b8/0x2c0 net/packet/af_packet.c:282
-packet_snd net/packet/af_packet.c:3073 [inline]
-packet_sendmsg+0x21f4/0x55d0 net/packet/af_packet.c:3104
-sock_sendmsg_nosec net/socket.c:714 [inline]
-sock_sendmsg+0xcf/0x120 net/socket.c:734
-____sys_sendmsg+0x6eb/0x810 net/socket.c:2489
-___sys_sendmsg+0xf3/0x170 net/socket.c:2543
-__sys_sendmsg net/socket.c:2572 [inline]
-__do_sys_sendmsg net/socket.c:2581 [inline]
-__se_sys_sendmsg net/socket.c:2579 [inline]
-__x64_sys_sendmsg+0x132/0x220 net/socket.c:2579
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3baaa89109
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3babba9168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f3baab9bf60 RCX: 00007f3baaa89109
-RDX: 0000000000000000 RSI: 0000000020000a00 RDI: 0000000000000003
-RBP: 00007f3baaae305d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffe74f2543f R14: 00007f3babba9300 R15: 0000000000022000
-</TASK>
-
-Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Stefano Brivio <sbrivio@redhat.com>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
 ---
- net/ipv4/ip_tunnel_core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../gpu/drm/bridge/cadence/cdns-dsi-core.c    | 446 +----------------
+ .../gpu/drm/bridge/cadence/cdns-dsi-core.h    | 458 ++++++++++++++++++
+ 2 files changed, 459 insertions(+), 445 deletions(-)
+ create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
 
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -410,7 +410,7 @@ int skb_tunnel_check_pmtu(struct sk_buff
- 	u32 mtu = dst_mtu(encap_dst) - headroom;
+diff --git a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+index 20bece84ff8c..cba91247ab26 100644
+--- a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
++++ b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+@@ -6,10 +6,7 @@
+  */
  
- 	if ((skb_is_gso(skb) && skb_gso_validate_network_len(skb, mtu)) ||
--	    (!skb_is_gso(skb) && (skb->len - skb_mac_header_len(skb)) <= mtu))
-+	    (!skb_is_gso(skb) && (skb->len - skb_network_offset(skb)) <= mtu))
- 		return 0;
+ #include <drm/drm_atomic_helper.h>
+-#include <drm/drm_bridge.h>
+ #include <drm/drm_drv.h>
+-#include <drm/drm_mipi_dsi.h>
+-#include <drm/drm_panel.h>
+ #include <drm/drm_probe_helper.h>
+ #include <video/mipi_display.h>
  
- 	skb_dst_update_pmtu_no_confirm(skb, mtu);
-
+@@ -23,448 +20,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/reset.h>
+ 
+-#include <linux/phy/phy.h>
+-#include <linux/phy/phy-mipi-dphy.h>
+-
+-#define IP_CONF				0x0
+-#define SP_HS_FIFO_DEPTH(x)		(((x) & GENMASK(30, 26)) >> 26)
+-#define SP_LP_FIFO_DEPTH(x)		(((x) & GENMASK(25, 21)) >> 21)
+-#define VRS_FIFO_DEPTH(x)		(((x) & GENMASK(20, 16)) >> 16)
+-#define DIRCMD_FIFO_DEPTH(x)		(((x) & GENMASK(15, 13)) >> 13)
+-#define SDI_IFACE_32			BIT(12)
+-#define INTERNAL_DATAPATH_32		(0 << 10)
+-#define INTERNAL_DATAPATH_16		(1 << 10)
+-#define INTERNAL_DATAPATH_8		(3 << 10)
+-#define INTERNAL_DATAPATH_SIZE		((x) & GENMASK(11, 10))
+-#define NUM_IFACE(x)			((((x) & GENMASK(9, 8)) >> 8) + 1)
+-#define MAX_LANE_NB(x)			(((x) & GENMASK(7, 6)) >> 6)
+-#define RX_FIFO_DEPTH(x)		((x) & GENMASK(5, 0))
+-
+-#define MCTL_MAIN_DATA_CTL		0x4
+-#define TE_MIPI_POLLING_EN		BIT(25)
+-#define TE_HW_POLLING_EN		BIT(24)
+-#define DISP_EOT_GEN			BIT(18)
+-#define HOST_EOT_GEN			BIT(17)
+-#define DISP_GEN_CHECKSUM		BIT(16)
+-#define DISP_GEN_ECC			BIT(15)
+-#define BTA_EN				BIT(14)
+-#define READ_EN				BIT(13)
+-#define REG_TE_EN			BIT(12)
+-#define IF_TE_EN(x)			BIT(8 + (x))
+-#define TVG_SEL				BIT(6)
+-#define VID_EN				BIT(5)
+-#define IF_VID_SELECT(x)		((x) << 2)
+-#define IF_VID_SELECT_MASK		GENMASK(3, 2)
+-#define IF_VID_MODE			BIT(1)
+-#define LINK_EN				BIT(0)
+-
+-#define MCTL_MAIN_PHY_CTL		0x8
+-#define HS_INVERT_DAT(x)		BIT(19 + ((x) * 2))
+-#define SWAP_PINS_DAT(x)		BIT(18 + ((x) * 2))
+-#define HS_INVERT_CLK			BIT(17)
+-#define SWAP_PINS_CLK			BIT(16)
+-#define HS_SKEWCAL_EN			BIT(15)
+-#define WAIT_BURST_TIME(x)		((x) << 10)
+-#define DATA_ULPM_EN(x)			BIT(6 + (x))
+-#define CLK_ULPM_EN			BIT(5)
+-#define CLK_CONTINUOUS			BIT(4)
+-#define DATA_LANE_EN(x)			BIT((x) - 1)
+-
+-#define MCTL_MAIN_EN			0xc
+-#define DATA_FORCE_STOP			BIT(17)
+-#define CLK_FORCE_STOP			BIT(16)
+-#define IF_EN(x)			BIT(13 + (x))
+-#define DATA_LANE_ULPM_REQ(l)		BIT(9 + (l))
+-#define CLK_LANE_ULPM_REQ		BIT(8)
+-#define DATA_LANE_START(x)		BIT(4 + (x))
+-#define CLK_LANE_EN			BIT(3)
+-#define PLL_START			BIT(0)
+-
+-#define MCTL_DPHY_CFG0			0x10
+-#define DPHY_C_RSTB			BIT(20)
+-#define DPHY_D_RSTB(x)			GENMASK(15 + (x), 16)
+-#define DPHY_PLL_PDN			BIT(10)
+-#define DPHY_CMN_PDN			BIT(9)
+-#define DPHY_C_PDN			BIT(8)
+-#define DPHY_D_PDN(x)			GENMASK(3 + (x), 4)
+-#define DPHY_ALL_D_PDN			GENMASK(7, 4)
+-#define DPHY_PLL_PSO			BIT(1)
+-#define DPHY_CMN_PSO			BIT(0)
+-
+-#define MCTL_DPHY_TIMEOUT1		0x14
+-#define HSTX_TIMEOUT(x)			((x) << 4)
+-#define HSTX_TIMEOUT_MAX		GENMASK(17, 0)
+-#define CLK_DIV(x)			(x)
+-#define CLK_DIV_MAX			GENMASK(3, 0)
+-
+-#define MCTL_DPHY_TIMEOUT2		0x18
+-#define LPRX_TIMEOUT(x)			(x)
+-
+-#define MCTL_ULPOUT_TIME		0x1c
+-#define DATA_LANE_ULPOUT_TIME(x)	((x) << 9)
+-#define CLK_LANE_ULPOUT_TIME(x)		(x)
+-
+-#define MCTL_3DVIDEO_CTL		0x20
+-#define VID_VSYNC_3D_EN			BIT(7)
+-#define VID_VSYNC_3D_LR			BIT(5)
+-#define VID_VSYNC_3D_SECOND_EN		BIT(4)
+-#define VID_VSYNC_3DFORMAT_LINE		(0 << 2)
+-#define VID_VSYNC_3DFORMAT_FRAME	(1 << 2)
+-#define VID_VSYNC_3DFORMAT_PIXEL	(2 << 2)
+-#define VID_VSYNC_3DMODE_OFF		0
+-#define VID_VSYNC_3DMODE_PORTRAIT	1
+-#define VID_VSYNC_3DMODE_LANDSCAPE	2
+-
+-#define MCTL_MAIN_STS			0x24
+-#define MCTL_MAIN_STS_CTL		0x130
+-#define MCTL_MAIN_STS_CLR		0x150
+-#define MCTL_MAIN_STS_FLAG		0x170
+-#define HS_SKEWCAL_DONE			BIT(11)
+-#define IF_UNTERM_PKT_ERR(x)		BIT(8 + (x))
+-#define LPRX_TIMEOUT_ERR		BIT(7)
+-#define HSTX_TIMEOUT_ERR		BIT(6)
+-#define DATA_LANE_RDY(l)		BIT(2 + (l))
+-#define CLK_LANE_RDY			BIT(1)
+-#define PLL_LOCKED			BIT(0)
+-
+-#define MCTL_DPHY_ERR			0x28
+-#define MCTL_DPHY_ERR_CTL1		0x148
+-#define MCTL_DPHY_ERR_CLR		0x168
+-#define MCTL_DPHY_ERR_FLAG		0x188
+-#define ERR_CONT_LP(x, l)		BIT(18 + ((x) * 4) + (l))
+-#define ERR_CONTROL(l)			BIT(14 + (l))
+-#define ERR_SYNESC(l)			BIT(10 + (l))
+-#define ERR_ESC(l)			BIT(6 + (l))
+-
+-#define MCTL_DPHY_ERR_CTL2		0x14c
+-#define ERR_CONT_LP_EDGE(x, l)		BIT(12 + ((x) * 4) + (l))
+-#define ERR_CONTROL_EDGE(l)		BIT(8 + (l))
+-#define ERR_SYN_ESC_EDGE(l)		BIT(4 + (l))
+-#define ERR_ESC_EDGE(l)			BIT(0 + (l))
+-
+-#define MCTL_LANE_STS			0x2c
+-#define PPI_C_TX_READY_HS		BIT(18)
+-#define DPHY_PLL_LOCK			BIT(17)
+-#define PPI_D_RX_ULPS_ESC(x)		(((x) & GENMASK(15, 12)) >> 12)
+-#define LANE_STATE_START		0
+-#define LANE_STATE_IDLE			1
+-#define LANE_STATE_WRITE		2
+-#define LANE_STATE_ULPM			3
+-#define LANE_STATE_READ			4
+-#define DATA_LANE_STATE(l, val)		\
+-	(((val) >> (2 + 2 * (l) + ((l) ? 1 : 0))) & GENMASK((l) ? 1 : 2, 0))
+-#define CLK_LANE_STATE_HS		2
+-#define CLK_LANE_STATE(val)		((val) & GENMASK(1, 0))
+-
+-#define DSC_MODE_CTL			0x30
+-#define DSC_MODE_EN			BIT(0)
+-
+-#define DSC_CMD_SEND			0x34
+-#define DSC_SEND_PPS			BIT(0)
+-#define DSC_EXECUTE_QUEUE		BIT(1)
+-
+-#define DSC_PPS_WRDAT			0x38
+-
+-#define DSC_MODE_STS			0x3c
+-#define DSC_PPS_DONE			BIT(1)
+-#define DSC_EXEC_DONE			BIT(2)
+-
+-#define CMD_MODE_CTL			0x70
+-#define IF_LP_EN(x)			BIT(9 + (x))
+-#define IF_VCHAN_ID(x, c)		((c) << ((x) * 2))
+-
+-#define CMD_MODE_CTL2			0x74
+-#define TE_TIMEOUT(x)			((x) << 11)
+-#define FILL_VALUE(x)			((x) << 3)
+-#define ARB_IF_WITH_HIGHEST_PRIORITY(x)	((x) << 1)
+-#define ARB_ROUND_ROBIN_MODE		BIT(0)
+-
+-#define CMD_MODE_STS			0x78
+-#define CMD_MODE_STS_CTL		0x134
+-#define CMD_MODE_STS_CLR		0x154
+-#define CMD_MODE_STS_FLAG		0x174
+-#define ERR_IF_UNDERRUN(x)		BIT(4 + (x))
+-#define ERR_UNWANTED_READ		BIT(3)
+-#define ERR_TE_MISS			BIT(2)
+-#define ERR_NO_TE			BIT(1)
+-#define CSM_RUNNING			BIT(0)
+-
+-#define DIRECT_CMD_SEND			0x80
+-
+-#define DIRECT_CMD_MAIN_SETTINGS	0x84
+-#define TRIGGER_VAL(x)			((x) << 25)
+-#define CMD_LP_EN			BIT(24)
+-#define CMD_SIZE(x)			((x) << 16)
+-#define CMD_VCHAN_ID(x)			((x) << 14)
+-#define CMD_DATATYPE(x)			((x) << 8)
+-#define CMD_LONG			BIT(3)
+-#define WRITE_CMD			0
+-#define READ_CMD			1
+-#define TE_REQ				4
+-#define TRIGGER_REQ			5
+-#define BTA_REQ				6
+-
+-#define DIRECT_CMD_STS			0x88
+-#define DIRECT_CMD_STS_CTL		0x138
+-#define DIRECT_CMD_STS_CLR		0x158
+-#define DIRECT_CMD_STS_FLAG		0x178
+-#define RCVD_ACK_VAL(val)		((val) >> 16)
+-#define RCVD_TRIGGER_VAL(val)		(((val) & GENMASK(14, 11)) >> 11)
+-#define READ_COMPLETED_WITH_ERR		BIT(10)
+-#define BTA_FINISHED			BIT(9)
+-#define BTA_COMPLETED			BIT(8)
+-#define TE_RCVD				BIT(7)
+-#define TRIGGER_RCVD			BIT(6)
+-#define ACK_WITH_ERR_RCVD		BIT(5)
+-#define ACK_RCVD			BIT(4)
+-#define READ_COMPLETED			BIT(3)
+-#define TRIGGER_COMPLETED		BIT(2)
+-#define WRITE_COMPLETED			BIT(1)
+-#define SENDING_CMD			BIT(0)
+-
+-#define DIRECT_CMD_STOP_READ		0x8c
+-
+-#define DIRECT_CMD_WRDATA		0x90
+-
+-#define DIRECT_CMD_FIFO_RST		0x94
+-
+-#define DIRECT_CMD_RDDATA		0xa0
+-
+-#define DIRECT_CMD_RD_PROPS		0xa4
+-#define RD_DCS				BIT(18)
+-#define RD_VCHAN_ID(val)		(((val) >> 16) & GENMASK(1, 0))
+-#define RD_SIZE(val)			((val) & GENMASK(15, 0))
+-
+-#define DIRECT_CMD_RD_STS		0xa8
+-#define DIRECT_CMD_RD_STS_CTL		0x13c
+-#define DIRECT_CMD_RD_STS_CLR		0x15c
+-#define DIRECT_CMD_RD_STS_FLAG		0x17c
+-#define ERR_EOT_WITH_ERR		BIT(8)
+-#define ERR_MISSING_EOT			BIT(7)
+-#define ERR_WRONG_LENGTH		BIT(6)
+-#define ERR_OVERSIZE			BIT(5)
+-#define ERR_RECEIVE			BIT(4)
+-#define ERR_UNDECODABLE			BIT(3)
+-#define ERR_CHECKSUM			BIT(2)
+-#define ERR_UNCORRECTABLE		BIT(1)
+-#define ERR_FIXED			BIT(0)
+-
+-#define VID_MAIN_CTL			0xb0
+-#define VID_IGNORE_MISS_VSYNC		BIT(31)
+-#define VID_FIELD_SW			BIT(28)
+-#define VID_INTERLACED_EN		BIT(27)
+-#define RECOVERY_MODE(x)		((x) << 25)
+-#define RECOVERY_MODE_NEXT_HSYNC	0
+-#define RECOVERY_MODE_NEXT_STOP_POINT	2
+-#define RECOVERY_MODE_NEXT_VSYNC	3
+-#define REG_BLKEOL_MODE(x)		((x) << 23)
+-#define REG_BLKLINE_MODE(x)		((x) << 21)
+-#define REG_BLK_MODE_NULL_PKT		0
+-#define REG_BLK_MODE_BLANKING_PKT	1
+-#define REG_BLK_MODE_LP			2
+-#define SYNC_PULSE_HORIZONTAL		BIT(20)
+-#define SYNC_PULSE_ACTIVE		BIT(19)
+-#define BURST_MODE			BIT(18)
+-#define VID_PIXEL_MODE_MASK		GENMASK(17, 14)
+-#define VID_PIXEL_MODE_RGB565		(0 << 14)
+-#define VID_PIXEL_MODE_RGB666_PACKED	(1 << 14)
+-#define VID_PIXEL_MODE_RGB666		(2 << 14)
+-#define VID_PIXEL_MODE_RGB888		(3 << 14)
+-#define VID_PIXEL_MODE_RGB101010	(4 << 14)
+-#define VID_PIXEL_MODE_RGB121212	(5 << 14)
+-#define VID_PIXEL_MODE_YUV420		(8 << 14)
+-#define VID_PIXEL_MODE_YUV422_PACKED	(9 << 14)
+-#define VID_PIXEL_MODE_YUV422		(10 << 14)
+-#define VID_PIXEL_MODE_YUV422_24B	(11 << 14)
+-#define VID_PIXEL_MODE_DSC_COMP		(12 << 14)
+-#define VID_DATATYPE(x)			((x) << 8)
+-#define VID_VIRTCHAN_ID(iface, x)	((x) << (4 + (iface) * 2))
+-#define STOP_MODE(x)			((x) << 2)
+-#define START_MODE(x)			(x)
+-
+-#define VID_VSIZE1			0xb4
+-#define VFP_LEN(x)			((x) << 12)
+-#define VBP_LEN(x)			((x) << 6)
+-#define VSA_LEN(x)			(x)
+-
+-#define VID_VSIZE2			0xb8
+-#define VACT_LEN(x)			(x)
+-
+-#define VID_HSIZE1			0xc0
+-#define HBP_LEN(x)			((x) << 16)
+-#define HSA_LEN(x)			(x)
+-
+-#define VID_HSIZE2			0xc4
+-#define HFP_LEN(x)			((x) << 16)
+-#define HACT_LEN(x)			(x)
+-
+-#define VID_BLKSIZE1			0xcc
+-#define BLK_EOL_PKT_LEN(x)		((x) << 15)
+-#define BLK_LINE_EVENT_PKT_LEN(x)	(x)
+-
+-#define VID_BLKSIZE2			0xd0
+-#define BLK_LINE_PULSE_PKT_LEN(x)	(x)
+-
+-#define VID_PKT_TIME			0xd8
+-#define BLK_EOL_DURATION(x)		(x)
+-
+-#define VID_DPHY_TIME			0xdc
+-#define REG_WAKEUP_TIME(x)		((x) << 17)
+-#define REG_LINE_DURATION(x)		(x)
+-
+-#define VID_ERR_COLOR1			0xe0
+-#define COL_GREEN(x)			((x) << 12)
+-#define COL_RED(x)			(x)
+-
+-#define VID_ERR_COLOR2			0xe4
+-#define PAD_VAL(x)			((x) << 12)
+-#define COL_BLUE(x)			(x)
+-
+-#define VID_VPOS			0xe8
+-#define LINE_VAL(val)			(((val) & GENMASK(14, 2)) >> 2)
+-#define LINE_POS(val)			((val) & GENMASK(1, 0))
+-
+-#define VID_HPOS			0xec
+-#define HORIZ_VAL(val)			(((val) & GENMASK(17, 3)) >> 3)
+-#define HORIZ_POS(val)			((val) & GENMASK(2, 0))
+-
+-#define VID_MODE_STS			0xf0
+-#define VID_MODE_STS_CTL		0x140
+-#define VID_MODE_STS_CLR		0x160
+-#define VID_MODE_STS_FLAG		0x180
+-#define VSG_RECOVERY			BIT(10)
+-#define ERR_VRS_WRONG_LEN		BIT(9)
+-#define ERR_LONG_READ			BIT(8)
+-#define ERR_LINE_WRITE			BIT(7)
+-#define ERR_BURST_WRITE			BIT(6)
+-#define ERR_SMALL_HEIGHT		BIT(5)
+-#define ERR_SMALL_LEN			BIT(4)
+-#define ERR_MISSING_VSYNC		BIT(3)
+-#define ERR_MISSING_HSYNC		BIT(2)
+-#define ERR_MISSING_DATA		BIT(1)
+-#define VSG_RUNNING			BIT(0)
+-
+-#define VID_VCA_SETTING1		0xf4
+-#define BURST_LP			BIT(16)
+-#define MAX_BURST_LIMIT(x)		(x)
+-
+-#define VID_VCA_SETTING2		0xf8
+-#define MAX_LINE_LIMIT(x)		((x) << 16)
+-#define EXACT_BURST_LIMIT(x)		(x)
+-
+-#define TVG_CTL				0xfc
+-#define TVG_STRIPE_SIZE(x)		((x) << 5)
+-#define TVG_MODE_MASK			GENMASK(4, 3)
+-#define TVG_MODE_SINGLE_COLOR		(0 << 3)
+-#define TVG_MODE_VSTRIPES		(2 << 3)
+-#define TVG_MODE_HSTRIPES		(3 << 3)
+-#define TVG_STOPMODE_MASK		GENMASK(2, 1)
+-#define TVG_STOPMODE_EOF		(0 << 1)
+-#define TVG_STOPMODE_EOL		(1 << 1)
+-#define TVG_STOPMODE_NOW		(2 << 1)
+-#define TVG_RUN				BIT(0)
+-
+-#define TVG_IMG_SIZE			0x100
+-#define TVG_NBLINES(x)			((x) << 16)
+-#define TVG_LINE_SIZE(x)		(x)
+-
+-#define TVG_COLOR1			0x104
+-#define TVG_COL1_GREEN(x)		((x) << 12)
+-#define TVG_COL1_RED(x)			(x)
+-
+-#define TVG_COLOR1_BIS			0x108
+-#define TVG_COL1_BLUE(x)		(x)
+-
+-#define TVG_COLOR2			0x10c
+-#define TVG_COL2_GREEN(x)		((x) << 12)
+-#define TVG_COL2_RED(x)			(x)
+-
+-#define TVG_COLOR2_BIS			0x110
+-#define TVG_COL2_BLUE(x)		(x)
+-
+-#define TVG_STS				0x114
+-#define TVG_STS_CTL			0x144
+-#define TVG_STS_CLR			0x164
+-#define TVG_STS_FLAG			0x184
+-#define TVG_STS_RUNNING			BIT(0)
+-
+-#define STS_CTL_EDGE(e)			((e) << 16)
+-
+-#define DPHY_LANES_MAP			0x198
+-#define DAT_REMAP_CFG(b, l)		((l) << ((b) * 8))
+-
+-#define DPI_IRQ_EN			0x1a0
+-#define DPI_IRQ_CLR			0x1a4
+-#define DPI_IRQ_STS			0x1a8
+-#define PIXEL_BUF_OVERFLOW		BIT(0)
+-
+-#define DPI_CFG				0x1ac
+-#define DPI_CFG_FIFO_DEPTH(x)		((x) >> 16)
+-#define DPI_CFG_FIFO_LEVEL(x)		((x) & GENMASK(15, 0))
+-
+-#define TEST_GENERIC			0x1f0
+-#define TEST_STATUS(x)			((x) >> 16)
+-#define TEST_CTRL(x)			(x)
+-
+-#define ID_REG				0x1fc
+-#define REV_VENDOR_ID(x)		(((x) & GENMASK(31, 20)) >> 20)
+-#define REV_PRODUCT_ID(x)		(((x) & GENMASK(19, 12)) >> 12)
+-#define REV_HW(x)			(((x) & GENMASK(11, 8)) >> 8)
+-#define REV_MAJOR(x)			(((x) & GENMASK(7, 4)) >> 4)
+-#define REV_MINOR(x)			((x) & GENMASK(3, 0))
+-
+-#define DSI_OUTPUT_PORT			0
+-#define DSI_INPUT_PORT(inputid)		(1 + (inputid))
+-
+-#define DSI_HBP_FRAME_OVERHEAD		12
+-#define DSI_HSA_FRAME_OVERHEAD		14
+-#define DSI_HFP_FRAME_OVERHEAD		6
+-#define DSI_HSS_VSS_VSE_FRAME_OVERHEAD	4
+-#define DSI_BLANKING_FRAME_OVERHEAD	6
+-#define DSI_NULL_FRAME_OVERHEAD		6
+-#define DSI_EOT_PKT_SIZE		4
+-
+-struct cdns_dsi_output {
+-	struct mipi_dsi_device *dev;
+-	struct drm_panel *panel;
+-	struct drm_bridge *bridge;
+-	union phy_configure_opts phy_opts;
+-};
+-
+-enum cdns_dsi_input_id {
+-	CDNS_SDI_INPUT,
+-	CDNS_DPI_INPUT,
+-	CDNS_DSC_INPUT,
+-};
+-
+-struct cdns_dsi_cfg {
+-	unsigned int hfp;
+-	unsigned int hsa;
+-	unsigned int hbp;
+-	unsigned int hact;
+-	unsigned int htotal;
+-};
+-
+-struct cdns_dsi_input {
+-	enum cdns_dsi_input_id id;
+-	struct drm_bridge bridge;
+-};
+-
+-struct cdns_dsi {
+-	struct mipi_dsi_host base;
+-	void __iomem *regs;
+-	struct cdns_dsi_input input;
+-	struct cdns_dsi_output output;
+-	unsigned int direct_cmd_fifo_depth;
+-	unsigned int rx_fifo_depth;
+-	struct completion direct_cmd_comp;
+-	struct clk *dsi_p_clk;
+-	struct reset_control *dsi_p_rst;
+-	struct clk *dsi_sys_clk;
+-	bool link_initialized;
+-	bool phy_initialized;
+-	struct phy *dphy;
+-};
++#include "cdns-dsi-core.h"
+ 
+ static inline struct cdns_dsi *input_to_dsi(struct cdns_dsi_input *input)
+ {
+diff --git a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
+new file mode 100644
+index 000000000000..65cc77f19b39
+--- /dev/null
++++ b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
+@@ -0,0 +1,458 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright: 2017 Cadence Design Systems, Inc.
++ *
++ * Author: Boris Brezillon <boris.brezillon@bootlin.com>
++ */
++
++#ifndef CDNS_DSI_H
++#define CDNS_DSI_H
++
++#include <drm/drm_bridge.h>
++#include <drm/drm_mipi_dsi.h>
++#include <drm/drm_panel.h>
++
++#include <linux/phy/phy.h>
++#include <linux/phy/phy-mipi-dphy.h>
++
++#define IP_CONF				0x0
++#define SP_HS_FIFO_DEPTH(x)		(((x) & GENMASK(30, 26)) >> 26)
++#define SP_LP_FIFO_DEPTH(x)		(((x) & GENMASK(25, 21)) >> 21)
++#define VRS_FIFO_DEPTH(x)		(((x) & GENMASK(20, 16)) >> 16)
++#define DIRCMD_FIFO_DEPTH(x)		(((x) & GENMASK(15, 13)) >> 13)
++#define SDI_IFACE_32			BIT(12)
++#define INTERNAL_DATAPATH_32		(0 << 10)
++#define INTERNAL_DATAPATH_16		(1 << 10)
++#define INTERNAL_DATAPATH_8		(3 << 10)
++#define INTERNAL_DATAPATH_SIZE		((x) & GENMASK(11, 10))
++#define NUM_IFACE(x)			((((x) & GENMASK(9, 8)) >> 8) + 1)
++#define MAX_LANE_NB(x)			(((x) & GENMASK(7, 6)) >> 6)
++#define RX_FIFO_DEPTH(x)		((x) & GENMASK(5, 0))
++
++#define MCTL_MAIN_DATA_CTL		0x4
++#define TE_MIPI_POLLING_EN		BIT(25)
++#define TE_HW_POLLING_EN		BIT(24)
++#define DISP_EOT_GEN			BIT(18)
++#define HOST_EOT_GEN			BIT(17)
++#define DISP_GEN_CHECKSUM		BIT(16)
++#define DISP_GEN_ECC			BIT(15)
++#define BTA_EN				BIT(14)
++#define READ_EN				BIT(13)
++#define REG_TE_EN			BIT(12)
++#define IF_TE_EN(x)			BIT(8 + (x))
++#define TVG_SEL				BIT(6)
++#define VID_EN				BIT(5)
++#define IF_VID_SELECT(x)		((x) << 2)
++#define IF_VID_SELECT_MASK		GENMASK(3, 2)
++#define IF_VID_MODE			BIT(1)
++#define LINK_EN				BIT(0)
++
++#define MCTL_MAIN_PHY_CTL		0x8
++#define HS_INVERT_DAT(x)		BIT(19 + ((x) * 2))
++#define SWAP_PINS_DAT(x)		BIT(18 + ((x) * 2))
++#define HS_INVERT_CLK			BIT(17)
++#define SWAP_PINS_CLK			BIT(16)
++#define HS_SKEWCAL_EN			BIT(15)
++#define WAIT_BURST_TIME(x)		((x) << 10)
++#define DATA_ULPM_EN(x)			BIT(6 + (x))
++#define CLK_ULPM_EN			BIT(5)
++#define CLK_CONTINUOUS			BIT(4)
++#define DATA_LANE_EN(x)			BIT((x) - 1)
++
++#define MCTL_MAIN_EN			0xc
++#define DATA_FORCE_STOP			BIT(17)
++#define CLK_FORCE_STOP			BIT(16)
++#define IF_EN(x)			BIT(13 + (x))
++#define DATA_LANE_ULPM_REQ(l)		BIT(9 + (l))
++#define CLK_LANE_ULPM_REQ		BIT(8)
++#define DATA_LANE_START(x)		BIT(4 + (x))
++#define CLK_LANE_EN			BIT(3)
++#define PLL_START			BIT(0)
++
++#define MCTL_DPHY_CFG0			0x10
++#define DPHY_C_RSTB			BIT(20)
++#define DPHY_D_RSTB(x)			GENMASK(15 + (x), 16)
++#define DPHY_PLL_PDN			BIT(10)
++#define DPHY_CMN_PDN			BIT(9)
++#define DPHY_C_PDN			BIT(8)
++#define DPHY_D_PDN(x)			GENMASK(3 + (x), 4)
++#define DPHY_ALL_D_PDN			GENMASK(7, 4)
++#define DPHY_PLL_PSO			BIT(1)
++#define DPHY_CMN_PSO			BIT(0)
++
++#define MCTL_DPHY_TIMEOUT1		0x14
++#define HSTX_TIMEOUT(x)			((x) << 4)
++#define HSTX_TIMEOUT_MAX		GENMASK(17, 0)
++#define CLK_DIV(x)			(x)
++#define CLK_DIV_MAX			GENMASK(3, 0)
++
++#define MCTL_DPHY_TIMEOUT2		0x18
++#define LPRX_TIMEOUT(x)			(x)
++
++#define MCTL_ULPOUT_TIME		0x1c
++#define DATA_LANE_ULPOUT_TIME(x)	((x) << 9)
++#define CLK_LANE_ULPOUT_TIME(x)		(x)
++
++#define MCTL_3DVIDEO_CTL		0x20
++#define VID_VSYNC_3D_EN			BIT(7)
++#define VID_VSYNC_3D_LR			BIT(5)
++#define VID_VSYNC_3D_SECOND_EN		BIT(4)
++#define VID_VSYNC_3DFORMAT_LINE		(0 << 2)
++#define VID_VSYNC_3DFORMAT_FRAME	(1 << 2)
++#define VID_VSYNC_3DFORMAT_PIXEL	(2 << 2)
++#define VID_VSYNC_3DMODE_OFF		0
++#define VID_VSYNC_3DMODE_PORTRAIT	1
++#define VID_VSYNC_3DMODE_LANDSCAPE	2
++
++#define MCTL_MAIN_STS			0x24
++#define MCTL_MAIN_STS_CTL		0x130
++#define MCTL_MAIN_STS_CLR		0x150
++#define MCTL_MAIN_STS_FLAG		0x170
++#define HS_SKEWCAL_DONE			BIT(11)
++#define IF_UNTERM_PKT_ERR(x)		BIT(8 + (x))
++#define LPRX_TIMEOUT_ERR		BIT(7)
++#define HSTX_TIMEOUT_ERR		BIT(6)
++#define DATA_LANE_RDY(l)		BIT(2 + (l))
++#define CLK_LANE_RDY			BIT(1)
++#define PLL_LOCKED			BIT(0)
++
++#define MCTL_DPHY_ERR			0x28
++#define MCTL_DPHY_ERR_CTL1		0x148
++#define MCTL_DPHY_ERR_CLR		0x168
++#define MCTL_DPHY_ERR_FLAG		0x188
++#define ERR_CONT_LP(x, l)		BIT(18 + ((x) * 4) + (l))
++#define ERR_CONTROL(l)			BIT(14 + (l))
++#define ERR_SYNESC(l)			BIT(10 + (l))
++#define ERR_ESC(l)			BIT(6 + (l))
++
++#define MCTL_DPHY_ERR_CTL2		0x14c
++#define ERR_CONT_LP_EDGE(x, l)		BIT(12 + ((x) * 4) + (l))
++#define ERR_CONTROL_EDGE(l)		BIT(8 + (l))
++#define ERR_SYN_ESC_EDGE(l)		BIT(4 + (l))
++#define ERR_ESC_EDGE(l)			BIT(0 + (l))
++
++#define MCTL_LANE_STS			0x2c
++#define PPI_C_TX_READY_HS		BIT(18)
++#define DPHY_PLL_LOCK			BIT(17)
++#define PPI_D_RX_ULPS_ESC(x)		(((x) & GENMASK(15, 12)) >> 12)
++#define LANE_STATE_START		0
++#define LANE_STATE_IDLE			1
++#define LANE_STATE_WRITE		2
++#define LANE_STATE_ULPM			3
++#define LANE_STATE_READ			4
++#define DATA_LANE_STATE(l, val)		\
++	(((val) >> (2 + 2 * (l) + ((l) ? 1 : 0))) & GENMASK((l) ? 1 : 2, 0))
++#define CLK_LANE_STATE_HS		2
++#define CLK_LANE_STATE(val)		((val) & GENMASK(1, 0))
++
++#define DSC_MODE_CTL			0x30
++#define DSC_MODE_EN			BIT(0)
++
++#define DSC_CMD_SEND			0x34
++#define DSC_SEND_PPS			BIT(0)
++#define DSC_EXECUTE_QUEUE		BIT(1)
++
++#define DSC_PPS_WRDAT			0x38
++
++#define DSC_MODE_STS			0x3c
++#define DSC_PPS_DONE			BIT(1)
++#define DSC_EXEC_DONE			BIT(2)
++
++#define CMD_MODE_CTL			0x70
++#define IF_LP_EN(x)			BIT(9 + (x))
++#define IF_VCHAN_ID(x, c)		((c) << ((x) * 2))
++
++#define CMD_MODE_CTL2			0x74
++#define TE_TIMEOUT(x)			((x) << 11)
++#define FILL_VALUE(x)			((x) << 3)
++#define ARB_IF_WITH_HIGHEST_PRIORITY(x)	((x) << 1)
++#define ARB_ROUND_ROBIN_MODE		BIT(0)
++
++#define CMD_MODE_STS			0x78
++#define CMD_MODE_STS_CTL		0x134
++#define CMD_MODE_STS_CLR		0x154
++#define CMD_MODE_STS_FLAG		0x174
++#define ERR_IF_UNDERRUN(x)		BIT(4 + (x))
++#define ERR_UNWANTED_READ		BIT(3)
++#define ERR_TE_MISS			BIT(2)
++#define ERR_NO_TE			BIT(1)
++#define CSM_RUNNING			BIT(0)
++
++#define DIRECT_CMD_SEND			0x80
++
++#define DIRECT_CMD_MAIN_SETTINGS	0x84
++#define TRIGGER_VAL(x)			((x) << 25)
++#define CMD_LP_EN			BIT(24)
++#define CMD_SIZE(x)			((x) << 16)
++#define CMD_VCHAN_ID(x)			((x) << 14)
++#define CMD_DATATYPE(x)			((x) << 8)
++#define CMD_LONG			BIT(3)
++#define WRITE_CMD			0
++#define READ_CMD			1
++#define TE_REQ				4
++#define TRIGGER_REQ			5
++#define BTA_REQ				6
++
++#define DIRECT_CMD_STS			0x88
++#define DIRECT_CMD_STS_CTL		0x138
++#define DIRECT_CMD_STS_CLR		0x158
++#define DIRECT_CMD_STS_FLAG		0x178
++#define RCVD_ACK_VAL(val)		((val) >> 16)
++#define RCVD_TRIGGER_VAL(val)		(((val) & GENMASK(14, 11)) >> 11)
++#define READ_COMPLETED_WITH_ERR		BIT(10)
++#define BTA_FINISHED			BIT(9)
++#define BTA_COMPLETED			BIT(8)
++#define TE_RCVD				BIT(7)
++#define TRIGGER_RCVD			BIT(6)
++#define ACK_WITH_ERR_RCVD		BIT(5)
++#define ACK_RCVD			BIT(4)
++#define READ_COMPLETED			BIT(3)
++#define TRIGGER_COMPLETED		BIT(2)
++#define WRITE_COMPLETED			BIT(1)
++#define SENDING_CMD			BIT(0)
++
++#define DIRECT_CMD_STOP_READ		0x8c
++
++#define DIRECT_CMD_WRDATA		0x90
++
++#define DIRECT_CMD_FIFO_RST		0x94
++
++#define DIRECT_CMD_RDDATA		0xa0
++
++#define DIRECT_CMD_RD_PROPS		0xa4
++#define RD_DCS				BIT(18)
++#define RD_VCHAN_ID(val)		(((val) >> 16) & GENMASK(1, 0))
++#define RD_SIZE(val)			((val) & GENMASK(15, 0))
++
++#define DIRECT_CMD_RD_STS		0xa8
++#define DIRECT_CMD_RD_STS_CTL		0x13c
++#define DIRECT_CMD_RD_STS_CLR		0x15c
++#define DIRECT_CMD_RD_STS_FLAG		0x17c
++#define ERR_EOT_WITH_ERR		BIT(8)
++#define ERR_MISSING_EOT			BIT(7)
++#define ERR_WRONG_LENGTH		BIT(6)
++#define ERR_OVERSIZE			BIT(5)
++#define ERR_RECEIVE			BIT(4)
++#define ERR_UNDECODABLE			BIT(3)
++#define ERR_CHECKSUM			BIT(2)
++#define ERR_UNCORRECTABLE		BIT(1)
++#define ERR_FIXED			BIT(0)
++
++#define VID_MAIN_CTL			0xb0
++#define VID_IGNORE_MISS_VSYNC		BIT(31)
++#define VID_FIELD_SW			BIT(28)
++#define VID_INTERLACED_EN		BIT(27)
++#define RECOVERY_MODE(x)		((x) << 25)
++#define RECOVERY_MODE_NEXT_HSYNC	0
++#define RECOVERY_MODE_NEXT_STOP_POINT	2
++#define RECOVERY_MODE_NEXT_VSYNC	3
++#define REG_BLKEOL_MODE(x)		((x) << 23)
++#define REG_BLKLINE_MODE(x)		((x) << 21)
++#define REG_BLK_MODE_NULL_PKT		0
++#define REG_BLK_MODE_BLANKING_PKT	1
++#define REG_BLK_MODE_LP			2
++#define SYNC_PULSE_HORIZONTAL		BIT(20)
++#define SYNC_PULSE_ACTIVE		BIT(19)
++#define BURST_MODE			BIT(18)
++#define VID_PIXEL_MODE_MASK		GENMASK(17, 14)
++#define VID_PIXEL_MODE_RGB565		(0 << 14)
++#define VID_PIXEL_MODE_RGB666_PACKED	(1 << 14)
++#define VID_PIXEL_MODE_RGB666		(2 << 14)
++#define VID_PIXEL_MODE_RGB888		(3 << 14)
++#define VID_PIXEL_MODE_RGB101010	(4 << 14)
++#define VID_PIXEL_MODE_RGB121212	(5 << 14)
++#define VID_PIXEL_MODE_YUV420		(8 << 14)
++#define VID_PIXEL_MODE_YUV422_PACKED	(9 << 14)
++#define VID_PIXEL_MODE_YUV422		(10 << 14)
++#define VID_PIXEL_MODE_YUV422_24B	(11 << 14)
++#define VID_PIXEL_MODE_DSC_COMP		(12 << 14)
++#define VID_DATATYPE(x)			((x) << 8)
++#define VID_VIRTCHAN_ID(iface, x)	((x) << (4 + (iface) * 2))
++#define STOP_MODE(x)			((x) << 2)
++#define START_MODE(x)			(x)
++
++#define VID_VSIZE1			0xb4
++#define VFP_LEN(x)			((x) << 12)
++#define VBP_LEN(x)			((x) << 6)
++#define VSA_LEN(x)			(x)
++
++#define VID_VSIZE2			0xb8
++#define VACT_LEN(x)			(x)
++
++#define VID_HSIZE1			0xc0
++#define HBP_LEN(x)			((x) << 16)
++#define HSA_LEN(x)			(x)
++
++#define VID_HSIZE2			0xc4
++#define HFP_LEN(x)			((x) << 16)
++#define HACT_LEN(x)			(x)
++
++#define VID_BLKSIZE1			0xcc
++#define BLK_EOL_PKT_LEN(x)		((x) << 15)
++#define BLK_LINE_EVENT_PKT_LEN(x)	(x)
++
++#define VID_BLKSIZE2			0xd0
++#define BLK_LINE_PULSE_PKT_LEN(x)	(x)
++
++#define VID_PKT_TIME			0xd8
++#define BLK_EOL_DURATION(x)		(x)
++
++#define VID_DPHY_TIME			0xdc
++#define REG_WAKEUP_TIME(x)		((x) << 17)
++#define REG_LINE_DURATION(x)		(x)
++
++#define VID_ERR_COLOR1			0xe0
++#define COL_GREEN(x)			((x) << 12)
++#define COL_RED(x)			(x)
++
++#define VID_ERR_COLOR2			0xe4
++#define PAD_VAL(x)			((x) << 12)
++#define COL_BLUE(x)			(x)
++
++#define VID_VPOS			0xe8
++#define LINE_VAL(val)			(((val) & GENMASK(14, 2)) >> 2)
++#define LINE_POS(val)			((val) & GENMASK(1, 0))
++
++#define VID_HPOS			0xec
++#define HORIZ_VAL(val)			(((val) & GENMASK(17, 3)) >> 3)
++#define HORIZ_POS(val)			((val) & GENMASK(2, 0))
++
++#define VID_MODE_STS			0xf0
++#define VID_MODE_STS_CTL		0x140
++#define VID_MODE_STS_CLR		0x160
++#define VID_MODE_STS_FLAG		0x180
++#define VSG_RECOVERY			BIT(10)
++#define ERR_VRS_WRONG_LEN		BIT(9)
++#define ERR_LONG_READ			BIT(8)
++#define ERR_LINE_WRITE			BIT(7)
++#define ERR_BURST_WRITE			BIT(6)
++#define ERR_SMALL_HEIGHT		BIT(5)
++#define ERR_SMALL_LEN			BIT(4)
++#define ERR_MISSING_VSYNC		BIT(3)
++#define ERR_MISSING_HSYNC		BIT(2)
++#define ERR_MISSING_DATA		BIT(1)
++#define VSG_RUNNING			BIT(0)
++
++#define VID_VCA_SETTING1		0xf4
++#define BURST_LP			BIT(16)
++#define MAX_BURST_LIMIT(x)		(x)
++
++#define VID_VCA_SETTING2		0xf8
++#define MAX_LINE_LIMIT(x)		((x) << 16)
++#define EXACT_BURST_LIMIT(x)		(x)
++
++#define TVG_CTL				0xfc
++#define TVG_STRIPE_SIZE(x)		((x) << 5)
++#define TVG_MODE_MASK			GENMASK(4, 3)
++#define TVG_MODE_SINGLE_COLOR		(0 << 3)
++#define TVG_MODE_VSTRIPES		(2 << 3)
++#define TVG_MODE_HSTRIPES		(3 << 3)
++#define TVG_STOPMODE_MASK		GENMASK(2, 1)
++#define TVG_STOPMODE_EOF		(0 << 1)
++#define TVG_STOPMODE_EOL		(1 << 1)
++#define TVG_STOPMODE_NOW		(2 << 1)
++#define TVG_RUN				BIT(0)
++
++#define TVG_IMG_SIZE			0x100
++#define TVG_NBLINES(x)			((x) << 16)
++#define TVG_LINE_SIZE(x)		(x)
++
++#define TVG_COLOR1			0x104
++#define TVG_COL1_GREEN(x)		((x) << 12)
++#define TVG_COL1_RED(x)			(x)
++
++#define TVG_COLOR1_BIS			0x108
++#define TVG_COL1_BLUE(x)		(x)
++
++#define TVG_COLOR2			0x10c
++#define TVG_COL2_GREEN(x)		((x) << 12)
++#define TVG_COL2_RED(x)			(x)
++
++#define TVG_COLOR2_BIS			0x110
++#define TVG_COL2_BLUE(x)		(x)
++
++#define TVG_STS				0x114
++#define TVG_STS_CTL			0x144
++#define TVG_STS_CLR			0x164
++#define TVG_STS_FLAG			0x184
++#define TVG_STS_RUNNING			BIT(0)
++
++#define STS_CTL_EDGE(e)			((e) << 16)
++
++#define DPHY_LANES_MAP			0x198
++#define DAT_REMAP_CFG(b, l)		((l) << ((b) * 8))
++
++#define DPI_IRQ_EN			0x1a0
++#define DPI_IRQ_CLR			0x1a4
++#define DPI_IRQ_STS			0x1a8
++#define PIXEL_BUF_OVERFLOW		BIT(0)
++
++#define DPI_CFG				0x1ac
++#define DPI_CFG_FIFO_DEPTH(x)		((x) >> 16)
++#define DPI_CFG_FIFO_LEVEL(x)		((x) & GENMASK(15, 0))
++
++#define TEST_GENERIC			0x1f0
++#define TEST_STATUS(x)			((x) >> 16)
++#define TEST_CTRL(x)			(x)
++
++#define ID_REG				0x1fc
++#define REV_VENDOR_ID(x)		(((x) & GENMASK(31, 20)) >> 20)
++#define REV_PRODUCT_ID(x)		(((x) & GENMASK(19, 12)) >> 12)
++#define REV_HW(x)			(((x) & GENMASK(11, 8)) >> 8)
++#define REV_MAJOR(x)			(((x) & GENMASK(7, 4)) >> 4)
++#define REV_MINOR(x)			((x) & GENMASK(3, 0))
++
++#define DSI_OUTPUT_PORT			0
++#define DSI_INPUT_PORT(inputid)		(1 + (inputid))
++
++#define DSI_HBP_FRAME_OVERHEAD		12
++#define DSI_HSA_FRAME_OVERHEAD		14
++#define DSI_HFP_FRAME_OVERHEAD		6
++#define DSI_HSS_VSS_VSE_FRAME_OVERHEAD	4
++#define DSI_BLANKING_FRAME_OVERHEAD	6
++#define DSI_NULL_FRAME_OVERHEAD		6
++#define DSI_EOT_PKT_SIZE		4
++
++struct cdns_dsi_output {
++	struct mipi_dsi_device *dev;
++	struct drm_panel *panel;
++	struct drm_bridge *bridge;
++	union phy_configure_opts phy_opts;
++};
++
++enum cdns_dsi_input_id {
++	CDNS_SDI_INPUT,
++	CDNS_DPI_INPUT,
++	CDNS_DSC_INPUT,
++};
++
++struct cdns_dsi_cfg {
++	unsigned int hfp;
++	unsigned int hsa;
++	unsigned int hbp;
++	unsigned int hact;
++	unsigned int htotal;
++};
++
++struct cdns_dsi_input {
++	enum cdns_dsi_input_id id;
++	struct drm_bridge bridge;
++};
++
++struct cdns_dsi {
++	struct mipi_dsi_host base;
++	void __iomem *regs;
++	struct cdns_dsi_input input;
++	struct cdns_dsi_output output;
++	unsigned int direct_cmd_fifo_depth;
++	unsigned int rx_fifo_depth;
++	struct completion direct_cmd_comp;
++	struct clk *dsi_p_clk;
++	struct reset_control *dsi_p_rst;
++	struct clk *dsi_sys_clk;
++	bool link_initialized;
++	bool phy_initialized;
++	struct phy *dphy;
++};
++
++#endif /* !CDNS_DSI_H */
+-- 
+2.36.1
 
