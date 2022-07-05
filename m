@@ -2,88 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54293C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D79C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiGEPby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        id S230494AbiGEPcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231670AbiGEPbv (ORCPT
+        with ESMTP id S231913AbiGEPc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:31:51 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02401A382;
-        Tue,  5 Jul 2022 08:31:50 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id m2so11274559plx.3;
-        Tue, 05 Jul 2022 08:31:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=53Rfn29B2zfkwZtImPM98mlN5TcCCd4d2t7ScEJEx1g=;
-        b=CYuBFwV0V8k6Tp8SmOjaJUd+DuCYbdxIOW61iN6m6vuW07in5aoHci8lXSpWVn6GNl
-         xmbdSGY9PWKFyV2Wf84AAEbrLQVcOIWoCdaxEm0v8cnnK2f88KTkc2PNIXipkqpox0EL
-         x0gqSy+LDkKD68b0aSrZibsz6ZwmpXqE99/j+H4jxNhF3m09XqpdCceUB6vabOJxN02v
-         zT+9IV2iP4ZmEWhNkzqzwEpdWzR1J6/uRB42GA5Y/tPItGIfZ27c4oGanmu+veDoJdp5
-         drlEwJbMQ5+8eHu87kIel2xvZCapzPT06Py81x6qGkzvyrUpconL+GD4OSA8Zjk+v62n
-         6acQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=53Rfn29B2zfkwZtImPM98mlN5TcCCd4d2t7ScEJEx1g=;
-        b=MYT/IyWSKxwSUTA2z7Uab/kFuYklL1keJMItDF3awseMTKWk+UqdigrZa4wIIYoQg3
-         xo4naePEgTm65iPaMoH+U468gdLjNqvniL/9rFl6i75Of2c3O2dCIoLWEcPa2QjIK+KN
-         E2kiD8bIqDR+ei/j+ryMmY/IKhnHc+EshJHvpr/c74V1fio27BWahcawv/uzP73JNmr1
-         M1SYeyRl9Nh2XqA7p4NqpwTWVClXaGzGXmgYIFxYUAkTGyv6Zf1dwq2lUsXEhUGopCPf
-         VbiYd2g0CwoHUgjKJsjWetw4rgyXL1XGy8sNA9bQh7m3+BvmYK/ZBaY1yiu7qNF+vE2S
-         nB0A==
-X-Gm-Message-State: AJIora+TT31/9467xUIH8v1O3RMPMVrqjyH9PhG5cWPnL0jus/Tubg3V
-        XCz7qMSoZ6vmWKfHE4sREyaRnl3P60ooLuVP
-X-Google-Smtp-Source: AGRyM1unsJNgGiMbnrv8w+HbwhSzQe1wI99ddtJzAyS98O3+ErYV8knvcoGz5bTBKrS2xbQ0aLtDNA==
-X-Received: by 2002:a17:90b:1c90:b0:1ee:d804:d2c1 with SMTP id oo16-20020a17090b1c9000b001eed804d2c1mr44391268pjb.92.1657035110264;
-        Tue, 05 Jul 2022 08:31:50 -0700 (PDT)
-Received: from localhost.localdomain ([120.227.32.112])
-        by smtp.gmail.com with ESMTPSA id f24-20020a63f118000000b0040caab35e5bsm16514081pgi.89.2022.07.05.08.31.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:31:49 -0700 (PDT)
-From:   Luo Xueqin <luoxueqin66@gmail.com>
-To:     wim@linux-watchdog.org, linux@roeck-us.net
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Luo Xueqin <luoxueqin@kylinos.cn>
-Subject: [RESEND PATCH v2] watchdog:Fix typo in comment
-Date:   Tue,  5 Jul 2022 23:31:38 +0800
-Message-Id: <20220705153138.29657-1-luoxueqin66@gmail.com>
-X-Mailer: git-send-email 2.15.0
+        Tue, 5 Jul 2022 11:32:29 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9D471A395;
+        Tue,  5 Jul 2022 08:32:28 -0700 (PDT)
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 5104920DDCA4;
+        Tue,  5 Jul 2022 08:32:28 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5104920DDCA4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657035148;
+        bh=kRnoCHsq+1Sa5DgsBfsbWeS+ACKGf2Fi6AFtFXIBaLs=;
+        h=From:To:Subject:Date:From;
+        b=pcGtDY6o/ZdZZ4/bmKzzdbHbBafbP4CgJR90LqZKqx4RuMS2A1BcxwKiK2nK41nO9
+         4IuBGt62IZmb8PpN6GSAdfdSmbRB5ABIqHX6mHjfMceWDJpPvEnlXpfIsMLXFxDuMZ
+         5kDXz9G1EsmuIVEeAzfhaLt4FV/Fe84GxJfxmp9I=
+From:   Saurabh Sengar <ssengar@linux.microsoft.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ssengar@microsoft.com, mikelley@microsoft.com
+Subject: [PATCH] scsi: storvsc: Prevent running tasklet for long
+Date:   Tue,  5 Jul 2022 08:32:21 -0700
+Message-Id: <1657035141-2132-1-git-send-email-ssengar@linux.microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luo Xueqin <luoxueqin@kylinos.cn>
+There can be scenarios where packets in ring buffer are continuously
+getting queued from upper layer and dequeued from storvsc interrupt
+handler, such scenarios can hold the foreach_vmbus_pkt loop (which is
+executing as a tasklet) for a long duration. Theoretically its possible
+that this loop executes forever. Add a condition to limit execution of
+this tasklet for finite amount of time to avoid such hazardous scenarios.
 
-Spelling mistake in comment.
-
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: Luo Xueqin <luoxueqin@kylinos.cn>
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
 ---
+ drivers/scsi/storvsc_drv.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-v2: add discoverers
-
- drivers/watchdog/pc87413_wdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/watchdog/pc87413_wdt.c b/drivers/watchdog/pc87413_wdt.c
-index 9f9a340427fc..c7f745caf203 100644
---- a/drivers/watchdog/pc87413_wdt.c
-+++ b/drivers/watchdog/pc87413_wdt.c
-@@ -442,7 +442,7 @@ static long pc87413_ioctl(struct file *file, unsigned int cmd,
- 	}
- }
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index fe000da..0c428cb 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -60,6 +60,9 @@
+ #define VMSTOR_PROTO_VERSION_WIN8_1	VMSTOR_PROTO_VERSION(6, 0)
+ #define VMSTOR_PROTO_VERSION_WIN10	VMSTOR_PROTO_VERSION(6, 2)
  
--/* -- Notifier funtions -----------------------------------------*/
-+/* -- Notifier functions -----------------------------------------*/
++/* channel callback timeout in ms */
++#define CALLBACK_TIMEOUT		5
++
+ /*  Packet structure describing virtual storage requests. */
+ enum vstor_packet_operation {
+ 	VSTOR_OPERATION_COMPLETE_IO		= 1,
+@@ -1204,6 +1207,7 @@ static void storvsc_on_channel_callback(void *context)
+ 	struct hv_device *device;
+ 	struct storvsc_device *stor_device;
+ 	struct Scsi_Host *shost;
++	unsigned long expire = jiffies + msecs_to_jiffies(CALLBACK_TIMEOUT);
  
- /**
-  *	pc87413_notify_sys:
+ 	if (channel->primary_channel != NULL)
+ 		device = channel->primary_channel->device_obj;
+@@ -1224,6 +1228,9 @@ static void storvsc_on_channel_callback(void *context)
+ 		u32 minlen = rqst_id ? sizeof(struct vstor_packet) :
+ 			sizeof(enum vstor_packet_operation);
+ 
++		if (time_after(jiffies, expire))
++			break;
++
+ 		if (pktlen < minlen) {
+ 			dev_err(&device->device,
+ 				"Invalid pkt: id=%llu, len=%u, minlen=%u\n",
 -- 
-2.25.1
+1.8.3.1
 
