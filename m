@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782AFCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EBBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233208AbiGEMCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S233220AbiGEMCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232949AbiGEMBL (ORCPT
+        with ESMTP id S233096AbiGEMBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:01:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A4F17E26;
-        Tue,  5 Jul 2022 05:01:10 -0700 (PDT)
+        Tue, 5 Jul 2022 08:01:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39E817AA6;
+        Tue,  5 Jul 2022 05:01:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B849617C5;
-        Tue,  5 Jul 2022 12:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24296C341C7;
-        Tue,  5 Jul 2022 12:01:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86011B817D4;
+        Tue,  5 Jul 2022 12:01:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCCCBC341CB;
+        Tue,  5 Jul 2022 12:01:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022469;
-        bh=CQl6euab5xGbNlx53hUvYix1BiHS9rLNvUdVGXVQJ1E=;
+        s=korg; t=1657022472;
+        bh=IoZTyfzd9DsX/b0gQKO3BlhJTHwTyv/JniQkRhKv3yk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tX224ih4VRTRbGaGyXCloz0d2jESLMcBoPmyUHfi4McV1wMsAMQPY119rQYk2GiRL
-         TJM0B7OljrMNPTyB+nxCKe9K5HFlrtw5tgHmH3r51Y94X/rn4w+ZxyY7cuqYpPbCBh
-         hmIAyh5PKxnr0F67erO+i5yZRC8TYw1FP91MW1g8=
+        b=IJOELwScx95d0PlCyyAOwMCbYV11DrtMMbgTLEcbnHw/YOFtHwoG60N3lybszveRc
+         ukiQZRCl2DNBSqRqd5w/aiLIKbK74/2diT40dRmBll7gyMUZ1oHtrckgtIJSMMZVGj
+         A4eArYu+JqS1Eg1013gnz68cAcQu8Lqeq2MoFfkI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 18/29] hwmon: (ibmaem) dont call platform_device_del() if platform_device_add() fails
-Date:   Tue,  5 Jul 2022 13:58:06 +0200
-Message-Id: <20220705115606.881762229@linuxfoundation.org>
+        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 19/29] net: dsa: bcm_sf2: force pause link settings
+Date:   Tue,  5 Jul 2022 13:58:07 +0200
+Message-Id: <20220705115606.910907553@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
 References: <20220705115606.333669144@linuxfoundation.org>
@@ -50,65 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit d0e51022a025ca5350fafb8e413a6fe5d4baf833 ]
+commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
 
-If platform_device_add() fails, it no need to call platform_device_del(), split
-platform_device_unregister() into platform_device_del/put(), so platform_device_put()
-can be called separately.
+The pause settings reported by the PHY should also be applied to the GMII port
+status override otherwise the switch will not generate pause frames towards the
+link partner despite the advertisement saying otherwise.
 
-Fixes: 8808a793f052 ("ibmaem: new driver for power/energy/temp meters in IBM System X hardware")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220701074153.4021556-1-yangyingliang@huawei.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/ibmaem.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/dsa/bcm_sf2.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/hwmon/ibmaem.c
-+++ b/drivers/hwmon/ibmaem.c
-@@ -563,7 +563,7 @@ static int aem_init_aem1_inst(struct aem
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -701,6 +701,11 @@ force_link:
+ 		reg |= LINK_STS;
+ 	if (phydev->duplex == DUPLEX_FULL)
+ 		reg |= DUPLX_MODE;
++	if (phydev->pause) {
++		if (phydev->asym_pause)
++			reg |= TXFLOW_CNTL;
++		reg |= RXFLOW_CNTL;
++	}
  
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
+ 	core_writel(priv, reg, offset);
  
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -611,7 +611,9 @@ hwmon_reg_err:
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
-@@ -703,7 +705,7 @@ static int aem_init_aem2_inst(struct aem
- 
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
- 
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -751,7 +753,9 @@ hwmon_reg_err:
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
 
 
