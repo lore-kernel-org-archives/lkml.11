@@ -2,69 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E312CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7C0CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233143AbiGEQur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 12:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
+        id S232548AbiGEQwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 12:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbiGEQup (ORCPT
+        with ESMTP id S229989AbiGEQwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 12:50:45 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E11BB1DA7E;
-        Tue,  5 Jul 2022 09:50:44 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id C89A168AA6; Tue,  5 Jul 2022 18:50:39 +0200 (CEST)
-Date:   Tue, 5 Jul 2022 18:50:39 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        Stephen Bates <sbates@raithlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-Message-ID: <20220705165039.GB14566@lst.de>
-References: <20220615161233.17527-21-logang@deltatee.com> <20220629064854.GD17576@lst.de> <99242789-66a6-bbd2-b56a-e47891f4522e@deltatee.com> <20220629175906.GU23621@ziepe.ca> <20220705075108.GB17451@lst.de> <20220705135102.GE23621@ziepe.ca> <20220705161240.GB13721@lst.de> <a509b13c-244b-23fc-f989-339750a733a5@deltatee.com> <20220705164315.GB14484@lst.de> <acb91f37-0470-8ce4-19e4-426903cbc3a1@deltatee.com>
+        Tue, 5 Jul 2022 12:52:14 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DEC1DA7E;
+        Tue,  5 Jul 2022 09:52:14 -0700 (PDT)
+Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BCF8766015CC;
+        Tue,  5 Jul 2022 17:52:11 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657039932;
+        bh=UttKVZOt1YH4wTXBPy+uccKMn+S4wfEPch8Ann4x4fU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OmPk0x2Rpj3k94LO12T8Dh8hCCCwft5+4WUti3Av8PMbU2OA/qaysosNCWac2Wr7n
+         muoJGNj/HWNIYntLIJICsdA+WOh/ih/e2PYMCJ46moeAYQmltmBXofEfenIbTCNVJy
+         cIyHoaXpscWhFAoYd7HkfbJGzCG9skQos5Xl9Ibgehj37EuTbsEi8dczFQx+ay6vKS
+         6CSiIFafFfEzqRuMwwTNdgnhxSpIkwO64hGGUUTfPl+tAlBk0pWHqrjZpey1vhr8M3
+         YVo3DV0w+Zo9gsfo+jpgX6arZgdFBKF+g9vOOlFIx+qNPZnJ0leyX9gSGyPBpvgPh+
+         jn5orayEpx2JA==
+Date:   Tue, 5 Jul 2022 12:52:08 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     linus.walleij@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: pinctrl: mt8195: Add gpio-line-names
+ property
+Message-ID: <20220705165208.wvwlgx3gosw66xhr@notapiano>
+References: <20220630110453.186526-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <acb91f37-0470-8ce4-19e4-426903cbc3a1@deltatee.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220630110453.186526-1-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[note for the newcomers, this is about allowing mmap()ing the PCIe
-P2P memory from the generic PCI P2P code through sysfs, and more
-importantly how to revoke it on device removal]
+On Thu, Jun 30, 2022 at 01:04:53PM +0200, AngeloGioacchino Del Regno wrote:
+> Add the 'gpio-line-names' property to mt8195-pinctrl, as this will be
+> used in devicetrees to describe pin names.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-On Tue, Jul 05, 2022 at 10:44:49AM -0600, Logan Gunthorpe wrote:
-> We might be able to. I'm not sure. I'll have to figure out how to find
-> that inode from the p2pdma code. I haven't found an obvious interface to
-> do that.
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-I think the right way to approach this would be a new sysfs API
-that internally calls unmap_mapping_range internally instead of
-exposing the inode. I suspect that might actually be the right thing
-to do for iomem_inode as well.
+Thanks,
+Nícolas
