@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D79C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F21C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230494AbiGEPcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        id S231710AbiGEPeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231913AbiGEPc3 (ORCPT
+        with ESMTP id S230030AbiGEPeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:32:29 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9D471A395;
-        Tue,  5 Jul 2022 08:32:28 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 5104920DDCA4;
-        Tue,  5 Jul 2022 08:32:28 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5104920DDCA4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1657035148;
-        bh=kRnoCHsq+1Sa5DgsBfsbWeS+ACKGf2Fi6AFtFXIBaLs=;
-        h=From:To:Subject:Date:From;
-        b=pcGtDY6o/ZdZZ4/bmKzzdbHbBafbP4CgJR90LqZKqx4RuMS2A1BcxwKiK2nK41nO9
-         4IuBGt62IZmb8PpN6GSAdfdSmbRB5ABIqHX6mHjfMceWDJpPvEnlXpfIsMLXFxDuMZ
-         5kDXz9G1EsmuIVEeAzfhaLt4FV/Fe84GxJfxmp9I=
-From:   Saurabh Sengar <ssengar@linux.microsoft.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ssengar@microsoft.com, mikelley@microsoft.com
-Subject: [PATCH] scsi: storvsc: Prevent running tasklet for long
-Date:   Tue,  5 Jul 2022 08:32:21 -0700
-Message-Id: <1657035141-2132-1-git-send-email-ssengar@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+        Tue, 5 Jul 2022 11:34:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE4D13DE9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:34:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81BD161B18
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 15:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE516C341C7;
+        Tue,  5 Jul 2022 15:34:13 +0000 (UTC)
+Date:   Tue, 5 Jul 2022 16:34:09 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Will Deacon <will@kernel.org>,
+        "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
+        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
+        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
+        jonathan@marek.ca, mark.rutland@arm.com,
+        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        geert+renesas@glider.be, linux-mm@kvack.org,
+        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+Message-ID: <YsRZ8V8mQ+HM31D6@arm.com>
+References: <20220704131516.GC31684@willie-the-truck>
+ <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
+ <20220704142313.GE31684@willie-the-truck>
+ <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
+ <20220704163815.GA32177@willie-the-truck>
+ <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck>
+ <YsRSajyMxahXe7ZS@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsRSajyMxahXe7ZS@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There can be scenarios where packets in ring buffer are continuously
-getting queued from upper layer and dequeued from storvsc interrupt
-handler, such scenarios can hold the foreach_vmbus_pkt loop (which is
-executing as a tasklet) for a long duration. Theoretically its possible
-that this loop executes forever. Add a condition to limit execution of
-this tasklet for finite amount of time to avoid such hazardous scenarios.
+On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
+> +void __init remap_crashkernel(void)
+> +{
+> +#ifdef CONFIG_KEXEC_CORE
+> +	phys_addr_t start, end, size;
+> +	phys_addr_t aligned_start, aligned_end;
+> +
+> +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+> +	    return;
+> +
+> +	if (!crashk_res.end)
+> +	    return;
+> +
+> +	start = crashk_res.start & PAGE_MASK;
+> +	end = PAGE_ALIGN(crashk_res.end);
+> +
+> +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
+> +	aligned_end = ALIGN(end, PUD_SIZE);
+> +
+> +	/* Clear PUDs containing crash kernel memory */
+> +	unmap_hotplug_range(__phys_to_virt(aligned_start),
+> +			    __phys_to_virt(aligned_end), false, NULL);
 
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
----
- drivers/scsi/storvsc_drv.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+What I don't understand is what happens if there's valid kernel data
+between aligned_start and crashk_res.start (or the other end of the
+range).
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index fe000da..0c428cb 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -60,6 +60,9 @@
- #define VMSTOR_PROTO_VERSION_WIN8_1	VMSTOR_PROTO_VERSION(6, 0)
- #define VMSTOR_PROTO_VERSION_WIN10	VMSTOR_PROTO_VERSION(6, 2)
- 
-+/* channel callback timeout in ms */
-+#define CALLBACK_TIMEOUT		5
-+
- /*  Packet structure describing virtual storage requests. */
- enum vstor_packet_operation {
- 	VSTOR_OPERATION_COMPLETE_IO		= 1,
-@@ -1204,6 +1207,7 @@ static void storvsc_on_channel_callback(void *context)
- 	struct hv_device *device;
- 	struct storvsc_device *stor_device;
- 	struct Scsi_Host *shost;
-+	unsigned long expire = jiffies + msecs_to_jiffies(CALLBACK_TIMEOUT);
- 
- 	if (channel->primary_channel != NULL)
- 		device = channel->primary_channel->device_obj;
-@@ -1224,6 +1228,9 @@ static void storvsc_on_channel_callback(void *context)
- 		u32 minlen = rqst_id ? sizeof(struct vstor_packet) :
- 			sizeof(enum vstor_packet_operation);
- 
-+		if (time_after(jiffies, expire))
-+			break;
-+
- 		if (pktlen < minlen) {
- 			dev_err(&device->device,
- 				"Invalid pkt: id=%llu, len=%u, minlen=%u\n",
 -- 
-1.8.3.1
-
+Catalin
