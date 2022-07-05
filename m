@@ -2,113 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDB9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 05:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C967C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 05:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiGEFH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 01:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        id S229596AbiGEFLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 01:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGEFHz (ORCPT
+        with ESMTP id S229448AbiGEFLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 01:07:55 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDB013D06;
-        Mon,  4 Jul 2022 22:07:54 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8208B5C003B;
-        Tue,  5 Jul 2022 01:07:52 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 05 Jul 2022 01:07:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1656997672; x=
-        1657084072; bh=9nY5RE/bGNXng/ITS0f9EUPsxcwltUGdSfZPvL271To=; b=T
-        9k1HVY0weVxBaMWNkBqWADMO9f51TEejqMhkprOAaWP7A+GsRVnwtSoMS6CODWNN
-        xcrAEAnHeIc5uCfJZ38Irt9v/MBuFIgtobkKO5l9Gy1b8MdpwSRfDBfrZ8Jge9LY
-        OxVgwJ3zNgUUdzdovDAvUaBe9mDEbgkuZ5/KOEz2r7xopV4WSIAqBgcgz7x3jZ5L
-        7gefundRif3T9n5pNfYJjodIi6ceVbypq8b6eedZ7R6K8Kkc6iqYdcswBMmSpyv/
-        y2CnHppqbMLfFF5a2aoKZysla6u0T66GuCthie4pk9HD2gXMXpGcED+RpFrkeGTh
-        F4zn1A99TlL8RiZdmmaYQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656997672; x=
-        1657084072; bh=9nY5RE/bGNXng/ITS0f9EUPsxcwltUGdSfZPvL271To=; b=i
-        iAb0VeIi7nUD5mvNBQIRan6fKs7Y5EXWQYwu1fsjqkKilP/2Gw0utNYB2RR8DvK5
-        pQpx+SpFC9pAi42/Gj+5OUrCwpCL2SmLpzan9srOWIhaw4GqOoSuYOxasR49O6xE
-        5PMIJb87MKAY6gXkMh9o6Nm9NJrJIWP4SRPX3m2xjc+mx9erNqnT38WSC1+BWfqt
-        XziI0IsgreK39Ub/yBUPIZ/2OvOyWfw+JuDIKsV3T3r9f0kH+mWeyz8SLgyt5yen
-        rBDZ2AR2zTQb9htKBwI4IxFYNVnwCYZSkdrmxWbf6v7nlO3KI9y2QFyAr4dxtxN+
-        khnQXi3Jh9Az+cgatBF1w==
-X-ME-Sender: <xms:KMfDYhVpC0qJbBv5rhTX0DfOyMtLPS8hTdFu3vmjdbe5q8Ywll_NdA>
-    <xme:KMfDYhm4liRTYzgXU-exIxT85Lqd1wGGICxnWSg5SHcGIby9S56wHMsrla52GanP_
-    RWnFvaSZajS_YeVQw>
-X-ME-Received: <xmr:KMfDYtYw_1l9CU3ZVQaqhAnnyy4xHUbQ7F11wDwaPRAJGM13LqV7rDt3cwhhh8hn4YXtRGuICDcqok0PXQlsfQfYdAg93RDnLvF3nNkWhdkBg_ipoL6-h3-T3A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeitddgledtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpedtvefhheehgfdvkeetffeludeuudehudeuvddtveelleekvedv
-    uedviefhkeeuheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:KMfDYkV7s3VcgtsH5SnnQ9xEqB7UsNoZ0pnYCtQJ75zj4QIcC7QaMg>
-    <xmx:KMfDYrk-CxRRG008UoyjfZKqVXT7x0CaFch7_HMVGOm0cijNROQX0g>
-    <xmx:KMfDYheHlmTralLxPOkkUG62STM1NvTMvlaj6EeANtGZqVqTdbVZwQ>
-    <xmx:KMfDYkfxkom3UfDUb5XnB22GIH7LnyvZjfTfLEk_uw5Y8H7s6AZ4vA>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 5 Jul 2022 01:07:50 -0400 (EDT)
-Subject: Re: [PATCH v5 3/3] ARM: dts: sun8i-r40: Add thermal trip
- points/cooling maps
-To:     qianfanguijin@163.com
-Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20220517013607.2252-1-qianfanguijin@163.com>
- <20220517013607.2252-4-qianfanguijin@163.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <75c9edeb-edfd-b910-7f72-53f7694b456d@sholland.org>
-Date:   Tue, 5 Jul 2022 00:07:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Tue, 5 Jul 2022 01:11:40 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A621C11C11
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 22:11:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656997899; x=1688533899;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WwZEgal7KZGmCYHHF9cBryiRx66UeCik/gm8iu9yUZY=;
+  b=SvhbsMrxA176Ye/SsXNBuZ4qHJFGDr1cxH10TrhSZacmlBgsjT/jbo/z
+   aDOOeziBJ2kjtjENPTupiWCrDx28OiCVvZRJ9Hu4sZ3WE1nggdcYlgSJC
+   FvZsemDGU9mtZiwpxWwodgdaVFLQe46NsQjf7qUEwbugmLlEnlC9/sbN1
+   EFxhiVMGOv6C8fOJ4NLOcxFhXhoUh17NcAIvF14JC+AdERGQkZxNqh/Qy
+   bs4hM7Ywp0kI36B1ZD1f3Zx8nHEMYIV1l6KDiQDhKdL8qR2XtNajAsRdS
+   KUf0MZJDmLYDcsDtFN+KNBlHqs6oSC4lfk16fOa61/V3A4AcNJnYK5RE1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="272029354"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="272029354"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:11:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="542807351"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:11:35 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v10 00/12] iommu: SVA and IOPF refactoring
+Date:   Tue,  5 Jul 2022 13:06:58 +0800
+Message-Id: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220517013607.2252-4-qianfanguijin@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 8:36 PM, qianfanguijin@163.com wrote:
-> From: qianfan Zhao <qianfanguijin@163.com>
-> 
-> For the trip points, I used values from the BSP code.
-> 
-> The critical trip point value is 30°C above the maximum recommended
-> ambient temperature (85°C) for the SoC from the datasheet, so there's
-> some headroom even at such a high ambient temperature.
-> 
-> Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+Hi folks,
 
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Samuel Holland <samuel@sholland.org>
+The former part of this series refactors the IOMMU SVA code by assigning
+an SVA type of iommu_domain to a shared virtual address and replacing
+sva_bind/unbind iommu ops with set/block_dev_pasid domain ops.
 
-which took quite a while to hit the passive trip point:
+The latter part changes the existing I/O page fault handling framework
+from only serving SVA to a generic one. Any driver or component could
+handle the I/O page faults for its domain in its own way by installing
+an I/O page fault handler.
 
-# cat /sys/class/thermal/cooling_device0/stats/time_in_state_ms
-state0  1374892
-state1  1499
-state2  0
-state3  0
-state4  0
+Thanks to Tony and Zhangfei. This series has been functionally tested on
+both intel and ARM aarch64 platforms.
+
+This series is also available on github:
+[2] https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v10
+
+Please review and suggest.
+
+Best regards,
+baolu
+
+Change log:
+v10:
+ - Rebase on next branch of iommu tree.
+ - Split attach/detach_device_pasid interfaces and SVA domain extensions
+   to different patches.
+ - Handle the return error of xa_cmpxchg() gracefully.
+ - Directly pass mm in as the SVA fault data.
+ - Rename iopf_handle_group() to iopf_handler().
+ - Some commit message and code comment refinement.
+ - Add Tested-by's from Zhangfei and Tony.
+
+v9:
+ - https://lore.kernel.org/linux-iommu/20220621144353.17547-1-baolu.lu@linux.intel.com/
+ - Some minor changes on comments and function names.
+ - Simplify dev_iommu_get_max_pasids().
+
+v8:
+ - https://lore.kernel.org/linux-iommu/20220607014942.3954894-1-baolu.lu@linux.intel.com/
+ - Add support for calculating the max pasids that a device could
+   consume.
+ - Replace container_of_safe() with container_of.
+ - Remove iommu_ops->sva_domain_ops and make sva support through the
+   generic domain_alloc/free() interfaces.
+ - [Robin] It would be logical to pass IOMMU_DOMAIN_SVA to the normal
+   domain_alloc call, so that driver-internal stuff like context
+   descriptors can be still be hung off the domain as usual (rather than
+   all drivers having to implement some extra internal lookup mechanism
+   to handle all the SVA domain ops).
+ - [Robin] I'd just stick the mm pointer in struct iommu_domain, in a
+   union with the fault handler stuff those are mutually exclusive with
+   SVA.
+ - https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
+
+v7:
+ - https://lore.kernel.org/linux-iommu/20220519072047.2996983-1-baolu.lu@linux.intel.com/
+ - Remove duplicate array for sva domain.
+ - Rename detach_dev_pasid to block_dev_pasid.
+ - Add raw device driver interfaces for iommufd.
+ - Other misc refinements and patch reorganization.
+ - Drop "dmaengine: idxd: Separate user and kernel pasid enabling" which
+   has been picked for dmaengine tree.
+
+v6:
+ - https://lore.kernel.org/linux-iommu/20220510061738.2761430-1-baolu.lu@linux.intel.com/
+ - Refine the SVA basic data structures.
+   Link: https://lore.kernel.org/linux-iommu/YnFv0ps0Ad8v+7uH@myrica/
+ - Refine arm smmuv3 sva domain allocation.
+ - Fix a possible lock issue.
+   Link: https://lore.kernel.org/linux-iommu/YnFydE8j8l7Q4m+b@myrica/
+
+v5:
+ - https://lore.kernel.org/linux-iommu/20220502014842.991097-1-baolu.lu@linux.intel.com/
+ - Address review comments from Jean-Philippe Brucker. Very appreciated!
+ - Remove redundant pci aliases check in
+   device_group_immutable_singleton().
+ - Treat all buses except PCI as static in immutable singleton check.
+ - As the sva_bind/unbind() have already guaranteed sva domain free only
+   after iopf_queue_flush_dev(), remove the unnecessary domain refcount.
+ - Move domain get() out of the list iteration in iopf_handle_group().
+
+v4:
+ - https://lore.kernel.org/linux-iommu/20220421052121.3464100-1-baolu.lu@linux.intel.com/
+ - Solve the overlap with another series and make this series
+   self-contained.
+ - No objection to the abstraction of data structure during v3 review.
+   Hence remove the RFC subject prefix.
+ - Refine the immutable singleton group code according to Kevin's
+   comments.
+
+v3:
+ - https://lore.kernel.org/linux-iommu/20220410102443.294128-1-baolu.lu@linux.intel.com/
+ - Rework iommu_group_singleton_lockdown() by adding a flag to the group
+   that positively indicates the group can never have more than one
+   member, even after hot plug.
+ - Abstract the data structs used for iommu sva in a separated patches to
+   make it easier for review.
+ - I still keep the RFC prefix in this series as above two significant
+   changes need at least another round review to be finalized.
+ - Several misc refinements.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220329053800.3049561-1-baolu.lu@linux.intel.com/
+ - Add sva domain life cycle management to avoid race between unbind and
+   page fault handling.
+ - Use a single domain for each mm.
+ - Return a single sva handler for the same binding.
+ - Add a new helper to meet singleton group requirement.
+ - Rework the SVA domain allocation for arm smmu v3 driver and move the
+   pasid_bit initialization to device probe.
+ - Drop the patch "iommu: Handle IO page faults directly".
+ - Add mmget_not_zero(mm) in SVA page fault handler.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220320064030.2936936-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+Lu Baolu (12):
+  iommu: Add max_pasids field in struct iommu_device
+  iommu: Add max_pasids field in struct dev_iommu
+  iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
+  iommu: Add attach/detach_dev_pasid iommu interface
+  iommu: Add IOMMU SVA domain support
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Prepare IOMMU domain for IOPF
+  iommu: Per-domain I/O page fault handling
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-iommu.h                   |  12 +-
+ include/linux/intel-svm.h                     |  13 -
+ include/linux/iommu.h                         | 128 +++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  19 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  14 +-
+ drivers/dma/idxd/cdev.c                       |   3 +-
+ drivers/dma/idxd/init.c                       |  25 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 112 +++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   9 +-
+ drivers/iommu/intel/dmar.c                    |   7 +
+ drivers/iommu/intel/iommu.c                   |   7 +-
+ drivers/iommu/intel/svm.c                     | 149 +++++------
+ drivers/iommu/io-pgfault.c                    |  77 ++----
+ drivers/iommu/iommu-sva-lib.c                 |  71 ------
+ drivers/iommu/iommu-sva.c                     | 227 +++++++++++++++++
+ drivers/iommu/iommu.c                         | 239 +++++++++++-------
+ drivers/misc/uacce/uacce.c                    |   2 +-
+ drivers/iommu/Makefile                        |   2 +-
+ 18 files changed, 651 insertions(+), 465 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (83%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
+-- 
+2.25.1
+
