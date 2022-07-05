@@ -2,387 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 00:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8130BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 00:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbiGEANp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 20:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
+        id S231766AbiGEAR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 20:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiGEANn (ORCPT
+        with ESMTP id S231713AbiGEARY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 20:13:43 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6656336
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 17:13:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656980021; x=1688516021;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=NGr/La54zVRmr7IapDE8sb1OM85ZTxwA3yns3YUAQOQ=;
-  b=kRybR9fRQ9pbZEaedn/iILygMqGUh9Gw/8LPT1VuCdolVjye4UHlJK6K
-   4dP0usQvH9ciN24xeqpgFm9Ks7ma+kkiVsV2BXuuih0N6NQ4DCYC/MzoG
-   zpGZW6+K7m0TN/oyz8RGqFEvvbS9ghSk2IYuXuXN1+ImPoG+VmlRsgxm9
-   407fieJbwMe4OROn0d6dQZr9ZLOn/Ul00JLDqc/I0y5feuSrJUyNzLRmq
-   SGccgdFY5g01578Eax97ghoWWTP4OA+CnxiTa/zwUoAXdEpoXLQTN9zxp
-   ZJIOgVdPG8fic0lJXbPvt5uYCFAKw02B4H6Ln1jEWs8nk7c4mCi9+5ORT
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="281972744"
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="281972744"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 17:13:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="590204345"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 04 Jul 2022 17:13:37 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 74540136; Tue,  5 Jul 2022 03:13:44 +0300 (EEST)
-Date:   Tue, 5 Jul 2022 03:13:44 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "kcc@google.com" <kcc@google.com>,
-        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
-        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
-        "glider@google.com" <glider@google.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Andi Kleen <ak@linux.intel.com>,
-        Rick P Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCHv3 5/8] x86/uaccess: Provide untagged_addr() and remove
- tags before address check
-Message-ID: <20220705001344.euyapepzjhrz5sid@black.fi.intel.com>
-References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
- <20220610143527.22974-6-kirill.shutemov@linux.intel.com>
- <53d41f54-28ad-023c-537f-281cc2c40ae9@kernel.org>
- <20220629004257.x3pyoydmtk2lhrnx@black.fi.intel.com>
- <7c8381b3-c71b-45e8-a162-c9701dabcc9b@www.fastmail.com>
+        Mon, 4 Jul 2022 20:17:24 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F39AB7C4
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 17:17:18 -0700 (PDT)
+Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220705001712epoutp0394b51610588a9013330696cef1dba504~_xr4ePypj2370323703epoutp03X
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 00:17:12 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220705001712epoutp0394b51610588a9013330696cef1dba504~_xr4ePypj2370323703epoutp03X
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1656980232;
+        bh=nXvJxR90Rt4/+tTG+sHkx/Q/nA1jXNywfZNn4ag0N3Q=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=jn5EktiJPA52RWRcRJK9B8uBCqZKVkAZ+8eocAjgGdarY5ulekdnHivoMjWqbXCxi
+         uWYdb8vZblTF0ckKU2K+Ss0YW962dJngpEfIc0Ws8ycGCVg3TnAaw4rffklpYgnS06
+         RDdHfO6QF3yE+LwwmGwSOZ7otAPl1/w0H7s4bNlc=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220705001711epcas1p19bff97cb752c14a26f52a5acb7d71eb2~_xr3oaJ5u2973829738epcas1p1X;
+        Tue,  5 Jul 2022 00:17:11 +0000 (GMT)
+Received: from epsmges1p3.samsung.com (unknown [182.195.38.241]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LcNXR3hwxz4x9Pp; Tue,  5 Jul
+        2022 00:17:11 +0000 (GMT)
+Received: from epcas1p2.samsung.com ( [182.195.41.46]) by
+        epsmges1p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5C.7D.09661.70383C26; Tue,  5 Jul 2022 09:17:11 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220705001710epcas1p40c6411bd768b39a9cff1d6ce09d445dd~_xr2ZeamZ1726517265epcas1p4w;
+        Tue,  5 Jul 2022 00:17:10 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220705001710epsmtrp2a88d2827d98723d9d028f8b200c7eb43~_xr2YI7u22425024250epsmtrp2c;
+        Tue,  5 Jul 2022 00:17:10 +0000 (GMT)
+X-AuditID: b6c32a37-2b9ff700000025bd-01-62c3830774ef
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B0.ED.08905.60383C26; Tue,  5 Jul 2022 09:17:10 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.253.101.71]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220705001710epsmtip273847a6ad0af2ba75255a7b46aa05d37~_xr2HjXsh0648506485epsmtip2D;
+        Tue,  5 Jul 2022 00:17:10 +0000 (GMT)
+From:   Seunghui Lee <sh043.lee@samsung.com>
+To:     ult.hansson@linaro.org, u.kleine-koenig@pengutronix.de,
+        gregkh@linuxfoundation.org, linux@dominikbrodowski.net,
+        alexandre.belloni@bootlin.com, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     grant.jung@samsung.com, jt77.jang@samsung.com,
+        dh0421.hwang@samsung.com, junwoo80.lee@samsung.com,
+        jangsub.yi@samsung.com, cw9316.lee@samsung.com,
+        sh8267.baek@samsung.com, wkon.kim@samsung.com,
+        seunghwan.hyun@samsung.com, Seunghui Lee <sh043.lee@samsung.com>
+Subject: [PATCH] mmc: print clock frequency with recognization
+Date:   Tue,  5 Jul 2022 09:49:29 +0900
+Message-Id: <20220705004929.14143-1-sh043.lee@samsung.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7c8381b3-c71b-45e8-a162-c9701dabcc9b@www.fastmail.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBJsWRmVeSWpSXmKPExsWy7bCmni578+Ekg/aJMhbt75axW8w41cZq
+        se/aSXaLX3/Xs1s0L17PZtGxdTKTxY7nZ9gtdv1tZrK4vGsOm8WR//2MFgtaPrBanDv5idWi
+        6c8+FotrZ06wWtyeOJnRYtpCC4vNl76xOAh6zFtT7XFhJ7fHnWt72Dz2z13D7tH/18Cjb8sq
+        Ro/Pm+QC2KOybTJSE1NSixRS85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTd
+        MnOAzldSKEvMKQUKBSQWFyvp29kU5ZeWpCpk5BeX2CqlFqTkFJgV6BUn5haX5qXr5aWWWBka
+        GBiZAhUmZGesOn2VqWA9Z0V/61TWBsZj7F2MnBwSAiYS/97dY+xi5OIQEtjBKPHq910mkISQ
+        wCdGiSn3AiES3xgl5j2HSIB0PD26lB0isZdR4lPnSyYI5zOjRP/H+SwgVWwCWhLTN20BS4gI
+        XGCUuPbwMJjDLNDDJPH70ndWkCphATuJx1+esYHYLAKqEhuPngaL8wpYSTy4fogNYp+8xJ/7
+        PcwQcUGJkzOfgG1gBoo3b53NDDJUQmAph8SMngWMEA0uEl/3wTQLS7w6vgXqVSmJz+/2QsWL
+        Jdr+/WOGsCskDvZ9gbKNJT59/gw0hwNogabE+l36EGFFiZ2/5zJC7OWTePe1hxWkREKAV6Kj
+        TQiiRFni5aNl0CCSlFjSfgtqoofEufZtYBOFBGIlDn7VnsAoPwvJM7OQPDMLYe8CRuZVjGKp
+        BcW56anFhgXG8FhNzs/dxAhOwlrmOxinvf2gd4iRiYPxEKMEB7OSCO+qSQeThHhTEiurUovy
+        44tKc1KLDzGaAoN3IrOUaHI+MA/klcQbmlgamJgZmVgYWxqbKYnzrpp2OlFIID2xJDU7NbUg
+        tQimj4mDU6qByfD+tDNXhE5qPjtkfJNhRVeK4+q/DSvemRVdlHPZwrK/1mTdvcWLN92YO/NQ
+        nEnUdx++o1u3sMZLv6yddMfM58ud0tmHDug/2/Ixi2GG/ppAsYjX8n82HXp5+8n9nYufNlir
+        R4cVn/ZarqzdWr5Y4pF7YOWtAK8bSm3mKvm73j17HaQd8z/GxSPHQ7UlNSxx48KgJxXzcuPq
+        ttvrdu3JW6tRd7d3O6NtYPKqGheux+1+fw9pyQiYHTw9eevD269rvpyL3fxMoJJd4+2Elat3
+        fGQ6HLhT+odpm5qTUHLd9ckW4iHivMvF3vHqpQn9aKwPXupia7GC+/wc9mhBoW+ZzjsNV273
+        +LlVUSpLaHaVuhJLcUaioRZzUXEiAPNrgU9LBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrOLMWRmVeSWpSXmKPExsWy7bCSvC5b8+Ekg+mNUhbt75axW8w41cZq
+        se/aSXaLX3/Xs1s0L17PZtGxdTKTxY7nZ9gtdv1tZrK4vGsOm8WR//2MFgtaPrBanDv5idWi
+        6c8+FotrZ06wWtyeOJnRYtpCC4vNl76xOAh6zFtT7XFhJ7fHnWt72Dz2z13D7tH/18Cjb8sq
+        Ro/Pm+QC2KO4bFJSczLLUov07RK4MladvspUsJ6zor91KmsD4zH2LkZODgkBE4mnR5cC2Vwc
+        QgK7GSXe9LdCJSQlFj96yNbFyAFkC0scPlwMEhYS+MgoMf+1CIjNJqAlMX3TFiaQXhGBa4wS
+        yx++ZQNxmAVmMEk8Wr6VEaRKWMBO4vGXZ2wgNouAqsTGo6dZQWxeASuJB9cPsUEsk5f4c7+H
+        GSIuKHFy5hMWEJsZKN68dTbzBEa+WUhSs5CkFjAyrWKUTC0ozk3PLTYsMMxLLdcrTswtLs1L
+        10vOz93ECI4LLc0djNtXfdA7xMjEwXiIUYKDWUmEd9Wkg0lCvCmJlVWpRfnxRaU5qcWHGKU5
+        WJTEeS90nYwXEkhPLEnNTk0tSC2CyTJxcEo1MKlE8BxU1M/eyW5cqfMyMSq6a8abczJXOdZJ
+        H9w6//+EajOJeN48i+Q3eksV1VNieGac3VBd9eGJzAz3lwlWn91tYjICn4ZLb5C3vpf4poxZ
+        R8nGx2dq9McVa08+2Sabu95w26y//evs5MXtLX8kZmzT293+TlJy0arZTS8Cp/2zW7F02bzr
+        vu8u/dKK2xxfwnFD1kSW9WZhssFJn8YJE973Ck9jz119fXvo/c/rTy52/Gi3591rLltnu2UK
+        vSG/eWud+iokvF6dYbl+Yutl7qYKyV2LP4ZLeL8OcpdZz5ps/dbKQswr8MI5iVWOwq1sJw57
+        77u1flPjv6SeaLt/jqeTX5u7X2lLqPFNjuu2UmIpzkg01GIuKk4EAAXZbUr6AgAA
+X-CMS-MailID: 20220705001710epcas1p40c6411bd768b39a9cff1d6ce09d445dd
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220705001710epcas1p40c6411bd768b39a9cff1d6ce09d445dd
+References: <CGME20220705001710epcas1p40c6411bd768b39a9cff1d6ce09d445dd@epcas1p4.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 07:38:20PM -0700, Andy Lutomirski wrote:
-> 
-> 
-> On Tue, Jun 28, 2022, at 5:42 PM, Kirill A. Shutemov wrote:
-> > On Tue, Jun 28, 2022 at 04:40:48PM -0700, Andy Lutomirski wrote:
-> >> On 6/10/22 07:35, Kirill A. Shutemov wrote:
-> >> > untagged_addr() is a helper used by the core-mm to strip tag bits and
-> >> > get the address to the canonical shape. In only handles userspace
-> >> > addresses. The untagging mask is stored in mmu_context and will be set
-> >> > on enabling LAM for the process.
-> >> > 
-> >> > The tags must not be included into check whether it's okay to access the
-> >> > userspace address.
-> >> > 
-> >> > Strip tags in access_ok().
-> >> 
-> >> What is the intended behavior for an access that spans a tag boundary?
-> >
-> > You mean if 'addr' passed to access_ok() is below 47- or 56-bit but 'addr'
-> > + 'size' overflows into tags? If is not valid access and the current
-> > implementation works correctly.
-> >
-> >> Also, at the risk of a potentially silly question, why do we need to strip
-> >> the tag before access_ok()?  With LAM, every valid tagged user address is
-> >> also a valid untagged address, right?  (There is no particular need to
-> >> enforce the actual value of TASK_SIZE_MAX on *access*, just on mmap.)
-> >> 
-> >> IOW, wouldn't it be sufficient, and probably better than what we have now,
-> >> to just check that the entire range has the high bit clear?
-> >
-> > No. We do things to addresses on kernel side beyond dereferencing them.
-> > Like comparing addresses have to make sense. find_vma() has to find
-> > relevant mapping and so on. 
-> 
-> I think you’re misunderstanding me. Of course things like find_vma()
-> need to untag the address. (But things like munmap, IMO, ought not
-> accept tagged addresses.)
-> 
-> But I’m not talking about that at all. I’m asking why we need to untag
-> an address for access_ok.  In the bad old days, access_ok checked that a
-> range was below a *variable* cutoff. But set_fs() is gone, and I don’t
-> think this is needed any more.
-> 
-> With some off-the-cuff bit hackery, I think it ought to be sufficient to
-> calculate addr+len and fail if the overflow or sign bits get set. If LAM
-> is off, we could calculate addr | len and fail if either of the top two
-> bits is set, but LAM may not let us get away with that.  The general
-> point being that, on x86 (as long as we ignore AMD’s LAM-like feature)
-> an address is a user address if the top bit is clear. Whether that
-> address is canonical or not or will translate or not is a separate
-> issue. (And making this change would require allowing uaccess to #GP,
-> which requires some care.)
-> 
-> What do you think?
+It's easy to figure out how fast frequency it has from the log.
+e.g. mmc0: new ultra high speed SDR104 SDXC card
+at address aaaa(clk 202000000)
 
-I think it can work. Below is my first take on this. It is raw and
-requires more work.
+Signed-off-by: Seunghui Lee <sh043.lee@samsung.com>
+---
+ drivers/mmc/core/bus.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-You talk about access_ok(), but I also checked what has to be done in
-get_user()/put_user() path. Not sure it is a good idea (but it seems
-work).
-
-The basic idea is to OR start and end of the range and check that MSB is
-clear.
-
-I reworked array_index_mask_nospec() thing to make the address all-ones if
-it is ouside of the user range. It should work to stop speculation as well
-as making it zero as we do now. 
-
-The patch as it is breaks 32-bit. It has to be handled separately.
-
-Any comments?
-
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 803241dfc473..53c6f86b036f 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -45,6 +45,12 @@ static inline bool pagefault_disabled(void);
- #define untagged_ptr(mm, ptr)	(ptr)
- #endif
+diff --git a/drivers/mmc/core/bus.c b/drivers/mmc/core/bus.c
+index 58a60afa650b..3623cc27a61c 100644
+--- a/drivers/mmc/core/bus.c
++++ b/drivers/mmc/core/bus.c
+@@ -348,7 +348,7 @@ int mmc_add_card(struct mmc_card *card)
+ 			mmc_card_ddr52(card) ? "DDR " : "",
+ 			type);
+ 	} else {
+-		pr_info("%s: new %s%s%s%s%s%s card at address %04x\n",
++		pr_info("%s: new %s%s%s%s%s%s card at address %04x(clk %u)\n",
+ 			mmc_hostname(card->host),
+ 			mmc_card_uhs(card) ? "ultra high speed " :
+ 			(mmc_card_hs(card) ? "high speed " : ""),
+@@ -356,7 +356,8 @@ int mmc_add_card(struct mmc_card *card)
+ 			(mmc_card_hs200(card) ? "HS200 " : ""),
+ 			mmc_card_hs400es(card) ? "Enhanced strobe " : "",
+ 			mmc_card_ddr52(card) ? "DDR " : "",
+-			uhs_bus_speed_mode, type, card->rca);
++			uhs_bus_speed_mode, type, card->rca,
++			card->host->ios.clock);
+ 	}
  
-+#define __access_ok(ptr, size)						\
-+({									\
-+	unsigned long addr = (unsigned long)(ptr);			\
-+	!((addr | (size) | addr + (size)) >> (BITS_PER_LONG - 1));	\
-+})
-+
- /**
-  * access_ok - Checks if a user space pointer is valid
-  * @addr: User space pointer to start of block to check
-@@ -62,10 +68,10 @@ static inline bool pagefault_disabled(void);
-  * Return: true (nonzero) if the memory block may be valid, false (zero)
-  * if it is definitely invalid.
-  */
--#define access_ok(addr, size)					\
-+#define access_ok(addr, size)						\
- ({									\
- 	WARN_ON_IN_IRQ();						\
--	likely(__access_ok(untagged_addr(current->mm, addr), size));	\
-+	likely(__access_ok(addr, size));				\
- })
- 
- #include <asm-generic/access_ok.h>
-@@ -150,13 +156,7 @@ extern int __get_user_bad(void);
-  * Return: zero on success, or -EFAULT on error.
-  * On error, the variable @x is set to zero.
-  */
--#define get_user(x,ptr)							\
--({									\
--	__typeof__(*(ptr)) __user *__ptr_clean;				\
--	__ptr_clean = untagged_ptr(current->mm, ptr);			\
--	might_fault();							\
--	do_get_user_call(get_user,x,__ptr_clean);			\
--})
-+#define get_user(x,ptr) ({ might_fault(); do_get_user_call(get_user,x,ptr); })
- 
- /**
-  * __get_user - Get a simple variable from user space, with less checking.
-@@ -253,12 +253,7 @@ extern void __put_user_nocheck_8(void);
-  *
-  * Return: zero on success, or -EFAULT on error.
-  */
--#define put_user(x, ptr) ({						\
--	__typeof__(*(ptr)) __user *__ptr_clean;				\
--	__ptr_clean = untagged_ptr(current->mm, ptr);			\
--	might_fault();							\
--	do_put_user_call(put_user,x,__ptr_clean);			\
--})
-+#define put_user(x, ptr) ({ might_fault(); do_put_user_call(put_user,x,ptr); })
- 
- /**
-  * __put_user - Write a simple value into user space, with less checking.
-diff --git a/arch/x86/lib/getuser.S b/arch/x86/lib/getuser.S
-index b70d98d79a9d..e526ae6ff844 100644
---- a/arch/x86/lib/getuser.S
-+++ b/arch/x86/lib/getuser.S
-@@ -37,22 +37,13 @@
- 
- #define ASM_BARRIER_NOSPEC ALTERNATIVE "", "lfence", X86_FEATURE_LFENCE_RDTSC
- 
--#ifdef CONFIG_X86_5LEVEL
--#define LOAD_TASK_SIZE_MINUS_N(n) \
--	ALTERNATIVE __stringify(mov $((1 << 47) - 4096 - (n)),%rdx), \
--		    __stringify(mov $((1 << 56) - 4096 - (n)),%rdx), X86_FEATURE_LA57
--#else
--#define LOAD_TASK_SIZE_MINUS_N(n) \
--	mov $(TASK_SIZE_MAX - (n)),%_ASM_DX
--#endif
--
- 	.text
- SYM_FUNC_START(__get_user_1)
--	LOAD_TASK_SIZE_MINUS_N(0)
--	cmp %_ASM_DX,%_ASM_AX
--	jae bad_get_user
--	sbb %_ASM_DX, %_ASM_DX		/* array_index_mask_nospec() */
--	and %_ASM_DX, %_ASM_AX
-+	mov %_ASM_AX, %_ASM_DX
-+	shl $1, %_ASM_DX
-+	jb bad_get_user
-+	sbb %_ASM_DX, %_ASM_DX
-+	or %_ASM_DX, %_ASM_AX
- 	ASM_STAC
- 1:	movzbl (%_ASM_AX),%edx
- 	xor %eax,%eax
-@@ -62,11 +53,13 @@ SYM_FUNC_END(__get_user_1)
- EXPORT_SYMBOL(__get_user_1)
- 
- SYM_FUNC_START(__get_user_2)
--	LOAD_TASK_SIZE_MINUS_N(1)
--	cmp %_ASM_DX,%_ASM_AX
--	jae bad_get_user
--	sbb %_ASM_DX, %_ASM_DX		/* array_index_mask_nospec() */
--	and %_ASM_DX, %_ASM_AX
-+	mov %_ASM_AX, %_ASM_DX
-+	add $1, %_ASM_DX
-+	or %_ASM_AX, %_ASM_DX
-+	shl $1, %_ASM_DX
-+	jb bad_get_user
-+	sbb %_ASM_DX, %_ASM_DX
-+	or %_ASM_DX, %_ASM_AX
- 	ASM_STAC
- 2:	movzwl (%_ASM_AX),%edx
- 	xor %eax,%eax
-@@ -76,11 +69,13 @@ SYM_FUNC_END(__get_user_2)
- EXPORT_SYMBOL(__get_user_2)
- 
- SYM_FUNC_START(__get_user_4)
--	LOAD_TASK_SIZE_MINUS_N(3)
--	cmp %_ASM_DX,%_ASM_AX
--	jae bad_get_user
--	sbb %_ASM_DX, %_ASM_DX		/* array_index_mask_nospec() */
--	and %_ASM_DX, %_ASM_AX
-+	mov %_ASM_AX, %_ASM_DX
-+	add $3, %_ASM_DX
-+	or %_ASM_AX, %_ASM_DX
-+	shl $1, %_ASM_DX
-+	jb bad_get_user
-+	sbb %_ASM_DX, %_ASM_DX
-+	or %_ASM_DX, %_ASM_AX
- 	ASM_STAC
- 3:	movl (%_ASM_AX),%edx
- 	xor %eax,%eax
-@@ -91,22 +86,26 @@ EXPORT_SYMBOL(__get_user_4)
- 
- SYM_FUNC_START(__get_user_8)
- #ifdef CONFIG_X86_64
--	LOAD_TASK_SIZE_MINUS_N(7)
--	cmp %_ASM_DX,%_ASM_AX
--	jae bad_get_user
--	sbb %_ASM_DX, %_ASM_DX		/* array_index_mask_nospec() */
--	and %_ASM_DX, %_ASM_AX
-+	mov %_ASM_AX, %_ASM_DX
-+	add $7, %_ASM_DX
-+	or %_ASM_AX, %_ASM_DX
-+	shl $1, %_ASM_DX
-+	jb bad_get_user
-+	sbb %_ASM_DX, %_ASM_DX
-+	or %_ASM_DX, %_ASM_AX
- 	ASM_STAC
- 4:	movq (%_ASM_AX),%rdx
- 	xor %eax,%eax
- 	ASM_CLAC
- 	RET
- #else
--	LOAD_TASK_SIZE_MINUS_N(7)
--	cmp %_ASM_DX,%_ASM_AX
--	jae bad_get_user_8
--	sbb %_ASM_DX, %_ASM_DX		/* array_index_mask_nospec() */
--	and %_ASM_DX, %_ASM_AX
-+	mov %_ASM_AX, %_ASM_DX
-+	add $7, %_ASM_DX
-+	or %_ASM_AX, %_ASM_DX
-+	shl $1, %_ASM_DX
-+	jb bad_get_user
-+	sbb %_ASM_DX, %_ASM_DX
-+	or %_ASM_DX, %_ASM_AX
- 	ASM_STAC
- 4:	movl (%_ASM_AX),%edx
- 5:	movl 4(%_ASM_AX),%ecx
-diff --git a/arch/x86/lib/putuser.S b/arch/x86/lib/putuser.S
-index b7dfd60243b7..eb7c4396cb1e 100644
---- a/arch/x86/lib/putuser.S
-+++ b/arch/x86/lib/putuser.S
-@@ -33,20 +33,11 @@
-  * as they get called from within inline assembly.
-  */
- 
--#ifdef CONFIG_X86_5LEVEL
--#define LOAD_TASK_SIZE_MINUS_N(n) \
--	ALTERNATIVE __stringify(mov $((1 << 47) - 4096 - (n)),%rbx), \
--		    __stringify(mov $((1 << 56) - 4096 - (n)),%rbx), X86_FEATURE_LA57
--#else
--#define LOAD_TASK_SIZE_MINUS_N(n) \
--	mov $(TASK_SIZE_MAX - (n)),%_ASM_BX
--#endif
--
- .text
- SYM_FUNC_START(__put_user_1)
--	LOAD_TASK_SIZE_MINUS_N(0)
--	cmp %_ASM_BX,%_ASM_CX
--	jae .Lbad_put_user
-+	mov %_ASM_CX, %_ASM_BX
-+	shl $1, %_ASM_BX
-+	jb .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_1, SYM_L_GLOBAL)
- 	ENDBR
- 	ASM_STAC
-@@ -59,9 +50,11 @@ EXPORT_SYMBOL(__put_user_1)
- EXPORT_SYMBOL(__put_user_nocheck_1)
- 
- SYM_FUNC_START(__put_user_2)
--	LOAD_TASK_SIZE_MINUS_N(1)
--	cmp %_ASM_BX,%_ASM_CX
--	jae .Lbad_put_user
-+	mov %_ASM_CX, %_ASM_BX
-+	add $1, %_ASM_BX
-+	or %_ASM_CX, %_ASM_BX
-+	shl $1, %_ASM_BX
-+	jb .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_2, SYM_L_GLOBAL)
- 	ENDBR
- 	ASM_STAC
-@@ -74,9 +67,11 @@ EXPORT_SYMBOL(__put_user_2)
- EXPORT_SYMBOL(__put_user_nocheck_2)
- 
- SYM_FUNC_START(__put_user_4)
--	LOAD_TASK_SIZE_MINUS_N(3)
--	cmp %_ASM_BX,%_ASM_CX
--	jae .Lbad_put_user
-+	mov %_ASM_CX, %_ASM_BX
-+	add $3, %_ASM_BX
-+	or %_ASM_CX, %_ASM_BX
-+	shl $1, %_ASM_BX
-+	jb .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_4, SYM_L_GLOBAL)
- 	ENDBR
- 	ASM_STAC
-@@ -89,9 +84,11 @@ EXPORT_SYMBOL(__put_user_4)
- EXPORT_SYMBOL(__put_user_nocheck_4)
- 
- SYM_FUNC_START(__put_user_8)
--	LOAD_TASK_SIZE_MINUS_N(7)
--	cmp %_ASM_BX,%_ASM_CX
--	jae .Lbad_put_user
-+	mov %_ASM_CX, %_ASM_BX
-+	add $7, %_ASM_BX
-+	or %_ASM_CX, %_ASM_BX
-+	shl $1, %_ASM_BX
-+	jb .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_8, SYM_L_GLOBAL)
- 	ENDBR
- 	ASM_STAC
+ #ifdef CONFIG_DEBUG_FS
 -- 
- Kirill A. Shutemov
+2.29.0
+
