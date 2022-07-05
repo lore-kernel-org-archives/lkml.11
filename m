@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75945C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA76DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232840AbiGEPCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
+        id S229977AbiGEPCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbiGEPCE (ORCPT
+        with ESMTP id S232161AbiGEPB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:02:04 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129D61572F;
-        Tue,  5 Jul 2022 08:01:59 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id r81-20020a1c4454000000b003a0297a61ddso9891323wma.2;
-        Tue, 05 Jul 2022 08:01:58 -0700 (PDT)
+        Tue, 5 Jul 2022 11:01:59 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C968C1582D;
+        Tue,  5 Jul 2022 08:01:57 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id n185so7199349wmn.4;
+        Tue, 05 Jul 2022 08:01:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+E9HBSea0QLQi12+8hra9Imm7sGSrMpugcSoqydPq9A=;
-        b=Utu6Up9oHePrJ9TGWq9tGqID2WUD4EUiHe8B6aGw6FR86OOrkeX/VRHCltmuY0Q4kD
-         4k5gH4ghw1J8FKkvsiWSpsHsWSn6WpjZ3M1X/7VpAkvp5CumDUSh8Sv6Dw7JpvTCnPNa
-         Z2yzPproSeTdUZWgPJQgQxI/TuY+zGjKJBflgZPp9Pwm25CrQ+rfauF3JSKOXczv2Kxc
-         2fM+vEKM0DNb8LuxhXAM5FkyNZbNBb9sJNxfYMAJ1MeUuVuSQAMp81uBO0c2wgNHYPmJ
-         wOOqlEfUMTjFtuAvv49qTVGaQpNvLh7V5PiFHwhlC9Y9fXnnHi26Ooa5DHr9BhJ5S9cc
-         Mffw==
+        bh=444AasoIjcG70+nERpDu52ztpjjLs2LzhKg2x6YMB6U=;
+        b=f3gYRqX5nVoGRNzWh42VpCUHEYoASYcoraNM09PKq6uUpWC9LdJswEjuKG53v22GKc
+         0MD49/dzwvF+CAOQsekNj1dcL5MDACaemPMHzz6D5rgPdwnRFo2wjIQiM66uCzwvjcGh
+         HfgLyfjcABeWpJxSxMD3bil1SaCjh3KOg+l5iXvTww88RivKqTMjCQpIovk6PUOYDf2x
+         8PV5LdZrCobG59M7poitj8tsmRrwzkcSsA9/qPHLKe/XxB1tCB6shw5XIH1V34NEx0cT
+         tZOhON6kHJKwEsCTwHU0hFzC4YzNfcT+MgGGbneke+PguecXnA0SSAhV0oJsxlyIhlBT
+         2Y5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+E9HBSea0QLQi12+8hra9Imm7sGSrMpugcSoqydPq9A=;
-        b=H43bVEFfzBJrm3mBNEGYqY8ymgRlON7osh9TGl8HdaR+XvCN/MtoEnKpEXjFb9Fwpy
-         Grn80+a+U7wH9euZLxTdy8QRFnoUrhJipLbqJw6uUhscDV4XoWhE+LfMTtBhV8fPoK40
-         xk+oPuzkvxwswUdhAK4VHEgfiGy/arGppXlbSL/rc49mY+yKIZx0uMgugrov3//msukS
-         S92mBKBvGRUakl06NUgejihMmTe5X9HXmwgm88Q1dhwXsP6EKoXGNFR+Cz3NpTZfnteT
-         CKo3zZL7LL3XNWOo1FMy2nDbjG9VvnDqYRl4lvjlQDcBWPs6dql7SMpRjPhy2sUFqnxa
-         tylw==
-X-Gm-Message-State: AJIora8ss68Y5choTUvF9H1PhP3aWn2kXRukTLbDhT1HIv8nCAjb9bWE
-        i/JncKmT3H8f44kFnbAAqMGeC7FVl4IM8A==
-X-Google-Smtp-Source: AGRyM1sVB6IM/YBuOlaNi9NmHKjqagwpO6IOclnO9H3x3nV4J4wLpsBSdF59jxp8dZjAVeQMhGXMwQ==
-X-Received: by 2002:a05:600c:4282:b0:3a0:2ddf:4df2 with SMTP id v2-20020a05600c428200b003a02ddf4df2mr39083450wmc.119.1657033318344;
-        Tue, 05 Jul 2022 08:01:58 -0700 (PDT)
+        bh=444AasoIjcG70+nERpDu52ztpjjLs2LzhKg2x6YMB6U=;
+        b=4b7/APf9reJsiclwiaTDg0KAvgHz4Rw8/veBtQF13yXlutpOINmTIHGDxaqEmwHlHU
+         mwM329UL+zpJVLTOvrUOHikCo5jZGzMfw/QLpXyS7rdRf4QZNEcocskByMpymjfx5+GU
+         y234opE0TpdiluYbbAYmExMMKSm89KnKWjt3fpZTZRxtdq+ZMqwE352CEcgYlZPnd1fW
+         sbRX57ThgoSwfAQ6ODUwIvOA1kLdUyna8v73xLt7KOuPUgyCndmPSXd6aJ/M/MY2KRSS
+         6flCtRLji36s6XZC5fm03om4wKp5lNPkeAR1NiZ10pvUvZuQ3Ing/xwBrVvsAhXIdUkL
+         wGEg==
+X-Gm-Message-State: AJIora+yO/H6xtd7zNoxptfBPzoYyQR7t3rDaTWcha/2MVSIJE7yiCKY
+        z3aZKwb+vffQESWZJlB4cFcE9AOBPex9Qg==
+X-Google-Smtp-Source: AGRyM1tl+xxus7ISOtrStGl5Jb6Id/jUsAT5Gel6Db0EkOREXG4KiRAHmpLu+nTNrx6XF+EnDRmDqw==
+X-Received: by 2002:a05:600c:3ca2:b0:3a0:1825:2e6b with SMTP id bg34-20020a05600c3ca200b003a018252e6bmr38704300wmb.132.1657033315746;
+        Tue, 05 Jul 2022 08:01:55 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.57
+        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:01:57 -0700 (PDT)
+        Tue, 05 Jul 2022 08:01:55 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 09/25] ipv4/udp: support zc with managed data
-Date:   Tue,  5 Jul 2022 16:01:09 +0100
-Message-Id: <bf422eaa053b981ecf525e3c6d6c939f8d5a5a1d.1656318994.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v3 07/25] net: don't track pfmemalloc for managed frags
+Date:   Tue,  5 Jul 2022 16:01:07 +0100
+Message-Id: <2f699cf7f534df23ed1fe51f88bf832706f215f2.1656318994.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656318994.git.asml.silence@gmail.com>
 References: <cover.1656318994.git.asml.silence@gmail.com>
@@ -69,103 +69,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Teach ipv4/udp about managed data. Make it recognise and use
-msg->msg_ubuf, and also set/propagate SKBFL_MANAGED_FRAG_REFS
-down to skb_zerocopy_iter_dgram().
+Managed pages contain pinned userspace pages and controlled by upper
+layers, there is no need in tracking skb->pfmemalloc for them.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv4/ip_output.c | 57 +++++++++++++++++++++++++++++++++-----------
- 1 file changed, 43 insertions(+), 14 deletions(-)
+ include/linux/skbuff.h | 28 +++++++++++++++++-----------
+ net/core/datagram.c    |  7 +++++--
+ 2 files changed, 22 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 581d1e233260..3fd1bf675598 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1017,18 +1017,35 @@ static int __ip_append_data(struct sock *sk,
- 	    (!exthdrlen || (rt->dst.dev->features & NETIF_F_HW_ESP_TX_CSUM)))
- 		csummode = CHECKSUM_PARTIAL;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 712168c21736..2d5badd4b9ff 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2549,6 +2549,22 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
+ 	return skb_headlen(skb) + __skb_pagelen(skb);
+ }
  
--	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
--		uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
--		if (!uarg)
--			return -ENOBUFS;
--		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
--		if (rt->dst.dev->features & NETIF_F_SG &&
--		    csummode == CHECKSUM_PARTIAL) {
--			paged = true;
--			zc = true;
--		} else {
--			uarg->zerocopy = 0;
--			skb_zcopy_set(skb, uarg, &extra_uref);
-+	if ((flags & MSG_ZEROCOPY) && length) {
-+		struct msghdr *msg = from;
++static inline void __skb_fill_page_desc_noacc(struct skb_shared_info *shinfo,
++					      int i, struct page *page,
++					      int off, int size)
++{
++	skb_frag_t *frag = &shinfo->frags[i];
 +
-+		if (getfrag == ip_generic_getfrag && msg->msg_ubuf) {
-+			if (skb_zcopy(skb) && msg->msg_ubuf != skb_zcopy(skb))
-+				return -EINVAL;
++	/*
++	 * Propagate page pfmemalloc to the skb if we can. The problem is
++	 * that not all callers have unique ownership of the page but rely
++	 * on page_is_pfmemalloc doing the right thing(tm).
++	 */
++	frag->bv_page		  = page;
++	frag->bv_offset		  = off;
++	skb_frag_size_set(frag, size);
++}
 +
-+			/* Leave uarg NULL if can't zerocopy, callers should
-+			 * be able to handle it.
-+			 */
-+			if ((rt->dst.dev->features & NETIF_F_SG) &&
-+			    csummode == CHECKSUM_PARTIAL) {
-+				paged = true;
-+				zc = true;
-+				uarg = msg->msg_ubuf;
-+			}
-+		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
-+			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
-+			if (!uarg)
-+				return -ENOBUFS;
-+			extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
-+			if (rt->dst.dev->features & NETIF_F_SG &&
-+			    csummode == CHECKSUM_PARTIAL) {
-+				paged = true;
-+				zc = true;
-+			} else {
-+				uarg->zerocopy = 0;
-+				skb_zcopy_set(skb, uarg, &extra_uref);
-+			}
- 		}
+ /**
+  * __skb_fill_page_desc - initialise a paged fragment in an skb
+  * @skb: buffer containing fragment to be initialised
+@@ -2565,17 +2581,7 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
+ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
+ 					struct page *page, int off, int size)
+ {
+-	skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+-
+-	/*
+-	 * Propagate page pfmemalloc to the skb if we can. The problem is
+-	 * that not all callers have unique ownership of the page but rely
+-	 * on page_is_pfmemalloc doing the right thing(tm).
+-	 */
+-	frag->bv_page		  = page;
+-	frag->bv_offset		  = off;
+-	skb_frag_size_set(frag, size);
+-
++	__skb_fill_page_desc_noacc(skb_shinfo(skb), i, page, off, size);
+ 	page = compound_head(page);
+ 	if (page_is_pfmemalloc(page))
+ 		skb->pfmemalloc	= true;
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index a93c05156f56..3c913a6342ad 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -616,7 +616,8 @@ EXPORT_SYMBOL(skb_copy_datagram_from_iter);
+ static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
+ 				   struct iov_iter *from, size_t length)
+ {
+-	int frag = skb_shinfo(skb)->nr_frags;
++	struct skb_shared_info *shinfo = skb_shinfo(skb);
++	int frag = shinfo->nr_frags;
+ 	int ret = 0;
+ 	struct bvec_iter bi;
+ 	ssize_t copied = 0;
+@@ -631,12 +632,14 @@ static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
+ 
+ 		copied += v.bv_len;
+ 		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
+-		skb_fill_page_desc(skb, frag++, v.bv_page, v.bv_offset, v.bv_len);
++		__skb_fill_page_desc_noacc(shinfo, frag++, v.bv_page,
++					   v.bv_offset, v.bv_len);
+ 		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
  	}
+ 	if (bi.bi_size)
+ 		ret = -EMSGSIZE;
  
-@@ -1192,13 +1209,14 @@ static int __ip_append_data(struct sock *sk,
- 				err = -EFAULT;
- 				goto error;
- 			}
--		} else if (!uarg || !uarg->zerocopy) {
-+		} else if (!zc) {
- 			int i = skb_shinfo(skb)->nr_frags;
- 
- 			err = -ENOMEM;
- 			if (!sk_page_frag_refill(sk, pfrag))
- 				goto error;
- 
-+			skb_zcopy_downgrade_managed(skb);
- 			if (!skb_can_coalesce(skb, i, pfrag->page,
- 					      pfrag->offset)) {
- 				err = -EMSGSIZE;
-@@ -1223,7 +1241,18 @@ static int __ip_append_data(struct sock *sk,
- 			skb->truesize += copy;
- 			wmem_alloc_delta += copy;
- 		} else {
--			err = skb_zerocopy_iter_dgram(skb, from, copy);
-+			struct msghdr *msg = from;
-+
-+			if (!skb_shinfo(skb)->nr_frags) {
-+				if (msg->msg_managed_data)
-+					skb_shinfo(skb)->flags |= SKBFL_MANAGED_FRAG_REFS;
-+			} else {
-+				/* appending, don't mix managed and unmanaged */
-+				if (!msg->msg_managed_data)
-+					skb_zcopy_downgrade_managed(skb);
-+			}
-+
-+			err = skb_zerocopy_iter_dgram(skb, msg, copy);
- 			if (err < 0)
- 				goto error;
- 		}
++	shinfo->nr_frags = frag;
+ 	from->bvec += bi.bi_idx;
+ 	from->nr_segs -= bi.bi_idx;
+ 	from->count = bi.bi_size;
 -- 
 2.36.1
 
