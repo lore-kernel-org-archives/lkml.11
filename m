@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC30CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 788ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233570AbiGEOOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
+        id S233557AbiGEOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233749AbiGEOM4 (ORCPT
+        with ESMTP id S233491AbiGEOP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:12:56 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA5DE48;
-        Tue,  5 Jul 2022 07:07:29 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id lg18so2043138ejb.0;
-        Tue, 05 Jul 2022 07:07:29 -0700 (PDT)
+        Tue, 5 Jul 2022 10:15:27 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D9B21A3;
+        Tue,  5 Jul 2022 07:09:57 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id z21so20689480lfb.12;
+        Tue, 05 Jul 2022 07:09:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Z2qvagdvkgzEk1isMwjSllduix1zdSWNV4qccAdh7FU=;
-        b=MHB5VmF3QPSByPVfjCgSZc56+o8mUHXfTuCp7kQtL/iPdihjtOvFZiYyQSIQ81RyZC
-         FDiRmcaK6lUTZkEJvSVDyi0P0BXWRwBy4DLpMNUVakM8J4vvqC9Y58lu/6yTXZYXJlGl
-         WxwMQTXcbgC8rztR8/4KRJn66HFBUu81BAnw9PZT1/O4yjQolLOF3fPM2vbvXAq7qxqi
-         XGuIyFvKP92I5AE4zzq+Sn2CZ4FKgYlc1XhyVo1WBhpZGB2sWHCoaCj/mzHFphwj+mSA
-         WtMTfzwMCuG3xh7wyZqj3GT+75gIrUXwMHQ4lBNAzeMQeH11fCueDQOny8IS5hDdVa1P
-         X7/w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mkpYMkRu/76pOOu+MHLe2oZToj5Yt5Dx7rgEtnCdrPQ=;
+        b=IKQoY/My2mvs2KygiBq4kvXiSv0KM+0Qeikhdsnx5XPID6cmubAFjIW0/HaD7POAY5
+         SsmKNSvgWfWg6VjKuWxZuE+KQS8WhIoy/i6vIWMrshxduSxnHjtRKOr5UkQttb5McMea
+         ki4r58st9mM8U7P/rRgKEw9QYn4mbhKQQ4DNcb8hL9HfvZEmVGjs+i8XWY1eE2jGOfOW
+         iYofhYXGteHTKOOSQNUopEfeMGP/9VR9FFZdu47Z6nPqeMtuVt1aTtAAPSij6x+IPXlA
+         ObmXDPU7XjGGtZQDYl501/GRpe00ttnaam5qB2wVso11bT+Pnp4Mw23E+f6j+1qWpXNj
+         /juA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Z2qvagdvkgzEk1isMwjSllduix1zdSWNV4qccAdh7FU=;
-        b=ss+6ZW0jdnQ6Hfs27kcPWr22xJBH2Baqc8lWvi1YxfT6x1NP+otdOVTLLwIeAz/6RK
-         NLY1PBepgvsVhjU3rDfdksCB14TVejRkoCWXob4L4SIDQWzEBwECRf2MfCqW0mK8azaE
-         DsSw1xyQeX8MmWwUSAZVMjzCCO2q2LrpCNSSMTK6r3C5NIMP/g7F5wX4eQkdjSbWqf92
-         AACxv4a1dB+FaIUPI8+vB1/qA7/qyOBLmhghpBQxefH1hKhY+4WV+xYlC1IkYwuyaEp4
-         Qu+v39HlYwiec2BXTUvLm3BYqPWWti02eRXSpHsWwBoOR4klj4q62GTLYsauyfLhi5pm
-         3mEA==
-X-Gm-Message-State: AJIora8Kh+/dngi23OqG/BaaVB1tI/jwSFKb6or/q1eySgQKqeVfP2sT
-        4uaQ7oBus5YUlakVtIoSDqA=
-X-Google-Smtp-Source: AGRyM1uVnZt77Nz5XJHxfF/ncLPsn3z75y9uk+m/MH3SSnPAYLwmUFcI4OfzGa1ar5cQfNwXZohRGw==
-X-Received: by 2002:a17:906:6545:b0:722:7c99:1ad7 with SMTP id u5-20020a170906654500b007227c991ad7mr33843952ejn.325.1657030001845;
-        Tue, 05 Jul 2022 07:06:41 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 07:06:41 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Jonathan McDowell <noodles@earth.li>
-Subject: [PATCH 12/13] ARM: dts: qcom: add speedbin efuse nvmem binding
-Date:   Tue,  5 Jul 2022 15:39:16 +0200
-Message-Id: <20220705133917.8405-13-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220705133917.8405-1-ansuelsmth@gmail.com>
-References: <20220705133917.8405-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mkpYMkRu/76pOOu+MHLe2oZToj5Yt5Dx7rgEtnCdrPQ=;
+        b=v58n3HVTQKtJbJsT0sBd/4cmBZ845aIbtkWWeuN7zrTCeVgEgNiiQDgMaCIaFRtlVI
+         96QyxPY9ihYaYMXpyFuTx4dcGNC9ORe2D2LQQDsmFL87+GAMXj9zj0h/9et/LRdS0TZE
+         8fdmXtUPl6IWbPvz2ksl/nK+WwEKZWHQAj6sP5n1kgnuORtgiKGaGyzrIWLQwmQhlHnc
+         Ay4T+9lB/fK+ndNCr13+/f8JTP6+RYBHXMXy62pJG3Ppdm2y4QWzh6Kb4eNLU0aQTSl0
+         dzrd+OOKh6qZsMIHuUogVyxIOMvBkWcPUvHS6D2/4+hXQahu8yo/7MhtZyngZZ1x6nBR
+         W78w==
+X-Gm-Message-State: AJIora/eq8FjRXGmH/Lhd+qriVPogirKZZXXWET5bM9rKJkc3hUNtzyv
+        mFc4O6PpTz8HDnutesco4K5BT5ESNF/PfDx0pWw=
+X-Google-Smtp-Source: AGRyM1tSIs7PI67WcqIU/JRHnYrMgswH/xmh7JqI+2SJSmBmNqBBi68lT4gRWIzylYRqVXC5Pn0RPBLpngzyVN3P5uw=
+X-Received: by 2002:a05:6512:b14:b0:482:a9b1:ea3 with SMTP id
+ w20-20020a0565120b1400b00482a9b10ea3mr9893588lfu.353.1657030195926; Tue, 05
+ Jul 2022 07:09:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220614181706.26513-1-max.oss.09@gmail.com> <1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl>
+In-Reply-To: <1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl>
+From:   Max Krummenacher <max.oss.09@gmail.com>
+Date:   Tue, 5 Jul 2022 16:09:44 +0200
+Message-ID: <CAEHkU3VEg=LU6U-rB6HWGy59=jZJkUe_qW5faLi+Xx4Ka+i5qg@mail.gmail.com>
+Subject: Re: [PATCH v1] Revert "Bluetooth: core: Fix missing power_on work
+ cancel on HCI close"
+To:     =?UTF-8?Q?Mateusz_Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add speedbin efuse nvmem binding needed for the opp table for the CPU
-freqs.
+On Mon, Jul 4, 2022 at 9:57 PM Mateusz Jo=C5=84czyk <mat.jonczyk@o2.pl> wro=
+te:
+>
+> W dniu 14.06.2022 o 20:17, Max Krummenacher pisze:
+> > From: Max Krummenacher <max.krummenacher@toradex.com>
+> >
+> > This reverts commit ff7f2926114d3a50f5ffe461a9bce8d761748da5.
+> >
+> > The commit ff7f2926114d ("Bluetooth: core: Fix missing power_on work
+> > cancel on HCI close") introduced between v5.18 and v5.19-rc1 makes
+> > going to suspend freeze. v5.19-rc2 is equally affected.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Tested-by: Jonathan McDowell <noodles@earth.li>
----
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+The following follow up commit fixes the issue for me without the revert.
+https://lore.kernel.org/all/20220705125931.3601-1-vasyl.vavrychuk@opensyner=
+gy.com/
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 777851bed95a..45e713387deb 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -862,6 +862,9 @@ tsens_calib: calib@400 {
- 			tsens_calib_backup: calib_backup@410 {
- 				reg = <0x410 0xb>;
- 			};
-+			speedbin_efuse: speedbin@c0 {
-+				reg = <0xc0 0x4>;
-+			};
- 		};
- 
- 		gcc: clock-controller@900000 {
--- 
-2.36.1
-
+Thanks
+Max
