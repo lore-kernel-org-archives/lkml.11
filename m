@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D59B2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiGEMEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
+        id S233745AbiGEMEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiGEMCb (ORCPT
+        with ESMTP id S233339AbiGEMCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:02:31 -0400
+        Tue, 5 Jul 2022 08:02:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3700186C8;
-        Tue,  5 Jul 2022 05:02:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844C7186D0;
+        Tue,  5 Jul 2022 05:02:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 724E66183D;
-        Tue,  5 Jul 2022 12:02:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8127EC341CB;
-        Tue,  5 Jul 2022 12:02:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2381A61841;
+        Tue,  5 Jul 2022 12:02:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 307BCC341CF;
+        Tue,  5 Jul 2022 12:02:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022537;
-        bh=9nKadkDKcu+bSnGkvWm/Kf03ITK4gAcE6KB+/jUdhko=;
+        s=korg; t=1657022540;
+        bh=ZCEvK/ssw1FYqzNYmSy+iICx8eG53Ow3fNJtoXKBqiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qtn2Zjsyy/rkhLUAI6tVtcPMd0D0prJ9m5kn2ZCtA1vOinaJuTInQ9T2wABY49wUt
-         JIceia5K1iWi7YjmrU1LI38Mydf15iYdSI0Q//WjHBJCjGITdJVBmCRJAFqP8X03Pj
-         qZv7/QdJaT+9oFktw0bdUeJzsLC5r1TW1rtqaSLQ=
+        b=wKsP2WM6i1hiBUng7yYkm5TGrjdJngVVVRxvGnVOlsrXRa/SYMvybAP+mIdoF9tPe
+         zAseKhGp1cbftmmyvKwRVELAMkaxIYN1/iiGaGz1SHBcEpDG04znar1B/nPmnWOq++
+         V3k7P0iaC7qK8dtOGLd6AizVXB0C68oJN8TYzlvM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 13/33] usbnet: fix memory allocation in helpers
-Date:   Tue,  5 Jul 2022 13:58:05 +0200
-Message-Id: <20220705115607.098490569@linuxfoundation.org>
+Subject: [PATCH 4.19 14/33] net: ipv6: unexport __init-annotated seg6_hmac_net_init()
+Date:   Tue,  5 Jul 2022 13:58:06 +0200
+Message-Id: <20220705115607.127077109@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
 References: <20220705115606.709817198@linuxfoundation.org>
@@ -48,45 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-commit e65af5403e462ccd7dff6a045a886c64da598c2e upstream.
+commit 53ad46169fe2996fe1b623ba6c9c4fa33847876f upstream.
 
-usbnet provides some helper functions that are also used in
-the context of reset() operations. During a reset the other
-drivers on a device are unable to operate. As that can be block
-drivers, a driver for another interface cannot use paging
-in its memory allocations without risking a deadlock.
-Use GFP_NOIO in the helpers.
+As of commit 5801f064e351 ("net: ipv6: unexport __init-annotated seg6_hmac_init()"),
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Fixes: 877bd862f32b8 ("usbnet: introduce usbnet 3 command helpers")
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220628093517.7469-1-oneukum@suse.com
+This remove the EXPORT_SYMBOL to fix modpost warning:
+
+WARNING: modpost: vmlinux.o(___ksymtab+seg6_hmac_net_init+0x0): Section mismatch in reference from the variable __ksymtab_seg6_hmac_net_init to the function .init.text:seg6_hmac_net_init()
+The symbol seg6_hmac_net_init is exported and annotated __init
+Fix this by removing the __init annotation of seg6_hmac_net_init or drop the export.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Link: https://lore.kernel.org/r/20220628033134.21088-1-yuehaibing@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/usbnet.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/seg6_hmac.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1998,7 +1998,7 @@ static int __usbnet_read_cmd(struct usbn
- 		   cmd, reqtype, value, index, size);
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -415,7 +415,6 @@ int __net_init seg6_hmac_net_init(struct
  
- 	if (size) {
--		buf = kmalloc(size, GFP_KERNEL);
-+		buf = kmalloc(size, GFP_NOIO);
- 		if (!buf)
- 			goto out;
- 	}
-@@ -2030,7 +2030,7 @@ static int __usbnet_write_cmd(struct usb
- 		   cmd, reqtype, value, index, size);
+ 	return 0;
+ }
+-EXPORT_SYMBOL(seg6_hmac_net_init);
  
- 	if (data) {
--		buf = kmemdup(data, size, GFP_KERNEL);
-+		buf = kmemdup(data, size, GFP_NOIO);
- 		if (!buf)
- 			goto out;
- 	} else {
+ void seg6_hmac_exit(void)
+ {
 
 
