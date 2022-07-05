@@ -2,87 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B45FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236050AbiGEMQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
+        id S236058AbiGEMQP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235276AbiGEMIs (ORCPT
+        with ESMTP id S235274AbiGEMIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:08:48 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E14310;
-        Tue,  5 Jul 2022 05:08:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657022919; x=1688558919;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=JX4CqpG131f0B16O13AOq1/dT80ue2EUWs1TLwPquUY=;
-  b=ZMPqufs8mnni+HSUvbhQ93KsIeFtwKgXdEqpmUE59hrLpQw3sMu41mrG
-   AXiJrWi+7GOVyjutg6ZxGco2VSBRUUGyN2RCORDJCvOsbXmi/psBqkDF9
-   YkERp/hqivfzG1Nd7J2KcPHvp5Rp5JE2Q1NsuJXtpIdSxsWcuQ9ZZ2N+T
-   A=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:08:39 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:08:39 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:38 -0700
-Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:35 -0700
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-To:     <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
-        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <konrad.dybcio@somainline.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [V3 0/7] Miscellaneous PAS fixes
-Date:   Tue, 5 Jul 2022 17:38:13 +0530
-Message-ID: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853762F0;
+        Tue,  5 Jul 2022 05:08:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38A02B817CC;
+        Tue,  5 Jul 2022 12:08:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2EBBC341C7;
+        Tue,  5 Jul 2022 12:08:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022916;
+        bh=a50ej18WXgHGFOycfqcwJ8u6rEn98dcQmIqpBfb7X+8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V433Peeh6eqWWH82M2Ykpsmh3W9xsGK6/rlSFsB+E1T4i0DkBqPrc9ZFl3glA5f6D
+         YLnu86d0HW61BvvcJG4DWsOZRIerA2HOxcLz6UePyfDQ/Qkw3b/jt+q3foweI3CZk6
+         c7Zhqs9TQ0EU+44sJIjx/lxKLLzbysU50bXZgdmQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 56/84] selftests: mptcp: more stable diag tests
+Date:   Tue,  5 Jul 2022 13:58:19 +0200
+Message-Id: <20220705115616.958466426@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A collection of misc. fixes for the remoteproc PAS and sysmon driver.
+From: Paolo Abeni <pabeni@redhat.com>
 
-V3:
- * Fixup misc. suggestions and rename to adsp_shutdown_poll_decrypt() [Bjorn]
- * Pick up another lone sysmon fix from the list with R-b.
+[ Upstream commit 42fb6cddec3b306c9f6ef136b6438e0de1836431 ]
 
-V2:
- * Add misc. sysmon fix.
- * Dropping patch 1 and 6 from V1.
+The mentioned test-case still use an hard-coded-len sleep to
+wait for a relative large number of connection to be established.
 
-Sibi Sankar (2):
-  remoteproc: qcom: pas: Add decrypt shutdown support for modem
-  remoteproc: sysmon: Wait for SSCTL service to come up
+On very slow VM and with debug build such timeout could be exceeded,
+causing failures in our CI.
 
-Siddharth Gupta (5):
-  remoteproc: qcom: pas: Mark va as io memory
-  remoteproc: qcom: pas: Mark devices as wakeup capable
-  remoteproc: qcom: pas: Check if coredump is enabled
-  remoteproc: q6v5: Set q6 state to offline on receiving wdog irq
-  remoteproc: sysmon: Send sysmon state only for running rprocs
+Address the issue polling for the expected condition several times,
+up to an unreasonable high amount of time. On reasonably fast system
+the self-tests will be faster then before, on very slow one we will
+still catch the correct condition.
 
- drivers/remoteproc/qcom_q6v5.c     |  4 +++
- drivers/remoteproc/qcom_q6v5_pas.c | 53 ++++++++++++++++++++++++++++++++++++--
- drivers/remoteproc/qcom_sysmon.c   | 16 ++++++++++--
- 3 files changed, 69 insertions(+), 4 deletions(-)
+Fixes: df62f2ec3df6 ("selftests/mptcp: add diag interface tests")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/net/mptcp/diag.sh | 48 +++++++++++++++++++----
+ 1 file changed, 40 insertions(+), 8 deletions(-)
 
+diff --git a/tools/testing/selftests/net/mptcp/diag.sh b/tools/testing/selftests/net/mptcp/diag.sh
+index ff821025d309..49dfabded1d4 100755
+--- a/tools/testing/selftests/net/mptcp/diag.sh
++++ b/tools/testing/selftests/net/mptcp/diag.sh
+@@ -61,6 +61,39 @@ chk_msk_nr()
+ 	__chk_nr "grep -c token:" $*
+ }
+ 
++wait_msk_nr()
++{
++	local condition="grep -c token:"
++	local expected=$1
++	local timeout=20
++	local msg nr
++	local max=0
++	local i=0
++
++	shift 1
++	msg=$*
++
++	while [ $i -lt $timeout ]; do
++		nr=$(ss -inmHMN $ns | $condition)
++		[ $nr == $expected ] && break;
++		[ $nr -gt $max ] && max=$nr
++		i=$((i + 1))
++		sleep 1
++	done
++
++	printf "%-50s" "$msg"
++	if [ $i -ge $timeout ]; then
++		echo "[ fail ] timeout while expecting $expected max $max last $nr"
++		ret=$test_cnt
++	elif [ $nr != $expected ]; then
++		echo "[ fail ] expected $expected found $nr"
++		ret=$test_cnt
++	else
++		echo "[  ok  ]"
++	fi
++	test_cnt=$((test_cnt+1))
++}
++
+ chk_msk_fallback_nr()
+ {
+ 		__chk_nr "grep -c fallback" $*
+@@ -109,7 +142,7 @@ ip -n $ns link set dev lo up
+ echo "a" | \
+ 	timeout ${timeout_test} \
+ 		ip netns exec $ns \
+-			./mptcp_connect -p 10000 -l -t ${timeout_poll} \
++			./mptcp_connect -p 10000 -l -t ${timeout_poll} -w 20 \
+ 				0.0.0.0 >/dev/null &
+ wait_local_port_listen $ns 10000
+ chk_msk_nr 0 "no msk on netns creation"
+@@ -117,7 +150,7 @@ chk_msk_nr 0 "no msk on netns creation"
+ echo "b" | \
+ 	timeout ${timeout_test} \
+ 		ip netns exec $ns \
+-			./mptcp_connect -p 10000 -r 0 -t ${timeout_poll} \
++			./mptcp_connect -p 10000 -r 0 -t ${timeout_poll} -w 20 \
+ 				127.0.0.1 >/dev/null &
+ wait_connected $ns 10000
+ chk_msk_nr 2 "after MPC handshake "
+@@ -129,13 +162,13 @@ flush_pids
+ echo "a" | \
+ 	timeout ${timeout_test} \
+ 		ip netns exec $ns \
+-			./mptcp_connect -p 10001 -l -s TCP -t ${timeout_poll} \
++			./mptcp_connect -p 10001 -l -s TCP -t ${timeout_poll} -w 20 \
+ 				0.0.0.0 >/dev/null &
+ wait_local_port_listen $ns 10001
+ echo "b" | \
+ 	timeout ${timeout_test} \
+ 		ip netns exec $ns \
+-			./mptcp_connect -p 10001 -r 0 -t ${timeout_poll} \
++			./mptcp_connect -p 10001 -r 0 -t ${timeout_poll} -w 20 \
+ 				127.0.0.1 >/dev/null &
+ wait_connected $ns 10001
+ chk_msk_fallback_nr 1 "check fallback"
+@@ -146,7 +179,7 @@ for I in `seq 1 $NR_CLIENTS`; do
+ 	echo "a" | \
+ 		timeout ${timeout_test} \
+ 			ip netns exec $ns \
+-				./mptcp_connect -p $((I+10001)) -l -w 10 \
++				./mptcp_connect -p $((I+10001)) -l -w 20 \
+ 					-t ${timeout_poll} 0.0.0.0 >/dev/null &
+ done
+ wait_local_port_listen $ns $((NR_CLIENTS + 10001))
+@@ -155,12 +188,11 @@ for I in `seq 1 $NR_CLIENTS`; do
+ 	echo "b" | \
+ 		timeout ${timeout_test} \
+ 			ip netns exec $ns \
+-				./mptcp_connect -p $((I+10001)) -w 10 \
++				./mptcp_connect -p $((I+10001)) -w 20 \
+ 					-t ${timeout_poll} 127.0.0.1 >/dev/null &
+ done
+-sleep 1.5
+ 
+-chk_msk_nr $((NR_CLIENTS*2)) "many msk socket present"
++wait_msk_nr $((NR_CLIENTS*2)) "many msk socket present"
+ flush_pids
+ 
+ exit $ret
 -- 
-2.7.4
+2.35.1
+
+
 
