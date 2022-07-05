@@ -2,71 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7106C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbiGETTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
+        id S233732AbiGETTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232995AbiGETTF (ORCPT
+        with ESMTP id S233704AbiGETTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:19:05 -0400
-Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294371EC47;
-        Tue,  5 Jul 2022 12:19:05 -0700 (PDT)
-Received: by mail-io1-f51.google.com with SMTP id y18so12061590iof.2;
-        Tue, 05 Jul 2022 12:19:05 -0700 (PDT)
+        Tue, 5 Jul 2022 15:19:08 -0400
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4D920F43;
+        Tue,  5 Jul 2022 12:19:07 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id v1so4670602ilg.11;
+        Tue, 05 Jul 2022 12:19:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=WPIEwkVrmxig66ialqAqq2owXYX1dmoA0wLUgk0+Jp8=;
-        b=lY5AA5tvC3H/ahvP8oWme5Q6YeaftNZPnDExCzAULgzVhvNikAWGQeqlmGWuGHxAtt
-         hsMyz+N2U+HsNiPNX3xuvxPlv8ThGOMKeMkq3Wjb7darkbKNcFVVbm89NPNPytCFBu9b
-         jiq6tfI1XhMb3cSTeds23PwBq90p4c7q+wUmGSOac4zBwYY4EF+IweMycz/r2tW2MRoR
-         EuuPyzTgB5Y8gSi30CLTbWNfmuUIFQ3Yu/1xsIFPhNDVsM9BSeid+ubzZ9e7okcQHLsK
-         Ga/PSF926VHbI3gACUZYNGmceepxeUtL1GQQ7Q/lLLbTxY/MuMNWpJA1zNI9e83Ccm8V
-         c6iQ==
-X-Gm-Message-State: AJIora8iFRqOZmauryWCb/8cAn8e0o9Gnk6vFi0jt6jLYLmZezCMvY1f
-        ln9xr+rRwIhS1lU7I4aaI9B+3m44bQ==
-X-Google-Smtp-Source: AGRyM1ukQp/CEyzQERolQoD4vyxGMs9HeuxGET5TIc4m7jyTwHuQfQWJXFF3lpftEUav3q1LgeVswg==
-X-Received: by 2002:a05:6602:164f:b0:678:9c7c:6701 with SMTP id y15-20020a056602164f00b006789c7c6701mr4168774iow.107.1657048744386;
-        Tue, 05 Jul 2022 12:19:04 -0700 (PDT)
+        bh=jTxl5HhQ1EHwkX7hjTWK1v+9qwbhzKvOp5HOmYTqR9s=;
+        b=Dx5mgunt9O9geSoOpnx0ondGBESCafqJjfZ8nZvxAL1TTNuSo6gxcGSukwrpf1Hrku
+         ImaPl0awPwfuE5Zh/1ql7CvGjzNd3sI61Eh9ONH9oV8hNOqirx5gpEvWQMMzgpM7wUIq
+         IMj9EfgndyfGl43cMrHJz6TARwVFYAbIwEOhp546aJwD7SOQ33/zwKMkbicti7SNsmVE
+         Qw+AoRRsNl40EfA/i3nqA+48DrE7lUrq6b8VZ/rC9cUK2mpLT/9ZsNyzrC4T8tF3CYQ6
+         TGBM+qpO4S3fnSUgoC0/Q9n244ClDSEPo+3/OL40bX7xWi0XJRfU4KxiQhw7KdYgVDHB
+         eoZw==
+X-Gm-Message-State: AJIora+BHQNxaYHFbaoVwRD4EIbCeJh8uYYoRGD0/QT1XBSqcwdHwcLA
+        O9kdcbkZchMbuF08xwbGkKYZ8h1exA==
+X-Google-Smtp-Source: AGRyM1tKSR6yEqXJ3Y3wA7863KnAkPiSf8wzj0xQy1WNVfh2oUq4S8o6zzeBIJRmcWeow2I9xMZeXQ==
+X-Received: by 2002:a05:6e02:18c5:b0:2da:df7e:2a09 with SMTP id s5-20020a056e0218c500b002dadf7e2a09mr16311399ilu.83.1657048746360;
+        Tue, 05 Jul 2022 12:19:06 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id f9-20020a02a109000000b00339e3a22dbbsm15216707jag.21.2022.07.05.12.19.03
+        by smtp.gmail.com with ESMTPSA id b18-20020a92c852000000b002dc251040besm1012900ilq.46.2022.07.05.12.19.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 12:19:04 -0700 (PDT)
-Received: (nullmailer pid 2471231 invoked by uid 1000);
+        Tue, 05 Jul 2022 12:19:06 -0700 (PDT)
+Received: (nullmailer pid 2471233 invoked by uid 1000);
         Tue, 05 Jul 2022 19:18:57 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alex Elder <elder@linaro.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         linux-kernel@vger.kernel.org,
-        =?utf-8?q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-In-Reply-To: <20220705155929.25565-1-pali@kernel.org>
-References: <20220705000448.14337-1-pali@kernel.org> <20220705155929.25565-1-pali@kernel.org>
-Subject: Re: [PATCH v2 1/2] [RFT] dt-bindings: leds: Add cznic,turris1x-leds.yaml binding
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220705161301.493364-1-krzysztof.kozlowski@linaro.org>
+References: <20220705161301.493364-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v4] dt-bindings: qcom: document preferred compatible naming
 Date:   Tue, 05 Jul 2022 13:18:57 -0600
-Message-Id: <1657048737.399210.2471230.nullmailer@robh.at.kernel.org>
+Message-Id: <1657048737.406960.2471232.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Jul 2022 17:59:28 +0200, Pali Rohár wrote:
-> Add device-tree bindings documentation for Turris 1.x RGB LEDs.
+On Tue, 05 Jul 2022 18:13:01 +0200, Krzysztof Kozlowski wrote:
+> Compatibles can come in two formats.  Either "vendor,ip-soc" or
+> "vendor,soc-ip".  Qualcomm bindings were mixing both of usages, so add a
+> DT schema file documenting preferred policy and enforcing it for all new
+> compatibles, except few existing patterns.
 > 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
 > ---
-> Changes in v2:
-> * Fix schema errors
+> 
+> Changes since v3:
+> 1. Add qcom,kpss-wdt-xxx to pattern for exceptions.
+> 2. Add ipq806x entries to list of exceptions.
+> 
+> Changes since v2:
+> 1. Narrow the expected pattern to be followed by dash '-' after model
+>    number (msm8996-) or by two letters and a dash (sc8280xp-).
+> 2. Add qcom,apss-wdt-xxx to list of exceptions.
+> 3. Use comment instead of description in the oneOf list.
+> 
+> Changes since v1:
+> 1. Add schema instead of readme (Rob).
+> 
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Alex Elder <elder@linaro.org>
+> Cc: Robert Foss <robert.foss@linaro.org>
+> Cc: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 > ---
->  .../bindings/leds/cznic,turris1x-leds.yaml    | 118 ++++++++++++++++++
->  1 file changed, 118 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
+>  .../devicetree/bindings/arm/qcom-soc.yaml     | 63 +++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/qcom-soc.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -75,7 +104,18 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/leds/cznic,turris1x-leds.example.dts:23.13-47: Warning (ranges_format): /example-0/cpld@3,0:ranges: "ranges" property has invalid length (16 bytes) (parent #address-cells == 1, child #address-cells == 1, #size-cells == 1)
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.example.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,qcs404' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+	'qcom,qcs404' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+	'qcom,qcs404' does not match '^qcom,[ak]pss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+	'qcom,qcs404' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+	'qcom,qcs404' is not one of ['qcom,ipq806x-nand', 'qcom,ipq806x-usb-phy-ss', 'qcom,ipq806x-usb-phy-hs']
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
 
 doc reference errors (make refcheckdocs):
 
