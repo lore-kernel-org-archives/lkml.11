@@ -2,156 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85229C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18DFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiGEJSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        id S230360AbiGEJTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiGEJSi (ORCPT
+        with ESMTP id S229974AbiGEJTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:18:38 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9928110C;
-        Tue,  5 Jul 2022 02:18:37 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-10bffc214ffso5617001fac.1;
-        Tue, 05 Jul 2022 02:18:37 -0700 (PDT)
+        Tue, 5 Jul 2022 05:19:49 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CF45F57
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:19:49 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id ju17so6469707pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 02:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2HblNoq4ry1fuefQI4LMCZ1P+uAb2OLT67Tkqkx39qc=;
+        b=mIHkD0cb0SUnRvk4YyT/znUupRHg9Ps/NOsLdcrQBcVFRi60ay0YWqFuiJ3nEiU2lu
+         GJu8bN42gJ75BQ32rAffXLtWYG7Nn8HhQ3+5zjQTAKf8qp/ZY81+bwxLuABlGO6GUGRE
+         el6k7/z+/TpmYDrxOt6SDOmtpeSk3QZyufys9rdQGBLpMlPSfA7oyzDSK89t5ghV7HIm
+         zXkacfnPwLKX2IKf4mvuPKoGemvYMjTTJ/mP2SBe3OXMOdR2AAse8Jw4izPhn4cUoRUY
+         JGObySJtfutXVGG/gJFXCHHRwqmvTVhH4HROy5Ahx1SDhDo7T96OirVkFJmTbOqulC47
+         FAcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8zMI7hf4Fvo1gks6+DJgLH8iax3WJOoRMgpJl0b4G5s=;
-        b=GReoJw8YWx8gBUWb3QJsnMh9IQoyJBpx0+Qt6TwuJOdkt6BVxl2571g41BP+9ej5K8
-         zR33myHI4bCD+wgQMIE+S1IN9UtGBJ1mFWEZ1Plej1qLHQvkhzyk1qE/5JYsroamqFgI
-         tEayFU6yMd5ahuZGMF6JvriHyogOie+J/dkC0ZRB5t86izfGUuJRKhExXUepculBzMr4
-         5rQ6t+XBhTVz0MMAV3F7+oUR5jI7WCDL7g4OykM7L3QWl6iMybzTw+aFMExYTXZa7m25
-         I5nPsdOKoIv8rqpUelZjNXHqGZXNKw0lwnHlRBuEVy55qVJk16fpw2vbwLyORGHMm7KX
-         KgzQ==
-X-Gm-Message-State: AJIora+GcZGVkrQYQNEDAZrEb0E+AMIg5ODXYfw5ii9IojFeejG8Ym7y
-        lhZVbdq+3AIhoHVKMLDmmoQthYZig93X9g==
-X-Google-Smtp-Source: AGRyM1uGa/3l1fVNu6+dlHIjmG/OIbyvoDSYlukAwjYeIGkNc7XVajBKi2XvW2WcMmbLHjgjWZi0PQ==
-X-Received: by 2002:a05:6870:5b91:b0:108:374a:96b0 with SMTP id em17-20020a0568705b9100b00108374a96b0mr19731432oab.126.1657012716872;
-        Tue, 05 Jul 2022 02:18:36 -0700 (PDT)
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com. [209.85.161.48])
-        by smtp.gmail.com with ESMTPSA id y27-20020a544d9b000000b0032b99637366sm11862308oix.25.2022.07.05.02.18.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 02:18:36 -0700 (PDT)
-Received: by mail-oo1-f48.google.com with SMTP id n11-20020a4ad12b000000b00425b01c3326so2271519oor.8;
-        Tue, 05 Jul 2022 02:18:36 -0700 (PDT)
-X-Received: by 2002:a81:9209:0:b0:31c:b1b7:b063 with SMTP id
- j9-20020a819209000000b0031cb1b7b063mr6920267ywg.383.1657012293585; Tue, 05
- Jul 2022 02:11:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2HblNoq4ry1fuefQI4LMCZ1P+uAb2OLT67Tkqkx39qc=;
+        b=U/lfueKCbQE3ITiS5M8VsCjhGW2Su1loDKjiN0cOH0eyCfbBOLbyl8uEYeNF174kl2
+         uWE7IQr+64cZD/P7iif52jNEgU6ycB8daaAF4EuNoK9HdYe4H2xhbt5h7gHEcd7Mp3VX
+         IM5oSEIZFD4f8UV4zN7YerVNhWASX0uzdr9GEJG2mKDQ7+moj5dI2/E0SIMi+1sXH3MX
+         TKGwIJBpJCVpE96aFTHF2gfYUWMaci9U1Dsq2SBPWfm3CbNdrkseuY0Jl8FMrnZ1YgjI
+         zvEhU8V23ASvkc0okI4OGBLBgZrtV3hXwVtKPIFlD2xr9h5iafzbsNR3k2wjQlXtgK2C
+         jCkQ==
+X-Gm-Message-State: AJIora858NI6kdVcchRnItr3Sb27x2hOdViIZXARLT/7ZRC6xN1loRsi
+        lVbFbthXZvrf3+daZICUnfeZBw==
+X-Google-Smtp-Source: AGRyM1tLmnVjoelCyWL3HIJ+JQ8REqXkGU82oDJxicpySFpGjGTW1h3HimF/HKKzAdvTl/j3a55LYA==
+X-Received: by 2002:a17:90b:4a07:b0:1ef:5a15:6f6 with SMTP id kk7-20020a17090b4a0700b001ef5a1506f6mr26578843pjb.80.1657012788621;
+        Tue, 05 Jul 2022 02:19:48 -0700 (PDT)
+Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id n19-20020a635913000000b0040df0c9a1aasm16812472pgb.14.2022.07.05.02.19.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 02:19:47 -0700 (PDT)
+From:   Eric Lin <eric.lin@sifive.com>
+To:     atishp@atishpatra.org, atishp@rivosinc.com, anup@brainfault.org,
+        will@kernel.org, mark.rutland@arm.com, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu,
+        linux-riscv@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     greentime.hu@sifive.com, Eric Lin <eric.lin@sifive.com>
+Subject: [PATCH] drivers/perf: riscv_pmu: Add riscv pmu pm notifier
+Date:   Tue,  5 Jul 2022 17:19:20 +0800
+Message-Id: <20220705091920.27432-1-eric.lin@sifive.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com> <20220601070707.3946847-4-saravanak@google.com>
-In-Reply-To: <20220601070707.3946847-4-saravanak@google.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 5 Jul 2022 11:11:21 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWo_wRwV-i_iyTxVnEsf3Th9GBAG+wxUQMQGnw1t2ijTg@mail.gmail.com>
-Message-ID: <CAMuHMdWo_wRwV-i_iyTxVnEsf3Th9GBAG+wxUQMQGnw1t2ijTg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/9] net: mdio: Delete usage of driver_deferred_probe_check_state()
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saravana,
+Currently, when the CPU is doing suspend to ram, we don't
+save pmu counter register and its content will be lost.
 
-On Wed, Jun 1, 2022 at 2:44 PM Saravana Kannan <saravanak@google.com> wrote:
-> Now that fw_devlink=on by default and fw_devlink supports interrupt
-> properties, the execution will never get to the point where
-> driver_deferred_probe_check_state() is called before the supplier has
-> probed successfully or before deferred probe timeout has expired.
->
-> So, delete the call and replace it with -ENODEV.
->
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+To ensure perf profiling is not affected by suspend to ram,
+this patch is based on arm_pmu CPU_PM notifier and implements riscv
+pmu pm notifier. In the pm notifier, we stop the counter and update
+the counter value before suspend and start the counter after resume.
 
-Thanks for your patch, which is now commit f8217275b57aa48d ("net:
-mdio: Delete usage of driver_deferred_probe_check_state()") in
-driver-core/driver-core-next.
+Signed-off-by: Eric Lin <eric.lin@sifive.com>
+---
+ drivers/perf/riscv_pmu.c       |  4 +-
+ drivers/perf/riscv_pmu_sbi.c   | 81 ++++++++++++++++++++++++++++++++--
+ include/linux/perf/riscv_pmu.h |  4 ++
+ 3 files changed, 83 insertions(+), 6 deletions(-)
 
-Seems like I missed something when providing my T-b for this series,
-sorry for that.
+diff --git a/drivers/perf/riscv_pmu.c b/drivers/perf/riscv_pmu.c
+index b2b8d2074ed0..2c961839903d 100644
+--- a/drivers/perf/riscv_pmu.c
++++ b/drivers/perf/riscv_pmu.c
+@@ -121,7 +121,7 @@ u64 riscv_pmu_event_update(struct perf_event *event)
+ 	return delta;
+ }
+ 
+-static void riscv_pmu_stop(struct perf_event *event, int flags)
++void riscv_pmu_stop(struct perf_event *event, int flags)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	struct riscv_pmu *rvpmu = to_riscv_pmu(event->pmu);
+@@ -175,7 +175,7 @@ int riscv_pmu_event_set_period(struct perf_event *event)
+ 	return overflow;
+ }
+ 
+-static void riscv_pmu_start(struct perf_event *event, int flags)
++void riscv_pmu_start(struct perf_event *event, int flags)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	struct riscv_pmu *rvpmu = to_riscv_pmu(event->pmu);
+diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
+index dca3537a8dcc..adc910e0f1e2 100644
+--- a/drivers/perf/riscv_pmu_sbi.c
++++ b/drivers/perf/riscv_pmu_sbi.c
+@@ -17,6 +17,7 @@
+ #include <linux/irqdomain.h>
+ #include <linux/of_irq.h>
+ #include <linux/of.h>
++#include <linux/cpu_pm.h>
+ 
+ #include <asm/sbi.h>
+ #include <asm/hwcap.h>
+@@ -693,6 +694,73 @@ static int pmu_sbi_setup_irqs(struct riscv_pmu *pmu, struct platform_device *pde
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_CPU_PM
++static int riscv_pm_pmu_notify(struct notifier_block *b, unsigned long cmd,
++				void *v)
++{
++	struct riscv_pmu *rvpmu = container_of(b, struct riscv_pmu, riscv_pm_nb);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(rvpmu->hw_events);
++	int enabled = bitmap_weight(cpuc->used_hw_ctrs, RISCV_MAX_COUNTERS);
++	struct perf_event *event;
++	int idx;
++
++	if (!enabled)
++		return NOTIFY_OK;
++
++	for (idx = 0; idx < RISCV_MAX_COUNTERS; idx++) {
++		event = cpuc->events[idx];
++		if (!event)
++			continue;
++
++		switch (cmd) {
++		case CPU_PM_ENTER:
++			/*
++			 * Stop and update the counter
++			 */
++			riscv_pmu_stop(event, PERF_EF_UPDATE);
++			break;
++		case CPU_PM_EXIT:
++		case CPU_PM_ENTER_FAILED:
++			/*
++			 * Restore and enable the counter.
++			 *
++			 * Requires RCU read locking to be functional,
++			 * wrap the call within RCU_NONIDLE to make the
++			 * RCU subsystem aware this cpu is not idle from
++			 * an RCU perspective for the riscv_pmu_start() call
++			 * duration.
++			 */
++			RCU_NONIDLE(riscv_pmu_start(event, PERF_EF_RELOAD));
++			break;
++		default:
++			break;
++		}
++	}
++
++	return NOTIFY_OK;
++}
++
++static int riscv_pm_pmu_register(struct riscv_pmu *pmu)
++{
++	pmu->riscv_pm_nb.notifier_call = riscv_pm_pmu_notify;
++	return cpu_pm_register_notifier(&pmu->riscv_pm_nb);
++}
++
++static void riscv_pm_pmu_unregister(struct riscv_pmu *pmu)
++{
++	cpu_pm_unregister_notifier(&pmu->riscv_pm_nb);
++}
++#else
++static inline int riscv_pm_pmu_register(struct riscv_pmu *pmu) { return 0; }
++static inline void riscv_pm_pmu_unregister(struct riscv_pmu *pmu) { }
++#endif
++
++static void riscv_pmu_destroy(struct riscv_pmu *pmu)
++{
++	riscv_pm_pmu_unregister(pmu);
++	cpuhp_state_remove_instance(CPUHP_AP_PERF_RISCV_STARTING, &pmu->node);
++}
++
+ static int pmu_sbi_device_probe(struct platform_device *pdev)
+ {
+ 	struct riscv_pmu *pmu = NULL;
+@@ -733,14 +801,19 @@ static int pmu_sbi_device_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = riscv_pm_pmu_register(pmu);
++	if (ret)
++		goto out_unregister;
++
+ 	ret = perf_pmu_register(&pmu->pmu, "cpu", PERF_TYPE_RAW);
+-	if (ret) {
+-		cpuhp_state_remove_instance(CPUHP_AP_PERF_RISCV_STARTING, &pmu->node);
+-		return ret;
+-	}
++	if (ret)
++		goto out_unregister;
+ 
+ 	return 0;
+ 
++out_unregister:
++	riscv_pmu_destroy(pmu);
++
+ out_free:
+ 	kfree(pmu);
+ 	return ret;
+diff --git a/include/linux/perf/riscv_pmu.h b/include/linux/perf/riscv_pmu.h
+index 46f9b6fe306e..bf66fe011fa8 100644
+--- a/include/linux/perf/riscv_pmu.h
++++ b/include/linux/perf/riscv_pmu.h
+@@ -56,9 +56,13 @@ struct riscv_pmu {
+ 
+ 	struct cpu_hw_events	__percpu *hw_events;
+ 	struct hlist_node	node;
++	struct notifier_block   riscv_pm_nb;
+ };
+ 
+ #define to_riscv_pmu(p) (container_of(p, struct riscv_pmu, pmu))
++
++void riscv_pmu_start(struct perf_event *event, int flags);
++void riscv_pmu_stop(struct perf_event *event, int flags);
+ unsigned long riscv_pmu_ctr_read_csr(unsigned long csr);
+ int riscv_pmu_event_set_period(struct perf_event *event);
+ uint64_t riscv_pmu_ctr_get_width_mask(struct perf_event *event);
+-- 
+2.36.1
 
-arch/arm/boot/dts/r8a7791-koelsch.dts has:
-
-    &ether {
-            pinctrl-0 = <&ether_pins>, <&phy1_pins>;
-            pinctrl-names = "default";
-
-            phy-handle = <&phy1>;
-            renesas,ether-link-active-low;
-            status = "okay";
-
-            phy1: ethernet-phy@1 {
-                    compatible = "ethernet-phy-id0022.1537",
-                                 "ethernet-phy-ieee802.3-c22";
-                    reg = <1>;
-                    interrupt-parent = <&irqc0>;
-                    interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
-                    micrel,led-mode = <1>;
-                    reset-gpios = <&gpio5 22 GPIO_ACTIVE_LOW>;
-            };
-    };
-
-Despite the interrupts property, &ether is now probed before irqc0
-(interrupt-controller@e61c0000 in arch/arm/boot/dts/r8a7791.dtsi),
-causing the PHY not finding its interrupt, and resorting to polling:
-
-    -Micrel KSZ8041RNLI ee700000.ethernet-ffffffff:01: attached PHY
-driver (mii_bus:phy_addr=ee700000.ethernet-ffffffff:01, irq=185)
-    +Micrel KSZ8041RNLI ee700000.ethernet-ffffffff:01: attached PHY
-driver (mii_bus:phy_addr=ee700000.ethernet-ffffffff:01, irq=POLL)
-
-Reverting this commit, and commit 9cbffc7a59561be9 ("driver core:
-Delete driver_deferred_probe_check_state()") fixes that.
-
-> --- a/drivers/net/mdio/fwnode_mdio.c
-> +++ b/drivers/net/mdio/fwnode_mdio.c
-> @@ -47,9 +47,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
->          * just fall back to poll mode
->          */
->         if (rc == -EPROBE_DEFER)
-> -               rc = driver_deferred_probe_check_state(&phy->mdio.dev);
-> -       if (rc == -EPROBE_DEFER)
-> -               return rc;
-> +               rc = -ENODEV;
->
->         if (rc > 0) {
->                 phy->irq = rc;
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
