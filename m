@@ -2,100 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A28E5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77582C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232626AbiGEJwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
+        id S230265AbiGEJy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiGEJvQ (ORCPT
+        with ESMTP id S230060AbiGEJyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:51:16 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC51113F82
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:49:59 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d5so10517121plo.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 02:49:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dNuDujWN9W1g88kKFQJS4fnKwCoQVZmV8mz8Iq8FU/s=;
-        b=BhBQ9g2q9M0kZORA2LG2XIzUp7lCMhxIe5kQhvGIfqCVFNtnBWDtCYi/aSXCzPCe+u
-         h7jocr2l1u+4Q9JnBf5J1ZCcBrmAQLy5ZgF4zxXobx7Ao8I6L3VqPN06HBr5kSTu020e
-         Z0j+PaSP/GSURTlhhrzZfoMoYnUuzneOYqxu0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dNuDujWN9W1g88kKFQJS4fnKwCoQVZmV8mz8Iq8FU/s=;
-        b=2V91ym7gncnBDF+c9ORN0oSKMn2V3n/X/nZb4kAm1tVO49M2zTZ0WaOBoHK3xxjhNs
-         QoT1eyC88W4Wu/zjXoTtk8aY6RaRue/325oNrqQwHkZCGF3ESE93uW0C0jXLMzG1lx04
-         rGvm3LTP032ynNA0zxHZAqQbigN1QvVypCfOzZpw4uk2bzItC99T/vE3RZApObNjMhoJ
-         VTrSoLHRCFLpjS/GhSDFoloEf0Zy4SxD1rHYbgMWftRd1F9WDeygvOwEll8uvA/ZA74K
-         iqTaBcAvWhMJlsx9y0rm3nn9dLU4/AojENk0FlGaJzqOFzarBKJrXpqRIdyOxqLBpVEb
-         Uw+g==
-X-Gm-Message-State: AJIora8gNOm9o2lJ+F7+XUwXCcg3BFinbaLJGSmJ7CrOkYJPy6EuTkja
-        k8r/8OSwP/4rz5wJupgpdw/I7w==
-X-Google-Smtp-Source: AGRyM1srUa7NyStt9XxdcLUu8TEjpzpM9KcuxS4p7FiTh2jnPnLRDGAc5YssLWz/O7Tg/YLTswEFOA==
-X-Received: by 2002:a17:903:41c4:b0:16a:1fda:579f with SMTP id u4-20020a17090341c400b0016a1fda579fmr40995717ple.169.1657014599029;
-        Tue, 05 Jul 2022 02:49:59 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:c921:5fa9:6620:638])
-        by smtp.gmail.com with ESMTPSA id j8-20020a17090a060800b001ed1444df67sm12002232pjj.6.2022.07.05.02.49.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 02:49:58 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thierry Strudel <tstrudel@google.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
+        Tue, 5 Jul 2022 05:54:13 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF3312096;
+        Tue,  5 Jul 2022 02:52:02 -0700 (PDT)
+X-UUID: 23dbcdd5835548e496fcf7fa4898f6ab-20220705
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:89c0cbba-c655-4e43-9687-407f1f20471b,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:0f94e32,CLOUDID:86d37463-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 23dbcdd5835548e496fcf7fa4898f6ab-20220705
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 344772149; Tue, 05 Jul 2022 17:51:57 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 5 Jul 2022 17:51:55 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 5 Jul 2022 17:51:55 +0800
+Message-ID: <3cd66cc0adc84619150bc96416974bceb0b4e917.camel@mediatek.com>
+Subject: Re: [PATCH v13 06/10] drm/mediatek: Add MT8195 External DisplayPort
+ support
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
-        Pin-yen Lin <treapking@chromium.org>
-Subject: [PATCH] PM: domains: Ensure genpd_debugfs_dir exists before remove
-Date:   Tue,  5 Jul 2022 17:49:47 +0800
-Message-Id: <20220705094946.827697-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "mripard@kernel.org" <mripard@kernel.org>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "airlied@linux.ie" <airlied@linux.ie>
+CC:     "msp@baylibre.com" <msp@baylibre.com>,
+        "granquet@baylibre.com" <granquet@baylibre.com>,
+        Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?= 
+        <jitao.shi@mediatek.com>,
+        "wenst@chromium.org" <wenst@chromium.org>,
+        CK Hu =?UTF-8?Q?=28=E8=83=A1=E4=BF=8A=E5=85=89=29?= 
+        <ck.hu@mediatek.com>,
+        "LiangXu Xu =?UTF-8?Q?=28=E5=BE=90=E4=BA=AE=29?=" 
+        <LiangXu.Xu@mediatek.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 5 Jul 2022 17:51:54 +0800
+In-Reply-To: <5971f465-9514-d830-8467-e722475ecc7f@collabora.com>
+References: <20220701062808.18596-1-rex-bc.chen@mediatek.com>
+         <20220701062808.18596-7-rex-bc.chen@mediatek.com>
+         <5971f465-9514-d830-8467-e722475ecc7f@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-genpd_debug_remove() may be indirectly called from others while
-genpd_debugfs_dir is not yet set. Make sure genpd_debugfs_dir exists
-before remove the sub components, otherwise components under
-/sys/kernel/debug may be accidentally removed.
+On Fri, 2022-07-01 at 16:14 +0800, AngeloGioacchino Del Regno wrote:
+> Il 01/07/22 08:28, Bo-Chen Chen ha scritto:
+> > From: Guillaume Ranquet <granquet@baylibre.com>
+> > 
+> > This patch adds External DisplayPort support to the mt8195 eDP
+> > driver.
+> > 
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >   drivers/gpu/drm/mediatek/mtk_dp.c     | 197
+> > +++++++++++++++++++++-----
+> >   drivers/gpu/drm/mediatek/mtk_dp_reg.h |   1 +
+> >   2 files changed, 161 insertions(+), 37 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c
+> > b/drivers/gpu/drm/mediatek/mtk_dp.c
+> > index b672d5a6f5bd..c3be97dd055c 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dp.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
+> > @@ -105,6 +105,7 @@ struct mtk_dp {
+> >   	struct regmap *regs;
+> >   
+> >   	bool enabled;
+> > +	bool has_fec;
+> 
+> You're introducing this has_fec variable here....
+> 
+> >   
+> >   	struct drm_connector *conn;
+> >   };
+> 
+> 
+> > @@ -1018,6 +1074,8 @@ static void
+> > mtk_dp_initialize_priv_data(struct mtk_dp *mtk_dp)
+> >   	mtk_dp->info.depth = DP_MSA_MISC_8_BPC;
+> >   	memset(&mtk_dp->info.timings, 0, sizeof(struct
+> > mtk_dp_timings));
+> >   	mtk_dp->info.timings.frame_rate = 60;
+> > +
+> > +	mtk_dp->has_fec = false;
+> 
+> .... setting it as false here ....
+> 
+> >   }
+> >   
+> >   static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
+> > @@ -1498,15 +1562,38 @@ static int mtk_dp_init_port(struct mtk_dp
+> > *mtk_dp)
+> >   static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
+> >   {
+> >   	struct mtk_dp *mtk_dp = dev;
+> > +	int event;
+> >   	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
+> >   
+> > +	event = mtk_dp_plug_state(mtk_dp) ?
+> > +		connector_status_connected :
+> > connector_status_disconnected;
+> > +
+> > +	if (event < 0)
+> > +		return IRQ_HANDLED;
+> > +
+> > +	dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
+> 
+> P.S.: This should be a dev_dbg().
+> 
+> > +	drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
+> > +
+> >   	if (mtk_dp->train_info.cable_state_change) {
+> >   		mtk_dp->train_info.cable_state_change = false;
+> >   
+> > -		mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
+> > -				   DP_PWR_STATE_BANDGAP_TPLL_LANE,
+> > -				   DP_PWR_STATE_MASK);
+> > -		drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
+> > +		if (!mtk_dp->train_info.cable_plugged_in) {
+> > +			mtk_dp_video_mute(mtk_dp, true);
+> > +
+> > +			mtk_dp_initialize_priv_data(mtk_dp);
+> > +			mtk_dp_set_idle_pattern(mtk_dp, true);
+> > +			if (mtk_dp->has_fec)
+> 
+> ...and you're checking it here, but there's nothing ever setting that
+> as true!
+> 
+> Is there anything you forgot? :-)
+> 
+> Cheers,
+> Angelo
 
-Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
-An example:
-scpsys_probe() in drivers/soc/mediatek/mtk-pm-domains.c indirectly calls
-genpd_debug_remove() on probe fail, causing /sys/kernel/debug/usb to be
-removed.
----
- drivers/base/power/domain.c | 3 +++
- 1 file changed, 3 insertions(+)
+Hello Angelo,
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 3e86772d5fac5..5a2e0232862e0 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -222,6 +222,9 @@ static void genpd_debug_remove(struct generic_pm_domain *genpd)
- {
- 	struct dentry *d;
- 
-+	if (!genpd_debugfs_dir)
-+		return;
-+
- 	d = debugfs_lookup(genpd->name, genpd_debugfs_dir);
- 	debugfs_remove(d);
- }
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+Thanks for your review.
+We do not support fec currently, so I will drop them.
+
+Thanks!
+
+BRs,
+Bo-Chen
 
