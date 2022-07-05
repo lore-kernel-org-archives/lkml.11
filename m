@@ -2,207 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E52A3CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A06CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236664AbiGEMSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53276 "EHLO
+        id S236558AbiGEMRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbiGEMJH (ORCPT
+        with ESMTP id S235342AbiGEMJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEDF23C;
-        Tue,  5 Jul 2022 05:09:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BA29B817CE;
-        Tue,  5 Jul 2022 12:09:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0B6C341C7;
-        Tue,  5 Jul 2022 12:09:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022943;
-        bh=G9rKul6QLomKJrTc71bzE9xvfktuMjJvjc1FJYL1LoQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DlwP2aencb6J3eJbg2m4ItqusHo5apfwNCnTp6Bz68AT95HOQS8/XjUN2OvPAY2eO
-         OJzftAPRNn0gjkZDtmackKAW+O7lCIEINTuv3wKJwckGkpck+KhJZihtEgcBEVQl6e
-         Ij0wnUbt5XQoGOE5wGMlTryHU8Ls3XhAa4pM/zhM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.10 65/84] selftests/rseq: Introduce thread pointer getters
-Date:   Tue,  5 Jul 2022 13:58:28 +0200
-Message-Id: <20220705115617.220969507@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
-References: <20220705115615.323395630@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:09:01 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D1F17E17;
+        Tue,  5 Jul 2022 05:09:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657022940; x=1688558940;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=fwRrMl9p2riRRQyGmmFyrVjyUvagNctJ2fZDM2FI/A4=;
+  b=KhcGk4UbcRg6dqGj4UzNaAqQ4+bZ4gRkatMadLQqGIYtqpTOUpJDZU4q
+   D9U2Sa6z2SDCbQrP0holqCO4izuExr6QRAbnSpjmB7viacjqGYiTzu8QV
+   FL+ZTmgRa0SE0rNWh8Hu0KelM18tC2O6YKief6cm6ntA7iJre1Pz2y19w
+   4=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:09:00 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:09:00 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:08:59 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:08:56 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>
+CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
+        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <konrad.dybcio@somainline.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [V3 6/7] remoteproc: sysmon: Wait for SSCTL service to come up
+Date:   Tue, 5 Jul 2022 17:38:19 +0530
+Message-ID: <1657022900-2049-7-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+The SSCTL service comes up after a finite time when the remote Q6 comes
+out of reset. Any graceful shutdowns requested during this period will
+be a NOP and abrupt tearing down of the glink channel might lead to pending
+transactions on the remote Q6 side and will ultimately lead to a fatal
+error. Fix this by waiting for the SSCTL service when a graceful shutdown
+is requested.
 
-commit 886ddfba933f5ce9d76c278165d834d114ba4ffc upstream.
-
-This is done in preparation for the selftest uplift to become compatible
-with glibc-2.35.
-
-glibc-2.35 exposes the rseq per-thread data in the TCB, accessible
-at an offset from the thread pointer.
-
-The toolchains do not implement accessing the thread pointer on all
-architectures. Provide thread pointer getters for ppc and x86 which
-lack (or lacked until recently) toolchain support.
-
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-7-mathieu.desnoyers@efficios.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1fb82ee806d1 ("remoteproc: qcom: Introduce sysmon")
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
 ---
- tools/testing/selftests/rseq/rseq-generic-thread-pointer.h |   25 ++++++++
- tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h     |   30 +++++++++
- tools/testing/selftests/rseq/rseq-thread-pointer.h         |   19 ++++++
- tools/testing/selftests/rseq/rseq-x86-thread-pointer.h     |   40 +++++++++++++
- 4 files changed, 114 insertions(+)
- create mode 100644 tools/testing/selftests/rseq/rseq-generic-thread-pointer.h
- create mode 100644 tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h
- create mode 100644 tools/testing/selftests/rseq/rseq-thread-pointer.h
- create mode 100644 tools/testing/selftests/rseq/rseq-x86-thread-pointer.h
+ drivers/remoteproc/qcom_sysmon.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-generic-thread-pointer.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-generic-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
+diff --git a/drivers/remoteproc/qcom_sysmon.c b/drivers/remoteproc/qcom_sysmon.c
+index 9fca81492863..a9f04dd83ab6 100644
+--- a/drivers/remoteproc/qcom_sysmon.c
++++ b/drivers/remoteproc/qcom_sysmon.c
+@@ -41,6 +41,7 @@ struct qcom_sysmon {
+ 	struct completion comp;
+ 	struct completion ind_comp;
+ 	struct completion shutdown_comp;
++	struct completion ssctl_comp;
+ 	struct mutex lock;
+ 
+ 	bool ssr_ack;
+@@ -445,6 +446,8 @@ static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
+ 
+ 	svc->priv = sysmon;
+ 
++	complete(&sysmon->ssctl_comp);
 +
-+#ifndef _RSEQ_GENERIC_THREAD_POINTER
-+#define _RSEQ_GENERIC_THREAD_POINTER
+ 	return 0;
+ }
+ 
+@@ -501,6 +504,7 @@ static int sysmon_start(struct rproc_subdev *subdev)
+ 		.ssr_event = SSCTL_SSR_EVENT_AFTER_POWERUP
+ 	};
+ 
++	reinit_completion(&sysmon->ssctl_comp);
+ 	mutex_lock(&sysmon->state_lock);
+ 	sysmon->state = SSCTL_SSR_EVENT_AFTER_POWERUP;
+ 	blocking_notifier_call_chain(&sysmon_notifiers, 0, (void *)&event);
+@@ -545,6 +549,11 @@ static void sysmon_stop(struct rproc_subdev *subdev, bool crashed)
+ 	if (crashed)
+ 		return;
+ 
++	if (sysmon->ssctl_instance) {
++		if (!wait_for_completion_timeout(&sysmon->ssctl_comp, HZ / 2))
++			dev_err(sysmon->dev, "timeout waiting for ssctl service\n");
++	}
 +
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+/* Use gcc builtin thread pointer. */
-+static inline void *rseq_thread_pointer(void)
-+{
-+	return __builtin_thread_pointer();
-+}
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-ppc-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_PPC_THREAD_POINTER
-+#define _RSEQ_PPC_THREAD_POINTER
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+static inline void *rseq_thread_pointer(void)
-+{
-+#ifdef __powerpc64__
-+	register void *__result asm ("r13");
-+#else
-+	register void *__result asm ("r2");
-+#endif
-+	asm ("" : "=r" (__result));
-+	return __result;
-+}
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-thread-pointer.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_THREAD_POINTER
-+#define _RSEQ_THREAD_POINTER
-+
-+#if defined(__x86_64__) || defined(__i386__)
-+#include "rseq-x86-thread-pointer.h"
-+#elif defined(__PPC__)
-+#include "rseq-ppc-thread-pointer.h"
-+#else
-+#include "rseq-generic-thread-pointer.h"
-+#endif
-+
-+#endif
---- /dev/null
-+++ b/tools/testing/selftests/rseq/rseq-x86-thread-pointer.h
-@@ -0,0 +1,40 @@
-+/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-+/*
-+ * rseq-x86-thread-pointer.h
-+ *
-+ * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-+ */
-+
-+#ifndef _RSEQ_X86_THREAD_POINTER
-+#define _RSEQ_X86_THREAD_POINTER
-+
-+#include <features.h>
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+#if __GNUC_PREREQ (11, 1)
-+static inline void *rseq_thread_pointer(void)
-+{
-+	return __builtin_thread_pointer();
-+}
-+#else
-+static inline void *rseq_thread_pointer(void)
-+{
-+	void *__result;
-+
-+# ifdef __x86_64__
-+	__asm__ ("mov %%fs:0, %0" : "=r" (__result));
-+# else
-+	__asm__ ("mov %%gs:0, %0" : "=r" (__result));
-+# endif
-+	return __result;
-+}
-+#endif /* !GCC 11 */
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif
-
+ 	if (sysmon->ssctl_version)
+ 		sysmon->shutdown_acked = ssctl_request_shutdown(sysmon);
+ 	else if (sysmon->ept)
+@@ -631,6 +640,7 @@ struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
+ 	init_completion(&sysmon->comp);
+ 	init_completion(&sysmon->ind_comp);
+ 	init_completion(&sysmon->shutdown_comp);
++	init_completion(&sysmon->ssctl_comp);
+ 	mutex_init(&sysmon->lock);
+ 	mutex_init(&sysmon->state_lock);
+ 
+-- 
+2.7.4
 
