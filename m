@@ -2,150 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50419CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B170CCCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237288AbiGEMXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
+        id S237506AbiGEMXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236012AbiGEMP7 (ORCPT
+        with ESMTP id S235727AbiGEMQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:15:59 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F9F1B7B9;
-        Tue,  5 Jul 2022 05:11:55 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBXV6048829;
-        Tue, 5 Jul 2022 07:11:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657023093;
-        bh=nlB1w+i7QT4hulVQci7NeKDsS6OG13fU0TgYxnWSh0s=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Nil2GTedYOqT48LoGl29NE6lR9dbFU3eno/XZmarwnPvGObdEyCw6vj0Fun8mIE7m
-         UHW2iLuUa9eCQp4jSeBAp41wu18zyn46FajMdrVD5emSgoJPmWM/pAKY1ut2Y3xOqc
-         2DlJBzeLP1y2saxq4i5AYd6eOiF/iJZKyQFF6xtc=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBXYf083983
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Jul 2022 07:11:33 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Jul 2022 07:11:33 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Jul 2022 07:11:32 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBVhj023381;
-        Tue, 5 Jul 2022 07:11:32 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
-        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
-        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>,
-        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
-        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
-        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
-        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v4 3/5] drm/bridge: cdns-dsi: Move to drm/bridge/cadence
-Date:   Tue, 5 Jul 2022 17:41:14 +0530
-Message-ID: <20220705121116.24121-4-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
-References: <20220705121116.24121-1-r-ravikumar@ti.com>
+        Tue, 5 Jul 2022 08:16:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7FE1BE97;
+        Tue,  5 Jul 2022 05:12:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A17B4B817D3;
+        Tue,  5 Jul 2022 12:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F40E1C341CB;
+        Tue,  5 Jul 2022 12:12:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657023122;
+        bh=4wrempK14aI2Lwl5s7i72OMdEzbm8xpeW9Zz4Lk8IKY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iRtR4udUrbFmhwjwUh129ELraV30j2IyRvWdePAuKWjyWEIhV0N0NcjY/FJGdGg27
+         GIScz6H6aLveaQDTMzDWFeMVOhc45H2wIbxDI0WV95BnF6CMCpDqmi5V8t8Emr8c5F
+         Yd+6dGdya4XvmWhEfXg4HZHnkZz65gb3/unzqx5U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 46/98] net: bonding: fix use-after-free after 802.3ad slave unbind
+Date:   Tue,  5 Jul 2022 13:58:04 +0200
+Message-Id: <20220705115618.894640564@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the cadence dsi bridge under drm/bridge/cadence
-directory, to prepare for adding j721e wrapper
-support
+From: Yevhen Orlov <yevhen.orlov@plvision.eu>
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+commit 050133e1aa2cb49bb17be847d48a4431598ef562 upstream.
+
+commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection"),
+resolve case, when there is several aggregation groups in the same bond.
+bond_3ad_unbind_slave will invalidate (clear) aggregator when
+__agg_active_ports return zero. So, ad_clear_agg can be executed even, when
+num_of_ports!=0. Than bond_3ad_unbind_slave can be executed again for,
+previously cleared aggregator. NOTE: at this time bond_3ad_unbind_slave
+will not update slave ports list, because lag_ports==NULL. So, here we
+got slave ports, pointing to freed aggregator memory.
+
+Fix with checking actual number of ports in group (as was before
+commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection") ),
+before ad_clear_agg().
+
+The KASAN logs are as follows:
+
+[  767.617392] ==================================================================
+[  767.630776] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x13dc/0x1470
+[  767.638764] Read of size 2 at addr ffff00011ba9d430 by task kworker/u8:7/767
+[  767.647361] CPU: 3 PID: 767 Comm: kworker/u8:7 Tainted: G           O 5.15.11 #15
+[  767.655329] Hardware name: DNI AmazonGo1 A7040 board (DT)
+[  767.660760] Workqueue: lacp_1 bond_3ad_state_machine_handler
+[  767.666468] Call trace:
+[  767.668930]  dump_backtrace+0x0/0x2d0
+[  767.672625]  show_stack+0x24/0x30
+[  767.675965]  dump_stack_lvl+0x68/0x84
+[  767.679659]  print_address_description.constprop.0+0x74/0x2b8
+[  767.685451]  kasan_report+0x1f0/0x260
+[  767.689148]  __asan_load2+0x94/0xd0
+[  767.692667]  bond_3ad_state_machine_handler+0x13dc/0x1470
+
+Fixes: 0622cab0341c ("bonding: fix 802.3ad aggregator reselection")
+Co-developed-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Link: https://lore.kernel.org/r/20220629012914.361-1-yevhen.orlov@plvision.eu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/Kconfig                       | 11 -----------
- drivers/gpu/drm/bridge/Makefile                      |  1 -
- drivers/gpu/drm/bridge/cadence/Kconfig               | 12 ++++++++++++
- drivers/gpu/drm/bridge/cadence/Makefile              |  2 ++
- .../bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c}   |  0
- 5 files changed, 14 insertions(+), 12 deletions(-)
- rename drivers/gpu/drm/bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c} (100%)
+ drivers/net/bonding/bond_3ad.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
-index 57946d80b02d..8b2226f72b24 100644
---- a/drivers/gpu/drm/bridge/Kconfig
-+++ b/drivers/gpu/drm/bridge/Kconfig
-@@ -15,17 +15,6 @@ config DRM_PANEL_BRIDGE
- menu "Display Interface Bridges"
- 	depends on DRM && DRM_BRIDGE
- 
--config DRM_CDNS_DSI
--	tristate "Cadence DPI/DSI bridge"
--	select DRM_KMS_HELPER
--	select DRM_MIPI_DSI
--	select DRM_PANEL_BRIDGE
--	select GENERIC_PHY_MIPI_DPHY
--	depends on OF
--	help
--	  Support Cadence DPI to DSI bridge. This is an internal
--	  bridge and is meant to be directly embedded in a SoC.
--
- config DRM_CHIPONE_ICN6211
- 	tristate "Chipone ICN6211 MIPI-DSI/RGB Converter bridge"
- 	depends on OF
-diff --git a/drivers/gpu/drm/bridge/Makefile b/drivers/gpu/drm/bridge/Makefile
-index 1884803c6860..52f6e8b4a821 100644
---- a/drivers/gpu/drm/bridge/Makefile
-+++ b/drivers/gpu/drm/bridge/Makefile
-@@ -1,5 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
- obj-$(CONFIG_DRM_CHIPONE_ICN6211) += chipone-icn6211.o
- obj-$(CONFIG_DRM_CHRONTEL_CH7033) += chrontel-ch7033.o
- obj-$(CONFIG_DRM_CROS_EC_ANX7688) += cros-ec-anx7688.o
-diff --git a/drivers/gpu/drm/bridge/cadence/Kconfig b/drivers/gpu/drm/bridge/cadence/Kconfig
-index 1d06182bea71..e4d3415df2a0 100644
---- a/drivers/gpu/drm/bridge/cadence/Kconfig
-+++ b/drivers/gpu/drm/bridge/cadence/Kconfig
-@@ -25,3 +25,15 @@ config DRM_CDNS_MHDP8546_J721E
- 	  initializes the J721E Display Port and sets up the
- 	  clock and data muxes.
- endif
-+
-+config DRM_CDNS_DSI
-+	tristate "Cadence DPI/DSI bridge"
-+	select DRM_KMS_HELPER
-+	select DRM_MIPI_DSI
-+	select DRM_PANEL_BRIDGE
-+	select GENERIC_PHY_MIPI_DPHY
-+	depends on OF
-+	help
-+	  Support Cadence DPI to DSI bridge. This is an internal
-+	  bridge and is meant to be directly embedded in a SoC.
-+
-diff --git a/drivers/gpu/drm/bridge/cadence/Makefile b/drivers/gpu/drm/bridge/cadence/Makefile
-index 4d2db8df1bc6..e3d8e9a40784 100644
---- a/drivers/gpu/drm/bridge/cadence/Makefile
-+++ b/drivers/gpu/drm/bridge/cadence/Makefile
-@@ -2,3 +2,5 @@
- obj-$(CONFIG_DRM_CDNS_MHDP8546) += cdns-mhdp8546.o
- cdns-mhdp8546-y := cdns-mhdp8546-core.o cdns-mhdp8546-hdcp.o
- cdns-mhdp8546-$(CONFIG_DRM_CDNS_MHDP8546_J721E) += cdns-mhdp8546-j721e.o
-+obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
-+cdns-dsi-y := cdns-dsi-core.o
-diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
-similarity index 100%
-rename from drivers/gpu/drm/bridge/cdns-dsi.c
-rename to drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
--- 
-2.36.1
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2228,7 +2228,8 @@ void bond_3ad_unbind_slave(struct slave
+ 				temp_aggregator->num_of_ports--;
+ 				if (__agg_active_ports(temp_aggregator) == 0) {
+ 					select_new_active_agg = temp_aggregator->is_active;
+-					ad_clear_agg(temp_aggregator);
++					if (temp_aggregator->num_of_ports == 0)
++						ad_clear_agg(temp_aggregator);
+ 					if (select_new_active_agg) {
+ 						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
+ 						/* select new active aggregator */
+
 
