@@ -2,89 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CD2CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:58:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiGEL6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39578 "EHLO
+        id S231461AbiGEL6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231129AbiGEL6O (ORCPT
+        with ESMTP id S231340AbiGEL6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:58:14 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FD017AA3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:58:13 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id j21so20193115lfe.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:58:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+LXRh8XLo5TTKatqai8h5sgh5sYynVOMyrVjObwxb1E=;
-        b=s6g6Q0DLjnlJCnTkpPlNJvE2I/RDfbKgLPupJBpng4B8yoQ2x3GzJnOzGkvBEo0NaB
-         gliGYhLOHuQW1EvxVW+8AMQYuAgx4Wf8SAJa1o2OhLwhxRXrAHxNGpPltHEK2SbsS6+Z
-         J0+QUX/OnHdkXUOfBR1a2kcMaOTQsB062PI8kL4Pb162hluHi+6kgJb2T0/rckWqdWQ6
-         n+fZubPlZOAVejJYuUdz/lBPx53WyBu2d5pf0gecLiq12pMVsU5PSMNIrRP+ykqjej74
-         GTGOpj001daiiGv5PB4KOVhgzd7qB+pxEaRRfLJYc85HFXM1DR/hJQNYwOTChS2RoIGh
-         azAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+LXRh8XLo5TTKatqai8h5sgh5sYynVOMyrVjObwxb1E=;
-        b=LKXXxQPTu+vo/TCfZFo9wAa5bGXW4BY73L1Qb9mnLOphDCiDmmgfRtpZMXlXhdQ9bi
-         N8fSsSWydNr4xveaDS0YHA+fr5nIzVqA1YVtsHBwMWoPNCWz/VjWMgjpns0sB1088JS2
-         7XB0y8ViVkQTHB7QVSDFf+BE7KyyeBi1qCa4aFiEhcBcoyrS0iK2jDK9h2hIofjKXufU
-         xq1KT3mWbLGn0vBlmrdHbN2M2/L9YOX17BwMxLKtxAMswBInZC4EE1jzKrfwGMOpTHdc
-         mdGpAzlzYiqXZVuDikxVAiHyPG8RjaIQUX3KFoR7yyzPk9odxaAAd7XmChAmk9vAKtVd
-         JDwQ==
-X-Gm-Message-State: AJIora84gTk6RCIbEfWTQiSmcoZ+S9jcWdyZHtc28RiTNFrbogGLcPd3
-        v2w/tZlOLXY1VWqub/+2uNT/Vw==
-X-Google-Smtp-Source: AGRyM1sp3XM6fmWLRp/zHlsY3yInJaCeushGtHM0lOg7pgLySV80H65Af1eQ2ZUwxSt/1iIcfm7kvQ==
-X-Received: by 2002:a05:6512:22c3:b0:47f:704b:3820 with SMTP id g3-20020a05651222c300b0047f704b3820mr21778416lfu.411.1657022291566;
-        Tue, 05 Jul 2022 04:58:11 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id n10-20020a0565120aca00b0047f77c979f3sm5656848lfu.235.2022.07.05.04.58.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 04:58:11 -0700 (PDT)
-Message-ID: <ce4b0c8e-8cc6-4157-652a-25e50da033c3@linaro.org>
-Date:   Tue, 5 Jul 2022 14:58:10 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 02/14] arm64: dts: qcom: sm8250: add missing PCIe PHY
- clock-cells
-Content-Language: en-GB
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Tue, 5 Jul 2022 07:58:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF68383;
+        Tue,  5 Jul 2022 04:58:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 732D6615BA;
+        Tue,  5 Jul 2022 11:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C823CC341C7;
+        Tue,  5 Jul 2022 11:58:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657022299;
+        bh=lCXFzDOu/arhn1E7qbcpYeWsTGXEZM7HRnIjvJuXRQo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ItEhj+54jubFtuMGB8gFICe9Al+h8/22un5trpf08ioiYyvwAhcQzH8J88lV0U0Wk
+         3kjJoLEbZ999TJifjmeJ2AwV3LE8AGTm5SW8a0VbWS/jRSxWRcs0MgbfYv6I3JUbY5
+         oWlVK3xxkK0cuX9vrewGjpSUrtKS6NUGwyo5lmGSfYP/Etsm65PW47EAH8KnNNIBAK
+         mbszHYkTs/pjmhQSLifETgm9myld2cOlwWOz7opBpUtW9M9iin29/e2On84my9D0dS
+         iaLLBkRA28pyUz2XF0HEHioDPv/P3pqY+j6u2i3yZtvqyM5Gz223bCAimMTq9WM22o
+         wp5tytzOK0tIg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o8hC7-000679-Jh; Tue, 05 Jul 2022 13:58:20 +0200
+Date:   Tue, 5 Jul 2022 13:58:19 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220705114032.22787-1-johan+linaro@kernel.org>
- <20220705114032.22787-3-johan+linaro@kernel.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220705114032.22787-3-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 38/43] phy: qcom-qmp-pcie: drop pipe clock lane suffix
+Message-ID: <YsQnW2o4eCU8PlWl@hovoldconsulting.com>
+References: <20220705094239.17174-1-johan+linaro@kernel.org>
+ <20220705094239.17174-39-johan+linaro@kernel.org>
+ <dcff330c-92ec-2302-8e2a-4ac124e72942@linaro.org>
+ <76508b56-6733-b65c-d81c-31ac173780c0@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <76508b56-6733-b65c-d81c-31ac173780c0@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 14:40, Johan Hovold wrote:
-> Add the missing '#clock-cells' properties to the PCIe QMP PHY nodes.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+On Tue, Jul 05, 2022 at 02:13:04PM +0300, Dmitry Baryshkov wrote:
+> On 05/07/2022 13:20, Krzysztof Kozlowski wrote:
+> > On 05/07/2022 11:42, Johan Hovold wrote:
+> >> The pipe clock is defined in the "lane" node so there's no need to keep
+> >> adding a redundant lane-number suffix to the clock name.
+> >>
+> >> Drop the lane suffix from the pipe clock name, but continue supporting
+> >> the legacy name as a fall back.
+> >>
+> >> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> >> ---
+> >>   drivers/phy/qualcomm/phy-qcom-qmp-pcie.c | 8 ++++++--
+> >>   1 file changed, 6 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+> >> index 385ea3d8de08..254ad25591b9 100644
+> >> --- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+> >> +++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+> >> @@ -2210,8 +2210,12 @@ int qcom_qmp_phy_pcie_create(struct device *dev, struct device_node *np, int id,
+> >>   	if (!qphy->pcs_misc)
+> >>   		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
+> >>   
+> >> -	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
+> >> -	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
+> >> +	qphy->pipe_clk = devm_get_clk_from_child(dev, np, "pipe");
+> > 
+> > Just get first clock and no need for handling any deprecation.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+I still want to deprecate the current name as it makes no sense and
+risks introducing inconsistencies when adding new resources (e.g. should
+they also get a bogus suffix).
 
-> ---
->   arch/arm64/boot/dts/qcom/sm8250.dtsi | 6 ++++++
->   1 file changed, 6 insertions(+)
+> If I got it correctly, passing NULL instead of the name would do the trick.
 
+Ah, thanks for spotting that. I feared this would require adding a host
+of new devres wrappers otherwise.
 
--- 
-With best wishes
-Dmitry
+Would still be needed for the upcoming second pipediv2 clock though...
+
+Johan
