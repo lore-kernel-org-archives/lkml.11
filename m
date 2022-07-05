@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 529F0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF60BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiGEMEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
+        id S233707AbiGEMEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiGEMC3 (ORCPT
+        with ESMTP id S233277AbiGEMC2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:02:29 -0400
+        Tue, 5 Jul 2022 08:02:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC991834F;
-        Tue,  5 Jul 2022 05:02:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AB717E21;
+        Tue,  5 Jul 2022 05:02:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4230E617B1;
-        Tue,  5 Jul 2022 12:02:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5496CC341C7;
-        Tue,  5 Jul 2022 12:02:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9437D616F6;
+        Tue,  5 Jul 2022 12:02:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A094FC341C7;
+        Tue,  5 Jul 2022 12:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022529;
-        bh=1aNxRSM3WSh6dT/Y9hf3086GdEr426ZdQj2p6D8x9j0=;
+        s=korg; t=1657022527;
+        bh=+rQfKbto52yGuOrSMFWqoI2DThOmXF6lZLMpateLKD8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BpCWTJvWNjT6FH7J+8IflXSwVijrXCrBFieVltyLyT24xJxXL21XuUne+w/Qp3j3V
-         FZ/FGbS4vAta3kG1BMw4t/S0pEh2UCXKSCm6Kc1zzeVtHjUYsiomabBAty+j2kyzFL
-         glvk6otMSbU6XfZ2qTm1Oc/5olWD1Hq6EYD6sKro=
+        b=OxpnEyCMRQqTNbOtWOqgKmh0+pxuWVU7Suoj3/pXuIlUG++cajqOIVyP/qMTcXOMc
+         BjYB8HPFoi+6LaKWyMkgiKoERwjJTvGB9VlABmVmQvjUrAGubkE/iQzPlR5n+Lyodo
+         MTMrsXPIcD5RE2fXam9wHozBQBk1I5ps/U3fcwNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+b75c138e9286ac742647@syzkaller.appspotmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 10/33] net: tun: unlink NAPI from device on destruction
-Date:   Tue,  5 Jul 2022 13:58:02 +0200
-Message-Id: <20220705115607.012470204@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Ye <chris.ye@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 4.19 01/33] nvdimm: Fix badblocks clear off-by-one error
+Date:   Tue,  5 Jul 2022 13:57:53 +0200
+Message-Id: <20220705115606.754090313@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
 References: <20220705115606.709817198@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,34 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Chris Ye <chris.ye@intel.com>
 
-commit 3b9bc84d311104906d2b4995a9a02d7b7ddab2db upstream.
+commit ef9102004a87cb3f8b26e000a095a261fc0467d3 upstream.
 
-Syzbot found a race between tun file and device destruction.
-NAPIs live in struct tun_file which can get destroyed before
-the netdev so we have to del them explicitly. The current
-code is missing deleting the NAPI if the queue was detached
-first.
+nvdimm_clear_badblocks_region() validates badblock clearing requests
+against the span of the region, however it compares the inclusive
+badblock request range to the exclusive region range. Fix up the
+off-by-one error.
 
-Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
-Reported-by: syzbot+b75c138e9286ac742647@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20220623042039.2274708-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 23f498448362 ("libnvdimm: rework region badblocks clearing")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Chris Ye <chris.ye@intel.com>
+Reviewed-by: Vishal Verma <vishal.l.verma@intel.com>
+Link: https://lore.kernel.org/r/165404219489.2445897.9792886413715690399.stgit@dwillia2-xfh
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/tun.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/nvdimm/bus.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -797,6 +797,7 @@ static void tun_detach_all(struct net_de
- 		sock_put(&tfile->sk);
- 	}
- 	list_for_each_entry_safe(tfile, tmp, &tun->disabled, next) {
-+		tun_napi_del(tfile);
- 		tun_enable_queue(tfile);
- 		tun_queue_purge(tfile);
- 		xdp_rxq_info_unreg(&tfile->xdp_rxq);
+--- a/drivers/nvdimm/bus.c
++++ b/drivers/nvdimm/bus.c
+@@ -196,8 +196,8 @@ static int nvdimm_clear_badblocks_region
+ 	ndr_end = nd_region->ndr_start + nd_region->ndr_size - 1;
+ 
+ 	/* make sure we are in the region */
+-	if (ctx->phys < nd_region->ndr_start
+-			|| (ctx->phys + ctx->cleared) > ndr_end)
++	if (ctx->phys < nd_region->ndr_start ||
++	    (ctx->phys + ctx->cleared - 1) > ndr_end)
+ 		return 0;
+ 
+ 	sector = (ctx->phys - nd_region->ndr_start) / 512;
 
 
