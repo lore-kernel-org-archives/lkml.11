@@ -2,92 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A62E2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE19C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232798AbiGEMAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S232921AbiGEMA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232712AbiGEMAH (ORCPT
+        with ESMTP id S232719AbiGEMAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:00:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1531834C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3FC1834B;
         Tue,  5 Jul 2022 05:00:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1694C617B1;
-        Tue,  5 Jul 2022 12:00:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714F1C341C7;
-        Tue,  5 Jul 2022 12:00:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657022402;
-        bh=P7/TRblLUfM9RD1xaDdnyulOyhjawodBZp2WEwoB/2E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n+vTQpGec7eEqrXJlNGvgvWFMW1zxJkDtuqSVybOfmR1QR4KHBYmS/z0BQvJ+TnJe
-         qhoJ/L4nNOzsT79QEmWakl5WX8Kke40NnWlejH6MsMTS8PFujVR1XCVPPYkNsg4BkH
-         1dkieZ5Cmx21KjP5UZh6zIrul8jQgLreIwl0Ir7DNsX4q9lc5WAqwkuKfIUBE7mSfy
-         G4z9kVK0HaeW8LxrUWbYDh1XFnBa6dEPAJYY1YnoLXXVcWWvWs/L6hF2XSUA+Y3hYF
-         x4eskdnHcGyTJqcs7LAUzraZVbC/P+mmMQipGqHgY3U1fZ2antvH1RFnKg2tLbjD7s
-         zxPQphHyCUFeA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o8hDn-000689-28; Tue, 05 Jul 2022 14:00:03 +0200
-Date:   Tue, 5 Jul 2022 14:00:03 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: add
- example node
-Message-ID: <YsQnwyyXcffNlkLT@hovoldconsulting.com>
-References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-10-johan+linaro@kernel.org>
- <8271f4d5-e12e-ddf0-46ab-86a39577755a@linaro.org>
- <YsQQ2o8aYJnnWuNa@hovoldconsulting.com>
- <3b91ee2f-3e87-c18c-aa04-2cd93273b63f@linaro.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8DA2B817DE;
+        Tue,  5 Jul 2022 12:00:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BDF7C341CD;
+        Tue,  5 Jul 2022 12:00:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022400;
+        bh=Z6JznfyhDfsBq1+fXRlVXSp+QZd9YIVqhiz08sWlkzU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zssH5ffkj9hWVw8qw1GKu8RxQdB2FzUX5e0Q8Q/4jM+YfDrWWJ4aeR62KrtdDPh0o
+         kmMPnI25CuYeeT4tGgeh8iH9IMeUnsJhj+qgm93wiUiKXg2v8gXOUNAS+iTndqzol/
+         NA29Ws7TWRAdoxfg6TShTVn/gxtx/VnUHEpx/9yE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 4.9 03/29] net: rose: fix UAF bugs caused by timer handler
+Date:   Tue,  5 Jul 2022 13:57:44 +0200
+Message-Id: <20220705115605.846177444@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115605.742248854@linuxfoundation.org>
+References: <20220705115605.742248854@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3b91ee2f-3e87-c18c-aa04-2cd93273b63f@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 01:32:30PM +0200, Krzysztof Kozlowski wrote:
-> On 05/07/2022 12:22, Johan Hovold wrote:
-> > On Tue, Jul 05, 2022 at 12:10:29PM +0200, Krzysztof Kozlowski wrote:
-> >> On 05/07/2022 11:42, Johan Hovold wrote:
-> >>> Add an example node based on a cleaned up version of msm8996.dtsi.
-> >>>
-> >>> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> >>
-> >> Squash it, please.
-> > 
-> > Why? It's a new addition to the schema.
-> 
-> Because it is not really new. When you add new bindings or convert
-> existing ones (without example), it is expected that example is within
-> that commit. You do here the same - add entirely new file. Old file had
-> example and the bindings. You now split some pieces, convert it, so new
-> file is also expected to come with the bindings.
-> 
-> The same as there is no point to make half-TXT-YAML conversion, there is
-> no point in half-split of existing bindings. Either this split is
-> correct and complete, or it's not a finished commit and we do not commit
-> half-commits.
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-Fair enough, I'll squash the examples in.
+commit 9cc02ede696272c5271a401e4f27c262359bc2f6 upstream.
 
-Thanks for the quick review.
+There are UAF bugs in rose_heartbeat_expiry(), rose_timer_expiry()
+and rose_idletimer_expiry(). The root cause is that del_timer()
+could not stop the timer handler that is running and the refcount
+of sock is not managed properly.
 
-Johan
+One of the UAF bugs is shown below:
+
+    (thread 1)          |        (thread 2)
+                        |  rose_bind
+                        |  rose_connect
+                        |    rose_start_heartbeat
+rose_release            |    (wait a time)
+  case ROSE_STATE_0     |
+  rose_destroy_socket   |  rose_heartbeat_expiry
+    rose_stop_heartbeat |
+    sock_put(sk)        |    ...
+  sock_put(sk) // FREE  |
+                        |    bh_lock_sock(sk) // USE
+
+The sock is deallocated by sock_put() in rose_release() and
+then used by bh_lock_sock() in rose_heartbeat_expiry().
+
+Although rose_destroy_socket() calls rose_stop_heartbeat(),
+it could not stop the timer that is running.
+
+The KASAN report triggered by POC is shown below:
+
+BUG: KASAN: use-after-free in _raw_spin_lock+0x5a/0x110
+Write of size 4 at addr ffff88800ae59098 by task swapper/3/0
+...
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0xbf/0xee
+ print_address_description+0x7b/0x440
+ print_report+0x101/0x230
+ ? irq_work_single+0xbb/0x140
+ ? _raw_spin_lock+0x5a/0x110
+ kasan_report+0xed/0x120
+ ? _raw_spin_lock+0x5a/0x110
+ kasan_check_range+0x2bd/0x2e0
+ _raw_spin_lock+0x5a/0x110
+ rose_heartbeat_expiry+0x39/0x370
+ ? rose_start_heartbeat+0xb0/0xb0
+ call_timer_fn+0x2d/0x1c0
+ ? rose_start_heartbeat+0xb0/0xb0
+ expire_timers+0x1f3/0x320
+ __run_timers+0x3ff/0x4d0
+ run_timer_softirq+0x41/0x80
+ __do_softirq+0x233/0x544
+ irq_exit_rcu+0x41/0xa0
+ sysvec_apic_timer_interrupt+0x8c/0xb0
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1b/0x20
+RIP: 0010:default_idle+0xb/0x10
+RSP: 0018:ffffc9000012fea0 EFLAGS: 00000202
+RAX: 000000000000bcae RBX: ffff888006660f00 RCX: 000000000000bcae
+RDX: 0000000000000001 RSI: ffffffff843a11c0 RDI: ffffffff843a1180
+RBP: dffffc0000000000 R08: dffffc0000000000 R09: ffffed100da36d46
+R10: dfffe9100da36d47 R11: ffffffff83cf0950 R12: 0000000000000000
+R13: 1ffff11000ccc1e0 R14: ffffffff8542af28 R15: dffffc0000000000
+...
+Allocated by task 146:
+ __kasan_kmalloc+0xc4/0xf0
+ sk_prot_alloc+0xdd/0x1a0
+ sk_alloc+0x2d/0x4e0
+ rose_create+0x7b/0x330
+ __sock_create+0x2dd/0x640
+ __sys_socket+0xc7/0x270
+ __x64_sys_socket+0x71/0x80
+ do_syscall_64+0x43/0x90
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Freed by task 152:
+ kasan_set_track+0x4c/0x70
+ kasan_set_free_info+0x1f/0x40
+ ____kasan_slab_free+0x124/0x190
+ kfree+0xd3/0x270
+ __sk_destruct+0x314/0x460
+ rose_release+0x2fa/0x3b0
+ sock_close+0xcb/0x230
+ __fput+0x2d9/0x650
+ task_work_run+0xd6/0x160
+ exit_to_user_mode_loop+0xc7/0xd0
+ exit_to_user_mode_prepare+0x4e/0x80
+ syscall_exit_to_user_mode+0x20/0x40
+ do_syscall_64+0x4f/0x90
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+This patch adds refcount of sock when we use functions
+such as rose_start_heartbeat() and so on to start timer,
+and decreases the refcount of sock when timer is finished
+or deleted by functions such as rose_stop_heartbeat()
+and so on. As a result, the UAF bugs could be mitigated.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Tested-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220629002640.5693-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/rose/rose_timer.c |   34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
+
+--- a/net/rose/rose_timer.c
++++ b/net/rose/rose_timer.c
+@@ -34,95 +34,95 @@ static void rose_idletimer_expiry(unsign
+ 
+ void rose_start_heartbeat(struct sock *sk)
+ {
+-	del_timer(&sk->sk_timer);
++	sk_stop_timer(sk, &sk->sk_timer);
+ 
+ 	sk->sk_timer.data     = (unsigned long)sk;
+ 	sk->sk_timer.function = &rose_heartbeat_expiry;
+ 	sk->sk_timer.expires  = jiffies + 5 * HZ;
+ 
+-	add_timer(&sk->sk_timer);
++	sk_reset_timer(sk, &sk->sk_timer, sk->sk_timer.expires);
+ }
+ 
+ void rose_start_t1timer(struct sock *sk)
+ {
+ 	struct rose_sock *rose = rose_sk(sk);
+ 
+-	del_timer(&rose->timer);
++	sk_stop_timer(sk, &rose->timer);
+ 
+ 	rose->timer.data     = (unsigned long)sk;
+ 	rose->timer.function = &rose_timer_expiry;
+ 	rose->timer.expires  = jiffies + rose->t1;
+ 
+-	add_timer(&rose->timer);
++	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
+ }
+ 
+ void rose_start_t2timer(struct sock *sk)
+ {
+ 	struct rose_sock *rose = rose_sk(sk);
+ 
+-	del_timer(&rose->timer);
++	sk_stop_timer(sk, &rose->timer);
+ 
+ 	rose->timer.data     = (unsigned long)sk;
+ 	rose->timer.function = &rose_timer_expiry;
+ 	rose->timer.expires  = jiffies + rose->t2;
+ 
+-	add_timer(&rose->timer);
++	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
+ }
+ 
+ void rose_start_t3timer(struct sock *sk)
+ {
+ 	struct rose_sock *rose = rose_sk(sk);
+ 
+-	del_timer(&rose->timer);
++	sk_stop_timer(sk, &rose->timer);
+ 
+ 	rose->timer.data     = (unsigned long)sk;
+ 	rose->timer.function = &rose_timer_expiry;
+ 	rose->timer.expires  = jiffies + rose->t3;
+ 
+-	add_timer(&rose->timer);
++	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
+ }
+ 
+ void rose_start_hbtimer(struct sock *sk)
+ {
+ 	struct rose_sock *rose = rose_sk(sk);
+ 
+-	del_timer(&rose->timer);
++	sk_stop_timer(sk, &rose->timer);
+ 
+ 	rose->timer.data     = (unsigned long)sk;
+ 	rose->timer.function = &rose_timer_expiry;
+ 	rose->timer.expires  = jiffies + rose->hb;
+ 
+-	add_timer(&rose->timer);
++	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
+ }
+ 
+ void rose_start_idletimer(struct sock *sk)
+ {
+ 	struct rose_sock *rose = rose_sk(sk);
+ 
+-	del_timer(&rose->idletimer);
++	sk_stop_timer(sk, &rose->timer);
+ 
+ 	if (rose->idle > 0) {
+ 		rose->idletimer.data     = (unsigned long)sk;
+ 		rose->idletimer.function = &rose_idletimer_expiry;
+ 		rose->idletimer.expires  = jiffies + rose->idle;
+ 
+-		add_timer(&rose->idletimer);
++		sk_reset_timer(sk, &rose->idletimer, rose->idletimer.expires);
+ 	}
+ }
+ 
+ void rose_stop_heartbeat(struct sock *sk)
+ {
+-	del_timer(&sk->sk_timer);
++	sk_stop_timer(sk, &sk->sk_timer);
+ }
+ 
+ void rose_stop_timer(struct sock *sk)
+ {
+-	del_timer(&rose_sk(sk)->timer);
++	sk_stop_timer(sk, &rose_sk(sk)->timer);
+ }
+ 
+ void rose_stop_idletimer(struct sock *sk)
+ {
+-	del_timer(&rose_sk(sk)->idletimer);
++	sk_stop_timer(sk, &rose_sk(sk)->idletimer);
+ }
+ 
+ static void rose_heartbeat_expiry(unsigned long param)
+@@ -139,6 +139,7 @@ static void rose_heartbeat_expiry(unsign
+ 		    (sk->sk_state == TCP_LISTEN && sock_flag(sk, SOCK_DEAD))) {
+ 			bh_unlock_sock(sk);
+ 			rose_destroy_socket(sk);
++			sock_put(sk);
+ 			return;
+ 		}
+ 		break;
+@@ -161,6 +162,7 @@ static void rose_heartbeat_expiry(unsign
+ 
+ 	rose_start_heartbeat(sk);
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+ 
+ static void rose_timer_expiry(unsigned long param)
+@@ -190,6 +192,7 @@ static void rose_timer_expiry(unsigned l
+ 		break;
+ 	}
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+ 
+ static void rose_idletimer_expiry(unsigned long param)
+@@ -213,4 +216,5 @@ static void rose_idletimer_expiry(unsign
+ 		sock_set_flag(sk, SOCK_DEAD);
+ 	}
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+
+
