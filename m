@@ -2,90 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84597C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C3ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbiGESwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
+        id S233040AbiGESwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232836AbiGESwZ (ORCPT
+        with ESMTP id S232836AbiGESwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:52:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7091CFE0;
-        Tue,  5 Jul 2022 11:52:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A03FB8182F;
-        Tue,  5 Jul 2022 18:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 303C5C341C7;
-        Tue,  5 Jul 2022 18:52:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657047141;
-        bh=yI0MSQYt/2idYq5077oft4Ko3AKuq2lB9fmiQNZBdv0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=rfzbtF7es33J4ZWS3ihPhg0w1qCtpvFpMU/qDwjfwbnzcFn8lTwXPBom3UWuLTSqY
-         Gogb/BCK0IvwTzQtNyStAvLafvyeWLg5cF2i6E3RO2WMFcd0gYu5UrGWXB+NWTUtdQ
-         rOTPuEIlKtdgM3VdlACvJhmP6CDdR4yS6gspxdvbQ6mYX+/ctTiSJ5v+MlAILbF3Wn
-         5ntLlLvx2rWJZ37RW8GIAafECM01nX7vi8JhwklRRNDpkQBKswdKb/8UjjznaeCRqD
-         5o+Wnf9+x8R1dpiBxW2n6t2j/Xvngrui2suJ/9b2ZH1KsEiOizC4igzVJeGUs9Xm/q
-         XkweOITeQ/hhA==
-From:   Mark Brown <broonie@kernel.org>
-To:     amadeuszx.slawinski@linux.intel.com, lukas.bulwahn@gmail.com,
-        cezary.rojewski@intel.com, alsa-devel@alsa-project.org
-Cc:     peter.ujfalusi@linux.intel.com, liam.r.girdwood@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        ranjani.sridharan@linux.intel.com, yung-chuan.liao@linux.intel.com,
-        tiwai@suse.com, linux-kernel@vger.kernel.org, perex@perex.cz,
-        kernel-janitors@vger.kernel.org, kai.vehmanen@linux.intel.com
-In-Reply-To: <20220705103238.7484-1-lukas.bulwahn@gmail.com>
-References: <20220705103238.7484-1-lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH] ASoC: Intel: avs: correct config reference for I2S test board
-Message-Id: <165704713892.1050281.16411314466657755512.b4-ty@kernel.org>
-Date:   Tue, 05 Jul 2022 19:52:18 +0100
+        Tue, 5 Jul 2022 14:52:30 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EE51EEDA;
+        Tue,  5 Jul 2022 11:52:30 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id j7so17097526ybj.10;
+        Tue, 05 Jul 2022 11:52:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yja7doOEpycm6RswSNt6Ndu5Y1PCKNLpIKO/qkkV0nE=;
+        b=a55i++zWl7RlFm3zSrT5LvAALOmVDqFD54SzizUFEfNwQRdB6Ou3Nnn7B+iZEQf1lU
+         PdGlmjvHtewS8WBW4VCSms4/L+CEQKjCVM3IHfw5EZdIlVypuM0/ZF13ZqFeCJ6phl7f
+         9Z5WQ21aGvw1n3m7g5oAcPQAZLEJMf8xV+hvC5Y0Mq9uOJy/YHfJUsnVccZnWAlDsMmQ
+         D+sNWKP+6nw9Gp/QWzcYQWt9nwX63aHvWbkOLhJjKZGupYEu7hN21C6tpra2B7n5oqB9
+         gfNrGNfFKEzRy9rpeyFHhZLpzE8Yf3kdH4CbwgbX5mGrkzBvGZi78uxoOEfNUf9/ahUt
+         Fl6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yja7doOEpycm6RswSNt6Ndu5Y1PCKNLpIKO/qkkV0nE=;
+        b=QMYylGvFUFs7EZi5kNXYW4fXRWs74bcQppWVI0qn8NG1wc2Zfji8bnq3ufeN8aKwtE
+         RwzwSjuZty2fqNLx0nAgqPt9EUD9DvUTXhQUCAxrPs2P6jGp41OmbFJ+WMNCXlOURI5M
+         ZSkFAoMh4bEm1dxPyZWZ2x+0Vp5YpbfGjbCUsU/udaMvD1Sotx3w23D5I9ULf7+KcxDF
+         +tb6zfiscsTOyiQzD+A5EpHodEAiNr9lfeOUsu8AULS/bDoT+90Hvq4SNyGyTsblbMkK
+         man47PYgeB+0IFA0/gLeI8LaPI1+cgr47l9TeTMlXFklK/N+7WrPZ0C8rwtJMUWdrqJe
+         UXqw==
+X-Gm-Message-State: AJIora/fDQospK+tOYRwfab8vtez3GnxRMK3895qamdnlklQ1d9hUoUl
+        h3tnvsxb3prXlEa1kDgQiOyXQEsCNDJCwf8trUM6s4htNPzxHw==
+X-Google-Smtp-Source: AGRyM1sXCXdmA1oh73EjPE613SlrQgJJ687u6/+ASegMiKcdwlMvgS9s5xDQMB5NWi9NuWyPo1By384NQC0dTgbyMks=
+X-Received: by 2002:a25:858e:0:b0:66e:4898:63e2 with SMTP id
+ x14-20020a25858e000000b0066e489863e2mr14635194ybk.296.1657047149337; Tue, 05
+ Jul 2022 11:52:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220705163136.2278662-1-vincent.knecht@mailoo.org> <20220705163136.2278662-6-vincent.knecht@mailoo.org>
+In-Reply-To: <20220705163136.2278662-6-vincent.knecht@mailoo.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 5 Jul 2022 20:51:52 +0200
+Message-ID: <CAHp75VexCGKRVovaMhfzonFkju6vh_TR6_A3vLtZVox3AhAvYg@mail.gmail.com>
+Subject: Re: [PATCH v3 5/6] leds: is31fl319x: Move chipset-specific values in
+ chipdef struct
+To:     Vincent Knecht <vincent.knecht@mailoo.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Jul 2022 12:32:38 +0200, Lukas Bulwahn wrote:
-> Commit e39acc4cfd92 ("ASoC: Intel: avs: Add I2S-test machine board") adds
-> the config "SND_SOC_INTEL_AVS_MACH_I2S_TEST", but in the Makefile refers
-> to  config "SND_SOC_INTEL_AVS_MACH_i2s_TEST" (notice the uppercase and
-> lowercase difference).
-> 
-> Adjust the Makefile to refer to the actual existing config.
-> 
-> [...]
+On Tue, Jul 5, 2022 at 6:33 PM Vincent Knecht <vincent.knecht@mailoo.org> wrote:
+>
+> Allow setting chips' specifics in chipdef struct by adding fields for:
+> - the reset register address
+> - a pointer to a regmap_config struct
+> - a pointer to a brightness_set function
+> - current default, min and max values
+> - a boolean to distinguish 319{0,1,3} and 319{6,9} chips
+> and use those fields in places where distinction has to be made.
+>
+> The fields for 319{0,1,3} still point to 319{6,9} values.
+> No functional change.
 
-Applied to
+...
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+> +static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
+> +{ /* we have no readable registers */
 
-Thanks!
+Non-standard place for comments.
 
-[1/1] ASoC: Intel: avs: correct config reference for I2S test board
-      commit: f4ba35b79bd0104f00e8e21e400b980bfaa2f17e
+> +       return false;
+> +}
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+...
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+> +static const struct reg_default is31fl3196_reg_defaults[] = {
+> +       { IS31FL3196_CONFIG1, 0x00},
+> +       { IS31FL3196_CONFIG2, 0x00},
+> +       { IS31FL3196_PWM(0), 0x00},
+> +       { IS31FL3196_PWM(1), 0x00},
+> +       { IS31FL3196_PWM(2), 0x00},
+> +       { IS31FL3196_PWM(3), 0x00},
+> +       { IS31FL3196_PWM(4), 0x00},
+> +       { IS31FL3196_PWM(5), 0x00},
+> +       { IS31FL3196_PWM(6), 0x00},
+> +       { IS31FL3196_PWM(7), 0x00},
+> +       { IS31FL3196_PWM(8), 0x00},
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Missed space before }.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+>  };
 
-Thanks,
-Mark
+-- 
+With Best Regards,
+Andy Shevchenko
