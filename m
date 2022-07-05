@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9320FCCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2CACCA493
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237816AbiGEMYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
+        id S234464AbiGEMW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236295AbiGEMRc (ORCPT
+        with ESMTP id S235199AbiGEMOZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:32 -0400
+        Tue, 5 Jul 2022 08:14:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42141902C;
-        Tue,  5 Jul 2022 05:12:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B5C18E3C;
+        Tue,  5 Jul 2022 05:11:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D09BB817D3;
-        Tue,  5 Jul 2022 12:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE51C385A9;
-        Tue,  5 Jul 2022 12:12:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 198C8B817D6;
+        Tue,  5 Jul 2022 12:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5864DC341C8;
+        Tue,  5 Jul 2022 12:11:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023136;
-        bh=s/yqnEjkyOmsRsGcNykfxHRinV2YJeryeE0pvGvcV80=;
+        s=korg; t=1657023094;
+        bh=tXppN8BcPgQ4XAzOGRUOpzB7tCna+gCnSSASx3UTd4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKrHuzYWtE3WXIDZLYjtjchV5z912AJHIyY+y9OSau0iZclmoV/Z5KPK+k4xxvWYo
-         k+gQ53G3b0DBIE876+8pLZ+08E0cPH5TD5+187W5cRdLM80RWhu3gBvWHN7EW04ZJj
-         mFDJBOuWb05uWfuH3h0rgRTC4mtStE3UwM2/CoIc=
+        b=s7JLUr8VKGBed3yfF2d9fNSVJZHxKZZ8Sc6yE0TYqJteIJqrddqDZuYM/ImeAQGqb
+         XPA5AARg3MBGrN9A0jZE7DvPNPsz4wN5A2z43KGe6gNTCyps9quQgrJVBpsinqytvg
+         Z27XeXRr3ovHfLdWHY5FFYrnfLnknXwzDXTZdr0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yilun Wu <yiluwu@cs.stonybrook.edu>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 51/98] epic100: fix use after free on rmmod
-Date:   Tue,  5 Jul 2022 13:58:09 +0200
-Message-Id: <20220705115619.033332801@linuxfoundation.org>
+        stable@vger.kernel.org, linux-cifs@vger.kernel.org,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 05/98] ksmbd: use vfs_llseek instead of dereferencing NULL
+Date:   Tue,  5 Jul 2022 13:57:23 +0200
+Message-Id: <20220705115617.728426832@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,50 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 8ee9d82cd0a45e7d050ade598c9f33032a0f2891 upstream.
+commit 067baa9a37b32b95fdeabccde4b0cb6a2cf95f96 upstream.
 
-epic_close() calls epic_rx() and uses dma buffer, but in epic_remove_one()
-we already freed the dma buffer. To fix this issue, reorder function calls
-like in the .probe function.
+By not checking whether llseek is NULL, this might jump to NULL. Also,
+it doesn't check FMODE_LSEEK. Fix this by using vfs_llseek(), which
+always does the right thing.
 
-BUG: KASAN: use-after-free in epic_rx+0xa6/0x7e0 [epic100]
-Call Trace:
- epic_rx+0xa6/0x7e0 [epic100]
- epic_close+0xec/0x2f0 [epic100]
- unregister_netdev+0x18/0x20
- epic_remove_one+0xaa/0xf0 [epic100]
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Yilun Wu <yiluwu@cs.stonybrook.edu>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Reviewed-by: Francois Romieu <romieu@fr.zoreil.com>
-Link: https://lore.kernel.org/r/20220627043351.25615-1-ztong0001@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f44158485826 ("cifsd: add file operations")
+Cc: stable@vger.kernel.org
+Cc: linux-cifs@vger.kernel.org
+Cc: Ronnie Sahlberg <lsahlber@redhat.com>
+Cc: Hyunchul Lee <hyc.lee@gmail.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Acked-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/smsc/epic100.c |    4 ++--
+ fs/ksmbd/vfs.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/smsc/epic100.c
-+++ b/drivers/net/ethernet/smsc/epic100.c
-@@ -1513,14 +1513,14 @@ static void epic_remove_one(struct pci_d
- 	struct net_device *dev = pci_get_drvdata(pdev);
- 	struct epic_private *ep = netdev_priv(dev);
+--- a/fs/ksmbd/vfs.c
++++ b/fs/ksmbd/vfs.c
+@@ -1051,7 +1051,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_fi
+ 	*out_count = 0;
+ 	end = start + length;
+ 	while (start < end && *out_count < in_count) {
+-		extent_start = f->f_op->llseek(f, start, SEEK_DATA);
++		extent_start = vfs_llseek(f, start, SEEK_DATA);
+ 		if (extent_start < 0) {
+ 			if (extent_start != -ENXIO)
+ 				ret = (int)extent_start;
+@@ -1061,7 +1061,7 @@ int ksmbd_vfs_fqar_lseek(struct ksmbd_fi
+ 		if (extent_start >= end)
+ 			break;
  
-+	unregister_netdev(dev);
- 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
- 			  ep->tx_ring_dma);
- 	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
- 			  ep->rx_ring_dma);
--	unregister_netdev(dev);
- 	pci_iounmap(pdev, ep->ioaddr);
--	pci_release_regions(pdev);
- 	free_netdev(dev);
-+	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
- 	/* pci_power_off(pdev, -1); */
- }
+-		extent_end = f->f_op->llseek(f, extent_start, SEEK_HOLE);
++		extent_end = vfs_llseek(f, extent_start, SEEK_HOLE);
+ 		if (extent_end < 0) {
+ 			if (extent_end != -ENXIO)
+ 				ret = (int)extent_end;
 
 
