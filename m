@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E917CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3992CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238066AbiGEM12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
+        id S238090AbiGEM1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237054AbiGEMSk (ORCPT
+        with ESMTP id S237092AbiGEMSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:40 -0400
+        Tue, 5 Jul 2022 08:18:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1413E1A806;
-        Tue,  5 Jul 2022 05:13:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC6E1C930;
+        Tue,  5 Jul 2022 05:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EF3061988;
-        Tue,  5 Jul 2022 12:13:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FCDEC341C7;
-        Tue,  5 Jul 2022 12:13:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FC49619E2;
+        Tue,  5 Jul 2022 12:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 587CBC341C7;
+        Tue,  5 Jul 2022 12:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023234;
-        bh=O17ehTDfhjE4F+lUosr/S96RFM/locaGX05TwGTLqUg=;
+        s=korg; t=1657023236;
+        bh=UwoVQFB2xwA9RIMlc72V+TJNik4rzihZerxzliovbrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CCrXZKsDj1r98aqoIrMOwkCaoAI9V5lL7E4BOcvgeaiCfl/1XQAExWRksYwRBjctR
-         mGdShPRcJaGzbe8Ku+APwtY7I1ZRQAvKSoWQAIlJwgn7gxT+U3PszU1kSRiZpF8gUw
-         OS0mlL2F2qVqxxz6MTDWFFNfu3qJ0gD7EM1tiM60=
+        b=GBEW4WTVDuWQWqABheBDJUM6LY78sXLPRvknluzPkGSuAtOAHPEQmG7x/d3+MJul8
+         MmnqiifiAGkRHYijLBGcZdW0qWxkvkFvGhq5mpoqPyHbAvo5MomjCGgVWHir1n3B3P
+         Oe5L2+MOGeZFlU8dOM+e487dUh91nNaAyhajt42o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.15 78/98] xen/blkfront: fix leaking data in shared pages
-Date:   Tue,  5 Jul 2022 13:58:36 +0200
-Message-Id: <20220705115619.788036686@linuxfoundation.org>
+        stable@vger.kernel.org, Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        katrinzhou <katrinzhou@tencent.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 87/98] drm/i915/gem: add missing else
+Date:   Tue,  5 Jul 2022 13:58:45 +0200
+Message-Id: <20220705115620.040019331@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,54 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roger Pau Monne <roger.pau@citrix.com>
+From: katrinzhou <katrinzhou@tencent.com>
 
-commit 2f446ffe9d737e9a844b97887919c4fda18246e7 upstream.
+[ Upstream commit 9efdd519d001ee3e761f6ff80d5eb123387421c1 ]
 
-When allocating pages to be used for shared communication with the
-backend always zero them, this avoids leaking unintended data present
-on the pages.
+Add missing else in set_proto_ctx_param() to fix coverity issue.
 
-This is CVE-2022-26365, part of XSA-403.
-
-Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Addresses-Coverity: ("Unused value")
+Fixes: d4433c7600f7 ("drm/i915/gem: Use the proto-context to handle create parameters (v5)")
+Suggested-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+[tursulin: fixup alignment]
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220621124926.615884-1-tvrtko.ursulin@linux.intel.com
+(cherry picked from commit 7482a65664c16cc88eb84d2b545a1fed887378a1)
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/xen-blkfront.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_context.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -312,7 +312,7 @@ static int fill_grant_buffer(struct blkf
- 			goto out_of_memory;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_context.c b/drivers/gpu/drm/i915/gem/i915_gem_context.c
+index 166bb46408a9..ee0c0b712522 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_context.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_context.c
+@@ -720,8 +720,9 @@ static int set_proto_ctx_param(struct drm_i915_file_private *fpriv,
+ 	case I915_CONTEXT_PARAM_PERSISTENCE:
+ 		if (args->size)
+ 			ret = -EINVAL;
+-		ret = proto_context_set_persistence(fpriv->dev_priv, pc,
+-						    args->value);
++		else
++			ret = proto_context_set_persistence(fpriv->dev_priv, pc,
++							    args->value);
+ 		break;
  
- 		if (info->feature_persistent) {
--			granted_page = alloc_page(GFP_NOIO);
-+			granted_page = alloc_page(GFP_NOIO | __GFP_ZERO);
- 			if (!granted_page) {
- 				kfree(gnt_list_entry);
- 				goto out_of_memory;
-@@ -1692,7 +1692,7 @@ static int setup_blkring(struct xenbus_d
- 	for (i = 0; i < info->nr_ring_pages; i++)
- 		rinfo->ring_ref[i] = GRANT_INVALID_REF;
- 
--	sring = alloc_pages_exact(ring_size, GFP_NOIO);
-+	sring = alloc_pages_exact(ring_size, GFP_NOIO | __GFP_ZERO);
- 	if (!sring) {
- 		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
- 		return -ENOMEM;
-@@ -2209,7 +2209,8 @@ static int blkfront_setup_indirect(struc
- 
- 		BUG_ON(!list_empty(&rinfo->indirect_pages));
- 		for (i = 0; i < num; i++) {
--			struct page *indirect_page = alloc_page(GFP_KERNEL);
-+			struct page *indirect_page = alloc_page(GFP_KERNEL |
-+			                                        __GFP_ZERO);
- 			if (!indirect_page)
- 				goto out_of_memory;
- 			list_add(&indirect_page->lru, &rinfo->indirect_pages);
+ 	case I915_CONTEXT_PARAM_NO_ZEROMAP:
+-- 
+2.35.1
+
 
 
