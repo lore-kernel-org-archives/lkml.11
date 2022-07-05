@@ -2,402 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EDFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9320FCCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237742AbiGEMX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
+        id S237816AbiGEMYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236263AbiGEMR3 (ORCPT
+        with ESMTP id S236295AbiGEMRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:29 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23ED51C12C;
-        Tue,  5 Jul 2022 05:12:14 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBTfD115013;
-        Tue, 5 Jul 2022 07:11:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657023089;
-        bh=iWlNjdimpa3kHJZ7xEjNp+ff4LaL81Rz+E9yME20FKQ=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=kygmDkoByAmwol1mlsVJQk6q0jvj1VunM0cjrxncilH3sgxvJGoVtbKSTMtR8+mQE
-         jrY7a8o8/hJOqLLOPLMIEU3H8cZE09mvEK9myERUfqtN6J2JMB1r42JxPw7wNssv0e
-         3DjSDudnP+kpUH1R3cwoerrccUh1QMgfC9wpCT5w=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBTar083954
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Jul 2022 07:11:29 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Jul 2022 07:11:28 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Jul 2022 07:11:28 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBRmX052048;
-        Tue, 5 Jul 2022 07:11:28 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
-        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
-        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>,
-        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
-        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
-        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
-        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v4 1/5] dt-bindings: display: bridge: Convert cdns,dsi.txt to yaml
-Date:   Tue, 5 Jul 2022 17:41:12 +0530
-Message-ID: <20220705121116.24121-2-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
-References: <20220705121116.24121-1-r-ravikumar@ti.com>
+        Tue, 5 Jul 2022 08:17:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42141902C;
+        Tue,  5 Jul 2022 05:12:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D09BB817D3;
+        Tue,  5 Jul 2022 12:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE51C385A9;
+        Tue,  5 Jul 2022 12:12:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657023136;
+        bh=s/yqnEjkyOmsRsGcNykfxHRinV2YJeryeE0pvGvcV80=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aKrHuzYWtE3WXIDZLYjtjchV5z912AJHIyY+y9OSau0iZclmoV/Z5KPK+k4xxvWYo
+         k+gQ53G3b0DBIE876+8pLZ+08E0cPH5TD5+187W5cRdLM80RWhu3gBvWHN7EW04ZJj
+         mFDJBOuWb05uWfuH3h0rgRTC4mtStE3UwM2/CoIc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yilun Wu <yiluwu@cs.stonybrook.edu>,
+        Tong Zhang <ztong0001@gmail.com>,
+        Francois Romieu <romieu@fr.zoreil.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 51/98] epic100: fix use after free on rmmod
+Date:   Tue,  5 Jul 2022 13:58:09 +0200
+Message-Id: <20220705115619.033332801@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert cdns,dsi.txt binding to yaml format
+From: Tong Zhang <ztong0001@gmail.com>
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+commit 8ee9d82cd0a45e7d050ade598c9f33032a0f2891 upstream.
+
+epic_close() calls epic_rx() and uses dma buffer, but in epic_remove_one()
+we already freed the dma buffer. To fix this issue, reorder function calls
+like in the .probe function.
+
+BUG: KASAN: use-after-free in epic_rx+0xa6/0x7e0 [epic100]
+Call Trace:
+ epic_rx+0xa6/0x7e0 [epic100]
+ epic_close+0xec/0x2f0 [epic100]
+ unregister_netdev+0x18/0x20
+ epic_remove_one+0xaa/0xf0 [epic100]
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Yilun Wu <yiluwu@cs.stonybrook.edu>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Reviewed-by: Francois Romieu <romieu@fr.zoreil.com>
+Link: https://lore.kernel.org/r/20220627043351.25615-1-ztong0001@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../bindings/display/bridge/cdns,dsi.txt      | 112 ----------
- .../bindings/display/bridge/cdns,dsi.yaml     | 198 ++++++++++++++++++
- 2 files changed, 198 insertions(+), 112 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
- create mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+ drivers/net/ethernet/smsc/epic100.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
-deleted file mode 100644
-index 525a4bfd8634..000000000000
---- a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
-+++ /dev/null
-@@ -1,112 +0,0 @@
--Cadence DSI bridge
--==================
--
--The Cadence DSI bridge is a DPI to DSI bridge supporting up to 4 DSI lanes.
--
--Required properties:
--- compatible: should be set to "cdns,dsi".
--- reg: physical base address and length of the controller's registers.
--- interrupts: interrupt line connected to the DSI bridge.
--- clocks: DSI bridge clocks.
--- clock-names: must contain "dsi_p_clk" and "dsi_sys_clk".
--- phys: phandle link to the MIPI D-PHY controller.
--- phy-names: must contain "dphy".
--- #address-cells: must be set to 1.
--- #size-cells: must be set to 0.
--
--Optional properties:
--- resets: DSI reset lines.
--- reset-names: can contain "dsi_p_rst".
--
--Required subnodes:
--- ports: Ports as described in Documentation/devicetree/bindings/graph.txt.
--  2 ports are available:
--  * port 0: this port is only needed if some of your DSI devices are
--	    controlled through  an external bus like I2C or SPI. Can have at
--	    most 4 endpoints. The endpoint number is directly encoding the
--	    DSI virtual channel used by this device.
--  * port 1: represents the DPI input.
--  Other ports will be added later to support the new kind of inputs.
--
--- one subnode per DSI device connected on the DSI bus. Each DSI device should
--  contain a reg property encoding its virtual channel.
--
--Example:
--	dsi0: dsi@fd0c0000 {
--		compatible = "cdns,dsi";
--		reg = <0x0 0xfd0c0000 0x0 0x1000>;
--		clocks = <&pclk>, <&sysclk>;
--		clock-names = "dsi_p_clk", "dsi_sys_clk";
--		interrupts = <1>;
--		phys = <&dphy0>;
--		phy-names = "dphy";
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			port@1 {
--				reg = <1>;
--				dsi0_dpi_input: endpoint {
--					remote-endpoint = <&xxx_dpi_output>;
--				};
--			};
--		};
--
--		panel: dsi-dev@0 {
--			compatible = "<vendor,panel>";
--			reg = <0>;
--		};
--	};
--
--or
--
--	dsi0: dsi@fd0c0000 {
--		compatible = "cdns,dsi";
--		reg = <0x0 0xfd0c0000 0x0 0x1000>;
--		clocks = <&pclk>, <&sysclk>;
--		clock-names = "dsi_p_clk", "dsi_sys_clk";
--		interrupts = <1>;
--		phys = <&dphy1>;
--		phy-names = "dphy";
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			port@0 {
--				reg = <0>;
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				dsi0_output: endpoint@0 {
--					reg = <0>;
--					remote-endpoint = <&dsi_panel_input>;
--				};
--			};
--
--			port@1 {
--				reg = <1>;
--				dsi0_dpi_input: endpoint {
--					remote-endpoint = <&xxx_dpi_output>;
--				};
--			};
--		};
--	};
--
--	i2c@xxx {
--		panel: panel@59 {
--			compatible = "<vendor,panel>";
--			reg = <0x59>;
--
--			port {
--				dsi_panel_input: endpoint {
--					remote-endpoint = <&dsi0_output>;
--				};
--			};
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
-new file mode 100644
-index 000000000000..ccedc73d8c18
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
-@@ -0,0 +1,198 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/bridge/cdns,dsi.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Cadence DSI bridge
-+
-+maintainers:
-+  - Boris Brezillon <boris.brezillon@bootlin.com>
-+
-+description: |
-+   CDNS DSI is a bridge device which converts DPI to DSI
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: cdns,dsi
-+
-+  reg:
-+    items:
-+      - description:
-+          Register block for controller's registers.
-+
-+  clocks:
-+    items:
-+      - description: PSM clock, used by the IP
-+      - description: sys clock, used by the IP
-+
-+  clock-names:
-+    items:
-+      - const: dsi_p_clk
-+      - const: dsi_sys_clk
-+
-+  phys:
-+    maxItems: 1
-+    description: phandle link to the MIPI D-PHY controller.
-+
-+  phy-names:
-+    const: dphy
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+    description: PHY reset.
-+
-+  reset-names:
-+    const: dsi_p_rst
-+
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description:
-+          Output port representing the DSI output. It can have
-+          most 4 endpoints. The endpoint number is directly encoding
-+          the DSI virtual channel used by this device.
-+
-+      port@1:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description:
-+          Input port representing the DP bridge input.
-+
-+    required:
-+      - port@1
-+
-+allOf:
-+  - $ref: ../dsi-controller.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - phys
-+  - phy-names
-+  - ports
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    bus {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        dsi@fd0c0000 {
-+            compatible = "cdns,dsi";
-+            reg = <0x0 0xfd0c0000 0x0 0x1000>;
-+            clocks = <&pclk>, <&sysclk>;
-+            clock-names = "dsi_p_clk", "dsi_sys_clk";
-+            interrupts = <1>;
-+            phys = <&dphy0>;
-+            phy-names = "dphy";
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            ports {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                port@1 {
-+                    reg = <1>;
-+                    endpoint {
-+                        remote-endpoint = <&xxx_dpi_output>;
-+                    };
-+                };
-+            };
-+
-+            panel@0 {
-+                compatible = "panasonic,vvx10f034n00";
-+                reg = <0>;
-+                power-supply = <&vcc_lcd_reg>;
-+            };
-+        };
-+    };
-+
-+  - |
-+    bus {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        dsi@fd0c0000 {
-+            compatible = "cdns,dsi";
-+            reg = <0x0 0xfd0c0000 0x0 0x1000>;
-+            clocks = <&pclk>, <&sysclk>;
-+            clock-names = "dsi_p_clk", "dsi_sys_clk";
-+            interrupts = <1>;
-+            phys = <&dphy1>;
-+            phy-names = "dphy";
-+
-+            ports {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                port@0 {
-+                    reg = <0>;
-+                    #address-cells = <1>;
-+                    #size-cells = <0>;
-+
-+                    dsi0_output: endpoint@0 {
-+                        reg = <0>;
-+                        remote-endpoint = <&dsi_panel_input>;
-+                    };
-+                };
-+
-+                port@1 {
-+                    reg = <1>;
-+                    endpoint {
-+                        remote-endpoint = <&xxx_dpi_output>;
-+                    };
-+                };
-+            };
-+        };
-+
-+        i2c {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            bridge@2d {
-+                compatible = "ti,sn65dsi86";
-+                reg = <0x2d>;
-+
-+                vpll-supply = <&src_pp1800_s4a>;
-+                vccio-supply = <&src_pp1800_s4a>;
-+                vcca-supply = <&src_pp1200_l2a>;
-+                vcc-supply = <&src_pp1200_l2a>;
-+
-+                ports {
-+                    #address-cells = <1>;
-+                    #size-cells = <0>;
-+
-+                    port@0 {
-+                        reg = <0>;
-+                        dsi_panel_input: endpoint {
-+                            remote-endpoint = <&dsi0_output>;
-+                        };
-+                    };
-+
-+                    port@1 {
-+                        reg = <1>;
-+                        endpoint {
-+                            remote-endpoint = <&panel_in_edp>;
-+                        };
-+                    };
-+                };
-+            };
-+        };
-+    };
--- 
-2.36.1
+--- a/drivers/net/ethernet/smsc/epic100.c
++++ b/drivers/net/ethernet/smsc/epic100.c
+@@ -1513,14 +1513,14 @@ static void epic_remove_one(struct pci_d
+ 	struct net_device *dev = pci_get_drvdata(pdev);
+ 	struct epic_private *ep = netdev_priv(dev);
+ 
++	unregister_netdev(dev);
+ 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
+ 			  ep->tx_ring_dma);
+ 	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
+ 			  ep->rx_ring_dma);
+-	unregister_netdev(dev);
+ 	pci_iounmap(pdev, ep->ioaddr);
+-	pci_release_regions(pdev);
+ 	free_netdev(dev);
++	pci_release_regions(pdev);
+ 	pci_disable_device(pdev);
+ 	/* pci_power_off(pdev, -1); */
+ }
+
 
