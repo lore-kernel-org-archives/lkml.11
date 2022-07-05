@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D01C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B47C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbiGEJvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        id S232580AbiGEJvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231657AbiGEJtV (ORCPT
+        with ESMTP id S231668AbiGEJtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 05:49:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DC412D32;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADFC25C3;
         Tue,  5 Jul 2022 02:49:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3F1F618E8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E331CB8171E;
         Tue,  5 Jul 2022 09:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3CC0C341D5;
-        Tue,  5 Jul 2022 09:49:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A04C341EC;
+        Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657014544;
-        bh=u94lrqzZCL2U43fE56CPQFg5fcc+j1jnnHfeDdjY1bQ=;
+        s=k20201202; t=1657014542;
+        bh=aA6pajJ5L/dtpPo1Rt6dHR4KQMCmecjywy0+jWwynWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sEcPHR1fafaGuuSHPAN8Q9f/p7OizsdAqSQRUHErXbjMdDUbelggFIZseBwPhyNQd
-         kzD11j9q4fV73chYFoGfYEKWj0Kjd9e77T4K/SHlX8B8Vm0OLSYnX1KzuaftSDL9eC
-         O0AQQYKg2vvkFyut0RZitBMkPpPDNDoxPtRJT9J3MkIWe/F/ElsZH/lfzjkAoTrdhD
-         CnGqEQdgd9ZHqtCnOTXgCoz7VEZDdiZNqj08FA3cjt+jODyK7fLGK/eocEBmAC2k3U
-         oO4AByecJW4mi+WTyQs8pHFDraelyiQ9KvUm2XWbhbssp9EPngEifmPBb29WNXhB0h
-         a9Ve4urwdLXTg==
+        b=AaAvgydX5jn9wkq3FKkJcT0kQdHTL0XkAvTfGY3NPO27XtIfm/Y60Van1YWO/shz3
+         cmfHUnAJ/Pf9VFP5remsO3MvCop2ijhCR7KIQ0z0UBpDEpSvvzI+Dsx7ITLTFrVnno
+         dwVNiqoUYVeAtnjQAwABUCdQ+mSnVX33E2s1IhDtRt4Q2vAedvYWKLilUJLTp2PkTy
+         I+rgL2qjhZm26ZtXgY3+oOZgp7e9VGfFEsu+jFMI8Qtf2llFollqwHa8RKD+VQ5X9U
+         5gRmnUskCpbkHZCr9Si+CLgGkLZYiR1SoB/NgvhgQJT9z3+BWQ/vDGCXBhjoDlEgX0
+         yI+uexoDLFU7Q==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8fB3-0004YY-NT; Tue, 05 Jul 2022 11:49:05 +0200
+        id 1o8fB1-0004XL-Gn; Tue, 05 Jul 2022 11:49:03 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,9 +44,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 36/43] dt-bindings: phy: qcom,qmp-usb3-dp: fix bogus clock-cells property
-Date:   Tue,  5 Jul 2022 11:42:32 +0200
-Message-Id: <20220705094239.17174-37-johan+linaro@kernel.org>
+Subject: [PATCH 11/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate reset names
+Date:   Tue,  5 Jul 2022 11:42:07 +0200
+Message-Id: <20220705094239.17174-12-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220705094239.17174-1-johan+linaro@kernel.org>
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
@@ -56,45 +56,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The QMP PHY wrapper node is not a clock provider so drop the bogus
-'#clock-cells' property that was added when converting to DT schema.
+Drop the unnecessary "lane" suffix from the PHY reset names and mark the
+old names as deprecated.
 
-Fixes: 59351049ad15 ("dt-bindings: phy: qcom,qmp-usb3-dp: Add dt bindings for USB3 DP PHY")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml        | 5 -----
- 1 file changed, 5 deletions(-)
+ .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 20 +++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-index 60dc27834e1d..86d64c61bca3 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-@@ -30,9 +30,6 @@ properties:
-       - const: dp_com
-       - const: dp
+diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+index 7931b1fd1476..0bea8270b37e 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+@@ -94,11 +94,15 @@ patternProperties:
+           - description: PHY (lane) reset
  
--  "#clock-cells":
--    enum: [ 1, 2 ]
--
-   "#address-cells":
-     enum: [ 1, 2 ]
+       reset-names:
+-        items:
+-          - enum:
+-              - lane0
+-              - lane1
+-              - lane2
++        oneOf:
++          - items:
++              - const: lane
++          - items:
++              - enum:
++                  - lane0
++                  - lane1
++                  - lane2
++            deprecated: true
  
-@@ -147,7 +144,6 @@ patternProperties:
- required:
-   - compatible
-   - reg
--  - "#clock-cells"
-   - "#address-cells"
-   - "#size-cells"
-   - ranges
-@@ -169,7 +165,6 @@ examples:
-               <0x088e8000 0x10>,
-               <0x088ea000 0x40>;
-         reg-names = "usb", "dp_com", "dp";
--        #clock-cells = <1>;
-         #address-cells = <1>;
-         #size-cells = <1>;
-         ranges = <0x0 0x088e9000 0x2000>;
+       "#clock-cells":
+         const: 0
+@@ -166,7 +170,7 @@ examples:
+             clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
+             clock-names = "pipe";
+             resets = <&gcc GCC_PCIE_0_PHY_BCR>;
+-            reset-names = "lane0";
++            reset-names = "lane";
+ 
+             #clock-cells = <0>;
+             clock-output-names = "pcie_0_pipe_clk_src";
+@@ -182,7 +186,7 @@ examples:
+             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
+             clock-names = "pipe";
+             resets = <&gcc GCC_PCIE_1_PHY_BCR>;
+-            reset-names = "lane1";
++            reset-names = "lane";
+ 
+             #clock-cells = <0>;
+             clock-output-names = "pcie_1_pipe_clk_src";
+@@ -198,7 +202,7 @@ examples:
+             clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
+             clock-names = "pipe";
+             resets = <&gcc GCC_PCIE_2_PHY_BCR>;
+-            reset-names = "lane2";
++            reset-names = "lane";
+ 
+             #clock-cells = <0>;
+             clock-output-names = "pcie_2_pipe_clk_src";
 -- 
 2.35.1
 
