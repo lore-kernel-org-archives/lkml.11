@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 463C2C2BBE6
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F75DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbiGEMT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54126 "EHLO
+        id S236282AbiGEMRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235677AbiGEMMp (ORCPT
+        with ESMTP id S235055AbiGEMI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:12:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85301A05C;
-        Tue,  5 Jul 2022 05:10:36 -0700 (PDT)
+        Tue, 5 Jul 2022 08:08:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3091836D;
+        Tue,  5 Jul 2022 05:07:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F550B817CC;
-        Tue,  5 Jul 2022 12:10:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80B30C341C7;
-        Tue,  5 Jul 2022 12:10:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62E35B817C7;
+        Tue,  5 Jul 2022 12:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF238C341C7;
+        Tue,  5 Jul 2022 12:07:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023033;
-        bh=PFhbweEncxSZIfwG7OMdvxCwMAgzwjrfOLaj2s0aC5s=;
+        s=korg; t=1657022855;
+        bh=CdltY3YtFYtmK68cdI/9Kb2Y0PHRiuO7d/0xZbESO4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A3EafwPoJues9QAqtRr3TG7V1ztDETewJ/ixalK6pOo4F3FGe3Yof6PTAm4SiAsDO
-         K5ROD0DAP0selRiGoauXUOkPtEvCvzUZRDDARH1lFbIsJhahsEkh43itaTwUHO7/j/
-         EsFI1ZJYRrcgmNPE2cDPq/jkz5QyIn5l4Lkg8Pww=
+        b=gy9x8pHOmfmrL8HtXmuWehix3ZHkZPYH1xzRrrQDiTazzNZe9ZPipqMI0dLd/fWHj
+         9wpsoHy+U+Ab5a6ClPqLZgerQxYri/DWQpfwHXrmMttu12i/qerMTdXwJKLJEhNigO
+         DRIL7lq6v6P7J+pVZVSLqkmhmSPkO2Ijim6rhsZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heinz Mauelshagen <heinzm@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.15 14/98] dm raid: fix accesses beyond end of raid member array
-Date:   Tue,  5 Jul 2022 13:57:32 +0200
-Message-Id: <20220705115617.988323268@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 06/84] powerpc/book3e: Fix PUD allocation size in map_kernel_page()
+Date:   Tue,  5 Jul 2022 13:57:29 +0200
+Message-Id: <20220705115615.512409993@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,118 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heinz Mauelshagen <heinzm@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 332bd0778775d0cf105c4b9e03e460b590749916 upstream.
+commit 986481618023e18e187646b0fff05a3c337531cb upstream.
 
-On dm-raid table load (using raid_ctr), dm-raid allocates an array
-rs->devs[rs->raid_disks] for the raid device members. rs->raid_disks
-is defined by the number of raid metadata and image tupples passed
-into the target's constructor.
+Commit 2fb4706057bc ("powerpc: add support for folded p4d page tables")
+erroneously changed PUD setup to a mix of PMD and PUD. Fix it.
 
-In the case of RAID layout changes being requested, that number can be
-different from the current number of members for existing raid sets as
-defined in their superblocks. Example RAID layout changes include:
-- raid1 legs being added/removed
-- raid4/5/6/10 number of stripes changed (stripe reshaping)
-- takeover to higher raid level (e.g. raid5 -> raid6)
+While at it, use PTE_TABLE_SIZE instead of PAGE_SIZE for PTE tables
+in order to avoid any confusion.
 
-When accessing array members, rs->raid_disks must be used in control
-loops instead of the potentially larger value in rs->md.raid_disks.
-Otherwise it will cause memory access beyond the end of the rs->devs
-array.
-
-Fix this by changing code that is prone to out-of-bounds access.
-Also fix validate_raid_redundancy() to validate all devices that are
-added. Also, use braces to help clean up raid_iterate_devices().
-
-The out-of-bounds memory accesses was discovered using KASAN.
-
-This commit was verified to pass all LVM2 RAID tests (with KASAN
-enabled).
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Heinz Mauelshagen <heinzm@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: 2fb4706057bc ("powerpc: add support for folded p4d page tables")
+Cc: stable@vger.kernel.org # v5.8+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/95ddfd6176d53e6c85e13bd1c358359daa56775f.1655974558.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-raid.c |   34 ++++++++++++++++++----------------
- 1 file changed, 18 insertions(+), 16 deletions(-)
+ arch/powerpc/mm/nohash/book3e_pgtable.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -1001,12 +1001,13 @@ static int validate_region_size(struct r
- static int validate_raid_redundancy(struct raid_set *rs)
- {
- 	unsigned int i, rebuild_cnt = 0;
--	unsigned int rebuilds_per_group = 0, copies;
-+	unsigned int rebuilds_per_group = 0, copies, raid_disks;
- 	unsigned int group_size, last_group_start;
- 
--	for (i = 0; i < rs->md.raid_disks; i++)
--		if (!test_bit(In_sync, &rs->dev[i].rdev.flags) ||
--		    !rs->dev[i].rdev.sb_page)
-+	for (i = 0; i < rs->raid_disks; i++)
-+		if (!test_bit(FirstUse, &rs->dev[i].rdev.flags) &&
-+		    ((!test_bit(In_sync, &rs->dev[i].rdev.flags) ||
-+		      !rs->dev[i].rdev.sb_page)))
- 			rebuild_cnt++;
- 
- 	switch (rs->md.level) {
-@@ -1046,8 +1047,9 @@ static int validate_raid_redundancy(stru
- 		 *	    A	 A    B	   B	C
- 		 *	    C	 D    D	   E	E
- 		 */
-+		raid_disks = min(rs->raid_disks, rs->md.raid_disks);
- 		if (__is_raid10_near(rs->md.new_layout)) {
--			for (i = 0; i < rs->md.raid_disks; i++) {
-+			for (i = 0; i < raid_disks; i++) {
- 				if (!(i % copies))
- 					rebuilds_per_group = 0;
- 				if ((!rs->dev[i].rdev.sb_page ||
-@@ -1070,10 +1072,10 @@ static int validate_raid_redundancy(stru
- 		 * results in the need to treat the last (potentially larger)
- 		 * set differently.
- 		 */
--		group_size = (rs->md.raid_disks / copies);
--		last_group_start = (rs->md.raid_disks / group_size) - 1;
-+		group_size = (raid_disks / copies);
-+		last_group_start = (raid_disks / group_size) - 1;
- 		last_group_start *= group_size;
--		for (i = 0; i < rs->md.raid_disks; i++) {
-+		for (i = 0; i < raid_disks; i++) {
- 			if (!(i % copies) && !(i > last_group_start))
- 				rebuilds_per_group = 0;
- 			if ((!rs->dev[i].rdev.sb_page ||
-@@ -1588,7 +1590,7 @@ static sector_t __rdev_sectors(struct ra
- {
- 	int i;
- 
--	for (i = 0; i < rs->md.raid_disks; i++) {
-+	for (i = 0; i < rs->raid_disks; i++) {
- 		struct md_rdev *rdev = &rs->dev[i].rdev;
- 
- 		if (!test_bit(Journal, &rdev->flags) &&
-@@ -3771,13 +3773,13 @@ static int raid_iterate_devices(struct d
- 	unsigned int i;
- 	int r = 0;
- 
--	for (i = 0; !r && i < rs->md.raid_disks; i++)
--		if (rs->dev[i].data_dev)
--			r = fn(ti,
--				 rs->dev[i].data_dev,
--				 0, /* No offset on data devs */
--				 rs->md.dev_sectors,
--				 data);
-+	for (i = 0; !r && i < rs->raid_disks; i++) {
-+		if (rs->dev[i].data_dev) {
-+			r = fn(ti, rs->dev[i].data_dev,
-+			       0, /* No offset on data devs */
-+			       rs->md.dev_sectors, data);
-+		}
-+	}
- 
- 	return r;
- }
+--- a/arch/powerpc/mm/nohash/book3e_pgtable.c
++++ b/arch/powerpc/mm/nohash/book3e_pgtable.c
+@@ -95,8 +95,8 @@ int __ref map_kernel_page(unsigned long
+ 		pgdp = pgd_offset_k(ea);
+ 		p4dp = p4d_offset(pgdp, ea);
+ 		if (p4d_none(*p4dp)) {
+-			pmdp = early_alloc_pgtable(PMD_TABLE_SIZE);
+-			p4d_populate(&init_mm, p4dp, pmdp);
++			pudp = early_alloc_pgtable(PUD_TABLE_SIZE);
++			p4d_populate(&init_mm, p4dp, pudp);
+ 		}
+ 		pudp = pud_offset(p4dp, ea);
+ 		if (pud_none(*pudp)) {
+@@ -105,7 +105,7 @@ int __ref map_kernel_page(unsigned long
+ 		}
+ 		pmdp = pmd_offset(pudp, ea);
+ 		if (!pmd_present(*pmdp)) {
+-			ptep = early_alloc_pgtable(PAGE_SIZE);
++			ptep = early_alloc_pgtable(PTE_TABLE_SIZE);
+ 			pmd_populate_kernel(&init_mm, pmdp, ptep);
+ 		}
+ 		ptep = pte_offset_kernel(pmdp, ea);
 
 
