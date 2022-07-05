@@ -2,579 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5094C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 08:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A21C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 08:59:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbiGEIzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 04:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
+        id S229866AbiGEI71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 04:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbiGEIzC (ORCPT
+        with ESMTP id S230309AbiGEI65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 04:55:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9CF13E0B;
-        Tue,  5 Jul 2022 01:54:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDAAFB81671;
-        Tue,  5 Jul 2022 08:54:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8C6C385A2;
-        Tue,  5 Jul 2022 08:54:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657011283;
-        bh=BHuZkW0eJ+WX6mMKEaJB7fYlXXHAt/pr6+iBHt921tY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mfrlx/4Nq9+LTTHzBFOowlQG96GoPQaYW15MSV8nWWHWiu9ph7x2B4A9yit1gLLCY
-         pYd05Fd4c0Rcf3SGgVU1u7ajoHRy7Fq4NRdJJVKHmDMhostuRDDD7ECR04Q4XlbXjs
-         CL+I2efcR841Pnt6GV3/gZNh9mP5bpXbCnVNJo03TAdBhMzvE6IymP/LcnUAZ3f8x5
-         5fNpRMq1CQly6foSefLI+GlGuLRpV7wvmD8PXs+hJ9nmbmY3zfNxk0daIkBMJ8L9LO
-         XxgHBE5tlIx8lsMqu0z32ifDAc09G9FIQLkUWPWupI8yLEVXFveVtvE0cNAZ55l7iX
-         SJT/kQ6gdaU6w==
-Date:   Tue, 5 Jul 2022 14:24:37 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kishon@ti.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, krzysztof.kozlowski@linaro.org
-Subject: Re: [PATCH v3 3/3] phy: freescale: Add i.MX8qm Mixel LVDS PHY support
-Message-ID: <YsP8TYgA7SU72/xE@matsya>
-References: <20220620123854.1138028-1-victor.liu@nxp.com>
- <20220620123854.1138028-4-victor.liu@nxp.com>
+        Tue, 5 Jul 2022 04:58:57 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3AF713F83
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 01:58:10 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id h17so3387558wrx.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 01:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Q/ncPyAf/LHAOE0FbL9Wvqu7kD562XsX+/ux2dlxkU=;
+        b=dAHHRn7QYGxYmpLieiRF+9dolkO094/7rMAMv5J2OYNYc8SynuEK+UCCYOvwMtjV9Z
+         OdhgF2JdyHIxd9Rfq1LGEq1DiYC44G5+buJ6+c/nSUSf+9dZMLg5+Xsv4tsrebJ86h6H
+         890qjPfoQu/MrF/7KyncJ3iqvEbcoA2YFA7qRxclZDUJVQ2LrVHxrXPXfAuU3hkFa+J0
+         iEh5e0my+aBBqJiy01ciM8nXhPVE/Q9NpxGRlFEgOztOYugPOXZiwpPmpwlr26/FrwFA
+         nrQ+nynkMPaVbSDFTzbXd+lvbIA0aiGnTKeuzKLCi2KNdhyg7AG+qWpdpvkhzzWLD4dr
+         J4sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Q/ncPyAf/LHAOE0FbL9Wvqu7kD562XsX+/ux2dlxkU=;
+        b=1SUWZHNkcau2InfAvpl8HUSapBlUqSBtVmImw4YusCEhS13XN+aj60ewvhxoME3e3j
+         9HpuJqV6T88CJlgI2n++2p5evZAWutisfsEbP/F7JdDCADepNNsRzWrYn//EdMul5iKZ
+         Srf8tOnkgrdHpj8BXE5QTMHEQTHJkOJLsPjQroKqyda10nCrvkV10AOeY9GvsCB28dtq
+         pwYidL4t8qjBKJl41Rk7g2udo4kROerK+GrfiwCDAooaGVJFxcWhqMi0WN52YU84nwgr
+         WRgIJ+0qLzcOpf0quLHViLzmfGUHBkgdyGc2CDAB2/wRvQUS8s+E4sLPysLrzvAajn/l
+         Nwig==
+X-Gm-Message-State: AJIora9ceKBvlF6eaXYSqYQnnR+mD4rF83ql4ArDDaTS1eFQtWixhZU1
+        PExZIfoRjVETV4g7Y9w9oaY8bBY2oG+SjhSsi/Ve6Q==
+X-Google-Smtp-Source: AGRyM1tWg1Yv6mY879/hY+vaCyyznYSukKIeA+o/XUOlWC0jsNVsM68gSSoV7MLk9mHrTMYvV0VQ2C/gmBjtmfFbeBY=
+X-Received: by 2002:a05:6000:144d:b0:21b:b3cc:162e with SMTP id
+ v13-20020a056000144d00b0021bb3cc162emr31706534wrx.433.1657011489178; Tue, 05
+ Jul 2022 01:58:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620123854.1138028-4-victor.liu@nxp.com>
+References: <20220405125540.2135d81d@canb.auug.org.au> <20220705091352.15150c7f@canb.auug.org.au>
+In-Reply-To: <20220705091352.15150c7f@canb.auug.org.au>
+From:   David Gow <davidgow@google.com>
+Date:   Tue, 5 Jul 2022 16:57:58 +0800
+Message-ID: <CABVgOSkhSb1oVo90h8vOALZzJFCE-1GaiADFEEpXEYqrvHTS=g@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the kunit-next tree with the apparmor tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     John Johansen <john.johansen@canonical.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Ricardo Ribalda <ribalda@chromium.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000385c6b05e30b0dcf"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20-06-22, 20:38, Liu Ying wrote:
-> Add Freescale i.MX8qm LVDS PHY support.
-> The PHY IP is from Mixel, Inc.
-> 
-> Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> ---
-> v2->v3:
-> * No change.
-> 
-> v1->v2:
-> * Drop 'This patch' from commit message. (Krzysztof)
-> * Make dev_err_probe() function calls as one-liners. (Krzysztof)
-> * Drop unnecessary debug messages. (Krzysztof)
-> * Get phy_ref_clk without name specified due to 'clock-names' dropped from
->   dt-binding.
-> 
->  drivers/phy/freescale/Kconfig                 |   9 +
->  drivers/phy/freescale/Makefile                |   1 +
->  .../phy/freescale/phy-fsl-imx8qm-lvds-phy.c   | 440 ++++++++++++++++++
->  3 files changed, 450 insertions(+)
->  create mode 100644 drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c
-> 
-> diff --git a/drivers/phy/freescale/Kconfig b/drivers/phy/freescale/Kconfig
-> index f9c54cd02036..853958fb2c06 100644
-> --- a/drivers/phy/freescale/Kconfig
-> +++ b/drivers/phy/freescale/Kconfig
-> @@ -8,6 +8,15 @@ config PHY_FSL_IMX8MQ_USB
->  	select GENERIC_PHY
->  	default ARCH_MXC && ARM64
->  
-> +config PHY_MIXEL_LVDS_PHY
-> +	tristate "Mixel LVDS PHY support"
-> +	depends on OF
-> +	select GENERIC_PHY
-> +	select REGMAP_MMIO
-> +	help
-> +	  Enable this to add support for the Mixel LVDS PHY as found
-> +	  on NXP's i.MX8qm SoC.
-> +
->  config PHY_MIXEL_MIPI_DPHY
->  	tristate "Mixel MIPI DSI PHY support"
->  	depends on OF && HAS_IOMEM
-> diff --git a/drivers/phy/freescale/Makefile b/drivers/phy/freescale/Makefile
-> index 3518d5dbe8a7..cedb328bc4d2 100644
-> --- a/drivers/phy/freescale/Makefile
-> +++ b/drivers/phy/freescale/Makefile
-> @@ -1,5 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  obj-$(CONFIG_PHY_FSL_IMX8MQ_USB)	+= phy-fsl-imx8mq-usb.o
-> +obj-$(CONFIG_PHY_MIXEL_LVDS_PHY)	+= phy-fsl-imx8qm-lvds-phy.o
->  obj-$(CONFIG_PHY_MIXEL_MIPI_DPHY)	+= phy-fsl-imx8-mipi-dphy.o
->  obj-$(CONFIG_PHY_FSL_IMX8M_PCIE)	+= phy-fsl-imx8m-pcie.o
->  obj-$(CONFIG_PHY_FSL_LYNX_28G)		+= phy-fsl-lynx-28g.o
-> diff --git a/drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c b/drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c
-> new file mode 100644
-> index 000000000000..37f77115ddab
-> --- /dev/null
-> +++ b/drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c
-> @@ -0,0 +1,440 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * Copyright 2017-2020,2022 NXP
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/clk.h>
-> +#include <linux/mfd/syscon.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/phy/phy.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/regmap.h>
-> +
-> +#define REG_SET		0x4
-> +#define REG_CLR		0x8
-> +
-> +#define PHY_CTRL	0x0
-> +#define  M_MASK		GENMASK(18, 17)
-> +#define  M(n)		FIELD_PREP(M_MASK, (n))
-> +#define  CCM_MASK	GENMASK(16, 14)
-> +#define  CCM(n)		FIELD_PREP(CCM_MASK, (n))
-> +#define  CA_MASK	GENMASK(13, 11)
-> +#define  CA(n)		FIELD_PREP(CA_MASK, (n))
-> +#define  TST_MASK	GENMASK(10, 5)
-> +#define  TST(n)		FIELD_PREP(TST_MASK, (n))
-> +#define  CH_EN(id)	BIT(3 + (id))
-> +#define  NB		BIT(2)
-> +#define  RFB		BIT(1)
-> +#define  PD		BIT(0)
-> +
-> +/* Power On Reset(POR) value */
-> +#define  CTRL_RESET_VAL	(M(0x0) | CCM(0x4) | CA(0x4) | TST(0x25))
-> +
-> +/* PHY initialization value and mask */
-> +#define  CTRL_INIT_MASK	(M_MASK | CCM_MASK | CA_MASK | TST_MASK | NB | RFB)
-> +#define  CTRL_INIT_VAL	(M(0x0) | CCM(0x5) | CA(0x4) | TST(0x25) | RFB)
-> +
-> +#define PHY_STATUS	0x10
-> +#define  LOCK		BIT(0)
-> +
-> +#define PHY_NUM		2
-> +
-> +#define MIN_CLKIN_FREQ	25000000
+--000000000000385c6b05e30b0dcf
+Content-Type: text/plain; charset="UTF-8"
 
-this is 25MHz, so lets write as 25 * MEGA (see units.h)
+On Tue, Jul 5, 2022 at 7:14 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> On Tue, 5 Apr 2022 12:55:40 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > Today's linux-next merge of the kunit-next tree got a conflict in:
+> >
+> >   security/apparmor/policy_unpack_test.c
+> >
+> > between commit:
+> >
+> >   d86d1652ab13 ("apparmor: test: Remove some casts which are no-longer required")
+> >
+> > from the apparmor tree and commit:
+> >
+> >   5f91bd9f1e7a ("apparmor: test: Use NULL macros")
+> >
+> > from the kunit-next tree.
+> >
+> > I fixed it up (see below) and can carry the fix as necessary. This
+> > is now fixed as far as linux-next is concerned, but any non trivial
+> > conflicts should be mentioned to your upstream maintainer when your tree
+> > is submitted for merging.  You may also want to consider cooperating
+> > with the maintainer of the conflicting tree to minimise any particularly
+> > complex conflicts.
+> >
+> >
+> > diff --cc security/apparmor/policy_unpack_test.c
+> > index 399dce3781aa,5c18d2f19862..000000000000
+> > --- a/security/apparmor/policy_unpack_test.c
+> > +++ b/security/apparmor/policy_unpack_test.c
+> > @@@ -408,8 -408,8 +408,8 @@@ static void policy_unpack_test_unpack_u
+> >
+> >       size = unpack_u16_chunk(puf->e, &chunk);
+> >
+> >  -    KUNIT_EXPECT_EQ(test, size, (size_t)0);
+> >  +    KUNIT_EXPECT_EQ(test, size, 0);
+> > -     KUNIT_EXPECT_PTR_EQ(test, chunk, NULL);
+> > +     KUNIT_EXPECT_NULL(test, chunk);
+> >       KUNIT_EXPECT_PTR_EQ(test, puf->e->pos, puf->e->end - 1);
+> >   }
+> >
+> > @@@ -430,8 -430,8 +430,8 @@@ static void policy_unpack_test_unpack_u
+> >
+> >       size = unpack_u16_chunk(puf->e, &chunk);
+> >
+> >  -    KUNIT_EXPECT_EQ(test, size, (size_t)0);
+> >  +    KUNIT_EXPECT_EQ(test, size, 0);
+> > -     KUNIT_EXPECT_PTR_EQ(test, chunk, NULL);
+> > +     KUNIT_EXPECT_NULL(test, chunk);
+> >       KUNIT_EXPECT_PTR_EQ(test, puf->e->pos, puf->e->start + TEST_U16_OFFSET);
+> >   }
+> >
+>
+> This is now a conflict between the apparmor tree and Linus' tree.
+>
 
-> +#define MAX_CLKIN_FREQ	165000000
+Hmm... this patch -- d86d1652ab13 ("apparmor: test: Remove some casts
+which are no-longer required") -- has been sitting in the
+apparmor-next branch since December, but there haven't been any
+AppArmor pull requests since then.
 
-here too
+If it's easier, I'm happy to redo this and send it in via the KUnit
+tree (assuming it gets removed from apparmor-next). Otherwise, I guess
+this'll just have to wait for the next AppArmor PR.
 
-> +
-> +#define PLL_LOCK_SLEEP		10
-> +#define PLL_LOCK_TIMEOUT	1000
-> +
-> +struct mixel_lvds_phy {
-> +	struct phy *phy;
-> +	struct phy_configure_opts_lvds cfg;
-> +	unsigned int id;
-> +};
-> +
-> +struct mixel_lvds_phy_priv {
-> +	struct regmap *regmap;
-> +	struct mutex lock;	/* protect remap access and cfg of our own */
-> +	struct clk *phy_ref_clk;
-> +	struct mixel_lvds_phy *phys[PHY_NUM];
-> +};
-> +
-> +static int mixel_lvds_phy_init(struct phy *phy)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-> +
-> +	mutex_lock(&priv->lock);
-> +	regmap_update_bits(priv->regmap,
-> +			   PHY_CTRL, CTRL_INIT_MASK, CTRL_INIT_VAL);
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mixel_lvds_phy_power_on(struct phy *phy)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-> +	struct mixel_lvds_phy *lvds_phy = phy_get_drvdata(phy);
-> +	struct mixel_lvds_phy *companion = priv->phys[lvds_phy->id ^ 1];
-> +	struct phy_configure_opts_lvds *cfg = &lvds_phy->cfg;
-> +	u32 val = 0;
-> +	u32 locked;
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(priv->phy_ref_clk);
-> +	if (ret < 0) {
-> +		dev_err(&phy->dev,
-> +			"failed to enable PHY reference clock: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* The master PHY would power on the slave PHY. */
-> +	if (cfg->is_slave)
-> +		return 0;
-> +
-> +	mutex_lock(&priv->lock);
-> +	if (cfg->bits_per_lane_and_dclk_cycle == 7) {
-> +		if (cfg->differential_clk_rate < 44000000)
-> +			val |= M(0x2);
-> +		else if (cfg->differential_clk_rate < 90000000)
-> +			val |= M(0x1);
-> +		else
-> +			val |= M(0x0);
-> +	} else {
-> +		val = NB;
-> +
-> +		if (cfg->differential_clk_rate < 32000000)
-> +			val |= M(0x2);
-> +		else if (cfg->differential_clk_rate < 63000000)
-> +			val |= M(0x1);
-> +		else
-> +			val |= M(0x0);
-> +	}
-> +	regmap_update_bits(priv->regmap, PHY_CTRL, M_MASK | NB, val);
-> +
-> +	/*
-> +	 * Enable two channels synchronously,
-> +	 * if the companion PHY is a slave PHY.
-> +	 */
-> +	if (companion->cfg.is_slave)
-> +		val = CH_EN(0) | CH_EN(1);
-> +	else
-> +		val = CH_EN(lvds_phy->id);
-> +	regmap_write(priv->regmap, PHY_CTRL + REG_SET, val);
-> +
-> +	ret = regmap_read_poll_timeout(priv->regmap, PHY_STATUS, locked,
-> +				       locked, PLL_LOCK_SLEEP,
-> +				       PLL_LOCK_TIMEOUT);
-> +	if (ret < 0) {
-> +		dev_err(&phy->dev, "failed to get PHY lock: %d\n", ret);
-> +		clk_disable_unprepare(priv->phy_ref_clk);
-> +	}
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int mixel_lvds_phy_power_off(struct phy *phy)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-> +	struct mixel_lvds_phy *lvds_phy = phy_get_drvdata(phy);
-> +
-> +	mutex_lock(&priv->lock);
-> +	regmap_write(priv->regmap, PHY_CTRL + REG_CLR, CH_EN(lvds_phy->id));
-> +	mutex_unlock(&priv->lock);
+-- David
 
-No check for slave here?
+--000000000000385c6b05e30b0dcf
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-> +
-> +	clk_disable_unprepare(priv->phy_ref_clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mixel_lvds_phy_configure(struct phy *phy,
-> +				    union phy_configure_opts *opts)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-> +	struct phy_configure_opts_lvds *cfg = &opts->lvds;
-> +	int ret;
-> +
-> +	ret = clk_set_rate(priv->phy_ref_clk, cfg->differential_clk_rate);
-> +	if (ret)
-> +		dev_err(&phy->dev,
-> +			"failed to set PHY reference clock rate(%lu): %d\n",
-
-this can fit in a single line (100 chars is okay)
-
-> +			cfg->differential_clk_rate, ret);
-> +
-> +	return ret;
-> +}
-> +
-> +/* Assume the master PHY's configuration set is cached first. */
-> +static int mixel_lvds_phy_check_slave(struct phy *slave_phy)
-> +{
-> +	struct device *dev = &slave_phy->dev;
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev->parent);
-> +	struct mixel_lvds_phy *slv = phy_get_drvdata(slave_phy);
-> +	struct mixel_lvds_phy *mst = priv->phys[slv->id ^ 1];
-> +	struct phy_configure_opts_lvds *mst_cfg = &mst->cfg;
-> +	struct phy_configure_opts_lvds *slv_cfg = &slv->cfg;
-> +
-> +	if (mst_cfg->bits_per_lane_and_dclk_cycle !=
-> +	    slv_cfg->bits_per_lane_and_dclk_cycle) {
-> +		dev_err(dev, "number bits mismatch(mst: %u vs slv: %u)\n",
-> +			mst_cfg->bits_per_lane_and_dclk_cycle,
-> +			slv_cfg->bits_per_lane_and_dclk_cycle);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (mst_cfg->differential_clk_rate !=
-> +	    slv_cfg->differential_clk_rate) {
-> +		dev_err(dev, "dclk rate mismatch(mst: %lu vs slv: %lu)\n",
-> +			mst_cfg->differential_clk_rate,
-> +			slv_cfg->differential_clk_rate);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (mst_cfg->lanes != slv_cfg->lanes) {
-> +		dev_err(dev, "lanes mismatch(mst: %u vs slv: %u)\n",
-> +			mst_cfg->lanes, slv_cfg->lanes);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (mst_cfg->is_slave == slv_cfg->is_slave) {
-> +		dev_err(dev, "master PHY is not found\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mixel_lvds_phy_validate(struct phy *phy, enum phy_mode mode,
-> +				   int submode, union phy_configure_opts *opts)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-> +	struct mixel_lvds_phy *lvds_phy = phy_get_drvdata(phy);
-> +	struct phy_configure_opts_lvds *cfg = &opts->lvds;
-> +	int ret = 0;
-> +
-> +	if (mode != PHY_MODE_LVDS) {
-> +		dev_err(&phy->dev, "invalid PHY mode(%d)\n", mode);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (cfg->bits_per_lane_and_dclk_cycle != 7 &&
-> +	    cfg->bits_per_lane_and_dclk_cycle != 10) {
-> +		dev_err(&phy->dev, "invalid bits per data lane(%u)\n",
-> +			cfg->bits_per_lane_and_dclk_cycle);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (cfg->lanes != 4 && cfg->lanes != 3) {
-> +		dev_err(&phy->dev, "invalid data lanes(%u)\n", cfg->lanes);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (cfg->differential_clk_rate < MIN_CLKIN_FREQ ||
-> +	    cfg->differential_clk_rate > MAX_CLKIN_FREQ) {
-> +		dev_err(&phy->dev, "invalid differential clock rate(%lu)\n",
-> +			cfg->differential_clk_rate);
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&priv->lock);
-> +	/* cache configuration set of our own for check */
-> +	memcpy(&lvds_phy->cfg, cfg, sizeof(*cfg));
-> +
-> +	if (cfg->is_slave) {
-> +		ret = mixel_lvds_phy_check_slave(phy);
-> +		if (ret)
-> +			dev_err(&phy->dev,
-> +				"failed to check slave PHY: %d\n", ret);
-
-very ugly, single line pls
-
-> +	}
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct phy_ops mixel_lvds_phy_ops = {
-> +	.init = mixel_lvds_phy_init,
-> +	.power_on = mixel_lvds_phy_power_on,
-> +	.power_off = mixel_lvds_phy_power_off,
-> +	.configure = mixel_lvds_phy_configure,
-> +	.validate = mixel_lvds_phy_validate,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int mixel_lvds_phy_reset(struct device *dev)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = pm_runtime_get_sync(dev);
-
-pm_runtime_resume_and_get() pls
-
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to get PM runtime: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	regmap_write(priv->regmap, PHY_CTRL, CTRL_RESET_VAL);
-> +
-> +	ret = pm_runtime_put(dev);
-
-this seems to be done only around reset, why not in on/off method?
-
-> +	if (ret < 0)
-> +		dev_err(dev, "failed to put PM runtime: %d\n", ret);
-> +
-> +	return ret;
-> +}
-> +
-> +static struct phy *mixel_lvds_phy_xlate(struct device *dev,
-> +					struct of_phandle_args *args)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-> +	unsigned int phy_id;
-> +
-> +	if (args->args_count != 1) {
-> +		dev_err(dev,
-> +			"invalid argument number(%d) for 'phys' property\n",
-> +			args->args_count);
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +
-> +	phy_id = args->args[0];
-> +
-> +	if (phy_id >= PHY_NUM) {
-> +		dev_err(dev, "invalid PHY index(%d)\n", phy_id);
-> +		return ERR_PTR(-ENODEV);
-> +	}
-> +
-> +	return priv->phys[phy_id]->phy;
-> +}
-> +
-> +static int mixel_lvds_phy_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct phy_provider *phy_provider;
-> +	struct mixel_lvds_phy_priv *priv;
-> +	struct mixel_lvds_phy *lvds_phy;
-> +	struct phy *phy;
-> +	int i;
-> +	int ret;
-> +
-> +	if (!dev->of_node)
-> +		return -ENODEV;
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->regmap = syscon_node_to_regmap(dev->of_node->parent);
-> +	if (IS_ERR(priv->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(priv->regmap),
-> +				     "failed to get regmap\n");
-> +
-> +	priv->phy_ref_clk = devm_clk_get(dev, NULL);
-> +	if (IS_ERR(priv->phy_ref_clk))
-> +		return dev_err_probe(dev, PTR_ERR(priv->phy_ref_clk),
-> +				     "failed to get PHY reference clock\n");
-> +
-> +	mutex_init(&priv->lock);
-> +
-> +	dev_set_drvdata(dev, priv);
-> +
-> +	pm_runtime_enable(dev);
-> +
-> +	ret = mixel_lvds_phy_reset(dev);
-> +	if (ret) {
-> +		dev_err(dev, "failed to do POR reset: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	for (i = 0; i < PHY_NUM; i++) {
-> +		lvds_phy = devm_kzalloc(dev, sizeof(*lvds_phy), GFP_KERNEL);
-> +		if (!lvds_phy) {
-> +			ret = -ENOMEM;
-> +			goto err;
-> +		}
-> +
-> +		phy = devm_phy_create(dev, NULL, &mixel_lvds_phy_ops);
-> +		if (IS_ERR(phy)) {
-> +			ret = PTR_ERR(phy);
-> +			dev_err(dev, "failed to create PHY for channel%d: %d\n",
-> +				i, ret);
-> +			goto err;
-> +		}
-> +
-> +		lvds_phy->phy = phy;
-> +		lvds_phy->id = i;
-> +		priv->phys[i] = lvds_phy;
-> +
-> +		phy_set_drvdata(phy, lvds_phy);
-> +	}
-> +
-> +	phy_provider = devm_of_phy_provider_register(dev, mixel_lvds_phy_xlate);
-> +	if (IS_ERR(phy_provider)) {
-> +		ret = PTR_ERR(phy_provider);
-> +		dev_err(dev, "failed to register PHY provider: %d\n", ret);
-> +		goto err;
-> +	}
-> +
-> +	return 0;
-> +err:
-> +	pm_runtime_disable(dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int mixel_lvds_phy_remove(struct platform_device *pdev)
-> +{
-> +	pm_runtime_disable(&pdev->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused mixel_lvds_phy_runtime_suspend(struct device *dev)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-> +
-> +	/* power down */
-> +	mutex_lock(&priv->lock);
-> +	regmap_write(priv->regmap, PHY_CTRL + REG_SET, PD);
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused mixel_lvds_phy_runtime_resume(struct device *dev)
-> +{
-> +	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-> +
-> +	/* power up + control initialization */
-> +	mutex_lock(&priv->lock);
-> +	regmap_update_bits(priv->regmap, PHY_CTRL,
-> +			   CTRL_INIT_MASK | PD, CTRL_INIT_VAL);
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct dev_pm_ops mixel_lvds_phy_pm_ops = {
-> +	SET_RUNTIME_PM_OPS(mixel_lvds_phy_runtime_suspend,
-> +			   mixel_lvds_phy_runtime_resume, NULL)
-> +};
-> +
-> +static const struct of_device_id mixel_lvds_phy_of_match[] = {
-> +	{ .compatible = "fsl,imx8qm-lvds-phy" },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, mixel_lvds_phy_of_match);
-> +
-> +static struct platform_driver mixel_lvds_phy_driver = {
-> +	.probe	= mixel_lvds_phy_probe,
-> +	.remove	= mixel_lvds_phy_remove,
-> +	.driver = {
-> +		.pm = &mixel_lvds_phy_pm_ops,
-> +		.name = "mixel-lvds-phy",
-> +		.of_match_table	= mixel_lvds_phy_of_match,
-> +	}
-> +};
-> +module_platform_driver(mixel_lvds_phy_driver);
-> +
-> +MODULE_DESCRIPTION("Mixel LVDS PHY driver");
-> +MODULE_AUTHOR("Liu Ying <victor.liu@nxp.com>");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.25.1
-
--- 
-~Vinod
+MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
+IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
+dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
+6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
+c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
+I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
+AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
+CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
+AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
+MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
+My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
+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
+z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
+dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
+AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
+c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
+LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
+LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
+Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
+VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
+ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
+OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
+3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
+lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
+R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
+MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCDK
+bzK6dGMWZuk91dPxpMeHb0+v5YssH7O6U6oYSOKGbDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA3MDUwODU4MDlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
+BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
+CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEABfsMFtPi/ZSo1vhGYExm
+mN4zXh9OOWDbpXO4i9eHWPbDxoITvyl/3hVWFlJ5Qykoa3aZODFhEmQjWlGfm6FAwQgP5txS9P2e
+KMsY9v9Xtzq5+PlM71re9NgiW4uIZHU2T9f5MZTu7x4G8/IP/QQOnkumTqz9OuHWsZNV4RkBH24b
+0G3kbKmCTwJb2VbKm+5h3GYKbm+E6tlC1SQ6pRC7yJo92IAQN0tu5xA14O3pnN++T0kDlv+QzDNU
+ZA0BvOxanHCjt8vzMqJIxkGgEps801QqZd82729Rw+hkQqb3opg7bX/V7yyTKO/iBxT5oJrBTJTn
+VOzWOhbVQHS+ZQiV9A==
+--000000000000385c6b05e30b0dcf--
