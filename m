@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447BACCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF9DCCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236843AbiGEMSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
+        id S236936AbiGEMSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234054AbiGEMJO (ORCPT
+        with ESMTP id S232197AbiGEMJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF5B1838B;
-        Tue,  5 Jul 2022 05:09:13 -0700 (PDT)
+        Tue, 5 Jul 2022 08:09:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75091186E8;
+        Tue,  5 Jul 2022 05:09:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB54261856;
-        Tue,  5 Jul 2022 12:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6144C341CF;
-        Tue,  5 Jul 2022 12:09:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1251861968;
+        Tue,  5 Jul 2022 12:09:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21691C36AE2;
+        Tue,  5 Jul 2022 12:09:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022952;
-        bh=XqE9c5jeIO8PhFmnmhzW9vcEqEU/9Q+JgXFOCaQYJAc=;
+        s=korg; t=1657022960;
+        bh=jzkFDmSMQEdcCXzeN1VJevw4S6A6EmA4JQDB+UhsubQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8Rghiz/Pv0PQm96t3r8tx10Z6MXl8fNrUGluUafpUmBRuBHIR6UmiHRKeP1CSAaj
-         JzJjaJgq9k9K4zHRnORBN99mr2JV7YBAySeNLAoQVM7jkalRpB7LXGvcFqi5EyAInV
-         +gixVviPI8URfSPh4d1Q7iTB6jN/6Rd8aknenyuk=
+        b=kDZYnXzFOio32WHkCLTRbToJ65Afe89Ir5mfxwPNurvJ5xJv2Ts39fV01nakQSAh1
+         eNvi44VDlpgNYvJfIw8Qcz+x+2B49rW5qGsDGMSADM6a5H5k6ErmNpWS0kHNQcQRKM
+         G+1qiGkOKZQF1kcciyUqYgghyHEwFgKSZChwEMsY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.10 68/84] selftests/rseq: Fix ppc32 missing instruction selection "u" and "x" for load/store
-Date:   Tue,  5 Jul 2022 13:58:31 +0200
-Message-Id: <20220705115617.308807524@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 35/84] NFC: nxp-nci: Dont issue a zero length i2c_master_read()
+Date:   Tue,  5 Jul 2022 13:57:58 +0200
+Message-Id: <20220705115616.348329371@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -49,188 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Michael Walle <michael@walle.cc>
 
-commit de6b52a21420a18dc8a36438d581efd1313d5fe3 upstream.
+commit eddd95b9423946aaacb55cac6a9b2cea8ab944fc upstream.
 
-Building the rseq basic test  with
-gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.12)
-Target: powerpc-linux-gnu
+There are packets which doesn't have a payload. In that case, the second
+i2c_master_read() will have a zero length. But because the NFC
+controller doesn't have any data left, it will NACK the I2C read and
+-ENXIO will be returned. In case there is no payload, just skip the
+second i2c master read.
 
-leads to these errors:
-
-/tmp/ccieEWxU.s: Assembler messages:
-/tmp/ccieEWxU.s:118: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:118: Error: junk at end of line: `,8'
-/tmp/ccieEWxU.s:121: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:121: Error: junk at end of line: `,8'
-/tmp/ccieEWxU.s:626: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:626: Error: junk at end of line: `,8'
-/tmp/ccieEWxU.s:629: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:629: Error: junk at end of line: `,8'
-/tmp/ccieEWxU.s:735: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:735: Error: junk at end of line: `,8'
-/tmp/ccieEWxU.s:738: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:738: Error: junk at end of line: `,8'
-/tmp/ccieEWxU.s:741: Error: syntax error; found `,', expected `('
-/tmp/ccieEWxU.s:741: Error: junk at end of line: `,8'
-Makefile:581: recipe for target 'basic_percpu_ops_test.o' failed
-
-Based on discussion with Linux powerpc maintainers and review of
-the use of the "m" operand in powerpc kernel code, add the missing
-%Un%Xn (where n is operand number) to the lwz, stw, ld, and std
-instructions when used with "m" operands.
-
-Using "WORD" to mean either a 32-bit or 64-bit type depending on
-the architecture is misleading. The term "WORD" really means a
-32-bit type in both 32-bit and 64-bit powerpc assembler. The intent
-here is to wrap load/store to intptr_t into common macros for both
-32-bit and 64-bit.
-
-Rename the macros with a RSEQ_ prefix, and use the terms "INT"
-for always 32-bit type, and "LONG" for architecture bitness-sized
-type.
-
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-10-mathieu.desnoyers@efficios.com
+Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/rseq/rseq-ppc.h |   55 ++++++++++++++++----------------
- 1 file changed, 28 insertions(+), 27 deletions(-)
+ drivers/nfc/nxp-nci/i2c.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/tools/testing/selftests/rseq/rseq-ppc.h
-+++ b/tools/testing/selftests/rseq/rseq-ppc.h
-@@ -47,10 +47,13 @@ do {									\
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -162,6 +162,9 @@ static int nxp_nci_i2c_nci_read(struct n
  
- #ifdef __PPC64__
+ 	skb_put_data(*skb, (void *)&header, NCI_CTRL_HDR_SIZE);
  
--#define STORE_WORD	"std "
--#define LOAD_WORD	"ld "
--#define LOADX_WORD	"ldx "
--#define CMP_WORD	"cmpd "
-+#define RSEQ_STORE_LONG(arg)	"std%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-+#define RSEQ_STORE_INT(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-+#define RSEQ_LOAD_LONG(arg)	"ld%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-+#define RSEQ_LOAD_INT(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-+#define RSEQ_LOADX_LONG		"ldx "							/* From base register ("b" constraint) */
-+#define RSEQ_CMP_LONG		"cmpd "
-+#define RSEQ_CMP_LONG_INT	"cmpdi "
- 
- #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,				\
- 			start_ip, post_commit_offset, abort_ip)			\
-@@ -89,10 +92,13 @@ do {									\
- 
- #else /* #ifdef __PPC64__ */
- 
--#define STORE_WORD	"stw "
--#define LOAD_WORD	"lwz "
--#define LOADX_WORD	"lwzx "
--#define CMP_WORD	"cmpw "
-+#define RSEQ_STORE_LONG(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
-+#define RSEQ_STORE_INT(arg)	RSEQ_STORE_LONG(arg)					/* To memory ("m" constraint) */
-+#define RSEQ_LOAD_LONG(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
-+#define RSEQ_LOAD_INT(arg)	RSEQ_LOAD_LONG(arg)					/* From memory ("m" constraint) */
-+#define RSEQ_LOADX_LONG		"lwzx "							/* From base register ("b" constraint) */
-+#define RSEQ_CMP_LONG		"cmpw "
-+#define RSEQ_CMP_LONG_INT	"cmpwi "
- 
- #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,				\
- 			start_ip, post_commit_offset, abort_ip)			\
-@@ -125,7 +131,7 @@ do {									\
- 		RSEQ_INJECT_ASM(1)						\
- 		"lis %%r17, (" __rseq_str(cs_label) ")@ha\n\t"			\
- 		"addi %%r17, %%r17, (" __rseq_str(cs_label) ")@l\n\t"		\
--		"stw %%r17, %[" __rseq_str(rseq_cs) "]\n\t"			\
-+		RSEQ_STORE_INT(rseq_cs) "%%r17, %[" __rseq_str(rseq_cs) "]\n\t"	\
- 		__rseq_str(label) ":\n\t"
- 
- #endif /* #ifdef __PPC64__ */
-@@ -136,7 +142,7 @@ do {									\
- 
- #define RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, label)			\
- 		RSEQ_INJECT_ASM(2)						\
--		"lwz %%r17, %[" __rseq_str(current_cpu_id) "]\n\t"		\
-+		RSEQ_LOAD_INT(current_cpu_id) "%%r17, %[" __rseq_str(current_cpu_id) "]\n\t" \
- 		"cmpw cr7, %[" __rseq_str(cpu_id) "], %%r17\n\t"		\
- 		"bne- cr7, " __rseq_str(label) "\n\t"
- 
-@@ -153,25 +159,25 @@ do {									\
-  * 	RSEQ_ASM_OP_* (else): doesn't have hard-code registers(unless cr7)
-  */
- #define RSEQ_ASM_OP_CMPEQ(var, expect, label)					\
--		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
--		CMP_WORD "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
-+		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
-+		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
- 		"bne- cr7, " __rseq_str(label) "\n\t"
- 
- #define RSEQ_ASM_OP_CMPNE(var, expectnot, label)				\
--		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
--		CMP_WORD "cr7, %%r17, %[" __rseq_str(expectnot) "]\n\t"		\
-+		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
-+		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expectnot) "]\n\t"		\
- 		"beq- cr7, " __rseq_str(label) "\n\t"
- 
- #define RSEQ_ASM_OP_STORE(value, var)						\
--		STORE_WORD "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
-+		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
- 
- /* Load @var to r17 */
- #define RSEQ_ASM_OP_R_LOAD(var)							\
--		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"
-+		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
- 
- /* Store r17 to @var */
- #define RSEQ_ASM_OP_R_STORE(var)						\
--		STORE_WORD "%%r17, %[" __rseq_str(var) "]\n\t"
-+		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
- 
- /* Add @count to r17 */
- #define RSEQ_ASM_OP_R_ADD(count)						\
-@@ -179,11 +185,11 @@ do {									\
- 
- /* Load (r17 + voffp) to r17 */
- #define RSEQ_ASM_OP_R_LOADX(voffp)						\
--		LOADX_WORD "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
-+		RSEQ_LOADX_LONG "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
- 
- /* TODO: implement a faster memcpy. */
- #define RSEQ_ASM_OP_R_MEMCPY() \
--		"cmpdi %%r19, 0\n\t" \
-+		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
- 		"beq 333f\n\t" \
- 		"addi %%r20, %%r20, -1\n\t" \
- 		"addi %%r21, %%r21, -1\n\t" \
-@@ -191,16 +197,16 @@ do {									\
- 		"lbzu %%r18, 1(%%r20)\n\t" \
- 		"stbu %%r18, 1(%%r21)\n\t" \
- 		"addi %%r19, %%r19, -1\n\t" \
--		"cmpdi %%r19, 0\n\t" \
-+		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
- 		"bne 222b\n\t" \
- 		"333:\n\t" \
- 
- #define RSEQ_ASM_OP_R_FINAL_STORE(var, post_commit_label)			\
--		STORE_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
-+		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"			\
- 		__rseq_str(post_commit_label) ":\n\t"
- 
- #define RSEQ_ASM_OP_FINAL_STORE(value, var, post_commit_label)			\
--		STORE_WORD "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
-+		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
- 		__rseq_str(post_commit_label) ":\n\t"
- 
- static inline __attribute__((always_inline))
-@@ -743,9 +749,4 @@ error2:
- #endif
- }
- 
--#undef STORE_WORD
--#undef LOAD_WORD
--#undef LOADX_WORD
--#undef CMP_WORD
--
- #endif /* !RSEQ_SKIP_FASTPATH */
++	if (!header.plen)
++		return 0;
++
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+ 	if (r != header.plen) {
+ 		nfc_err(&client->dev,
 
 
