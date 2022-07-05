@@ -2,102 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D158FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F01FDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231556AbiGEP0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52816 "EHLO
+        id S229754AbiGEP05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiGEP0S (ORCPT
+        with ESMTP id S229507AbiGEP0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:26:18 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FA718E1D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:26:16 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-3137316bb69so112226817b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:26:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wk5Y25/dUa+IXHDUL10teFIgK8kNUBO1oeMMo3Ill7A=;
-        b=GsAVWt2RcePWEhCXpNuMhOCPB/Hj0hjOSc8fcr//l2a2j40bz/A12CPiM8+rQ2cPjK
-         FE5x28RU7A1yUurjYhLkASsz48TuNZEr964a++b3qUwT0Dd+P2X5uC26c9NdiCWrj+kn
-         caXUKSdiChQxkH5FlcxBpqu4F6jMfJsOKcOg2iC/om/w2HLcyM7dJvZegTcorWJCHyAm
-         qxBmfiiWhnPwTHDdJf6wDI2hTxM/+hfs+I7+rIFVjP896vjIND+LDdG1DCSBHGgiIARa
-         qPBhKXlPitQ3IKIZ0WQ4v7vL89DzX8YO5/crQ8+8uQAfT9uynVOAtYYUSU/cS08mijcM
-         uBFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wk5Y25/dUa+IXHDUL10teFIgK8kNUBO1oeMMo3Ill7A=;
-        b=PZ5u/UVejzNto5HsYC28Th/voWUYFZjN84DBPEDgd4Rw1y4Bjdel73mWQFUzNMzjb4
-         eKeqEzYnFQ3MdnLPRnjDUfQHpQRQfU7Urs2n66VVfIclze5S4M3IkO4CAxEbIT3FDbft
-         q839gzJ6LuLY/W1GimbiFpiuRx+mkzfjslF5spEenWgZ5RpvHaqBF9JJs9ROo3wvYKZ1
-         QAA67iqUSOg1mzbTlcOWsKleHXf4OrEXXpGi/4/y3Q1nztwo4tvqp+7mRADek6Xk8zJh
-         iClAXWlTCbXuTqTgUgktjpHvgNFSEXczvYFTUQLfV0hIUP05iPX5zXrm+KmFsx0rnstT
-         HV4A==
-X-Gm-Message-State: AJIora+e54QBEq4d2AdJOMalaG2F6QQ2sT5bZRRH/QNgWzLeYvHgz9XL
-        zVQ+ty9mBtE38T1TlQBSN4XMXkXoiNYIM/Hk3+k=
-X-Google-Smtp-Source: AGRyM1sbWvK8fkwIV+Pfzeg/eyU/uTFVrTo9rOPot9tVLZJPz+6AT+wWjBp66RmVgXIojzx5ysR5XQTYtqIqakTkrA4=
-X-Received: by 2002:a81:8397:0:b0:31c:8a02:3f6d with SMTP id
- t145-20020a818397000000b0031c8a023f6dmr15794516ywf.486.1657034775878; Tue, 05
- Jul 2022 08:26:15 -0700 (PDT)
+        Tue, 5 Jul 2022 11:26:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F229518E28;
+        Tue,  5 Jul 2022 08:26:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A39E7B81809;
+        Tue,  5 Jul 2022 15:26:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13211C341C7;
+        Tue,  5 Jul 2022 15:26:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657034811;
+        bh=7eBjk9mDSgvIzpkiH7EvCzwk2kRbUpj6AGdrebCGPsE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FrJ29z6/8tSoAac0Iw9JLiLKpX+XxqLisd902MEyW70oQCIog8kSErx+FBzVsrEr7
+         ikicV0YDar37GDPyAMOs6NAITPwJyLBFSSCTipAedm9RVyYpSKtE2DpKQxrDlPHV7j
+         6euhgqrfmp/Y4w3KfAjYI017mpLtqwnY1Ak1aJxu1InZlhqXVBEMVpqKFzwdDydZ1z
+         Mns5hBoVdcLaq52ETra9WPNEcsQVleo61PH3Ul8BpnURGU2JxEj78AE+po0EWxIT5Y
+         9fnY++PexO1rorGyJ/7H6z3krPk24c8/xhDGeuZZzeAmmaGhkbnrRUUVTGV5BCIheE
+         Kr6f7PWbK98Ow==
+Date:   Tue, 5 Jul 2022 08:26:49 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Add a general "kernel hardening" section
+Message-ID: <YsRYORcovwCGvztR@dev-arch.thelio-3990X>
+References: <20220702004638.2486003-1-keescook@chromium.org>
 MIME-Version: 1.0
-References: <20220703143533.62173-1-andriy.shevchenko@linux.intel.com>
- <91f156ba-5d93-63d6-5fa0-86614bc370d3@linux.intel.com> <YsMTHTcOWX4Q3W7f@smile.fi.intel.com>
- <21522ae3-96a3-ce07-6466-89cbf6c67a9f@linux.intel.com>
-In-Reply-To: <21522ae3-96a3-ce07-6466-89cbf6c67a9f@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 17:25:39 +0200
-Message-ID: <CAHp75VfcbeMt=OUamfyoheqxX1gcCoov+976ewPUerfH=wSxRg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] ASoC: SOF: Intel: bdw: remove duplicating driver
- data retrieval
-To:     =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        sound-open-firmware@alsa-project.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220702004638.2486003-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 3:19 PM P=C3=A9ter Ujfalusi
-<peter.ujfalusi@linux.intel.com> wrote:
-> On 04/07/2022 19:19, Andy Shevchenko wrote:
-> > On Mon, Jul 04, 2022 at 10:31:48AM +0300, P=C3=A9ter Ujfalusi wrote:
-> >> On 03/07/2022 17:35, Andy Shevchenko wrote:
+On Fri, Jul 01, 2022 at 05:46:38PM -0700, Kees Cook wrote:
+> While many large subsystems related to kernel hardening have their own
+> distinct MAINTAINERS entries, there are some smaller collections that
+> don't, but are maintained/reviewed by linux-hardening@vger.kernel.org.
+> Add a section to capture these, add (or replace defunct) trees that are
+> now all carried in the hardening tree.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-...
+Acked-by: Nathan Chancellor <nathan@kernel.org>
 
-> >> +    return sof_acpi_probe(pdev, (const struct sof_dev_desc *)id->driv=
-er_data);
-> >>  }
-> >
-> >> We don't use the desc in sof_broadwell_probe(), so we can just pass th=
-e id->driver_data
-> >
-> > I prefer not to cast inside the function parameters when it's not about=
- POD.
->
-> Fair enough.
->
-> How about assigning desc before it is used?
-
-As answered in the other email, I'm fine to modify the change accordingly.
-
---=20
-With Best Regards,
-Andy Shevchenko
+> ---
+>  MAINTAINERS | 21 +++++++++++++++++----
+>  1 file changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 3cf9842d9233..2702b29e922f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4873,7 +4873,7 @@ R:	Nick Desaulniers <ndesaulniers@google.com>
+>  L:	llvm@lists.linux.dev
+>  S:	Supported
+>  B:	https://github.com/ClangBuiltLinux/linux/issues
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/clang/features
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	include/linux/cfi.h
+>  F:	kernel/cfi.c
+>  
+> @@ -7783,6 +7783,7 @@ FORTIFY_SOURCE
+>  M:	Kees Cook <keescook@chromium.org>
+>  L:	linux-hardening@vger.kernel.org
+>  S:	Supported
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	include/linux/fortify-string.h
+>  F:	lib/test_fortify/*
+>  F:	scripts/test_fortify.sh
+> @@ -8225,6 +8226,7 @@ GCC PLUGINS
+>  M:	Kees Cook <keescook@chromium.org>
+>  L:	linux-hardening@vger.kernel.org
+>  S:	Maintained
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	Documentation/kbuild/gcc-plugins.rst
+>  F:	scripts/Makefile.gcc-plugins
+>  F:	scripts/gcc-plugins/
+> @@ -10742,6 +10744,17 @@ F:	scripts/mk*
+>  F:	scripts/mod/
+>  F:	scripts/package/
+>  
+> +KERNEL HARDENING (not covered by other areas)
+> +M:	Kees Cook <keescook@chromium.org>
+> +L:	linux-hardening@vger.kernel.org
+> +S:	Supported
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+> +F:	include/linux/overflow.h
+> +F:	include/linux/randomize_kstack.h
+> +F:	mm/usercopy.c
+> +K:	\b(add|choose)_random_kstack_offset\b
+> +K:	\b__check_(object_size|heap_object)\b
+> +
+>  KERNEL JANITORS
+>  L:	kernel-janitors@vger.kernel.org
+>  S:	Odd Fixes
+> @@ -11542,7 +11555,7 @@ F:	drivers/media/usb/dvb-usb-v2/lmedm04*
+>  LOADPIN SECURITY MODULE
+>  M:	Kees Cook <keescook@chromium.org>
+>  S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git lsm/loadpin
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	Documentation/admin-guide/LSM/LoadPin.rst
+>  F:	security/loadpin/
+>  
+> @@ -17857,7 +17870,7 @@ M:	Kees Cook <keescook@chromium.org>
+>  R:	Andy Lutomirski <luto@amacapital.net>
+>  R:	Will Drewry <wad@chromium.org>
+>  S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git seccomp
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/seccomp
+>  F:	Documentation/userspace-api/seccomp_filter.rst
+>  F:	include/linux/seccomp.h
+>  F:	include/uapi/linux/seccomp.h
+> @@ -21993,7 +22006,7 @@ F:	include/linux/yam.h
+>  YAMA SECURITY MODULE
+>  M:	Kees Cook <keescook@chromium.org>
+>  S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git yama/tip
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	Documentation/admin-guide/LSM/Yama.rst
+>  F:	security/yama/
+>  
+> -- 
+> 2.32.0
+> 
