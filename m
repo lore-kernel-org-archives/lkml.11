@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A04DFCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CF6CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238815AbiGEM3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
+        id S238854AbiGEM3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237556AbiGEMTV (ORCPT
+        with ESMTP id S237580AbiGEMTY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D57B18E1A;
-        Tue,  5 Jul 2022 05:15:13 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9A41D320;
+        Tue,  5 Jul 2022 05:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 407ADB8170A;
-        Tue,  5 Jul 2022 12:15:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A02C341C7;
-        Tue,  5 Jul 2022 12:15:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79336619E2;
+        Tue,  5 Jul 2022 12:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A4B0C341C8;
+        Tue,  5 Jul 2022 12:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023311;
-        bh=Ksb1/PcP0ywMCJuFBLWwNgkMw+7Bu7olf1MzbZcnlgw=;
+        s=korg; t=1657023321;
+        bh=6vtMtvnMKcOp3rLFFzFcjg0nyVIUE85PXXLARnqvPeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bq/v9Q6yWmX7hOGnl+Ur4DbYu0Vw/H9G/95xdJjKwOkAlWQ1EukcNRExWdLQ7PGCR
-         EZErdFKoeo5OeWyH1+m8fJhK/hmnkcP2i1jxadmRdT9p0GXXw69igJQeh9FMDlvGPq
-         XW4dcYl7SzPyKoteWGJYoEXjN7O7Zg9eGsZpvVPw=
+        b=jCMeA8+fTj7Dl86BKaNvvKWA6cZhpiqtX5OF0x0E3hp1nzbNYQPnXEh0aI+boNQur
+         ENgE/ipUnYshHfjug1PGpvuah72L39uuQICTm+R5P0xqWVD+dTcPWfsW4a5fdBmPWB
+         ELY55UblcPmQmHkAm2opH0gv+Yq7AcKRsOEc0pFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.18 015/102] parisc/unaligned: Fix emulate_ldw() breakage
-Date:   Tue,  5 Jul 2022 13:57:41 +0200
-Message-Id: <20220705115618.848258989@linuxfoundation.org>
+        stable@vger.kernel.org, Jinzhou Su <Jinzhou.Su@amd.com>,
+        Huang Rui <ray.huang@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.18 019/102] cpufreq: amd-pstate: Add resume and suspend callbacks
+Date:   Tue,  5 Jul 2022 13:57:45 +0200
+Message-Id: <20220705115618.964128291@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -47,37 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Jinzhou Su <Jinzhou.Su@amd.com>
 
-commit 96b80fcd2705fc50ebe1f7f3ce204e861b3099ab upstream.
+commit b376471fb47d4905e72fe73e9eeed228f8f2f230 upstream.
 
-The commit e8aa7b17fe41 broke the 32-bit load-word unalignment exception
-handler because it calculated the wrong amount of bits by which the value
-should be shifted. This patch fixes it.
+When system resumes from S3, the CPPC enable register will be
+cleared and reset to 0.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Fixes: e8aa7b17fe41 ("parisc/unaligned: Rewrite inline assembly of emulate_ldw()")
-Cc: stable@vger.kernel.org   # v5.18
+So enable the CPPC interface by writing 1 to this register on
+system resume and disable it during system suspend.
+
+Signed-off-by: Jinzhou Su <Jinzhou.Su@amd.com>
+Signed-off-by: Jinzhou Su <Jinzhou.Su@amd.com>
+Acked-by: Huang Rui <ray.huang@amd.com>
+[ rjw: Subject and changelog edits ]
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/unaligned.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/cpufreq/amd-pstate.c |   24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/arch/parisc/kernel/unaligned.c b/arch/parisc/kernel/unaligned.c
-index ed1e88a74dc4..bac581b5ecfc 100644
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -146,7 +146,7 @@ static int emulate_ldw(struct pt_regs *regs, int toreg, int flop)
- "	depw	%%r0,31,2,%4\n"
- "1:	ldw	0(%%sr1,%4),%0\n"
- "2:	ldw	4(%%sr1,%4),%3\n"
--"	subi	32,%4,%2\n"
-+"	subi	32,%2,%2\n"
- "	mtctl	%2,11\n"
- "	vshd	%0,%3,%0\n"
- "3:	\n"
--- 
-2.37.0
-
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -566,6 +566,28 @@ static int amd_pstate_cpu_exit(struct cp
+ 	return 0;
+ }
+ 
++static int amd_pstate_cpu_resume(struct cpufreq_policy *policy)
++{
++	int ret;
++
++	ret = amd_pstate_enable(true);
++	if (ret)
++		pr_err("failed to enable amd-pstate during resume, return %d\n", ret);
++
++	return ret;
++}
++
++static int amd_pstate_cpu_suspend(struct cpufreq_policy *policy)
++{
++	int ret;
++
++	ret = amd_pstate_enable(false);
++	if (ret)
++		pr_err("failed to disable amd-pstate during suspend, return %d\n", ret);
++
++	return ret;
++}
++
+ /* Sysfs attributes */
+ 
+ /*
+@@ -636,6 +658,8 @@ static struct cpufreq_driver amd_pstate_
+ 	.target		= amd_pstate_target,
+ 	.init		= amd_pstate_cpu_init,
+ 	.exit		= amd_pstate_cpu_exit,
++	.suspend	= amd_pstate_cpu_suspend,
++	.resume		= amd_pstate_cpu_resume,
+ 	.set_boost	= amd_pstate_set_boost,
+ 	.name		= "amd-pstate",
+ 	.attr           = amd_pstate_attr,
 
 
