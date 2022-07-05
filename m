@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FDBCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232493AbiGEL7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
+        id S232556AbiGEL7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232322AbiGEL7d (ORCPT
+        with ESMTP id S232108AbiGEL7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:59:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C002678;
-        Tue,  5 Jul 2022 04:59:32 -0700 (PDT)
+        Tue, 5 Jul 2022 07:59:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFFC1582A;
+        Tue,  5 Jul 2022 04:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BEDCB817D2;
-        Tue,  5 Jul 2022 11:59:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E44C341C7;
-        Tue,  5 Jul 2022 11:59:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61EF0B817CC;
+        Tue,  5 Jul 2022 11:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0EA6C341C7;
+        Tue,  5 Jul 2022 11:59:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022370;
-        bh=lNTWFd29FeHei074LkrRifrXHa5SjoBLx0HBvMGgLLs=;
+        s=korg; t=1657022373;
+        bh=tpiyEXn88fsmM6J9Y6FUx7OOFUOVV+53Ew27/QlsE4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HfW4fKzgUMsnt6mQVLCqyeKjWdemWGXOHB9RHMwxAFDDzoivVdny0+nzddxS5kUEQ
-         1J6kBZft9vplFbPfGRK/XIGLG5xxepBRHdvPqBI9/ZWryL6Y+AXHIAFK2fDoXHicPt
-         YX5x1OcP1QGwSJ/Bcxhm0ixRAkj+diHp/hfWoSRE=
+        b=Zj3cdy5kbcszhckQvqqaR7nnmvFjKWcmZT3rhl6L2DmYLMAjVjQgFdCl1D6vwQ17C
+         uHWYRno8k8Hx4GuFuZFqJVAcbi2zAgbQ9oGIpmcOWl7ovioTsxCnrZ8M5x/wO/HSal
+         ZcPqk/teWH/mioRGY3WbWnbas2G5AHuE83oV7/Mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 12/29] nfc: nfcmrvl: Fix irq_of_parse_and_map() return value
-Date:   Tue,  5 Jul 2022 13:57:53 +0200
-Message-Id: <20220705115606.110327439@linuxfoundation.org>
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 13/29] NFC: nxp-nci: Dont issue a zero length i2c_master_read()
+Date:   Tue,  5 Jul 2022 13:57:54 +0200
+Message-Id: <20220705115606.139233334@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115605.742248854@linuxfoundation.org>
 References: <20220705115605.742248854@linuxfoundation.org>
@@ -49,52 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Michael Walle <michael@walle.cc>
 
-commit 5a478a653b4cca148d5c89832f007ec0809d7e6d upstream.
+commit eddd95b9423946aaacb55cac6a9b2cea8ab944fc upstream.
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+There are packets which doesn't have a payload. In that case, the second
+i2c_master_read() will have a zero length. But because the NFC
+controller doesn't have any data left, it will NACK the I2C read and
+-ENXIO will be returned. In case there is no payload, just skip the
+second i2c master read.
 
-Reported-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Fixes: caf6e49bf6d0 ("NFC: nfcmrvl: add spi driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220627124048.296253-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/i2c.c |    6 +++---
- drivers/nfc/nfcmrvl/spi.c |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/nfc/nxp-nci/i2c.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -186,9 +186,9 @@ static int nfcmrvl_i2c_parse_dt(struct d
- 		pdata->irq_polarity = IRQF_TRIGGER_RISING;
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -180,6 +180,9 @@ static int nxp_nci_i2c_nci_read(struct n
+ 	memcpy(skb_put(*skb, NCI_CTRL_HDR_SIZE), (void *) &header,
+ 	       NCI_CTRL_HDR_SIZE);
  
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
--		pr_err("Unable to get irq, error: %d\n", ret);
--		return ret;
-+	if (!ret) {
-+		pr_err("Unable to get irq\n");
-+		return -EINVAL;
- 	}
- 	pdata->irq = ret;
- 
---- a/drivers/nfc/nfcmrvl/spi.c
-+++ b/drivers/nfc/nfcmrvl/spi.c
-@@ -130,9 +130,9 @@ static int nfcmrvl_spi_parse_dt(struct d
- 	}
- 
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
--		pr_err("Unable to get irq, error: %d\n", ret);
--		return ret;
-+	if (!ret) {
-+		pr_err("Unable to get irq\n");
-+		return -EINVAL;
- 	}
- 	pdata->irq = ret;
- 
++	if (!header.plen)
++		return 0;
++
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+ 	if (r != header.plen) {
+ 		nfc_err(&client->dev,
 
 
