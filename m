@@ -2,124 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A0ECCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7269ECCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237321AbiGEMXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        id S237392AbiGEMXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235601AbiGEMP7 (ORCPT
+        with ESMTP id S235076AbiGEMQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:15:59 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFB11B7AF;
-        Tue,  5 Jul 2022 05:11:55 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBVJS048821;
-        Tue, 5 Jul 2022 07:11:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657023091;
-        bh=JI6LrYkRvcXaKdPV76i9fhijESgbnGvtmEoKh8ex9kQ=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=fOOxsmdR/PfYMpg1mc7Jd3ge66AR2R2ATnSrA7zxC7EDFlMrh2K8yGVBVRTrsstu1
-         2OzXvewyCIm/ufanoUmXkadImAhuocipaHzuyOR1FkaZhcYgT4kTHLwEctFwpgbcoh
-         tMJvM6aK+N9DObXpGPToTrGa7b3AF8JxL69gC/GE=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBVKl008858
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Jul 2022 07:11:31 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Jul 2022 07:11:30 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Jul 2022 07:11:30 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBTkL098983;
-        Tue, 5 Jul 2022 07:11:30 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
-        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
-        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>,
-        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
-        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
-        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
-        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v4 2/5] dt-bindings: display: bridge: cdns,dsi: Add compatible for dsi on j721e
-Date:   Tue, 5 Jul 2022 17:41:13 +0530
-Message-ID: <20220705121116.24121-3-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
-References: <20220705121116.24121-1-r-ravikumar@ti.com>
+        Tue, 5 Jul 2022 08:16:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD471BE9B;
+        Tue,  5 Jul 2022 05:12:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22B7B619AF;
+        Tue,  5 Jul 2022 12:12:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A380C341C8;
+        Tue,  5 Jul 2022 12:11:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657023119;
+        bh=DLmVq64ijXGPUQWlCgQoxcagw9iIf3gK9IgQk8qCHrM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FbzZ1BajUeONfbe94ALR+hfAnwYeZsjYxxMguMAqR8Jd8+9xALearuKw18oIrLfN9
+         21j8tl7Nqzw7WitihKvwgrFkNdJzOhKZsOGDRYQ1O2wKhTx6307bN7HIjxDZkckQa6
+         7EYPD8cwHhEcHqt3Jzxx+XY0V8EO70TNb7gMkUz0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 45/98] net: phy: ax88772a: fix lost pause advertisement configuration
+Date:   Tue,  5 Jul 2022 13:58:03 +0200
+Message-Id: <20220705115618.866567600@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible to support dsi bridge on j721e
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+commit fa152f626b24ec2ca3489100d8c5c0a0bce4e2ef upstream.
+
+In case of asix_ax88772a_link_change_notify() workaround, we run soft
+reset which will automatically clear MII_ADVERTISE configuration. The
+PHYlib framework do not know about changed configuration state of the
+PHY, so we need use phy_init_hw() to reinit PHY configuration.
+
+Fixes: dde258469257 ("net: usb/phy: asix: add support for ax88772A/C PHYs")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220628114349.3929928-1-o.rempel@pengutronix.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../bindings/display/bridge/cdns,dsi.yaml     | 24 +++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ drivers/net/phy/ax88796b.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
-index ccedc73d8c18..33a88b39cf09 100644
---- a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
-@@ -14,13 +14,17 @@ description: |
+diff --git a/drivers/net/phy/ax88796b.c b/drivers/net/phy/ax88796b.c
+index 457896337505..0f1e617a26c9 100644
+--- a/drivers/net/phy/ax88796b.c
++++ b/drivers/net/phy/ax88796b.c
+@@ -88,8 +88,10 @@ static void asix_ax88772a_link_change_notify(struct phy_device *phydev)
+ 	/* Reset PHY, otherwise MII_LPA will provide outdated information.
+ 	 * This issue is reproducible only with some link partner PHYs
+ 	 */
+-	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset)
+-		phydev->drv->soft_reset(phydev);
++	if (phydev->state == PHY_NOLINK) {
++		phy_init_hw(phydev);
++		phy_start_aneg(phydev);
++	}
+ }
  
- properties:
-   compatible:
--    items:
--      - const: cdns,dsi
-+    enum:
-+      - cdns,dsi
-+      - ti,j721e-dsi
- 
-   reg:
-+    minItems: 1
-     items:
-       - description:
-           Register block for controller's registers.
-+      - description:
-+          Register block for wrapper settings registers in case of TI J7 SoCs.
- 
-   clocks:
-     items:
-@@ -74,6 +78,22 @@ properties:
- allOf:
-   - $ref: ../dsi-controller.yaml#
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,j721e-dsi
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+          maxItems: 2
-+    else:
-+      properties:
-+        reg:
-+          minItems: 1
-+          maxItems: 1
-+
- required:
-   - compatible
-   - reg
+ static struct phy_driver asix_driver[] = {
 -- 
-2.36.1
+2.37.0
+
+
 
