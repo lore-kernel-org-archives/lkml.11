@@ -2,186 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51768C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBCFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:39:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232792AbiGESjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        id S233003AbiGESjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232444AbiGESi4 (ORCPT
+        with ESMTP id S232804AbiGESjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:38:56 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF6A1EED0;
-        Tue,  5 Jul 2022 11:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657046335; x=1688582335;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bp/6skjaHsxhHpW9+rU5zrpeFxQXZKGs9YnkmuQGVP8=;
-  b=YFmK8QzleZ2+Oj7ovd/cL6offmnX+u8cWdJpPg+m+8iHxCkL141O8WOx
-   ScjTSGPwHk92+vAXVKGs5NznqhHalQGVW8DW34n+xrxpy63azkJCnT+Pb
-   xda5G34m9iEiiSxr9RgjxXuN7E45PNVCbnoVX4phrU96jzZ9QnYg9yXJK
-   UOYWR1onRyXYvqaZsrBUh7/sY9PGEPOxun3xgyAuguewG9NgqAsIxK7Wc
-   X1NtUXLRJ2Xz6cv3tnBG5M5rhLtOp5eLXoqhvjPIENxlm8K/iJtdMqJNc
-   tp/LQZbCdxKpbu+qSQ+DMxwbZPfxYkF3vOGoOqLETzqLAfuq6jl5oRkZ2
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284173882"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="284173882"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:38:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="619965099"
-Received: from viggo.jf.intel.com (HELO ray2.sr71.net) ([10.54.77.144])
-  by orsmga008.jf.intel.com with ESMTP; 05 Jul 2022 11:38:55 -0700
-From:   Dave Hansen <dave.hansen@linux.intel.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        linux-sgx@vger.kernel.org
-Subject: [PATCH] x86/sgx: Allow enclaves to use Asynchrounous Exit Notification
-Date:   Tue,  5 Jul 2022 11:36:48 -0700
-Message-Id: <20220705183648.3739111-1-dave.hansen@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 5 Jul 2022 14:39:15 -0400
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806A21CFCA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:39:02 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 8985 invoked from network); 5 Jul 2022 20:38:58 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1657046338; bh=WWwtFu5inTGYYHR/P6xpZs+1V1TpiM1KVqGs6QWQJP4=;
+          h=Subject:To:Cc:From;
+          b=r0ig7VGT6CmM+AW0kQSIPZOUUY77GPXcRzY9cQdeZwaExr8ASpSw++z4W5Unf3viy
+           CLf5mkqTzrRMI38RuY14xKAhN68AZj60y1VKq9h0U00kTHtEGbtc9HBP8iPtJ20BPr
+           9QjNzQh3HO288IrQ18p9/CLeXcx69+NezqM3jLl0=
+Received: from aafi210.neoplus.adsl.tpnet.pl (HELO [192.168.1.22]) (mat.jonczyk@o2.pl@[83.4.138.210])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <vasyl.vavrychuk@opensynergy.com>; 5 Jul 2022 20:38:58 +0200
+Message-ID: <494b21fb-896e-5c80-ff53-b5f914663736@o2.pl>
+Date:   Tue, 5 Jul 2022 20:38:48 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to
+ `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
+Content-Language: en-GB
+To:     Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org,
+        Max Krummenacher <max.oss.09@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        max.krummenacher@toradex.com
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20220614181706.26513-1-max.oss.09@gmail.com>
+ <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+From:   =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>
+In-Reply-To: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-WP-MailID: ea507a630c026762668487bc76baf600
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 000000A [IRNk]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Short Version:
+W dniu 5.07.2022 o 14:59, Vasyl Vavrychuk pisze:
+> `cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
+> commit [1] to ensure that power_on work is canceled after HCI interface
+> down.
+>
+> But, in certain cases power_on work function may call hci_dev_close_sync
+> itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
+> cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
+> happens when device is rfkilled on boot. To avoid deadlock, move
+> power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
+>
+> Deadlock introduced by commit [1] was reported in [2,3] as broken
+> suspend. Suspend did not work because `hdev->req_lock` held as result of
+> `power_on` work deadlock. In fact, other BT features were not working.
+> It was not observed when testing [1] since it was verified without
+> rfkill in place.
+>
+> NOTE: It is not needed to cancel power_on work from other places where
+> hci_dev_do_close/hci_dev_close_sync is called in case:
+> * Requests were serialized due to `hdev->req_workqueue`. The power_on
+> work is first in that workqueue.
+> * hci_rfkill_set_block which won't close device anyway until HCI_SETUP
+> is on.
+> * hci_sock_release which runs after hci_sock_bind which ensures
+> HCI_SETUP was cleared.
+>
+> As result, behaviour is the same as in pre-dd06ed7 commit, except
+> power_on work cancel added to hci_dev_close.
+>
+> [1]: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+> [2]: https://lore.kernel.org/lkml/20220614181706.26513-1-max.oss.09@gmail.com/
+> [2]: https://lore.kernel.org/lkml/1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl/
+>
+> Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+> Reported-by: Max Krummenacher <max.krummenacher@toradex.com>
+> Reported-by: Mateusz Jonczyk <mat.jonczyk@o2.pl>
 
-Allow enclaves to use the new Asynchronous EXit (AEX)
-notification mechanism.  This mechanism lets enclaves run a
-handler after an AEX event.  These handlers can run mitigations
-for things like SGX-Step[1].
+Works well: suspend (with bluetooth on and also off), hibernation, sending files, rfkill.
 
-AEX Notify will be made available both on upcoming processors and
-on some older processors through microcode updates.
+Thank you.
 
-Long Version:
+Reported-and-tested-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-== SGX Attribute Background ==
+Greetings,
 
-The SGX architecture includes a list of SGX "attributes".  These
-attributes ensure consistency and transparency around specific
-enclave features.
-
-As a simple example, the "DEBUG" attribute allows an enclave to
-be debugged, but also destroys virtually all of SGX security.
-Using attributes, enclaves can know that they are being debugged.
-Attributes also affect enclave attestation so an enclave can, for
-instance, be denied access to secrets while it is being debugged.
-
-The kernel keeps a list of known attributes and will only
-initialize enclaves that use a known set of attributes.  This
-kernel policy eliminates the chance that a new SGX attribute
-could cause undesired effects.
-
-For example, imagine a new attribute was added called
-"PROVISIONKEY2" that provided similar functionality to
-"PROVISIIONKEY".  A kernel policy that allowed indiscriminate use
-of unknown attributes and thus PROVISIONKEY2 would undermine the
-existing kernel policy which limits use of PROVISIONKEY enclaves.
-
-== AEX Notify Background ==
-
-"Intel Architecture Instruction Set Extensions and Future
-Features - Version 45" is out[2].  There is a new chapter:
-
-	Asynchronous Enclave Exit Notify and the EDECCSSA User Leaf Function.
-
-Enclaves exit can be either synchronous and consensual (EEXIT for
-instance) or asynchronous (on an interrupt or fault).  The
-asynchronous ones can evidently be exploited to single step
-enclaves[1], on top of which other naughty things can be built.
-
-AEX Notify will be made available both on upcoming processors and
-on some older processors through microcode updates.
-
-== The Problem ==
-
-These attacks are currently entirely opaque to the enclave since
-the hardware does the save/restore under the covers. The
-Asynchronous Enclave Exit Notify (AEX Notify) mechanism provides
-enclaves an ability to detect and mitigate potential exposure to
-these kinds of attacks.
-
-== The Solution ==
-
-Define the new attribute value for AEX Notification.  Ensure the
-attribute is cleared from the list reserved attributes which
-allows it to be used in enclaves.
-
-I just built this and ran it to make sure there were no obvious
-regressions since I do not have the hardware to test it handy.
-Tested-by's would be much appreciated.
-
-1. https://github.com/jovanbulck/sgx-step
-2. https://cdrdv2.intel.com/v1/dl/getContent/671368?explicitVersion=true
-
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: x86@kernel.org
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: linux-sgx@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- arch/x86/include/asm/sgx.h | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
-
-diff --git a/arch/x86/include/asm/sgx.h b/arch/x86/include/asm/sgx.h
-index 3f9334ef67cd..f7328d8efd83 100644
---- a/arch/x86/include/asm/sgx.h
-+++ b/arch/x86/include/asm/sgx.h
-@@ -110,17 +110,28 @@ enum sgx_miscselect {
-  * %SGX_ATTR_EINITTOKENKEY:	Allow to use token signing key that is used to
-  *				sign cryptographic tokens that can be passed to
-  *				EINIT as an authorization to run an enclave.
-+ * %SGX_ATTR_ASYNC_EXIT_NOTIFY:	Allow enclaves to be notified after an
-+ *				asynchronous exit has occurred.
-  */
- enum sgx_attribute {
--	SGX_ATTR_INIT		= BIT(0),
--	SGX_ATTR_DEBUG		= BIT(1),
--	SGX_ATTR_MODE64BIT	= BIT(2),
--	SGX_ATTR_PROVISIONKEY	= BIT(4),
--	SGX_ATTR_EINITTOKENKEY	= BIT(5),
--	SGX_ATTR_KSS		= BIT(7),
-+	SGX_ATTR_INIT		   = BIT(0),
-+	SGX_ATTR_DEBUG		   = BIT(1),
-+	SGX_ATTR_MODE64BIT	   = BIT(2),
-+				  /* BIT(3) is reserved */
-+	SGX_ATTR_PROVISIONKEY	   = BIT(4),
-+	SGX_ATTR_EINITTOKENKEY	   = BIT(5),
-+				  /* BIT(6) is for CET */
-+	SGX_ATTR_KSS		   = BIT(7),
-+				  /* BIT(8) is reserved */
-+				  /* BIT(9) is reserved */
-+	SGX_ATTR_ASYNC_EXIT_NOTIFY = BIT(10),
- };
- 
--#define SGX_ATTR_RESERVED_MASK	(BIT_ULL(3) | BIT_ULL(6) | GENMASK_ULL(63, 8))
-+#define SGX_ATTR_RESERVED_MASK	(BIT_ULL(3) | \
-+				 BIT_ULL(6) | \
-+				 BIT_ULL(8) | \
-+				 BIT_ULL(9) | \
-+				 GENMASK_ULL(63, 11))
- 
- /**
-  * struct sgx_secs - SGX Enclave Control Structure (SECS)
--- 
-2.34.1
+Mateusz Jończyk
 
