@@ -2,103 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A57CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FFAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbiGELy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
+        id S229507AbiGELyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232965AbiGELxE (ORCPT
+        with ESMTP id S230342AbiGELyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:53:04 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CD317A84
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:53:02 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id r9so14181109ljp.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:53:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IbfaXjeOYPk8qrQ6FvKEJiDPLZqhzWiK2mEmdCgaVvk=;
-        b=B4DtRXPpYtc7Jys2RrKIjT7AKP3Cq2mEqDpEzOACwvCZDb77o2+T4h755u44lqfwgP
-         v4Li7tF6UwQtWQ0lA//rN/NYdtZNB0dTA+HcwQ3CRgQE5xx+N4nKDoqtN9y6iHkEeup/
-         YdkZNnjl5Z58di+2anNCAwRIwoLzrJNvq2Xb0c0Ru6dtLmH1QR2udERachuAu2MOXTJl
-         KWkvYf5EB+mX0k7axZ4FUwhcvlTAPffn3D72r33YlkHi/1SgzMQdEXVcmmYyOBtag99J
-         IrZirlPmqptkw8Y6vgrSxrtadQffV6EYlUsra222sQhNAGezLdeBVoHJ9FRGhQImzcgg
-         ewvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IbfaXjeOYPk8qrQ6FvKEJiDPLZqhzWiK2mEmdCgaVvk=;
-        b=rihq60NB5jPcd4Z+3R55N4SYasJ1NCq1IttPODD4oHHpJKzguPrBv1qQLNvmkStExk
-         wOpvXW73u95PcGJIjcojVkH06rsJszSsBGP9GjiWlCAZyk+LuSkMRD9NqE12zW83Gpq9
-         Z+vLPBPU1TQsg25nIeYg9qu9ktz8kq0B5xE95dctsZEF99Wu29Iq1XfdXzAy8QsfGVtQ
-         D/icIXEvbGvtF2QPQYt3UoUsbGiU1KevzR7r782Dy4b93ko341MYSjXjV0/DlMnncBVZ
-         r1NA3E5kWbWvLvI4fyXibx0fE9bkGrUAUTXOZvqv3/taKevDZjfa0NOfjc9+yCP+h4hR
-         NIUg==
-X-Gm-Message-State: AJIora86FkQJCmBVM8Z2YnI/AyAnsSawioBfBysjqPdr11usdCpu35bW
-        ynhiS73jLgPR/2APWJ6gcnMZLQ==
-X-Google-Smtp-Source: AGRyM1uPETmr+vhZN8KGx7CQ/BROrtMw0EI5i1L+BOd8h4XD5hhpd2Juf1gemkduB7se6umPE1HwyQ==
-X-Received: by 2002:a2e:9547:0:b0:24f:2e31:6078 with SMTP id t7-20020a2e9547000000b0024f2e316078mr18478545ljh.102.1657021981247;
-        Tue, 05 Jul 2022 04:53:01 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id 9-20020a2e0509000000b0025538905298sm5487757ljf.123.2022.07.05.04.53.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 04:53:00 -0700 (PDT)
-Message-ID: <29d1f7a3-e141-270c-9e71-e052fd41dd48@linaro.org>
-Date:   Tue, 5 Jul 2022 13:52:59 +0200
+        Tue, 5 Jul 2022 07:54:25 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652AF17AA6;
+        Tue,  5 Jul 2022 04:54:24 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 265BM13d010362;
+        Tue, 5 Jul 2022 11:54:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=8CHLSpOyGtHfVEN8PmGyC9+PyRtlgkvNXgWIGIzvReM=;
+ b=OlWPC2TbiJM+O1ADSzuCbg3cTWlMTviNS/YzWM6un6Fk33Ik3rsX0mOZNBK9/9Phr8CH
+ l4zjTNDgclkeXjog2/mFiZs9Dyz0811Gau4XIzFBf2Wqa9p+/unJOWIvAe2RpkSbKzeH
+ T5z/+GR/so+TOaqbafcE41B/IT3KLMWTLyJV+YiUaOrzeVX1q7cvIrS6lbQfYzeuY1AM
+ MTa3/YwbTvpn/XbvY51Ux5QdkOP/39xZJEXCY4A5uUUI1O2LVMluRTbHSaZ8qKAAvPr7
+ TviOrDZtW8wKylZBMDZgH9fW4cDGFS7fvzIrrZqhMyBAS85R4RzdfaDYO9V4lcGhAzGt 0A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h4mbvgpgf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 11:54:06 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 265BrAcD030687;
+        Tue, 5 Jul 2022 11:54:06 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h4mbvgpfy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 11:54:06 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 265BpeC0024891;
+        Tue, 5 Jul 2022 11:54:03 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3h2d9jbyp6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 11:54:03 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 265Bs9lO32899368
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 5 Jul 2022 11:54:09 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A201D4C04E;
+        Tue,  5 Jul 2022 11:54:00 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 191094C046;
+        Tue,  5 Jul 2022 11:54:00 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.48.113])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue,  5 Jul 2022 11:54:00 +0000 (GMT)
+Date:   Tue, 5 Jul 2022 13:53:58 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: Re: [PATCH 5.18 112/181] vmcore: convert copy_oldmem_page() to take
+ an iov_iter
+Message-ID: <YsQmVlnNDiMNsjD+@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220627111944.553492442@linuxfoundation.org>
+ <20220627111947.945731832@linuxfoundation.org>
+ <YrnaYJA675eGIy03@osiris>
+ <YrqpEZV3yu31t6E2@kroah.com>
+ <Yrq70Ctw3UYPFnzC@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <YsMisFQdaUZpxroY@casper.infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dt-bindings: leds: class-multicolor: reference class
- directly in multi-led node
-Content-Language: en-US
-To:     Pavel Machek <pavel@ucw.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>
-References: <20220624112106.111351-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220624112106.111351-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsMisFQdaUZpxroY@casper.infradead.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: WGMQlDIouX2O3FIdH8_aIbjl_QBqMUTJ
+X-Proofpoint-ORIG-GUID: D9AKQ_ZLiTRB1BnKEJ7l-vq-B36qtFGd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-05_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
+ malwarescore=0 suspectscore=0 phishscore=0 clxscore=1015 mlxscore=0
+ bulkscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207050049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/06/2022 13:21, Krzysztof Kozlowski wrote:
-> The leds/common.yaml is referenced directly in each LED node, which
-> leads to people doing the same with leds/leds-class-multicolor.yaml.
-> This is not correct because leds-class-multicolor.yaml defined multi-led
-> property and its children.  Some schemas implemented this incorrect.
-> 
-> Rework this to match same behavior common.yaml, so expect the multi-led
-> node to reference the leds-class-multicolor.yaml.  Fixing allows to add
-> unevaluatedProperties:false.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> This will conflict with any new users of leds-class-multicolor, e.g.:
-> https://lore.kernel.org/all/20220623115631.22209-4-peterwu.pub@gmail.com/
-> 
-> The new users should be updated to match the usage introduced here.
+On Mon, Jul 04, 2022 at 06:26:08PM +0100, Matthew Wilcox wrote:
 
-Pavel,
+Hi Matthew,
 
-Any comments from your side? It's waiting for a bit and folks are
-sending more and more wrong multicolor bindings...
+> > > > cc02e6e21aa5 ("s390/crash: add missing iterator advance in copy_oldmem_page()")
+> > > > af2debd58bd7 ("s390/crash: make copy_oldmem_page() return number of bytes copied")
+> > > 
+> > > Both of them are also in the 5.18-rc queue here, right?
+> > 
+> > Yes, these are:
+> > 
+> > 	[PATCH 5.18 113/181] s390/crash: add missing iterator advance in copy_oldmem_page() Greg Kroah-Hartman
+> 
+> It's generally considered polite to cc the original author when you
+> fix one of their patches.  I wasn't aware of this patch.
 
-Best regards,
-Krzysztof
+Apologies for not doing that - I did not realize this patch could be
+of interest for non-s390.
+
+> While the code change looks right, the commit message is wrong;
+> copy_oldmem_user() and copy_oldmem_kernel() need to GO AWAY.  You
+> need to be more like the other architectures and end up calling
+> copy_to_iter().  I have no idea what this memcpy_hsa_kernel()
+> and memcpy_hsa_user() are all about, but I was hoping that somebody
+> from the s390 team would react to:
+> 
+>     s390 needs more work to pass the iov_iter down further, or refactor, but
+>     I'd be more comfortable if someone who can test on s390 did that work.
+> 
+> Maybe you'll do it.
+
+I considered going with copy_to_iter(), but unfortunately getting rid of
+copy_oldmem_user() and copy_oldmem_kernel() is not an easy thing to do,
+if possible. At least for the time being we have to stay with these two
+and handle copy_oldmem_page() on our own.
+
+Yet, a hope that a single-segment iterator on s390 would be enough
+turned out to be wrong and a follow-up fix is coming. Hopefully, it
+will make s390 code one step closer to others.
+
+Thanks!
