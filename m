@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8B9CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2473ACCA480
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238783AbiGEM3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S239152AbiGEMaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237572AbiGEMTX (ORCPT
+        with ESMTP id S237692AbiGEMTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FDC1D316;
-        Tue,  5 Jul 2022 05:15:20 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791851AF26;
+        Tue,  5 Jul 2022 05:16:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4F2B61A05;
-        Tue,  5 Jul 2022 12:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7ED1C341C7;
-        Tue,  5 Jul 2022 12:15:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D7D88CE1A40;
+        Tue,  5 Jul 2022 12:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E869DC341C7;
+        Tue,  5 Jul 2022 12:16:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023319;
-        bh=Xf/Ge2KvjiZb23gT7lk55mqe0xDzPV0YbzEZ/ET/f6s=;
+        s=korg; t=1657023363;
+        bh=0R3xF/u6QllQD4opIKzBhCiHP/mcSqA9/m+EQC51hyE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYIT+RQefzAqtT3KfK0mi7W8KwZ2/Jq4mUO4HSSpnHCymZE4BKGF7vlCvA+mgct/m
-         zZv4kkXq/dMe31esNDJTQc6ms2efTTFXsJeUkgfJIntbMIL30JEt/QSCzG+qvbQ+0E
-         fAolf+MYBOJBLfJptKenv4kXKr1hLFw6mI4TVaQ4=
+        b=VtcMQmuYfUk1H2wns0PZPpPlla44QmkIw1Bv/GP+xT+skl6R1o8upDLwt1U2MeiXg
+         oY8OyG0tgow5xqwyyYWsGIRDAc4ZVyi0s05P0tAFLQEa5ofHDsQYEEPuKreMobnbVg
+         e07+XS5EG3lyj9XnZIk/vXzh+nrWWJMDdTzobzhU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 018/102] powerpc/bpf: Fix use of user_pt_regs in uapi
-Date:   Tue,  5 Jul 2022 13:57:44 +0200
-Message-Id: <20220705115618.935403012@linuxfoundation.org>
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 032/102] net: dp83822: disable rx error interrupt
+Date:   Tue,  5 Jul 2022 13:57:58 +0200
+Message-Id: <20220705115619.327071385@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,78 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
 
-commit b21bd5a4b130f8370861478d2880985daace5913 upstream.
+commit 0e597e2affb90d6ea48df6890d882924acf71e19 upstream.
 
-Trying to build a .c file that includes <linux/bpf_perf_event.h>:
-  $ cat test_bpf_headers.c
-  #include <linux/bpf_perf_event.h>
+Some RX errors, notably when disconnecting the cable, increase the RCSR
+register. Once half full (0x7fff), an interrupt flood is generated. I
+measured ~3k/s interrupts even after the RX errors transfer was
+stopped.
 
-throws the below error:
-  /usr/include/linux/bpf_perf_event.h:14:28: error: field ‘regs’ has incomplete type
-     14 |         bpf_user_pt_regs_t regs;
-	|                            ^~~~
+Since we don't read and clear the RCSR register, we should disable this
+interrupt.
 
-This is because we typedef bpf_user_pt_regs_t to 'struct user_pt_regs'
-in arch/powerpc/include/uaps/asm/bpf_perf_event.h, but 'struct
-user_pt_regs' is not exposed to userspace.
-
-Powerpc has both pt_regs and user_pt_regs structures. However, unlike
-arm64 and s390, we expose user_pt_regs to userspace as just 'pt_regs'.
-As such, we should typedef bpf_user_pt_regs_t to 'struct pt_regs' for
-userspace.
-
-Within the kernel though, we want to typedef bpf_user_pt_regs_t to
-'struct user_pt_regs'.
-
-Remove arch/powerpc/include/uapi/asm/bpf_perf_event.h so that the
-uapi/asm-generic version of the header is exposed to userspace.
-Introduce arch/powerpc/include/asm/bpf_perf_event.h so that we can
-typedef bpf_user_pt_regs_t to 'struct user_pt_regs' for use within the
-kernel.
-
-Note that this was not showing up with the bpf selftest build since
-tools/include/uapi/asm/bpf_perf_event.h didn't include the powerpc
-variant.
-
-Fixes: a6460b03f945ee ("powerpc/bpf: Fix broken uapi for BPF_PROG_TYPE_PERF_EVENT")
-Cc: stable@vger.kernel.org # v4.20+
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-[mpe: Use typical naming for header include guard]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220627191119.142867-1-naveen.n.rao@linux.vnet.ibm.com
+Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/bpf_perf_event.h      |    9 +++++++++
- arch/powerpc/include/uapi/asm/bpf_perf_event.h |    9 ---------
- 2 files changed, 9 insertions(+), 9 deletions(-)
- create mode 100644 arch/powerpc/include/asm/bpf_perf_event.h
- delete mode 100644 arch/powerpc/include/uapi/asm/bpf_perf_event.h
+ drivers/net/phy/dp83822.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- /dev/null
-+++ b/arch/powerpc/include/asm/bpf_perf_event.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_POWERPC_BPF_PERF_EVENT_H
-+#define _ASM_POWERPC_BPF_PERF_EVENT_H
-+
-+#include <asm/ptrace.h>
-+
-+typedef struct user_pt_regs bpf_user_pt_regs_t;
-+
-+#endif /* _ASM_POWERPC_BPF_PERF_EVENT_H */
---- a/arch/powerpc/include/uapi/asm/bpf_perf_event.h
-+++ /dev/null
-@@ -1,9 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
--#ifndef _UAPI__ASM_BPF_PERF_EVENT_H__
--#define _UAPI__ASM_BPF_PERF_EVENT_H__
--
--#include <asm/ptrace.h>
--
--typedef struct user_pt_regs bpf_user_pt_regs_t;
--
--#endif /* _UAPI__ASM_BPF_PERF_EVENT_H__ */
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -228,8 +228,7 @@ static int dp83822_config_intr(struct ph
+ 		if (misr_status < 0)
+ 			return misr_status;
+ 
+-		misr_status |= (DP83822_RX_ERR_HF_INT_EN |
+-				DP83822_LINK_STAT_INT_EN |
++		misr_status |= (DP83822_LINK_STAT_INT_EN |
+ 				DP83822_ENERGY_DET_INT_EN |
+ 				DP83822_LINK_QUAL_INT_EN);
+ 
 
 
