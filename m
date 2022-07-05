@@ -2,118 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36362C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDF2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbiGERFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        id S230271AbiGERGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiGERFN (ORCPT
+        with ESMTP id S229501AbiGERGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:05:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775B71AD82
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:05:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E3425CE1B95
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 17:05:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5071BC341C7;
-        Tue,  5 Jul 2022 17:05:05 +0000 (UTC)
-Date:   Tue, 5 Jul 2022 18:05:01 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     Will Deacon <will@kernel.org>,
-        "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
-        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
-        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
-        jonathan@marek.ca, mark.rutland@arm.com,
-        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        geert+renesas@glider.be, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
- degradation
-Message-ID: <YsRvPTORdvIwzShL@arm.com>
-References: <20220704142313.GE31684@willie-the-truck>
- <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
- <20220704163815.GA32177@willie-the-truck>
- <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
- <20220705095231.GB552@willie-the-truck>
- <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
- <20220705121115.GB1012@willie-the-truck>
- <YsRSajyMxahXe7ZS@kernel.org>
- <YsRZ8V8mQ+HM31D6@arm.com>
- <YsRfgX7FFZLxQU50@kernel.org>
+        Tue, 5 Jul 2022 13:06:48 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2321928F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:06:45 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-10c0119dd16so6959769fac.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 10:06:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WPIMENGp4bXPFbinmL/gsx/9qor/mNBafiC18YluS24=;
+        b=RQg5BdTVlBRNmA0anLA/AEfBvZsCPnGPLvFVs8JzPWMVbAEI3TAXZqnOpwEHvPxc+V
+         F0I9+VxrAog75zIGBXbdfFD1tRtVspXAn1xbDNCV+rl/TejNg7J+u3jy6Oen0DpzgBP2
+         SxTARrs/vJ+0ufSsu4GIejAcN5/ee5aE0SK6I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=WPIMENGp4bXPFbinmL/gsx/9qor/mNBafiC18YluS24=;
+        b=6xdZQEpSjFRp1UWRuBdZRvY4S2WprJIlf0NQKJFYzLxBV1T/0/+60pMvR6Q2xm7ilv
+         PIMfvoePIsnZUYoe3rQ+XR0yeRunuWNHqtn2+1tpLa6MlcDdT4PHNAIlOrgljMwQLIPO
+         J7vYCbfKFPt4ILuBY/x4TKl/gnf41BmAOCp01q3oi3We9lUM55CSVt5OnOaNuhHRmUXh
+         H9gpJNsu/A4R+D4gFf1dWmRT+EsHmUReju6ONq5fhN27/MNK0BFBDrpHJvoDukmIO8Sa
+         TTqFxwVA18tHDh5TiMD0jw3WsUGWYbCgV+Kx0j2aFITTOFV4SVdkR9HkKuKlhmANg9oE
+         Pvsg==
+X-Gm-Message-State: AJIora/sGlipjIP01aSk3iA4M/ofERTJoIAaiX9C951YJAuOuCxhElgT
+        oeHhEHVH4wVR8EQR+Ujpe959Aw==
+X-Google-Smtp-Source: AGRyM1tMNvmcCLUj0HlDUkFzzeB6v75SVTqcP11Hpv/RLbzqfbN4e0i9hHBWVxBReDceKATWT0IYoQ==
+X-Received: by 2002:a05:6870:1c9:b0:10b:ef44:3c7e with SMTP id n9-20020a05687001c900b0010bef443c7emr9288413oad.231.1657040805081;
+        Tue, 05 Jul 2022 10:06:45 -0700 (PDT)
+Received: from fedora64.linuxtx.org (99-47-93-78.lightspeed.rcsntx.sbcglobal.net. [99.47.93.78])
+        by smtp.gmail.com with ESMTPSA id h26-20020a9d3e5a000000b0060603221255sm16378453otg.37.2022.07.05.10.06.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 10:06:44 -0700 (PDT)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+Date:   Tue, 5 Jul 2022 12:06:42 -0500
+From:   Justin Forbes <jforbes@fedoraproject.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 000/102] 5.18.10-rc1 review
+Message-ID: <YsRvouhNos6sGjiT@fedora64.linuxtx.org>
+References: <20220705115618.410217782@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YsRfgX7FFZLxQU50@kernel.org>
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 06:57:53PM +0300, Mike Rapoport wrote:
-> On Tue, Jul 05, 2022 at 04:34:09PM +0100, Catalin Marinas wrote:
-> > On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
-> > > +void __init remap_crashkernel(void)
-> > > +{
-> > > +#ifdef CONFIG_KEXEC_CORE
-> > > +	phys_addr_t start, end, size;
-> > > +	phys_addr_t aligned_start, aligned_end;
-> > > +
-> > > +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
-> > > +	    return;
-> > > +
-> > > +	if (!crashk_res.end)
-> > > +	    return;
-> > > +
-> > > +	start = crashk_res.start & PAGE_MASK;
-> > > +	end = PAGE_ALIGN(crashk_res.end);
-> > > +
-> > > +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
-> > > +	aligned_end = ALIGN(end, PUD_SIZE);
-> > > +
-> > > +	/* Clear PUDs containing crash kernel memory */
-> > > +	unmap_hotplug_range(__phys_to_virt(aligned_start),
-> > > +			    __phys_to_virt(aligned_end), false, NULL);
-> > 
-> > What I don't understand is what happens if there's valid kernel data
-> > between aligned_start and crashk_res.start (or the other end of the
-> > range).
+On Tue, Jul 05, 2022 at 01:57:26PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.10 release.
+> There are 102 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Data shouldn't go anywhere :)
+> Responses should be made by Thu, 07 Jul 2022 11:55:56 +0000.
+> Anything received after that time might be too late.
 > 
-> There is 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.10-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
 > 
-> +	/* map area from PUD start to start of crash kernel with large pages */
-> +	size = start - aligned_start;
-> +	__create_pgd_mapping(swapper_pg_dir, aligned_start,
-> +			     __phys_to_virt(aligned_start),
-> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+> thanks,
 > 
-> and 
-> 
-> +	/* map area from end of crash kernel to PUD end with large pages */
-> +	size = aligned_end - end;
-> +	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
-> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
-> 
-> after the unmap, so after we tear down a part of a linear map we
-> immediately recreate it, just with a different page size.
-> 
-> This all happens before SMP, so there is no concurrency at that point.
+> greg k-h
 
-That brief period of unmap worries me. The kernel text, data and stack
-are all in the vmalloc space but any other (memblock) allocation to this
-point may be in the unmapped range before and after the crashkernel
-reservation. The interrupts are off, so I think the only allocation and
-potential access that may go in this range is the page table itself. But
-it looks fragile to me.
+Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
+s390x, x86_64), and boot tested x86_64. No regressions noted.
 
--- 
-Catalin
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
