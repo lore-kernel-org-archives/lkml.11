@@ -2,212 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34188C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbiGENt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
+        id S229995AbiGENtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232661AbiGENss (ORCPT
+        with ESMTP id S230348AbiGENtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:48:48 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2043.outbound.protection.outlook.com [40.107.22.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B7A20F41;
-        Tue,  5 Jul 2022 06:20:00 -0700 (PDT)
+        Tue, 5 Jul 2022 09:49:03 -0400
+X-Greylist: delayed 1234 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Jul 2022 06:20:46 PDT
+Received: from refb01.tmes.trendmicro.eu (refb01.tmes.trendmicro.eu [18.185.115.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70266220F0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 06:20:46 -0700 (PDT)
+Received: from 104.47.0.55_.trendmicro.com (unknown [172.21.19.51])
+        by refb01.tmes.trendmicro.eu (Postfix) with ESMTPS id 15168102F887E;
+        Tue,  5 Jul 2022 13:00:11 +0000 (UTC)
+Received: from 104.47.0.55_.trendmicro.com (unknown [172.21.167.194])
+        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 89F6310000C40;
+        Tue,  5 Jul 2022 13:00:08 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1657026006.714000
+X-TM-MAIL-UUID: bb9cbeab-c09d-458b-b057-a55f020b030e
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (unknown [104.47.0.55])
+        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id AE6441008F089;
+        Tue,  5 Jul 2022 13:00:06 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KtslqcbqGHQglcejAiA59NSCcsroLSF5mZ+Zuex7NSnZRuiruKdW7NHu1yFe1YBEn2AM83VR09mdFkLREV+wLs5zNtzFO5/YCZIurH0UoT1R862kLqJY+eRfEE3cvs6wP1USfFtEmlbPgrC4m/TkgQ4wHA02y2YFnH09rT4oGpqjQsjYXA5DOFwPGFxXwNk5ol6kDSy+iiZbHtbVtucLo47e04h3otnBq+pAd+MQ5LswrkjiOs2Q8QTnS0P4/x5X2pW2eJxy7Qo2Qa7+2N/Uor9aopFyr4vTt7xWVjdwyCMJU+kBT01FnlFMxoKHfHeB614O58+Cfl96kdF+5fGIUA==
+ b=HgwcrkLTwdrPSXCARIZu6Eo2igmnZlcbDqO8LolVf1WPHTWYzEUMjk7mLDU/KIB4cxlyVtIVz5w17flPFtvTPf+Hs0h26IKdTclCPuGtPf2ev8SCyRhL2shDlTJrX0R1J9fs7e7HGVtEO9Eqp4MoS5CUddiL8DrEip5unOUcjUMadueerilOXT919+voNUmvS1LicXmwoairzqv1BcK8sYtOr9cDMoGBRU3H1DIZFchrpx0sUhtMXk634h3Vn5ocETIdnXA+33bhgwhGIvZ9bXbz7z79jU3I4QP1IQeyGGJ2kp9xpSRIxAJ7w0cau1ykbwlmqmiooFzgmBBIzaHLfw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=djszGhgmEGTOjGiHwqjgYU0W3s5z2S/6KEqIalhNKOo=;
- b=bj6KYyg3meeS/m80Fz1Mg5K/pShIeCEcPKPeisVANgFypYR80d8AQtDXGoB1xAlNGmv63gj0lDNR8Zn7FI06D9vH925KVWFgpML/NoN1fKG1s+P2HbTfbCl45YOsakKTX+xYmD+llBIfS3rOSKWh0bN+QjOsCHe5ZYcibKWRHpMT+At8Wzzn/CqNDi1mPP1q3VwW0Nv17PuN8wUw5ZhNZUwW43YBHOMXMWTzBSxJA54UGPLWT0EUsCjPZkMt02tYO5iWnJLAw0eKvrwGkL1o5PdTBI8nouK61GEZjwkIWj+fTTM2aWQvLkFhkBRCDsxKfI+jFtf2cwWEqdhpnKAhpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=djszGhgmEGTOjGiHwqjgYU0W3s5z2S/6KEqIalhNKOo=;
- b=hcu/kjVo8rJq9rC1uPtN4n66D5KDLza+jGLhYj9dH4mAtZPq2JHHbPgnkOX3TDRnkMoss60B/jZzdI+7U5fipXu8OUoULrTcxOdyx/EQ9f3S7bhnhSL+BAAUBSquomycJY02UNbKoHwxm10a1Gnbgm/u7PULEJ0f4GSgV6oBtYw=
-Received: from DU2PR04MB8774.eurprd04.prod.outlook.com (2603:10a6:10:2e1::21)
- by VI1PR04MB7103.eurprd04.prod.outlook.com (2603:10a6:800:123::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Tue, 5 Jul
- 2022 13:19:57 +0000
-Received: from DU2PR04MB8774.eurprd04.prod.outlook.com
- ([fe80::5c49:dd85:a8d0:2907]) by DU2PR04MB8774.eurprd04.prod.outlook.com
- ([fe80::5c49:dd85:a8d0:2907%3]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
- 13:19:56 +0000
-From:   Han Xu <han.xu@nxp.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bough Chen <haibo.chen@nxp.com>,
-        "ashish.kumar@nxp.com" <ashish.kumar@nxp.com>,
-        "yogeshgaur.83@gmail.com" <yogeshgaur.83@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "singh.kuldeep87k@gmail.com" <singh.kuldeep87k@gmail.com>,
-        "tudor.ambarus@microchip.com" <tudor.ambarus@microchip.com>,
-        "p.yadav@ti.com" <p.yadav@ti.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "vigneshr@ti.com" <vigneshr@ti.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>
-CC:     "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "zhengxunli@mxic.com.tw" <zhengxunli@mxic.com.tw>
-Subject: RE: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
- nxp,fspi-dll-slvdly
-Thread-Topic: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
- nxp,fspi-dll-slvdly
-Thread-Index: AQHYkFF0qJujufsOTUOD0eIhHoBTUq1viBIAgAALOQCAAAJgAIAAKZ1g
-Date:   Tue, 5 Jul 2022 13:19:56 +0000
-Message-ID: <DU2PR04MB87747C9A8F18D8300461D6B197819@DU2PR04MB8774.eurprd04.prod.outlook.com>
-References: <1657012303-6464-1-git-send-email-haibo.chen@nxp.com>
- <1657012303-6464-7-git-send-email-haibo.chen@nxp.com>
- <ef676df1-77e0-b8ee-3950-97eade8ddd5b@linaro.org>
- <VI1PR04MB40167A70FBE772DF91047A4190819@VI1PR04MB4016.eurprd04.prod.outlook.com>
- <59d360ef-5374-c7a7-2995-854ab3715b25@linaro.org>
-In-Reply-To: <59d360ef-5374-c7a7-2995-854ab3715b25@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6623e09c-720e-4804-7986-08da5e890e1f
-x-ms-traffictypediagnostic: VI1PR04MB7103:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MmbikJxpBorj/zrXfLTmYbO3xhZPmsKk4BIQaN4uTA/5l2RNIJKq/oQxrZvNbxPCcsBJWD6i1jVMCAESsdDYKJqGCmGxEwNe0ZDtbkjmgGyoX4cZ8ozlkfbVkWpNK3fsOYFSBmtSmnwBi/amcSnST/YqAoisoQ8n5mije7GG2/g81l5ABjXdCPXqVu5A3E5QoQcos9ul7iZPBpVo98heTcdgtCn/1geYimt1viEwBGOH/ddqVe1TwRP1KIdBD96xdvU8N7H2at1RoCNwTWmSD/3RX77nsoRw84s1SeRxFnpDTvPvfbvjqTiIUHGRvgfl5rhJYMEyfjvu/a0YGbPw/rJGf6EGSex1xN0ROSkGflNcP3H3wIfMEJDkNOjEkn0eeIGMZ01CHkDaAy/Nu+WJm2wZyQMwtA/YAuV/rcxFuGjYNy3fPJ6V4LhBHS/mM0UmMd01f4LtmacsK+0kpWtVtcTvPQwskq/YC46JBUMrSQoaQ2QYANqJKqchzoF/0ZupJ3Wl7ckSqJ9JRODVAxxDvTu9lsKVFPQLuUNddGlaFjEHaHtP6ETABxIY7Au180x6y+Rk5s+e7C1B7FfgZHX1Q470GTmuaJ/zqOJQ+V8Y5eB8wDoCuAqQF4t9CtGDCRlrkI0OtZ2sxos8FUHfBYo7TgGNmhP0r93ePtU6qW6KxFhWJdCil3QQxYWtJ5+sqM6HgkSpee6CObU+UJdwBnvoYhmfRooZoEtmn9oxyjvTMbtqqS+sRUx2vFIGBXL+BZEKgaYlIj1JuJzqwaZrGh6PV6mHXgy7qN7JhGML/SsTqnlZWzSR/VoLjDpRvTAyAl5Tr0qvYJOeEO9zUKVya9TCDw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8774.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(376002)(396003)(346002)(39860400002)(66476007)(64756008)(8676002)(4326008)(66556008)(66446008)(5660300002)(7416002)(52536014)(8936002)(76116006)(2906002)(66946007)(44832011)(55016003)(86362001)(33656002)(38100700002)(921005)(122000001)(38070700005)(71200400001)(83380400001)(41300700001)(478600001)(9686003)(54906003)(110136005)(316002)(186003)(55236004)(26005)(7696005)(6506007)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bldoTGx2eWRFZG93MmFncnYzREIyWStDdDc0WHo3RmZEYUU4Rll0V0hHRUFM?=
- =?utf-8?B?dDlKcHdnNFluOTZVdlY5cUQvR0tKbEE0YzZaaWJPeG02QzBpUUgrdlBvR2sv?=
- =?utf-8?B?S1dKQ0lRYXVDWktOMjY5dDV1aVArK2hYV00zTm8rSTVJcGlVUERtWWx0aC9Z?=
- =?utf-8?B?NU56eDVseXpRa3MxZWxNcC81ZThyRU9ORTNBMjBxajdBVEF3aW5FWVZkQ0NO?=
- =?utf-8?B?Q2JxM2srTEFKY0pUUWN2c0FmSzI3Z292NFZOY0IyTmVjaEJSK2JLQllsNHdz?=
- =?utf-8?B?MjcyMFlLMFVrOHM0NVhmOFdYRHpJOWVieG5nNkJ0RFpjY3hLTUx0OHV1allp?=
- =?utf-8?B?b2IwZkt5OWExV2tEb1JCRWczUExocHlOTk14YnlDUFY4dFR2MzQrSy9nYkFW?=
- =?utf-8?B?OWFnMTlnY0UxYkZxRUZUZ2prTGVENEp5WGRDMnBnTHhvM2hYbUJKNll1U3A3?=
- =?utf-8?B?YXlRaVJRU293bm5DYmFPZVJRalRRT2FmdlZCNXE0WDErbTMwd2lKRnY3S1hW?=
- =?utf-8?B?alJTYVFIcGFDazVEeWNwcnBmZjF5bDJIZC9nWkxRWHBmUmNrQXl5TVZFQkRL?=
- =?utf-8?B?OWlVazVOc3Ayd0d5dWtNMDFqOGU5eXc5K2Fwem9oN0s5azBNQk9EL0R4VitH?=
- =?utf-8?B?dzgxMVNmMlRpQ2JkVHNqZktjcnJqdWVPZDZCT2EyU01CZG1odGpOQTVyYXpE?=
- =?utf-8?B?VlEyaHl3SU9qaTczTndrcVhQUlZ4RWRWT2VMRGI0UEFYSHdUdTJIWUlMUkI1?=
- =?utf-8?B?cVZrazVBZWxscnBGM3VxbDRBQU9GSlVsQjN4aW01M2IwcHRIMHVKaE95bjgy?=
- =?utf-8?B?MlVUWFF2RStlWjBvcytLbm43ZzBrMUZ2dUVWbjA4c1FiL2FYU3JKdXc4QWNX?=
- =?utf-8?B?bzE3NXpxSTRPWW5SVWhZOVpvUmVYeldicnJvdStUUHFsOXVFV1MrdzVabER0?=
- =?utf-8?B?bmQvUHJqOGgyMUFsNERiTjJSOXQyWkluTURybmlxT1FrN1c5U3V6d1JYVXlD?=
- =?utf-8?B?V0JtVWRCQTVwMEsvR084VDFqd09jRzdEWmNxREQwQVFKdWN5TlpZTTl5MlIz?=
- =?utf-8?B?SkM2bmRraG9LWEhEYVZpbDBZMnc0VEhLc25HbWJENzZQVTMweWNHQURaMFZO?=
- =?utf-8?B?YklUY0VpaW92RG9aa0ZtWGhEMUEwekNzdDJLQjV6aU5LQS9FRmtlNDlna1Rs?=
- =?utf-8?B?MC80OVVwVzdQZjdJYkZsaXROMWppM09MZjNVbks4Mk16QTNxc3VLZTBMbUVm?=
- =?utf-8?B?bFpNMkg0Q3V4a09sWkg4SzFvdldQTXNYQ1QzVlh1RUlEMmFiWjlIZnBhZWhM?=
- =?utf-8?B?cFVzTFpqQzExSDdzb2d5WnE2TTJUZ01UbFZhQ2VZckJYTHQ0UGQweFI1UGpL?=
- =?utf-8?B?V0ZiZlRyUlM4azA3MWtVbDdQK2xOWXRmbERPMExWUHdtSXRMOWQ4dFVtbDgr?=
- =?utf-8?B?cXBGZlVqMysyT1AyNW53K0lGaFo4SVAxQmh3Y1J1MjU3cVhWNW5UN1FBSWZq?=
- =?utf-8?B?UWhldWJZREczTmRmYXZmRXFmN3VDSmRPeEhKWnVUdS9ndHpmNS9QN3lzTElZ?=
- =?utf-8?B?VitJT2hTWWlrVGVaUFJhK1h0TU5lK1RlZHVDelhwdkk1NjBnNTVZaHY1T3pC?=
- =?utf-8?B?VFBuUStqbk5IYTRrWkFkcTNqRWNJdEdSTXh2SGZ6RWV3R0pTWGgxMkFBQmJh?=
- =?utf-8?B?OXlWKzFjTEZTTktkYzNQaWZmR2NTenF6VkM1ZnlkTzBIVlBiMjl6SEJUNXVO?=
- =?utf-8?B?b1NiejJNdjhHbnRDd1FmOGZ6YXlVTGZ2eGM4TkszSW9oUUlNOEpKSzFZOXp6?=
- =?utf-8?B?QjJ5UHZqUHlnMUZSNkJlZnpCQUxIc0RyZGRranl6ZXZiRmE5REptY1VvWSs2?=
- =?utf-8?B?alZTWFV2VWtwUllVdU9HTWdaMXU1UW42amNGVDNSN3A4RUV2Y2ZWOGtTb1JB?=
- =?utf-8?B?aUU0OXU5RGtIYWlYT3dLb3BVQjFRclBxS3dicENzYzY5QUcwN2VKbzFmU25z?=
- =?utf-8?B?OVRMWHB4STV6S1YrQ3ZLMnlrWUs4U2pIdVlpU1EvN1YxcmJ3RjVlaVlLUTlj?=
- =?utf-8?B?U2FlQTg3RXEvSlIzUGwzemxVK2tad1F3Vm5HOFpvNGRuZkxLakZFTUZMWFox?=
- =?utf-8?Q?sIbs=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ bh=N4In53M6i4y4lWT0YhqY5MdGnlfRbI42Ey0MaO6pZKU=;
+ b=e2tTQ/ZLTxa4i9A3NZGfJV+fmjIUYElG3A8I5fuwDtMYPCSQabpyfwvk7kAxR7lOIMp2O2hCiWCEMf/27aEXONUJAB5YDCs54fzR9jTx8DAu3FUPdLqNO/r24OBGHq7Kot9Xygu2AF6+ZkT6tlYPmfCSKEnjS1Nv83HV4qhEwvx44TJ5lqGVPu7+gzZ0Eteu6HzMIA7P0lrKO8Ltei8fIPHM+basDIJWldT5aSVStbg1iwnqV2Yet1vq7exPkJQammfwTT3UfoLzIjslZRUHCS7XRUOMJjPZulH5Vo3075PuWy3AQSxqy4AurfJKnSDdPM6ZJfobMeHIe8awSO2GGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 217.66.60.4) smtp.rcpttodomain=davemloft.net smtp.mailfrom=opensynergy.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=opensynergy.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=opensynergy.com;
+Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
+ designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
+From:   Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org,
+        Max Krummenacher <max.oss.09@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        max.krummenacher@toradex.com
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Subject: [PATCH] Bluetooth: core: Fix deadlock due to `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
+Date:   Tue,  5 Jul 2022 15:59:31 +0300
+Message-Id: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220614181706.26513-1-max.oss.09@gmail.com>
+References: <20220614181706.26513-1-max.oss.09@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8774.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6623e09c-720e-4804-7986-08da5e890e1f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2022 13:19:56.6507
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 1d595ac2-6eb6-4ea3-3f30-08da5e864645
+X-MS-TrafficTypeDiagnostic: PA4PR04MB7727:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vMsV4LJ8lEfuXd6lNB1gGPso7DN3kPnMOG1auOKbqIMokp3LePG8/zQV66KOfEFgZ6nEt0uJw0vlFjSS3YVGHZnE9CkwrWWDn8rPP1onsky8P1bVw04WfVBBEGFW7qH3mbtSJ2VI2bE5QB0jiAmXuheObpqdBK0K7+MvJND1veR5E0M7Ed8e9EutmZi+LBmC9Fu/jVNrCtIgJOpNTYwhwBTspWWIqRiVLhD/luO6DPMrFUI/+GfOObGbZLLGmmLd1PAqMmocnn1uV9960uhN+Nuqn8x8bHg6y89HF/tFJI3+PZPua8wE1hwhQGD0JMnESKJfzj20qvG2zqxAn/0zmYBs48RYkUMuOBt4ggg8UGKCUDLpZf+rvUomW9umBJmM9wIbLFHYYtjWsZoEoGC2+HtEkBr3PYpvp/5x71ydvV+7J0QJ6prZwpENu3cwCAfY2JrfEZ4t+Ue1xs5n4Qs9GVXeanroWPEJ17YqxEH5FaGpeJvZaEdeGLf2pxFAnFNVN0lfgUmt3U7y3HKRK09XYzV7/LKqyp4xeYdP09sJp3Hzx3W/nw4mt43XE6rJH2k5SrfqhynhUdIGRg5jt8j6S2ZGIdj8U/Gw/ZlVEy9ofi2i9l8KbElNZpg8sOZGIsTAk+I0RN9vjU6eFgH3yQCMaGUB/YGu/Xi81ajbXk1sN3DjB5MvM/FcQrfeidFzhGfOn4W3p8lBT7G8ABWVkfzMznMbME65PTjNinj9/V+UqRUYbqjIX6xc3CGLSKaOOz8pW7zgrSiBn0YbAjdhdbiIuUWbIYKgR4lvvFUjL5Z+cKZ1QLNgI+L1RgZpW0+XlQC5fbxOxvZpfQEZ6TM9AtyV1A==
+X-Forefront-Antispam-Report: CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:mx1.opensynergy.com;CAT:NONE;SFS:(13230016)(376002)(39840400004)(136003)(346002)(396003)(36840700001)(46966006)(2906002)(1076003)(186003)(107886003)(26005)(336012)(83380400001)(2616005)(40480700001)(36860700001)(36756003)(41300700001)(82310400005)(54906003)(110136005)(44832011)(7416002)(478600001)(81166007)(5660300002)(8936002)(966005)(8676002)(70586007)(70206006)(4326008)(47076005)(316002)(42186006)(86362001)(81973001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 13:00:02.3293
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IUIAx7jW4DSxWFI12A0N6V7//15VRHcqa82giLfS6nyb20XSd2KQLRT4YBd++N/o
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7103
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d595ac2-6eb6-4ea3-3f30-08da5e864645
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource: AM6EUR05FT055.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7727
+X-TM-AS-ERS: 104.47.0.55-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.0.1004-26996.007
+X-TMASE-Result: 10--10.482100-4.000000
+X-TMASE-MatchedRID: hDt2nT7GHlPoSitJVour/f7FEhWgo0y8iK5qg1cmsr+dkHRvBVgJZmfL
+        KEW7qlsHqUirzUPTZU8RXOKWV2pRUD3rUpOWwerc/kFj+75tvQwd7wYwkPJ/mh8DRANMiqtikrI
+        9/WPu3jf68qduCW2JnM/NY1zQKKD4skLtspCGs70zOazjYfBb8Y0KoZnZ6F+XsMZG2pUzAfOyuh
+        piqaRnanAm0uKJEVsP5erpc6fZVyrfytYpCSLCzr9A3Bl1/DcVUmlK22ARBaHCkJHfGKxhL7+Ih
+        mgj6NxWiAaG2YvsCOK12HagvbwDji/7QU2czuUNA9lly13c/gFHyz3bB5kG50z5vzLEGq8DSebk
+        8lenLCkkrfB4Sxx5OjKVinSQfz+2RGPq1SoWksB+yskgwrfsC30tCKdnhB58FMkUvzgg/cUqzDt
+        2+ewmfO0d84ZRbF3AIAcCikR3vq/ZKrIEyWvT574TNGUN4s+AaKip7hpHodOcWpgypYPMbtdt5+
+        WoqbOB
+X-TMASE-XGENCLOUD: c53241e7-22e2-4b84-95f7-0e1209b093b6-0-0-200-0
+X-TM-Deliver-Signature: 8AE3E450CD76EE7D70593E6C79C1DA51
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
+        s=TM-DKIM-20210503141657; t=1657026008;
+        bh=/mzkp2obN17YX5X2aYRTHkUYlkv9Lt075UpXK6TxCjo=; l=3043;
+        h=From:To:Date;
+        b=v8uQMikK0XKPHj2iHngFpC7c7Xrmb3DRgVP2ad8XJudMOk7z/shAMZSLeijq4dSby
+         C3tZJzxHtVumf9nqr9d/u8VjW712PODZY0MIBWBxRqeNsNoTnVSGuOstAEu+iaQlKf
+         qDWFlsq3e4RYrjczxtIStNk8gM/yc89H/W+Hnix/rTY0Z9W7lyhn51W9mJv5cGMBDl
+         ak32o3lt5xD/zjbkPCFb+Sl+2qcsgEtG4xbHD2xHFyhpe/ivTc+ewnoZ9NlrxinJax
+         sd7TfuvcUryaFus8K66+erkXKOCp/tozHDOrVL9kbJ/W8S48cteW3fldyLO87obN49
+         EIuzg81MBRXuw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEtyenlzenRvZiBLb3psb3dz
-a2kgPGtyenlzenRvZi5rb3psb3dza2lAbGluYXJvLm9yZz4NCj5TZW50OiBUdWVzZGF5LCBKdWx5
-IDUsIDIwMjIgNTozNyBBTQ0KPlRvOiBCb3VnaCBDaGVuIDxoYWliby5jaGVuQG54cC5jb20+OyBh
-c2hpc2gua3VtYXJAbnhwLmNvbTsNCj55b2dlc2hnYXVyLjgzQGdtYWlsLmNvbTsgYnJvb25pZUBr
-ZXJuZWwub3JnOyByb2JoK2R0QGtlcm5lbC5vcmc7DQo+a3J6eXN6dG9mLmtvemxvd3NraStkdEBs
-aW5hcm8ub3JnOyBIYW4gWHUgPGhhbi54dUBueHAuY29tPjsNCj5zaW5naC5rdWxkZWVwODdrQGdt
-YWlsLmNvbTsgdHVkb3IuYW1iYXJ1c0BtaWNyb2NoaXAuY29tOyBwLnlhZGF2QHRpLmNvbTsNCj5t
-aWNoYWVsQHdhbGxlLmNjOyBtaXF1ZWwucmF5bmFsQGJvb3RsaW4uY29tOyByaWNoYXJkQG5vZC5h
-dDsgdmlnbmVzaHJAdGkuY29tOw0KPnNoYXduZ3VvQGtlcm5lbC5vcmc7IHMuaGF1ZXJAcGVuZ3V0
-cm9uaXguZGU7IGtlcm5lbEBwZW5ndXRyb25peC5kZQ0KPkNjOiBsaW51eC1zcGlAdmdlci5rZXJu
-ZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0KPmRldmljZXRyZWVAdmdlci5r
-ZXJuZWwub3JnOyBsaW51eC1tdGRAbGlzdHMuaW5mcmFkZWFkLm9yZzsgZmVzdGV2YW1AZ21haWwu
-Y29tOw0KPmRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBsaW51eC1hcm0ta2VybmVs
-QGxpc3RzLmluZnJhZGVhZC5vcmc7DQo+emhlbmd4dW5saUBteGljLmNvbS50dw0KPlN1YmplY3Q6
-IFJlOiBbUEFUQ0ggMDcvMTFdIGR0LWJpbmRpbmdzOiBzcGk6IHNwaS1ueHAtZnNwaTogYWRkIGEg
-bmV3IHByb3BlcnR5DQo+bnhwLGZzcGktZGxsLXNsdmRseQ0KPg0KPk9uIDA1LzA3LzIwMjIgMTI6
-MjgsIEJvdWdoIENoZW4gd3JvdGU6DQo+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+
-PiBGcm9tOiBLcnp5c3p0b2YgS296bG93c2tpIDxrcnp5c3p0b2Yua296bG93c2tpQGxpbmFyby5v
-cmc+DQo+Pj4gU2VudDogMjAyMuW5tDfmnIg15pelIDE3OjQ4DQo+Pj4gVG86IEJvdWdoIENoZW4g
-PGhhaWJvLmNoZW5AbnhwLmNvbT47IGFzaGlzaC5rdW1hckBueHAuY29tOw0KPj4+IHlvZ2VzaGdh
-dXIuODNAZ21haWwuY29tOyBicm9vbmllQGtlcm5lbC5vcmc7IHJvYmgrZHRAa2VybmVsLm9yZzsN
-Cj4+PiBrcnp5c3p0b2Yua296bG93c2tpK2R0QGxpbmFyby5vcmc7IEhhbiBYdSA8aGFuLnh1QG54
-cC5jb20+Ow0KPj4+IHNpbmdoLmt1bGRlZXA4N2tAZ21haWwuY29tOyB0dWRvci5hbWJhcnVzQG1p
-Y3JvY2hpcC5jb207DQo+Pj4gcC55YWRhdkB0aS5jb207IG1pY2hhZWxAd2FsbGUuY2M7IG1pcXVl
-bC5yYXluYWxAYm9vdGxpbi5jb207DQo+Pj4gcmljaGFyZEBub2QuYXQ7IHZpZ25lc2hyQHRpLmNv
-bTsgc2hhd25ndW9Aa2VybmVsLm9yZzsNCj4+PiBzLmhhdWVyQHBlbmd1dHJvbml4LmRlOyBrZXJu
-ZWxAcGVuZ3V0cm9uaXguZGUNCj4+PiBDYzogbGludXgtc3BpQHZnZXIua2VybmVsLm9yZzsgbGlu
-dXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4+PiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgtbXRkQGxpc3RzLmluZnJhZGVhZC5vcmc7DQo+Pj4gZmVzdGV2YW1AZ21haWwuY29t
-OyBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPjsNCj4+PiBsaW51eC1hcm0ta2VybmVs
-QGxpc3RzLmluZnJhZGVhZC5vcmc7IHpoZW5neHVubGlAbXhpYy5jb20udHcNCj4+PiBTdWJqZWN0
-OiBSZTogW1BBVENIIDA3LzExXSBkdC1iaW5kaW5nczogc3BpOiBzcGktbnhwLWZzcGk6IGFkZCBh
-IG5ldw0KPj4+IHByb3BlcnR5IG54cCxmc3BpLWRsbC1zbHZkbHkNCj4+Pg0KPj4+IE9uIDA1LzA3
-LzIwMjIgMTE6MTEsIGhhaWJvLmNoZW5AbnhwLmNvbSB3cm90ZToNCj4+Pj4gRnJvbTogSGFpYm8g
-Q2hlbiA8aGFpYm8uY2hlbkBueHAuY29tPg0KPj4+Pg0KPj4+PiBBZGQgb25lIG9wdGlvbmFsIHBy
-b3BlcnR5IG54cCxmc3BpLWRsbC1zbHZkbHkNCj4+Pj4NCj4+Pj4gU2lnbmVkLW9mZi1ieTogSGFp
-Ym8gQ2hlbiA8aGFpYm8uY2hlbkBueHAuY29tPg0KPj4+PiAtLS0NCj4+Pj4gIERvY3VtZW50YXRp
-b24vZGV2aWNldHJlZS9iaW5kaW5ncy9zcGkvc3BpLW54cC1mc3BpLnlhbWwgfCA2ICsrKysrKw0K
-Pj4+PiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQ0KPj4+Pg0KPj4+PiBkaWZmIC0t
-Z2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktbnhwLWZzcGku
-eWFtbA0KPj4+IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktbnhw
-LWZzcGkueWFtbA0KPj4+PiBpbmRleCAxYjU1MmMyOTgyNzcuLjZiZDYxNTY1Njg2YSAxMDA2NDQN
-Cj4+Pj4gLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktbnhw
-LWZzcGkueWFtbA0KPj4+PiArKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
-c3BpL3NwaS1ueHAtZnNwaS55YW1sDQo+Pj4+IEBAIC00NSw2ICs0NSwxMiBAQCBwcm9wZXJ0aWVz
-Og0KPj4+PiAgICAgICAgLSBjb25zdDogZnNwaV9lbg0KPj4+PiAgICAgICAgLSBjb25zdDogZnNw
-aQ0KPj4+Pg0KPj4+PiArICBueHAsZnNwaS1kbGwtc2x2ZGx5Og0KPj4+PiArICAgICRyZWY6IC9z
-Y2hlbWFzL3R5cGVzLnlhbWwjL2RlZmluaXRpb25zL3VpbnQzMg0KPj4+PiArICAgIGRlc2NyaXB0
-aW9uOiB8DQo+Pj4+ICsgICAgICBTcGVjaWZ5IHRoZSBETEwgc2xhdmUgbGluZSBkZWxheSB2YWx1
-ZS4NCj4+Pg0KPj4+IFdoYXQgYXJlIHRoZSB1bml0cz8NCj4+DQo+PiBEbyB5b3UgbWVhbiBoZXJl
-IG5lZWQgdG8gZ2l2ZSBtb3JlIGRldGFpbCBleHBsYWluIGFib3V0IHRoaXMgcHJvcGVyaXR5Pw0K
-Pj4NCj4+IEhvdyBhYm91dCBjaGFuZ2UgbGlrZSB0aGlzPw0KPj4gICAgU3BlY2lmeSB0aGUgRExM
-IHNsYXZlIGxpbmUgZGVsYXkgdmFsdWUuIFRoZSBkZWxheSB0YXJnZXQgZm9yIHNsYXZlIGRlbGF5
-IGxpbmUgaXM6DQo+KChueHAsZnNwaS1kbGwtc2x2ZGx5KzEpICogMS8zMiAqIGNsb2NrIGN5Y2xl
-IG9mIHJlZmVyZW5jZSBjbG9jayAoc2VyaWFsIHJvb3QgY2xvY2spLg0KPg0KPlRoaXMgd291bGQg
-YmUgZ29vZC4NCj4NCj4+IFRoZSByYW5nZSBvZiB0aGlzIHZhbHVlIGlzIDB+MTYuDQo+DQo+VGhp
-cyBuZWVkcyB0byBnbyB0byBzY2hlbWEgaW5zdGVhZCBhcyAibWF4aW11bTogMTYiLg0KPg0KPkJ1
-dCBzdGlsbCB0aGUgcXVlc3Rpb24gaXMgLSB3aGF0IGFyZSB0aGUgdW5pdHMgdXNlZCBpbiB0aGlz
-ICJkZWxheSI/IG1zPyB1cz8NCg0KSEkgS3J6eXN6dG9mLA0KDQpBY2NvcmRpbmcgdG8gdGhlIGZv
-cm11bGEsIHRoZSByYW5nZSBzaG91bGQgYmUgMH4xNSwgMTYgc2hvdWxkIGRvIG5vdGhpbmcgb3Ig
-bm8gZGVsYXkuDQoNClRoZSB1bml0IHNob3VsZCBiZSBjbG9jayBwaGFzZS4gSW4gb3RoZXIgd29y
-ZHMsIHRoZSBkZWxheSBjYW4gYmUgaW4gcmFuZ2Ugb2YgMS8zMn4xLzIgY2xvY2sgY3ljbGUuDQoN
-Cg0KPg0KPkJlc3QgcmVnYXJkcywNCj5Lcnp5c3p0b2YNCg==
+`cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
+commit [1] to ensure that power_on work is canceled after HCI interface
+down.
+
+But, in certain cases power_on work function may call hci_dev_close_sync
+itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
+cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
+happens when device is rfkilled on boot. To avoid deadlock, move
+power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
+
+Deadlock introduced by commit [1] was reported in [2,3] as broken
+suspend. Suspend did not work because `hdev->req_lock` held as result of
+`power_on` work deadlock. In fact, other BT features were not working.
+It was not observed when testing [1] since it was verified without
+rfkill in place.
+
+NOTE: It is not needed to cancel power_on work from other places where
+hci_dev_do_close/hci_dev_close_sync is called in case:
+* Requests were serialized due to `hdev->req_workqueue`. The power_on
+work is first in that workqueue.
+* hci_rfkill_set_block which won't close device anyway until HCI_SETUP
+is on.
+* hci_sock_release which runs after hci_sock_bind which ensures
+HCI_SETUP was cleared.
+
+As result, behaviour is the same as in pre-dd06ed7 commit, except
+power_on work cancel added to hci_dev_close.
+
+[1]: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+[2]: https://lore.kernel.org/lkml/20220614181706.26513-1-max.oss.09@gmail.com/
+[2]: https://lore.kernel.org/lkml/1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl/
+
+Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Reported-by: Max Krummenacher <max.krummenacher@toradex.com>
+Reported-by: Mateusz Jonczyk <mat.jonczyk@o2.pl>
+---
+ net/bluetooth/hci_core.c | 3 +++
+ net/bluetooth/hci_sync.c | 1 -
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 59a5c1341c26..a0f99baafd35 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -571,6 +571,7 @@ int hci_dev_close(__u16 dev)
+ 		goto done;
+ 	}
+ 
++	cancel_work_sync(&hdev->power_on);
+ 	if (hci_dev_test_and_clear_flag(hdev, HCI_AUTO_OFF))
+ 		cancel_delayed_work(&hdev->power_off);
+ 
+@@ -2675,6 +2676,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
+ 	list_del(&hdev->list);
+ 	write_unlock(&hci_dev_list_lock);
+ 
++	cancel_work_sync(&hdev->power_on);
++
+ 	hci_cmd_sync_clear(hdev);
+ 
+ 	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 286d6767f017..1739e8cb3291 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -4088,7 +4088,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+ 
+ 	bt_dev_dbg(hdev, "");
+ 
+-	cancel_work_sync(&hdev->power_on);
+ 	cancel_delayed_work(&hdev->power_off);
+ 	cancel_delayed_work(&hdev->ncmd_timer);
+ 
+-- 
+2.30.2
+
