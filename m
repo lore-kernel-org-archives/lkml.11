@@ -2,108 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AC7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1717BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbiGEORx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
+        id S233076AbiGEORz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233349AbiGEORW (ORCPT
+        with ESMTP id S233074AbiGEORP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:17:22 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751A51005
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 07:13:11 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id w83so16323545oiw.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 07:13:11 -0700 (PDT)
+        Tue, 5 Jul 2022 10:17:15 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D51B61
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 07:12:42 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id z25so3201994lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 07:12:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QI3B1vIlvYkplD/OGFLDNG9KjTXHUoGMSflSfPKXG5I=;
-        b=DfVQLNy96aUWYf+Jt0CfmE7H2lYMo7TQ0F5goqxT/ODcU4vuDqq+EKv0pC/J4mrPhK
-         ckjbHfhDcM5wrntYgLzgf4zdR7zfyhv8EjVmBawbawurUni6XstEXFQUYxjf1NYyODD6
-         JPzGBSjXAh7267svFQP1/88rAhJ9b46HIRC+vRsLsjkfBpF4DE0b+rjSZsyAN1p5kBe7
-         r30gzYYQP8a2ucHu2cTDVoEVEYJ3nmw3FmEew6OWMWC8nTEOWbFg2aiYec8ekbJVaFTy
-         +0Gqw+CHRpYHpNyO8unp5PRDhpgUZuluMmI8VlZbN3j3LhiyufpNrFpy5akiSIhVBsNi
-         PTzg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=96uT2/xHI+gJvTeOzSVEvKEVuYL1WzZK+F5WRMOqgPU=;
+        b=EgHA5JrPLft/X3CFmcSgTwtTvECDveakN/2eQwLizukZ1zwsResj9IHMN3FSmmNZqH
+         5esk68KrdSVQGMTMFYDbvKW8hYaxKcvG0DBhIN+03JfXtTRd4Xb/Eg5EWC6cuHTq73rL
+         jjTDdg0IDX4s+Y2Cr8LRrseVutTmDARy/lobgDKmKk9vQanpAxXEuEzAQU/HEG/tw+J5
+         /6h5DDeXqawo434PwFTi9OcOBTEVHxswPjQEzOwB8CuCRE7eLhx9/NsJJ7d2maK9ekQ6
+         CjVey19X3C1BavDYQ8HPLTDw2tVIOKNNklPMaqfkKplUCccgSYePn/a0/JFdi5eQJjsr
+         Rjag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QI3B1vIlvYkplD/OGFLDNG9KjTXHUoGMSflSfPKXG5I=;
-        b=PdQ/DEED2WBj7YYk2hMj6SsL6zLG5osxx1wqkysiThHOUNejcCKe+J27jtFddWJGDa
-         zwPE+1jWfb3dU6GQhCh2dxkIV0QvjqzBvWmfKLymVRKJ084+b2Wo2hqonpeVSt1Ud7XV
-         UFUaM9fu6e5r11l5XZwlALxXb+OA7bhmLP6Us+B5rrE+LcORU5iSmo55Nk0LBbU+dmd9
-         un8+Pv1I47ec3Sdij3ro1i5tBoYs0ch22f5joQIM/tJ7bkrMDHeUFB18zK6FJNouA/mn
-         LLyWEDHKhksONRlsgjYWpM+wOIF12N2E9Af+aonTPFtS0UXpEI+nMJiLPyC9MtnmOo5+
-         tGaA==
-X-Gm-Message-State: AJIora+eEVxPlBIqsI3fHaOUIt9jfP0Z6sG4j9fYAYKCNtKHBKrAUE+5
-        4ocUVmi+ZmFxGxb2xtKdq0zUPh1rQNBHvjyBmJQ=
-X-Google-Smtp-Source: AGRyM1uKWnxIsrOjuSrESBMFHOOIgp08dNiqIPuvwPDUKe/GYZCd8M/st/cAl0YrkegNHZK4GxiYvRIkoO4isGqxnes=
-X-Received: by 2002:a05:6808:2099:b0:335:1606:2504 with SMTP id
- s25-20020a056808209900b0033516062504mr19434401oiw.110.1657030389377; Tue, 05
- Jul 2022 07:13:09 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=96uT2/xHI+gJvTeOzSVEvKEVuYL1WzZK+F5WRMOqgPU=;
+        b=3h8b6puv/b9rSsRBvrXMZvnhpDYetSo7wTGQQRu/EMjR9flAcMOppWviOzY3Ur+pmm
+         KYivOet5WQm4nDxT9AftVCX6rrE/mevnZSV22ToxdoYMIKhESL4VXVwFIYNZSv+5aLah
+         dTFNazGaLghLW9OTTzQ8yq5/+kb16Vs00gXzVyXJiwjV7p74NfJEHIB8jb+Sl8ZTdSAO
+         6XyE7SJ5m/oA8zzabNlzx59mAX6rRVzsfH1shtlgoARqJfjJhTmTn/9lNEl759FoTLad
+         nc1kHftgctlVeVxh1ncIjZMt/c039GGkFq5yoR9alS1wZac/pBJVhyJKDNPArwo40MaF
+         jf1Q==
+X-Gm-Message-State: AJIora/6rSFy6pwm6DnkSUjvvV66jFbDC1AXTzW3rgx2kFHvPcAmhT2M
+        lY0cRIoT9WuRcv4SdIhqhncm0Q==
+X-Google-Smtp-Source: AGRyM1ucI0R96J38sx4KrEcjCZdRo4b5u4rRdvgJC2EhgCpkX68hj/jPkm7aCy/l7c0q04uk3jbg7g==
+X-Received: by 2002:a05:6512:224d:b0:47f:7812:d135 with SMTP id i13-20020a056512224d00b0047f7812d135mr21506046lfu.29.1657030360658;
+        Tue, 05 Jul 2022 07:12:40 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id v6-20020a056512348600b00478f2f2f043sm5719610lfr.147.2022.07.05.07.12.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 07:12:39 -0700 (PDT)
+Message-ID: <be521f90-97ce-c61d-d7d6-8f2bde24d824@linaro.org>
+Date:   Tue, 5 Jul 2022 16:12:38 +0200
 MIME-Version: 1.0
-References: <00c521b5b872b06c9350145c7d39fe7c@mailhost.ics.forth.gr>
- <CA+zEjCs0n8KA_oaFKJbaP6kNohDA=qJHvUKhePUK+hDFJSbHig@mail.gmail.com>
- <CA+zEjCscL1dWASm7u20p1B7-JeJaGTXiWG=K1XiWtZj=VFX+WQ@mail.gmail.com>
- <d75edc49681473bf8b88e474ae61b524@mailhost.ics.forth.gr> <CA+zEjCsc60mxPynL7DDGxfaUz7uif3uXPx3atnHbvM3ei_TETA@mail.gmail.com>
- <2ec74f4bd0e7b7cb4b579e9e042fc035@mailhost.ics.forth.gr> <CALecT5gdqW9Na_s9PiFAZt0u=_uPCu0zYdUCb4UfuSV6fM_Q+w@mail.gmail.com>
- <75409de5-2351-3ab2-5162-33ebd8d30749@ics.forth.gr>
-In-Reply-To: <75409de5-2351-3ab2-5162-33ebd8d30749@ics.forth.gr>
-From:   Yixun Lan <yixun.lan@gmail.com>
-Date:   Tue, 5 Jul 2022 14:12:58 +0000
-Message-ID: <CALecT5gA-h7p__BZT=okWJCANz9oHE8R4kwHC6hJOPKGMe+Fkg@mail.gmail.com>
-Subject: Re: RISC-V: patched kexec-tools on github for review/testing
-To:     Nick Kossifidis <mick@ics.forth.gr>
-Cc:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        ebiederm@xmission.com, kexec@lists.infradead.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Alexandre ghiti <alex@ghiti.fr>,
-        Mike Rapoport <rppt@kernel.org>, geert+renesas@glider.be,
-        Stephano Cetola <scetola@linuxfoundation.org>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
+ nxp,fspi-dll-slvdly
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>, Han Xu <han.xu@nxp.com>
+Cc:     Bough Chen <haibo.chen@nxp.com>, ashish.kumar@nxp.com,
+        yogeshgaur.83@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, singh.kuldeep87k@gmail.com,
+        tudor.ambarus@microchip.com, p.yadav@ti.com,
+        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        festevam@gmail.com, dl-linux-imx <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, zhengxunli@mxic.com.tw
+References: <1657012303-6464-1-git-send-email-haibo.chen@nxp.com>
+ <1657012303-6464-7-git-send-email-haibo.chen@nxp.com>
+ <ef676df1-77e0-b8ee-3950-97eade8ddd5b@linaro.org>
+ <VI1PR04MB40167A70FBE772DF91047A4190819@VI1PR04MB4016.eurprd04.prod.outlook.com>
+ <59d360ef-5374-c7a7-2995-854ab3715b25@linaro.org>
+ <DU2PR04MB87747C9A8F18D8300461D6B197819@DU2PR04MB8774.eurprd04.prod.outlook.com>
+ <f33ad190-f5c7-d9fa-088b-5538ab1f4d59@linaro.org>
+ <DU2PR04MB877492F346BAA10B2AA7428497819@DU2PR04MB8774.eurprd04.prod.outlook.com>
+ <62f113a0cdb0d58bf04ab0b274912eb7@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <62f113a0cdb0d58bf04ab0b274912eb7@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HI Nick
+On 05/07/2022 16:06, Michael Walle wrote:
+> 
+>>>
+>>> I think you could use here clock cycles or clock phase, but then it 
+>>> has to be obvious
+>>> it is that unit.
+>>
+>> Hi Krzysztof,
+>>
+>> Let me clarify it, in the document a term "delay cell" was used to
+>> descript this register bit. Each delay cell equals "1/32 clock phase",
+>> so the unit of delay cell is clock phase. The value user need set in
+>> DT just number to define how many delay cells needed.
+> 
+> Then should the unit be "-degrees" and the possible range 0-180?
 
-On Tue, Jul 5, 2022 at 12:24 PM Nick Kossifidis <mick@ics.forth.gr> wrote:
->
-> Hello Yixun,
->
-> On 7/2/22 14:35, Yixun Lan wrote:
-> > hi Nick
-> >
-> > ping, any update for this? any new patch for kexec-tools?
-> >
-> > I'd also like to try kexec on unmatched board, and encounter the same error
-> > as Alexandre Ghiti reported, generally I'm using almost same cmdline
-> >
-> > Yixun Lan
->
-> The kernel-side patches have already been merged upstream, for
-> kexec-tools there are some people working on fixes, I'm expecting pull
-> requests on the github before I do a pull request upstream. You should
-> be able to use kexec without initrd.
->
-> Regards,
-> Nick
+Thanks. We don't have it documented currently, but the unit seems
+reasonable.
 
-Thanks for the reply and updated information
-I was looking forward to use "--initrd" in order to boot a complicated OS,
-
-Anyway, I will try kexec without initrd, and please keep me posted
-when there is PR
-
-Regards
-
-Yixun Lan
+Best regards,
+Krzysztof
