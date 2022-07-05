@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 997C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9DCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231718AbiGEJvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        id S232345AbiGEJvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbiGEJtV (ORCPT
+        with ESMTP id S231658AbiGEJtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 05:49:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48F012D34;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5528A12D38;
         Tue,  5 Jul 2022 02:49:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E8666194F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AB4C61947;
         Tue,  5 Jul 2022 09:49:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 603CAC36B04;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB63C36AFD;
         Tue,  5 Jul 2022 09:49:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657014545;
-        bh=NnKadBX0uQiTIGEQh4rkH/Llkp6mA0RpNtPji7zBpeU=;
+        bh=RBWMNafFLJ5+9XGEW3FH8+PBc/s5o4Lq0hQU1zm8vLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tlyS9sOoQRO/kQ5ohVioxfNPSqVrgkdSTSkqipO3BMGqGkAyNzvhUy2RLhT2VaAw8
-         yRTYtOUjtA9fuI4A/t07/JC8vnzKERS1h5JNxD/p7jTJWS9jErckovwRzHRyP+Ci1U
-         zntmJpOijWSWR0cWXOGZMn46MDJi3ncF1xpbTzvkMeaSYpAR91E6rFNzCDjL6inQTo
-         exr41COcpMTUhdbGtjMKOY9jBXQUYKrmPmfy18YceI/QkavQJP85WPfY/VI4IaA4Rx
-         DRPYsQ+iz3aosmh2F/UjrAE6WQ33w6giN5qeiEas68mSxxf0TT27pvmyCiQYxUowzu
-         3Uy1VXzKzkETg==
+        b=E/s9WnG6vT5+QzoAu2WPfG3LnnSg2GPTdpGHJrm8xye4O2IEA145Ql/1nSZyhMBwM
+         BJ8hJ+Yb5OXD9stqdk+sSo+UIoLyHaOAerzyoM66/a4wctqMNI+JE/u9ROu+a6tYWp
+         tNN26KjbWuP5xNiwfFL4Aq1ihAay2cRwvd6NsXkKrwNqCURM6okopd/t4OcqzkLZLt
+         bTu9RNWWjiD/X6iqjMoQEtfVtdSdlyS3hrjsuBb/cwJzVn63+O72DyWEWtL7jJwg/f
+         nUolDSTc7XwtGKYb7KaAxJh+26AW3LYJGAAYB/PQzwCnUN/355oHkLAvpxklcVe6tk
+         uvVD8aBtni7ig==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8fB4-0004aa-CD; Tue, 05 Jul 2022 11:49:06 +0200
+        id 1o8fB4-0004ZQ-21; Tue, 05 Jul 2022 11:49:06 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,9 +44,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 41/43] phy: qcom-qmp-pcie-msm8996: drop pipe clock lane suffix
-Date:   Tue,  5 Jul 2022 11:42:37 +0200
-Message-Id: <20220705094239.17174-42-johan+linaro@kernel.org>
+Subject: [PATCH 39/43] phy: qcom-qmp-combo: drop unused lane reset
+Date:   Tue,  5 Jul 2022 11:42:35 +0200
+Message-Id: <20220705094239.17174-40-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220705094239.17174-1-johan+linaro@kernel.org>
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
@@ -56,36 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pipe clock is defined in the "lane" node so there's no need to keep
-adding a redundant lane-number suffix to the clock name.
-
-Drop the lane suffix from the pipe clock name, but continue supporting
-the legacy name as a fall back.
+Drop the unused lane reset pointer which isn't used by any combo PHY.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-index 812d14afb5ec..b8481dab54db 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-@@ -904,8 +904,12 @@ int qcom_qmp_phy_pcie_msm8996_create(struct device *dev, struct device_node *np,
- 	if (!qphy->pcs_misc)
- 		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
- 
--	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
--	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
-+	qphy->pipe_clk = devm_get_clk_from_child(dev, np, "pipe");
-+	if (IS_ERR(qphy->pipe_clk) && PTR_ERR(qphy->pipe_clk) != -EPROBE_DEFER) {
-+		/* Fall back to the legacy pipe clock name. */
-+		snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
-+		qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
-+	}
- 	if (IS_ERR(qphy->pipe_clk)) {
- 		return dev_err_probe(dev, PTR_ERR(qphy->pipe_clk),
- 				     "failed to get lane%d pipe clock\n", id);
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+index c18cd3b93c30..b266514ae9ee 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -818,7 +818,6 @@ struct qmp_phy_combo_cfg {
+  * @pipe_clk: pipe clock
+  * @index: lane index
+  * @qmp: QMP phy to which this lane belongs
+- * @lane_rst: lane's reset controller
+  * @mode: current PHY mode
+  * @dp_aux_cfg: Display port aux config
+  * @dp_opts: Display port optional config
+@@ -837,7 +836,6 @@ struct qmp_phy {
+ 	struct clk *pipe_clk;
+ 	unsigned int index;
+ 	struct qcom_qmp *qmp;
+-	struct reset_control *lane_rst;
+ 	enum phy_mode mode;
+ 	unsigned int dp_aux_cfg;
+ 	struct phy_configure_opts_dp dp_opts;
 -- 
 2.35.1
 
