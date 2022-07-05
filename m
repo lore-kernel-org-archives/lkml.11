@@ -2,846 +2,337 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A304C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbiGEPFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
+        id S231487AbiGEPF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbiGEPDh (ORCPT
+        with ESMTP id S232605AbiGEPEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:03:37 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA32186E3;
-        Tue,  5 Jul 2022 08:02:20 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id r81-20020a1c4454000000b003a0297a61ddso9892138wma.2;
-        Tue, 05 Jul 2022 08:02:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yNwXN07cYz9oATyqiff3MOHF5I7hs7uLWOybawFraro=;
-        b=Qn/p2isQgAwbf/N4NRUAAt28jaLe2XamgAjc6WUTm9trsrD9Vu6iouDvS65SGrRl8y
-         As1n3cs16DisfoPsRxwLeT84B3n5rbDlvzTv2tUZNMgFNsrbAB6K0dfWRJdcVhmqtREC
-         hX8a688zX7MLuVqwuT42KuWFV0q4Ut0jH8BW5Qv2UMHcvEM7qb/m97EmV/GkdOvwAlt+
-         Y5QNvR5bGUXxcSLUC8VetVHYlXzQNY8aSqYuO0PDiOARjdV97rwh9wjIda9dATCS1By5
-         u+T1aaX1XVhdxPsp4MF8Ybl1MlKqGiT32GYkB3ZmpF63p2wIiuNgu4OSe0P+Ru7vI3iX
-         aBDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yNwXN07cYz9oATyqiff3MOHF5I7hs7uLWOybawFraro=;
-        b=jaIC23HmTq9ACbGhwgewX9m+vkYb4iKpxgEedbFWseysHjJS9iNrHD8zSIklZqlWwb
-         Dl2Li/wU1W+M290f/Kl9O7QODfP8PZ2SHaEoBF9/m3Kb81Yc6TTmTVpFYbS8cr4KpGhd
-         Qa4hpxnDhvmdCwwcYMArne4Gy4lkdMrEyjFomVwpo1dDrNs7iqV7HRTME+UjKv/cBYfr
-         LsPH2ECHfuiceZN04/kaFkyYw2XQD6T5b/fGUaPX4nVaKy2FWck3ErT8TaLyfdLXy0HF
-         YScYIUbh5Thnd3caYJIqqws8TTsl9ubhQyQRpkb8S6iEY/LvdcaiqEZlLRKen9emFhWz
-         Zj/A==
-X-Gm-Message-State: AJIora/0qJz/0aAx6hLZWcXfa+ctMdmkj/d8edsvaBMQr5bnYFmlUjqA
-        u9DrMSDUmbLS5zBbF704+5Hsse3dkhBBCA==
-X-Google-Smtp-Source: AGRyM1s+4UQ3eAXjodrnGKpZt0fNPp/wU5y4xwO26bcepd3wUWmF57ZO92SSZTXW0YXJD+bqBDMqgQ==
-X-Received: by 2002:a05:600c:4f42:b0:3a0:57ed:93a9 with SMTP id m2-20020a05600c4f4200b003a057ed93a9mr36757575wmq.143.1657033339286;
-        Tue, 05 Jul 2022 08:02:19 -0700 (PDT)
-Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.02.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:02:18 -0700 (PDT)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
-        kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 25/25] selftests/io_uring: test zerocopy send
-Date:   Tue,  5 Jul 2022 16:01:25 +0100
-Message-Id: <cd0bc816ae8dbc546df5c09cee92459ad759c4d1.1656318994.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1656318994.git.asml.silence@gmail.com>
-References: <cover.1656318994.git.asml.silence@gmail.com>
+        Tue, 5 Jul 2022 11:04:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4733918E13
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:02:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99B2661A74
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 15:02:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E85DC341CF;
+        Tue,  5 Jul 2022 15:02:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657033343;
+        bh=FLTWAi3TQAiX2oOWQsTB0NHrQ7KBrxSjL3BiVo1EjqU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VicSeAlmzqAkpitwkh62i3dP8Br6BtRNl9m7WTCpYnhiij8SF5l8FrnKK7ZT6UEFv
+         aiMc5P5ePELQBKfrUvre+MjZdZ5ix4opfqiTjWZWxOX3eW5f2gmkFjlPL6V+ZgssCT
+         d3BBRycBnoK2MDeQNdSQWAQ6b19dxraUfbR/j4LHYDJcv7Fmc43yaei4d3bVKDtSxd
+         DIK9nwhignS8qinuL/jjOTObZIq9pgWt8oj1KVDGqp7mkcflA/AXwDepTLd3Fm6gpW
+         eep3YstTCxLDEzoYSJl2dbb/nPJQZgyWUL3Ls6U5E0Q/qL+bhPUS00tBfumnAW9rS4
+         2pQbtQ6gwyA0Q==
+Date:   Tue, 5 Jul 2022 18:02:02 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, catalin.marinas@arm.com,
+        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
+        james.morse@arm.com, quic_qiancai@quicinc.com,
+        christophe.leroy@csgroup.eu, jonathan@marek.ca,
+        mark.rutland@arm.com, thunder.leizhen@huawei.com,
+        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, geert+renesas@glider.be,
+        linux-mm@kvack.org, yaohongbo@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+Message-ID: <YsRSajyMxahXe7ZS@kernel.org>
+References: <4accaeda-572f-f72d-5067-2d0999e4d00a@linux.alibaba.com>
+ <20220704131516.GC31684@willie-the-truck>
+ <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
+ <20220704142313.GE31684@willie-the-truck>
+ <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
+ <20220704163815.GA32177@willie-the-truck>
+ <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705121115.GB1012@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add selftests for io_uring zerocopy sends and io_uring's notification
-infrastructure. It's largely influenced by msg_zerocopy and uses it on
-the receive side.
+On Tue, Jul 05, 2022 at 01:11:16PM +0100, Will Deacon wrote:
+> On Tue, Jul 05, 2022 at 08:07:07PM +0800, guanghui.fgh wrote:
+> > 
+> > 3.When rodata full is disabled, crashkernel also need protect(keep
+> > arch_kexec_[un]protect_crashkres using).
+> > I think crashkernel should't depend on radata full(Maybe other architecture
+> > don't support radata full now).
+> 
+> I think this is going round in circles :/
+> 
+> As a first step, can we please leave the crashkernel mapped unless
+> rodata=full? It should be a much simpler patch to write, review and maintain
+> and it gives you the performance you want when crashkernel is being used.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+As it seems I failed to communicate my thoughts about reusing the existing
+unmap_hotplug_range() to remap the crash kernel, let's try a more formal
+approach ;-)
+
+This is what I came up with and it does not look too complex. There are a
+couple of extra #ifdefs that can be removed if we toss some code around in
+a preparation patch.
+
+From 5adbfcbe370da0f09cd917e73aaac7ba8c6b45df Mon Sep 17 00:00:00 2001
+From: Mike Rapoport <rppt@linux.ibm.com>
+Date: Sat, 2 Jul 2022 23:57:53 +0800
+Subject: [PATCH] arm64/mm: remap crash kernel with base pages even if
+ rodata_full disabled
+
+For server systems it is important to protect crash kernel memory for
+post-mortem analysis. In order to protect this memory it should be mapped
+at PTE level.
+
+When CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 is enabled, usage of crash kernel
+essentially forces mapping of the entire linear map with base pages even if
+rodata_full is not set (commit 2687275a5843 ("arm64: Force
+NO_BLOCK_MAPPINGS if crashkernel reservation is required")) and this causes
+performance degradation.
+
+To reduce the performance degradation, postpone reservation of the crash
+kernel memory to bootmem_init() regardless of CONFIG_ZONE_DMA or
+CONFIG_ZONE_DMA32 and enable remapping of the crash kernel memory at PTE
+level.
+
+Co-developed-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/io_uring_zerocopy_tx.c      | 605 ++++++++++++++++++
- .../selftests/net/io_uring_zerocopy_tx.sh     | 131 ++++
- 3 files changed, 737 insertions(+)
- create mode 100644 tools/testing/selftests/net/io_uring_zerocopy_tx.c
- create mode 100755 tools/testing/selftests/net/io_uring_zerocopy_tx.sh
+ arch/arm64/include/asm/mmu.h |  1 +
+ arch/arm64/mm/init.c         |  8 +---
+ arch/arm64/mm/mmu.c          | 91 +++++++++++++++++++-----------------
+ 3 files changed, 52 insertions(+), 48 deletions(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 7ea54af55490..51261483744e 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -59,6 +59,7 @@ TEST_GEN_FILES += toeplitz
- TEST_GEN_FILES += cmsg_sender
- TEST_GEN_FILES += stress_reuseport_listen
- TEST_PROGS += test_vxlan_vnifiltering.sh
-+TEST_GEN_FILES += io_uring_zerocopy_tx
+diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
+index 48f8466a4be9..f4eb2f61dd0d 100644
+--- a/arch/arm64/include/asm/mmu.h
++++ b/arch/arm64/include/asm/mmu.h
+@@ -71,6 +71,7 @@ extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
+ extern void *fixmap_remap_fdt(phys_addr_t dt_phys, int *size, pgprot_t prot);
+ extern void mark_linear_text_alias_ro(void);
+ extern bool kaslr_requires_kpti(void);
++extern void remap_crashkernel(void);
  
- TEST_FILES := settings
+ #define INIT_MM_CONTEXT(name)	\
+ 	.pgd = init_pg_dir,
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 339ee84e5a61..51f8329931f8 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -190,6 +190,7 @@ static void __init reserve_crashkernel(void)
+ 	crashk_res.start = crash_base;
+ 	crashk_res.end = crash_base + crash_size - 1;
+ 	insert_resource(&iomem_resource, &crashk_res);
++	remap_crashkernel();
+ }
  
-diff --git a/tools/testing/selftests/net/io_uring_zerocopy_tx.c b/tools/testing/selftests/net/io_uring_zerocopy_tx.c
-new file mode 100644
-index 000000000000..899ddc84f8a9
---- /dev/null
-+++ b/tools/testing/selftests/net/io_uring_zerocopy_tx.c
-@@ -0,0 +1,605 @@
-+/* SPDX-License-Identifier: MIT */
-+/* based on linux-kernel/tools/testing/selftests/net/msg_zerocopy.c */
-+#include <assert.h>
-+#include <errno.h>
-+#include <error.h>
-+#include <fcntl.h>
-+#include <limits.h>
-+#include <stdbool.h>
-+#include <stdint.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
+ /*
+@@ -388,10 +389,6 @@ void __init arm64_memblock_init(void)
+ 	}
+ 
+ 	early_init_fdt_scan_reserved_mem();
+-
+-	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
+-		reserve_crashkernel();
+-
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+ }
+ 
+@@ -438,8 +435,7 @@ void __init bootmem_init(void)
+ 	 * request_standard_resources() depends on crashkernel's memory being
+ 	 * reserved, so do it here.
+ 	 */
+-	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
+-		reserve_crashkernel();
++	reserve_crashkernel();
+ 
+ 	memblock_dump_all();
+ }
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 626ec32873c6..e0b5769bfc9f 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -483,21 +483,6 @@ void __init mark_linear_text_alias_ro(void)
+ 			    PAGE_KERNEL_RO);
+ }
+ 
+-static bool crash_mem_map __initdata;
+-
+-static int __init enable_crash_mem_map(char *arg)
+-{
+-	/*
+-	 * Proper parameter parsing is done by reserve_crashkernel(). We only
+-	 * need to know if the linear map has to avoid block mappings so that
+-	 * the crashkernel reservations can be unmapped later.
+-	 */
+-	crash_mem_map = true;
+-
+-	return 0;
+-}
+-early_param("crashkernel", enable_crash_mem_map);
+-
+ static void __init map_mem(pgd_t *pgdp)
+ {
+ 	static const u64 direct_map_end = _PAGE_END(VA_BITS_MIN);
+@@ -527,17 +512,6 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 */
+ 	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
+ 
+-#ifdef CONFIG_KEXEC_CORE
+-	if (crash_mem_map) {
+-		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
+-		    IS_ENABLED(CONFIG_ZONE_DMA32))
+-			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+-		else if (crashk_res.end)
+-			memblock_mark_nomap(crashk_res.start,
+-			    resource_size(&crashk_res));
+-	}
+-#endif
+-
+ 	/* map all the memory banks */
+ 	for_each_mem_range(i, &start, &end) {
+ 		if (start >= end)
+@@ -570,19 +544,6 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 * in page granularity and put back unused memory to buddy system
+ 	 * through /sys/kernel/kexec_crash_size interface.
+ 	 */
+-#ifdef CONFIG_KEXEC_CORE
+-	if (crash_mem_map &&
+-	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
+-		if (crashk_res.end) {
+-			__map_memblock(pgdp, crashk_res.start,
+-				       crashk_res.end + 1,
+-				       PAGE_KERNEL,
+-				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+-			memblock_clear_nomap(crashk_res.start,
+-					     resource_size(&crashk_res));
+-		}
+-	}
+-#endif
+ }
+ 
+ void mark_rodata_ro(void)
+@@ -827,7 +788,7 @@ int kern_addr_valid(unsigned long addr)
+ 	return pfn_valid(pte_pfn(pte));
+ }
+ 
+-#ifdef CONFIG_MEMORY_HOTPLUG
++#if defined(CONFIG_MEMORY_HOTPLUG) || defined(CONFIG_KEXEC_CORE)
+ static void free_hotplug_page_range(struct page *page, size_t size,
+ 				    struct vmem_altmap *altmap)
+ {
+@@ -839,6 +800,7 @@ static void free_hotplug_page_range(struct page *page, size_t size,
+ 	}
+ }
+ 
++#ifdef CONFIG_MEMORY_HOTPLUG
+ static void free_hotplug_pgtable_page(struct page *page)
+ {
+ 	free_hotplug_page_range(page, PAGE_SIZE, NULL);
+@@ -862,6 +824,7 @@ static bool pgtable_range_aligned(unsigned long start, unsigned long end,
+ 		return false;
+ 	return true;
+ }
++#endif /* CONFIG_MEMORY_HOTPLUG */
+ 
+ static void unmap_hotplug_pte_range(pmd_t *pmdp, unsigned long addr,
+ 				    unsigned long end, bool free_mapped,
+@@ -994,7 +957,9 @@ static void unmap_hotplug_range(unsigned long addr, unsigned long end,
+ 		unmap_hotplug_p4d_range(pgdp, addr, next, free_mapped, altmap);
+ 	} while (addr = next, addr < end);
+ }
++#endif /* CONFIG_MEMORY_HOTPLUG || CONFIG_KEXEC_CORE */
+ 
++#ifdef CONFIG_MEMORY_HOTPLUG
+ static void free_empty_pte_table(pmd_t *pmdp, unsigned long addr,
+ 				 unsigned long end, unsigned long floor,
+ 				 unsigned long ceiling)
+@@ -1148,7 +1113,7 @@ static void free_empty_tables(unsigned long addr, unsigned long end,
+ 		free_empty_p4d_table(pgdp, addr, next, floor, ceiling);
+ 	} while (addr = next, addr < end);
+ }
+-#endif
++#endif /* CONFIG_MEMORY_HOTPLUG */
+ 
+ #if !ARM64_KERNEL_USES_PMD_MAPS
+ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+@@ -1213,7 +1178,7 @@ void vmemmap_free(unsigned long start, unsigned long end,
+ 	unmap_hotplug_range(start, end, true, altmap);
+ 	free_empty_tables(start, end, VMEMMAP_START, VMEMMAP_END);
+ }
+-#endif /* CONFIG_MEMORY_HOTPLUG */
++#endif /* CONFIG_MEMORY_HOTPLUG || CONFIG_KEXEC_CORE */
+ 
+ static inline pud_t *fixmap_pud(unsigned long addr)
+ {
+@@ -1677,3 +1642,45 @@ static int __init prevent_bootmem_remove_init(void)
+ }
+ early_initcall(prevent_bootmem_remove_init);
+ #endif
 +
-+#include <arpa/inet.h>
-+#include <linux/errqueue.h>
-+#include <linux/if_packet.h>
-+#include <linux/io_uring.h>
-+#include <linux/ipv6.h>
-+#include <linux/socket.h>
-+#include <linux/sockios.h>
-+#include <net/ethernet.h>
-+#include <net/if.h>
-+#include <netinet/in.h>
-+#include <netinet/ip.h>
-+#include <netinet/ip6.h>
-+#include <netinet/tcp.h>
-+#include <netinet/udp.h>
-+#include <sys/ioctl.h>
-+#include <sys/mman.h>
-+#include <sys/resource.h>
-+#include <sys/socket.h>
-+#include <sys/stat.h>
-+#include <sys/time.h>
-+#include <sys/types.h>
-+#include <sys/un.h>
-+#include <sys/wait.h>
++void __init remap_crashkernel(void)
++{
++#ifdef CONFIG_KEXEC_CORE
++	phys_addr_t start, end, size;
++	phys_addr_t aligned_start, aligned_end;
 +
-+#define NOTIF_TAG 0xfffffffULL
-+#define NONZC_TAG 0
-+#define ZC_TAG 1
++	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
++	    return;
 +
-+enum {
-+	MODE_NONZC	= 0,
-+	MODE_ZC		= 1,
-+	MODE_ZC_FIXED	= 2,
-+	MODE_MIXED	= 3,
-+};
++	if (!crashk_res.end)
++	    return;
 +
-+static bool cfg_flush		= false;
-+static bool cfg_cork		= false;
-+static int  cfg_mode		= MODE_ZC_FIXED;
-+static int  cfg_nr_reqs		= 8;
-+static int  cfg_family		= PF_UNSPEC;
-+static int  cfg_payload_len;
-+static int  cfg_port		= 8000;
-+static int  cfg_runtime_ms	= 4200;
++	start = crashk_res.start & PAGE_MASK;
++	end = PAGE_ALIGN(crashk_res.end);
 +
-+static socklen_t cfg_alen;
-+static struct sockaddr_storage cfg_dst_addr;
++	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
++	aligned_end = ALIGN(end, PUD_SIZE);
 +
-+static char payload[IP_MAXPACKET] __attribute__((aligned(4096)));
++	/* Clear PUDs containing crash kernel memory */
++	unmap_hotplug_range(__phys_to_virt(aligned_start),
++			    __phys_to_virt(aligned_end), false, NULL);
 +
-+struct io_sq_ring {
-+	unsigned *head;
-+	unsigned *tail;
-+	unsigned *ring_mask;
-+	unsigned *ring_entries;
-+	unsigned *flags;
-+	unsigned *array;
-+};
++	/* map area from PUD start to start of crash kernel with large pages */
++	size = start - aligned_start;
++	__create_pgd_mapping(swapper_pg_dir, aligned_start,
++			     __phys_to_virt(aligned_start),
++			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
 +
-+struct io_cq_ring {
-+	unsigned *head;
-+	unsigned *tail;
-+	unsigned *ring_mask;
-+	unsigned *ring_entries;
-+	struct io_uring_cqe *cqes;
-+};
++	/* map crash kernel memory with base pages */
++	size = end - start;
++	__create_pgd_mapping(swapper_pg_dir, start,  __phys_to_virt(start),
++			     size, PAGE_KERNEL, early_pgtable_alloc,
++			     NO_EXEC_MAPPINGS | NO_BLOCK_MAPPINGS |
++			     NO_CONT_MAPPINGS);
 +
-+struct io_uring_sq {
-+	unsigned *khead;
-+	unsigned *ktail;
-+	unsigned *kring_mask;
-+	unsigned *kring_entries;
-+	unsigned *kflags;
-+	unsigned *kdropped;
-+	unsigned *array;
-+	struct io_uring_sqe *sqes;
-+
-+	unsigned sqe_head;
-+	unsigned sqe_tail;
-+
-+	size_t ring_sz;
-+};
-+
-+struct io_uring_cq {
-+	unsigned *khead;
-+	unsigned *ktail;
-+	unsigned *kring_mask;
-+	unsigned *kring_entries;
-+	unsigned *koverflow;
-+	struct io_uring_cqe *cqes;
-+
-+	size_t ring_sz;
-+};
-+
-+struct io_uring {
-+	struct io_uring_sq sq;
-+	struct io_uring_cq cq;
-+	int ring_fd;
-+};
-+
-+#ifdef __alpha__
-+# ifndef __NR_io_uring_setup
-+#  define __NR_io_uring_setup		535
-+# endif
-+# ifndef __NR_io_uring_enter
-+#  define __NR_io_uring_enter		536
-+# endif
-+# ifndef __NR_io_uring_register
-+#  define __NR_io_uring_register	537
-+# endif
-+#else /* !__alpha__ */
-+# ifndef __NR_io_uring_setup
-+#  define __NR_io_uring_setup		425
-+# endif
-+# ifndef __NR_io_uring_enter
-+#  define __NR_io_uring_enter		426
-+# endif
-+# ifndef __NR_io_uring_register
-+#  define __NR_io_uring_register	427
-+# endif
++	/* map area from end of crash kernel to PUD end with large pages */
++	size = aligned_end - end;
++	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
++			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
 +#endif
-+
-+#if defined(__x86_64) || defined(__i386__)
-+#define read_barrier()	__asm__ __volatile__("":::"memory")
-+#define write_barrier()	__asm__ __volatile__("":::"memory")
-+#else
-+
-+#define read_barrier()	__sync_synchronize()
-+#define write_barrier()	__sync_synchronize()
-+#endif
-+
-+static int io_uring_setup(unsigned int entries, struct io_uring_params *p)
-+{
-+	return syscall(__NR_io_uring_setup, entries, p);
 +}
-+
-+static int io_uring_enter(int fd, unsigned int to_submit,
-+			  unsigned int min_complete,
-+			  unsigned int flags, sigset_t *sig)
-+{
-+	return syscall(__NR_io_uring_enter, fd, to_submit, min_complete,
-+			flags, sig, _NSIG / 8);
-+}
-+
-+static int io_uring_register_buffers(struct io_uring *ring,
-+				     const struct iovec *iovecs,
-+				     unsigned nr_iovecs)
-+{
-+	int ret;
-+
-+	ret = syscall(__NR_io_uring_register, ring->ring_fd,
-+		      IORING_REGISTER_BUFFERS, iovecs, nr_iovecs);
-+	return (ret < 0) ? -errno : ret;
-+}
-+
-+static int io_uring_register_notifications(struct io_uring *ring,
-+					   unsigned nr,
-+					   struct io_uring_notification_slot *slots)
-+{
-+	int ret;
-+	struct io_uring_notification_register r = {
-+		.nr_slots = nr,
-+		.data = (unsigned long)slots,
-+	};
-+
-+	ret = syscall(__NR_io_uring_register, ring->ring_fd,
-+		      IORING_REGISTER_NOTIFIERS, &r, sizeof(r));
-+	return (ret < 0) ? -errno : ret;
-+}
-+
-+static int io_uring_mmap(int fd, struct io_uring_params *p,
-+			 struct io_uring_sq *sq, struct io_uring_cq *cq)
-+{
-+	size_t size;
-+	void *ptr;
-+	int ret;
-+
-+	sq->ring_sz = p->sq_off.array + p->sq_entries * sizeof(unsigned);
-+	ptr = mmap(0, sq->ring_sz, PROT_READ | PROT_WRITE,
-+		   MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_SQ_RING);
-+	if (ptr == MAP_FAILED)
-+		return -errno;
-+	sq->khead = ptr + p->sq_off.head;
-+	sq->ktail = ptr + p->sq_off.tail;
-+	sq->kring_mask = ptr + p->sq_off.ring_mask;
-+	sq->kring_entries = ptr + p->sq_off.ring_entries;
-+	sq->kflags = ptr + p->sq_off.flags;
-+	sq->kdropped = ptr + p->sq_off.dropped;
-+	sq->array = ptr + p->sq_off.array;
-+
-+	size = p->sq_entries * sizeof(struct io_uring_sqe);
-+	sq->sqes = mmap(0, size, PROT_READ | PROT_WRITE,
-+			MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_SQES);
-+	if (sq->sqes == MAP_FAILED) {
-+		ret = -errno;
-+err:
-+		munmap(sq->khead, sq->ring_sz);
-+		return ret;
-+	}
-+
-+	cq->ring_sz = p->cq_off.cqes + p->cq_entries * sizeof(struct io_uring_cqe);
-+	ptr = mmap(0, cq->ring_sz, PROT_READ | PROT_WRITE,
-+			MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_CQ_RING);
-+	if (ptr == MAP_FAILED) {
-+		ret = -errno;
-+		munmap(sq->sqes, p->sq_entries * sizeof(struct io_uring_sqe));
-+		goto err;
-+	}
-+	cq->khead = ptr + p->cq_off.head;
-+	cq->ktail = ptr + p->cq_off.tail;
-+	cq->kring_mask = ptr + p->cq_off.ring_mask;
-+	cq->kring_entries = ptr + p->cq_off.ring_entries;
-+	cq->koverflow = ptr + p->cq_off.overflow;
-+	cq->cqes = ptr + p->cq_off.cqes;
-+	return 0;
-+}
-+
-+static int io_uring_queue_init(unsigned entries, struct io_uring *ring,
-+			       unsigned flags)
-+{
-+	struct io_uring_params p;
-+	int fd, ret;
-+
-+	memset(ring, 0, sizeof(*ring));
-+	memset(&p, 0, sizeof(p));
-+	p.flags = flags;
-+
-+	fd = io_uring_setup(entries, &p);
-+	if (fd < 0)
-+		return fd;
-+	ret = io_uring_mmap(fd, &p, &ring->sq, &ring->cq);
-+	if (!ret)
-+		ring->ring_fd = fd;
-+	else
-+		close(fd);
-+	return ret;
-+}
-+
-+static int io_uring_submit(struct io_uring *ring)
-+{
-+	struct io_uring_sq *sq = &ring->sq;
-+	const unsigned mask = *sq->kring_mask;
-+	unsigned ktail, submitted, to_submit;
-+	int ret;
-+
-+	read_barrier();
-+	if (*sq->khead != *sq->ktail) {
-+		submitted = *sq->kring_entries;
-+		goto submit;
-+	}
-+	if (sq->sqe_head == sq->sqe_tail)
-+		return 0;
-+
-+	ktail = *sq->ktail;
-+	to_submit = sq->sqe_tail - sq->sqe_head;
-+	for (submitted = 0; submitted < to_submit; submitted++) {
-+		read_barrier();
-+		sq->array[ktail++ & mask] = sq->sqe_head++ & mask;
-+	}
-+	if (!submitted)
-+		return 0;
-+
-+	if (*sq->ktail != ktail) {
-+		write_barrier();
-+		*sq->ktail = ktail;
-+		write_barrier();
-+	}
-+submit:
-+	ret = io_uring_enter(ring->ring_fd, submitted, 0,
-+				IORING_ENTER_GETEVENTS, NULL);
-+	return ret < 0 ? -errno : ret;
-+}
-+
-+static inline void io_uring_prep_send(struct io_uring_sqe *sqe, int sockfd,
-+				      const void *buf, size_t len, int flags)
-+{
-+	memset(sqe, 0, sizeof(*sqe));
-+	sqe->opcode = (__u8) IORING_OP_SEND;
-+	sqe->fd = sockfd;
-+	sqe->addr = (unsigned long) buf;
-+	sqe->len = len;
-+	sqe->msg_flags = (__u32) flags;
-+}
-+
-+static inline void io_uring_prep_sendzc(struct io_uring_sqe *sqe, int sockfd,
-+				        const void *buf, size_t len, int flags,
-+				        unsigned slot_idx, unsigned zc_flags)
-+{
-+	io_uring_prep_send(sqe, sockfd, buf, len, flags);
-+	sqe->opcode = (__u8) IORING_OP_SENDZC;
-+	sqe->notification_idx = slot_idx;
-+	sqe->ioprio = zc_flags;
-+}
-+
-+static struct io_uring_sqe *io_uring_get_sqe(struct io_uring *ring)
-+{
-+	struct io_uring_sq *sq = &ring->sq;
-+
-+	if (sq->sqe_tail + 1 - sq->sqe_head > *sq->kring_entries)
-+		return NULL;
-+	return &sq->sqes[sq->sqe_tail++ & *sq->kring_mask];
-+}
-+
-+static int io_uring_wait_cqe(struct io_uring *ring, struct io_uring_cqe **cqe_ptr)
-+{
-+	struct io_uring_cq *cq = &ring->cq;
-+	const unsigned mask = *cq->kring_mask;
-+	unsigned head = *cq->khead;
-+	int ret;
-+
-+	*cqe_ptr = NULL;
-+	do {
-+		read_barrier();
-+		if (head != *cq->ktail) {
-+			*cqe_ptr = &cq->cqes[head & mask];
-+			break;
-+		}
-+		ret = io_uring_enter(ring->ring_fd, 0, 1,
-+					IORING_ENTER_GETEVENTS, NULL);
-+		if (ret < 0)
-+			return -errno;
-+	} while (1);
-+
-+	return 0;
-+}
-+
-+static inline void io_uring_cqe_seen(struct io_uring *ring)
-+{
-+	*(&ring->cq)->khead += 1;
-+	write_barrier();
-+}
-+
-+static unsigned long gettimeofday_ms(void)
-+{
-+	struct timeval tv;
-+
-+	gettimeofday(&tv, NULL);
-+	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-+}
-+
-+static void do_setsockopt(int fd, int level, int optname, int val)
-+{
-+	if (setsockopt(fd, level, optname, &val, sizeof(val)))
-+		error(1, errno, "setsockopt %d.%d: %d", level, optname, val);
-+}
-+
-+static int do_setup_tx(int domain, int type, int protocol)
-+{
-+	int fd;
-+
-+	fd = socket(domain, type, protocol);
-+	if (fd == -1)
-+		error(1, errno, "socket t");
-+
-+	do_setsockopt(fd, SOL_SOCKET, SO_SNDBUF, 1 << 21);
-+
-+	if (connect(fd, (void *) &cfg_dst_addr, cfg_alen))
-+		error(1, errno, "connect");
-+	return fd;
-+}
-+
-+static void do_tx(int domain, int type, int protocol)
-+{
-+	struct io_uring_notification_slot b[1] = {{.tag = NOTIF_TAG}};
-+	struct io_uring_sqe *sqe;
-+	struct io_uring_cqe *cqe;
-+	unsigned long packets = 0, bytes = 0;
-+	struct io_uring ring;
-+	struct iovec iov;
-+	uint64_t tstop;
-+	int i, fd, ret;
-+	int compl_cqes = 0;
-+
-+	fd = do_setup_tx(domain, type, protocol);
-+
-+	ret = io_uring_queue_init(512, &ring, 0);
-+	if (ret)
-+		error(1, ret, "io_uring: queue init");
-+
-+	ret = io_uring_register_notifications(&ring, 1, b);
-+	if (ret)
-+		error(1, ret, "io_uring: tx ctx registration");
-+
-+	iov.iov_base = payload;
-+	iov.iov_len = cfg_payload_len;
-+
-+	ret = io_uring_register_buffers(&ring, &iov, 1);
-+	if (ret)
-+		error(1, ret, "io_uring: buffer registration");
-+
-+	tstop = gettimeofday_ms() + cfg_runtime_ms;
-+	do {
-+		if (cfg_cork)
-+			do_setsockopt(fd, IPPROTO_UDP, UDP_CORK, 1);
-+
-+		for (i = 0; i < cfg_nr_reqs; i++) {
-+			unsigned zc_flags = 0;
-+			unsigned buf_idx = 0;
-+			unsigned slot_idx = 0;
-+			unsigned mode = cfg_mode;
-+			unsigned msg_flags = 0;
-+
-+			if (cfg_mode == MODE_MIXED)
-+				mode = rand() % 3;
-+
-+			sqe = io_uring_get_sqe(&ring);
-+
-+			if (mode == MODE_NONZC) {
-+				io_uring_prep_send(sqe, fd, payload,
-+						   cfg_payload_len, msg_flags);
-+				sqe->user_data = NONZC_TAG;
-+			} else {
-+				if (cfg_flush) {
-+					zc_flags |= IORING_SENDZC_FLUSH;
-+					compl_cqes++;
-+				}
-+				io_uring_prep_sendzc(sqe, fd, payload,
-+						     cfg_payload_len,
-+						     msg_flags, slot_idx, zc_flags);
-+				if (mode == MODE_ZC_FIXED) {
-+					sqe->ioprio |= IORING_SENDZC_FIXED_BUF;
-+					sqe->buf_index = buf_idx;
-+				}
-+				sqe->user_data = ZC_TAG;
-+			}
-+		}
-+
-+		ret = io_uring_submit(&ring);
-+		if (ret != cfg_nr_reqs)
-+			error(1, ret, "submit");
-+
-+		for (i = 0; i < cfg_nr_reqs; i++) {
-+			ret = io_uring_wait_cqe(&ring, &cqe);
-+			if (ret)
-+				error(1, ret, "wait cqe");
-+
-+			if (cqe->user_data == NOTIF_TAG) {
-+				compl_cqes--;
-+				i--;
-+			} else if (cqe->user_data != NONZC_TAG &&
-+				   cqe->user_data != ZC_TAG) {
-+				error(1, cqe->res, "invalid user_data");
-+			} else if (cqe->res <= 0 && cqe->res != -EAGAIN) {
-+				error(1, cqe->res, "send failed");
-+			} else {
-+				if (cqe->res > 0) {
-+					packets++;
-+					bytes += cqe->res;
-+				}
-+				/* failed requests don't flush */
-+				if (cfg_flush &&
-+				    cqe->res <= 0 &&
-+				    cqe->user_data == ZC_TAG)
-+					compl_cqes--;
-+			}
-+			io_uring_cqe_seen(&ring);
-+		}
-+		if (cfg_cork)
-+			do_setsockopt(fd, IPPROTO_UDP, UDP_CORK, 0);
-+	} while (gettimeofday_ms() < tstop);
-+
-+	if (close(fd))
-+		error(1, errno, "close");
-+
-+	fprintf(stderr, "tx=%lu (MB=%lu), tx/s=%lu (MB/s=%lu)\n",
-+			packets, bytes >> 20,
-+			packets / (cfg_runtime_ms / 1000),
-+			(bytes >> 20) / (cfg_runtime_ms / 1000));
-+
-+	while (compl_cqes) {
-+		ret = io_uring_wait_cqe(&ring, &cqe);
-+		if (ret)
-+			error(1, ret, "wait cqe");
-+		io_uring_cqe_seen(&ring);
-+		compl_cqes--;
-+	}
-+}
-+
-+static void do_test(int domain, int type, int protocol)
-+{
-+	int i;
-+
-+	for (i = 0; i < IP_MAXPACKET; i++)
-+		payload[i] = 'a' + (i % 26);
-+	do_tx(domain, type, protocol);
-+}
-+
-+static void usage(const char *filepath)
-+{
-+	error(1, 0, "Usage: %s [-f] [-n<N>] [-z0] [-s<payload size>] "
-+		    "(-4|-6) [-t<time s>] -D<dst_ip> udp", filepath);
-+}
-+
-+static void parse_opts(int argc, char **argv)
-+{
-+	const int max_payload_len = sizeof(payload) -
-+				    sizeof(struct ipv6hdr) -
-+				    sizeof(struct tcphdr) -
-+				    40 /* max tcp options */;
-+	struct sockaddr_in6 *addr6 = (void *) &cfg_dst_addr;
-+	struct sockaddr_in *addr4 = (void *) &cfg_dst_addr;
-+	char *daddr = NULL;
-+	int c;
-+
-+	if (argc <= 1)
-+		usage(argv[0]);
-+	cfg_payload_len = max_payload_len;
-+
-+	while ((c = getopt(argc, argv, "46D:p:s:t:n:fc:m:")) != -1) {
-+		switch (c) {
-+		case '4':
-+			if (cfg_family != PF_UNSPEC)
-+				error(1, 0, "Pass one of -4 or -6");
-+			cfg_family = PF_INET;
-+			cfg_alen = sizeof(struct sockaddr_in);
-+			break;
-+		case '6':
-+			if (cfg_family != PF_UNSPEC)
-+				error(1, 0, "Pass one of -4 or -6");
-+			cfg_family = PF_INET6;
-+			cfg_alen = sizeof(struct sockaddr_in6);
-+			break;
-+		case 'D':
-+			daddr = optarg;
-+			break;
-+		case 'p':
-+			cfg_port = strtoul(optarg, NULL, 0);
-+			break;
-+		case 's':
-+			cfg_payload_len = strtoul(optarg, NULL, 0);
-+			break;
-+		case 't':
-+			cfg_runtime_ms = 200 + strtoul(optarg, NULL, 10) * 1000;
-+			break;
-+		case 'n':
-+			cfg_nr_reqs = strtoul(optarg, NULL, 0);
-+			break;
-+		case 'f':
-+			cfg_flush = 1;
-+			break;
-+		case 'c':
-+			cfg_cork = strtol(optarg, NULL, 0);
-+			break;
-+		case 'm':
-+			cfg_mode = strtol(optarg, NULL, 0);
-+			break;
-+		}
-+	}
-+
-+	switch (cfg_family) {
-+	case PF_INET:
-+		memset(addr4, 0, sizeof(*addr4));
-+		addr4->sin_family = AF_INET;
-+		addr4->sin_port = htons(cfg_port);
-+		if (daddr &&
-+		    inet_pton(AF_INET, daddr, &(addr4->sin_addr)) != 1)
-+			error(1, 0, "ipv4 parse error: %s", daddr);
-+		break;
-+	case PF_INET6:
-+		memset(addr6, 0, sizeof(*addr6));
-+		addr6->sin6_family = AF_INET6;
-+		addr6->sin6_port = htons(cfg_port);
-+		if (daddr &&
-+		    inet_pton(AF_INET6, daddr, &(addr6->sin6_addr)) != 1)
-+			error(1, 0, "ipv6 parse error: %s", daddr);
-+		break;
-+	default:
-+		error(1, 0, "illegal domain");
-+	}
-+
-+	if (cfg_payload_len > max_payload_len)
-+		error(1, 0, "-s: payload exceeds max (%d)", max_payload_len);
-+	if (cfg_mode == MODE_NONZC && cfg_flush)
-+		error(1, 0, "-f: only zerocopy modes support notifications");
-+	if (optind != argc - 1)
-+		usage(argv[0]);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	const char *cfg_test = argv[argc - 1];
-+
-+	parse_opts(argc, argv);
-+
-+	if (!strcmp(cfg_test, "tcp"))
-+		do_test(cfg_family, SOCK_STREAM, 0);
-+	else if (!strcmp(cfg_test, "udp"))
-+		do_test(cfg_family, SOCK_DGRAM, 0);
-+	else
-+		error(1, 0, "unknown cfg_test %s", cfg_test);
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/net/io_uring_zerocopy_tx.sh b/tools/testing/selftests/net/io_uring_zerocopy_tx.sh
-new file mode 100755
-index 000000000000..6a65e4437640
---- /dev/null
-+++ b/tools/testing/selftests/net/io_uring_zerocopy_tx.sh
-@@ -0,0 +1,131 @@
-+#!/bin/bash
-+#
-+# Send data between two processes across namespaces
-+# Run twice: once without and once with zerocopy
-+
-+set -e
-+
-+readonly DEV="veth0"
-+readonly DEV_MTU=65535
-+readonly BIN_TX="./io_uring_zerocopy_tx"
-+readonly BIN_RX="./msg_zerocopy"
-+
-+readonly RAND="$(mktemp -u XXXXXX)"
-+readonly NSPREFIX="ns-${RAND}"
-+readonly NS1="${NSPREFIX}1"
-+readonly NS2="${NSPREFIX}2"
-+
-+readonly SADDR4='192.168.1.1'
-+readonly DADDR4='192.168.1.2'
-+readonly SADDR6='fd::1'
-+readonly DADDR6='fd::2'
-+
-+readonly path_sysctl_mem="net.core.optmem_max"
-+
-+# No arguments: automated test
-+if [[ "$#" -eq "0" ]]; then
-+	IPs=( "4" "6" )
-+	protocols=( "tcp" "udp" )
-+
-+	for IP in "${IPs[@]}"; do
-+		for proto in "${protocols[@]}"; do
-+			for mode in $(seq 1 3); do
-+				$0 "$IP" "$proto" -m "$mode" -t 1 -n 32
-+				$0 "$IP" "$proto" -m "$mode" -t 1 -n 32 -f
-+				$0 "$IP" "$proto" -m "$mode" -t 1 -n 32 -c -f
-+			done
-+		done
-+	done
-+
-+	echo "OK. All tests passed"
-+	exit 0
-+fi
-+
-+# Argument parsing
-+if [[ "$#" -lt "2" ]]; then
-+	echo "Usage: $0 [4|6] [tcp|udp|raw|raw_hdrincl|packet|packet_dgram] <args>"
-+	exit 1
-+fi
-+
-+readonly IP="$1"
-+shift
-+readonly TXMODE="$1"
-+shift
-+readonly EXTRA_ARGS="$@"
-+
-+# Argument parsing: configure addresses
-+if [[ "${IP}" == "4" ]]; then
-+	readonly SADDR="${SADDR4}"
-+	readonly DADDR="${DADDR4}"
-+elif [[ "${IP}" == "6" ]]; then
-+	readonly SADDR="${SADDR6}"
-+	readonly DADDR="${DADDR6}"
-+else
-+	echo "Invalid IP version ${IP}"
-+	exit 1
-+fi
-+
-+# Argument parsing: select receive mode
-+#
-+# This differs from send mode for
-+# - packet:	use raw recv, because packet receives skb clones
-+# - raw_hdrinc: use raw recv, because hdrincl is a tx-only option
-+case "${TXMODE}" in
-+'packet' | 'packet_dgram' | 'raw_hdrincl')
-+	RXMODE='raw'
-+	;;
-+*)
-+	RXMODE="${TXMODE}"
-+	;;
-+esac
-+
-+# Start of state changes: install cleanup handler
-+save_sysctl_mem="$(sysctl -n ${path_sysctl_mem})"
-+
-+cleanup() {
-+	ip netns del "${NS2}"
-+	ip netns del "${NS1}"
-+	sysctl -w -q "${path_sysctl_mem}=${save_sysctl_mem}"
-+}
-+
-+trap cleanup EXIT
-+
-+# Configure system settings
-+sysctl -w -q "${path_sysctl_mem}=1000000"
-+
-+# Create virtual ethernet pair between network namespaces
-+ip netns add "${NS1}"
-+ip netns add "${NS2}"
-+
-+ip link add "${DEV}" mtu "${DEV_MTU}" netns "${NS1}" type veth \
-+  peer name "${DEV}" mtu "${DEV_MTU}" netns "${NS2}"
-+
-+# Bring the devices up
-+ip -netns "${NS1}" link set "${DEV}" up
-+ip -netns "${NS2}" link set "${DEV}" up
-+
-+# Set fixed MAC addresses on the devices
-+ip -netns "${NS1}" link set dev "${DEV}" address 02:02:02:02:02:02
-+ip -netns "${NS2}" link set dev "${DEV}" address 06:06:06:06:06:06
-+
-+# Add fixed IP addresses to the devices
-+ip -netns "${NS1}" addr add 192.168.1.1/24 dev "${DEV}"
-+ip -netns "${NS2}" addr add 192.168.1.2/24 dev "${DEV}"
-+ip -netns "${NS1}" addr add       fd::1/64 dev "${DEV}" nodad
-+ip -netns "${NS2}" addr add       fd::2/64 dev "${DEV}" nodad
-+
-+# Optionally disable sg or csum offload to test edge cases
-+# ip netns exec "${NS1}" ethtool -K "${DEV}" sg off
-+
-+do_test() {
-+	local readonly ARGS="$1"
-+
-+	echo "ipv${IP} ${TXMODE} ${ARGS}"
-+	ip netns exec "${NS2}" "${BIN_RX}" "-${IP}" -t 2 -C 2 -S "${SADDR}" -D "${DADDR}" -r "${RXMODE}" &
-+	sleep 0.2
-+	ip netns exec "${NS1}" "${BIN_TX}" "-${IP}" -t 1 -D "${DADDR}" ${ARGS} "${TXMODE}"
-+	wait
-+}
-+
-+do_test "${EXTRA_ARGS}"
-+echo ok
 -- 
-2.36.1
+2.35.3
 
+ 
+> Will
+
+-- 
+Sincerely yours,
+Mike.
