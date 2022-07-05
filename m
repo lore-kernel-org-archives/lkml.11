@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 367BACCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32080C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234019AbiGEMGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
+        id S234089AbiGEMG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233617AbiGEMDl (ORCPT
+        with ESMTP id S233216AbiGEMDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:03:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563F517E18;
-        Tue,  5 Jul 2022 05:03:39 -0700 (PDT)
+        Tue, 5 Jul 2022 08:03:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB2D17A9C;
+        Tue,  5 Jul 2022 05:03:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E576E6184D;
-        Tue,  5 Jul 2022 12:03:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D65C341C7;
-        Tue,  5 Jul 2022 12:03:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9955B817C7;
+        Tue,  5 Jul 2022 12:03:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E93C341CB;
+        Tue,  5 Jul 2022 12:03:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022618;
-        bh=CQl6euab5xGbNlx53hUvYix1BiHS9rLNvUdVGXVQJ1E=;
+        s=korg; t=1657022615;
+        bh=k5rB3mV2xOF1YciF+TjfsvceZ7yhfsHMZMANhZEVAys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VfWPiFH96O337WbYn95GsQaRweIR1lrAr2TJhqWjH0DAT69ug881vQP/UGEPRI+fh
-         dhVS+XrZrMzuJKcOzzjuL/jq45SLjIw53dqOjSBPQEPaYK+ZJ6ttOndgnyvXzx3BA8
-         NZhBo4BYnOhoQoNk0tqqJ3LigmoIp6eLyxZby5tE=
+        b=krojxvxTnGIalrFjqhdPhlvRZ89JyREz3PyZxtmZtJqIh8FvHhwjzsfX8VE4KYfOv
+         XQ6mXPJQptTODMiFZqVm2vWF6owQthYiQPu8118LghISsCSiBR1jsBuDI6NbxjreE1
+         5FalJSe946U9jHUAENy0lDsma/LrXvumr77yCyss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 23/33] hwmon: (ibmaem) dont call platform_device_del() if platform_device_add() fails
-Date:   Tue,  5 Jul 2022 13:58:15 +0200
-Message-Id: <20220705115607.391872617@linuxfoundation.org>
+        stable@vger.kernel.org, Carlo Lobrano <c.lobrano@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Porcedda <fabio.porcedda@gmail.com>
+Subject: [PATCH 4.19 32/33] net: usb: qmi_wwan: add Telit 0x1060 composition
+Date:   Tue,  5 Jul 2022 13:58:24 +0200
+Message-Id: <20220705115607.654847493@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
 References: <20220705115606.709817198@linuxfoundation.org>
@@ -50,65 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Carlo Lobrano <c.lobrano@gmail.com>
 
-[ Upstream commit d0e51022a025ca5350fafb8e413a6fe5d4baf833 ]
+commit 8d17a33b076d24aa4861f336a125c888fb918605 upstream.
 
-If platform_device_add() fails, it no need to call platform_device_del(), split
-platform_device_unregister() into platform_device_del/put(), so platform_device_put()
-can be called separately.
+This patch adds support for Telit LN920 0x1060 composition
 
-Fixes: 8808a793f052 ("ibmaem: new driver for power/energy/temp meters in IBM System X hardware")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220701074153.4021556-1-yangyingliang@huawei.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+0x1060: tty, adb, rmnet, tty, tty, tty, tty
+
+Signed-off-by: Carlo Lobrano <c.lobrano@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/ibmaem.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/usb/qmi_wwan.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/hwmon/ibmaem.c
-+++ b/drivers/hwmon/ibmaem.c
-@@ -563,7 +563,7 @@ static int aem_init_aem1_inst(struct aem
- 
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
- 
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -611,7 +611,9 @@ hwmon_reg_err:
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
-@@ -703,7 +705,7 @@ static int aem_init_aem2_inst(struct aem
- 
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
- 
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -751,7 +753,9 @@ hwmon_reg_err:
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1318,6 +1318,7 @@ static const struct usb_device_id produc
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1031, 3)}, /* Telit LE910C1-EUX */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
++	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
 
 
