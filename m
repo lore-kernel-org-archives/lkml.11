@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909FBCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A04DFCCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238752AbiGEM3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        id S238815AbiGEM3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237570AbiGEMTW (ORCPT
+        with ESMTP id S237556AbiGEMTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A691D31A;
-        Tue,  5 Jul 2022 05:15:17 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D57B18E1A;
+        Tue,  5 Jul 2022 05:15:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7AB6619FF;
-        Tue,  5 Jul 2022 12:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 091A6C36AEC;
-        Tue,  5 Jul 2022 12:15:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 407ADB8170A;
+        Tue,  5 Jul 2022 12:15:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A02C341C7;
+        Tue,  5 Jul 2022 12:15:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023316;
-        bh=ZoC9/6gzYJWPUIuCnUTdDmp8SaoEGi7lnJN2Rv7DdX4=;
+        s=korg; t=1657023311;
+        bh=Ksb1/PcP0ywMCJuFBLWwNgkMw+7Bu7olf1MzbZcnlgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lN9iWWqTF2WqcJ/6QH7HfUXfv1zhAdRnP2SqJLKd22B0c38dSul7PRk9luv/MeM9T
-         UK9WMiGap01CnF4TV3Y/xb/DbGPrsZwR5MYgWF9rlGEGPCCMrG5mRU9XLrqBo/rYOG
-         /t+Xuy6Lde/CYtDlrhx5EBzMyqwYgkgQKRf6lEGY=
+        b=Bq/v9Q6yWmX7hOGnl+Ur4DbYu0Vw/H9G/95xdJjKwOkAlWQ1EukcNRExWdLQ7PGCR
+         EZErdFKoeo5OeWyH1+m8fJhK/hmnkcP2i1jxadmRdT9p0GXXw69igJQeh9FMDlvGPq
+         XW4dcYl7SzPyKoteWGJYoEXjN7O7Zg9eGsZpvVPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 017/102] powerpc/book3e: Fix PUD allocation size in map_kernel_page()
-Date:   Tue,  5 Jul 2022 13:57:43 +0200
-Message-Id: <20220705115618.906656846@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.18 015/102] parisc/unaligned: Fix emulate_ldw() breakage
+Date:   Tue,  5 Jul 2022 13:57:41 +0200
+Message-Id: <20220705115618.848258989@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -50,48 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Helge Deller <deller@gmx.de>
 
-commit 986481618023e18e187646b0fff05a3c337531cb upstream.
+commit 96b80fcd2705fc50ebe1f7f3ce204e861b3099ab upstream.
 
-Commit 2fb4706057bc ("powerpc: add support for folded p4d page tables")
-erroneously changed PUD setup to a mix of PMD and PUD. Fix it.
+The commit e8aa7b17fe41 broke the 32-bit load-word unalignment exception
+handler because it calculated the wrong amount of bits by which the value
+should be shifted. This patch fixes it.
 
-While at it, use PTE_TABLE_SIZE instead of PAGE_SIZE for PTE tables
-in order to avoid any confusion.
-
-Fixes: 2fb4706057bc ("powerpc: add support for folded p4d page tables")
-Cc: stable@vger.kernel.org # v5.8+
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/95ddfd6176d53e6c85e13bd1c358359daa56775f.1655974558.git.christophe.leroy@csgroup.eu
+Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: e8aa7b17fe41 ("parisc/unaligned: Rewrite inline assembly of emulate_ldw()")
+Cc: stable@vger.kernel.org   # v5.18
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/nohash/book3e_pgtable.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/parisc/kernel/unaligned.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/mm/nohash/book3e_pgtable.c
-+++ b/arch/powerpc/mm/nohash/book3e_pgtable.c
-@@ -96,8 +96,8 @@ int __ref map_kernel_page(unsigned long
- 		pgdp = pgd_offset_k(ea);
- 		p4dp = p4d_offset(pgdp, ea);
- 		if (p4d_none(*p4dp)) {
--			pmdp = early_alloc_pgtable(PMD_TABLE_SIZE);
--			p4d_populate(&init_mm, p4dp, pmdp);
-+			pudp = early_alloc_pgtable(PUD_TABLE_SIZE);
-+			p4d_populate(&init_mm, p4dp, pudp);
- 		}
- 		pudp = pud_offset(p4dp, ea);
- 		if (pud_none(*pudp)) {
-@@ -106,7 +106,7 @@ int __ref map_kernel_page(unsigned long
- 		}
- 		pmdp = pmd_offset(pudp, ea);
- 		if (!pmd_present(*pmdp)) {
--			ptep = early_alloc_pgtable(PAGE_SIZE);
-+			ptep = early_alloc_pgtable(PTE_TABLE_SIZE);
- 			pmd_populate_kernel(&init_mm, pmdp, ptep);
- 		}
- 		ptep = pte_offset_kernel(pmdp, ea);
+diff --git a/arch/parisc/kernel/unaligned.c b/arch/parisc/kernel/unaligned.c
+index ed1e88a74dc4..bac581b5ecfc 100644
+--- a/arch/parisc/kernel/unaligned.c
++++ b/arch/parisc/kernel/unaligned.c
+@@ -146,7 +146,7 @@ static int emulate_ldw(struct pt_regs *regs, int toreg, int flop)
+ "	depw	%%r0,31,2,%4\n"
+ "1:	ldw	0(%%sr1,%4),%0\n"
+ "2:	ldw	4(%%sr1,%4),%3\n"
+-"	subi	32,%4,%2\n"
++"	subi	32,%2,%2\n"
+ "	mtctl	%2,11\n"
+ "	vshd	%0,%3,%0\n"
+ "3:	\n"
+-- 
+2.37.0
+
 
 
