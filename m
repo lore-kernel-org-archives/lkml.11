@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC80CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3756FC2BBE7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237251AbiGEMS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        id S237764AbiGEMTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234762AbiGEMKH (ORCPT
+        with ESMTP id S235582AbiGEMMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:10:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E47B18E28;
-        Tue,  5 Jul 2022 05:09:48 -0700 (PDT)
+        Tue, 5 Jul 2022 08:12:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDDD193DA;
+        Tue,  5 Jul 2022 05:10:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 382ACB817DB;
-        Tue,  5 Jul 2022 12:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E17AC385A2;
-        Tue,  5 Jul 2022 12:09:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0249618BC;
+        Tue,  5 Jul 2022 12:10:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBAE1C341C7;
+        Tue,  5 Jul 2022 12:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022985;
-        bh=V+/WldTC6vQLgWKvnFcl69sg7sGiHRUODREL8mDSXEE=;
+        s=korg; t=1657023028;
+        bh=CdltY3YtFYtmK68cdI/9Kb2Y0PHRiuO7d/0xZbESO4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCMl3G7Uu8RBewMnOUZlxm92TnxBIvZYqMBR0EpLvXDg4z2yJ07kaVY1Ujom1Zqgh
-         pI/dEwmNBUxCyb3vprgzfJpDCyU740apHYjhSvxYFSs8v0pWc0Dy1GN7yEnpk3alje
-         34Xlb07wW5T4M0jFlFS25tpIhrDctB/t2gI/pO34=
+        b=kfaeOwW1IwZeTrCIzodu+A+f/HYMVZu4bKW3UB+Qe7YDtLdGygoMQO0U+uoRaEfb3
+         HhJH7FwqQjeWvQhqJYUUSKuQBd6syh+mom3Tdu4uS9jxboPgPjP04f8XH5nooGzI8P
+         vsRK17eVxtQQ0XRRnaHh3dsnsTAvfkQuI9GJSjI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 31/84] net/sched: act_api: Notify user space if any actions were flushed before error
-Date:   Tue,  5 Jul 2022 13:57:54 +0200
-Message-Id: <20220705115616.232591938@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 12/98] powerpc/book3e: Fix PUD allocation size in map_kernel_page()
+Date:   Tue,  5 Jul 2022 13:57:30 +0200
+Message-Id: <20220705115617.930064260@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
-References: <20220705115615.323395630@linuxfoundation.org>
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,81 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 76b39b94382f9e0a639e1c70c3253de248cc4c83 upstream.
+commit 986481618023e18e187646b0fff05a3c337531cb upstream.
 
-If during an action flush operation one of the actions is still being
-referenced, the flush operation is aborted and the kernel returns to
-user space with an error. However, if the kernel was able to flush, for
-example, 3 actions and failed on the fourth, the kernel will not notify
-user space that it deleted 3 actions before failing.
+Commit 2fb4706057bc ("powerpc: add support for folded p4d page tables")
+erroneously changed PUD setup to a mix of PMD and PUD. Fix it.
 
-This patch fixes that behaviour by notifying user space of how many
-actions were deleted before flush failed and by setting extack with a
-message describing what happened.
+While at it, use PTE_TABLE_SIZE instead of PAGE_SIZE for PTE tables
+in order to avoid any confusion.
 
-Fixes: 55334a5db5cd ("net_sched: act: refuse to remove bound action outside")
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 2fb4706057bc ("powerpc: add support for folded p4d page tables")
+Cc: stable@vger.kernel.org # v5.8+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/95ddfd6176d53e6c85e13bd1c358359daa56775f.1655974558.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/act_api.c |   22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ arch/powerpc/mm/nohash/book3e_pgtable.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -302,7 +302,8 @@ static int tcf_idr_release_unsafe(struct
- }
- 
- static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
--			  const struct tc_action_ops *ops)
-+			  const struct tc_action_ops *ops,
-+			  struct netlink_ext_ack *extack)
- {
- 	struct nlattr *nest;
- 	int n_i = 0;
-@@ -318,20 +319,25 @@ static int tcf_del_walker(struct tcf_idr
- 	if (nla_put_string(skb, TCA_KIND, ops->kind))
- 		goto nla_put_failure;
- 
-+	ret = 0;
- 	mutex_lock(&idrinfo->lock);
- 	idr_for_each_entry_ul(idr, p, tmp, id) {
- 		if (IS_ERR(p))
- 			continue;
- 		ret = tcf_idr_release_unsafe(p);
--		if (ret == ACT_P_DELETED) {
-+		if (ret == ACT_P_DELETED)
- 			module_put(ops->owner);
--			n_i++;
--		} else if (ret < 0) {
--			mutex_unlock(&idrinfo->lock);
--			goto nla_put_failure;
--		}
-+		else if (ret < 0)
-+			break;
-+		n_i++;
- 	}
- 	mutex_unlock(&idrinfo->lock);
-+	if (ret < 0) {
-+		if (n_i)
-+			NL_SET_ERR_MSG(extack, "Unable to flush all TC actions");
-+		else
-+			goto nla_put_failure;
-+	}
- 
- 	ret = nla_put_u32(skb, TCA_FCNT, n_i);
- 	if (ret)
-@@ -352,7 +358,7 @@ int tcf_generic_walker(struct tc_action_
- 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
- 
- 	if (type == RTM_DELACTION) {
--		return tcf_del_walker(idrinfo, skb, ops);
-+		return tcf_del_walker(idrinfo, skb, ops, extack);
- 	} else if (type == RTM_GETACTION) {
- 		return tcf_dump_walker(idrinfo, skb, cb);
- 	} else {
+--- a/arch/powerpc/mm/nohash/book3e_pgtable.c
++++ b/arch/powerpc/mm/nohash/book3e_pgtable.c
+@@ -95,8 +95,8 @@ int __ref map_kernel_page(unsigned long
+ 		pgdp = pgd_offset_k(ea);
+ 		p4dp = p4d_offset(pgdp, ea);
+ 		if (p4d_none(*p4dp)) {
+-			pmdp = early_alloc_pgtable(PMD_TABLE_SIZE);
+-			p4d_populate(&init_mm, p4dp, pmdp);
++			pudp = early_alloc_pgtable(PUD_TABLE_SIZE);
++			p4d_populate(&init_mm, p4dp, pudp);
+ 		}
+ 		pudp = pud_offset(p4dp, ea);
+ 		if (pud_none(*pudp)) {
+@@ -105,7 +105,7 @@ int __ref map_kernel_page(unsigned long
+ 		}
+ 		pmdp = pmd_offset(pudp, ea);
+ 		if (!pmd_present(*pmdp)) {
+-			ptep = early_alloc_pgtable(PAGE_SIZE);
++			ptep = early_alloc_pgtable(PTE_TABLE_SIZE);
+ 			pmd_populate_kernel(&init_mm, pmdp, ptep);
+ 		}
+ 		ptep = pte_offset_kernel(pmdp, ea);
 
 
