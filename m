@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E95CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55867C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236811AbiGEMb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
+        id S238047AbiGEMcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236435AbiGEMU5 (ORCPT
+        with ESMTP id S235065AbiGEMVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:20:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594CF1EAD6;
-        Tue,  5 Jul 2022 05:16:33 -0700 (PDT)
+        Tue, 5 Jul 2022 08:21:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B9E1EAFE;
+        Tue,  5 Jul 2022 05:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43AA4B817AC;
-        Tue,  5 Jul 2022 12:16:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858EFC341C7;
-        Tue,  5 Jul 2022 12:16:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED54F61A94;
+        Tue,  5 Jul 2022 12:16:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03878C341C7;
+        Tue,  5 Jul 2022 12:16:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023390;
-        bh=Hok1Co2iefPKMui6f6ms2vbGt5lvHy3kQSfw/a3Howk=;
+        s=korg; t=1657023396;
+        bh=tgcEEObmjWIoRo4+RmcNJHwzZmd8PbTCFr5gDg2ruiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=grMgPN26tdvI6zP9FGpVLx0s5Jt6ZWHqbprlVVGHUcnaOWL+162AtcKdPHAq4+/Qh
-         A52mH/xETwPXBEknVlGW0/aPwTzy8tjCJlRvAzn5eNk7bq7E945YlnZEVlBKTWzrcs
-         4imQ6+Ife9UG2BJ54/OKqd8oIbdje4RQfhV5UHFQ=
+        b=ldysNu6+WlyUZpsAoK/YcyI87T5X4aGu3Pq5jmuPasIccdWVM+pGgBULnUQ1AzAns
+         b0aV87yPnF2hDaLCzBMNEPVy2U4geGebPVTfjaPc92Q+kimJUXyY3YaTyZ/mHkEiYt
+         DEbzhxKMDtsVoj3jerlYo9iZUzz5qh+874I9Up94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anton Lundin <glance@acc.umu.se>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 036/102] net: usb: asix: do not force pause frames support
-Date:   Tue,  5 Jul 2022 13:58:02 +0200
-Message-Id: <20220705115619.437596269@linuxfoundation.org>
+        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.18 046/102] NFSv4: Add an fattr allocation to _nfs4_discover_trunking()
+Date:   Tue,  5 Jul 2022 13:58:12 +0200
+Message-Id: <20220705115619.716969254@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,37 +48,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Scott Mayhew <smayhew@redhat.com>
 
-commit ce95ab775f8d8e89a038c0e5611a7381a2ef8e43 upstream.
+commit 4f40a5b5544618b096d1611a18219dd91fd57f80 upstream.
 
-We should respect link partner capabilities and not force flow control
-support on every link. Even more, in current state the MAC driver do not
-advertises pause support so we should not keep flow control enabled at
-all.
+This was missed in c3ed222745d9 ("NFSv4: Fix free of uninitialized
+nfs4_label on referral lookup.") and causes a panic when mounting
+with '-o trunkdiscovery':
 
-Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-Reported-by: Anton Lundin <glance@acc.umu.se>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Tested-by: Anton Lundin <glance@acc.umu.se>
-Link: https://lore.kernel.org/r/20220624075139.3139300-2-o.rempel@pengutronix.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+PID: 1604   TASK: ffff93dac3520000  CPU: 3   COMMAND: "mount.nfs"
+ #0 [ffffb79140f738f8] machine_kexec at ffffffffaec64bee
+ #1 [ffffb79140f73950] __crash_kexec at ffffffffaeda67fd
+ #2 [ffffb79140f73a18] crash_kexec at ffffffffaeda76ed
+ #3 [ffffb79140f73a30] oops_end at ffffffffaec2658d
+ #4 [ffffb79140f73a50] general_protection at ffffffffaf60111e
+    [exception RIP: nfs_fattr_init+0x5]
+    RIP: ffffffffc0c18265  RSP: ffffb79140f73b08  RFLAGS: 00010246
+    RAX: 0000000000000000  RBX: ffff93dac304a800  RCX: 0000000000000000
+    RDX: ffffb79140f73bb0  RSI: ffff93dadc8cbb40  RDI: d03ee11cfaf6bd50
+    RBP: ffffb79140f73be8   R8: ffffffffc0691560   R9: 0000000000000006
+    R10: ffff93db3ffd3df8  R11: 0000000000000000  R12: ffff93dac4040000
+    R13: ffff93dac2848e00  R14: ffffb79140f73b60  R15: ffffb79140f73b30
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #5 [ffffb79140f73b08] _nfs41_proc_get_locations at ffffffffc0c73d53 [nfsv4]
+ #6 [ffffb79140f73bf0] nfs4_proc_get_locations at ffffffffc0c83e90 [nfsv4]
+ #7 [ffffb79140f73c60] nfs4_discover_trunking at ffffffffc0c83fb7 [nfsv4]
+ #8 [ffffb79140f73cd8] nfs_probe_fsinfo at ffffffffc0c0f95f [nfs]
+ #9 [ffffb79140f73da0] nfs_probe_server at ffffffffc0c1026a [nfs]
+    RIP: 00007f6254fce26e  RSP: 00007ffc69496ac8  RFLAGS: 00000246
+    RAX: ffffffffffffffda  RBX: 0000000000000000  RCX: 00007f6254fce26e
+    RDX: 00005600220a82a0  RSI: 00005600220a64d0  RDI: 00005600220a6520
+    RBP: 00007ffc69496c50   R8: 00005600220a8710   R9: 003035322e323231
+    R10: 0000000000000000  R11: 0000000000000246  R12: 00007ffc69496c50
+    R13: 00005600220a8440  R14: 0000000000000010  R15: 0000560020650ef9
+    ORIG_RAX: 00000000000000a5  CS: 0033  SS: 002b
+
+Fixes: c3ed222745d9 ("NFSv4: Fix free of uninitialized nfs4_label on referral lookup.")
+Signed-off-by: Scott Mayhew <smayhew@redhat.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/asix.h |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/nfs/nfs4proc.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
---- a/drivers/net/usb/asix.h
-+++ b/drivers/net/usb/asix.h
-@@ -126,8 +126,7 @@
- 	 AX_MEDIUM_RE)
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index c0fdcf8c0032..bb0e84a46d61 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4012,22 +4012,29 @@ static int _nfs4_discover_trunking(struct nfs_server *server,
+ 	}
  
- #define AX88772_MEDIUM_DEFAULT	\
--	(AX_MEDIUM_FD | AX_MEDIUM_RFC | \
--	 AX_MEDIUM_TFC | AX_MEDIUM_PS | \
-+	(AX_MEDIUM_FD | AX_MEDIUM_PS | \
- 	 AX_MEDIUM_AC | AX_MEDIUM_RE)
+ 	page = alloc_page(GFP_KERNEL);
++	if (!page)
++		return -ENOMEM;
+ 	locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
+-	if (page == NULL || locations == NULL)
+-		goto out;
++	if (!locations)
++		goto out_free;
++	locations->fattr = nfs_alloc_fattr();
++	if (!locations->fattr)
++		goto out_free_2;
  
- /* AX88772 & AX88178 RX_CTL values */
+ 	status = nfs4_proc_get_locations(server, fhandle, locations, page,
+ 					 cred);
+ 	if (status)
+-		goto out;
++		goto out_free_3;
+ 
+ 	for (i = 0; i < locations->nlocations; i++)
+ 		test_fs_location_for_trunking(&locations->locations[i], clp,
+ 					      server);
+-out:
+-	if (page)
+-		__free_page(page);
++out_free_3:
++	kfree(locations->fattr);
++out_free_2:
+ 	kfree(locations);
++out_free:
++	__free_page(page);
+ 	return status;
+ }
+ 
+-- 
+2.37.0
+
 
 
