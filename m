@@ -2,110 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E98CFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A89D3CCA496
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239652AbiGEMes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52730 "EHLO
+        id S239467AbiGEMen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237680AbiGEMZv (ORCPT
+        with ESMTP id S237661AbiGEMZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:25:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F89D63;
-        Tue,  5 Jul 2022 05:18:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Jul 2022 08:25:43 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24D117A96;
+        Tue,  5 Jul 2022 05:18:10 -0700 (PDT)
+Received: from HP-EliteBook-840-G7.. (1-171-254-213.dynamic-ip.hinet.net [1.171.254.213])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0072CE1B22;
-        Tue,  5 Jul 2022 12:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD4E8C341C7;
-        Tue,  5 Jul 2022 12:18:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023491;
-        bh=gJPHiYJw2eD9q/XdjDFanrKWV7ZlkQz5rUWrohNBK+w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lG3w1PXaVRCraj3hDfUN9UZ6LNbsW1jZC54Ja/exrZnsVCAZktB1/SzLC+YLZ04JZ
-         y75pttEMRuG1UMmf+njrHWBBN4mr8pFNaM2KKo0IXvDm+YP9uCL/bDzJyNtoXoef4k
-         avecZjzNhWXr2NKSg6JkJDo0Wr57PnsPmrldSuHw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, katrinzhou <katrinzhou@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 077/102] ipv6/sit: fix ipip6_tunnel_get_prl return value
-Date:   Tue,  5 Jul 2022 13:58:43 +0200
-Message-Id: <20220705115620.595403664@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id E6DAA3F382;
+        Tue,  5 Jul 2022 12:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1657023486;
+        bh=iTvnrtGJmHbu5jxs176IxAoGznZUm87Bg9lJ9yagBe8=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=Ofam5KN6BRYtLrlpL0lFvS+M/JTyxh0GjX+aWo6NbSF3kpgWTJaNjvDlgb+LsQtJ6
+         FBoXELSK4q1KeQbdnS6rihONcCuK98wXPjgFz6+Ug5KDOu3gVSUlf3pXMv2y+CAbpP
+         XuWSLbese+hF0Rd365DfL9l03szZlVB0n7HTU+ADc9lsWwzR9QCBduKbNgfP8bxnJN
+         VVGzFLlSamjwM8AIpOahwXKi5zZqBPcxNsvTIC7alkSz5QYdCGOljDUrgeGw/sBifi
+         Jgf7Cre/uYZFcz+ynVl/nViyJJgrO5UoUTuEZkCzNxL4PGBTIdGLP3n502SQN3cZGD
+         95t+OpFULNKFw==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     ktsai@capellamicro.com, jic23@kernel.org, lars@metafoo.de
+Cc:     hdegoede@redhat.com, Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: cm32181: Add PM support
+Date:   Tue,  5 Jul 2022 20:17:56 +0800
+Message-Id: <20220705121756.41660-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: katrinzhou <katrinzhou@tencent.com>
+The read on in_illuminance_input keeps at 0 after system sleep.
 
-commit adabdd8f6acabc0c3fdbba2e7f5a2edd9c5ef22d upstream.
+So add proper suspend and resume callback to make the sensor keep
+working after system sleep.
 
-When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
-Move the position of label "out" to return correctly.
-
-Addresses-Coverity: ("Unused value")
-Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
-Signed-off-by: katrinzhou <katrinzhou@tencent.com>
-Reviewed-by: Eric Dumazet<edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220628035030.1039171-1-zys.zljxml@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- net/ipv6/sit.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/iio/light/cm32181.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -323,8 +323,6 @@ static int ipip6_tunnel_get_prl(struct n
- 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL_ACCOUNT | __GFP_NOWARN) :
- 		NULL;
- 
--	rcu_read_lock();
--
- 	ca = min(t->prl_count, cmax);
- 
- 	if (!kp) {
-@@ -341,7 +339,7 @@ static int ipip6_tunnel_get_prl(struct n
- 		}
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index 97649944f1df6..e46bc6a54f199 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -460,6 +460,8 @@ static int cm32181_probe(struct i2c_client *client)
+ 			return PTR_ERR(client);
  	}
  
--	c = 0;
-+	rcu_read_lock();
- 	for_each_prl_rcu(t->prl) {
- 		if (c >= cmax)
- 			break;
-@@ -353,7 +351,7 @@ static int ipip6_tunnel_get_prl(struct n
- 		if (kprl.addr != htonl(INADDR_ANY))
- 			break;
- 	}
--out:
++	i2c_set_clientdata(client, indio_dev);
 +
- 	rcu_read_unlock();
- 
- 	len = sizeof(*kp) * c;
-@@ -362,7 +360,7 @@ out:
- 		ret = -EFAULT;
- 
- 	kfree(kp);
--
-+out:
- 	return ret;
+ 	cm32181 = iio_priv(indio_dev);
+ 	cm32181->client = client;
+ 	cm32181->dev = dev;
+@@ -486,6 +488,25 @@ static int cm32181_probe(struct i2c_client *client)
+ 	return 0;
  }
  
-
++static int cm32181_suspend(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++
++	return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
++					 CM32181_CMD_ALS_DISABLE);
++}
++
++static int cm32181_resume(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct cm32181_chip *cm32181 = iio_priv(i2c_get_clientdata(client));
++
++	return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
++					 cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
++}
++
++DEFINE_SIMPLE_DEV_PM_OPS(cm32181_pm_ops, cm32181_suspend, cm32181_resume);
++
+ static const struct of_device_id cm32181_of_match[] = {
+ 	{ .compatible = "capella,cm3218" },
+ 	{ .compatible = "capella,cm32181" },
+@@ -506,6 +527,7 @@ static struct i2c_driver cm32181_driver = {
+ 		.name	= "cm32181",
+ 		.acpi_match_table = ACPI_PTR(cm32181_acpi_match),
+ 		.of_match_table = cm32181_of_match,
++		.pm = pm_sleep_ptr(&cm32181_pm_ops),
+ 	},
+ 	.probe_new	= cm32181_probe,
+ };
+-- 
+2.36.1
 
