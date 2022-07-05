@@ -2,149 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F51C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231372AbiGERBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
+        id S233363AbiGERCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiGERBY (ORCPT
+        with ESMTP id S233343AbiGERCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:01:24 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F0F1C911;
-        Tue,  5 Jul 2022 10:01:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657040483; x=1688576483;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=jeChhiyWoLcjAegHXqh/rf8PudXtR1Yc73pLcMWtrq0=;
-  b=tlN75nk0XWbKtBWOXad+7t5du1l6YzgQPQy38bHO3WyQo3P9j+FVchlO
-   QUQMpT2Mv76CK8nSw6F0e1OUuPjJKzwRd4t9FxORiSw84hNn8GdutZwgF
-   Zmde1gC92CQmCLes2uMrNZiPN4Icj3hOiwYchfuo1IK2+QM01eL13Xsi5
-   I=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 05 Jul 2022 10:01:23 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 05 Jul 2022 10:01:21 -0700
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 05 Jul 2022 22:31:07 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 1D9E73CBE; Tue,  5 Jul 2022 22:31:06 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com, dmitry.baryshkov@linaro.org,
-        quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
-        bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
-        quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
-Subject: [PATCH v4 5/7] drm/bridge: Add psr support for panel bridge callbacks
-Date:   Tue,  5 Jul 2022 22:30:43 +0530
-Message-Id: <1657040445-13067-6-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1657040445-13067-1-git-send-email-quic_vpolimer@quicinc.com>
+        Tue, 5 Jul 2022 13:02:06 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A221F611
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7v/ZqsGsmcIWhos8q1V9yrzf2DBDa8vXIkaH9fJX1IU=; b=NtVtqq7EIOVnOnlKwKwpX/HxDF
+        YDHxFCpKzu6hropCuVmJdpKieMN3E7AeKawOF9KVG/dNeUK8lUH6nlKKB+kUnW1wR/XJPqletxI1S
+        24EO7QvbJNL9fg1hBgUa62PqM9nc9xTjpptnkoTM80QsODAvKeKTgnR9K2UiXjAIjs9w8vWVT7czA
+        fwfxcddzEnTZzuiCnCIgQHPje7FGvAOUA8ykIj5nMHeHTZi3rLBF1aquuG/URS8ZweVck+FSBkef1
+        2iErMPbrXbd834jZOt6CPkb/aIW2QupXV2R1M0tkjBzt5JEFup0ohTACrOboJ2gFiN/kkQVKXRofr
+        PMSsGsaQ==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o8lvf-0004G4-0K; Tue, 05 Jul 2022 17:01:39 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 343D0980059; Tue,  5 Jul 2022 19:01:37 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 19:01:37 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/13] locking/qspinlock: split common mcs queueing code
+ into its own function
+Message-ID: <YsRucXLUueWlAeJC@worktop.programming.kicks-ass.net>
+References: <20220704143820.3071004-1-npiggin@gmail.com>
+ <20220704143820.3071004-4-npiggin@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704143820.3071004-4-npiggin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change will handle the psr entry exit cases in the panel
-bridge atomic callback functions. For example, the panel power
-should not turn off if the panel is entering psr.
+On Tue, Jul 05, 2022 at 12:38:10AM +1000, Nicholas Piggin wrote:
+> +void queued_spin_lock_slowpath(struct qspinlock *lock, u32 val)
+> +{
+> +	if (pv_enabled()) {
+> +		queued_spin_lock_mcs_queue(lock);
+> +		return;
+> +	}
+> +
+> +	if (virt_spin_lock(lock))
+> +		return;
+> +
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
----
- drivers/gpu/drm/bridge/panel.c | 48 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
-
-diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
-index eeb9546..9770b8c 100644
---- a/drivers/gpu/drm/bridge/panel.c
-+++ b/drivers/gpu/drm/bridge/panel.c
-@@ -112,6 +112,18 @@ static void panel_bridge_atomic_pre_enable(struct drm_bridge *bridge,
- 				struct drm_bridge_state *old_bridge_state)
- {
- 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
-+	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
-+	struct drm_encoder *encoder = bridge->encoder;
-+	struct drm_crtc *crtc;
-+	struct drm_crtc_state *old_crtc_state;
-+
-+	crtc = drm_atomic_get_new_crtc_for_encoder(atomic_state, encoder);
-+	if (!crtc)
-+		return;
-+
-+	old_crtc_state = drm_atomic_get_old_crtc_state(atomic_state, crtc);
-+	if (old_crtc_state && old_crtc_state->self_refresh_active)
-+		return;
- 
- 	drm_panel_prepare(panel_bridge->panel);
- }
-@@ -120,6 +132,18 @@ static void panel_bridge_atomic_enable(struct drm_bridge *bridge,
- 				struct drm_bridge_state *old_bridge_state)
- {
- 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
-+	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
-+	struct drm_encoder *encoder = bridge->encoder;
-+	struct drm_crtc *crtc;
-+	struct drm_crtc_state *old_crtc_state;
-+
-+	crtc = drm_atomic_get_new_crtc_for_encoder(atomic_state, encoder);
-+	if (!crtc)
-+		return;
-+
-+	old_crtc_state = drm_atomic_get_old_crtc_state(atomic_state, crtc);
-+	if (old_crtc_state && old_crtc_state->self_refresh_active)
-+		return;
- 
- 	drm_panel_enable(panel_bridge->panel);
- }
-@@ -128,6 +152,18 @@ static void panel_bridge_atomic_disable(struct drm_bridge *bridge,
- 				struct drm_bridge_state *old_bridge_state)
- {
- 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
-+	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
-+	struct drm_encoder *encoder = bridge->encoder;
-+	struct drm_crtc *crtc;
-+	struct drm_crtc_state *new_crtc_state;
-+
-+	crtc = drm_atomic_get_old_crtc_for_encoder(atomic_state, encoder);
-+	if (!crtc)
-+		return;
-+
-+	new_crtc_state = drm_atomic_get_new_crtc_state(atomic_state, crtc);
-+	if (new_crtc_state && new_crtc_state->self_refresh_active)
-+		return;
- 
- 	drm_panel_disable(panel_bridge->panel);
- }
-@@ -136,6 +172,18 @@ static void panel_bridge_atomic_post_disable(struct drm_bridge *bridge,
- 				struct drm_bridge_state *old_bridge_state)
- {
- 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
-+	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
-+	struct drm_encoder *encoder = bridge->encoder;
-+	struct drm_crtc *crtc;
-+	struct drm_crtc_state *new_crtc_state;
-+
-+	crtc = drm_atomic_get_old_crtc_for_encoder(atomic_state, encoder);
-+	if (!crtc)
-+		return;
-+
-+	new_crtc_state = drm_atomic_get_new_crtc_state(atomic_state, crtc);
-+	if (new_crtc_state && new_crtc_state->self_refresh_active)
-+		return;
- 
- 	drm_panel_unprepare(panel_bridge->panel);
- }
--- 
-2.7.4
+This reminds me; at the time I meant to make queued_spin_lock_slowpath()
+a static_call() and redirect the function appropriately at boot time.
+But that was before static_call() was merged and I never seem to have
+gotten around to doing that afterwards...
 
