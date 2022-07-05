@@ -2,83 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317ADC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232865AbiGEMAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
+        id S232798AbiGEMAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232680AbiGEMAF (ORCPT
+        with ESMTP id S232712AbiGEMAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:00:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED4917E3C;
-        Tue,  5 Jul 2022 05:00:00 -0700 (PDT)
+        Tue, 5 Jul 2022 08:00:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1531834C;
+        Tue,  5 Jul 2022 05:00:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43D31B817D3;
-        Tue,  5 Jul 2022 11:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DB9C341C7;
-        Tue,  5 Jul 2022 11:59:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022398;
-        bh=AZoMAuQ6OxD3h/PpP37DVLqlgzQlS/JHVB1+uwEHFWU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zTbmRxmQyTX81I/IYiks6QPfpP9mXohJbxXvPxj+QH/rZgs7nKmPXn3elzLAhS+6I
-         3hvBlcefWLtAc7iu94rwmGBCPrTzohB/nkcTwMzWERyWROPNtbB4tDufy/WmW9QLLD
-         6KV/JeXOg+YqlydDeBh46t9M6fswfGOBQPKPYYNM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 4.9 21/29] xen/netfront: fix leaking data in shared pages
-Date:   Tue,  5 Jul 2022 13:58:02 +0200
-Message-Id: <20220705115606.373332495@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115605.742248854@linuxfoundation.org>
-References: <20220705115605.742248854@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1694C617B1;
+        Tue,  5 Jul 2022 12:00:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714F1C341C7;
+        Tue,  5 Jul 2022 12:00:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657022402;
+        bh=P7/TRblLUfM9RD1xaDdnyulOyhjawodBZp2WEwoB/2E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n+vTQpGec7eEqrXJlNGvgvWFMW1zxJkDtuqSVybOfmR1QR4KHBYmS/z0BQvJ+TnJe
+         qhoJ/L4nNOzsT79QEmWakl5WX8Kke40NnWlejH6MsMTS8PFujVR1XCVPPYkNsg4BkH
+         1dkieZ5Cmx21KjP5UZh6zIrul8jQgLreIwl0Ir7DNsX4q9lc5WAqwkuKfIUBE7mSfy
+         G4z9kVK0HaeW8LxrUWbYDh1XFnBa6dEPAJYY1YnoLXXVcWWvWs/L6hF2XSUA+Y3hYF
+         x4eskdnHcGyTJqcs7LAUzraZVbC/P+mmMQipGqHgY3U1fZ2antvH1RFnKg2tLbjD7s
+         zxPQphHyCUFeA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o8hDn-000689-28; Tue, 05 Jul 2022 14:00:03 +0200
+Date:   Tue, 5 Jul 2022 14:00:03 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: add
+ example node
+Message-ID: <YsQnwyyXcffNlkLT@hovoldconsulting.com>
+References: <20220705094239.17174-1-johan+linaro@kernel.org>
+ <20220705094239.17174-10-johan+linaro@kernel.org>
+ <8271f4d5-e12e-ddf0-46ab-86a39577755a@linaro.org>
+ <YsQQ2o8aYJnnWuNa@hovoldconsulting.com>
+ <3b91ee2f-3e87-c18c-aa04-2cd93273b63f@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3b91ee2f-3e87-c18c-aa04-2cd93273b63f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roger Pau Monne <roger.pau@citrix.com>
+On Tue, Jul 05, 2022 at 01:32:30PM +0200, Krzysztof Kozlowski wrote:
+> On 05/07/2022 12:22, Johan Hovold wrote:
+> > On Tue, Jul 05, 2022 at 12:10:29PM +0200, Krzysztof Kozlowski wrote:
+> >> On 05/07/2022 11:42, Johan Hovold wrote:
+> >>> Add an example node based on a cleaned up version of msm8996.dtsi.
+> >>>
+> >>> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> >>
+> >> Squash it, please.
+> > 
+> > Why? It's a new addition to the schema.
+> 
+> Because it is not really new. When you add new bindings or convert
+> existing ones (without example), it is expected that example is within
+> that commit. You do here the same - add entirely new file. Old file had
+> example and the bindings. You now split some pieces, convert it, so new
+> file is also expected to come with the bindings.
+> 
+> The same as there is no point to make half-TXT-YAML conversion, there is
+> no point in half-split of existing bindings. Either this split is
+> correct and complete, or it's not a finished commit and we do not commit
+> half-commits.
 
-commit 307c8de2b02344805ebead3440d8feed28f2f010 upstream.
+Fair enough, I'll squash the examples in.
 
-When allocating pages to be used for shared communication with the
-backend always zero them, this avoids leaking unintended data present
-on the pages.
+Thanks for the quick review.
 
-This is CVE-2022-33740, part of XSA-403.
-
-Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/xen-netfront.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -260,7 +260,7 @@ static struct sk_buff *xennet_alloc_one_
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-+	page = alloc_page(GFP_ATOMIC | __GFP_NOWARN | __GFP_ZERO);
- 	if (!page) {
- 		kfree_skb(skb);
- 		return NULL;
-
-
+Johan
