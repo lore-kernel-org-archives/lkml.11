@@ -2,123 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 887F9CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C0DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232017AbiGEOZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
+        id S232172AbiGEO1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231932AbiGEOZ1 (ORCPT
+        with ESMTP id S231769AbiGEO1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:25:27 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A1DE3A;
-        Tue,  5 Jul 2022 07:25:26 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id m6-20020a05600c3b0600b003a0489f412cso7557181wms.1;
-        Tue, 05 Jul 2022 07:25:26 -0700 (PDT)
+        Tue, 5 Jul 2022 10:27:35 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285F0E2D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 07:27:33 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id c15so14796540ljr.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 07:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:in-reply-to:date:message-id
-         :mime-version;
-        bh=kzF2aQ2qZDRgEZ+TJ8G9dh15EJTQP9sotTs3vWpm7gA=;
-        b=W3A/aQ7YnKad10stmSsi366qwULKX4WtYgaXftqN5RTXMtMtyus9m7aVi7MoBxO9Ou
-         gVoJygZsyFotdvQxFHKjfTAlhq11qTMyup8U0LuBDzNkRNhDuqXZcMmazMWl9BNlw/Jd
-         ViMELw0Ymfe+kfu+u0dLXLil7qMMDBHkyG1GN1s94YPcycL7lmtm2CNuGZ7dDUoNVol6
-         hIx+xivHtob2Pui16H+RjG4f0trbM3VYRfyDT9/sUw+Wmq0JTJI31J70n/g3F2gQEkfV
-         qWbIiC8Y12Lrk8OBCvEKoNgtKHPMZwcieaCwLDj4H+ouq/JXLoril8BOpKJPITT7MYEs
-         Ukhg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cq+rwG5GlUu183kF9O9RM161Z2xkyctrzWRCkzqLHRA=;
+        b=ETPZ2xI6tl+nu08jgqeul7MugHkuS70DC1p+sN8Nmnf0r8zuH//FUYkyGQUHTCy2uV
+         lT4uOu9IXXw4wm4vjo1+QfgNmXShQythbfbJEDAfeFDfu0LA/hpZu2VysB0/P3WFbhPp
+         Py0Iw0V3wRAxiaj7oyzDDGt+NnN011pt3eLODl89C66EGV4u5qRfNT0+777BkepB8h6t
+         sCIiTxtZD6RzAgk/+wni+ccIWlbOxgcM4/FDdllMhiUf3w9LD7kMlxz1fS5M36i00pmd
+         6apDoQCdciU/ZPUd218M20IWCO5xoQkH7pKzgZziDiN0EKyeFqG1JQ4n+HRBUx2Upubl
+         cRPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=kzF2aQ2qZDRgEZ+TJ8G9dh15EJTQP9sotTs3vWpm7gA=;
-        b=oP6HAoB0ITMAkEt0ETAI2C/aPBgU1a66XeViVvDBNtPIrMh7fPOtg8pfEemeT8NK5b
-         BLVVHuIGC/9mamnwWy0/dSFHMYBNUT5JqWPSUalHxahj04UtucsLVXsb0JrXwBy36Pxa
-         DtCcJ7dNoUza9xoQsNjv6Sk74NPmoeZXR8dfT71bBrnyzxep9sE/nQVYRoWjMlKmqwfs
-         tywz59iVJwErwi6wvZ6kXJuf9SljIzW4B3ZYgyWB8yKFDobB1aodbAnsr1LF5TSEPxmr
-         hFIRhe1nXJeJDe3gUxpU0iKjWno0XjhadZ72faUlrZ0Vdl0yVi06iVYzlVysWifPPGht
-         RlNA==
-X-Gm-Message-State: AJIora/+6tFVEh9Tcw6p6mOXx1QzBYso3Jfeg9fOcPnMOyNxvyXL28Q1
-        BGLDDRAiKSWijtPcbvB5qI4=
-X-Google-Smtp-Source: AGRyM1uJ7YxpTxQhJVu4OiZ1HqSY0BllwcmeBTP6Ar5PWH9fwjChl3JBg9CWULe6lZvsOQBen1Qx5g==
-X-Received: by 2002:a1c:4405:0:b0:3a1:886d:c33c with SMTP id r5-20020a1c4405000000b003a1886dc33cmr27271330wma.200.1657031124621;
-        Tue, 05 Jul 2022 07:25:24 -0700 (PDT)
-Received: from localhost (92.40.203.109.threembb.co.uk. [92.40.203.109])
-        by smtp.gmail.com with ESMTPSA id u18-20020adfdd52000000b002185d79dc7fsm9631986wrm.75.2022.07.05.07.25.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 07:25:23 -0700 (PDT)
-References: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
- <20220629143046.213584-7-aidanmacdonald.0x0@gmail.com>
- <YsQwHiVdooN2TWbh@google.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        sre@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
-        lars@metafoo.de, quic_gurus@quicinc.com,
-        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
-        michael@walle.cc, rdunlap@infradead.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v4 06/15] mfd: axp20x: Add support for AXP192
-In-reply-to: <YsQwHiVdooN2TWbh@google.com>
-Date:   Tue, 05 Jul 2022 15:26:32 +0100
-Message-ID: <MiQPswErEouy9b8OQ6k5WeQxH3ENw94W@localhost>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cq+rwG5GlUu183kF9O9RM161Z2xkyctrzWRCkzqLHRA=;
+        b=1A3g/E7RJC+wKWPWcD+zshqO60XZ/9teb6z2GPTWumMqQGEx8B5bt4SH0O3dQaZgAt
+         ncSz2LVOFqFYidhL0GtHsuoC3FKTxI3JYMT4Z1Oew1OdpP8rNKWtxRXi+8mGLI16lEgT
+         9lCpb0srZESwsz/gRGYFnQt9/EE4xIc12ViwuOAdaIKo0lxKey6VfAeV1ay8sCXNyV60
+         21oQQahlaGol3V1xTy2lXbnWSS8Qcabs9eIkiDHL8uv75WEuBHllDgTiKjP+JE1bwHLg
+         u2N6hX6GFhz45i0ORyygONPlGRh82DpZsBmI/KwWGU221nj0IZMvpJcgCm2OwubYVzuk
+         WEiA==
+X-Gm-Message-State: AJIora+DLmarY2albov8rht8Xnz58Fctkja5ObGT0pvTTLtgDXvQkJmr
+        LtArVwtih/nn5nxE4XdZwr1Fag==
+X-Google-Smtp-Source: AGRyM1tjXaQxw2mEkj/bUlJ/hl3fhMF5vUOSsIl5m3rHYUUrzbIO0Cvzt7BPdZh5Xh4tSW+wmYPvGQ==
+X-Received: by 2002:a2e:b94e:0:b0:25b:b99f:4f58 with SMTP id 14-20020a2eb94e000000b0025bb99f4f58mr19250754ljs.263.1657031250676;
+        Tue, 05 Jul 2022 07:27:30 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id j11-20020a056512344b00b00484e9e254c4sm74818lfr.100.2022.07.05.07.27.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 07:27:30 -0700 (PDT)
+Message-ID: <3e2c2b6b-713b-e613-9712-0b9c6d8ba8cc@linaro.org>
+Date:   Tue, 5 Jul 2022 16:27:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v13 2/3] dt-bindings: usb: Add analogix anx7411 PD binding
+Content-Language: en-US
+To:     Xin Ji <xji@analogixsemi.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, Rob Herring <robh@kernel.org>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220705053657.2340274-1-xji@analogixsemi.com>
+ <20220705053657.2340274-2-xji@analogixsemi.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220705053657.2340274-2-xji@analogixsemi.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/07/2022 07:36, Xin Ji wrote:
+> Add analogix PD chip anx7411 device binding
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> 
+> ---
+> v12 -> v13 :
+>     1. Drop the quotes for "$id" and "$schema"
+>     2. Remove "allOf" label
+>     3. Change node name from "i2c1" to "i2c"
+>     4. Change node name from "typec" to "usb-typec"
+> ---
+>  .../bindings/usb/analogix,anx7411.yaml        | 76 +++++++++++++++++++
+>  1 file changed, 76 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+> new file mode 100644
+> index 000000000000..57429864d499
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+> @@ -0,0 +1,76 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/usb/analogix,anx7411.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analogix ANX7411 Type-C controller bindings
+> +
+> +maintainers:
+> +  - Xin Ji <xji@analogixsemi.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - analogix,anx7411
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  connector:
+> +    type: object
+> +    $ref: ../connector/usb-connector.yaml
+> +    description:
+> +      Properties for usb c connector.
+> +
+> +    properties:
+> +      compatible:
+> +        const: usb-c-connector
+> +
+> +      power-role: true
+> +
+> +      data-role: true
+> +
+> +      try-power-role: true
+> +
+> +    required:
+> +      - compatible
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - connector
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        usb-typec: anx7411@2C {
 
-Lee Jones <lee.jones@linaro.org> writes:
+1. node name is still not correct.
+2. lowercase hex, so @2c.
 
-> On Wed, 29 Jun 2022, Aidan MacDonald wrote:
->
->> The AXP192 PMIC is similar to the AXP202/AXP209, but with different
->> regulators, additional GPIOs, and a different IRQ register layout.
->> 
->> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  drivers/mfd/axp20x-i2c.c   |   2 +
->>  drivers/mfd/axp20x.c       | 152 +++++++++++++++++++++++++++++++++++++
->>  include/linux/mfd/axp20x.h |  84 ++++++++++++++++++++
->>  3 files changed, 238 insertions(+)
->> [...]
->> +static const struct regmap_irq_chip axp192_regmap_irq_chip = {
->> +	.name			= "axp192_irq_chip",
->> +	.status_base		= AXP192_IRQ1_STATE,
->> +	.ack_base		= AXP192_IRQ1_STATE,
->> +	.unmask_base		= AXP192_IRQ1_EN,
->> +	.init_ack_masked	= true,
->> +	.irqs			= axp192_regmap_irqs,
->> +	.num_irqs		= ARRAY_SIZE(axp192_regmap_irqs),
->> +	.num_regs		= 5,
->> +	.get_irq_reg		= axp192_get_irq_reg,
->
-> Fix me:
->
-> drivers/mfd/axp20x.c:634:35: error: initialization of 'unsigned int (*)(struct regmap_irq_chip_data *, unsigned int,  int)' from incompatible pointer type 'int (*)(unsigned int,  int)' [-Werror=incompatible-pointer-types]
->   634 |         .get_irq_reg            = axp192_get_irq_reg,
->       |                                   ^~~~~~~~~~~~~~~~~~
-> drivers/mfd/axp20x.c:634:35: note: (near initialization for 'axp192_regmap_irq_chip.get_irq_reg')
->
+> +            compatible = "analogix,anx7411";
+> +            reg = <0x2C>;
 
-This doesn't need fixing. You are missing the prerequisite patches.
+lowercase hex
 
--- snip --
-Changes in v4:
-* Drop regmap-irq patches and rebase on top of the regmap-irq
-  refactoring series[1], which implements the same functionality.
+> +            interrupts = <8 IRQ_TYPE_EDGE_FALLING>;
+> +            interrupt-parent = <&gpio0>;
+> +
+> +            typec_con: connector {
+> +                compatible = "usb-c-connector";
+> +                power-role = "dual";
+> +                data-role = "dual";
+> +                try-power-role = "source";
 
-[1]: https://lore.kernel.org/lkml/20220623211420.918875-1-aidanmacdonald.0x0@gmail.com/
--- snip --
+The DT schema requires ports property and just "port" is not accepted.
 
-Perhaps I wasn't clear enough that it was a dependency, sorry for
-any confusion.
+> +
+> +                port {
+> +                    typec_con_ep: endpoint {
+> +                        remote-endpoint = <&usbotg_hs_ep>;
+> +                    };
+> +                };
+> +            };
+> +        };
+> +    };
+> +...
 
-Regards,
-Aidan
+
+Best regards,
+Krzysztof
