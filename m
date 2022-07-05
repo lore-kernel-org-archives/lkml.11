@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E69DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:21:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0F3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236564AbiGEMVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
+        id S236591AbiGEMVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235116AbiGEMNj (ORCPT
+        with ESMTP id S235397AbiGEMNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:13:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6E118B2B;
-        Tue,  5 Jul 2022 05:11:12 -0700 (PDT)
+        Tue, 5 Jul 2022 08:13:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DC918E26;
+        Tue,  5 Jul 2022 05:11:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6CD1B817CC;
-        Tue,  5 Jul 2022 12:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2043DC341C7;
-        Tue,  5 Jul 2022 12:11:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 096B0CE1A19;
+        Tue,  5 Jul 2022 12:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8178C341C8;
+        Tue,  5 Jul 2022 12:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023069;
-        bh=0R3xF/u6QllQD4opIKzBhCiHP/mcSqA9/m+EQC51hyE=;
+        s=korg; t=1657023072;
+        bh=pCXAk4k3e529OArICjAe1YJg2OztYxZ7W0/Z47I8aRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=npi5cOCFHUesxtYQQSlZkEkQEhEReQSfv516crht2nwKOHByj7y81pZ7WDMiC5+Ut
-         PWD2B4Yh2zNovaDXG/6msLqZ0sIbxq/zVqvCvZC82P5oiqyOf9vVzu2T24OIzgS0cN
-         CgWUHe5DTnWhPS4sKRvEXZt5xdTM9wOc9Tuke5jk=
+        b=dpQ+rtzOAK7epwZLnxOa2R9PaxkJ1s65ykK2AOUdW394zu3Y7rCvsW1m8ZDKyVQqP
+         3njbARzuF1cmco3G5yEWGZb1HnpoB1xme4o7EAVzg9n5MKhECXV9trwton7J5meUz0
+         AfEnyxEfBEk4bpAkDSQ01fTJdz2ewNuHGQCi10QU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 26/98] net: dp83822: disable rx error interrupt
-Date:   Tue,  5 Jul 2022 13:57:44 +0200
-Message-Id: <20220705115618.335739835@linuxfoundation.org>
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH 5.15 27/98] RDMA/qedr: Fix reporting QP timeout attribute
+Date:   Tue,  5 Jul 2022 13:57:45 +0200
+Message-Id: <20220705115618.363660970@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,38 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-commit 0e597e2affb90d6ea48df6890d882924acf71e19 upstream.
+commit 118f767413ada4eef7825fbd4af7c0866f883441 upstream.
 
-Some RX errors, notably when disconnecting the cable, increase the RCSR
-register. Once half full (0x7fff), an interrupt flood is generated. I
-measured ~3k/s interrupts even after the RX errors transfer was
-stopped.
+Make sure to save the passed QP timeout attribute when the QP gets modified,
+so when calling query QP the right value is reported and not the
+converted value that is required by the firmware. This issue was found
+while running the pyverbs tests.
 
-Since we don't read and clear the RCSR register, we should disable this
-interrupt.
-
-Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
-Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
+Link: https://lore.kernel.org/r/20220525132029.84813-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/dp83822.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/infiniband/hw/qedr/qedr.h  |    1 +
+ drivers/infiniband/hw/qedr/verbs.c |    4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -228,8 +228,7 @@ static int dp83822_config_intr(struct ph
- 		if (misr_status < 0)
- 			return misr_status;
+--- a/drivers/infiniband/hw/qedr/qedr.h
++++ b/drivers/infiniband/hw/qedr/qedr.h
+@@ -418,6 +418,7 @@ struct qedr_qp {
+ 	u32 sq_psn;
+ 	u32 qkey;
+ 	u32 dest_qp_num;
++	u8 timeout;
  
--		misr_status |= (DP83822_RX_ERR_HF_INT_EN |
--				DP83822_LINK_STAT_INT_EN |
-+		misr_status |= (DP83822_LINK_STAT_INT_EN |
- 				DP83822_ENERGY_DET_INT_EN |
- 				DP83822_LINK_QUAL_INT_EN);
+ 	/* Relevant to qps created from kernel space only (ULPs) */
+ 	u8 prev_wqe_size;
+--- a/drivers/infiniband/hw/qedr/verbs.c
++++ b/drivers/infiniband/hw/qedr/verbs.c
+@@ -2622,6 +2622,8 @@ int qedr_modify_qp(struct ib_qp *ibqp, s
+ 					1 << max_t(int, attr->timeout - 8, 0);
+ 		else
+ 			qp_params.ack_timeout = 0;
++
++		qp->timeout = attr->timeout;
+ 	}
  
+ 	if (attr_mask & IB_QP_RETRY_CNT) {
+@@ -2781,7 +2783,7 @@ int qedr_query_qp(struct ib_qp *ibqp,
+ 	rdma_ah_set_dgid_raw(&qp_attr->ah_attr, &params.dgid.bytes[0]);
+ 	rdma_ah_set_port_num(&qp_attr->ah_attr, 1);
+ 	rdma_ah_set_sl(&qp_attr->ah_attr, 0);
+-	qp_attr->timeout = params.timeout;
++	qp_attr->timeout = qp->timeout;
+ 	qp_attr->rnr_retry = params.rnr_retry;
+ 	qp_attr->retry_cnt = params.retry_cnt;
+ 	qp_attr->min_rnr_timer = params.min_rnr_nak_timer;
 
 
