@@ -2,57 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43832CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B334C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbiGEKt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
+        id S232499AbiGEKuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:50:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiGEKtw (ORCPT
+        with ESMTP id S231165AbiGEKtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:49:52 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6216570;
-        Tue,  5 Jul 2022 03:49:51 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264MMtr8032125;
-        Tue, 5 Jul 2022 03:49:39 -0700
+        Tue, 5 Jul 2022 06:49:53 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072779FFF;
+        Tue,  5 Jul 2022 03:49:52 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 265AEVia017811;
+        Tue, 5 Jul 2022 03:49:47 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=3T8cVMF9jMNz98b/gbgituSqVWv5rIRFxggjD3KvqFc=;
- b=UEMcP6LCL8+6L74PIIvTdMMcrODZ2KW7accrIaauWSLbr89yT8e3HN3l13I2SozK4V9O
- qS+ixxunWPpXbRwTcshAanAdJh1xJ25dzMgzLRQ0z86+MKCoYpbe8DY7tD4hgLaXTLOw
- 2Vg9kmz5QW03TVN3mbULbhr33JPNUCkgu/vhiRgUjszLYkHaWXBhUM+tsDtKj6PC+vnv
- S51SNjR3Q3q1xnKopoTy/Gh6TPzX5UgI7g104ynLyrUbH2rNxe93xpkkHp39qOVHi/eG
- XiBLTdYGtMoiH9z7PPfQ0A1BRFjLQYytExN2R+hSQdbHPVCGxkG0S/a/OMVatekOSAku cw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h2nhnrnup-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=aIby4nVSWLBwI0U6WhFqSOE/GmxbdwXYVJX9EKDPvos=;
+ b=cyWEg39A9xNjOGu9WZIR4Ihyo7ULNUbVMkWCHIbliQfRAXRg7fo/+ZVGMfIpG/8Aca9B
+ gKc8wFQwX5Zp/GZmecyk1oxc8QpqapJnChFCep7AqX8gAHmCjOyWzunxcKUEcoC6mWlW
+ lqeo5+qJtd7JFhr6ncg23wg52lDF+K0V0OlWQSxIxZqw4WUTzV1TnZuuCFUMkjslaKzA
+ PPWdfjetzG6I5a2JeerHWpSiQ0+Sh+6d/ID0ufGBNb0ypdCEcFKuOUa8I/mkiH225zrD
+ i9lDZVQAMxZyO4SpVLtTho3VLWfE2R7f2yYHScKl6z+LHhF2sg62112yH7BA4Bn98yzo Tg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h2kcrh7ut-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 05 Jul 2022 03:49:39 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 5 Jul
- 2022 03:49:36 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 5 Jul 2022 03:49:36 -0700
+        Tue, 05 Jul 2022 03:49:46 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Jul
+ 2022 03:49:45 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 5 Jul 2022 03:49:45 -0700
 Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 8C0EF3F7040;
-        Tue,  5 Jul 2022 03:49:34 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 5373B3F707E;
+        Tue,  5 Jul 2022 03:49:43 -0700 (PDT)
 From:   Ratheesh Kannoth <rkannoth@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [PATCH 00/12] *** Exact Match Table and Field hash ***
-Date:   Tue, 5 Jul 2022 16:19:11 +0530
-Message-ID: <20220705104923.2113935-1-rkannoth@marvell.com>
+Subject: [PATCH 03/12] octeontx2-af: Exact match scan from kex profile
+Date:   Tue, 5 Jul 2022 16:19:14 +0530
+Message-ID: <20220705104923.2113935-4-rkannoth@marvell.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220705104923.2113935-1-rkannoth@marvell.com>
+References: <20220705104923.2113935-1-rkannoth@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: sO_I6BXDFmwniOps0uX22B_abBkhgECB
-X-Proofpoint-GUID: sO_I6BXDFmwniOps0uX22B_abBkhgECB
+X-Proofpoint-GUID: d3zlyjZRnxcrtI63s4IrfongrIuR_x6I
+X-Proofpoint-ORIG-GUID: d3zlyjZRnxcrtI63s4IrfongrIuR_x6I
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-05_08,2022-06-28_01,2022-06-22_01
@@ -60,127 +63,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-*** Exact match table and Field hash support for CN10KB silicon ***
+CN10KB silicon supports exact match table. Scanning KEX
+profile should check for exact match feature is enabled
+and then set profile masks properly.
 
-Ratheesh Kannoth (11):
+These kex profile masks are required to configure NPC
+MCAM drop rules. If there is a miss in exact match table,
+these drop rules will drop those packets.
 
-These patch series enables exact match table in CN10KB silicon. Legacy
-silicon used NPC mcam to do packet fields/channel matching for NPC rules.
-NPC mcam resources exahausted as customer use case increased.
-Supporting many DMAC filter becomes a challenge, as RPM based filter
-count is less. Exact match table has 4way 2K entry table and a 32 entry
-fully associative cam table. Second table is to handle hash
-table collision overflows in 4way 2K entry table. Enabling exact match table
-results in KEX key to be appended with Hit/Miss status. This can be used
-to match in NPC mcam for a more generic rule and drop those packets than
-having DMAC drop rules for each DMAC entry in NPC mcam.
+Change-Id: Ifef556a865897ea387be7c47770bbaebd91a7377
+Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |  1 +
+ .../marvell/octeontx2/af/rvu_npc_fs.c         | 37 +++++++++++++++++--
+ 2 files changed, 35 insertions(+), 3 deletions(-)
 
-  octeontx2-af: Exact match support
-  octeontx2-af: Exact match scan from kex profile
-  octeontx2-af: devlink configuration support
-  octeontx2-af: FLR handler for exact match table.
-  octeontx2-af: Drop rules for NPC MCAM
-  octeontx2-af: Debugsfs support for exact match.
-  octeontx2: Modify mbox request and response structures
-  octeontx2-af: Wrapper functions for mac addr add/del/update/reset
-  octeontx2-af: Invoke exact match functions if supported
-  octeontx2-pf: Add support for exact match table.
-  octeontx2-af: Enable Exact match flag in kex profile
-
-Suman Ghosh (1):
-
-CN10KB variant of CN10K series of silicons supports
-a new feature where in a large protocol field
-(eg 128bit IPv6 DIP) can be condensed into a small
-hashed 32bit data. This saves a lot of space in MCAM key
-and allows user to add more protocol fields into the filter.
-A max of two such protocol data can be hashed.
-This patch adds support for hashing IPv6 SIP and/or DIP.
-
-  octeontx2-af: Support to hash reduce of actual field into MCAM key
-
- .../ethernet/marvell/octeontx2/af/Makefile    |    2 +-
- First patch in the series "octeontx2-af: Support to hash reduce of actual field into MCAM key"
- introduced new C file. Makefile is modified to compile the same.
-
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |   41 +-
- Mbox request and response structures requires modification. RPM based DMAC filter can be modified at any location
- in the RPM filter table as entry's location has no relation to content. But for NPC exact match's 2K, 4way table
- is based on hash. This means that modification of an entry may fail if hash mismatches. In these cases, we need
- to delete existing entry and create a new entry in a different slot determined by hash value. This index has to
- be returned to caller.
-
- .../net/ethernet/marvell/octeontx2/af/npc.h   |   25 +
- New data types (enums and macros) for this feature.
-
- .../marvell/octeontx2/af/npc_profile.h        |    5 +-
- Kex profile changes to add exact match HIT bit in the Key. Inorder to accommodate this nibble, NPC_PARSE_NIBBLE_ERRCODE
- is deleted as it is not used.
-
- .../net/ethernet/marvell/octeontx2/af/rvu.c   |   17 +
- Exact match HW capability flag is initialized to false. FLR handler changes to invoke rvu_npc_exact_reset()
- to free all exact match resources in case of interface reset.
-
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |   24 +-
- Exact match table info is defined in rvu_hwinfo structure. This table structure is heap allocated and maintains
- all information about available/free/allocated resources.
-
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |   41 +-
- As of today, RPM based DMAC filter is configured upon user command. Each of these mbox handler is trapped and
- checked for NPC exact match support. If support is enabled, invokes Exact match API instead of RPM dmac based calls.
-
- .../marvell/octeontx2/af/rvu_debugfs.c        |  179 ++
- Three debugfs entries would be created if Exact match table is supported.
-	1. exact_entries : List out npc exact match entries
-	2. exact_info : Info related exact match tables (mem and cam table)
-	3. exact_drop_cnt: Drop packet counter for each NPC mcam drop rule.
-
- .../marvell/octeontx2/af/rvu_devlink.c        |   71 +-
- Devlink provides flexibility to user to switch to RPM based DMAC filters on CN10KB silicon. Please note that
- devlink command fails if user added DMAC filters prior to devlink command to disable exact match table.
-
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |    7 +
- Promiscous mode enable must disable this Exact match table based drop rule on NPC mcam. set rx mode routine
- calls enable/disable corresponding NPC exact drop rule when promiscous mode is toggled.
-
- .../ethernet/marvell/octeontx2/af/rvu_npc.c   |   51 +-
- APIs to reserve NPC mcam entries. This is used to reserve and configure NPC drop rules.
-
- .../marvell/octeontx2/af/rvu_npc_fs.c         |  162 +-
- For each PF, there is a drop rule installed in NPC mcam. This installation is done during rvu probe itself.
- Drop rule has multicast and broadcast bits turned off. This means that broadcast and multicast packets will
- never get dropped irrespective of NPC exact match table. This rule action is drop if exact table match bit
- 0 and channel is matched. This means if there is no hit is exact match table and channel match, packets will
- be dropped.
-
- .../marvell/octeontx2/af/rvu_npc_fs.h         |   17 +
- Function declarations.
-
- .../marvell/octeontx2/af/rvu_npc_hash.c       | 1958 +++++++++++++++++
- New file added. This file implements add/del/update to exact match table,
- probing of the feature and invokes function to install drop ruleis in NPC mcam.
-
- .../marvell/octeontx2/af/rvu_npc_hash.h       |  233 ++
- function declarations for rvu_npc_hash.c
-
- .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   15 +
- Register access macros for NPC exact match.
-
- .../marvell/octeontx2/nic/otx2_common.h       |   10 +-
- Since NPC exact match table has more entries than RPM DMAC filter, size of bmap_to_dmacindex is
- increased from 8 to 32bit. Maximum number of dmac entries available also increased (increased the size of bitmap)
-
- .../marvell/octeontx2/nic/otx2_dmac_flt.c     |   46 +-
- .../marvell/octeontx2/nic/otx2_flows.c        |   40 +-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |    2 +-
- Above change in marvell/octeontx2/nic/otx2_common.h, require corresponding modification in these 3 C files.
- Please note that we need to modify/change existing entry index as mentioned in description of
- net/ethernet/marvell/octeontx2/af/mbox.h in this cover letter.
-
- 20 files changed, 2879 insertions(+), 67 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
-
---
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+index 69f9517c61f4..f187293e3e08 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+@@ -208,6 +208,7 @@ enum key_fields {
+ 	NPC_ERRLEV,
+ 	NPC_ERRCODE,
+ 	NPC_LXMB,
++	NPC_EXACT_RESULT,
+ 	NPC_LA,
+ 	NPC_LB,
+ 	NPC_LC,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+index 08a0fa44857e..4a8618731fc6 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -229,6 +229,25 @@ static bool npc_check_field(struct rvu *rvu, int blkaddr, enum key_fields type,
+ 	return true;
+ }
+ 
++static void npc_scan_exact_result(struct npc_mcam *mcam, u8 bit_number,
++				  u8 key_nibble, u8 intf)
++{
++	u8 offset = (key_nibble * 4) % 64; /* offset within key word */
++	u8 kwi = (key_nibble * 4) / 64; /* which word in key */
++	u8 nr_bits = 4; /* bits in a nibble */
++	u8 type;
++
++	switch (bit_number) {
++	case 40 ... 43:
++		type = NPC_EXACT_RESULT;
++		break;
++
++	default:
++		return;
++	}
++	npc_set_kw_masks(mcam, type, nr_bits, kwi, offset, intf);
++}
++
+ static void npc_scan_parse_result(struct npc_mcam *mcam, u8 bit_number,
+ 				  u8 key_nibble, u8 intf)
+ {
+@@ -511,8 +530,8 @@ static int npc_scan_kex(struct rvu *rvu, int blkaddr, u8 intf)
+ {
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+ 	u8 lid, lt, ld, bitnr;
++	u64 cfg, masked_cfg;
+ 	u8 key_nibble = 0;
+-	u64 cfg;
+ 
+ 	/* Scan and note how parse result is going to be in key.
+ 	 * A bit set in PARSE_NIBBLE_ENA corresponds to a nibble from
+@@ -520,12 +539,24 @@ static int npc_scan_kex(struct rvu *rvu, int blkaddr, u8 intf)
+ 	 * will be concatenated in key.
+ 	 */
+ 	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(intf));
+-	cfg &= NPC_PARSE_NIBBLE;
+-	for_each_set_bit(bitnr, (unsigned long *)&cfg, 31) {
++	masked_cfg = cfg & NPC_PARSE_NIBBLE;
++	for_each_set_bit(bitnr, (unsigned long *)&masked_cfg, 31) {
+ 		npc_scan_parse_result(mcam, bitnr, key_nibble, intf);
+ 		key_nibble++;
+ 	}
+ 
++	/* Ignore exact match bits for mcam entries except the first rule
++	 * which is drop on hit. This first rule is configured explitcitly by
++	 * exact match code.
++	 */
++	masked_cfg = cfg & NPC_EXACT_NIBBLE;
++	bitnr = NPC_EXACT_NIBBLE_START;
++	for_each_set_bit_from(bitnr, (unsigned long *)&masked_cfg,
++			      NPC_EXACT_NIBBLE_START) {
++		npc_scan_exact_result(mcam, bitnr, key_nibble, intf);
++		key_nibble++;
++	}
++
+ 	/* Scan and note how layer data is going to be in key */
+ 	for (lid = 0; lid < NPC_MAX_LID; lid++) {
+ 		for (lt = 0; lt < NPC_MAX_LT; lt++) {
+-- 
 2.25.1
+
