@@ -2,95 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C9FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233777AbiGEDd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 23:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
+        id S234014AbiGEDmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 23:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiGEDdY (ORCPT
+        with ESMTP id S230005AbiGEDmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 23:33:24 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C9C333;
-        Mon,  4 Jul 2022 20:33:22 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id q16so12063263qtn.5;
-        Mon, 04 Jul 2022 20:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ypaL1IlKXP58U4eXRSooCnlyHaXsyMRpZ//5TtTmBio=;
-        b=X2SywJSYXMntQ7t2YKLNDWkpQjo903ga7rqfyVpl7K8WcADt72aOnj13360+8hlCmE
-         JPvsSTllQm4zSU9kVMOAKIf1UH+a7DazNIQLJIqw/bKSElfOJpcG46K8A28o0OZPfZi0
-         klKF3zqQHDbCCwAUJmCV+004BetHWJ7wrK6oadiQWDr4SmMixCS/PgsnxBbTsAxUsn7c
-         6vbsySBpSiSxoVxSDvfQW/NK8J6QdK2hze1yjnDbesKwpibi+YkoK23Pp5wW0QnfhtOk
-         5bFtzNKj8b4yfYuFfzfm57L52zsej+dLLb0OQOOAHArbv8gSgI2eapgcTeGnFOrdYLjm
-         JT2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ypaL1IlKXP58U4eXRSooCnlyHaXsyMRpZ//5TtTmBio=;
-        b=nAUYc48pUengwsQUPMNTQxt8yZeAWuLpHVS6y8rDZLYGeiaBZwxS2afU/mfWWlZCto
-         BzljPpZWmEo6AMgb8IwnCuQllOBPlq/MrClcYM4RqLwH3Ii7fUvfpTO1sAnyIKKBfEEa
-         zeFptiAH1fELY4MVotvBg0uZKpqcjEmxBZKx+2l7uDwnnrn4zyTHS07bDUraoRkqaKR8
-         gvkQOFksFbtzjHj+xwKJV8gDYicRRrdNbkJUK9QrUdaX4EWWm8RFxOZntuD0biY3fJ4h
-         F4PJ/sRgbpHxG5hffowCbTw9i+GZS/7x9kCFflSs3HQ2Ly5NqsnwqmYMMcPCAPQJp1mm
-         J9VA==
-X-Gm-Message-State: AJIora9YvVTTXOnaRUwFzMVX7A86I3AZuS34XfcKO1Ff/TQsCAta1aTp
-        S1fNE570d6uScSRVIjwAYNE=
-X-Google-Smtp-Source: AGRyM1sGgVAwneyhQ2ThYjuGZTrc72GeAQD7nFraX4FFObM9HqTuGaX848deBZFJl4TJbhyg4lpLKw==
-X-Received: by 2002:a05:622a:120e:b0:31b:f5d8:c63c with SMTP id y14-20020a05622a120e00b0031bf5d8c63cmr26487017qtx.316.1656992001422;
-        Mon, 04 Jul 2022 20:33:21 -0700 (PDT)
-Received: from MBP.hobot.cc (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id az16-20020a05620a171000b006af4a816963sm19147037qkb.133.2022.07.04.20.33.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 Jul 2022 20:33:20 -0700 (PDT)
-From:   Schspa Shi <schspa@gmail.com>
-To:     myungjoo.ham@samsung.com, sre@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Schspa Shi <schspa@gmail.com>
-Subject: [PATCH] power: supply: Fix typo in power_supply_check_supplies
-Date:   Tue,  5 Jul 2022 11:32:44 +0800
-Message-Id: <20220705033244.5791-1-schspa@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        Mon, 4 Jul 2022 23:42:49 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157F911A34;
+        Mon,  4 Jul 2022 20:42:40 -0700 (PDT)
+X-UUID: 606f240891bf41a59487387e78167705-20220705
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:eb830ac2-996a-4c17-9292-1608dba76243,OB:10,L
+        OB:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:70
+X-CID-INFO: VERSION:1.1.8,REQID:eb830ac2-996a-4c17-9292-1608dba76243,OB:10,LOB
+        :0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:70
+X-CID-META: VersionHash:0f94e32,CLOUDID:1a419dd6-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:fa3177135264,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 606f240891bf41a59487387e78167705-20220705
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1690609949; Tue, 05 Jul 2022 11:42:34 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 5 Jul 2022 11:42:33 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 5 Jul 2022 11:42:33 +0800
+Message-ID: <7fd15824d46d51063da6a8cbfa96ca285c33e2be.camel@mediatek.com>
+Subject: Re: [PATCH v15 01/16] dt-bindings: mediatek,dpi: Add DP_INTF
+ compatible
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <xinlei.lee@mediatek.com>, <liangxu.xu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 5 Jul 2022 11:42:33 +0800
+In-Reply-To: <20220701035845.16458-2-rex-bc.chen@mediatek.com>
+References: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
+         <20220701035845.16458-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It seems to be a typo, there is no actual BUG, but it's better to
-fix it to avoid any possible BUG after we change the type of
-supplied_from.
+Hi, Bo-Chen:
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
----
- drivers/power/supply/power_supply_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Fri, 2022-07-01 at 11:58 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> DP_INTF is similar to DPI but does not have the exact same feature
+> set
+> or register layouts.
+> 
+> DP_INTF is the sink of the display pipeline that is connected to the
+> DisplayPort controller and encoder unit. It takes the same clocks as
+> DPI.
 
-diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
-index fad5890c899e..02228d68c599 100644
---- a/drivers/power/supply/power_supply_core.c
-+++ b/drivers/power/supply/power_supply_core.c
-@@ -263,13 +263,13 @@ static int power_supply_check_supplies(struct power_supply *psy)
- 		return 0;
- 
- 	/* All supplies found, allocate char ** array for filling */
--	psy->supplied_from = devm_kzalloc(&psy->dev, sizeof(psy->supplied_from),
-+	psy->supplied_from = devm_kzalloc(&psy->dev, sizeof(*psy->supplied_from),
- 					  GFP_KERNEL);
- 	if (!psy->supplied_from)
- 		return -ENOMEM;
- 
- 	*psy->supplied_from = devm_kcalloc(&psy->dev,
--					   cnt - 1, sizeof(char *),
-+					   cnt - 1, sizeof(**psy->supplied_from),
- 					   GFP_KERNEL);
- 	if (!*psy->supplied_from)
- 		return -ENOMEM;
--- 
-2.29.0
+Applied to mediatek-drm-next [1], thanks.
+
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/log/?h=mediatek-drm-next
+
+Regards,
+CK
+
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: CK Hu <ck.hu@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++---
+> --
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> index 77ee1b923991..8e526a4b134e 100644
+> ---
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> +++
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yam
+> l
+> @@ -4,16 +4,16 @@
+>  $id: 
+> http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: mediatek DPI Controller Device Tree Bindings
+> +title: mediatek DPI and DP_INTF Controller
+>  
+>  maintainers:
+>    - CK Hu <ck.hu@mediatek.com>
+>    - Jitao shi <jitao.shi@mediatek.com>
+>  
+>  description: |
+> -  The Mediatek DPI function block is a sink of the display subsystem
+> and
+> -  provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a
+> parallel
+> -  output bus.
+> +  The Mediatek DPI and DP_INTF function blocks are a sink of the
+> display
+> +  subsystem and provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422
+> pixel data on a
+> +  parallel output bus.
+>  
+>  properties:
+>    compatible:
+> @@ -24,6 +24,7 @@ properties:
+>        - mediatek,mt8183-dpi
+>        - mediatek,mt8186-dpi
+>        - mediatek,mt8192-dpi
+> +      - mediatek,mt8195-dp-intf
+>  
+>    reg:
+>      maxItems: 1
+> @@ -55,7 +56,7 @@ properties:
+>      $ref: /schemas/graph.yaml#/properties/port
+>      description:
+>        Output port node. This port should be connected to the input
+> port of an
+> -      attached HDMI or LVDS encoder chip.
+> +      attached HDMI, LVDS or DisplayPort encoder chip.
+>  
+>  required:
+>    - compatible
 
