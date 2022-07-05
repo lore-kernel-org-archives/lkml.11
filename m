@@ -2,101 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E90C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73323CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232441AbiGEWmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 18:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41360 "EHLO
+        id S232282AbiGEWra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 18:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiGEWmD (ORCPT
+        with ESMTP id S229486AbiGEWr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 18:42:03 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B793011C01;
-        Tue,  5 Jul 2022 15:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657060922; x=1688596922;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dcYq/1YuB/JBMWYqjYqQ5YtRYg69/7SayXrUgOGsr6o=;
-  b=dV1tdJEA9imihPnvWVEj5Wr4tYeP+6OeU2IPWGdMQ4P+Bf8J9aQBBhwX
-   0DtP74uI9D8tyxL8uRRbsjOwObn+UMolW0nnDQVfHGeVipnzwBLmTJYel
-   i7Qhi0adXLdXKde6TJsvpax9yk0K0+DMA9Hvr5RGeHfJnoI4DStOvCIK3
-   wwXtQaAN7VIde5SNoi5Xc/jtCva79UdQpgIUzl5ntE3D6bMCDOtyVvpv6
-   sKCGa3pDr9WbGvH/degjIsEUuFsGO2AsHUPsDUIzbwI9NBZrwWfIGQIXS
-   zkyssITR6wpSNpDNDCn2NYKwzS46bLNkO55zdhqHJW7vCDP3JHbdcUj2b
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="266576420"
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="266576420"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 15:42:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="593089358"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 05 Jul 2022 15:42:00 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8rF1-000Jfc-BY;
-        Tue, 05 Jul 2022 22:41:59 +0000
-Date:   Wed, 6 Jul 2022 06:41:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     carsten.haitzler@foss.arm.com, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, coresight@lists.linaro.org,
-        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        mike.leach@linaro.org, leo.yan@linaro.org,
-        linux-perf-users@vger.kernel.org, acme@kernel.org
-Subject: Re: [PATCH 14/14] perf test: Add relevant documentation about
- CoreSight testing
-Message-ID: <202207060615.3jB32CbT-lkp@intel.com>
-References: <20220701120804.3226396-15-carsten.haitzler@foss.arm.com>
+        Tue, 5 Jul 2022 18:47:28 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FC813D43;
+        Tue,  5 Jul 2022 15:47:27 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 265LofWc018671;
+        Tue, 5 Jul 2022 22:47:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=qTkmdsElXaiI1gFxf5tq/TR/wAqNux/WQh/17NhFdpo=;
+ b=dwLd9bdyGhDwHfRQ4U5QkUxUd3Zfr622lV48dIHcrYhh8iS8Mcb2aiw+69VtUoTXDC9e
+ 28MeyfSCLc3bnn3q4m8v+ZmnWPwLypZf7YcYKs7SvctVfexTLt0RxnTGhn964iueaM1R
+ YpEK7EPqCqPD5qEGmJPu5udIlQpdLPEXk3i8p1PmTlXXm6rdpuTkzkvwktnqjlh5NXrb
+ 3z5GpGQquw637RMADPcP+drUpy0v0SXD8aFLoV3lcale9n9diU39XdiW4aHVvFTjYWmx
+ HFYL41Iwfs9AY1o8eASTAdKp3pFRsZIErrx74cGYFLtN1dUhscMuQ5UmKxwt3rCS3X/W qg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h4wju937n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 22:47:04 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 265MdY6L003859;
+        Tue, 5 Jul 2022 22:47:04 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h4wju936w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 22:47:04 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 265MM0K2001260;
+        Tue, 5 Jul 2022 22:47:01 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma02fra.de.ibm.com with ESMTP id 3h4uwp030n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 22:47:01 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 265MkwHw23855430
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 5 Jul 2022 22:46:58 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 56A3FAE045;
+        Tue,  5 Jul 2022 22:46:58 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3A85DAE04D;
+        Tue,  5 Jul 2022 22:46:55 +0000 (GMT)
+Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com (unknown [9.211.99.148])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  5 Jul 2022 22:46:55 +0000 (GMT)
+Message-ID: <47256afac54d68c23f0bdec257ffa26ddf1eb25d.camel@linux.ibm.com>
+Subject: Re: [PATCH v4 4/5] of: kexec: Refactor IMA buffer related functions
+ to make them reusable
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>, kexec@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Borislav Petkov <bp@suse.de>,
+        Jonathan McDowell <noodles@fb.com>
+Date:   Tue, 05 Jul 2022 18:46:54 -0400
+In-Reply-To: <20220701022603.31076-5-stefanb@linux.ibm.com>
+References: <20220701022603.31076-1-stefanb@linux.ibm.com>
+         <20220701022603.31076-5-stefanb@linux.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: -x1Dh1y0EJb-AfkgfkHymnGfWTli0eet
+X-Proofpoint-GUID: r5JLXk2Kpw16oJa3Z5CMPR49-qQNuX-5
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701120804.3226396-15-carsten.haitzler@foss.arm.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-05_18,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 phishscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0
+ suspectscore=0 mlxscore=0 impostorscore=0 adultscore=0 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207050097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+[Cc'ing Borislav Petkov <bp@suse.de>, Jonathan McDowell <noodles@fb.com
+>]
 
-Thank you for the patch! Perhaps something to improve:
+Hi Stefan,
 
-[auto build test WARNING on acme/perf/core]
-[also build test WARNING on tip/perf/core linus/master v5.19-rc5 next-20220705]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+On Thu, 2022-06-30 at 22:26 -0400, Stefan Berger wrote:
+> Refactor IMA buffer related functions to make them reusable for carrying
+> TPM logs across kexec.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Frank Rowand <frowand.list@gmail.com>
+> Cc: Mimi Zohar <zohar@linux.ibm.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/carsten-haitzler-foss-arm-com/perf-test-Refactor-shell-tests-allowing-subdirs/20220701-210837
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git perf/core
-reproduce: make htmldocs
+Refactoring the ima_get_kexec_buffer sounds good, but there's a merge
+conflict with Jonathan McDowell's commit "b69a2afd5afc x86/kexec: Carry
+forward IMA measurement log on kexec".
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/of/kexec.c
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+thanks,
 
-All warnings (new ones prefixed by >>):
+Mimi
 
->> Documentation/trace/coresight/coresight-perf.rst:104: WARNING: Inline emphasis start-string without end-string.
+> 
+> ---
+> v4:
+>  - Move debug output into setup_buffer()
+> ---
+>  drivers/of/kexec.c | 131 ++++++++++++++++++++++++++-------------------
+>  1 file changed, 76 insertions(+), 55 deletions(-)
+> 
+> diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+> index c4f9b6655a2e..0710703acfb0 100644
+> --- a/drivers/of/kexec.c
+> +++ b/drivers/of/kexec.c
+> @@ -115,48 +115,59 @@ static int do_get_kexec_buffer(const void *prop, int len, unsigned long *addr,
+>  	return 0;
+>  }
+>  
+> -/**
+> - * ima_get_kexec_buffer - get IMA buffer from the previous kernel
+> - * @addr:	On successful return, set to point to the buffer contents.
+> - * @size:	On successful return, set to the buffer size.
+> - *
+> - * Return: 0 on success, negative errno on error.
+> - */
+> -int ima_get_kexec_buffer(void **addr, size_t *size)
+> +static int get_kexec_buffer(const char *name, unsigned long *addr, size_t *size)
+>  {
+>  	int ret, len;
+> -	unsigned long tmp_addr;
+>  	unsigned long start_pfn, end_pfn;
+> -	size_t tmp_size;
+>  	const void *prop;
+>  
+> -	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> -		return -ENOTSUPP;
+> -
+> -	prop = of_get_property(of_chosen, "linux,ima-kexec-buffer", &len);
+> +	prop = of_get_property(of_chosen, name, &len);
+>  	if (!prop)
+>  		return -ENOENT;
+>  
+> -	ret = do_get_kexec_buffer(prop, len, &tmp_addr, &tmp_size);
+> +	ret = do_get_kexec_buffer(prop, len, addr, size);
+>  	if (ret)
+>  		return ret;
+>  
+> -	/* Do some sanity on the returned size for the ima-kexec buffer */
+> -	if (!tmp_size)
+> +	/* Do some sanity on the returned size for the kexec buffer */
+> +	if (!*size)
+>  		return -ENOENT;
+>  
+>  	/*
+>  	 * Calculate the PFNs for the buffer and ensure
+>  	 * they are with in addressable memory.
+>  	 */
+> -	start_pfn = PHYS_PFN(tmp_addr);
+> -	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
+> +	start_pfn = PHYS_PFN(*addr);
+> +	end_pfn = PHYS_PFN(*addr + *size - 1);
+>  	if (!page_is_ram(start_pfn) || !page_is_ram(end_pfn)) {
+> -		pr_warn("IMA buffer at 0x%lx, size = 0x%zx beyond memory\n",
+> -			tmp_addr, tmp_size);
+> +		pr_warn("%s buffer at 0x%lx, size = 0x%zx beyond memory\n",
+> +			name, *addr, *size);
+>  		return -EINVAL;
+>  	}
+>  
+> +	return 0;
+> +}
+> +
+> +/**
+> + * ima_get_kexec_buffer - get IMA buffer from the previous kernel
+> + * @addr:	On successful return, set to point to the buffer contents.
+> + * @size:	On successful return, set to the buffer size.
+> + *
+> + * Return: 0 on success, negative errno on error.
+> + */
+> +int ima_get_kexec_buffer(void **addr, size_t *size)
+> +{
+> +	int ret;
+> +	unsigned long tmp_addr;
+> +	size_t tmp_size;
+> +
+> +	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> +		return -ENOTSUPP;
+> +
+> +	ret = get_kexec_buffer("linux,ima-kexec-buffer", &tmp_addr, &tmp_size);
+> +	if (ret)
+> +		return ret;
+> +
+>  	*addr = __va(tmp_addr);
+>  	*size = tmp_size;
+>  
+> @@ -191,72 +202,82 @@ int ima_free_kexec_buffer(void)
+>  	return memblock_phys_free(addr, size);
+>  }
+>  
+> -/**
+> - * remove_ima_buffer - remove the IMA buffer property and reservation from @fdt
+> - *
+> - * @fdt: Flattened Device Tree to update
+> - * @chosen_node: Offset to the chosen node in the device tree
+> - *
+> - * The IMA measurement buffer is of no use to a subsequent kernel, so we always
+> - * remove it from the device tree.
+> - */
+> -static void remove_ima_buffer(void *fdt, int chosen_node)
+> +static int remove_buffer(void *fdt, int chosen_node, const char *name)
+>  {
+>  	int ret, len;
+>  	unsigned long addr;
+>  	size_t size;
+>  	const void *prop;
+>  
+> -	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> -		return;
+> -
+> -	prop = fdt_getprop(fdt, chosen_node, "linux,ima-kexec-buffer", &len);
+> +	prop = fdt_getprop(fdt, chosen_node, name, &len);
+>  	if (!prop)
+> -		return;
+> +		return -ENOENT;
+>  
+>  	ret = do_get_kexec_buffer(prop, len, &addr, &size);
+> -	fdt_delprop(fdt, chosen_node, "linux,ima-kexec-buffer");
+> +	fdt_delprop(fdt, chosen_node, name);
+>  	if (ret)
+> -		return;
+> +		return ret;
+>  
+>  	ret = fdt_find_and_del_mem_rsv(fdt, addr, size);
+>  	if (!ret)
+> -		pr_debug("Removed old IMA buffer reservation.\n");
+> +		pr_debug("Remove old %s buffer reserveration", name);
+> +	return ret;
+>  }
+>  
+> -#ifdef CONFIG_IMA_KEXEC
+>  /**
+> - * setup_ima_buffer - add IMA buffer information to the fdt
+> - * @image:		kexec image being loaded.
+> - * @fdt:		Flattened device tree for the next kernel.
+> - * @chosen_node:	Offset to the chosen node.
+> + * remove_ima_buffer - remove the IMA buffer property and reservation from @fdt
+>   *
+> - * Return: 0 on success, or negative errno on error.
+> + * @fdt: Flattened Device Tree to update
+> + * @chosen_node: Offset to the chosen node in the device tree
+> + *
+> + * The IMA measurement buffer is of no use to a subsequent kernel, so we always
+> + * remove it from the device tree.
+>   */
+> -static int setup_ima_buffer(const struct kimage *image, void *fdt,
+> -			    int chosen_node)
+> +static void remove_ima_buffer(void *fdt, int chosen_node)
+> +{
+> +	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
+> +		return;
+> +
+> +	remove_buffer(fdt, chosen_node, "linux,ima-kexec-buffer");
+> +}
+> +
+> +#ifdef CONFIG_IMA_KEXEC
+> +static int setup_buffer(void *fdt, int chosen_node, const char *name,
+> +			phys_addr_t addr, size_t size)
+>  {
+>  	int ret;
+>  
+> -	if (!image->ima_buffer_size)
+> +	if (!size)
+>  		return 0;
+>  
+>  	ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
+> -				       "linux,ima-kexec-buffer",
+> -				       image->ima_buffer_addr,
+> -				       image->ima_buffer_size);
+> +				       name, addr, size);
+>  	if (ret < 0)
+>  		return -EINVAL;
+>  
+> -	ret = fdt_add_mem_rsv(fdt, image->ima_buffer_addr,
+> -			      image->ima_buffer_size);
+> +	ret = fdt_add_mem_rsv(fdt, addr, size);
+>  	if (ret)
+>  		return -EINVAL;
+>  
+> -	pr_debug("IMA buffer at 0x%pa, size = 0x%zx\n",
+> -		 &image->ima_buffer_addr, image->ima_buffer_size);
+> +	pr_debug("%s at 0x%pa, size = 0x%zx\n", name, &addr, size);
+>  
+>  	return 0;
+> +
+> +}
+> +
+> +/**
+> + * setup_ima_buffer - add IMA buffer information to the fdt
+> + * @image:		kexec image being loaded.
+> + * @fdt:		Flattened device tree for the next kernel.
+> + * @chosen_node:	Offset to the chosen node.
+> + *
+> + * Return: 0 on success, or negative errno on error.
+> + */
+> +static int setup_ima_buffer(const struct kimage *image, void *fdt,
+> +			    int chosen_node)
+> +{
+> +	return setup_buffer(fdt, chosen_node, "linux,ima-kexec-buffer",
+> +			    image->ima_buffer_addr, image->ima_buffer_size);
+>  }
+>  #else /* CONFIG_IMA_KEXEC */
+>  static inline int setup_ima_buffer(const struct kimage *image, void *fdt,
 
-vim +104 Documentation/trace/coresight/coresight-perf.rst
 
-    98	
-    99	    CoreSight / ASM Pure Loop
-   100	    CoreSight / Memcpy 16k 10 Threads
-   101	    CoreSight / Thread Loop 10 Threads - Check TID
-   102	    ...
-   103	
- > 104	These perf record tests will not run if the tool binaries do not exist
-   105	in tests/shell/coresight/*/ and will be skipped. If you do not have
-   106	CoreSight support in hardware then either do not build perf with
-   107	CoreSight support or remove these binaries in order to not have these
-   108	tests fail and have them skip instead.
-   109	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
