@@ -2,110 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4DDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B81C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbiGEJD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        id S230182AbiGEJDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiGEJDK (ORCPT
+        with ESMTP id S230271AbiGEJD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:03:10 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AFEEB9;
-        Tue,  5 Jul 2022 02:03:09 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31caffa4a45so30551557b3.3;
-        Tue, 05 Jul 2022 02:03:09 -0700 (PDT)
+        Tue, 5 Jul 2022 05:03:28 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05092EE12
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:03:26 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id u12so20438691eja.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 02:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W8Wm30eRqjZo2DvnTiNrnXX7il5/XiX6XVUun1Gx7QM=;
-        b=JWKcgYFNvzSnmT5hJZ53dIu3SLHoGOnTs2pSxOBhvcg73/bdybJ+exxxs/G5YeTNXK
-         XxSuSK6MTE4C839oVxctGcLCddtTpqdLJrN5Bmx/VFX8xvsgvtLoDR3ctPPEPKs7//li
-         nJQ0SyyITr+PlaUqPXy1c+8oGs1uQtb2QongaSGfxDMnl5qqWCncSGwtbro5YaaceLI1
-         qtEHf4/NJSDlHw33R/zGvvPrP0I/t50HqjM8uq/8ruTWHPKxd/xyKiS7a3ZpuEo1/i5K
-         6DFTDS6XjwXmRybKb4kDwNClXZhtyNCFMSvPsoZFL8SA6RgWGdK7avVznlbzq2GSLX93
-         CG2w==
+        d=konsulko.com; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
+         :content-disposition;
+        bh=VhMVYceaMPOW57U8F7IYVNMLSx0pUikqSY1p27w3qOM=;
+        b=d97wazQqx3cx2Ox9PftXcyeAWivYS8wfb3lcmRlz1Vjdh/T8kUD5YI/5ESyC5dM+je
+         QNiAwQzu02o0AY/09yrCN5KyDGDhA6YfFQRRtaVX+vBV7JMi4jB8sTnV0kS8Xpqk33A8
+         6YQAmWK3zRjHa+B4i2h5YpHUO3VBsvne7z/6I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W8Wm30eRqjZo2DvnTiNrnXX7il5/XiX6XVUun1Gx7QM=;
-        b=R3pP0ns4Pe/q7HIob1OHpjDQ0RIeg75y3yiTUK2kjIXvr7f0TAlFIIo7zVitlJkvaP
-         JpyJJJH0fJf1cLdzjr0/Z0rdHulss821Ja9FF8M2hwt6xVi6hsN8bWoD1n0SoozZT2xD
-         Baio57Cjzlhk7kbKfrFBVmZ988gjkQa5ZWa0B3zaV1N85hCJlWRBMhdEYWgB2yirPYkU
-         8JxUUy6AEDfCK9COtuHIHw1nGFKJjk3Q/RDiuVuhlG+v0UBCqlBPtrqyNhzl63+sX+nQ
-         gAKYRA89XXD7UWhzRwCzryOKm1cXk80pLygML/79GMh22CfCT82B0a0aiyzPI83tiOqB
-         8gQw==
-X-Gm-Message-State: AJIora9l/ZPF/6bMN6jLW/ZXKex2m5MUmtfCxjOpOMyv7GeeunRO7oxx
-        zJVMc25RpIlfXgl1wTnFpj02xbON1wfPcC4WjFc=
-X-Google-Smtp-Source: AGRyM1v2CRG+DKXHIE5wryGPKVWEqDbJO+C7vYv5XEX7bEg0r5zo5hw9c4p4l7Taip7CR4eGcodROUoYssgTudunweE=
-X-Received: by 2002:a81:8397:0:b0:31c:8a02:3f6d with SMTP id
- t145-20020a818397000000b0031c8a023f6dmr13860042ywf.486.1657011788255; Tue, 05
- Jul 2022 02:03:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:mime-version:content-disposition;
+        bh=VhMVYceaMPOW57U8F7IYVNMLSx0pUikqSY1p27w3qOM=;
+        b=VYSh33X/NL4RTGdD6jHOcbkMYk8nBD7QYlcltyyl31gihA4Q99Eh6YEdqBYynur0qo
+         KGujBA8gy2k/b+RZLPHC3Gb1ewa2HrVjOH4AnVSrGPWAcpUsosnwRHORTbetyvpDGSe0
+         F6cihKCzGmdmXvYt+jIopeWmvNoPtKC6bJsK19iqfxa03pGqXbTrbuioQ3VQKfm7XuIx
+         e6dqbcZQxYrKR0i1rVl7DmHFauecFPcw8HAYJMTStwoUSrHCeg+E3iwBzNSXTNmjkaxo
+         U4ljVOT+DYg9guTzkDn8AX1z4TfWSRJpZtPvAAILid41Rot9VCa8hJX9X+LMvL0o/epT
+         DICA==
+X-Gm-Message-State: AJIora+otTiohG30sm5UOhA/GqeHo4ss94t2vQoDXKCJXtTbNQP1WQOn
+        fnCNj1Cs/mRL3+a0q0fY3kwDdhOwk0xhPw==
+X-Google-Smtp-Source: AGRyM1sVZiecfw9Ff+mKo3y9uv99XzCrsKyxN4Rm3Nj53BK/O8N8a64Q3r1M0bZCKgmkxN3RWqFP5Q==
+X-Received: by 2002:a17:906:b01a:b0:718:cc50:4c6 with SMTP id v26-20020a170906b01a00b00718cc5004c6mr31971409ejy.630.1657011805095;
+        Tue, 05 Jul 2022 02:03:25 -0700 (PDT)
+Received: from p310.k.g (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id q10-20020a170906940a00b006fe8bf56f53sm15631412ejx.43.2022.07.05.02.03.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 02:03:24 -0700 (PDT)
+Date:   Tue, 5 Jul 2022 12:06:29 +0300
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-imx@nxp.com, robh+dt@kernel.org
+Subject: [patch] fix IMX FEC device tree for Variscite SOMs
+Message-ID: <YsP/Fc6KHWb6ciR8@p310.k.g>
+Mail-Followup-To: linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        robh+dt@kernel.org
 MIME-Version: 1.0
-References: <YsGVa8KFmdvGY92e@debian.me> <20220704034041.15448-1-bagasdotme@gmail.com>
- <CAHp75Vdg=NG9fnd0EQWg5D4WoW9hGJM+MMBRLSacgQUptuGe9Q@mail.gmail.com> <5418fb0b-47e2-d251-a6c7-a9bacbaf3dc1@gmail.com>
-In-Reply-To: <5418fb0b-47e2-d251-a6c7-a9bacbaf3dc1@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 11:02:32 +0200
-Message-ID: <CAHp75VfEzNJSAJrjcY_cUj7=k4fNL+TcpEWc9k=wSWB5qb8wJg@mail.gmail.com>
-Subject: Re: [PATCH v2] Documentation: bno055: separate SPDX identifier and
- page title
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Linux Documentation List <linux-doc@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andrea Merello <andrea.merello@iit.it>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="6R2DcGwZpkmiWR9J"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 3:13 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
-> On 7/5/22 02:49, Andy Shevchenko wrote:
 
-...
+--6R2DcGwZpkmiWR9J
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> >> Cc: Jonathan Corbet <corbet@lwn.net>
-> >> Cc: Andrea Merello <andrea.merello@iit.it>
-> >> Cc: Jonathan Cameron <jic23@kernel.org>
-> >> Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> >> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> >> Cc: Rob Herring <robh+dt@kernel.org>
-> >> Cc: Matt Ranostay <matt.ranostay@konsulko.com>
-> >> Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
-> >> Cc: jacopo@jmondi.org
-> >> Cc: linux-iio@vger.kernel.org
-> >> Cc: devicetree@vger.kernel.org
-> >> Cc: linux-kernel@vger.kernel.org (open list)
-> >
-> > It's a very noisy Cc list which will go in the git history. Instead,
-> > use --to and --cc parameters of `git format-patch`. Maintainers
-> > usually use `b4` tool that adds a Link tag to the patch itself on the
-> > Lore archive which will keep track on the Cc list anyway.
+	Hello,
 
-> Thanks for reminding me.
->
-> I think something like `b4 am -l`, right?
->
-> Anyway, should I resend (reroll)?
+The attached patch fixes FEC's detection on Variscite Symphony board on 
+'master'.  Please review and advice on how to proceed with the final patch.
 
-Depends on the maintainer's wishes. Maybe they can drop them when
-applying, I dunno.
 
--- 
-With Best Regards,
-Andy Shevchenko
+thanks,
+Petko
+
+--6R2DcGwZpkmiWR9J
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="imx8mm-var-som.patch"
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
+index a0bd540f27d3..a853e3c2d0a7 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
+@@ -110,6 +110,9 @@ &fec1 {
+ 	phy-handle = <&ethphy>;
+ 	phy-supply = <&reg_eth_phy>;
+ 	fsl,magic-packet;
++	phy-reset-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
++	phy-reset-duration = <10>;
++	phy-reset-post-delay = <20>;
+ 	status = "okay";
+ 
+ 	mdio {
+@@ -119,9 +122,9 @@ mdio {
+ 		ethphy: ethernet-phy@4 {
+ 			compatible = "ethernet-phy-ieee802.3-c22";
+ 			reg = <4>;
+-			reset-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
+-			reset-assert-us = <10000>;
+-			reset-deassert-us = <10000>;
+ 		};
+ 	};
+ };
+
+--6R2DcGwZpkmiWR9J--
