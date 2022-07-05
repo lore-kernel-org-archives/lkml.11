@@ -2,101 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 506D0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 00:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E66C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 00:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbiGEAkL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 20:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        id S231809AbiGEAmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 20:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiGEAkI (ORCPT
+        with ESMTP id S229734AbiGEAmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 20:40:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9892BEA;
-        Mon,  4 Jul 2022 17:40:07 -0700 (PDT)
+        Mon, 4 Jul 2022 20:42:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC492BEA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 17:42:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25C4E616ED;
-        Tue,  5 Jul 2022 00:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD839C3411E;
-        Tue,  5 Jul 2022 00:39:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7F7F616ED
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 00:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA609C3411E;
+        Tue,  5 Jul 2022 00:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656981606;
-        bh=SP8Jaem1tPIKC61mxYfgYhbEnJ0OUuIXySTXu0B8/J8=;
+        s=k20201202; t=1656981763;
+        bh=NH5c7njVSOspj3x3CMKvmR0zmbbUmwx4E9ZZYbEUmyw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IQ1EZQO59cjvnku9rPPMRRLGYX9sCwIw7GGDkayK1eKN9UzbL6bRbTbzz8DVm8fWZ
-         n1NDsUpT7LhXoKmX/ZTm8BDcsriryl3BG7moNtSmaPzmjytHc5GyDqxLQW2GWqXKd2
-         U1jiha42NBbsbbmdINYFFRlHogMTxwbJfxODx5IStmMQ4Qzvj9fSvDbl7h5cb3RpmK
-         FZgMbIV1GHxjpUFTvqUsiaQ0C/skH46cF2vN3/22l3wcoF8JdhgSDI0bFz/pGRee4C
-         WMAofjVrFJDp8pbwJB8H8dxlEwrhYIXTm4Xfy5giTfCuVifST8kNCUgbrnuxTGpqH5
-         nkM1TnJyy8BLA==
-Date:   Tue, 5 Jul 2022 08:39:55 +0800
+        b=cML8F2/rNnHbks8e7CnqUhOmIdkzwwsccL1VmbQy1N2i896KnOAyzzcV3IQUw1bun
+         j4wTeQLNJ9g/xMhFZUcxNQ+dywd34+nYX2acDwVvOMgiInFIKtXsefmpSyizqVknnM
+         b7hftZlzd3RUANdcMcdUiaB/qXh3GqfM5UdNLZnt3l1astEM0M8K5ny93L1nZHmdtH
+         WeRFtSh7WOBl/Hl/Vfpay2u18ChiFwaXNlOg9VgXlLpXvH1+HuHeiIaDWTUrspVb7m
+         p2gnRyMtBxZuJJGAX3yv9ZbePsBuE8dM/atdGFhOYKu0YROHQovEZ1YP5l+yyLiPih
+         WoRW00tur0vZA==
+Date:   Tue, 5 Jul 2022 08:42:37 +0800
 From:   Shawn Guo <shawnguo@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Stefan Agner <stefan@agner.ch>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        Liu Ying <victor.liu@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Ming Qian <ming.qian@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v6 00/14] dt-bindings: arm: freescale: Switch fsl,scu
- from txt to yaml
-Message-ID: <20220705003955.GO819983@dragon>
-References: <20220629164414.301813-1-viorel.suman@oss.nxp.com>
- <0e515289-9d3c-9c61-950d-09c14b33c8c2@linaro.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, michael@walle.cc, arnd@arndb.de
+Subject: Re: [PATCH -next 1/2] soc: fsl: guts: fix return value check in
+ fsl_guts_init()
+Message-ID: <20220705004237.GP819983@dragon>
+References: <20220628140249.1073809-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0e515289-9d3c-9c61-950d-09c14b33c8c2@linaro.org>
+In-Reply-To: <20220628140249.1073809-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 07:51:06PM +0200, Krzysztof Kozlowski wrote:
-> On 29/06/2022 18:44, Viorel Suman (OSS) wrote:
-> > From: Viorel Suman <viorel.suman@nxp.com>
-> > 
-> > Changes since v5: https://lore.kernel.org/lkml/20220616164303.790379-1-viorel.suman@nxp.com/
-> >   * Updated according to Krzysztof Kozlowski comments
-> > 
+On Tue, Jun 28, 2022 at 10:02:48PM +0800, Yang Yingliang wrote:
+> In case of error, of_iomap() returns NULL pointer not ERR_PTR().
+> The IS_ERR() test in the return value check should be replaced
+> with NULL test and return -ENOMEM as error value.
 > 
-> My comment a about removal of each part of TXT bindings in each patch,
-> was not addressed. Your approach makes it more difficult to read patches
-> and makes sense only if each subsystem maintainer will take the patches
-> (separately). If the patches are going through one tree, then better to
-> remove the TXT gradually.
-> 
-> So the question - who is going to take each of the patches?
+> Fixes: ab4988d6a393 ("soc: fsl: guts: embed fsl_guts_get_svr() in probe()")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-I can take the series through IMX tree if that makes the most sense.
-
-Shawn
+Applied both, thanks!
