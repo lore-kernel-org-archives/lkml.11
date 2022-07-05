@@ -2,122 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD61BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235898AbiGEMPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
+        id S232600AbiGEMPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235148AbiGEMIh (ORCPT
+        with ESMTP id S235145AbiGEMIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:08:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 008AD186EC
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:07:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657022874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rtU/kjgULaXwcfy8e9s7Yd/T+aye61K0bMduomyl2x8=;
-        b=ET8aILWa/kDf21auaaZsqvrfavaQc+pcj4IOjSzXbtR5VtSQS4O2Dphs5zfApiwu5f6un7
-        GylpZWdDNnUQJ9jdE03EnjhQ+gprUo2F8LXR7Gk1Ohz4DSm9oZCpummFGgI6N2U0pshxrA
-        cmjTpZ5dP8nzvRlqbfqrnUT7kqseHcE=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-5-5GbvSFoFO-KWzGGYvGs_Qg-1; Tue, 05 Jul 2022 08:07:52 -0400
-X-MC-Unique: 5GbvSFoFO-KWzGGYvGs_Qg-1
-Received: by mail-ed1-f71.google.com with SMTP id y6-20020a056402270600b00433940d207eso5734646edd.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:07:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rtU/kjgULaXwcfy8e9s7Yd/T+aye61K0bMduomyl2x8=;
-        b=FAfk5SsjJwetQfXq3VMal78cU0f3O1Amc5LtHOkeJs1SzF13Rdgqk0OjfTrstiLhfP
-         EmgK4ay7PSwFhPm41VU9t8evtaWh9YLO9dZ+58dYQVev1MRVYjHqFYc68yFEJa/NfZgj
-         gjr9rywnmEqpINr8Kryq3dI1k6Bj6117qrsivKGWgQD1PT789W2eR9+uYscKMJ9kcrOQ
-         ab0SeMXdkzVW7dmm6ueADvSYNRmxW0gJjUuGRz/x6eP8zZhcvQmCC/fkWFJk9JjpzBDL
-         662+ITYIRePNrxyzhjHAtfgTsERUgy5dSoYKY2VmBmi0Sl0PAMOJy5X8+P/YiwlxCY1G
-         R+ig==
-X-Gm-Message-State: AJIora/Z5LCSCVRL1HzkpsIP1Ifz/kfdNAGj4YmbhSc0WTmWEqJjfl58
-        azeh00c8mqRNGuuQnyn3PimVvkl2SYrt8aX6tBiN+F8/2J5vFvAUn6UIZpcbijKKM3KJH528iNw
-        LVcgeTlYtLcyaoWT8sqxXhTuRq9KW+eRT21O3WDrz
-X-Received: by 2002:a17:907:60cb:b0:726:a69a:c7a with SMTP id hv11-20020a17090760cb00b00726a69a0c7amr34652269ejc.156.1657022871632;
-        Tue, 05 Jul 2022 05:07:51 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uhvLESVkJqLMUVkS1+sqRcYMDYYv/DpSqkaUqCJgY9nCI7teVnX7sRGbX5NjXfak1s0+Cw2DXmD+gxM4e1w/E=
-X-Received: by 2002:a17:907:60cb:b0:726:a69a:c7a with SMTP id
- hv11-20020a17090760cb00b00726a69a0c7amr34652242ejc.156.1657022871395; Tue, 05
- Jul 2022 05:07:51 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3AD186EA;
+        Tue,  5 Jul 2022 05:07:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FD6BB817D4;
+        Tue,  5 Jul 2022 12:07:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1769C341CB;
+        Tue,  5 Jul 2022 12:07:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022871;
+        bh=eUPnbsN5qey8yJk67Dttb6PR2gid9MnycznwxnZhKRU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eVaHatahqxDzvzXI/JVsqMnh27k3gTx7SLhKC1gCEJUwv43OPqm0I2A7GM+EFgjDO
+         9pTnOGEM4zPdYcZD98R/Fm61cNiCLsYh1Wf5kzebdo+5TeyuJLKlxJDSE7/ItE2PWO
+         s22T9nswU9zd1kGVdO6z2EgfoCVNHk8RaUqRcxQA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 41/84] xfs: use current->journal_info for detecting transaction recursion
+Date:   Tue,  5 Jul 2022 13:58:04 +0200
+Message-Id: <20220705115616.520277372@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220704191535.76006-1-vdronov@redhat.com> <YsOKj/GE2Mb2UsYa@zx2c4.com>
- <YsOY/eWq7gRjXJK1@zx2c4.com>
-In-Reply-To: <YsOY/eWq7gRjXJK1@zx2c4.com>
-From:   Vlad Dronov <vdronov@redhat.com>
-Date:   Tue, 5 Jul 2022 14:07:40 +0200
-Message-ID: <CAMusb+RLB6-oz10yp9Cdigt0TeJ_85M30bH8snZaeM2CyvUiYA@mail.gmail.com>
-Subject: Re: [PATCH] wireguard: Kconfig: select CRYPTO_CHACHA_S390
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Dave Chinner <dchinner@redhat.com>
 
-On Tue, Jul 5, 2022 at 3:51 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> On Tue, Jul 05, 2022 at 02:49:19AM +0200, Jason A. Donenfeld wrote:
-> > Hi Vladis,
-> >
-> > On Mon, Jul 04, 2022 at 09:15:35PM +0200, Vladis Dronov wrote:
-> > > Select the new implementation of CHACHA20 for S390 when available,
-> > > it is faster than the generic software implementation.
-> > >
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > Link: https://lore.kernel.org/linux-kernel/202207030630.6SZVkrWf-lkp@intel.com/
-> > > Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-> > > ... skip ...
-> >
-> > Thanks for the patch. Queued up as:
-> > https://git.zx2c4.com/wireguard-linux/commit/?id=1b4ab028730cd00c144eaa51160865504b780961
-> >
-> > I'll include this in my series to net.git soon.
+commit 756b1c343333a5aefcc26b0409f3fd16f72281bf upstream.
 
-Thanks a ton, Jason!
-Most appreciated.
+Because the iomap code using PF_MEMALLOC_NOFS to detect transaction
+recursion in XFS is just wrong. Remove it from the iomap code and
+replace it with XFS specific internal checks using
+current->journal_info instead.
 
-> This actually leads to a minor problem:
->
->   WARNING: unmet direct dependencies detected for CRYPTO_CHACHA_S390
->     Depends on [n]: CRYPTO [=y] && CRYPTO_HW [=n] && S390 [=y]
->
-> This is of course harmless, since this doesn't *actually* depend on
-> CRYPTO_HW. In fact, the dependency on CRYPTO_HW is entirely a mistake
-> here that was repeated a few times. I cleaned this up and fixed it in
-> this patch:
->
->     https://lore.kernel.org/linux-crypto/20220705014653.111335-1-Jason@zx2c4.com/
->
-> So hopefully Herbert will take that for 5.19 and then we'll be all set
-> here.
->
-> Jason
+[djwong: This change also realigns the lifetime of NOFS flag changes to
+match the incore transaction, instead of the inconsistent scheme we have
+now.]
 
-Whoa, that's... funny. Honestly, I was always wondering why CRYPTO_CHACHA_S390
-and friends live in drivers/crypto/Kconfig. Now I know why. The patch
-looks great, thank you.
+Fixes: 9070733b4efa ("xfs: abstract PF_FSTRANS to PF_MEMALLOC_NOFS")
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/iomap/buffered-io.c    |    7 -------
+ fs/xfs/libxfs/xfs_btree.c |   12 ++++++++++--
+ fs/xfs/xfs_aops.c         |   17 +++++++++++++++--
+ fs/xfs/xfs_trans.c        |   20 +++++---------------
+ fs/xfs/xfs_trans.h        |   30 ++++++++++++++++++++++++++++++
+ 5 files changed, 60 insertions(+), 26 deletions(-)
 
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+--- a/fs/iomap/buffered-io.c
++++ b/fs/iomap/buffered-io.c
+@@ -1461,13 +1461,6 @@ iomap_do_writepage(struct page *page, st
+ 		goto redirty;
+ 
+ 	/*
+-	 * Given that we do not allow direct reclaim to call us, we should
+-	 * never be called in a recursive filesystem reclaim context.
+-	 */
+-	if (WARN_ON_ONCE(current->flags & PF_MEMALLOC_NOFS))
+-		goto redirty;
+-
+-	/*
+ 	 * Is this page beyond the end of the file?
+ 	 *
+ 	 * The page index is less than the end_index, adjust the end_offset
+--- a/fs/xfs/libxfs/xfs_btree.c
++++ b/fs/xfs/libxfs/xfs_btree.c
+@@ -2811,7 +2811,7 @@ xfs_btree_split_worker(
+ 	struct xfs_btree_split_args	*args = container_of(work,
+ 						struct xfs_btree_split_args, work);
+ 	unsigned long		pflags;
+-	unsigned long		new_pflags = PF_MEMALLOC_NOFS;
++	unsigned long		new_pflags = 0;
+ 
+ 	/*
+ 	 * we are in a transaction context here, but may also be doing work
+@@ -2823,12 +2823,20 @@ xfs_btree_split_worker(
+ 		new_pflags |= PF_MEMALLOC | PF_SWAPWRITE | PF_KSWAPD;
+ 
+ 	current_set_flags_nested(&pflags, new_pflags);
++	xfs_trans_set_context(args->cur->bc_tp);
+ 
+ 	args->result = __xfs_btree_split(args->cur, args->level, args->ptrp,
+ 					 args->key, args->curp, args->stat);
+-	complete(args->done);
+ 
++	xfs_trans_clear_context(args->cur->bc_tp);
+ 	current_restore_flags_nested(&pflags, new_pflags);
++
++	/*
++	 * Do not access args after complete() has run here. We don't own args
++	 * and the owner may run and free args before we return here.
++	 */
++	complete(args->done);
++
+ }
+ 
+ /*
+--- a/fs/xfs/xfs_aops.c
++++ b/fs/xfs/xfs_aops.c
+@@ -62,7 +62,7 @@ xfs_setfilesize_trans_alloc(
+ 	 * We hand off the transaction to the completion thread now, so
+ 	 * clear the flag here.
+ 	 */
+-	current_restore_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
++	xfs_trans_clear_context(tp);
+ 	return 0;
+ }
+ 
+@@ -125,7 +125,7 @@ xfs_setfilesize_ioend(
+ 	 * thus we need to mark ourselves as being in a transaction manually.
+ 	 * Similarly for freeze protection.
+ 	 */
+-	current_set_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
++	xfs_trans_set_context(tp);
+ 	__sb_writers_acquired(VFS_I(ip)->i_sb, SB_FREEZE_FS);
+ 
+ 	/* we abort the update if there was an IO error */
+@@ -577,6 +577,12 @@ xfs_vm_writepage(
+ {
+ 	struct xfs_writepage_ctx wpc = { };
+ 
++	if (WARN_ON_ONCE(current->journal_info)) {
++		redirty_page_for_writepage(wbc, page);
++		unlock_page(page);
++		return 0;
++	}
++
+ 	return iomap_writepage(page, wbc, &wpc.ctx, &xfs_writeback_ops);
+ }
+ 
+@@ -587,6 +593,13 @@ xfs_vm_writepages(
+ {
+ 	struct xfs_writepage_ctx wpc = { };
+ 
++	/*
++	 * Writing back data in a transaction context can result in recursive
++	 * transactions. This is bad, so issue a warning and get out of here.
++	 */
++	if (WARN_ON_ONCE(current->journal_info))
++		return 0;
++
+ 	xfs_iflags_clear(XFS_I(mapping->host), XFS_ITRUNCATED);
+ 	return iomap_writepages(mapping, wbc, &wpc.ctx, &xfs_writeback_ops);
+ }
+--- a/fs/xfs/xfs_trans.c
++++ b/fs/xfs/xfs_trans.c
+@@ -68,6 +68,7 @@ xfs_trans_free(
+ 	xfs_extent_busy_clear(tp->t_mountp, &tp->t_busy, false);
+ 
+ 	trace_xfs_trans_free(tp, _RET_IP_);
++	xfs_trans_clear_context(tp);
+ 	if (!(tp->t_flags & XFS_TRANS_NO_WRITECOUNT))
+ 		sb_end_intwrite(tp->t_mountp->m_super);
+ 	xfs_trans_free_dqinfo(tp);
+@@ -119,7 +120,8 @@ xfs_trans_dup(
+ 
+ 	ntp->t_rtx_res = tp->t_rtx_res - tp->t_rtx_res_used;
+ 	tp->t_rtx_res = tp->t_rtx_res_used;
+-	ntp->t_pflags = tp->t_pflags;
++
++	xfs_trans_switch_context(tp, ntp);
+ 
+ 	/* move deferred ops over to the new tp */
+ 	xfs_defer_move(ntp, tp);
+@@ -153,9 +155,6 @@ xfs_trans_reserve(
+ 	int			error = 0;
+ 	bool			rsvd = (tp->t_flags & XFS_TRANS_RESERVE) != 0;
+ 
+-	/* Mark this thread as being in a transaction */
+-	current_set_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
+-
+ 	/*
+ 	 * Attempt to reserve the needed disk blocks by decrementing
+ 	 * the number needed from the number available.  This will
+@@ -163,10 +162,8 @@ xfs_trans_reserve(
+ 	 */
+ 	if (blocks > 0) {
+ 		error = xfs_mod_fdblocks(mp, -((int64_t)blocks), rsvd);
+-		if (error != 0) {
+-			current_restore_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
++		if (error != 0)
+ 			return -ENOSPC;
+-		}
+ 		tp->t_blk_res += blocks;
+ 	}
+ 
+@@ -240,9 +237,6 @@ undo_blocks:
+ 		xfs_mod_fdblocks(mp, (int64_t)blocks, rsvd);
+ 		tp->t_blk_res = 0;
+ 	}
+-
+-	current_restore_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
+-
+ 	return error;
+ }
+ 
+@@ -266,6 +260,7 @@ xfs_trans_alloc(
+ 	tp = kmem_cache_zalloc(xfs_trans_zone, GFP_KERNEL | __GFP_NOFAIL);
+ 	if (!(flags & XFS_TRANS_NO_WRITECOUNT))
+ 		sb_start_intwrite(mp->m_super);
++	xfs_trans_set_context(tp);
+ 
+ 	/*
+ 	 * Zero-reservation ("empty") transactions can't modify anything, so
+@@ -878,7 +873,6 @@ __xfs_trans_commit(
+ 
+ 	xfs_log_commit_cil(mp, tp, &commit_lsn, regrant);
+ 
+-	current_restore_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
+ 	xfs_trans_free(tp);
+ 
+ 	/*
+@@ -910,7 +904,6 @@ out_unreserve:
+ 			xfs_log_ticket_ungrant(mp->m_log, tp->t_ticket);
+ 		tp->t_ticket = NULL;
+ 	}
+-	current_restore_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
+ 	xfs_trans_free_items(tp, !!error);
+ 	xfs_trans_free(tp);
+ 
+@@ -970,9 +963,6 @@ xfs_trans_cancel(
+ 		tp->t_ticket = NULL;
+ 	}
+ 
+-	/* mark this thread as no longer being in a transaction */
+-	current_restore_flags_nested(&tp->t_pflags, PF_MEMALLOC_NOFS);
+-
+ 	xfs_trans_free_items(tp, dirty);
+ 	xfs_trans_free(tp);
+ }
+--- a/fs/xfs/xfs_trans.h
++++ b/fs/xfs/xfs_trans.h
+@@ -268,4 +268,34 @@ xfs_trans_item_relog(
+ 	return lip->li_ops->iop_relog(lip, tp);
+ }
+ 
++static inline void
++xfs_trans_set_context(
++	struct xfs_trans	*tp)
++{
++	ASSERT(current->journal_info == NULL);
++	tp->t_pflags = memalloc_nofs_save();
++	current->journal_info = tp;
++}
++
++static inline void
++xfs_trans_clear_context(
++	struct xfs_trans	*tp)
++{
++	if (current->journal_info == tp) {
++		memalloc_nofs_restore(tp->t_pflags);
++		current->journal_info = NULL;
++	}
++}
++
++static inline void
++xfs_trans_switch_context(
++	struct xfs_trans	*old_tp,
++	struct xfs_trans	*new_tp)
++{
++	ASSERT(current->journal_info == old_tp);
++	new_tp->t_pflags = old_tp->t_pflags;
++	old_tp->t_pflags = 0;
++	current->journal_info = new_tp;
++}
++
+ #endif	/* __XFS_TRANS_H__ */
+
 
