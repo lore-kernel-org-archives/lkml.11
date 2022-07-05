@@ -2,95 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC5EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E685C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiGETfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
+        id S232665AbiGETgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiGETfL (ORCPT
+        with ESMTP id S230135AbiGETgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:35:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9961113F4C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:35:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657049709;
+        Tue, 5 Jul 2022 15:36:31 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5FE13FB2;
+        Tue,  5 Jul 2022 12:36:30 -0700 (PDT)
+Received: from zn.tnic (p200300ea970ff625329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f625:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DE0E71EC0628;
+        Tue,  5 Jul 2022 21:36:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1657049785;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JZb+7m6BwOHgwZTIM3F92SCtoz3eCtsGyAxs0BJcE2M=;
-        b=ARHrlYfaZGWSmUK5uLNmrv3CLTH6rMziPjWcurYKv+g1LN84V4QWlFCH7kjYwwyZfS5Mvv
-        7o5uVbZTljIsgEq5/aUu21lCA6EaIkicuj4n8M6+4i0BtXgBJ0gesGwSOGqjDSR8sysO1p
-        TXCf7CksO0n/dCKhe6jGs9Gi1SPmU34=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-7-vv5yY6AlM9uFERyuIlXRkA-1; Tue, 05 Jul 2022 15:34:29 -0400
-X-MC-Unique: vv5yY6AlM9uFERyuIlXRkA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 15149833A11;
-        Tue,  5 Jul 2022 19:34:04 +0000 (UTC)
-Received: from [10.22.16.141] (unknown [10.22.16.141])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AF780456CD9;
-        Tue,  5 Jul 2022 19:34:03 +0000 (UTC)
-Message-ID: <48a8bde8-8783-e1f6-ef44-c9cae15f71a7@redhat.com>
-Date:   Tue, 5 Jul 2022 15:34:03 -0400
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=s8J8d5ZD1NtUU5JRSS/ItcYuS6F4P47XpllivMzf87o=;
+        b=CYAJFqLPSx1ehm7wcUphSX9EWalTFYzy2s5e2vW1knuJ2MgMxhOyXFZiKJxRnn65i1LTXx
+        z6QxxfrgCmuNCUqEFoukAoKTL/2V6JEeQCCX4HCRrDpCeDWCRbeLyIZPGE82Hs3kg+czu+
+        9EUDiQHULEW8UFb3P8zZIkSHwIX4AB8=
+Date:   Tue, 5 Jul 2022 21:36:20 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] random: remove CONFIG_ARCH_RANDOM and "nordrand"
+Message-ID: <YsSStCQQf008hF2F@zn.tnic>
+References: <20220705190121.293703-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 04/13] locking/qspinlock: move pv lock word helpers into
- qspinlock.c
-Content-Language: en-US
-To:     Nicholas Piggin <npiggin@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
-References: <20220704143820.3071004-1-npiggin@gmail.com>
- <20220704143820.3071004-5-npiggin@gmail.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220704143820.3071004-5-npiggin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220705190121.293703-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/4/22 10:38, Nicholas Piggin wrote:
-> There is no real reason not to keep all the bit manipulation together.
->
-> Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-> ---
->   kernel/locking/qspinlock.c          | 107 ++++++++++++++++------------
->   kernel/locking/qspinlock_paravirt.h |  51 -------------
->   2 files changed, 63 insertions(+), 95 deletions(-)
->
-> diff --git a/kernel/locking/qspinlock.c b/kernel/locking/qspinlock.c
-> index 7360d643de29..8f2173e22479 100644
-> --- a/kernel/locking/qspinlock.c
-> +++ b/kernel/locking/qspinlock.c
-> @@ -141,7 +141,24 @@ struct qnode *grab_qnode(struct qnode *base, int idx)
->   
->   #define _Q_LOCKED_PENDING_MASK (_Q_LOCKED_MASK | _Q_PENDING_MASK)
->   
-> +/**
-> + * set_pending - set the pending bit.
-> + * @lock: Pointer to queued spinlock structure
-> + *
-> + * *,0,* -> *,1,*
-> + *
-> + * The pending bit is used by the queue head vCPU to indicate that it
-> + * is actively spinning on the lock and no lock stealing is allowed.
+On Tue, Jul 05, 2022 at 09:01:21PM +0200, Jason A. Donenfeld wrote:
+> @@ -26,7 +18,6 @@ __setup("nordrand", x86_rdrand_setup);
+>   */
+>  #define SANITY_CHECK_LOOPS 8
+>  
+> -#ifdef CONFIG_ARCH_RANDOM
+>  void x86_init_rdrand(struct cpuinfo_x86 *c)
+>  {
+>  	unsigned int changed = 0;
+> @@ -59,8 +50,6 @@ void x86_init_rdrand(struct cpuinfo_x86 *c)
+>  	}
+>  
+>  	if (WARN_ON_ONCE(!changed))
+> -		pr_emerg(
+> -"RDRAND gives funky smelling output, might consider not using it by booting with \"nordrand\"");
+> +		pr_emerg("RDRAND gives funky smelling output; update microcode or firmware.");
 
-The pending bit has different usage in pv and non-pv cases. The 
-description here refers to the pv case. For non-pv, it is used to avoid 
-loading the the extra node cacheline in likely contended case.
+It is highly unlikely to get a BIOS or microcode update for that matter,
+for old systems:
 
-Cheers,
-Longman
+7879fc4bdc75 ("x86/rdrand: Sanity-check RDRAND output")
 
+so I guess here you're better off saying that the kernel simply disables
+rdrand support and do
+
+	clear_cpu_cap(c, X86_FEATURE_RDRAND);
+
+here too.
+
+If I read the commit message above correctly, it sounds like RDRAND
+output is not that important anyway...
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
