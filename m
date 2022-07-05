@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF9BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233353AbiGEMDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
+        id S233393AbiGEMDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiGEMBg (ORCPT
+        with ESMTP id S230026AbiGEMBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:01:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A29418356;
-        Tue,  5 Jul 2022 05:01:35 -0700 (PDT)
+        Tue, 5 Jul 2022 08:01:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF09618375;
+        Tue,  5 Jul 2022 05:01:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA0B26184A;
-        Tue,  5 Jul 2022 12:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0000C341C7;
-        Tue,  5 Jul 2022 12:01:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1631B817D4;
+        Tue,  5 Jul 2022 12:01:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5485C341C7;
+        Tue,  5 Jul 2022 12:01:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022494;
-        bh=zlk6f9vOJB8weBnkiCKJdA1tSvlOjwDX1031HjkIl0s=;
+        s=korg; t=1657022491;
+        bh=whB7DChqKjNXM6KulnnZB0EMSPHoC3atR9z0QHm4pT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U9qWg7o7i3p4LXd1Y+qZAFjpvOhB4tREGuzXRFqGcPFg/gst94MpPeSBv+5hpjfws
-         aMNo+x3JyMbzA0FQDcwLs9iOtn6d2rWIZZh56zCYmf0oDKFa2mHQLwaG34Gl6kz9ad
-         1huI1Txivd7DcQ9XYuQErqKz1lekO2n07WGskjak=
+        b=r8tNRXc7cFM/Qh5+bg584xm5qgRAFA6RM2fqZ8IX4DJTFrD5MGg/08/GsHkjVw337
+         ZhZWmdEI/wlWXouVX3SW62RISj9PLZtudoG1LmGZ7U9T0DnV/aIC34A3rO8OJEvsaM
+         LE2FWOTb3WtCyWmU/062RhUoO2bcXIaONQdjlnys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
         Juergen Gross <jgross@suse.com>
-Subject: [PATCH 4.14 26/29] xen/blkfront: force data bouncing when backend is untrusted
-Date:   Tue,  5 Jul 2022 13:58:14 +0200
-Message-Id: <20220705115607.114216075@linuxfoundation.org>
+Subject: [PATCH 4.14 25/29] xen/netfront: force data bouncing when backend is untrusted
+Date:   Tue,  5 Jul 2022 13:58:13 +0200
+Message-Id: <20220705115607.084848474@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
 References: <20220705115606.333669144@linuxfoundation.org>
@@ -51,187 +51,123 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Roger Pau Monne <roger.pau@citrix.com>
 
-commit 2400617da7eebf9167d71a46122828bc479d64c9 upstream.
+commit 4491001c2e0fa69efbb748c96ec96b100a5cdb7e upstream.
 
-Split the current bounce buffering logic used with persistent grants
-into it's own option, and allow enabling it independently of
-persistent grants.  This allows to reuse the same code paths to
-perform the bounce buffering required to avoid leaking contiguous data
-in shared pages not part of the request fragments.
+Bounce all data on the skbs to be transmitted into zeroed pages if the
+backend is untrusted. This avoids leaking data present in the pages
+shared with the backend but not part of the skb fragments.  This
+requires introducing a new helper in order to allocate skbs with a
+size multiple of XEN_PAGE_SIZE so we don't leak contiguous data on the
+granted pages.
 
 Reporting whether the backend is to be trusted can be done using a
 module parameter, or from the xenstore frontend path as set by the
 toolstack when adding the device.
 
-This is CVE-2022-33742, part of XSA-403.
+This is CVE-2022-33741, part of XSA-403.
 
 Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
 Reviewed-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/xen-blkfront.c |   42 +++++++++++++++++++++++++++---------------
- 1 file changed, 27 insertions(+), 15 deletions(-)
+ drivers/net/xen-netfront.c |   50 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 48 insertions(+), 2 deletions(-)
 
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -148,6 +148,10 @@ static unsigned int xen_blkif_max_ring_o
- module_param_named(max_ring_page_order, xen_blkif_max_ring_order, int, S_IRUGO);
- MODULE_PARM_DESC(max_ring_page_order, "Maximum order of pages to be used for the shared ring");
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -63,6 +63,10 @@ module_param_named(max_queues, xennet_ma
+ MODULE_PARM_DESC(max_queues,
+ 		 "Maximum number of queues per virtual interface");
  
-+static bool __read_mostly xen_blkif_trusted = true;
-+module_param_named(trusted, xen_blkif_trusted, bool, 0644);
++static bool __read_mostly xennet_trusted = true;
++module_param_named(trusted, xennet_trusted, bool, 0644);
 +MODULE_PARM_DESC(trusted, "Is the backend trusted");
 +
- #define BLK_RING_SIZE(info)	\
- 	__CONST_RING_SIZE(blkif, XEN_PAGE_SIZE * (info)->nr_ring_pages)
+ #define XENNET_TIMEOUT  (5 * HZ)
  
-@@ -208,6 +212,7 @@ struct blkfront_info
- 	unsigned int feature_discard:1;
- 	unsigned int feature_secdiscard:1;
- 	unsigned int feature_persistent:1;
-+	unsigned int bounce:1;
- 	unsigned int discard_granularity;
- 	unsigned int discard_alignment;
- 	/* Number of 4KB segments handled */
-@@ -301,7 +306,7 @@ static int fill_grant_buffer(struct blkf
- 		if (!gnt_list_entry)
- 			goto out_of_memory;
+ static const struct ethtool_ops xennet_ethtool_ops;
+@@ -163,6 +167,9 @@ struct netfront_info {
+ 	/* Is device behaving sane? */
+ 	bool broken;
  
--		if (info->feature_persistent) {
-+		if (info->bounce) {
- 			granted_page = alloc_page(GFP_NOIO | __GFP_ZERO);
- 			if (!granted_page) {
- 				kfree(gnt_list_entry);
-@@ -321,7 +326,7 @@ out_of_memory:
- 	list_for_each_entry_safe(gnt_list_entry, n,
- 	                         &rinfo->grants, node) {
- 		list_del(&gnt_list_entry->node);
--		if (info->feature_persistent)
-+		if (info->bounce)
- 			__free_page(gnt_list_entry->page);
- 		kfree(gnt_list_entry);
- 		i--;
-@@ -367,7 +372,7 @@ static struct grant *get_grant(grant_ref
- 	/* Assign a gref to this page */
- 	gnt_list_entry->gref = gnttab_claim_grant_reference(gref_head);
- 	BUG_ON(gnt_list_entry->gref == -ENOSPC);
--	if (info->feature_persistent)
-+	if (info->bounce)
- 		grant_foreign_access(gnt_list_entry, info);
- 	else {
- 		/* Grant access to the GFN passed by the caller */
-@@ -391,7 +396,7 @@ static struct grant *get_indirect_grant(
- 	/* Assign a gref to this page */
- 	gnt_list_entry->gref = gnttab_claim_grant_reference(gref_head);
- 	BUG_ON(gnt_list_entry->gref == -ENOSPC);
--	if (!info->feature_persistent) {
-+	if (!info->bounce) {
- 		struct page *indirect_page;
++	/* Should skbs be bounced into a zeroed buffer? */
++	bool bounce;
++
+ 	atomic_t rx_gso_checksum_fixup;
+ };
  
- 		/* Fetch a pre-allocated page to use for indirect grefs */
-@@ -706,7 +711,7 @@ static int blkif_queue_rw_req(struct req
- 		.grant_idx = 0,
- 		.segments = NULL,
- 		.rinfo = rinfo,
--		.need_copy = rq_data_dir(req) && info->feature_persistent,
-+		.need_copy = rq_data_dir(req) && info->bounce,
- 	};
- 
- 	/*
-@@ -1027,11 +1032,12 @@ static void xlvbd_flush(struct blkfront_
- {
- 	blk_queue_write_cache(info->rq, info->feature_flush ? true : false,
- 			      info->feature_fua ? true : false);
--	pr_info("blkfront: %s: %s %s %s %s %s\n",
-+	pr_info("blkfront: %s: %s %s %s %s %s %s %s\n",
- 		info->gd->disk_name, flush_info(info),
- 		"persistent grants:", info->feature_persistent ?
- 		"enabled;" : "disabled;", "indirect descriptors:",
--		info->max_indirect_segments ? "enabled;" : "disabled;");
-+		info->max_indirect_segments ? "enabled;" : "disabled;",
-+		"bounce buffer:", info->bounce ? "enabled" : "disabled;");
+@@ -592,6 +599,34 @@ static void xennet_mark_tx_pending(struc
+ 		queue->tx_link[i] = TX_PENDING;
  }
  
- static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
-@@ -1266,7 +1272,7 @@ static void blkif_free_ring(struct blkfr
- 	if (!list_empty(&rinfo->indirect_pages)) {
- 		struct page *indirect_page, *n;
++struct sk_buff *bounce_skb(const struct sk_buff *skb)
++{
++	unsigned int headerlen = skb_headroom(skb);
++	/* Align size to allocate full pages and avoid contiguous data leaks */
++	unsigned int size = ALIGN(skb_end_offset(skb) + skb->data_len,
++				  XEN_PAGE_SIZE);
++	struct sk_buff *n = alloc_skb(size, GFP_ATOMIC | __GFP_ZERO);
++
++	if (!n)
++		return NULL;
++
++	if (!IS_ALIGNED((uintptr_t)n->head, XEN_PAGE_SIZE)) {
++		WARN_ONCE(1, "misaligned skb allocated\n");
++		kfree_skb(n);
++		return NULL;
++	}
++
++	/* Set the data pointer */
++	skb_reserve(n, headerlen);
++	/* Set the tail pointer and length */
++	skb_put(n, skb->len);
++
++	BUG_ON(skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len));
++
++	skb_copy_header(n, skb);
++	return n;
++}
++
+ #define MAX_XEN_SKB_FRAGS (65536 / XEN_PAGE_SIZE + 1)
  
--		BUG_ON(info->feature_persistent);
-+		BUG_ON(info->bounce);
- 		list_for_each_entry_safe(indirect_page, n, &rinfo->indirect_pages, lru) {
- 			list_del(&indirect_page->lru);
- 			__free_page(indirect_page);
-@@ -1283,7 +1289,7 @@ static void blkif_free_ring(struct blkfr
- 				continue;
+ static int xennet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -644,9 +679,13 @@ static int xennet_start_xmit(struct sk_b
  
- 			rinfo->persistent_gnts_c--;
--			if (info->feature_persistent)
-+			if (info->bounce)
- 				__free_page(persistent_gnt->page);
- 			kfree(persistent_gnt);
- 		}
-@@ -1303,7 +1309,7 @@ static void blkif_free_ring(struct blkfr
- 		for (j = 0; j < segs; j++) {
- 			persistent_gnt = rinfo->shadow[i].grants_used[j];
- 			gnttab_end_foreign_access(persistent_gnt->gref, 0, 0UL);
--			if (info->feature_persistent)
-+			if (info->bounce)
- 				__free_page(persistent_gnt->page);
- 			kfree(persistent_gnt);
- 		}
-@@ -1493,7 +1499,7 @@ static int blkif_completion(unsigned lon
- 	data.s = s;
- 	num_sg = s->num_sg;
+ 	/* The first req should be at least ETH_HLEN size or the packet will be
+ 	 * dropped by netback.
++	 *
++	 * If the backend is not trusted bounce all data to zeroed pages to
++	 * avoid exposing contiguous data on the granted page not belonging to
++	 * the skb.
+ 	 */
+-	if (unlikely(PAGE_SIZE - offset < ETH_HLEN)) {
+-		nskb = skb_copy(skb, GFP_ATOMIC);
++	if (np->bounce || unlikely(PAGE_SIZE - offset < ETH_HLEN)) {
++		nskb = bounce_skb(skb);
+ 		if (!nskb)
+ 			goto drop;
+ 		dev_consume_skb_any(skb);
+@@ -1946,6 +1985,10 @@ static int talk_to_netback(struct xenbus
  
--	if (bret->operation == BLKIF_OP_READ && info->feature_persistent) {
-+	if (bret->operation == BLKIF_OP_READ && info->bounce) {
- 		for_each_sg(s->sg, sg, num_sg, i) {
- 			BUG_ON(sg->offset + sg->length > PAGE_SIZE);
- 
-@@ -1552,7 +1558,7 @@ static int blkif_completion(unsigned lon
- 				 * Add the used indirect page back to the list of
- 				 * available pages for indirect grefs.
- 				 */
--				if (!info->feature_persistent) {
-+				if (!info->bounce) {
- 					indirect_page = s->indirect_grants[i]->page;
- 					list_add(&indirect_page->lru, &rinfo->indirect_pages);
- 				}
-@@ -1841,6 +1847,10 @@ static int talk_to_blkback(struct xenbus
- 	if (!info)
- 		return -ENODEV;
+ 	info->netdev->irq = 0;
  
 +	/* Check if backend is trusted. */
-+	info->bounce = !xen_blkif_trusted ||
++	info->bounce = !xennet_trusted ||
 +		       !xenbus_read_unsigned(dev->nodename, "trusted", 1);
 +
- 	max_page_order = xenbus_read_unsigned(info->xbdev->otherend,
- 					      "max-ring-page-order", 0);
- 	ring_page_order = min(xen_blkif_max_ring_order, max_page_order);
-@@ -2256,10 +2266,10 @@ static int blkfront_setup_indirect(struc
+ 	/* Check if backend supports multiple queues */
+ 	max_queues = xenbus_read_unsigned(info->xbdev->otherend,
+ 					  "multi-queue-max-queues", 1);
+@@ -2099,6 +2142,9 @@ static int xennet_connect(struct net_dev
+ 	err = talk_to_netback(np->xbdev, np);
  	if (err)
- 		goto out_of_memory;
+ 		return err;
++	if (np->bounce)
++		dev_info(&np->xbdev->dev,
++			 "bouncing transmitted data to zeroed pages\n");
  
--	if (!info->feature_persistent && info->max_indirect_segments) {
-+	if (!info->bounce && info->max_indirect_segments) {
- 		/*
--		 * We are using indirect descriptors but not persistent
--		 * grants, we need to allocate a set of pages that can be
-+		 * We are using indirect descriptors but don't have a bounce
-+		 * buffer, we need to allocate a set of pages that can be
- 		 * used for mapping indirect grefs
- 		 */
- 		int num = INDIRECT_GREFS(grants) * BLK_RING_SIZE(info);
-@@ -2352,6 +2362,8 @@ static void blkfront_gather_backend_feat
- 	info->feature_persistent =
- 		!!xenbus_read_unsigned(info->xbdev->otherend,
- 				       "feature-persistent", 0);
-+	if (info->feature_persistent)
-+		info->bounce = true;
- 
- 	indirect_segments = xenbus_read_unsigned(info->xbdev->otherend,
- 					"feature-max-indirect-segments", 0);
+ 	/* talk_to_netback() sets the correct number of queues */
+ 	num_queues = dev->real_num_tx_queues;
 
 
