@@ -2,66 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAB9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbiGERhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S231821AbiGERhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiGERhX (ORCPT
+        with ESMTP id S231863AbiGERh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:37:23 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFEB1F2D4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:37:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1dPV8s9V/nXkihecezo4qXiu3xvYdE5MGUb7XFcFFzg=; b=ZHrAEYvzChYWbgnmtlDKgF/G8w
-        CwWkso3uBV3ByZWVCwHQCjND6AAssmF1SPrIVbTKnCUEBpcBNxYWtjp3iQpO8SvXkHlKNQesZiDwX
-        hDlWl0GwFgrkQTx/n2NEZepuozGlUhHIUcrRAdwwUmgv2jHuAKqVrdhTJzmB6xnfC4Q+UW9Y+Qmre
-        OHNTgnFLnnpKR6gOGFVluKjpLqfnF4uoYSANZ+j03hgGdKUBTE5rLt0qQ0zGqTie1/Q3MNOsqsOUF
-        Mt5qpGP1Hx4BnVYHIHJYpN/7VqQf69lTL4cKpYpVfqOfJjbTskj1m+6dt9dMjxOHyoLWGwNGIzVQD
-        yyc787wA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o8mTm-0004pG-G6; Tue, 05 Jul 2022 17:36:55 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0AAA0980059; Tue,  5 Jul 2022 19:36:54 +0200 (CEST)
-Date:   Tue, 5 Jul 2022 19:36:54 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Nicholas Piggin <npiggin@gmail.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 06/13] locking/qspinlock: merge qspinlock_paravirt.h into
- qspinlock.c
-Message-ID: <YsR2tlnJZ3c0ZeaP@worktop.programming.kicks-ass.net>
-References: <20220704143820.3071004-1-npiggin@gmail.com>
- <20220704143820.3071004-7-npiggin@gmail.com>
- <YsRy5HHdHhRz9z/9@worktop.programming.kicks-ass.net>
+        Tue, 5 Jul 2022 13:37:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589EA1FCE1;
+        Tue,  5 Jul 2022 10:37:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C15E9618B8;
+        Tue,  5 Jul 2022 17:37:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96CDDC341C7;
+        Tue,  5 Jul 2022 17:37:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657042646;
+        bh=Z03DyOKw08NyvBbV0e2NrmufEjG46UtGoFtwcHEG4XQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v9WjN6pyCZhXsj9VLfzY+SopN06++D8wk1SyJWtPl/DTNC4vAztKjLJuKhGBYQH1K
+         YzmO1I/sMO3hp4BdRHgurqQhsVBgROxpg/x5F8JQHOdlOxQdCbX89XVfVFEIwGO0/F
+         vm/QGPbQA6E70ggXPC6ldOq+yWSALHXAxiMtXyZg=
+Date:   Tue, 5 Jul 2022 19:37:23 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Pin-yen Lin <treapking@chromium.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] PM: domains: Ensure genpd_debugfs_dir exists before
+ remove
+Message-ID: <YsR20yPbtUMjZOBC@kroah.com>
+References: <20220705171649.969194-1-hsinyi@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YsRy5HHdHhRz9z/9@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220705171649.969194-1-hsinyi@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 07:20:37PM +0200, Peter Zijlstra wrote:
-> On Tue, Jul 05, 2022 at 12:38:13AM +1000, Nicholas Piggin wrote:
-> > There isn't much reason to keep these separate.
+On Wed, Jul 06, 2022 at 01:16:49AM +0800, Hsin-Yi Wang wrote:
+> Both genpd_debug_add() and genpd_debug_remove() may be called
+> indirectly by other drivers while genpd_debugfs_dir is not yet
+> set. For example, drivers can call pm_genpd_init() in probe or
+> pm_genpd_init() in probe fail/cleanup path:
 > 
-> The reason was so that other paravirt implementations could be added.
+> pm_genpd_init()
+>  --> genpd_debug_add()
 > 
-> The CNA thing was also implemented this way...
+> pm_genpd_remove()
+>  --> genpd_remove()
+>    --> genpd_debug_remove()
+> 
+> At this time, genpd_debug_init() may not yet be called.
+> 
+> genpd_debug_add() checks that if genpd_debugfs_dir is NULL, it
+> will return directly. Make sure this is also checked
+> in pm_genpd_remove(), otherwise components under debugfs root
+> which has the same name as other components under pm_genpd may
+> be accidentally removed, since NULL represents debugfs root.
+> 
+> Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
+> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> ---
+> v1->v2: Add more context in commit message
 
-Also, (TIL) s390 seems to have a copy of all this:
-
-  b96f7d881ad9 ("s390/spinlock: introduce spinlock wait queueing")
-
-it might be nice if it were possible to fold that back into this with a
-different paravirt implementation; but I've not looked at it in any
-great detail yet.
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
