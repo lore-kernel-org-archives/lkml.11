@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A281FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D59A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235977AbiGEMPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53364 "EHLO
+        id S235991AbiGEMPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235207AbiGEMIm (ORCPT
+        with ESMTP id S235205AbiGEMIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:08:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFD118345;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0FC18E3F;
         Tue,  5 Jul 2022 05:08:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B1994CE1B87;
-        Tue,  5 Jul 2022 12:08:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A16D5C341CB;
-        Tue,  5 Jul 2022 12:08:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6723661968;
+        Tue,  5 Jul 2022 12:08:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4D3C341CB;
+        Tue,  5 Jul 2022 12:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022888;
-        bh=hoLSOmY0encCMcz8kriaTtmJ2l5lUCnPyPwV9DNXjwo=;
+        s=korg; t=1657022890;
+        bh=I3S82u24jWu80vnRKie8qpSc4ajvVZZJzoHtD/bSW0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EO3WomPOx4r2bh3AqJRzJWADdoZMQfntWhEfoM6owW3/2cNRoEzy4E3dSGb4zNpr2
-         p8azuwiLB4t3qHyqyOdrJLFQY3PtyasnuiaW3U2jk64m80gKXrY+drGBsS4ykAqiPb
-         /bmE1xqNz/v0nGDVjfpNx4ftL63fhlyqPiHE0Dy0=
+        b=E3Am/M7fFCnikJL0w8mqU19VA/zMD3yWrDh09mYWeno8uWDcc7pMAK8bfY2Xv0llK
+         sbpIMmXVIhmpKjbUXi/8eyZ+p+sJ0giNptO/fwc9j4MfQcJoStDN5Iut/BE0Oq4JXS
+         YER0F+2Era10uBTDIzSXzUu79T01CY/xHCWoWxCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Chandan Babu R <chandanrlinux@gmail.com>,
-        Brian Foster <bfoster@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 47/84] xfs: fix xfs_reflink_unshare usage of filemap_write_and_wait_range
-Date:   Tue,  5 Jul 2022 13:58:10 +0200
-Message-Id: <20220705115616.699746148@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 48/84] tcp: add a missing nf_reset_ct() in 3WHS handling
+Date:   Tue,  5 Jul 2022 13:58:11 +0200
+Message-Id: <20220705115616.728392676@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -50,35 +52,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-commit d4f74e162d238ce00a640af5f0611c3f51dad70e upstream.
+commit 6f0012e35160cd08a53e46e3b3bbf724b92dfe68 upstream.
 
-The final parameter of filemap_write_and_wait_range is the end of the
-range to flush, not the length of the range to flush.
+When the third packet of 3WHS connection establishment
+contains payload, it is added into socket receive queue
+without the XFRM check and the drop of connection tracking
+context.
 
-Fixes: 46afb0628b86 ("xfs: only flush the unshared range in xfs_reflink_unshare")
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Chandan Babu R <chandanrlinux@gmail.com>
-Reviewed-by: Brian Foster <bfoster@redhat.com>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
+This means that if the data is left unread in the socket
+receive queue, conntrack module can not be unloaded.
+
+As most applications usually reads the incoming data
+immediately after accept(), bug has been hiding for
+quite a long time.
+
+Commit 68822bdf76f1 ("net: generalize skb freeing
+deferral to per-cpu lists") exposed this bug because
+even if the application reads this data, the skb
+with nfct state could stay in a per-cpu cache for
+an arbitrary time, if said cpu no longer process RX softirqs.
+
+Many thanks to Ilya Maximets for reporting this issue,
+and for testing various patches:
+https://lore.kernel.org/netdev/20220619003919.394622-1-i.maximets@ovn.org/
+
+Note that I also added a missing xfrm4_policy_check() call,
+although this is probably not a big issue, as the SYN
+packet should have been dropped earlier.
+
+Fixes: b59c270104f0 ("[NETFILTER]: Keep conntrack reference until IPsec policy checks are done")
+Reported-by: Ilya Maximets <i.maximets@ovn.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Tested-by: Ilya Maximets <i.maximets@ovn.org>
+Reviewed-by: Ilya Maximets <i.maximets@ovn.org>
+Link: https://lore.kernel.org/r/20220623050436.1290307-1-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_reflink.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_ipv4.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/xfs/xfs_reflink.c
-+++ b/fs/xfs/xfs_reflink.c
-@@ -1503,7 +1503,8 @@ xfs_reflink_unshare(
- 	if (error)
- 		goto out;
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1980,7 +1980,8 @@ process:
+ 		struct sock *nsk;
  
--	error = filemap_write_and_wait_range(inode->i_mapping, offset, len);
-+	error = filemap_write_and_wait_range(inode->i_mapping, offset,
-+			offset + len - 1);
- 	if (error)
- 		goto out;
- 
+ 		sk = req->rsk_listener;
+-		if (unlikely(tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))) {
++		if (unlikely(!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb) ||
++			     tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))) {
+ 			sk_drops_add(sk, skb);
+ 			reqsk_put(req);
+ 			goto discard_it;
+@@ -2019,6 +2020,7 @@ process:
+ 			}
+ 			goto discard_and_relse;
+ 		}
++		nf_reset_ct(skb);
+ 		if (nsk == sk) {
+ 			reqsk_put(req);
+ 			tcp_v4_restore_cb(skb);
 
 
