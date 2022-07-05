@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B76CCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DECEECCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiGELlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        id S230021AbiGELlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230444AbiGELk6 (ORCPT
+        with ESMTP id S230245AbiGELk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:40:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF99167D8;
+        Tue, 5 Jul 2022 07:40:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAB115FEC;
         Tue,  5 Jul 2022 04:40:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F05B361616;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA41F6160B;
         Tue,  5 Jul 2022 11:40:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F2EC341CE;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C49C341C7;
         Tue,  5 Jul 2022 11:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657021256;
-        bh=u8THKk4ajgBBs95c1HTSf/xYHDV++eZ0huzhIB4RiiE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=juW3U61kxlGnX2cm1PXP4iGP+vrw8nS3YG1frzvJOfrQu5HL9Ck+ztJmlOODoIu5f
-         PQb/n3fx+4XamxSsApctYLqH5q28FaGtcC1+83jaNrcS30dUK0yBq6CWxx0jRKB6M1
-         0PadT/nrG3xKQd+6IcVuSNxA8W9VHq3/7d85Aw0NONx5oUeFlr9Q26jVcfkCccyZ0t
-         XALulk8xQZcfTvMG56mrrRHmiyBDIycc0yNICKgu2Zt/6HyhbAjD2mpaJTheqjNR6z
-         uEfD1XlOLQNFmjeIjSPJ3cqaFb+sXrOZcn8f/PvN4Cx3QQo5EZX945OH10eAfKlS42
-         XaHGRQu90Ei9A==
+        bh=VZF93OYGtOaGPIHiLLXsnydvfAw5xjGC/4aqKGXNIKQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=C5CEyyOUsvyEnhPpjrFgIwQrdObCvHns2QnPRfSWz5DnX4qOvbPdQIgfWYqTgInZ9
+         EEuOqWwU9448T0WjTLC+N4JJ14Awo6wl8aVJGVniELzmh3XdBT3fEgMvKn6lMJE+w/
+         LK8S6cKZDAPAT+oheLbcQJLswFgWbQ2lW/8QDrXEGAUGCqXe9iqAoINiD9OxpY2eXL
+         skrtswwU9XbJvrthvS1JOuVV9GH25d4AZhNkO2kd1JUKTT7N+a7F6438xrqON1X+8n
+         AcU+GaH6lYBYVEzDRvmuzGKbXL+J9WqBvny+v6tRvCPg8sDU/6u73KSaYsFukH6GVH
+         KPKCEB5pEyccw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8gvJ-0005xW-Ad; Tue, 05 Jul 2022 13:40:57 +0200
+        id 1o8gvI-0005xQ-B8; Tue, 05 Jul 2022 13:40:57 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
@@ -42,39 +42,58 @@ Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 03/14] arm64: dts: qcom: ipq6018: drop USB PHY clock index
-Date:   Tue,  5 Jul 2022 13:40:21 +0200
-Message-Id: <20220705114032.22787-4-johan+linaro@kernel.org>
+Subject: [PATCH 00/14] arm64: dts: qcom: QMP PHY fixes
+Date:   Tue,  5 Jul 2022 13:40:18 +0200
+Message-Id: <20220705114032.22787-1-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220705114032.22787-1-johan+linaro@kernel.org>
-References: <20220705114032.22787-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The QMP USB PHY provides a single clock so drop the redundant clock
-index.
+Here's a bunch of fixes for PHY related DT issues found while amending
+the current QMP PHY schema:
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- arch/arm64/boot/dts/qcom/ipq6018.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+	https://lore.kernel.org/r/20220705094239.17174-1-johan+linaro@kernel.org
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-index c89499e366d3..ef1c5caacad0 100644
---- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-@@ -710,7 +710,7 @@ usb0_ssphy: phy@78200 {
- 				      <0x0 0x00078800 0x0 0x1F8>, /* PCS */
- 				      <0x0 0x00078600 0x0 0x044>; /* PCS misc */
- 				#phy-cells = <0>;
--				#clock-cells = <1>;
-+				#clock-cells = <0>;
- 				clocks = <&gcc GCC_USB0_PIPE_CLK>;
- 				clock-names = "pipe0";
- 				clock-output-names = "gcc_usb0_pipe_clk_src";
+Included are also some cleanups of the MS8996 PCIe PHY node which make
+the node match the new binding example.
+
+Note that none of these depend on any additions to the binding (e.g. the
+deprecation of the lane suffix) even if some of issues would not be
+found when validating against the current schema.
+
+Johan
+
+
+Johan Hovold (14):
+  arm64: dts: qcom: sc7280: drop PCIe PHY clock index
+  arm64: dts: qcom: sm8250: add missing PCIe PHY clock-cells
+  arm64: dts: qcom: ipq6018: drop USB PHY clock index
+  arm64: dts: qcom: ipq8074: drop USB PHY clock index
+  arm64: dts: qcom: msm8996: drop USB PHY clock index
+  arm64: dts: qcom: msm8998: drop USB PHY clock index
+  arm64: dts: qcom: sm8350: drop USB PHY clock index
+  arm64: dts: qcom: sm8450: drop USB PHY clock index
+  arm64: dts: qcom: sc8280xp: drop UFS PHY clock-cells
+  arm64: dts: qcom: sm8250: drop UFS PHY clock-cells
+  arm64: dts: qcom: sm8450: drop UFS PHY clock-cells
+  arm64: dts: qcom: msm8996: add missing PCIe PHY clock-cells
+  arm64: dts: qcom: msm8996: use non-empty ranges for PCIe PHYs
+  arm64: dts: qcom: msm8996: clean up PCIe PHY node
+
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi  |  2 +-
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi  |  4 +-
+ arch/arm64/boot/dts/qcom/msm8996.dtsi  | 53 +++++++++++++++-----------
+ arch/arm64/boot/dts/qcom/msm8998.dtsi  |  2 +-
+ arch/arm64/boot/dts/qcom/sc7280.dtsi   |  4 +-
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi |  2 -
+ arch/arm64/boot/dts/qcom/sm8250.dtsi   |  6 +++
+ arch/arm64/boot/dts/qcom/sm8350.dtsi   |  5 +--
+ arch/arm64/boot/dts/qcom/sm8450.dtsi   |  3 +-
+ 9 files changed, 46 insertions(+), 35 deletions(-)
+
 -- 
 2.35.1
 
