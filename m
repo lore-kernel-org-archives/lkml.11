@@ -2,89 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69C1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E32DCCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbiGETM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
+        id S233473AbiGETNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233779AbiGETMm (ORCPT
+        with ESMTP id S232433AbiGETNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:12:42 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC74020F7A;
-        Tue,  5 Jul 2022 12:12:40 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id b85so10300327yba.8;
-        Tue, 05 Jul 2022 12:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=57cUWhF9VaqTVA1734zTG0eBBoeZZWbpzvCVHxEeHsg=;
-        b=qgYeHABwiqO25p0BTSmbVdaFuDZo3wWingdIK42NsVZRRyHfNRojZ3lSIqIJsFP7ek
-         QsWwbk8Gw2jxnfZru1Xj2c7TcsWbocfl2KRRwkSFwNSVHzz+n95ww4s47QLs2/pS8pEK
-         RLIH1iTTayK8I3DKHsSBGDixxFxRp9AtoRHfMMbdVrUhcFkYuKd+IWD/psYCMQ/1ehuW
-         QrynLtYB7hEqCmb3YkMIY7BLavlgiSPOuWS1/ay4CDuNJBCfTrnYDP5qwg9LxAyATVtT
-         GQn5bmpZd4Fndt6IlqlGIAnyYzWrS5AiVN5zXHT4M16sbZBVZlvZ8/Z0YXYeMO5Lm+nP
-         GT/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=57cUWhF9VaqTVA1734zTG0eBBoeZZWbpzvCVHxEeHsg=;
-        b=khhO/7yvkGtqesVBw5y548XOonp7iZHESUV8uItp8FNNjY/yODHOzFCFr7QayvYYbZ
-         wl3XlwCIldfo/flT4khahohlEY+QYpNtzDCFswaxCosvlNpr+o2MSM0/RmEW8CVw7KGO
-         Rv/IPwGDOM2eM2KxJiRQ701W4wmJZ5mYp8v/rL5B8CnLym7tYD+qBIOWzHvYAtJz0Ns/
-         pVwe6YUZsW/BbO7VLQVJgnOPREPINMHvymjmFUr3RnIY91OlLBYnxN/vtzl7AVgZk+B2
-         GT/lAg2eGdKakqjKNTGok3JktUGJ4vbsB78QTNZ0NwmfdnXnQdy6U5tyKD4vd6P0/+m+
-         k9pw==
-X-Gm-Message-State: AJIora8bT35PKmd8ygpmVUNQ9f3XtSJh1yXjDV0B2vTRO9JM8Y88T5ZU
-        lafUxUVLOLidfOG6iSNZaDtt5YLMFZ9aUImgr7mQqlkfTtz4yA==
-X-Google-Smtp-Source: AGRyM1su+ua32MhJSMzy8VPGelN4ZA+0a9k5ZpXM5XHwIeKL69TkCcG2EspcyfTSny8g0KfHy9W5PDk7RXfaCqmz/oI=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr2851299ybg.460.1657048359433; Tue, 05
- Jul 2022 12:12:39 -0700 (PDT)
+        Tue, 5 Jul 2022 15:13:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151B71B7B5;
+        Tue,  5 Jul 2022 12:13:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C3C61B18;
+        Tue,  5 Jul 2022 19:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55818C341C7;
+        Tue,  5 Jul 2022 19:13:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657048409;
+        bh=2fD47EYJ8DU5PxNdFvZQ3nFWOAQNfiU3a87fuXvip1Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OrFaTXZ8tUO1+ZVEJelT78P/UuxyQydx5O3S0+mHCYqrg5GJkn/azari59H/6zW33
+         oxm1RbFB5t0Gj58Sxu/1NAgRi/3zx2dJFMztVLIgAurUSiQKxpymUTKQLm+70w/HX1
+         hOvAu0h5siF3JqnpuNCCd+a6XTGr1mynLyTa3DOpMj8KdTULy41rIVBldGyT66/jVK
+         CpyjxU5VmV5BF/yb+ZiYEv34O3lb0WR2f93JOVnGRIqm/ntP0JQZDSNbRnQc6VaF3o
+         1SikloQ4+HdZRIhfvv6BvCsL92ng9kHUwZM7kLoTVZFr40jGGDoGO+gif8TA2ZsyqD
+         vlThvK5g01S0Q==
+Date:   Tue, 5 Jul 2022 12:13:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Max Krummenacher <max.oss.09@gmail.com>,
+        Mateusz =?UTF-8?B?Sm/FhGN6eWs=?= <mat.jonczyk@o2.pl>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        max.krummenacher@toradex.com,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to
+ `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
+Message-ID: <20220705121327.5b8029e4@kernel.org>
+In-Reply-To: <CABBYNZL9yir6tbEnwu8sQMnNG+h-8bMdnkK1Tsqo8AOtc5goGw@mail.gmail.com>
+References: <20220614181706.26513-1-max.oss.09@gmail.com>
+        <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+        <20220705151446.GA28605@francesco-nb.int.toradex.com>
+        <CABBYNZJDkmU_Fgfszrau9CK6DSQM2xGaGwfVyVkjNo7MVtBd8w@mail.gmail.com>
+        <20220705113829.4af55980@kernel.org>
+        <CABBYNZL9yir6tbEnwu8sQMnNG+h-8bMdnkK1Tsqo8AOtc5goGw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220705121756.41660-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220705121756.41660-1-kai.heng.feng@canonical.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 21:12:03 +0200
-Message-ID: <CAHp75VdnvxhR7yB2sroH4y8VgU3ORnCC3wH4CEKYCX1XSPvMxg@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: cm32181: Add PM support
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Kevin Tsai <ktsai@capellamicro.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 2:31 PM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> The read on in_illuminance_input keeps at 0 after system sleep.
->
-> So add proper suspend and resume callback to make the sensor keep
-> working after system sleep.
+On Tue, 5 Jul 2022 12:00:43 -0700 Luiz Augusto von Dentz wrote:
+> > > Ive rebased the patch on top of bluetooth-next and fixed the hash,
+> > > lets see if passes CI I might just go ahead and push it.  
+> >
+> > Thanks for pushing it along, the final version can got thru bluetooth ->  
+> > -> net and into 5.19, right?  
+> 
+> Yep, I will send the pull request in a moment.
 
-...
-
-> +static int cm32181_resume(struct device *dev)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct cm32181_chip *cm32181 = iio_priv(i2c_get_clientdata(client));
-
-Simply device_get_drvdata(dev) ?
-
-> +       return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-> +                                        cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
+Perfect, thank you!!
