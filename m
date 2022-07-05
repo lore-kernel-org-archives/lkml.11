@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 622EDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F2BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238032AbiGEM1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
+        id S238048AbiGEM1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237018AbiGEMSe (ORCPT
+        with ESMTP id S237028AbiGEMSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A4E1A3A1;
-        Tue,  5 Jul 2022 05:13:51 -0700 (PDT)
+        Tue, 5 Jul 2022 08:18:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703EC1A3B3;
+        Tue,  5 Jul 2022 05:13:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5B7DB817D3;
-        Tue,  5 Jul 2022 12:13:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D942C341C7;
-        Tue,  5 Jul 2022 12:13:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD208619B9;
+        Tue,  5 Jul 2022 12:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E956DC341C7;
+        Tue,  5 Jul 2022 12:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023228;
-        bh=u2+qk0VaXt/xlaKih6IiscdsQz5E8o+kNEJq18d1LV4=;
+        s=korg; t=1657023231;
+        bh=mWzakzAFCV63PIMMYja2uPuyb3HlopSPTzWsMv9g3WU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p9yw6pAIvT33GawiFXnCJj9Qa0DZXw7OL8UgoCCgVUtdHbrsS+Ho5Yz7yKhxnZzUy
-         fCOdQsh4o+5pbRHWeGZ6NP4WjYk9hvfaeKcc+MiIF22Oryj9vUQ5QV9C3+bXUlaxLM
-         FOWSkUNHPEL3yRi/Dej+Crr17bbkK6R1wiI26DZY=
+        b=FTv0VLnjnZjrh62A//QOHoP/cs40qi+V9UinW7h+Uw4oyKl2gszBjK01Db2YS/Yio
+         r9ONoxn96SGX6YE3gGKOObzuK0vcSWF1qPKH/yLoDyt/8pjr0onGSe0RRbLLPQVccL
+         RuObyIYkz34BAyZQtsQSEJQUJ2eDW9iuHLkCO+Ts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 42/98] net/sched: act_api: Notify user space if any actions were flushed before error
-Date:   Tue,  5 Jul 2022 13:58:00 +0200
-Message-Id: <20220705115618.782704663@linuxfoundation.org>
+Subject: [PATCH 5.15 33/98] net: ipv6: unexport __init-annotated seg6_hmac_net_init()
+Date:   Tue,  5 Jul 2022 13:57:51 +0200
+Message-Id: <20220705115618.532198514@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,81 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-commit 76b39b94382f9e0a639e1c70c3253de248cc4c83 upstream.
+commit 53ad46169fe2996fe1b623ba6c9c4fa33847876f upstream.
 
-If during an action flush operation one of the actions is still being
-referenced, the flush operation is aborted and the kernel returns to
-user space with an error. However, if the kernel was able to flush, for
-example, 3 actions and failed on the fourth, the kernel will not notify
-user space that it deleted 3 actions before failing.
+As of commit 5801f064e351 ("net: ipv6: unexport __init-annotated seg6_hmac_init()"),
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-This patch fixes that behaviour by notifying user space of how many
-actions were deleted before flush failed and by setting extack with a
-message describing what happened.
+This remove the EXPORT_SYMBOL to fix modpost warning:
 
-Fixes: 55334a5db5cd ("net_sched: act: refuse to remove bound action outside")
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+WARNING: modpost: vmlinux.o(___ksymtab+seg6_hmac_net_init+0x0): Section mismatch in reference from the variable __ksymtab_seg6_hmac_net_init to the function .init.text:seg6_hmac_net_init()
+The symbol seg6_hmac_net_init is exported and annotated __init
+Fix this by removing the __init annotation of seg6_hmac_net_init or drop the export.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Link: https://lore.kernel.org/r/20220628033134.21088-1-yuehaibing@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/act_api.c |   22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ net/ipv6/seg6_hmac.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -350,7 +350,8 @@ static int tcf_idr_release_unsafe(struct
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -408,7 +408,6 @@ int __net_init seg6_hmac_net_init(struct
+ 
+ 	return 0;
  }
+-EXPORT_SYMBOL(seg6_hmac_net_init);
  
- static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
--			  const struct tc_action_ops *ops)
-+			  const struct tc_action_ops *ops,
-+			  struct netlink_ext_ack *extack)
+ void seg6_hmac_exit(void)
  {
- 	struct nlattr *nest;
- 	int n_i = 0;
-@@ -366,20 +367,25 @@ static int tcf_del_walker(struct tcf_idr
- 	if (nla_put_string(skb, TCA_KIND, ops->kind))
- 		goto nla_put_failure;
- 
-+	ret = 0;
- 	mutex_lock(&idrinfo->lock);
- 	idr_for_each_entry_ul(idr, p, tmp, id) {
- 		if (IS_ERR(p))
- 			continue;
- 		ret = tcf_idr_release_unsafe(p);
--		if (ret == ACT_P_DELETED) {
-+		if (ret == ACT_P_DELETED)
- 			module_put(ops->owner);
--			n_i++;
--		} else if (ret < 0) {
--			mutex_unlock(&idrinfo->lock);
--			goto nla_put_failure;
--		}
-+		else if (ret < 0)
-+			break;
-+		n_i++;
- 	}
- 	mutex_unlock(&idrinfo->lock);
-+	if (ret < 0) {
-+		if (n_i)
-+			NL_SET_ERR_MSG(extack, "Unable to flush all TC actions");
-+		else
-+			goto nla_put_failure;
-+	}
- 
- 	ret = nla_put_u32(skb, TCA_FCNT, n_i);
- 	if (ret)
-@@ -400,7 +406,7 @@ int tcf_generic_walker(struct tc_action_
- 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
- 
- 	if (type == RTM_DELACTION) {
--		return tcf_del_walker(idrinfo, skb, ops);
-+		return tcf_del_walker(idrinfo, skb, ops, extack);
- 	} else if (type == RTM_GETACTION) {
- 		return tcf_dump_walker(idrinfo, skb, cb);
- 	} else {
 
 
