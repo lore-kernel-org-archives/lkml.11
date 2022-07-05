@@ -2,91 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC840C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B099C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234196AbiGEMHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
+        id S234209AbiGEMHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233739AbiGEMEK (ORCPT
+        with ESMTP id S233755AbiGEMER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:04:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFC6186EF;
-        Tue,  5 Jul 2022 05:04:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F41F61806;
-        Tue,  5 Jul 2022 12:04:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A24C341C7;
-        Tue,  5 Jul 2022 12:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022643;
-        bh=32NJMC0s5CjllmvErXiC++NFIfdW1o0siO8fgtY6M6U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T5XUYbHnDnsGGyb+iLx2IcE7u7KLUFICwM0Z9l3mAJjaytXmVJt3jRO7OPf+ijwV6
-         mv++jDpIPadnaGFtiGZyijNy3cIHQ3onJeDHkkp81o49j1Oz8rROm/PFC9Hz0Ttn6I
-         kRIrRnfgOcgav7kzXpjLf1q4NuSFOnEX5y71+yr4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 17/58] usbnet: fix memory allocation in helpers
-Date:   Tue,  5 Jul 2022 13:57:53 +0200
-Message-Id: <20220705115610.749856705@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
-References: <20220705115610.236040773@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:04:17 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67D6186F5
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:04:04 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id u14so14254082ljh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SKrrlYio3nbOhBwUjGXrXLl1qRaxBrsfKwRApIXmEYA=;
+        b=K8YQ23Rylb1x1QKt7AAmePbuiVxRyCHCejs55T8ZL5xKJrl3RkaVfQnfBI44Sn3rQ5
+         HdBryzd2JLl9O+Fyclq/O1Qk6iwMoLwBVhzTusTZ2gPxk4PXP1SvHG06xNlbZXUlYded
+         GIuwXPp2FEvc6+MRt0txApq30EkG8g0JJTVjEoxXJA2Iqin1E/5WmLffYlk12OREqfLM
+         o4GcJJyfK8zrGSVbJ1V7EJjCXL8xg+veB4SWGAWyDdiK3Ws1BPVzTXJuP1+koPlZlblT
+         beS16XeNojQaYi8pN0P1EwlwUBJGae0bnMHiqQFihYpJyNBGeIS3C+j7kZlNNwrvBosS
+         nIDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SKrrlYio3nbOhBwUjGXrXLl1qRaxBrsfKwRApIXmEYA=;
+        b=6BfN9DkRqvwu0kEHRgg+McwQ1NKOTrIJvlWuFVvqF7UmVw5PE0rlw6ly6JoDLr3x0o
+         DfZ0O7tLP4pnv5asmJ72bHTmFwBjZVAphHT0Sigm0zm+c8MhDxQSsGU6KJFrirlm36+x
+         8lM+eucvovvyCYRbt6bOKUi4SJ9zAPlA+sCZuZw3JJgaN1z7e+gleFcJXsOy0CJlOvMW
+         w5uZT1EcBqWALgXrHJ9LJGYxMEOd19l+taZrlD+TYoiuGsFHRNnh2T20Bf2SgPeI7FGJ
+         u0q6vgkJ+btU62s7ZDan76E2irxGgx/3IXLhIPFeWRN5Iu1XoA84TJVnOiVUtcYnyZ+1
+         a1xA==
+X-Gm-Message-State: AJIora9yrknV2TuV9S3FAwLYF5ewrEgBgpByf51uhRRG4GXS370sWEV9
+        LUKU5TaC3wCOMuod5JbQxq+C0g==
+X-Google-Smtp-Source: AGRyM1vv5rjw2OlOSx1JvR0oEE9A3qm/K4mVXdNVA3ZRjKjkZ/YHSCV55kfEk2f8/LXPfsK5ZH2vgg==
+X-Received: by 2002:a05:651c:1798:b0:25d:3043:58e0 with SMTP id bn24-20020a05651c179800b0025d304358e0mr2581367ljb.310.1657022641768;
+        Tue, 05 Jul 2022 05:04:01 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id n13-20020a2e82cd000000b0025a885a135csm5547082ljh.119.2022.07.05.05.04.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 05:04:00 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RESEND PATCH v3 0/3] dt-bindings: input: gpio-keys: apply via DT tree
+Date:   Tue,  5 Jul 2022 14:03:53 +0200
+Message-Id: <20220705120356.94876-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+Hi Rob,
 
-commit e65af5403e462ccd7dff6a045a886c64da598c2e upstream.
+Can you apply these directly? You already reviewed them, but I dropped
+the tag so you will see them in Patchwork. It seems these won't go in
+through input [1].
 
-usbnet provides some helper functions that are also used in
-the context of reset() operations. During a reset the other
-drivers on a device are unable to operate. As that can be block
-drivers, a driver for another interface cannot use paging
-in its memory allocations without risking a deadlock.
-Use GFP_NOIO in the helpers.
+[1] https://lore.kernel.org/all/c2c1cf0c-9462-9ba5-a297-70d13a063de1@linaro.org/
 
-Fixes: 877bd862f32b8 ("usbnet: introduce usbnet 3 command helpers")
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220628093517.7469-1-oneukum@suse.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/usb/usbnet.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Best regards,
+Krzysztof
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1987,7 +1987,7 @@ static int __usbnet_read_cmd(struct usbn
- 		   cmd, reqtype, value, index, size);
- 
- 	if (size) {
--		buf = kmalloc(size, GFP_KERNEL);
-+		buf = kmalloc(size, GFP_NOIO);
- 		if (!buf)
- 			goto out;
- 	}
-@@ -2019,7 +2019,7 @@ static int __usbnet_write_cmd(struct usb
- 		   cmd, reqtype, value, index, size);
- 
- 	if (data) {
--		buf = kmemdup(data, size, GFP_KERNEL);
-+		buf = kmemdup(data, size, GFP_NOIO);
- 		if (!buf)
- 			goto out;
- 	} else {
 
+Krzysztof Kozlowski (3):
+  dt-bindings: input: gpio-keys: enforce node names to match all
+    properties
+  dt-bindings: input: gpio-keys: reference input.yaml and document
+    properties
+  dt-bindings: input: gpio-keys: accept also interrupt-extended
+
+ .../devicetree/bindings/input/gpio-keys.yaml  | 159 +++++++++---------
+ 1 file changed, 82 insertions(+), 77 deletions(-)
+
+-- 
+2.34.1
 
