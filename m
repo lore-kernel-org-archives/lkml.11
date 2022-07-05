@@ -2,143 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A98DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D69EDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbiGEPih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35878 "EHLO
+        id S231873AbiGEPlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiGEPia (ORCPT
+        with ESMTP id S230248AbiGEPlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:38:30 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE28101A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:38:29 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id t19so20573438lfl.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:38:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5lac26hSsxq2bqnIIbfo8iISJEnKW0GSTyf9EVWeE/Q=;
-        b=fQ22/amhPh/I/Xg9BYSELh7tZekP3MwvTy0jBXI7Rb8+FG2nRtPqMPqIHrO6WVwZIU
-         lTv93pXJqRsza/X+5D34Cd/zOn6u6V5ksIiRnP1qwUgBY0uPPU8hP1+EAZLJAnD7Pyma
-         Zk7HKsXc+Ql4z0/CA3osKYg3Z+PcTp65hZLDhsyw2SK0Bw8uR6+84F4vHVEszweSCXMP
-         mi82fIrrjPFiaKbhBNDYhLDbK2OsDOUThTAaU0vb4MM3xHtG9QkCpRrzezOR2RNm6WnL
-         Al8WFMIioAyE+5TIGbCNNzTl7rPsxHt1VYiUEexZuJxMctYm6XcTk159GzZPhpT8rAl3
-         TmhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5lac26hSsxq2bqnIIbfo8iISJEnKW0GSTyf9EVWeE/Q=;
-        b=so1RY3rVwBOUERvLrd7Yceg+ZxkOukqfJO+naB+1pxFdi10bAqN91aMFXi8vXkIfJg
-         C37oZ5YvuoSASFtXUpfkyXV9swDTp4qKGEkMrCwKbJwNrTKoTjnsLGSvDx+vdseiKT9z
-         1otm1eEus/Hzl3q1mIkhc6nUbXeJgCW6LCVD45slsVwzePuW7f1Zj+W5J5Hud4EoYxBW
-         xdxBqcusH75Jm0vS3WNN1SZQMcfBv7EM5MzX5ZmWrxua2hdAANjXQMXNk4YYpmplJMn8
-         vs2ounlolhbXpV3Xmj+P55C18+xhNPhr3xVY05zVuvg+ehMHBX9s4B0uj5cIo73mUdHK
-         HlxQ==
-X-Gm-Message-State: AJIora+Eg+t3Jfr1hsa7Ho+E8sE2fosxP2MZ/vfVowAQsYKpAO/W6NUv
-        /C2txMhsYxl87hVk589jvgwdFg==
-X-Google-Smtp-Source: AGRyM1tmXLh3z47oCGKtYz2FIn0NiD6p981KwThQufhF/Jz38GQV4qLcO+NFEqfJnt590d8d+yj6eQ==
-X-Received: by 2002:a05:6512:6d4:b0:47f:74b4:4ec4 with SMTP id u20-20020a05651206d400b0047f74b44ec4mr22043767lff.654.1657035507235;
-        Tue, 05 Jul 2022 08:38:27 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id a9-20020a19ca09000000b00477a6c86f17sm5746920lfg.8.2022.07.05.08.38.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 08:38:26 -0700 (PDT)
-Message-ID: <0bd271e9-8d9b-7388-2d9b-65cc39a54f8c@linaro.org>
-Date:   Tue, 5 Jul 2022 17:38:24 +0200
+        Tue, 5 Jul 2022 11:41:52 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D7A12759;
+        Tue,  5 Jul 2022 08:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657035711; x=1688571711;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hp9+ZjKqW51mjGl+R+E35bg8BkjYNebZYZf7uvGtI7w=;
+  b=frUW89lIKZ4ZNu2jz6XOWK3/GhDhOUflFB+lXTJ0I4t3AP+gXzP9EebR
+   4b1O+t4nK88XgZPxWIY4dhqnW9MX52Iz67g/Bv/5WVwGqIwt8HF/TQFj/
+   y8TigyfYDqhMCZVpS6ubp7ODDXTp0Ya4Nwmzy3AtWkDUj1pgfYITzfWoQ
+   UtiKxPaQbk50C3XiSaZo6N0RLj/775ggGqjrKXyna/0m7ibVBU7KnqbFs
+   8BDkAEg4Iu+fnXIy9VtaOziUlOWXItOhH2w8oJpSXnKlRsTL7DMs59uEF
+   XrD4iwxlfrsbZkbtRsj5z0/N8Z4O37XNJiUH5cwlArwEnxk30L0mGMyak
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="263174660"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="263174660"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 08:41:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="735200315"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Jul 2022 08:41:46 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 265FfiYV030211;
+        Tue, 5 Jul 2022 16:41:45 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Larysa Zaremba" <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        "Willem de Bruijn" <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce and use Generic Hints/metadata
+Date:   Tue,  5 Jul 2022 17:41:20 +0200
+Message-Id: <20220705154120.22497-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <87a69o94wz.fsf@toke.dk>
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com> <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk> <20220704154440.7567-1-alexandr.lobakin@intel.com> <87a69o94wz.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
- nxp,fspi-dll-slvdly
-Content-Language: en-US
-To:     Han Xu <han.xu@nxp.com>
-Cc:     Michael Walle <michael@walle.cc>, Bough Chen <haibo.chen@nxp.com>,
-        ashish.kumar@nxp.com, yogeshgaur.83@gmail.com, broonie@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        singh.kuldeep87k@gmail.com, tudor.ambarus@microchip.com,
-        p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mtd@lists.infradead.org, festevam@gmail.com,
-        dl-linux-imx <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, zhengxunli@mxic.com.tw
-References: <1657012303-6464-1-git-send-email-haibo.chen@nxp.com>
- <1657012303-6464-7-git-send-email-haibo.chen@nxp.com>
- <ef676df1-77e0-b8ee-3950-97eade8ddd5b@linaro.org>
- <VI1PR04MB40167A70FBE772DF91047A4190819@VI1PR04MB4016.eurprd04.prod.outlook.com>
- <59d360ef-5374-c7a7-2995-854ab3715b25@linaro.org>
- <DU2PR04MB87747C9A8F18D8300461D6B197819@DU2PR04MB8774.eurprd04.prod.outlook.com>
- <f33ad190-f5c7-d9fa-088b-5538ab1f4d59@linaro.org>
- <DU2PR04MB877492F346BAA10B2AA7428497819@DU2PR04MB8774.eurprd04.prod.outlook.com>
- <62f113a0cdb0d58bf04ab0b274912eb7@walle.cc>
- <be521f90-97ce-c61d-d7d6-8f2bde24d824@linaro.org>
- <20220705145226.tarpvub6bh67tj63@umbrella>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705145226.tarpvub6bh67tj63@umbrella>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 16:52, Han Xu wrote:
-> On 22/07/05 04:12PM, Krzysztof Kozlowski wrote:
->> On 05/07/2022 16:06, Michael Walle wrote:
->>>
->>>>>
->>>>> I think you could use here clock cycles or clock phase, but then it 
->>>>> has to be obvious
->>>>> it is that unit.
->>>>
->>>> Hi Krzysztof,
->>>>
->>>> Let me clarify it, in the document a term "delay cell" was used to
->>>> descript this register bit. Each delay cell equals "1/32 clock phase",
->>>> so the unit of delay cell is clock phase. The value user need set in
->>>> DT just number to define how many delay cells needed.
->>>
->>> Then should the unit be "-degrees" and the possible range 0-180?
->>
->> Thanks. We don't have it documented currently, but the unit seems
->> reasonable.
+From: Toke Høiland-Jørgensen <toke@redhat.com>
+Date: Mon, 04 Jul 2022 19:14:04 +0200
+
+> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 > 
-> IMO, use the unit "-degrees" makes it more complicate. Personaly I would
-> calculate how many clock cycle delay needed, such as 1/4 clock cycle or half
-> clock cycle. Using degree brings extra calculation.
+> > From: Toke H??iland-J??rgensen <toke@redhat.com>
+> > Date: Wed, 29 Jun 2022 15:43:05 +0200
+> >
+> >> John Fastabend <john.fastabend@gmail.com> writes:
+> >> 
+> >> > Alexander Lobakin wrote:
+> >> >> This RFC is to give the whole picture. It will most likely be split
+> >> >> onto several series, maybe even merge cycles. See the "table of
+> >> >> contents" below.
+> >> >
+> >> > Even for RFC its a bit much. Probably improve the summary
+> >> > message here as well I'm still not clear on the overall
+> >> > architecture so not sure I want to dig into patches.
+> >> 
+> >> +1 on this, and piggybacking on your comment to chime in on the general
+> >> architecture.
+> >> 
+> >> >> Now, a NIC driver, or even a SmartNIC itself, can put those params
+> >> >> there in a well-defined format. The format is fixed, but can be of
+> >> >> several different types represented by structures, which definitions
+> >> >> are available to the kernel, BPF programs and the userland.
+> >> >
+> >> > I don't think in general the format needs to be fixed.
+> >> 
+> >> No, that's the whole point of BTF: it's not supposed to be UAPI, we'll
+> >> use CO-RE to enable dynamic formats...
+> >> 
+> >> [...]
+> >> 
+> >> >> It is fixed due to it being almost a UAPI, and the exact format can
+> >> >> be determined by reading the last 10 bytes of metadata. They contain
+> >> >> a 2-byte magic ID to not confuse it with a non-compatible meta and
+> >> >> a 8-byte combined BTF ID + type ID: the ID of the BTF where this
+> >> >> structure is defined and the ID of that definition inside that BTF.
+> >> >> Users can obtain BTF IDs by structure types using helpers available
+> >> >> in the kernel, BPF (written by the CO-RE/verifier) and the userland
+> >> >> (libbpf -> kernel call) and then rely on those ID when reading data
+> >> >> to make sure whether they support it and what to do with it.
+> >> >> Why separate magic and ID? The idea is to make different formats
+> >> >> always contain the basic/"generic" structure embedded at the end.
+> >> >> This way we can still benefit in purely generic consumers (like
+> >> >> cpumap) while providing some "extra" data to those who support it.
+> >> >
+> >> > I don't follow this. If you have a struct in your driver name it
+> >> > something obvious, ice_xdp_metadata. If I understand things
+> >> > correctly just dump the BTF for the driver, extract the
+> >> > struct and done you can use CO-RE reads. For the 'fixed' case
+> >> > this looks easy. And I don't think you even need a patch for this.
+> >> 
+> >> ...however as we've discussed previously, we do need a bit of
+> >> infrastructure around this. In particular, we need to embed the embed
+> >> the BTF ID into the metadata itself so BPF can do runtime disambiguation
+> >> between different formats (and add the right CO-RE primitives to make
+> >> this easy). This is for two reasons:
+> >> 
+> >> - The metadata might be different per-packet (e.g., PTP packets with
+> >>   timestamps interleaved with bulk data without them)
+> >> 
+> >> - With redirects we may end up processing packets from different devices
+> >>   in a single XDP program (in devmap or cpumap, or on a veth) so we need
+> >>   to be able to disambiguate at runtime.
+> >> 
+> >> So I think the part of the design that puts the BTF ID into the end of
+> >> the metadata struct is sound; however, the actual format doesn't have to
+> >> be fixed, we can use CO-RE to pick out the bits that a given BPF program
+> >> needs; we just need a convention for how drivers report which format(s)
+> >> they support. Which we should also agree on (and add core infrastructure
+> >> around) so each driver doesn't go around inventing their own
+> >> conventions.
+> >> 
+> >> >> The enablement of this feature is controlled on attaching/replacing
+> >> >> XDP program on an interface with two new parameters: that combined
+> >> >> BTF+type ID and metadata threshold.
+> >> >> The threshold specifies the minimum frame size which a driver (or
+> >> >> NIC) should start composing metadata from. It is introduced instead
+> >> >> of just false/true flag due to that often it's not worth it to spend
+> >> >> cycles to fetch all that data for such small frames: let's say, it
+> >> >> can be even faster to just calculate checksums for them on CPU
+> >> >> rather than touch non-coherent DMA zone. Simple XDP_DROP case loses
+> >> >> 15 Mpps on 64 byte frames with enabled metadata, threshold can help
+> >> >> mitigate that.
+> >> >
+> >> > I would put this in the bonus category. Can you do the simple thing
+> >> > above without these extra bits and then add them later. Just
+> >> > pick some overly conservative threshold to start with.
+> >> 
+> >> Yeah, I'd agree this kind of configuration is something that can be
+> >> added later, and also it's sort of orthogonal to the consumption of the
+> >> metadata itself.
+> >> 
+> >> Also, tying this configuration into the loading of an XDP program is a
+> >> terrible interface: these are hardware configuration options, let's just
+> >> put them into ethtool or 'ip link' like any other piece of device
+> >> configuration.
+> >
+> > I don't believe it fits there, especially Ethtool. Ethtool is for
+> > hardware configuration, XDP/AF_XDP is 95% software stuff (apart from
+> > offload bits which is purely NFP's for now).
+> 
+> But XDP-hints is about consuming hardware features. When you're
+> configuring which metadata items you want, you're saying "please provide
+> me with these (hardware) features". So ethtool is an excellent place to
+> do that :)
 
-And what if the next device uses a bit different divider? Like 1/16?
-This is why we have standard units so people won't push register values
-into the bindings.
+With Ethtool you configure the hardware, e.g. it won't strip VLAN
+tags if you disable rx-cvlan-stripping. With configuring metadata
+you only tell what you want to see there, don't you?
 
 > 
-> The granularity of the clock phase change is 1/32 of 180 degree, but the range
-> 0-180 make people feel it can be set in any degree in range.
+> > I follow that way:
+> >
+> > 1) you pick a program you want to attach;
+> > 2) usually they are written for special needs and usecases;
+> > 3) so most likely that program will be tied with metadata/driver/etc
+> >    in some way;
+> > 4) so you want to enable Hints of a particular format primarily for
+> >    this program and usecase, same with threshold and everything
+> >    else.
+> >
+> > Pls explain how you see it, I might be wrong for sure.
+> 
+> As above: XDP hints is about giving XDP programs (and AF_XDP consumers)
+> access to metadata that is not currently available. Tying the lifetime
+> of that hardware configuration (i.e., which information to provide) to
+> the lifetime of an XDP program is not a good interface: for one thing,
+> how will it handle multiple programs? What about when XDP is not used at
 
-Yes, because that's how the bindings are being written - allowing any
-reasonable value, not register-specific value, to be used because it is
-the most flexible, hardware-independent and allows further customization
-of bindings (e.g. new devices). Embedding device programming model into
-the bindings contradicts it.
+Multiple progs is stuff I didn't cover, but will do later (as you
+all say to me, "let's start with something simple" :)). Aaaand
+multiple XDP progs (I'm not talking about attaching progs in
+differeng modes) is not a kernel feature, rather a libpf feature,
+so I believe it should be handled there later...
 
-Second, nothing stops you from narrowing the acceptable values with an
-enum. This still allows extension. Your 1/32 does not.
+> all but you still want to configure the same features?
+
+What's the point of configuring metadata when there are no progs
+attached? To configure it once and not on every prog attach? I'm
+not saying I don't like it, just want to clarify.
+Maybe I need opinions from some more people, just to have an
+overview of how most of folks see it and would like to configure
+it. 'Cause I heard from at least one of the consumers that
+libpf API is a perfect place for Hints to him :)
 
 > 
-> If I describe all details of the relation between "nxp,fspi-dll-slvdly" and
-> "delay cell" in patch v2, do you think it's clear for users?
+> In addition, in every other case where we do dynamic data access (with
+> CO-RE) the BPF program is a consumer that modifies itself to access the
+> data provided by the kernel. I get that this is harder to achieve for
+> AF_XDP, but then let's solve that instead of making a totally
+> inconsistent interface for XDP.
 
-1/32 could be a nice unit, but degrees is better. Just like uV is better
-than 1/32 of V. Like 1 us is better than 1/32 of ms.
+I also see CO-RE more fitting and convenient way to use them, but
+didn't manage to solve two things:
 
-Do you see  in the bindings many other values like time, potential,
-current or power described in 1/32 units?
+1) AF_XDP programs, so what to do with them? Prepare patches for
+   LLVM to make it able to do CO-RE on AF_XDP program load? Or
+   just hardcode them for particular usecases and NICs? What about
+   "general-purpose" programs?
+   And if hardcode, what's the point then to do Generic Hints at
+   all? Then all it needs is making driver building some meta in
+   front of frames via on-off button and that's it? Why BTF ID in
+   the meta then if consumers will access meta hardcoded (via CO-RE
+   or literally hardcoded, doesn't matter)?
+2) In-kernel metadata consumers? Also do CO-RE? Otherwise, with no
+   generic metadata structure they won't be able to benefit from
+   Hints. But I guess we still need to provide kernel with meta?
+   Or no?
 
-Best regards,
-Krzysztof
+> 
+> I'm as excited as you about the prospect of having totally programmable
+
+But I mostly care about current generation with no programmable
+Hints...
+
+> hardware where you can just specify any arbitrary metadata format and
+> it'll provide that for you. But that is an orthogonal feature: let's
+> start with creating a dynamic interface for consuming the (static)
+> hardware features we already have, and then later we can have a separate
+> interface for configuring more dynamic hardware features. XDP-hints is
+> about adding this consumption feature in a way that's sufficiently
+> dynamic that we can do the other (programmable hardware) thing on top
+> later...
+> 
+> -Toke
+
+Thanks,
+Olek
