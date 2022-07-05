@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A66CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7901CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234106AbiGEMJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
+        id S234300AbiGEMJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233834AbiGEMEi (ORCPT
+        with ESMTP id S233853AbiGEMEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:04:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED2A18B21;
-        Tue,  5 Jul 2022 05:04:25 -0700 (PDT)
+        Tue, 5 Jul 2022 08:04:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5244B1098;
+        Tue,  5 Jul 2022 05:04:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B215BB817E1;
-        Tue,  5 Jul 2022 12:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7F06C36AE3;
-        Tue,  5 Jul 2022 12:04:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B1D6B817D4;
+        Tue,  5 Jul 2022 12:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718EAC341CB;
+        Tue,  5 Jul 2022 12:04:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022662;
-        bh=5jkvhh7RyOWNuugdqiUVq0gQskA5p/QLvh+4aoBou74=;
+        s=korg; t=1657022667;
+        bh=To1+g38CwvXFP8X3zKMmvdouclQwnDTBYBTkdXMr64o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TpZPx0F1zHUdKZYY1/8QKUiH9wMWFPno9hTEjB4TaI9/l7QJVM0YfXcPz3qgahz6R
-         o6B+rwHS0f6Hmr3QdM+s+3Sf9FMVos9bYmOIBG+mAMgPVo0tsFA5oiIv37K7h86p4d
-         JJD69otrnPdGGI+6rCnRD4fdmgGZUrNrvo1Xn51c=
+        b=X/D2JNPTTkfKrk0iOS+Z8UJbIwliN2HW7ORABQFqryXNf1w/sXYUxCDqhhnrRkw0w
+         NOuhxWwXHU644y0pkg3FJUWjqXqplDzTgGbPtkQbGNp0K4OkHDlji5dEAxM9ZexseC
+         YNdu1ptsxL0ftXGN/wrsGov392sqxAjaKAlSGY3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
+        stable@vger.kernel.org,
+        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 23/58] net/sched: act_api: Notify user space if any actions were flushed before error
-Date:   Tue,  5 Jul 2022 13:57:59 +0200
-Message-Id: <20220705115610.932214413@linuxfoundation.org>
+Subject: [PATCH 5.4 25/58] net: bonding: fix use-after-free after 802.3ad slave unbind
+Date:   Tue,  5 Jul 2022 13:58:01 +0200
+Message-Id: <20220705115610.989949975@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -49,81 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: Yevhen Orlov <yevhen.orlov@plvision.eu>
 
-commit 76b39b94382f9e0a639e1c70c3253de248cc4c83 upstream.
+commit 050133e1aa2cb49bb17be847d48a4431598ef562 upstream.
 
-If during an action flush operation one of the actions is still being
-referenced, the flush operation is aborted and the kernel returns to
-user space with an error. However, if the kernel was able to flush, for
-example, 3 actions and failed on the fourth, the kernel will not notify
-user space that it deleted 3 actions before failing.
+commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection"),
+resolve case, when there is several aggregation groups in the same bond.
+bond_3ad_unbind_slave will invalidate (clear) aggregator when
+__agg_active_ports return zero. So, ad_clear_agg can be executed even, when
+num_of_ports!=0. Than bond_3ad_unbind_slave can be executed again for,
+previously cleared aggregator. NOTE: at this time bond_3ad_unbind_slave
+will not update slave ports list, because lag_ports==NULL. So, here we
+got slave ports, pointing to freed aggregator memory.
 
-This patch fixes that behaviour by notifying user space of how many
-actions were deleted before flush failed and by setting extack with a
-message describing what happened.
+Fix with checking actual number of ports in group (as was before
+commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection") ),
+before ad_clear_agg().
 
-Fixes: 55334a5db5cd ("net_sched: act: refuse to remove bound action outside")
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+The KASAN logs are as follows:
+
+[  767.617392] ==================================================================
+[  767.630776] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x13dc/0x1470
+[  767.638764] Read of size 2 at addr ffff00011ba9d430 by task kworker/u8:7/767
+[  767.647361] CPU: 3 PID: 767 Comm: kworker/u8:7 Tainted: G           O 5.15.11 #15
+[  767.655329] Hardware name: DNI AmazonGo1 A7040 board (DT)
+[  767.660760] Workqueue: lacp_1 bond_3ad_state_machine_handler
+[  767.666468] Call trace:
+[  767.668930]  dump_backtrace+0x0/0x2d0
+[  767.672625]  show_stack+0x24/0x30
+[  767.675965]  dump_stack_lvl+0x68/0x84
+[  767.679659]  print_address_description.constprop.0+0x74/0x2b8
+[  767.685451]  kasan_report+0x1f0/0x260
+[  767.689148]  __asan_load2+0x94/0xd0
+[  767.692667]  bond_3ad_state_machine_handler+0x13dc/0x1470
+
+Fixes: 0622cab0341c ("bonding: fix 802.3ad aggregator reselection")
+Co-developed-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Link: https://lore.kernel.org/r/20220629012914.361-1-yevhen.orlov@plvision.eu
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/act_api.c |   22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ drivers/net/bonding/bond_3ad.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -287,7 +287,8 @@ static int tcf_idr_release_unsafe(struct
- }
- 
- static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
--			  const struct tc_action_ops *ops)
-+			  const struct tc_action_ops *ops,
-+			  struct netlink_ext_ack *extack)
- {
- 	struct nlattr *nest;
- 	int n_i = 0;
-@@ -303,20 +304,25 @@ static int tcf_del_walker(struct tcf_idr
- 	if (nla_put_string(skb, TCA_KIND, ops->kind))
- 		goto nla_put_failure;
- 
-+	ret = 0;
- 	mutex_lock(&idrinfo->lock);
- 	idr_for_each_entry_ul(idr, p, tmp, id) {
- 		if (IS_ERR(p))
- 			continue;
- 		ret = tcf_idr_release_unsafe(p);
--		if (ret == ACT_P_DELETED) {
-+		if (ret == ACT_P_DELETED)
- 			module_put(ops->owner);
--			n_i++;
--		} else if (ret < 0) {
--			mutex_unlock(&idrinfo->lock);
--			goto nla_put_failure;
--		}
-+		else if (ret < 0)
-+			break;
-+		n_i++;
- 	}
- 	mutex_unlock(&idrinfo->lock);
-+	if (ret < 0) {
-+		if (n_i)
-+			NL_SET_ERR_MSG(extack, "Unable to flush all TC actions");
-+		else
-+			goto nla_put_failure;
-+	}
- 
- 	ret = nla_put_u32(skb, TCA_FCNT, n_i);
- 	if (ret)
-@@ -337,7 +343,7 @@ int tcf_generic_walker(struct tc_action_
- 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
- 
- 	if (type == RTM_DELACTION) {
--		return tcf_del_walker(idrinfo, skb, ops);
-+		return tcf_del_walker(idrinfo, skb, ops, extack);
- 	} else if (type == RTM_GETACTION) {
- 		return tcf_dump_walker(idrinfo, skb, cb);
- 	} else {
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2218,7 +2218,8 @@ void bond_3ad_unbind_slave(struct slave
+ 				temp_aggregator->num_of_ports--;
+ 				if (__agg_active_ports(temp_aggregator) == 0) {
+ 					select_new_active_agg = temp_aggregator->is_active;
+-					ad_clear_agg(temp_aggregator);
++					if (temp_aggregator->num_of_ports == 0)
++						ad_clear_agg(temp_aggregator);
+ 					if (select_new_active_agg) {
+ 						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
+ 						/* select new active aggregator */
 
 
