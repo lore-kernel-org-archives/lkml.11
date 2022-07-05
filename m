@@ -2,60 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55147CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AEEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbiGEHMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 03:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S229485AbiGEHOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 03:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiGEHMx (ORCPT
+        with ESMTP id S229754AbiGEHO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 03:12:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C1D64F0;
-        Tue,  5 Jul 2022 00:12:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89FDEB81607;
-        Tue,  5 Jul 2022 07:12:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67B01C341C7;
-        Tue,  5 Jul 2022 07:12:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657005169;
-        bh=jecdmO07RSUAbMoa7+ZQbRfH07PxhO+rt6YpHbFgc9Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=D3pp3WGDqfye6d51EI4wCI+SDPBOfnPLX9gA7eqrUEWIinoFh2oXK8pGRFkz/xTRf
-         JkQ0CbS/5GqosbOEJK/BTEt6JtP3++D4v4XFVg9EQ5q5dtYdL8i1I1Y29tlk/ReifA
-         5MjpURFxrf0AyQa9H1IvlgjaaUh+7Nn+1/LvncY+Z4K83kyvjKkDAQWVmeJ9fyc95o
-         SRiFrOpZvUpNThuatSBGzDYOYYVfypoKsof5R6F5U8jNIOqrl94YPONQosUmH0p15c
-         W0/Z1rx4EwnRuQ/UQpY9TPaEGOP1PDW2MtABEnBHh8ums6xqWAtG3vSOv4nJVq+98Q
-         DohKCURq6vTFQ==
-Date:   Tue, 5 Jul 2022 12:42:44 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] phy: qcom-qmp: clean up defines
-Message-ID: <YsPkbAj7gYqbFOgz@matsya>
-References: <20220609120338.4080-1-johan+linaro@kernel.org>
+        Tue, 5 Jul 2022 03:14:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05A9525E1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 00:14:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657005266;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4giCAN0BxKc778vWtSSTjZu8pniT4NMZr4y0gV4ab5g=;
+        b=QbSXLA1nGNsfL4a6dcdZZDagb0berUXgxKOobbKyb0wcuhBiZOAemkVNDpJCTNaOWcfv87
+        A1xf8+3sL099HAqbXw2yjdOnLOQ3k2h4uqax4yQmEor7fTEn4Qr4ElRCqlnYhmEyNYQXIh
+        Lj/9xAlsTjw3ST+SiR5EUXVXRWG9LJk=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-610-PssA0gOQPJirPu1LAw5aeg-1; Tue, 05 Jul 2022 03:14:25 -0400
+X-MC-Unique: PssA0gOQPJirPu1LAw5aeg-1
+Received: by mail-wr1-f71.google.com with SMTP id h29-20020adfaa9d000000b0021d67fc0b4aso908885wrc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 00:14:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4giCAN0BxKc778vWtSSTjZu8pniT4NMZr4y0gV4ab5g=;
+        b=3DD8WOweyV+Pjag5WS3vq91NbkIGfuCrMMmzPwaz+1TYWGVyt4wjyXlsYjx0NqUCgV
+         UR6HD0otzTXkRbkn06Dalm+piM0fb9+vG9GAiLMOnzfSaoXvIFxqFfJfHOCbJ7i/KG5/
+         3c1+l54xLEugFY/BR7WA/ldEREE0xFmvkM93ZRw9U+qZ3UHMutZBj7IzEVKe1d7HaEc1
+         drfUNKrhc2V9ijTQfH4keWZby5B8uac2bUlJ0UHLfxJ2gixHrevxmVBYl0aglO2vZIHG
+         jtDjlJ4PDa0XPLypwGOkexuSGj1VyZT8mfvTHxCG2pxsRnZqHFdZBOU3L7zSOo3fC1P1
+         fwQw==
+X-Gm-Message-State: AJIora/oVtFXDjt+KH+pzrWSl32B+t7TYE9zaiHHpF7Jn0DPrdj6ZE8L
+        +BJd2sOkRrH7ZxZ1e6KC4odutgKWOQYxYuuN2qhRkX8pPlGZAnXKDCv44k3vsJGApuxZ3AuHNAE
+        an3liNNdq05BhkhPF5d5ArMBU
+X-Received: by 2002:a05:600c:219a:b0:3a1:816e:47da with SMTP id e26-20020a05600c219a00b003a1816e47damr28318206wme.36.1657005264248;
+        Tue, 05 Jul 2022 00:14:24 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vcW9e9eTalezNtaWJSnF5gbHxxCeW7lqs+IDLr/j+gAKlupZwbA3tlhTxkIM9It+mdfQXIUg==
+X-Received: by 2002:a05:600c:219a:b0:3a1:816e:47da with SMTP id e26-20020a05600c219a00b003a1816e47damr28318198wme.36.1657005264087;
+        Tue, 05 Jul 2022 00:14:24 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-206.retail.telecomitalia.it. [79.46.200.206])
+        by smtp.gmail.com with ESMTPSA id v13-20020a1cf70d000000b0039747cf8354sm21868103wmh.39.2022.07.05.00.14.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 00:14:23 -0700 (PDT)
+Date:   Tue, 5 Jul 2022 09:14:20 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
+Subject: Re: [RFC PATCH 1/6] tools/virtio: fix build
+Message-ID: <20220705071420.24slcba3racqjmx6@sgarzare-redhat>
+References: <20220704171701.127665-1-sgarzare@redhat.com>
+ <20220704171701.127665-2-sgarzare@redhat.com>
+ <20220704150706-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220609120338.4080-1-johan+linaro@kernel.org>
+In-Reply-To: <20220704150706-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09-06-22, 14:03, Johan Hovold wrote:
-> Here are some trivial cleanups of the QMP defines for issues found while
-> adding support for SC8280XP.
+On Mon, Jul 04, 2022 at 03:07:15PM -0400, Michael S. Tsirkin wrote:
+>On Mon, Jul 04, 2022 at 07:16:56PM +0200, Stefano Garzarella wrote:
+>> Fix the build caused by the following changes:
+>> - phys_addr_t is now defined in tools/include/linux/types.h
+>> - dev_warn_once() is used in drivers/virtio/virtio_ring.c
+>> - linux/uio.h included by vringh.h use INT_MAX defined in limits.h
+>>
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>
+>Post this separately?
 
-Applied, thanks
+Yep, sure!
 
--- 
-~Vinod
+Stefano
+
