@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9EBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69222CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236219AbiGEMR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46974 "EHLO
+        id S236386AbiGEMRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234508AbiGEMHj (ORCPT
+        with ESMTP id S235271AbiGEMIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:07:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAFF18E3E;
-        Tue,  5 Jul 2022 05:06:34 -0700 (PDT)
+        Tue, 5 Jul 2022 08:08:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5159618391;
+        Tue,  5 Jul 2022 05:08:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48BA4B817CE;
-        Tue,  5 Jul 2022 12:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC39EC341C7;
-        Tue,  5 Jul 2022 12:06:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2DE26185C;
+        Tue,  5 Jul 2022 12:08:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9F8FC341C7;
+        Tue,  5 Jul 2022 12:08:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022792;
-        bh=Os+jTlmLZnGl5oAPWtM00+O1nz8jtA8vVJ/umO8ZLx4=;
+        s=korg; t=1657022913;
+        bh=5umilpb4rX0IlcTKtL3SqiOhJ1aAiUdT9PfzUNpBy0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oWN2ktsBZi2hzhEXTAkZQG6bzBniUJNonVl0EqTy5GeS9c1Jat5IcidZVXQEM3xrh
-         4u3qP1i8BS03vpOE/6RrtZ4iM3+lduYgd2PR35MFnha8lQCZcLserCvGPm5rbWb889
-         gu9x7Fu/5mauSuo2VfawEJtQscw5cRctveU7YZl0=
+        b=cdLtkDOvnM8pYxq5v0lZpKKmbHKkMe5n5Ss0LH4fATRVF46jTksz7FVBZQeRqoS+5
+         VrnhUjnbRSM3HqvK4ITQ7NGXvbmh3AJcbGNJyXUm2g4Wil0aBYfSj3gFYsp81EirxQ
+         gDRZItVPiI/7SfiLJ+Ga9XZBIlfhicynI9BOXOXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.10 12/84] net: rose: fix UAF bugs caused by timer handler
-Date:   Tue,  5 Jul 2022 13:57:35 +0200
-Message-Id: <20220705115615.686651921@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH 5.10 55/84] selftests: mptcp: fix diag instability
+Date:   Tue,  5 Jul 2022 13:58:18 +0200
+Message-Id: <20220705115616.929907196@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -48,251 +51,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Paolo Abeni <pabeni@redhat.com>
 
-commit 9cc02ede696272c5271a401e4f27c262359bc2f6 upstream.
+[ Upstream commit 0cd33c5ffec12bd77a1c02db2469fac08f840939 ]
 
-There are UAF bugs in rose_heartbeat_expiry(), rose_timer_expiry()
-and rose_idletimer_expiry(). The root cause is that del_timer()
-could not stop the timer handler that is running and the refcount
-of sock is not managed properly.
+Instead of waiting for an arbitrary amount of time for the MPTCP
+MP_CAPABLE handshake to complete, explicitly wait for the relevant
+socket to enter into the established status.
 
-One of the UAF bugs is shown below:
+Additionally let the data transfer application use the slowest
+transfer mode available (-r), to cope with very slow host, or
+high jitter caused by hosting VMs.
 
-    (thread 1)          |        (thread 2)
-                        |  rose_bind
-                        |  rose_connect
-                        |    rose_start_heartbeat
-rose_release            |    (wait a time)
-  case ROSE_STATE_0     |
-  rose_destroy_socket   |  rose_heartbeat_expiry
-    rose_stop_heartbeat |
-    sock_put(sk)        |    ...
-  sock_put(sk) // FREE  |
-                        |    bh_lock_sock(sk) // USE
-
-The sock is deallocated by sock_put() in rose_release() and
-then used by bh_lock_sock() in rose_heartbeat_expiry().
-
-Although rose_destroy_socket() calls rose_stop_heartbeat(),
-it could not stop the timer that is running.
-
-The KASAN report triggered by POC is shown below:
-
-BUG: KASAN: use-after-free in _raw_spin_lock+0x5a/0x110
-Write of size 4 at addr ffff88800ae59098 by task swapper/3/0
-...
-Call Trace:
- <IRQ>
- dump_stack_lvl+0xbf/0xee
- print_address_description+0x7b/0x440
- print_report+0x101/0x230
- ? irq_work_single+0xbb/0x140
- ? _raw_spin_lock+0x5a/0x110
- kasan_report+0xed/0x120
- ? _raw_spin_lock+0x5a/0x110
- kasan_check_range+0x2bd/0x2e0
- _raw_spin_lock+0x5a/0x110
- rose_heartbeat_expiry+0x39/0x370
- ? rose_start_heartbeat+0xb0/0xb0
- call_timer_fn+0x2d/0x1c0
- ? rose_start_heartbeat+0xb0/0xb0
- expire_timers+0x1f3/0x320
- __run_timers+0x3ff/0x4d0
- run_timer_softirq+0x41/0x80
- __do_softirq+0x233/0x544
- irq_exit_rcu+0x41/0xa0
- sysvec_apic_timer_interrupt+0x8c/0xb0
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1b/0x20
-RIP: 0010:default_idle+0xb/0x10
-RSP: 0018:ffffc9000012fea0 EFLAGS: 00000202
-RAX: 000000000000bcae RBX: ffff888006660f00 RCX: 000000000000bcae
-RDX: 0000000000000001 RSI: ffffffff843a11c0 RDI: ffffffff843a1180
-RBP: dffffc0000000000 R08: dffffc0000000000 R09: ffffed100da36d46
-R10: dfffe9100da36d47 R11: ffffffff83cf0950 R12: 0000000000000000
-R13: 1ffff11000ccc1e0 R14: ffffffff8542af28 R15: dffffc0000000000
-...
-Allocated by task 146:
- __kasan_kmalloc+0xc4/0xf0
- sk_prot_alloc+0xdd/0x1a0
- sk_alloc+0x2d/0x4e0
- rose_create+0x7b/0x330
- __sock_create+0x2dd/0x640
- __sys_socket+0xc7/0x270
- __x64_sys_socket+0x71/0x80
- do_syscall_64+0x43/0x90
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Freed by task 152:
- kasan_set_track+0x4c/0x70
- kasan_set_free_info+0x1f/0x40
- ____kasan_slab_free+0x124/0x190
- kfree+0xd3/0x270
- __sk_destruct+0x314/0x460
- rose_release+0x2fa/0x3b0
- sock_close+0xcb/0x230
- __fput+0x2d9/0x650
- task_work_run+0xd6/0x160
- exit_to_user_mode_loop+0xc7/0xd0
- exit_to_user_mode_prepare+0x4e/0x80
- syscall_exit_to_user_mode+0x20/0x40
- do_syscall_64+0x4f/0x90
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-This patch adds refcount of sock when we use functions
-such as rose_start_heartbeat() and so on to start timer,
-and decreases the refcount of sock when timer is finished
-or deleted by functions such as rose_stop_heartbeat()
-and so on. As a result, the UAF bugs could be mitigated.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Tested-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220629002640.5693-1-duoming@zju.edu.cn
+Fixes: df62f2ec3df6 ("selftests/mptcp: add diag interface tests")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/258
+Reported-and-tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rose/rose_timer.c |   34 +++++++++++++++++++---------------
- 1 file changed, 19 insertions(+), 15 deletions(-)
+ tools/testing/selftests/net/mptcp/diag.sh | 44 +++++++++++++++++++----
+ 1 file changed, 37 insertions(+), 7 deletions(-)
 
---- a/net/rose/rose_timer.c
-+++ b/net/rose/rose_timer.c
-@@ -31,89 +31,89 @@ static void rose_idletimer_expiry(struct
- 
- void rose_start_heartbeat(struct sock *sk)
- {
--	del_timer(&sk->sk_timer);
-+	sk_stop_timer(sk, &sk->sk_timer);
- 
- 	sk->sk_timer.function = rose_heartbeat_expiry;
- 	sk->sk_timer.expires  = jiffies + 5 * HZ;
- 
--	add_timer(&sk->sk_timer);
-+	sk_reset_timer(sk, &sk->sk_timer, sk->sk_timer.expires);
+diff --git a/tools/testing/selftests/net/mptcp/diag.sh b/tools/testing/selftests/net/mptcp/diag.sh
+index 2674ba20d524..ff821025d309 100755
+--- a/tools/testing/selftests/net/mptcp/diag.sh
++++ b/tools/testing/selftests/net/mptcp/diag.sh
+@@ -71,6 +71,36 @@ chk_msk_remote_key_nr()
+ 		__chk_nr "grep -c remote_key" $*
  }
  
- void rose_start_t1timer(struct sock *sk)
- {
- 	struct rose_sock *rose = rose_sk(sk);
++# $1: ns, $2: port
++wait_local_port_listen()
++{
++	local listener_ns="${1}"
++	local port="${2}"
++
++	local port_hex i
++
++	port_hex="$(printf "%04X" "${port}")"
++	for i in $(seq 10); do
++		ip netns exec "${listener_ns}" cat /proc/net/tcp | \
++			awk "BEGIN {rc=1} {if (\$2 ~ /:${port_hex}\$/ && \$4 ~ /0A/) {rc=0; exit}} END {exit rc}" &&
++			break
++		sleep 0.1
++	done
++}
++
++wait_connected()
++{
++	local listener_ns="${1}"
++	local port="${2}"
++
++	local port_hex i
++
++	port_hex="$(printf "%04X" "${port}")"
++	for i in $(seq 10); do
++		ip netns exec ${listener_ns} grep -q " 0100007F:${port_hex} " /proc/net/tcp && break
++		sleep 0.1
++	done
++}
  
--	del_timer(&rose->timer);
-+	sk_stop_timer(sk, &rose->timer);
+ trap cleanup EXIT
+ ip netns add $ns
+@@ -81,15 +111,15 @@ echo "a" | \
+ 		ip netns exec $ns \
+ 			./mptcp_connect -p 10000 -l -t ${timeout_poll} \
+ 				0.0.0.0 >/dev/null &
+-sleep 0.1
++wait_local_port_listen $ns 10000
+ chk_msk_nr 0 "no msk on netns creation"
  
- 	rose->timer.function = rose_timer_expiry;
- 	rose->timer.expires  = jiffies + rose->t1;
+ echo "b" | \
+ 	timeout ${timeout_test} \
+ 		ip netns exec $ns \
+-			./mptcp_connect -p 10000 -j -t ${timeout_poll} \
++			./mptcp_connect -p 10000 -r 0 -t ${timeout_poll} \
+ 				127.0.0.1 >/dev/null &
+-sleep 0.1
++wait_connected $ns 10000
+ chk_msk_nr 2 "after MPC handshake "
+ chk_msk_remote_key_nr 2 "....chk remote_key"
+ chk_msk_fallback_nr 0 "....chk no fallback"
+@@ -101,13 +131,13 @@ echo "a" | \
+ 		ip netns exec $ns \
+ 			./mptcp_connect -p 10001 -l -s TCP -t ${timeout_poll} \
+ 				0.0.0.0 >/dev/null &
+-sleep 0.1
++wait_local_port_listen $ns 10001
+ echo "b" | \
+ 	timeout ${timeout_test} \
+ 		ip netns exec $ns \
+-			./mptcp_connect -p 10001 -j -t ${timeout_poll} \
++			./mptcp_connect -p 10001 -r 0 -t ${timeout_poll} \
+ 				127.0.0.1 >/dev/null &
+-sleep 0.1
++wait_connected $ns 10001
+ chk_msk_fallback_nr 1 "check fallback"
+ flush_pids
  
--	add_timer(&rose->timer);
-+	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
- }
+@@ -119,7 +149,7 @@ for I in `seq 1 $NR_CLIENTS`; do
+ 				./mptcp_connect -p $((I+10001)) -l -w 10 \
+ 					-t ${timeout_poll} 0.0.0.0 >/dev/null &
+ done
+-sleep 0.1
++wait_local_port_listen $ns $((NR_CLIENTS + 10001))
  
- void rose_start_t2timer(struct sock *sk)
- {
- 	struct rose_sock *rose = rose_sk(sk);
- 
--	del_timer(&rose->timer);
-+	sk_stop_timer(sk, &rose->timer);
- 
- 	rose->timer.function = rose_timer_expiry;
- 	rose->timer.expires  = jiffies + rose->t2;
- 
--	add_timer(&rose->timer);
-+	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
- }
- 
- void rose_start_t3timer(struct sock *sk)
- {
- 	struct rose_sock *rose = rose_sk(sk);
- 
--	del_timer(&rose->timer);
-+	sk_stop_timer(sk, &rose->timer);
- 
- 	rose->timer.function = rose_timer_expiry;
- 	rose->timer.expires  = jiffies + rose->t3;
- 
--	add_timer(&rose->timer);
-+	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
- }
- 
- void rose_start_hbtimer(struct sock *sk)
- {
- 	struct rose_sock *rose = rose_sk(sk);
- 
--	del_timer(&rose->timer);
-+	sk_stop_timer(sk, &rose->timer);
- 
- 	rose->timer.function = rose_timer_expiry;
- 	rose->timer.expires  = jiffies + rose->hb;
- 
--	add_timer(&rose->timer);
-+	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
- }
- 
- void rose_start_idletimer(struct sock *sk)
- {
- 	struct rose_sock *rose = rose_sk(sk);
- 
--	del_timer(&rose->idletimer);
-+	sk_stop_timer(sk, &rose->idletimer);
- 
- 	if (rose->idle > 0) {
- 		rose->idletimer.function = rose_idletimer_expiry;
- 		rose->idletimer.expires  = jiffies + rose->idle;
- 
--		add_timer(&rose->idletimer);
-+		sk_reset_timer(sk, &rose->idletimer, rose->idletimer.expires);
- 	}
- }
- 
- void rose_stop_heartbeat(struct sock *sk)
- {
--	del_timer(&sk->sk_timer);
-+	sk_stop_timer(sk, &sk->sk_timer);
- }
- 
- void rose_stop_timer(struct sock *sk)
- {
--	del_timer(&rose_sk(sk)->timer);
-+	sk_stop_timer(sk, &rose_sk(sk)->timer);
- }
- 
- void rose_stop_idletimer(struct sock *sk)
- {
--	del_timer(&rose_sk(sk)->idletimer);
-+	sk_stop_timer(sk, &rose_sk(sk)->idletimer);
- }
- 
- static void rose_heartbeat_expiry(struct timer_list *t)
-@@ -130,6 +130,7 @@ static void rose_heartbeat_expiry(struct
- 		    (sk->sk_state == TCP_LISTEN && sock_flag(sk, SOCK_DEAD))) {
- 			bh_unlock_sock(sk);
- 			rose_destroy_socket(sk);
-+			sock_put(sk);
- 			return;
- 		}
- 		break;
-@@ -152,6 +153,7 @@ static void rose_heartbeat_expiry(struct
- 
- 	rose_start_heartbeat(sk);
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
- 
- static void rose_timer_expiry(struct timer_list *t)
-@@ -181,6 +183,7 @@ static void rose_timer_expiry(struct tim
- 		break;
- 	}
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
- 
- static void rose_idletimer_expiry(struct timer_list *t)
-@@ -205,4 +208,5 @@ static void rose_idletimer_expiry(struct
- 		sock_set_flag(sk, SOCK_DEAD);
- 	}
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
+ for I in `seq 1 $NR_CLIENTS`; do
+ 	echo "b" | \
+-- 
+2.35.1
+
 
 
