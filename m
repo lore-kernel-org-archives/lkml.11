@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1FEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30836C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbiGEONh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        id S233478AbiGEONk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233681AbiGEOMx (ORCPT
+        with ESMTP id S233727AbiGEOMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:12:53 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8B5D46;
-        Tue,  5 Jul 2022 07:07:11 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id d2so21893646ejy.1;
-        Tue, 05 Jul 2022 07:07:11 -0700 (PDT)
+        Tue, 5 Jul 2022 10:12:55 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0853033E;
+        Tue,  5 Jul 2022 07:07:19 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id y8so9686373eda.3;
+        Tue, 05 Jul 2022 07:07:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5OS8iU7ckkLSHaqIlbeZBVviyMeZBZWBd3YMMJ6ry8s=;
-        b=ITXSjr6Hx9JXRQKMyllhYYZzuJ1REHHD90EP3obKhtLGFRZNWMWQqZnLw2JnLRQT4A
-         /QHKlHBp1arBKI+k172O52LKDqCh0oUesKoY2gcpTkRjPbn9hUUL6wEkhkpwrNU+lrFO
-         G4erj7vXKZ7rb755akVNGI29habKFdPXpESfvubP7iEchUUE2JmiNzZ7X9ADxMsLd9Dq
-         Ts2CPmITFPNmnFz+8ogLP1dpUYJND72e0jx9gSYWGwD3k5fG/H0DeUKtpMfcMzS4lR0E
-         I1DdLgeBcjGs7KYNRI53e1U6EwA8e+YfFp8geR2/zn3pR8jgny22nyMKBhlSatYCjNv5
-         KEaQ==
+        bh=ALHV+/iLZs2nffxTGCRHNUI4guHcb4svQkIg5UgcKsU=;
+        b=E8GtxnKvapahRH8ZdterhezeDhj8eFddVxsqIudi0MEay+93aHzm1wmC6VNTKW8uc+
+         pKk2vyflaLfbmDPEqVMga9C99UFaeFGxumtQgKgy9nO04UOnf6UUmmvS3WHKmBem3QIK
+         63OQoJgPtA4Z5p6Fdmr6/rg12o8UYDhXWrM/g/N6zBmobd+DKiH5npSTqJKM4WUy21yc
+         nusZ0+U7dOchyoPi7tKc8STaQtFkYu/yhYbBQLxD3oSCap1qKH6ikyj/U6rEq7P7QpHJ
+         2oji9+7g+iUm9md3t90uPAUMq6762E5fi3fxCdta//pDEHXIkLZHVbTIhcWqO1zVqHcT
+         VloA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5OS8iU7ckkLSHaqIlbeZBVviyMeZBZWBd3YMMJ6ry8s=;
-        b=LW9vZXj878s7ZKUGADc/f5cM02qKOnjZ2hcn4hRfV430oAioZmbaiJvLkjZQxlNmL1
-         8/84NgyUUSxzfAfduPum/v6ayqA4CGqwpfOaWEjCTSKfISmDWr2VRLx7SiUk9Mv6o607
-         nLIMgiKy0MWk2W3eQd1PB76lsol18KIiDGWafuGRcDJm+6u+510nTeoa/ip6gvkTrGvR
-         SXOFc7QXXzxbWBnRhOE+xb1aidUGJVewFBju06Ev/ZYNRDYEId1Qz1quP1QqizC05uIs
-         XqDx+f7zsFpTyosS0rvQRngzznvzXAnk0r8qHEPdKeeGwzhXI6VnlVGVVIh38/8dPCnx
-         neLg==
-X-Gm-Message-State: AJIora+TDNOgHAhsZGet14FAjw47aFayL/CTjELeLVBfRQpsUKvRtmxN
-        E6/5Iw6Vqah2gUYukcUyRR8=
-X-Google-Smtp-Source: AGRyM1uzISHMsdteQlV7VGJjOxdRKXpM0QKKYgz7fqjdlytM0Og1nfnajqac+KlDbo0HDg/rrQyM9A==
-X-Received: by 2002:a17:907:6d92:b0:726:cbdd:465e with SMTP id sb18-20020a1709076d9200b00726cbdd465emr35238204ejc.155.1657029994799;
-        Tue, 05 Jul 2022 07:06:34 -0700 (PDT)
+        bh=ALHV+/iLZs2nffxTGCRHNUI4guHcb4svQkIg5UgcKsU=;
+        b=whEhBSCYxIux5dl4EYoKnNjxavlXP0niStNdB4CbkEkFXsU2ocM1qges9US4x6NE5L
+         7uvYqnp3glvSnkyYfLe2jS8bp4OnoM5drdxrcWKmzIblVLPUwxhq2EPJCw4VyMv91yIm
+         ojaANMUBtjxIvylEODSoePlxED5F6LkcxPpHBQSe79jbqiS4xP/YWOWg372F+CxgsAef
+         m2Js4JgxTd6qBG+Y9fgrmxm49lhKp+FRFsH7qQ9AQnePNXsKQ27lIXNrnR9CWaEipiUE
+         KysNavmsLNj/kb7SVyigt6PtLF0L4h4wFifHDcGH/VXhO4d7cp8ELgN1iH1Y28A+l8ql
+         fTSQ==
+X-Gm-Message-State: AJIora+VUOK2RQVqF+ygYwSjTlXx9+idBTRIoZXzt9W/DpXLfQOQcOmu
+        /MLlTAFqf20rwXYlJAH6XZk=
+X-Google-Smtp-Source: AGRyM1twU8jHFfh4rNoYRNv0V9m04ao+wqd/FGotl5G6g3iluwWfoRQVCmH6fQB7QqA2MrNZn65lzA==
+X-Received: by 2002:a50:fc9a:0:b0:43a:5475:8916 with SMTP id f26-20020a50fc9a000000b0043a54758916mr14768594edq.155.1657029999391;
+        Tue, 05 Jul 2022 07:06:39 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.33
+        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 07:06:34 -0700 (PDT)
+        Tue, 05 Jul 2022 07:06:38 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-kernel@vger.kernel.org
 Cc:     Christian Marangi <ansuelsmth@gmail.com>,
         Jonathan McDowell <noodles@earth.li>
-Subject: [PATCH 06/13] ARM: dts: qcom: enable usb phy by default for ipq8064
-Date:   Tue,  5 Jul 2022 15:39:10 +0200
-Message-Id: <20220705133917.8405-7-ansuelsmth@gmail.com>
+Subject: [PATCH 10/13] ARM: dts: qcom: add sic non secure node for ipq8064
+Date:   Tue,  5 Jul 2022 15:39:14 +0200
+Message-Id: <20220705133917.8405-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220705133917.8405-1-ansuelsmth@gmail.com>
 References: <20220705133917.8405-1-ansuelsmth@gmail.com>
@@ -70,38 +70,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable usb phy by default. When the usb phy were pushed, half of them
-were flagged as disabled by mistake. Fix this to correctly init dwc3
-node on any ipq8064 based SoC.
+Add missing sic non secure node for ipq8064.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 Tested-by: Jonathan McDowell <noodles@earth.li>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index b2faa4a067e9..9c32c637ea46 100644
+index 98527a7d885e..ef8faee6dfd4 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -1177,8 +1177,6 @@ hs_phy_0: phy@100f8800 {
- 			clocks = <&gcc USB30_0_UTMI_CLK>;
- 			clock-names = "ref";
- 			#phy-cells = <0>;
--
--			status = "disabled";
+@@ -543,6 +543,11 @@ saw1: regulator@2099000 {
+ 			regulator;
  		};
  
- 		ss_phy_0: phy@100f8830 {
-@@ -1187,8 +1185,6 @@ ss_phy_0: phy@100f8830 {
- 			clocks = <&gcc USB30_0_MASTER_CLK>;
- 			clock-names = "ref";
- 			#phy-cells = <0>;
--
--			status = "disabled";
- 		};
- 
- 		usb3_0: usb3@100f8800 {
++		sic_non_secure: sic-non-secure@12100000 {
++			compatible = "syscon";
++			reg = <0x12100000 0x10000>;
++		};
++
+ 		gsbi2: gsbi@12480000 {
+ 			compatible = "qcom,gsbi-v1.0.0";
+ 			cell-index = <2>;
 -- 
 2.36.1
 
