@@ -2,329 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D817C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18CCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237688AbiGEMZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
+        id S237858AbiGEM0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236625AbiGEMSA (ORCPT
+        with ESMTP id S236618AbiGEMR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DEA193E2;
-        Tue,  5 Jul 2022 05:13:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4DCAB817AC;
-        Tue,  5 Jul 2022 12:13:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B0EC341C7;
-        Tue,  5 Jul 2022 12:13:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023189;
-        bh=/tWmGCqwNuBv2ZFBAZMFfrnGTqFYVqZFwG8JGBoUnSk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nIJSAHPtQpXAA26mclS/NCqXVz5DBJdVmzympf5CE0sTwjePF4O9pDRp6CXJL0B96
-         Uy1LL1nPgDWk60jsP/G3Gf47NGOPkF1f0gD9Z7hVOINlWCR2MwlymdhctPTI5g0ZOF
-         67RrIsSq6WjmoQW3hMWqQo5L/EW7+GvnENjJBpFw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 68/98] selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
-Date:   Tue,  5 Jul 2022 13:58:26 +0200
-Message-Id: <20220705115619.507941499@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:17:58 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E519193DA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:13:09 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id i17so9486805ljj.12
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:13:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=UeNH2jSWLV7pgX+9k7Jm7Qrd1Rmj1W872ul3so8oKsg=;
+        b=z8mFZcu8ol2iXYecvxhFYVi1ZxVvlUsA9LO5AkNvxja+k2FsQDGymo6xlhVwgpfHAa
+         IZnKK/XQLW3VNqnYmH1aVoW+TMAqVeQZ8Ia9/maR4izz4q8X9gP7wWoQV8/cjgUC6Q4f
+         L/MSlBfpow9PbpLtZWW95HXO/IAIG2VUsZ05RyWvU5mRTJdyezEz6oEvl4M65oogq60W
+         Fv6fNRQJNaykpYXU/aBizSMBVCSZRUcDmPoiAF1sAKWeDzwtWem5NJnjOz3Mu0KBhNal
+         gPyLFTAAnFxB+R3UjFOQ7gccQ0tXnKh1BvIe8QZiD041AJ8Zj3ZgSVfuuf4f1OTiJvBz
+         UVJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=UeNH2jSWLV7pgX+9k7Jm7Qrd1Rmj1W872ul3so8oKsg=;
+        b=etPRLaew5XBkHIGae5Bp1IId1XEOy0IrafOSmYGccpRLnA5Majb1sThprUvhdNLhcL
+         77ob9rY4YyjD9DoJRvIasOh4CySezVLY5iarowudfjBF3bQZyXJcPEGS2JZ1AI4EsMws
+         Rz6sifgMp+JEkujeIxnPfZhRJlx+xNC3JNHieZzNZvoMozDOFCp8QpDNi6ZY5kgR0GYr
+         E5GpyFp9Tt9FkN6GHK743f1s9hOab72KVEgFoDLVNSDGarKf5VkWLs6xN91q0bgBT8X6
+         KeOkGGiUeunKQ/GS27tv+5PwWdS8M0vKmpiRV/jCDfLTed6EEygVNcXhyAs67vBrSnQE
+         IZwg==
+X-Gm-Message-State: AJIora/CaWxtTGbqrUU9YvVHnTQ1Cv7v0Zu6oWeWqBYNzXWnuY81ieDk
+        H1I1XbnCZSfyKe1+VyUe2+n57w==
+X-Google-Smtp-Source: AGRyM1u4eaLpKZopejR3YzQCSTc3vkTgPfGkiK6QtKH02WQO260Dtam/hZsuQzVtqY6jQ39l776M9w==
+X-Received: by 2002:a05:651c:246:b0:25a:3420:735d with SMTP id x6-20020a05651c024600b0025a3420735dmr20556878ljn.515.1657023188027;
+        Tue, 05 Jul 2022 05:13:08 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id v13-20020ac2560d000000b0047f8790085csm5673105lfd.71.2022.07.05.05.13.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 05:13:06 -0700 (PDT)
+Message-ID: <e5d2d2b9-b346-0481-03be-4a94c87a816f@linaro.org>
+Date:   Tue, 5 Jul 2022 14:13:05 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dt-bindings: leds: lp50xx: fix LED children names
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Dan Murphy <dmurphy@ti.com>, linux-leds@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220624111325.96478-1-krzysztof.kozlowski@linaro.org>
+ <1656091594.405509.146345.nullmailer@robh.at.kernel.org>
+ <31f5f441-eba3-4ffb-cf68-159cd827ade7@linaro.org>
+In-Reply-To: <31f5f441-eba3-4ffb-cf68-159cd827ade7@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+On 24/06/2022 19:31, Krzysztof Kozlowski wrote:
+> On 24/06/2022 19:26, Rob Herring wrote:
+>> On Fri, 24 Jun 2022 13:13:25 +0200, Krzysztof Kozlowski wrote:
+>>> The lp50xx LEDs expects to have single-color LED children with unit
+>>> addresses.  This is required by the driver and provided by existing
+>>> DTSes.  Fix the binding to match actual usage.
+>>>
+>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> Fixes: dce1452301e7 ("dt: bindings: lp50xx: Introduce the lp50xx family of RGB drivers")
+>>> ---
+>>>  Documentation/devicetree/bindings/leds/leds-lp50xx.yaml | 8 +++++++-
+>>>  1 file changed, 7 insertions(+), 1 deletion(-)
+>>>
+>>
+>> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+>> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>>
+>> yamllint warnings/errors:
+>>
+>> dtschema/dtc warnings/errors:
+>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-lp50xx.example.dtb: led-controller@14: multi-led@2:#size-cells:0:0: 0 was expected
+>> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
+>>
+> 
+> This is expected and fixed in:
+> https://lore.kernel.org/all/20220607075247.58048-1-krzysztof.kozlowski@linaro.org/
+> 
+> I did not combine this patch with above patchset because this one is a
+> fix and might be backported to stable.
+> 
 
-commit 233e667e1ae3e348686bd9dd0172e62a09d852e1 upstream.
+Anyone willing to pick this up? This is a fix.
 
-glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
-data in the TCB, accessible at an offset from the thread pointer, rather
-than through an actual Thread-Local Storage (TLS) variable, as the
-Linux kernel selftests initially expected.
-
-The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
-actively coexist in a process, because the kernel supports only a single
-rseq registration per thread.
-
-Here is the scheme introduced to ensure selftests can work both with an
-older glibc and with glibc-2.35+:
-
-- librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
-
-- librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
-  __rseq_flags) using dlsym() in a librseq library constructor. If those
-  are found, copy their values into rseq_offset, rseq_size, and
-  rseq_flags.
-
-- Else, if those glibc symbols are not found, handle rseq registration
-  from librseq and use its own IE-model TLS to implement the rseq ABI
-  per-thread storage.
-
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/testing/selftests/rseq/Makefile |    2 
- tools/testing/selftests/rseq/rseq.c   |  161 ++++++++++++++++------------------
- tools/testing/selftests/rseq/rseq.h   |   13 ++
- 3 files changed, 88 insertions(+), 88 deletions(-)
-
---- a/tools/testing/selftests/rseq/Makefile
-+++ b/tools/testing/selftests/rseq/Makefile
-@@ -6,7 +6,7 @@ endif
- 
- CFLAGS += -O2 -Wall -g -I./ -I../../../../usr/include/ -L$(OUTPUT) -Wl,-rpath=./ \
- 	  $(CLANG_FLAGS)
--LDLIBS += -lpthread
-+LDLIBS += -lpthread -ldl
- 
- # Own dependencies because we only want to build against 1st prerequisite, but
- # still track changes to header files and depend on shared object.
---- a/tools/testing/selftests/rseq/rseq.c
-+++ b/tools/testing/selftests/rseq/rseq.c
-@@ -26,103 +26,113 @@
- #include <assert.h>
- #include <signal.h>
- #include <limits.h>
-+#include <dlfcn.h>
- 
- #include "../kselftest.h"
- #include "rseq.h"
- 
--__thread struct rseq_abi __rseq_abi = {
--	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
--};
-+static const int *libc_rseq_offset_p;
-+static const unsigned int *libc_rseq_size_p;
-+static const unsigned int *libc_rseq_flags_p;
-+
-+/* Offset from the thread pointer to the rseq area.  */
-+int rseq_offset;
-+
-+/* Size of the registered rseq area.  0 if the registration was
-+   unsuccessful.  */
-+unsigned int rseq_size = -1U;
- 
--/*
-- * Shared with other libraries. This library may take rseq ownership if it is
-- * still 0 when executing the library constructor. Set to 1 by library
-- * constructor when handling rseq. Set to 0 in destructor if handling rseq.
-- */
--int __rseq_handled;
-+/* Flags used during rseq registration.  */
-+unsigned int rseq_flags;
- 
--/* Whether this library have ownership of rseq registration. */
- static int rseq_ownership;
- 
--static __thread volatile uint32_t __rseq_refcount;
-+static
-+__thread struct rseq_abi __rseq_abi __attribute__((tls_model("initial-exec"))) = {
-+	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
-+};
- 
--static void signal_off_save(sigset_t *oldset)
-+static int sys_rseq(struct rseq_abi *rseq_abi, uint32_t rseq_len,
-+		    int flags, uint32_t sig)
- {
--	sigset_t set;
--	int ret;
--
--	sigfillset(&set);
--	ret = pthread_sigmask(SIG_BLOCK, &set, oldset);
--	if (ret)
--		abort();
-+	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
- }
- 
--static void signal_restore(sigset_t oldset)
-+int rseq_available(void)
- {
--	int ret;
-+	int rc;
- 
--	ret = pthread_sigmask(SIG_SETMASK, &oldset, NULL);
--	if (ret)
-+	rc = sys_rseq(NULL, 0, 0, 0);
-+	if (rc != -1)
- 		abort();
--}
--
--static int sys_rseq(volatile struct rseq_abi *rseq_abi, uint32_t rseq_len,
--		    int flags, uint32_t sig)
--{
--	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
-+	switch (errno) {
-+	case ENOSYS:
-+		return 0;
-+	case EINVAL:
-+		return 1;
-+	default:
-+		abort();
-+	}
- }
- 
- int rseq_register_current_thread(void)
- {
--	int rc, ret = 0;
--	sigset_t oldset;
-+	int rc;
- 
--	if (!rseq_ownership)
-+	if (!rseq_ownership) {
-+		/* Treat libc's ownership as a successful registration. */
- 		return 0;
--	signal_off_save(&oldset);
--	if (__rseq_refcount == UINT_MAX) {
--		ret = -1;
--		goto end;
- 	}
--	if (__rseq_refcount++)
--		goto end;
- 	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), 0, RSEQ_SIG);
--	if (!rc) {
--		assert(rseq_current_cpu_raw() >= 0);
--		goto end;
--	}
--	if (errno != EBUSY)
--		RSEQ_WRITE_ONCE(__rseq_abi.cpu_id, RSEQ_ABI_CPU_ID_REGISTRATION_FAILED);
--	ret = -1;
--	__rseq_refcount--;
--end:
--	signal_restore(oldset);
--	return ret;
-+	if (rc)
-+		return -1;
-+	assert(rseq_current_cpu_raw() >= 0);
-+	return 0;
- }
- 
- int rseq_unregister_current_thread(void)
- {
--	int rc, ret = 0;
--	sigset_t oldset;
-+	int rc;
- 
--	if (!rseq_ownership)
-+	if (!rseq_ownership) {
-+		/* Treat libc's ownership as a successful unregistration. */
- 		return 0;
--	signal_off_save(&oldset);
--	if (!__rseq_refcount) {
--		ret = -1;
--		goto end;
- 	}
--	if (--__rseq_refcount)
--		goto end;
--	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi),
--		      RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
--	if (!rc)
--		goto end;
--	__rseq_refcount = 1;
--	ret = -1;
--end:
--	signal_restore(oldset);
--	return ret;
-+	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
-+	if (rc)
-+		return -1;
-+	return 0;
-+}
-+
-+static __attribute__((constructor))
-+void rseq_init(void)
-+{
-+	libc_rseq_offset_p = dlsym(RTLD_NEXT, "__rseq_offset");
-+	libc_rseq_size_p = dlsym(RTLD_NEXT, "__rseq_size");
-+	libc_rseq_flags_p = dlsym(RTLD_NEXT, "__rseq_flags");
-+	if (libc_rseq_size_p && libc_rseq_offset_p && libc_rseq_flags_p) {
-+		/* rseq registration owned by glibc */
-+		rseq_offset = *libc_rseq_offset_p;
-+		rseq_size = *libc_rseq_size_p;
-+		rseq_flags = *libc_rseq_flags_p;
-+		return;
-+	}
-+	if (!rseq_available())
-+		return;
-+	rseq_ownership = 1;
-+	rseq_offset = (void *)&__rseq_abi - rseq_thread_pointer();
-+	rseq_size = sizeof(struct rseq_abi);
-+	rseq_flags = 0;
-+}
-+
-+static __attribute__((destructor))
-+void rseq_exit(void)
-+{
-+	if (!rseq_ownership)
-+		return;
-+	rseq_offset = 0;
-+	rseq_size = -1U;
-+	rseq_ownership = 0;
- }
- 
- int32_t rseq_fallback_current_cpu(void)
-@@ -136,20 +146,3 @@ int32_t rseq_fallback_current_cpu(void)
- 	}
- 	return cpu;
- }
--
--void __attribute__((constructor)) rseq_init(void)
--{
--	/* Check whether rseq is handled by another library. */
--	if (__rseq_handled)
--		return;
--	__rseq_handled = 1;
--	rseq_ownership = 1;
--}
--
--void __attribute__((destructor)) rseq_fini(void)
--{
--	if (!rseq_ownership)
--		return;
--	__rseq_handled = 0;
--	rseq_ownership = 0;
--}
---- a/tools/testing/selftests/rseq/rseq.h
-+++ b/tools/testing/selftests/rseq/rseq.h
-@@ -43,12 +43,19 @@
- #define RSEQ_INJECT_FAILED
- #endif
- 
--extern __thread struct rseq_abi __rseq_abi;
--extern int __rseq_handled;
-+#include "rseq-thread-pointer.h"
-+
-+/* Offset from the thread pointer to the rseq area.  */
-+extern int rseq_offset;
-+/* Size of the registered rseq area.  0 if the registration was
-+   unsuccessful.  */
-+extern unsigned int rseq_size;
-+/* Flags used during rseq registration.  */
-+extern unsigned int rseq_flags;
- 
- static inline struct rseq_abi *rseq_get_abi(void)
- {
--	return &__rseq_abi;
-+	return (struct rseq_abi *) ((uintptr_t) rseq_thread_pointer() + rseq_offset);
- }
- 
- #define rseq_likely(x)		__builtin_expect(!!(x), 1)
-
-
+Best regards,
+Krzysztof
