@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A1C1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232152AbiGEU4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 16:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
+        id S232206AbiGEU4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 16:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231151AbiGEU4F (ORCPT
+        with ESMTP id S231351AbiGEU4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 16:56:05 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF3514D3D;
-        Tue,  5 Jul 2022 13:56:04 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id f26so812344ejl.4;
-        Tue, 05 Jul 2022 13:56:04 -0700 (PDT)
+        Tue, 5 Jul 2022 16:56:07 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFDE15A0B;
+        Tue,  5 Jul 2022 13:56:05 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id sb34so23654933ejc.11;
+        Tue, 05 Jul 2022 13:56:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+pxGLgqzAqc2l8/ddgANBnUDCCoY1u5ohBwZ73O4BlQ=;
-        b=LioSRr8uLOdD4wJfnGoyW7I38zarpcZSYK6pbWcurbClBkdAY1FNnzqJ6UslL8WOkk
-         jO+MD20ygtas4RPU+rU6pZ4x7AT++xpFViRA4e4kA3nlqpYPJThum0AO3whwsaETXSUp
-         VEGf5DelS++fbMSQizieo155t1BsiSYH1o0eH+puiwrG87T5dYC8tereZv+7WjzPFUnz
-         MsliTk9rvzGqn/5VscyIx5uqFO8i8w+brmbvBPIiTw1n3s5EoV39lrrCZdqKsmoyJN60
-         +TDlin0PvEpOfpfrlZ0bLdWTaEmoww9U5T/+SGIBu1ilAJ72ip0jU4IEs0J2jAFIXGfl
-         qqsA==
+        bh=kUlxRQ1of3eu4XW5c6JjZr01Kt72atQDrgao/HtGT8o=;
+        b=miyLqZVDr95MvsZByIU18n/yp0Ra7HJ0BNVK4mKXeV8tRMGr3ngt0Y9Hnl+pOI+2D7
+         cWXICRa2OW2HyJYaHu6HORU/kZ3WqTdG7miqXV21G2vsxwnX/R3nyi1XaPIq2bKA8QXy
+         Bg3zeqnHhbw/ItfO6WAKVAZhFXtkF0kZMQD8CRPZH95jrc/m0eRzIXKZZ/vDePGkXxLK
+         roWoSfLaGK0KMGDHH03HaUiWlReh+SRdtbDTr0iEITBUEnPcZMi4JDY7TP6MNJaYDfrb
+         vyTQ1QxIEkMorAiI9PcV2VZamL8+/oaljcHWnN3ebCazzKpEqeUWFADs6ed7LbELLTZq
+         Suuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+pxGLgqzAqc2l8/ddgANBnUDCCoY1u5ohBwZ73O4BlQ=;
-        b=Oa12XZteV4hfJMgSM1XQXuhAbFGTNoqVBo1eM5etg1hogjAFFDpXUWoXkhb5waZO68
-         WSP2Ftqjk/SqbbfpWT+Uh3g2E2mgLoMV0PsUtNzCdU8jJhh3hCk63mK5/tBOMi35qBwS
-         Pya35EPwMPsJmNuGF2e+zeGOdXyRRp9FTKypPxN+oQz+31J2MVfl3X9Og0PNbyose3sy
-         OeYplRePCowGixXC7JBgBhmZyNYYtu32AiOvc2svTgQ71KkmPIzIi9Mh5DZfwz/ZAMfB
-         bMVUezJ5fYYeJY59/C8H3kVQKiaNZMQCLar0tNPzKiu9VCIUhZ912IUDpsBH0n42zM71
-         MLag==
-X-Gm-Message-State: AJIora84RcOb724xW25imaoKbln0+E9D3yqwFx9PsvOKme1hCRQbqW8u
-        FCJs2M/LSCpRzsmky9TnPO0=
-X-Google-Smtp-Source: AGRyM1sbftGN1BJPGRPcnZkK9dHdSsBdkzB+AOczKdOp05PVuXAhxpHsPDU80I4FNtO80u166bBjJw==
-X-Received: by 2002:a17:906:478e:b0:722:f84d:159f with SMTP id cw14-20020a170906478e00b00722f84d159fmr36093911ejc.182.1657054563348;
-        Tue, 05 Jul 2022 13:56:03 -0700 (PDT)
+        bh=kUlxRQ1of3eu4XW5c6JjZr01Kt72atQDrgao/HtGT8o=;
+        b=JotKsZ+z+OAvR+uzXg+HWeU8Y4b9e8lpo2v8K1AilGkZtqZNnCsWkYcqfU6+3KCKcE
+         qvqURq/Euk/RFkWo0NYEjQA8NRPOHRoKcZK8P+cuwcWrM0fMF1PCksJ1WfhyBgAljXXe
+         WN3YtOyRQWzQvIfbVjsGeoonam73V3Qex6gZd2/MR12SU/MY7zIR5FX9+9pd/SAdT2Fa
+         A2Sn+pA0s5KPDEEkNRutKVD1s3BaHTCXepbHpK/nmozjh97ZN3gEnfkAc1P/9JA12XAy
+         PBt8uY5Bx6oE3iDYr7HUOnxEYBdmce+M7z8Q5UzYWN02iATY39zwlSJDvLRilvsxEkBS
+         aJyg==
+X-Gm-Message-State: AJIora/H+E3+6Lc6cXa3Q4h8U8+jfsCl9fw9soPJw6jZlZpRPWUqe5x6
+        pY41tWYv8TFXmhfgP6iyAbg=
+X-Google-Smtp-Source: AGRyM1tkrgcFjXCiCX34Lg+Lnqb+x2ssJiae/UJXSnmXTeK4u1T3oF/r+ctDrKsKTu5KdSyy0vKxdw==
+X-Received: by 2002:a17:906:5189:b0:722:dc81:222a with SMTP id y9-20020a170906518900b00722dc81222amr35711482ejk.502.1657054565390;
+        Tue, 05 Jul 2022 13:56:05 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id dm3-20020a05640222c300b0043a70c51470sm3836956edb.55.2022.07.05.13.56.02
+        by smtp.googlemail.com with ESMTPSA id dm3-20020a05640222c300b0043a70c51470sm3836956edb.55.2022.07.05.13.56.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 13:56:03 -0700 (PDT)
+        Tue, 05 Jul 2022 13:56:05 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Andy Gross <agross@kernel.org>,
@@ -59,9 +59,9 @@ To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [PATCH 3/5] clk: qcom: clk-rpm: convert to parent_data API
-Date:   Tue,  5 Jul 2022 22:28:35 +0200
-Message-Id: <20220705202837.667-4-ansuelsmth@gmail.com>
+Subject: [PATCH 5/5] clk: qcom: gcc-ipq806x: remove cc_register_board for pxo and cxo
+Date:   Tue,  5 Jul 2022 22:28:37 +0200
+Message-Id: <20220705202837.667-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220705202837.667-1-ansuelsmth@gmail.com>
 References: <20220705202837.667-1-ansuelsmth@gmail.com>
@@ -71,78 +71,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert clk-rpm driver to parent_data API and change parent names to cxo
-and pxo instead of the board variant as pxo_board is an ancient name and
-pxo should be used instead.
+Now that these clock are defined as fixed clk in dts, we can drop the
+register_board_clk for cxo_board and pxo_board in gcc_ipq806x_probe.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/clk-rpm.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/clk/qcom/gcc-ipq806x.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/clk/qcom/clk-rpm.c b/drivers/clk/qcom/clk-rpm.c
-index a18811c38018..d45a8b0fc97c 100644
---- a/drivers/clk/qcom/clk-rpm.c
-+++ b/drivers/clk/qcom/clk-rpm.c
-@@ -23,6 +23,14 @@
- #define QCOM_RPM_SCALING_ENABLE_ID			0x2
- #define QCOM_RPM_XO_MODE_ON				0x2
+diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+index 718de17a1e60..883629de2751 100644
+--- a/drivers/clk/qcom/gcc-ipq806x.c
++++ b/drivers/clk/qcom/gcc-ipq806x.c
+@@ -3384,14 +3384,6 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
+ 	struct regmap *regmap;
+ 	int ret;
  
-+static const struct clk_parent_data gcc_pxo[] = {
-+	{ .fw_name = "pxo", .name = "pxo" },
-+};
-+
-+static const struct clk_parent_data gcc_cxo[] = {
-+	{ .fw_name = "cxo", .name = "cxo" },
-+};
-+
- #define DEFINE_CLK_RPM(_platform, _name, _active, r_id)			      \
- 	static struct clk_rpm _platform##_##_active;			      \
- 	static struct clk_rpm _platform##_##_name = {			      \
-@@ -32,8 +40,8 @@
- 		.hw.init = &(struct clk_init_data){			      \
- 			.ops = &clk_rpm_ops,				      \
- 			.name = #_name,					      \
--			.parent_names = (const char *[]){ "pxo_board" },      \
--			.num_parents = 1,				      \
-+			.parent_data = gcc_pxo,				      \
-+			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
- 		},							      \
- 	};								      \
- 	static struct clk_rpm _platform##_##_active = {			      \
-@@ -44,8 +52,8 @@
- 		.hw.init = &(struct clk_init_data){			      \
- 			.ops = &clk_rpm_ops,				      \
- 			.name = #_active,				      \
--			.parent_names = (const char *[]){ "pxo_board" },      \
--			.num_parents = 1,				      \
-+			.parent_data = gcc_pxo,				      \
-+			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
- 		},							      \
- 	}
- 
-@@ -56,8 +64,8 @@
- 		.hw.init = &(struct clk_init_data){			      \
- 			.ops = &clk_rpm_xo_ops,			      \
- 			.name = #_name,					      \
--			.parent_names = (const char *[]){ "cxo_board" },      \
--			.num_parents = 1,				      \
-+			.parent_data = gcc_cxo,				      \
-+			.num_parents = ARRAY_SIZE(gcc_cxo),		      \
- 		},							      \
- 	}
- 
-@@ -68,8 +76,8 @@
- 		.hw.init = &(struct clk_init_data){			      \
- 			.ops = &clk_rpm_fixed_ops,			      \
- 			.name = #_name,					      \
--			.parent_names = (const char *[]){ "pxo" },	      \
--			.num_parents = 1,				      \
-+			.parent_data = gcc_pxo,				      \
-+			.num_parents = ARRAY_SIZE(gcc_pxo),		      \
- 		},							      \
- 	}
- 
+-	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
+-	if (ret)
+-		return ret;
+-
+-	ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
+-	if (ret)
+-		return ret;
+-
+ 	if (of_machine_is_compatible("qcom,ipq8065")) {
+ 		ubi32_core1_src_clk.freq_tbl = clk_tbl_nss_ipq8065;
+ 		ubi32_core2_src_clk.freq_tbl = clk_tbl_nss_ipq8065;
 -- 
 2.36.1
 
