@@ -2,137 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9D8CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE57FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230013AbiGEQbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 12:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        id S231347AbiGEQcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 12:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbiGEQbm (ORCPT
+        with ESMTP id S229739AbiGEQcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 12:31:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7303A183A6;
-        Tue,  5 Jul 2022 09:31:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 51C1ACE1C35;
-        Tue,  5 Jul 2022 16:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B55C341CA;
-        Tue,  5 Jul 2022 16:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657038697;
-        bh=9iaIjTB6QH828vGInWWa01bZE4sAESoku2uPYuAZIAA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UwbGlo4Eud8EqRMTlivzhrJaUQ8FitBR6ZUTjqjyEbAOpIk+38VORhI8ajJJmJSmY
-         LrH1dHe8sQd9xYgSnsxIa5AysohtNasCSWe+LS6VfZhlN0vbKYzR/98R4OAzANb7b3
-         3ItThntjEeum9/lzg0ZMbvWjF8WGAY0kQDs6dQGA=
-Date:   Tue, 5 Jul 2022 18:31:35 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Geliang Tang <geliangtang@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        MPTCP Upstream <mptcp@lists.linux.dev>
-Subject: Re: [PATCH 5.10 51/84] selftests: mptcp: add ADD_ADDR timeout test
- case
-Message-ID: <YsRnZ/wmcqGiYzOt@kroah.com>
-References: <20220705115615.323395630@linuxfoundation.org>
- <20220705115616.814163273@linuxfoundation.org>
- <a2260559-86af-74ff-ca95-d494688d5ea7@tessares.net>
+        Tue, 5 Jul 2022 12:32:23 -0400
+Received: from msg-4.mailo.com (ip-15.mailobj.net [213.182.54.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145D118397;
+        Tue,  5 Jul 2022 09:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
+        t=1657038709; bh=ouJa5y4vdwiRty43M9bbEgkFe6kuAVsNovH1gQErzZk=;
+        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
+         MIME-Version:Content-Transfer-Encoding;
+        b=UdjIy0Pwib4EvTRgorrK6p53bQYuLVB0rb7cHY+SpZULmCYwfMiPAN5Is6IECXY8k
+         JLG+i6xShCpaxJzxH0S1URv+toOMczjBnTjTJG7xJMhtr3bRgjZZmhGnNGsJE8pgIm
+         8+UiEg3i/CFgiimCLD7G/4XwtYIDFzMYKGhVO1Gg=
+Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
+        via [213.182.55.207]
+        Tue,  5 Jul 2022 18:31:49 +0200 (CEST)
+X-EA-Auth: Uq2xKidGUDd1kCK49L6UF7m9/ek3qHWtupxl6g2f2w+dJttmTWttG3fgbmBpdl62O4Ozpqa8jaJT06cbEbwxtF7DDtXFC7XCBiVV+vhJHyA=
+From:   Vincent Knecht <vincent.knecht@mailoo.org>
+To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vincent Knecht <vincent.knecht@mailoo.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        hns@goldelico.com
+Subject: [PATCH v3 0/6] leds: Fix/Add is31fl319{0,1,3} support
+Date:   Tue,  5 Jul 2022 18:31:28 +0200
+Message-Id: <20220705163136.2278662-1-vincent.knecht@mailoo.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a2260559-86af-74ff-ca95-d494688d5ea7@tessares.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 05:59:22PM +0200, Matthieu Baerts wrote:
-> Hi Greg, Sasha,
-> 
-> (+ MPTCP upstream ML)
-> 
-> First, thank you again for maintaining the stable branches!
-> 
-> On 05/07/2022 13:58, Greg Kroah-Hartman wrote:
-> > From: Geliang Tang <geliangtang@gmail.com>
-> > 
-> > [ Upstream commit 8d014eaa9254a9b8e0841df40dd36782b451579a ]
-> > 
-> > This patch added the test case for retransmitting ADD_ADDR when timeout
-> > occurs. It set NS1's add_addr_timeout to 1 second, and drop NS2's ADD_ADDR
-> > echo packets.
-> TL;DR: Could it be possible to drop all selftests MPTCP patches from
-> v5.10 queue please?
-> 
-> 
-> I was initially reacting on this patch because it looks like it depends on:
-> 
->   93f323b9cccc ("mptcp: add a new sysctl add_addr_timeout")
-> 
-> and indirectly to:
-> 
->   9ce7deff92e8 ("docs: networking: mptcp: Add MPTCP sysctl entries")
-> 
-> to have "net.mptcp.add_addr_timeout" sysctl knob needed for this new
-> selftest.
-> 
-> But then I tried to understand why this current patch ("selftests:
-> mptcp: add ADD_ADDR timeout test case") has been selected for 5.10. I
-> guess it was to ease the backport of another one, right?
-> Looking at the 'series' file in 5.10 queue, it seems the new
-> "selftests-mptcp-more-stable-diag-tests" patch requires 5 other patches:
-> 
-> -> selftests-mptcp-more-stable-diag-tests.patch
->  -> selftests-mptcp-fix-diag-instability.patch
->   -> selftests-mptcp-launch-mptcp_connect-with-timeout.patch
->    -> selftests-mptcp-add-add_addr-ipv6-test-cases.patch
->     -> selftests-mptcp-add-link-failure-test-case.patch
->      -> selftests-mptcp-add-add_addr-timeout-test-case.patch
-> 
-> 
-> When looking at these patches in more detail, it looks like "selftests:
-> mptcp: add ADD_ADDR IPv6 test cases" depends on a new feature only
-> available from v5.11: ADD_ADDR for IPv6.
-> 
-> 
-> Could it be possible to drop all these patches from v5.10 then please?
+v3:
+- pick up Rob's R-b for patches 1 and 2
+- reinstate bindings docs license and maintainer
+  changes with Nikolaus agreement
+- took Andy's comments on patch 4 into account
 
-Sure, but leave them in for 5.15.y and 5.18.y?
+v2:
+- keep original bindings license and maintainer/owner (Rob)
+- squash bindings patches 2 & 4 (Krzysztof)
 
-> The two recent fixes for the "diag" selftest mainly helps on slow / busy
-> CI. I think it is not worth backporting them to v5.10.
-> 
-> 
-> (Note that if we want "selftests: mptcp: fix diag instability" patch, we
-> also need 2e580a63b5c2 ("selftests: mptcp: add cfg_do_w for cfg_remove")
-> and the top part of 8da6229b9524 ("selftests: mptcp: timeout testcases
-> for multi addresses"): the list starts to be long.)
-> 
-> 
-> One last thing: it looks like when Sasha adds patches to a stable queue,
-> a notification is sent to less people than when Greg adds patches. For
-> example here, I have not been notified for this patch when added to the
-> queue while I was one of the reviewers. I already got notifications from
-> Greg when I was a reviewer on other patches.
-> Is it normal? Do you only cc people who signed off on the patch?
+v1-resend:
+- no change, resending after configuring git to accomodate
+  for smtp provider limit of 5 emails per batch
+- just change cover-letter to mention si-en chip for idol347
 
-I cc: everyone on the commit, Sasha should also do that but sometimes
-his script acts up.
 
-> It looks like you don't cc maintainers from the MAINTAINERS file but
-> that's probably on purpose. I didn't get cc for all MPTCP patches of the
-> series here but I guess I can always subscribe to 'stable' ML for that.
+The is31fl3190, is31fl3191 and is31fl3193 chips (1 or 3 PWM channels)
+cannot be handled the same as is31fl3196 and is31fl3199,
+if only because the register map is different.
+Also:
+- the software shutdown bit is reversed
+- and additional field needs to be set to enable all channels
+- the led-max-microamp current values and setting are not the same
 
-No, we don't use the MAINTAINERS file, that would just be too noisy as
-ideally who ever the MAINTAINER was, they already saw this as the commit
-is already in Linus's tree.
+Datasheets:
+https://lumissil.com/assets/pdf/core/IS31FL3190_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3191_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3193_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3196_DS.pdf
+https://lumissil.com/assets/pdf/core/IS31FL3199_DS.pdf
 
-thanks,
+This series:
 
-greg k-h
+- converts dt-bindings to dtschema, adding all si-en compatibles
+  for convenience and consistency, and adding constraints on
+  supported values for eg. reg address and led-max-microamp
+
+- changes vars, structs and defines to not use 319X suffix
+  but 3190 for 319{0,1,3} and 3196 for 319{6,9}
+
+- adds fields in chipdef struct for chip-specific values
+
+- only in the last patch, adds is31fl319{0,1,3} specific values
+  so those chips can work.
+
+Tested on msm8916-alcatel-idol347, which probably has an
+si-en,sn3190 or si-en,sn3191 (only one white led indicator).
+
+Vincent Knecht (6):
+  dt-bindings: leds: Convert is31fl319x to dtschema
+  dt-bindings: leds: is31fl319x: Document variants specificities
+  leds: is31fl319x: Add missing si-en compatibles
+  leds: is31fl319x: Use non-wildcard names for vars, structs and defines
+  leds: is31fl319x: Move chipset-specific values in chipdef struct
+  leds: is31fl319x: Add support for is31fl319{0,1,3} chips
+
+ .../bindings/leds/issi,is31fl319x.yaml        | 193 +++++++++
+ .../bindings/leds/leds-is31fl319x.txt         |  61 ---
+ drivers/leds/leds-is31fl319x.c                | 406 +++++++++++++-----
+ 3 files changed, 488 insertions(+), 172 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
+ delete mode 100644 Documentation/devicetree/bindings/leds/leds-is31fl319x.txt
+
+-- 
+2.35.3
+
+
+
