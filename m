@@ -2,377 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7982CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E66C6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230030AbiGEPLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36246 "EHLO
+        id S229552AbiGEPOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbiGEPLF (ORCPT
+        with ESMTP id S229489AbiGEPOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:11:05 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36ED0CEF
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:10:21 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id d2so22228367ejy.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:10:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dkpN1b4wP9gTZUtEgRoxQX0uUzfu9gESHo4XVBhNNPA=;
-        b=jtX3byuXyfc2mF/rBU1M4/i77Y3tRdz2XH46byqIsfIKKhOLkoBSf+LTlU7hrA6X2j
-         8iKu9cxdOL/P9b6KmRtmTaKvprIJ42mVGAdpNqhVtfAnpBOjqNtHWcfnTd9JOfMluq8V
-         3t1exD8XY3OfFVfq50fAeo620chL6sdXcvktq3qjgBgPHwRkEFXmlhFtILjfrXZ7fGPo
-         9FbxvE388pdW6PVWA7jDHcswPCzy/j0JPDhP/6OeXV7RewR9E/G+8J5C9H0gSaM3GiEl
-         K80kZ8LmV8wNAJbNoZM+6zll2pSiw1hlxn0S+ZFqHHULCmt4KZXnUHUeQRnKzYDsKYYQ
-         iG9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dkpN1b4wP9gTZUtEgRoxQX0uUzfu9gESHo4XVBhNNPA=;
-        b=4M6o90b91PcrZWo3AJOTnaCyp7rIgeMBMH9z3Wykc2/aLnVEsYr8hXbErEBG7IdLjT
-         AT9T6PXGfZgw3cTwOibBotoexO8mOX9bw5Ow31kQdBMA3b4a9a5Dd+8dAOH+aaPtJvbH
-         9buUfZuj7TRJHZCWieNaJn/IoSVX5l3JNcJHCdtasXvoNR8dqoboluin5rTkCIGaS5qu
-         8ZEkY5rq0De9ohf8ePbbEQadGj0+q2rcx57rS1ZfRFkE07v8L6r0GCtZ+BAE8BgJo7n3
-         n73IesdPOD1kloU+Eli+F68GVWBeV+g+h7o85pUDYE7sPs/sQOldg3PcsDYNC3qn/lMr
-         bk3g==
-X-Gm-Message-State: AJIora9XzVoqIDbt3/gxT2CvEYVlSLy3rhD590wUy9cBfFuDYDVqQ4S+
-        rXQk336Btdb3aju45kfEfefNrBrjFt9Ccfw0GBA=
-X-Google-Smtp-Source: AGRyM1t2xhRsfyqVg5935Rq05PnjacmxfFyEeFcbXVcIX7X+PnwWDRi5pnasbbuvQSDhCYj3EMsFY8eF4tcYWyJs1Sc=
-X-Received: by 2002:a17:906:5d0b:b0:726:a043:fcb4 with SMTP id
- g11-20020a1709065d0b00b00726a043fcb4mr35047447ejt.508.1657033819797; Tue, 05
- Jul 2022 08:10:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704134532.103876-1-andrealmeid@igalia.com> <db6ab6f5-e3b1-f068-37ac-807e1ff074a8@amd.com>
-In-Reply-To: <db6ab6f5-e3b1-f068-37ac-807e1ff074a8@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 5 Jul 2022 11:10:07 -0400
-Message-ID: <CADnq5_O3i2ciutAFS-uzX8bedOXxeOJUNWGRfsuOqpmL-tW64w@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdpgu/debugfs: Simplify some exit paths
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Pan Xinhui <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jack Xiao <Jack.Xiao@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>, kernel-dev@igalia.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 5 Jul 2022 11:14:39 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2061.outbound.protection.outlook.com [40.107.21.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE483165A6;
+        Tue,  5 Jul 2022 08:14:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Cttt+bIb6yUEhcZDlXryeFAwjx09MsWE17++kL2Uc38QqiAw8yOsj83cTyCf1nwjGN+k0LTl0DVg1MFfEDvGgb6bquhB2S45FfV7eCvZ0TGzaVv6jWKNS6yCbQoJdGN+V6xkB359+8arwbaRBWeHLn6YKGTwQPlYqXPHjOiwZU9SA9hz/9CRygSBMyGfUTXPHWNgx1TSYnlHIjXo/Lem4owNpDZcqq7aNkS/3Rqw1q0cj+jzB7e/AENwVH5XmmeVK/HupskD2LQa5RHz60HewglbuNibxtnS0IHKy1LmctfgGK9TRivRauKdx8KBy1td4Zwssn7gRGPVGVAsnyjQ+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uxVqL5a3UVmd3eD16K4e+TgFSTJiRU6clFYCP1of8NI=;
+ b=HdqUVyvtbzKbBywfifbpdHmA+GDwhFb9B1ZzOiDVfR51oplTJ0FhIDrgxbtfdtiIfUezkCV7nv1ujG28ZexrHMG6qy81oqbiKvrm9TBayEKbWZRwuPDbKgIQkdHM59d3YBgu2y7He1G1JTTR7TYQMh5HNIawkMoHtfLN3/Uq4Db5nfg3lrxzYw+SStmGbZxV9+zJeHQIICLt3ylvJhPBY8VqGl8cWlcW0pYkBehZn//QGyHBXAGoZAYnL8GKsiXb2IkUOZvIfsQchwMTph0lsbPow12EE42JR7ZsNkDg17L47Rf0wtfakbdf9eevnu25Hojid1NoR+drY6wdneW2+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uxVqL5a3UVmd3eD16K4e+TgFSTJiRU6clFYCP1of8NI=;
+ b=Yc3wJAPHHwlbFHAzIMm8zGfESR/SwiYm3HA21p7d8tzyshelk7D5La28c5XiqguwpCf/53G373H2qgOCfKeO4ZOWL5sGFnZGNhiiZg/4peV7bB6n2VOk2w2dYXDDecGRAj0CLI9fkwF3TCVDGvp4LMUM2iSfUaOyrzY6NIOpNto=
+Received: from PAXPR04MB9186.eurprd04.prod.outlook.com (2603:10a6:102:232::18)
+ by VI1PR04MB4205.eurprd04.prod.outlook.com (2603:10a6:803:42::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Tue, 5 Jul
+ 2022 15:14:34 +0000
+Received: from PAXPR04MB9186.eurprd04.prod.outlook.com
+ ([fe80::e945:8bde:54e5:d83e]) by PAXPR04MB9186.eurprd04.prod.outlook.com
+ ([fe80::e945:8bde:54e5:d83e%6]) with mapi id 15.20.5395.020; Tue, 5 Jul 2022
+ 15:14:34 +0000
+From:   Frank Li <frank.li@nxp.com>
+To:     Tom Rix <trix@redhat.com>, "kishon@ti.com" <kishon@ti.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "jdmason@kudzu.us" <jdmason@kudzu.us>
+CC:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several
+ globals to statics
+Thread-Topic: [EXT] [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several
+ globals to statics
+Thread-Index: AQHYj6mjuRnEAzekOE6wUpPspghcC61v5Fnw
+Date:   Tue, 5 Jul 2022 15:14:33 +0000
+Message-ID: <PAXPR04MB918658D6AC3A0A341E4260FC88819@PAXPR04MB9186.eurprd04.prod.outlook.com>
+References: <20220704132559.2859918-1-trix@redhat.com>
+In-Reply-To: <20220704132559.2859918-1-trix@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6e0e53b6-a66b-4ec4-c0ec-08da5e99114e
+x-ms-traffictypediagnostic: VI1PR04MB4205:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Tz5WgyhwkhD+c8FnNsRrjfbv/NuJp6WIZOdHEGvgL1GE8uiCvzvuY7Xgpl/IkeQWF3jJJl3QI2x4NQ9DtvgJwR2DVxjwVVZ8m7aWeblMSgix7d8X8kGYzSueg7Mmd+di1Bt2K6fmNshbnjmnghCLXgloOOBcBiMmrwy7rXfVZkpsOhq8oj6BHu4UXscGEkgboecSbgm938R1jVO1F70E0HfLzEflMo6LemwaJ5Vu2pCD+svK+173ISVYVeMgB+LQKpa1KFBp/AKdDZ51R+ryezKqlRzVxh0j2pA7lt6xSBi8k49exvhZPUzivtLx5/8OXpwjicMA8E4UpVHC2r2pX7QdS6ODDy0kCMt6Fz+zT/VReLPgssKGKBJDgsRaE3nxhNUWWJEC+7T2pOphtoyrnkDqfUO/m3x9vOzwfkJb+iTOD2vaOFXjMwNBB8BkDs6yXa1VfZ1Y3USXHJnUFEjf3PZwkXA4tiDgREzk5LYxeqWEzwPGJndof/dO3yde2j3RBtrjf/jk9zuiN+VsZnQZC27A5sJsi6ZDW9KOgzL3XB3mHspqVjKa4am11jQYGZEDELhXo5MMSpAckDF/K7xSuo4s75NAJumAJ9MrLsUA63MyztkWOoh+nQig0rf4AxNFPhtwNHX+jKbKppMs1D2kapjSAfTVF40ZRSE75bMmPm4++SU3Lg3q8Prvt0ayRDdSssnHk4LC7OJm1j0KydplJcCqJF1/o0FkOxH8G7r7rtkImKX6tSrIYrluGRdhK9R/w7r+iti9SECU7soonld5+CWolf8oUoarTst+eOxoDV9E1fxZBxjTgAeghSSOiw5R
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9186.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(396003)(39860400002)(136003)(346002)(2906002)(8936002)(83380400001)(52536014)(186003)(76116006)(66946007)(44832011)(64756008)(5660300002)(66556008)(66446008)(8676002)(66476007)(4326008)(33656002)(478600001)(55236004)(55016003)(71200400001)(26005)(316002)(7696005)(9686003)(6506007)(53546011)(38100700002)(38070700005)(86362001)(41300700001)(110136005)(54906003)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9Y07bZhrU7vY68lWy7zGfEyCchwH8JDsIjc/F1i3C/0okoTP5x3kbLL79r7q?=
+ =?us-ascii?Q?/rqg7tVTt8oV2V1KNvwZdUll61ngTeaTdE/eB96ik5nR8O8LBT4/bwKqtd7y?=
+ =?us-ascii?Q?+1j1eNLeMzsjdkKfHf4R7EdsVmHemqdfdV9z0vWFTIqgO+ho3t+Lu2OEE5Iw?=
+ =?us-ascii?Q?BEWc7wHWbIDtCmTOlctD0Njzd9aK//5X1HOt1Q5/yCMF8/70Ky3e+tGVWTnp?=
+ =?us-ascii?Q?2hnjGkeMEwKKusEiAVdgWPE9OzwFBlRfCLrPi5P9Md3GmsBsGrTbiA1clXPm?=
+ =?us-ascii?Q?rtgRloZhlRh9nnioh6Kg+RsKXEALkee1zE7Qk4kzbHqmq06dqIn6MoLjKffO?=
+ =?us-ascii?Q?6JsXH1sW966VRoMUQ3BdaiL5Q/z8DsZspDlJ/pcH4q879FiYqnKAYAbIjIHg?=
+ =?us-ascii?Q?pA2jg5TO3xlqvkAxCaHXD1ilJwpiHkCaBN5ZcdfRWnFfm3rfoqp/JqW9kv21?=
+ =?us-ascii?Q?CjND9GyRMSrUeA1G69Zx09/WJA46RGt7KbrJ+JI6PhGnOHSJ59ED0Jlt9b93?=
+ =?us-ascii?Q?A7yaTXPUfyN7HJiyMXjo+lRK9ajawGhZbOrvTfVU3VAn/SvEpRK8DbR071Us?=
+ =?us-ascii?Q?D5NZjeQhKSvO5BlboaLo1Djh+lVcc1hdzNf/4uioiaq1pg60ge081pHhK+Yy?=
+ =?us-ascii?Q?p62W9TQbtowdEJ41nkzfFV/IbVcu8Iy5ROJDwyifmOQngc7nJDyfZXc40LXx?=
+ =?us-ascii?Q?bblUNk5f4YLq8fLsXbrmm538j2qbHuExRjhhVa2K1srPrAH5ykkc2pGns6v7?=
+ =?us-ascii?Q?bC88+FBSBJENvzdsefjlCbBqSKMdFgEQcAw8x0seCnAGXfrmsqNZIeiV5UgS?=
+ =?us-ascii?Q?WDzXeuaJPejCWuvDe5ZomY02dUeskZxQI9U8AB+kpa8zfRT5Pxxn8LZ8EgmO?=
+ =?us-ascii?Q?VVFE9AggosrfKMYfy2mZB6AX4ZqW6Nh5YUuTpJeTr6vpi+OKGVDixzbHvPLW?=
+ =?us-ascii?Q?gEb95gtT0yMWSTzhOTMPYcEaQGxO8JX+SRwUCz9tVsQ5EO5nQsXuCH0tS1lw?=
+ =?us-ascii?Q?xuIlgTEhCeUb7L/daxgW+1/lrfQpcBqLvDBcOMZW6r/IDO2aE7C5L1YfX0C2?=
+ =?us-ascii?Q?n9yQfNr9cUKlcchIH2JT472quuw9mPQYtUdXGXAD+gu8i0kcgG2KF7OVSVKC?=
+ =?us-ascii?Q?HHf02T3Vk0jLsxOjw9TIzRhR/HWIIPePh7tKIbhpdptkA1fIKQPjXMV8Q5jx?=
+ =?us-ascii?Q?D1fHMhpduPlzJkD/+aEpHOVvgNG67xzAvbTY+yzISAv0r7wOrvU9iqZEBdrL?=
+ =?us-ascii?Q?vkaoHj5N+a7YWMg95RMdBEhoxy6rhkSr4wtwVCXaciJ5hGqTFuIMZiDS78Qs?=
+ =?us-ascii?Q?0jXHwfqBi14cyHY4+792Qj4zAZ1Lc2Ugtoo1O3EQnJzbleRxJjdWZ1yNDeZN?=
+ =?us-ascii?Q?FdNHAySHSvbq3Ts9lNjgbPyira0HCsiZ0N8egkmpNaaDj67RLqcwCSUGtyVX?=
+ =?us-ascii?Q?poIBrCw9d8QyLeI3ZHAYC7y8n0Ulg7j/K4ZIyVbW+bno0s7+Plojpdh7yv2l?=
+ =?us-ascii?Q?9/h/BqXHmqbcRG+Uz6MYQyKLVVOS7kS43v2n/VOQk2oOfp2AAowGLMYb2DWk?=
+ =?us-ascii?Q?mlK/kh5X2YAgb5qNfgo=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9186.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e0e53b6-a66b-4ec4-c0ec-08da5e99114e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2022 15:14:33.9102
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7GZHyztKxvj48Jkc9cCio0nZeuSkbyq/ou66Vh9dOEkEtd5DN+JGfgxiEi+qTQBh0Ql9YyyRPOjmgf6Xp+ZAlQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4205
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
 
-On Mon, Jul 4, 2022 at 12:23 PM Christian K=C3=B6nig
-<christian.koenig@amd.com> wrote:
->
-> Am 04.07.22 um 15:45 schrieb Andr=C3=A9 Almeida:
-> > To avoid code repetition, unify the function exit path when possible. N=
-o
-> > functional changes.
-> >
-> > Signed-off-by: Andr=C3=A9 Almeida <andrealmeid@igalia.com>
->
-> Acked-by: Christian K=C3=B6nig <christian.koenig@amd.com>
->
-> > ---
-> >   drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c | 107 ++++++++-----------=
--
-> >   1 file changed, 42 insertions(+), 65 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c b/drivers/gpu/=
-drm/amd/amdgpu/amdgpu_debugfs.c
-> > index f3ac7912c29c..f3b3c688e4e7 100644
-> > --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
-> > +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
-> > @@ -383,12 +383,8 @@ static ssize_t amdgpu_debugfs_regs_pcie_read(struc=
-t file *f, char __user *buf,
-> >
-> >               value =3D RREG32_PCIE(*pos);
-> >               r =3D put_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     amdgpu_virt_disable_access_debugfs(adev);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               result +=3D 4;
-> >               buf +=3D 4;
-> > @@ -396,11 +392,12 @@ static ssize_t amdgpu_debugfs_regs_pcie_read(stru=
-ct file *f, char __user *buf,
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> > -
-> >       amdgpu_virt_disable_access_debugfs(adev);
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   /**
-> > @@ -441,12 +438,8 @@ static ssize_t amdgpu_debugfs_regs_pcie_write(stru=
-ct file *f, const char __user
-> >               uint32_t value;
-> >
-> >               r =3D get_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     amdgpu_virt_disable_access_debugfs(adev);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               WREG32_PCIE(*pos, value);
-> >
-> > @@ -456,11 +449,12 @@ static ssize_t amdgpu_debugfs_regs_pcie_write(str=
-uct file *f, const char __user
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> > -
-> >       amdgpu_virt_disable_access_debugfs(adev);
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   /**
-> > @@ -502,12 +496,8 @@ static ssize_t amdgpu_debugfs_regs_didt_read(struc=
-t file *f, char __user *buf,
-> >
-> >               value =3D RREG32_DIDT(*pos >> 2);
-> >               r =3D put_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     amdgpu_virt_disable_access_debugfs(adev);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               result +=3D 4;
-> >               buf +=3D 4;
-> > @@ -515,11 +505,12 @@ static ssize_t amdgpu_debugfs_regs_didt_read(stru=
-ct file *f, char __user *buf,
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> > -
-> >       amdgpu_virt_disable_access_debugfs(adev);
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   /**
-> > @@ -560,12 +551,8 @@ static ssize_t amdgpu_debugfs_regs_didt_write(stru=
-ct file *f, const char __user
-> >               uint32_t value;
-> >
-> >               r =3D get_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     amdgpu_virt_disable_access_debugfs(adev);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               WREG32_DIDT(*pos >> 2, value);
-> >
-> > @@ -575,11 +562,12 @@ static ssize_t amdgpu_debugfs_regs_didt_write(str=
-uct file *f, const char __user
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> > -
-> >       amdgpu_virt_disable_access_debugfs(adev);
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   /**
-> > @@ -621,12 +609,8 @@ static ssize_t amdgpu_debugfs_regs_smc_read(struct=
- file *f, char __user *buf,
-> >
-> >               value =3D RREG32_SMC(*pos);
-> >               r =3D put_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     amdgpu_virt_disable_access_debugfs(adev);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               result +=3D 4;
-> >               buf +=3D 4;
-> > @@ -634,11 +618,12 @@ static ssize_t amdgpu_debugfs_regs_smc_read(struc=
-t file *f, char __user *buf,
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> > -
-> >       amdgpu_virt_disable_access_debugfs(adev);
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   /**
-> > @@ -679,12 +664,8 @@ static ssize_t amdgpu_debugfs_regs_smc_write(struc=
-t file *f, const char __user *
-> >               uint32_t value;
-> >
-> >               r =3D get_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     amdgpu_virt_disable_access_debugfs(adev);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               WREG32_SMC(*pos, value);
-> >
-> > @@ -694,11 +675,12 @@ static ssize_t amdgpu_debugfs_regs_smc_write(stru=
-ct file *f, const char __user *
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> > -
-> >       amdgpu_virt_disable_access_debugfs(adev);
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   /**
-> > @@ -1090,11 +1072,8 @@ static ssize_t amdgpu_debugfs_gfxoff_write(struc=
-t file *f, const char __user *bu
-> >               uint32_t value;
-> >
-> >               r =3D get_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               amdgpu_gfx_off_ctrl(adev, value ? true : false);
-> >
-> > @@ -1104,10 +1083,12 @@ static ssize_t amdgpu_debugfs_gfxoff_write(stru=
-ct file *f, const char __user *bu
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> >
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >
-> > @@ -1139,18 +1120,12 @@ static ssize_t amdgpu_debugfs_gfxoff_read(struc=
-t file *f, char __user *buf,
-> >               uint32_t value;
-> >
-> >               r =3D amdgpu_get_gfx_off_status(adev, &value);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               r =3D put_user(value, (uint32_t *)buf);
-> > -             if (r) {
-> > -                     pm_runtime_mark_last_busy(adev_to_drm(adev)->dev)=
-;
-> > -                     pm_runtime_put_autosuspend(adev_to_drm(adev)->dev=
-);
-> > -                     return r;
-> > -             }
-> > +             if (r)
-> > +                     goto out;
-> >
-> >               result +=3D 4;
-> >               buf +=3D 4;
-> > @@ -1158,10 +1133,12 @@ static ssize_t amdgpu_debugfs_gfxoff_read(struc=
-t file *f, char __user *buf,
-> >               size -=3D 4;
-> >       }
-> >
-> > +     r =3D result;
-> > +out:
-> >       pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
-> >       pm_runtime_put_autosuspend(adev_to_drm(adev)->dev);
-> >
-> > -     return result;
-> > +     return r;
-> >   }
-> >
-> >   static const struct file_operations amdgpu_debugfs_regs2_fops =3D {
->
+
+> -----Original Message-----
+> From: Tom Rix <trix@redhat.com>
+> Sent: Monday, July 4, 2022 8:26 AM
+> To: kishon@ti.com; lpieralisi@kernel.org; kw@linux.com;
+> bhelgaas@google.com; jdmason@kudzu.us; Frank Li <frank.li@nxp.com>
+> Cc: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org; Tom Rix
+> <trix@redhat.com>
+> Subject: [EXT] [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several glo=
+bals
+> to statics
+>=20
+> Caution: EXT Email
+>=20
+> sparse reports
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:956:10: warning: symbol
+> 'pci_space' was not declared. Should it be static?
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: symbol
+> 'pci_read' was not declared. Should it be static?
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: symbol
+> 'pci_write' was not declared. Should it be static?
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:989:16: warning: symbol
+> 'vpci_ops' was not declared. Should it be static?
+>=20
+> These functions and variables are only used in pci-epf-vntb.c, so their s=
+torage
+> class specifiers should be static.
+>=20
+> Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and E=
+P
+> connection")
+> Signed-off-by: Tom Rix <trix@redhat.com>
+
+Acked-by: Frank Li <Frank.Li@nxp.com>
+
+> ---
+> v2,3 : Change commit prefix
+>=20
+> ---
+>  drivers/pci/endpoint/functions/pci-epf-vntb.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> index ebf7e243eefa..6f0775b1fec3 100644
+> --- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> +++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> @@ -953,7 +953,7 @@ static struct config_group *epf_ntb_add_cfs(struct
+> pci_epf *epf,
+>=20
+>  #define VPCI_BUS_NUM 0x10
+>=20
+> -uint32_t pci_space[] =3D {
+> +static uint32_t pci_space[] =3D {
+>         (VNTB_VID | (VNTB_PID << 16)),  //DeviceID, Vendor ID
+>         0,              // status, Command
+>         0xffffffff,     // Class code, subclass, prog if, revision id
+> @@ -972,7 +972,7 @@ uint32_t pci_space[] =3D {
+>         0,              //Max Lat, Min Gnt, interrupt pin, interrupt line
+>  };
+>=20
+> -int pci_read(struct pci_bus *bus, unsigned int devfn, int where, int siz=
+e, u32
+> *val)
+> +static int pci_read(struct pci_bus *bus, unsigned int devfn, int where, =
+int
+> size, u32 *val)
+>  {
+>         if (devfn =3D=3D 0) {
+>                 memcpy(val, ((uint8_t *)pci_space) + where, size);
+> @@ -981,12 +981,12 @@ int pci_read(struct pci_bus *bus, unsigned int
+> devfn, int where, int size, u32 *
+>         return -1;
+>  }
+>=20
+> -int pci_write(struct pci_bus *bus, unsigned int devfn, int where, int si=
+ze, u32
+> val)
+> +static int pci_write(struct pci_bus *bus, unsigned int devfn, int where,=
+ int
+> size, u32 val)
+>  {
+>         return 0;
+>  }
+>=20
+> -struct pci_ops vpci_ops =3D {
+> +static struct pci_ops vpci_ops =3D {
+>         .read =3D pci_read,
+>         .write =3D pci_write,
+>  };
+> --
+> 2.27.0
+
