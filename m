@@ -2,140 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EAFCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC843C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239614AbiGEMhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S239512AbiGEMhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239442AbiGEMal (ORCPT
+        with ESMTP id S237998AbiGEM0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:30:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0BC1F63B;
-        Tue,  5 Jul 2022 05:22:43 -0700 (PDT)
+        Tue, 5 Jul 2022 08:26:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D5218B30;
+        Tue,  5 Jul 2022 05:19:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92BC7B816A4;
-        Tue,  5 Jul 2022 12:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03C6BC341C8;
-        Tue,  5 Jul 2022 12:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657023761;
-        bh=Hl6oQo9fBaw8lhEcoZN8z4oGgTIORkI///LPXaadh+8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SGQ+VMDCiVJPI4dlqjm6Uv2sKZm0+joTht54YfW3He8Z4TXCbeHtiJKZdcs1VujQB
-         XAA2SxR6GNjQtjJKLXg7y0JYM5Pz/vsfXtRkhyGy6LKLQqz3Np79+MNzF60ClPJoQ2
-         ooyBc3m5oTtSEMv4OJbpNAiQA7yu3QQxnc+nMB3uvPwmV563psN5lrHm3fRSrJPqe9
-         vWttuvEoEvZ8wLAsrNvAc7KAS4SfQC4GJa9ZKpY7Vcf86/dBvakGk9dyVc6ouR9k69
-         XLfGDOgNuwErrygPnknj+3tPXCpXiczR2VNMUTBkvimKnSi34NCzhkDHzteL5aOhsu
-         Z/fKTCx/OnzZg==
-Received: by pali.im (Postfix)
-        id 3564ACBF; Tue,  5 Jul 2022 14:22:38 +0200 (CEST)
-Date:   Tue, 5 Jul 2022 14:22:38 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] leds: Add support for Turris 1.x LEDs
-Message-ID: <20220705122238.ul3cctrxkkttge3m@pali>
-References: <20220705000448.14337-1-pali@kernel.org>
- <20220705000448.14337-2-pali@kernel.org>
- <20220705123705.0a9caead@thinkpad>
- <20220705105609.cpabhrwozyeejwqe@pali>
- <20220705135227.6380d6d5@thinkpad>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2CEC61A3D;
+        Tue,  5 Jul 2022 12:19:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE4E0C341CB;
+        Tue,  5 Jul 2022 12:19:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657023576;
+        bh=qdd5LhemVJpkIKRTjx/m2JL5J9QYtLjcJ48EPcaVsEo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FwOflWiU+siwbhbjsBWBbZmQ0QZaN0Yp7juWybxj1KGGUJ8CWxEijo3Y+/eZKkVtv
+         VqRpbXVEO4auVq2umXHmIOoHmY677BRaRaw//3C3TXIyf+HK34arsbhxWcL8j6APSP
+         wPft8Em+ergoe4HKRyv761LxyCFzvu9TbPjI0a1g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.18 079/102] mlxsw: spectrum_router: Fix rollback in tunnel next hop init
+Date:   Tue,  5 Jul 2022 13:58:45 +0200
+Message-Id: <20220705115620.653529683@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220705135227.6380d6d5@thinkpad>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday 05 July 2022 13:52:27 Marek Behún wrote:
-> On Tue, 5 Jul 2022 12:56:09 +0200
-> Pali Rohár <pali@kernel.org> wrote:
-> 
-> > > 
-> > > I don't consider this a problem  
-> > 
-> > I think it is a problem, to ensure that 'cat multi_intensity' for every
-> 
-> Misunderstanding. I meant that I don't consider the eventual
-> inconsistency a problem, i.e. I agree with your code.
-> 
-> > > Or maybe just write the value?
-> > > Is the register write expensive on the CPLD or why are you trying to
-> > > avoid it if unnecessary?  
-> > 
-> > I just do not see any reason to do unnecessary writes.
-> 
-> But now you do an unnecessary check.
+From: Petr Machata <petrm@nvidia.com>
 
-I think that testing if some bit is set in 32-bit general purpose
-processor register is something which really does not play role here.
+commit 665030fd0c1ed9f505932e6e73e7a2c788787a0a upstream.
 
-Note that readb() is always needed to do because it is required to
-modify just one bit and this cannot be done without read-modify-write
-operations.
+In mlxsw_sp_nexthop6_init(), a next hop is always added to the router
+linked list, and mlxsw_sp_nexthop_type_init() is invoked afterwards. When
+that function results in an error, the next hop will not have been removed
+from the linked list. As the error is propagated upwards and the caller
+frees the next hop object, the linked list ends up holding an invalid
+object.
 
-> Unless the writeb() is slower than
-> that check. Since this isn't i2c, I am wondering how fast that writeb()
-> is... But this is just me wondering, we can keep it the way you wrote
-> it...
-> 
-> > > 
-> > > Hmm. Wouldn't it make more sense to simply have the global brightness
-> > > accept values from 0 to 7, instead of mapping it to 256 values? And
-> > > call it something like selected_brightness_index?  
-> > 
-> > All other drivers have brightness entry which operates on monotone
-> > brightness property.
-> > Brightness levels do not have to be monotone and by default are
-> > decreasing: 0 = brightness with higher intensity; 7 = no intensity (off)
-> 
-> What do you mean all other drivers? AFAIK only one driver does this
-> global brightness thing, and that is Omnia. The global brightness is
-> something different from LED cdev brightness property, the same names
-> are just coincidental (in fact it caused confusion when Pavel was
-> first reviewing Turris Omnia driver). Maybe it should have been called
-> global_intensity, to avoid the confusion...
+A similar issue comes up with mlxsw_sp_nexthop4_init(), where rollback
+block does exist, however does not include the linked list removal.
 
-Ok. I thought "brightness" == "brightness" too.
+Both IPv6 and IPv4 next hops have a similar issue with next-hop counter
+rollbacks. As these were introduced in the same patchset as the next hop
+linked list, include the cleanup in this patch.
 
-Anyway, as Omnia has this API it makes sense to use same API for other
-devices, this allows userspace software to be compatible with more
-devices.
+Fixes: dbe4598c1e92 ("mlxsw: spectrum_router: Keep nexthops in a linked list")
+Fixes: a5390278a5eb ("mlxsw: spectrum: Add support for setting counters on nexthops")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220629070205.803952-1-idosch@nvidia.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-> > I cannot image who would like or prefer usage of such API.
-> 
-> One file that represents the index of the selected global intensity (as
-> is stored internally in the CPLD) and another file that represents the
-> configured intensities between which the button switches makes sense,
-> IMO.
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -4418,6 +4418,8 @@ static int mlxsw_sp_nexthop4_init(struct
+ 	return 0;
+ 
+ err_nexthop_neigh_init:
++	list_del(&nh->router_list_node);
++	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
+ 	mlxsw_sp_nexthop_remove(mlxsw_sp, nh);
+ 	return err;
+ }
+@@ -6743,6 +6745,7 @@ static int mlxsw_sp_nexthop6_init(struct
+ 				  const struct fib6_info *rt)
+ {
+ 	struct net_device *dev = rt->fib6_nh->fib_nh_dev;
++	int err;
+ 
+ 	nh->nhgi = nh_grp->nhgi;
+ 	nh->nh_weight = rt->fib6_nh->fib_nh_weight;
+@@ -6758,7 +6761,16 @@ static int mlxsw_sp_nexthop6_init(struct
+ 		return 0;
+ 	nh->ifindex = dev->ifindex;
+ 
+-	return mlxsw_sp_nexthop_type_init(mlxsw_sp, nh, dev);
++	err = mlxsw_sp_nexthop_type_init(mlxsw_sp, nh, dev);
++	if (err)
++		goto err_nexthop_type_init;
++
++	return 0;
++
++err_nexthop_type_init:
++	list_del(&nh->router_list_node);
++	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
++	return err;
+ }
+ 
+ static void mlxsw_sp_nexthop6_fini(struct mlxsw_sp *mlxsw_sp,
 
-And this is the issue. If you want to get current brightness, you need
-to read two files and then do non-trivial logic to derive current
-brightness.
 
-> > Just stick with existing APIs. "brightness" entry takes intensity value
-> > which is monotone, 0 the lowest, MAX (=255) the highest.
-> 
-> Again, the name "brightness" does not imply that it is the same thing
-> as "brightness" of a LED cdev. And since it even doesn't live in
-> /sys/class/<led>/ directory, we are proposing new API and can use
-> whatever makes sense.
-> 
-> I am not saying that the way you did it doesn't make sense. I am just
-> wondering if it wouldn't make more sense to be able to read the index
-> of what the user selected by button pressing.
-> 
-> Marek
-
-So what about exporting another sysfs file which controls current level (0-7)?
