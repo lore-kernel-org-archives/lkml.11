@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE09C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B709C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235433AbiGEMNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
+        id S235459AbiGEMNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234675AbiGEMHv (ORCPT
+        with ESMTP id S234697AbiGEMHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:07:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41441192BB;
-        Tue,  5 Jul 2022 05:06:52 -0700 (PDT)
+        Tue, 5 Jul 2022 08:07:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB181193D9;
+        Tue,  5 Jul 2022 05:06:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA5E617B1;
-        Tue,  5 Jul 2022 12:06:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C566DC341CB;
-        Tue,  5 Jul 2022 12:06:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72CDB617B1;
+        Tue,  5 Jul 2022 12:06:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D91BC341CB;
+        Tue,  5 Jul 2022 12:06:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022811;
-        bh=P9EBvSno1J4Q6TM91bka1vnIcxP0MV0I7TioYm05TN0=;
+        s=korg; t=1657022813;
+        bh=DX7hiBN5sHf4FF2JHvqbjadlUbypr1etovO8+/fUvnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lyBK+olUu+E+EnwKz/sO4Dx3J4vCzip2cC1pGbuq/WP2cKsnZM3g1xjREv+uqnZgf
-         8pbOKXcdAzrw7k/7kElNaI4CmoDErCLFIt6YpTFVCGbZRPc3Z8XdHIsx/tZqMYS7o3
-         7fxyY4W5Dn8FxPIR+cpnbUPOy0KBHRujfaGKC7N4=
+        b=E5uFu4k6w6uUa8nlQabGM29a96bkI2zRrT4Q+ckUkLB0hQ0M9X71dCvYakF8WeeHb
+         Zvr0LAQjdGLMtMqbLGArWIBki3tFMvp43eOYHXN7ws58R0sTfpZ66ofAgKw+/s+bTR
+         86ZO0C2t6Nk9QL/RYnSHQwMZIVp12DfdpkORWMeo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 19/84] net: dp83822: disable false carrier interrupt
-Date:   Tue,  5 Jul 2022 13:57:42 +0200
-Message-Id: <20220705115615.886314240@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        David Forster <dforster@brocade.com>,
+        Siwar Zitouni <siwar.zitouni@6wind.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 02/84] ipv6: take care of disable_policy when restoring routes
+Date:   Tue,  5 Jul 2022 13:57:25 +0200
+Message-Id: <20220705115615.397849839@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -50,41 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-commit c96614eeab663646f57f67aa591e015abd8bd0ba upstream.
+commit 3b0dc529f56b5f2328244130683210be98f16f7f upstream.
 
-When unplugging an Ethernet cable, false carrier events were produced by
-the PHY at a very high rate. Once the false carrier counter full, an
-interrupt was triggered every few clock cycles until the cable was
-replugged. This resulted in approximately 10k/s interrupts.
+When routes corresponding to addresses are restored by
+fixup_permanent_addr(), the dst_nopolicy parameter was not set.
+The typical use case is a user that configures an address on a down
+interface and then put this interface up.
 
-Since the false carrier counter (FCSCR) is never used, we can safely
-disable this interrupt.
+Let's take care of this flag in addrconf_f6i_alloc(), so that every callers
+benefit ont it.
 
-In addition to improving performance, this also solved MDIO read
-timeouts I was randomly encountering with an i.MX8 fec MAC because of
-the interrupt flood. The interrupt count and MDIO timeout fix were
-tested on a v5.4.110 kernel.
-
-Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
-Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+CC: stable@kernel.org
+CC: David Forster <dforster@brocade.com>
+Fixes: df789fe75206 ("ipv6: Provide ipv6 version of "disable_policy" sysctl")
+Reported-by: Siwar Zitouni <siwar.zitouni@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220623120015.32640-1-nicolas.dichtel@6wind.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/dp83822.c |    1 -
- 1 file changed, 1 deletion(-)
+ net/ipv6/addrconf.c |    4 ----
+ net/ipv6/route.c    |    9 ++++++++-
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -244,7 +244,6 @@ static int dp83822_config_intr(struct ph
- 			return misr_status;
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1102,10 +1102,6 @@ ipv6_add_addr(struct inet6_dev *idev, st
+ 		goto out;
+ 	}
  
- 		misr_status |= (DP83822_RX_ERR_HF_INT_EN |
--				DP83822_FALSE_CARRIER_HF_INT_EN |
- 				DP83822_LINK_STAT_INT_EN |
- 				DP83822_ENERGY_DET_INT_EN |
- 				DP83822_LINK_QUAL_INT_EN);
+-	if (net->ipv6.devconf_all->disable_policy ||
+-	    idev->cnf.disable_policy)
+-		f6i->dst_nopolicy = true;
+-
+ 	neigh_parms_data_state_setall(idev->nd_parms);
+ 
+ 	ifa->addr = *cfg->pfx;
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4479,8 +4479,15 @@ struct fib6_info *addrconf_f6i_alloc(str
+ 	}
+ 
+ 	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
+-	if (!IS_ERR(f6i))
++	if (!IS_ERR(f6i)) {
+ 		f6i->dst_nocount = true;
++
++		if (!anycast &&
++		    (net->ipv6.devconf_all->disable_policy ||
++		     idev->cnf.disable_policy))
++			f6i->dst_nopolicy = true;
++	}
++
+ 	return f6i;
+ }
+ 
 
 
