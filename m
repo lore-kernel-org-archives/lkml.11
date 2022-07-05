@@ -2,162 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 023E3C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AACCCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237663AbiGEMXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S237871AbiGEMYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236177AbiGEMRN (ORCPT
+        with ESMTP id S236332AbiGEMRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7C31902E;
-        Tue,  5 Jul 2022 05:12:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71979B817CE;
-        Tue,  5 Jul 2022 12:12:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9A5AC341C7;
-        Tue,  5 Jul 2022 12:12:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023125;
-        bh=w8/GIHaK5lt0ow3tkT2iLdxX6zkIiYVhDF4tLqjmHFE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ecsQb7soXRoHEbKGdzrZC6Qyl0DGO6/BDYy7gNfSah80kUDo9gwzUvRQJ7KqVLHph
-         KDlG0jKlgxebLc2eFHJEx8RdCy1GOBIJ64NduQcE44htLsIDscxmTXm5BT5g2ynyNP
-         qIccS0TAoLDTqnTxxoiM5O4OtDM8seLX2N9IAJew=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 47/98] powerpc/memhotplug: Add add_pages override for PPC
-Date:   Tue,  5 Jul 2022 13:58:05 +0200
-Message-Id: <20220705115618.922242082@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:17:35 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EEE1C135;
+        Tue,  5 Jul 2022 05:12:21 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBbkW126500;
+        Tue, 5 Jul 2022 07:11:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657023097;
+        bh=5PS06OiuFOGV6B3a+bWMbXD/8Hz+t/MCO8edcDvjNyI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=CxOUax3cEDEL2+SP2KSIMmwxxFG6kGYujBKgY0SDxZwFRAVPVWXDtbdwExvFjEnDs
+         l+UEVgz6YcTLZPi4PXfWpXzhTsFUnGAOPBCAeAitfJJZv1fIIP61GKsMz20tfKHGYj
+         hKF6rNb23UKMqmoxNnbnQjQDKBAooM8zvzE0oo14=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBbtu064210
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 07:11:37 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 07:11:36 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 07:11:36 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBZrN099029;
+        Tue, 5 Jul 2022 07:11:36 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v4 5/5] drm/bridge: cdns-dsi: Add support for J721E wrapper
+Date:   Tue, 5 Jul 2022 17:41:16 +0530
+Message-ID: <20220705121116.24121-6-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
+References: <20220705121116.24121-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Add support for wrapper settings for DSI bridge on
+j721e. Also set the DPI input to DPI0
 
-commit ac790d09885d36143076e7e02825c541e8eee899 upstream.
-
-With commit ffa0b64e3be5 ("powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit")
-the kernel now validate the addr against high_memory value. This results
-in the below BUG_ON with dax pfns.
-
-[  635.798741][T26531] kernel BUG at mm/page_alloc.c:5521!
-1:mon> e
-cpu 0x1: Vector: 700 (Program Check) at [c000000007287630]
-    pc: c00000000055ed48: free_pages.part.0+0x48/0x110
-    lr: c00000000053ca70: tlb_finish_mmu+0x80/0xd0
-    sp: c0000000072878d0
-   msr: 800000000282b033
-  current = 0xc00000000afabe00
-  paca    = 0xc00000037ffff300   irqmask: 0x03   irq_happened: 0x05
-    pid   = 26531, comm = 50-landscape-sy
-kernel BUG at :5521!
-Linux version 5.19.0-rc3-14659-g4ec05be7c2e1 (kvaneesh@ltc-boston8) (gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, GNU ld (GNU Binutils for Ubuntu) 2.34) #625 SMP Thu Jun 23 00:35:43 CDT 2022
-1:mon> t
-[link register   ] c00000000053ca70 tlb_finish_mmu+0x80/0xd0
-[c0000000072878d0] c00000000053ca54 tlb_finish_mmu+0x64/0xd0 (unreliable)
-[c000000007287900] c000000000539424 exit_mmap+0xe4/0x2a0
-[c0000000072879e0] c00000000019fc1c mmput+0xcc/0x210
-[c000000007287a20] c000000000629230 begin_new_exec+0x5e0/0xf40
-[c000000007287ae0] c00000000070b3cc load_elf_binary+0x3ac/0x1e00
-[c000000007287c10] c000000000627af0 bprm_execve+0x3b0/0xaf0
-[c000000007287cd0] c000000000628414 do_execveat_common.isra.0+0x1e4/0x310
-[c000000007287d80] c00000000062858c sys_execve+0x4c/0x60
-[c000000007287db0] c00000000002c1b0 system_call_exception+0x160/0x2c0
-[c000000007287e10] c00000000000c53c system_call_common+0xec/0x250
-
-The fix is to make sure we update high_memory on memory hotplug.
-This is similar to what x86 does in commit 3072e413e305 ("mm/memory_hotplug: introduce add_pages")
-
-Fixes: ffa0b64e3be5 ("powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit")
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220629050925.31447-1-aneesh.kumar@linux.ibm.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
 ---
- arch/powerpc/Kconfig  |    4 ++++
- arch/powerpc/mm/mem.c |   33 ++++++++++++++++++++++++++++++++-
- 2 files changed, 36 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/cadence/Kconfig        |  9 ++++
+ drivers/gpu/drm/bridge/cadence/Makefile       |  1 +
+ .../gpu/drm/bridge/cadence/cdns-dsi-core.c    | 37 +++++++++++++-
+ .../gpu/drm/bridge/cadence/cdns-dsi-core.h    | 13 +++++
+ .../gpu/drm/bridge/cadence/cdns-dsi-j721e.c   | 51 +++++++++++++++++++
+ .../gpu/drm/bridge/cadence/cdns-dsi-j721e.h   | 18 +++++++
+ 6 files changed, 128 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c
+ create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.h
 
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -353,6 +353,10 @@ config ARCH_SUSPEND_NONZERO_CPU
- 	def_bool y
- 	depends on PPC_POWERNV || PPC_PSERIES
+diff --git a/drivers/gpu/drm/bridge/cadence/Kconfig b/drivers/gpu/drm/bridge/cadence/Kconfig
+index e4d3415df2a0..663a02d96420 100644
+--- a/drivers/gpu/drm/bridge/cadence/Kconfig
++++ b/drivers/gpu/drm/bridge/cadence/Kconfig
+@@ -37,3 +37,12 @@ config DRM_CDNS_DSI
+ 	  Support Cadence DPI to DSI bridge. This is an internal
+ 	  bridge and is meant to be directly embedded in a SoC.
  
-+config ARCH_HAS_ADD_PAGES
-+	def_bool y
-+	depends on ARCH_ENABLE_MEMORY_HOTPLUG
++if DRM_CDNS_DSI
 +
- config PPC_DCR_NATIVE
- 	bool
++config DRM_CDNS_DSI_J721E
++	bool "J721E Cadence DPI/DSI wrapper support"
++	default y
++	help
++	  Support J721E Cadence DPI/DSI wrapper. This wrapper adds
++	  support to select which DPI input to use for the bridge.
++endif
+diff --git a/drivers/gpu/drm/bridge/cadence/Makefile b/drivers/gpu/drm/bridge/cadence/Makefile
+index e3d8e9a40784..4cffc8ff71c4 100644
+--- a/drivers/gpu/drm/bridge/cadence/Makefile
++++ b/drivers/gpu/drm/bridge/cadence/Makefile
+@@ -4,3 +4,4 @@ cdns-mhdp8546-y := cdns-mhdp8546-core.o cdns-mhdp8546-hdcp.o
+ cdns-mhdp8546-$(CONFIG_DRM_CDNS_MHDP8546_J721E) += cdns-mhdp8546-j721e.o
+ obj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o
+ cdns-dsi-y := cdns-dsi-core.o
++cdns-dsi-$(CONFIG_DRM_CDNS_DSI_J721E) += cdns-dsi-j721e.o
+diff --git a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+index cba91247ab26..4b7de38ef1b0 100644
+--- a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
++++ b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.c
+@@ -15,12 +15,16 @@
+ #include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/of_address.h>
++#include <linux/of_device.h>
+ #include <linux/of_graph.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/reset.h>
  
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -104,6 +104,37 @@ void __ref arch_remove_linear_mapping(u6
- 	vm_unmap_aliases();
+ #include "cdns-dsi-core.h"
++#ifdef CONFIG_DRM_CDNS_DSI_J721E
++#include "cdns-dsi-j721e.h"
++#endif
+ 
+ static inline struct cdns_dsi *input_to_dsi(struct cdns_dsi_input *input)
+ {
+@@ -265,6 +269,10 @@ static void cdns_dsi_bridge_disable(struct drm_bridge *bridge)
+ 
+ 	val = readl(dsi->regs + MCTL_MAIN_EN) & ~IF_EN(input->id);
+ 	writel(val, dsi->regs + MCTL_MAIN_EN);
++
++	if (dsi->platform_ops && dsi->platform_ops->disable)
++		dsi->platform_ops->disable(dsi);
++
+ 	pm_runtime_put(dsi->base.dev);
  }
  
-+/*
-+ * After memory hotplug the variables max_pfn, max_low_pfn and high_memory need
-+ * updating.
-+ */
-+static void update_end_of_memory_vars(u64 start, u64 size)
-+{
-+	unsigned long end_pfn = PFN_UP(start + size);
+@@ -360,6 +368,9 @@ static void cdns_dsi_bridge_enable(struct drm_bridge *bridge)
+ 	if (WARN_ON(pm_runtime_get_sync(dsi->base.dev) < 0))
+ 		return;
+ 
++	if (dsi->platform_ops && dsi->platform_ops->enable)
++		dsi->platform_ops->enable(dsi);
 +
-+	if (end_pfn > max_pfn) {
-+		max_pfn = end_pfn;
-+		max_low_pfn = end_pfn;
-+		high_memory = (void *)__va(max_pfn * PAGE_SIZE - 1) + 1;
+ 	mode = &bridge->encoder->crtc->state->adjusted_mode;
+ 	nlanes = output->dev->lanes;
+ 
+@@ -800,6 +811,8 @@ static int cdns_dsi_drm_probe(struct platform_device *pdev)
+ 		goto err_disable_pclk;
+ 	}
+ 
++	dsi->platform_ops = of_device_get_match_data(&pdev->dev);
++
+ 	val = readl(dsi->regs + IP_CONF);
+ 	dsi->direct_cmd_fifo_depth = 1 << (DIRCMD_FIFO_DEPTH(val) + 2);
+ 	dsi->rx_fifo_depth = RX_FIFO_DEPTH(val);
+@@ -835,14 +848,27 @@ static int cdns_dsi_drm_probe(struct platform_device *pdev)
+ 	dsi->base.dev = &pdev->dev;
+ 	dsi->base.ops = &cdns_dsi_ops;
+ 
++	if (dsi->platform_ops && dsi->platform_ops->init) {
++		ret = dsi->platform_ops->init(dsi);
++		if (ret != 0) {
++			dev_err(&pdev->dev, "platform initialization failed: %d\n",
++				ret);
++			goto err_disable_runtime_pm;
++		}
 +	}
-+}
 +
-+int __ref add_pages(int nid, unsigned long start_pfn, unsigned long nr_pages,
-+		    struct mhp_params *params)
+ 	ret = mipi_dsi_host_register(&dsi->base);
+ 	if (ret)
+-		goto err_disable_runtime_pm;
++		goto err_deinit_platform;
+ 
+ 	clk_disable_unprepare(dsi->dsi_p_clk);
+ 
+ 	return 0;
+ 
++err_deinit_platform:
++	if (dsi->platform_ops && dsi->platform_ops->exit)
++		dsi->platform_ops->exit(dsi);
++
+ err_disable_runtime_pm:
+ 	pm_runtime_disable(&pdev->dev);
+ 
+@@ -857,6 +883,10 @@ static int cdns_dsi_drm_remove(struct platform_device *pdev)
+ 	struct cdns_dsi *dsi = platform_get_drvdata(pdev);
+ 
+ 	mipi_dsi_host_unregister(&dsi->base);
++
++	if (dsi->platform_ops && dsi->platform_ops->exit)
++		dsi->platform_ops->exit(dsi);
++
+ 	pm_runtime_disable(&pdev->dev);
+ 
+ 	return 0;
+@@ -864,6 +894,11 @@ static int cdns_dsi_drm_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id cdns_dsi_of_match[] = {
+ 	{ .compatible = "cdns,dsi" },
++#ifdef CONFIG_DRM_CDNS_DSI_J721E
++	{ .compatible = "ti,j721e-dsi",
++	  .data = &dsi_ti_j721e_ops,
++	},
++#endif
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, cdns_dsi_of_match);
+diff --git a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
+index 65cc77f19b39..37568b547fbe 100644
+--- a/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
++++ b/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
+@@ -439,9 +439,22 @@ struct cdns_dsi_input {
+ 	struct drm_bridge bridge;
+ };
+ 
++struct cdns_dsi;
++
++struct dsi_platform_ops {
++	int (*init)(struct cdns_dsi *dsi);
++	void (*exit)(struct cdns_dsi *dsi);
++	void (*enable)(struct cdns_dsi *dsi);
++	void (*disable)(struct cdns_dsi *dsi);
++};
++
+ struct cdns_dsi {
+ 	struct mipi_dsi_host base;
+ 	void __iomem *regs;
++#ifdef CONFIG_DRM_CDNS_DSI_J721E
++	void __iomem *j721e_regs;
++#endif
++	const struct dsi_platform_ops *platform_ops;
+ 	struct cdns_dsi_input input;
+ 	struct cdns_dsi_output output;
+ 	unsigned int direct_cmd_fifo_depth;
+diff --git a/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c b/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c
+new file mode 100644
+index 000000000000..b5216acb333e
+--- /dev/null
++++ b/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c
+@@ -0,0 +1,51 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * TI j721e Cadence DSI wrapper
++ *
++ * Copyright (C) 2022 Texas Instruments Incorporated - http://www.ti.com/
++ * Author: Rahul T R <r-ravikumar@ti.com>
++ */
++
++#include <linux/io.h>
++#include <linux/platform_device.h>
++
++#include "cdns-dsi-j721e.h"
++
++#define DSI_WRAP_REVISION		0x0
++#define DSI_WRAP_DPI_CONTROL		0x4
++#define DSI_WRAP_DSC_CONTROL		0x8
++#define DSI_WRAP_DPI_SECURE		0xc
++#define DSI_WRAP_DSI_0_ASF_STATUS	0x10
++
++#define DSI_WRAP_DPI_0_EN		BIT(0)
++#define DSI_WRAP_DSI2_MUX_SEL		BIT(4)
++
++static int cdns_dsi_j721e_init(struct cdns_dsi *dsi)
 +{
-+	int ret;
++	struct platform_device *pdev = to_platform_device(dsi->base.dev);
 +
-+	ret = __add_pages(nid, start_pfn, nr_pages, params);
-+	if (ret)
-+		return ret;
-+
-+	/* update max_pfn, max_low_pfn and high_memory */
-+	update_end_of_memory_vars(start_pfn << PAGE_SHIFT,
-+				  nr_pages << PAGE_SHIFT);
-+
-+	return ret;
++	dsi->j721e_regs = devm_platform_ioremap_resource(pdev, 1);
++	return PTR_ERR_OR_ZERO(dsi->j721e_regs);
 +}
 +
- int __ref arch_add_memory(int nid, u64 start, u64 size,
- 			  struct mhp_params *params)
- {
-@@ -114,7 +145,7 @@ int __ref arch_add_memory(int nid, u64 s
- 	rc = arch_create_linear_mapping(nid, start, size, params);
- 	if (rc)
- 		return rc;
--	rc = __add_pages(nid, start_pfn, nr_pages, params);
-+	rc = add_pages(nid, start_pfn, nr_pages, params);
- 	if (rc)
- 		arch_remove_linear_mapping(start, size);
- 	return rc;
-
++static void cdns_dsi_j721e_enable(struct cdns_dsi *dsi)
++{
++	/*
++	 * Enable DPI0 as its input. DSS0 DPI2 is connected
++	 * to DSI DPI0. This is the only supported configuration on
++	 * J721E.
++	 */
++	writel(DSI_WRAP_DPI_0_EN, dsi->j721e_regs + DSI_WRAP_DPI_CONTROL);
++}
++
++static void cdns_dsi_j721e_disable(struct cdns_dsi *dsi)
++{
++	/* Put everything to defaults  */
++	writel(0, dsi->j721e_regs + DSI_WRAP_DPI_CONTROL);
++}
++
++const struct dsi_platform_ops dsi_ti_j721e_ops = {
++	.init = cdns_dsi_j721e_init,
++	.enable = cdns_dsi_j721e_enable,
++	.disable = cdns_dsi_j721e_disable,
++};
+diff --git a/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.h b/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.h
+new file mode 100644
+index 000000000000..01f3dbd92db2
+--- /dev/null
++++ b/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * TI j721e Cadence DSI wrapper
++ *
++ * Copyright (C) 2022 Texas Instruments Incorporated - http://www.ti.com/
++ * Author: Rahul T R <r-ravikumar@ti.com>
++ */
++
++#ifndef CDNS_DSI_J721E_H
++#define CDNS_DSI_J721E_H
++
++#include "cdns-dsi-core.h"
++
++struct dsi_platform_ops;
++
++extern const struct dsi_platform_ops dsi_ti_j721e_ops;
++
++#endif /* !CDNS_DSI_J721E_H */
+-- 
+2.36.1
 
