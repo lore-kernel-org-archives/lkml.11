@@ -2,119 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C902C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73656C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232950AbiGEKxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41906 "EHLO
+        id S232882AbiGEKyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiGEKxK (ORCPT
+        with ESMTP id S232098AbiGEKyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:53:10 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED8516596;
-        Tue,  5 Jul 2022 03:52:35 -0700 (PDT)
-Received: from [192.168.2.145] (unknown [109.252.119.232])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 04042660180F;
-        Tue,  5 Jul 2022 11:52:30 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657018353;
-        bh=C0XVywH+oyNLG15zS9kJCfV/f1r6tRA5EPvm3RYnUOM=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=BFsJtEh/gBUsqY7oLRLDvEEt2L0qJInllcm8ERMdMkKs/ivYjVrMj7HM0VLqfdii4
-         iZJrTAHKS+FQJADUDLdChPRH7Y6aiXltet0/Ptkf7VzEZKH0NTIj3TrpzjnTsS5eIM
-         +daU4k8lz/lV6BZmBuVv7AHzc7nHJfY2f1YwSD3ROdt84HfzsTGjByasgAXNcMz4d1
-         qg/O+0qPRX6gCd4cBJwu1DYAoDwhHm0Pyvxxug8XaHFbhF++KaNwZMKNBglpUncQwu
-         n6itsrDfKq1GL6c0rmng3zw4Cd6j6JFnFqIEoFQiM5a30K8uZbuwLUOjlQtKkbkZuL
-         78aARH30ofTdQ==
-Message-ID: <37f028a0-f54a-a1a9-e23a-3c1af6979a62@collabora.com>
-Date:   Tue, 5 Jul 2022 13:52:28 +0300
+        Tue, 5 Jul 2022 06:54:13 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2066.outbound.protection.outlook.com [40.107.101.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAC2BF44;
+        Tue,  5 Jul 2022 03:53:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OVNpo21wlejsWDNfpDBwV5ZnpKIGCje+bWxRdiVI24L8o5Aj6J8chUcU7Vro+gr0Vnj7FETonxGhWszd9k9CaARU9zANq1KuTw2ymljbWQvMm/FqJeS0pEgugJw5Em7TbvgDnTHQM78GgPv+DMcWagThT/AW8MNpfsU8OK8KgbUFV8gFbZV9fETxuNCP7UQsA+J+OlvfeY7D9ISvB/2JfmZds3hz64rCUowAI9k0TAl31y89zXsmopVStUP7H+OibzmLAO0saEWwtbydLbul82hz2vfPygbnZezvrC8lmU/R4Gx2qQKEh378TkukFi5Neoi3JYAimeuQi5LN0EZodw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lBQBrhz++joxqgzrUQcfMu8iuhZOzwr9XKqzzet0pZY=;
+ b=muXWn3C8L3ExWRJ7L5hq+qnBdUQjvXAO/FsNhuM4KUo5w8eY5n+O9+HjS2QRWi34ZUELKb5k8/Q3GKWhovB31uS4kunuVTL0vOf8Fsxe7/Fv8OAbi58/ewaz8VypatJ6tVATLkQ/Nykrgg3wjUrAc4TvevtaGX8g0NPSo1hLxR2ikx10NATk8poc4S4faVBcvq2UM9CFz2R3Lz9834TYPQrMK5RlXfoRvXohIrN3MfLI5dl6/EMuEjVQ/CL9e2I3OM+dVU9mBc+vIXTioFzWiVn9qlfQX0+s6IfvlsKq9jmTK9XUdywtcCFgdaJhz71WTzHt84w1bAJBNSNseiXufQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lBQBrhz++joxqgzrUQcfMu8iuhZOzwr9XKqzzet0pZY=;
+ b=VQnO00TdvZH4BWWQP9y0+TGXnGQ32Uske9UYvI4gYIlZns5WVdo6Gra1lt+BfhQjylkaWDd2Gbzq8IV9RZZ2OFOHzB2h1Oz6UQEl4tBeTRN+mlwLqZ2wRTe5vg0rjH/7wDw6U6CDDDogd1GC617e22qgZutiNo5Z/HFwuM7hWDMxPzgKaDMeydMRVMZK80fIR8P8O4i/oRZslYOBJTLcRoP4Yu0hbbf0YZJkGGx9Rw4Fdh20pYSZNbIsErjBZTRScR5JXjLETFuUrl2dfHCvHkBJq4PZ1Qef9J5JDMOIqE/83PpdCSedQWR3ikFb2HCDGi26bXukDgieRkaO7N8L2w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by MN2PR12MB4189.namprd12.prod.outlook.com (2603:10b6:208:1d8::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Tue, 5 Jul
+ 2022 10:53:30 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::611c:e609:d343:aa34%7]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
+ 10:53:30 +0000
+Date:   Tue, 5 Jul 2022 13:53:24 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Hans S <schultz.hans@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
+ traffic cannot unlock a locked port
+Message-ID: <YsQYJElDK8DBHYz8@shredder>
+References: <Yr2LFI1dx6Oc7QBo@shredder>
+ <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
+ <Yr778K/7L7Wqwws2@shredder>
+ <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
+ <Yr8oPba83rpJE3GV@shredder>
+ <CAKUejP4_05E0hfFp-ceXLgPuid=MwrAoHyQ-nYE3qx3Tisb4uA@mail.gmail.com>
+ <YsE+hreRa0REAG3g@shredder>
+ <CAKUejP4H4yKu6LaLUUUWypt7EPuYDK-5UdUDHPF8F2U5hGnzOQ@mail.gmail.com>
+ <YsLILMpLI3alAj+1@shredder>
+ <CAKUejP5=eNyAso=MW2nb2o=OKMaysmWUJ-zqLcerPg6EzsQVYQ@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKUejP5=eNyAso=MW2nb2o=OKMaysmWUJ-zqLcerPg6EzsQVYQ@mail.gmail.com>
+X-ClientProxiedBy: LO2P265CA0035.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:61::23) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 14/22] dma-buf: Introduce new locking convention
-Content-Language: en-US
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m_=28Intel=29?= 
-        <thomas_os@shipmail.org>
-Cc:     intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        kernel@collabora.com, linux-media@vger.kernel.org,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Qiang Yu <yuq825@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-References: <20220526235040.678984-1-dmitry.osipenko@collabora.com>
- <20220526235040.678984-15-dmitry.osipenko@collabora.com>
- <0a02a31d-a256-4ca4-0e35-e2ea1868a8ae@amd.com>
- <e6e17c52-43c2-064b-500e-325bb3ba3b2c@collabora.com>
- <02e7946b-34ca-b48e-1ba6-e7b63740a2d9@amd.com>
- <7372dd1b-06f7-5336-4738-15f9b4d4d4b3@collabora.com>
- <90fe74f6-a622-e4ae-3004-6f1bc1790247@shipmail.org>
- <0d88cf7c-61e5-d7a8-a6ba-83388114a1fa@collabora.com>
- <fd026c44-b067-3537-3020-4ae8f24137ad@collabora.com>
-In-Reply-To: <fd026c44-b067-3537-3020-4ae8f24137ad@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8c8230df-bf3d-4dfe-72e2-08da5e7498c6
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4189:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z/Pln/pCxH3B96pH4hl1YU1AXgj2K+VHdM0VCFjfIMplDReoHuR9UJ++KW6vvR216Gk+rf24o65uVQn9675DYlhNvGq3qfNKuLlh+/2Rp/uvBgUZ7W4sXrXZFlahz09CtDbflPKEt5OAmiAbwu9B0RY287rMpFsefRIdl0Xc+9DXicZLB4wWF0Hobl2d3oq+Ec1sBwues4aVVirw9gOcVUEvhmNQET1B3k6ZbMXiomHKytj47n2tgx17gfGwJdWPoR8dYKIRz28DACKCYMI9rrwaCbrFWMOXRV9COOanc2u3/UyTuOFUY80EmOBnMjyJ6XwcoyYBxef0PbmxMJE2jInk9l7w1lQTQTaunaxDgwr0Zbac4l//dP7JCjmN0aJpS7USq4+ITFxTQb2qK4F1Grogoet7w9elr2Pb8Dejbtj1vVIDcZlQHzSzjrDWFhPU2NDvOWOkPI85mhiiv8ohhaIbNgwkXN3X3Q7IJq1xqZdjvWTyhMubTR/Ee86+fW8AZHd3YXnpTS0FMbrY2LZ5WMcmYhCdOSNcDcJqpsKnqtLV6P2c9USwgeSroOU6MDMKlNpTnoce5H7ulOlkLw96LClLHyhp3EPPbG8wwI5J5ViM1R3YixeytLQv24bNYne0f+1uyMKkBorBOhzqh+flwInTULE2fp4lHOyXdZ52dAQKEkRvA2FXmBQ5c/eHtPhqpnOnBmrSeUGes1KLmXjSjVEtoh8+QKMfcaiyO4ed6CUV/ccypVG9ypMms4zghO1b
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(136003)(366004)(396003)(376002)(346002)(39860400002)(83380400001)(186003)(66946007)(66556008)(66476007)(8676002)(4326008)(478600001)(86362001)(6486002)(7416002)(8936002)(5660300002)(26005)(9686003)(6512007)(38100700002)(6666004)(41300700001)(53546011)(2906002)(6506007)(33716001)(54906003)(6916009)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZryG6fiRt66xlCvk9PO1OlcwSG4P7ZU3hcHmbZlhXoD18ky3fJatdl5jxRTI?=
+ =?us-ascii?Q?/1XcBviQ7LhcE4kmrvAeYpn85rZ+dbsDQuytD/Jt1xPFA+WYiZqz4QkpxLz4?=
+ =?us-ascii?Q?iEnWGpHTY748GXysDdEJFj0i86UQgrUmsdjvIhj07N48rmWBLepsnEsMW1+Q?=
+ =?us-ascii?Q?JBoxlMUiQ6w6huwK0lzw0/O111ocIHzk9Xo2NB1iyJD63BYiLkZFXzCyhgPZ?=
+ =?us-ascii?Q?cG8dN/g/pgjf70dyObcpudzsi5KwuOj5fDNUNowSusXBmOVg3nc4en5tbZAi?=
+ =?us-ascii?Q?r9+a6MJTti/HQLDuOBVo+DLd+ovF4Y/LX95ZfScHRef3VvFaDWP4h+s5nt2F?=
+ =?us-ascii?Q?ITZKOWg73FvOrvpwVaXjLM3o488CUGy3AqYjjIXrU8bqDLUWhKUTC/ausM04?=
+ =?us-ascii?Q?/mwkSUPzZpldpj56fO9G3JFBNvlRNSiv+T3pXmZTAEb8p1GA83ZX1KMJ8HQS?=
+ =?us-ascii?Q?ayt/YXCn7DygkGHEG3Eb8gBKqHTGU3jl05K+5K2HeyldFf8nXwkmogAbY0jE?=
+ =?us-ascii?Q?TlCfRl3kmj+BaLHzPGaGtqR1SrSasCTKEknGNBIoTCgWSIqeroQeK93bQ3ci?=
+ =?us-ascii?Q?YJKfVMEchKdsMXEM/zvx5MRjdKxZe3uLRsMRyhoDy8sMjCziBguiI2kCWVxf?=
+ =?us-ascii?Q?I8p4QFEv1GWXL4kwlJ3TX07XV9YrLdHv0hfYe5NbVn/Y5kLrOaSkZGbXkcLW?=
+ =?us-ascii?Q?PzYF3aLcsDnsQo0rSCOGiujPtNPoQd4tw/09SvfDuT45rWlQvkOBOz/6ZqUp?=
+ =?us-ascii?Q?oFn4zb3HArtYxNcah678lHkdwIjVJ6ic8SNYEemjAHqvLFQsIcumrq/oWPgp?=
+ =?us-ascii?Q?CgeS1zZi7dIN+2dkxkNNbYO704WWD4om75t0G1IQXkK+6T7rWF6tlpVUl2ya?=
+ =?us-ascii?Q?znMOg4wJLhDhO88uovfbjzXY7oF7DkmYCr5D/kbx77I58nueCYLdt0JBEoYU?=
+ =?us-ascii?Q?6eaLqE8PnKeiBaneiF/iTUfehnUPdiqkTMpw5W7jrNuqt+QNSepZ3jNes9Ea?=
+ =?us-ascii?Q?QQAsX+ZClAJibby2aGq7yaBvbTrogC0K9VeMSajcstMSqjCBPfNVrPw1fYGd?=
+ =?us-ascii?Q?MWz1OOmMtB6wF3m6c3vkf3jofT9+asdk/W92yZDAtPFI4qJxsT0gqr/ZJP71?=
+ =?us-ascii?Q?rZXSO/WFy+slmlPTaIGZI1YgOFKe32Xamrz/d+oJQL5eqg6JpSR0Zmm9zoZB?=
+ =?us-ascii?Q?WCPONQHgxofsLoy5eeojxr4ieB5i4FXDyP7pMqO4YoE2i9iS+VFdpdpqxnF4?=
+ =?us-ascii?Q?vT/rqXoi2DIV6fnCkm5IL5LcfTufYXC2qun5omFecV2xo9/CYTw2YskeRT+l?=
+ =?us-ascii?Q?yVErXwZ/Kz4xOhfJYZJ2M4TCXIY73MGpBPsSC1kaqbb0rlEdB5X02oyyCb/N?=
+ =?us-ascii?Q?Ngc2/iutwfFzjlN96UUHGpfSqXwI6qFzqG5DNxTida9U9A04gBjCa8oq86oL?=
+ =?us-ascii?Q?wBJv3g/NqLLTptU+zmJLcc5AA5zbxZW7KXA/hpL+7aOSxZnzucM6aO6niIu4?=
+ =?us-ascii?Q?Bqf9eKAdrZMPR/KFHnj+vYgIdzWY23NTSyGDvlZ9w6Ielo4wvb05cE/ER8Ba?=
+ =?us-ascii?Q?iJV99FG6eqEpjG0WCfhGhtzbhph9UuxcxqR2Z1W4?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c8230df-bf3d-4dfe-72e2-08da5e7498c6
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 10:53:30.2454
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rgf2Nuf4PqWKNfiD6LAAZsstYbx3XaL0FMqb9XCcVDjs0Rq88Jqs+8h7eZOWvxt3icf+/uFlcY3X9pXwZE9XYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4189
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/5/22 01:38, Dmitry Osipenko wrote:
-...
->>> Also i915 will run into trouble with attach. In particular since i915
->>> starts a full ww transaction in its attach callback to be able to lock
->>> other objects if migration is needed. I think i915 CI would catch this
->>> in a selftest.
->> Seems it indeed it should deadlock. But i915 selftests apparently
->> should've caught it and they didn't, I'll re-check what happened.
->>
+On Mon, Jul 04, 2022 at 04:36:12PM +0200, Hans S wrote:
+> On Mon, Jul 4, 2022 at 1:00 PM Ido Schimmel <idosch@nvidia.com> wrote:
+> >
+> > On Mon, Jul 04, 2022 at 09:54:31AM +0200, Hans S wrote:
+> > > >
+> > > > IIUC, with mv88e6xxx, when the port is locked and learning is disabled:
+> > > >
+> > > > 1. You do not get miss violation interrupts. Meaning, you can't report
+> > > > 'locked' entries to the bridge driver.
+> > > >
+> > > > 2. You do not get aged-out interrupts. Meaning, you can't tell the
+> > > > bridge driver to remove aged-out entries.
+> > > >
+> > > > My point is that this should happen regardless if learning is enabled on
+> > > > the bridge driver or not. Just make sure it is always enabled in
+> > > > mv88e6xxx when the port is locked. Learning in the bridge driver itself
+> > > > can be off, thereby eliminating the need to disable learning from
+> > > > link-local packets.
+> > >
+> > > So you suggest that we enable learning in the driver when locking the
+> > > port and document that learning should be turned off from user space
+> > > before locking the port?
+> >
+> > Yes. Ideally, the bridge driver would reject configurations where
+> > learning is enabled and the port is locked, but it might be too late for
+> > that. It would be good to add a note in the man page that learning
+> > should be disabled when the port is locked to avoid "unlocking" the port
+> > by accident.
 > 
-> The i915 selftests use a separate mock_dmabuf_ops. That's why it works
-> for the selftests, i.e. there is no deadlock.
-> 
-> Thomas, would i915 CI run a different set of tests or will it be the
-> default i915 selftests ran by IGT?
-> 
+> Well you cannot unlock the port by either enabling or disabling
+> learning after the port is locked, but Mac-Auth and refreshing might
+> not work. I clarify just so that no-one gets confused.
 
-Nevermind, I had a local kernel change that was forgotten about.. it
-prevented the i915 live tests from running.
+I was referring to the fact that if learning is enabled, a host can
+populate the FDB with whatever MAC it wants by crafting a link-local
+packet with this MAC as SA. Subsequent packets with this MAC as SA will
+pass the locking check in the bridge driver.
 
--- 
-Best regards,
-Dmitry
+> I can do so that the driver returns -EINVAL if learning is on when
+> locking the port, but that would of course only be for mv88e6xxx...
+
+Working around this issue in the mv88e6xxx driver is the correct thing
+to do, IMO. We avoid leaking this implementation detail (i.e., forcing
+learning to be enabled) to user space, which in turn helps us avoid
+working around issues created by it (this patch, for example).
