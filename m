@@ -2,110 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00228C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FDBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233270AbiGEMC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S231756AbiGEMCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232981AbiGEMBY (ORCPT
+        with ESMTP id S230504AbiGEMBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:01:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408701835F;
-        Tue,  5 Jul 2022 05:01:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2879B817D3;
-        Tue,  5 Jul 2022 12:01:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5A9C36AE3;
-        Tue,  5 Jul 2022 12:01:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022480;
-        bh=FnF83P0Me1TTViQOm7a/P8GEvR4lEBNIGtf5qJLmVJM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkvKMPcU+7u83dyBUR+GG6Fv5byeba0LX9cZgjCtUp2YjmXW4VmkL2q0Bdn89OQ01
-         P41ySJLYWEVDmbBbhhb6asLbUtprG0v6gSlhd1g0OOONwIU651PBdSJRYdN6OnhhXR
-         ekVvykQWmgp05oQ+uYbboKw24ttQsRI22SwSc2J0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, katrinzhou <katrinzhou@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 21/29] ipv6/sit: fix ipip6_tunnel_get_prl return value
-Date:   Tue,  5 Jul 2022 13:58:09 +0200
-Message-Id: <20220705115606.969644195@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
-References: <20220705115606.333669144@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FDA1834F;
+        Tue,  5 Jul 2022 05:01:22 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o8hEp-000Eyk-No; Tue, 05 Jul 2022 14:01:07 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o8hEp-000Uzq-CA; Tue, 05 Jul 2022 14:01:07 +0200
+Subject: Re: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220701042810.26362-1-lukas.bulwahn@gmail.com>
+ <Yr7mcjRq57laZGEY@boxer>
+ <CAJ8uoz16yGJqYX2xOcczTGKFnG4joh8+f1uPGMAP4rmm3feYDQ@mail.gmail.com>
+ <Yr78Md1Nqpj+peO0@boxer>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c9c2d7b3-7d29-252d-6070-77d562ee4c3b@iogearbox.net>
+Date:   Tue, 5 Jul 2022 14:01:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yr78Md1Nqpj+peO0@boxer>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26594/Tue Jul  5 09:24:14 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: katrinzhou <katrinzhou@tencent.com>
+On 7/1/22 3:52 PM, Maciej Fijalkowski wrote:
+> On Fri, Jul 01, 2022 at 03:13:36PM +0200, Magnus Karlsson wrote:
+>> On Fri, Jul 1, 2022 at 2:38 PM Maciej Fijalkowski
+>> <maciej.fijalkowski@intel.com> wrote:
+>>>
+>>> On Fri, Jul 01, 2022 at 06:28:10AM +0200, Lukas Bulwahn wrote:
+>>>> Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
+>>>> files tools/{lib => testing/selftests}/bpf/xsk.[ch], but misses to adjust
+>>>> the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
+>>>>
+>>>> Adjust the file entry after this file movement.
+>>>>
+>>>> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+>>>> ---
+>>>> Andrii, please ack.
+>>>>
+>>>> Alexei, please pick this minor non-urgent clean-up on top of the commit above.
+>>>>
+>>>>   MAINTAINERS | 2 +-
+>>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>>> index fa4bfa3d10bf..27d9e65b9a85 100644
+>>>> --- a/MAINTAINERS
+>>>> +++ b/MAINTAINERS
+>>>> @@ -22042,7 +22042,7 @@ F:    include/uapi/linux/xdp_diag.h
+>>>>   F:   include/net/netns/xdp.h
+>>>>   F:   net/xdp/
+>>>>   F:   samples/bpf/xdpsock*
+>>>> -F:   tools/lib/bpf/xsk*
+>>>> +F:   tools/testing/selftests/bpf/xsk*
+>>>
+>>> Magnus, this doesn't cover xdpxceiver.
+>>> How about we move the lib part and xdpxceiver part to a dedicated
+>>> directory? Or would it be too nested from main dir POV?
+>>
+>> Or we can just call everything we add xsk* something?
+> 
+> No strong feelings. test_xsk.sh probably also needs to be addressed.
+> That's why I proposed dedicated dir.
 
-commit adabdd8f6acabc0c3fdbba2e7f5a2edd9c5ef22d upstream.
+Could one of you follow-up on this for bpf-next tree? Maybe for selftests something
+similar as in case of the XDP entry could work.
 
-When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
-Move the position of label "out" to return correctly.
-
-Addresses-Coverity: ("Unused value")
-Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
-Signed-off-by: katrinzhou <katrinzhou@tencent.com>
-Reviewed-by: Eric Dumazet<edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220628035030.1039171-1-zys.zljxml@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv6/sit.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -308,8 +308,6 @@ static int ipip6_tunnel_get_prl(struct i
- 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL | __GFP_NOWARN) :
- 		NULL;
- 
--	rcu_read_lock();
--
- 	ca = min(t->prl_count, cmax);
- 
- 	if (!kp) {
-@@ -325,7 +323,7 @@ static int ipip6_tunnel_get_prl(struct i
- 		}
- 	}
- 
--	c = 0;
-+	rcu_read_lock();
- 	for_each_prl_rcu(t->prl) {
- 		if (c >= cmax)
- 			break;
-@@ -337,7 +335,7 @@ static int ipip6_tunnel_get_prl(struct i
- 		if (kprl.addr != htonl(INADDR_ANY))
- 			break;
- 	}
--out:
-+
- 	rcu_read_unlock();
- 
- 	len = sizeof(*kp) * c;
-@@ -346,7 +344,7 @@ out:
- 		ret = -EFAULT;
- 
- 	kfree(kp);
--
-+out:
- 	return ret;
- }
- 
-
-
+Thanks,
+Daniel
