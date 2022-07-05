@@ -2,263 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8015CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F276C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232620AbiGENiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
+        id S230461AbiGENio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232533AbiGENh4 (ORCPT
+        with ESMTP id S229802AbiGENi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:37:56 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FEA7BD00
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:59:17 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id x1so13463946qtv.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=OcCzp3/I2S1Lj2WiWjf+IVXJz5y+wSXmaCXx6oy51R4=;
-        b=MujJyB/23qhfekOKjeLTm4xManAfIMczJHZUilG6Po9qwwvUJlx/wEkIj0+1LWks1C
-         L8xPcDXK47Mro267I/Ry0acKOUHrC5G+9s3uKojLwv0sambB5WtEwE2oHdB20wFycoc9
-         wfFcZUS0RDpodCtOLLdghxBHBUpfbMFueJUbFgcjoVk0PfeeuZlv/fHooeWdIYy70TEa
-         pUJ+k4eGBC/RnP+nTAnPjmSGaz0BhkgertJK/Ko7SKyOFrJJARCBXTKhQ9F1JIyE85dS
-         wQdTmc1o2HVc+fA3SJvx3cHCIw+7mENH5TG/U3i8ZPYuEf7wZS1e6btK62DWMB9bC7C+
-         KN8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=OcCzp3/I2S1Lj2WiWjf+IVXJz5y+wSXmaCXx6oy51R4=;
-        b=zFMT02HWk+bHvvUHNvYsVe+4ANBQeHD+NUfd52AIp3XVqRfmbrrfv3VWXSA06GgUqV
-         wByuJQ87TQKO+jUi0UzdFpANtz3MiRNzXojaGrkwz4rAqbNTva9CWbgbY+Kt2/RKh07R
-         yc+OXQ5yVzuUPQ523O5AP19l1AedK/QoyGBW6IOmlAg9tJpy8JM+tVffU1r9vsFK0cki
-         kGt58i2KAqBPQu8JP8zr+iQvNKOON2HzY6pk8ygHvUp5jswQrmbH8B3Ce7r+qawBw80x
-         G5h4FL/ozQd7ZYdqduUfGN+cGSyrUhKBcAEOBML/rebdj9v9Qc5L0rwnVXQVZIVQj4hC
-         k9aw==
-X-Gm-Message-State: AJIora+pBFylT1oPB3ZP1M72wOUZbEBnaRUzhJA1IilParOKZ9RpXbv5
-        G7oC3TYalrFx7EGvvSlTfetOWA==
-X-Google-Smtp-Source: AGRyM1s6Ap3z2L+CmoX67bFaxVHJdK0WVqG8dR58i0XDYQMI8+KD2oirAljxhMaQtELYPMsItiPL+g==
-X-Received: by 2002:a05:6214:c22:b0:472:f86e:47b2 with SMTP id a2-20020a0562140c2200b00472f86e47b2mr7376314qvd.102.1657025953568;
-        Tue, 05 Jul 2022 05:59:13 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (mtl.collabora.ca. [66.171.169.34])
-        by smtp.gmail.com with ESMTPSA id bp13-20020a05620a458d00b006af10bd3635sm21454592qkb.57.2022.07.05.05.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 05:59:12 -0700 (PDT)
-Message-ID: <42ba6a9516f4359b757d2f94b16c1bb23cc41cb2.camel@ndufresne.ca>
-Subject: Re: [EXT] Re: [PATCH] media: amphion: only insert the first
- sequence startcode for vc1l format
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Ming Qian <ming.qian@nxp.com>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "hverkuil-cisco@xs4all.nl" <hverkuil-cisco@xs4all.nl>
-Cc:     "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Tue, 05 Jul 2022 08:59:11 -0400
-In-Reply-To: <AM6PR04MB634136824EC98EE804FAD0CEE7819@AM6PR04MB6341.eurprd04.prod.outlook.com>
-References: <20220628052017.26979-1-ming.qian@nxp.com>
-         <6e54af5243d324c5df1c9ec18d4b091fbd52150f.camel@ndufresne.ca>
-         <AM6PR04MB6341F4EB028CAE9B61C85157E7819@AM6PR04MB6341.eurprd04.prod.outlook.com>
-         <AM6PR04MB634136824EC98EE804FAD0CEE7819@AM6PR04MB6341.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
-MIME-Version: 1.0
+        Tue, 5 Jul 2022 09:38:29 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B96C7D1F3;
+        Tue,  5 Jul 2022 05:59:34 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.190.65.210])
+        by mail-app2 (Coremail) with SMTP id by_KCgAnzUHrNMRivCY+Aw--.58122S2;
+        Tue, 05 Jul 2022 20:56:20 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v2] net: rose: fix UAF bug caused by rose_t0timer_expiry
+Date:   Tue,  5 Jul 2022 20:56:10 +0800
+Message-Id: <20220705125610.77971-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgAnzUHrNMRivCY+Aw--.58122S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ar1ftFyktw4DJryUAr1xuFg_yoW8uryrpF
+        WYk343Grs3tw4UXFW8XFn7Zw4Ygw4DJry3Wr1xuFWSy3Z7Jr4YvF1kKFW8uF4xZFWkCFWa
+        gr1kGry5AwnFqF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkF1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
+        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
+        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48J
+        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
+        IF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
+        87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgoCAVZdtaiRogAtsD
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mardi 05 juillet 2022 =C3=A0 11:27 +0000, Ming Qian a =C3=A9crit=C2=A0:
-> > > From: Ming Qian
-> > > Sent: 2022=E5=B9=B47=E6=9C=885=E6=97=A5 10:00
-> > > To: Nicolas Dufresne <nicolas@ndufresne.ca>; mchehab@kernel.org;
-> > > hverkuil-cisco@xs4all.nl
-> > > Cc: shawnguo@kernel.org; robh+dt@kernel.org; s.hauer@pengutronix.de;
-> > > kernel@pengutronix.de; festevam@gmail.com; dl-linux-imx
-> > > <linux-imx@nxp.com>; linux-media@vger.kernel.org;
-> > > linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org
-> > > Subject: RE: [EXT] Re: [PATCH] media: amphion: only insert the first
-> > > sequence
-> > > startcode for vc1l format
-> > >=20
-> > > > From: Nicolas Dufresne <nicolas@ndufresne.ca>
-> > > > Sent: 2022=E5=B9=B47=E6=9C=885=E6=97=A5 0:06
-> > > > To: Ming Qian <ming.qian@nxp.com>; mchehab@kernel.org;
-> > > > hverkuil-cisco@xs4all.nl
-> > > > Cc: shawnguo@kernel.org; robh+dt@kernel.org; s.hauer@pengutronix.de=
-;
-> > > > kernel@pengutronix.de; festevam@gmail.com; dl-linux-imx
-> > > > <linux-imx@nxp.com>; linux-media@vger.kernel.org;
-> > > > linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org
-> > > > Subject: [EXT] Re: [PATCH] media: amphion: only insert the first
-> > > > sequence startcode for vc1l format
-> > > >=20
-> > > > Caution: EXT Email
-> > > >=20
-> > > > Hi Ming,
-> > > >=20
-> > > > Le mardi 28 juin 2022 =C3=A0 13:20 +0800, Ming Qian a =C3=A9crit :
-> > > > > For some formats, the amphion vpu requires startcode before seque=
-nce
-> > > > > and frame, such as vc1, vp8.
-> > > >=20
-> > > > I'm not sure why VP8 is being mentioned here. There is no specified
-> > > > sartcode for VP8, and no split of headers either.
-> > > >=20
-> > >=20
-> > > Hi Nicolas,
-> > > =C2=A0=C2=A0=C2=A0This patch has nothing to do with vp8, and indeed t=
-here is no specified
-> > > startcode for VP8.
-> > > But amphion vpu requires driver to help insert some custom startcode =
-for
-> > > vp8
-> > > and vc1.
-> > > It's custom behavior.
-> > >=20
-> > Instead of exposing the custom format, you should use data_offset like =
-VENUS
-> > driver do.  They vp8/9 codec in VENUS have the frame prefixed with an I=
-VF
-> > header, the data_offset let the userland skip it.
->=20
-> Hi Nicolas,
-> =C2=A0=C2=A0=C2=A0=C2=A0There is a stream buffer, and driver will copy th=
-e coded frame data to the
-> stream buffer, driver can decide to insert custom startcode or not, userl=
-and
-> won't know about it, so I don't think it's necessary to use data_offset t=
-o let
-> userland skip something.
-> =C2=A0=C2=A0=C2=A0=C2=A0Currently , driver will insert startcode for form=
-at vp8 and vc1. This is
-> transparent to the user.
+There are UAF bugs caused by rose_t0timer_expiry(). The
+root cause is that del_timer() could not stop the timer
+handler that is running and there is no synchronization.
+One of the race conditions is shown below:
 
-Can't you save the slow copy by using data_offset then ? I think most of th=
-e
-confusion comes from this commit message, someone else then you should be a=
-ble
-to understand what it means.
+    (thread 1)             |        (thread 2)
+                           | rose_device_event
+                           |   rose_rt_device_down
+                           |     rose_remove_neigh
+rose_t0timer_expiry        |       rose_stop_t0timer(rose_neigh)
+  ...                      |         del_timer(&neigh->t0timer)
+                           |         kfree(rose_neigh) //[1]FREE
+  neigh->dce_mode //[2]USE |
 
-regards,
-Nicolas
+The rose_neigh is deallocated in position [1] and use in
+position [2].
 
->=20
-> Ming
->=20
-> > > =C2=A0=C2=A0=C2=A0I'm sorry that my description include some confusio=
-n
-> > >=20
-> > > Ming
-> > >=20
-> > > > >=20
-> > > > > But for V4L2_PIX_FMT_VC1_ANNEX_L, only the first sequence startco=
-de
-> > > > > is needed, the extra startcode will cause decoding error.
-> > > > > So after seek, we don't need to insert the sequence startcode.
-> > > > >=20
-> > > > > In other words, for V4L2_PIX_FMT_VC1_ANNEX_L, the vpu doesn't
-> > > > > support dynamic resolution change.
-> > > > >=20
-> > > > > Fixes: 145e936380edb ("media: amphion: implement malone decoder r=
-pc
-> > > > > interface")
-> > > > > Signed-off-by: Ming Qian <ming.qian@nxp.com>
-> > > > > ---
-> > > > > =C2=A0drivers/media/platform/amphion/vdec.c       | 1 +
-> > > > > =C2=A0drivers/media/platform/amphion/vpu.h        | 1 +
-> > > > > =C2=A0drivers/media/platform/amphion/vpu_malone.c | 2 ++
-> > > > > =C2=A0drivers/media/platform/amphion/vpu_rpc.h    | 7 ++++++-
-> > > > > =C2=A04 files changed, 10 insertions(+), 1 deletion(-)
-> > > > >=20
-> > > > > diff --git a/drivers/media/platform/amphion/vdec.c
-> > > > > b/drivers/media/platform/amphion/vdec.c
-> > > > > index 09d4f27970ec..51218a41a5ac 100644
-> > > > > --- a/drivers/media/platform/amphion/vdec.c
-> > > > > +++ b/drivers/media/platform/amphion/vdec.c
-> > > > > @@ -731,6 +731,7 @@ static void vdec_stop_done(struct vpu_inst *i=
-nst)
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vdec->eos_received =3D 0;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vdec->is_source_changed =3D f=
-alse;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vdec->source_change =3D 0;
-> > > > > +     inst->total_input_count =3D 0;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vpu_inst_unlock(inst);
-> > > > > =C2=A0}
-> > > > >=20
-> > > > > diff --git a/drivers/media/platform/amphion/vpu.h
-> > > > > b/drivers/media/platform/amphion/vpu.h
-> > > > > index e56b96a7e5d3..f914de6ed81e 100644
-> > > > > --- a/drivers/media/platform/amphion/vpu.h
-> > > > > +++ b/drivers/media/platform/amphion/vpu.h
-> > > > > @@ -258,6 +258,7 @@ struct vpu_inst {
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct vpu_format cap_format;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32 min_buffer_cap;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32 min_buffer_out;
-> > > > > +     u32 total_input_count;
-> > > > >=20
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct v4l2_rect crop;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32 colorspace;
-> > > > > diff --git a/drivers/media/platform/amphion/vpu_malone.c
-> > > > > b/drivers/media/platform/amphion/vpu_malone.c
-> > > > > index c62b49e85060..f4a488bf9880 100644
-> > > > > --- a/drivers/media/platform/amphion/vpu_malone.c
-> > > > > +++ b/drivers/media/platform/amphion/vpu_malone.c
-> > > > > @@ -1314,6 +1314,8 @@ static int
-> > > > vpu_malone_insert_scode_vc1_l_seq(struct malone_scode_t *scode)
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int size =3D 0;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u8 rcv_seqhdr[MALONE_VC1_RCV_=
-SEQ_HEADER_LEN];
-> > > > >=20
-> > > > > +     if (scode->inst->total_input_count)
-> > > > > +             return 0;
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0scode->need_data =3D 0;
-> > > > >=20
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret =3D vpu_malone_insert_sco=
-de_seq(scode,
-> > > > > MALONE_CODEC_ID_VC1_SIMPLE, sizeof(rcv_seqhdr)); diff --git
-> > > > > a/drivers/media/platform/amphion/vpu_rpc.h
-> > > > > b/drivers/media/platform/amphion/vpu_rpc.h
-> > > > > index 25119e5e807e..7eb6f01e6ab5 100644
-> > > > > --- a/drivers/media/platform/amphion/vpu_rpc.h
-> > > > > +++ b/drivers/media/platform/amphion/vpu_rpc.h
-> > > > > @@ -312,11 +312,16 @@ static inline int vpu_iface_input_frame(str=
-uct
-> > > > vpu_inst *inst,
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0struct vb2_buffer *vb)  {
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct vpu_iface_ops *ops =3D=
- vpu_core_get_iface(inst->core);
-> > > > > +     int ret;
-> > > > >=20
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!ops || !ops->input_frame=
-)
-> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
-> > > > >=20
-> > > > > -     return ops->input_frame(inst->core->iface, inst, vb);
-> > > > > +     ret =3D ops->input_frame(inst->core->iface, inst, vb);
-> > > > > +     if (ret < 0)
-> > > > > +             return ret;
-> > > > > +     inst->total_input_count++;
-> > > > > +     return ret;
-> > > > > =C2=A0}
-> > > > >=20
-> > > > > =C2=A0static inline int vpu_iface_config_memory_resource(struct v=
-pu_inst
-> > > > > *inst,
->=20
+The crash trace triggered by POC is like below:
+
+BUG: KASAN: use-after-free in expire_timers+0x144/0x320
+Write of size 8 at addr ffff888009b19658 by task swapper/0/0
+...
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0xbf/0xee
+ print_address_description+0x7b/0x440
+ print_report+0x101/0x230
+ ? expire_timers+0x144/0x320
+ kasan_report+0xed/0x120
+ ? expire_timers+0x144/0x320
+ expire_timers+0x144/0x320
+ __run_timers+0x3ff/0x4d0
+ run_timer_softirq+0x41/0x80
+ __do_softirq+0x233/0x544
+ ...
+
+This patch changes rose_stop_ftimer() and rose_stop_t0timer()
+in rose_remove_neigh() to del_timer_sync() in order that the
+timer handler could be finished before the resources such as
+rose_neigh and so on are deallocated. As a result, the UAF
+bugs could be mitigated.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in v2:
+  - v2: Use del_timer_sync to stop timer in rose_remove_neigh.
+
+ net/rose/rose_route.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index fee6409c2bb..eb0b8197ac8 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -227,8 +227,8 @@ static void rose_remove_neigh(struct rose_neigh *rose_neigh)
+ {
+ 	struct rose_neigh *s;
+ 
+-	rose_stop_ftimer(rose_neigh);
+-	rose_stop_t0timer(rose_neigh);
++	del_timer_sync(&rose_neigh->ftimer);
++	del_timer_sync(&rose_neigh->t0timer);
+ 
+ 	skb_queue_purge(&rose_neigh->queue);
+ 
+-- 
+2.17.1
 
