@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF98CCA496
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC324C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238509AbiGEM3N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        id S238595AbiGEM3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237474AbiGEMTP (ORCPT
+        with ESMTP id S237518AbiGEMTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53D21D0D4;
-        Tue,  5 Jul 2022 05:14:42 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF7C1D0FF;
+        Tue,  5 Jul 2022 05:14:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A6FFB8170A;
-        Tue,  5 Jul 2022 12:14:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09EFBC341C7;
-        Tue,  5 Jul 2022 12:14:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87745B817AC;
+        Tue,  5 Jul 2022 12:14:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE92AC341C7;
+        Tue,  5 Jul 2022 12:14:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023280;
-        bh=eQyiGUsTpyX0QuJXNAt6t6TjeqSqJjJyqf0tE+DcXkY=;
+        s=korg; t=1657023294;
+        bh=OTmZADZLWKyTXoVEvZlu6VSqwHjC1HlNN1ln2kDxW2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OdSNOfTYYTuG3OLx55baV9BDQL0uTrGy1ffimAq745pd37ZRQB/2OgJDb6jIcw9CY
-         8OxXmyGqDpjdTwH4K9Rn30YAlot+Eu4i656zcgaIZctp8gFV4P6z5qtzIUA5XbqDL2
-         U5RU/c7VTviHReWEOLQlNBRg2qafeqYKBpu7+MkQ=
+        b=dQHCelNNeEIyW5z7mfWY8gp6o+eYNWJ3DkLlpQlb//hsbLf8pC4yKhw6w8vCtk6Ra
+         0Ix2clyh59wtzcgKkHtSiWJBz4bjsU9Kgdc7yPL6r8nUuGF0JCT2LqioEYTEzm3sB2
+         tuPzekqm+vx1cFiBrd6drGsizJr+NzojgkDfsIF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.15 83/98] xen/arm: Fix race in RB-tree based P2M accounting
-Date:   Tue,  5 Jul 2022 13:58:41 +0200
-Message-Id: <20220705115619.928285828@linuxfoundation.org>
+        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.18 001/102] drm/amdgpu: fix adev variable used in amdgpu_device_gpu_recover()
+Date:   Tue,  5 Jul 2022 13:57:27 +0200
+Message-Id: <20220705115618.454736735@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,72 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-commit b75cd218274e01d026dc5240e86fdeb44bbed0c8 upstream.
+commit bbba251577b27422ebe173e1bd006424d6a8cfb3 upstream.
 
-During the PV driver life cycle the mappings are added to
-the RB-tree by set_foreign_p2m_mapping(), which is called from
-gnttab_map_refs() and are removed by clear_foreign_p2m_mapping()
-which is called from gnttab_unmap_refs(). As both functions end
-up calling __set_phys_to_machine_multi() which updates the RB-tree,
-this function can be called concurrently.
+Use the correct adev variable for the drm_fb_helper in
+amdgpu_device_gpu_recover().  Noticed by inspection.
 
-There is already a "p2m_lock" to protect against concurrent accesses,
-but the problem is that the first read of "phys_to_mach.rb_node"
-in __set_phys_to_machine_multi() is not covered by it, so this might
-lead to the incorrect mappings update (removing in our case) in RB-tree.
-
-In my environment the related issue happens rarely and only when
-PV net backend is running, the xen_add_phys_to_mach_entry() claims
-that it cannot add new pfn <-> mfn mapping to the tree since it is
-already exists which results in a failure when mapping foreign pages.
-
-But there might be other bad consequences related to the non-protected
-root reads such use-after-free, etc.
-
-While at it, also fix the similar usage in __pfn_to_mfn(), so
-initialize "struct rb_node *n" with the "p2m_lock" held in both
-functions to avoid possible bad consequences.
-
-This is CVE-2022-33744 / XSA-406.
-
-Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Fixes: 087451f372bf ("drm/amdgpu: use generic fb helpers instead of setting up AMD own's.")
+Reviewed-by: Guchun Chen <guchun.chen@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/xen/p2m.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/xen/p2m.c
-+++ b/arch/arm/xen/p2m.c
-@@ -63,11 +63,12 @@ out:
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -5140,7 +5140,7 @@ int amdgpu_device_gpu_recover_imp(struct
+ 		 */
+ 		amdgpu_unregister_gpu_instance(tmp_adev);
  
- unsigned long __pfn_to_mfn(unsigned long pfn)
- {
--	struct rb_node *n = phys_to_mach.rb_node;
-+	struct rb_node *n;
- 	struct xen_p2m_entry *entry;
- 	unsigned long irqflags;
+-		drm_fb_helper_set_suspend_unlocked(adev_to_drm(adev)->fb_helper, true);
++		drm_fb_helper_set_suspend_unlocked(adev_to_drm(tmp_adev)->fb_helper, true);
  
- 	read_lock_irqsave(&p2m_lock, irqflags);
-+	n = phys_to_mach.rb_node;
- 	while (n) {
- 		entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
- 		if (entry->pfn <= pfn &&
-@@ -152,10 +153,11 @@ bool __set_phys_to_machine_multi(unsigne
- 	int rc;
- 	unsigned long irqflags;
- 	struct xen_p2m_entry *p2m_entry;
--	struct rb_node *n = phys_to_mach.rb_node;
-+	struct rb_node *n;
- 
- 	if (mfn == INVALID_P2M_ENTRY) {
- 		write_lock_irqsave(&p2m_lock, irqflags);
-+		n = phys_to_mach.rb_node;
- 		while (n) {
- 			p2m_entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
- 			if (p2m_entry->pfn <= pfn &&
+ 		/* disable ras on ALL IPs */
+ 		if (!need_emergency_restart &&
 
 
