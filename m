@@ -2,87 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D45BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36362C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbiGEREK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        id S231390AbiGERFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231390AbiGERDu (ORCPT
+        with ESMTP id S229537AbiGERFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:03:50 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D767518E19;
-        Tue,  5 Jul 2022 10:03:49 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265H3hWR053344;
-        Tue, 5 Jul 2022 12:03:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657040623;
-        bh=2HKjx10FFf1Yp7Fuxqiy2dy5NnGbMAnndAuu1JIHU9Y=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=sF2wq3SrGWt+pnQrcFXQ3moPlchwc5ovfkNb9+Ci57/QODoyQPpm90dQiErKfpYog
-         yrA6SCA0QM0047jHS/3G+mGpctmSNSAHa0p0y7ivgX3HWqGxT17VZb9lVH2WssIoqe
-         LWgc9l8gQ2S7zbDL8gE4DCWBPcrP0vNDWPMEK4iY=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265H3hpP103070
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Jul 2022 12:03:43 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Jul 2022 12:03:43 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Jul 2022 12:03:43 -0500
-Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265H3e0A118192;
-        Tue, 5 Jul 2022 12:03:42 -0500
-From:   Andrew Davis <afd@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Andrew Davis <afd@ti.com>
-Subject: [PATCH 5/6] arm64: dts: ti: k3-am65-main: Do not exclusively claim SA2UL
-Date:   Tue, 5 Jul 2022 12:03:39 -0500
-Message-ID: <20220705170340.26719-5-afd@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220705170340.26719-1-afd@ti.com>
-References: <20220705170340.26719-1-afd@ti.com>
+        Tue, 5 Jul 2022 13:05:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775B71AD82
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 10:05:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E3425CE1B95
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 17:05:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5071BC341C7;
+        Tue,  5 Jul 2022 17:05:05 +0000 (UTC)
+Date:   Tue, 5 Jul 2022 18:05:01 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Will Deacon <will@kernel.org>,
+        "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
+        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
+        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
+        jonathan@marek.ca, mark.rutland@arm.com,
+        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        geert+renesas@glider.be, linux-mm@kvack.org,
+        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+Message-ID: <YsRvPTORdvIwzShL@arm.com>
+References: <20220704142313.GE31684@willie-the-truck>
+ <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
+ <20220704163815.GA32177@willie-the-truck>
+ <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck>
+ <YsRSajyMxahXe7ZS@kernel.org>
+ <YsRZ8V8mQ+HM31D6@arm.com>
+ <YsRfgX7FFZLxQU50@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YsRfgX7FFZLxQU50@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SA2UL hardware is also used by SYSFW and OP-TEE. It should be
-requested using the shared TI-SCI flags instead of the exclusive
-flags or the request will fail.
+On Tue, Jul 05, 2022 at 06:57:53PM +0300, Mike Rapoport wrote:
+> On Tue, Jul 05, 2022 at 04:34:09PM +0100, Catalin Marinas wrote:
+> > On Tue, Jul 05, 2022 at 06:02:02PM +0300, Mike Rapoport wrote:
+> > > +void __init remap_crashkernel(void)
+> > > +{
+> > > +#ifdef CONFIG_KEXEC_CORE
+> > > +	phys_addr_t start, end, size;
+> > > +	phys_addr_t aligned_start, aligned_end;
+> > > +
+> > > +	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+> > > +	    return;
+> > > +
+> > > +	if (!crashk_res.end)
+> > > +	    return;
+> > > +
+> > > +	start = crashk_res.start & PAGE_MASK;
+> > > +	end = PAGE_ALIGN(crashk_res.end);
+> > > +
+> > > +	aligned_start = ALIGN_DOWN(crashk_res.start, PUD_SIZE);
+> > > +	aligned_end = ALIGN(end, PUD_SIZE);
+> > > +
+> > > +	/* Clear PUDs containing crash kernel memory */
+> > > +	unmap_hotplug_range(__phys_to_virt(aligned_start),
+> > > +			    __phys_to_virt(aligned_end), false, NULL);
+> > 
+> > What I don't understand is what happens if there's valid kernel data
+> > between aligned_start and crashk_res.start (or the other end of the
+> > range).
+> 
+> Data shouldn't go anywhere :)
+> 
+> There is 
+> 
+> +	/* map area from PUD start to start of crash kernel with large pages */
+> +	size = start - aligned_start;
+> +	__create_pgd_mapping(swapper_pg_dir, aligned_start,
+> +			     __phys_to_virt(aligned_start),
+> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+> 
+> and 
+> 
+> +	/* map area from end of crash kernel to PUD end with large pages */
+> +	size = aligned_end - end;
+> +	__create_pgd_mapping(swapper_pg_dir, end, __phys_to_virt(end),
+> +			     size, PAGE_KERNEL, early_pgtable_alloc, 0);
+> 
+> after the unmap, so after we tear down a part of a linear map we
+> immediately recreate it, just with a different page size.
+> 
+> This all happens before SMP, so there is no concurrency at that point.
 
-Signed-off-by: Andrew Davis <afd@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That brief period of unmap worries me. The kernel text, data and stack
+are all in the vmalloc space but any other (memblock) allocation to this
+point may be in the unmapped range before and after the crashkernel
+reservation. The interrupts are off, so I think the only allocation and
+potential access that may go in this range is the page table itself. But
+it looks fragile to me.
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-index 2b0bac89b23f2..8f9c6282e8925 100644
---- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-@@ -112,7 +112,7 @@ main_uart2: serial@2820000 {
- 	crypto: crypto@4e00000 {
- 		compatible = "ti,am654-sa2ul";
- 		reg = <0x0 0x4e00000 0x0 0x1200>;
--		power-domains = <&k3_pds 136 TI_SCI_PD_EXCLUSIVE>;
-+		power-domains = <&k3_pds 136 TI_SCI_PD_SHARED>;
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 		ranges = <0x0 0x04e00000 0x00 0x04e00000 0x0 0x30000>;
 -- 
-2.36.1
-
+Catalin
