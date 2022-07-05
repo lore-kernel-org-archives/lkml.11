@@ -2,68 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B10E7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E41DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232605AbiGEP5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        id S229978AbiGEP6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232288AbiGEP5p (ORCPT
+        with ESMTP id S230493AbiGEP6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:57:45 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0872E1164
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:57:44 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 265Fmsn6029167;
-        Tue, 5 Jul 2022 10:48:55 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 265FmqXx029161;
-        Tue, 5 Jul 2022 10:48:52 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 5 Jul 2022 10:48:52 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>, "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        Sathvika Vasireddy <sv@linux.vnet.ibm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC PATCH v3 11/12] powerpc: Remove unreachable() from WARN_ON()
-Message-ID: <20220705154852.GR25951@gate.crashing.org>
-References: <20220624183238.388144-1-sv@linux.ibm.com> <20220624183238.388144-12-sv@linux.ibm.com> <70b6d08d-aced-7f4e-b958-a3c7ae1a9319@csgroup.eu> <92eae2ef-f9b6-019a-5a8e-728cdd9bbbc0@linux.vnet.ibm.com> <cce19b1c-449a-f306-533a-9edc855049aa@csgroup.eu> <YsLS02T6TAxN/HcL@hirez.programming.kicks-ass.net> <6ab46ef2-6bbd-e758-a7ff-5f62fdf1ca96@csgroup.eu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+        Tue, 5 Jul 2022 11:58:13 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A96C266A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:58:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657036692; x=1688572692;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4UcFBdwVPNGp4VMF2eOGRnKawTrULmg2jhiKGa5OAmM=;
+  b=fk8DD8g2x5zhV7Kd4eO0Tb4auvEtbc+O+jIrFtPlT2WNTuFQz19Xn1DF
+   7aNWrSnW4cOYDpUq+/vpqfxN7zguCVE3mU80badcg3adeZJwIONlQXWnE
+   TD6p1dir5rjVM7qYx8kZUASNvYfVA0yrDtxgTwj4qvFvWiPrXYqz6z3u9
+   eRNOnkOPGM+9w0UtY+TZW4YKJQLNFWgq1unyhxV9f8+IcNlZn3LDUtZNM
+   DhHgw7EAok4ueC20rWUoQ6/wdlKfl0jFQJY5/j9nP0lOhGkIJe/OdGQwv
+   mz7Fv/y7QyflKRAbKICy8qa3273ww2NapWOdmz/Wiz3xaXig+YIlddGCc
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="283416794"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="283416794"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 08:58:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="919769341"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 05 Jul 2022 08:58:09 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id F069E1A0; Tue,  5 Jul 2022 18:58:15 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Subject: [PATCH v3 1/1] ASoC: Intel: catpt: remove duplicating driver data retrieval
+Date:   Tue,  5 Jul 2022 18:58:13 +0300
+Message-Id: <20220705155813.75917-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6ab46ef2-6bbd-e758-a7ff-5f62fdf1ca96@csgroup.eu>
-User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 12:34:08PM +0000, Christophe Leroy wrote:
-> Le 04/07/2022 à 13:45, Peter Zijlstra a écrit :
-> > I'm somewhat confused; how is an empty STT_FUNC a valid construct on
-> > Power?
-> 
-> So am I. It is likely not a valid construct, but that's what GCC seems 
-> to generate when you call annotate_unreachable().
+device_get_match_data() in ACPI case calls similar to acpi_match_device().
+Hence there is no need to duplicate the call. Just assign what is in
+the id->driver_data.
 
-It is a valid construct on (almost) all targets.  If the user chooses to
-have executable code terminate in limbo, that is what the compiler will
-do (and this can result in a code symbol with size 0).  Compare this to
-data symbols with no size, the situation is quite similar.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v3: moved spec assignment closer to its user (PÃ©ter, Czarek)
+ sound/soc/intel/catpt/device.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
+diff --git a/sound/soc/intel/catpt/device.c b/sound/soc/intel/catpt/device.c
+index 85a34e37316d..d48a71d2cf1e 100644
+--- a/sound/soc/intel/catpt/device.c
++++ b/sound/soc/intel/catpt/device.c
+@@ -254,14 +254,11 @@ static int catpt_acpi_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
+-	spec = device_get_match_data(dev);
+-	if (!spec)
+-		return -ENODEV;
+-
+ 	cdev = devm_kzalloc(dev, sizeof(*cdev), GFP_KERNEL);
+ 	if (!cdev)
+ 		return -ENOMEM;
+ 
++	spec = (const struct catpt_spec *)id->driver_data;
+ 	catpt_dev_init(cdev, dev, spec);
+ 
+ 	/* map DSP bar address */
+-- 
+2.35.1
 
-Segher
