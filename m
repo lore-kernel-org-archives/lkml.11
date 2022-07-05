@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE09C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235188AbiGEMNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
+        id S235433AbiGEMNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234651AbiGEMHt (ORCPT
+        with ESMTP id S234675AbiGEMHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:07:49 -0400
+        Tue, 5 Jul 2022 08:07:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8952193C7;
-        Tue,  5 Jul 2022 05:06:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41441192BB;
+        Tue,  5 Jul 2022 05:06:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F38016196B;
-        Tue,  5 Jul 2022 12:06:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE18C341CD;
-        Tue,  5 Jul 2022 12:06:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA5E617B1;
+        Tue,  5 Jul 2022 12:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C566DC341CB;
+        Tue,  5 Jul 2022 12:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022808;
-        bh=i9iHaXZQFWZI8UBoun2kJF0PJzjl4NwWTkVIdZdQ/tc=;
+        s=korg; t=1657022811;
+        bh=P9EBvSno1J4Q6TM91bka1vnIcxP0MV0I7TioYm05TN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vujEEiSlqmK6Qy68ZcmihQsMCJf3Auu2Nste6zHfSwzxrWMxIgc45nEQFxIm80dbL
-         M/ESMwyenagYNtwYWIl/sgwtE5pj6vZ1J+/wuLUGwFXAz7vMfAh8t96T8UEEeKT1Wu
-         9F3Q0GS8iT8jjZ1rZnTxXiNtrMkRkOu5qYLxrNNg=
+        b=lyBK+olUu+E+EnwKz/sO4Dx3J4vCzip2cC1pGbuq/WP2cKsnZM3g1xjREv+uqnZgf
+         8pbOKXcdAzrw7k/7kElNaI4CmoDErCLFIt6YpTFVCGbZRPc3Z8XdHIsx/tZqMYS7o3
+         7fxyY4W5Dn8FxPIR+cpnbUPOy0KBHRujfaGKC7N4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petar Penkov <ppenkov@aviatrix.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 18/84] net: tun: stop NAPI when detaching queues
-Date:   Tue,  5 Jul 2022 13:57:41 +0200
-Message-Id: <20220705115615.858128566@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 19/84] net: dp83822: disable false carrier interrupt
+Date:   Tue,  5 Jul 2022 13:57:42 +0200
+Message-Id: <20220705115615.886314240@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -48,58 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
 
-commit a8fc8cb5692aebb9c6f7afd4265366d25dcd1d01 upstream.
+commit c96614eeab663646f57f67aa591e015abd8bd0ba upstream.
 
-While looking at a syzbot report I noticed the NAPI only gets
-disabled before it's deleted. I think that user can detach
-the queue before destroying the device and the NAPI will never
-be stopped.
+When unplugging an Ethernet cable, false carrier events were produced by
+the PHY at a very high rate. Once the false carrier counter full, an
+interrupt was triggered every few clock cycles until the cable was
+replugged. This resulted in approximately 10k/s interrupts.
 
-Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
-Acked-by: Petar Penkov <ppenkov@aviatrix.com>
-Link: https://lore.kernel.org/r/20220623042105.2274812-1-kuba@kernel.org
+Since the false carrier counter (FCSCR) is never used, we can safely
+disable this interrupt.
+
+In addition to improving performance, this also solved MDIO read
+timeouts I was randomly encountering with an i.MX8 fec MAC because of
+the interrupt flood. The interrupt count and MDIO timeout fix were
+tested on a v5.4.110 kernel.
+
+Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/tun.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/phy/dp83822.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -279,6 +279,12 @@ static void tun_napi_init(struct tun_str
- 	}
- }
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -244,7 +244,6 @@ static int dp83822_config_intr(struct ph
+ 			return misr_status;
  
-+static void tun_napi_enable(struct tun_file *tfile)
-+{
-+	if (tfile->napi_enabled)
-+		napi_enable(&tfile->napi);
-+}
-+
- static void tun_napi_disable(struct tun_file *tfile)
- {
- 	if (tfile->napi_enabled)
-@@ -659,8 +665,10 @@ static void __tun_detach(struct tun_file
- 		if (clean) {
- 			RCU_INIT_POINTER(tfile->tun, NULL);
- 			sock_put(&tfile->sk);
--		} else
-+		} else {
- 			tun_disable_queue(tun, tfile);
-+			tun_napi_disable(tfile);
-+		}
- 
- 		synchronize_net();
- 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
-@@ -814,6 +822,7 @@ static int tun_attach(struct tun_struct
- 
- 	if (tfile->detached) {
- 		tun_enable_queue(tfile);
-+		tun_napi_enable(tfile);
- 	} else {
- 		sock_hold(&tfile->sk);
- 		tun_napi_init(tun, tfile, napi, napi_frags);
+ 		misr_status |= (DP83822_RX_ERR_HF_INT_EN |
+-				DP83822_FALSE_CARRIER_HF_INT_EN |
+ 				DP83822_LINK_STAT_INT_EN |
+ 				DP83822_ENERGY_DET_INT_EN |
+ 				DP83822_LINK_QUAL_INT_EN);
 
 
