@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C16CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B7CCCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiGEJtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
+        id S231574AbiGEJtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231303AbiGEJtE (ORCPT
+        with ESMTP id S231338AbiGEJtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:49:04 -0400
+        Tue, 5 Jul 2022 05:49:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49167FD3E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F0C101EA;
         Tue,  5 Jul 2022 02:49:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D085B61926;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C7861919;
+        Tue,  5 Jul 2022 09:49:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E43AC36B0D;
         Tue,  5 Jul 2022 09:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969DAC341CE;
-        Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657014542;
-        bh=6PIq6E5IaCm16IQAMjZXZR5xejvClm6y5jWgrc0y/xs=;
+        s=k20201202; t=1657014543;
+        bh=O9KkrHVAnzuQAnWNP5LQhMy3imM3btu6fVBNuFDOHhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P3awIUsbzmwLD6QRDlPOJcqT6OrDahzk0Vn6MaJ97hWJlBQ7SKd+ZRpS0mWhWrmJI
-         mdZPyVYcW/omzwhYAFJ0dWiCo/AgWRqX3+QR2eF7xq6z0qmmKfHpCCuKlFga6uL/Nq
-         /dLEODfwmoWqY99TEDLAh7DVgdEr87HxzQzNC5GRAXSkM6bxBzHOLxfT+3/HCrel1s
-         ALScvVzCltHuwEXgP5MFEqEDLEUJVZhRDuqlN8IzKSEhrQmobP/8t7bYiYdtL5Wv8u
-         wKVPQjFnmP3uJnRChsF30O6UsrjuLl52r7M5Qk9TOpTW5E432q8AlYPShwxq2jRgDl
-         54ZdtQIz/i1Jw==
+        b=N13QWXPnsai1JxPCWabuUFUO8LdKjY+j+9WaMSySHoZwnRFzKm+XLZc5oXacl1+Jg
+         52NCvoGaBouaqt4RFZUtIpK7YVIOR+cOoxqEd5I62v9Q4ejT49nKw7FrkX9ylmB7hs
+         rM1skunEounUXKTWQM0z4cHhJ8zlprBwzZMClw4yIyBa/Tl726kTXVe68B26mZapiC
+         nIPpUNw16+hw1ezGy79dqkbZ/J0pnrHyflv2TGoau97EPTEoSsjlXrqg+jaByu/qeL
+         bSnSonxfRQfmzUjSvbp+H1dpb/Vc1fYT8PWywpe+cLNHi14snGv1dyr9X6/qcFFxam
+         lfOUCWvhjg96A==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1o8fB1-0004XJ-Dt; Tue, 05 Jul 2022 11:49:03 +0200
+        id 1o8fB2-0004Xe-1m; Tue, 05 Jul 2022 11:49:04 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -44,9 +44,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 10/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate PIPE clock names
-Date:   Tue,  5 Jul 2022 11:42:06 +0200
-Message-Id: <20220705094239.17174-11-johan+linaro@kernel.org>
+Subject: [PATCH 17/43] dt-bindings: phy: qcom,qmp-pcie: add missing child node schema
+Date:   Tue,  5 Jul 2022 11:42:13 +0200
+Message-Id: <20220705094239.17174-18-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220705094239.17174-1-johan+linaro@kernel.org>
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
@@ -56,66 +56,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the unnecessary "lane" suffix from the PHY PIPE clock names and
-mark the old names as deprecated.
+Add the missing the description of the PHY-provider child node which was
+ignored when converting to DT schema.
 
+Also fix up the incorrect description that claimed that one child node
+per lane was required.
+
+Fixes: ccf51c1cedfd ("dt-bindings: phy: qcom,qmp: Convert QMP PHY bindings to yaml")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 20 +++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ .../bindings/phy/qcom,qmp-pcie-phy.yaml       | 88 ++++++++++++++++++-
+ 1 file changed, 85 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-index 45f7bb7a632a..7931b1fd1476 100644
---- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-@@ -79,11 +79,15 @@ patternProperties:
-           - description: PIPE clock
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
+index ff1577f68a00..5a1ebf874559 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
+@@ -69,9 +69,37 @@ properties:
+ patternProperties:
+   "^phy@[0-9a-f]+$":
+     type: object
+-    description:
+-      Each device node of QMP PHY is required to have as many child nodes as
+-      the number of lanes the PHY has.
++    description: Single PHY-provider child node.
++    properties:
++      reg:
++        minItems: 3
++        maxItems: 6
++
++      clocks:
++        items:
++          - description: PIPE clock
++
++      clock-names:
++        items:
++          - const: pipe0
++
++      "#clock-cells":
++        const: 0
++
++      clock-output-names: true
++
++      "#phy-cells":
++        const: 0
++
++    required:
++      - reg
++      - clocks
++      - clock-names
++      - "#clock-cells"
++      - clock-output-names
++      - "#phy-cells"
++
++    additionalProperties: false
  
-       clock-names:
--        items:
--          - enum:
--              - pipe0
--              - pipe1
--              - pipe2
-+        oneOf:
-+          - items:
-+              - const: pipe
-+          - items:
-+              - enum:
-+                  - pipe0
-+                  - pipe1
-+                  - pipe2
-+            deprecated: true
- 
-       resets:
-         items:
-@@ -160,7 +164,7 @@ examples:
-                   <0x1400 0x1dc>;
- 
-             clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
--            clock-names = "pipe0";
-+            clock-names = "pipe";
-             resets = <&gcc GCC_PCIE_0_PHY_BCR>;
-             reset-names = "lane0";
- 
-@@ -176,7 +180,7 @@ examples:
-                   <0x2400 0x1dc>;
- 
-             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
--            clock-names = "pipe1";
-+            clock-names = "pipe";
-             resets = <&gcc GCC_PCIE_1_PHY_BCR>;
-             reset-names = "lane1";
- 
-@@ -192,7 +196,7 @@ examples:
-                   <0x3400 0x1dc>;
- 
-             clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
--            clock-names = "pipe2";
-+            clock-names = "pipe";
-             resets = <&gcc GCC_PCIE_2_PHY_BCR>;
-             reset-names = "lane2";
- 
+ required:
+   - compatible
+@@ -180,3 +208,57 @@ allOf:
+       required:
+         - vdda-phy-supply
+         - vdda-pll-supply
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,sm8250-qmp-gen3x2-pcie-phy
++              - qcom,sm8250-qmp-modem-pcie-phy
++              - qcom,sm8450-qmp-gen4x2-pcie-phy
++    then:
++      patternProperties:
++        "^phy@[0-9a-f]+$":
++          properties:
++            reg:
++              items:
++                - description: TX lane 1
++                - description: RX lane 1
++                - description: PCS
++                - description: TX lane 2
++                - description: RX lane 2
++                - description: PCS_MISC
++    else:
++      patternProperties:
++        "^phy@[0-9a-f]+$":
++          properties:
++            reg:
++              minItems: 3
++              maxItems: 4
++              items:
++                - description: TX
++                - description: RX
++                - description: PCS
++                - description: PCS_MISC
++      if:
++        properties:
++          compatible:
++            contains:
++              enum:
++                - qcom,ipq6018-qmp-pcie-phy
++                - qcom,ipq8074-qmp-pcie-phy
++                - qcom,msm8998-qmp-pcie-phy
++                - qcom,sdm845-qhp-pcie-phy
++      then:
++        patternProperties:
++          "^phy@[0-9a-f]+$":
++            properties:
++              reg:
++                maxItems: 3
++      else:
++        patternProperties:
++          "^phy@[0-9a-f]+$":
++            properties:
++              reg:
++                minItems: 4
 -- 
 2.35.1
 
