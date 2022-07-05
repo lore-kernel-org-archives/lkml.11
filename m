@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237484AbiGEMfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:35:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
+        id S237589AbiGEMfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237976AbiGEM0q (ORCPT
+        with ESMTP id S237981AbiGEM0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A35A18E13;
-        Tue,  5 Jul 2022 05:18:53 -0700 (PDT)
+        Tue, 5 Jul 2022 08:26:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFD619001;
+        Tue,  5 Jul 2022 05:19:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 051ED61984;
-        Tue,  5 Jul 2022 12:18:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14460C341C7;
-        Tue,  5 Jul 2022 12:18:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CEAFB816A4;
+        Tue,  5 Jul 2022 12:18:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A155AC341C7;
+        Tue,  5 Jul 2022 12:18:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023532;
-        bh=ADwui9E0rfIJoCR/H1EoQbMIg5U6xbIwzSp52+1nWDs=;
+        s=korg; t=1657023538;
+        bh=hNXmo5FzrW8h9mvBLBvzgpTIgoLac6GO58zwrAYU/bM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PXHU2SmYknjpyzeo4UprzpEODAD5ler7kyF0bREDbN1gjQoBcniRSZpEKmcpjpsKk
-         JYKBSS8qJ6l1F+do30bZ1AFPAVA94DAoAiOPqOBQ34J2T1gY3aQkukyN3O4K06I+9a
-         gWhHbc5n/1I71/lTzFiYxfcDg8AEQdGPlBIx1YKE=
+        b=Lyw1watX1HGq23UhHZbwk0r3ZG4TQCb9XadUKywyAP6Y4dBItZ0ckrzXq6JBeUn21
+         MtCJ/9b14ATEdwdSsy/eLWXs4AiC4Bp0esSepmlI4K2JJONG76TlCwwPnJ030PEMfa
+         m69hXcjoIMdIxuiobCSJXskcOwmgIpIv5GFBQ83Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Casper Andersson <casper.casan@gmail.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 095/102] net: sparx5: mdb add/del handle non-sparx5 devices
-Date:   Tue,  5 Jul 2022 13:59:01 +0200
-Message-Id: <20220705115621.116971720@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jan Beulich <jbeulich@suse.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.18 097/102] xen/blkfront: fix leaking data in shared pages
+Date:   Tue,  5 Jul 2022 13:59:03 +0200
+Message-Id: <20220705115621.172267766@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -50,49 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casper Andersson <casper.casan@gmail.com>
+From: Roger Pau Monne <roger.pau@citrix.com>
 
-[ Upstream commit 9c5de246c1dbe785268fc2e83c88624b92e4ec93 ]
+commit 2f446ffe9d737e9a844b97887919c4fda18246e7 upstream.
 
-When adding/deleting mdb entries on other net_devices, eg., tap
-interfaces, it should not crash.
+When allocating pages to be used for shared communication with the
+backend always zero them, this avoids leaking unintended data present
+on the pages.
 
-Fixes: 3bacfccdcb2d ("net: sparx5: Add mdb handlers")
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
-Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
-Link: https://lore.kernel.org/r/20220630122226.316812-1-casper.casan@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This is CVE-2022-26365, part of XSA-403.
+
+Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/block/xen-blkfront.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-index 3429660cd2e5..5edc8b7176c8 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-@@ -396,6 +396,9 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
- 	u32 mact_entry;
- 	int res, err;
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -313,7 +313,7 @@ static int fill_grant_buffer(struct blkf
+ 			goto out_of_memory;
  
-+	if (!sparx5_netdevice_check(dev))
-+		return -EOPNOTSUPP;
-+
- 	if (netif_is_bridge_master(v->obj.orig_dev)) {
- 		sparx5_mact_learn(spx5, PGID_CPU, v->addr, v->vid);
- 		return 0;
-@@ -466,6 +469,9 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
- 	u32 mact_entry, res, pgid_entry[3];
- 	int err;
+ 		if (info->feature_persistent) {
+-			granted_page = alloc_page(GFP_NOIO);
++			granted_page = alloc_page(GFP_NOIO | __GFP_ZERO);
+ 			if (!granted_page) {
+ 				kfree(gnt_list_entry);
+ 				goto out_of_memory;
+@@ -1689,7 +1689,7 @@ static int setup_blkring(struct xenbus_d
+ 	for (i = 0; i < info->nr_ring_pages; i++)
+ 		rinfo->ring_ref[i] = GRANT_INVALID_REF;
  
-+	if (!sparx5_netdevice_check(dev))
-+		return -EOPNOTSUPP;
-+
- 	if (netif_is_bridge_master(v->obj.orig_dev)) {
- 		sparx5_mact_forget(spx5, v->addr, v->vid);
- 		return 0;
--- 
-2.35.1
-
+-	sring = alloc_pages_exact(ring_size, GFP_NOIO);
++	sring = alloc_pages_exact(ring_size, GFP_NOIO | __GFP_ZERO);
+ 	if (!sring) {
+ 		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
+ 		return -ENOMEM;
+@@ -2206,7 +2206,8 @@ static int blkfront_setup_indirect(struc
+ 
+ 		BUG_ON(!list_empty(&rinfo->indirect_pages));
+ 		for (i = 0; i < num; i++) {
+-			struct page *indirect_page = alloc_page(GFP_KERNEL);
++			struct page *indirect_page = alloc_page(GFP_KERNEL |
++			                                        __GFP_ZERO);
+ 			if (!indirect_page)
+ 				goto out_of_memory;
+ 			list_add(&indirect_page->lru, &rinfo->indirect_pages);
 
 
