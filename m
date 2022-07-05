@@ -2,96 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6709DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D29C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbiGEQL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 12:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S231626AbiGEQMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 12:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232435AbiGEQLV (ORCPT
+        with ESMTP id S229521AbiGEQMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 12:11:21 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9FA1A3A5
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 09:11:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657037480; x=1688573480;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8/q1hXVhKg9yQEzY3bhW4w5a4akFV783q++XCNoIrns=;
-  b=BcQlQ4rniQqG3QMgcOF1+78mH4YrJF4vcV4CEHIFr0CCWw2rybStfJm+
-   Y+ytFVpsNr55SXEmEHaijphTx+O6RudnZEozfYf6cA1sPM4QvtCkA6/ad
-   G3pdouSsMMDN2VxJyp5P2boox9WFwq+VcqBQ2acs0pFvK1ivMuJnKlBLk
-   u3p1BFygOu6Ej4CXxsDPV9HGlZyvU+CPSA72u5G7UrdfPy3p4S5rXNj2J
-   2/IN4ayuQmgemzbhgdOlN48Xvv6v/y1K1kptFPzvBWb+PFr/stJ3t/UhB
-   VYnBfeWsTvNk991BugBRutsKDA9keOkjNiBPKTOePoneJ+mw2gP8jVsoa
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282148871"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="282148871"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 09:11:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="592972442"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 05 Jul 2022 09:11:15 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2B286CE; Tue,  5 Jul 2022 19:11:07 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/2] ASoC: SOF: Intel: byt: remove duplicating driver data retrieval
-Date:   Tue,  5 Jul 2022 19:11:02 +0300
-Message-Id: <20220705161102.76250-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220705161102.76250-1-andriy.shevchenko@linux.intel.com>
-References: <20220705161102.76250-1-andriy.shevchenko@linux.intel.com>
+        Tue, 5 Jul 2022 12:12:45 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C89F1A3A5;
+        Tue,  5 Jul 2022 09:12:44 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B875B67373; Tue,  5 Jul 2022 18:12:40 +0200 (CEST)
+Date:   Tue, 5 Jul 2022 18:12:40 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+        Stephen Bates <sbates@raithlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
+Message-ID: <20220705161240.GB13721@lst.de>
+References: <20220615161233.17527-1-logang@deltatee.com> <20220615161233.17527-21-logang@deltatee.com> <20220629064854.GD17576@lst.de> <99242789-66a6-bbd2-b56a-e47891f4522e@deltatee.com> <20220629175906.GU23621@ziepe.ca> <20220705075108.GB17451@lst.de> <20220705135102.GE23621@ziepe.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705135102.GE23621@ziepe.ca>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-device_get_match_data() in ACPI case calls similar to acpi_match_device().
-Hence there is no need to duplicate the call. Just assign what is in
-the id->driver_data.
+On Tue, Jul 05, 2022 at 10:51:02AM -0300, Jason Gunthorpe wrote:
+> > In fact I'm not even sure this should be a character device, it seems
+> > to fit it way better with the PCI sysfs hierchacy, just like how we
+> > map MMIO resources, which these are anyway.  And once it is on sysfs
+> > we do have a uniqueue inode and need none of the pseudofs stuff, and
+> > don't need all the glue code in nvme either.
+> 
+> Shouldn't there be an allocator here? It feels a bit weird that the
+> entire CMB is given to a single process, it is a sharable resource,
+> isn't it?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: new patch (Pierre)
- sound/soc/sof/intel/byt.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
-index 4ed8381eceda..e6dc4ff531c3 100644
---- a/sound/soc/sof/intel/byt.c
-+++ b/sound/soc/sof/intel/byt.c
-@@ -465,10 +465,7 @@ static int sof_baytrail_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	desc = device_get_match_data(&pdev->dev);
--	if (!desc)
--		return -ENODEV;
--
-+	desc = (const struct sof_dev_desc *)id->driver_data;
- 	if (desc == &sof_acpi_baytrail_desc && soc_intel_is_byt_cr(pdev))
- 		desc = &sof_acpi_baytrailcr_desc;
- 
--- 
-2.35.1
-
+Making the entire area given by the device to the p2p allocator available
+to user space seems sensible to me.  That is what the current series does,
+and what a sysfs interface would do as well.
