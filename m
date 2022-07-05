@@ -2,136 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B150AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF8BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232243AbiGEStz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52072 "EHLO
+        id S232444AbiGESu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbiGESty (ORCPT
+        with ESMTP id S230300AbiGESuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:49:54 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F4C17051
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:49:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657046993; x=1688582993;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sc6i1tz+Lv3Uv79rQqFCwzyZJZl9FjQkvggjc4hufoY=;
-  b=ClxUR27hpxBLgQCi1LZvUk/JbDfuLn+rbNyCQo1z3xUQKzGg1LeNIgLc
-   MVr6k97Cw2V59FtBvv5A1CdZm/Rbk5M7Rl318Nb6jYxpM6vy4oXQW/qUq
-   Iihgy7rzNjlxtTWxjHyhZX72gO/rtC0eong7gaZa0IWETSBOPgDm84WBQ
-   wIkYV6l3BzV04yK9EviasdVqbW3s57rntvsdppem5tdCrujcmXUq9gsTZ
-   9rJxJz7Z0OWKKv9NRnxr6grJBdjpdguHyqYaTrQnu8rG4JwbR6v3gltZD
-   J4O1Bw26UVgDpcZPLiPEz1obDkpr1kOyPnth2LGy5kHxdnaRV9keiZmtO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284560958"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="284560958"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:49:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="919836329"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Jul 2022 11:49:51 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8ncN-000JUL-0b;
-        Tue, 05 Jul 2022 18:49:51 +0000
-Date:   Wed, 6 Jul 2022 02:48:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Coly Li <colyli@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [colyli-bcache:nvdimm-meta 16/16]
- arch/alpha/include/asm/string.h:37:32: warning: argument 1 null where
- non-null expected
-Message-ID: <202207060229.nZBDhhNX-lkp@intel.com>
+        Tue, 5 Jul 2022 14:50:55 -0400
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5AC18370;
+        Tue,  5 Jul 2022 11:50:54 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id 76so7842800ybd.0;
+        Tue, 05 Jul 2022 11:50:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rEEp1avjtVpzd2rsIuvCf8awzg9kogoo/eZ9Po79gdw=;
+        b=7nJf6Nr24WQCYtyhTuUjddA2GsQqaAuNQJ0Dt+xvFDy7Th7ZuHAP6NqsbLnGfXe1uz
+         zGdg1XdDC3eL1xHXCNu+coKL9TjtzpEIgMsyMnSuG53mReozZyqAk0oximOWg4Y4oSnM
+         tmrhl9uyIGTb7xb4HHx+Hnpu7+F+PehbNY73f6SRowfnt5etTjSXHLNBax5ad79APcm2
+         rOPVT7vMPRCLVe/sgSn4aotCwJP02gx9OtmVIKNDVDD+HAtK7d3m6TSbSzRnfTM2WCi2
+         ijYl1kd7b02CekxddsVkFP2gZNYOR55UeEOW3iSDnfIfJiu+aY3TMm22A22VQReAlIeX
+         EygQ==
+X-Gm-Message-State: AJIora+27yAA4WGbIf/UQ/XP3Np4pJefReiKP92fd+cDM1aMERoZEihS
+        Ve5oJwDlSglWsXtk5hsW2niM9NUNIcGTZTqLJlg=
+X-Google-Smtp-Source: AGRyM1s+K+w9syS/4MUthIcayVyD+nAAsBHqrlB9RJMsRRD1+cb3mvFhbUNxWI/P5iK+pcwBsKRnGVi3K9dKqJ8GaC4=
+X-Received: by 2002:a25:ab81:0:b0:66e:3dc5:898c with SMTP id
+ v1-20020a25ab81000000b0066e3dc5898cmr15271965ybi.81.1657047054027; Tue, 05
+ Jul 2022 11:50:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220607035158.308111-1-helgaas@kernel.org>
+In-Reply-To: <20220607035158.308111-1-helgaas@kernel.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Jul 2022 20:50:43 +0200
+Message-ID: <CAJZ5v0idEvNRU5vmybRms4aQbBoUUH8CBRtaGT5O1bScND5ZSA@mail.gmail.com>
+Subject: Re: [PATCH] PM / wakeup: Unify device_init_wakeup() for PM_SLEEP and !PM_SLEEP
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git nvdimm-meta
-head:   5c8259ab2129816fc49fd6d060206ba61b0594d1
-commit: 5c8259ab2129816fc49fd6d060206ba61b0594d1 [16/16] bcache: support storing bcache btree nodes into NVDIMM meta device
-config: alpha-randconfig-r013-20220703 (https://download.01.org/0day-ci/archive/20220706/202207060229.nZBDhhNX-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git/commit/?id=5c8259ab2129816fc49fd6d060206ba61b0594d1
-        git remote add colyli-bcache https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git
-        git fetch --no-tags colyli-bcache nvdimm-meta
-        git checkout 5c8259ab2129816fc49fd6d060206ba61b0594d1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/md/bcache/
+On Tue, Jun 7, 2022 at 5:52 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> From: Bjorn Helgaas <bhelgaas@google.com>
+>
+> Previously the CONFIG_PM_SLEEP and !CONFIG_PM_SLEEP device_init_wakeup()
+> implementations differed in confusing ways:
+>
+>   - The PM_SLEEP version checked for a NULL device pointer and returned
+>     -EINVAL, while the !PM_SLEEP version did not and would simply
+>     dereference a NULL pointer.
+>
+>   - When called with "false", the !PM_SLEEP version cleared "capable" and
+>     "enable" in the opposite order of the PM_SLEEP version.  That was
+>     harmless because for !PM_SLEEP they're simple assignments, but it's
+>     unnecessary confusion.
+>
+> Use a simplified version of the PM_SLEEP implementation for both cases.
+>
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  drivers/base/power/wakeup.c | 30 ------------------------------
+>  include/linux/pm_wakeup.h   | 31 +++++++++++++++++++++++--------
+>  2 files changed, 23 insertions(+), 38 deletions(-)
+>
+> diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
+> index 11a4ffe91367..e3befa2c1b66 100644
+> --- a/drivers/base/power/wakeup.c
+> +++ b/drivers/base/power/wakeup.c
+> @@ -500,36 +500,6 @@ void device_set_wakeup_capable(struct device *dev, bool capable)
+>  }
+>  EXPORT_SYMBOL_GPL(device_set_wakeup_capable);
+>
+> -/**
+> - * device_init_wakeup - Device wakeup initialization.
+> - * @dev: Device to handle.
+> - * @enable: Whether or not to enable @dev as a wakeup device.
+> - *
+> - * By default, most devices should leave wakeup disabled.  The exceptions are
+> - * devices that everyone expects to be wakeup sources: keyboards, power buttons,
+> - * possibly network interfaces, etc.  Also, devices that don't generate their
+> - * own wakeup requests but merely forward requests from one bus to another
+> - * (like PCI bridges) should have wakeup enabled by default.
+> - */
+> -int device_init_wakeup(struct device *dev, bool enable)
+> -{
+> -       int ret = 0;
+> -
+> -       if (!dev)
+> -               return -EINVAL;
+> -
+> -       if (enable) {
+> -               device_set_wakeup_capable(dev, true);
+> -               ret = device_wakeup_enable(dev);
+> -       } else {
+> -               device_wakeup_disable(dev);
+> -               device_set_wakeup_capable(dev, false);
+> -       }
+> -
+> -       return ret;
+> -}
+> -EXPORT_SYMBOL_GPL(device_init_wakeup);
+> -
+>  /**
+>   * device_set_wakeup_enable - Enable or disable a device to wake up the system.
+>   * @dev: Device to handle.
+> diff --git a/include/linux/pm_wakeup.h b/include/linux/pm_wakeup.h
+> index 196a157456aa..77f4849e3418 100644
+> --- a/include/linux/pm_wakeup.h
+> +++ b/include/linux/pm_wakeup.h
+> @@ -109,7 +109,6 @@ extern struct wakeup_source *wakeup_sources_walk_next(struct wakeup_source *ws);
+>  extern int device_wakeup_enable(struct device *dev);
+>  extern int device_wakeup_disable(struct device *dev);
+>  extern void device_set_wakeup_capable(struct device *dev, bool capable);
+> -extern int device_init_wakeup(struct device *dev, bool val);
+>  extern int device_set_wakeup_enable(struct device *dev, bool enable);
+>  extern void __pm_stay_awake(struct wakeup_source *ws);
+>  extern void pm_stay_awake(struct device *dev);
+> @@ -167,13 +166,6 @@ static inline int device_set_wakeup_enable(struct device *dev, bool enable)
+>         return 0;
+>  }
+>
+> -static inline int device_init_wakeup(struct device *dev, bool val)
+> -{
+> -       device_set_wakeup_capable(dev, val);
+> -       device_set_wakeup_enable(dev, val);
+> -       return 0;
+> -}
+> -
+>  static inline bool device_may_wakeup(struct device *dev)
+>  {
+>         return dev->power.can_wakeup && dev->power.should_wakeup;
+> @@ -217,4 +209,27 @@ static inline void pm_wakeup_hard_event(struct device *dev)
+>         return pm_wakeup_dev_event(dev, 0, true);
+>  }
+>
+> +/**
+> + * device_init_wakeup - Device wakeup initialization.
+> + * @dev: Device to handle.
+> + * @enable: Whether or not to enable @dev as a wakeup device.
+> + *
+> + * By default, most devices should leave wakeup disabled.  The exceptions are
+> + * devices that everyone expects to be wakeup sources: keyboards, power buttons,
+> + * possibly network interfaces, etc.  Also, devices that don't generate their
+> + * own wakeup requests but merely forward requests from one bus to another
+> + * (like PCI bridges) should have wakeup enabled by default.
+> + */
+> +static inline int device_init_wakeup(struct device *dev, bool enable)
+> +{
+> +       if (enable) {
+> +               device_set_wakeup_capable(dev, true);
+> +               return device_wakeup_enable(dev);
+> +       } else {
+> +               device_wakeup_disable(dev);
+> +               device_set_wakeup_capable(dev, false);
+> +               return 0;
+> +       }
+> +}
+> +
+>  #endif /* _LINUX_PM_WAKEUP_H */
+> --
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Applied as 5.20 material, sorry for the delay.
 
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/md/bcache/nvmpg.h:8,
-                    from drivers/md/bcache/alloc.c:66:
-   drivers/md/bcache/nvmpg_format.h:132:19: warning: 'bch_nvmpg_recs_magic' defined but not used [-Wunused-const-variable=]
-     132 | static const __u8 bch_nvmpg_recs_magic[] = {
-         |                   ^~~~~~~~~~~~~~~~~~~~
-   drivers/md/bcache/nvmpg_format.h:129:19: warning: 'bch_nvmpg_magic' defined but not used [-Wunused-const-variable=]
-     129 | static const __u8 bch_nvmpg_magic[] = {
-         |                   ^~~~~~~~~~~~~~~
-   In file included from include/linux/string.h:20,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/smp.h:13,
-                    from include/linux/lockdep.h:14,
-                    from include/linux/spinlock.h:62,
-                    from include/linux/wait.h:9,
-                    from include/linux/mempool.h:8,
-                    from include/linux/bio.h:8,
-                    from drivers/md/bcache/bcache.h:181,
-                    from drivers/md/bcache/alloc.c:64:
-   In function '__memset',
-       inlined from '__bch_nvmpg_bucket_free' at drivers/md/bcache/alloc.c:488:2,
-       inlined from 'bch_bucket_free' at drivers/md/bcache/alloc.c:497:3:
->> arch/alpha/include/asm/string.h:37:32: warning: argument 1 null where non-null expected [-Wnonnull]
-      37 |                         return __builtin_memset(s, c, n);
-         |                                ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/md/bcache/alloc.c: In function 'bch_bucket_free':
-   arch/alpha/include/asm/string.h:37:32: note: in a call to built-in function '__builtin_memset'
-
-
-vim +37 arch/alpha/include/asm/string.h
-
-^1da177e4c3f41 include/asm-alpha/string.h      Linus Torvalds    2005-04-16  29  
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  30  /* For gcc 3.x, we cannot have the inline function named "memset" because
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  31     the __builtin_memset will attempt to resolve to the inline as well,
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  32     leading to a "sorry" about unimplemented recursive inlining.  */
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  33  extern inline void *__memset(void *s, int c, size_t n)
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  34  {
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  35  	if (__builtin_constant_p(c)) {
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  36  		if (__builtin_constant_p(n)) {
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11 @37  			return __builtin_memset(s, c, n);
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  38  		} else {
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  39  			unsigned long c8 = (c & 0xff) * 0x0101010101010101UL;
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  40  			return __constant_c_memset(s, c8, n);
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  41  		}
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  42  	}
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  43  	return ___memset(s, c, n);
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  44  }
-a47e5bb5764f02 arch/alpha/include/asm/string.h Richard Henderson 2013-07-11  45  
-
-:::::: The code at line 37 was first introduced by commit
-:::::: a47e5bb5764f029f989a182b0dd2d4cce69f8b14 alpha: Eliminate compiler warning from memset macro
-
-:::::: TO: Richard Henderson <rth@twiddle.net>
-:::::: CC: Matt Turner <mattst88@gmail.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks!
