@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C31CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CCBCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238846AbiGEMdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
+        id S238823AbiGEMdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236519AbiGEMYw (ORCPT
+        with ESMTP id S236315AbiGEMYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:24:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C2B1F60F;
-        Tue,  5 Jul 2022 05:17:19 -0700 (PDT)
+        Tue, 5 Jul 2022 08:24:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EB91F60B;
+        Tue,  5 Jul 2022 05:17:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 406E2619E2;
-        Tue,  5 Jul 2022 12:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 423BEC341C7;
-        Tue,  5 Jul 2022 12:17:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 437CA619A6;
+        Tue,  5 Jul 2022 12:17:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ED8EC341C7;
+        Tue,  5 Jul 2022 12:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023438;
-        bh=i0CGAAs5eqYu9dCjxaqX8R2K+gUYhSz8F47FXguxCYM=;
+        s=korg; t=1657023435;
+        bh=lPtAx4yoSuF525SvttvK23JLuvl2j0I/XA747UUluUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uHE79lSByMDoSRKarykBgVve8zjsoszSpmRt1YTOBuXlSV9KulZkZniAAUa1B2Uf6
-         9SEB1mhDmJeFLGxU93DTzzPWuvOTfNsAjGy/RK1XgWn++Vrgfeo5y6ndIV+OCOmYsM
-         OnsMlKTJtQm2QTTdhmAFeGY93bK0dO/3aJOl5DVA=
+        b=z/jXmMYnQCTnqU60hcR6TXdDWTeF/d0ZPjZH9faiD2TGKnI2nNVHX3fhVqmfAhl48
+         uQ0AwUNtVpGpbWR1lPvvZdC+Ykx4q2ruqdcMySOxNFlqY9oGCFcSXB/eHaMe3nVp8T
+         Co/WNWv+q9Ien6wrf8laRSxYjcEag3xBEeAmlbO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coleman Dietsch <dietschc@csp.edu>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 060/102] selftests net: fix kselftest net fatal error
-Date:   Tue,  5 Jul 2022 13:58:26 +0200
-Message-Id: <20220705115620.110554978@linuxfoundation.org>
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 059/102] net: phy: ax88772a: fix lost pause advertisement configuration
+Date:   Tue,  5 Jul 2022 13:58:25 +0200
+Message-Id: <20220705115620.081969368@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,42 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coleman Dietsch <dietschc@csp.edu>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-commit 7b92aa9e613508cbaa29dd35bf27db4c35628b10 upstream.
+commit fa152f626b24ec2ca3489100d8c5c0a0bce4e2ef upstream.
 
-The incorrect path is causing the following error when trying to run net
-kselftests:
+In case of asix_ax88772a_link_change_notify() workaround, we run soft
+reset which will automatically clear MII_ADVERTISE configuration. The
+PHYlib framework do not know about changed configuration state of the
+PHY, so we need use phy_init_hw() to reinit PHY configuration.
 
-In file included from bpf/nat6to4.c:43:
-../../../lib/bpf/bpf_helpers.h:11:10: fatal error: 'bpf_helper_defs.h' file not found
-         ^~~~~~~~~~~~~~~~~~~
-1 error generated.
-
-Fixes: cf67838c4422 ("selftests net: fix bpf build error")
-Signed-off-by: Coleman Dietsch <dietschc@csp.edu>
-Link: https://lore.kernel.org/r/20220628174744.7908-1-dietschc@csp.edu
+Fixes: dde258469257 ("net: usb/phy: asix: add support for ax88772A/C PHYs")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220628114349.3929928-1-o.rempel@pengutronix.de
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/ax88796b.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-index 8a69c91fcca0..8ccaf8732eb2 100644
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ b/tools/testing/selftests/net/bpf/Makefile
-@@ -2,7 +2,7 @@
+--- a/drivers/net/phy/ax88796b.c
++++ b/drivers/net/phy/ax88796b.c
+@@ -88,8 +88,10 @@ static void asix_ax88772a_link_change_no
+ 	/* Reset PHY, otherwise MII_LPA will provide outdated information.
+ 	 * This issue is reproducible only with some link partner PHYs
+ 	 */
+-	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset)
+-		phydev->drv->soft_reset(phydev);
++	if (phydev->state == PHY_NOLINK) {
++		phy_init_hw(phydev);
++		phy_start_aneg(phydev);
++	}
+ }
  
- CLANG ?= clang
- CCINCLUDE += -I../../bpf
--CCINCLUDE += -I../../../lib
-+CCINCLUDE += -I../../../../lib
- CCINCLUDE += -I../../../../../usr/include/
- 
- TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
--- 
-2.37.0
-
+ static struct phy_driver asix_driver[] = {
 
 
