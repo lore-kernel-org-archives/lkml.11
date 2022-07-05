@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8B8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6DEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238614AbiGEMg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
+        id S238655AbiGEMhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236570AbiGEM0x (ORCPT
+        with ESMTP id S236595AbiGEM0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:26:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF7C1903D;
-        Tue,  5 Jul 2022 05:19:15 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372F119281;
+        Tue,  5 Jul 2022 05:19:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E065861984;
-        Tue,  5 Jul 2022 12:19:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC24C341C7;
-        Tue,  5 Jul 2022 12:19:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6A8EB817D3;
+        Tue,  5 Jul 2022 12:19:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CB6DC341C7;
+        Tue,  5 Jul 2022 12:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023554;
-        bh=eQyiGUsTpyX0QuJXNAt6t6TjeqSqJjJyqf0tE+DcXkY=;
+        s=korg; t=1657023559;
+        bh=11OHJIBZ3fG8MxkMGl4D4AZSGHT2IQhGDgeosFtCU9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rb237297oCP8j0oczXTb5iy+CM32jz+DpkftKHcQxAXYYaraEGT6eHY9lwjm93IDf
-         vS+2Xl9j5657qPoGrdV8GzlhS+77cvH+SCNvEeCA6ZN6Xaa4fcf0BKsollFkofhDbK
-         8et3B1VA1yF1P7WoC4JK/4HjbceN8jktijMg/F1Y=
+        b=qPpAF5W4JLaf9guefXYU/K1qmhy4F5jbujeNKbduWe2+LbAikVV7mXl944MyqsCQ2
+         GHjweCf/WzKPJd4Bqw8s7pMbfIw5Pf9jQINUdhVQcl0ffDHTYVbHyqCRGJQ7pxjJe1
+         FLp8U/ftiklTxs9bVwbMbKM7kMuCXVxE00e7pnhQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.18 102/102] xen/arm: Fix race in RB-tree based P2M accounting
-Date:   Tue,  5 Jul 2022 13:59:08 +0200
-Message-Id: <20220705115621.313807716@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 083/102] platform/x86: ideapad-laptop: Add allow_v4_dytc module parameter
+Date:   Tue,  5 Jul 2022 13:58:49 +0200
+Message-Id: <20220705115620.767892150@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -50,72 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit b75cd218274e01d026dc5240e86fdeb44bbed0c8 upstream.
+[ Upstream commit a27a1e35f5c87463ba7c12d5b7d7cbafbefc9213 ]
 
-During the PV driver life cycle the mappings are added to
-the RB-tree by set_foreign_p2m_mapping(), which is called from
-gnttab_map_refs() and are removed by clear_foreign_p2m_mapping()
-which is called from gnttab_unmap_refs(). As both functions end
-up calling __set_phys_to_machine_multi() which updates the RB-tree,
-this function can be called concurrently.
+Add an allow_v4_dytc module parameter to allow users to easily test if
+DYTC version 4 platform-profiles work on their laptop.
 
-There is already a "p2m_lock" to protect against concurrent accesses,
-but the problem is that the first read of "phys_to_mach.rb_node"
-in __set_phys_to_machine_multi() is not covered by it, so this might
-lead to the incorrect mappings update (removing in our case) in RB-tree.
-
-In my environment the related issue happens rarely and only when
-PV net backend is running, the xen_add_phys_to_mach_entry() claims
-that it cannot add new pfn <-> mfn mapping to the tree since it is
-already exists which results in a failure when mapping foreign pages.
-
-But there might be other bad consequences related to the non-protected
-root reads such use-after-free, etc.
-
-While at it, also fix the similar usage in __pfn_to_mfn(), so
-initialize "struct rb_node *n" with the "p2m_lock" held in both
-functions to avoid possible bad consequences.
-
-This is CVE-2022-33744 / XSA-406.
-
-Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 599482c58ebd ("platform/x86: ideapad-laptop: Add platform support for Ideapad 5 Pro 16ACH6-82L5")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213297
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220623115914.103001-1-hdegoede@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/xen/p2m.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/platform/x86/ideapad-laptop.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
---- a/arch/arm/xen/p2m.c
-+++ b/arch/arm/xen/p2m.c
-@@ -63,11 +63,12 @@ out:
+diff --git a/drivers/platform/x86/ideapad-laptop.c b/drivers/platform/x86/ideapad-laptop.c
+index 6b472fd431d0..abd0c81d62c4 100644
+--- a/drivers/platform/x86/ideapad-laptop.c
++++ b/drivers/platform/x86/ideapad-laptop.c
+@@ -152,6 +152,10 @@ static bool no_bt_rfkill;
+ module_param(no_bt_rfkill, bool, 0444);
+ MODULE_PARM_DESC(no_bt_rfkill, "No rfkill for bluetooth.");
  
- unsigned long __pfn_to_mfn(unsigned long pfn)
- {
--	struct rb_node *n = phys_to_mach.rb_node;
-+	struct rb_node *n;
- 	struct xen_p2m_entry *entry;
- 	unsigned long irqflags;
++static bool allow_v4_dytc;
++module_param(allow_v4_dytc, bool, 0444);
++MODULE_PARM_DESC(allow_v4_dytc, "Enable DYTC version 4 platform-profile support.");
++
+ /*
+  * ACPI Helpers
+  */
+@@ -907,13 +911,16 @@ static int ideapad_dytc_profile_init(struct ideapad_private *priv)
  
- 	read_lock_irqsave(&p2m_lock, irqflags);
-+	n = phys_to_mach.rb_node;
- 	while (n) {
- 		entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
- 		if (entry->pfn <= pfn &&
-@@ -152,10 +153,11 @@ bool __set_phys_to_machine_multi(unsigne
- 	int rc;
- 	unsigned long irqflags;
- 	struct xen_p2m_entry *p2m_entry;
--	struct rb_node *n = phys_to_mach.rb_node;
-+	struct rb_node *n;
+ 	dytc_version = (output >> DYTC_QUERY_REV_BIT) & 0xF;
  
- 	if (mfn == INVALID_P2M_ENTRY) {
- 		write_lock_irqsave(&p2m_lock, irqflags);
-+		n = phys_to_mach.rb_node;
- 		while (n) {
- 			p2m_entry = rb_entry(n, struct xen_p2m_entry, rbnode_phys);
- 			if (p2m_entry->pfn <= pfn &&
+-	if (dytc_version < 5) {
+-		if (dytc_version < 4 || !dmi_check_system(ideapad_dytc_v4_allow_table)) {
+-			dev_info(&priv->platform_device->dev,
+-				 "DYTC_VERSION is less than 4 or is not allowed: %d\n",
+-				 dytc_version);
+-			return -ENODEV;
+-		}
++	if (dytc_version < 4) {
++		dev_info(&priv->platform_device->dev, "DYTC_VERSION < 4 is not supported\n");
++		return -ENODEV;
++	}
++
++	if (dytc_version < 5 &&
++	    !(allow_v4_dytc || dmi_check_system(ideapad_dytc_v4_allow_table))) {
++		dev_info(&priv->platform_device->dev,
++			 "DYTC_VERSION 4 support may not work. Pass ideapad_laptop.allow_v4_dytc=Y on the kernel commandline to enable\n");
++		return -ENODEV;
+ 	}
+ 
+ 	priv->dytc = kzalloc(sizeof(*priv->dytc), GFP_KERNEL);
+-- 
+2.35.1
+
 
 
