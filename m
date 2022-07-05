@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B364CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 643AFCCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239027AbiGEMeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
+        id S238995AbiGEMeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236823AbiGEMZ0 (ORCPT
+        with ESMTP id S231904AbiGEMZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:25:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DDA17E22;
-        Tue,  5 Jul 2022 05:17:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFFE1B7AF;
+        Tue,  5 Jul 2022 05:17:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DCDBB817CC;
-        Tue,  5 Jul 2022 12:17:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 119B5C341C7;
-        Tue,  5 Jul 2022 12:17:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 269A761983;
+        Tue,  5 Jul 2022 12:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACA3C341C7;
+        Tue,  5 Jul 2022 12:17:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023458;
-        bh=e5mcciVgW1C+/q37f4/+fFKAhTA1T2u0ZfsCKlYxsEE=;
+        s=korg; t=1657023455;
+        bh=E/RhKELd2XMIJKei+fQXXP00rg8+FgoKBR2TNdH2JsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYTyMBCFPEdRuAzHj7+i6hdvz1IyFaAGCTlmccV7qjV+PmMAF0P04rX1lLyhQmOnh
-         OjaOCIbad5E/0ErU32hCOz9ZarOT8MlMotIpaSqBByChPjWhIfptu+752vU91MMbGa
-         Ln6KxhhUV6YGT2X4vdWPG+L3qZQmFWhgJssFNqaA=
+        b=Y4d7+8yjAf2/XQJT3UrtyEXmZ1y6L8OIBXRks/UoBKAzb5X6ZyTkw6SomTJw92O2c
+         K67vd/X6KhLqpbYSx8m1pqEtSuVbjkw3icvuOIk035sSZQEbfg/if9cEDo7/aoPaUY
+         uqexbN3xe4WUfN19yBJEYZtb3szwwZSvoUBu2O/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 066/102] nfc: nfcmrvl: Fix irq_of_parse_and_map() return value
-Date:   Tue,  5 Jul 2022 13:58:32 +0200
-Message-Id: <20220705115620.280776926@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.18 065/102] platform/x86: ideapad-laptop: Add Ideapad 5 15ITL05 to ideapad_dytc_v4_allow_table[]
+Date:   Tue,  5 Jul 2022 13:58:31 +0200
+Message-Id: <20220705115620.251879929@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,52 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 5a478a653b4cca148d5c89832f007ec0809d7e6d upstream.
+commit 8853e8ce9b576e0a3aad8381e19a117964d445fa upstream.
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+The Ideapad 5 15ITL05 uses DYTC version 4 for platform-profile
+control. This has been tested successfully with the ideapad-laptop
+DYTC version 5 code; Add the Ideapad 5 15ITL05 to the
+ideapad_dytc_v4_allow_table[].
 
-Reported-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Fixes: caf6e49bf6d0 ("NFC: nfcmrvl: add spi driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220627124048.296253-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 599482c58ebd ("platform/x86: ideapad-laptop: Add platform support for Ideapad 5 Pro 16ACH6-82L5")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213297
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220627130850.313537-1-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/i2c.c |    6 +++---
- drivers/nfc/nfcmrvl/spi.c |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/platform/x86/ideapad-laptop.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -167,9 +167,9 @@ static int nfcmrvl_i2c_parse_dt(struct d
- 		pdata->irq_polarity = IRQF_TRIGGER_RISING;
- 
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
--		pr_err("Unable to get irq, error: %d\n", ret);
--		return ret;
-+	if (!ret) {
-+		pr_err("Unable to get irq\n");
-+		return -EINVAL;
- 	}
- 	pdata->irq = ret;
- 
---- a/drivers/nfc/nfcmrvl/spi.c
-+++ b/drivers/nfc/nfcmrvl/spi.c
-@@ -115,9 +115,9 @@ static int nfcmrvl_spi_parse_dt(struct d
- 	}
- 
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
--		pr_err("Unable to get irq, error: %d\n", ret);
--		return ret;
-+	if (!ret) {
-+		pr_err("Unable to get irq\n");
-+		return -EINVAL;
- 	}
- 	pdata->irq = ret;
+--- a/drivers/platform/x86/ideapad-laptop.c
++++ b/drivers/platform/x86/ideapad-laptop.c
+@@ -871,12 +871,18 @@ static void dytc_profile_refresh(struct
+ static const struct dmi_system_id ideapad_dytc_v4_allow_table[] = {
+ 	{
+ 		/* Ideapad 5 Pro 16ACH6 */
+-		.ident = "LENOVO 82L5",
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "82L5")
+ 		}
+ 	},
++	{
++		/* Ideapad 5 15ITL05 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "IdeaPad 5 15ITL05")
++		}
++	},
+ 	{}
+ };
  
 
 
