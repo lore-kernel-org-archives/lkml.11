@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3909CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A8ECCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234369AbiGEMH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
+        id S234307AbiGEMHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233585AbiGEMEe (ORCPT
+        with ESMTP id S233809AbiGEMEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:04:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F314518B18;
-        Tue,  5 Jul 2022 05:04:14 -0700 (PDT)
+        Tue, 5 Jul 2022 08:04:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CD318B10;
+        Tue,  5 Jul 2022 05:04:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92BC6618BB;
-        Tue,  5 Jul 2022 12:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A63C3C341C7;
-        Tue,  5 Jul 2022 12:04:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBDF4618C1;
+        Tue,  5 Jul 2022 12:04:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1374C341CD;
+        Tue,  5 Jul 2022 12:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022654;
-        bh=I6nBQjLM1/cAfalksFjC0yxm4pri54FIPYoqdUEPRDo=;
+        s=korg; t=1657022651;
+        bh=GFOw2R84yg4QcKnn41alywsiSA7JiGvxuKNGWf0T9sA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWGsP5GCwlB2kFeIJkTSQe8CPYGziOrB8zwQ4skisgJIN0ObM5n/VFrL9VBXeKw3X
-         ywhK8ed/dhpUqOsm6lGKl6lKSEJV+hpWH8xZL+Uhsqu2X0ZHWSoSV5D5zYUt64niRv
-         qFdblMpCaEaXtjFOQaZd16r0R0bE6T6wEc00DQ6o=
+        b=ygpreDfTwVfi6yWr1EupNY/EPbdFU1DFbbWCygGJrPHSA1flyBsKJtKF0I1YZ2u9l
+         KlLB1QzggisSLm9SxF55Jf1FgbJ3/Yfb2d5IdIWQvI4QxQzrvvsIzzI9HidVf+dGcQ
+         zgSMn3P7k3E26+36aTT675vrtj/tK6T155xuJ+xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH 5.4 20/58] PM / devfreq: exynos-ppmu: Fix refcount leak in of_get_devfreq_events
-Date:   Tue,  5 Jul 2022 13:57:56 +0200
-Message-Id: <20220705115610.845621364@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Ye <chris.ye@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 5.4 02/58] nvdimm: Fix badblocks clear off-by-one error
+Date:   Tue,  5 Jul 2022 13:57:38 +0200
+Message-Id: <20220705115610.311469402@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -48,47 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Chris Ye <chris.ye@intel.com>
 
-commit f44b799603a9b5d2e375b0b2d54dd0b791eddfc2 upstream.
+commit ef9102004a87cb3f8b26e000a095a261fc0467d3 upstream.
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-This function only calls of_node_put() in normal path,
-missing it in error paths.
-Add missing of_node_put() to avoid refcount leak.
+nvdimm_clear_badblocks_region() validates badblock clearing requests
+against the span of the region, however it compares the inclusive
+badblock request range to the exclusive region range. Fix up the
+off-by-one error.
 
-Fixes: f262f28c1470 ("PM / devfreq: event: Add devfreq_event class")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Fixes: 23f498448362 ("libnvdimm: rework region badblocks clearing")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Chris Ye <chris.ye@intel.com>
+Reviewed-by: Vishal Verma <vishal.l.verma@intel.com>
+Link: https://lore.kernel.org/r/165404219489.2445897.9792886413715690399.stgit@dwillia2-xfh
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/devfreq/event/exynos-ppmu.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/nvdimm/bus.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/devfreq/event/exynos-ppmu.c
-+++ b/drivers/devfreq/event/exynos-ppmu.c
-@@ -514,15 +514,19 @@ static int of_get_devfreq_events(struct
+--- a/drivers/nvdimm/bus.c
++++ b/drivers/nvdimm/bus.c
+@@ -187,8 +187,8 @@ static int nvdimm_clear_badblocks_region
+ 	ndr_end = nd_region->ndr_start + nd_region->ndr_size - 1;
  
- 	count = of_get_child_count(events_np);
- 	desc = devm_kcalloc(dev, count, sizeof(*desc), GFP_KERNEL);
--	if (!desc)
-+	if (!desc) {
-+		of_node_put(events_np);
- 		return -ENOMEM;
-+	}
- 	info->num_events = count;
+ 	/* make sure we are in the region */
+-	if (ctx->phys < nd_region->ndr_start
+-			|| (ctx->phys + ctx->cleared) > ndr_end)
++	if (ctx->phys < nd_region->ndr_start ||
++	    (ctx->phys + ctx->cleared - 1) > ndr_end)
+ 		return 0;
  
- 	of_id = of_match_device(exynos_ppmu_id_match, dev);
- 	if (of_id)
- 		info->ppmu_type = (enum exynos_ppmu_type)of_id->data;
--	else
-+	else {
-+		of_node_put(events_np);
- 		return -EINVAL;
-+	}
- 
- 	j = 0;
- 	for_each_child_of_node(events_np, node) {
+ 	sector = (ctx->phys - nd_region->ndr_start) / 512;
 
 
