@@ -2,275 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1846BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 01:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D02CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 01:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233761AbiGEBZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 21:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
+        id S233925AbiGEBZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 21:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiGEBZO (ORCPT
+        with ESMTP id S233776AbiGEBZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 21:25:14 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81292621
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 18:25:11 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id i7so19325340ybe.11
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Jul 2022 18:25:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oxGa/UwGYNXANo3k9McHl4oRBHJAk4Ona0s0oaNIr6k=;
-        b=brZaAixxbqg32fFMtecxDPU543uF2DZeknsz+TCPE1RU/iECd1bg9DiQ/XWEIF4tux
-         hW9j5SKB/aRSTiykA4kxHU2zXcnmcpzJA5PrVrmvJkn0spxavjRLW/YJsn10RjnWpAkv
-         HcmikYQ+e3Fo0EfkK1E3V6cTfYPl0jYS4651nVhE29wYvhZz28slFEvEUsKXZLKlqP74
-         5P7WSTTyMFdVyWJkCBS91dIsrIHNSl2KsMbSuID4mS/ba68vVG6ZSrQ0Tvu5zN4GFAr7
-         O+vOUSNcJ+2Rupg2vXnKw4qKMMuYK4kx/FphOQCX5tRdMt7oVh+CoP6T9uczVQjkbOLV
-         FmJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oxGa/UwGYNXANo3k9McHl4oRBHJAk4Ona0s0oaNIr6k=;
-        b=O0CEHw6ZulbpmwuW6PuqnaqTk0Shyu1e+SRVwd45577uQA2mRIWkKnh5s3IbWFtvl6
-         kCuiL84oqrmYMdVf5HvOKuuFRaupFVxPeeLEQJAq+kQ7P7yHsqW864BAUew4uL2anZbh
-         x+RUeoDWfc3vyfpRz0wINa01/Z/xhiUQgmrl7cfA5U7VLcorewvPGXrUuaPbhPmWGvZQ
-         QatSbrrFo6wJb6hlSse9IeZW4Td6Yvmkw/OqnVobXwtRCy+SFRQ+MaH/SVeZZIQBvkqd
-         OhaniH5KkLu4HgsGmW/OWnPLFwVl6O00bOg1jbwpTPuAfNdP0++HCeCYanGT3COZrwwT
-         zFdQ==
-X-Gm-Message-State: AJIora+DXA2e9cYIsMfybSgbB56iA7Kx0Mvo9uVdRPq9oaIp8GCKQoLq
-        Cbz/JAZUe1pxO5ByCRLHNZfZ0XDFQ3Ia9wTkhDsjUg==
-X-Google-Smtp-Source: AGRyM1vcsnHjOqIE4a8Iv8znQf+GV37h8OTjSBFnPgReTC2yad5rVaxApqAf/t47hEItPoIylgcdnpihO7Pw5jH5N/c=
-X-Received: by 2002:a25:358b:0:b0:668:a642:ccb3 with SMTP id
- c133-20020a25358b000000b00668a642ccb3mr33543842yba.563.1656984310707; Mon, 04
- Jul 2022 18:25:10 -0700 (PDT)
+        Mon, 4 Jul 2022 21:25:33 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF636403
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Jul 2022 18:25:32 -0700 (PDT)
+Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220705012530epoutp027af5b7d6d6f95f63c1b408e50a29d6ad~_ynglEvHS2744527445epoutp02Z
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 01:25:30 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220705012530epoutp027af5b7d6d6f95f63c1b408e50a29d6ad~_ynglEvHS2744527445epoutp02Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1656984330;
+        bh=AzNm0xLY0Fnv3a1td38IRyzqImN7mPuakVjbDTWje5E=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=QMfaLsHJZgxQWL3lRLi06P9JzMri47k5Au8p5IcAignDLdJbu/zMRU/6ZhVJClobu
+         MkzawLj8pqffxlVuW4xwzqIxYwAoxgO1mlmf4pzn4C86kMw0+37qcuhrgrz2NwEwib
+         P38HCwC69fQH662WsHXbtqdQ5NdR9rsj5mmp8950=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
+        20220705012529epcas1p3fcbe8cb4e5d08815553e9a87ebffaa0e~_yngG5itU0897108971epcas1p3N;
+        Tue,  5 Jul 2022 01:25:29 +0000 (GMT)
+Received: from epsmges1p5.samsung.com (unknown [182.195.36.224]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4LcQ306kmcz4x9Q1; Tue,  5 Jul
+        2022 01:25:16 +0000 (GMT)
+Received: from epcas1p1.samsung.com ( [182.195.41.45]) by
+        epsmges1p5.samsung.com (Symantec Messaging Gateway) with SMTP id
+        EC.B6.09678.CF293C26; Tue,  5 Jul 2022 10:25:16 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220705012516epcas1p2c15e9e9984735c32bcc754ff646ccbf3~_ynTrSTUs1325313253epcas1p2d;
+        Tue,  5 Jul 2022 01:25:16 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220705012516epsmtrp14ab3b045ea3aa460de23dabcf781b1bd~_ynTqDh6I3155031550epsmtrp14;
+        Tue,  5 Jul 2022 01:25:16 +0000 (GMT)
+X-AuditID: b6c32a39-e51ff700000025ce-50-62c392fcfff1
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        98.74.08802.CF293C26; Tue,  5 Jul 2022 10:25:16 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.253.101.71]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220705012516epsmtip24a17a858fe0d52d8c74432fea1f405ac~_ynTaIzao1416314163epsmtip2U;
+        Tue,  5 Jul 2022 01:25:16 +0000 (GMT)
+From:   Seunghui Lee <sh043.lee@samsung.com>
+To:     ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk, Avri.Altman@wdc.com,
+        shawn.lin@rock-chips.com, adrian.hunter@intel.com
+Cc:     grant.jung@samsung.com, jt77.jang@samsung.com,
+        dh0421.hwang@samsung.com, junwoo80.lee@samsung.com,
+        jangsub.yi@samsung.com, cw9316.lee@samsung.com,
+        sh8267.baek@samsung.com, wkon.kim@samsung.com,
+        seunghwan.hyun@samsung.com, Seunghui Lee <sh043.lee@samsung.com>
+Subject: [PATCH] mmc: use mmc_card_* macro and add it for sd_combo
+Date:   Tue,  5 Jul 2022 10:57:29 +0900
+Message-Id: <20220705015729.14455-1-sh043.lee@samsung.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <5265491.31r3eYUQgx@steina-w> <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
- <5717577.DvuYhMxLoT@steina-w>
-In-Reply-To: <5717577.DvuYhMxLoT@steina-w>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 4 Jul 2022 18:24:33 -0700
-Message-ID: <CAGETcx8KGOTanmnVTLJ=SSDgv71ofhUcRxXRiqnUBNB3RZsY=A@mail.gmail.com>
-Subject: Re: (EXT) Re: (EXT) Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: multipart/mixed; boundary="0000000000003dfee805e304b968"
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFJsWRmVeSWpSXmKPExsWy7bCmru6fSYeTDF4sN7I4+WQNm8XLn1fZ
+        LFbf7WezmHGqjdVi37WT7Ba//q5nt+jYOpnJYsfzM+wWu/42M1lc3jWHzeLI/35Gi3MnP7Fa
+        NP3Zx2Jx7cwJVos7T9azWhxfG26x+dI3FgdBj8V7XjJ5XD5b6nHn2h42j7+z9rN49G1Zxejx
+        eZOcR/uBbqYA9qhsm4zUxJTUIoXUvOT8lMy8dFsl7+B453hTMwNDXUNLC3MlhbzE3FRbJRef
+        AF23zBygB5QUyhJzSoFCAYnFxUr6djZF+aUlqQoZ+cUltkqpBSk5BWYFesWJucWleel6eakl
+        VoYGBkamQIUJ2Rm/70xnLrhmWPHv0k+WBsYHGl2MHBwSAiYSv7ucuhi5OIQEdjBK9DT9ZoJw
+        PjFKbPxxkhXC+cwo8WXKN5YuRk6wjomfNkFV7WKU+LzhDELVuv4L7CBVbAJaEtM3bQGrEhHY
+        wChxdf07NhCHWaCHSeL3pe+sIFXCAk4Ss1pmgXWwCKhKXO24zQ5yFa+AlcTah8oQ6+Ql/tzv
+        YQaxeQUEJU7OfAJ2BjNQvHnrbGaQmRICKzkkHl09yAjR4CJxauMRKFtY4tXxLewQtpTEy/42
+        KLtYou3fP2YIu0LiYN8XKNtY4tPnz4wgNzALaEqs36UPEVaU2Pl7LiPEXj6Jd197WCGBxyvR
+        0SYEUaIs8fLRMiYIW1JiSfstqIkeEleerwL7VkggVmLpswvsExjlZyH5ZhaSb2YhLF7AyLyK
+        USy1oDg3PbXYsMAUHqvJ+bmbGMGJWMtyB+P0tx/0DjEycTAeYpTgYFYS4V016WCSEG9KYmVV
+        alF+fFFpTmrxIUZTYPBOZJYSTc4H5oK8knhDE0sDEzMjEwtjS2MzJXHeVdNOJwoJpCeWpGan
+        phakFsH0MXFwSjUwKf3aGmZZzfN0lXKA8tonz6YY1exU2Bfxe9qxucF3qlXl23i7Wz6fuiLI
+        8TMpYW2/j1/Px1kc3u88dOIXnSxnYxZcanJl5YRrjgesmXRmORieZ/uffGZvuskS40PPK67O
+        6X+6uLGuOl/SbrKo0KSAV9UzGNamC93NMJrx1W/D2UJOd0PD2W1nVp/xN17NUfaYUdS/Jzxy
+        0l6JMpabWgK3H65NOXrpW/8br1c3GXaoqMXUm9yU2SmyyorROuL/rNxVlz6tP3eWZe+i0P1i
+        JwtPreAoC1dYmf37WwDnJ/urB7Qq797Yu+xeUJuOCFPtBAkvG/tXTznkPyz/+z5gscN+a43s
+        f2oTz8zZribqY21mo8RSnJFoqMVcVJwIAA0seP1NBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBLMWRmVeSWpSXmKPExsWy7bCSvO6fSYeTDCbNErQ4+WQNm8XLn1fZ
+        LFbf7WezmHGqjdVi37WT7Ba//q5nt+jYOpnJYsfzM+wWu/42M1lc3jWHzeLI/35Gi3MnP7Fa
+        NP3Zx2Jx7cwJVos7T9azWhxfG26x+dI3FgdBj8V7XjJ5XD5b6nHn2h42j7+z9rN49G1Zxejx
+        eZOcR/uBbqYA9igum5TUnMyy1CJ9uwSujN93pjMXXDOs+HfpJ0sD4wONLkZODgkBE4mJnzYx
+        dTFycQgJ7GCUWLPqCgtEQlJi8aOHbF2MHEC2sMThw8UQNR8ZJb6fnM4IUsMmoCUxfdMWJhBb
+        BKT59lsdkCJmgRlMEo+WbwUrEhZwkpjVMosdxGYRUJW42nGbHWQor4CVxNqHyhC75CX+3O9h
+        BrF5BQQlTs58AnYDM1C8eets5gmMfLOQpGYhSS1gZFrFKJlaUJybnltsWGCUl1quV5yYW1ya
+        l66XnJ+7iREcGVpaOxj3rPqgd4iRiYPxEKMEB7OSCO+qSQeThHhTEiurUovy44tKc1KLDzFK
+        c7AoifNe6DoZLySQnliSmp2aWpBaBJNl4uCUamBaJPF1R3HLOblGJZ3Dycv/H0i4y2d2LE8u
+        YCPjBTbdGO+4RVf/ey7OthRdtizEO4Ltghtn3OfMJSoxX5L/ZpWnz1rcuFRx022+o+sXn0/g
+        vJeQzPDZ8MOP1gTx7rU7OzVe7lWP5uy6tL6HxVbr6oXLXQFy+dzNZ2c1NLO8/cj/NnTNxS8K
+        K96t0u++y7NuPn+kS8J/3Xl3Q34sWlwl9P1bvercXuXwy+dNnf5O5uLa+0Bv+jVrjZfz/tpf
+        3V79bf8CMYvFFTYJz/vm1OzYryTQ+CXvysL6hs0s1aln5l07G/pA8w8vg/VZ34k2E6MFBH5X
+        Gz+6ksVsyfb672v19fUFv98u/Wbx6uLmVXK8WjOslViKMxINtZiLihMBadfBNfsCAAA=
+X-CMS-MailID: 20220705012516epcas1p2c15e9e9984735c32bcc754ff646ccbf3
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220705012516epcas1p2c15e9e9984735c32bcc754ff646ccbf3
+References: <CGME20220705012516epcas1p2c15e9e9984735c32bcc754ff646ccbf3@epcas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000003dfee805e304b968
-Content-Type: text/plain; charset="UTF-8"
+add mmc_card_sd_combo() macro for sd combo type card and
+use mmc_card_* macro to simplify instead of comparing card->type
 
-On Mon, Jul 4, 2022 at 12:07 AM Alexander Stein
-<alexander.stein@ew.tq-group.com> wrote:
->
-> Am Freitag, 1. Juli 2022, 09:02:22 CEST schrieb Saravana Kannan:
-> > On Thu, Jun 30, 2022 at 11:02 PM Alexander Stein
-> >
-> > <alexander.stein@ew.tq-group.com> wrote:
-> > > Hi Saravana,
-> > >
-> > > Am Freitag, 1. Juli 2022, 02:37:14 CEST schrieb Saravana Kannan:
-> > > > On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
-> > > >
-> > > > <alexander.stein@ew.tq-group.com> wrote:
-> > > > > Hi,
-> > > > >
-> > > > > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
-> > > > > > Hi,
-> > > > > >
-> > > > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > > > > "power-domains" property, the execution will never get to the
-> > > > > > > point
-> > > > > > > where driver_deferred_probe_check_state() is called before the
-> > > > > > > supplier
-> > > > > > > has probed successfully or before deferred probe timeout has
-> > > > > > > expired.
-> > > > > > >
-> > > > > > > So, delete the call and replace it with -ENODEV.
-> > > > > >
-> > > > > > Looks like this causes omaps to not boot in Linux next. With this
-> > > > > > simple-pm-bus fails to probe initially as the power-domain is not
-> > > > > > yet available. On platform_probe() genpd_get_from_provider() returns
-> > > > > > -ENOENT.
-> > > > > >
-> > > > > > Seems like other stuff is potentially broken too, any ideas on
-> > > > > > how to fix this?
-> > > > >
-> > > > > I think I'm hit by this as well, although I do not get a lockup.
-> > > > > In my case I'm using
-> > > > > arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts and probing of
-> > > > > 38320000.blk-ctrl fails as the power-domain is not (yet) registed.
-> > > >
-> > > > Ok, took a look.
-> > > >
-> > > > The problem is that there are two drivers for the same device and they
-> > > > both initialize this device.
-> > > >
-> > > >     gpc: gpc@303a0000 {
-> > > >
-> > > >         compatible = "fsl,imx8mq-gpc";
-> > > >
-> > > >     }
-> > > >
-> > > > $ git grep -l "fsl,imx7d-gpc" -- drivers/
-> > > > drivers/irqchip/irq-imx-gpcv2.c
-> > > > drivers/soc/imx/gpcv2.c
-> > > >
-> > > > IMHO, this is a bad/broken design.
-> > > >
-> > > > So what's happening is that fw_devlink will block the probe of
-> > > > 38320000.blk-ctrl until 303a0000.gpc is initialized. And it stops
-> > > > blocking the probe of 38320000.blk-ctrl as soon as the first driver
-> > > > initializes the device. In this case, it's the irqchip driver.
-> > > >
-> > > > I'd recommend combining these drivers into one. Something like the
-> > > > patch I'm attaching (sorry for the attachment, copy-paste is mangling
-> > > > the tabs). Can you give it a shot please?
-> > >
-> > > I tried this patch and it delayed the driver initialization (those of UART
-> > > as
-> > > well BTW). Unfortunately the driver fails the same way:
-> > Thanks for testing the patch!
-> >
-> > > > [    1.125253] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed
-> > > > to
-> > >
-> > > attach power domain "bus"
-> > >
-> > > More than that it even introduced some more errors:
-> > > > [    0.008160] irq: no irq domain found for gpc@303a0000 !
-> >
-> > So the idea behind my change was that as long as the irqchip isn't the
-> > root of the irqdomain (might be using the terms incorrectly) like the
-> > gic, you can make it a platform driver. And I was trying to hack up a
-> > patch that's the equivalent of platform_irqchip_probe() (which just
-> > ends up eventually calling the callback you use in IRQCHIP_DECLARE().
-> > I probably made some mistake in the quick hack that I'm sure if
-> > fixable.
-> >
-> > > > [    0.013251] Failed to map interrupt for
-> > > > /soc@0/bus@30400000/timer@306a0000
-> >
-> > However, this timer driver also uses TIMER_OF_DECLARE() which can't
-> > handle failure to get the IRQ (because it's can't -EPROBE_DEFER). So,
-> > this means, the timer driver inturn needs to be converted to a
-> > platform driver if it's supposed to work with the IRQCHIP_DECLARE()
-> > being converted to a platform driver.
-> >
-> > But that's a can of worms not worth opening. But then I remembered
-> > this simpler workaround will work and it is pretty much a variant of
-> > the workaround that's already in the gpc's irqchip driver to allow two
-> > drivers to probe the same device (people really should stop doing
-> > that).
-> >
-> > Can you drop my previous hack patch and try this instead please? I'm
-> > 99% sure this will work.
-> >
-> > diff --git a/drivers/irqchip/irq-imx-gpcv2.c
-> > b/drivers/irqchip/irq-imx-gpcv2.c index b9c22f764b4d..8a0e82067924 100644
-> > --- a/drivers/irqchip/irq-imx-gpcv2.c
-> > +++ b/drivers/irqchip/irq-imx-gpcv2.c
-> > @@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
-> > device_node *node,
-> >          * later the GPC power domain driver will not be skipped.
-> >          */
-> >         of_node_clear_flag(node, OF_POPULATED);
-> > +       fwnode_dev_initialized(domain->fwnode, false);
-> >         return 0;
-> >  }
->
-> Just to be sure here, I tried this patch on top of next-20220701 but
-> unfortunately this doesn't fix the original problem either. The timer errors
-> are gone though.
+Signed-off-by: Seunghui Lee <sh043.lee@samsung.com>
+---
+ drivers/mmc/core/block.c  |  4 ++--
+ drivers/mmc/core/bus.c    |  4 ++--
+ drivers/mmc/core/sd.c     |  2 +-
+ drivers/mmc/core/sdio.c   | 16 ++++++++--------
+ drivers/mmc/host/mxcmmc.c |  2 +-
+ include/linux/mmc/card.h  |  1 +
+ 6 files changed, 15 insertions(+), 14 deletions(-)
 
-To clarify, you had the timer issue only with my "combine drivers" patch, right?
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index bda6c67ce93f..4d7ae8fc2901 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -2987,7 +2987,7 @@ static int mmc_blk_probe(struct mmc_card *card)
+ 	 * Don't enable runtime PM for SD-combo cards here. Leave that
+ 	 * decision to be taken during the SDIO init sequence instead.
+ 	 */
+-	if (card->type != MMC_TYPE_SD_COMBO) {
++	if (!mmc_card_sd_combo(card)) {
+ 		pm_runtime_set_active(&card->dev);
+ 		pm_runtime_enable(&card->dev);
+ 	}
+@@ -3014,7 +3014,7 @@ static void mmc_blk_remove(struct mmc_card *card)
+ 		mmc_blk_part_switch(card, md->part_type);
+ 		mmc_release_host(card->host);
+ 	}
+-	if (card->type != MMC_TYPE_SD_COMBO)
++	if (!mmc_card_sd_combo(card))
+ 		pm_runtime_disable(&card->dev);
+ 	pm_runtime_put_noidle(&card->dev);
+ 	mmc_blk_remove_req(md);
+diff --git a/drivers/mmc/core/bus.c b/drivers/mmc/core/bus.c
+index 58a60afa650b..d8762fa3d5cd 100644
+--- a/drivers/mmc/core/bus.c
++++ b/drivers/mmc/core/bus.c
+@@ -85,7 +85,7 @@ mmc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 			return retval;
+ 	}
+ 
+-	if (card->type == MMC_TYPE_SDIO || card->type == MMC_TYPE_SD_COMBO) {
++	if (mmc_card_sdio(card) || mmc_card_sd_combo(card)) {
+ 		retval = add_uevent_var(env, "SDIO_ID=%04X:%04X",
+ 					card->cis.vendor, card->cis.device);
+ 		if (retval)
+@@ -107,7 +107,7 @@ mmc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	 * SDIO (non-combo) cards are not handled by mmc_block driver and do not
+ 	 * have accessible CID register which used by mmc_card_name() function.
+ 	 */
+-	if (card->type == MMC_TYPE_SDIO)
++	if (mmc_card_sdio(card))
+ 		return 0;
+ 
+ 	retval = add_uevent_var(env, "MMC_NAME=%s", mmc_card_name(card));
+diff --git a/drivers/mmc/core/sd.c b/drivers/mmc/core/sd.c
+index c5f1df6ce4c0..f0186bdf2025 100644
+--- a/drivers/mmc/core/sd.c
++++ b/drivers/mmc/core/sd.c
+@@ -793,7 +793,7 @@ static umode_t sd_std_is_visible(struct kobject *kobj, struct attribute *attr,
+ 	     attr == &dev_attr_info2.attr ||
+ 	     attr == &dev_attr_info3.attr ||
+ 	     attr == &dev_attr_info4.attr
+-	    ) && card->type != MMC_TYPE_SD_COMBO)
++	    ) &&!mmc_card_sd_combo(card))
+ 		return 0;
+ 
+ 	return attr->mode;
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 25799accf8a0..b589df1c35e0 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -335,7 +335,7 @@ static int sdio_disable_4bit_bus(struct mmc_card *card)
+ {
+ 	int err;
+ 
+-	if (card->type == MMC_TYPE_SDIO)
++	if (mmc_card_sdio(card))
+ 		goto out;
+ 
+ 	if (!(card->host->caps & MMC_CAP_4_BIT_DATA))
+@@ -360,7 +360,7 @@ static int sdio_enable_4bit_bus(struct mmc_card *card)
+ 	err = sdio_enable_wide(card);
+ 	if (err <= 0)
+ 		return err;
+-	if (card->type == MMC_TYPE_SDIO)
++	if (mmc_card_sdio(card))
+ 		goto out;
+ 
+ 	if (card->scr.bus_widths & SD_SCR_BUS_WIDTH_4) {
+@@ -415,7 +415,7 @@ static int sdio_enable_hs(struct mmc_card *card)
+ 	int ret;
+ 
+ 	ret = mmc_sdio_switch_hs(card, true);
+-	if (ret <= 0 || card->type == MMC_TYPE_SDIO)
++	if (ret <= 0 || mmc_card_sdio(card))
+ 		return ret;
+ 
+ 	ret = mmc_sd_switch_hs(card);
+@@ -441,7 +441,7 @@ static unsigned mmc_sdio_get_max_clock(struct mmc_card *card)
+ 		max_dtr = card->cis.max_dtr;
+ 	}
+ 
+-	if (card->type == MMC_TYPE_SD_COMBO)
++	if (mmc_card_sd_combo(card))
+ 		max_dtr = min(max_dtr, mmc_sd_get_max_clock(card));
+ 
+ 	return max_dtr;
+@@ -689,7 +689,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 	    mmc_sd_get_cid(host, ocr & rocr, card->raw_cid, NULL) == 0) {
+ 		card->type = MMC_TYPE_SD_COMBO;
+ 
+-		if (oldcard && (oldcard->type != MMC_TYPE_SD_COMBO ||
++		if (oldcard && (!mmc_card_sd_combo(oldcard) ||
+ 		    memcmp(card->raw_cid, oldcard->raw_cid, sizeof(card->raw_cid)) != 0)) {
+ 			err = -ENOENT;
+ 			goto mismatch;
+@@ -697,7 +697,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 	} else {
+ 		card->type = MMC_TYPE_SDIO;
+ 
+-		if (oldcard && oldcard->type != MMC_TYPE_SDIO) {
++		if (oldcard && !mmc_card_sdio(oldcard)) {
+ 			err = -ENOENT;
+ 			goto mismatch;
+ 		}
+@@ -754,7 +754,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 	/*
+ 	 * Read CSD, before selecting the card
+ 	 */
+-	if (!oldcard && card->type == MMC_TYPE_SD_COMBO) {
++	if (!oldcard && mmc_card_sd_combo(card)) {
+ 		err = mmc_sd_get_csd(card);
+ 		if (err)
+ 			goto remove;
+@@ -827,7 +827,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 
+ 	mmc_fixup_device(card, sdio_fixup_methods);
+ 
+-	if (card->type == MMC_TYPE_SD_COMBO) {
++	if (mmc_card_sd_combo(card)) {
+ 		err = mmc_sd_setup_card(host, card, oldcard != NULL);
+ 		/* handle as SDIO-only card if memory init failed */
+ 		if (err) {
+diff --git a/drivers/mmc/host/mxcmmc.c b/drivers/mmc/host/mxcmmc.c
+index 613f13306433..2cf0413407ea 100644
+--- a/drivers/mmc/host/mxcmmc.c
++++ b/drivers/mmc/host/mxcmmc.c
+@@ -923,7 +923,7 @@ static void mxcmci_init_card(struct mmc_host *host, struct mmc_card *card)
+ 	 * One way to prevent this is to only allow 1-bit transfers.
+ 	 */
+ 
+-	if (is_imx31_mmc(mxcmci) && card->type == MMC_TYPE_SDIO)
++	if (is_imx31_mmc(mxcmci) && mmc_card_sdio(card))
+ 		host->caps &= ~MMC_CAP_4_BIT_DATA;
+ 	else
+ 		host->caps |= MMC_CAP_4_BIT_DATA;
+diff --git a/include/linux/mmc/card.h b/include/linux/mmc/card.h
+index 37f975875102..156a7b673a28 100644
+--- a/include/linux/mmc/card.h
++++ b/include/linux/mmc/card.h
+@@ -348,5 +348,6 @@ bool mmc_card_is_blockaddr(struct mmc_card *card);
+ #define mmc_card_mmc(c)		((c)->type == MMC_TYPE_MMC)
+ #define mmc_card_sd(c)		((c)->type == MMC_TYPE_SD)
+ #define mmc_card_sdio(c)	((c)->type == MMC_TYPE_SDIO)
++#define mmc_card_sd_combo(c)	((c)->type == MMC_TYPE_SD_COMBO)
+ 
+ #endif /* LINUX_MMC_CARD_H */
+-- 
+2.29.0
 
-> The probe of imx8m-blk-ctrl got slightly delayed (from 0.74 to 0.90s printk
-> time) but results in the identical error message.
-
-My guess is that the probe attempt of blk-ctrl is delayed now till gpc
-probes (because of the device links getting created with the
-fwnode_dev_initialized() fix), but by the time gpc probe finishes, the
-power domains aren't registered yet because of the additional level of
-device addition and probing.
-
-Can you try the attached patch please?
-
-And if that doesn't fix the issues, then enable the debug logs in the
-following functions please and share the logs from boot till the
-failure? If you can enable CONFIG_PRINTK_CALLER, that'd help too.
-device_link_add()
-fwnode_link_add()
-fw_devlink_relax_cycle()
-
-Btw, part of the reason I'm trying to make sure we fix it the right
-way is that when we try to enable async boot by default, we don't run
-into issues.
-
-Thanks,
-Saravana
-
---0000000000003dfee805e304b968
-Content-Type: text/x-patch; charset="US-ASCII"; name="0001-imx-fix-and-logs.patch"
-Content-Disposition: attachment; filename="0001-imx-fix-and-logs.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l57hngib0>
-X-Attachment-Id: f_l57hngib0
-
-RnJvbSAzNGFlNGZhOWM3ZWZjYTI2ZTU5NDY0MjJhYjlhMDkyNWNlNGE1MjkzIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBTYXJhdmFuYSBLYW5uYW4gPHNhcmF2YW5ha0Bnb29nbGUuY29t
-PgpEYXRlOiBGcmksIDEgSnVsIDIwMjIgMDE6MjU6NTYgLTA3MDAKU3ViamVjdDogW1BBVENIXSBp
-bXgtZml4IGFuZCBsb2dzCgotLS0KIGRyaXZlcnMvaXJxY2hpcC9pcnEtaW14LWdwY3YyLmMgfCAg
-MSArCiBkcml2ZXJzL3NvYy9pbXgvZ3BjdjIuYyAgICAgICAgIHwgMTAgKysrKysrKysrLQogMiBm
-aWxlcyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9pcnFjaGlwL2lycS1pbXgtZ3BjdjIuYyBiL2RyaXZlcnMvaXJxY2hpcC9pcnEt
-aW14LWdwY3YyLmMKaW5kZXggYjljMjJmNzY0YjRkLi44YTBlODIwNjc5MjQgMTAwNjQ0Ci0tLSBh
-L2RyaXZlcnMvaXJxY2hpcC9pcnEtaW14LWdwY3YyLmMKKysrIGIvZHJpdmVycy9pcnFjaGlwL2ly
-cS1pbXgtZ3BjdjIuYwpAQCAtMjgzLDYgKzI4Myw3IEBAIHN0YXRpYyBpbnQgX19pbml0IGlteF9n
-cGN2Ml9pcnFjaGlwX2luaXQoc3RydWN0IGRldmljZV9ub2RlICpub2RlLAogCSAqIGxhdGVyIHRo
-ZSBHUEMgcG93ZXIgZG9tYWluIGRyaXZlciB3aWxsIG5vdCBiZSBza2lwcGVkLgogCSAqLwogCW9m
-X25vZGVfY2xlYXJfZmxhZyhub2RlLCBPRl9QT1BVTEFURUQpOworCWZ3bm9kZV9kZXZfaW5pdGlh
-bGl6ZWQoZG9tYWluLT5md25vZGUsIGZhbHNlKTsKIAlyZXR1cm4gMDsKIH0KIApkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9zb2MvaW14L2dwY3YyLmMgYi9kcml2ZXJzL3NvYy9pbXgvZ3BjdjIuYwppbmRl
-eCA4NWFhODZlMTMzOGEuLjA3ZmNlYWY3NGYxOSAxMDA2NDQKLS0tIGEvZHJpdmVycy9zb2MvaW14
-L2dwY3YyLmMKKysrIGIvZHJpdmVycy9zb2MvaW14L2dwY3YyLmMKQEAgLTEzNTAsNiArMTM1MCw4
-IEBAIHN0YXRpYyBpbnQgaW14X3BnY19kb21haW5fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZSAqcGRldikKIAkJZ290byBvdXRfZ2VucGRfcmVtb3ZlOwogCX0KIAorCWRldl9pbmZvKCIlczog
-UHJvYmUgc3VjY2VlZGVkXG4iLCBfX2Z1bmNfXyk7CisKIAlyZXR1cm4gMDsKIAogb3V0X2dlbnBk
-X3JlbW92ZToKQEAgLTE0MjMsNyArMTQyNSwxMiBAQCBzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2Ry
-aXZlciBpbXhfcGdjX2RvbWFpbl9kcml2ZXIgPSB7CiAJLnJlbW92ZSAgID0gaW14X3BnY19kb21h
-aW5fcmVtb3ZlLAogCS5pZF90YWJsZSA9IGlteF9wZ2NfZG9tYWluX2lkLAogfTsKLWJ1aWx0aW5f
-cGxhdGZvcm1fZHJpdmVyKGlteF9wZ2NfZG9tYWluX2RyaXZlcikKKworc3RhdGljIGludCBfX2lu
-aXQgaW14X3BnY19kb21haW5faW5pdCh2b2lkKQoreworCXJldHVybiBwbGF0Zm9ybV9kcml2ZXJf
-cmVnaXN0ZXIoJmlteF9wZ2NfZG9tYWluX2RyaXZlcik7Cit9CitzdWJzeXNfaW5pdGNhbGwoaW14
-X3BnY19kb21haW5faW5pdCk7CiAKIHN0YXRpYyBpbnQgaW14X2dwY3YyX3Byb2JlKHN0cnVjdCBw
-bGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiB7CkBAIC0xNTE4LDYgKzE1MjUsNyBAQCBzdGF0aWMgaW50
-IGlteF9ncGN2Ml9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogCQl9CiAJfQog
-CisJZGV2X2luZm8oIiVzOiBQcm9iZSBzdWNjZWVkZWRcbiIsIF9fZnVuY19fKTsKIAlyZXR1cm4g
-MDsKIH0KIAotLSAKMi4zNy4wLnJjMC4xNjEuZzEwZjM3YmVkOTAtZ29vZwoK
---0000000000003dfee805e304b968--
