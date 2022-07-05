@@ -2,106 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 876B6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD81CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbiGEJs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
+        id S231171AbiGEJtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbiGEJsX (ORCPT
+        with ESMTP id S230074AbiGEJtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:48:23 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B10B70
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 02:48:21 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id m18so1163745lfg.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 02:48:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ahpvfjUdXTR8WSsjap+PAgVIzJ16qJ7M8PATGfTPtFI=;
-        b=hXYh3ispdpHgB9k7Iam45wMwEKXDESJJWiotYpXkdeS9eJapOErB2G7dIMxlYFRta9
-         MVodOWys9y/5TNwtIFzRWNutDMqOVTytJ18zQRoWiUWqYemL6igs7DK5kAQP0IQlJmDN
-         qEkfNJ9I/NINevOP+1+Vi0CeWGUtA0GzV2DafPHBe2k/r3fHUXoZFRnmL95uXJ8GFGGS
-         s3FES0TubM69HkJDeS0E0drO0lEo6RTrjYGMFgigqsWW6HAuqeZUSM+4UEA5qZa9ZeVE
-         ma8btURFm3pDjuQPBqDiDk5RQYh8h+SfTLRpi/BqEjRq2yZriwDiyi6iVB/st89b/HIU
-         REgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ahpvfjUdXTR8WSsjap+PAgVIzJ16qJ7M8PATGfTPtFI=;
-        b=xP0wxr37rDe9ecIn0OKsQE62Lvw+Ux5wG9U0PhFIot3pp0Is+GI6DyDqqrAKJTbA3y
-         f5U6wYN9h7ij7aqXNj7QceMN0ah4e+iK4tcUeQbdWPZlpl3N5Nu8gMh9Bl4VpF9mOh3D
-         1cyd3l5AxCuIiINcChwH/DL7ilm/cTzXNZUmqyzDsnjxnZyZrb9CEFQMD1mQByyTsNXy
-         LiSci5YbdQ9maYLjFQ986PzFGyO1q+/Q7YaGdBegu20Iu6Xc9JdPpQJZKgYajdMhgv0P
-         eJPaS2z96O5pI0Djd8awsJMN610Tu933r1yvm5y04D1POjy2kAZfq2cj1LyUOHZEqL5r
-         woLQ==
-X-Gm-Message-State: AJIora8bZW/6MTvsX7Jy97dlaKneiPyvqayRkFB2Qr0d3988rHeQh5cY
-        FuMmvGByyIMjf0H6dFRZByrfEA==
-X-Google-Smtp-Source: AGRyM1u721+7xpKSxN/uYG1ugKxyjBkKJ+dK71jGvPOj3htzgCrnsBaya92MI59e4jlypYIxOOnQkQ==
-X-Received: by 2002:a05:6512:3d89:b0:481:bcf:cecd with SMTP id k9-20020a0565123d8900b004810bcfcecdmr22709190lfv.511.1657014500137;
-        Tue, 05 Jul 2022 02:48:20 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id bf26-20020a2eaa1a000000b0025d2f556e6csm401559ljb.14.2022.07.05.02.48.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 02:48:19 -0700 (PDT)
-Message-ID: <ef676df1-77e0-b8ee-3950-97eade8ddd5b@linaro.org>
-Date:   Tue, 5 Jul 2022 11:48:18 +0200
+        Tue, 5 Jul 2022 05:49:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54186266B;
+        Tue,  5 Jul 2022 02:49:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C855561912;
+        Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29831C341D1;
+        Tue,  5 Jul 2022 09:49:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657014542;
+        bh=PRWF0dxD1eXxpPCxf2RrBgIGlcN0HFetPfQNjqW6hVY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AID+pfdcyTF9puV9smoekOeujTxZItnvAW8tiIHIpKy5zpbSoSh1TGtKgyuvokq38
+         muyKEZmytORg7XJujwIQ/IUayRyPB0vHyoiBjx64I+1Rap9UeZSmPuC9PSt5vzUm6M
+         70b5MSa1CDT4b+2YovO8NscM0UQRgbstOqh+kdYKTsC8yt8gh3oNdpY/y70lFQmv6w
+         gxP8ZX6+xn/iPtbXKu3JGY8Uav19ohF7IRYKB6YhlodehgqLvX40yHWGdwJwwgZi3v
+         vhTGeWCitD/hQ81aZ1pp32+HX7W3jPXTrYSGl083FaDvyrkHVVUTLPnzAz4OfyGTFk
+         +CkS4e3PVUc0A==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1o8fB0-0004Wr-GB; Tue, 05 Jul 2022 11:49:02 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 00/43] phy: qcom,qmp: fix dt-bindings and deprecate lane suffix
+Date:   Tue,  5 Jul 2022 11:41:56 +0200
+Message-Id: <20220705094239.17174-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 07/11] dt-bindings: spi: spi-nxp-fspi: add a new property
- nxp,fspi-dll-slvdly
-Content-Language: en-US
-To:     haibo.chen@nxp.com, ashish.kumar@nxp.com, yogeshgaur.83@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, han.xu@nxp.com,
-        singh.kuldeep87k@gmail.com, tudor.ambarus@microchip.com,
-        p.yadav@ti.com, michael@walle.cc, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-arm-kernel@lists.infradead.org, zhengxunli@mxic.com.tw
-References: <1657012303-6464-1-git-send-email-haibo.chen@nxp.com>
- <1657012303-6464-7-git-send-email-haibo.chen@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1657012303-6464-7-git-send-email-haibo.chen@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 11:11, haibo.chen@nxp.com wrote:
-> From: Haibo Chen <haibo.chen@nxp.com>
-> 
-> Add one optional property nxp,fspi-dll-slvdly
-> 
-> Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-> ---
->  Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml b/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml
-> index 1b552c298277..6bd61565686a 100644
-> --- a/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml
-> +++ b/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml
-> @@ -45,6 +45,12 @@ properties:
->        - const: fspi_en
->        - const: fspi
->  
-> +  nxp,fspi-dll-slvdly:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      Specify the DLL slave line delay value.
+When adding support for SC8280XP to the QMP PHY driver I noticed that
+the PHY provider child node was not described by the current DT schema.
 
-What are the units?
+The SC8280XP PHYs also need a second fixed-divider PIPE clock
+("pipediv2") and I didn't want to have to add a bogus "lane" suffix to
+the clock name just to match the current "pipe0" name so I decided to
+deprecate the unnecessary suffix in the current binding instead.
 
-Best regards,
-Krzysztof
+To be able to add the missing child-node schema and handle device
+specifics like additional PIPE clocks, it quickly became obvious that
+the binding needs to be split up.
+
+This series fixes some issue with the current schema before splitting
+it up in separate schemas for PCIe, UFS and USB, which are then cleaned
+up further before adding missing parts like the child PHY provider
+nodes and examples.
+
+The MSM8996 PCIe PHY gets its own schema as this is the only non-combo
+PHY that actually provides more than one PHY per IP block. Note that the
+"lane" suffix is still unnecessary and misleading.
+
+The final patches adds support for the new resource names to the
+(recently split up) PHY drivers. Included is also a related combo PHY
+cleanup.
+
+I'll post a separate series with related DTS fixes caught while
+developing this series.
+
+Johan
+
+
+Johan Hovold (43):
+  dt-bindings: phy: qcom,qmp: fix bogus clock-cells property
+  dt-bindings: phy: qcom,qmp: sort compatible strings
+  dt-bindings: phy: qcom,qmp: clean up descriptions
+  dt-bindings: phy: qcom,qmp: clean up example
+  dt-bindings: phy: qcom,qmp: drop child-node comment
+  dt-bindings: phy: qcom,qmp: split out msm8996-qmp-pcie-phy
+  dt-bindings: phy: qcom,msm8996-qmp-pcie: clean up constraints
+  dt-bindings: phy: qcom,msm8996-qmp-pcie: add missing child node schema
+  dt-bindings: phy: qcom,msm8996-qmp-pcie: add example node
+  dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate PIPE clock names
+  dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate reset names
+  dt-bindings: phy: qcom,qmp: split out PCIe PHY binding
+  dt-bindings: phy: qcom,qmp-pcie: clean up register constraints
+  dt-bindings: phy: qcom,qmp-pcie: clean up clock constraints
+  dt-bindings: phy: qcom,qmp-pcie: clean up reset constraints
+  dt-bindings: phy: qcom,qmp-pcie: drop unused vddp-ref-clk supply
+  dt-bindings: phy: qcom,qmp-pcie: add missing child node schema
+  dt-bindings: phy: qcom,qmp-pcie: add example node
+  dt-bindings: phy: qcom,qmp-pcie: deprecate PIPE clock name
+  dt-bindings: phy: qcom,qmp: split out UFS PHY binding
+  dt-bindings: phy: qcom,qmp-ufs: clean up supplies
+  dt-bindings: phy: qcom,qmp-ufs: clean up reset providers
+  dt-bindings: phy: qcom,qmp-ufs: clean up clock constraints
+  dt-bindings: phy: qcom,qmp-ufs: clean up register constraints
+  dt-bindings: phy: qcom,qmp-ufs: add missing SM8450 clock
+  dt-bindings: phy: qcom,qmp-ufs: add missing SM8150 power domain
+  dt-bindings: phy: qcom,qmp-ufs: add missing child node schema
+  dt-bindings: phy: qcom,qmp-ufs: add example node
+  dt-bindings: phy: qcom,qmp: split out USB binding
+  dt-bindings: phy: qcom,qmp-usb: clean up clock constraints
+  dt-bindings: phy: qcom,qmp-usb: clean up supplies
+  dt-bindings: phy: qcom,qmp-usb: drop unused vddp-ref-clk supply
+  dt-bindings: phy: qcom,qmp-usb: clean up reset providers
+  dt-bindings: phy: qcom,qmp-usb: add missing child node schema
+  dt-bindings: phy: qcom,qmp-usb: deprecate PIPE clock name
+  dt-bindings: phy: qcom,qmp-usb3-dp: fix bogus clock-cells property
+  dt-bindings: phy: qcom,qmp-usb3-dp: deprecate USB PIPE clock name
+  phy: qcom-qmp-pcie: drop pipe clock lane suffix
+  phy: qcom-qmp-combo: drop unused lane reset
+  phy: qcom-qmp-combo: drop pipe clock lane suffix
+  phy: qcom-qmp-pcie-msm8996: drop pipe clock lane suffix
+  phy: qcom-qmp-pcie-msm8996: drop reset lane suffix
+  phy: qcom-qmp-usb: drop pipe clock lane suffix
+
+ .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 212 ++++++++
+ .../bindings/phy/qcom,qmp-pcie-phy.yaml       | 309 +++++++++++
+ .../devicetree/bindings/phy/qcom,qmp-phy.yaml | 500 ------------------
+ .../bindings/phy/qcom,qmp-ufs-phy.yaml        | 249 +++++++++
+ .../bindings/phy/qcom,qmp-usb-phy.yaml        | 417 +++++++++++++++
+ .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml    |  15 +-
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c     |  10 +-
+ .../phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c  |  17 +-
+ drivers/phy/qualcomm/phy-qcom-qmp-pcie.c      |   8 +-
+ drivers/phy/qualcomm/phy-qcom-qmp-usb.c       |   8 +-
+ 10 files changed, 1224 insertions(+), 521 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+ create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-pcie-phy.yaml
+ delete mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+ create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+ create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
+
+-- 
+2.35.1
+
