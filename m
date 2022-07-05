@@ -2,158 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26278C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 21:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D83CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 21:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbiGEVqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 17:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
+        id S232545AbiGEVs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 17:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiGEVqi (ORCPT
+        with ESMTP id S232246AbiGEVsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 17:46:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D544CBE36
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 14:46:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91A1CB819A4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 21:46:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39A7C341C7;
-        Tue,  5 Jul 2022 21:46:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657057594;
-        bh=U8oytdS3Sr57mzpNJqhOx+S7S3Yftn+YrpA6G/d0ItY=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=dIg6MhBa6xYSPTs7RjUTZ8605gQPii0BYb1N7JlDui/MkPWQ7yCvaevDDIQiwEW9o
-         LDG0vnRMHil+vPqRDZntNLqspvGDqFeQJM1aNbScYUVFHHdjdjNLXa7P9Nc7/uWAdR
-         J8flvTzpces08pwNfxJiTe7wEBx8dLq9RhmFgX8d3Bwhhr9ndudziO+wXmMSZmrDGk
-         1zreAgk62aZB/p5gxLjV3+4fDOP/WcYjRUuUcWq8DSnptKeGcpKVfbC6XnzO19u36E
-         gnLMOj9xf4iZFPd+cKNV09NxxuHnx5cSpHI/xPyp3D0WGTWyltNLGoQr4Nw7XghMcX
-         y8fKfgQZyrXkg==
-Message-ID: <725b7b32d65b4026313f658954f9f7ad31bd2c64.camel@kernel.org>
-Subject: Re: [PATCH v7 0/4] tracing/probes: allow no event name input when
- create group
-From:   Tom Zanussi <zanussi@kernel.org>
-To:     Linyu Yuan <quic_linyyuan@quicinc.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Date:   Tue, 05 Jul 2022 16:46:32 -0500
-In-Reply-To: <1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com>
-References: <1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com>
+        Tue, 5 Jul 2022 17:48:25 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECE510AF;
+        Tue,  5 Jul 2022 14:48:23 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so8080069wme.0;
+        Tue, 05 Jul 2022 14:48:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PU7Lk/8Sax5XmlQiaVaA1dEst+rO/Dc76xfk8EMg5rU=;
+        b=VWKoc1vTC7dmodEJ7AnbFDZ5fs/4+Nq8GI6aDF//zH1sFJE8ous9N8DVmhCdNBDu7J
+         TEV0OZ7bot7bTz3H4yd56ZRrkwxGIFMbiNXyMqyxTYq3VKR1u9rg6rHhTYMEXhscqSPb
+         Ccm6AxwWMhv1d8/+zxJYMjbHjFhlhaXe+b5fXKLXVU2U8ZbZY80EwHbaMEMkj/MpnXbt
+         Uw0LZyDNux3g8GLLZXWynLp0GUTzkeUfRCaJubH+VuWeVBLJXqR6LPAfYZV768F05DkS
+         81qT5rHG43qh7gdNNw7b8ZC4JsCyyDamnVIJ9F70HPL12MxnnMZIoo1SVum0jci5LIaF
+         DoNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PU7Lk/8Sax5XmlQiaVaA1dEst+rO/Dc76xfk8EMg5rU=;
+        b=BHzZCVcA51KikK3eBRptwRhimizcV57bdkg3j6/yveqmvKVagPPEm57yggJ7Tb6Pe+
+         3bYms8OlDHFtsAXmCXow2ZUGd2I5f3H/kPmpg/05vS47G1HT8Cret2dNAuiN1a++RzVa
+         +hip0s3OrQBIc+wdUs9xmwMynRw5roYwHmZUdiQaZNbom+KlbPnuV7vMYS7Ry6YZCHDa
+         Y7tEJLZsTsrjfdTVeJfHEceE8T9C7p2WJR/PsUJPxSzreV4BkhDFQ4TCyY04/ayrucNB
+         LltIbXXREfC6oT9wfEor8wQNsY2vHmB3z8UKK0o4qBT8Fz0XQCukNSAODgSGmtU8cPwq
+         AcVw==
+X-Gm-Message-State: AJIora8HdXQsxChXq21vzeItZKuOuiNfAyEh5PVdI1zUT8CTcbBd2fUS
+        Ef44s7uhA2+CMDexJOSlbQvsvQ7GXRjbEUS3sOQ=
+X-Google-Smtp-Source: AGRyM1s4DVmvwO3UYi3am/1hl7v5k+11uGFQz8SR7b/jLPUtCXxxfUROpF6gbwNkgnUr5Rze8aRIMeW9WGiopFicipE=
+X-Received: by 2002:a05:600c:4f83:b0:3a1:7310:62e7 with SMTP id
+ n3-20020a05600c4f8300b003a1731062e7mr36978255wmq.84.1657057702289; Tue, 05
+ Jul 2022 14:48:22 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
+ <20220701090240.1896131-3-dmitry.osipenko@collabora.com> <2bb95e80-b60a-36c0-76c8-a06833032c77@amd.com>
+In-Reply-To: <2bb95e80-b60a-36c0-76c8-a06833032c77@amd.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Tue, 5 Jul 2022 14:48:34 -0700
+Message-ID: <CAF6AEGtqPeF1DjmBKgzWK39Yi81YiNjTjDNn85TKx7uwicFTSA@mail.gmail.com>
+Subject: Re: [PATCH v8 2/2] drm/gem: Don't map imported GEMs
+To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas_os@shipmail.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        kernel@collabora.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1-0ubuntu1 
-MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yuan,
+On Tue, Jul 5, 2022 at 4:51 AM Christian K=C3=B6nig <christian.koenig@amd.c=
+om> wrote:
+>
+> Am 01.07.22 um 11:02 schrieb Dmitry Osipenko:
+> > Drivers that use drm_gem_mmap() and drm_gem_mmap_obj() helpers don't
+> > handle imported dma-bufs properly, which results in mapping of somethin=
+g
+> > else than the imported dma-buf. On NVIDIA Tegra we get a hard lockup wh=
+en
+> > userspace writes to the memory mapping of a dma-buf that was imported i=
+nto
+> > Tegra's DRM GEM.
+> >
+> > Majority of DRM drivers prohibit mapping of the imported GEM objects.
+> > Mapping of imported GEMs require special care from userspace since it
+> > should sync dma-buf because mapping coherency of the exporter device ma=
+y
+> > not match the DRM device. Let's prohibit the mapping for all DRM driver=
+s
+> > for consistency.
+> >
+> > Suggested-by: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
+> > Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+>
+> I'm pretty sure that this is the right approach, but it's certainly more
+> than possible that somebody abused this already.
 
-On Mon, 2022-06-27 at 10:19 +0800, Linyu Yuan wrote:
-> take kprobe event as example, when create a group of events,
-> p[:[GRP/]EVENT] [MOD:]KSYM[+OFFS]|KADDR [FETCHARGS],
-> according to this format, we must input EVENT name,
->=20
-> this change allow only GRP/ input, EVENT name auto generate from
-> KSYM,
-> p[:[GRP/][EVENT]] [MOD:]KSYM[+OFFS]|KADDR [FETCHARGS]
->=20
-> similar change apply to eprobe and uprobe.
+I suspect that this is abused if you run deqp cts on android.. ie. all
+winsys buffers are dma-buf imports from gralloc.  And then when you
+hit readpix...
 
-Thanks for making those changes!
+You might only hit this in scenarios with separate gpu and display (or
+dGPU+iGPU) because self-imports are handled differently in
+drm_gem_prime_import_dev().. and maybe not in cases where you end up
+with a blit from tiled/compressed to linear.. maybe that narrows the
+scope enough to just fix it in userspace?
 
-For the series,
+BR,
+-R
 
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-
-Tom
-
->=20
-> V2: (v1:
-> https://lore.kernel.org/lkml/1651397651-30454-1-git-send-email-quic_linyy=
-uan@quicinc.com/
-> )
-> =C2=A0=C2=A0=C2=A0 fix remove comment in V1 patch1,
-> =C2=A0=C2=A0=C2=A0 remove v1 patch2 as it is NACK.
->=20
-> v3: (v2 :
-> https://lore.kernel.org/lkml/1653795294-19764-1-git-send-email-quic_linyy=
-uan@quicinc.com/
-> )
-> =C2=A0=C2=A0=C2=A0 add selftest cases for kprobe and eprobe event,
-> =C2=A0=C2=A0=C2=A0 remove macro used in v1,v2,
-> =C2=A0=C2=A0=C2=A0 change location to generate eprobe event name.
->=20
-> v4: (v3 :
-> https://lore.kernel.org/lkml/1653978552-18637-1-git-send-email-quic_linyy=
-uan@quicinc.com/
-> )
-> =C2=A0=C2=A0=C2=A0 fix comment of kprobe/eprobe test case.
->=20
-> v5: (v4:
-> https://lore.kernel.org/lkml/1654171861-24014-1-git-send-email-quic_linyy=
-uan@quicinc.com/
-> )
-> =C2=A0=C2=A0=C2=A0 for eprobe, when only input a "SYSTEM.", it is invalid=
-.
-> =C2=A0=C2=A0=C2=A0 add Acked-by from Masami Hiramatsu (Google) <mhiramat@=
-kernel.org>
->=20
-> v6: (v5:
-> https://lore.kernel.org/lkml/1655168698-19898-1-git-send-email-quic_linyy=
-uan@quicinc.com/
-> )
-> =C2=A0=C2=A0=C2=A0 change some code order according review comment from T=
-om Zanussi,
-> =C2=A0=C2=A0=C2=A0 some minor changes.
->=20
-> v7: (v6:
-> https://lore.kernel.org/lkml/1655776787-18133-1-git-send-email-quic_linyy=
-uan@quicinc.com/
-> )
-> =C2=A0=C2=A0=C2=A0 move log index to a separate patch according review co=
-mment
->=20
-> Linyu Yuan (4):
-> =C2=A0 tracing: eprobe: add missing log index
-> =C2=A0 tracing: eprobe: remove duplicate is_good_name() operation
-> =C2=A0 tracing: auto generate event name when create a group of events
-> =C2=A0 selftests/ftrace: add test case for GRP/ only input
->=20
-> =C2=A0Documentation/trace/kprobetrace.rst=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 8 +++-=
----
-> =C2=A0Documentation/trace/uprobetracer.rst=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 8 +++----
-> =C2=A0kernel/trace/trace.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 8 +++-=
----
-> =C2=A0kernel/trace/trace_dynevent.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 |=C2=A0 2 +-
-> =C2=A0kernel/trace/trace_eprobe.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 | 28 +++++++++++-
-> ----------
-> =C2=A0kernel/trace/trace_kprobe.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 | 16 ++++++++----
-> -
-> =C2=A0kernel/trace/trace_probe.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 4 ++++
-> =C2=A0kernel/trace/trace_uprobe.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 | 12 ++++++----
-> =C2=A0.../ftrace/test.d/dynevent/add_remove_eprobe.tc=C2=A0=C2=A0=C2=A0 |=
-=C2=A0 9 ++++++-
-> =C2=A0.../ftrace/test.d/dynevent/add_remove_kprobe.tc=C2=A0=C2=A0=C2=A0 |=
-=C2=A0 7 ++++++
-> =C2=A010 files changed, 64 insertions(+), 38 deletions(-)
->=20
-
+> Anyway patch is Reviewed-by: Christian K=C3=B6nig <christian.koenig@amd.c=
+om>
+> since you are really fixing a major stability problem here.
+>
+> Regards,
+> Christian.
+>
+> > ---
+> >   drivers/gpu/drm/drm_gem.c              | 4 ++++
+> >   drivers/gpu/drm/drm_gem_shmem_helper.c | 9 ---------
+> >   2 files changed, 4 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
+> > index 86d670c71286..fc9ec42fa0ab 100644
+> > --- a/drivers/gpu/drm/drm_gem.c
+> > +++ b/drivers/gpu/drm/drm_gem.c
+> > @@ -1034,6 +1034,10 @@ int drm_gem_mmap_obj(struct drm_gem_object *obj,=
+ unsigned long obj_size,
+> >   {
+> >       int ret;
+> >
+> > +     /* Don't allow imported objects to be mapped */
+> > +     if (obj->import_attach)
+> > +             return -EINVAL;
+> > +
+> >       /* Check for valid size. */
+> >       if (obj_size < vma->vm_end - vma->vm_start)
+> >               return -EINVAL;
+> > diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/d=
+rm_gem_shmem_helper.c
+> > index 8ad0e02991ca..6190f5018986 100644
+> > --- a/drivers/gpu/drm/drm_gem_shmem_helper.c
+> > +++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
+> > @@ -609,17 +609,8 @@ EXPORT_SYMBOL_GPL(drm_gem_shmem_vm_ops);
+> >    */
+> >   int drm_gem_shmem_mmap(struct drm_gem_shmem_object *shmem, struct vm_=
+area_struct *vma)
+> >   {
+> > -     struct drm_gem_object *obj =3D &shmem->base;
+> >       int ret;
+> >
+> > -     if (obj->import_attach) {
+> > -             /* Drop the reference drm_gem_mmap_obj() acquired.*/
+> > -             drm_gem_object_put(obj);
+> > -             vma->vm_private_data =3D NULL;
+> > -
+> > -             return dma_buf_mmap(obj->dma_buf, vma, 0);
+> > -     }
+> > -
+> >       ret =3D drm_gem_shmem_get_pages(shmem);
+> >       if (ret) {
+> >               drm_gem_vm_close(vma);
+>
