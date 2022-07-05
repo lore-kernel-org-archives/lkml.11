@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F4EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57685C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232649AbiGEMAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41914 "EHLO
+        id S232788AbiGEMAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232643AbiGEL7t (ORCPT
+        with ESMTP id S232700AbiGEMAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:59:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AC31091;
-        Tue,  5 Jul 2022 04:59:48 -0700 (PDT)
+        Tue, 5 Jul 2022 08:00:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC5517E1B;
+        Tue,  5 Jul 2022 04:59:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 929626179A;
-        Tue,  5 Jul 2022 11:59:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A00C2C36AE3;
-        Tue,  5 Jul 2022 11:59:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CD96617B1;
+        Tue,  5 Jul 2022 11:59:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19755C341C7;
+        Tue,  5 Jul 2022 11:59:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022387;
-        bh=8yXwt5fDYM0Ni43eWkCW3PtpY1Ok5HaaZ+H9RI5f51c=;
+        s=korg; t=1657022392;
+        bh=edsKe0FVOvsRAYwbS5XjA2Hdnp3PFY86vrBZUlfMG/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DjsSw/8GVHQ08Ef+qA45vIxuUVRECBNHTmZij+Q6U3kgbb9voluPVQ79qtwPFEv66
-         MFkT3XlktN73vXVCVl4xuoVbio5sRWya3ChjkGq3eP+9Knx1jFDDlO1KE+d21M4rzu
-         K4jEWKpI0dyMZ4UJAkc3NiMAxebbaPl0GB8nVU34=
+        b=ZtOJqFpoR3naKG3/umhGm7DDnU+GUiDE8pN2OmSRwjv1jGpKPgDKAfiO9TlgSbzo4
+         p4Od0PGzEI+Uu8+hdQPxx6Bw2owtyMq9GrM+9oq+Fcy34fJNSwmndDeIeNhuSnXmwI
+         kZLTVe8Xjq2panhlbLRombNA1XX7qNZ+KYADTok8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, katrinzhou <katrinzhou@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 18/29] ipv6/sit: fix ipip6_tunnel_get_prl return value
-Date:   Tue,  5 Jul 2022 13:57:59 +0200
-Message-Id: <20220705115606.285853914@linuxfoundation.org>
+        stable@vger.kernel.org, Bruce Fields <bfields@fieldses.org>,
+        Zorro Lang <zlang@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.9 02/29] SUNRPC: Fix READ_PLUS crasher
+Date:   Tue,  5 Jul 2022 13:57:43 +0200
+Message-Id: <20220705115605.816369937@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115605.742248854@linuxfoundation.org>
 References: <20220705115605.742248854@linuxfoundation.org>
@@ -50,62 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: katrinzhou <katrinzhou@tencent.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit adabdd8f6acabc0c3fdbba2e7f5a2edd9c5ef22d upstream.
+commit a23dd544debcda4ee4a549ec7de59e85c3c8345c upstream.
 
-When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
-Move the position of label "out" to return correctly.
+Looks like there are still cases when "space_left - frag1bytes" can
+legitimately exceed PAGE_SIZE. Ensure that xdr->end always remains
+within the current encode buffer.
 
-Addresses-Coverity: ("Unused value")
-Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
-Signed-off-by: katrinzhou <katrinzhou@tencent.com>
-Reviewed-by: Eric Dumazet<edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220628035030.1039171-1-zys.zljxml@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Bruce Fields <bfields@fieldses.org>
+Reported-by: Zorro Lang <zlang@redhat.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216151
+Fixes: 6c254bf3b637 ("SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/sit.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ net/sunrpc/xdr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -308,8 +308,6 @@ static int ipip6_tunnel_get_prl(struct i
- 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL) :
- 		NULL;
- 
--	rcu_read_lock();
--
- 	ca = min(t->prl_count, cmax);
- 
- 	if (!kp) {
-@@ -325,7 +323,7 @@ static int ipip6_tunnel_get_prl(struct i
- 		}
- 	}
- 
--	c = 0;
-+	rcu_read_lock();
- 	for_each_prl_rcu(t->prl) {
- 		if (c >= cmax)
- 			break;
-@@ -337,7 +335,7 @@ static int ipip6_tunnel_get_prl(struct i
- 		if (kprl.addr != htonl(INADDR_ANY))
- 			break;
- 	}
--out:
-+
- 	rcu_read_unlock();
- 
- 	len = sizeof(*kp) * c;
-@@ -346,7 +344,7 @@ out:
- 		ret = -EFAULT;
- 
- 	kfree(kp);
--
-+out:
- 	return ret;
- }
- 
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -544,7 +544,7 @@ static __be32 *xdr_get_next_encode_buffe
+ 	 */
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	if (space_left - nbytes >= PAGE_SIZE)
++	if (space_left - frag1bytes >= PAGE_SIZE)
+ 		xdr->end = (void *)p + PAGE_SIZE;
+ 	else
+ 		xdr->end = (void *)p + space_left - frag1bytes;
 
 
