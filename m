@@ -2,111 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 227B6CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:32:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99167CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiGELc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
+        id S229673AbiGELeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiGELcn (ORCPT
+        with ESMTP id S230021AbiGELeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:32:43 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F72C165AC
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:32:37 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so16479484pjl.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:32:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ric4fzw9LJrNcSTyTbiVbmxdWQkgNYXNndpMyI1IIbo=;
-        b=bno77WZ9RFLUA1l5FIyvVKOlbQeZOgroHT8krb9x/2BeGPyEyF3d4DMC/A6FJPLsIy
-         Xh68b6iMHQDHj6wr4x0VhPEDYyIcjrLT37xsEAvLNUArogpa23P8Il09lM0o+gNssS0c
-         0tuD3JCPSpIqHWokuxBFhr6jv7arq2VtVzQiYVkDR+pepwn+xsRP4CflanZGLpfngjWO
-         bHq5EH89mKUZHb1HEFXYk9Ovy0bYsflOcQRJ0pLomQ90Dso8+QCeR+xy5hQt+Dpi4uCI
-         zH0WRDo1y3pVD3Q3jWm8nUkRAsKpWjh28ibSovr6OrIEATo/+SoKGJJp+2rVyVNPIKYC
-         FGqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ric4fzw9LJrNcSTyTbiVbmxdWQkgNYXNndpMyI1IIbo=;
-        b=0SmBTlhXke9EmOFEMSAT0LdnIN95Ih+21SmOkZt/LKzHjMocfSVZ/kWxEUbi6B/4md
-         msZ2MNVfCAjAUROy9YtMgYxH3L91dZObcCnBaphkClaAmevYPMvOYfHcAXS6iRi5zjya
-         aa0Um+fZUqkrrQgwZtfNIimC7IzABnMfk6fL2/BbNy7PnrgZcK1IL0udwvufoVP6PWnO
-         JyC2VWhe2p2owG714wU0uPJhTec+mkjWh7x7cXFOGn9y0cqYxbdUF8BbsCvJ5NdLvdKa
-         p8FcFXpn5rWX0kEtvoj6F/7mbc69bkxxS+b7D9A4bSMAq9371wPfJgjLEyK5sr8HtUi7
-         ZWFw==
-X-Gm-Message-State: AJIora9UuxfpndhDkMGfR48zs2BvkNALAbN4/TcQ9Cuk4bHw+eLxhNYW
-        FfMPIZjS17CUSNaSE+LDqoE=
-X-Google-Smtp-Source: AGRyM1syeOueifblOfmGpwHkIsqecYbc6DEx/9cbc/zkvhAdvSCi4VFFxj0dlcUjXP518boRxTLjyQ==
-X-Received: by 2002:a17:902:d405:b0:16b:f1ee:27c0 with SMTP id b5-20020a170902d40500b0016bf1ee27c0mr2873828ple.10.1657020757077;
-        Tue, 05 Jul 2022 04:32:37 -0700 (PDT)
-Received: from localhost ([101.86.201.206])
-        by smtp.gmail.com with ESMTPSA id p10-20020a170902bd0a00b00161ac982b9esm23121878pls.185.2022.07.05.04.32.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 04:32:36 -0700 (PDT)
-From:   Patrick Wang <patrick.wang.shcn@gmail.com>
-To:     dennis@kernel.org, tj@kernel.org, cl@linux.com,
-        akpm@linux-foundation.org
-Cc:     catalin.marinas@arm.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, patrick.wang.shcn@gmail.com
-Subject: [PATCH] mm: percpu: use kmemleak_ignore_phys() instead of kmemleak_free()
-Date:   Tue,  5 Jul 2022 19:31:58 +0800
-Message-Id: <20220705113158.127600-1-patrick.wang.shcn@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+        Tue, 5 Jul 2022 07:34:06 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772B162DB;
+        Tue,  5 Jul 2022 04:34:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AyNl3NtuGWwEeqjb2CHrABw6FuhdW9Y2GHmgRyq5zGmTFUsOaUqAS0P6tsMx3rjl3XTmB8SVS/eWJ97V+ZRDOl7/cOKxcw8jcm5M9celaRjKybk9Rc6cqBwnAwseIe/nJk7htuqTEIrKkKnlZjd+X5EeUYXmpCgMW9++lq8IwWwM2maP+hraqCGkCWDcViwHa9UmHFHovwszL+PS8EyxBlqxJh4ZjIAeTTd1F2RXVfkTOpU+yZScsN3QYIUr8IZAbU02mBj1FsNFDIvVwkGh2Rq1Egc5ZEipqcEaugqRQsH0JViOK3UBPZP9WqYTEohZoTu7w39b79J18iAWFEqENA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8TXhxapzxVOZ4HEw3o7/f3/JBLUEle02467ayjlVvFs=;
+ b=CTmAcJBoWIUwyuyP9W8szIDH+aH/SxdRa4AOb1ZOY7XxtjVOA1oZVouRuDXwjUs+dWH46oS0466T3mRlqrLPWmyRe+3Wg8pSCvRpVos/Mrv+0ZDMUCUlJoCE9Ge9/OIqPYSVL1Amt3HbpsKQAsrqRTueZRT71k0xxir1qbnSX4OcP1mv+ovDQKWXggLlifDw5c5NKM65fy9HcD14pRiSMxKVnbRl6ESMoynWWqewOnjdqDgDoBK1pFgo1kw1DzaUhoPSLsuUIpYNauNtFKV4xHnRxBP7E06/kiRFaigJ1u/5tzkftntLc2fF5KXUlAdCS4Q+CNAfXOehUhfZk2ZWxQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8TXhxapzxVOZ4HEw3o7/f3/JBLUEle02467ayjlVvFs=;
+ b=y+g0RbdmutH7JcYbOA2J5ReFR+RZ6EctZK0Naltuk0cYaT5iQXYPCZ8PVyhyYLwtrLCa98KYOgRw8rJNdSzvf8gA5lLNsDWrZxU8usx07oqG46D4mFj2AUDF0w5TE52HpL3a7cPRvaf1q2efnB8OVgHqrOTvBxHM6tMDX0j6I7Q=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by BN8PR12MB3314.namprd12.prod.outlook.com (2603:10b6:408:45::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Tue, 5 Jul
+ 2022 11:33:59 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
+ 11:33:59 +0000
+Message-ID: <a42237c9-6304-4b06-cede-2175c7e7b87d@amd.com>
+Date:   Tue, 5 Jul 2022 13:33:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v8 1/2] drm/gem: Properly annotate WW context on
+ drm_gem_lock_reservations() error
+Content-Language: en-US
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-tegra@vger.kernel.org, kernel@collabora.com,
+        virtualization@lists.linux-foundation.org
+References: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
+ <20220701090240.1896131-2-dmitry.osipenko@collabora.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220701090240.1896131-2-dmitry.osipenko@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR0P281CA0131.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:97::16) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6cfd42e6-0da2-47da-555f-08da5e7a4078
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3314:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uh10KPZUPrS3d9rZjjif4aIxItaKYdv3du3AK2JdlsYi1TD93YtygxKP7BVSJeQe8AREmZB0VKzDjyyf9YrX/weFgrlt04kb4YiVS8mLbFyecqmPkgGNxK8OrM8O1Nw46Zpxz87IUeQFcf7uu11d13nt7mpwlIoXSD+5oplgoVT9ySRB5UJ3eiYGwEP15Ft14pkh2dFIXc9hlBtY3jNRuGjsUcfku2XrNwjJ5WJWBwIGLUFN9HW0jSGqX4DM8PWL9g6CvLpaDdBz+CY5YexFuMQVq8HGX8j9xuVdYT40JvI3AHj50j6octEKZNnAtgrGZxuTOXsLg8eLwgig0DNkWqg+XVmlJtpvrQHBG/ySTPSHnYq8EW77fq2gX9UCoeFnqaK68YxC/mDQSBlrWZQKwbiI+9H8SrYyWS5zcmN+djfYmGgo4sqHYbC0zWui9+0hWP1Tjl0fI3l2sx0GMyMJGhjk5NDH3Qze7cniGG2q53g9FHdXmZTJDK98UlIvinfSgD3V4qIYUPYs49IrHgpFeIAfEQwV+LLnDs2ioUj7nFGiHfXtFMG5MHkUI4Hqr7+U63LAeK+BwFmAxf8c3dBxrwjgG+BTl2/nlwIW3i77b1GuR3N13Q2C2RrmODdkfKBoKa6BVFZ9RU3S4wPTm58mVsJvhNebSxBXxGkDOKVOWWaz7OCLb9bqa9eXv4x0PUcmcvCQvhM05rvY95Q08C9CEYMYo5cW0mdiAdqfgGNJoqqCrpMSEZCpd/jfkOGted5VTtCQqReBA3NcRHIP3urZO6CjZ1HT8EpIjp4Itu+Uaq/cqn+Oi15BsTBKu6uRyXFht2/VMa7ceU+XEkXu6EK67wazXPF2nl+NQbR438/Txs4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(396003)(376002)(346002)(39860400002)(186003)(83380400001)(2616005)(66574015)(66476007)(8936002)(66946007)(36756003)(31686004)(5660300002)(4326008)(26005)(7416002)(6512007)(6666004)(86362001)(478600001)(8676002)(110136005)(41300700001)(316002)(6506007)(66556008)(38100700002)(6486002)(921005)(31696002)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZTlzWDdIWjRNbGhzeFZEYk4xWFZaVkU3MldESStSbHo5dkM5ODZFQkRMKzZo?=
+ =?utf-8?B?Z2hHd2RQcE56ZUROdlZhK1d5ZzUwam5wMHZzY0tMOHVWbGEyRVMyTzlVWXhu?=
+ =?utf-8?B?dEZrbjd2L1llb2JUWUl3Y2tPQUxBVDRKUUtTV3U3ZGgvdzl2NmRzdmYrYThZ?=
+ =?utf-8?B?RHd5RE9xTHZsTFlvZGVwdjRrT2ZtQktxOTkzUWIvODdkK2d2ZXozcXdoT21n?=
+ =?utf-8?B?RE1lUVRyQkxEV3NleXBkdzNSUDhacWlMVzZueTIzby90T09Pbm9aZ0Z5NU9m?=
+ =?utf-8?B?SERMNE1RT29DbzBGd05YUldtM2pxVWlTZkpOTy9OT1pzYlZYZ3FZQlpZSytI?=
+ =?utf-8?B?KytFaEE2ZDljSlp3a3VnVmc3MTNvdlE2TzROdVM5UmpMbWxSd0ttbFIyVjlD?=
+ =?utf-8?B?N0Q5RVdaNFU0a3hBSlYydlFBUjBJQkIxL0pHMVBxV0VaT01iSURPRmhLUWQ5?=
+ =?utf-8?B?Y29XZHp0c3dYN3VzUG5FUFRVVGh0YnlpblBKRDFpZStMWXVHRmFLMXBFMnNi?=
+ =?utf-8?B?c0V0Ym9zRzJGbnAwS3FYRW1RSHpzMktYaW4yOTFKaXRHMVo4YWxNVmExY0Zz?=
+ =?utf-8?B?L25BYjlCWEdjUXhQVEZOc2szTnYxUVB3My9YVzkyc1BqNm1EeVJBQjFOUDJF?=
+ =?utf-8?B?YjczUnl0REcwY2pxWFBoNng4V0Z0SW45R21vMlI4Ri9KT1ZOUWlTWCtuYzBr?=
+ =?utf-8?B?WDJXTkExZElKMGEyU3pnMTQxUkVveStjUjV2ZnZKak9LamtSOTZmTlBWWFVl?=
+ =?utf-8?B?ZEFyK0VRelMzRHVNRStQbWljTS9mMG4wL1owNjcwRkc1d0hmOGRDbVN2aTZY?=
+ =?utf-8?B?NU0vaStrRFhrd3crVXlwYkNtNGYvSzNvZ3VnYkZkbWRwbHhYWkNxSDBjdGVC?=
+ =?utf-8?B?M3R3bnRqcVlPaUFQcXY4SWdRUUFpR1M5azRwS1VPYmZvYWltRGFRMzdOOGta?=
+ =?utf-8?B?WWtKMDdIU25oSHpMM1pScWNUbFdGOXhjc0ltK0IvYTczRVRwZFZTVlFlWUQy?=
+ =?utf-8?B?QlR3cVovQUJETGJxSEpnb01iVkcvR2NoRUh6YmM2aEoydnVYKzdmZDUwZVRV?=
+ =?utf-8?B?RzBGZ1VHRFlpVm9CVDJydXJCWFlsWEc0cTZhV3IyWEJhSk1lUmdEVll2dm9E?=
+ =?utf-8?B?NWQ3dU91bVkwbGljdnpnZGNUSW1aZWwrSDRsZW9YMkdYb2lZSjM3Ykl6cC9v?=
+ =?utf-8?B?UkswOFVjUjZpMkhMTjhzdS9nclc5L0tob1lWZnp5VG1iTUtiRTFtYmlJMVBN?=
+ =?utf-8?B?aWVmVWtyREw2Ry85VVRmN2VkTk82YjNuUDU5WW43UVA0cEkzbG5ITzZTK1My?=
+ =?utf-8?B?Z2ZGbW5XZEhBeUIwRnJXOE5Oc3NCMTh3TTBzTGJOMi85V3Q3Q2pzd1Bmdzl1?=
+ =?utf-8?B?OUxkS0Z1QllnZFBpZUo1MlpRVEJRK2FsWmVqSS9aampKM0FmdzVRdVZIcXh0?=
+ =?utf-8?B?aU5YVkRsbHVuaWFnNWNoUEdCRzQ0ZU4yMllnSE11YmdodVdlMEgwNVkwbzdZ?=
+ =?utf-8?B?QTNFWXdmbTlQRWxLQ1NMZm9xWEZRcW00dmcySXlwcmN5Rjh4ays3Q2gwQUFj?=
+ =?utf-8?B?QXZPVkpiczI4dzduendCQnVjaENRdlRSdzMyaUpXRjZUVEI3Y281cy92aUZJ?=
+ =?utf-8?B?VFgxRStIVzVsTnphMlo3YmFMdUx6dDhYZUk0ZUVlUlRUMmg1Q25uejVMNjZI?=
+ =?utf-8?B?NXIveFhNRWttNFFkU1RtcE0rQkErWVBRYXpTd3ZJTWl1cW5tQ0hqYXZrZ2Jy?=
+ =?utf-8?B?YUx0TmVWU0tJYmNsUysxZHZkMyswazZENDZoMEV1Y05RV2pPSENiNGpGZGVn?=
+ =?utf-8?B?amQ1Q0JlMHpWRVdhb1hiSTUrbjU3WXVDTCtWMFd6bGNWOEVRcmVkN1VSYVoz?=
+ =?utf-8?B?Vk1WOWhCclRYS242OGQ5MFhjZnphV21vT3hFeFlVdE9VQ3FSTnFFQnI3NWha?=
+ =?utf-8?B?ZERBMGVqRm91NHdrVGo2WjlVQTlIc1h0WTN3eFdZNmVqMVJyS2dsbzlKNEVG?=
+ =?utf-8?B?QkFaQVJuWk9tczlWUm9oc1hRd2Mrb01HT0crb1dKUGxUMkwxeU5uV0RZeVZw?=
+ =?utf-8?B?dUl4R21oUTFIeDVzeDZLVEhjTVFPWjBzcFBIYmc5NUFiZFV0d2w5aTNsamE4?=
+ =?utf-8?Q?WDRWGM/Xw5Jzc+RGH2xUTm3/H?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6cfd42e6-0da2-47da-555f-08da5e7a4078
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 11:33:58.9964
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i4PQRWCPqIp8ku3dByaTcWRszQok7AR4OujmYczTFAoqdQdm9Y/WZIuDiBrlIdQa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3314
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kmemleak recently added a rbtree to store the objects
-allocted with physical address. Those objects can't be
-freed with kmemleak_free(). Use kmemleak_ignore_phys()
-instead of kmemleak_free() for those objects.
+Am 01.07.22 um 11:02 schrieb Dmitry Osipenko:
+> Use ww_acquire_fini() in the error code paths. Otherwise lockdep
+> thinks that lock is held when lock's memory is freed after the
+> drm_gem_lock_reservations() error. The ww_acquire_context needs to be
+> annotated as "released", which fixes the noisy "WARNING: held lock freed!"
+> splat of VirtIO-GPU driver with CONFIG_DEBUG_MUTEXES=y and enabled lockdep.
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 7edc3e3b975b5 ("drm: Add helpers for locking an array of BO reservations.")
+> Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
----
-Similar to:
-https://lkml.kernel.org/r/20220628113714.7792-2-yee.lee@mediatek.com
+Reviewed-by: Christian König <christian.koenig@amd.com>
 
- mm/percpu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/mm/percpu.c b/mm/percpu.c
-index 3633eeefaa0d..27697b2429c2 100644
---- a/mm/percpu.c
-+++ b/mm/percpu.c
-@@ -3104,7 +3104,7 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
- 			goto out_free_areas;
- 		}
- 		/* kmemleak tracks the percpu allocations separately */
--		kmemleak_free(ptr);
-+		kmemleak_ignore_phys(__pa(ptr));
- 		areas[group] = ptr;
- 
- 		base = min(ptr, base);
-@@ -3304,7 +3304,7 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t
- 				goto enomem;
- 			}
- 			/* kmemleak tracks the percpu allocations separately */
--			kmemleak_free(ptr);
-+			kmemleak_ignore_phys(__pa(ptr));
- 			pages[j++] = virt_to_page(ptr);
- 		}
- 	}
-@@ -3417,7 +3417,7 @@ void __init setup_per_cpu_areas(void)
- 	if (!ai || !fc)
- 		panic("Failed to allocate memory for percpu areas.");
- 	/* kmemleak tracks the percpu allocations separately */
--	kmemleak_free(fc);
-+	kmemleak_ignore_phys(__pa(fc));
- 
- 	ai->dyn_size = unit_size;
- 	ai->unit_size = unit_size;
--- 
-2.25.1
+> ---
+>   drivers/gpu/drm/drm_gem.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
+> index eb0c2d041f13..86d670c71286 100644
+> --- a/drivers/gpu/drm/drm_gem.c
+> +++ b/drivers/gpu/drm/drm_gem.c
+> @@ -1226,7 +1226,7 @@ drm_gem_lock_reservations(struct drm_gem_object **objs, int count,
+>   		ret = dma_resv_lock_slow_interruptible(obj->resv,
+>   								 acquire_ctx);
+>   		if (ret) {
+> -			ww_acquire_done(acquire_ctx);
+> +			ww_acquire_fini(acquire_ctx);
+>   			return ret;
+>   		}
+>   	}
+> @@ -1251,7 +1251,7 @@ drm_gem_lock_reservations(struct drm_gem_object **objs, int count,
+>   				goto retry;
+>   			}
+>   
+> -			ww_acquire_done(acquire_ctx);
+> +			ww_acquire_fini(acquire_ctx);
+>   			return ret;
+>   		}
+>   	}
 
