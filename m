@@ -2,92 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA69CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B32ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 20:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231910AbiGEUDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 16:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        id S231971AbiGEUIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 16:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiGEUDp (ORCPT
+        with ESMTP id S229655AbiGEUIj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 16:03:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DEA5FF3;
-        Tue,  5 Jul 2022 13:03:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81C5F61B91;
-        Tue,  5 Jul 2022 20:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01E8C341C7;
-        Tue,  5 Jul 2022 20:03:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657051422;
-        bh=z+VSOPZHJdUGcIPzt3HH3vim1AKYQpXZNPySuOqur1c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=CzGjJ6s+WAWlKor2phjuf7ooM/Vupuguc09eReuXWoPLeN4ANOmN38Bt7+GaaUuuY
-         vTjkp+Xl37VN2DXwTigD++pVNzozDZpHfGrUKdyNlDX4hC61PaETI31VPXle93gjsH
-         vQPEuY9y4aLonw3G560bNngRJ6YdG5lWcIvyndrf7zBKWh+he8dRq7YVEjuABE1Qy8
-         gHw6zKb1OS6jec1P+yxCglegfhkHdNwQlF8MrQgSeEt0DlTvR7gdVVsatUM6yJ9V4C
-         VL194AOgBWCYMj+V+9uFVBKj6y8Mf0uY9XNScPbx7sYdQaRatOoesNGbI9dq2rzXXQ
-         tjTFuxtNwEZMQ==
-Date:   Tue, 5 Jul 2022 15:03:41 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] PCI: iproc: Use the bitmap API to allocate bitmaps
-Message-ID: <20220705200341.GA80171@bhelgaas>
+        Tue, 5 Jul 2022 16:08:39 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786FB17E24
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 13:08:38 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id dn9so18247156ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 13:08:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pIq36v8wbs/crdsFluPW/o6PUn4dC6+CyT1Mue/r6HA=;
+        b=Re0vVY2AKXjk6ch8pHfO7eao4ier7bJy84tNV8N6GCRRrhgwN/x20kkMDp1IpXTbGO
+         F+RJhCcSc1d3eOGS545ZeziJ2RGUB5rYLZHkptxK9NukD1lfjc5Gd8z8TGYt+G4fmWGJ
+         gHaDvuaMxe/wjwXO6MJ+ReoVMw7dW+YY2+szBr/8t+Tr371rYaAYtyCvLoRp8r1R8Vk7
+         j88rOH/wz5+/PbJ1eMXVTjIks/Ej0zFYJTR54Xfhr/gB4mcvukIwUhp/rJwQfXK71y3W
+         n+HffrFmF6Ey+8EXBIqBcFWCwgdDI/3gmb0ub6Yp2u2vPn2euVcrcRfs+fKDMrdAURbC
+         j/Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pIq36v8wbs/crdsFluPW/o6PUn4dC6+CyT1Mue/r6HA=;
+        b=NmqAwXjPwCippT/5urm5cZ8B+yHXqpb//sdUdWkVmYOuS63CZ8iYhbZIX3vAXtXyea
+         /9B+qbe1uFtEOlrle/CosNL1wHH7KmdMNWq8LxTifnnbQB86tnRAmJHXjEGVyI540NQK
+         tUBJUGV4rX8/e5oBEO2eQye4iPYMjBPx74W8R0du1tvEhSxRG4posaXFkkzqaTQOmlFr
+         m4QHylCHbZWvw1P6dJcvpxIr0P+Lpcrgl588/6WmMSDG3sNZoUsM6nF+27mVNxQ7cCXS
+         YzKujoInKBgFYcqvg9X06Ed3KN05Ac1Gz4+J9rPKZ2XyV1sBM3ev7TBbv2ff2Er7wr9u
+         QZiA==
+X-Gm-Message-State: AJIora/wFuc9PO5jLFC+saQl1AvNbrSFtpbO7Z2Im/BVqzjnAsLi3rTk
+        D3wo1BSxHHvUqo+Mnjwp7Du2/qSWZTS8QQ==
+X-Google-Smtp-Source: AGRyM1tlIP9NshOHw7mRD90hBXUoaOn6/U4K+d/MSfl75EZRSgK1+016xvOMN3dBGdMuomvHtlViEQ==
+X-Received: by 2002:a17:907:7fa5:b0:726:935b:2faa with SMTP id qk37-20020a1709077fa500b00726935b2faamr36914434ejc.17.1657051717095;
+        Tue, 05 Jul 2022 13:08:37 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id ds12-20020a0564021ccc00b00437d3e6c4c7sm13944635edb.53.2022.07.05.13.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 13:08:36 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: Re: [PATCH] soc: sunxi: mbus: Only build the driver on ARM/ARM64
+Date:   Tue, 05 Jul 2022 22:08:35 +0200
+Message-ID: <2156179.72vocr9iq0@kista>
+In-Reply-To: <8122293.NyiUUSuA9g@jernej-laptop>
+References: <20220702032520.22129-1-samuel@sholland.org> <8122293.NyiUUSuA9g@jernej-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d839a951358ceb447226dc776590a2a38f3e3f9d.1656940469.git.christophe.jaillet@wanadoo.fr>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 03:15:03PM +0200, Christophe JAILLET wrote:
-> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
-> 
-> It is less verbose and it improves the semantic.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Dne sobota, 02. julij 2022 ob 21:12:04 CEST je Jernej =C5=A0krabec napisal(=
+a):
+> Dne sobota, 02. julij 2022 ob 05:25:20 CEST je Samuel Holland napisal(a):
+> > This driver exists as a workaround for old devicetrees which are missing
+> > interconnects properties, so it is only useful for those specific
+> > platforms, which all happen to be ARM or ARM64.
+> >=20
+> > This solves the issue that the driver fails to build on RISC-V, where
+> > PHYS_OFFSET is not defined.
+> >=20
+> > Signed-off-by: Samuel Holland <samuel@sholland.org>
+>=20
+> Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Applied with Ray's ack to pci/ctrl/iproc for v5.20, thanks!
+Applied, thanks!
+=20
+Best regards,
+Jernej
 
-> ---
->  drivers/pci/controller/pcie-iproc-msi.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-iproc-msi.c b/drivers/pci/controller/pcie-iproc-msi.c
-> index 757b7fbcdc59..fee036b07cd4 100644
-> --- a/drivers/pci/controller/pcie-iproc-msi.c
-> +++ b/drivers/pci/controller/pcie-iproc-msi.c
-> @@ -589,8 +589,8 @@ int iproc_msi_init(struct iproc_pcie *pcie, struct device_node *node)
->  		msi->has_inten_reg = true;
->  
->  	msi->nr_msi_vecs = msi->nr_irqs * EQ_LEN;
-> -	msi->bitmap = devm_kcalloc(pcie->dev, BITS_TO_LONGS(msi->nr_msi_vecs),
-> -				   sizeof(*msi->bitmap), GFP_KERNEL);
-> +	msi->bitmap = devm_bitmap_zalloc(pcie->dev, msi->nr_msi_vecs,
-> +					 GFP_KERNEL);
->  	if (!msi->bitmap)
->  		return -ENOMEM;
->  
-> -- 
-> 2.34.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
