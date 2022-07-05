@@ -2,93 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83EE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F72C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiGEWL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 18:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54582 "EHLO
+        id S231332AbiGEWO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 18:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiGEWL5 (ORCPT
+        with ESMTP id S229489AbiGEWOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 18:11:57 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892431AF24;
-        Tue,  5 Jul 2022 15:11:55 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LcxjL54Znz4xRC;
-        Wed,  6 Jul 2022 08:11:50 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657059110;
-        bh=P6Hfr2IF7ZpIdzghLv/XtcySNRkvPFbYuccFa2pcaIg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=AzGLNUkIE9l+J0N0qcywNT6p0fdCZJFzRQPhrgbqOroba1SDlvm06HPBQoM1wE3il
-         /MNJhsEbgMByDiJTPHUURdprsMtsz1Lk+PEbbOj9j3QxsrFvWzZTmqipB8/tDWFo9U
-         TCXJ/BU3IuWZzwxPCuh75PgR2Fknz81FBY9Ib2H8dHMmPb2CffsiFP501FzuFSCpCr
-         512Qb9rZgvVamqJFvjohNZrPeMZO3xNoltXRy0FP3f/pi/Q5oFoPj7jaY9wNijyZME
-         1HiRNLlPJYTzMunzi+mga8uUdTLJ61YF9IrRysT/S1ulVbC+Y2In3nZGWalNApJWZM
-         Z8dQ3LSv8g1gw==
-Date:   Wed, 6 Jul 2022 08:06:15 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steve French <smfrench@gmail.com>,
-        CIFS <linux-cifs@vger.kernel.org>
-Cc:     Shyam Prasad N <sprasad@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the cifs tree
-Message-ID: <20220706080615.11c5ede3@canb.auug.org.au>
+        Tue, 5 Jul 2022 18:14:24 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BC212610;
+        Tue,  5 Jul 2022 15:14:23 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id o3-20020a17090a744300b001ef8f7f3dddso5529903pjk.3;
+        Tue, 05 Jul 2022 15:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x7dxhw2AJ9mK9YOl+Hr0LnwAgrXApCiFJEWSuCtRDko=;
+        b=BDi7i9vEGXuMYFb2o/b0/Coa9JsiKkK8bNzucunbpGHJwggkb9TlmCdIzYh5hZ2UBa
+         pXVyqb5u5Np5Z4wwZlO/pb82pryyMaK2gSEM73Xegatf2x034qrZ4olGMkI3AZXXRvw5
+         F7+EoRK1t5IIptdUR15YPgIBItNcxHUxo+SfK/KvryyxK41tzf06BzTrd8m7CmpGMdsd
+         hruJDyvM8N1idIh7MYJ4//2/WcrL5EnJ8IXoaZyfO7j4pWtMCr9Wtu/rGWmbACdO+Rns
+         NB66GWGezkBH4U+XN0CTNLh5Pry486/SOW3eIaYVcfGm6or6pVfLjYlAdNvW4kGY4Sz2
+         mllQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x7dxhw2AJ9mK9YOl+Hr0LnwAgrXApCiFJEWSuCtRDko=;
+        b=yt9Bt8ccXpVoHw/VtMrUiYaYeWGTqeHLiMTb7PZvrMrVi0RYPRMWnHCzXzk/tkJ79i
+         WRLR8kTE7U3ZUFX5pXB/sp5yjNP7Nx8nvD2gyzgzjLdUuIKlCgfHN+W3NrMyWpqi1SUX
+         ijkqt7K9INLhLLTTxIQ/g2LptCPPnOYnR5ErBtvWF3B26Iln98qGkuIDuMO1jMQCwL3g
+         rab9rHj1+yKDnZCK1W9tHcFgi6GVWMLlZSMKRAJj9v3J4GYTLjcwvTdWJJHpjvab8PDD
+         /hFlsPxyqcTpGF+ZecRvdW4NK6bldcQfKPtUIa2EZjJpr9BPTeAi8LYHoM9xdbl7U6+v
+         v2/w==
+X-Gm-Message-State: AJIora96c4SPpZ0KWz0QeNlhiU+0EotcmPFogBkoAo13sbdKJq6rEuQ2
+        UcqbSZjc5J7QDAElULY2oeItHBLikDoGsaKq
+X-Google-Smtp-Source: AGRyM1uvjMGPcyWyUs4A6dzA+l1ysQDAuG+XqGzMNkltBadweQ/lJsl5XmKMXyiqkMqhLkOKxG5xlw==
+X-Received: by 2002:a17:90b:1b0e:b0:1ec:e2f6:349e with SMTP id nu14-20020a17090b1b0e00b001ece2f6349emr45617148pjb.14.1657059263066;
+        Tue, 05 Jul 2022 15:14:23 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:3caa:449f:1bc2:21eb])
+        by smtp.gmail.com with ESMTPSA id u9-20020a056a00158900b0051b8e7765edsm23479137pfk.67.2022.07.05.15.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 15:14:08 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-xtensa@linux-xtensa.org
+Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH] xtensa: noMMU: fix vm_get_page_prot definition
+Date:   Tue,  5 Jul 2022 15:14:11 -0700
+Message-Id: <20220705221411.3381797-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/HSHpA1MQhk015Xv92h96SKS";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/HSHpA1MQhk015Xv92h96SKS
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Don't define protection_map and don't use DECLARE_VM_GET_PAGE_PROT in
+noMMU configs, because in that case the definition for vm_get_page_prot
+is provided by the include/linux/mm.h
 
-Hi all,
+Fixes: 61ab8053710f ("xtensa/mm: enable ARCH_HAS_VM_GET_PAGE_PROT")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ arch/xtensa/mm/init.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-In commit
+diff --git a/arch/xtensa/mm/init.c b/arch/xtensa/mm/init.c
+index fb830ec8183c..b2587a1a7c46 100644
+--- a/arch/xtensa/mm/init.c
++++ b/arch/xtensa/mm/init.c
+@@ -217,6 +217,7 @@ static int __init parse_memmap_opt(char *str)
+ }
+ early_param("memmap", parse_memmap_opt);
+ 
++#ifdef CONFIG_MMU
+ static const pgprot_t protection_map[16] = {
+ 	[VM_NONE]					= PAGE_NONE,
+ 	[VM_READ]					= PAGE_READONLY,
+@@ -236,3 +237,4 @@ static const pgprot_t protection_map[16] = {
+ 	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= PAGE_SHARED_EXEC
+ };
+ DECLARE_VM_GET_PAGE_PROT
++#endif
+-- 
+2.30.2
 
-  37c1ad516f2c ("cifs: fix race condition with delayed threads")
-
-Fixes tag
-
-  Fixes: 37d488b3d38c ("cifs: change iface_list from array to sorted linked=
- list")
-
-has these problem(s):
-
-  - Target SHA1 does not exist
-
-Maybe you meant
-
-Fixes: aa45dadd34e4 ("cifs: change iface_list from array to sorted linked l=
-ist")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/HSHpA1MQhk015Xv92h96SKS
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLEtdcACgkQAVBC80lX
-0GwYyAgApFQFZ/3RgcC4pxZ5ogF6EcunNfozd8O0zkKwe5WKHfxuw1/j3XnMiR9N
-2MzEugC6Rnc2H4VSG180Dx2vKIOvVE38vlo6N08P7oPxIiwIqdMW8YOPi05bd7BC
-APfknHcjBO/tSSFSg806MErYMc2tyOXGEqO1km1R60VFSqSacPHuT1Yy5+q6Ebh/
-OScSLV0TXynLZV7IUfNGDyibmEwbpas/olqa8IKT3UUAbuuMkloOdFw7rZLg0LX9
-eKD7W82X1guNOJ/3QJWrSblOHq8qNF/H8a37NlAqwaPpcfFYc8uMqxI4Vzj6KIY2
-MD3Ns+SYXvC+JF165qjMLmYsgirsVQ==
-=YyQo
------END PGP SIGNATURE-----
-
---Sig_/HSHpA1MQhk015Xv92h96SKS--
