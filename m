@@ -2,86 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A03AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDC1CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232521AbiGELqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S229922AbiGELvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232476AbiGELqf (ORCPT
+        with ESMTP id S229457AbiGELvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:46:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8722E1707E;
-        Tue,  5 Jul 2022 04:46:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25E6760F69;
-        Tue,  5 Jul 2022 11:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83181C341CE;
-        Tue,  5 Jul 2022 11:46:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657021593;
-        bh=g9kyp+0dqAAFhiEd0vppJfgTzCC43SYBYOZLu2V0sgU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BV2AyIIK1FKrm5uJx7f2fQJU5dXNzlYlA9nCPEiHIhAfRKUPoNR63d45CV8hKNk41
-         MvlsW0mf5/KvVMJhqRNi76PqRFEPwfrrIoqZB79KwuaUSITaRvaSdlFX7lsn6gVZDq
-         FnF4S2KbzTiMzYuMZ39sM3wxgKN5y+bY29r1aKr09NB7VaG9Ypl3oWOKgXGs/zvuZ7
-         Luy/ybkDrNIEOvDb2PA0VO90Hz3u9rTAO6NqlJIT6PKaY8myVBoK/TFophbp7M2lYs
-         n6pLS/UH1Nn130fVA22aQAepSNimte77Xvu9v6k7XBVnKpazywMOBzSwXFdy4QbZke
-         +7fsJfjTyiaqg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o8h0j-00062C-Hr; Tue, 05 Jul 2022 13:46:34 +0200
-Date:   Tue, 5 Jul 2022 13:46:33 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 16/43] dt-bindings: phy: qcom,qmp-pcie: drop unused
- vddp-ref-clk supply
-Message-ID: <YsQkmUVla9+CDYly@hovoldconsulting.com>
-References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-17-johan+linaro@kernel.org>
- <d3a49c05-0fd0-920e-bd0a-f821e8e27b8b@linaro.org>
+        Tue, 5 Jul 2022 07:51:17 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDD1175A8
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:51:16 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id y16so20070802lfb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:51:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/UGo3h1lFotrXUyVOn1vvOw10sA63ae5wh+VH5tG39s=;
+        b=c3j2jGXVqGFeYL75sECqGf7InKbQhuBnnqkj1UqNiL/+dGSczDyMQcf9Atm1oKsz3d
+         HsYqcKbvtKchDYMu6q2wripBe4bD5G3oo9GqFuvCXUMQViG23oVoqFbR9pPq4POpg+q3
+         CPTPYo0qtLsCba7MDASbJOliZCmGTPnmIXv+wgyG8h6Qy3bG+XdE1/ZcABa84jmGVEni
+         DegY99VzxiaRDQ8BsRvthhlBO8Bcio7T46lRE6T16uEE3R7AVCQCZLd1TCc68zTqutFo
+         e6xJIYJXzMR7CUK7NtYL+Dkbe33MssoJHi1PLUy/jdGbn5KmjBIbSh2Z1preu8ZIF2uK
+         mCGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/UGo3h1lFotrXUyVOn1vvOw10sA63ae5wh+VH5tG39s=;
+        b=eDIFLcgoHoJd8o6Of3uP4X04BovaANz7tSeTyTzPBnvqf4+PMnRObiZx+uJBNm5rw0
+         y9kZd2fGc2sMl/slS0XCOAbsNYrDiF/GFJOiZQuPlzo80QRl6Kp+6phjUKF7JmQjw2dd
+         MWlawmP2jE60t6oyyRihdyFnfKpdrimI4S7yhdwsQbGjWo8vedP2N6QR+tszCPnOsfqo
+         2NqiUbieXAXQEgiby2aBz7a+yzvoin4LQtdKTify5Dy/pUzh4/O4Ur/1W22f6olDmA0I
+         fhCetOeBlVnuKmw7XNZFKhfMx1aDaXkN7r/QTylJmVgVyZRHx0bxgBf0KMPISB5Ff+D8
+         dxoQ==
+X-Gm-Message-State: AJIora+wy2bysXcZAKUGKByx2Le8lgjUItI8kjZojpDGFpzHudvF/YRY
+        vlvsY9zry49YKAPNOAzmWpocHw==
+X-Google-Smtp-Source: AGRyM1vw6cA8apgUVB4nud8nMwX7wEE8bQbgw7xac6nBHVQglGxItugzYlWcsshQ3UiivXanpk/r6Q==
+X-Received: by 2002:a05:6512:2a8d:b0:47f:b3ba:4922 with SMTP id dt13-20020a0565122a8d00b0047fb3ba4922mr23997604lfb.38.1657021874399;
+        Tue, 05 Jul 2022 04:51:14 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id s14-20020a19770e000000b0047faab456cesm5659965lfc.237.2022.07.05.04.51.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 04:51:13 -0700 (PDT)
+Message-ID: <90fd55cb-13f4-eac2-2b1a-85ae628ecc89@linaro.org>
+Date:   Tue, 5 Jul 2022 13:51:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d3a49c05-0fd0-920e-bd0a-f821e8e27b8b@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] dt-bindings: leds: Add cznic,turris1x-leds.yaml
+ binding
+Content-Language: en-US
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220705000448.14337-1-pali@kernel.org>
+ <42d837dd-fbd1-6294-2fa0-8a07ae0f8d44@linaro.org>
+ <20220705114238.xwgexavgozqskwbw@pali>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220705114238.xwgexavgozqskwbw@pali>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 12:16:34PM +0200, Krzysztof Kozlowski wrote:
-> On 05/07/2022 11:42, Johan Hovold wrote:
-> > Only UFS PHY nodes in mainline have a vddp-ref-clk supply. Drop it from
-> > the PCIe PHY binding.
-> > 
+On 05/07/2022 13:42, Pali Rohár wrote:
+> On Tuesday 05 July 2022 13:36:54 Krzysztof Kozlowski wrote:
+>> On 05/07/2022 02:04, Pali Rohár wrote:
+>>> Add device-tree bindings documentation for Turris 1.x RGB LEDs.
+>>>
+>>> Signed-off-by: Pali Rohár <pali@kernel.org>
+>>> ---
+>>>  .../bindings/leds/cznic,turris1x-leds.yaml    | 116 ++++++++++++++++++
+>>>  1 file changed, 116 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml b/Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
+>>> new file mode 100644
+>>> index 000000000000..fd09613c8d2d
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
+>>> @@ -0,0 +1,116 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/leds/cznic,turris1x-leds.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: CZ.NIC's Turris 1.x LEDs driver
+>>> +
+>>> +maintainers:
+>>> +  - Pali Rohár <pali@kernel.org>
+>>> +
+>>> +description:
+>>> +  This module adds support for the RGB LEDs found on the front panel of the
+>>> +  Turris 1.x routers. There are 8 RGB LEDs that are controlled by CZ.NIC CPLD
+>>> +  firmware running on Lattice FPGA. Firmware is open source and available at
+>>> +  https://gitlab.nic.cz/turris/hw/turris_cpld/-/blob/master/CZ_NIC_Router_CPLD.v
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    const: cznic,turris1x-leds
+>>> +
+>>> +  reg:
+>>> +    maxItems: 2
+>>
+>> You need to describe the items, if it is really two items. However your
+>> example has only one item, so this was not tested and won't work.
 > 
-> That's not really good reason. Either the hardware uses ref-clk supply
-> or not. Now it looks like you copied everything from common schema and
-> clean things up. That's not how it should be organize.
+> Ehm? Example has two items in the reg.
 
-Yes, and I've been pretty clear that that's how I'm going about to
-disentangle the current binding.
- 
-> It's okay to copy existing bindings which are applicable and then in
-> separate patch deprecate things or remove pieces which are not correct.
-> But all this in assumption that the first copy already selected only
-> applicable parts.
+No, you have exactly one item.
+<0x13 0x1d>
 
-But how would you be able to tell what parts I left out from the
-original copy unless I first do the split and then explicitly remove
-things that were presumably *never* applicable and just happened to be
-added because all bindings where combined in one large mess of a schema?
+Two items are for example:
+<0x13 0x1d>, <0x23 0x1d>
 
-Johan
+> 
+>> You'll get warning from Rob's robot soon... but you should test the
+>> bindings instead.
+> 
+> I have tested bindings on the real hardware and it is working fine
+> together with the driver from patch 2/2.
+
+Bindings cannot be tested on real hardware. Bindings are tested with
+dt_binding_check, as explained in writing-schema.rst
+
+> 
+>>> +
+>>> +  "#address-cells":
+>>> +    const: 1
+>>> +
+>>> +  "#size-cells":
+>>> +    const: 0
+>>> +
+>>> +patternProperties:
+>>> +  "^multi-led@[0-7]$":
+>>> +    type: object
+>>> +    $ref: leds-class-multicolor.yaml#
+>>
+>> This looks incorrect, unless you rebased on my patchset?
+> 
+> So what is the correct? (I used inspiration from
+> cznic,turris-omnia-leds.yaml file)
+
+Which according to current multicolor bindings is not correct. Correct
+is pwm-multicolor. However if you rebase on [1], it looks fine, except
+missing unevaluatedProperties.
+
+[1]
+https://lore.kernel.org/all/20220624112106.111351-1-krzysztof.kozlowski@linaro.org/
+
+> 
+>>> +
+>>> +    properties:
+>>> +      reg:
+>>> +        minimum: 0
+>>> +        maximum: 7
+>>> +
+>>> +    required:
+>>> +      - reg
+>>> +
+>>> +additionalProperties: false
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +
+>>
+>> No blank line.
+> 
+> Ok.
+> 
+>>> +    #include <dt-bindings/leds/common.h>
+>>> +
+>>> +    cpld@3,0 {
+>>
+>> Generic node name.
+> 
+> Is not cpld name generic enough?
+
+No, it means nothing to me. Just like "a", "ashjd" or "wrls".
+
+"The name of a node should be somewhat generic, reflecting the function
+of the device and not its precise programming
+ model. If appropriate, the name should be one of the following choices:"
+
+Best regards,
+Krzysztof
