@@ -2,162 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91A2CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232732AbiGEP7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
+        id S232784AbiGEQAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 12:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiGEP7r (ORCPT
+        with ESMTP id S229520AbiGEQAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:59:47 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4246C13DCD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:59:46 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u12so22382275eja.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eVxNdksJTPOevalf7BH9L1TRDCo8ZI9OB7mA3/aAEj8=;
-        b=WXZTIBU9zcO43MUvBFqYfuCH7aGFfk5nMeKMiu6m7yQmfM/t7iOMGon6fEDky+7f0K
-         j3HZhHPUg2BNRBxIXSh/kfJ92zL+0ZCvgF/ySQv4XzgYkHnHz5SRGef43pyzDEhkIDXu
-         SC7UPUw8+zZ2Q+C4zN33YsjGZVo2raTjHfkJ3tbFJCv0t2+tC6ZLJhqYc5LQjnSlqrV/
-         S7T4ALECYtyTmx4ktsDxmGLniWcYyuo7EzcvyefqFjR5tgNHfDiIznTjNGcgKrmxKlJP
-         ZVp1a4zdDcDBHkIfSsDSU/efA3uBvN0HkeiqkXsMw8gD6LBk6VmEPwqDZOFZcXYi5xns
-         0otQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eVxNdksJTPOevalf7BH9L1TRDCo8ZI9OB7mA3/aAEj8=;
-        b=sob3mEVfudJMgnNSEvxo5M6WKpKtUtAwjZY8ZIDzruM6dnzlcNW65N3UxUvNYXGANv
-         ijngFOIE6CHvTfzn7e84U0cv9D8sItzdJhTa+PxqlzUq7uXJRdB/vhDgqzY/Z99W9dgA
-         OuHAaPs6CF7I3MbYzL7kBrZUVVRpqNewEHEB+ndd8tXSN84CJvBDWk2XirkKvPgppa7R
-         du6l2oBlFU9u1/WNj/m2YwFLW8cD/i7a6aP8SOJotXw5TeaFrFdqYEBCdHhpTEMvNw/4
-         /yG3kJ+EnU5X/uKD7+QdrEuv2pENsTs7/BMjxhRaqWijkQd1MVKnoarrMnSKhc5G+bcr
-         fiWQ==
-X-Gm-Message-State: AJIora/sGY2LZUmGy/f6guguXy4RqwcSDWH/hilY/t1Tgj1jTdg9k2eQ
-        4rKUbVtXKO3NeYlXnODWZwDb/5ggfpjlP5H+TaI=
-X-Google-Smtp-Source: AGRyM1sw14PYQgx4fDDohP9Y7fIl+IS4r51qvLbc2ltU8iplXj66xVjCUG/0gsBD8GFYDO/k8AVTBGFlG5L1j4lUgis=
-X-Received: by 2002:a17:907:60cc:b0:722:e564:eb11 with SMTP id
- hv12-20020a17090760cc00b00722e564eb11mr34082648ejc.736.1657036784885; Tue, 05
- Jul 2022 08:59:44 -0700 (PDT)
+        Tue, 5 Jul 2022 12:00:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B87F13DCD;
+        Tue,  5 Jul 2022 09:00:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35E8361B91;
+        Tue,  5 Jul 2022 16:00:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D4A4C341C7;
+        Tue,  5 Jul 2022 16:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657036807;
+        bh=iNFu+DCH3hapeUc3T/tivUxYXOlzMBlW6gIg/mWtii8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gOPLhrbOO+fFuKTsxaoTB2TA6IUw0fPCOAYRWdnPC2QRQLkWaUQTpzWuTAzp0Gz0l
+         fxCu/kSIFRluRp6z/2snPVwgBYjWddbrv+VPY9+Om7nZIWrkU3D6NkLnBan1szM4Qy
+         KtP0+zsj2sNU/OM0BfxquL50JZD66nGVPwCVvGSXjZzNvTHQpTzLG9fw7nL6686PF+
+         Q3dmARH9e7mcRonE6HehLqTizR8UAfhuyCdv7L50v72IDbIFn0UukEgEMpUeJttcWL
+         lHHYlhPRN8kCLHtkmtFMRXCGRmuo53116NkNz/629rA6FZ8e9TX28OGywxfjCsrRIw
+         59AmdL6iNxAXw==
+Received: by pali.im (Postfix)
+        id D5003CBF; Tue,  5 Jul 2022 18:00:03 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/2] [RFT] dt-bindings: leds: Add cznic,turris1x-leds.yaml binding
+Date:   Tue,  5 Jul 2022 17:59:28 +0200
+Message-Id: <20220705155929.25565-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220705000448.14337-1-pali@kernel.org>
+References: <20220705000448.14337-1-pali@kernel.org>
 MIME-Version: 1.0
-References: <20220705132032.702972-1-yangyingliang@huawei.com> <20220705132032.702972-2-yangyingliang@huawei.com>
-In-Reply-To: <20220705132032.702972-2-yangyingliang@huawei.com>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Tue, 5 Jul 2022 08:59:43 -0700
-Message-ID: <CAMo8BfJvXaDnsXrA1ELKJz1QZmW+8NcQpkhkjKbkp1zxMTePCg@mail.gmail.com>
-Subject: Re: [PATCH -next 2/2] xtensa: iss: change the return type of
- iss_net_configure() to void
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, Chris Zankel <chris@zankel.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yang,
+Add device-tree bindings documentation for Turris 1.x RGB LEDs.
 
-On Tue, Jul 5, 2022 at 6:10 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
->
-> Change the return type of iss_net_configure() to void, because it's not used.
->
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  arch/xtensa/platforms/iss/network.c | 23 +++++++++--------------
->  1 file changed, 9 insertions(+), 14 deletions(-)
+Signed-off-by: Pali Rohár <pali@kernel.org>
 
-This change removes a lot of code that was added in the previous change.
-Maybe fold both patches into one to avoid that pattern of adding and then
-immediately removing code? Or, if you feel that changing the return type
-of the iss_net_configure is an important separate step, maybe do it first?
+---
+Changes in v2:
+* Fix schema errors
+---
+ .../bindings/leds/cznic,turris1x-leds.yaml    | 118 ++++++++++++++++++
+ 1 file changed, 118 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
 
-> diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
-> index 5e475f7472e4..e38ff51ce833 100644
-> --- a/arch/xtensa/platforms/iss/network.c
-> +++ b/arch/xtensa/platforms/iss/network.c
-> @@ -472,16 +472,15 @@ static const struct net_device_ops iss_netdev_ops = {
->         .ndo_set_rx_mode        = iss_net_set_multicast_list,
->  };
->
-> -static int iss_net_configure(int index, char *init)
-> +static void iss_net_configure(int index, char *init)
->  {
->         struct net_device *dev;
->         struct iss_net_private *lp;
-> -       int err;
->
->         dev = alloc_etherdev(sizeof(*lp));
->         if (dev == NULL) {
->                 pr_err("eth_configure: failed to allocate device\n");
-> -               return -ENOMEM;
-> +               return;
->         }
->
->         /* Initialize private element. */
-> @@ -509,7 +508,6 @@ static int iss_net_configure(int index, char *init)
->         if (!tuntap_probe(lp, index, init)) {
->                 pr_err("%s: invalid arguments. Skipping device!\n",
->                        dev->name);
-> -               err = -EINVAL;
->                 goto err_free_netdev;
->         }
->
-> @@ -518,8 +516,7 @@ static int iss_net_configure(int index, char *init)
->         /* sysfs register */
->
->         if (!driver_registered) {
-> -               err = platform_driver_register(&iss_net_driver);
-> -               if (err)
-> +               if (platform_driver_register(&iss_net_driver))
->                         goto err_free_netdev;
->                 driver_registered = 1;
->         }
-> @@ -530,8 +527,7 @@ static int iss_net_configure(int index, char *init)
->
->         lp->pdev.id = index;
->         lp->pdev.name = DRIVER_NAME;
-> -       err = platform_device_register(&lp->pdev);
-> -       if (err)
-> +       if (platform_device_register(&lp->pdev))
->                 goto err_free_netdev;
->         SET_NETDEV_DEV(dev, &lp->pdev.dev);
->
-> @@ -541,23 +537,22 @@ static int iss_net_configure(int index, char *init)
->         dev->irq = -1;
->
->         rtnl_lock();
-> -       err = register_netdevice(dev);
-> -       rtnl_unlock();
-> -
-> -       if (err) {
-> +       if (register_netdevice(dev)) {
-> +               rtnl_unlock();
->                 pr_err("%s: error registering net device!\n", dev->name);
->                 goto err_unregister_device;
->         }
-> +       rtnl_unlock();
->
->         timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
->
-> -       return 0;
-> +       return;
->
->  err_unregister_device:
->         platform_device_unregister(&lp->pdev);
->  err_free_netdev:
->         free_netdev(dev);
-> -       return err;
-> +       return;
-
-No need for 'return' at the end of the void function.
-
+diff --git a/Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml b/Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
+new file mode 100644
+index 000000000000..bcaab5b03128
+--- /dev/null
++++ b/Documentation/devicetree/bindings/leds/cznic,turris1x-leds.yaml
+@@ -0,0 +1,118 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/leds/cznic,turris1x-leds.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: CZ.NIC's Turris 1.x LEDs driver
++
++maintainers:
++  - Pali Rohár <pali@kernel.org>
++
++description:
++  This module adds support for the RGB LEDs found on the front panel of the
++  Turris 1.x routers. There are 8 RGB LEDs that are controlled by CZ.NIC CPLD
++  firmware running on Lattice FPGA. Firmware is open source and available at
++  https://gitlab.nic.cz/turris/hw/turris_cpld/-/blob/master/CZ_NIC_Router_CPLD.v
++
++properties:
++  compatible:
++    const: cznic,turris1x-leds
++
++  reg:
++    description: CPLD address range where LED registers are mapped
++    maxItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++patternProperties:
++  "^multi-led@[0-7]$":
++    type: object
++    $ref: leds-class-multicolor.yaml#
++    unevaluatedProperties: false
++
++    properties:
++      reg:
++        minimum: 0
++        maximum: 7
++
++    required:
++      - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/leds/common.h>
++
++    cpld@3,0 {
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0x3 0x0 0x00020000>;
++
++        led-controller@13 {
++            compatible = "cznic,turris1x-leds";
++            reg = <0x13 0x1d>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            multi-led@0 {
++                    reg = <0x0>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_WAN;
++            };
++
++            multi-led@1 {
++                    reg = <0x1>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_LAN;
++                    function-enumerator = <5>;
++            };
++
++            multi-led@2 {
++                    reg = <0x2>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_LAN;
++                    function-enumerator = <4>;
++            };
++
++            multi-led@3 {
++                    reg = <0x3>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_LAN;
++                    function-enumerator = <3>;
++            };
++
++            multi-led@4 {
++                    reg = <0x4>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_LAN;
++                    function-enumerator = <2>;
++            };
++
++            multi-led@5 {
++                    reg = <0x5>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_LAN;
++                    function-enumerator = <1>;
++            };
++
++            multi-led@6 {
++                    reg = <0x6>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_WLAN;
++            };
++
++            multi-led@7 {
++                    reg = <0x7>;
++                    color = <LED_COLOR_ID_RGB>;
++                    function = LED_FUNCTION_POWER;
++            };
++        };
++    };
++
++...
 -- 
-Thanks.
--- Max
+2.20.1
+
