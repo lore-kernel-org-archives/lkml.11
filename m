@@ -2,112 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E343DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E935CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbiGEKa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
+        id S231450AbiGEKdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiGEKa3 (ORCPT
+        with ESMTP id S231395AbiGEKdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:30:29 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D50A15833;
-        Tue,  5 Jul 2022 03:30:06 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-31caffa4a45so32519027b3.3;
-        Tue, 05 Jul 2022 03:30:06 -0700 (PDT)
+        Tue, 5 Jul 2022 06:33:01 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF031572A;
+        Tue,  5 Jul 2022 03:32:59 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id lw20so20873195ejb.4;
+        Tue, 05 Jul 2022 03:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8etHjP9NB2AEzDxGeqW3akKDdSo8OiEzz0+PEyCVcMI=;
-        b=e40iovbVTXulHSh0GwhgN51kUXvZf4ISbfavw4qKV94xUm+8MdOKNcXq/EgWgUz5d8
-         BD9EyVlmIknBG+DOhCFTczbbpElxqDUOMAzRaYlQ/pZMcBzj/jxiol+KMxiZcTLPfg7c
-         ZSXMeNy/Qb9z+thnamxGnmOMNtjZjqVMe6cWnldkEVYUJCDsX2I5OFpcznriK+CYWnai
-         sHVEJ7MEzYL2DTIbWgf2sOjWZbIergf3EfBxrnlmQHSJdodopzgkUckqGOlv+TqU86b5
-         sHpK0dSod4Ah58nnOOLL9RCjIfXqBGQQM/TGTCUWW/eZHrx39k7vN3f+Et5P9czC6hRv
-         dKZg==
+        h=from:to:cc:subject:date:message-id;
+        bh=jY5FjsixWEcU8zWWnoT9i17TwQs6gwoN4AcRetl459A=;
+        b=CLXsjGhps7gMkknzEejhsqeXGH97V6MUc8+1rvRng+RCUolyNyxRSjRnpe0IclsK5e
+         YYRN5JHrfj7XOXa9vWKxCbw7mEDKJSaR/ywYKw0jIEGtRY8S/LayzRbvfvKX3csZR36f
+         Br6uh63jmTgncimGaDumlZAhkZBWplIsKCz7Toi32BLIGHz8hIvBJEDHnxkCFp5+Zp6f
+         ZKzVQfSoAW0rPlVYOSeRthMhkh3iLJBPHoWVRtBYp/0KBi5BQQR3fjWNnieqXOjFWGZt
+         e7UwHoDELvPxzOhhiWbA4dHPGA4rguCmnAkZEJnjk3iHcvg0yfW6jYTuy1u1HyuOMVrW
+         FeeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8etHjP9NB2AEzDxGeqW3akKDdSo8OiEzz0+PEyCVcMI=;
-        b=aZjztgCWoafc7LeggEXjSppc9SuNVDbqOnvy+65zEirRE1oTol9paAbXCNe2mEdtRN
-         BFM+0lTkWzo5I0L5Rb7aDwaj/ZsPGDrcA7Y8bATjg+iyUcZJSjvp97O6dfSoMZdeICmg
-         o/IjoJI/H6G0I4ZvcDdsuRjnZD4jDSQ/HeUSAs1QSpiaToUjny+xbCUM9LfzntHmMszE
-         yf0K6214Y57Q9DQDGVsfyG3pdsSNmXvh1kaVU1L5091B2jjXIXXnXW69e5oPzekSr2wp
-         tA+ZaBchXWF7e808GumuU3xibUqVNiQRAHiWGDGjF0pIXVJ8JaSBFwWYloOIMgUGfwln
-         bIKQ==
-X-Gm-Message-State: AJIora9N79klqOmt5kIxmHGBsJm7rmVKWhXmt58l10QMiXCKNDt5jJIY
-        eZSoWJRyZPKtguRDSACSM96hdzYmujdy+SlJNZI=
-X-Google-Smtp-Source: AGRyM1u4An9CGm86TWkOCZ6rN+Gp+qniI7fES8Od55cX8SpJNJq4/vULFL0zRs0viV5Xdm7bnUQc5liTVBX8LGJ601I=
-X-Received: by 2002:a81:3984:0:b0:31c:b59e:a899 with SMTP id
- g126-20020a813984000000b0031cb59ea899mr6131611ywa.195.1657017005324; Tue, 05
- Jul 2022 03:30:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <12026357.O9o76ZdvQC@kreacher> <2657553.mvXUDI8C0e@kreacher>
- <5606189.DvuYhMxLoT@kreacher> <e9666883-3285-36a6-6278-ace219b88f3c@huawei.com>
- <CAHp75Ve-Cm43HhqqxxfmKTbC_Gkx=0aAcj0jJmA=-Nr-NT1FqQ@mail.gmail.com>
- <CAHp75VdT1YZUQbdHupA2RmucUBSzypcPwKBgSa4=sVQAhC+Vsw@mail.gmail.com>
- <61fbd71b-9c36-345c-7aed-561b81c34259@huawei.com> <CAHp75VdxaBG8Sj3j7Wa7BrZOrn1j2eAtJMw0N8z255HwMSohYw@mail.gmail.com>
- <df8c0a5d-e950-1726-5d30-80dcc8b20ff9@huawei.com> <CAJZ5v0hv7nm57QrCYX+aX=fVoE0s0BxEpJfz+a8bsPzzSZt7+g@mail.gmail.com>
- <71dfc3cd-c2ae-8096-9280-67e77c21055e@huawei.com> <CAHp75VfqJwF4YypH3QE0MRgZAyjEMKche-4czUuiC=aTYoYwig@mail.gmail.com>
- <CAHp75VfpQfBYD-AmVhbxm4tp_1EVv8xqCChYpuuRKOC=P_Y_og@mail.gmail.com> <050e5a2f-42b9-f851-ec6e-e2a9d3fdbe1c@huawei.com>
-In-Reply-To: <050e5a2f-42b9-f851-ec6e-e2a9d3fdbe1c@huawei.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 12:29:27 +0200
-Message-ID: <CAHp75VfQDtvUbOYvjXsCg9q62iHwc-SwqZ+XD2yiJe=o12c9xA@mail.gmail.com>
-Subject: Re: [PATCH v3] hisi_lpc: Use acpi_dev_for_each_child()
-To:     John Garry <john.garry@huawei.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jY5FjsixWEcU8zWWnoT9i17TwQs6gwoN4AcRetl459A=;
+        b=PEdcYYkbcVXrs2A4Q89egtU8i6k4FOv4R4Ar0RysERRLe+wMpTyMktanuJcCHrWNS1
+         Ac3w/GJXdNnmnfvI0rG29ppBLD3Rt0c6y8WX0oP56o8X05KHDml99ehzoTChXr4yybcp
+         WZ1s30nZfS3TgJEjSIjprPDb5igdkkWngA++Lk4urpFer0Ogt62uWr/BUA4R4crbmmz6
+         0iSKL7ZgIfcQqniF8hw7ZKoEsbVdoDU1d/UKZ2tpM0WfHJFGTroI6OPOsPZSEg42BYeO
+         8baYUxW2euSPVchYtSMIUxNWKC5UrpOIZwvuktcMpGwZBbXyXwdaMRjESRSxQ1KyhZ/Y
+         iMBw==
+X-Gm-Message-State: AJIora/w4r5V2LjCXr4cKiiWgL5envH70OSEO8q/3zdk84c4eCc5U3Z/
+        7EeYct1wtsC5h0tgo05r5bI=
+X-Google-Smtp-Source: AGRyM1vbRqvZJ1bJMfKQceJ+JeD7Wl2liAwNwopQ2x8qJrxF1kBDubDhMTHNKcVUtXWF2qb02ic21A==
+X-Received: by 2002:a17:907:271b:b0:72a:72bb:6f47 with SMTP id w27-20020a170907271b00b0072a72bb6f47mr26019412ejk.634.1657017177777;
+        Tue, 05 Jul 2022 03:32:57 -0700 (PDT)
+Received: from felia.fritz.box (200116b82698ad00a9019cf0f015ae6b.dip.versatel-1u1.de. [2001:16b8:2698:ad00:a901:9cf0:f015:ae6b])
+        by smtp.gmail.com with ESMTPSA id p19-20020aa7cc93000000b0042bdb6a3602sm22540880edt.69.2022.07.05.03.32.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 03:32:57 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] ASoC: Intel: avs: correct config reference for I2S test board
+Date:   Tue,  5 Jul 2022 12:32:38 +0200
+Message-Id: <20220705103238.7484-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 12:16 PM John Garry <john.garry@huawei.com> wrote:
-> On 05/07/2022 10:39, Andy Shevchenko wrote:
-> > On Tue, Jul 5, 2022 at 11:38 AM Andy Shevchenko
-> > <andy.shevchenko@gmail.com>  wrote:
-> >> On Tue, Jul 5, 2022 at 10:37 AM John Garry<john.garry@huawei.com>  wrote:
+Commit e39acc4cfd92 ("ASoC: Intel: avs: Add I2S-test machine board") adds
+the config "SND_SOC_INTEL_AVS_MACH_I2S_TEST", but in the Makefile refers
+to  config "SND_SOC_INTEL_AVS_MACH_i2s_TEST" (notice the uppercase and
+lowercase difference).
 
-...
+Adjust the Makefile to refer to the actual existing config.
 
-> >> John, I believe now you may send a formal clean up to convert to platform_device
-> > Hit Enter too early:-)
-> >
-> > ...to platform_device_register_full().
->
-> Sure, I can look at that now. But I just found where we previously
-> mentioned the possibility of factoring out some of the ACPI platform
-> device creation code:
->
-> https://lore.kernel.org/linux-acpi/CAHp75VfOa5pN4MKT-aQmWBwPGWsOaQupyfrN-weWwfR3vMLtuA@mail.gmail.com/
->
-> There is actually still a comment in the hisi_lpc driver - I should have
-> checked there first :)
->
-> So my impression is that the hisi_lpc code is almost the same in
-> acpi_create_platform_device(), apart from we need do the resource fixup
-> in hisi_lpc_acpi_set_io_res().
->
-> So we could factor out by dividing acpi_create_platform_device() into 2x
-> parts: resource get and then platform dev create. But that does not seem
-> wise as we have 2x parts which don't make sense on their own. Or else
-> pass a fixup callback into acpi_create_platform_device(). Any other
-> ideas if we want to go this way?
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Amadeusz, Cezary, please ack.
 
-I prefer having an ops or so structure where you can pass ->fixup()
-and/or ->xlate() function, Btw, it looks like the code in hisi_lpc
-needs a lot of cleanups.
+Mark, please pick this minor build config fix.
 
+ sound/soc/intel/avs/boards/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/intel/avs/boards/Makefile b/sound/soc/intel/avs/boards/Makefile
+index 25e8c4bb07db..bc75376d58c2 100644
+--- a/sound/soc/intel/avs/boards/Makefile
++++ b/sound/soc/intel/avs/boards/Makefile
+@@ -16,7 +16,7 @@ snd-soc-avs-ssm4567-objs := ssm4567.o
+ obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_DA7219) += snd-soc-avs-da7219.o
+ obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_DMIC) += snd-soc-avs-dmic.o
+ obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_HDAUDIO) += snd-soc-avs-hdaudio.o
+-obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_i2s_TEST) += snd-soc-avs-i2s-test.o
++obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_I2S_TEST) += snd-soc-avs-i2s-test.o
+ obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_MAX98357A) += snd-soc-avs-max98357a.o
+ obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_MAX98373) += snd-soc-avs-max98373.o
+ obj-$(CONFIG_SND_SOC_INTEL_AVS_MACH_NAU8825) += snd-soc-avs-nau8825.o
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
