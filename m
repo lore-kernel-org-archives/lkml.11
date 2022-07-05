@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B324C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227B6CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231751AbiGELct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S229925AbiGELc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiGELcf (ORCPT
+        with ESMTP id S229700AbiGELcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:32:35 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE38165B8
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:32:34 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id u14so14156634ljh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:32:33 -0700 (PDT)
+        Tue, 5 Jul 2022 07:32:43 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F72C165AC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:32:37 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so16479484pjl.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:32:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qaYi1wEt2C2JhLIJsincP0Q2Rkx1dIZ1ZvSisaiv2yM=;
-        b=myegyeCgfK2LkukV+pPs7crITRe2CkDAlueLDUmQmpB0rDV9FGaDYyCNDnNsxHV+I6
-         v2s0FdFJ/IiRX4iMHNeuDeaHin3OTvBe/Wg4X88PGFwVM+LEzRwQ3N/Ea8xF1L8EOwng
-         zgLZJg/C5HpkbvMHF8VvbGQnxC/c9Q7L0SjwgWDxlwJip3OX/e/BT0Vbcm7ncVDRtjAc
-         tcpFhUPNbd6P+gQHeGkH9xVAXIITxOX7PBxqAUMpOfgAzjSthCsPi/qNxkt+W3fTwFJN
-         mgIWaQVWOa/7X+KXd8bBy1Ay12dHeKv3ufjgtfZsCeLmhv4e/CPo3OwmPcP6sleDDm+B
-         yAZA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ric4fzw9LJrNcSTyTbiVbmxdWQkgNYXNndpMyI1IIbo=;
+        b=bno77WZ9RFLUA1l5FIyvVKOlbQeZOgroHT8krb9x/2BeGPyEyF3d4DMC/A6FJPLsIy
+         Xh68b6iMHQDHj6wr4x0VhPEDYyIcjrLT37xsEAvLNUArogpa23P8Il09lM0o+gNssS0c
+         0tuD3JCPSpIqHWokuxBFhr6jv7arq2VtVzQiYVkDR+pepwn+xsRP4CflanZGLpfngjWO
+         bHq5EH89mKUZHb1HEFXYk9Ovy0bYsflOcQRJ0pLomQ90Dso8+QCeR+xy5hQt+Dpi4uCI
+         zH0WRDo1y3pVD3Q3jWm8nUkRAsKpWjh28ibSovr6OrIEATo/+SoKGJJp+2rVyVNPIKYC
+         FGqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qaYi1wEt2C2JhLIJsincP0Q2Rkx1dIZ1ZvSisaiv2yM=;
-        b=agkf2IKdDXOHFM914pqi1E8S6EIOwbMhEENPgaB8BRoq0UqG7R9VBosrK8DS1PsmSN
-         DIZyugZTYAwQ0kDIL4pFHAR50jgOFD4d+rbXM6aIMXvfrA3DS5MR9Ru+Ecl+t8Swmon9
-         nHbY3Zcc7LxwBFA4J2uDkPIuGQXMqkgEbf/Iuhf5mlK7S50Wg1SHUBR4uTZhz7YBs7Hp
-         pKJ5PMmW/sD0efRMBPYB5sSbggCvl5B0MaCgss5RSLDcKDGyLNMtdoCBnkMEBLUgpcWT
-         pNvGF6+zdO0q4iIv/AcUaE9tPQciJo4u6tff0nYmg/qJbryLGbUK9rHyEmA2ogLKYDRu
-         fc9g==
-X-Gm-Message-State: AJIora/mgKqjPzpJNfLExo45jolF6vTzjEH3vUZar9CzR7YpELevRuAX
-        Q1A0taRy1DgMQYGQyozWYZXm2w==
-X-Google-Smtp-Source: AGRyM1sDEMfsIqrE/O54h2/HWiK8uRNTaue2L0djpV2Y+9vKv+BEGYutc3aiZvtNajkxCH+H6rDE7w==
-X-Received: by 2002:a05:651c:178a:b0:25a:44ab:593 with SMTP id bn10-20020a05651c178a00b0025a44ab0593mr19941534ljb.358.1657020752431;
-        Tue, 05 Jul 2022 04:32:32 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id h15-20020a2eb0ef000000b00255500154fasm5510079ljl.52.2022.07.05.04.32.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 04:32:31 -0700 (PDT)
-Message-ID: <3b91ee2f-3e87-c18c-aa04-2cd93273b63f@linaro.org>
-Date:   Tue, 5 Jul 2022 13:32:30 +0200
+        bh=ric4fzw9LJrNcSTyTbiVbmxdWQkgNYXNndpMyI1IIbo=;
+        b=0SmBTlhXke9EmOFEMSAT0LdnIN95Ih+21SmOkZt/LKzHjMocfSVZ/kWxEUbi6B/4md
+         msZ2MNVfCAjAUROy9YtMgYxH3L91dZObcCnBaphkClaAmevYPMvOYfHcAXS6iRi5zjya
+         aa0Um+fZUqkrrQgwZtfNIimC7IzABnMfk6fL2/BbNy7PnrgZcK1IL0udwvufoVP6PWnO
+         JyC2VWhe2p2owG714wU0uPJhTec+mkjWh7x7cXFOGn9y0cqYxbdUF8BbsCvJ5NdLvdKa
+         p8FcFXpn5rWX0kEtvoj6F/7mbc69bkxxS+b7D9A4bSMAq9371wPfJgjLEyK5sr8HtUi7
+         ZWFw==
+X-Gm-Message-State: AJIora9UuxfpndhDkMGfR48zs2BvkNALAbN4/TcQ9Cuk4bHw+eLxhNYW
+        FfMPIZjS17CUSNaSE+LDqoE=
+X-Google-Smtp-Source: AGRyM1syeOueifblOfmGpwHkIsqecYbc6DEx/9cbc/zkvhAdvSCi4VFFxj0dlcUjXP518boRxTLjyQ==
+X-Received: by 2002:a17:902:d405:b0:16b:f1ee:27c0 with SMTP id b5-20020a170902d40500b0016bf1ee27c0mr2873828ple.10.1657020757077;
+        Tue, 05 Jul 2022 04:32:37 -0700 (PDT)
+Received: from localhost ([101.86.201.206])
+        by smtp.gmail.com with ESMTPSA id p10-20020a170902bd0a00b00161ac982b9esm23121878pls.185.2022.07.05.04.32.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 04:32:36 -0700 (PDT)
+From:   Patrick Wang <patrick.wang.shcn@gmail.com>
+To:     dennis@kernel.org, tj@kernel.org, cl@linux.com,
+        akpm@linux-foundation.org
+Cc:     catalin.marinas@arm.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, patrick.wang.shcn@gmail.com
+Subject: [PATCH] mm: percpu: use kmemleak_ignore_phys() instead of kmemleak_free()
+Date:   Tue,  5 Jul 2022 19:31:58 +0800
+Message-Id: <20220705113158.127600-1-patrick.wang.shcn@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 09/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: add
- example node
-Content-Language: en-US
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-10-johan+linaro@kernel.org>
- <8271f4d5-e12e-ddf0-46ab-86a39577755a@linaro.org>
- <YsQQ2o8aYJnnWuNa@hovoldconsulting.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YsQQ2o8aYJnnWuNa@hovoldconsulting.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 12:22, Johan Hovold wrote:
-> On Tue, Jul 05, 2022 at 12:10:29PM +0200, Krzysztof Kozlowski wrote:
->> On 05/07/2022 11:42, Johan Hovold wrote:
->>> Add an example node based on a cleaned up version of msm8996.dtsi.
->>>
->>> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
->>
->> Squash it, please.
-> 
-> Why? It's a new addition to the schema.
+Kmemleak recently added a rbtree to store the objects
+allocted with physical address. Those objects can't be
+freed with kmemleak_free(). Use kmemleak_ignore_phys()
+instead of kmemleak_free() for those objects.
 
-Because it is not really new. When you add new bindings or convert
-existing ones (without example), it is expected that example is within
-that commit. You do here the same - add entirely new file. Old file had
-example and the bindings. You now split some pieces, convert it, so new
-file is also expected to come with the bindings.
+Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+---
+Similar to:
+https://lkml.kernel.org/r/20220628113714.7792-2-yee.lee@mediatek.com
 
-The same as there is no point to make half-TXT-YAML conversion, there is
-no point in half-split of existing bindings. Either this split is
-correct and complete, or it's not a finished commit and we do not commit
-half-commits.
+ mm/percpu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/mm/percpu.c b/mm/percpu.c
+index 3633eeefaa0d..27697b2429c2 100644
+--- a/mm/percpu.c
++++ b/mm/percpu.c
+@@ -3104,7 +3104,7 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
+ 			goto out_free_areas;
+ 		}
+ 		/* kmemleak tracks the percpu allocations separately */
+-		kmemleak_free(ptr);
++		kmemleak_ignore_phys(__pa(ptr));
+ 		areas[group] = ptr;
+ 
+ 		base = min(ptr, base);
+@@ -3304,7 +3304,7 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t
+ 				goto enomem;
+ 			}
+ 			/* kmemleak tracks the percpu allocations separately */
+-			kmemleak_free(ptr);
++			kmemleak_ignore_phys(__pa(ptr));
+ 			pages[j++] = virt_to_page(ptr);
+ 		}
+ 	}
+@@ -3417,7 +3417,7 @@ void __init setup_per_cpu_areas(void)
+ 	if (!ai || !fc)
+ 		panic("Failed to allocate memory for percpu areas.");
+ 	/* kmemleak tracks the percpu allocations separately */
+-	kmemleak_free(fc);
++	kmemleak_ignore_phys(__pa(fc));
+ 
+ 	ai->dyn_size = unit_size;
+ 	ai->unit_size = unit_size;
+-- 
+2.25.1
+
