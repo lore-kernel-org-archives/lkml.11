@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099D4CCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E5ECCA48F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238478AbiGEM3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35970 "EHLO
+        id S238308AbiGEM2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237491AbiGEMTR (ORCPT
+        with ESMTP id S237279AbiGEMS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BF11D0ED;
-        Tue,  5 Jul 2022 05:14:51 -0700 (PDT)
+        Tue, 5 Jul 2022 08:18:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF111CFC0;
+        Tue,  5 Jul 2022 05:14:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAE8DB8170A;
-        Tue,  5 Jul 2022 12:14:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6E3C341C7;
-        Tue,  5 Jul 2022 12:14:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35440619E2;
+        Tue,  5 Jul 2022 12:14:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42DABC341C7;
+        Tue,  5 Jul 2022 12:14:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023288;
-        bh=3qEmsLJXqFekBedASALHJHcy6eqcwMkrlqiBSTjM+BI=;
+        s=korg; t=1657023255;
+        bh=dWM85wtkZwlYgoAndYW7KR0A2jkZRIv+OfH2BEyh2ck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGFJn1UXx7MRyD32CrCo515ZT43nlkJhy/ar3W1/kOTwqEjQ/+5gihTfmSsTvtvLi
-         6O36/FKrXC0Q5NvS3F5kVk7T7OY1ve+EHrvdXw9UFk+ywJdRapIyZ5MVtG4hadtU59
-         EYKFgcLhSUhVzGWMTdoQaf2QS6AKcw8Dw6VdQWkw=
+        b=rMyKY2W6UGJze1wIs4C5w6RLpmKZdJdCDkQYKIRJk6mH/S7486p6TnTbaCELexO3L
+         6aQeNJoODcRc3rVCNb7E6LuxoVozKIabd+l54+LpwKlUb77z/BgvJtNiWrNWzcyr3U
+         p4rvK9F4nAWzd3m2xWsGsXM+qBw2ouRBjKDPQIM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 86/98] net: fix IFF_TX_SKB_NO_LINEAR definition
-Date:   Tue,  5 Jul 2022 13:58:44 +0200
-Message-Id: <20220705115620.011655239@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Stefan Seyfried <seife+kernel@b1-systems.com>,
+        Kenneth Chan <kenneth.t.chan@gmail.com>
+Subject: [PATCH 5.15 94/98] platform/x86: panasonic-laptop: filter out duplicate volume up/down/mute keypresses
+Date:   Tue,  5 Jul 2022 13:58:52 +0200
+Message-Id: <20220705115620.238957737@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,36 +51,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 3b89b511ea0c705cc418440e2abf9d692a556d84 ]
+[ Upstream commit aacb455dfe01b7a24a792a2fbe7a04112ce8321d ]
 
-The "1<<31" shift has a sign extension bug so IFF_TX_SKB_NO_LINEAR is
-0xffffffff80000000 instead of 0x0000000080000000.
+On some Panasonic models the volume up/down/mute keypresses get
+reported both through the Panasonic ACPI HKEY interface as well as
+through the atkbd device.
 
-Fixes: c2ff53d8049f ("net: Add priv_flags for allow tx skb without linear")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Link: https://lore.kernel.org/r/YrRrcGttfEVnf85Q@kili
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Filter out the atkbd scan-codes for these to avoid reporting presses
+twice.
+
+Note normally we would leave the filtering of these to userspace by mapping
+the scan-codes to KEY_UNKNOWN through /lib/udev/hwdb.d/60-keyboard.hwdb.
+However in this case that would cause regressions since we were filtering
+the Panasonic ACPI HKEY events before, so filter these in the kernel.
+
+Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
+Reported-and-tested-by: Stefan Seyfried <seife+kernel@b1-systems.com>
+Reported-and-tested-by: Kenneth Chan <kenneth.t.chan@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220624112340.10130-7-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/Kconfig            |  1 +
+ drivers/platform/x86/panasonic-laptop.c | 41 +++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 39f1893ecac0..f8d46dc62d65 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1645,7 +1645,7 @@ enum netdev_priv_flags {
- 	IFF_FAILOVER_SLAVE		= 1<<28,
- 	IFF_L3MDEV_RX_HANDLER		= 1<<29,
- 	IFF_LIVE_RENAME_OK		= 1<<30,
--	IFF_TX_SKB_NO_LINEAR		= 1<<31,
-+	IFF_TX_SKB_NO_LINEAR		= BIT_ULL(31),
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index 50a5c4f3cefd..f1ff003bb14b 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -872,6 +872,7 @@ config PANASONIC_LAPTOP
+ 	depends on INPUT && ACPI
+ 	depends on BACKLIGHT_CLASS_DEVICE
+ 	depends on ACPI_VIDEO=n || ACPI_VIDEO
++	depends on SERIO_I8042 || SERIO_I8042 = n
+ 	select INPUT_SPARSEKMAP
+ 	help
+ 	  This driver adds support for access to backlight control and hotkeys
+diff --git a/drivers/platform/x86/panasonic-laptop.c b/drivers/platform/x86/panasonic-laptop.c
+index 65ca863ffb9f..7ca49b3fc6c2 100644
+--- a/drivers/platform/x86/panasonic-laptop.c
++++ b/drivers/platform/x86/panasonic-laptop.c
+@@ -122,6 +122,7 @@
+ #include <linux/acpi.h>
+ #include <linux/backlight.h>
+ #include <linux/ctype.h>
++#include <linux/i8042.h>
+ #include <linux/init.h>
+ #include <linux/input.h>
+ #include <linux/input/sparse-keymap.h>
+@@ -129,6 +130,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/seq_file.h>
++#include <linux/serio.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
+@@ -241,6 +243,42 @@ struct pcc_acpi {
+ 	struct platform_device	*platform;
  };
  
- #define IFF_802_1Q_VLAN			IFF_802_1Q_VLAN
++/*
++ * On some Panasonic models the volume up / down / mute keys send duplicate
++ * keypress events over the PS/2 kbd interface, filter these out.
++ */
++static bool panasonic_i8042_filter(unsigned char data, unsigned char str,
++				   struct serio *port)
++{
++	static bool extended;
++
++	if (str & I8042_STR_AUXDATA)
++		return false;
++
++	if (data == 0xe0) {
++		extended = true;
++		return true;
++	} else if (extended) {
++		extended = false;
++
++		switch (data & 0x7f) {
++		case 0x20: /* e0 20 / e0 a0, Volume Mute press / release */
++		case 0x2e: /* e0 2e / e0 ae, Volume Down press / release */
++		case 0x30: /* e0 30 / e0 b0, Volume Up press / release */
++			return true;
++		default:
++			/*
++			 * Report the previously filtered e0 before continuing
++			 * with the next non-filtered byte.
++			 */
++			serio_interrupt(port, 0xe0, 0);
++			return false;
++		}
++	}
++
++	return false;
++}
++
+ /* method access functions */
+ static int acpi_pcc_write_sset(struct pcc_acpi *pcc, int func, int val)
+ {
+@@ -1006,6 +1044,7 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
+ 		pcc->platform = NULL;
+ 	}
+ 
++	i8042_install_filter(panasonic_i8042_filter);
+ 	return 0;
+ 
+ out_platform:
+@@ -1029,6 +1068,8 @@ static int acpi_pcc_hotkey_remove(struct acpi_device *device)
+ 	if (!device || !pcc)
+ 		return -EINVAL;
+ 
++	i8042_remove_filter(panasonic_i8042_filter);
++
+ 	if (pcc->platform) {
+ 		device_remove_file(&pcc->platform->dev, &dev_attr_cdpower);
+ 		platform_device_unregister(pcc->platform);
 -- 
 2.35.1
 
