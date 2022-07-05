@@ -2,170 +2,402 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 677D7CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EDFC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237785AbiGEMX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
+        id S237742AbiGEMX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236272AbiGEMRa (ORCPT
+        with ESMTP id S236263AbiGEMR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0AC1C125;
-        Tue,  5 Jul 2022 05:12:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91973B8170A;
-        Tue,  5 Jul 2022 12:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09705C341CF;
-        Tue,  5 Jul 2022 12:12:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023133;
-        bh=qtR+L+imlhsuaNM4K5Mt9oLNyF1AorjqhC75DA53sHc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=riHuFNSf89/OOL5h9zvL789nfQc5NFYbEOqWDWGZyX5UXUUdN1mKJDL9zRdYyGMMr
-         5lP48hyWTy4CnIckGL2sTweQnw1rs2XuPoKYrt93eQ8pfaHCAMgEzD8VXSWT3+P+HM
-         DkNj+cX0xkGaeUoW4WTnHbEUAZ77FcHR4bLlCGgw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuang Li <shuali@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>, Jon Maloy <jmaloy@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 50/98] tipc: move bc link creation back to tipc_node_create
-Date:   Tue,  5 Jul 2022 13:58:08 +0200
-Message-Id: <20220705115619.005195067@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:17:29 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23ED51C12C;
+        Tue,  5 Jul 2022 05:12:14 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBTfD115013;
+        Tue, 5 Jul 2022 07:11:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657023089;
+        bh=iWlNjdimpa3kHJZ7xEjNp+ff4LaL81Rz+E9yME20FKQ=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=kygmDkoByAmwol1mlsVJQk6q0jvj1VunM0cjrxncilH3sgxvJGoVtbKSTMtR8+mQE
+         jrY7a8o8/hJOqLLOPLMIEU3H8cZE09mvEK9myERUfqtN6J2JMB1r42JxPw7wNssv0e
+         3DjSDudnP+kpUH1R3cwoerrccUh1QMgfC9wpCT5w=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBTar083954
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 07:11:29 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 07:11:28 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 07:11:28 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBRmX052048;
+        Tue, 5 Jul 2022 07:11:28 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v4 1/5] dt-bindings: display: bridge: Convert cdns,dsi.txt to yaml
+Date:   Tue, 5 Jul 2022 17:41:12 +0530
+Message-ID: <20220705121116.24121-2-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220705121116.24121-1-r-ravikumar@ti.com>
+References: <20220705121116.24121-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+Convert cdns,dsi.txt binding to yaml format
 
-commit cb8092d70a6f5f01ec1490fce4d35efed3ed996c upstream.
-
-Shuang Li reported a NULL pointer dereference crash:
-
-  [] BUG: kernel NULL pointer dereference, address: 0000000000000068
-  [] RIP: 0010:tipc_link_is_up+0x5/0x10 [tipc]
-  [] Call Trace:
-  []  <IRQ>
-  []  tipc_bcast_rcv+0xa2/0x190 [tipc]
-  []  tipc_node_bc_rcv+0x8b/0x200 [tipc]
-  []  tipc_rcv+0x3af/0x5b0 [tipc]
-  []  tipc_udp_recv+0xc7/0x1e0 [tipc]
-
-It was caused by the 'l' passed into tipc_bcast_rcv() is NULL. When it
-creates a node in tipc_node_check_dest(), after inserting the new node
-into hashtable in tipc_node_create(), it creates the bc link. However,
-there is a gap between this insert and bc link creation, a bc packet
-may come in and get the node from the hashtable then try to dereference
-its bc link, which is NULL.
-
-This patch is to fix it by moving the bc link creation before inserting
-into the hashtable.
-
-Note that for a preliminary node becoming "real", the bc link creation
-should also be called before it's rehashed, as we don't create it for
-preliminary nodes.
-
-Fixes: 4cbf8ac2fe5a ("tipc: enable creating a "preliminary" node")
-Reported-by: Shuang Li <shuali@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
 ---
- net/tipc/node.c |   41 ++++++++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 19 deletions(-)
+ .../bindings/display/bridge/cdns,dsi.txt      | 112 ----------
+ .../bindings/display/bridge/cdns,dsi.yaml     | 198 ++++++++++++++++++
+ 2 files changed, 198 insertions(+), 112 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
+ create mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
 
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -472,8 +472,8 @@ struct tipc_node *tipc_node_create(struc
- 				   bool preliminary)
- {
- 	struct tipc_net *tn = net_generic(net, tipc_net_id);
-+	struct tipc_link *l, *snd_l = tipc_bc_sndlink(net);
- 	struct tipc_node *n, *temp_node;
--	struct tipc_link *l;
- 	unsigned long intv;
- 	int bearer_id;
- 	int i;
-@@ -488,6 +488,16 @@ struct tipc_node *tipc_node_create(struc
- 			goto exit;
- 		/* A preliminary node becomes "real" now, refresh its data */
- 		tipc_node_write_lock(n);
-+		if (!tipc_link_bc_create(net, tipc_own_addr(net), addr, peer_id, U16_MAX,
-+					 tipc_link_min_win(snd_l), tipc_link_max_win(snd_l),
-+					 n->capabilities, &n->bc_entry.inputq1,
-+					 &n->bc_entry.namedq, snd_l, &n->bc_entry.link)) {
-+			pr_warn("Broadcast rcv link refresh failed, no memory\n");
-+			tipc_node_write_unlock_fast(n);
-+			tipc_node_put(n);
-+			n = NULL;
-+			goto exit;
-+		}
- 		n->preliminary = false;
- 		n->addr = addr;
- 		hlist_del_rcu(&n->hash);
-@@ -567,7 +577,16 @@ update:
- 	n->signature = INVALID_NODE_SIG;
- 	n->active_links[0] = INVALID_BEARER_ID;
- 	n->active_links[1] = INVALID_BEARER_ID;
--	n->bc_entry.link = NULL;
-+	if (!preliminary &&
-+	    !tipc_link_bc_create(net, tipc_own_addr(net), addr, peer_id, U16_MAX,
-+				 tipc_link_min_win(snd_l), tipc_link_max_win(snd_l),
-+				 n->capabilities, &n->bc_entry.inputq1,
-+				 &n->bc_entry.namedq, snd_l, &n->bc_entry.link)) {
-+		pr_warn("Broadcast rcv link creation failed, no memory\n");
-+		kfree(n);
-+		n = NULL;
-+		goto exit;
-+	}
- 	tipc_node_get(n);
- 	timer_setup(&n->timer, tipc_node_timeout, 0);
- 	/* Start a slow timer anyway, crypto needs it */
-@@ -1155,7 +1174,7 @@ void tipc_node_check_dest(struct net *ne
- 			  bool *respond, bool *dupl_addr)
- {
- 	struct tipc_node *n;
--	struct tipc_link *l, *snd_l;
-+	struct tipc_link *l;
- 	struct tipc_link_entry *le;
- 	bool addr_match = false;
- 	bool sign_match = false;
-@@ -1175,22 +1194,6 @@ void tipc_node_check_dest(struct net *ne
- 		return;
- 
- 	tipc_node_write_lock(n);
--	if (unlikely(!n->bc_entry.link)) {
--		snd_l = tipc_bc_sndlink(net);
--		if (!tipc_link_bc_create(net, tipc_own_addr(net),
--					 addr, peer_id, U16_MAX,
--					 tipc_link_min_win(snd_l),
--					 tipc_link_max_win(snd_l),
--					 n->capabilities,
--					 &n->bc_entry.inputq1,
--					 &n->bc_entry.namedq, snd_l,
--					 &n->bc_entry.link)) {
--			pr_warn("Broadcast rcv link creation failed, no mem\n");
--			tipc_node_write_unlock_fast(n);
--			tipc_node_put(n);
--			return;
--		}
--	}
- 
- 	le = &n->links[b->identity];
- 
-
+diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
+deleted file mode 100644
+index 525a4bfd8634..000000000000
+--- a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
++++ /dev/null
+@@ -1,112 +0,0 @@
+-Cadence DSI bridge
+-==================
+-
+-The Cadence DSI bridge is a DPI to DSI bridge supporting up to 4 DSI lanes.
+-
+-Required properties:
+-- compatible: should be set to "cdns,dsi".
+-- reg: physical base address and length of the controller's registers.
+-- interrupts: interrupt line connected to the DSI bridge.
+-- clocks: DSI bridge clocks.
+-- clock-names: must contain "dsi_p_clk" and "dsi_sys_clk".
+-- phys: phandle link to the MIPI D-PHY controller.
+-- phy-names: must contain "dphy".
+-- #address-cells: must be set to 1.
+-- #size-cells: must be set to 0.
+-
+-Optional properties:
+-- resets: DSI reset lines.
+-- reset-names: can contain "dsi_p_rst".
+-
+-Required subnodes:
+-- ports: Ports as described in Documentation/devicetree/bindings/graph.txt.
+-  2 ports are available:
+-  * port 0: this port is only needed if some of your DSI devices are
+-	    controlled through  an external bus like I2C or SPI. Can have at
+-	    most 4 endpoints. The endpoint number is directly encoding the
+-	    DSI virtual channel used by this device.
+-  * port 1: represents the DPI input.
+-  Other ports will be added later to support the new kind of inputs.
+-
+-- one subnode per DSI device connected on the DSI bus. Each DSI device should
+-  contain a reg property encoding its virtual channel.
+-
+-Example:
+-	dsi0: dsi@fd0c0000 {
+-		compatible = "cdns,dsi";
+-		reg = <0x0 0xfd0c0000 0x0 0x1000>;
+-		clocks = <&pclk>, <&sysclk>;
+-		clock-names = "dsi_p_clk", "dsi_sys_clk";
+-		interrupts = <1>;
+-		phys = <&dphy0>;
+-		phy-names = "dphy";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		ports {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			port@1 {
+-				reg = <1>;
+-				dsi0_dpi_input: endpoint {
+-					remote-endpoint = <&xxx_dpi_output>;
+-				};
+-			};
+-		};
+-
+-		panel: dsi-dev@0 {
+-			compatible = "<vendor,panel>";
+-			reg = <0>;
+-		};
+-	};
+-
+-or
+-
+-	dsi0: dsi@fd0c0000 {
+-		compatible = "cdns,dsi";
+-		reg = <0x0 0xfd0c0000 0x0 0x1000>;
+-		clocks = <&pclk>, <&sysclk>;
+-		clock-names = "dsi_p_clk", "dsi_sys_clk";
+-		interrupts = <1>;
+-		phys = <&dphy1>;
+-		phy-names = "dphy";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		ports {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			port@0 {
+-				reg = <0>;
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+-
+-				dsi0_output: endpoint@0 {
+-					reg = <0>;
+-					remote-endpoint = <&dsi_panel_input>;
+-				};
+-			};
+-
+-			port@1 {
+-				reg = <1>;
+-				dsi0_dpi_input: endpoint {
+-					remote-endpoint = <&xxx_dpi_output>;
+-				};
+-			};
+-		};
+-	};
+-
+-	i2c@xxx {
+-		panel: panel@59 {
+-			compatible = "<vendor,panel>";
+-			reg = <0x59>;
+-
+-			port {
+-				dsi_panel_input: endpoint {
+-					remote-endpoint = <&dsi0_output>;
+-				};
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+new file mode 100644
+index 000000000000..ccedc73d8c18
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+@@ -0,0 +1,198 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/bridge/cdns,dsi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Cadence DSI bridge
++
++maintainers:
++  - Boris Brezillon <boris.brezillon@bootlin.com>
++
++description: |
++   CDNS DSI is a bridge device which converts DPI to DSI
++
++properties:
++  compatible:
++    items:
++      - const: cdns,dsi
++
++  reg:
++    items:
++      - description:
++          Register block for controller's registers.
++
++  clocks:
++    items:
++      - description: PSM clock, used by the IP
++      - description: sys clock, used by the IP
++
++  clock-names:
++    items:
++      - const: dsi_p_clk
++      - const: dsi_sys_clk
++
++  phys:
++    maxItems: 1
++    description: phandle link to the MIPI D-PHY controller.
++
++  phy-names:
++    const: dphy
++
++  power-domains:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++    description: PHY reset.
++
++  reset-names:
++    const: dsi_p_rst
++
++  ports:
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++      port@0:
++        $ref: /schemas/graph.yaml#/properties/port
++        description:
++          Output port representing the DSI output. It can have
++          most 4 endpoints. The endpoint number is directly encoding
++          the DSI virtual channel used by this device.
++
++      port@1:
++        $ref: /schemas/graph.yaml#/properties/port
++        description:
++          Input port representing the DP bridge input.
++
++    required:
++      - port@1
++
++allOf:
++  - $ref: ../dsi-controller.yaml#
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - phys
++  - phy-names
++  - ports
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    bus {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        dsi@fd0c0000 {
++            compatible = "cdns,dsi";
++            reg = <0x0 0xfd0c0000 0x0 0x1000>;
++            clocks = <&pclk>, <&sysclk>;
++            clock-names = "dsi_p_clk", "dsi_sys_clk";
++            interrupts = <1>;
++            phys = <&dphy0>;
++            phy-names = "dphy";
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            ports {
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                port@1 {
++                    reg = <1>;
++                    endpoint {
++                        remote-endpoint = <&xxx_dpi_output>;
++                    };
++                };
++            };
++
++            panel@0 {
++                compatible = "panasonic,vvx10f034n00";
++                reg = <0>;
++                power-supply = <&vcc_lcd_reg>;
++            };
++        };
++    };
++
++  - |
++    bus {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        dsi@fd0c0000 {
++            compatible = "cdns,dsi";
++            reg = <0x0 0xfd0c0000 0x0 0x1000>;
++            clocks = <&pclk>, <&sysclk>;
++            clock-names = "dsi_p_clk", "dsi_sys_clk";
++            interrupts = <1>;
++            phys = <&dphy1>;
++            phy-names = "dphy";
++
++            ports {
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                port@0 {
++                    reg = <0>;
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++
++                    dsi0_output: endpoint@0 {
++                        reg = <0>;
++                        remote-endpoint = <&dsi_panel_input>;
++                    };
++                };
++
++                port@1 {
++                    reg = <1>;
++                    endpoint {
++                        remote-endpoint = <&xxx_dpi_output>;
++                    };
++                };
++            };
++        };
++
++        i2c {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            bridge@2d {
++                compatible = "ti,sn65dsi86";
++                reg = <0x2d>;
++
++                vpll-supply = <&src_pp1800_s4a>;
++                vccio-supply = <&src_pp1800_s4a>;
++                vcca-supply = <&src_pp1200_l2a>;
++                vcc-supply = <&src_pp1200_l2a>;
++
++                ports {
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++
++                    port@0 {
++                        reg = <0>;
++                        dsi_panel_input: endpoint {
++                            remote-endpoint = <&dsi0_output>;
++                        };
++                    };
++
++                    port@1 {
++                        reg = <1>;
++                        endpoint {
++                            remote-endpoint = <&panel_in_edp>;
++                        };
++                    };
++                };
++            };
++        };
++    };
+-- 
+2.36.1
 
