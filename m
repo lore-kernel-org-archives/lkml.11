@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A866C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1690CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239103AbiGEMaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S238674AbiGEM32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237651AbiGEMTd (ORCPT
+        with ESMTP id S237536AbiGEMTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E800D18E00;
-        Tue,  5 Jul 2022 05:15:51 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0611ADA6;
+        Tue,  5 Jul 2022 05:15:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96184B817AC;
-        Tue,  5 Jul 2022 12:15:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D35C341C7;
-        Tue,  5 Jul 2022 12:15:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 857E3CE1A19;
+        Tue,  5 Jul 2022 12:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 965E4C341C7;
+        Tue,  5 Jul 2022 12:14:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023349;
-        bh=ZVMKvq6nEv0PjRmO1sVB9snpTOPkH4ykEw7NIvNnQzU=;
+        s=korg; t=1657023300;
+        bh=4WXz2y68FOjP0HgfcdIFWltw+CyggqE2EdWR0mX+PZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aeim7BJKDitsQF9/mOkFe4aOIv2wNz4Zy6MaZ2DBe++EqKNuhYcV9fxHOgM9QckH9
-         iLLol/y+DjpYMIPUobNqLuqXcEKnRagU2y7I2DIGMBM5/juofIWalSz2qs75sA7p4Q
-         f53ljNfSeuXVybQnv+FPegnuWpp0Lrt8cwnNvUP8=
+        b=UR1kn+94DAfMR20vOpIu9PHviUs4TqLMHgXqkRs9o02KLlOcMIWCV2fL6CWoRWUnz
+         Z4CSEKcByHysgNtcT9QivK3xAkvSPlwVfM0S3lvVxnX2jh6g59zYXLfblxnjSe2CG0
+         MhcyUZX9NKAa62k6xAfl1htsqFAGc2FFKUyD2Ifs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+b75c138e9286ac742647@syzkaller.appspotmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 028/102] net: tun: unlink NAPI from device on destruction
-Date:   Tue,  5 Jul 2022 13:57:54 +0200
-Message-Id: <20220705115619.215623310@linuxfoundation.org>
+        =?UTF-8?q?Felipe=20de=20Jesus=20Araujo=20da=20Concei=C3=A7=C3=A3o?= 
+        <felipe.conceicao@petrosoftdesign.com>,
+        "Lamarque V. Souza" <lamarque.souza@petrosoftdesign.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.18 011/102] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA IM2P33F8ABR1
+Date:   Tue,  5 Jul 2022 13:57:37 +0200
+Message-Id: <20220705115618.736191551@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,34 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Lamarque Vieira Souza <lamarque@petrosoftdesign.com>
 
-commit 3b9bc84d311104906d2b4995a9a02d7b7ddab2db upstream.
+commit e1c70d79346356bb1ede3f79436df80917845ab9 upstream.
 
-Syzbot found a race between tun file and device destruction.
-NAPIs live in struct tun_file which can get destroyed before
-the netdev so we have to del them explicitly. The current
-code is missing deleting the NAPI if the queue was detached
-first.
+ADATA IM2P33F8ABR1 reports bogus eui64 values that appear to be the same
+across all drives. Quirk them out so they are not marked as "non globally
+unique" duplicates.
 
-Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
-Reported-by: syzbot+b75c138e9286ac742647@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20220623042039.2274708-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Co-developed-by: Felipe de Jesus Araujo da Conceição <felipe.conceicao@petrosoftdesign.com>
+Signed-off-by: Felipe de Jesus Araujo da Conceição <felipe.conceicao@petrosoftdesign.com>
+Signed-off-by: Lamarque V. Souza <lamarque.souza@petrosoftdesign.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/tun.c |    1 +
- 1 file changed, 1 insertion(+)
 
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -728,6 +728,7 @@ static void tun_detach_all(struct net_de
- 		sock_put(&tfile->sk);
- 	}
- 	list_for_each_entry_safe(tfile, tmp, &tun->disabled, next) {
-+		tun_napi_del(tfile);
- 		tun_enable_queue(tfile);
- 		tun_queue_purge(tfile);
- 		xdp_rxq_info_unreg(&tfile->xdp_rxq);
+Cc: stable@vger.kernel.org
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/nvme/host/pci.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3436,6 +3436,8 @@ static const struct pci_device_id nvme_i
+ 	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
+ 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++	{ PCI_DEVICE(0x1cc1, 0x33f8),   /* ADATA IM2P33F8ABR1 1 TB */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x10ec, 0x5762),   /* ADATA SX6000LNP */
+ 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
+ 				NVME_QUIRK_BOGUS_NID, },
 
 
