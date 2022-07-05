@@ -2,141 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEBFCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD78C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 17:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233239AbiGERy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 13:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
+        id S233399AbiGERzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232649AbiGERyy (ORCPT
+        with ESMTP id S231797AbiGERzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 13:54:54 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1690913E9B;
-        Tue,  5 Jul 2022 10:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657043693; x=1688579693;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Km880PB9XZc0BJUMeh8tRcEuJbGickfi/0b4M5YX+Ik=;
-  b=Dbk6BVmeVH+oQSjaCEaG23oR6hE3X+YRYvntD1+zKwwFMKnYK7KJ0Ip6
-   x6to0msA+GuH5Ad48/PVEUPZKf4FUDGVmnPrETCWrADcHAOkV+RlDsE+O
-   qxHgxhm4KETVTG7kg2wKkpVlv+ANhdY1+GJ2bO9tob8mhglAzCtcJ4cW1
-   a53l6T58RsRpla3iLrM3Z0EDT2dUcJHRVRh7ij2Ru4PIW7Gn7bNwa7cpg
-   cqaHsgw3J8GQJd+7qcYjOJr6/qJPWkiZVsGEG6GGHrZu9lJY5E5upHcE1
-   3P7KxBs0glCU6H0AHAw5zPwSHfk5yruBpCimIypSDWzCPteuCBbNEQ5hK
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272208264"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="272208264"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 10:47:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="919813843"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Jul 2022 10:47:49 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8meK-000JRZ-Uh;
-        Tue, 05 Jul 2022 17:47:48 +0000
-Date:   Wed, 6 Jul 2022 01:47:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nishanth Menon <nm@ti.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-adc128s052: Fix number of channels when
- device tree is used
-Message-ID: <202207060155.zkacpxjc-lkp@intel.com>
-References: <20220630230107.13438-1-nm@ti.com>
+        Tue, 5 Jul 2022 13:55:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D4E1B794;
+        Tue,  5 Jul 2022 10:55:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0057E618E2;
+        Tue,  5 Jul 2022 17:55:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15B1C341C7;
+        Tue,  5 Jul 2022 17:54:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657043699;
+        bh=ss/FWSfpRhPy761O/GOGlxFQc7q8ILJU6ePmGBd1zuA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ajkxm9aFdQ+4eDM5fM2/xY0Lfllfb+NOSRNA+Fec2jr2dkPKpuTAewpiKAzK05+MS
+         WJOdFB/mlYY2/yUgX6Z5FlscEyk3Vxn/u42630GotVSszHd7JrkudM53X/+ca1yI2r
+         nqlAZRgTFTDXJ3XvdE9Lxzy0d9NoTF5ktZCAJqy3frtkQo1N2QQHaKnizuNtWOZ2rx
+         dd6Fxqq1xygEPY0/CpdajqKBecBdd6mayrg/gQq3dxKA9lIQshGPbkQNUnBHA4sBcm
+         wcPgb7z/s/imXIstgCtDino2OqK91FOGWtQdoMARcI+btTUbs/82e+eJcZ05LbVAFq
+         D5rl4BuEO1HeA==
+Date:   Tue, 5 Jul 2022 12:54:53 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Add a general "kernel hardening" section
+Message-ID: <YsR67UJTZvON/6LG@work>
+References: <20220702004638.2486003-1-keescook@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220630230107.13438-1-nm@ti.com>
+In-Reply-To: <20220702004638.2486003-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nishanth,
+On Fri, Jul 01, 2022 at 05:46:38PM -0700, Kees Cook wrote:
+> While many large subsystems related to kernel hardening have their own
+> distinct MAINTAINERS entries, there are some smaller collections that
+> don't, but are maintained/reviewed by linux-hardening@vger.kernel.org.
+> Add a section to capture these, add (or replace defunct) trees that are
+> now all carried in the hardening tree.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-I love your patch! Perhaps something to improve:
+Acked-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v5.19-rc5 next-20220705]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Thanks
+--
+Gustavo
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nishanth-Menon/iio-adc-ti-adc128s052-Fix-number-of-channels-when-device-tree-is-used/20220701-070342
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-config: nios2-randconfig-r036-20220703 (https://download.01.org/0day-ci/archive/20220706/202207060155.zkacpxjc-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d5184722ec9ae186da9bed1497e4804297f2040b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nishanth-Menon/iio-adc-ti-adc128s052-Fix-number-of-channels-when-device-tree-is-used/20220701-070342
-        git checkout d5184722ec9ae186da9bed1497e4804297f2040b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/iio/adc/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iio/adc/ti-adc128s052.c:185:50: warning: initialization of 'const void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     185 |         { .compatible = "ti,adc122s021", .data = 1},
-         |                                                  ^
-   drivers/iio/adc/ti-adc128s052.c:185:50: note: (near initialization for 'adc128_of_match[1].data')
-   drivers/iio/adc/ti-adc128s052.c:186:50: warning: initialization of 'const void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     186 |         { .compatible = "ti,adc122s051", .data = 1},
-         |                                                  ^
-   drivers/iio/adc/ti-adc128s052.c:186:50: note: (near initialization for 'adc128_of_match[2].data')
-   drivers/iio/adc/ti-adc128s052.c:187:50: warning: initialization of 'const void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     187 |         { .compatible = "ti,adc122s101", .data = 1},
-         |                                                  ^
-   drivers/iio/adc/ti-adc128s052.c:187:50: note: (near initialization for 'adc128_of_match[3].data')
-   drivers/iio/adc/ti-adc128s052.c:188:50: warning: initialization of 'const void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     188 |         { .compatible = "ti,adc124s021", .data = 2},
-         |                                                  ^
-   drivers/iio/adc/ti-adc128s052.c:188:50: note: (near initialization for 'adc128_of_match[4].data')
-   drivers/iio/adc/ti-adc128s052.c:189:50: warning: initialization of 'const void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     189 |         { .compatible = "ti,adc124s051", .data = 2},
-         |                                                  ^
-   drivers/iio/adc/ti-adc128s052.c:189:50: note: (near initialization for 'adc128_of_match[5].data')
-   drivers/iio/adc/ti-adc128s052.c:190:50: warning: initialization of 'const void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     190 |         { .compatible = "ti,adc124s101", .data = 2},
-         |                                                  ^
-   drivers/iio/adc/ti-adc128s052.c:190:50: note: (near initialization for 'adc128_of_match[6].data')
-
-
-vim +185 drivers/iio/adc/ti-adc128s052.c
-
-   182	
-   183	static const struct of_device_id adc128_of_match[] = {
-   184		{ .compatible = "ti,adc128s052", .data = 0},
- > 185		{ .compatible = "ti,adc122s021", .data = 1},
-   186		{ .compatible = "ti,adc122s051", .data = 1},
-   187		{ .compatible = "ti,adc122s101", .data = 1},
-   188		{ .compatible = "ti,adc124s021", .data = 2},
-   189		{ .compatible = "ti,adc124s051", .data = 2},
-   190		{ .compatible = "ti,adc124s101", .data = 2},
-   191		{ /* sentinel */ },
-   192	};
-   193	MODULE_DEVICE_TABLE(of, adc128_of_match);
-   194	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  MAINTAINERS | 21 +++++++++++++++++----
+>  1 file changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 3cf9842d9233..2702b29e922f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4873,7 +4873,7 @@ R:	Nick Desaulniers <ndesaulniers@google.com>
+>  L:	llvm@lists.linux.dev
+>  S:	Supported
+>  B:	https://github.com/ClangBuiltLinux/linux/issues
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/clang/features
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	include/linux/cfi.h
+>  F:	kernel/cfi.c
+>  
+> @@ -7783,6 +7783,7 @@ FORTIFY_SOURCE
+>  M:	Kees Cook <keescook@chromium.org>
+>  L:	linux-hardening@vger.kernel.org
+>  S:	Supported
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	include/linux/fortify-string.h
+>  F:	lib/test_fortify/*
+>  F:	scripts/test_fortify.sh
+> @@ -8225,6 +8226,7 @@ GCC PLUGINS
+>  M:	Kees Cook <keescook@chromium.org>
+>  L:	linux-hardening@vger.kernel.org
+>  S:	Maintained
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	Documentation/kbuild/gcc-plugins.rst
+>  F:	scripts/Makefile.gcc-plugins
+>  F:	scripts/gcc-plugins/
+> @@ -10742,6 +10744,17 @@ F:	scripts/mk*
+>  F:	scripts/mod/
+>  F:	scripts/package/
+>  
+> +KERNEL HARDENING (not covered by other areas)
+> +M:	Kees Cook <keescook@chromium.org>
+> +L:	linux-hardening@vger.kernel.org
+> +S:	Supported
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+> +F:	include/linux/overflow.h
+> +F:	include/linux/randomize_kstack.h
+> +F:	mm/usercopy.c
+> +K:	\b(add|choose)_random_kstack_offset\b
+> +K:	\b__check_(object_size|heap_object)\b
+> +
+>  KERNEL JANITORS
+>  L:	kernel-janitors@vger.kernel.org
+>  S:	Odd Fixes
+> @@ -11542,7 +11555,7 @@ F:	drivers/media/usb/dvb-usb-v2/lmedm04*
+>  LOADPIN SECURITY MODULE
+>  M:	Kees Cook <keescook@chromium.org>
+>  S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git lsm/loadpin
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	Documentation/admin-guide/LSM/LoadPin.rst
+>  F:	security/loadpin/
+>  
+> @@ -17857,7 +17870,7 @@ M:	Kees Cook <keescook@chromium.org>
+>  R:	Andy Lutomirski <luto@amacapital.net>
+>  R:	Will Drewry <wad@chromium.org>
+>  S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git seccomp
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/seccomp
+>  F:	Documentation/userspace-api/seccomp_filter.rst
+>  F:	include/linux/seccomp.h
+>  F:	include/uapi/linux/seccomp.h
+> @@ -21993,7 +22006,7 @@ F:	include/linux/yam.h
+>  YAMA SECURITY MODULE
+>  M:	Kees Cook <keescook@chromium.org>
+>  S:	Supported
+> -T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git yama/tip
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/hardening
+>  F:	Documentation/admin-guide/LSM/Yama.rst
+>  F:	security/yama/
+>  
+> -- 
+> 2.32.0
+> 
