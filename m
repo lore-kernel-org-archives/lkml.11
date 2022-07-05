@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFE5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE32C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233824AbiGEMEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
+        id S233836AbiGEMEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233453AbiGEMCq (ORCPT
+        with ESMTP id S233422AbiGEMCl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:02:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D1C17E21;
-        Tue,  5 Jul 2022 05:02:45 -0700 (PDT)
+        Tue, 5 Jul 2022 08:02:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C28E17AAA;
+        Tue,  5 Jul 2022 05:02:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10B37B817D3;
-        Tue,  5 Jul 2022 12:02:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C28C341C7;
-        Tue,  5 Jul 2022 12:02:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADBB561830;
+        Tue,  5 Jul 2022 12:02:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7B07C341C7;
+        Tue,  5 Jul 2022 12:02:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022562;
-        bh=RBN1VrK3jAHNYDEBxvR5VsJAYA7eBYhPYQO6FEJg6Ik=;
+        s=korg; t=1657022560;
+        bh=IXuzRz5oVHoJYP8Vq7RjV2ZsHhZp2usTsI+g98gYu2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mLsRrjUX5CMWqKo3IT+65JxshvcWUC1dtjvxqbpVLiIAOeek0JHzjeZcbsghAHzvI
-         IklF3/Ob5kg5aB50nGBePGTT1DDqUHVdkE9ayI/4bntTkxsUfI028kblSq7L7omgHR
-         auQCBtjvK1qOE7i2V6eZFjiAkI/rP7XfyremAfr4=
+        b=Fjeo3Y9A+jJ6YI9lZusj+SJK+7zV7kmzJID2znPyRgcWjlKdZvLea/d/wjOmT15aF
+         rw+yF5Ypfdk0pSGqJZBawKgfk53dmQCNAWBNYHTlSHHIS5DVtwXDqvz65tZeHEnc6+
+         BIWyWO1+7+AshWx+IEjNGej+kl2mg3lx6aOeACvs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 21/33] net: tun: avoid disabling NAPI twice
-Date:   Tue,  5 Jul 2022 13:58:13 +0200
-Message-Id: <20220705115607.334949507@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 20/33] NFC: nxp-nci: Dont issue a zero length i2c_master_read()
+Date:   Tue,  5 Jul 2022 13:58:12 +0200
+Message-Id: <20220705115607.304839322@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
 References: <20220705115606.709817198@linuxfoundation.org>
@@ -49,41 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Michael Walle <michael@walle.cc>
 
-commit ff1fa2081d173b01cebe2fbf0a2d0f1cee9ce4b5 upstream.
+commit eddd95b9423946aaacb55cac6a9b2cea8ab944fc upstream.
 
-Eric reports that syzbot made short work out of my speculative
-fix. Indeed when queue gets detached its tfile->tun remains,
-so we would try to stop NAPI twice with a detach(), close()
-sequence.
+There are packets which doesn't have a payload. In that case, the second
+i2c_master_read() will have a zero length. But because the NFC
+controller doesn't have any data left, it will NACK the I2C read and
+-ENXIO will be returned. In case there is no payload, just skip the
+second i2c master read.
 
-Alternative fix would be to move tun_napi_disable() to
-tun_detach_all() and let the NAPI run after the queue
-has been detached.
-
-Fixes: a8fc8cb5692a ("net: tun: stop NAPI when detaching queues")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220629181911.372047-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/tun.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/nfc/nxp-nci/i2c.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -710,7 +710,8 @@ static void __tun_detach(struct tun_file
- 	tun = rtnl_dereference(tfile->tun);
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -178,6 +178,9 @@ static int nxp_nci_i2c_nci_read(struct n
  
- 	if (tun && clean) {
--		tun_napi_disable(tfile);
-+		if (!tfile->detached)
-+			tun_napi_disable(tfile);
- 		tun_napi_del(tfile);
- 	}
+ 	skb_put_data(*skb, (void *)&header, NCI_CTRL_HDR_SIZE);
  
++	if (!header.plen)
++		return 0;
++
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+ 	if (r != header.plen) {
+ 		nfc_err(&client->dev,
 
 
