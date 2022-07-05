@@ -2,88 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD7AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 01:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BA8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 01:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233178AbiGEBIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 21:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
+        id S233630AbiGEBJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 21:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiGEBIs (ORCPT
+        with ESMTP id S231609AbiGEBJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 21:08:48 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE8E2AF3;
-        Mon,  4 Jul 2022 18:08:46 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LcPd86CJKzhYZG;
-        Tue,  5 Jul 2022 09:06:20 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Jul
- 2022 09:08:12 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next] i40e: i40e_reset_vf should return false if reset vf timeout
-Date:   Tue, 5 Jul 2022 09:13:04 +0800
-Message-ID: <20220705011304.230622-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 4 Jul 2022 21:09:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8AF3AE67;
+        Mon,  4 Jul 2022 18:09:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 531E8B81174;
+        Tue,  5 Jul 2022 01:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC90C3411E;
+        Tue,  5 Jul 2022 01:08:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656983341;
+        bh=0bXhSKEDoZtsL74HNM3wpJRuF7dDoG5MGtWktQvyyiQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Alce4gdQkhsdIA8+iCEyrko8U1tfeHQ8vqN9rKQOIT40R7yf2ogVFakC6KGydeB4F
+         6LQ9Z3UKM+Rfmv3XxbVXXEuGJ0uXj0/yY7jBNV37EbHX88vCZlYSRLlUlnJsqYcNpG
+         M1beZdV8K/6tdUKESXScM4GC6T5d6f7JoOkwRcRfd+UNFBK49DKzJpnqKcA8opH4dk
+         n6jAZ7N3XUVIjOlFZ4aI/3vijWhKliJPlWUnS29f9zOEeh6iEqb80qsCtZ87HzCBma
+         0HNukRi2x9+Sk37u9zP+QvRBwZeaNz2dF4nsv1JoyTO0lpabHKn9JztHoNjfFoLreN
+         SP1V7tIWt6Jmw==
+Date:   Tue, 5 Jul 2022 09:08:54 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v4 0/4] nvmem: sfp: binding updates
+Message-ID: <20220705010854.GR819983@dragon>
+References: <20220630223207.1687329-1-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630223207.1687329-1-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-when trigger vf reset, but vf status is not ready, i40e_reset_vf
-should not do other cleanup action. The current logic is always return
-true. But it can't cover timeout scenary, and the looping in function
-i40e_vc_reset_vf is useless. 
-Waiting for 120ms will cover most normal scenary. And the caller 
-function should try again when timeout or accept that resetting vf 
-failed.
+On Thu, Jun 30, 2022 at 06:32:03PM -0400, Sean Anderson wrote:
+> This adds bindings for SFP devices which had support added in commit
+> 33a1c6618677 ("nvmem: sfp: Add support for TA 2.1 devices").
+> 
+> Shawn, I saw that you applied patch 1/4 (formerly patch 5/9) [1].
+> However, I wasn't able to find it in your repo [2], so I've left it in.
+> Feel free to disregard it if you've already applied it somewhere.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Sorry, I did not push my branch in time.  It's on imx/fixes branch now.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index d01fb592778c..42262009a00c 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -1564,11 +1564,17 @@ bool i40e_reset_vf(struct i40e_vf *vf, bool flr)
- 	if (flr)
- 		usleep_range(10000, 20000);
- 
--	if (!rsd)
--		dev_err(&pf->pdev->dev, "VF reset check timeout on VF %d\n",
--			vf->vf_id);
- 	usleep_range(10000, 20000);
- 
-+	if (!rsd) {
-+		reg = rd32(hw, I40E_VPGEN_VFRSTAT(vf->vf_id));
-+		if (!(reg & I40E_VPGEN_VFRSTAT_VFRD_MASK)) {
-+			dev_err(&pf->pdev->dev, "VF reset check timeout on VF %d\n",
-+				vf->vf_id);
-+			return false;
-+		}
-+	}
-+
- 	/* On initial reset, we don't have any queues to disable */
- 	if (vf->lan_vsi_idx != 0)
- 		i40e_vsi_stop_rings(pf->vsi[vf->lan_vsi_idx]);
--- 
-2.17.1
+> 
+> [1] https://lore.kernel.org/linux-arm-kernel/20220629133217.GM819983@dragon/
+> [2] git://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git
+> 
+> Changes in v4:
+> - Split off 32-bit changes into their own patch
+> - Use arm64 prefix instead of ARM
+> 
+> Sean Anderson (4):
+>   arm64: dts: ls1028a: Update SFP binding to include clock
+>   arm64: dts: layerscape: Add SFP binding for TA 2.1 devices
+>   ARM: dts: layerscape: Add SFP binding for TA 2.1 devices
+>   arm64: dts: Add SFP binding for TA 3.0 devices
 
+Applied all with s/binding/node on subject.
+
+Shawn
