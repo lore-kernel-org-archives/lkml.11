@@ -2,118 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CADCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83EE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 22:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232057AbiGEWLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 18:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
+        id S230507AbiGEWL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 18:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiGEWLS (ORCPT
+        with ESMTP id S229489AbiGEWL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 18:11:18 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98FE1AF1A;
-        Tue,  5 Jul 2022 15:11:16 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id z25so5323596lfr.2;
-        Tue, 05 Jul 2022 15:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=t+jlLw01pbpeg71grsXyKUoNlpwX1KBSX1qcVAQ75OQ=;
-        b=ZmQmwj/cA1F89iA8lWCQfeLozBC9O+yyrAfvoG5YPUJxWXCt56NGUp7y82DkB7wD/E
-         A47s9jrnp63SiFOYfQJwzl8d2kZUob+rIHpe4Jfnsj8fF4b41PAeBMcUBAjl9pjCnuH3
-         OwYubVhxTL5hTR254x3YfywmA3HRmoRTADRIgywSULXB23lk/LriTI4iAtT3ciHqSKva
-         7wIohbHbVipx8AAZ1/LO+cGKDqPa0suGwP6eILg6mXAUkI8b5MIn2KcSgHIOKTH1F1bn
-         PpaH7EXKVWeT2zoDB5SSVtyPlHfiSNw9pr151+97+JvXMnbfvxPZevVoM2dtR2VPZ97N
-         +plA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=t+jlLw01pbpeg71grsXyKUoNlpwX1KBSX1qcVAQ75OQ=;
-        b=QoZpAzXHaLzg5mE247BDjDsaiz5aCwqM7HbyGUJvyOQQ6Ubc3/r2lXdfB6nxdMyAhk
-         599dYMOlGhIzJ6qia21jCJHF7POspyj7FRpMYzlHXehStQ7yuDcA2+jKq6GZUgdL/cxI
-         7175c4RyBnVXhCdjpOlbxs82TkRKyr+j5RCkyBOZgspP5SgqultBC3gkwvNsZNgqP3yJ
-         Q7YhngVPhO2d+TJG45V4HCEFJTR4QKhFrHzGV5ZJC0RENXEG95O7jL0/bP86oraKi0IE
-         nhEcsstFl6AoItzeyTUKnap/NfnJX7z9sliDkK09gwrbvKZHa5cki+0Iiamt2OFQ6Ok8
-         VGAw==
-X-Gm-Message-State: AJIora/WmYvVQj+sGyr4amw4kAVLZ9WgNHq5Px9mPPlb59kX4O+uX30l
-        n0yV0670KeneAURD4U3H1iMf0UJIoI73fQ==
-X-Google-Smtp-Source: AGRyM1suGhKtFclh9YZZKDm+F08jWGn3b6RjEdBC2jEsPiguREv7fbkCoJ7tJNZb6L+KKgs5fAh/8g==
-X-Received: by 2002:ac2:5603:0:b0:484:3be8:c063 with SMTP id v3-20020ac25603000000b004843be8c063mr2555307lfd.263.1657059075373;
-        Tue, 05 Jul 2022 15:11:15 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id q15-20020a19f20f000000b0047f6b8c2127sm5890369lfh.186.2022.07.05.15.11.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 15:11:14 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 01:11:12 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH RESEND v5 7/8] clk: baikal-t1: Add DDR/PCIe directly
- controlled resets support
-Message-ID: <20220705221112.vix772dpl2ql2ibq@mobilestation>
-References: <20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru>
- <20220624141853.7417-8-Sergey.Semin@baikalelectronics.ru>
- <094a0d4e1c1b40f51ce7bec42e410500265d7a6d.camel@pengutronix.de>
+        Tue, 5 Jul 2022 18:11:57 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892431AF24;
+        Tue,  5 Jul 2022 15:11:55 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LcxjL54Znz4xRC;
+        Wed,  6 Jul 2022 08:11:50 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657059110;
+        bh=P6Hfr2IF7ZpIdzghLv/XtcySNRkvPFbYuccFa2pcaIg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=AzGLNUkIE9l+J0N0qcywNT6p0fdCZJFzRQPhrgbqOroba1SDlvm06HPBQoM1wE3il
+         /MNJhsEbgMByDiJTPHUURdprsMtsz1Lk+PEbbOj9j3QxsrFvWzZTmqipB8/tDWFo9U
+         TCXJ/BU3IuWZzwxPCuh75PgR2Fknz81FBY9Ib2H8dHMmPb2CffsiFP501FzuFSCpCr
+         512Qb9rZgvVamqJFvjohNZrPeMZO3xNoltXRy0FP3f/pi/Q5oFoPj7jaY9wNijyZME
+         1HiRNLlPJYTzMunzi+mga8uUdTLJ61YF9IrRysT/S1ulVbC+Y2In3nZGWalNApJWZM
+         Z8dQ3LSv8g1gw==
+Date:   Wed, 6 Jul 2022 08:06:15 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Steve French <smfrench@gmail.com>,
+        CIFS <linux-cifs@vger.kernel.org>
+Cc:     Shyam Prasad N <sprasad@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the cifs tree
+Message-ID: <20220706080615.11c5ede3@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <094a0d4e1c1b40f51ce7bec42e410500265d7a6d.camel@pengutronix.de>
+Content-Type: multipart/signed; boundary="Sig_/HSHpA1MQhk015Xv92h96SKS";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Philipp
+--Sig_/HSHpA1MQhk015Xv92h96SKS
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 29, 2022 at 05:16:56PM +0200, Philipp Zabel wrote:
-> Hi Serge,
-> 
-> On Fr, 2022-06-24 at 17:18 +0300, Serge Semin wrote:
-> > Aside with a set of the trigger-like resets Baikal-T1 CCU provides two
-> > additional blocks with directly controlled reset signals. In particular it
-> > concerns DDR full and initial resets and various PCIe sub-domains resets.
-> > Let's add the direct reset assertion/de-assertion of the corresponding
-> > flags support into the Baikal-T1 CCU driver then. It will be required at
-> > least for the PCIe platform driver. Obviously the DDR controller isn't
-> > supposed to be fully reset in the kernel, so the corresponding controls
-> > are added just for the sake of the interface implementation completeness.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
+Hi all,
 
-> This looks good to me, the issues with the previous patch still apply.
+In commit
 
-I see. Let's settle the main question there first then. Further
-actions in this patch framework depend on your answer there.
+  37c1ad516f2c ("cifs: fix race condition with delayed threads")
 
--Sergey
+Fixes tag
 
-> 
-> [...]
-> > +static int ccu_rst_set(struct reset_controller_dev *rcdev,
-> > +		       unsigned long idx, bool high)
-> > +{
-> > +	struct ccu_rst *rst;
-> > +
-> > +	rst = ccu_rst_get_desc(rcdev, idx);
-> > +	if (IS_ERR(rst)) {
-> > +		pr_err("Invalid reset index %lu specified\n", idx);
-> > +		return PTR_ERR(rst);
-> > +	}
-> 
-> e.g. this should not be necessary.
-> 
-> regards
-> Philipp
+  Fixes: 37d488b3d38c ("cifs: change iface_list from array to sorted linked=
+ list")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Maybe you meant
+
+Fixes: aa45dadd34e4 ("cifs: change iface_list from array to sorted linked l=
+ist")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/HSHpA1MQhk015Xv92h96SKS
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLEtdcACgkQAVBC80lX
+0GwYyAgApFQFZ/3RgcC4pxZ5ogF6EcunNfozd8O0zkKwe5WKHfxuw1/j3XnMiR9N
+2MzEugC6Rnc2H4VSG180Dx2vKIOvVE38vlo6N08P7oPxIiwIqdMW8YOPi05bd7BC
+APfknHcjBO/tSSFSg806MErYMc2tyOXGEqO1km1R60VFSqSacPHuT1Yy5+q6Ebh/
+OScSLV0TXynLZV7IUfNGDyibmEwbpas/olqa8IKT3UUAbuuMkloOdFw7rZLg0LX9
+eKD7W82X1guNOJ/3QJWrSblOHq8qNF/H8a37NlAqwaPpcfFYc8uMqxI4Vzj6KIY2
+MD3Ns+SYXvC+JF165qjMLmYsgirsVQ==
+=YyQo
+-----END PGP SIGNATURE-----
+
+--Sig_/HSHpA1MQhk015Xv92h96SKS--
