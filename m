@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB901CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236891AbiGEMWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35968 "EHLO
+        id S236993AbiGEMWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235077AbiGEMOZ (ORCPT
+        with ESMTP id S235384AbiGEMO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:14:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54A31AF36;
-        Tue,  5 Jul 2022 05:11:35 -0700 (PDT)
+        Tue, 5 Jul 2022 08:14:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618AB18E3E;
+        Tue,  5 Jul 2022 05:11:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 17ED5CE0B30;
-        Tue,  5 Jul 2022 12:11:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6F97C341C7;
-        Tue,  5 Jul 2022 12:11:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB23D6199F;
+        Tue,  5 Jul 2022 12:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034D2C341CB;
+        Tue,  5 Jul 2022 12:11:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023092;
-        bh=KC8MqfMyQx1/g+nburEZ84WUna6TZcVN6nJKmHnEhw4=;
+        s=korg; t=1657023097;
+        bh=DLG/8mYl4w6sHKTDWLygZTML8XM51Y+PdumRohmFhVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehE+3cfjYCOPG8XHEqDOKfKGGfF9XAV9A8z3FIDc3+wMUmzfeHj+Vg9k9ZfotgD5y
-         XPbobwhd2YVsKJMfghu/0AKc1NHCONFZNB8sngs0Tr6npXzKxyZuAn32ZxI4vOXeGB
-         ENNt6eSBUy9OwNV65+XSda2bb2cbaLnZyG5jDOAg=
+        b=M8lLBhG3LzSbk8CFlFslkIKjyuY8lIo1O5LOPlwc4pJZgpXc9HEcxmopmrV7jS09R
+         eY1BjjUEf87UcYu64R8baZzKYscHqp0lNh1QOkej+R1t+7tb2wewLiTn18XcbID9wK
+         czQasVcuRruLbX6C1HddfA4HYOMNfgZ1pt5/6QAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 04/98] ksmbd: check invalid FileOffset and BeyondFinalZero in FSCTL_ZERO_DATA
-Date:   Tue,  5 Jul 2022 13:57:22 +0200
-Message-Id: <20220705115617.699117389@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        David Forster <dforster@brocade.com>,
+        Siwar Zitouni <siwar.zitouni@6wind.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 06/98] ipv6: take care of disable_policy when restoring routes
+Date:   Tue,  5 Jul 2022 13:57:24 +0200
+Message-Id: <20220705115617.756868512@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -49,69 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-commit b5e5f9dfc915ff05b41dff56181e1dae101712bd upstream.
+commit 3b0dc529f56b5f2328244130683210be98f16f7f upstream.
 
-FileOffset should not be greater than BeyondFinalZero in FSCTL_ZERO_DATA.
-And don't call ksmbd_vfs_zero_data() if length is zero.
+When routes corresponding to addresses are restored by
+fixup_permanent_addr(), the dst_nopolicy parameter was not set.
+The typical use case is a user that configures an address on a down
+interface and then put this interface up.
 
-Cc: stable@vger.kernel.org
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Let's take care of this flag in addrconf_f6i_alloc(), so that every callers
+benefit ont it.
+
+CC: stable@kernel.org
+CC: David Forster <dforster@brocade.com>
+Fixes: df789fe75206 ("ipv6: Provide ipv6 version of "disable_policy" sysctl")
+Reported-by: Siwar Zitouni <siwar.zitouni@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220623120015.32640-1-nicolas.dichtel@6wind.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c |   29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+ net/ipv6/addrconf.c |    4 ----
+ net/ipv6/route.c    |    9 ++++++++-
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -7684,7 +7684,7 @@ int smb2_ioctl(struct ksmbd_work *work)
- 	{
- 		struct file_zero_data_information *zero_data;
- 		struct ksmbd_file *fp;
--		loff_t off, len;
-+		loff_t off, len, bfz;
- 
- 		if (!test_tree_conn_flag(work->tcon, KSMBD_TREE_CONN_FLAG_WRITABLE)) {
- 			ksmbd_debug(SMB,
-@@ -7701,19 +7701,26 @@ int smb2_ioctl(struct ksmbd_work *work)
- 		zero_data =
- 			(struct file_zero_data_information *)&req->Buffer[0];
- 
--		fp = ksmbd_lookup_fd_fast(work, id);
--		if (!fp) {
--			ret = -ENOENT;
-+		off = le64_to_cpu(zero_data->FileOffset);
-+		bfz = le64_to_cpu(zero_data->BeyondFinalZero);
-+		if (off > bfz) {
-+			ret = -EINVAL;
- 			goto out;
- 		}
- 
--		off = le64_to_cpu(zero_data->FileOffset);
--		len = le64_to_cpu(zero_data->BeyondFinalZero) - off;
--
--		ret = ksmbd_vfs_zero_data(work, fp, off, len);
--		ksmbd_fd_put(work, fp);
--		if (ret < 0)
--			goto out;
-+		len = bfz - off;
-+		if (len) {
-+			fp = ksmbd_lookup_fd_fast(work, id);
-+			if (!fp) {
-+				ret = -ENOENT;
-+				goto out;
-+			}
-+
-+			ret = ksmbd_vfs_zero_data(work, fp, off, len);
-+			ksmbd_fd_put(work, fp);
-+			if (ret < 0)
-+				goto out;
-+		}
- 		break;
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1111,10 +1111,6 @@ ipv6_add_addr(struct inet6_dev *idev, st
+ 		goto out;
  	}
- 	case FSCTL_QUERY_ALLOCATED_RANGES:
+ 
+-	if (net->ipv6.devconf_all->disable_policy ||
+-	    idev->cnf.disable_policy)
+-		f6i->dst_nopolicy = true;
+-
+ 	neigh_parms_data_state_setall(idev->nd_parms);
+ 
+ 	ifa->addr = *cfg->pfx;
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4590,8 +4590,15 @@ struct fib6_info *addrconf_f6i_alloc(str
+ 	}
+ 
+ 	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
+-	if (!IS_ERR(f6i))
++	if (!IS_ERR(f6i)) {
+ 		f6i->dst_nocount = true;
++
++		if (!anycast &&
++		    (net->ipv6.devconf_all->disable_policy ||
++		     idev->cnf.disable_policy))
++			f6i->dst_nopolicy = true;
++	}
++
+ 	return f6i;
+ }
+ 
 
 
