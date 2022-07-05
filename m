@@ -2,85 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F2FCCA49D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66380C19F55
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237705AbiGEMTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
+        id S236628AbiGEMSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235552AbiGEMMd (ORCPT
+        with ESMTP id S235363AbiGEMJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:12:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E30C19C0E;
-        Tue,  5 Jul 2022 05:10:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E108B817CC;
-        Tue,  5 Jul 2022 12:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76404C341CB;
-        Tue,  5 Jul 2022 12:10:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023022;
-        bh=hmENZ+/vWQlRjjnTe5XQ7swfxKx5MpsYPkF68SH6ml0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PpH+KEoqn3EMubUPNaAA/GT/fgAgW77jpV5hj9ngGEleC0YW8/rzuVReszy0YVqDu
-         Kp3QQhVeuwS8F3apEbdtj+7pQntrIdMDtO1xZpcfq96TUc0kE1jgKFquIbscsz/m0c
-         n4evKoqzWmYNRwizrISQElEswYWNsvdpTUtDz0LM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Ye <chris.ye@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.15 10/98] nvdimm: Fix badblocks clear off-by-one error
-Date:   Tue,  5 Jul 2022 13:57:28 +0200
-Message-Id: <20220705115617.872093890@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:09:04 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0A310AF;
+        Tue,  5 Jul 2022 05:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657022944; x=1688558944;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=shTB0DnuQEAQMrBnn3hQIHFMKfWKIyiEX/Amn09n/BM=;
+  b=HhwnmPTdLApE9RNsPw/SkvmThpgEmkJsNqxGyygOxtamdYJeoZuq3OZC
+   raB/ct330TJa+xAsZg951Gk+a//bH4KC6BhBjs5AX7J7vWo5qay2+fu21
+   0KpqR8CCNTfwV8U/8zGAVJuh5C/SJcns5fs4eDAztVm7PAJl3oipFqaoj
+   E=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:09:03 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:09:03 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:09:03 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Jul 2022 05:09:00 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>
+CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
+        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <konrad.dybcio@somainline.org>,
+        Siddharth Gupta <sidgup@codeaurora.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [V3 7/7] remoteproc: sysmon: Send sysmon state only for running rprocs
+Date:   Tue, 5 Jul 2022 17:38:20 +0530
+Message-ID: <1657022900-2049-8-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Ye <chris.ye@intel.com>
+From: Siddharth Gupta <sidgup@codeaurora.org>
 
-commit ef9102004a87cb3f8b26e000a095a261fc0467d3 upstream.
+When a new remoteproc boots up, send the sysmon state notification
+of only running remoteprocs. Sending state of remoteprocs booting
+up in parallel can cause a race between SSR clients of the remoteproc
+that is booting up and the sysmon notification for the same remoteproc,
+resulting in an inconsistency between which state the remoteproc that
+is booting up in parallel.
 
-nvdimm_clear_badblocks_region() validates badblock clearing requests
-against the span of the region, however it compares the inclusive
-badblock request range to the exclusive region range. Fix up the
-off-by-one error.
+For example - if remoteproc A and B crash one after the other, after
+remoteproc A boots up, if the remoteproc A tries to get the state of
+remoteproc B before the sysmon subdevice for B is invoked but after
+the ssr subdevice of B has been invoked, clients on remoteproc A
+might get confused when the sysmon notification indicates a different
+state.
 
-Fixes: 23f498448362 ("libnvdimm: rework region badblocks clearing")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Chris Ye <chris.ye@intel.com>
-Reviewed-by: Vishal Verma <vishal.l.verma@intel.com>
-Link: https://lore.kernel.org/r/165404219489.2445897.9792886413715690399.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Siddharth Gupta <sidgup@codeaurora.org>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
 ---
- drivers/nvdimm/bus.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/remoteproc/qcom_sysmon.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/nvdimm/bus.c
-+++ b/drivers/nvdimm/bus.c
-@@ -185,8 +185,8 @@ static int nvdimm_clear_badblocks_region
- 	ndr_end = nd_region->ndr_start + nd_region->ndr_size - 1;
+diff --git a/drivers/remoteproc/qcom_sysmon.c b/drivers/remoteproc/qcom_sysmon.c
+index a9f04dd83ab6..57dde2a69b9d 100644
+--- a/drivers/remoteproc/qcom_sysmon.c
++++ b/drivers/remoteproc/qcom_sysmon.c
+@@ -512,10 +512,12 @@ static int sysmon_start(struct rproc_subdev *subdev)
  
- 	/* make sure we are in the region */
--	if (ctx->phys < nd_region->ndr_start
--			|| (ctx->phys + ctx->cleared) > ndr_end)
-+	if (ctx->phys < nd_region->ndr_start ||
-+	    (ctx->phys + ctx->cleared - 1) > ndr_end)
- 		return 0;
+ 	mutex_lock(&sysmon_lock);
+ 	list_for_each_entry(target, &sysmon_list, node) {
+-		if (target == sysmon)
++		mutex_lock(&target->state_lock);
++		if (target == sysmon || target->state != SSCTL_SSR_EVENT_AFTER_POWERUP) {
++			mutex_unlock(&target->state_lock);
+ 			continue;
++		}
  
- 	sector = (ctx->phys - nd_region->ndr_start) / 512;
-
+-		mutex_lock(&target->state_lock);
+ 		event.subsys_name = target->name;
+ 		event.ssr_event = target->state;
+ 
+-- 
+2.7.4
 
