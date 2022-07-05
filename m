@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E460C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00755C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 03:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234042AbiGEDoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 23:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        id S233864AbiGEDso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 23:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiGEDo2 (ORCPT
+        with ESMTP id S229727AbiGEDsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 23:44:28 -0400
+        Mon, 4 Jul 2022 23:48:42 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8062BDE;
-        Mon,  4 Jul 2022 20:44:27 -0700 (PDT)
-X-UUID: e4f900cb4d774b8fa76ff3c975d1902d-20220705
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACB02BE5;
+        Mon,  4 Jul 2022 20:48:40 -0700 (PDT)
+X-UUID: bcc7d7e370f349a9af44f17cd9bf2b93-20220705
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:7f2611b9-c9f6-4195-b8dd-cf88f8b96c72,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:0f94e32,CLOUDID:e2066b63-0b3f-4b2c-b3a6-ed5c044366a0,C
+X-CID-O-INFO: VERSION:1.1.8,REQID:66dbdefe-f985-4aec-a552-dd4ee86892a9,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:0f94e32,CLOUDID:9bc68d86-57f0-47ca-ba27-fe8c57fbf305,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
         ,QS:nil,BEC:nil,COL:0
-X-UUID: e4f900cb4d774b8fa76ff3c975d1902d-20220705
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+X-UUID: bcc7d7e370f349a9af44f17cd9bf2b93-20220705
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 987968885; Tue, 05 Jul 2022 11:44:21 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 413294378; Tue, 05 Jul 2022 11:48:33 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 5 Jul 2022 11:44:20 +0800
+ Tue, 5 Jul 2022 11:48:31 +0800
 Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Tue, 5 Jul 2022 11:44:20 +0800
-Message-ID: <a50ede187d6a9015c8458d23b88f9690f380129b.camel@mediatek.com>
-Subject: Re: [PATCH v15 03/16] drm/mediatek: dpi: Add kernel document for
- struct mtk_dpi_conf
+ Transport; Tue, 5 Jul 2022 11:48:31 +0800
+Message-ID: <20a5ac6a0e089a11f82f2d6eaa303a775b11e3a3.camel@mediatek.com>
+Subject: Re: [PATCH v15 04/16] drm/mediatek: dpi: Remove output format of YUV
 From:   CK Hu <ck.hu@mediatek.com>
 To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
         <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
@@ -52,10 +51,10 @@ CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 5 Jul 2022 11:44:19 +0800
-In-Reply-To: <20220701035845.16458-4-rex-bc.chen@mediatek.com>
+Date:   Tue, 5 Jul 2022 11:48:31 +0800
+In-Reply-To: <20220701035845.16458-5-rex-bc.chen@mediatek.com>
 References: <20220701035845.16458-1-rex-bc.chen@mediatek.com>
-         <20220701035845.16458-4-rex-bc.chen@mediatek.com>
+         <20220701035845.16458-5-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
@@ -68,11 +67,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Hi, Bo-Chen:
 
 On Fri, 2022-07-01 at 11:58 +0800, Bo-Chen Chen wrote:
-> This driver will support dp_intf and there are many configs between
-> dpi
-> and dp_intf. Therefore, we will add many configs in "struct
-> mtk_dpi_conf".
-> To let this structure more readable, we add this kernel doc.
+> DPI is not support output format as YUV, but there is the setting of
+> configuring output YUV. Therefore, remove them in this patch.
 
 Applied to mediatek-drm-next [1], thanks.
 
@@ -83,34 +79,66 @@ Regards,
 CK
 
 > 
+> Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
 > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> Reviewed-by: CK Hu <ck.hu@mediatek.com>
 > ---
->  drivers/gpu/drm/mediatek/mtk_dpi.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 31 ++++++--------------------
+> ----
+>  1 file changed, 6 insertions(+), 25 deletions(-)
 > 
 > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
 > b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> index e61cd67b978f..f66a121ba0c9 100644
+> index f66a121ba0c9..3473ee18ad97 100644
 > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
 > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> @@ -118,6 +118,15 @@ struct mtk_dpi_yc_limit {
->  	u16 c_bottom;
+> @@ -54,13 +54,7 @@ enum mtk_dpi_out_channel_swap {
 >  };
 >  
-> +/**
-> + * struct mtk_dpi_conf - Configuration of mediatek dpi.
-> + * @cal_factor: Callback function to calculate factor value.
-> + * @reg_h_fre_con: Register address of frequency control.
-> + * @max_clock_khz: Max clock frequency supported for this SoCs in
-> khz units.
-> + * @edge_sel_en: Enable of edge selection.
-> + * @output_fmts: Array of supported output formats.
-> + * @num_output_fmts: Quantity of supported output formats.
-> + */
->  struct mtk_dpi_conf {
->  	unsigned int (*cal_factor)(int clock);
->  	u32 reg_h_fre_con;
+>  enum mtk_dpi_out_color_format {
+> -	MTK_DPI_COLOR_FORMAT_RGB,
+> -	MTK_DPI_COLOR_FORMAT_RGB_FULL,
+> -	MTK_DPI_COLOR_FORMAT_YCBCR_444,
+> -	MTK_DPI_COLOR_FORMAT_YCBCR_422,
+> -	MTK_DPI_COLOR_FORMAT_XV_YCC,
+> -	MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL,
+> -	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
+> +	MTK_DPI_COLOR_FORMAT_RGB
+>  };
+>  
+>  struct mtk_dpi {
+> @@ -373,24 +367,11 @@ static void mtk_dpi_config_disable_edge(struct
+> mtk_dpi *dpi)
+>  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+>  					enum mtk_dpi_out_color_format
+> format)
+>  {
+> -	if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_444) ||
+> -	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+> -		mtk_dpi_config_yuv422_enable(dpi, false);
+> -		mtk_dpi_config_csc_enable(dpi, true);
+> -		mtk_dpi_config_swap_input(dpi, false);
+> -		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+> -	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
+> -		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+> -		mtk_dpi_config_yuv422_enable(dpi, true);
+> -		mtk_dpi_config_csc_enable(dpi, true);
+> -		mtk_dpi_config_swap_input(dpi, true);
+> -		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+> -	} else {
+> -		mtk_dpi_config_yuv422_enable(dpi, false);
+> -		mtk_dpi_config_csc_enable(dpi, false);
+> -		mtk_dpi_config_swap_input(dpi, false);
+> -		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+> -	}
+> +	/* only support RGB888 */
+> +	mtk_dpi_config_yuv422_enable(dpi, false);
+> +	mtk_dpi_config_csc_enable(dpi, false);
+> +	mtk_dpi_config_swap_input(dpi, false);
+> +	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+>  }
+>  
+>  static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
 
