@@ -2,112 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C3ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9633CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233040AbiGESwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
+        id S231332AbiGESyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232836AbiGESwa (ORCPT
+        with ESMTP id S229537AbiGESyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:52:30 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EE51EEDA;
-        Tue,  5 Jul 2022 11:52:30 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id j7so17097526ybj.10;
-        Tue, 05 Jul 2022 11:52:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yja7doOEpycm6RswSNt6Ndu5Y1PCKNLpIKO/qkkV0nE=;
-        b=a55i++zWl7RlFm3zSrT5LvAALOmVDqFD54SzizUFEfNwQRdB6Ou3Nnn7B+iZEQf1lU
-         PdGlmjvHtewS8WBW4VCSms4/L+CEQKjCVM3IHfw5EZdIlVypuM0/ZF13ZqFeCJ6phl7f
-         9Z5WQ21aGvw1n3m7g5oAcPQAZLEJMf8xV+hvC5Y0Mq9uOJy/YHfJUsnVccZnWAlDsMmQ
-         D+sNWKP+6nw9Gp/QWzcYQWt9nwX63aHvWbkOLhJjKZGupYEu7hN21C6tpra2B7n5oqB9
-         gfNrGNfFKEzRy9rpeyFHhZLpzE8Yf3kdH4CbwgbX5mGrkzBvGZi78uxoOEfNUf9/ahUt
-         Fl6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yja7doOEpycm6RswSNt6Ndu5Y1PCKNLpIKO/qkkV0nE=;
-        b=QMYylGvFUFs7EZi5kNXYW4fXRWs74bcQppWVI0qn8NG1wc2Zfji8bnq3ufeN8aKwtE
-         RwzwSjuZty2fqNLx0nAgqPt9EUD9DvUTXhQUCAxrPs2P6jGp41OmbFJ+WMNCXlOURI5M
-         ZSkFAoMh4bEm1dxPyZWZ2x+0Vp5YpbfGjbCUsU/udaMvD1Sotx3w23D5I9ULf7+KcxDF
-         +tb6zfiscsTOyiQzD+A5EpHodEAiNr9lfeOUsu8AULS/bDoT+90Hvq4SNyGyTsblbMkK
-         man47PYgeB+0IFA0/gLeI8LaPI1+cgr47l9TeTMlXFklK/N+7WrPZ0C8rwtJMUWdrqJe
-         UXqw==
-X-Gm-Message-State: AJIora/fDQospK+tOYRwfab8vtez3GnxRMK3895qamdnlklQ1d9hUoUl
-        h3tnvsxb3prXlEa1kDgQiOyXQEsCNDJCwf8trUM6s4htNPzxHw==
-X-Google-Smtp-Source: AGRyM1sXCXdmA1oh73EjPE613SlrQgJJ687u6/+ASegMiKcdwlMvgS9s5xDQMB5NWi9NuWyPo1By384NQC0dTgbyMks=
-X-Received: by 2002:a25:858e:0:b0:66e:4898:63e2 with SMTP id
- x14-20020a25858e000000b0066e489863e2mr14635194ybk.296.1657047149337; Tue, 05
- Jul 2022 11:52:29 -0700 (PDT)
+        Tue, 5 Jul 2022 14:54:01 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B84C1658C;
+        Tue,  5 Jul 2022 11:54:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657047241; x=1688583241;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=jy5NhYWnWv4OHjHj7j8+j/6G/mQekzx7zQG7r8h8CYw=;
+  b=ME7rBK8vJiDaySGt1QdyXQetd/62Q2ftUp9igrUWf7d3N5SV36+3k+rI
+   eoH3kjwx7HcyIzIwzb7cd8pO/UQUlATDT0s9kVYn3wqfmUcv0MfLxM+FI
+   +3wV2ls8RFCCBbWFXZ8xYdz6mND3uhqF9OoztTQWiwMK6+1qh/Rkpbd74
+   JC9j2Y6GY/5eN3r5YpxoL/JywDvmfZ8xrug7CmrzVajOqcTKdXM0KSgNs
+   VcZiIc5hLN6bW7YpS6RR+FIEIsa/w6lpgwWhsR8UO4Hh6QxUXcNDQbU7p
+   sxC6/dmB5rbmEEB2srSWFoMdcFxVbzShxw62ApXg+5pa2/Ly6tH4/ZStF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282201901"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="282201901"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:54:00 -0700
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="695775841"
+Received: from atongsak-mobl1.amr.corp.intel.com ([10.209.113.116])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:54:00 -0700
+Date:   Tue, 5 Jul 2022 11:54:00 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Geliang Tang <geliangtang@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        MPTCP Upstream <mptcp@lists.linux.dev>
+Subject: Re: [PATCH 5.10 51/84] selftests: mptcp: add ADD_ADDR timeout test
+ case
+In-Reply-To: <YsRnZ/wmcqGiYzOt@kroah.com>
+Message-ID: <86b7155-839d-381e-4927-dd607366c7e6@linux.intel.com>
+References: <20220705115615.323395630@linuxfoundation.org> <20220705115616.814163273@linuxfoundation.org> <a2260559-86af-74ff-ca95-d494688d5ea7@tessares.net> <YsRnZ/wmcqGiYzOt@kroah.com>
 MIME-Version: 1.0
-References: <20220705163136.2278662-1-vincent.knecht@mailoo.org> <20220705163136.2278662-6-vincent.knecht@mailoo.org>
-In-Reply-To: <20220705163136.2278662-6-vincent.knecht@mailoo.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 20:51:52 +0200
-Message-ID: <CAHp75VexCGKRVovaMhfzonFkju6vh_TR6_A3vLtZVox3AhAvYg@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] leds: is31fl319x: Move chipset-specific values in
- chipdef struct
-To:     Vincent Knecht <vincent.knecht@mailoo.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 6:33 PM Vincent Knecht <vincent.knecht@mailoo.org> wrote:
+On Tue, 5 Jul 2022, Greg Kroah-Hartman wrote:
+
+> On Tue, Jul 05, 2022 at 05:59:22PM +0200, Matthieu Baerts wrote:
+>> Hi Greg, Sasha,
+>>
+>> (+ MPTCP upstream ML)
+>>
+>> First, thank you again for maintaining the stable branches!
+>>
+>> On 05/07/2022 13:58, Greg Kroah-Hartman wrote:
+>>> From: Geliang Tang <geliangtang@gmail.com>
+>>>
+>>> [ Upstream commit 8d014eaa9254a9b8e0841df40dd36782b451579a ]
+>>>
+>>> This patch added the test case for retransmitting ADD_ADDR when timeout
+>>> occurs. It set NS1's add_addr_timeout to 1 second, and drop NS2's ADD_ADDR
+>>> echo packets.
+>> TL;DR: Could it be possible to drop all selftests MPTCP patches from
+>> v5.10 queue please?
+>>
+>>
+>> I was initially reacting on this patch because it looks like it depends on:
+>>
+>>   93f323b9cccc ("mptcp: add a new sysctl add_addr_timeout")
+>>
+>> and indirectly to:
+>>
+>>   9ce7deff92e8 ("docs: networking: mptcp: Add MPTCP sysctl entries")
+>>
+>> to have "net.mptcp.add_addr_timeout" sysctl knob needed for this new
+>> selftest.
+>>
+>> But then I tried to understand why this current patch ("selftests:
+>> mptcp: add ADD_ADDR timeout test case") has been selected for 5.10. I
+>> guess it was to ease the backport of another one, right?
+>> Looking at the 'series' file in 5.10 queue, it seems the new
+>> "selftests-mptcp-more-stable-diag-tests" patch requires 5 other patches:
+>>
+>> -> selftests-mptcp-more-stable-diag-tests.patch
+>>  -> selftests-mptcp-fix-diag-instability.patch
+>>   -> selftests-mptcp-launch-mptcp_connect-with-timeout.patch
+>>    -> selftests-mptcp-add-add_addr-ipv6-test-cases.patch
+>>     -> selftests-mptcp-add-link-failure-test-case.patch
+>>      -> selftests-mptcp-add-add_addr-timeout-test-case.patch
+>>
+>>
+>> When looking at these patches in more detail, it looks like "selftests:
+>> mptcp: add ADD_ADDR IPv6 test cases" depends on a new feature only
+>> available from v5.11: ADD_ADDR for IPv6.
+>>
+>>
+>> Could it be possible to drop all these patches from v5.10 then please?
 >
-> Allow setting chips' specifics in chipdef struct by adding fields for:
-> - the reset register address
-> - a pointer to a regmap_config struct
-> - a pointer to a brightness_set function
-> - current default, min and max values
-> - a boolean to distinguish 319{0,1,3} and 319{6,9} chips
-> and use those fields in places where distinction has to be made.
+> Sure, but leave them in for 5.15.y and 5.18.y?
 >
-> The fields for 319{0,1,3} still point to 319{6,9} values.
-> No functional change.
 
-...
+Hi Greg -
 
-> +static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
-> +{ /* we have no readable registers */
+I'm the other MPTCP maintainer, jumping in here due to Matt's time zone.
 
-Non-standard place for comments.
+Yes: leave selftests-mptcp-more-stable-diag-tests.patch in 5.15.y and 
+5.18.y
 
-> +       return false;
-> +}
-
-...
-
-> +static const struct reg_default is31fl3196_reg_defaults[] = {
-> +       { IS31FL3196_CONFIG1, 0x00},
-> +       { IS31FL3196_CONFIG2, 0x00},
-> +       { IS31FL3196_PWM(0), 0x00},
-> +       { IS31FL3196_PWM(1), 0x00},
-> +       { IS31FL3196_PWM(2), 0x00},
-> +       { IS31FL3196_PWM(3), 0x00},
-> +       { IS31FL3196_PWM(4), 0x00},
-> +       { IS31FL3196_PWM(5), 0x00},
-> +       { IS31FL3196_PWM(6), 0x00},
-> +       { IS31FL3196_PWM(7), 0x00},
-> +       { IS31FL3196_PWM(8), 0x00},
-
-Missed space before }.
-
->  };
-
--- 
-With Best Regards,
-Andy Shevchenko
+--
+Mat Martineau
+Intel
