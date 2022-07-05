@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B83C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A15C9C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232425AbiGEMHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
+        id S234265AbiGEMHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233796AbiGEME3 (ORCPT
+        with ESMTP id S233802AbiGEMEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:04:29 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FFA18B08
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:04:08 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id i17so9457805ljj.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:04:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n04xRHDLPG5HTJiUoTVbiyOiGV01+5rVdjSb2OnFTXM=;
-        b=BCDuSqECc+nJ4QixySuzLrzpTldvI4Om7Dhhe79zvfcZpzEzGecmAsDtbOf3XLzQC7
-         w1uhu4rB9AKVhxlEOmTXJsDmqBX/3XMZXi9nrbmqxCnspovd7Q8yAdlrQQX0aZYeV6Fl
-         c8WcJWt8Si79EF8UcAIz71wn15IahJMZQdjSgHyrHfHv/2MYqOUJadjBcEzDAjbrBDzj
-         rRImKl3ArYsXlhHZx7+a/pZCSpAYvIjJP14wEi6xVHIkMAoeQyfbYASKFAWMrBNse3wm
-         KDbQ04/bH6MFUz+3trU9Jg7lhMH741aCEqeBNZBq8fgVsCxnHx9VVKxFpE/9R8U5Fvkr
-         YDOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n04xRHDLPG5HTJiUoTVbiyOiGV01+5rVdjSb2OnFTXM=;
-        b=bkw/dfX401dwEpY8P+pT6narC9dccQuHqOFT+kdtxiVdxLasKj8q92emgsqTOPYwgw
-         p0SgHmgj4HXmc1AOSCCBPP4vSzKI+wXtdQCoRdfbCeMWhaKxVn1sHZVW0Yvzqe6u8ebi
-         7etVhvIz7ASUkBhzxnSPrbCiwshjNH8KWHJs2b3UDterHj2u4v1yMhm0gRxhjlxXIPj6
-         /FGMzw4MavoC4EmJqcKcp9ElVbUtv2JE654snqeqhdP1m/QILA5avuN2bb1SoKMujKya
-         Rip20TIBdGFNTeDjtipC3iX1LnmST5koX+qitCaM6kmkskp6aMHfVoXx0EdiO4cXQdqV
-         7Lhw==
-X-Gm-Message-State: AJIora8uqDWOfMQWo3pz2Ftts6eRZ7Ao3/Ge0uDh0FNtkCfQNrReEIx5
-        W6QZ68U28mCF9kt3iYCGZBDrg7a2NatEig==
-X-Google-Smtp-Source: AGRyM1sl7oYOktjybXQ7DcS9EisH+raxTv/CIYoUdIA4mqFgH0EaCpesDAtzqgGs0ayhR8cQfoLLyg==
-X-Received: by 2002:a05:651c:1699:b0:25b:c598:3803 with SMTP id bd25-20020a05651c169900b0025bc5983803mr20101511ljb.0.1657022646876;
-        Tue, 05 Jul 2022 05:04:06 -0700 (PDT)
-Received: from krzk-bin.home ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id n13-20020a2e82cd000000b0025a885a135csm5547082ljh.119.2022.07.05.05.04.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 05:04:05 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RESEND PATCH v3 3/3] dt-bindings: input: gpio-keys: accept also interrupt-extended
-Date:   Tue,  5 Jul 2022 14:03:56 +0200
-Message-Id: <20220705120356.94876-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220705120356.94876-1-krzysztof.kozlowski@linaro.org>
-References: <20220705120356.94876-1-krzysztof.kozlowski@linaro.org>
+        Tue, 5 Jul 2022 08:04:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBEB18393;
+        Tue,  5 Jul 2022 05:04:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0818F618C1;
+        Tue,  5 Jul 2022 12:04:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E39C341C7;
+        Tue,  5 Jul 2022 12:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022648;
+        bh=o9wFnSjris8ibElMDNV0VbhJ19NMBcbZ8ctLxZIfb5U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p6T/qzp08TYN8Z4TmW9z2cMLm2IUzN7vmpckvF6YwzTn4JbBdPTOWQGprwkXlhbUS
+         f07vTN8FUNJAvFdiZE85zlUe3MdeqkxN+WHf8Q3hn5RAFuWQ1jEaqWfIE7djnmNkyN
+         UKDQT845BvRpNm4j+nEE+ys9prcelqtHQB6huT6E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.4 19/58] caif_virtio: fix race between virtio_device_ready() and ndo_open()
+Date:   Tue,  5 Jul 2022 13:57:55 +0200
+Message-Id: <20220705115610.816744997@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
+References: <20220705115610.236040773@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Each key device node might have interrupts-extended instead of
-interrupts property:
+From: Jason Wang <jasowang@redhat.com>
 
-  fsl-ls1028a-kontron-sl28-var1.dtb: buttons0: power-button: 'anyOf' conditional failed, one must be fixed:
-    'interrupts' is a required property
-    'gpios' is a required property
+commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+We currently depend on probe() calling virtio_device_ready() -
+which happens after netdev
+registration. Since ndo_open() can be called immediately
+after register_netdev, this means there exists a race between
+ndo_open() and virtio_device_ready(): the driver may start to use the
+device (e.g. TX) before DRIVER_OK which violates the spec.
+
+Fix this by switching to use register_netdevice() and protect the
+virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
+only be called after virtio_device_ready().
+
+Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/input/gpio-keys.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/caif/caif_virtio.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/input/gpio-keys.yaml b/Documentation/devicetree/bindings/input/gpio-keys.yaml
-index e722e681d237..17ac9dff7972 100644
---- a/Documentation/devicetree/bindings/input/gpio-keys.yaml
-+++ b/Documentation/devicetree/bindings/input/gpio-keys.yaml
-@@ -92,6 +92,8 @@ patternProperties:
-     anyOf:
-       - required:
-           - interrupts
-+      - required:
-+          - interrupts-extended
-       - required:
-           - gpios
+--- a/drivers/net/caif/caif_virtio.c
++++ b/drivers/net/caif/caif_virtio.c
+@@ -723,13 +723,21 @@ static int cfv_probe(struct virtio_devic
+ 	/* Carrier is off until netdevice is opened */
+ 	netif_carrier_off(netdev);
  
--- 
-2.34.1
++	/* serialize netdev register + virtio_device_ready() with ndo_open() */
++	rtnl_lock();
++
+ 	/* register Netdev */
+-	err = register_netdev(netdev);
++	err = register_netdevice(netdev);
+ 	if (err) {
++		rtnl_unlock();
+ 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
+ 		goto err;
+ 	}
+ 
++	virtio_device_ready(vdev);
++
++	rtnl_unlock();
++
+ 	debugfs_init(cfv);
+ 
+ 	return 0;
+
 
