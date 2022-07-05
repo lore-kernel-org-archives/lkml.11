@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A6FCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235492AbiGEMYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S236314AbiGEMYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236486AbiGEMRs (ORCPT
+        with ESMTP id S236493AbiGEMRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:17:48 -0400
+        Tue, 5 Jul 2022 08:17:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC7B192A0;
-        Tue,  5 Jul 2022 05:12:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3791839C;
+        Tue,  5 Jul 2022 05:12:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F640B816B8;
-        Tue,  5 Jul 2022 12:12:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A614EC341C7;
-        Tue,  5 Jul 2022 12:12:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5749B817AC;
+        Tue,  5 Jul 2022 12:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD17C341C7;
+        Tue,  5 Jul 2022 12:12:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023156;
-        bh=x+8JrTwYQkyjSY8KozZWrMcfxe5iJyL0E374ypPtwbM=;
+        s=korg; t=1657023161;
+        bh=mPTr9w/jCgfpxCpItUJAnZZ9omfa6Os7VYXh26GUht0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DWw1bg99oIGI0bhiTiIlcRktnS4CexS3ktNutAp8YmqC0PjOFtPX8MdULnP7O9Qrt
-         vLOs41D7J//SratOxH3vt5q1F6QtvurCGO7LKKHzeychL6LtrPfI+mB/FrYo7y/kOu
-         d5B6RNy1Kwrwi+GKCR0UjnjC0OQctKEd80uqXe6Q=
+        b=vBaIeSyF0+MKhw1hLYI+mBTZq6gplngBpMdX44gONmfeAQZ/zQLMCyAkePk/u0Ex5
+         kmaQzUfRHDKdHuzSmQ083yBJBV+iIyraW3xI0CbZfu0qYOYnPPptSvAyR6pdKUmDOQ
+         e+8siMWeKaEM8D3ykF+AMRaUpbF1NtRyzucdHeHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.15 57/98] mlxsw: spectrum_router: Fix rollback in tunnel next hop init
-Date:   Tue,  5 Jul 2022 13:58:15 +0200
-Message-Id: <20220705115619.202118013@linuxfoundation.org>
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 59/98] MAINTAINERS: add Leah as xfs maintainer for 5.15.y
+Date:   Tue,  5 Jul 2022 13:58:17 +0200
+Message-Id: <20220705115619.257428199@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,72 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Leah Rumancik <leah.rumancik@gmail.com>
 
-commit 665030fd0c1ed9f505932e6e73e7a2c788787a0a upstream.
+Update MAINTAINERS for xfs in an effort to help direct bots/questions
+about xfs in 5.15.y.
 
-In mlxsw_sp_nexthop6_init(), a next hop is always added to the router
-linked list, and mlxsw_sp_nexthop_type_init() is invoked afterwards. When
-that function results in an error, the next hop will not have been removed
-from the linked list. As the error is propagated upwards and the caller
-frees the next hop object, the linked list ends up holding an invalid
-object.
+Note: 5.10.y and 5.4.y will have different updates to their
+respective MAINTAINERS files for this effort.
 
-A similar issue comes up with mlxsw_sp_nexthop4_init(), where rollback
-block does exist, however does not include the linked list removal.
-
-Both IPv6 and IPv4 next hops have a similar issue with next-hop counter
-rollbacks. As these were introduced in the same patchset as the next hop
-linked list, include the cleanup in this patch.
-
-Fixes: dbe4598c1e92 ("mlxsw: spectrum_router: Keep nexthops in a linked list")
-Fixes: a5390278a5eb ("mlxsw: spectrum: Add support for setting counters on nexthops")
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220629070205.803952-1-idosch@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Suggested-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ MAINTAINERS |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -4293,6 +4293,8 @@ static int mlxsw_sp_nexthop4_init(struct
- 	return 0;
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20579,6 +20579,7 @@ F:	drivers/xen/*swiotlb*
  
- err_nexthop_neigh_init:
-+	list_del(&nh->router_list_node);
-+	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
- 	mlxsw_sp_nexthop_remove(mlxsw_sp, nh);
- 	return err;
- }
-@@ -6578,6 +6580,7 @@ static int mlxsw_sp_nexthop6_init(struct
- 				  const struct fib6_info *rt)
- {
- 	struct net_device *dev = rt->fib6_nh->fib_nh_dev;
-+	int err;
- 
- 	nh->nhgi = nh_grp->nhgi;
- 	nh->nh_weight = rt->fib6_nh->fib_nh_weight;
-@@ -6593,7 +6596,16 @@ static int mlxsw_sp_nexthop6_init(struct
- 		return 0;
- 	nh->ifindex = dev->ifindex;
- 
--	return mlxsw_sp_nexthop_type_init(mlxsw_sp, nh, dev);
-+	err = mlxsw_sp_nexthop_type_init(mlxsw_sp, nh, dev);
-+	if (err)
-+		goto err_nexthop_type_init;
-+
-+	return 0;
-+
-+err_nexthop_type_init:
-+	list_del(&nh->router_list_node);
-+	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
-+	return err;
- }
- 
- static void mlxsw_sp_nexthop6_fini(struct mlxsw_sp *mlxsw_sp,
+ XFS FILESYSTEM
+ C:	irc://irc.oftc.net/xfs
++M:	Leah Rumancik <leah.rumancik@gmail.com>
+ M:	Darrick J. Wong <djwong@kernel.org>
+ M:	linux-xfs@vger.kernel.org
+ L:	linux-xfs@vger.kernel.org
 
 
