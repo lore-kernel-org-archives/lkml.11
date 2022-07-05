@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F17C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F36A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbiGEPed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:34:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
+        id S231889AbiGEPem (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbiGEPe2 (ORCPT
+        with ESMTP id S231867AbiGEPej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:34:28 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B4215FF4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:34:28 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-3137316bb69so112490517b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:34:28 -0700 (PDT)
+        Tue, 5 Jul 2022 11:34:39 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D3018E27;
+        Tue,  5 Jul 2022 08:34:39 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id r2so14156873qta.0;
+        Tue, 05 Jul 2022 08:34:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NMiJfnuB9E8oSfD8q3hXX0dz5a3dBhL6ICVpLeG7Qi8=;
-        b=mYEpFjQNeokVX/aLWI26f3fU2HS/juOCGx0/m9LYGgTft11OkCep1akwsDz5NgUmnN
-         +rHLC40R1nQBfUXmMa/KEUDebn+nQvG1rAQ5DURS9nwGsot3QNgNv+y2G0Pshd4e+6v5
-         vsBTm6udQnxyDreNH6RZsd0gJPT0y1qWaeYUEsAO5PvFWp2f6CBE4LF3gl1FsjBmfHwz
-         U6KKM00690q6sHK2mDfWXtYyZXHHAtKr4Xpuaxv0MtzKULjxPaUS7/A9fvTkHywmR1zy
-         dhl75/cmY4DIqGF3bFaTc7mKfBUmJ3uYHKd/IHE8xzfaOIAnQtxMsy6N7f/cubkRDkQO
-         LSkA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Zl6l+NCofyHaAaMIMCac48blXJv7LbUh1X1KIYW7CUY=;
+        b=Mttb0u16/aUQIHinZmR/WC63isXaJ/zMVfXtElePw6ErvS4rnJ8Yblbn2TSpDKt2y9
+         CPZ9PYF3rMpP4amOqVrMN65+EUUDKQVNZ51o1U/nl6l9GAtYWa2P2EaKEnUcTwfm8s1s
+         Pd84b2oPkpcu5xFPwz90CCd/Mr4jIWmT20rICAZ2K43Lv/LUs4bopsBFWXAkif2e1GsW
+         Go5ty7BM+UWmejyr2VdQeet6jRQQ7/Fhjz31gIghp02SO4Dru6lK03xD58N42q6vpfeH
+         bBnWf0pUD10Fo7pkL0LsxDhVL8p3iHZSovpjaIK++ynX2byhVEr5R8X5X7vMwZTqlrwi
+         jCdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NMiJfnuB9E8oSfD8q3hXX0dz5a3dBhL6ICVpLeG7Qi8=;
-        b=nj/m7QiSzgFJdg+KedF43DJB2zWBMDplOGgIZ8bRY9bP2UfJ44AyIB/imKOYdgpAFZ
-         cJhe9t160CRzy/TiW3qj9qZTaU6CTsGcLsQRa/KKg9pKggKYben+YfDpi3IBZswbinXD
-         zD6kWgpiRLZHGhkt5VBVrmQ6d7B6d87y6uMPv5k2uOa0XBdwk80mS0hCr/wXTbb5tDLb
-         94N9QUMSNHNgKHGdJmuwII7xlQi2xVgH5YZR1UjGCX4bEcM8dn7DnJmXHSnUlnsrFDos
-         +6k/L7mgMkrEwNUrV/M1imM388YaQcmMVA7oeYcSK2wuNPY5iSgN3ymQJfN+OrR3/Uns
-         Cskw==
-X-Gm-Message-State: AJIora/tCXJ9CPX8cT4Tif0scfMo4QXi9xlkGcJExO5Uw9iq1H4dciv+
-        de7SiwaPdde++kD7pls0/BLi4pv2adTiPhhFufE=
-X-Google-Smtp-Source: AGRyM1tHlOOEZ+YGBBwNVGcEkLJmjTThfw81bZn46U0aLo+GszGzPrpdUkkU4QhMIHnidQP6GtMMYL542n8cXjZ3iKM=
-X-Received: by 2002:a81:4bd7:0:b0:31c:91da:5a20 with SMTP id
- y206-20020a814bd7000000b0031c91da5a20mr14885422ywa.131.1657035267360; Tue, 05
- Jul 2022 08:34:27 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Zl6l+NCofyHaAaMIMCac48blXJv7LbUh1X1KIYW7CUY=;
+        b=b/iFuHzYQpoAfs2Tf35+jc7LXWU35hCDtC7aB2JewWbzIajmAb/fGboCqXsRPvLfPW
+         iyay3NFiM5d2tZNEavsAg9a92D63qvnH8+93W4wWzxbarcCObfg0ApkYgHDYsh2xc5Cu
+         Wp467DkvJ9UCRo3/0Dq8jBy6QdZ9CdXp8CO29XEz2w0WsrRBV9MPk59IQwyKTUm3DqJo
+         SZptqNFD6EOGs6upb+Z4EKpAOsWsahlOinAzKIDPqqxnhHIh5xqxZM9XfioXVaq6KRlo
+         MkOdYBi7F37c7gg1oTMZcQQPAAXDlGvZ08xlleOEtquXwpkMs55q5V6bDBnOiEqhMxVX
+         MMXA==
+X-Gm-Message-State: AJIora9Kgcepxvt2t6PBLQNtp3btxj24YWULUQEfAcd3+tRFSkcVhYGh
+        gj7QxeNxBcK4VtLByYUC4O8XHMGHUFQ=
+X-Google-Smtp-Source: AGRyM1stUhz929nse5NQ427iAYlCDIqXKdfr+kdFOnjN2kBn2UTQWDjOEmUMuiQsIpQNAfYUtyuD0Q==
+X-Received: by 2002:a05:6214:766:b0:473:1b4:3fe0 with SMTP id f6-20020a056214076600b0047301b43fe0mr5085395qvz.102.1657035278062;
+        Tue, 05 Jul 2022 08:34:38 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id 14-20020ac8594e000000b00304fc3d144esm24068727qtz.1.2022.07.05.08.34.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 08:34:37 -0700 (PDT)
+Message-ID: <5874e274-13e9-a2bf-9cca-670709fc62f6@gmail.com>
+Date:   Tue, 5 Jul 2022 08:34:35 -0700
 MIME-Version: 1.0
-References: <20220705114312.86164-1-andriy.shevchenko@linux.intel.com>
- <20220705114312.86164-4-andriy.shevchenko@linux.intel.com>
- <f85d13df-b3b9-5cde-6f4c-a68507cedee9@huawei.com> <CAHp75Ves4VZHRWGW9hP1cz-Cytx_c2GsK3BHuNiCyRqCufB1Hg@mail.gmail.com>
- <5cd65a67-4289-23f7-3bec-c166e96aa9e2@huawei.com>
-In-Reply-To: <5cd65a67-4289-23f7-3bec-c166e96aa9e2@huawei.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 Jul 2022 17:33:51 +0200
-Message-ID: <CAHp75VfjZ=RRWbcV4oVK9RMsq_5QhCweYOLsfgK_iak6Gw=hmQ@mail.gmail.com>
-Subject: Re: [PATCH v1 4/4] bus: hisi_lpc: Don't guard ACPI IDs with ACPI_PTR()
-To:     John Garry <john.garry@huawei.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH 4.9 16/29] net: dsa: bcm_sf2: force pause link settings
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20220705115605.742248854@linuxfoundation.org>
+ <20220705115606.227964792@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220705115606.227964792@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 5:27 PM John Garry <john.garry@huawei.com> wrote:
-> On 05/07/2022 16:15, Andy Shevchenko wrote:
 
-...
 
-> >>> The OF is not guarded, neither ACPI needs.
-> >> This doesn't read well.
-> > "The OF is not guarded, neither ACPI needs it."
-> >
-> > Better? Otherwise please propose how it can be amended here.
->
-> How about "The OF ID table is not guarded, and the ACPI table does not
-> needs it either."?
+On 7/5/2022 4:57 AM, Greg Kroah-Hartman wrote:
+> From: Doug Berger <opendmb@gmail.com>
+> 
+> commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
+> 
+> The pause settings reported by the PHY should also be applied to the GMII port
+> status override otherwise the switch will not generate pause frames towards the
+> link partner despite the advertisement saying otherwise.
+> 
+> Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-FIne with me.
-
-...
-
-> > Strictly speaking, yes we need mod_devicetable.h. But of.h and acpi.h
-> > include it.
->
-> acpi.h does not include it for !CONFIG_ACPI, which is the only one which
-> I had checked. But now I see that of.h always includes it, so what you
-> are doing is ok.
-
-What a surprise. I was under the impression that acpi.h always
-includes it. Hmm... Probably we never had drivers that in Kconfig have
-something like "depends on ACPI || COMPILE_TEST (and at the same time
-have no explicit mod_devicetable.h inclusion nor implicit providers
-like of.h), which should immediately point to the issue.
-
+Greg, please remove this patch and the ones in 4.14 as well as the fix 
+is not quite appropriate, sorry about that.
 -- 
-With Best Regards,
-Andy Shevchenko
+Florian
