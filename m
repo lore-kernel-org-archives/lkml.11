@@ -2,62 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A12CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E74C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232677AbiGEN13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
+        id S229975AbiGEN3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232145AbiGEN1N (ORCPT
+        with ESMTP id S231969AbiGEN31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:27:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1A941601;
-        Tue,  5 Jul 2022 05:49:27 -0700 (PDT)
+        Tue, 5 Jul 2022 09:29:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC923897;
+        Tue,  5 Jul 2022 05:51:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBB2AB817C7;
-        Tue,  5 Jul 2022 12:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC97EC341C7;
-        Tue,  5 Jul 2022 12:48:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C51D760C38;
+        Tue,  5 Jul 2022 12:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CEADC341C7;
+        Tue,  5 Jul 2022 12:51:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657025329;
-        bh=unpkgiZ7iLWfroJs+BqlFoxz6dG1xKaDeB3iWMuXpvw=;
+        s=k20201202; t=1657025461;
+        bh=/wZNkLMQ8f+ZI2REJC8guWCA/5+Cuw84Q5nJ99AIcHw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cE+V+ETn3k/uhUlZHHvZKPVZXjS26zd3XCGdIJIMbnK2tKlJSZVgJ1TS0+xy1Nh97
-         u2qRTP0ZQ02/lo01pLPPakaEHxGyg0k7zVjA1Kdy1Ddw1RP4gH8JJvdlYEKkvPupMX
-         oJ5oTt5xxx0ysGOAO5pbpbGL3wWIX0kGISw8PiaP6DQkYn1/NaKEsYwUNO1QI42MIM
-         LShXlq6Upbzlu3Hj6nWfigDoJCn7+Sq4PCqfF8u96oMTDS4zpgOps+uPLyPFJxHuKv
-         WS9gCJkFoRnygUkDIfFfif4qCzJDs2S/NRhqqaRZUMoKqLJaG9xtkRjvW2wAShmbGF
-         R4w52whxpbi1Q==
-Date:   Tue, 5 Jul 2022 18:18:45 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        b=dltjLfCNk82lbByxTujjWM7+9d44kyeRnLamAQVgTy3q5zVutAq9ESsCPfXPdl25N
+         YEYgDMfLzUQ5ugYwr2AFh2AuRQqKI5luhJ6xrgXA8rUApup0KivbD1wvLoaY2/GdW9
+         IHOBoCeRcE7IcNy59A1+Qf/Oc2eM+4ToUk6f+NRhG/d5H3H8K+XDJOA7y3P+vcap0a
+         4E20zmfdnEjP4pvxm7FSPIIHqMj4h0bPZL8nBoYiBMRoRRJq+ccNgBR15GqNeQVFtJ
+         HgkA3vba3QG1bQPHaAo0x3QT3Wj8E+1UPggDjcv0+EIpdzh9yYWMeqZVFAQzFhCLZt
+         u/+18q8MD/TlQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o8i18-0006yd-1j; Tue, 05 Jul 2022 14:51:02 +0200
+Date:   Tue, 5 Jul 2022 14:51:02 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dmaengine: at_xdma: handle errors of
- at_xdmac_alloc_desc() correctly
-Message-ID: <YsQzLZ+KsohkHW+2@matsya>
-References: <20220526135111.1470926-1-michael@walle.cc>
+Subject: Re: [PATCH 01/14] arm64: dts: qcom: sc7280: drop PCIe PHY clock index
+Message-ID: <YsQztl9KHS5csu4A@hovoldconsulting.com>
+References: <20220705114032.22787-1-johan+linaro@kernel.org>
+ <20220705114032.22787-2-johan+linaro@kernel.org>
+ <e3b344e7-4100-e0d4-0dcd-aeef4893ad43@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220526135111.1470926-1-michael@walle.cc>
+In-Reply-To: <e3b344e7-4100-e0d4-0dcd-aeef4893ad43@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26-05-22, 15:51, Michael Walle wrote:
-> It seems that it is valid to have less than the requested number of
-> descriptors. But what is not valid and leads to subsequent errors is to
-> have zero descriptors. In that case, abort the probing.
+On Tue, Jul 05, 2022 at 03:42:08PM +0300, Dmitry Baryshkov wrote:
+> On 05/07/2022 14:40, Johan Hovold wrote:
+> > The QMP PCIe PHY provides a single clock so drop the redundant clock
+> > index.
+> > 
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> 
+> Hmm. After checking the source code, the clocks entry of the phy@1c0e000 
+> node also needs to be fixed.
 
-Applied, thanks
+I assume you meant pci@1c08000 here? Thanks for catching that!
 
--- 
-~Vinod
+> And also maybe:
+> 
+> Fixes: bd7d507935ca ("arm64: dts: qcom: sc7280: Add pcie clock support")
+> Fixes: 92e0ee9f83b3 ("arm64: dts: qcom: sc7280: Add PCIe and PHY related 
+> nodes")
+
+Maybe, I'm a bit reluctant to add a Fixes tags for these even if they do
+violate the binding. But sure, why not.
+
+> > ---
+> >   arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> > index e66fc67de206..b0ae2dbba50f 100644
+> > --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> > @@ -818,7 +818,7 @@ gcc: clock-controller@100000 {
+> >   			reg = <0 0x00100000 0 0x1f0000>;
+> >   			clocks = <&rpmhcc RPMH_CXO_CLK>,
+> >   				 <&rpmhcc RPMH_CXO_CLK_A>, <&sleep_clk>,
+> > -				 <0>, <&pcie1_lane 0>,
+> > +				 <0>, <&pcie1_lane>,
+> >   				 <0>, <0>, <0>, <0>;
+> >   			clock-names = "bi_tcxo", "bi_tcxo_ao", "sleep_clk",
+> >   				      "pcie_0_pipe_clk", "pcie_1_pipe_clk",
+> > @@ -2110,7 +2110,7 @@ pcie1_lane: phy@1c0e200 {
+> >   				clock-names = "pipe0";
+> >   
+> >   				#phy-cells = <0>;
+> > -				#clock-cells = <1>;
+> > +				#clock-cells = <0>;
+> >   				clock-output-names = "pcie_1_pipe_clk";
+> >   			};
+> >   		};
+
+Johan
