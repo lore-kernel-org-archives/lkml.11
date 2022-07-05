@@ -2,186 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A942C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B91C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 15:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232718AbiGEPqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 11:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        id S230047AbiGEPrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 11:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbiGEPpm (ORCPT
+        with ESMTP id S232774AbiGEPq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 11:45:42 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13911B7B3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:45:32 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id i186so12295541vsc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:45:32 -0700 (PDT)
+        Tue, 5 Jul 2022 11:46:27 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6240B2ADB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 08:46:18 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id m18so2792509lfg.10
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 08:46:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/dhXhbOglhCLbSQDWsXDPYparhLE1UyWYSan+fY72i0=;
-        b=aGB34TXr33CLWOLjdKvfCju7OjM/UO5amLzuwBXZ0J1SSAyfC9D4I6vkLkZk2EhdlH
-         QbZJTQxpIvWW/WQ7ckhUADeP7SBc5Yxt/dGisYHHSDAY5xj+oWR7XNNW1+/YoXUfaJ9B
-         mMEaJ6I+4tGjCTXJ0iUxJvWAfQ5Q6RiNf50A5InDLx0J/15XI0TbbY5yDyMzmzBkL7LP
-         cH5pczG97jFSprtJ8CAaflQxV/LhDz5b/L+NzsxXTkeGJMsGyQsusUMhczRBwwFrxbwB
-         Xy8ZtkTJAH2jaybfcFM3ULz73YH6N7FQg9vrLMdTQHfinveU09l5p8FbXTtc/OKj2nHX
-         eMQA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=skQdkbBJDPAVydlmX1UM7e+Ff0NvQ2MRAQ4wLe+ZPuo=;
+        b=TYURG0V9UTfKD1uPyWAV8bOq4DdCfaabxH6lFyNYgVeNhH0bquO0oY7Tp8XxVLlbl6
+         o8hbEulHbeqBtQzkIF1QY9KgiecSob67j6o0lSd7SomrzJkjczbGtdRxruHr4VKI1LAN
+         tBsTBPqk5wVI5KT6SyWC+5lq6QNxFSERd1PBUI94e22bXDxdepkcpJ7eEahd0/NPWa0r
+         KIfPIQyd+slEsuSEIlf0EojKsx7zxhPJna7Fy2yuKSn/B14g7Q31qK/lgO03ikHw2Kc9
+         mqdzmSU7IDvdQFcUXUcfzOBvoei5MPvtavggWq39jYDv3EnhJTdUfNvPHF6NUzDY5hjX
+         JcbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/dhXhbOglhCLbSQDWsXDPYparhLE1UyWYSan+fY72i0=;
-        b=U/FRREEwwLY0DXIAK5sNBw/Aa7yfoxDZGL8Rss2ZCgZ0diYDFgAaIUvhxIJGzHVJ1y
-         F/QqjIomDDrdWjZhrzv3H6Q0+YEMId9Ap230/bcncDrspio95z/AoV7N1j8FPKGZMSni
-         hNwlXe7XdRdyxeaM2VqlIk0HdNI5WdBm7IJebRf2Y7RcUIUUqcWbGrsk8JHbaCpjAqHS
-         Qk/EUpEniDtyydHEYi7yDUz5CxHOAuznKh65Wt9bIfXeVDh+q6w08UUqmj2mCSqBeKGh
-         UgFaOCCasR/krUpjPFmjvtFvKEYaI+g9h7v91AbKlX94uXUYlsKbrm1b5rTROc0nAFuW
-         8TXA==
-X-Gm-Message-State: AJIora9PNZEIk7bx/9eB3NzbxgZV3zyJoAr8YiKoCSvqgFcy6mAJcD2O
-        GnudrO5QQaKYUFgN+nfDoKqszA==
-X-Google-Smtp-Source: AGRyM1tzyAc3cX2djRO5+2Tz5crNgXY742v+srlhhk6HdKdupDTNP9iR+752QyStL0SwjfQtn2Hs3Q==
-X-Received: by 2002:a67:ec08:0:b0:354:3c03:3a29 with SMTP id d8-20020a67ec08000000b003543c033a29mr19190218vso.22.1657035931874;
-        Tue, 05 Jul 2022 08:45:31 -0700 (PDT)
-Received: from eze-laptop ([190.190.187.68])
-        by smtp.gmail.com with ESMTPSA id s23-20020a67f4d7000000b003567174ede3sm4875203vsn.16.2022.07.05.08.45.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=skQdkbBJDPAVydlmX1UM7e+Ff0NvQ2MRAQ4wLe+ZPuo=;
+        b=fPIJCKhMNctP7tGs9ppP5NzD7CN66MuTFLpXVsrXsiN7ONUjgEFKSG63TXdBqlLym+
+         i7jVo7e4r6bHdehifh0gPmPPsmlWTnGWt0DOmxnHieNuI62CQQuHIq+BBvUIW7DPL2np
+         j7gNuEt35dl6ZQy8ip9Ntwaq0VBuu0fakjg/Pt7EB0Q4TG6JSB1hdtges1uHv5qktktz
+         GSgyWacfzo6D+Wc96oDgGnSFce+kN8GhTBIcFqizp+OjDle5qlCCsixSItGqP2NjKL6e
+         mxAIxSxqxxO4Fzv7O5XqgGTO1BhU26aGy1tatXO0KGlvxUChWIL5E7uEbWhzoLWZm/dp
+         LP6w==
+X-Gm-Message-State: AJIora/O12O4ow5fvEmjQFEEwOjCu1nWFsCW8Pgmjd+xXfQym2bFNJ9+
+        NGwV9WDImAluSl0wSnKPhTcxv2cJXYfuQg==
+X-Google-Smtp-Source: AGRyM1ueChz7kcB4Mlr9M8aw0/msbdrYbvGVP/oZ5ymJzVTsp4JAr+dXDzXnbQfdcWpaHbg1lc0vsw==
+X-Received: by 2002:a05:6512:3d23:b0:47f:6b6f:f5ba with SMTP id d35-20020a0565123d2300b0047f6b6ff5bamr23383926lfv.160.1657035976786;
+        Tue, 05 Jul 2022 08:46:16 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id y14-20020a19750e000000b0047f78ad78bdsm5738394lfe.218.2022.07.05.08.46.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:45:31 -0700 (PDT)
-Date:   Tue, 5 Jul 2022 12:45:26 -0300
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     mchehab@kernel.org, hverkuil@xs4all.nl, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-Subject: Re: [PATCH v10 11/17] media: uapi: Add
- V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
-Message-ID: <YsRclobW7gL/Dtlr@eze-laptop>
-References: <20220705085420.272912-1-benjamin.gaignard@collabora.com>
- <20220705085420.272912-12-benjamin.gaignard@collabora.com>
+        Tue, 05 Jul 2022 08:46:16 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 2/2] dt-bindings: hwinfo: samsung,s5pv210-chipid: add S5PV210 ChipID
+Date:   Tue,  5 Jul 2022 17:46:13 +0200
+Message-Id: <20220705154613.453096-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220705154613.453096-1-krzysztof.kozlowski@linaro.org>
+References: <20220705154613.453096-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705085420.272912-12-benjamin.gaignard@collabora.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi guys,
+Document already used S5PV210 ChipID block.
 
-On Tue, Jul 05, 2022 at 10:54:14AM +0200, Benjamin Gaignard wrote:
-> The number of 'entry point offset' can be very variable.
-> Instead of using a large static array define a v4l2 dynamic array
-> of U32 (V4L2_CTRL_TYPE_U32).
-> The number of entry point offsets is reported by the elems field
-> and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_offsets
-> field.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> ---
->  .../userspace-api/media/v4l/ext-ctrls-codec.rst       | 11 +++++++++++
->  drivers/media/v4l2-core/v4l2-ctrls-defs.c             |  5 +++++
->  include/media/hevc-ctrls.h                            |  5 ++++-
->  3 files changed, 20 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> index db0df7d9f27c..8df8d7fdfe70 100644
-> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> @@ -3010,6 +3010,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->      * - __u32
->        - ``data_bit_offset``
->        - Offset (in bits) to the video data in the current slice data.
-> +    * - __u32
-> +      - ``num_entry_point_offsets``
-> +      - Specifies the number of entry point offset syntax elements in the slice header.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-This looks underdocumented. Somewhere in the docs it should be mentioned
-that the field 'num_entry_point_offsets' is linked to the control
-V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS.
+---
 
-Thanks,
-Ezequiel
+Changes since v2:
+1. None.
 
->      * - __u8
->        - ``nal_unit_type``
->        - Specifies the coding type of the slice (B, P or I).
-> @@ -3150,6 +3153,14 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->  
->      \normalsize
->  
-> +``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
-> +    Specifies entry point offsets in bytes.
-> +    This control is a dynamically sized array. The number of entry point
-> +    offsets is reported by the ``elems`` field.
-> +    This bitstream parameter is defined according to :ref:`hevc`.
-> +    They are described in section 7.4.7.1 "General slice segment header
-> +    semantics" of the specification.
-> +
->  ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
->      Specifies the HEVC scaling matrix parameters used for the scaling process
->      for transform coefficients.
-> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> index d594efbcbb93..e22921e7ea61 100644
-> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> @@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
->  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return "HEVC Decode Parameters";
->  	case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return "HEVC Decode Mode";
->  	case V4L2_CID_STATELESS_HEVC_START_CODE:		return "HEVC Start Code";
-> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return "HEVC Entry Point Offsets";
->  
->  	/* Colorimetry controls */
->  	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
-> @@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
->  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
->  		*type = V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
->  		break;
-> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
-> +		*type = V4L2_CTRL_TYPE_U32;
-> +		*flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
-> +		break;
->  	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
->  		*type = V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
->  		break;
-> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-> index a372c184689e..3a6601a46ced 100644
-> --- a/include/media/hevc-ctrls.h
-> +++ b/include/media/hevc-ctrls.h
-> @@ -20,6 +20,7 @@
->  #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS	(V4L2_CID_CODEC_BASE + 1012)
->  #define V4L2_CID_STATELESS_HEVC_DECODE_MODE	(V4L2_CID_CODEC_BASE + 1015)
->  #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 1016)
-> +#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_BASE + 1017)
->  
->  /* enum v4l2_ctrl_type type values */
->  #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
-> @@ -316,6 +317,8 @@ struct v4l2_hevc_pred_weight_table {
->   *
->   * @bit_size: size (in bits) of the current slice data
->   * @data_bit_offset: offset (in bits) to the video data in the current slice data
-> + * @num_entry_point_offsets: specifies the number of entry point offset syntax
-> + *			     elements in the slice header.
->   * @nal_unit_type: specifies the coding type of the slice (B, P or I)
->   * @nuh_temporal_id_plus1: minus 1 specifies a temporal identifier for the NAL unit
->   * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
-> @@ -358,7 +361,7 @@ struct v4l2_hevc_pred_weight_table {
->  struct v4l2_ctrl_hevc_slice_params {
->  	__u32	bit_size;
->  	__u32	data_bit_offset;
-> -
-> +	__u32	num_entry_point_offsets;
->  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
->  	__u8	nal_unit_type;
->  	__u8	nuh_temporal_id_plus1;
-> -- 
-> 2.32.0
-> 
+Changes since v1:
+1. Move to hwinfo and rename.
+2. Mention that device is already used.
+---
+ .../hwinfo/samsung,s5pv210-chipid.yaml        | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwinfo/samsung,s5pv210-chipid.yaml
+
+diff --git a/Documentation/devicetree/bindings/hwinfo/samsung,s5pv210-chipid.yaml b/Documentation/devicetree/bindings/hwinfo/samsung,s5pv210-chipid.yaml
+new file mode 100644
+index 000000000000..563ded4fca83
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwinfo/samsung,s5pv210-chipid.yaml
+@@ -0,0 +1,30 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwinfo/samsung,s5pv210-chipid.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Samsung S5PV210 SoC ChipID
++
++maintainers:
++  - Krzysztof Kozlowski <krzk@kernel.org>
++
++properties:
++  compatible:
++    const: samsung,s5pv210-chipid
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    chipid@e0000000 {
++        compatible = "samsung,s5pv210-chipid";
++        reg = <0xe0000000 0x1000>;
++    };
+-- 
+2.34.1
+
