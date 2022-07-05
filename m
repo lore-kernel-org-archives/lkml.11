@@ -2,67 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D3D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E5AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236171AbiGEMRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46704 "EHLO
+        id S236179AbiGEMRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234292AbiGEMHX (ORCPT
+        with ESMTP id S234291AbiGEMHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:07:23 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3433318E03
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:06:11 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id p123-20020a6bbf81000000b00674f66cf13aso6657489iof.23
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:06:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=T/AlQSYxlkVrUbwtFGQtFES7f2HUlnqABAOSRIEkTs4=;
-        b=U7HzWFE159B9dzlaO0EyyiVGZhehQtQ3OIhzT6ebjdqJDexMO3rTnaOMuEmjqR2fch
-         pQBrhF8m0hJbNOX/bPtHd3fyUOvxJxPCtHHbw/zOQiJeGVoqRotR3xJx+fPx5Pf8Y7cu
-         MySrez18IIK6aOIjOED9nu5/neOJeEdnou8+VIj7bAwN2EbWegeXo5a3COfIn+Mgyk+q
-         XURD3N9DQeO/OAlCELVQ6GBymYhdYzqFyXUEZBpmnEPoXJDUHxV90y0XiR0ExG4k2k+q
-         V01tTTrBIvM6izbfQW25T4nuBeRjo5an/fqKLcln9o+JwY5j20T92Fe6wiG3bl7E3OqL
-         XK+A==
-X-Gm-Message-State: AJIora9NOUSaRfXNPeK5eJeUTT/wTUBN9uQI4Aff07bhmbTwsbmFvXRC
-        eD2/BZIRRrgyhxBwk+QPZAXA84y4qfXsFMsaA7/6eY8Hy5bu
-X-Google-Smtp-Source: AGRyM1tqJIgNe7Xk+QmnIWMbr08/mAuscUMlZWp6SxPbHxIQFyp23OAfaKNENVjen+rFdj/xZPV72bRW62riFm0eG+WMfPF4rPm5
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F81918E00;
+        Tue,  5 Jul 2022 05:06:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C05D961956;
+        Tue,  5 Jul 2022 12:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAFEDC341C7;
+        Tue,  5 Jul 2022 12:06:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022770;
+        bh=aiJdJWuzWK8LLYxiRPG5JdmijkvLWK87Ym/glBaD/+4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wT9sQ6+eHCDqQHBLqRzcvQ0aoAx/sEL0JTGgnqVu1fSW12Q0BIAIdHYPFRHP2x8Rv
+         aA+Vj9J12SNmWyTOL+1OdVv1lt/qoQFuXpVOXTIPiOlk/3B+D97q7CDhXKlhMZda56
+         UeJcmslF3URMqm5gRmOstcjNU3Kx8XdPmRm03e6k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Denis Efremov <efremov@linux.com>,
+        kernel test robot <lkp@intel.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 32/58] sit: use min
+Date:   Tue,  5 Jul 2022 13:58:08 +0200
+Message-Id: <20220705115611.191729183@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
+References: <20220705115610.236040773@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:4813:b0:33c:8b87:3175 with SMTP id
- cp19-20020a056638481300b0033c8b873175mr20370097jab.182.1657022770437; Tue, 05
- Jul 2022 05:06:10 -0700 (PDT)
-Date:   Tue, 05 Jul 2022 05:06:10 -0700
-In-Reply-To: <20220705105938.1894-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009de38405e30dad33@google.com>
-Subject: Re: [syzbot] WARNING in send_packet/usb_submit_urb
-From:   syzbot <syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: kernel test robot <lkp@intel.com>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+commit 284fda1eff8a8b27d2cafd7dc8fb423d13720f21 upstream.
 
-Reported-and-tested-by: syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com
+Opportunity for min()
 
-Tested on:
+Generated by: scripts/coccinelle/misc/minmax.cocci
 
-commit:         1a0e93df Merge tag 'for-linus' of git://git.kernel.org..
-git tree:       http://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/torvalds/linux.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=109a81f4080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=833001d0819ddbc9
-dashboard link: https://syzkaller.appspot.com/bug?extid=0c3cb6dc05fbbdc3ad66
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=141cc000080000
+CC: Denis Efremov <efremov@linux.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/ipv6/sit.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Note: testing is done by a robot and is best-effort only.
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -312,7 +312,7 @@ static int ipip6_tunnel_get_prl(struct i
+ 
+ 	rcu_read_lock();
+ 
+-	ca = t->prl_count < cmax ? t->prl_count : cmax;
++	ca = min(t->prl_count, cmax);
+ 
+ 	if (!kp) {
+ 		/* We don't try hard to allocate much memory for
+
+
