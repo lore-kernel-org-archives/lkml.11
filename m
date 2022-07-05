@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4C8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiGEKXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
+        id S230131AbiGEKXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiGEKXN (ORCPT
+        with ESMTP id S231953AbiGEKXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:23:13 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E25D140D9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 03:23:11 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id q8so1478779ljj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 03:23:10 -0700 (PDT)
+        Tue, 5 Jul 2022 06:23:43 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F41714D32
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 03:23:35 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id y16so19726427lfb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 03:23:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=hkwPfIALvdSAU2N+QXSkCqGtHG+6iyMXOJOvPCyiJGw=;
-        b=DkaKRWBO09Bt2yF50Bv2PtP2qHgMg2KEOaGzBjYBoFxhX6fe2VO9yY9e34yUmIN/Ri
-         oytrJjsQsF9fhlM5rYSX2RQyWNfu6uXCBCbsErDdTTpvJhgdmTFZ2rfRCw0nS+bS840S
-         h2KMdRVwicolslBHijie/QN9nSpJ2L0+P/pMPiMkbh2xuilR8LLVAOWNGdrVqnF/bKyr
-         IK1v7AzELoGJdsXlsMzH7e03vmBwkrmwfV/ZsH0I3AZRUbfLhFVxTVLhuhvkxm+aT+Jv
-         pPQ8Lz/NSVpUeIU8iGxOpCD8onXdJoHKVcN6+JzHqcJ7hzGalSI28JF1L6YG9fGpdssg
-         JSEA==
+        bh=D5siEQlI9XeniTKofv/2Ej6WMzqEAvwWpsCPDQ5Kx7k=;
+        b=RGrEAp7zvLo7CTBtpOOl5wiObpP8CTfkfXlUAXMlhsoqFhctrsSeGyQvtum9CIMClQ
+         T2ionu2utuPpEtPp8pEJ1SrdUwt2orU2kEVDrs+3cuzWyq/aWS8d8HJ1BODLE3gLG/HQ
+         RBUoCV972pvReTzlL93EsOl9qCj7Q0tfHPFaOGFNAc11JkQgLqlPVzTqZU0rPwrcPWPM
+         zqah7tRBSuz0NI3lQ0TFfXPoX1D5qN8bfxwKApd5EefSfCQaNvTQxv8fRbZDoiTJmfhX
+         MqhY2392OhqhTie0d3Dt2sfN2AmOf8QjBFhWFMU/jXuVt2SwDcxGluCbmyzT1H/m4MVZ
+         aNlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=hkwPfIALvdSAU2N+QXSkCqGtHG+6iyMXOJOvPCyiJGw=;
-        b=S0Q70gpamsbK3mRiHnHzBeIlDiht5wpFIpkKmIdodrfE64W2DZkcd7SKpNG9Aox1AG
-         KW4QoOKFCtsPCCvHiUHnpgzXruKjEOOoGtFb7flMfc9F/k0yo5UPTrTBgTlpmVwnPBrm
-         V6V4s7S+niOO2u+ANwwK9ANdNvEuNOqbSkLcERYIb91FTfDSwjf8rhZLRxkzZKU4oGJo
-         0FxwNkCC3ReaQPKfUkd+59f9uWVOX+NDKP/tJlaQ1SutM2uhvqDMrSvmpnaFuveNZtrB
-         r+R+maHJjTms1ZSrJsT34+fi6fXXyGWM1YjJRYOTExtmKFHL5HCHPVlXnurjc/BG1dov
-         x3Qw==
-X-Gm-Message-State: AJIora+Q+YKfZW6b5GZtQDYKla7E2zHDluJeZk51xG2s0Geo4Ctbo3bt
-        8z5tlzenJxHipxAz03H7i+wB9g==
-X-Google-Smtp-Source: AGRyM1tK6aV4ED+ArkEi6a0TDdCwN3rOkmF5CvDjTenVKYf3MB0Hfzxm32KYRLOcIqfP845yDk0iEw==
-X-Received: by 2002:a2e:9dcb:0:b0:25d:16eb:2671 with SMTP id x11-20020a2e9dcb000000b0025d16eb2671mr8829879ljj.46.1657016589353;
-        Tue, 05 Jul 2022 03:23:09 -0700 (PDT)
+        bh=D5siEQlI9XeniTKofv/2Ej6WMzqEAvwWpsCPDQ5Kx7k=;
+        b=rJlhWbcOMU7noU0jfqwRo3ZjWRYbYDurlpkjdRjMzohZVfr+f0aSZhy3nCAVzq5nhJ
+         xZDj5Y/63JegcEe86cgqgHNEaoe9majlPGF4XI0sA1RvUuBhltRUlwxXz83NU0Wphd6J
+         WEWTbUIMIxNfRXIxmkbS+9VG35KxxRNhjsF+Mx2bA5tbctsJrH0M9UU5LJrcc4lRcF1I
+         qDHCRjXR4PJB1TiyLMef966G7jgfWaglG3UMZKelh7qnAYrE9XwF8DbTueTCvGp27Ez+
+         7ghN1ixhTyljXY1DZuyPGDirXSoD7wXjwRajvCgB/+pGkEXzb1c2LD/zQPC6sMkxhAv9
+         Yaiw==
+X-Gm-Message-State: AJIora8HJLjjBJnpiXxODxDSPFwEsVTBVLNQkptc0llYVChLmUJ/LR+m
+        l5S3r1onOJZZYlxQSpD0ALP5YQ==
+X-Google-Smtp-Source: AGRyM1u/5ekv4E6MjvZ4URSOmp1X5JoJIqCjqdBiA5tEuuxuPaVwWaOw4MHCavNj71iNDl2hB3U8ng==
+X-Received: by 2002:a05:6512:260e:b0:47d:ae43:62b3 with SMTP id bt14-20020a056512260e00b0047dae4362b3mr23834973lfb.77.1657016613842;
+        Tue, 05 Jul 2022 03:23:33 -0700 (PDT)
 Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05651c128b00b0025a725af81csm5479239ljc.39.2022.07.05.03.23.08
+        by smtp.gmail.com with ESMTPSA id s6-20020a056512214600b0047b0f2d7650sm5622474lfr.271.2022.07.05.03.23.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 03:23:08 -0700 (PDT)
-Message-ID: <1053b27f-37f8-a94d-2868-1e2b200d822a@linaro.org>
-Date:   Tue, 5 Jul 2022 12:23:07 +0200
+        Tue, 05 Jul 2022 03:23:33 -0700 (PDT)
+Message-ID: <b1a14a8d-489c-6871-332d-230811baace3@linaro.org>
+Date:   Tue, 5 Jul 2022 12:23:32 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 06/43] dt-bindings: phy: qcom,qmp: split out
- msm8996-qmp-pcie-phy
+Subject: Re: [PATCH 07/43] dt-bindings: phy: qcom,msm8996-qmp-pcie: clean up
+ constraints
 Content-Language: en-US
 To:     Johan Hovold <johan@kernel.org>
 Cc:     Johan Hovold <johan+linaro@kernel.org>,
@@ -68,112 +68,31 @@ Cc:     Johan Hovold <johan+linaro@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20220705094239.17174-1-johan+linaro@kernel.org>
- <20220705094239.17174-7-johan+linaro@kernel.org>
- <46b0cdab-aa94-7f55-5d9f-f79a644f0fec@linaro.org>
- <YsQQfwqmiQ7O3FdY@hovoldconsulting.com>
+ <20220705094239.17174-8-johan+linaro@kernel.org>
+ <4b1a9ded-24b1-faf1-e105-f18afef57682@linaro.org>
+ <YsQQnT5ixHtSo+vk@hovoldconsulting.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YsQQfwqmiQ7O3FdY@hovoldconsulting.com>
+In-Reply-To: <YsQQnT5ixHtSo+vk@hovoldconsulting.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 12:20, Johan Hovold wrote:
-> On Tue, Jul 05, 2022 at 12:08:36PM +0200, Krzysztof Kozlowski wrote:
+On 05/07/2022 12:21, Johan Hovold wrote:
+> On Tue, Jul 05, 2022 at 12:09:19PM +0200, Krzysztof Kozlowski wrote:
 >> On 05/07/2022 11:42, Johan Hovold wrote:
->>> The QMP PHY DT schema is getting unwieldy. Break out the odd-bird
->>> msm8996-qmp-pcie-phy which is the only QMP PHY that uses separate
->>> "per-lane" nodes.
+>>> Drop the compatible conditional and tighten the property constraints.
 >>>
 >>> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
->>> ---
->>>  .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 114 ++++++++++++++++++
->>>  .../devicetree/bindings/phy/qcom,qmp-phy.yaml |  32 -----
->>>  2 files changed, 114 insertions(+), 32 deletions(-)
->>>  create mode 100644 Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
->>> new file mode 100644
->>> index 000000000000..14fd86fd91ec
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
->>> @@ -0,0 +1,114 @@
->>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->>> +
 >>
->> No line break
->>
->>> +%YAML 1.2
->>> +---
->>> +$id: "http://devicetree.org/schemas/phy/qcom,msm8996-qmp-pcie-phy.yaml#"
->>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->>
->> Drop the quotes from two above.
+>> Squash it with previous patch. Does not make sense to add new file and a
+>> patch later change it.
 > 
-> This comes from the current binding. I can clean that one up first.
+> I beg to differ, for the reasons I just spelled out in my previous
+> reply.
 
-You now selectively copy pieces from old binding into new one. Copy
-while correcting obvious issues.
-
-> 
->>> +
->>> +title: Qualcomm QMP PHY controller (MSM8996 PCIe)
->>> +
->>> +maintainers:
->>> +  - Vinod Koul <vkoul@kernel.org>
->>> +
->>> +description:
->>> +  QMP PHY controller supports physical layer functionality for a number of
->>> +  controllers on Qualcomm chipsets, such as, PCIe, UFS, and USB.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: qcom,msm8996-qmp-pcie-phy
->>> +
->>> +  reg:
->>> +    minItems: 1
->>> +    items:
->>> +      - description: Address and length of PHY's common serdes block.
->>> +      - description: Address and length of PHY's DP_COM control block.
->>
->> Are two reg items applicable here?
-> 
-> No, but see below.
-> 
->>> +
->>> +  "#address-cells":
->>> +    enum: [ 1, 2 ]
->>> +
->>> +  "#size-cells":
->>> +    enum: [ 1, 2 ]
->>> +
->>> +  ranges: true
->>> +
->>> +  clocks:
->>> +    minItems: 1
->>> +    maxItems: 4
->>
->> Define clocks here, not in allOf:if:then.
-> 
-> To remain sane, and to help reviewers, I decided not to do changes to
-> the binding while splitting it up which would only make them harder
-> to review.
-> 
-> Hence the split followed by cleanup/tightening of constraints.
-
-It's confusing. I look at this commit and it is not correct. How do I
-know that next commits will correct it? I responded in further patches
-that most of them they should be squashed with this copy.
-
-> 
->> How about an example?
-> 
-> That's also a new addition to the binding and goes in a later separate
-> patch.
-> 
-
-
+So let's keep the discussion there.
 
 Best regards,
 Krzysztof
