@@ -2,118 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D1ACCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A1CCCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238346AbiGEM24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        id S238257AbiGEM2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237408AbiGEMTJ (ORCPT
+        with ESMTP id S237341AbiGEMTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6188A1CFF8;
-        Tue,  5 Jul 2022 05:14:30 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AA31CFE4;
+        Tue,  5 Jul 2022 05:14:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE606619F7;
-        Tue,  5 Jul 2022 12:14:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 059E0C341C7;
-        Tue,  5 Jul 2022 12:14:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023269;
-        bh=gDNm9VkZhtxww4I2NnBeE9/UzhtLtDxB4AKiTkuqLKY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZDeNzTP1gRUHO3ot2xebC6EAInj4s4swFJmzlE7c0CZ339o5qep0uzccIYe6WsHD
-         2F4XRzvv1hzdr14QPcrI+KBSSjNoajaOZNEd86BGNYTlDMfDqaVeLNAARq4vvGN9ie
-         TQ7Fn0kWTfDI1IN7sJMKFltVlU3b/yld/elDorww=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 98/98] hwmon: (ibmaem) dont call platform_device_del() if platform_device_add() fails
-Date:   Tue,  5 Jul 2022 13:58:56 +0200
-Message-Id: <20220705115620.354412491@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B431B817AC;
+        Tue,  5 Jul 2022 12:14:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55EC9C341C7;
+        Tue,  5 Jul 2022 12:14:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657023260;
+        bh=eBWd0tCkw8jxlUV3NSOCIj8B6jofKqA950ZsVt66SzE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=N67ZaWn9tVq7Gt7/fkdkN7ek7TjT5uzBWxkpI77WGBYzeedQbmQ6H9DeiNSxa0E4c
+         8iaMaSTFIGELURYmBmq91SdfVHaNkrpn+tTtFvFRh2qlS+fv32he9cUYiiL5E2rHDy
+         tsw5xXgriJI+i+bFtgZMmDmUXVXmayr8oSHVFRTZauqr9Fh/tCQJCKXuX8Wzu/z3zp
+         nu0JQoUT+akB1cldzf1cSoTXBNbP0SWbmZ3T2mC4Tv3OYK0QlV84QamHDa+idiXCZI
+         x+yYIOjkl/Xw8Y6LRGzfR4JzmFT9bDlOLqr4yJz7gHr99nkOvHAO6ta3kGL2iOBSc7
+         c0iL8JFlbifnA==
+Message-ID: <3d031d76040d76f0cebde50fca28ba038216890c.camel@kernel.org>
+Subject: Re: [PATCH v2 0/2] netfs: fix the crash when unlocking the folio
+From:   Jeff Layton <jlayton@kernel.org>
+To:     xiubli@redhat.com, dhowells@redhat.com
+Cc:     linux-kernel@vger.kernel.org, willy@infradead.org,
+        keescook@chromium.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, ceph-devel@vger.kernel.org,
+        marc.dionne@auristor.com, linux-afs@lists.infradead.org
+Date:   Tue, 05 Jul 2022 08:14:18 -0400
+In-Reply-To: <20220705025255.331695-1-xiubli@redhat.com>
+References: <20220705025255.331695-1-xiubli@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+On Tue, 2022-07-05 at 10:52 +0800, xiubli@redhat.com wrote:
+> From: Xiubo Li <xiubli@redhat.com>
+>=20
+> V2:
+> - Add error_unlocked lable and rename error lable to error_locked.
+>=20
+>=20
+> kernel: page:00000000c9746ff1 refcount:2 mapcount:0 mapping:00000000dc278=
+5bb index:0x1 pfn:0x141afc
+> kernel: memcg:ffff88810f766000
+> kernel: aops:ceph_aops [ceph] ino:100000005e7 dentry name:"postgresql-Fri=
+.log"=20
+> kernel: flags: 0x5ffc000000201c(uptodate|dirty|lru|private|node=3D0|zone=
+=3D2|lastcpupid=3D0x7ff)
+> kernel: raw: 005ffc000000201c ffffea000a9eeb48 ffffea00060ade48 ffff88819=
+3ed8228
+> kernel: raw: 0000000000000001 ffff88810cc96500 00000002ffffffff ffff88810=
+f766000
+> kernel: page dumped because: VM_BUG_ON_FOLIO(!folio_test_locked(folio))
+> kernel: ------------[ cut here ]------------
+> kernel: kernel BUG at mm/filemap.c:1559!
+> kernel: invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> kernel: CPU: 4 PID: 131697 Comm: postmaster Tainted: G S                5=
+.19.0-rc2-ceph-g822a4c74e05d #1
+> kernel: Hardware name: Supermicro SYS-5018R-WR/X10SRW-F, BIOS 2.0 12/17/2=
+015
+> kernel: RIP: 0010:folio_unlock+0x26/0x30
+> kernel: Code: 00 0f 1f 00 0f 1f 44 00 00 48 8b 07 a8 01 74 0e f0 80 27 fe=
+ 78 01 c3 31 f6 e9 d6 fe ff ff 48 c7 c6 c0 81 37 82 e8 aa 64 04 00 <0f> 0b =
+0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 87 b8 01 00 00
+> kernel: RSP: 0018:ffffc90004377bc8 EFLAGS: 00010246
+> kernel: RAX: 000000000000003f RBX: ffff888193ed8228 RCX: 0000000000000001
+> kernel: RDX: 0000000000000000 RSI: ffffffff823a3569 RDI: 00000000ffffffff
+> kernel: RBP: ffffffff828a0058 R08: 0000000000000001 R09: 0000000000000001
+> kernel: R10: 000000007c6b0fd2 R11: 0000000000000034 R12: 0000000000000001
+> kernel: R13: 00000000fffffe00 R14: ffffea000506bf00 R15: ffff888193ed8000
+> kernel: FS:  00007f4993626340(0000) GS:ffff88885fd00000(0000) knlGS:00000=
+00000000000
+> kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> kernel: CR2: 0000555789ee8000 CR3: 000000017a52a006 CR4: 00000000001706e0
+> kernel: Call Trace:
+> kernel: <TASK>
+> kernel: netfs_write_begin+0x130/0x950 [netfs]
+> kernel: ceph_write_begin+0x46/0xd0 [ceph]
+> kernel: generic_perform_write+0xef/0x200
+> kernel: ? file_update_time+0xd4/0x110
+> kernel: ceph_write_iter+0xb01/0xcd0 [ceph]
+> kernel: ? lock_is_held_type+0xe3/0x140
+> kernel: ? new_sync_write+0x106/0x180
+> kernel: new_sync_write+0x106/0x180
+> kernel: vfs_write+0x29a/0x3a0
+> kernel: ksys_write+0x5c/0xd0
+> kernel: do_syscall_64+0x34/0x80
+> kernel: entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> kernel: RIP: 0033:0x7f49903205c8
+> kernel: Code: 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f 80 00 00 00 00 f3 0f=
+ 1e fa 48 8d 05 d5 3f 2a 00 8b 00 85 c0 75 17 b8 01 00 00 00 0f 05 <48> 3d =
+00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 49 89 d4 55
+> kernel: RSP: 002b:00007fff104bd178 EFLAGS: 00000246 ORIG_RAX: 00000000000=
+00001
+> kernel: RAX: ffffffffffffffda RBX: 0000000000000048 RCX: 00007f49903205c8
+> kernel: RDX: 0000000000000048 RSI: 000055944d3c1ea0 RDI: 000000000000000b
+> kernel: RBP: 000055944d3c1ea0 R08: 000055944d3963d0 R09: 00007fff1055b080
+> kernel: R10: 0000000000000000 R11: 0000000000000246 R12: 000055944d3962f0
+> kernel: R13: 0000000000000048 R14: 00007f49905bb880 R15: 0000000000000048
+> kernel: </TASK>
+>=20
+>=20
+>=20
+> Xiubo Li (2):
+>   netfs: do not unlock and put the folio twice
+>   afs: unlock the folio when vnode is marked deleted
+>=20
+>  fs/afs/file.c            |  8 +++++++-
+>  fs/netfs/buffered_read.c | 13 +++++++------
+>  2 files changed, 14 insertions(+), 7 deletions(-)
+>=20
 
-[ Upstream commit d0e51022a025ca5350fafb8e413a6fe5d4baf833 ]
-
-If platform_device_add() fails, it no need to call platform_device_del(), split
-platform_device_unregister() into platform_device_del/put(), so platform_device_put()
-can be called separately.
-
-Fixes: 8808a793f052 ("ibmaem: new driver for power/energy/temp meters in IBM System X hardware")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220701074153.4021556-1-yangyingliang@huawei.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/hwmon/ibmaem.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/hwmon/ibmaem.c b/drivers/hwmon/ibmaem.c
-index a4ec85207782..2e6d6a5cffa1 100644
---- a/drivers/hwmon/ibmaem.c
-+++ b/drivers/hwmon/ibmaem.c
-@@ -550,7 +550,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
- 
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
- 
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -598,7 +598,9 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
-@@ -690,7 +692,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
- 
- 	res = platform_device_add(data->pdev);
- 	if (res)
--		goto ipmi_err;
-+		goto dev_add_err;
- 
- 	platform_set_drvdata(data->pdev, data);
- 
-@@ -738,7 +740,9 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
- 	ipmi_destroy_user(data->ipmi.user);
- ipmi_err:
- 	platform_set_drvdata(data->pdev, NULL);
--	platform_device_unregister(data->pdev);
-+	platform_device_del(data->pdev);
-+dev_add_err:
-+	platform_device_put(data->pdev);
- dev_err:
- 	ida_simple_remove(&aem_ida, data->id);
- id_err:
--- 
-2.35.1
-
-
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
