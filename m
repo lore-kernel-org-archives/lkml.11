@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49133C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234974AbiGEMKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
+        id S234990AbiGEMKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234047AbiGEMFr (ORCPT
+        with ESMTP id S233343AbiGEMF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:05:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFE418E2B;
-        Tue,  5 Jul 2022 05:05:13 -0700 (PDT)
+        Tue, 5 Jul 2022 08:05:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C505418E3E;
+        Tue,  5 Jul 2022 05:05:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C57F618BB;
-        Tue,  5 Jul 2022 12:05:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAA62C341CD;
-        Tue,  5 Jul 2022 12:05:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56CF461806;
+        Tue,  5 Jul 2022 12:05:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63EC2C341C7;
+        Tue,  5 Jul 2022 12:05:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022712;
-        bh=EOZo9s1qbmNa7TGA1A9FPZ5KLTRFRYSWC118HBm/k08=;
+        s=korg; t=1657022714;
+        bh=XqE9c5jeIO8PhFmnmhzW9vcEqEU/9Q+JgXFOCaQYJAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZeROG7AN2DKkGOooFSO+FAstlHwLC55eTwbWErVhSmDm5IhlsZoNIdNvnND32zBl3
-         NzLlfQrScoOZfPJtNvGsf0wiuyx2E6kbbAQyrBakgPf3sDZjhA9zaxnL1h1WC5Mz7K
-         pLuhGf7pWcPDP4EiGD0QI7Exitu/EUDe7ZhjIJ4o=
+        b=yG/4VHjj84qKbP4AJE0TfK5+PCPURSmc3/kCohHCjPmW+6zj5AZQHZe9pGzFdljJB
+         ojjhiA+Wip67FrLHHF4YSNzV2VPfdruUdYGMRhu1fdMfUWF/iE2PEgVzymegZxwLFY
+         UylG4WLOOpw5BrwDstnA6u1t72e1ROd9rjcSPQRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.4 42/58] selftests/rseq: Fix ppc32: wrong rseq_cs 32-bit field pointer on big endian
-Date:   Tue,  5 Jul 2022 13:58:18 +0200
-Message-Id: <20220705115611.481794724@linuxfoundation.org>
+Subject: [PATCH 5.4 43/58] selftests/rseq: Fix ppc32 missing instruction selection "u" and "x" for load/store
+Date:   Tue,  5 Jul 2022 13:58:19 +0200
+Message-Id: <20220705115611.510013146@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -51,376 +51,186 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-commit 24d1136a29da5953de5c0cbc6c83eb62a1e0bf14 upstream.
+commit de6b52a21420a18dc8a36438d581efd1313d5fe3 upstream.
 
-ppc32 incorrectly uses padding as rseq_cs pointer field. Fix this by
-using the rseq_cs.arch.ptr field.
+Building the rseq basic test  with
+gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.12)
+Target: powerpc-linux-gnu
 
-Use this field across all architectures.
+leads to these errors:
+
+/tmp/ccieEWxU.s: Assembler messages:
+/tmp/ccieEWxU.s:118: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:118: Error: junk at end of line: `,8'
+/tmp/ccieEWxU.s:121: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:121: Error: junk at end of line: `,8'
+/tmp/ccieEWxU.s:626: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:626: Error: junk at end of line: `,8'
+/tmp/ccieEWxU.s:629: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:629: Error: junk at end of line: `,8'
+/tmp/ccieEWxU.s:735: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:735: Error: junk at end of line: `,8'
+/tmp/ccieEWxU.s:738: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:738: Error: junk at end of line: `,8'
+/tmp/ccieEWxU.s:741: Error: syntax error; found `,', expected `('
+/tmp/ccieEWxU.s:741: Error: junk at end of line: `,8'
+Makefile:581: recipe for target 'basic_percpu_ops_test.o' failed
+
+Based on discussion with Linux powerpc maintainers and review of
+the use of the "m" operand in powerpc kernel code, add the missing
+%Un%Xn (where n is operand number) to the lwz, stw, ld, and std
+instructions when used with "m" operands.
+
+Using "WORD" to mean either a 32-bit or 64-bit type depending on
+the architecture is misleading. The term "WORD" really means a
+32-bit type in both 32-bit and 64-bit powerpc assembler. The intent
+here is to wrap load/store to intptr_t into common macros for both
+32-bit and 64-bit.
+
+Rename the macros with a RSEQ_ prefix, and use the terms "INT"
+for always 32-bit type, and "LONG" for architecture bitness-sized
+type.
 
 Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-9-mathieu.desnoyers@efficios.com
+Link: https://lkml.kernel.org/r/20220124171253.22072-10-mathieu.desnoyers@efficios.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/rseq/rseq-arm.h   |   16 ++++++++--------
- tools/testing/selftests/rseq/rseq-arm64.h |   16 ++++++++--------
- tools/testing/selftests/rseq/rseq-mips.h  |   16 ++++++++--------
- tools/testing/selftests/rseq/rseq-ppc.h   |   16 ++++++++--------
- tools/testing/selftests/rseq/rseq-s390.h  |   12 ++++++------
- 5 files changed, 38 insertions(+), 38 deletions(-)
+ tools/testing/selftests/rseq/rseq-ppc.h |   55 ++++++++++++++++----------------
+ 1 file changed, 28 insertions(+), 27 deletions(-)
 
---- a/tools/testing/selftests/rseq/rseq-arm.h
-+++ b/tools/testing/selftests/rseq/rseq-arm.h
-@@ -186,7 +186,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -256,7 +256,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -317,7 +317,7 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [count]		"Ir" (count)
- 		  RSEQ_INJECT_INPUT
-@@ -382,7 +382,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -458,7 +458,7 @@ int rseq_cmpeqv_trystorev_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -538,7 +538,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -658,7 +658,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -783,7 +783,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
---- a/tools/testing/selftests/rseq/rseq-arm64.h
-+++ b/tools/testing/selftests/rseq/rseq-arm64.h
-@@ -231,7 +231,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -288,7 +288,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [expectnot]		"r" (expectnot),
- 		  [load]		"Qo" (*load),
-@@ -338,7 +338,7 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [count]		"r" (count)
- 		  RSEQ_INJECT_INPUT
-@@ -389,7 +389,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -448,7 +448,7 @@ int rseq_cmpeqv_trystorev_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -509,7 +509,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"Qo" (*v),
- 		  [expect]		"r" (expect),
- 		  [v2]			"Qo" (*v2),
-@@ -570,7 +570,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
-@@ -630,7 +630,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"Qo" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [expect]		"r" (expect),
- 		  [v]			"Qo" (*v),
- 		  [newv]		"r" (newv),
---- a/tools/testing/selftests/rseq/rseq-mips.h
-+++ b/tools/testing/selftests/rseq/rseq-mips.h
-@@ -191,7 +191,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -259,7 +259,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -320,7 +320,7 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [count]		"Ir" (count)
- 		  RSEQ_INJECT_INPUT
-@@ -383,7 +383,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -457,7 +457,7 @@ int rseq_cmpeqv_trystorev_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -533,7 +533,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -650,7 +650,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -772,7 +772,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
 --- a/tools/testing/selftests/rseq/rseq-ppc.h
 +++ b/tools/testing/selftests/rseq/rseq-ppc.h
-@@ -236,7 +236,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -302,7 +302,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -360,7 +360,7 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"r" (count)
-@@ -420,7 +420,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -490,7 +490,7 @@ int rseq_cmpeqv_trystorev_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -561,7 +561,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -636,7 +636,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
-@@ -712,7 +712,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
---- a/tools/testing/selftests/rseq/rseq-s390.h
-+++ b/tools/testing/selftests/rseq/rseq-s390.h
-@@ -166,7 +166,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intp
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -234,7 +234,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -289,7 +289,7 @@ int rseq_addv(intptr_t *v, intptr_t coun
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"r" (count)
-@@ -348,7 +348,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -427,7 +427,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -535,7 +535,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
- 		  [current_cpu_id]	"m" (rseq_get_abi()->cpu_id),
--		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs),
-+		  [rseq_cs]		"m" (rseq_get_abi()->rseq_cs.arch.ptr),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
+@@ -47,10 +47,13 @@ do {									\
+ 
+ #ifdef __PPC64__
+ 
+-#define STORE_WORD	"std "
+-#define LOAD_WORD	"ld "
+-#define LOADX_WORD	"ldx "
+-#define CMP_WORD	"cmpd "
++#define RSEQ_STORE_LONG(arg)	"std%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
++#define RSEQ_STORE_INT(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
++#define RSEQ_LOAD_LONG(arg)	"ld%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
++#define RSEQ_LOAD_INT(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
++#define RSEQ_LOADX_LONG		"ldx "							/* From base register ("b" constraint) */
++#define RSEQ_CMP_LONG		"cmpd "
++#define RSEQ_CMP_LONG_INT	"cmpdi "
+ 
+ #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,				\
+ 			start_ip, post_commit_offset, abort_ip)			\
+@@ -89,10 +92,13 @@ do {									\
+ 
+ #else /* #ifdef __PPC64__ */
+ 
+-#define STORE_WORD	"stw "
+-#define LOAD_WORD	"lwz "
+-#define LOADX_WORD	"lwzx "
+-#define CMP_WORD	"cmpw "
++#define RSEQ_STORE_LONG(arg)	"stw%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* To memory ("m" constraint) */
++#define RSEQ_STORE_INT(arg)	RSEQ_STORE_LONG(arg)					/* To memory ("m" constraint) */
++#define RSEQ_LOAD_LONG(arg)	"lwz%U[" __rseq_str(arg) "]%X[" __rseq_str(arg) "] "	/* From memory ("m" constraint) */
++#define RSEQ_LOAD_INT(arg)	RSEQ_LOAD_LONG(arg)					/* From memory ("m" constraint) */
++#define RSEQ_LOADX_LONG		"lwzx "							/* From base register ("b" constraint) */
++#define RSEQ_CMP_LONG		"cmpw "
++#define RSEQ_CMP_LONG_INT	"cmpwi "
+ 
+ #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,				\
+ 			start_ip, post_commit_offset, abort_ip)			\
+@@ -125,7 +131,7 @@ do {									\
+ 		RSEQ_INJECT_ASM(1)						\
+ 		"lis %%r17, (" __rseq_str(cs_label) ")@ha\n\t"			\
+ 		"addi %%r17, %%r17, (" __rseq_str(cs_label) ")@l\n\t"		\
+-		"stw %%r17, %[" __rseq_str(rseq_cs) "]\n\t"			\
++		RSEQ_STORE_INT(rseq_cs) "%%r17, %[" __rseq_str(rseq_cs) "]\n\t"	\
+ 		__rseq_str(label) ":\n\t"
+ 
+ #endif /* #ifdef __PPC64__ */
+@@ -136,7 +142,7 @@ do {									\
+ 
+ #define RSEQ_ASM_CMP_CPU_ID(cpu_id, current_cpu_id, label)			\
+ 		RSEQ_INJECT_ASM(2)						\
+-		"lwz %%r17, %[" __rseq_str(current_cpu_id) "]\n\t"		\
++		RSEQ_LOAD_INT(current_cpu_id) "%%r17, %[" __rseq_str(current_cpu_id) "]\n\t" \
+ 		"cmpw cr7, %[" __rseq_str(cpu_id) "], %%r17\n\t"		\
+ 		"bne- cr7, " __rseq_str(label) "\n\t"
+ 
+@@ -153,25 +159,25 @@ do {									\
+  * 	RSEQ_ASM_OP_* (else): doesn't have hard-code registers(unless cr7)
+  */
+ #define RSEQ_ASM_OP_CMPEQ(var, expect, label)					\
+-		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
+-		CMP_WORD "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
++		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
++		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expect) "]\n\t"		\
+ 		"bne- cr7, " __rseq_str(label) "\n\t"
+ 
+ #define RSEQ_ASM_OP_CMPNE(var, expectnot, label)				\
+-		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
+-		CMP_WORD "cr7, %%r17, %[" __rseq_str(expectnot) "]\n\t"		\
++		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"		\
++		RSEQ_CMP_LONG "cr7, %%r17, %[" __rseq_str(expectnot) "]\n\t"		\
+ 		"beq- cr7, " __rseq_str(label) "\n\t"
+ 
+ #define RSEQ_ASM_OP_STORE(value, var)						\
+-		STORE_WORD "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
++		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t"
+ 
+ /* Load @var to r17 */
+ #define RSEQ_ASM_OP_R_LOAD(var)							\
+-		LOAD_WORD "%%r17, %[" __rseq_str(var) "]\n\t"
++		RSEQ_LOAD_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
+ 
+ /* Store r17 to @var */
+ #define RSEQ_ASM_OP_R_STORE(var)						\
+-		STORE_WORD "%%r17, %[" __rseq_str(var) "]\n\t"
++		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"
+ 
+ /* Add @count to r17 */
+ #define RSEQ_ASM_OP_R_ADD(count)						\
+@@ -179,11 +185,11 @@ do {									\
+ 
+ /* Load (r17 + voffp) to r17 */
+ #define RSEQ_ASM_OP_R_LOADX(voffp)						\
+-		LOADX_WORD "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
++		RSEQ_LOADX_LONG "%%r17, %[" __rseq_str(voffp) "], %%r17\n\t"
+ 
+ /* TODO: implement a faster memcpy. */
+ #define RSEQ_ASM_OP_R_MEMCPY() \
+-		"cmpdi %%r19, 0\n\t" \
++		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
+ 		"beq 333f\n\t" \
+ 		"addi %%r20, %%r20, -1\n\t" \
+ 		"addi %%r21, %%r21, -1\n\t" \
+@@ -191,16 +197,16 @@ do {									\
+ 		"lbzu %%r18, 1(%%r20)\n\t" \
+ 		"stbu %%r18, 1(%%r21)\n\t" \
+ 		"addi %%r19, %%r19, -1\n\t" \
+-		"cmpdi %%r19, 0\n\t" \
++		RSEQ_CMP_LONG_INT "%%r19, 0\n\t" \
+ 		"bne 222b\n\t" \
+ 		"333:\n\t" \
+ 
+ #define RSEQ_ASM_OP_R_FINAL_STORE(var, post_commit_label)			\
+-		STORE_WORD "%%r17, %[" __rseq_str(var) "]\n\t"			\
++		RSEQ_STORE_LONG(var) "%%r17, %[" __rseq_str(var) "]\n\t"			\
+ 		__rseq_str(post_commit_label) ":\n\t"
+ 
+ #define RSEQ_ASM_OP_FINAL_STORE(value, var, post_commit_label)			\
+-		STORE_WORD "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
++		RSEQ_STORE_LONG(var) "%[" __rseq_str(value) "], %[" __rseq_str(var) "]\n\t" \
+ 		__rseq_str(post_commit_label) ":\n\t"
+ 
+ static inline __attribute__((always_inline))
+@@ -743,9 +749,4 @@ error2:
+ #endif
+ }
+ 
+-#undef STORE_WORD
+-#undef LOAD_WORD
+-#undef LOADX_WORD
+-#undef CMP_WORD
+-
+ #endif /* !RSEQ_SKIP_FASTPATH */
 
 
