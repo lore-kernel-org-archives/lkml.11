@@ -2,88 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0330FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F41CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbiGEMHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46684 "EHLO
+        id S231593AbiGEMHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233304AbiGEMEV (ORCPT
+        with ESMTP id S233305AbiGEMEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:04:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B886F18B06;
-        Tue,  5 Jul 2022 05:04:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 563AA61806;
-        Tue,  5 Jul 2022 12:04:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F066C341CD;
-        Tue,  5 Jul 2022 12:04:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022645;
-        bh=R7f18Xlc1Q62JQ4Yx4W+U9vHjzR1KDd6znSGV0IEi5M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1o+vWghYzchkvK6+iU4k1MtIYHAthhKQ0V/nyzFmM01+qvdC5NVKT/7e/Kpro7DEq
-         3v7oZGIkdW+hgHaUSoAxa7bgZTZI8YgQPCYkpgOFQbDfyOy6UC6w76ItEmquULd2oe
-         u3djnzLlZe0NdXBpOO6qLAIE5i+v2MRF9Hz9u2/E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 18/58] net: ipv6: unexport __init-annotated seg6_hmac_net_init()
-Date:   Tue,  5 Jul 2022 13:57:54 +0200
-Message-Id: <20220705115610.787902361@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
-References: <20220705115610.236040773@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C28918B01
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:04:06 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id z13so20101172lfj.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yoi+zPkWqTTvlN+wO0cy6XLBUH8069tfMWIB3LL7MAs=;
+        b=WWm4T6oxPdyPf5nsyg+DEokjkXa55qLaAcSi2GDKKfFnM1SJamkJj8diao1wh7h519
+         GDoPLkEc/u9fTELcdU6Q4+o4/K40UotZ89sbgkmxhlbDvVJ9Gcc2lfyDde/6o8F1fRCI
+         tNGW81W1D02hV+RFSs5ZkEXmXzO6VIebpXuWx+W4l/Y7d4iheXr73VyKBbpIFUPm0PcK
+         WvOOKxYVB5Euu0yKFIWxIB87V2IAyJcx8UOBPhZLKvyC2/JVMr9WeKeP7SIzCIXBDNnw
+         M7AuCQ55qjw3wgT9gUYaSVTmxU7wDLuq/oHaOSw+9HQEmN1UwlQbqKD/Pr74pThF5Adq
+         7Q8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yoi+zPkWqTTvlN+wO0cy6XLBUH8069tfMWIB3LL7MAs=;
+        b=FBc3TS00/2CnYKytamBF8KSC+FZe77vk4b/9ZQQlI4TUS1rcwfk6WSWBLoPCMsn4Ll
+         tJyMohQOZLsLjagL78DXgbnh7dGkyMlVHh5xpnua5t37NkGnS94Kh6QkIC2ij+yyQz+f
+         YQ1sBhgkPDfwawyifso6kamtSFiCEJ0pxe6aiheE9b8/CX807OOOUVJxcZUydxJbfmPG
+         xjT85ny4DYPOG6wKuw/UdnbIc17V1Up3asbyBHBWohSEl9A9ZuBpAyKCwTfpcQuXfgcr
+         AO7iBxej4nNxfWhcrsdfLbM5FwgnlprMZ6KJLhYSDLsAKHW7au9xeCNz7RNNs7kUmbir
+         da4A==
+X-Gm-Message-State: AJIora+802xn/x+iG3jUEoFK80oI/9tHXuSGOcz18F5KJvFQTcKWNVYg
+        2PyAeIJdPlVexiFHLkzbOR9urw==
+X-Google-Smtp-Source: AGRyM1tJsEWFcvfyYuEaK0/YaV0GLte8Y2Pk2okWn5zzhgGVTJYfJHiMKhSx90vLBPEz9AYpkSVJBg==
+X-Received: by 2002:a19:f208:0:b0:481:5db8:7ce7 with SMTP id q8-20020a19f208000000b004815db87ce7mr14835124lfh.526.1657022644777;
+        Tue, 05 Jul 2022 05:04:04 -0700 (PDT)
+Received: from krzk-bin.home ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id n13-20020a2e82cd000000b0025a885a135csm5547082ljh.119.2022.07.05.05.04.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 05:04:04 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RESEND PATCH v3 2/3] dt-bindings: input: gpio-keys: reference input.yaml and document properties
+Date:   Tue,  5 Jul 2022 14:03:55 +0200
+Message-Id: <20220705120356.94876-3-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220705120356.94876-1-krzysztof.kozlowski@linaro.org>
+References: <20220705120356.94876-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+The original text bindings documented "autorepeat" and "label"
+properties (in the device node, beside the nodes with keys).  DTS use
+also poll-interval.  Reference the input.yaml to get these top-level
+properties.
 
-commit 53ad46169fe2996fe1b623ba6c9c4fa33847876f upstream.
-
-As of commit 5801f064e351 ("net: ipv6: unexport __init-annotated seg6_hmac_init()"),
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
-
-This remove the EXPORT_SYMBOL to fix modpost warning:
-
-WARNING: modpost: vmlinux.o(___ksymtab+seg6_hmac_net_init+0x0): Section mismatch in reference from the variable __ksymtab_seg6_hmac_net_init to the function .init.text:seg6_hmac_net_init()
-The symbol seg6_hmac_net_init is exported and annotated __init
-Fix this by removing the __init annotation of seg6_hmac_net_init or drop the export.
-
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Link: https://lore.kernel.org/r/20220628033134.21088-1-yuehaibing@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- net/ipv6/seg6_hmac.c |    1 -
- 1 file changed, 1 deletion(-)
+ .../devicetree/bindings/input/gpio-keys.yaml  | 32 +++++++++++--------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
---- a/net/ipv6/seg6_hmac.c
-+++ b/net/ipv6/seg6_hmac.c
-@@ -410,7 +410,6 @@ int __net_init seg6_hmac_net_init(struct
+diff --git a/Documentation/devicetree/bindings/input/gpio-keys.yaml b/Documentation/devicetree/bindings/input/gpio-keys.yaml
+index 27bb5c6ab8d9..e722e681d237 100644
+--- a/Documentation/devicetree/bindings/input/gpio-keys.yaml
++++ b/Documentation/devicetree/bindings/input/gpio-keys.yaml
+@@ -15,6 +15,13 @@ properties:
+       - gpio-keys
+       - gpio-keys-polled
  
- 	return 0;
- }
--EXPORT_SYMBOL(seg6_hmac_net_init);
++  autorepeat: true
++
++  label:
++    description: Name of entire device
++
++  poll-interval: true
++
+ patternProperties:
+   "^(button|event|key|switch|(button|event|key|switch)-[a-z0-9-]+|[a-z0-9-]+-(button|event|key|switch))$":
+     $ref: input.yaml#
+@@ -94,19 +101,18 @@ patternProperties:
  
- void seg6_hmac_exit(void)
- {
-
+     unevaluatedProperties: false
+ 
+-if:
+-  properties:
+-    compatible:
+-      const: gpio-keys-polled
+-then:
+-  properties:
+-    poll-interval:
+-      description:
+-        Poll interval time in milliseconds
+-      $ref: /schemas/types.yaml#/definitions/uint32
+-
+-  required:
+-    - poll-interval
++allOf:
++  - $ref: input.yaml#
++  - if:
++      properties:
++        compatible:
++          const: gpio-keys-polled
++    then:
++      required:
++        - poll-interval
++    else:
++      properties:
++        poll-interval: false
+ 
+ additionalProperties: false
+ 
+-- 
+2.34.1
 
