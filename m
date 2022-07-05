@@ -2,111 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E038C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 11:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbiGELnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 07:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
+        id S232420AbiGELnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 07:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232305AbiGELm6 (ORCPT
+        with ESMTP id S232410AbiGELnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 07:42:58 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF8017057
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 04:42:57 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id r9so14150893ljp.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 04:42:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=IKFzC2WnGUeD5q+RVNdKS9eslmn2mdX7LBfEuxyO6s0=;
-        b=shqlCX3emJgRu1Pna1MbtQuzhWuZhEs8PAA3jmb+7RwgySeFo2pGBXoPkUWUROHBBE
-         FWZbGO4cg3CylTU9GMQKslQU32a7dGi3+ijWcXfay2OlHKiQLs0ykj2NaBe5N/JhzfcN
-         19xo3isaGrJzv1Q6jLa3uCX3qtqId5yQXZkG1gBtCYGF9m1D6W3K+PvTsvtnG5Opat8v
-         o/P62oNI8QylZ5Yj9Mg4YLSpYBwicg168DhTBaEd/0wSpdFVgRCtBlwvqtwmYWdcyAny
-         cvAgYT0jpvypq33fbyiza+NiaR+g6NRINmr2/Nr/4ON2zNx8q/MXLtSKOCtFe4MVAc5m
-         LPtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=IKFzC2WnGUeD5q+RVNdKS9eslmn2mdX7LBfEuxyO6s0=;
-        b=Ho58WCZYKLRh1AWOkiFgK6OB+YLiEu3yKgPoXEQS3He2wwZCqMTK2Gcdx/5YjfwsNB
-         uhqLG5SixaBX0yutBxAu3q/72KnULteAGkHTkguKNQQxL5PXZSmmb1SGsVHoOyYG1HrX
-         DAi3l6NACgOvoy9b7d0VacqG9epy95NamK9PXErMj7yJVv9a8tLC34rtiKw6+psdk8sS
-         DUINdxhU/8yNOW2SFdDG9WHY/sPxQTKSv2LBoceWGWF8Nvrvv6zzYrNnrQTsZLZIEyLD
-         yEw1f30cVTHuPmiTsAMOjHelZ1o97HaJJYupTYpH2O3Ia7UIBl3vIfzCbz/HYtlP6yTv
-         FyeQ==
-X-Gm-Message-State: AJIora/7a6upbR+m6Ex1R/NPChz+3Wcc7/twgqa7RNj3MHkwyW9kPMJ2
-        aWZM+jzj3e+b1CjOSpm1vGmqaw==
-X-Google-Smtp-Source: AGRyM1ux3EckAJGDpDmodjM6QA+G+YsFdxnyaku2jwEufpmBJihqJQ038PHElZsdEF7+/vgSvGrxFw==
-X-Received: by 2002:a05:651c:1a12:b0:25b:f6ec:c71 with SMTP id by18-20020a05651c1a1200b0025bf6ec0c71mr16262193ljb.253.1657021375670;
-        Tue, 05 Jul 2022 04:42:55 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id w8-20020a056512098800b0047255d21124sm5673760lft.83.2022.07.05.04.42.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 04:42:55 -0700 (PDT)
-Message-ID: <3a01a031-356e-fde2-b160-0676fb542f51@linaro.org>
-Date:   Tue, 5 Jul 2022 13:42:54 +0200
+        Tue, 5 Jul 2022 07:43:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C0F1705A;
+        Tue,  5 Jul 2022 04:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657021384; x=1688557384;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WfImbQtfeMtGGz2Cw5g0Es7g3tuLxqK4vIhrQdT+d4M=;
+  b=A85DDNCHazegrS6Dqt0itgJpV1tYrdxWLJLTB9F+tD2zL2sHodNJfAlj
+   AiO+KmQzY0jwCRLhOLMXegkRoAI7oURgXpBkz/EGhB45Kds6OZRTihxur
+   x+v3Uz/KtiRsLoN3iPy9+T/DyGoADozMYJb7cWNVGl8aq5dpe+H15Y/O1
+   Cz0i85Df1ch5MdzINYhnqmGdCrkGRGO0uAdLdw/UeQZ/MFp/rFd+N10E9
+   hH3VEw9IE+VopBd99Oe9vU4n0Ow7+s3uiWizlHAwxDxsuLNt5N6seoWAj
+   xv4SttDS8FBOcOG8oqJ+UQNNE1cmz7g3zNTF80oi9M//VqWhx8ZVrLOiP
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="180778158"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jul 2022 04:43:03 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 5 Jul 2022 04:42:57 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 5 Jul 2022 04:42:53 -0700
+From:   Daire McNamara <daire.mcnamara@microchip.com>
+To:     <conor@kernel.org>, <conor.dooley@microchip.com>
+CC:     <aou@eecs.berkeley.edu>, <atishp@atishpatra.org>,
+        <daire.mcnamara@microchip.com>, <devicetree@vger.kernel.org>,
+        <ivan.griffin@microchip.com>, <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <palmer@dabbelt.com>, <palmer@rivosinc.com>,
+        <paul.walmsley@sifive.com>, <robh+dt@kernel.org>,
+        <sudeep.holla@arm.com>
+Subject: Re: [PATCH] riscv: dts: microchip: hook up the mpfs's l2cache
+Date:   Tue, 5 Jul 2022 12:42:30 +0100
+Message-ID: <20220705114229.2734205-1-daire.mcnamara@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220629200732.4039258-1-conor@kernel.org>
+References: <20220629200732.4039258-1-conor@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 36/40] ARM: dts: aspeed: align gpio-key node names with
- dtschema
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Cc:     soc@kernel.org, arm@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, linux-aspeed@lists.ozlabs.org,
-        devicetree@vger.kernel.org, Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
- <20220616005333.18491-36-krzysztof.kozlowski@linaro.org>
- <5e0d5cca-c4a8-6651-0e67-47b5fc23c5c7@linaro.org>
-In-Reply-To: <5e0d5cca-c4a8-6651-0e67-47b5fc23c5c7@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/06/2022 10:49, Krzysztof Kozlowski wrote:
-> On 16/06/2022 02:53, Krzysztof Kozlowski wrote:
->> The node names should be generic and DT schema expects certain pattern
->> (e.g. with key/button/switch).
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  .../arm/boot/dts/aspeed-bmc-ampere-mtjade.dts | 30 ++++++------
->>  .../boot/dts/aspeed-bmc-bytedance-g220a.dts   | 48 +++++++++----------
->>  arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts  |  8 ++--
->>  arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts  | 12 ++---
->>  .../boot/dts/aspeed-bmc-inspur-fp5280g2.dts   | 22 ++++-----
->>  arch/arm/boot/dts/aspeed-bmc-opp-mihawk.dts   | 23 ++++-----
->>  arch/arm/boot/dts/aspeed-bmc-opp-mowgli.dts   | 20 ++++----
->>  arch/arm/boot/dts/aspeed-bmc-opp-nicole.dts   |  2 +-
->>  arch/arm/boot/dts/aspeed-bmc-opp-palmetto.dts |  2 +-
->>  arch/arm/boot/dts/aspeed-bmc-opp-romulus.dts  |  2 +-
->>  arch/arm/boot/dts/aspeed-bmc-opp-swift.dts    | 30 ++++++------
->>  arch/arm/boot/dts/aspeed-bmc-opp-tacoma.dts   | 12 ++---
->>  arch/arm/boot/dts/aspeed-bmc-opp-vesnin.dts   |  4 +-
->>  .../boot/dts/aspeed-bmc-opp-witherspoon.dts   | 16 +++----
->>  arch/arm/boot/dts/aspeed-bmc-opp-zaius.dts    |  4 +-
->>  15 files changed, 118 insertions(+), 117 deletions(-)
->>
-> 
-> Joel,
-> 
-> Any comments on the Aspeed patches? Do you intend to take them or shall
-> I handle them with the rest?
+Reviewed-by: Daire McNamara <daire.mcnamara@microchip.com>
 
-These are still not in next and still not response here, so I'll pick
-them up.
-
-Best regards,
-Krzysztof
+> From: Conor Dooley <conor.dooley@microchip.com>
+> Date: Monday, 4 July 2022 at 10:04
+> To: FPGA ESS Linux patches <FPGA-ESS-Linux-Patches@microchip.com>
+> Cc: Conor Dooley - M52691 <Conor.Dooley@microchip.com>
+> Subject: [PATCH] riscv: dts: microchip: hook up the mpfs' l2cache
+> 
+> The initial PolarFire SoC devicetree must have been forked off from
+> the fu540 one prior to the addition of l2cache controller support being
+> added there. When the controller node was added to mpfs.dtsi, it was
+> not hooked up to the CPUs & thus sysfs reports an incorrect cache
+> configuration. Hook it up.
+> 
+> Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
+> Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  arch/riscv/boot/dts/microchip/mpfs.dtsi | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+> index ed8739350587..2df555a57003 100644
+> --- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
+> +++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+> @@ -50,6 +50,7 @@ cpu1: cpu@1 {
+>                          riscv,isa = "rv64imafdc";
+>                          clocks = <&clkcfg CLK_CPU>;
+>                          tlb-split;
+> +                       next-level-cache = <&cctrllr>;
+>                          status = "okay";
+>  
+>                          cpu1_intc: interrupt-controller {
+> @@ -77,6 +78,7 @@ cpu2: cpu@2 {
+>                          riscv,isa = "rv64imafdc";
+>                          clocks = <&clkcfg CLK_CPU>;
+>                          tlb-split;
+> +                       next-level-cache = <&cctrllr>;
+>                          status = "okay";
+>  
+>                          cpu2_intc: interrupt-controller {
+> @@ -104,6 +106,7 @@ cpu3: cpu@3 {
+>                          riscv,isa = "rv64imafdc";
+>                          clocks = <&clkcfg CLK_CPU>;
+>                          tlb-split;
+> +                       next-level-cache = <&cctrllr>;
+>                          status = "okay";
+>  
+>                          cpu3_intc: interrupt-controller {
+> @@ -131,6 +134,7 @@ cpu4: cpu@4 {
+>                          riscv,isa = "rv64imafdc";
+>                          clocks = <&clkcfg CLK_CPU>;
+>                          tlb-split;
+> +                       next-level-cache = <&cctrllr>;
+>                          status = "okay";
+>                          cpu4_intc: interrupt-controller {
+>                                  #interrupt-cells = <1>;
+> -- 
+> 2.36.1
