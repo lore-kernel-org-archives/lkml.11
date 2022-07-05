@@ -2,174 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A20C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90EB7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbiGEQcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 12:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
+        id S233044AbiGEQcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 12:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231423AbiGEQcZ (ORCPT
+        with ESMTP id S232591AbiGEQc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 12:32:25 -0400
-Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F3318382;
-        Tue,  5 Jul 2022 09:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1657038719; bh=Obre5IIa+wQZbNnEgE6NenQzK6E616sCX+q9jkhLXDk=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding;
-        b=UsyX2LqfslhudDZbUkOJzTExVwJOxyQS4IPVqSSYPC/p69bK0mCtsbIswSuuwGx85
-         j2Z3XLNBrcckPeidJb7RCsKF9cvfMZdCpK29pDDT619G7lrntTQa2LhLP4JAO55xEp
-         mP4HI7k2mQiR1Z+TiIjOk1rdq4Ood1sf8eng+v00=
-Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
-        via [213.182.55.207]
-        Tue,  5 Jul 2022 18:31:59 +0200 (CEST)
-X-EA-Auth: uy+XIWsVz7YnrvCMGI2igZ4GD6wt6zDY8wIs7sajjsm2njh0kMZYz054c3LV5CBIq+wy0C4UbXizPP/bqETCeSu7CeClHJC7Sms51yaLemA=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        Tue, 5 Jul 2022 12:32:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E1219292
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 09:32:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98858B81873
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 16:32:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDC40C341C7;
+        Tue,  5 Jul 2022 16:32:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657038744;
+        bh=ELTHKRlGh2TFVwLiCwnTc8wlXdeQ+pD6rYi563gQQ6k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mgT7xZwlPFkbHzVDL4FfLEz+K3+F0eqFtJeBULjpARFv44dCZBP8Tm6Jfvg5o9/AH
+         6zvB4+zEv9Y40JhDbbNDKTmOzP50QvvQdLfjaZVVXMBJr6q2E+f8XHTIDrBzc00Obc
+         lyDwMpFlmhH3HQB8FrHioEdFazMU3NPn2KoSlFzIDzdxPm/DKcjY7kKg27PJ+m3kd4
+         IPvWjPL5pHPcNMJx1tyLZRFC1H0+8S481xJSzRo8ZaJQRPdv/MMfZpN3MBORe3SI8D
+         9QZJR9HqKtsQNcBV+p03sNN8eg/2A2wAPsc/iVY6+wxAMEg+YtKCEQ+fHPVX54z2iB
+         cp6E822nyYKxQ==
+Date:   Tue, 5 Jul 2022 17:32:19 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        hns@goldelico.com, Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 2/6] dt-bindings: leds: is31fl319x: Document variants specificities
-Date:   Tue,  5 Jul 2022 18:31:30 +0200
-Message-Id: <20220705163136.2278662-3-vincent.knecht@mailoo.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220705163136.2278662-1-vincent.knecht@mailoo.org>
-References: <20220705163136.2278662-1-vincent.knecht@mailoo.org>
+Subject: Re: equalizer cfg in max98088 driver
+Message-ID: <YsRnkxcBWCgtRIn7@sirena.org.uk>
+References: <20220705075500.GA1987744@tom-ThinkPad-T14s-Gen-2i>
+ <YsQd7mub0KJdYUDw@sirena.org.uk>
+ <20220705162956.GA2676656@tom-ThinkPad-T14s-Gen-2i>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="LoH50+dDeMaAE155"
+Content-Disposition: inline
+In-Reply-To: <20220705162956.GA2676656@tom-ThinkPad-T14s-Gen-2i>
+X-Cookie: Only God can make random selections.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add si-en compatibles for all chip variants and add conditionals
-depending on compatibles to document variants specs:
-- possible reg addresses
-- whether audio-gain-db is supported or not
-- maximum number of leds
-- led-max-microamp values
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
- .../bindings/leds/issi,is31fl319x.yaml        | 84 ++++++++++++++++++-
- 1 file changed, 82 insertions(+), 2 deletions(-)
+--LoH50+dDeMaAE155
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml b/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
-index 0d684aeeb8cd..940333f2d69c 100644
---- a/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
-+++ b/Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
-@@ -28,6 +28,10 @@ properties:
-       - issi,is31fl3193
-       - issi,is31fl3196
-       - issi,is31fl3199
-+      - si-en,sn3190
-+      - si-en,sn3191
-+      - si-en,sn3193
-+      - si-en,sn3196
-       - si-en,sn3199
- 
-   reg:
-@@ -61,8 +65,6 @@ patternProperties:
-         maximum: 9
- 
-       led-max-microamp:
--        default: 20000
--        enum: [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000]
-         description:
-           Note that a driver will take the lowest of all LED limits
-           since the chip has a single global setting. The lowest value
-@@ -71,6 +73,84 @@ patternProperties:
-           and not the current, which will always have its peak value
-           equal to led-max-microamp.
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3190
-+              - issi,is31fl3191
-+              - issi,is31fl3193
-+              - si-en,sn3190
-+              - si-en,sn3191
-+              - si-en,sn3193
-+    then:
-+      properties:
-+        reg:
-+          enum: [0x68, 0x69, 0x6a, 0x6b]
-+
-+        audio-gain-db: false
-+
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            led-max-microamp:
-+              default: 42000
-+              enum: [5000, 10000, 17500, 30000, 42000]
-+    else:
-+      properties:
-+        reg:
-+          enum: [0x64, 0x65, 0x66, 0x67]
-+
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            led-max-microamp:
-+              default: 20000
-+              enum: [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000]
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3190
-+              - issi,is31fl3191
-+              - si-en,sn3190
-+              - si-en,sn3191
-+    then:
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            reg:
-+              maximum: 1
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3193
-+              - si-en,sn3193
-+    then:
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            reg:
-+              maximum: 3
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - issi,is31fl3196
-+              - si-en,sn3196
-+    then:
-+      patternProperties:
-+        "^led@[1-9]$":
-+          properties:
-+            reg:
-+              maximum: 6
-+
- required:
-   - compatible
-   - reg
--- 
-2.35.3
+On Tue, Jul 05, 2022 at 06:29:56PM +0200, Tommaso Merciai wrote:
+> On Tue, Jul 05, 2022 at 12:18:06PM +0100, Mark Brown wrote:
 
+> > There's plenty of examples of equalisers in the code already.  I don't
+> > know how this specific device works but generally these are either
+> > exposed as a series of volume like sliders or as binary controls.  This
+> > doesn't restrict people to settings from the firmware, making
+> > development of new configuraitons much easier.
 
+> Thanks for your reply.
+> I meant somethings like this:
 
+I understood what you meant, like I say this should be a runtime control.
+
+--LoH50+dDeMaAE155
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLEZ5IACgkQJNaLcl1U
+h9AiKQf+McrQlmTh3R3eoil6IjzxS5r8PRIouf93sdRTuAKMBxPiVDQyl+zbeywm
+976+jJEsliyD7V3tJqBivh1bNsbn0Ai3WJ+5wpKqOy0LZdFvCyQgWI+84BrGBzKz
+dkITYXpzVNFOChRNaWjh/LOgpebSATjvwUFpcM0oSxygn8Kez7sdXgZA8Mzxj7Ws
+37/OUPASXphF2cYpiKVx2N+FN63S0a5ZWoRrkd136Zf83bwnzsAZ7jgy3vFwfVd3
+jy6s6biSmxzAEiV2YLvPpJtH3z558y3ILqmtV1HbjtU1LrB9f9sL0F+iBIov66R2
+FpKjgyoX0TEJ7ku7aCKiB5LV32v/2A==
+=nQpp
+-----END PGP SIGNATURE-----
+
+--LoH50+dDeMaAE155--
