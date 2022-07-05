@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A8ECCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4945FCCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238202AbiGEM2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
+        id S238221AbiGEM2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237324AbiGEMTB (ORCPT
+        with ESMTP id S237357AbiGEMTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36AE1CFDE;
-        Tue,  5 Jul 2022 05:14:20 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA721CFF1;
+        Tue,  5 Jul 2022 05:14:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59C25B817D6;
-        Tue,  5 Jul 2022 12:14:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7A3C36AED;
-        Tue,  5 Jul 2022 12:14:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50FC2619B9;
+        Tue,  5 Jul 2022 12:14:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B6D7C341C7;
+        Tue,  5 Jul 2022 12:14:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023258;
-        bh=Qy1pLN/zNK/8cHKZVUMsqXEMzNApCfDLymxAnISS+x0=;
+        s=korg; t=1657023263;
+        bh=pyhdauLBoqSjSiGXmzPG8RWnckzy4jcB2XZZJLH8K1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KiZIkUYMf85ZbGrMheecU16FJz+Anc7p1G3S5ByqCmEkg8FDb9R986O0R/VgKSEOn
-         Hey6JHeqSAwc9FVkO38RG0/tXzrbdiJOCKSzgsJUOBq3mif5Mc5tK7++VR/zURKzB0
-         QCR1YdEuUAG8xdLyAL4KqlKAmW/k/PKxB9iMe83I=
+        b=jmxTF0ZZoO7KCybPUd7fNTO7UdeKRENRCU4ckWrUtqqPXy90/XBbP62NNgp4pyuHf
+         aixOxXrEis+URQ5k1LboP3RISQJMbcMBw4MnuKf9ZVL2A5BMopwwCzCngNkYniN0A9
+         XA4E7rzH58Htbp+kh2JRzMOFnV8XVmFpSI51VkYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
-        Simon Ser <contact@emersion.fr>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 95/98] drm/fourcc: fix integer type usage in uapi header
-Date:   Tue,  5 Jul 2022 13:58:53 +0200
-Message-Id: <20220705115620.267868752@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jan Beulich <jbeulich@suse.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.15 79/98] xen/netfront: fix leaking data in shared pages
+Date:   Tue,  5 Jul 2022 13:58:37 +0200
+Message-Id: <20220705115619.815256649@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -50,63 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlos Llamas <cmllamas@google.com>
+From: Roger Pau Monne <roger.pau@citrix.com>
 
-[ Upstream commit 20b8264394b33adb1640a485a62a84bc1388b6a3 ]
+commit 307c8de2b02344805ebead3440d8feed28f2f010 upstream.
 
-Kernel uapi headers are supposed to use __[us]{8,16,32,64} types defined
-by <linux/types.h> as opposed to 'uint32_t' and similar. See [1] for the
-relevant discussion about this topic. In this particular case, the usage
-of 'uint64_t' escaped headers_check as these macros are not being called
-here. However, the following program triggers a compilation error:
+When allocating pages to be used for shared communication with the
+backend always zero them, this avoids leaking unintended data present
+on the pages.
 
-  #include <drm/drm_fourcc.h>
+This is CVE-2022-33740, part of XSA-403.
 
-  int main()
-  {
-  	unsigned long x = AMD_FMT_MOD_CLEAR(RB);
-  	return 0;
-  }
-
-gcc error:
-  drm.c:5:27: error: ‘uint64_t’ undeclared (first use in this function)
-      5 |         unsigned long x = AMD_FMT_MOD_CLEAR(RB);
-        |                           ^~~~~~~~~~~~~~~~~
-
-This patch changes AMD_FMT_MOD_{SET,CLEAR} macros to use the correct
-integer types, which fixes the above issue.
-
-  [1] https://lkml.org/lkml/2019/6/5/18
-
-Fixes: 8ba16d599374 ("drm/fourcc: Add AMD DRM modifiers.")
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Reviewed-by: Simon Ser <contact@emersion.fr>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/drm/drm_fourcc.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/xen-netfront.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
-index 9f4bb4a6f358..808c73c52820 100644
---- a/include/uapi/drm/drm_fourcc.h
-+++ b/include/uapi/drm/drm_fourcc.h
-@@ -1352,11 +1352,11 @@ drm_fourcc_canonicalize_nvidia_format_mod(__u64 modifier)
- #define AMD_FMT_MOD_PIPE_MASK 0x7
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -273,7 +273,8 @@ static struct sk_buff *xennet_alloc_one_
+ 	if (unlikely(!skb))
+ 		return NULL;
  
- #define AMD_FMT_MOD_SET(field, value) \
--	((uint64_t)(value) << AMD_FMT_MOD_##field##_SHIFT)
-+	((__u64)(value) << AMD_FMT_MOD_##field##_SHIFT)
- #define AMD_FMT_MOD_GET(field, value) \
- 	(((value) >> AMD_FMT_MOD_##field##_SHIFT) & AMD_FMT_MOD_##field##_MASK)
- #define AMD_FMT_MOD_CLEAR(field) \
--	(~((uint64_t)AMD_FMT_MOD_##field##_MASK << AMD_FMT_MOD_##field##_SHIFT))
-+	(~((__u64)AMD_FMT_MOD_##field##_MASK << AMD_FMT_MOD_##field##_SHIFT))
- 
- #if defined(__cplusplus)
- }
--- 
-2.35.1
-
+-	page = page_pool_dev_alloc_pages(queue->page_pool);
++	page = page_pool_alloc_pages(queue->page_pool,
++				     GFP_ATOMIC | __GFP_NOWARN | __GFP_ZERO);
+ 	if (unlikely(!page)) {
+ 		kfree_skb(skb);
+ 		return NULL;
 
 
