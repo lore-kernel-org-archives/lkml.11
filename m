@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6082FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF176C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233538AbiGEMDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
+        id S233553AbiGEMDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiGEMBr (ORCPT
+        with ESMTP id S231465AbiGEMBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:01:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979CE18392;
-        Tue,  5 Jul 2022 05:01:43 -0700 (PDT)
+        Tue, 5 Jul 2022 08:01:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB25183A2;
+        Tue,  5 Jul 2022 05:01:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36951617B9;
-        Tue,  5 Jul 2022 12:01:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17293C341C7;
-        Tue,  5 Jul 2022 12:01:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9310EB817D3;
+        Tue,  5 Jul 2022 12:01:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C9EC341C7;
+        Tue,  5 Jul 2022 12:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022502;
-        bh=L+TEF1izGni3M66cHb4MOAqlNAGDsFriebUnKiySbEE=;
+        s=korg; t=1657022505;
+        bh=c6vtjDsUvTnnXR8XpyHcPF4t2AXKtHHBZEfEQCOfs4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWlkTHDehIOdD767cpLbjz5UbH2zJ7xZRcdIIR/vG6w9ixL8vIYI45eAzsqmxls04
-         YSL8pJY75TjvLp+pOROLx3d+8j7nMTp9YdNxiamKYqfLcdxue+CRQBcezryZU4qUhE
-         ojsJnwWb/pFUJ8m6xaZI6UQfFMbgtr3FV45QsnkQ=
+        b=KlTfuwBXzT/Lswa+N1RD0F8ph0fmZ7isU6YHHcZOU5QxgT5ZkncSUra0vVUStOHap
+         SM6XpFR/bkgUlG3fL1E8uOPtkeRoLxp9JfAJMMYI16L0tSWkHSzNcWMMyPVnaMCmNT
+         RO1GUqEqmRECtwcHI6ymV0ib9my2W5oTfhOmFV54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabio Porcedda <fabio.porcedda@gmail.com>
-Subject: [PATCH 4.14 29/29] net: usb: qmi_wwan: add Telit 0x1070 composition
-Date:   Tue,  5 Jul 2022 13:58:17 +0200
-Message-Id: <20220705115607.203432019@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.14 03/29] dm raid: fix KASAN warning in raid5_add_disks
+Date:   Tue,  5 Jul 2022 13:57:51 +0200
+Message-Id: <20220705115606.440077428@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
 References: <20220705115606.333669144@linuxfoundation.org>
@@ -50,33 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 94f2a444f28a649926c410eb9a38afb13a83ebe0 upstream.
+commit 617b365872a247480e9dcd50a32c8d1806b21861 upstream.
 
-Add the following Telit FN990 composition:
+There's a KASAN warning in raid5_add_disk when running the LVM testsuite.
+The warning happens in the test
+lvconvert-raid-reshape-linear_to_raid6-single-type.sh. We fix the warning
+by verifying that rdev->saved_raid_disk is within limits.
 
-0x1070: tty, adb, rmnet, tty, tty, tty, tty
-
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Link: https://lore.kernel.org/r/20211210095722.22269-1-dnlplm@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/qmi_wwan.c |    1 +
+ drivers/md/raid5.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1308,6 +1308,7 @@ static const struct usb_device_id produc
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1070, 2)},	/* Telit FN990 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -7689,6 +7689,7 @@ static int raid5_add_disk(struct mddev *
+ 	 */
+ 	if (rdev->saved_raid_disk >= 0 &&
+ 	    rdev->saved_raid_disk >= first &&
++	    rdev->saved_raid_disk <= last &&
+ 	    conf->disks[rdev->saved_raid_disk].rdev == NULL)
+ 		first = rdev->saved_raid_disk;
+ 
 
 
