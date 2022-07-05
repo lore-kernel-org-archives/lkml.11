@@ -2,151 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E997CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D262C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236747AbiGEMVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        id S236326AbiGEMVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235576AbiGEMOH (ORCPT
+        with ESMTP id S235584AbiGEMOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:14:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC811AF01
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:11:24 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9871AF00;
+        Tue,  5 Jul 2022 05:11:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B1E7619B0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:11:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC7DC341C7;
-        Tue,  5 Jul 2022 12:11:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657023083;
-        bh=xx894h8t9r1HogxTqBUnJmpp/M0AqILhNb+ZPL3THQI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uNgKo6jhuJULh+DvqMhsjgsekzUkkZNVWMvDYYA7ntWZLbKRAdWvfd+gACcAYbp0I
-         dCQCNLJmnQuguvCTAzBvi6G5wQv44m2QfmvRb2BRJ1mOts4bwJQwzBW9LmPZMWM0v9
-         KgqYBmAWhJHn6XGLqhd8L1t+BwyQKfVps44h0Y+N96Wn/9LVV2/F0Y8uD9V2VHh7tY
-         wBPuTJioL8OeAgSd2sS1zNyh5XfOu6vwDuShC/LKO/6ERm4BT02FcEZpdi/RAhMrUb
-         cYkBHwYGzp5iKewKqfrHyOoieY6FijI/hjrGVShMSwM0qHUq6S8DcrbG9px0DirWPK
-         NxoDdLggB8MEg==
-Date:   Tue, 5 Jul 2022 13:11:16 +0100
-From:   Will Deacon <will@kernel.org>
-To:     "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, baolin.wang@linux.alibaba.com,
-        catalin.marinas@arm.com, akpm@linux-foundation.org,
-        david@redhat.com, jianyong.wu@arm.com, james.morse@arm.com,
-        quic_qiancai@quicinc.com, christophe.leroy@csgroup.eu,
-        jonathan@marek.ca, mark.rutland@arm.com,
-        thunder.leizhen@huawei.com, anshuman.khandual@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        rppt@kernel.org, geert+renesas@glider.be, linux-mm@kvack.org,
-        yaohongbo@linux.alibaba.com, alikernel-developer@linux.alibaba.com
-Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
- degradation
-Message-ID: <20220705121115.GB1012@willie-the-truck>
-References: <20220704111402.GA31553@willie-the-truck>
- <4accaeda-572f-f72d-5067-2d0999e4d00a@linux.alibaba.com>
- <20220704131516.GC31684@willie-the-truck>
- <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
- <20220704142313.GE31684@willie-the-truck>
- <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
- <20220704163815.GA32177@willie-the-truck>
- <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
- <20220705095231.GB552@willie-the-truck>
- <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0F33B817D6;
+        Tue,  5 Jul 2022 12:11:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42E1FC341C8;
+        Tue,  5 Jul 2022 12:11:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657023083;
+        bh=8Yx/3O7X0zhWd1KHPuHeo8VgXhfddwNdjHKMYGEiN0M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SJ7RXG6fZ3pjoweKhFGnO6SbFc+VKQmKmU6XuiAzhWJaBsfVlR+s5T1WdwyVCj9qj
+         sEI9biIN9o9w/vjylghlbUFAiItnw0p0Y/OK8f/S1ch0PS5BxQm2dC0EqH85SvgnhW
+         SgaSKUIQ2Zrwbl1S9CrZfhhpfFNyi1RbGwmS9gXM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Anton Lundin <glance@acc.umu.se>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 30/98] net: usb: asix: do not force pause frames support
+Date:   Tue,  5 Jul 2022 13:57:48 +0200
+Message-Id: <20220705115618.447843543@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
+References: <20220705115617.568350164@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 08:07:07PM +0800, guanghui.fgh wrote:
-> 
-> 
-> 在 2022/7/5 17:52, Will Deacon 写道:
-> > On Mon, Jul 04, 2022 at 07:09:23PM +0200, Ard Biesheuvel wrote:
-> > > On Mon, 4 Jul 2022 at 18:38, Will Deacon <will@kernel.org> wrote:
-> > > > 
-> > > > On Mon, Jul 04, 2022 at 10:34:07PM +0800, guanghui.fgh wrote:
-> > > > > Thanks.
-> > > > > 
-> > > > > 在 2022/7/4 22:23, Will Deacon 写道:
-> > > > > > On Mon, Jul 04, 2022 at 10:11:27PM +0800, guanghui.fgh wrote:
-> > > ...
-> > > > > > > Namely, it's need to use non block/section mapping for crashkernel mem
-> > > > > > > before shringking.
-> > > > > > 
-> > > > > > Well, yes, but we can change arch_kexec_[un]protect_crashkres() not to do
-> > > > > > that if we're leaving the thing mapped, no?
-> > > > > > 
-> > > > > I think we should use arch_kexec_[un]protect_crashkres for crashkernel mem.
-> > > > > 
-> > > > > Because when invalid crashkernel mem pagetable, there is no chance to rd/wr
-> > > > > the crashkernel mem by mistake.
-> > > > > 
-> > > > > If we don't use arch_kexec_[un]protect_crashkres to invalid crashkernel mem
-> > > > > pagetable, there maybe some write operations to these mem by mistake which
-> > > > > may cause crashkernel boot error and vmcore saving error.
-> > > > 
-> > > > I don't really buy this line of reasoning. The entire main kernel is
-> > > > writable, so why do we care about protecting the crashkernel so much? The
-> > > > _code_ to launch the crash kernel is writable! If you care about preventing
-> > > > writes to memory which should not be writable, then you should use
-> > > > rodata=full.
-> > > > 
-> > > 
-> > > This is not entirely true - the core kernel text and rodata are
-> > > remapped r/o in the linear map, whereas all module code and rodata are
-> > > left writable when rodata != full.
-> > 
-> > Yes, sorry, you're quite right. The kernel text is only writable if
-> > rodata=off.
-> > 
-> > But I still think it makes sense to protect the crashkernel only if
-> > rodata=full (which is the default on arm64) as this allows us to rely
-> > on page mappings and I think fits well with what we do for modules.
-> > 
-> > > But the conclusion is the same, imo: if you can't be bothered to
-> > > protect a good chunk of the code and rodata that the kernel relies on,
-> > > why should the crashkernel be treated any differently?
-> > 
-> > Thanks.
-> > 
-> > Will
-> Thanks.
-> 
-> 1.The rodata full is harm to the performance and has been disabled in-house.
-> 
-> 2.When using crashkernel with rodata non full, the kernel also will use non
-> block/section mapping which cause high d-TLB miss and degrade performance
-> greatly.
-> This patch fix it to use block/section mapping as far as possible.
-> 
-> bool can_set_direct_map(void)
-> {
-> 	return rodata_full || debug_pagealloc_enabled();
-> }
-> 
-> map_mem:
-> if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
-> 	flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
-> 
-> 3.When rodata full is disabled, crashkernel also need protect(keep
-> arch_kexec_[un]protect_crashkres using).
-> I think crashkernel should't depend on radata full(Maybe other architecture
-> don't support radata full now).
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-I think this is going round in circles :/
+commit ce95ab775f8d8e89a038c0e5611a7381a2ef8e43 upstream.
 
-As a first step, can we please leave the crashkernel mapped unless
-rodata=full? It should be a much simpler patch to write, review and maintain
-and it gives you the performance you want when crashkernel is being used.
+We should respect link partner capabilities and not force flow control
+support on every link. Even more, in current state the MAC driver do not
+advertises pause support so we should not keep flow control enabled at
+all.
 
-Will
+Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
+Reported-by: Anton Lundin <glance@acc.umu.se>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Tested-by: Anton Lundin <glance@acc.umu.se>
+Link: https://lore.kernel.org/r/20220624075139.3139300-2-o.rempel@pengutronix.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/usb/asix.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+index 2c81236c6c7c..45d3cc5cc355 100644
+--- a/drivers/net/usb/asix.h
++++ b/drivers/net/usb/asix.h
+@@ -126,8 +126,7 @@
+ 	 AX_MEDIUM_RE)
+ 
+ #define AX88772_MEDIUM_DEFAULT	\
+-	(AX_MEDIUM_FD | AX_MEDIUM_RFC | \
+-	 AX_MEDIUM_TFC | AX_MEDIUM_PS | \
++	(AX_MEDIUM_FD | AX_MEDIUM_PS | \
+ 	 AX_MEDIUM_AC | AX_MEDIUM_RE)
+ 
+ /* AX88772 & AX88178 RX_CTL values */
+-- 
+2.37.0
+
+
+
