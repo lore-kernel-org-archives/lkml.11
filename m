@@ -2,121 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB870CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F645C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 07:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231202AbiGEHvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 03:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45490 "EHLO
+        id S231317AbiGEHwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 03:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbiGEHvp (ORCPT
+        with ESMTP id S231578AbiGEHwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 03:51:45 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED306DF4B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 00:51:43 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id g4so20436663ybg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 00:51:43 -0700 (PDT)
+        Tue, 5 Jul 2022 03:52:42 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC5213D6A;
+        Tue,  5 Jul 2022 00:52:41 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z41so14228829ede.1;
+        Tue, 05 Jul 2022 00:52:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k8cdnnptoSm5AJC45vIjlcJ8J1DipiYnWtE0ruW2rxs=;
-        b=hrW9cMR7Z3PxWD/FtQwAajFkdScrx1WIecOy3tNPSPFj7ZpT3MS6GjAIcWTagfEmKJ
-         gkd2p1YtA2R+Hh+5XgkXthXfwg2R5jG2gKm0g6phV8Lrz5F4whqrhU83Dj4tyPwZFMtM
-         uh781jvQ7OZBXq+KPR5Hc8P02RQW8jmkhPaUJ/ZwYrOawwLL/FrmV28X7ASFhZjVAiDC
-         4PMU4qslIoAXQOx4rSi7700OVzBPHPOTQk+OIii9voMpdvQNDRlo5aNm95xeq1Ki2eBG
-         hdoFAWundROhfmqT1kj2LM1sDGiWNawV/jwFpZ3ps+48699ORO58C04c2n4NkdSQvBX9
-         lJrQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sVHg27tFoCVvZZIXk/W94pwI0Pu4JuMAc/g2EqD7c8I=;
+        b=CYr0HGCmIpU9tGWD2SZn/cCWxwGIhI4vSE7yNrw3jvX35pfLMdSuYkZn+aRhaqQrFV
+         wUiljZdTSAT1Qphe09CajjMcNNRnZoLQSqWUKN1dMnHSybQYHCj3DH3pcjcsCdGXP3h4
+         vRrOrUL/ZBeuYpPmACPFsXqQQ4JoJPDo39HZESMHB4X9FK5g8U1lc8GpTJodXm6wYMBm
+         WXKMtYKcvuL5bvqEQIkvfYmthZXs6zyeHrhVlUJgdud1+zK863uHkFMZ31enqw6dzC6E
+         Z7ct5el9AqIuEb3hN5YuEEBBqV/EDTCCDFAeCDmBJcQm1R3ghLtwg+wQ1sY+z6zxdQLl
+         bpcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k8cdnnptoSm5AJC45vIjlcJ8J1DipiYnWtE0ruW2rxs=;
-        b=aBFIEK6729DnR2G5J0l70ocoi7r/I8qRQvRlZ0y9f9T/6RLCXLZNYk/PPtUtksUnxk
-         T6UefKXQuZRAlTibnsAf2KOIF71OyXtS/Q+Y39xncq0nbyb8evFsspddcACy4x94ccQ5
-         mWJ01+DLgoJSiqEteIpmN6zd2hhU6WTgbd8CUuC6F//mVjyedWS+rgDA+YxU2lcClPhg
-         Y6DN7V3uSBUnkXAXqvBx4TLc4ezxYNTrEaEuiKTDo6umVuKRPM/jnJ5oRN/S96JFplEo
-         EkorXMCvHcCFV4y9JL7/gVg51NDNMKDXsL7EZs4UrosoeKQJQeYg0WeovUxM2AVo3mkq
-         Wnfw==
-X-Gm-Message-State: AJIora/pLO3zVoqzrMhTnQhZKQjgTwOyvhx8S6yX+I+Lwcs84935nzLT
-        pP/sRnOsejChRMDL5JsIrwBY4SkH7vWhAM+u0OnNBg==
-X-Google-Smtp-Source: AGRyM1tcec4ZVozLeG3AHgF0JBmdcEQv61u7/2ayYABYM50nQefJuIIBRyMGNOqvt0ngm0odO3V8Tx51FRXcuMYED+M=
-X-Received: by 2002:a25:4290:0:b0:66e:53b2:56ed with SMTP id
- p138-20020a254290000000b0066e53b256edmr7670009yba.254.1657007503251; Tue, 05
- Jul 2022 00:51:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sVHg27tFoCVvZZIXk/W94pwI0Pu4JuMAc/g2EqD7c8I=;
+        b=Vyk7NE8slJcTpY4jK/pxLVs0Shl1cc6FlRnJiXpNWMAfP8HC6UIBrCQ5LTT+cCPVk2
+         lV4Y41vu8RrdZaCLbRGcf3kU2CnBxQpCtQG36Kf9yBDfTu7CWEhxIireoQEFRI+n10mM
+         rN6WJZQywiPlwcg4B4guoFeSoJL9hnHtnEon1m7meoHs2zpCD6czZNYQ7+8cpliENpgJ
+         KvzpiIQSw9qfAktY3d5iX0AvEZrYH23hnr0Jzac4QSV79RUR5lRL9zCz1L1dkFyAsa3F
+         OmFrc0I0kqIt/QDI6PA6/MCbcJlon6RjrmjRQ9aqDpLv8tDn9j8o3eP6lEr5FlLt+EsL
+         35cQ==
+X-Gm-Message-State: AJIora+jvzPy15ppgm5AJa0FYEm48P3BJryri7nT3z8eIHpP2iZ/Od8L
+        EDmYtk61a9s9835TunHWEjc=
+X-Google-Smtp-Source: AGRyM1vYJUa7eNnjIo+BOJ3SwH3f9c/JjmwfxHh5ctJZ51DjW1EJTxHpL1HA2YYhSpMihoKRCuag0g==
+X-Received: by 2002:a05:6402:4414:b0:434:f58c:ee2e with SMTP id y20-20020a056402441400b00434f58cee2emr43708933eda.362.1657007560160;
+        Tue, 05 Jul 2022 00:52:40 -0700 (PDT)
+Received: from roman-Latitude-3400.globallogic.com ([195.234.74.2])
+        by smtp.gmail.com with ESMTPSA id q17-20020a17090676d100b0072aac7446edsm4171579ejn.41.2022.07.05.00.52.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 00:52:39 -0700 (PDT)
+From:   Roman Stratiienko <r.stratiienko@gmail.com>
+To:     samuel@sholland.org
+Cc:     peron.clem@gmail.com, mturquette@baylibre.com, sboyd@kernel.org,
+        mripard@kernel.org, wens@csie.org, jernej.skrabec@gmail.com,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Roman Stratiienko <r.stratiienko@gmail.com>
+Subject: [PATCH v3] clk: sunxi-ng: sun50i: h6: Modify GPU clock configuration to support DFS
+Date:   Tue,  5 Jul 2022 10:52:26 +0300
+Message-Id: <20220705075226.359475-1-r.stratiienko@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220704112526.2492342-1-chenhuacai@loongson.cn>
- <20220704112526.2492342-5-chenhuacai@loongson.cn> <CAK8P3a2XBGtJMB=Z-W56MLREAr3sAYKqDHo3yg=4hJ4T6x+QdQ@mail.gmail.com>
- <CAAhV-H5djQOzRsW-JaRPzaAnh64WgHiGvHxc1UdAUV43tirukg@mail.gmail.com>
-In-Reply-To: <CAAhV-H5djQOzRsW-JaRPzaAnh64WgHiGvHxc1UdAUV43tirukg@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 5 Jul 2022 15:51:06 +0800
-Message-ID: <CAMZfGtXLxPO3jmkKpF7n9Scb=542yrf1taWHZGdPwK-tZsJXgQ@mail.gmail.com>
-Subject: Re: [PATCH V4 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, loongarch@lists.linux.dev,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Feiyang Chen <chenfeiyang@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 2:22 PM Huacai Chen <chenhuacai@kernel.org> wrote:
->
-> Hi, Arnd,
->
-> On Mon, Jul 4, 2022 at 8:18 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > On Mon, Jul 4, 2022 at 1:25 PM Huacai Chen <chenhuacai@loongson.cn> wrote:
-> > > To avoid the following build error on LoongArch we should include linux/
-> > > static_key.h in page-flags.h.
-> > >
-> > > In file included from ./include/linux/mmzone.h:22,
-> > > from ./include/linux/gfp.h:6,
-> > > from ./include/linux/mm.h:7,
-> > > from arch/loongarch/kernel/asm-offsets.c:9:
-> > > ./include/linux/page-flags.h:208:1: warning: data definition has no
-> > > type or storage class
-> > > 208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-> > > | ^~~~~~~~~~~~~~~~~~~~~~~~
-> > > ./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
-> > > declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
-> > > ./include/linux/page-flags.h:209:26: warning: parameter names (without
-> > > types) in function declaration
-> >
-> > I wonder if page_fixed_fake_head() should be moved out of line to avoid
-> > this, it's already nontrivial here, and that would avoid the static key
-> > in a central header.
-> I have some consideration here. I think both inline function and
-> static key are instruments to make things faster, in other words,
-> page_fixed_fake_head() is a performance critical function. If so, it
-> is not suitable to move it out of line.
+Using simple bash script it was discovered that not all CCU registers
+can be safely used for DFS, e.g.:
 
-+1
+    while true
+    do
+        devmem 0x3001030 4 0xb0003e02
+        devmem 0x3001030 4 0xb0001e02
+    done
 
-The static key is an optimization when HVO is disabled.
+Script above changes the GPU_PLL multiplier register value. While the
+script is running, the user should interact with the user interface.
 
-Thanks.
+Using this method the following results were obtained:
 
->
-> Huacai
-> >
-> >        Arnd
-> >
+| Register  | Name           | Bits  | Values | Result |
+| --        | --             | --    | --     | --     |
+| 0x3001030 | GPU_PLL.MULT   | 15..8 | 20-62  | OK     |
+| 0x3001030 | GPU_PLL.INDIV  |     1 | 0-1    | OK     |
+| 0x3001030 | GPU_PLL.OUTDIV |     0 | 0-1    | FAIL   |
+| 0x3001670 | GPU_CLK.DIV    |  3..0 | ANY    | FAIL   |
+
+DVFS started to work seamlessly once dividers which caused the
+glitches were set to fixed values.
+
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+
+---
+
+Changelog:
+
+V2:
+- Drop changes related to mux
+- Drop frequency limiting
+- Add unused dividers initialization
+
+V3:
+- Adjust comments
+---
+ drivers/clk/sunxi-ng/ccu-sun50i-h6.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h6.c b/drivers/clk/sunxi-ng/ccu-sun50i-h6.c
+index 2ddf0a0da526f..068d1a6b2ebf3 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun50i-h6.c
++++ b/drivers/clk/sunxi-ng/ccu-sun50i-h6.c
+@@ -95,13 +95,13 @@ static struct ccu_nkmp pll_periph1_clk = {
+ 	},
+ };
+ 
++/* For GPU PLL, using an output divider for DFS causes system to fail */
+ #define SUN50I_H6_PLL_GPU_REG		0x030
+ static struct ccu_nkmp pll_gpu_clk = {
+ 	.enable		= BIT(31),
+ 	.lock		= BIT(28),
+ 	.n		= _SUNXI_CCU_MULT_MIN(8, 8, 12),
+ 	.m		= _SUNXI_CCU_DIV(1, 1), /* input divider */
+-	.p		= _SUNXI_CCU_DIV(0, 1), /* output divider */
+ 	.common		= {
+ 		.reg		= 0x030,
+ 		.hw.init	= CLK_HW_INIT("pll-gpu", "osc24M",
+@@ -294,9 +294,9 @@ static SUNXI_CCU_M_WITH_MUX_GATE(deinterlace_clk, "deinterlace",
+ static SUNXI_CCU_GATE(bus_deinterlace_clk, "bus-deinterlace", "psi-ahb1-ahb2",
+ 		      0x62c, BIT(0), 0);
+ 
++/* Keep GPU_CLK divider const to avoid DFS instability. */
+ static const char * const gpu_parents[] = { "pll-gpu" };
+-static SUNXI_CCU_M_WITH_MUX_GATE(gpu_clk, "gpu", gpu_parents, 0x670,
+-				       0, 3,	/* M */
++static SUNXI_CCU_MUX_WITH_GATE(gpu_clk, "gpu", gpu_parents, 0x670,
+ 				       24, 1,	/* mux */
+ 				       BIT(31),	/* gate */
+ 				       CLK_SET_RATE_PARENT);
+@@ -1193,6 +1193,16 @@ static int sun50i_h6_ccu_probe(struct platform_device *pdev)
+ 	if (IS_ERR(reg))
+ 		return PTR_ERR(reg);
+ 
++	/* Force PLL_GPU output divider bits to 0 */
++	val = readl(reg + SUN50I_H6_PLL_GPU_REG);
++	val &= ~BIT(0);
++	writel(val, reg + SUN50I_H6_PLL_GPU_REG);
++
++	/* Force GPU_CLK divider bits to 0 */
++	val = readl(reg + gpu_clk.common.reg);
++	val &= ~GENMASK(3, 0);
++	writel(val, reg + gpu_clk.common.reg);
++
+ 	/* Enable the lock bits on all PLLs */
+ 	for (i = 0; i < ARRAY_SIZE(pll_regs); i++) {
+ 		val = readl(reg + pll_regs[i]);
+-- 
+2.34.1
+
