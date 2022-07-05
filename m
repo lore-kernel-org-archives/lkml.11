@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AA9CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 065D4CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238892AbiGEMd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        id S238871AbiGEMdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236648AbiGEMY4 (ORCPT
+        with ESMTP id S231266AbiGEMYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:24:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308761F613;
-        Tue,  5 Jul 2022 05:17:25 -0700 (PDT)
+        Tue, 5 Jul 2022 08:24:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B2C1F60D;
+        Tue,  5 Jul 2022 05:17:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF60561AAD;
-        Tue,  5 Jul 2022 12:17:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C667CC341C7;
-        Tue,  5 Jul 2022 12:17:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1C67B817AC;
+        Tue,  5 Jul 2022 12:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A2FBC341CB;
+        Tue,  5 Jul 2022 12:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023444;
-        bh=BX1cOwwr99Bu5wNg/qeLuar04H9j3nT7tHJjtd/K2ME=;
+        s=korg; t=1657023441;
+        bh=4wrempK14aI2Lwl5s7i72OMdEzbm8xpeW9Zz4Lk8IKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fO3BbEabpI2HSKscTuoG1otXo3n1gROYVGnr0iUsnRiOw1RnHll6Q21Tpbi0nqyel
-         IXaNFUtGVOG8QAkZk+It0LXOr9uYgMcy1hy2PaAB8RP1F+sFWiwoyMSShoKP3rrl1z
-         DWVoHUXpfKk6ss+SpmuS6mf4rDC1V0QekspXTjC8=
+        b=PchrN6eqVUq8LoveQG/s4Ayrl3ZpD+vl2Lsh2k9i75Cus2SVm0Fk8HtYap8VWhQFB
+         hUaqkSjwX5B/QDHiKjstQaCmGSqS8gGva4eppP17g2V3m/wVkX5G/tUuVTpzmXkBmu
+         CbUP+TAZ9/5ZWxi58Pq4d9Wzwg2830oYf/n709yc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org,
+        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 062/102] net: dsa: felix: fix race between reading PSFP stats and port stats
-Date:   Tue,  5 Jul 2022 13:58:28 +0200
-Message-Id: <20220705115620.167781445@linuxfoundation.org>
+Subject: [PATCH 5.18 061/102] net: bonding: fix use-after-free after 802.3ad slave unbind
+Date:   Tue,  5 Jul 2022 13:58:27 +0200
+Message-Id: <20220705115620.139254675@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,48 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Yevhen Orlov <yevhen.orlov@plvision.eu>
 
-commit 58bf4db695287c4bb2a5fc9fc12c78fdd4c36894 upstream.
+commit 050133e1aa2cb49bb17be847d48a4431598ef562 upstream.
 
-Both PSFP stats and the port stats read by ocelot_check_stats_work() are
-indirectly read through the same mechanism - write to STAT_CFG:STAT_VIEW,
-read from SYS:STAT:CNT[n].
+commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection"),
+resolve case, when there is several aggregation groups in the same bond.
+bond_3ad_unbind_slave will invalidate (clear) aggregator when
+__agg_active_ports return zero. So, ad_clear_agg can be executed even, when
+num_of_ports!=0. Than bond_3ad_unbind_slave can be executed again for,
+previously cleared aggregator. NOTE: at this time bond_3ad_unbind_slave
+will not update slave ports list, because lag_ports==NULL. So, here we
+got slave ports, pointing to freed aggregator memory.
 
-It's just that for port stats, we write STAT_VIEW with the index of the
-port, and for PSFP stats, we write STAT_VIEW with the filter index.
+Fix with checking actual number of ports in group (as was before
+commit 0622cab0341c ("bonding: fix 802.3ad aggregator reselection") ),
+before ad_clear_agg().
 
-So if we allow them to run concurrently, ocelot_check_stats_work() may
-change the view from vsc9959_psfp_counters_get(), and vice versa.
+The KASAN logs are as follows:
 
-Fixes: 7d4b564d6add ("net: dsa: felix: support psfp filter on vsc9959")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220629183007.3808130-1-vladimir.oltean@nxp.com
+[  767.617392] ==================================================================
+[  767.630776] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x13dc/0x1470
+[  767.638764] Read of size 2 at addr ffff00011ba9d430 by task kworker/u8:7/767
+[  767.647361] CPU: 3 PID: 767 Comm: kworker/u8:7 Tainted: G           O 5.15.11 #15
+[  767.655329] Hardware name: DNI AmazonGo1 A7040 board (DT)
+[  767.660760] Workqueue: lacp_1 bond_3ad_state_machine_handler
+[  767.666468] Call trace:
+[  767.668930]  dump_backtrace+0x0/0x2d0
+[  767.672625]  show_stack+0x24/0x30
+[  767.675965]  dump_stack_lvl+0x68/0x84
+[  767.679659]  print_address_description.constprop.0+0x74/0x2b8
+[  767.685451]  kasan_report+0x1f0/0x260
+[  767.689148]  __asan_load2+0x94/0xd0
+[  767.692667]  bond_3ad_state_machine_handler+0x13dc/0x1470
+
+Fixes: 0622cab0341c ("bonding: fix 802.3ad aggregator reselection")
+Co-developed-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Link: https://lore.kernel.org/r/20220629012914.361-1-yevhen.orlov@plvision.eu
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/bonding/bond_3ad.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1883,6 +1883,8 @@ static void vsc9959_psfp_sgi_table_del(s
- static void vsc9959_psfp_counters_get(struct ocelot *ocelot, u32 index,
- 				      struct felix_stream_filter_counters *counters)
- {
-+	mutex_lock(&ocelot->stats_lock);
-+
- 	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(index),
- 		   SYS_STAT_CFG_STAT_VIEW_M,
- 		   SYS_STAT_CFG);
-@@ -1897,6 +1899,8 @@ static void vsc9959_psfp_counters_get(st
- 		     SYS_STAT_CFG_STAT_VIEW(index) |
- 		     SYS_STAT_CFG_STAT_CLEAR_SHOT(0x10),
- 		     SYS_STAT_CFG);
-+
-+	mutex_unlock(&ocelot->stats_lock);
- }
- 
- static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2228,7 +2228,8 @@ void bond_3ad_unbind_slave(struct slave
+ 				temp_aggregator->num_of_ports--;
+ 				if (__agg_active_ports(temp_aggregator) == 0) {
+ 					select_new_active_agg = temp_aggregator->is_active;
+-					ad_clear_agg(temp_aggregator);
++					if (temp_aggregator->num_of_ports == 0)
++						ad_clear_agg(temp_aggregator);
+ 					if (select_new_active_agg) {
+ 						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
+ 						/* select new active aggregator */
 
 
