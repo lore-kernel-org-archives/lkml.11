@@ -2,232 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB6DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F97C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 13:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232384AbiGENeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
+        id S232214AbiGENfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232576AbiGENdh (ORCPT
+        with ESMTP id S231324AbiGENew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:33:37 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6B428E17
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:55:14 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id a11so14391965ljb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 05:55:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=W1cGgApTbKJWLFEV91Nplq6woKey3TRAhy9Am/ClrW4=;
-        b=jPvGH+kdVD6Q/3Ol/HMko/03+o/UKAOFK9C23heMweX++XoZmFROm6jci5QHMpRE36
-         3gQCaz4SlBirqZ6zRyTqI2Ku8znOuUSx1PnPCp2G5bWDmfkCqsxlGygbzN3Xq7K5J1Vg
-         w9eJXusFlTjMLMY2dm583K8lvPRCi7gYRBEUeO6Xr/yTzIO34rcHN1aiUZPdLRFoNG+E
-         y0/0GOPVZYpKbfasLgHjgH0SHnSU+rb3063siGQpK9t6INtYCZMf9mkg6cY3XiqfYd9P
-         DWUqqg788SqI7Kom7m2XG+hnzonknCsaE/xNYG68tnVCTksRsx+VvdDAHp1lC6V1vocD
-         6Q2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=W1cGgApTbKJWLFEV91Nplq6woKey3TRAhy9Am/ClrW4=;
-        b=OOc4QdXvW6MqEarTlDq7IHgkKKMDqMwLaZ4EDmX9l8yckh+UGOGzqOLszn0dd82HVz
-         i0DIRQrItEp4gtPkwebr27B13DF2cobwQJ7w5fSEFzeWVN6WpoeS0wmI2/xNLToi3nwt
-         BShwLwYd83ZkhVlRbXKs91nzMPQefsxRszCp2GkKj/SCc/Ay7nD2PO0/pDe/xabiof2+
-         rmx1wHCIfai148E4rSvl/h65ndKQMCmN04OT4eOXCtTFAMNpUMPEbGcttpXORo39PCDi
-         EoM6tdJo4kFPIhqFNMAZjuXer/Jvx/JYaQmugyZ+JE+X+rkdaa+/sPan3+fOe3iSaJ7n
-         BKmw==
-X-Gm-Message-State: AJIora8fns0sbyTDvWgsfwwZ2KWatJY8IJ+AP0AZaKHhEqYyGfRBFCwN
-        vtaF9eULQi11VdoeHh9ss93wdEVnoIzsFg==
-X-Google-Smtp-Source: AGRyM1s3xnM62iOhzwwEsUJLvlYd4iPyPQs8nvpycCl9q1NqfYqmBypbvl1w9wTag2K2lwq1B+TZNA==
-X-Received: by 2002:a2e:a484:0:b0:25a:8c94:3763 with SMTP id h4-20020a2ea484000000b0025a8c943763mr19292175lji.64.1657025712278;
-        Tue, 05 Jul 2022 05:55:12 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id l8-20020ac25548000000b0047255d21107sm5674891lfk.54.2022.07.05.05.55.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 05:55:11 -0700 (PDT)
-Message-ID: <3358f88c-5c58-ae0d-2c26-7ba9a954b491@linaro.org>
-Date:   Tue, 5 Jul 2022 14:55:10 +0200
+        Tue, 5 Jul 2022 09:34:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527901EAEC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 05:56:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5778B817DD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2418C341C7;
+        Tue,  5 Jul 2022 12:56:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657025794;
+        bh=/DkYeQmQMOp7ocOqXErwSAITKoW0dXUGUzjZIpwaCAQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VlSYE0suFgc8JYonqgLLHklZJIU8r838nt4yo7iiToxsUJW9tT05b1sd9ghCytjjJ
+         7QLZwcvp62iwxGzt6rYEL4o0jDGavZGwpXXKuo8y9GlnCasZA0NNyU6Ft1T+9ajkXY
+         Ewqz/3GZQxsDhk8AyDzmuncJEIHOHKofOScSSsS1T/MVkrDR439ofwFqJRxf8KML3F
+         3F9LsZC77qu69MhnVru5m+QVNe7whdhpiNVGHSN1IcdNA1TUQQpiN6+RfClV9X1Bt+
+         1x2uzsIQXUIAuPKSM08LIhGMf/XkdCMn5jlxEphmTyeqiQjWkvX8/TZ/YqbG8wkFI+
+         V/KMvE1nVJ79g==
+Date:   Tue, 5 Jul 2022 15:56:14 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     "guanghui.fgh" <guanghuifeng@linux.alibaba.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        baolin.wang@linux.alibaba.com, catalin.marinas@arm.com,
+        akpm@linux-foundation.org, david@redhat.com, jianyong.wu@arm.com,
+        james.morse@arm.com, quic_qiancai@quicinc.com,
+        christophe.leroy@csgroup.eu, jonathan@marek.ca,
+        mark.rutland@arm.com, thunder.leizhen@huawei.com,
+        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, geert+renesas@glider.be,
+        linux-mm@kvack.org, yaohongbo@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com
+Subject: Re: [PATCH v4] arm64: mm: fix linear mem mapping access performance
+ degradation
+Message-ID: <YsQ07kvZX5sO2ov2@kernel.org>
+References: <4accaeda-572f-f72d-5067-2d0999e4d00a@linux.alibaba.com>
+ <20220704131516.GC31684@willie-the-truck>
+ <2ae1cae0-ee26-aa59-7ed9-231d67194dce@linux.alibaba.com>
+ <20220704142313.GE31684@willie-the-truck>
+ <6977c692-78ca-5a67-773e-0389c85f2650@linux.alibaba.com>
+ <20220704163815.GA32177@willie-the-truck>
+ <CAMj1kXEvY5QXOUrXZ7rBp9As=65uTTFRSSq+FPt-n4M2P-_VtQ@mail.gmail.com>
+ <20220705095231.GB552@willie-the-truck>
+ <5d044fdd-a61a-d60f-d294-89e17de37712@linux.alibaba.com>
+ <20220705121115.GB1012@willie-the-truck>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] dt-bindings: leds: Add cznic,turris1x-leds.yaml
- binding
-Content-Language: en-US
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220705000448.14337-1-pali@kernel.org>
- <42d837dd-fbd1-6294-2fa0-8a07ae0f8d44@linaro.org>
- <20220705114238.xwgexavgozqskwbw@pali>
- <90fd55cb-13f4-eac2-2b1a-85ae628ecc89@linaro.org>
- <20220705121541.t7jjcjp4hkqprsdo@pali>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705121541.t7jjcjp4hkqprsdo@pali>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705121115.GB1012@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 14:15, Pali Rohár wrote:
->>>> You need to describe the items, if it is really two items. However your
->>>> example has only one item, so this was not tested and won't work.
->>>
->>> Ehm? Example has two items in the reg.
->>
->> No, you have exactly one item.
->> <0x13 0x1d>
->>
->> Two items are for example:
->> <0x13 0x1d>, <0x23 0x1d>
+On Tue, Jul 05, 2022 at 01:11:16PM +0100, Will Deacon wrote:
+> On Tue, Jul 05, 2022 at 08:07:07PM +0800, guanghui.fgh wrote:
+> > 
+> > 1.The rodata full is harm to the performance and has been disabled in-house.
+> > 
+> > 2.When using crashkernel with rodata non full, the kernel also will use non
+> > block/section mapping which cause high d-TLB miss and degrade performance
+> > greatly.
+> > This patch fix it to use block/section mapping as far as possible.
+> > 
+> > bool can_set_direct_map(void)
+> > {
+> > 	return rodata_full || debug_pagealloc_enabled();
+> > }
+> > 
+> > map_mem:
+> > if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+> > 	flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+> > 
+> > 3.When rodata full is disabled, crashkernel also need protect(keep
+> > arch_kexec_[un]protect_crashkres using).
+> > I think crashkernel should't depend on radata full(Maybe other architecture
+> > don't support radata full now).
 > 
-> Ok. So I should change maxItems to 1 in this case?
-
-Yes
-
+> I think this is going round in circles :/
 > 
-> And how you want to describe those items?
+> As a first step, can we please leave the crashkernel mapped unless
+> rodata=full? It should be a much simpler patch to write, review and maintain
+> and it gives you the performance you want when crashkernel is being used.
 
-In that case, no need to describe.
+Since we are talking about large systems, what do you think about letting
+them set CRASH_ALIGN to PUD_SIZE, then
 
-> 
->>>
->>>> You'll get warning from Rob's robot soon... but you should test the
->>>> bindings instead.
->>>
->>> I have tested bindings on the real hardware and it is working fine
->>> together with the driver from patch 2/2.
->>
->> Bindings cannot be tested on real hardware. Bindings are tested with
->> dt_binding_check, as explained in writing-schema.rst
-> 
-> Ou... this is something which I was not able to run, it just does not
-> work, throws lot of python dependency hell errors and it spend more than
-> hour with it. So sorry, I really cannot run it. Maybe it would be a wise
-> to provide web service for these checks for those who cannot run them
-> locally?
+	unmap(crashkernel);
+	__create_pgd_mapping(crashkernel, NO_BLOCK_MAPPINGS);
 
-It's one pip command to install and one make command to run... I would
-say easy to start using, unless of course you use some unusual distro
-without Python 3 (cannot believe nowadays...) or without pip.
+should be enough to make crash kernel mapped with base pages.
+ 
+> Will
 
-Rob's bot will test it for you.
-
-Anyway, in such case please mark your bindings always as RFT, so we will
-not waste time on reviewing obvious stuff which is found by automated
-tools. I think we both agree that reviewers time should not be used for
-trivial stuff already pointed out by compiler/linter/automation.
-
-> 
->>>
->>>>> +
->>>>> +  "#address-cells":
->>>>> +    const: 1
->>>>> +
->>>>> +  "#size-cells":
->>>>> +    const: 0
->>>>> +
->>>>> +patternProperties:
->>>>> +  "^multi-led@[0-7]$":
->>>>> +    type: object
->>>>> +    $ref: leds-class-multicolor.yaml#
->>>>
->>>> This looks incorrect, unless you rebased on my patchset?
->>>
->>> So what is the correct? (I used inspiration from
->>> cznic,turris-omnia-leds.yaml file)
->>
->> Which according to current multicolor bindings is not correct. Correct
->> is pwm-multicolor. However if you rebase on [1], it looks fine, except
->> missing unevaluatedProperties.
-> 
-> Ok. So does it mean that I should just add
-> "unevaluatedProperties: false"?
-
-Yes, on that level of indentation, so:
-    $ref: leds-class-multicolor.yaml#
-    unevaluatedProperties: false
-
-
-> 
->> [1]
->> https://lore.kernel.org/all/20220624112106.111351-1-krzysztof.kozlowski@linaro.org/
->>
->>>
->>>>> +
->>>>> +    properties:
->>>>> +      reg:
->>>>> +        minimum: 0
->>>>> +        maximum: 7
->>>>> +
->>>>> +    required:
->>>>> +      - reg
->>>>> +
->>>>> +additionalProperties: false
->>>>> +
->>>>> +examples:
->>>>> +  - |
->>>>> +
->>>>
->>>> No blank line.
->>>
->>> Ok.
->>>
->>>>> +    #include <dt-bindings/leds/common.h>
->>>>> +
->>>>> +    cpld@3,0 {
->>>>
->>>> Generic node name.
->>>
->>> Is not cpld name generic enough?
->>
->> No, it means nothing to me. Just like "a", "ashjd" or "wrls".
-> 
-> If you never heard about it, I would suggest to read something about
-> Programmable logic devices. It is interesting category of hardware with
-> which you can play. CPLD and FPGA are very often used in lot of products
-> and FPGA is very easy for playing and programming custom logic.
-
-The are many different acronyms in the language so without context might
-be tricky to connect the dots.
-
-> 
-> For example on wikipedia is list of different technologies of
-> programmable logic devices:
-> https://en.wikipedia.org/wiki/Programmable_logic_device
-> 
-> So if you want more generic name, just name it "pld"? 
-
-That one would be fine.
-
-> But as it is CPLD
-> device I would suggest to name it really as "cpld". It does not matter
-> from which manufactor you have CPLD, just like it does not matter from
-> which manufactor you have NAND.
-
-Then cpld is fine as well.
-
-> 
-> From bus point of view, cpld is like nand or nor nodes in DTS. All of
-> them refers to specific memory map of chip selects on the local bus.
-> 
->> "The name of a node should be somewhat generic, reflecting the function
->> of the device and not its precise programming
->>  model. If appropriate, the name should be one of the following choices:"
-> 
-> Hm... You forgot to send what are those "choices:"?
-
-I didn't, I just assumed you will Google it (or use other web-search
-engine of your choice) to get the spec. As this is a quote, Google
-results should be very accurate. No need to duplicate entire pages of
-publicly available specification.
-
-Best regards,
-Krzysztof
+-- 
+Sincerely yours,
+Mike.
