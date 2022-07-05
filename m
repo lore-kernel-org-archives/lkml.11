@@ -2,84 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1690CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D2A0CCA49D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238674AbiGEM32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
+        id S239179AbiGEMaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237536AbiGEMTT (ORCPT
+        with ESMTP id S236011AbiGEMP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0611ADA6;
-        Tue,  5 Jul 2022 05:15:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 857E3CE1A19;
-        Tue,  5 Jul 2022 12:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 965E4C341C7;
-        Tue,  5 Jul 2022 12:14:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023300;
-        bh=4WXz2y68FOjP0HgfcdIFWltw+CyggqE2EdWR0mX+PZ8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UR1kn+94DAfMR20vOpIu9PHviUs4TqLMHgXqkRs9o02KLlOcMIWCV2fL6CWoRWUnz
-         Z4CSEKcByHysgNtcT9QivK3xAkvSPlwVfM0S3lvVxnX2jh6g59zYXLfblxnjSe2CG0
-         MhcyUZX9NKAa62k6xAfl1htsqFAGc2FFKUyD2Ifs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Felipe=20de=20Jesus=20Araujo=20da=20Concei=C3=A7=C3=A3o?= 
-        <felipe.conceicao@petrosoftdesign.com>,
-        "Lamarque V. Souza" <lamarque.souza@petrosoftdesign.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.18 011/102] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA IM2P33F8ABR1
-Date:   Tue,  5 Jul 2022 13:57:37 +0200
-Message-Id: <20220705115618.736191551@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
-References: <20220705115618.410217782@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Jul 2022 08:15:59 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173E41B7BA;
+        Tue,  5 Jul 2022 05:11:55 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 265CBQ0b048797;
+        Tue, 5 Jul 2022 07:11:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1657023086;
+        bh=DdKYIDUtMAM+MphRAs2vZgvWfyg6OQsVaA35wJnU7CU=;
+        h=From:To:CC:Subject:Date;
+        b=XTlnfN4jbsti3M/WIragQoOnZnptrOtpqacEqE39LJQ7DH2J1hXoKD9MrsoloCDD9
+         bT1U+KZ0v1/TrsiLj16fW8gLexRuzZBYuzHIgwRwjgZLWO8VIP6IHe4atMTM10i6nZ
+         W37+ILCB7/1LKfNDWaahWzBpWtO/Tj/Ab9P2pZv0=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 265CBQZx017026
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Jul 2022 07:11:26 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Jul 2022 07:11:26 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Jul 2022 07:11:26 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 265CBOqx023307;
+        Tue, 5 Jul 2022 07:11:25 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <dri-devel@lists.freedesktop.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <p.zabel@pengutronix.de>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>,
+        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
+        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>,
+        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
+        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v4 0/5] Add support for CDNS DSI J721E wrapper
+Date:   Tue, 5 Jul 2022 17:41:11 +0530
+Message-ID: <20220705121116.24121-1-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lamarque Vieira Souza <lamarque@petrosoftdesign.com>
+Following series of patches adds supports for CDNS DSI
+bridge on j721e.
 
-commit e1c70d79346356bb1ede3f79436df80917845ab9 upstream.
+v4:
+ - split conversion txt to yaml
+ - seperate commit for addinig new compatible
+ - conditionally limit the items for reg property, based on the compatible
 
-ADATA IM2P33F8ABR1 reports bogus eui64 values that appear to be the same
-across all drives. Quirk them out so they are not marked as "non globally
-unique" duplicates.
+v3:
+ - Convert cdns-dsi.txt binding to yaml
+ - Move the bridge under display/bridge/cadence
+ - Add new compatible to enable the wrapper module
 
-Co-developed-by: Felipe de Jesus Araujo da Conceição <felipe.conceicao@petrosoftdesign.com>
-Signed-off-by: Felipe de Jesus Araujo da Conceição <felipe.conceicao@petrosoftdesign.com>
-Signed-off-by: Lamarque V. Souza <lamarque.souza@petrosoftdesign.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+v2:
+ - Moved setting DPI0 to bridge_enable, since it
+   should be done after pm_runtime_get
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/nvme/host/pci.c |    2 ++
- 1 file changed, 2 insertions(+)
+Rahul T R (5):
+  dt-bindings: display: bridge: Convert cdns,dsi.txt to yaml
+  dt-bindings: display: bridge: cdns,dsi: Add compatible for dsi on
+    j721e
+  drm/bridge: cdns-dsi: Move to drm/bridge/cadence
+  drm/bridge: cdns-dsi: Create a header file
+  drm/bridge: cdns-dsi: Add support for J721E wrapper
 
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3436,6 +3436,8 @@ static const struct pci_device_id nvme_i
- 	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
- 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
- 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-+	{ PCI_DEVICE(0x1cc1, 0x33f8),   /* ADATA IM2P33F8ABR1 1 TB */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(0x10ec, 0x5762),   /* ADATA SX6000LNP */
- 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
- 				NVME_QUIRK_BOGUS_NID, },
+ .../bindings/display/bridge/cdns,dsi.txt      | 112 ----
+ .../bindings/display/bridge/cdns,dsi.yaml     | 218 ++++++++
+ drivers/gpu/drm/bridge/Kconfig                |  11 -
+ drivers/gpu/drm/bridge/Makefile               |   1 -
+ drivers/gpu/drm/bridge/cadence/Kconfig        |  21 +
+ drivers/gpu/drm/bridge/cadence/Makefile       |   3 +
+ .../{cdns-dsi.c => cadence/cdns-dsi-core.c}   | 483 ++----------------
+ .../gpu/drm/bridge/cadence/cdns-dsi-core.h    | 471 +++++++++++++++++
+ .../gpu/drm/bridge/cadence/cdns-dsi-j721e.c   |  51 ++
+ .../gpu/drm/bridge/cadence/cdns-dsi-j721e.h   |  18 +
+ 10 files changed, 819 insertions(+), 570 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.txt
+ create mode 100644 Documentation/devicetree/bindings/display/bridge/cdns,dsi.yaml
+ rename drivers/gpu/drm/bridge/{cdns-dsi.c => cadence/cdns-dsi-core.c} (65%)
+ create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h
+ create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c
+ create mode 100644 drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.h
 
+-- 
+2.36.1
 
