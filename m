@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D151C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C820C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238435AbiGEMgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
+        id S238490AbiGEMgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiGEM0x (ORCPT
+        with ESMTP id S237991AbiGEM0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:26:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F95419283;
-        Tue,  5 Jul 2022 05:19:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833E31903F;
+        Tue,  5 Jul 2022 05:19:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08C0B61A94;
-        Tue,  5 Jul 2022 12:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DFDCC341C7;
-        Tue,  5 Jul 2022 12:19:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A21FB817D7;
+        Tue,  5 Jul 2022 12:19:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E71C341C7;
+        Tue,  5 Jul 2022 12:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023562;
-        bh=Ig/3G7oernmENYG2DFEgOyi5ubdQU1IEW0OLmXhB+jI=;
+        s=korg; t=1657023556;
+        bh=BC4FmKCgrjD525c56OJFhwPcTeuAUarXhmva6CJfH+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VduMVcPErDKw+w6E26X1Ox0dsMNhrLEp3PHKblwtiK11KRZduCWszNcLk1g1/sYAT
-         MnT2e0nOeRkdJEvrjNYpU92VSBUkjjv5qXIsNpARy5bWJcmrBJMIb5GNclXEBbz6UA
-         U5XLXmyXsY9MUe3tJggyil9hJ+CQ3O/8lSLOi3NU=
+        b=qm2RIFKu7pSyOeprBSDP9NbdB6rIx3R0lZn6hGxmU55+tslyr9O0th45A4i+W1nrt
+         LhlfTSmL6g6lUqo9xzM8XMYuGXNBQLjamaslCayaWslr1cN04caY4J/tB6d81nLH7s
+         UjXr2xaNkCWQE6IoNo0+5yilWrahOl0ioJ1mKlRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        katrinzhou <katrinzhou@tencent.com>,
-        Jani Nikula <jani.nikula@intel.com>,
+        stable@vger.kernel.org, Mark Yacoub <markyacoub@chromium.org>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 084/102] drm/i915/gem: add missing else
-Date:   Tue,  5 Jul 2022 13:58:50 +0200
-Message-Id: <20220705115620.797799156@linuxfoundation.org>
+Subject: [PATCH 5.18 082/102] drm/msm/dpu: Increment vsync_cnt before waking up userspace
+Date:   Tue,  5 Jul 2022 13:58:48 +0200
+Message-Id: <20220705115620.738471178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -50,42 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: katrinzhou <katrinzhou@tencent.com>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit 9efdd519d001ee3e761f6ff80d5eb123387421c1 ]
+[ Upstream commit c28d76d360f9f7af1f910342bde27939873bc45e ]
 
-Add missing else in set_proto_ctx_param() to fix coverity issue.
+The 'vsync_cnt' is used to count the number of frames for a crtc.
+Unfortunately, we increment the count after waking up userspace via
+dpu_crtc_vblank_callback() calling drm_crtc_handle_vblank().
+drm_crtc_handle_vblank() wakes up userspace processes that have called
+drm_wait_vblank_ioctl(), and if that ioctl is expecting the count to
+increase it won't.
 
-Addresses-Coverity: ("Unused value")
-Fixes: d4433c7600f7 ("drm/i915/gem: Use the proto-context to handle create parameters (v5)")
-Suggested-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Signed-off-by: katrinzhou <katrinzhou@tencent.com>
-[tursulin: fixup alignment]
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220621124926.615884-1-tvrtko.ursulin@linux.intel.com
-(cherry picked from commit 7482a65664c16cc88eb84d2b545a1fed887378a1)
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Increment the count before calling into the drm APIs so that we don't
+have to worry about ordering the increment with anything else in drm.
+This fixes a software video decode test that fails to see frame counts
+increase on Trogdor boards.
+
+Cc: Mark Yacoub <markyacoub@chromium.org>
+Cc: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 885455d6bf82 ("drm/msm: Change dpu_crtc_get_vblank_counter to use vsync count.")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Tested-by: Jessica Zhang <quic_jesszhan@quicinc.com> # Trogdor (sc7180)
+Patchwork: https://patchwork.freedesktop.org/patch/490531/
+Link: https://lore.kernel.org/r/20220622023855.2970913-1-swboyd@chromium.org
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_context.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_context.c b/drivers/gpu/drm/i915/gem/i915_gem_context.c
-index 9ae294eb7fb4..12b7d4d39216 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_context.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_context.c
-@@ -932,8 +932,9 @@ static int set_proto_ctx_param(struct drm_i915_file_private *fpriv,
- 	case I915_CONTEXT_PARAM_PERSISTENCE:
- 		if (args->size)
- 			ret = -EINVAL;
--		ret = proto_context_set_persistence(fpriv->dev_priv, pc,
--						    args->value);
-+		else
-+			ret = proto_context_set_persistence(fpriv->dev_priv, pc,
-+							    args->value);
- 		break;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 3940b9c6323b..fffd2ef897a0 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1187,12 +1187,13 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+ 	DPU_ATRACE_BEGIN("encoder_vblank_callback");
+ 	dpu_enc = to_dpu_encoder_virt(drm_enc);
  
- 	case I915_CONTEXT_PARAM_PROTECTED_CONTENT:
++	atomic_inc(&phy_enc->vsync_cnt);
++
+ 	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+ 	if (dpu_enc->crtc)
+ 		dpu_crtc_vblank_callback(dpu_enc->crtc);
+ 	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+ 
+-	atomic_inc(&phy_enc->vsync_cnt);
+ 	DPU_ATRACE_END("encoder_vblank_callback");
+ }
+ 
 -- 
 2.35.1
 
