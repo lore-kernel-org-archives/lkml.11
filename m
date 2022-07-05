@@ -2,92 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF807C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E488C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiGESBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
+        id S232107AbiGESBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiGESBO (ORCPT
+        with ESMTP id S231414AbiGESBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:01:14 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CED419C11
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:01:13 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id t25so21880830lfg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 11:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0079lLmav/VCCFzPGL1GXPUq4bAgsYoN8nrtlXETWH8=;
-        b=KYcHBYys3eLsXJLm/eYQ/ZNS+mx8xvwor3pYgFX5OQk5VLfScF2Zw6XEaC9gwWDo4j
-         mcLzHVi9MnfgJtP8ceZceddHpveWbfkaMLYpS4HC7fK/lKAwkrusIckPnJjWcYNzuRRH
-         MRLgEoedTLKgS96qcCc2SiauxBsXUtv77fmJ0D7AGCDvTsZkNBBUFJ88uAPlOSXspbxr
-         MP/0EmUiIv3PBWAqry8cZQgbCioCpcYbBEKfdmw2tpLp2z6rXdfhNXLHD1RYiTNW4qbq
-         7ZpIqoqifj2U6IYgwfFGInm4dTBoPEU4KLS2/tvgtuLy4Em14B3LHV5WWp0O02sKR4o8
-         d/pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0079lLmav/VCCFzPGL1GXPUq4bAgsYoN8nrtlXETWH8=;
-        b=A8j/Lk63UhaXNJs8AAEg8yy0cRnDw1cxYRn1YhDOAxOEIdRH3qnvlqppKftNx3UNEl
-         QlVEUN2lsTx7Vt/l0SqN+TeS2nxNQBxY2Bl+yWUG0ae2LfDsRCUs+8avfl+1uJuVu/5m
-         SE0YvWtaPH/sqXgl0EDD5yNEUjzir6RfE1N3WkPsouW0+Z0P4fmwSxi3C3WMzcwDedxY
-         /c79QoTzyePdNsqKgw4ANecVZItyq0dw7+Emd0/65QLiie95ofkifWt5rGJcFkD7ptrk
-         /trv+XCn6pXEbFqK8a6ox/hLYgYTY/OsU2erqo58/SuYUIwugISPQZfbuaJ+d4JwEE0t
-         L8nA==
-X-Gm-Message-State: AJIora9ZiWHZb467nySfBkUD1wU2azDgwWSTVFkQNEfvAZg8euDw8YUo
-        71Wt9191xlMQFIF1lzqSM2DfKw==
-X-Google-Smtp-Source: AGRyM1upKilZU4ZKNQrEZdcfM1s7N9ZuleYTw86ANBrPbDZ8QK/h77KQm2CPc3QLLwp33Gl5u1kdjQ==
-X-Received: by 2002:a05:6512:260a:b0:47f:ab30:d624 with SMTP id bt10-20020a056512260a00b0047fab30d624mr24227411lfb.326.1657044071745;
-        Tue, 05 Jul 2022 11:01:11 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id bi37-20020a05651c232500b0025d3ba76992sm201662ljb.97.2022.07.05.11.01.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 11:01:10 -0700 (PDT)
-Message-ID: <919d53fc-b2c0-bd9e-09fe-d6402ad3af8b@linaro.org>
-Date:   Tue, 5 Jul 2022 20:01:09 +0200
+        Tue, 5 Jul 2022 14:01:23 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4581EACF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657044082; x=1688580082;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Pfm/RYAueDuO2Oi8EfsfQLxSrg3TUplLuLB+vxlNeh0=;
+  b=ClfPpeiF+key4AYh7O11HzlIPDKs+x5MK5jemtTEMPC4AoBAskg6j/jf
+   uCjWLEz5T4shE2iEUAFDIuRllTyQ0WFoqB4yx0szaLZHfHbRB9JPCHMO7
+   9V41UMfjIOvWYX8D9EdQ0SRD96RallUT6wO0BjCVniIja+6ocSbUJg5zl
+   3uXnnnOwPHKMNmmu3wMrSL0pqrwnVSWr5BcmWEzNY3ORGXc8S7a5bY+bw
+   BHlGkXBGA5Vbn5UpyFPWfGVeLOsrEwKWQFyMUfaggvssqnOvQgkpIB2I8
+   3ULqjn/Q+kKp3tYnWkP+sDbn/VvQIHw9wSoBMXx3LgrgZmX9k3TY0pruC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="282184037"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="282184037"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 10:53:54 -0700
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="682608856"
+Received: from wxu3-mobl1.amr.corp.intel.com (HELO [10.212.54.191]) ([10.212.54.191])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 10:53:53 -0700
+Message-ID: <377f2c4a-562b-9384-adfc-8180964c2b42@linux.intel.com>
+Date:   Tue, 5 Jul 2022 11:57:37 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dt-bindings: sound: Convert atmel CLASSD to json-schema
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/2] ASoC: SOF: Intel: byt: remove duplicating driver
+ data retrieval
 Content-Language: en-US
-To:     Ryan.Wanner@microchip.com, Claudiu.Beznea@microchip.com,
-        nicolas.ferre@microchip.com, alexandre.berna@microchip.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220705163046.18409-1-Ryan.Wanner@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220705163046.18409-1-Ryan.Wanner@microchip.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+References: <20220705161102.76250-1-andriy.shevchenko@linux.intel.com>
+ <20220705161102.76250-2-andriy.shevchenko@linux.intel.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220705161102.76250-2-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/2022 18:30, Ryan.Wanner@microchip.com wrote:
-> From: Ryan Wanner <Ryan.Wanner@microchip.com>
+
+
+On 7/5/22 11:11, Andy Shevchenko wrote:
+> device_get_match_data() in ACPI case calls similar to acpi_match_device().
+> Hence there is no need to duplicate the call. Just assign what is in
+> the id->driver_data.
 > 
-> Convert atmel CLASSD devicetree binding to json-schema.
-> Change file name to match json-scheme naming.
-> 
-> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+
+Thanks Andy!
+
 > ---
->  .../bindings/sound/atmel,sama5d2-classd.yaml  | 111 ++++++++++++++++++
->  .../bindings/sound/atmel-classd.txt           |  55 ---------
->  2 files changed, 111 insertions(+), 55 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/sound/atmel,sama5d2-classd.yaml
->  delete mode 100644 Documentation/devicetree/bindings/sound/atmel-classd.txt
+> v2: new patch (Pierre)
+>  sound/soc/sof/intel/byt.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
 > 
-
-All comments from your other patch apply here as well. It's easier to
-send them in a patchset...
-
-
-Best regards,
-Krzysztof
+> diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
+> index 4ed8381eceda..e6dc4ff531c3 100644
+> --- a/sound/soc/sof/intel/byt.c
+> +++ b/sound/soc/sof/intel/byt.c
+> @@ -465,10 +465,7 @@ static int sof_baytrail_probe(struct platform_device *pdev)
+>  		return -ENODEV;
+>  	}
+>  
+> -	desc = device_get_match_data(&pdev->dev);
+> -	if (!desc)
+> -		return -ENODEV;
+> -
+> +	desc = (const struct sof_dev_desc *)id->driver_data;
+>  	if (desc == &sof_acpi_baytrail_desc && soc_intel_is_byt_cr(pdev))
+>  		desc = &sof_acpi_baytrailcr_desc;
+>  
