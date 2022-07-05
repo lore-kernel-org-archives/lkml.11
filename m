@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5636BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60ED3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236186AbiGEMRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
+        id S236196AbiGEMRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234283AbiGEMHX (ORCPT
+        with ESMTP id S234352AbiGEMH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:07:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7925519021;
-        Tue,  5 Jul 2022 05:06:08 -0700 (PDT)
+        Tue, 5 Jul 2022 08:07:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065C018E1E;
+        Tue,  5 Jul 2022 05:06:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1673961876;
-        Tue,  5 Jul 2022 12:06:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201A5C341CD;
-        Tue,  5 Jul 2022 12:06:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E116B817CC;
+        Tue,  5 Jul 2022 12:06:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C8BBC341C7;
+        Tue,  5 Jul 2022 12:06:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022767;
-        bh=svF5i739Bq80o8Vq9mQxW322TDesVXYpo1IegF0LoZM=;
+        s=korg; t=1657022773;
+        bh=MnqXVIOJW7ZcGVW2Tx32lJm+Cc+JW85oMxqZt8G151o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l215cXiXvvkCcCnXkkGYYUAshPjPi81E4IHxn9x7davoA2tsj9aDRMQHH3aHCIlsP
-         YduYtU6dxBYiCM20/RGxfTCBcQN1TvKPw9z6p8/NKKg9By9Ce5NDZTk+US235Hpq2H
-         jRDR9dXiuS1/Zlnz7OuESey59qbxa86bfgWsffU4=
+        b=S1eLKx2LWF708FFBOgQuPQpTRpMe+Jyrr7RVZ85PRvK5zCPyWgnOJxUzA5XS/D0l+
+         AUqalFkHJHJG1IkebVQroEXG2isjYMlr5GfYeaz4UllZd9sf5ZIQcw7E9Zhx8FdM+G
+         yZE2Grf8C2Z5UwTmNTODkRJi3b1ZEPxTGhPP3b+U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, katrinzhou <katrinzhou@tencent.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 31/58] net: dsa: bcm_sf2: force pause link settings
-Date:   Tue,  5 Jul 2022 13:58:07 +0200
-Message-Id: <20220705115611.162237133@linuxfoundation.org>
+Subject: [PATCH 5.4 33/58] ipv6/sit: fix ipip6_tunnel_get_prl return value
+Date:   Tue,  5 Jul 2022 13:58:09 +0200
+Message-Id: <20220705115611.220348063@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115610.236040773@linuxfoundation.org>
 References: <20220705115610.236040773@linuxfoundation.org>
@@ -49,37 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: katrinzhou <katrinzhou@tencent.com>
 
-commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
+commit adabdd8f6acabc0c3fdbba2e7f5a2edd9c5ef22d upstream.
 
-The pause settings reported by the PHY should also be applied to the GMII port
-status override otherwise the switch will not generate pause frames towards the
-link partner despite the advertisement saying otherwise.
+When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
+Move the position of label "out" to return correctly.
 
-Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+Addresses-Coverity: ("Unused value")
+Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
+Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+Reviewed-by: Eric Dumazet<edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220628035030.1039171-1-zys.zljxml@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/bcm_sf2.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ net/ipv6/sit.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -602,6 +602,11 @@ force_link:
- 		reg |= LINK_STS;
- 	if (state->duplex == DUPLEX_FULL)
- 		reg |= DUPLX_MODE;
-+	if (state->pause & MLO_PAUSE_TXRX_MASK) {
-+		if (state->pause & MLO_PAUSE_TX)
-+			reg |= TXFLOW_CNTL;
-+		reg |= RXFLOW_CNTL;
-+	}
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -310,8 +310,6 @@ static int ipip6_tunnel_get_prl(struct i
+ 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL | __GFP_NOWARN) :
+ 		NULL;
  
- 	core_writel(priv, reg, offset);
+-	rcu_read_lock();
+-
+ 	ca = min(t->prl_count, cmax);
+ 
+ 	if (!kp) {
+@@ -327,7 +325,7 @@ static int ipip6_tunnel_get_prl(struct i
+ 		}
+ 	}
+ 
+-	c = 0;
++	rcu_read_lock();
+ 	for_each_prl_rcu(t->prl) {
+ 		if (c >= cmax)
+ 			break;
+@@ -339,7 +337,7 @@ static int ipip6_tunnel_get_prl(struct i
+ 		if (kprl.addr != htonl(INADDR_ANY))
+ 			break;
+ 	}
+-out:
++
+ 	rcu_read_unlock();
+ 
+ 	len = sizeof(*kp) * c;
+@@ -348,7 +346,7 @@ out:
+ 		ret = -EFAULT;
+ 
+ 	kfree(kp);
+-
++out:
+ 	return ret;
  }
+ 
 
 
