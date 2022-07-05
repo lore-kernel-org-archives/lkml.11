@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09507CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236742AbiGEMZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
+        id S236776AbiGEMZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236557AbiGEMRy (ORCPT
+        with ESMTP id S236554AbiGEMRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:17:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A772193C8;
-        Tue,  5 Jul 2022 05:12:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FC2183B9;
+        Tue,  5 Jul 2022 05:12:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 265816199F;
-        Tue,  5 Jul 2022 12:12:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F88C341C7;
-        Tue,  5 Jul 2022 12:12:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D303619A6;
+        Tue,  5 Jul 2022 12:12:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E5AEC341C7;
+        Tue,  5 Jul 2022 12:12:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023172;
-        bh=SxEx45m+FeN+Ug2bbYW0UuEaNfwSzL2M/Kss9ZJVAfE=;
+        s=korg; t=1657023169;
+        bh=KLewugvlQfnHhOK3fgli2q9qbyOzLhQxzieXn0BcCdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vl2Hxo742WULJnkMpGcddesgLPw8x7KaPAtK4R1SZt4GStA0Z1n7Whvtlr/xgWfQU
-         calPWlTwIxzAKXC6VNOC7DbevonHESCdE2TSVRbc8WVDz0kbdTMvmo0kb3Ocd0jTzd
-         YFYsAUOk+hTciJR5ZNC+XBlm22BgRzUEEuGKSPxY=
+        b=Jnpui4DS7tMvR5BIqA4kYcc9rvw0vb9XmzBYAiimdcbYoQfZqJDknRo75y2L3KdW+
+         s6roqgz7jrTIoOApC+CMBES6+TIAvWkSkbLtHm4SYejImh9wOSvisQLBqKz3ZqbVUG
+         7CdE+pLA7HKiJ6subq8s9+CTFRP3o2SuaJtUmA7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.15 36/98] caif_virtio: fix race between virtio_device_ready() and ndo_open()
-Date:   Tue,  5 Jul 2022 13:57:54 +0200
-Message-Id: <20220705115618.615667154@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH 5.15 62/98] selftests/rseq: remove ARRAY_SIZE define from individual tests
+Date:   Tue,  5 Jul 2022 13:58:20 +0200
+Message-Id: <20220705115619.341529183@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
 References: <20220705115617.568350164@linuxfoundation.org>
@@ -48,54 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
+commit 07ad4f7629d4802ff0d962b0ac23ea6445964e2a upstream.
 
-We currently depend on probe() calling virtio_device_ready() -
-which happens after netdev
-registration. Since ndo_open() can be called immediately
-after register_netdev, this means there exists a race between
-ndo_open() and virtio_device_ready(): the driver may start to use the
-device (e.g. TX) before DRIVER_OK which violates the spec.
+ARRAY_SIZE is defined in several selftests. Remove definitions from
+individual test files and include header file for the define instead.
+ARRAY_SIZE define is added in a separate patch to prepare for this
+change.
 
-Fix this by switching to use register_netdevice() and protect the
-virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-only be called after virtio_device_ready().
+Remove ARRAY_SIZE from rseq tests and pickup the one defined in
+kselftest.h.
 
-Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/caif/caif_virtio.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ tools/testing/selftests/rseq/basic_percpu_ops_test.c |    3 +--
+ tools/testing/selftests/rseq/rseq.c                  |    3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/net/caif/caif_virtio.c
-+++ b/drivers/net/caif/caif_virtio.c
-@@ -721,13 +721,21 @@ static int cfv_probe(struct virtio_devic
- 	/* Carrier is off until netdevice is opened */
- 	netif_carrier_off(netdev);
+--- a/tools/testing/selftests/rseq/basic_percpu_ops_test.c
++++ b/tools/testing/selftests/rseq/basic_percpu_ops_test.c
+@@ -9,10 +9,9 @@
+ #include <string.h>
+ #include <stddef.h>
  
-+	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-+	rtnl_lock();
-+
- 	/* register Netdev */
--	err = register_netdev(netdev);
-+	err = register_netdevice(netdev);
- 	if (err) {
-+		rtnl_unlock();
- 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
- 		goto err;
- 	}
++#include "../kselftest.h"
+ #include "rseq.h"
  
-+	virtio_device_ready(vdev);
-+
-+	rtnl_unlock();
-+
- 	debugfs_init(cfv);
+-#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
+-
+ struct percpu_lock_entry {
+ 	intptr_t v;
+ } __attribute__((aligned(128)));
+--- a/tools/testing/selftests/rseq/rseq.c
++++ b/tools/testing/selftests/rseq/rseq.c
+@@ -27,10 +27,9 @@
+ #include <signal.h>
+ #include <limits.h>
  
- 	return 0;
++#include "../kselftest.h"
+ #include "rseq.h"
+ 
+-#define ARRAY_SIZE(arr)	(sizeof(arr) / sizeof((arr)[0]))
+-
+ __thread volatile struct rseq __rseq_abi = {
+ 	.cpu_id = RSEQ_CPU_ID_UNINITIALIZED,
+ };
 
 
