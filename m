@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55867C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB19CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238047AbiGEMcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        id S238149AbiGEMcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235065AbiGEMVY (ORCPT
+        with ESMTP id S236327AbiGEMVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:21:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B9E1EAFE;
-        Tue,  5 Jul 2022 05:16:37 -0700 (PDT)
+        Tue, 5 Jul 2022 08:21:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567B81EC5B;
+        Tue,  5 Jul 2022 05:16:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED54F61A94;
-        Tue,  5 Jul 2022 12:16:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03878C341C7;
-        Tue,  5 Jul 2022 12:16:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E2FFB817D6;
+        Tue,  5 Jul 2022 12:16:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC7ADC341C7;
+        Tue,  5 Jul 2022 12:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023396;
-        bh=tgcEEObmjWIoRo4+RmcNJHwzZmd8PbTCFr5gDg2ruiw=;
+        s=korg; t=1657023399;
+        bh=yW6P9YuM9s9xi88y9L2oz/Ysp91Ihvn+tkdKgZ6/CXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ldysNu6+WlyUZpsAoK/YcyI87T5X4aGu3Pq5jmuPasIccdWVM+pGgBULnUQ1AzAns
-         b0aV87yPnF2hDaLCzBMNEPVy2U4geGebPVTfjaPc92Q+kimJUXyY3YaTyZ/mHkEiYt
-         DEbzhxKMDtsVoj3jerlYo9iZUzz5qh+874I9Up94=
+        b=RWlzaDYyl+x1HYqhZmL2Ij+mUGUqgAbGitinutWrwZC6tmgv2Y+eVhAxPSXB+wW/n
+         t53wx3c/OQ+OPHtyQSYy9WzcCpO4AHrZJXSCTfD8Ps2LMeDfy6aQUTOXcqRzc0x5p7
+         2v9W/M+Vd7E9qb1RrC4kepJkZZZjp2J6Bm9CVQZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.18 046/102] NFSv4: Add an fattr allocation to _nfs4_discover_trunking()
-Date:   Tue,  5 Jul 2022 13:58:12 +0200
-Message-Id: <20220705115619.716969254@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        Luis Henriques <lhenriques@suse.de>,
+        He Zhe <zhe.he@windriver.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.18 047/102] vfs: fix copy_file_range() regression in cross-fs copies
+Date:   Tue,  5 Jul 2022 13:58:13 +0200
+Message-Id: <20220705115619.744439744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,91 +53,251 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Scott Mayhew <smayhew@redhat.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-commit 4f40a5b5544618b096d1611a18219dd91fd57f80 upstream.
+commit 868f9f2f8e004bfe0d3935b1976f625b2924893b upstream.
 
-This was missed in c3ed222745d9 ("NFSv4: Fix free of uninitialized
-nfs4_label on referral lookup.") and causes a panic when mounting
-with '-o trunkdiscovery':
+A regression has been reported by Nicolas Boichat, found while using the
+copy_file_range syscall to copy a tracefs file.
 
-PID: 1604   TASK: ffff93dac3520000  CPU: 3   COMMAND: "mount.nfs"
- #0 [ffffb79140f738f8] machine_kexec at ffffffffaec64bee
- #1 [ffffb79140f73950] __crash_kexec at ffffffffaeda67fd
- #2 [ffffb79140f73a18] crash_kexec at ffffffffaeda76ed
- #3 [ffffb79140f73a30] oops_end at ffffffffaec2658d
- #4 [ffffb79140f73a50] general_protection at ffffffffaf60111e
-    [exception RIP: nfs_fattr_init+0x5]
-    RIP: ffffffffc0c18265  RSP: ffffb79140f73b08  RFLAGS: 00010246
-    RAX: 0000000000000000  RBX: ffff93dac304a800  RCX: 0000000000000000
-    RDX: ffffb79140f73bb0  RSI: ffff93dadc8cbb40  RDI: d03ee11cfaf6bd50
-    RBP: ffffb79140f73be8   R8: ffffffffc0691560   R9: 0000000000000006
-    R10: ffff93db3ffd3df8  R11: 0000000000000000  R12: ffff93dac4040000
-    R13: ffff93dac2848e00  R14: ffffb79140f73b60  R15: ffffb79140f73b30
-    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- #5 [ffffb79140f73b08] _nfs41_proc_get_locations at ffffffffc0c73d53 [nfsv4]
- #6 [ffffb79140f73bf0] nfs4_proc_get_locations at ffffffffc0c83e90 [nfsv4]
- #7 [ffffb79140f73c60] nfs4_discover_trunking at ffffffffc0c83fb7 [nfsv4]
- #8 [ffffb79140f73cd8] nfs_probe_fsinfo at ffffffffc0c0f95f [nfs]
- #9 [ffffb79140f73da0] nfs_probe_server at ffffffffc0c1026a [nfs]
-    RIP: 00007f6254fce26e  RSP: 00007ffc69496ac8  RFLAGS: 00000246
-    RAX: ffffffffffffffda  RBX: 0000000000000000  RCX: 00007f6254fce26e
-    RDX: 00005600220a82a0  RSI: 00005600220a64d0  RDI: 00005600220a6520
-    RBP: 00007ffc69496c50   R8: 00005600220a8710   R9: 003035322e323231
-    R10: 0000000000000000  R11: 0000000000000246  R12: 00007ffc69496c50
-    R13: 00005600220a8440  R14: 0000000000000010  R15: 0000560020650ef9
-    ORIG_RAX: 00000000000000a5  CS: 0033  SS: 002b
+Before commit 5dae222a5ff0 ("vfs: allow copy_file_range to copy across
+devices") the kernel would return -EXDEV to userspace when trying to
+copy a file across different filesystems.  After this commit, the
+syscall doesn't fail anymore and instead returns zero (zero bytes
+copied), as this file's content is generated on-the-fly and thus reports
+a size of zero.
 
-Fixes: c3ed222745d9 ("NFSv4: Fix free of uninitialized nfs4_label on referral lookup.")
-Signed-off-by: Scott Mayhew <smayhew@redhat.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Another regression has been reported by He Zhe - the assertion of
+WARN_ON_ONCE(ret == -EOPNOTSUPP) can be triggered from userspace when
+copying from a sysfs file whose read operation may return -EOPNOTSUPP.
+
+Since we do not have test coverage for copy_file_range() between any two
+types of filesystems, the best way to avoid these sort of issues in the
+future is for the kernel to be more picky about filesystems that are
+allowed to do copy_file_range().
+
+This patch restores some cross-filesystem copy restrictions that existed
+prior to commit 5dae222a5ff0 ("vfs: allow copy_file_range to copy across
+devices"), namely, cross-sb copy is not allowed for filesystems that do
+not implement ->copy_file_range().
+
+Filesystems that do implement ->copy_file_range() have full control of
+the result - if this method returns an error, the error is returned to
+the user.  Before this change this was only true for fs that did not
+implement the ->remap_file_range() operation (i.e.  nfsv3).
+
+Filesystems that do not implement ->copy_file_range() still fall-back to
+the generic_copy_file_range() implementation when the copy is within the
+same sb.  This helps the kernel can maintain a more consistent story
+about which filesystems support copy_file_range().
+
+nfsd and ksmbd servers are modified to fall-back to the
+generic_copy_file_range() implementation in case vfs_copy_file_range()
+fails with -EOPNOTSUPP or -EXDEV, which preserves behavior of
+server-side-copy.
+
+fall-back to generic_copy_file_range() is not implemented for the smb
+operation FSCTL_DUPLICATE_EXTENTS_TO_FILE, which is arguably a correct
+change of behavior.
+
+Fixes: 5dae222a5ff0 ("vfs: allow copy_file_range to copy across devices")
+Link: https://lore.kernel.org/linux-fsdevel/20210212044405.4120619-1-drinkcat@chromium.org/
+Link: https://lore.kernel.org/linux-fsdevel/CANMq1KDZuxir2LM5jOTm0xx+BnvW=ZmpsG47CyHFJwnw7zSX6Q@mail.gmail.com/
+Link: https://lore.kernel.org/linux-fsdevel/20210126135012.1.If45b7cdc3ff707bc1efa17f5366057d60603c45f@changeid/
+Link: https://lore.kernel.org/linux-fsdevel/20210630161320.29006-1-lhenriques@suse.de/
+Reported-by: Nicolas Boichat <drinkcat@chromium.org>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Luis Henriques <lhenriques@suse.de>
+Fixes: 64bf5ff58dff ("vfs: no fallback for ->copy_file_range")
+Link: https://lore.kernel.org/linux-fsdevel/20f17f64-88cb-4e80-07c1-85cb96c83619@windriver.com/
+Reported-by: He Zhe <zhe.he@windriver.com>
+Tested-by: Namjae Jeon <linkinjeon@kernel.org>
+Tested-by: Luis Henriques <lhenriques@suse.de>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ fs/ksmbd/smb2pdu.c |   16 ++++++++---
+ fs/ksmbd/vfs.c     |    4 ++
+ fs/nfsd/vfs.c      |    8 ++++-
+ fs/read_write.c    |   77 ++++++++++++++++++++++++++++++-----------------------
+ 4 files changed, 68 insertions(+), 37 deletions(-)
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index c0fdcf8c0032..bb0e84a46d61 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -4012,22 +4012,29 @@ static int _nfs4_discover_trunking(struct nfs_server *server,
- 	}
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -7815,14 +7815,24 @@ int smb2_ioctl(struct ksmbd_work *work)
+ 		src_off = le64_to_cpu(dup_ext->SourceFileOffset);
+ 		dst_off = le64_to_cpu(dup_ext->TargetFileOffset);
+ 		length = le64_to_cpu(dup_ext->ByteCount);
+-		cloned = vfs_clone_file_range(fp_in->filp, src_off, fp_out->filp,
+-					      dst_off, length, 0);
++		/*
++		 * XXX: It is not clear if FSCTL_DUPLICATE_EXTENTS_TO_FILE
++		 * should fall back to vfs_copy_file_range().  This could be
++		 * beneficial when re-exporting nfs/smb mount, but note that
++		 * this can result in partial copy that returns an error status.
++		 * If/when FSCTL_DUPLICATE_EXTENTS_TO_FILE_EX is implemented,
++		 * fall back to vfs_copy_file_range(), should be avoided when
++		 * the flag DUPLICATE_EXTENTS_DATA_EX_SOURCE_ATOMIC is set.
++		 */
++		cloned = vfs_clone_file_range(fp_in->filp, src_off,
++					      fp_out->filp, dst_off, length, 0);
+ 		if (cloned == -EXDEV || cloned == -EOPNOTSUPP) {
+ 			ret = -EOPNOTSUPP;
+ 			goto dup_ext_out;
+ 		} else if (cloned != length) {
+ 			cloned = vfs_copy_file_range(fp_in->filp, src_off,
+-						     fp_out->filp, dst_off, length, 0);
++						     fp_out->filp, dst_off,
++						     length, 0);
+ 			if (cloned != length) {
+ 				if (cloned < 0)
+ 					ret = cloned;
+--- a/fs/ksmbd/vfs.c
++++ b/fs/ksmbd/vfs.c
+@@ -1779,6 +1779,10 @@ int ksmbd_vfs_copy_file_ranges(struct ks
  
- 	page = alloc_page(GFP_KERNEL);
-+	if (!page)
-+		return -ENOMEM;
- 	locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
--	if (page == NULL || locations == NULL)
--		goto out;
-+	if (!locations)
-+		goto out_free;
-+	locations->fattr = nfs_alloc_fattr();
-+	if (!locations->fattr)
-+		goto out_free_2;
+ 		ret = vfs_copy_file_range(src_fp->filp, src_off,
+ 					  dst_fp->filp, dst_off, len, 0);
++		if (ret == -EOPNOTSUPP || ret == -EXDEV)
++			ret = generic_copy_file_range(src_fp->filp, src_off,
++						      dst_fp->filp, dst_off,
++						      len, 0);
+ 		if (ret < 0)
+ 			return ret;
  
- 	status = nfs4_proc_get_locations(server, fhandle, locations, page,
- 					 cred);
- 	if (status)
--		goto out;
-+		goto out_free_3;
+--- a/fs/nfsd/vfs.c
++++ b/fs/nfsd/vfs.c
+@@ -577,6 +577,7 @@ out_err:
+ ssize_t nfsd_copy_file_range(struct file *src, u64 src_pos, struct file *dst,
+ 			     u64 dst_pos, u64 count)
+ {
++	ssize_t ret;
  
- 	for (i = 0; i < locations->nlocations; i++)
- 		test_fs_location_for_trunking(&locations->locations[i], clp,
- 					      server);
--out:
--	if (page)
--		__free_page(page);
-+out_free_3:
-+	kfree(locations->fattr);
-+out_free_2:
- 	kfree(locations);
-+out_free:
-+	__free_page(page);
- 	return status;
+ 	/*
+ 	 * Limit copy to 4MB to prevent indefinitely blocking an nfsd
+@@ -587,7 +588,12 @@ ssize_t nfsd_copy_file_range(struct file
+ 	 * limit like this and pipeline multiple COPY requests.
+ 	 */
+ 	count = min_t(u64, count, 1 << 22);
+-	return vfs_copy_file_range(src, src_pos, dst, dst_pos, count, 0);
++	ret = vfs_copy_file_range(src, src_pos, dst, dst_pos, count, 0);
++
++	if (ret == -EOPNOTSUPP || ret == -EXDEV)
++		ret = generic_copy_file_range(src, src_pos, dst, dst_pos,
++					      count, 0);
++	return ret;
  }
  
--- 
-2.37.0
-
+ __be32 nfsd4_vfs_fallocate(struct svc_rqst *rqstp, struct svc_fh *fhp,
+--- a/fs/read_write.c
++++ b/fs/read_write.c
+@@ -1381,28 +1381,6 @@ ssize_t generic_copy_file_range(struct f
+ }
+ EXPORT_SYMBOL(generic_copy_file_range);
+ 
+-static ssize_t do_copy_file_range(struct file *file_in, loff_t pos_in,
+-				  struct file *file_out, loff_t pos_out,
+-				  size_t len, unsigned int flags)
+-{
+-	/*
+-	 * Although we now allow filesystems to handle cross sb copy, passing
+-	 * a file of the wrong filesystem type to filesystem driver can result
+-	 * in an attempt to dereference the wrong type of ->private_data, so
+-	 * avoid doing that until we really have a good reason.  NFS defines
+-	 * several different file_system_type structures, but they all end up
+-	 * using the same ->copy_file_range() function pointer.
+-	 */
+-	if (file_out->f_op->copy_file_range &&
+-	    file_out->f_op->copy_file_range == file_in->f_op->copy_file_range)
+-		return file_out->f_op->copy_file_range(file_in, pos_in,
+-						       file_out, pos_out,
+-						       len, flags);
+-
+-	return generic_copy_file_range(file_in, pos_in, file_out, pos_out, len,
+-				       flags);
+-}
+-
+ /*
+  * Performs necessary checks before doing a file copy
+  *
+@@ -1424,6 +1402,24 @@ static int generic_copy_file_checks(stru
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * We allow some filesystems to handle cross sb copy, but passing
++	 * a file of the wrong filesystem type to filesystem driver can result
++	 * in an attempt to dereference the wrong type of ->private_data, so
++	 * avoid doing that until we really have a good reason.
++	 *
++	 * nfs and cifs define several different file_system_type structures
++	 * and several different sets of file_operations, but they all end up
++	 * using the same ->copy_file_range() function pointer.
++	 */
++	if (file_out->f_op->copy_file_range) {
++		if (file_in->f_op->copy_file_range !=
++		    file_out->f_op->copy_file_range)
++			return -EXDEV;
++	} else if (file_inode(file_in)->i_sb != file_inode(file_out)->i_sb) {
++		return -EXDEV;
++	}
++
+ 	/* Don't touch certain kinds of inodes */
+ 	if (IS_IMMUTABLE(inode_out))
+ 		return -EPERM;
+@@ -1489,26 +1485,41 @@ ssize_t vfs_copy_file_range(struct file
+ 	file_start_write(file_out);
+ 
+ 	/*
+-	 * Try cloning first, this is supported by more file systems, and
+-	 * more efficient if both clone and copy are supported (e.g. NFS).
++	 * Cloning is supported by more file systems, so we implement copy on
++	 * same sb using clone, but for filesystems where both clone and copy
++	 * are supported (e.g. nfs,cifs), we only call the copy method.
+ 	 */
++	if (file_out->f_op->copy_file_range) {
++		ret = file_out->f_op->copy_file_range(file_in, pos_in,
++						      file_out, pos_out,
++						      len, flags);
++		goto done;
++	}
++
+ 	if (file_in->f_op->remap_file_range &&
+ 	    file_inode(file_in)->i_sb == file_inode(file_out)->i_sb) {
+-		loff_t cloned;
+-
+-		cloned = file_in->f_op->remap_file_range(file_in, pos_in,
++		ret = file_in->f_op->remap_file_range(file_in, pos_in,
+ 				file_out, pos_out,
+ 				min_t(loff_t, MAX_RW_COUNT, len),
+ 				REMAP_FILE_CAN_SHORTEN);
+-		if (cloned > 0) {
+-			ret = cloned;
++		if (ret > 0)
+ 			goto done;
+-		}
+ 	}
+ 
+-	ret = do_copy_file_range(file_in, pos_in, file_out, pos_out, len,
+-				flags);
+-	WARN_ON_ONCE(ret == -EOPNOTSUPP);
++	/*
++	 * We can get here for same sb copy of filesystems that do not implement
++	 * ->copy_file_range() in case filesystem does not support clone or in
++	 * case filesystem supports clone but rejected the clone request (e.g.
++	 * because it was not block aligned).
++	 *
++	 * In both cases, fall back to kernel copy so we are able to maintain a
++	 * consistent story about which filesystems support copy_file_range()
++	 * and which filesystems do not, that will allow userspace tools to
++	 * make consistent desicions w.r.t using copy_file_range().
++	 */
++	ret = generic_copy_file_range(file_in, pos_in, file_out, pos_out, len,
++				      flags);
++
+ done:
+ 	if (ret > 0) {
+ 		fsnotify_access(file_in);
 
 
