@@ -2,61 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 830ACCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8E3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 18:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233049AbiGES6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
+        id S231487AbiGES6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 14:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbiGES6K (ORCPT
+        with ESMTP id S230383AbiGES6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:58:10 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C135B1F617
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 11:58:09 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id r3so23488370ybr.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 11:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3raL3Db4m4kOl7wusjljlVNOD4iTwESZC4E355aPMLQ=;
-        b=fKq9b41nbWN7wF44/PdWV6ZHCe+bYPNXmJfAcWcc3evXl6sPwIO9uyvv2VC4w6L0DP
-         sKwam9/qNxgDRfLB646tXiegomZk8axE/kQUaMlrssfqcIE0RTN4XbxrFXQuDscSNVDk
-         0oVlqk1okzJX+nWb9vs9d+aAUWYbjVMztRxqmXpV/mVrgcLEdc/SCnR0NFBic3nyOhXM
-         cuZVnWr89P5+sCo8pcSOYUMDSff0hWXOdoz8NGicbWeuOb8RVTetzSXliwZlq7HuuyXP
-         mdruvajGc47PV240hYYshZQcU3L1mo7DIIBce2hF6bYaOJboGcmDkH4pQAg4xC1oZIQT
-         zuPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3raL3Db4m4kOl7wusjljlVNOD4iTwESZC4E355aPMLQ=;
-        b=ROnwuxbs0Vf4SGKLccAwaqJQxdL4Ov48U7SMZHdHquI3wCbDpf5Dnn9itimdqjeg58
-         R/J4C1xC/cv+BXGBF6KMHrwABQ2DtKEn+fVZYna/uLSUYX/eCMldVhG/6QO8iF51UD+t
-         FG2U9FBjasS61ClsVk18R/FznW0cv+fOPSvWfqxJECS3jPHwlgwMozVev0LMBVbxn/YK
-         fGW4UrCXlzdENP4h/zTd8iz2XD18zhPmbI3VGp50YELg8vFD4gSo7yEEjn95RicdY9NR
-         QGpRHyelvPZAyD/YKNOWg5gjAiED42MucoNoN2CNQHHwGwfwbRe45Ua6cbBdCqYJ9859
-         sKKw==
-X-Gm-Message-State: AJIora+JFiqDoHsI5DnTTcVkHpvbHWzqk23pfT6BZ3KZktnKalDWLebS
-        XcqERvqIAVVgIPmn0y4bG+f9j8vyzXWO1XGH8XUcvw==
-X-Google-Smtp-Source: AGRyM1tn8i6N9xJ1nK5EupdELaSdSv9BwRhDnVb3bbeIVNfk3JG3E3E5peA8OUwxmCLWu0Rb9VbhoMarKy+1dmDnJD8=
-X-Received: by 2002:a25:2d62:0:b0:66e:7510:8de7 with SMTP id
- s34-20020a252d62000000b0066e75108de7mr4623018ybe.530.1657047488745; Tue, 05
- Jul 2022 11:58:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
- <Yr66xEMB/ORr0Xcp@lunn.ch> <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
-In-Reply-To: <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 5 Jul 2022 11:57:32 -0700
-Message-ID: <CAGETcx_BUR3EPDLgp9v0Uk9N=8BtYRjFyhpJTQa9kEMHtkgdwQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
+        Tue, 5 Jul 2022 14:58:14 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1847F1F2D4;
+        Tue,  5 Jul 2022 11:58:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=qZ2WlJMPplKX5hD7/ytSPU+PApsdSlrWaoNdjz1LRz4=; b=H4m64xxvn/PDDZ4J1IXvojRhaz
+        mTahq53NWWB8NnCBdcSI61nm5EuqE1DphksCjYYd208+6LkHeGd8NGTztH58x7sEKckiR4fVr4tjs
+        e7iWNcxrcJ7GQ3JR6atkk3hgpEWyOFfH6Yad1NBN9XucN0wl1xC+LXcBPpj58CgvM71M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o8nk1-009OaC-MM; Tue, 05 Jul 2022 20:57:45 +0200
+Date:   Tue, 5 Jul 2022 20:57:45 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+Cc:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
         "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "edumazet@google.com" <edumazet@google.com>,
@@ -66,85 +39,39 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         "rafael@kernel.org" <rafael@kernel.org>,
+        "saravanak@google.com" <saravanak@google.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "git (AMD-Xilinx)" <git@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
+ producer ethernet node to probe first
+Message-ID: <YsSJqb9pPFcrIvrU@lunn.ch>
+References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
+ <Yr66xEMB/ORr0Xcp@lunn.ch>
+ <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 11:49 AM Pandey, Radhey Shyam
-<radhey.shyam.pandey@amd.com> wrote:
->
-> > -----Original Message-----
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: Friday, July 1, 2022 2:44 PM
-> > To: Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
-> > Cc: nicolas.ferre@microchip.com; claudiu.beznea@microchip.com;
-> > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > pabeni@redhat.com; hkallweit1@gmail.com; linux@armlinux.org.uk;
-> > gregkh@linuxfoundation.org; rafael@kernel.org; saravanak@google.com;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org; git (AMD-Xilinx)
-> > <git@amd.com>
-> > Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make
-> > MDIO producer ethernet node to probe first
-> >
-> > On Fri, Jul 01, 2022 at 01:25:06AM +0530, Radhey Shyam Pandey wrote:
-> > > In shared MDIO suspend/resume usecase for ex. with MDIO producer
-> > > (0xff0c0000) eth1 and MDIO consumer(0xff0b0000) eth0 there is a
-> > > constraint that ethernet interface(ff0c0000) MDIO bus producer has to
-> > > be resumed before the consumer ethernet interface(ff0b0000).
-> > >
-> > > However above constraint is not met when GEM0(ff0b0000) is resumed first.
-> > > There is phy_error on GEM0 and interface becomes non-functional on
-> > resume.
-> > >
-> > > suspend:
-> > > [ 46.477795] macb ff0c0000.ethernet eth1: Link is Down [ 46.483058]
-> > > macb ff0c0000.ethernet: gem-ptp-timer ptp clock unregistered.
-> > > [ 46.490097] macb ff0b0000.ethernet eth0: Link is Down [ 46.495298]
-> > > macb ff0b0000.ethernet: gem-ptp-timer ptp clock unregistered.
-> > >
-> > > resume:
-> > > [ 46.633840] macb ff0b0000.ethernet eth0: configuring for phy/sgmii
-> > > link mode macb_mdio_read -> pm_runtime_get_sync(GEM1) it return -
-> > EACCES error.
-> > >
-> > > The suspend/resume is dependent on probe order so to fix this
-> > > dependency ensure that MDIO producer ethernet node is always probed
-> > > first followed by MDIO consumer ethernet node.
-> > >
-> > > During MDIO registration find out if MDIO bus is shared and check if
-> > > MDIO producer platform node(traverse by 'phy-handle' property) is
-> > > bound. If not bound then defer the MDIO consumer ethernet node probe.
-> > > Doing it ensures that in suspend/resume MDIO producer is resumed
-> > > followed by MDIO consumer ethernet node.
-> >
-> > I don't think there is anything specific to MACB here. There are Freescale
-> > boards which have an MDIO bus shared by two interfaces etc.
-> >
-> > Please try to solve this in a generic way, not specific to one MAC and MDIO
-> > combination.
->
 > Thanks for the review.  I want to get your thoughts on the outline of
 > the generic solution. Is the current approach fine and we can extend it
 > for all shared MDIO use cases/ or do we see any limitations?
->
+>  
 > a) Figure out if the MDIO bus is shared.  (new binding or reuse existing)
-> b) If the MDIO bus is shared based on DT property then figure out if the
+> b) If the MDIO bus is shared based on DT property then figure out if the 
 > MDIO producer platform device is probed. If not, defer MDIO consumer
 > MDIO bus registration.
 
-Radhey,
+I actually think you need to talk to the core device model people and
+those who support suspend/resume.
 
-I think Andrew added me because he's pointing you towards fw_devlink.
+It seems like there should be a way to declare a dependency, probably
+a probe time, so the core will just do the right things. I don't see
+why MDIO busses should be the first to have this problem, so i expect
+there already exists a solution.
 
-Andrew,
-
-I have intentionally not added phy-handle support to fw_devlink
-because it would also prevent the generic driver from binding/cause
-issues with DSA. I have some high level ideas on fixing that but
-haven't gotten around to it yet.
-
--Saravana
+	Andrew
