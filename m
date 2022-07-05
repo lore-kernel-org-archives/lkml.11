@@ -2,224 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B9C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4DDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 09:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiGEJDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 05:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        id S230368AbiGEJD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231574AbiGEJCX (ORCPT
+        with ESMTP id S230123AbiGEJDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 05:02:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F97C12D03
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 01:59:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657011596;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+UC/vpAZ24B41yJaSERUjpzXj/4P7BrqzPeTPZNYUSk=;
-        b=SuWhVu/wRNBUdO4mUoWnzeZ6rBZMpU4PAN5xO8NBZJpKNNrhJHt6P/LYiIoV/Bgj1RvWeQ
-        97OgCGTWwjhgMbQu4kMZVwempcBtUMrV8/M5grQ4nuyggjUv4e7sQfVD6TI4BIOARMKeFJ
-        0+wXn2TR/uk3JhJ/fhyf6UdzHIFksaw=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-592-Gqhan04_PGSl4aDqHJ_Klg-1; Tue, 05 Jul 2022 04:59:47 -0400
-X-MC-Unique: Gqhan04_PGSl4aDqHJ_Klg-1
-Received: by mail-ej1-f69.google.com with SMTP id go10-20020a1709070d8a00b00722e8ee15b4so2540360ejc.22
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 01:59:47 -0700 (PDT)
+        Tue, 5 Jul 2022 05:03:10 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AFEEB9;
+        Tue,  5 Jul 2022 02:03:09 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31caffa4a45so30551557b3.3;
+        Tue, 05 Jul 2022 02:03:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W8Wm30eRqjZo2DvnTiNrnXX7il5/XiX6XVUun1Gx7QM=;
+        b=JWKcgYFNvzSnmT5hJZ53dIu3SLHoGOnTs2pSxOBhvcg73/bdybJ+exxxs/G5YeTNXK
+         XxSuSK6MTE4C839oVxctGcLCddtTpqdLJrN5Bmx/VFX8xvsgvtLoDR3ctPPEPKs7//li
+         nJQ0SyyITr+PlaUqPXy1c+8oGs1uQtb2QongaSGfxDMnl5qqWCncSGwtbro5YaaceLI1
+         qtEHf4/NJSDlHw33R/zGvvPrP0I/t50HqjM8uq/8ruTWHPKxd/xyKiS7a3ZpuEo1/i5K
+         6DFTDS6XjwXmRybKb4kDwNClXZhtyNCFMSvPsoZFL8SA6RgWGdK7avVznlbzq2GSLX93
+         CG2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+UC/vpAZ24B41yJaSERUjpzXj/4P7BrqzPeTPZNYUSk=;
-        b=CdqbuJhJUHoAZuPnipQTZmqNlpJGArLd2PSJ8sFHjcwj6Ln/eKApc/f8pSVJrEjtO+
-         ZonLrnEPYO24k/z71VNtqpyOH10Nmnf+DOmLoxfcp2Uaf+UmxtDuYDRBc7SHOpLyDLbh
-         cn4swLCTd9K1qjdLOBq7fklOs/87qt1Mj0T0JGbH9gifJbR1zhbVQa61xUvYNTlF2K/5
-         0Rv8f2AOZuquhOhBMZLzBTVl2pYH5HeXP6DgzaBFj6I3Ux2cyBDI/O+lWgT6KVG5p11Q
-         jQjXyU+Mq2hvMP5FnathxKIqurR66iEslXAQuJ1dYD+/+OSAMO1cdx7PsA4naA8s5G0V
-         OHdw==
-X-Gm-Message-State: AJIora8bcH9g6dx45r948buqdc2clTeuFLcMViIfqNxRj+LD9QdD9/ln
-        r6GzFryRWBT0WyA4J7DpogtKZqf2f7bIi1ByCUa6DYDUcX3uJ8CY2UVcaOmiulk6cEQXx8v3vMp
-        Y6nrLW76f1NGD3UeFfXQlo31+
-X-Received: by 2002:a17:907:6d1d:b0:726:363e:cca3 with SMTP id sa29-20020a1709076d1d00b00726363ecca3mr32657355ejc.713.1657011586766;
-        Tue, 05 Jul 2022 01:59:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t8yxRBy3xDLi7w7e5LNzTm1PgIo8eoKRWrZOilTxJAHABYZhdkwvgHvAIzrmk1L4W21Ao6Wg==
-X-Received: by 2002:a17:907:6d1d:b0:726:363e:cca3 with SMTP id sa29-20020a1709076d1d00b00726363ecca3mr32657342ejc.713.1657011586452;
-        Tue, 05 Jul 2022 01:59:46 -0700 (PDT)
-Received: from redhat.com ([2.54.184.191])
-        by smtp.gmail.com with ESMTPSA id uz12-20020a170907118c00b00711aed17047sm15357907ejb.28.2022.07.05.01.59.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 01:59:45 -0700 (PDT)
-Date:   Tue, 5 Jul 2022 04:59:41 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kernel@openvz.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/1] Create debugfs file with virtio balloon usage
- information
-Message-ID: <20220705045912-mutt-send-email-mst@kernel.org>
-References: <20220705083638.29669-1-alexander.atanasov@virtuozzo.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W8Wm30eRqjZo2DvnTiNrnXX7il5/XiX6XVUun1Gx7QM=;
+        b=R3pP0ns4Pe/q7HIob1OHpjDQ0RIeg75y3yiTUK2kjIXvr7f0TAlFIIo7zVitlJkvaP
+         JpyJJJH0fJf1cLdzjr0/Z0rdHulss821Ja9FF8M2hwt6xVi6hsN8bWoD1n0SoozZT2xD
+         Baio57Cjzlhk7kbKfrFBVmZ988gjkQa5ZWa0B3zaV1N85hCJlWRBMhdEYWgB2yirPYkU
+         8JxUUy6AEDfCK9COtuHIHw1nGFKJjk3Q/RDiuVuhlG+v0UBCqlBPtrqyNhzl63+sX+nQ
+         gAKYRA89XXD7UWhzRwCzryOKm1cXk80pLygML/79GMh22CfCT82B0a0aiyzPI83tiOqB
+         8gQw==
+X-Gm-Message-State: AJIora9l/ZPF/6bMN6jLW/ZXKex2m5MUmtfCxjOpOMyv7GeeunRO7oxx
+        zJVMc25RpIlfXgl1wTnFpj02xbON1wfPcC4WjFc=
+X-Google-Smtp-Source: AGRyM1v2CRG+DKXHIE5wryGPKVWEqDbJO+C7vYv5XEX7bEg0r5zo5hw9c4p4l7Taip7CR4eGcodROUoYssgTudunweE=
+X-Received: by 2002:a81:8397:0:b0:31c:8a02:3f6d with SMTP id
+ t145-20020a818397000000b0031c8a023f6dmr13860042ywf.486.1657011788255; Tue, 05
+ Jul 2022 02:03:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705083638.29669-1-alexander.atanasov@virtuozzo.com>
+References: <YsGVa8KFmdvGY92e@debian.me> <20220704034041.15448-1-bagasdotme@gmail.com>
+ <CAHp75Vdg=NG9fnd0EQWg5D4WoW9hGJM+MMBRLSacgQUptuGe9Q@mail.gmail.com> <5418fb0b-47e2-d251-a6c7-a9bacbaf3dc1@gmail.com>
+In-Reply-To: <5418fb0b-47e2-d251-a6c7-a9bacbaf3dc1@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 5 Jul 2022 11:02:32 +0200
+Message-ID: <CAHp75VfEzNJSAJrjcY_cUj7=k4fNL+TcpEWc9k=wSWB5qb8wJg@mail.gmail.com>
+Subject: Re: [PATCH v2] Documentation: bno055: separate SPDX identifier and
+ page title
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Linux Documentation List <linux-doc@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrea Merello <andrea.merello@iit.it>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        jmondi <jacopo@jmondi.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 08:36:37AM +0000, Alexander Atanasov wrote:
-> Allow the guest to know how much it is ballooned by the host.
-> It is useful when debugging out of memory conditions.
-> 
-> When host gets back memory from the guest it is accounted
-> as used memory in the guest but the guest have no way to know
-> how much it is actually ballooned.
-> 
-> Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-> ---
->  drivers/virtio/virtio_balloon.c     | 77 +++++++++++++++++++++++++++++
->  include/uapi/linux/virtio_balloon.h |  1 +
->  2 files changed, 78 insertions(+)
-> 
-> V2:
->  - fixed coding style
->  - removed pretty print
-> V3:
->  - removed dublicate of features
->  - comment about balooned_pages more clear
->  - convert host pages to balloon pages
-> V4:
->  - added a define for BALLOON_PAGE_SIZE to make things clear
-> 
-> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-> index b9737da6c4dd..dc4ad584b947 100644
-> --- a/drivers/virtio/virtio_balloon.c
-> +++ b/drivers/virtio/virtio_balloon.c
-> @@ -10,6 +10,7 @@
->  #include <linux/virtio_balloon.h>
->  #include <linux/swap.h>
->  #include <linux/workqueue.h>
-> +#include <linux/debugfs.h>
->  #include <linux/delay.h>
->  #include <linux/slab.h>
->  #include <linux/module.h>
-> @@ -731,6 +732,77 @@ static void report_free_page_func(struct work_struct *work)
->  	}
->  }
->  
-> +/*
-> + * DEBUGFS Interface
-> + */
-> +#ifdef CONFIG_DEBUG_FS
-> +
-> +#define guest_to_balloon_pages(i) ((i)*VIRTIO_BALLOON_PAGES_PER_PAGE)
-> +/**
-> + * virtio_balloon_debug_show - shows statistics of balloon operations.
-> + * @f: pointer to the &struct seq_file.
-> + * @offset: ignored.
-> + *
-> + * Provides the statistics that can be accessed in virtio-balloon in the debugfs.
-> + *
-> + * Return: zero on success or an error code.
-> + */
-> +
-> +static int virtio_balloon_debug_show(struct seq_file *f, void *offset)
-> +{
-> +	struct virtio_balloon *b = f->private;
-> +	u32 num_pages;
-> +	struct sysinfo i;
-> +
-> +	si_meminfo(&i);
-> +
-> +	seq_printf(f, "%-22s: %d\n", "page_size", VIRTIO_BALLOON_PAGE_SIZE);
-> +
-> +	virtio_cread_le(b->vdev, struct virtio_balloon_config, actual,
-> +			&num_pages);
-> +	/*
-> +	 * Pages allocated by host from the guest memory.
-> +	 * Host inflates the balloon to get more memory.
-> +	 * Guest needs to deflate the balloon to get more memory.
-> +	 */
-> +	seq_printf(f, "%-22s: %u\n", "ballooned_pages", num_pages);
-> +
-> +	/* Total Memory for the guest from host */
-> +	seq_printf(f, "%-22s: %lu\n", "total_pages",
-> +			guest_to_balloon_pages(i.totalram));
-> +
-> +	/* Current memory for the guest */
-> +	seq_printf(f, "%-22s: %lu\n", "current_pages",
-> +			guest_to_balloon_pages(i.totalram) - num_pages);
-> +
-> +	return 0;
-> +}
-> +
-> +DEFINE_SHOW_ATTRIBUTE(virtio_balloon_debug);
-> +
-> +static void  virtio_balloon_debugfs_init(struct virtio_balloon *b)
-> +{
-> +	debugfs_create_file("virtio-balloon", 0444, NULL, b,
-> +			    &virtio_balloon_debug_fops);
-> +}
-> +
-> +static void  virtio_balloon_debugfs_exit(struct virtio_balloon *b)
-> +{
-> +	debugfs_remove(debugfs_lookup("virtio-balloon", NULL));
-> +}
-> +
-> +#else
-> +
-> +static inline void virtio_balloon_debugfs_init(struct virtio_balloon *b)
-> +{
-> +}
-> +
-> +static inline void virtio_balloon_debugfs_exit(struct virtio_balloon *b)
-> +{
-> +}
-> +
-> +#endif	/* CONFIG_DEBUG_FS */
-> +
->  #ifdef CONFIG_BALLOON_COMPACTION
->  /*
->   * virtballoon_migratepage - perform the balloon page migration on behalf of
-> @@ -1019,6 +1091,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
->  
->  	if (towards_target(vb))
->  		virtballoon_changed(vdev);
-> +
-> +	virtio_balloon_debugfs_init(vb);
-> +
->  	return 0;
->  
->  out_unregister_oom:
-> @@ -1065,6 +1140,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
->  {
->  	struct virtio_balloon *vb = vdev->priv;
->  
-> +	virtio_balloon_debugfs_exit(vb);
-> +
->  	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
->  		page_reporting_unregister(&vb->pr_dev_info);
->  	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
-> diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
-> index ddaa45e723c4..f3ff7c4e5884 100644
-> --- a/include/uapi/linux/virtio_balloon.h
-> +++ b/include/uapi/linux/virtio_balloon.h
-> @@ -40,6 +40,7 @@
->  
->  /* Size of a PFN in the balloon interface. */
->  #define VIRTIO_BALLOON_PFN_SHIFT 12
-> +#define VIRTIO_BALLOON_PAGE_SIZE (1<<VIRTIO_BALLOON_PFN_SHIFT)
->  #define VIRTIO_BALLOON_CMD_ID_STOP	0
->  #define VIRTIO_BALLOON_CMD_ID_DONE	1
+On Tue, Jul 5, 2022 at 3:13 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+> On 7/5/22 02:49, Andy Shevchenko wrote:
 
-Did you run checkpatch on this?
+...
 
-> -- 
-> 2.25.1
+> >> Cc: Jonathan Corbet <corbet@lwn.net>
+> >> Cc: Andrea Merello <andrea.merello@iit.it>
+> >> Cc: Jonathan Cameron <jic23@kernel.org>
+> >> Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> >> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> >> Cc: Rob Herring <robh+dt@kernel.org>
+> >> Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+> >> Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
+> >> Cc: jacopo@jmondi.org
+> >> Cc: linux-iio@vger.kernel.org
+> >> Cc: devicetree@vger.kernel.org
+> >> Cc: linux-kernel@vger.kernel.org (open list)
+> >
+> > It's a very noisy Cc list which will go in the git history. Instead,
+> > use --to and --cc parameters of `git format-patch`. Maintainers
+> > usually use `b4` tool that adds a Link tag to the patch itself on the
+> > Lore archive which will keep track on the Cc list anyway.
 
+> Thanks for reminding me.
+>
+> I think something like `b4 am -l`, right?
+>
+> Anyway, should I resend (reroll)?
+
+Depends on the maintainer's wishes. Maybe they can drop them when
+applying, I dunno.
+
+-- 
+With Best Regards,
+Andy Shevchenko
