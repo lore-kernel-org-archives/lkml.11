@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F42C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E019C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238285AbiGEMcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        id S238310AbiGEMc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236898AbiGEMWV (ORCPT
+        with ESMTP id S236530AbiGEMVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:22:21 -0400
+        Tue, 5 Jul 2022 08:21:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736E61EC7E;
-        Tue,  5 Jul 2022 05:16:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71BC1EAF2;
+        Tue,  5 Jul 2022 05:16:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63A44B817D2;
-        Tue,  5 Jul 2022 12:16:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7BABC341C7;
-        Tue,  5 Jul 2022 12:16:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEBC2B817D2;
+        Tue,  5 Jul 2022 12:16:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AA59C341CB;
+        Tue,  5 Jul 2022 12:16:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023402;
-        bh=SxEx45m+FeN+Ug2bbYW0UuEaNfwSzL2M/Kss9ZJVAfE=;
+        s=korg; t=1657023393;
+        bh=Ub5rxeG+IntLQTZS8z03pKCQV9SQe+0wZK+/TsH557w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXKoT0fZZa2IsVMS6mLZ7sl779ZUl6UxYHExFv36bzmtoMIsI3ZmjXyeJL8E+Eoyf
-         Qw55V7bgYTb3J5x0graaXucNrcTKG9kfcDsJSLppeGJfYHPKjvrVMEcSp+8+gNtrLj
-         Wq/ppVYGU9ph+OWIVAYfIWu5ziXhj01gSR6VEWtw=
+        b=Xp/BVQXHfbvTBpMO4NdtIT14BugBSeS33WHnO5i7hLw7uhqU9OS7oPDGdYby7vKL5
+         qug8M3/o1hJgXJtfrj6h49mvUDdlBuBpfc9OpYgUTxvWljDt+eou8SlKA2Q6J5RAfJ
+         izhQe1LvkdbcXUpOGPzg4A+L5oJOKC6M5MKzcQZI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.18 048/102] caif_virtio: fix race between virtio_device_ready() and ndo_open()
-Date:   Tue,  5 Jul 2022 13:58:14 +0200
-Message-Id: <20220705115619.772193552@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.18 045/102] NFSD: restore EINVAL error translation in nfsd_commit()
+Date:   Tue,  5 Jul 2022 13:58:11 +0200
+Message-Id: <20220705115619.689052879@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,54 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
+commit 8a9ffb8c857c2c99403bd6483a5a005fed5c0773 upstream.
 
-We currently depend on probe() calling virtio_device_ready() -
-which happens after netdev
-registration. Since ndo_open() can be called immediately
-after register_netdev, this means there exists a race between
-ndo_open() and virtio_device_ready(): the driver may start to use the
-device (e.g. TX) before DRIVER_OK which violates the spec.
+commit 555dbf1a9aac ("nfsd: Replace use of rwsem with errseq_t")
+incidentally broke translation of -EINVAL to nfserr_notsupp.
+The patch restores that.
 
-Fix this by switching to use register_netdevice() and protect the
-virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-only be called after virtio_device_ready().
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 555dbf1a9aac ("nfsd: Replace use of rwsem with errseq_t")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/caif/caif_virtio.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fs/nfsd/vfs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/caif/caif_virtio.c
-+++ b/drivers/net/caif/caif_virtio.c
-@@ -721,13 +721,21 @@ static int cfv_probe(struct virtio_devic
- 	/* Carrier is off until netdevice is opened */
- 	netif_carrier_off(netdev);
+--- a/fs/nfsd/vfs.c
++++ b/fs/nfsd/vfs.c
+@@ -1170,6 +1170,7 @@ nfsd_commit(struct svc_rqst *rqstp, stru
+ 			nfsd_copy_write_verifier(verf, nn);
+ 			err2 = filemap_check_wb_err(nf->nf_file->f_mapping,
+ 						    since);
++			err = nfserrno(err2);
+ 			break;
+ 		case -EINVAL:
+ 			err = nfserr_notsupp;
+@@ -1177,8 +1178,8 @@ nfsd_commit(struct svc_rqst *rqstp, stru
+ 		default:
+ 			nfsd_reset_write_verifier(nn);
+ 			trace_nfsd_writeverf_reset(nn, rqstp, err2);
++			err = nfserrno(err2);
+ 		}
+-		err = nfserrno(err2);
+ 	} else
+ 		nfsd_copy_write_verifier(verf, nn);
  
-+	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-+	rtnl_lock();
-+
- 	/* register Netdev */
--	err = register_netdev(netdev);
-+	err = register_netdevice(netdev);
- 	if (err) {
-+		rtnl_unlock();
- 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
- 		goto err;
- 	}
- 
-+	virtio_device_ready(vdev);
-+
-+	rtnl_unlock();
-+
- 	debugfs_init(cfv);
- 
- 	return 0;
 
 
