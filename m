@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B334C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0220CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 10:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232499AbiGEKuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
+        id S232070AbiGEKuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 06:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbiGEKtx (ORCPT
+        with ESMTP id S232277AbiGEKt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:49:53 -0400
+        Tue, 5 Jul 2022 06:49:58 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072779FFF;
-        Tue,  5 Jul 2022 03:49:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0165CB7EF;
+        Tue,  5 Jul 2022 03:49:57 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 265AEVia017811;
-        Tue, 5 Jul 2022 03:49:47 -0700
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 265AEa8e008574;
+        Tue, 5 Jul 2022 03:49:53 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=aIby4nVSWLBwI0U6WhFqSOE/GmxbdwXYVJX9EKDPvos=;
- b=cyWEg39A9xNjOGu9WZIR4Ihyo7ULNUbVMkWCHIbliQfRAXRg7fo/+ZVGMfIpG/8Aca9B
- gKc8wFQwX5Zp/GZmecyk1oxc8QpqapJnChFCep7AqX8gAHmCjOyWzunxcKUEcoC6mWlW
- lqeo5+qJtd7JFhr6ncg23wg52lDF+K0V0OlWQSxIxZqw4WUTzV1TnZuuCFUMkjslaKzA
- PPWdfjetzG6I5a2JeerHWpSiQ0+Sh+6d/ID0ufGBNb0ypdCEcFKuOUa8I/mkiH225zrD
- i9lDZVQAMxZyO4SpVLtTho3VLWfE2R7f2yYHScKl6z+LHhF2sg62112yH7BA4Bn98yzo Tg== 
+ bh=SFS19wLuHv2uSHwfMNjPYaqWoH/RcVh6da2kWQi1ZPw=;
+ b=BjGbzIKvlNxCohWeQhHLjG2IUaB2TJ/0aI+CGUElH8bbGGaoMqiv5Wt4O5Xctfbs+CqM
+ LupAr6uwjPgGq7wftJG3notzO+jSPgxJwgtLtCW2E5Tf+d5/1IrgSn1HfPADRmlOGCUe
+ 6be6xlVM519QZsd6O8h0dnkf1lUCEcIyLGux9YmNuUSml+ET8nRw9En/AOjfyhC6CR6g
+ 7cAvuqHfJlkmz2eD8iJNsNQUIhFGEVGsyeqa5yDnoSUJVR4+xU0GGMVwNu5RH8tJiL2J
+ PSN9ADgNvkpeUuHW8VldO8c4IFw02mxS3WOVtX8oSsY5Q43LFAHDdw1xkHfD6rWFL2fr ig== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h2kcrh7ut-3
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h2kcrh7v0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 05 Jul 2022 03:49:46 -0700
+        Tue, 05 Jul 2022 03:49:52 -0700
 Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Jul
- 2022 03:49:45 -0700
+ 2022 03:49:51 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 5 Jul 2022 03:49:45 -0700
+ Transport; Tue, 5 Jul 2022 03:49:51 -0700
 Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 5373B3F707E;
-        Tue,  5 Jul 2022 03:49:43 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 039AE3F707E;
+        Tue,  5 Jul 2022 03:49:48 -0700 (PDT)
 From:   Ratheesh Kannoth <rkannoth@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [PATCH 03/12] octeontx2-af: Exact match scan from kex profile
-Date:   Tue, 5 Jul 2022 16:19:14 +0530
-Message-ID: <20220705104923.2113935-4-rkannoth@marvell.com>
+Subject: [PATCH 05/12] octeontx2-af: FLR handler for exact match table.
+Date:   Tue, 5 Jul 2022 16:19:16 +0530
+Message-ID: <20220705104923.2113935-6-rkannoth@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220705104923.2113935-1-rkannoth@marvell.com>
 References: <20220705104923.2113935-1-rkannoth@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: d3zlyjZRnxcrtI63s4IrfongrIuR_x6I
-X-Proofpoint-ORIG-GUID: d3zlyjZRnxcrtI63s4IrfongrIuR_x6I
+X-Proofpoint-GUID: gi4UvLOVDcxXp-6QEEE1FhFjDHfWq8fa
+X-Proofpoint-ORIG-GUID: gi4UvLOVDcxXp-6QEEE1FhFjDHfWq8fa
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-05_08,2022-06-28_01,2022-06-22_01
@@ -63,100 +63,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CN10KB silicon supports exact match table. Scanning KEX
-profile should check for exact match feature is enabled
-and then set profile masks properly.
+FLR handler should remove/free all exact match table resources
+corresponding to each interface.
 
-These kex profile masks are required to configure NPC
-MCAM drop rules. If there is a miss in exact match table,
-these drop rules will drop those packets.
-
-Change-Id: Ifef556a865897ea387be7c47770bbaebd91a7377
+Change-Id: I84a816845cffbaaccfba40b9c0b1829f64e9c5a5
 Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/npc.h   |  1 +
- .../marvell/octeontx2/af/rvu_npc_fs.c         | 37 +++++++++++++++++--
- 2 files changed, 35 insertions(+), 3 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  4 +++
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 27 +++++++++++++++++++
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  1 +
+ 3 files changed, 32 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-index 69f9517c61f4..f187293e3e08 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-@@ -208,6 +208,7 @@ enum key_fields {
- 	NPC_ERRLEV,
- 	NPC_ERRCODE,
- 	NPC_LXMB,
-+	NPC_EXACT_RESULT,
- 	NPC_LA,
- 	NPC_LB,
- 	NPC_LC,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-index 08a0fa44857e..4a8618731fc6 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-@@ -229,6 +229,25 @@ static bool npc_check_field(struct rvu *rvu, int blkaddr, enum key_fields type,
- 	return true;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index 1b6e9efbb8ec..9eedbf389ee0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -2555,6 +2555,10 @@ static void rvu_blklf_teardown(struct rvu *rvu, u16 pcifunc, u8 blkaddr)
+ 
+ static void __rvu_flr_handler(struct rvu *rvu, u16 pcifunc)
+ {
++
++	if (rvu_npc_exact_has_match_table(rvu))
++		rvu_npc_exact_reset(rvu, pcifunc);
++
+ 	mutex_lock(&rvu->flr_lock);
+ 	/* Reset order should reflect inter-block dependencies:
+ 	 * 1. Reset any packet/work sources (NIX, CPT, TIM)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+index 4a226deedd49..bf80ce3db446 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+@@ -1170,6 +1170,33 @@ void rvu_npc_exact_disable_feature(struct rvu *rvu)
+ 	rvu->hw->cap.npc_exact_match_enabled = false;
  }
  
-+static void npc_scan_exact_result(struct npc_mcam *mcam, u8 bit_number,
-+				  u8 key_nibble, u8 intf)
++/**
++ *	rvu_npc_exact_reset - Delete and free all entry which match pcifunc.
++ *      @rvu: resource virtualization unit.
++ *	@pcifunc: PCI func to match.
++ */
++void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc)
 +{
-+	u8 offset = (key_nibble * 4) % 64; /* offset within key word */
-+	u8 kwi = (key_nibble * 4) / 64; /* which word in key */
-+	u8 nr_bits = 4; /* bits in a nibble */
-+	u8 type;
++	struct npc_exact_table *table = rvu->hw->table;
++	struct npc_exact_table_entry *tmp, *iter;
++	u32 seq_id;
 +
-+	switch (bit_number) {
-+	case 40 ... 43:
-+		type = NPC_EXACT_RESULT;
-+		break;
++	mutex_lock(&table->lock);
++	list_for_each_entry_safe(iter, tmp, &table->lhead_gbl, glist) {
++		if (pcifunc != iter->pcifunc)
++			continue;
 +
-+	default:
-+		return;
++		seq_id = iter->seq_id;
++		dev_dbg(rvu->dev, "%s: resetting pcifun=%d seq_id=%u\n", __func__,
++			pcifunc, seq_id);
++
++		mutex_unlock(&table->lock);
++		rvu_npc_exact_del_table_entry_by_id(rvu, seq_id);
++		mutex_lock(&table->lock);
 +	}
-+	npc_set_kw_masks(mcam, type, nr_bits, kwi, offset, intf);
++	mutex_unlock(&table->lock);
 +}
 +
- static void npc_scan_parse_result(struct npc_mcam *mcam, u8 bit_number,
- 				  u8 key_nibble, u8 intf)
- {
-@@ -511,8 +530,8 @@ static int npc_scan_kex(struct rvu *rvu, int blkaddr, u8 intf)
- {
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
- 	u8 lid, lt, ld, bitnr;
-+	u64 cfg, masked_cfg;
- 	u8 key_nibble = 0;
--	u64 cfg;
+ /**
+  *      rvu_npc_exact_init - initialize exact match table
+  *      @rvu: resource virtualization unit.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
+index d832af03d4a9..87e7d0edb6d8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
+@@ -187,5 +187,6 @@ int rvu_npc_exact_init(struct rvu *rvu);
  
- 	/* Scan and note how parse result is going to be in key.
- 	 * A bit set in PARSE_NIBBLE_ENA corresponds to a nibble from
-@@ -520,12 +539,24 @@ static int npc_scan_kex(struct rvu *rvu, int blkaddr, u8 intf)
- 	 * will be concatenated in key.
- 	 */
- 	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(intf));
--	cfg &= NPC_PARSE_NIBBLE;
--	for_each_set_bit(bitnr, (unsigned long *)&cfg, 31) {
-+	masked_cfg = cfg & NPC_PARSE_NIBBLE;
-+	for_each_set_bit(bitnr, (unsigned long *)&masked_cfg, 31) {
- 		npc_scan_parse_result(mcam, bitnr, key_nibble, intf);
- 		key_nibble++;
- 	}
+ bool rvu_npc_exact_can_disable_feature(struct rvu *rvu);
+ void rvu_npc_exact_disable_feature(struct rvu *rvu);
++void rvu_npc_exact_reset(struct rvu *rvu, u16 pcifunc);
  
-+	/* Ignore exact match bits for mcam entries except the first rule
-+	 * which is drop on hit. This first rule is configured explitcitly by
-+	 * exact match code.
-+	 */
-+	masked_cfg = cfg & NPC_EXACT_NIBBLE;
-+	bitnr = NPC_EXACT_NIBBLE_START;
-+	for_each_set_bit_from(bitnr, (unsigned long *)&masked_cfg,
-+			      NPC_EXACT_NIBBLE_START) {
-+		npc_scan_exact_result(mcam, bitnr, key_nibble, intf);
-+		key_nibble++;
-+	}
-+
- 	/* Scan and note how layer data is going to be in key */
- 	for (lid = 0; lid < NPC_MAX_LID; lid++) {
- 		for (lt = 0; lt < NPC_MAX_LT; lt++) {
+ #endif /* RVU_NPC_HASH_H */
 -- 
 2.25.1
 
