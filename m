@@ -2,103 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F192CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D27C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233100AbiGETuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
+        id S232108AbiGETur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiGETub (ORCPT
+        with ESMTP id S231713AbiGETup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:50:31 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A10B1D3;
-        Tue,  5 Jul 2022 12:50:30 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id n12so12508256pfq.0;
-        Tue, 05 Jul 2022 12:50:30 -0700 (PDT)
+        Tue, 5 Jul 2022 15:50:45 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363FA19004
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:50:44 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id h17so5869751wrx.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 12:50:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=37SdVu/I0AZorgpaKaU7xxUX/U/C9pM7788+cOvGxXo=;
-        b=bP9AV1g4jXU7AaBQbqDeTt8A40XBQK+TrOXr7haMW0Z5QFg/THYEnIK0oYr9L94YYM
-         X8OKch06J5dTr6kixfYy/af5QJqjFhtxL0mtMiYgOi6Ror8vzt1axavDbB6IOujayZyn
-         mEj04GvEZ6fVCBI08D5mCo4CQq785hV8v9DlrZ28yf94CLJd6FyP6azjYTjRlH8e0aYn
-         ik/xEUzsI8HAEsZAvAKpqDYil8AwsjSJHeAQtUOv6e+e04/W49DjSlFoYTporfV08Xlb
-         a8EfJ2rcHqX2IletPO2hNvthIWSdxK9fY/UbS1VAmIg43NAf9/Fhq7xpQt42O/zBAbb8
-         KadQ==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=r8/0ZA0cdDqN2NnSWqxUYORUadal9PFtP6t/aV1KcUw=;
+        b=QDyNEjwt8jCOFKmVmOz51PmC22Xtmo4y6ANbnIbf7vTmALffsQFEn3b0SfY95Xs6XY
+         StEcZLt7rPwuOuNu4U8kcY/e7iSq/jvOPH3To1xBijA2ePnM1WXKcF+f/Cm12kNxpchC
+         aLVMEF8udPULxRIOGsi07WkD/2Htb141j7fZ5gby5z4X1iiSneWcZ+057VyMUw+kozy7
+         hiQNo+L/4RDHocqVaKuHpGlsHHb191B+CxsJ733h/TbzapMBV7kY5HtZBx92nasY7rlh
+         xhiSz0tRf/gSME/U95Nhnojf40K857J1RCdqoVLKx66X1YElZcMANtv3kAmRsOgbGinh
+         oJKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=37SdVu/I0AZorgpaKaU7xxUX/U/C9pM7788+cOvGxXo=;
-        b=g6x8csPfKSDE/8TVSD1+ozPgoNub03JVbe0MG5g6l1JlztoAmZ0+Yaj8I3jR9Q6b51
-         ro+2fYUfBhPi2w/aYs8Jgw586N/VdqRrTgIAVH8NjSu5LxRXkAhPCmX0tNGZ6QiRq+DA
-         7E7Ri+huP9JjJAIR+rKHTO2Op8YMCwMwJ7/71DbD7bm9NaQWFhBln78elBNdojGsw++E
-         SnQPl0bXHyLS4wd4itGyB4rz/fzu8BrChoQrCpQYteQMYqgbkc34tci1A8ayRbP33sC7
-         EHFaetcUjUzqwi1g05ttXBUh8DvSRLCm6Lr4F3tYUImVRh0ynjqvtvV2dn+wE889Xioq
-         lGCw==
-X-Gm-Message-State: AJIora+pys5m6breIOuKcFQMbhBXRq+P8MouHABrnc5UHm+ziWiSRbUG
-        FkYko6cnuaZ5jtjply0j4xxFHOgnAv6vmxOs
-X-Google-Smtp-Source: AGRyM1s5YB3qHl69kOMEJZ015jOq3FOyorbYcGTuq2C8q05wm/FDscHTaWVxBsgIuQISAPKtkec0hw==
-X-Received: by 2002:a63:a112:0:b0:40c:450e:b1ad with SMTP id b18-20020a63a112000000b0040c450eb1admr31468801pgf.493.1657050629579;
-        Tue, 05 Jul 2022 12:50:29 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:3caa:449f:1bc2:21eb])
-        by smtp.gmail.com with ESMTPSA id nk3-20020a17090b194300b001ef8407f6d2sm5848777pjb.46.2022.07.05.12.50.27
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=r8/0ZA0cdDqN2NnSWqxUYORUadal9PFtP6t/aV1KcUw=;
+        b=CSc/sxpFxTHWXcVVtAjh3neaymPW2rCEgxMoi8huJ1yMXU20iWdLwnDYDS5jTtTFPO
+         Y/3i/x9PiDVPVJ7+E4Fiwafnkv8ouQ6aHtvVZUuoRBGK8au4mFeChHoT1iQHl70gk0fD
+         kapCfL0kQIHG/WWKUsYJ2jAa+BAHf/8HaXLw1ZnmScPBtwscjkIlbEA3KoIqIFt9veI7
+         XTnZVe3bpTLFAF8N7lxZi8i0SDoahE4whTfPDSr+sN8N6VIx9TzuuomNplFxE8r9yVQA
+         ywLlb5RYe6j/pki4ke19A2sQqwGryBg3m7HxOub9EZTu8hpqhXvq65pi7MudLbDKTfdh
+         XdKQ==
+X-Gm-Message-State: AJIora9MR6YO3enS+bw6XGjdDnxZ5n9d6DGkrbFNXxv1Nu0gqQ7pQkBN
+        AcQU0rL1rCeQR/X1//CYbFisLg==
+X-Google-Smtp-Source: AGRyM1t4VJeJWG18aGWqK1uBLyW34gcIgRkYi+KE9OO5+cMEcmfCc/8n7ObhkC/951z3k5iY2UhS5A==
+X-Received: by 2002:a5d:66c1:0:b0:21d:6c98:7aa4 with SMTP id k1-20020a5d66c1000000b0021d6c987aa4mr9956115wrw.136.1657050642786;
+        Tue, 05 Jul 2022 12:50:42 -0700 (PDT)
+Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
+        by smtp.gmail.com with ESMTPSA id c21-20020a05600c0a5500b0039c4d022a44sm24170705wmq.1.2022.07.05.12.50.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 12:50:28 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-next@vger.kernel.org, netdev@vger.kernel.org,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH] net/mlx5e: use div64_u64 for long division
-Date:   Tue,  5 Jul 2022 12:50:25 -0700
-Message-Id: <20220705195025.3348953-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 05 Jul 2022 12:50:42 -0700 (PDT)
+References: <20220705142444.17063-1-pboos@baylibre.com>
+ <f756b2d5-56e7-6e52-2739-eca4bb33508b@baylibre.com>
+User-agent: mu4e 1.8.2; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     Philippe Boos <pboos@baylibre.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] watchdog: meson: keep running if already active
+Date:   Tue, 05 Jul 2022 21:29:35 +0200
+In-reply-to: <f756b2d5-56e7-6e52-2739-eca4bb33508b@baylibre.com>
+Message-ID: <1jmtdnwd7y.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This fixes the following build error on 32-bit architectures visible in
-linux-next:
 
-  ERROR: modpost: "__divdi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
-  ERROR: modpost: "__udivdi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
+On Tue 05 Jul 2022 at 16:39, Neil Armstrong <narmstrong@baylibre.com> wrote:
 
-Fixes: 6ddac26cf763 ("net/mlx5e: Add support to modify hardware flow meter parameters")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Hi,
+>
+> On 05/07/2022 16:24, Philippe Boos wrote:
+>> If the watchdog is already running (e.g.: started by bootloader) then
+>> the kernel driver should keep the watchdog active but the amlogic driver
+>> turns it off.
+>> Let the driver fix the clock rate then restart the watchdog if it was
+>> previously active.
+>> Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
+>
+> Please drop this review tag since it was done off-list
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index 28962b2134c7..81e7fe819017 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- // Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- 
-+#include <asm/div64.h>
- #include "lib/aso.h"
- #include "en/tc/post_act.h"
- #include "meter.h"
-@@ -61,7 +62,7 @@ mlx5e_flow_meter_cir_calc(u64 cir, u8 *man, u8 *exp)
- 		m = cir << e;
- 		if ((s64)m < 0) /* overflow */
- 			break;
--		m /= MLX5_CONST_CIR;
-+		m = div64_u64(m, MLX5_CONST_CIR);
- 		if (m > 0xFF) /* man width 8 bit */
- 			continue;
- 		_cir = MLX5_CALC_CIR(m, e);
--- 
-2.30.2
+Indeed a review was done off-list.
+
+Reviewed-by says a review has been done. I was not aware this applied to
+public reviews only. I probably missed that, would you mind pointing me
+to that rule please ?
+
+>
+>> Signed-off-by: Philippe Boos <pboos@baylibre.com>
+>> ---
+>>   drivers/watchdog/meson_gxbb_wdt.c | 10 ++++++++++
+>>   1 file changed, 10 insertions(+)
+>> diff --git a/drivers/watchdog/meson_gxbb_wdt.c
+>> b/drivers/watchdog/meson_gxbb_wdt.c
+>> index 5a9ca10fbcfa..8c2c6f7f3bb5 100644
+>> --- a/drivers/watchdog/meson_gxbb_wdt.c
+>> +++ b/drivers/watchdog/meson_gxbb_wdt.c
+>> @@ -146,6 +146,7 @@ static int meson_gxbb_wdt_probe(struct platform_device *pdev)
+>>   	struct device *dev = &pdev->dev;
+>>   	struct meson_gxbb_wdt *data;
+>>   	int ret;
+>> +	u32 regval;
+>>     	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>>   	if (!data)
+>> @@ -177,6 +178,8 @@ static int meson_gxbb_wdt_probe(struct platform_device *pdev)
+>>   	data->wdt_dev.timeout = DEFAULT_TIMEOUT;
+>>   	watchdog_set_drvdata(&data->wdt_dev, data);
+>>   +	regval = readl(data->reg_base + GXBB_WDT_CTRL_REG); > +
+>>   	/* Setup with 1ms timebase */
+>>   	writel(((clk_get_rate(data->clk) / 1000) & GXBB_WDT_CTRL_DIV_MASK) |
+>>   		GXBB_WDT_CTRL_EE_RESET |
+>> @@ -186,6 +189,13 @@ static int meson_gxbb_wdt_probe(struct platform_device *pdev)
+>>     	meson_gxbb_wdt_set_timeout(&data->wdt_dev, data->wdt_dev.timeout);
+>>   +	if ((regval & GXBB_WDT_CTRL_EN) != 0) {
+>> +		ret = meson_gxbb_wdt_start(&data->wdt_dev);
+>> +		if (ret)
+>> +			return ret;
+>> +		set_bit(WDOG_HW_RUNNING, &data->wdt_dev.status);
+>> +	}
+>> +
+>>   	watchdog_stop_on_reboot(&data->wdt_dev);
+>>   	return devm_watchdog_register_device(dev, &data->wdt_dev);
+>>   }
+>
+> I think it would be much claner to leave the watchdog enabled, and get the
+> parameters
+> from the registers and update the wdt_dev accordingly.
+
+The problem is updating the time base (ie, the clock divider) while the
+watchdog is running. We should not make an assumption about what the
+bootloader is going to leave us.
+
+It could be safe if we could update the divider, the timeout and ping
+the watchdog with a single write. There is several registers for
+that, so not possible. It is safer to update the divider with the
+watchdog off.
+
+There is indeed a small window of opportunity were a crash could happen
+with the watchdog off. What is proposed here is progress compared to
+what we have right now, which is waiting for userspace to come up to
+start the watchdog again.
+
+The only safe way to keep the watchdog on throughout is to keep whatever
+time base was set by the bootloader. That means major rework since the whole
+driver rely on a 1ms time base. I'm not sure re-using the bootloader
+settings is such a great idea anyway. 
+
+>
+> Neil
 
