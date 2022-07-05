@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B97C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4ACCCA494
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237150AbiGEMSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
+        id S237128AbiGEMSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234570AbiGEMJk (ORCPT
+        with ESMTP id S234531AbiGEMJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:09:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE1D18E03;
-        Tue,  5 Jul 2022 05:09:38 -0700 (PDT)
+        Tue, 5 Jul 2022 08:09:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507DB18B3D;
+        Tue,  5 Jul 2022 05:09:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E5AD61965;
-        Tue,  5 Jul 2022 12:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25067C341CE;
-        Tue,  5 Jul 2022 12:09:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0972B817CC;
+        Tue,  5 Jul 2022 12:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25391C341C8;
+        Tue,  5 Jul 2022 12:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022977;
-        bh=YMVr9fZPQq1V9/lhdWidHBImzFSQEEi0DyhJerbTpmo=;
+        s=korg; t=1657022974;
+        bh=s/yqnEjkyOmsRsGcNykfxHRinV2YJeryeE0pvGvcV80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mAe7J7HE2yyjkPtMXCTra3LaSiAjInlCMBwB24ZnnxNW8UeZb+s05RBmaoJbzLzCd
-         wGbwE7Hjkxj+dGc++Y2a7Wb2ETMNU0YPe7VTcKxPzt2dariMhO4XhU2cXURNZaWklg
-         z62DoubgOY5bTxpyCJwCmKJX4Tu/4h0tlhmCLZ8Y=
+        b=tcswe8c8mvqllebEnp77BEKv1K7hnA1rdk5ouWIsTwnYC6ffJ1Un2FPaHuk6pvKQ8
+         fQLCPVuFqlVvFcJXGjbP1adLf0059J+pTFadi3wELOv8aET13NuBgoQ/Ia/tFpN+nc
+         Cx4fVChQe9hBwoBZGv9iVZqJI0v3BHKBgfwOSjRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 38/84] io_uring: ensure that send/sendmsg and recv/recvmsg check sqe->ioprio
-Date:   Tue,  5 Jul 2022 13:58:01 +0200
-Message-Id: <20220705115616.433740062@linuxfoundation.org>
+        stable@vger.kernel.org, Yilun Wu <yiluwu@cs.stonybrook.edu>,
+        Tong Zhang <ztong0001@gmail.com>,
+        Francois Romieu <romieu@fr.zoreil.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 37/84] epic100: fix use after free on rmmod
+Date:   Tue,  5 Jul 2022 13:58:00 +0200
+Message-Id: <20220705115616.404892125@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
 References: <20220705115615.323395630@linuxfoundation.org>
@@ -47,44 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Tong Zhang <ztong0001@gmail.com>
 
-commit 73911426aaaadbae54fa72359b33a7b6a56947db upstream.
+commit 8ee9d82cd0a45e7d050ade598c9f33032a0f2891 upstream.
 
-All other opcodes correctly check if this is set and -EINVAL if it is
-and they don't support that field, for some reason the these were
-forgotten.
+epic_close() calls epic_rx() and uses dma buffer, but in epic_remove_one()
+we already freed the dma buffer. To fix this issue, reorder function calls
+like in the .probe function.
 
-This was unified a bit differently in the upstream tree, but had the
-same effect as making sure we error on this field. Rather than have
-a painful backport of the upstream commit, just fixup the mentioned
-opcodes.
+BUG: KASAN: use-after-free in epic_rx+0xa6/0x7e0 [epic100]
+Call Trace:
+ epic_rx+0xa6/0x7e0 [epic100]
+ epic_close+0xec/0x2f0 [epic100]
+ unregister_netdev+0x18/0x20
+ epic_remove_one+0xaa/0xf0 [epic100]
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Yilun Wu <yiluwu@cs.stonybrook.edu>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Reviewed-by: Francois Romieu <romieu@fr.zoreil.com>
+Link: https://lore.kernel.org/r/20220627043351.25615-1-ztong0001@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/smsc/epic100.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4366,6 +4366,8 @@ static int io_sendmsg_prep(struct io_kio
+--- a/drivers/net/ethernet/smsc/epic100.c
++++ b/drivers/net/ethernet/smsc/epic100.c
+@@ -1513,14 +1513,14 @@ static void epic_remove_one(struct pci_d
+ 	struct net_device *dev = pci_get_drvdata(pdev);
+ 	struct epic_private *ep = netdev_priv(dev);
  
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
-+	if (unlikely(sqe->addr2 || sqe->splice_fd_in || sqe->ioprio))
-+		return -EINVAL;
- 
- 	sr->msg_flags = READ_ONCE(sqe->msg_flags);
- 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
-@@ -4601,6 +4603,8 @@ static int io_recvmsg_prep(struct io_kio
- 
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
-+	if (unlikely(sqe->addr2 || sqe->splice_fd_in || sqe->ioprio))
-+		return -EINVAL;
- 
- 	sr->msg_flags = READ_ONCE(sqe->msg_flags);
- 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
++	unregister_netdev(dev);
+ 	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
+ 			  ep->tx_ring_dma);
+ 	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
+ 			  ep->rx_ring_dma);
+-	unregister_netdev(dev);
+ 	pci_iounmap(pdev, ep->ioaddr);
+-	pci_release_regions(pdev);
+ 	free_netdev(dev);
++	pci_release_regions(pdev);
+ 	pci_disable_device(pdev);
+ 	/* pci_power_off(pdev, -1); */
+ }
 
 
