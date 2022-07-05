@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F5FCCA49E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855DBC19F56
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239308AbiGEMa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
+        id S237227AbiGEMbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236693AbiGEMSD (ORCPT
+        with ESMTP id S237749AbiGEMTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:18:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77FCD9B;
-        Tue,  5 Jul 2022 05:13:21 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A191DA63;
+        Tue,  5 Jul 2022 05:16:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53960619A6;
-        Tue,  5 Jul 2022 12:13:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC1FC341C7;
-        Tue,  5 Jul 2022 12:13:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C78CFB817C7;
+        Tue,  5 Jul 2022 12:16:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C59CC341C7;
+        Tue,  5 Jul 2022 12:16:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023200;
-        bh=fb5507BRvRaLsnk6R3xvXMZucIZUqeaGpwagamhkkw8=;
+        s=korg; t=1657023371;
+        bh=S5VZ16MVAsamjg1oH37WupoF04UNs1l/MFw9ZvMgLjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2UYg0e/13mkP4wOVf6C3nXJmnzl2cPMr1JCKKx8JKlBwErqQLkycKcvXJMi+XnusJ
-         jwV09DSz7y+AbRmpKT9+wGKn0rm5Y4reEs3rZxR5+WXki1OpAAWSS99mWNHQmOsRaU
-         cy8rza+839JSgm+QmZpjl383+LcnLWucM/YnC1N4=
+        b=HTy/eALPeCR7mIEMznLJqEYuRLmes8OtTZhNZ49+6vPkCNeIsaCePLBjjEMkwqOOX
+         URCfc964BL8FcTOI6/3MZ1qK6KsLs9B1P2H8PfwF11mKbbceVVxxFGcl/bBYozeMKp
+         R0yWNIwWyrb8X7/D2RhVgpQg9kxQbipln8Mn8neA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 72/98] selftests/rseq: Fix warnings about #if checks of undefined tokens
-Date:   Tue,  5 Jul 2022 13:58:30 +0200
-Message-Id: <20220705115619.619831738@linuxfoundation.org>
+        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 004/102] ksmbd: set the range of bytes to zero without extending file size in FSCTL_ZERO_DATA
+Date:   Tue,  5 Jul 2022 13:57:30 +0200
+Message-Id: <20220705115618.540113896@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115617.568350164@linuxfoundation.org>
-References: <20220705115617.568350164@linuxfoundation.org>
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit d7ed99ade3e62b755584eea07b4e499e79240527 upstream.
+commit 18e39fb960e6a908ac5230b57e3d0d6c25232368 upstream.
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-12-mathieu.desnoyers@efficios.com
+generic/091, 263 test failed since commit f66f8b94e7f2 ("cifs: when
+extending a file with falloc we should make files not-sparse").
+FSCTL_ZERO_DATA sets the range of bytes to zero without extending file
+size. The VFS_FALLOCATE_FL_KEEP_SIZE flag should be used even on
+non-sparse files.
+
+Cc: stable@vger.kernel.org
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/rseq/param_test.c |    2 +-
- tools/testing/selftests/rseq/rseq-x86.h   |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/ksmbd/vfs.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/rseq/param_test.c
-+++ b/tools/testing/selftests/rseq/param_test.c
-@@ -161,7 +161,7 @@ unsigned int yield_mod_cnt, nr_abort;
- 	"	cbnz	" INJECT_ASM_REG ", 222b\n"			\
- 	"333:\n"
+--- a/fs/ksmbd/vfs.c
++++ b/fs/ksmbd/vfs.c
+@@ -1015,7 +1015,9 @@ int ksmbd_vfs_zero_data(struct ksmbd_wor
+ 				     FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+ 				     off, len);
  
--#elif __PPC__
-+#elif defined(__PPC__)
+-	return vfs_fallocate(fp->filp, FALLOC_FL_ZERO_RANGE, off, len);
++	return vfs_fallocate(fp->filp,
++			     FALLOC_FL_ZERO_RANGE | FALLOC_FL_KEEP_SIZE,
++			     off, len);
+ }
  
- #define RSEQ_INJECT_INPUT \
- 	, [loop_cnt_1]"m"(loop_cnt[1]) \
---- a/tools/testing/selftests/rseq/rseq-x86.h
-+++ b/tools/testing/selftests/rseq/rseq-x86.h
-@@ -600,7 +600,7 @@ int rseq_cmpeqv_trymemcpy_storev_release
- 
- #endif /* !RSEQ_SKIP_FASTPATH */
- 
--#elif __i386__
-+#elif defined(__i386__)
- 
- #define rseq_smp_mb()	\
- 	__asm__ __volatile__ ("lock; addl $0,-128(%%esp)" ::: "memory", "cc")
+ int ksmbd_vfs_fqar_lseek(struct ksmbd_file *fp, loff_t start, loff_t length,
 
 
