@@ -2,89 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20637C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4116BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 19:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbiGETqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 15:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
+        id S232822AbiGETrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiGETqE (ORCPT
+        with ESMTP id S229849AbiGETri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 15:46:04 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D4519C3D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Jul 2022 12:46:03 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id j1-20020a17090aeb0100b001ef777a7befso5495829pjz.0
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Jul 2022 12:46:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BxbTn0CECdrZXETflGt2gGDbEAPGwlDhM6o4bF0C3yE=;
-        b=Fdw6fzHTpa73THj5FbnWvsryc9rX9O54EvNLbsmVn8I2OqAr35tJitYbGgkTDKBqwq
-         195R0eKEaHXRMxRuYaHFdey6D6R5j8lnecgTglFyJ5u2Sxa3BV4KDrjhCQAvy5hAQg8K
-         NnBaFDbUCRr+zIrvGQ+p6HSLSFQaA0+G69is3GhXEycNbYxDTyVmSHm6CKVwEkAAf3W9
-         ZXJwspvQ0f/RvRrlmkvyyMdu3f5U+LsH/zsrrmzN7VXBxi7qGUR9D5olyg+R0ZD5o8kg
-         69JxKMa050Xl4PspweOy03E95RIAvogwR8rcssCIiTyYyhCItPBpf5TS4xfl8gplnW4F
-         g81w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BxbTn0CECdrZXETflGt2gGDbEAPGwlDhM6o4bF0C3yE=;
-        b=UqthwgPC8eB4h16xhjgx+vc7OlvzoK61GOg1UlAEhDP0XdF1j/VQ3uWLq10rd23rNc
-         Oi33+ohTpEM8ksOEo/thwebpbfqZhZ7ZBju1IpiukOlw1s5ky/lO/jq0vPVnoG2WlUgY
-         YC477UC77RBCQ54fyIk+1yNwZ5fV1DLdU6XluNFiewpxsnnDx3nEx0CLG5X3+ODth5RJ
-         0Vd6KS/PHRYbQXR7pYQ43apatFY8Y9T+LTausH3phpBSObz+rinvWKSVYJ/u7M1zMUjP
-         GxLhrAOWXhW3U6aIPB9t/TUpYsk9g19Og3XWsfQ0fA4LJaFlSQPBd5z2VTbjEz9GRtRl
-         zWaw==
-X-Gm-Message-State: AJIora/dmS00CaBaAzLACkqsco8laDxOHokJiBg9B9ugonnvVwCo8UEZ
-        773qFkuDjEeZBFEEALr02r6tYiUnfSi8aciqZQTwpmbJ
-X-Google-Smtp-Source: AGRyM1vnZOyBKIvJzumKYrmgw1LwXomVfZE8/AO11upfxcNuo8eGdcG5ysjznGDWIIJwoyjStENtCUcgLB4X8pZIVUg=
-X-Received: by 2002:a17:902:ab8a:b0:16a:7cf2:a394 with SMTP id
- f10-20020a170902ab8a00b0016a7cf2a394mr41982956plr.26.1657050363017; Tue, 05
- Jul 2022 12:46:03 -0700 (PDT)
+        Tue, 5 Jul 2022 15:47:38 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DE019C3D;
+        Tue,  5 Jul 2022 12:47:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657050457; x=1688586457;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6Vb7xfZq1vwtZpgIWv0jJKrs3Fn35tFR3X4uht7SrhY=;
+  b=R8hFQ24vLrZU1jukMXRDuj99hcayGKB8hxsr6MeVMxAYFSjYJPxO11Ls
+   fH1+wVyC9pofFNgmC/FeEgL0E2NQKWNCgzcQq4DVTLjWddFm0k+5IzFzK
+   TlJICJUXAOh9URpH0Q5U8W45csOj0f9qxs3S7N6aqojc1YAoZ8SVSnM3q
+   MtC73BFr590dW+AJA0SZhoP30ThjmcIu01iMBnmZzamvCpuGAORg/PMZK
+   qgSiEfPBk/9MllRY+0pyMwsPQNlGzhSQEx7chzP+KijIYX8qrYzxFpN6e
+   hH7kr8f2t6IG8PWABP/g5jv0COmr2gcZxSso4vaQ304gxYMI5Xt4+jfI8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="272252921"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="272252921"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 12:47:37 -0700
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="619987493"
+Received: from gkammela-mobl.amr.corp.intel.com (HELO [10.144.144.107]) ([10.144.144.107])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 12:47:37 -0700
+Message-ID: <b617a83b-cde1-ed7f-cd5f-9eabcffffafb@linux.intel.com>
+Date:   Tue, 5 Jul 2022 12:47:31 -0700
 MIME-Version: 1.0
-References: <20220616174840.1202070-1-shy828301@gmail.com> <20220703161422.71e0c7316cca0442c682fcaf@linux-foundation.org>
-In-Reply-To: <20220703161422.71e0c7316cca0442c682fcaf@linux-foundation.org>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Tue, 5 Jul 2022 12:45:50 -0700
-Message-ID: <CAHbLzkp=LnwkYKQKaFyoMc3BgkcuViKdpF2H+Ymq9Q=gKZwRZA@mail.gmail.com>
-Subject: Re: [mm-unstable v5 PATCH 0/7] Cleanup transhuge_xxx helpers
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Zach O'Keefe" <zokeefe@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 0/4] Add Raptor Lake and PCI error recovery support
+Content-Language: en-US
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     markgross@kernel.org, david.e.box@linux.intel.com,
+        srinivas.pandruvada@intel.com, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220629221334.434307-1-gayatri.kammela@linux.intel.com>
+ <ac7bfd35-203b-5002-a3ff-787ca1738a41@redhat.com>
+From:   "Kammela, Gayatri" <gayatri.kammela@linux.intel.com>
+In-Reply-To: <ac7bfd35-203b-5002-a3ff-787ca1738a41@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 3, 2022 at 4:14 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 16 Jun 2022 10:48:33 -0700 Yang Shi <shy828301@gmail.com> wrote:
->
-> > This series is the follow-up of the discussion about cleaning up transhuge_xxx
-> > helpers at https://lore.kernel.org/linux-mm/627a71f8-e879-69a5-ceb3-fc8d29d2f7f1@suse.cz/.
-> >
-> > THP has a bunch of helpers that do VMA sanity check for different paths, they
-> > do the similar checks for the most callsites and have a lot duplicate codes.
-> > And it is confusing what helpers should be used at what conditions.
-> >
-> > This series reorganized and cleaned up the code so that we could consolidate
-> > all the checks into hugepage_vma_check().
-> >
-> > The transhuge_vma_enabled(), transparent_hugepage_active() and
-> > __transparent_hugepage_enabled() are killed by this series.
->
-> I plan to move this into mm-stable later this week, along with two fixups:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/akpm/25-new.git/tree/patches/mm-thp-kill-transparent_hugepage_active-fix.patch
-> https://git.kernel.org/pub/scm/linux/kernel/git/akpm/25-new.git/tree/patches/mm-thp-kill-transparent_hugepage_active-fix-fix.patch
+On 7/2/2022 2:54 AM, Hans de Goede wrote:
 
-Looks good to me. Thanks for the heads up.
+> Hi,
+>
+> On 6/30/22 00:13, Gayatri Kammela wrote:
+>> Hi,
+>>
+>> This patch set adds Raptor Lake support as well as PCI error recovery
+>> support to PMT driver. It also has a rework patch and a fix for fixed
+>> region handling.
+>>
+>> Patch 1: Rework early hardware code
+>> Patch 2: Add support for Raptor Lake
+>> Patch 3: Fix fixed region handling
+>> Patch 4: Add PCI error recovery support to Intel PMT
+> Thank you for your patch-series, I've applied the series to my
+> review-hans branch:
+> https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+>
+> Note it will show up in my review-hans branch once I've pushed my
+> local branch there, which might take a while.
+>
+> Once I've run some tests on this branch the patches there will be
+> added to the platform-drivers-x86/for-next branch and eventually
+> will be included in the pdx86 pull-request to Linus for the next
+> merge-window.
+>
+> Regards,
+>
+> Hans
+>
+Thank you Hans!
+>> David E. Box (3):
+>>    platform/x86/intel/vsec: Rework early hardware code
+>>    platform/x86/intel/vsec: Add support for Raptor Lake
+>>    platform/x86/intel/pmt: telemetry: Fix fixed region handling
+>>
+>> Gayatri Kammela (1):
+>>    platform/x86/intel/vsec: Add PCI error recovery support to Intel PMT
+>>
+>>   drivers/platform/x86/intel/pmt/class.c     |  23 ++--
+>>   drivers/platform/x86/intel/pmt/telemetry.c |  18 ++-
+>>   drivers/platform/x86/intel/vsec.c          | 130 ++++++++++++++++-----
+>>   drivers/platform/x86/intel/vsec.h          |  11 +-
+>>   4 files changed, 136 insertions(+), 46 deletions(-)
+>>
+>>
+>> base-commit: 03c765b0e3b4cb5063276b086c76f7a612856a9a
