@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30836C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8871FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 14:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233478AbiGEONk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 10:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S231137AbiGEONn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 10:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233727AbiGEOMz (ORCPT
+        with ESMTP id S233703AbiGEOMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 10:12:55 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0853033E;
-        Tue,  5 Jul 2022 07:07:19 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id y8so9686373eda.3;
-        Tue, 05 Jul 2022 07:07:18 -0700 (PDT)
+        Tue, 5 Jul 2022 10:12:54 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658F262D4;
+        Tue,  5 Jul 2022 07:07:13 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id fi2so21822083ejb.9;
+        Tue, 05 Jul 2022 07:07:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ALHV+/iLZs2nffxTGCRHNUI4guHcb4svQkIg5UgcKsU=;
-        b=E8GtxnKvapahRH8ZdterhezeDhj8eFddVxsqIudi0MEay+93aHzm1wmC6VNTKW8uc+
-         pKk2vyflaLfbmDPEqVMga9C99UFaeFGxumtQgKgy9nO04UOnf6UUmmvS3WHKmBem3QIK
-         63OQoJgPtA4Z5p6Fdmr6/rg12o8UYDhXWrM/g/N6zBmobd+DKiH5npSTqJKM4WUy21yc
-         nusZ0+U7dOchyoPi7tKc8STaQtFkYu/yhYbBQLxD3oSCap1qKH6ikyj/U6rEq7P7QpHJ
-         2oji9+7g+iUm9md3t90uPAUMq6762E5fi3fxCdta//pDEHXIkLZHVbTIhcWqO1zVqHcT
-         VloA==
+        bh=5pW+LGdGa+yB3l9T441GO4AwfhNQkGODHFHNmvhWdCw=;
+        b=GUD5kprOgvBu+70ifTcthe9/sGCv1EyOjHGHaJoOyLB92Jmu3d5Plf9g1tvDxBUoB4
+         UfU1wqe8idKTEpEMExXnq1KavRSD6UJG+0SmFgPhbzh3p7jduUSZDxgPtKKbWNV8EXd6
+         PxzrdldpNmMsaThH17YCFWyGjDc7n3n9IYHGGyAYGERL7gflZc5Qt1u7QXYXvSLI+8Hn
+         0h8eUko3xR0qaUR5H7D+2F6ulTL80/XKrzQZha3oskIdfdaWxq6/r5DX115MQjnOIu+T
+         xzxAij57+8zj554oSxqtVOztH3OjpDK/xUztXgZaGaRxJZkslhRDt5Kow5+T0i/SZyFw
+         w7vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ALHV+/iLZs2nffxTGCRHNUI4guHcb4svQkIg5UgcKsU=;
-        b=whEhBSCYxIux5dl4EYoKnNjxavlXP0niStNdB4CbkEkFXsU2ocM1qges9US4x6NE5L
-         7uvYqnp3glvSnkyYfLe2jS8bp4OnoM5drdxrcWKmzIblVLPUwxhq2EPJCw4VyMv91yIm
-         ojaANMUBtjxIvylEODSoePlxED5F6LkcxPpHBQSe79jbqiS4xP/YWOWg372F+CxgsAef
-         m2Js4JgxTd6qBG+Y9fgrmxm49lhKp+FRFsH7qQ9AQnePNXsKQ27lIXNrnR9CWaEipiUE
-         KysNavmsLNj/kb7SVyigt6PtLF0L4h4wFifHDcGH/VXhO4d7cp8ELgN1iH1Y28A+l8ql
-         fTSQ==
-X-Gm-Message-State: AJIora+VUOK2RQVqF+ygYwSjTlXx9+idBTRIoZXzt9W/DpXLfQOQcOmu
-        /MLlTAFqf20rwXYlJAH6XZk=
-X-Google-Smtp-Source: AGRyM1twU8jHFfh4rNoYRNv0V9m04ao+wqd/FGotl5G6g3iluwWfoRQVCmH6fQB7QqA2MrNZn65lzA==
-X-Received: by 2002:a50:fc9a:0:b0:43a:5475:8916 with SMTP id f26-20020a50fc9a000000b0043a54758916mr14768594edq.155.1657029999391;
-        Tue, 05 Jul 2022 07:06:39 -0700 (PDT)
+        bh=5pW+LGdGa+yB3l9T441GO4AwfhNQkGODHFHNmvhWdCw=;
+        b=fynSVSymRSqbabPCnleQ+WWm2Sum8nut6SVXlynVPSVJxoK4OzLGBJ/w37/9YUqH+O
+         Xkr0IqW5h/m/AB6qI2lP6GP8/gqumFW2elcrWLcqofWTDAhT6+LeMN1ZxT9oclWdNB5x
+         JOXTaYdZfWvVkZXo6rxPqk+4O8suiJIZzHLBOwxLwMgahgeOLG3IHC/5NltQbccB7pT0
+         3rzRhRv6xS93mgE+ylKasUzTFvGTWph6Gwpn0hFzIa781avXzyS0RNVPo6U6bdA0QzaE
+         tSvHy0alyZljoWhnlhAwYkpoXaZWcNUjoBBzRzfY6HySoOFqcdWLRC51P7ZbWX1gz9DB
+         YvlA==
+X-Gm-Message-State: AJIora9eTshpzDEEz01LGdzWdytnB0kT6n1UK0GK3zLx/rGgeEvBdHYl
+        k8n61j8MW4WvJbY1Zw+GSJxCFHTuKBw=
+X-Google-Smtp-Source: AGRyM1vqq2PL3EbJksOAZryk7Y0FMKL7AXkrFYo9BXh/a1QCqer1yjviwO824JWR2rtbwkgh0Zx+cg==
+X-Received: by 2002:a17:906:3f02:b0:718:bdf7:790d with SMTP id c2-20020a1709063f0200b00718bdf7790dmr35335560ejj.479.1657029995894;
+        Tue, 05 Jul 2022 07:06:35 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.38
+        by smtp.googlemail.com with ESMTPSA id ku5-20020a170907788500b0072aee605e0esm399709ejc.60.2022.07.05.07.06.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 07:06:38 -0700 (PDT)
+        Tue, 05 Jul 2022 07:06:35 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-kernel@vger.kernel.org
 Cc:     Christian Marangi <ansuelsmth@gmail.com>,
         Jonathan McDowell <noodles@earth.li>
-Subject: [PATCH 10/13] ARM: dts: qcom: add sic non secure node for ipq8064
-Date:   Tue,  5 Jul 2022 15:39:14 +0200
-Message-Id: <20220705133917.8405-11-ansuelsmth@gmail.com>
+Subject: [PATCH 07/13] ARM: dts: qcom: reduce pci IO size to 64K for ipq8064
+Date:   Tue,  5 Jul 2022 15:39:11 +0200
+Message-Id: <20220705133917.8405-8-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220705133917.8405-1-ansuelsmth@gmail.com>
 References: <20220705133917.8405-1-ansuelsmth@gmail.com>
@@ -70,30 +70,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing sic non secure node for ipq8064.
+The current value for pci IO is problematic for ath10k wifi card
+commonly connected to ipq8064 SoC.
+The current value is probably a typo and is actually uncommon to find
+1MB IO space even on a x86 arch. Also with recent changes to the pci
+driver, pci1 and pci2 now fails to function as any connected device
+fails any reg read/write. Reduce this to 64K as it should be more than
+enough and 3 * 64K of total IO space doesn't exceed the IO_SPACE_LIMIT
+hardcoded for the ARM arch.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 Tested-by: Jonathan McDowell <noodles@earth.li>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 98527a7d885e..ef8faee6dfd4 100644
+index 9c32c637ea46..e13f6ae92e05 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -543,6 +543,11 @@ saw1: regulator@2099000 {
- 			regulator;
- 		};
+@@ -920,7 +920,7 @@ pcie0: pci@1b500000 {
+ 			#address-cells = <3>;
+ 			#size-cells = <2>;
  
-+		sic_non_secure: sic-non-secure@12100000 {
-+			compatible = "syscon";
-+			reg = <0x12100000 0x10000>;
-+		};
-+
- 		gsbi2: gsbi@12480000 {
- 			compatible = "qcom,gsbi-v1.0.0";
- 			cell-index = <2>;
+-			ranges = <0x81000000 0 0x0fe00000 0x0fe00000 0 0x00100000   /* downstream I/O */
++			ranges = <0x81000000 0 0x0fe00000 0x0fe00000 0 0x00010000   /* downstream I/O */
+ 				  0x82000000 0 0x08000000 0x08000000 0 0x07e00000>; /* non-prefetchable memory */
+ 
+ 			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+@@ -971,7 +971,7 @@ pcie1: pci@1b700000 {
+ 			#address-cells = <3>;
+ 			#size-cells = <2>;
+ 
+-			ranges = <0x81000000 0 0x31e00000 0x31e00000 0 0x00100000   /* downstream I/O */
++			ranges = <0x81000000 0 0x31e00000 0x31e00000 0 0x00010000   /* downstream I/O */
+ 				  0x82000000 0 0x2e000000 0x2e000000 0 0x03e00000>; /* non-prefetchable memory */
+ 
+ 			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
+@@ -1022,7 +1022,7 @@ pcie2: pci@1b900000 {
+ 			#address-cells = <3>;
+ 			#size-cells = <2>;
+ 
+-			ranges = <0x81000000 0 0x35e00000 0x35e00000 0 0x00100000   /* downstream I/O */
++			ranges = <0x81000000 0 0x35e00000 0x35e00000 0 0x00010000   /* downstream I/O */
+ 				  0x82000000 0 0x32000000 0x32000000 0 0x03e00000>; /* non-prefetchable memory */
+ 
+ 			interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.36.1
 
