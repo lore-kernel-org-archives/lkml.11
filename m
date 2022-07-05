@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC37CCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A473CCA496
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239448AbiGEMal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
+        id S239581AbiGEMaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237621AbiGEMTa (ORCPT
+        with ESMTP id S237664AbiGEMTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:19:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EE718E2B;
-        Tue,  5 Jul 2022 05:15:35 -0700 (PDT)
+        Tue, 5 Jul 2022 08:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B38D1AF20;
+        Tue,  5 Jul 2022 05:16:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 377FFB817D3;
-        Tue,  5 Jul 2022 12:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748FFC341C7;
-        Tue,  5 Jul 2022 12:15:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AC0561A98;
+        Tue,  5 Jul 2022 12:16:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32ED4C341C7;
+        Tue,  5 Jul 2022 12:16:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023332;
-        bh=bQxN3bh++1R1mBIbbNcGTPNamM2kdxz0RwMIs1cqQhQ=;
+        s=korg; t=1657023360;
+        bh=AzEppktl3iMXpKZKusDV5yRb60MSK4FbE+GTaPKMriY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXKcYJwxadFGHp0JPou6AvR7SL4pc7Feqw9lTE8GlrVyJai9TPmaTMbOHuJHZgrp0
-         7VfYjN67bzWh3V7meZ8oWQbndPztF9CRCWDT77SBNfwaEHIzyE6eOYNlMg/xB8qKJN
-         JTQLVBzCwEkzuYN+F06zq2K/9PDt3HcutWnIssvo=
+        b=rAVPffiHjhXA73R6fPBwDqZjafyUugLz/rCQXRoeKgPtu7zWNVHPljPzXaus5ZlFv
+         dLhO5Bn6EYaGMnxegYpwZyHvr40dhtRI0goaAOCG7ieP1D6cyvQUOKuUWYCzbUCKrR
+         EUnq+jZJjj/T2+nyyrLCdwzGTe6N58ZDwexeJTxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bruce Fields <bfields@fieldses.org>,
-        Zorro Lang <zlang@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.18 022/102] SUNRPC: Fix READ_PLUS crasher
-Date:   Tue,  5 Jul 2022 13:57:48 +0200
-Message-Id: <20220705115619.047664900@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 031/102] net: dp83822: disable false carrier interrupt
+Date:   Tue,  5 Jul 2022 13:57:57 +0200
+Message-Id: <20220705115619.299386367@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -49,34 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
 
-commit a23dd544debcda4ee4a549ec7de59e85c3c8345c upstream.
+commit c96614eeab663646f57f67aa591e015abd8bd0ba upstream.
 
-Looks like there are still cases when "space_left - frag1bytes" can
-legitimately exceed PAGE_SIZE. Ensure that xdr->end always remains
-within the current encode buffer.
+When unplugging an Ethernet cable, false carrier events were produced by
+the PHY at a very high rate. Once the false carrier counter full, an
+interrupt was triggered every few clock cycles until the cable was
+replugged. This resulted in approximately 10k/s interrupts.
 
-Reported-by: Bruce Fields <bfields@fieldses.org>
-Reported-by: Zorro Lang <zlang@redhat.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216151
-Fixes: 6c254bf3b637 ("SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Since the false carrier counter (FCSCR) is never used, we can safely
+disable this interrupt.
+
+In addition to improving performance, this also solved MDIO read
+timeouts I was randomly encountering with an i.MX8 fec MAC because of
+the interrupt flood. The interrupt count and MDIO timeout fix were
+tested on a v5.4.110 kernel.
+
+Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/xdr.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/dp83822.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/net/sunrpc/xdr.c
-+++ b/net/sunrpc/xdr.c
-@@ -979,7 +979,7 @@ static __be32 *xdr_get_next_encode_buffe
- 	 */
- 	xdr->p = (void *)p + frag2bytes;
- 	space_left = xdr->buf->buflen - xdr->buf->len;
--	if (space_left - nbytes >= PAGE_SIZE)
-+	if (space_left - frag1bytes >= PAGE_SIZE)
- 		xdr->end = (void *)p + PAGE_SIZE;
- 	else
- 		xdr->end = (void *)p + space_left - frag1bytes;
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -229,7 +229,6 @@ static int dp83822_config_intr(struct ph
+ 			return misr_status;
+ 
+ 		misr_status |= (DP83822_RX_ERR_HF_INT_EN |
+-				DP83822_FALSE_CARRIER_HF_INT_EN |
+ 				DP83822_LINK_STAT_INT_EN |
+ 				DP83822_ENERGY_DET_INT_EN |
+ 				DP83822_LINK_QUAL_INT_EN);
 
 
