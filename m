@@ -2,93 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D710C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 00:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 00:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233455AbiGEAtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Jul 2022 20:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        id S233588AbiGEAum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Jul 2022 20:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbiGEAta (ORCPT
+        with ESMTP id S230311AbiGEAuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Jul 2022 20:49:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49AA211;
-        Mon,  4 Jul 2022 17:49:28 -0700 (PDT)
+        Mon, 4 Jul 2022 20:50:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1F0102;
+        Mon,  4 Jul 2022 17:50:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D9ECB815DE;
-        Tue,  5 Jul 2022 00:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C82C7C341C7;
-        Tue,  5 Jul 2022 00:49:24 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="XLTWYdPm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656982162;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wmcQHMubNIwKlbU4GHBQg5M1JCcEEO+b9FlZdRzaFZg=;
-        b=XLTWYdPmtr6B5danc6K4jWINNoG15JH0Z5RCQmUrCUAUhH59PRZomvhdYir/xZUUyExcFi
-        kRoBjPlSVnrwUWi9e1hVaAvv+r1fPJJUbSAGLGdUWF5w2nRbmPUhw+l8YulW1TYnrHZZ2f
-        HpOLs2jBmN2giNMfmDYU8oWFiXPJvdI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 82b84a2d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 5 Jul 2022 00:49:22 +0000 (UTC)
-Date:   Tue, 5 Jul 2022 02:49:19 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Vladis Dronov <vdronov@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wireguard: Kconfig: select CRYPTO_CHACHA_S390
-Message-ID: <YsOKj/GE2Mb2UsYa@zx2c4.com>
-References: <20220704191535.76006-1-vdronov@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9EA7617EA;
+        Tue,  5 Jul 2022 00:50:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C0B4C3411E;
+        Tue,  5 Jul 2022 00:50:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656982236;
+        bh=ICm1TCJKrTszOgEn1hHpXR9pNd9AusgVG5NTjNFfNLs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=l1XCugCzbg00N6Au13ME/W3/ql1hyrtVQnFdgeU7rhz4tgHgBikAxfqvL42ygwV+k
+         NA3UMEnyLyZJ81FIQUgrUT2qb6l0nuhYl+fuoi4jo6NIgfShrr5cZ4ziw852PxBl5Z
+         ClK5GuA/HRWnvmsvDiif1oeWF61TsVLlfTM+6fHXMeUO4btc4EewbEPHgpiNlj6LUe
+         PQT55+5E7ts0+iUaRC1oe+Sh4rY8M4yznUW9EWA0fDcVmdWy5OstrC3T47GKnFqAHQ
+         500+d3Y41glSfqHJgGZoq9CQLEhl6RGboERMKA3YrwqDbyu8ZiRDNAclnf7N/hQRYq
+         WHP7ZLsi74/lQ==
+Date:   Tue, 5 Jul 2022 08:50:29 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Kris Bahnsen <kris@embeddedTS.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Mark Featherston <mark@embeddedTS.com>
+Subject: Re: [PATCH v2] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
+Message-ID: <20220705005029.GQ819983@dragon>
+References: <20220630210327.4645-1-kris@embeddedTS.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220704191535.76006-1-vdronov@redhat.com>
+In-Reply-To: <20220630210327.4645-1-kris@embeddedTS.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vladis,
-
-On Mon, Jul 04, 2022 at 09:15:35PM +0200, Vladis Dronov wrote:
-> Select the new implementation of CHACHA20 for S390 when available,
-> it is faster than the generic software implementation.
+On Thu, Jun 30, 2022 at 02:03:27PM -0700, Kris Bahnsen wrote:
+> Device-tree incorrectly used "ngpio" which caused the driver to
+> fallback to 32 ngpios.
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Link: https://lore.kernel.org/linux-kernel/202207030630.6SZVkrWf-lkp@intel.com/
-> Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-> ---
->  drivers/net/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+> This platform has 62 GPIO registers.
 > 
-> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-> index b2a4f998c180..8c1eeb5a8db8 100644
-> --- a/drivers/net/Kconfig
-> +++ b/drivers/net/Kconfig
-> @@ -94,6 +94,7 @@ config WIREGUARD
->  	select CRYPTO_CURVE25519_NEON if ARM && KERNEL_MODE_NEON
->  	select CRYPTO_CHACHA_MIPS if CPU_MIPS32_R2
->  	select CRYPTO_POLY1305_MIPS if MIPS
-> +	select CRYPTO_CHACHA_S390 if S390
->  	help
->  	  WireGuard is a secure, fast, and easy to use replacement for IPSec
->  	  that uses modern cryptography and clever networking tricks. It's
-> -- 
-> 2.36.1
+> Fixes: 9ff8e9fccef9 ("ARM: dts: TS-7970: add basic device tree")
+> Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
 
-Thanks for the patch. Queued up as:
-https://git.zx2c4.com/wireguard-linux/commit/?id=1b4ab028730cd00c144eaa51160865504b780961
-
-I'll include this in my series to net.git soon.
-
-Regards,
-Jason
+Applied, thanks!
