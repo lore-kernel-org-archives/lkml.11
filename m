@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC824CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB47C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbiGEMBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
+        id S233178AbiGEMBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232906AbiGEMAx (ORCPT
+        with ESMTP id S232882AbiGEMAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:00:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9421582A;
-        Tue,  5 Jul 2022 05:00:52 -0700 (PDT)
+        Tue, 5 Jul 2022 08:00:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C277718343;
+        Tue,  5 Jul 2022 05:00:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43818B817D6;
-        Tue,  5 Jul 2022 12:00:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A57C341C7;
-        Tue,  5 Jul 2022 12:00:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C20B617DB;
+        Tue,  5 Jul 2022 12:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68778C341C7;
+        Tue,  5 Jul 2022 12:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022450;
-        bh=v40g/hBBeQmr4W1jpD2WWBoeCsbWUBpQuUMf2B4Nk+o=;
+        s=korg; t=1657022452;
+        bh=Fjz4FNY8X9b8x9Bgqc8fzqlaOfq4GfGD4PoiPWMxbug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w/MvqmlVg21K862aYaNaM7oCo1AKs0XPifoAulMSIf3EFGUQrBXdephxWByfCIT+A
-         srvDo/WLNTs3lKsueqV0Vds+lj5Y6BQ2oQreTDiBJlu+sS+svLKFtoG692y42GkpNc
-         0DKKJ6EeShr1OEUnOD/aP9cHiQpzsU9S5lY+YmYg=
+        b=vpfC2e6iq6ESR42alnR/8O/v5oMOle3xJLMw6Qj11aghcHbPL8epm4zZRipIWiNxt
+         j82nRyHeMgnwieQkBoQ6QYUx5QIpuQT3IXjQLLqlO2wej/XJWINRf5Tjqo9Jl/qvIa
+         CtcvHE2e9GZUDaysByh879Ezw355FMtJEs+Lxe8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 4.14 11/29] caif_virtio: fix race between virtio_device_ready() and ndo_open()
-Date:   Tue,  5 Jul 2022 13:57:59 +0200
-Message-Id: <20220705115606.676585095@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.14 12/29] netfilter: nft_dynset: restore set element counter when failing to update
+Date:   Tue,  5 Jul 2022 13:58:00 +0200
+Message-Id: <20220705115606.706201363@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
 References: <20220705115606.333669144@linuxfoundation.org>
@@ -48,54 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 11a37eb66812ce6a06b79223ad530eb0e1d7294d upstream.
+commit 05907f10e235680cc7fb196810e4ad3215d5e648 upstream.
 
-We currently depend on probe() calling virtio_device_ready() -
-which happens after netdev
-registration. Since ndo_open() can be called immediately
-after register_netdev, this means there exists a race between
-ndo_open() and virtio_device_ready(): the driver may start to use the
-device (e.g. TX) before DRIVER_OK which violates the spec.
+This patch fixes a race condition.
 
-Fix this by switching to use register_netdevice() and protect the
-virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-only be called after virtio_device_ready().
+nft_rhash_update() might fail for two reasons:
 
-Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Message-Id: <20220620051115.3142-3-jasowang@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+- Element already exists in the hashtable.
+- Another packet won race to insert an entry in the hashtable.
+
+In both cases, new() has already bumped the counter via atomic_add_unless(),
+therefore, decrement the set element counter.
+
+Fixes: 22fe54d5fefc ("netfilter: nf_tables: add support for dynamic set updates")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/caif/caif_virtio.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ net/netfilter/nft_set_hash.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/caif/caif_virtio.c
-+++ b/drivers/net/caif/caif_virtio.c
-@@ -727,13 +727,21 @@ static int cfv_probe(struct virtio_devic
- 	/* Carrier is off until netdevice is opened */
- 	netif_carrier_off(netdev);
- 
-+	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-+	rtnl_lock();
-+
- 	/* register Netdev */
--	err = register_netdev(netdev);
-+	err = register_netdevice(netdev);
- 	if (err) {
-+		rtnl_unlock();
- 		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
- 		goto err;
+--- a/net/netfilter/nft_set_hash.c
++++ b/net/netfilter/nft_set_hash.c
+@@ -127,6 +127,7 @@ static bool nft_rhash_update(struct nft_
+ 	/* Another cpu may race to insert the element with the same key */
+ 	if (prev) {
+ 		nft_set_elem_destroy(set, he, true);
++		atomic_dec(&set->nelems);
+ 		he = prev;
  	}
  
-+	virtio_device_ready(vdev);
-+
-+	rtnl_unlock();
-+
- 	debugfs_init(cfv);
+@@ -136,6 +137,7 @@ out:
  
- 	return 0;
+ err2:
+ 	nft_set_elem_destroy(set, he, true);
++	atomic_dec(&set->nelems);
+ err1:
+ 	return false;
+ }
 
 
