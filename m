@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4689FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233333AbiGEMFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42990 "EHLO
+        id S233478AbiGEMF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233187AbiGEMB7 (ORCPT
+        with ESMTP id S233300AbiGEMCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:01:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8622C183AB;
-        Tue,  5 Jul 2022 05:01:50 -0700 (PDT)
+        Tue, 5 Jul 2022 08:02:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBB1186C0;
+        Tue,  5 Jul 2022 05:02:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36B4DB817E0;
-        Tue,  5 Jul 2022 12:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933B2C341CF;
-        Tue,  5 Jul 2022 12:01:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 091AF617B9;
+        Tue,  5 Jul 2022 12:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B77C341C7;
+        Tue,  5 Jul 2022 12:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657022507;
-        bh=zn+oj4F3sWLH/khQA3k0ERFN8bPpUeyumgY59Fo0PEA=;
+        s=korg; t=1657022532;
+        bh=agdFxK753EBUOj8N9zT75LstaCVGEjxIZQx/VTP1TVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stT6mZ+AVlHAJbjZx3OyV28ztLfDmoPhAXxrqhX0FhJHplGOqY7MN6nOe2rRJAHbA
-         guQ+VR3Gf24M+m3v2PdpHptQUC16ejIKZN8qDbB1FLs01qPx0zYXGWMf9OYdNqTa6J
-         SF1ileAvYpDv+jFc1/7rhQgD9jcjXLRSDbw39XGs=
+        b=0n34H9xvBEGqR4o5gIp6eCrdihn1bJpbuqv1VE599teoSstt6GCLSrCUuaMFQXSfS
+         hiDyZErMQG3RoWqGGkgOw+M4qvoTl8pfVA5OVUG+oh7zRMS694tSnbzaTlan8Ug3VP
+         1b0mjJLEVdX2wNLxvBfLXPo9j3wNx1qGVEUkjapc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Ingo Franzki <ifranzki@linux.ibm.com>,
-        Juergen Christ <jchrist@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>
-Subject: [PATCH 4.14 04/29] s390/archrandom: simplify back to earlier design and initialize earlier
-Date:   Tue,  5 Jul 2022 13:57:52 +0200
-Message-Id: <20220705115606.470285882@linuxfoundation.org>
+        stable@vger.kernel.org, Petar Penkov <ppenkov@aviatrix.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 11/33] net: tun: stop NAPI when detaching queues
+Date:   Tue,  5 Jul 2022 13:58:03 +0200
+Message-Id: <20220705115607.041196563@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220705115606.333669144@linuxfoundation.org>
-References: <20220705115606.333669144@linuxfoundation.org>
+In-Reply-To: <20220705115606.709817198@linuxfoundation.org>
+References: <20220705115606.709817198@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,164 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit e4f74400308cb8abde5fdc9cad609c2aba32110c upstream.
+commit a8fc8cb5692aebb9c6f7afd4265366d25dcd1d01 upstream.
 
-s390x appears to present two RNG interfaces:
-- a "TRNG" that gathers entropy using some hardware function; and
-- a "DRBG" that takes in a seed and expands it.
+While looking at a syzbot report I noticed the NAPI only gets
+disabled before it's deleted. I think that user can detach
+the queue before destroying the device and the NAPI will never
+be stopped.
 
-Previously, the TRNG was wired up to arch_get_random_{long,int}(), but
-it was observed that this was being called really frequently, resulting
-in high overhead. So it was changed to be wired up to arch_get_random_
-seed_{long,int}(), which was a reasonable decision. Later on, the DRBG
-was then wired up to arch_get_random_{long,int}(), with a complicated
-buffer filling thread, to control overhead and rate.
-
-Fortunately, none of the performance issues matter much now. The RNG
-always attempts to use arch_get_random_seed_{long,int}() first, which
-means a complicated implementation of arch_get_random_{long,int}() isn't
-really valuable or useful to have around. And it's only used when
-reseeding, which means it won't hit the high throughput complications
-that were faced before.
-
-So this commit returns to an earlier design of just calling the TRNG in
-arch_get_random_seed_{long,int}(), and returning false in arch_get_
-random_{long,int}().
-
-Part of what makes the simplification possible is that the RNG now seeds
-itself using the TRNG at bootup. But this only works if the TRNG is
-detected early in boot, before random_init() is called. So this commit
-also causes that check to happen in setup_arch().
-
-Cc: stable@vger.kernel.org
-Cc: Harald Freudenberger <freude@linux.ibm.com>
-Cc: Ingo Franzki <ifranzki@linux.ibm.com>
-Cc: Juergen Christ <jchrist@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Link: https://lore.kernel.org/r/20220610222023.378448-1-Jason@zx2c4.com
-Reviewed-by: Harald Freudenberger <freude@linux.ibm.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
+Acked-by: Petar Penkov <ppenkov@aviatrix.com>
+Link: https://lore.kernel.org/r/20220623042105.2274812-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/crypto/arch_random.c     |   20 +++-----------------
- arch/s390/include/asm/archrandom.h |   32 ++++++++++++++------------------
- arch/s390/kernel/setup.c           |    5 +++++
- 3 files changed, 22 insertions(+), 35 deletions(-)
+ drivers/net/tun.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/arch/s390/crypto/arch_random.c
-+++ b/arch/s390/crypto/arch_random.c
-@@ -1,13 +1,9 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * s390 arch random implementation.
-  *
-- * Copyright IBM Corp. 2017
-- * Author(s): Harald Freudenberger <freude@de.ibm.com>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License (version 2 only)
-- * as published by the Free Software Foundation.
-- *
-+ * Copyright IBM Corp. 2017, 2020
-+ * Author(s): Harald Freudenberger
-  */
- 
- #include <linux/kernel.h>
-@@ -20,13 +16,3 @@ DEFINE_STATIC_KEY_FALSE(s390_arch_random
- 
- atomic64_t s390_arch_random_counter = ATOMIC64_INIT(0);
- EXPORT_SYMBOL(s390_arch_random_counter);
--
--static int __init s390_arch_random_init(void)
--{
--	/* check if subfunction CPACF_PRNO_TRNG is available */
--	if (cpacf_query_func(CPACF_PRNO, CPACF_PRNO_TRNG))
--		static_branch_enable(&s390_arch_random_available);
--
--	return 0;
--}
--arch_initcall(s390_arch_random_init);
---- a/arch/s390/include/asm/archrandom.h
-+++ b/arch/s390/include/asm/archrandom.h
-@@ -2,7 +2,7 @@
- /*
-  * Kernel interface for the s390 arch_random_* functions
-  *
-- * Copyright IBM Corp. 2017
-+ * Copyright IBM Corp. 2017, 2020
-  *
-  * Author: Harald Freudenberger <freude@de.ibm.com>
-  *
-@@ -20,38 +20,34 @@
- DECLARE_STATIC_KEY_FALSE(s390_arch_random_available);
- extern atomic64_t s390_arch_random_counter;
- 
--static void s390_arch_random_generate(u8 *buf, unsigned int nbytes)
-+static inline bool __must_check arch_get_random_long(unsigned long *v)
- {
--	cpacf_trng(NULL, 0, buf, nbytes);
--	atomic64_add(nbytes, &s390_arch_random_counter);
-+	return false;
- }
- 
--static inline bool arch_get_random_long(unsigned long *v)
-+static inline bool __must_check arch_get_random_int(unsigned int *v)
- {
--	if (static_branch_likely(&s390_arch_random_available)) {
--		s390_arch_random_generate((u8 *)v, sizeof(*v));
--		return true;
--	}
- 	return false;
- }
- 
--static inline bool arch_get_random_int(unsigned int *v)
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
- {
- 	if (static_branch_likely(&s390_arch_random_available)) {
--		s390_arch_random_generate((u8 *)v, sizeof(*v));
-+		cpacf_trng(NULL, 0, (u8 *)v, sizeof(*v));
-+		atomic64_add(sizeof(*v), &s390_arch_random_counter);
- 		return true;
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -333,6 +333,12 @@ static void tun_napi_init(struct tun_str
  	}
- 	return false;
  }
  
--static inline bool arch_get_random_seed_long(unsigned long *v)
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
- {
--	return arch_get_random_long(v);
--}
--
--static inline bool arch_get_random_seed_int(unsigned int *v)
--{
--	return arch_get_random_int(v);
-+	if (static_branch_likely(&s390_arch_random_available)) {
-+		cpacf_trng(NULL, 0, (u8 *)v, sizeof(*v));
-+		atomic64_add(sizeof(*v), &s390_arch_random_counter);
-+		return true;
-+	}
-+	return false;
- }
- 
- #endif /* CONFIG_ARCH_RANDOM */
---- a/arch/s390/kernel/setup.c
-+++ b/arch/s390/kernel/setup.c
-@@ -853,6 +853,11 @@ static void __init setup_randomness(void
- 	if (stsi(vmms, 3, 2, 2) == 0 && vmms->count)
- 		add_device_randomness(&vmms->vm, sizeof(vmms->vm[0]) * vmms->count);
- 	memblock_free((unsigned long) vmms, PAGE_SIZE);
++static void tun_napi_enable(struct tun_file *tfile)
++{
++	if (tfile->napi_enabled)
++		napi_enable(&tfile->napi);
++}
 +
-+#ifdef CONFIG_ARCH_RANDOM
-+	if (cpacf_query_func(CPACF_PRNO, CPACF_PRNO_TRNG))
-+		static_branch_enable(&s390_arch_random_available);
-+#endif
- }
+ static void tun_napi_disable(struct tun_file *tfile)
+ {
+ 	if (tfile->napi_enabled)
+@@ -723,8 +729,10 @@ static void __tun_detach(struct tun_file
+ 		if (clean) {
+ 			RCU_INIT_POINTER(tfile->tun, NULL);
+ 			sock_put(&tfile->sk);
+-		} else
++		} else {
+ 			tun_disable_queue(tun, tfile);
++			tun_napi_disable(tfile);
++		}
  
- /*
+ 		synchronize_net();
+ 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
+@@ -878,6 +886,7 @@ static int tun_attach(struct tun_struct
+ 
+ 	if (tfile->detached) {
+ 		tun_enable_queue(tfile);
++		tun_napi_enable(tfile);
+ 	} else {
+ 		sock_hold(&tfile->sk);
+ 		tun_napi_init(tun, tfile, napi, napi_frags);
 
 
