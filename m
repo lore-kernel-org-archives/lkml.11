@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7226C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFDBCCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239820AbiGEMfD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
+        id S239596AbiGEMer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237960AbiGEM02 (ORCPT
+        with ESMTP id S237403AbiGEMZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:26:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520D9630D;
-        Tue,  5 Jul 2022 05:18:30 -0700 (PDT)
+        Tue, 5 Jul 2022 08:25:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824D619033;
+        Tue,  5 Jul 2022 05:17:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 035FCB8170A;
-        Tue,  5 Jul 2022 12:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9E3C341C7;
-        Tue,  5 Jul 2022 12:18:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2008861983;
+        Tue,  5 Jul 2022 12:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF20C341C7;
+        Tue,  5 Jul 2022 12:17:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657023507;
-        bh=IyAY60xbrSdkFFbgrfZdUCHoU7VC9nCnMrRzTpbJl44=;
+        s=korg; t=1657023477;
+        bh=DZ0Ce/oyCCND9pcA0PzAuS+rWlvoN4Rx1bft0Gkp9MQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QIsFqeOO5tIZ7WaifPnHGGDvcKyNEJhFXCVj1HeTB2KWaJL+uZH2PhtfMdf7SvPH9
-         o6xcrDG3oQ9ROcutH7BTy33AFgnwccvAu8L0nHR1KXi6oUCH+FKlaZo/7MFz9yZ9Du
-         mUv+nxcYX9uNCHKcTiAgfZ9t7NitBcaXLeJdg/JM=
+        b=ZVis3ORtvxsFXliJfhABD4mDfWlgIiQyXZje41Y3M9rFy+NN3x5BxR5flA3ttOUBK
+         TQH0wHWaR/gh16QF/2DsNFtQn/f9XJXMn6YsNgY05Tx04c9QY0rENZfeDR2eYg2s/W
+         BhfXkLH/hMQwtc2f+pCi3dtV6qkMnD568LiUamGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.18 044/102] NFS: restore module put when manager exits.
-Date:   Tue,  5 Jul 2022 13:58:10 +0200
-Message-Id: <20220705115619.661600798@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stefan Seyfried <seife+kernel@b1-systems.com>,
+        Kenneth Chan <kenneth.t.chan@gmail.com>
+Subject: [PATCH 5.18 073/102] ACPI: video: Change how we determine if brightness key-presses are handled
+Date:   Tue,  5 Jul 2022 13:58:39 +0200
+Message-Id: <20220705115620.481744730@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
 References: <20220705115618.410217782@linuxfoundation.org>
@@ -48,39 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 080abad71e99d2becf38c978572982130b927a28 upstream.
+commit 3a0cf7ab8df3878a7e2f3d29275b785cf4e7afb6 upstream.
 
-Commit f49169c97fce ("NFSD: Remove svc_serv_ops::svo_module") removed
-calls to module_put_and_kthread_exit() from threads that acted as SUNRPC
-servers and had a related svc_serv_ops structure.  This was correct.
+Some systems have an ACPI video bus but not ACPI video devices with
+backlight capability. On these devices brightness key-presses are
+(logically) not reported through the ACPI video bus.
 
-It ALSO removed the module_put_and_kthread_exit() call from
-nfs4_run_state_manager() which is NOT a SUNRPC service.
+Change how acpi_video_handles_brightness_key_presses() determines if
+brightness key-presses are handled by the ACPI video driver to avoid
+vendor specific drivers/platform/x86 drivers filtering out their
+brightness key-presses even though they are the only ones reporting
+these presses.
 
-Consequently every time the NFSv4 state manager runs the module count
-increments and won't be decremented.  So the nfsv4 module cannot be
-unloaded.
-
-So restore the module_put_and_kthread_exit() call.
-
-Fixes: f49169c97fce ("NFSD: Remove svc_serv_ops::svo_module")
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: ed83c9171829 ("platform/x86: panasonic-laptop: Resolve hotkey double trigger bug")
+Reported-and-tested-by: Stefan Seyfried <seife+kernel@b1-systems.com>
+Reported-and-tested-by: Kenneth Chan <kenneth.t.chan@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220624112340.10130-2-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4state.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/acpi_video.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -2743,5 +2743,6 @@ again:
- 		goto again;
+--- a/drivers/acpi/acpi_video.c
++++ b/drivers/acpi/acpi_video.c
+@@ -73,6 +73,7 @@ module_param(device_id_scheme, bool, 044
+ static int only_lcd = -1;
+ module_param(only_lcd, int, 0444);
  
- 	nfs_put_client(clp);
-+	module_put_and_kthread_exit(0);
- 	return 0;
++static bool has_backlight;
+ static int register_count;
+ static DEFINE_MUTEX(register_count_mutex);
+ static DEFINE_MUTEX(video_list_lock);
+@@ -1222,6 +1223,9 @@ acpi_video_bus_get_one_device(struct acp
+ 	acpi_video_device_bind(video, data);
+ 	acpi_video_device_find_cap(data);
+ 
++	if (data->cap._BCM && data->cap._BCL)
++		has_backlight = true;
++
+ 	mutex_lock(&video->device_list_lock);
+ 	list_add_tail(&data->entry, &video->video_device_list);
+ 	mutex_unlock(&video->device_list_lock);
+@@ -2250,6 +2254,7 @@ void acpi_video_unregister(void)
+ 	if (register_count) {
+ 		acpi_bus_unregister_driver(&acpi_video_bus);
+ 		register_count = 0;
++		has_backlight = false;
+ 	}
+ 	mutex_unlock(&register_count_mutex);
  }
+@@ -2271,13 +2276,7 @@ void acpi_video_unregister_backlight(voi
+ 
+ bool acpi_video_handles_brightness_key_presses(void)
+ {
+-	bool have_video_busses;
+-
+-	mutex_lock(&video_list_lock);
+-	have_video_busses = !list_empty(&video_bus_head);
+-	mutex_unlock(&video_list_lock);
+-
+-	return have_video_busses &&
++	return has_backlight &&
+ 	       (report_key_events & REPORT_BRIGHTNESS_KEY_EVENTS);
+ }
+ EXPORT_SYMBOL(acpi_video_handles_brightness_key_presses);
 
 
