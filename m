@@ -2,192 +2,315 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C89C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C573AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236120AbiGEMQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
+        id S236126AbiGEMQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235280AbiGEMIt (ORCPT
+        with ESMTP id S235299AbiGEMIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Jul 2022 08:08:49 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11E0CF7;
-        Tue,  5 Jul 2022 05:08:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657022922; x=1688558922;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=CDyatd/alwRxhQKIcCzS9dAT6SbHX1ERg8cwqTzIgys=;
-  b=U65DyMa9iOTEWwlQf7fH7zHF5MYATUOJWytoVUY6TXUcv1BzlTJfWEbn
-   /KsnIjbsyRvQmAqsfzcOtvGZU2o3e9Ie/IK/Kx1q7qKbxPDVRyriBFH0A
-   H/dcpJ0Id72FI0poSX8q0yArhpI7a3ld1YMHbw2ANOqb03/cqYocQN/QK
-   c=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jul 2022 05:08:42 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:08:42 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:42 -0700
-Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Jul 2022 05:08:39 -0700
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-To:     <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <mathieu.poirier@linaro.org>,
-        <dmitry.baryshkov@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <konrad.dybcio@somainline.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [V3 1/7] remoteproc: qcom: pas: Add decrypt shutdown support for modem
-Date:   Tue, 5 Jul 2022 17:38:14 +0530
-Message-ID: <1657022900-2049-2-git-send-email-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
-References: <1657022900-2049-1-git-send-email-quic_sibis@quicinc.com>
+        Tue, 5 Jul 2022 08:08:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8580D63;
+        Tue,  5 Jul 2022 05:08:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 449E96185C;
+        Tue,  5 Jul 2022 12:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510F1C341C7;
+        Tue,  5 Jul 2022 12:08:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657022932;
+        bh=kd6p/UrJ3DHSukQSI++ieBOSln3aoMGyy+6/k6m0eFs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kLq8eH6dnLhaaAl5JmzHFXqJMdAPoi4tiGRVHjBZQ9ML2IqgKl6VwtpxKBX/l6sYm
+         4yYTVgqt1IewoL5JFgXmCrojfWSkTLseJKPUWw4fKoeupCEHoWj74FGTolohTs0vcr
+         yxXK5GqWqri976mAALlmXcqYhfRLYfn0Gjh5viiI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.10 61/84] selftests/rseq: introduce own copy of rseq uapi header
+Date:   Tue,  5 Jul 2022 13:58:24 +0200
+Message-Id: <20220705115617.103464931@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115615.323395630@linuxfoundation.org>
+References: <20220705115615.323395630@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The initial shutdown request to modem on SM8450 SoCs would start the
-decryption process and will keep returning errors until the modem shutdown
-is complete. Fix this by retrying shutdowns in fixed intervals.
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-Err Logs on modem shutdown:
-qcom_q6v5_pas 4080000.remoteproc: failed to shutdown: -22
-remoteproc remoteproc3: can't stop rproc: -22
+commit 5c105d55a9dc9e01535116ccfc26e703168a574f upstream.
 
-Fixes: 5cef9b48458d ("remoteproc: qcom: pas: Add SM8450 remoteproc support")
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+The Linux kernel rseq uapi header has a broken layout for the
+rseq_cs.ptr field on 32-bit little endian architectures. The entire
+rseq_cs.ptr field is planned for removal, leaving only the 64-bit
+rseq_cs.ptr64 field available.
+
+Both glibc and librseq use their own copy of the Linux kernel uapi
+header, where they introduce proper union fields to access to the 32-bit
+low order bits of the rseq_cs pointer on 32-bit architectures.
+
+Introduce a copy of the Linux kernel uapi headers in the Linux kernel
+selftests.
+
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220124171253.22072-2-mathieu.desnoyers@efficios.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ tools/testing/selftests/rseq/rseq-abi.h |  151 ++++++++++++++++++++++++++++++++
+ tools/testing/selftests/rseq/rseq.c     |   14 +-
+ tools/testing/selftests/rseq/rseq.h     |   10 --
+ 3 files changed, 161 insertions(+), 14 deletions(-)
+ create mode 100644 tools/testing/selftests/rseq/rseq-abi.h
 
-v3:
- * Fixup misc. suggestions and rename to adsp_shutdown_poll_decrypt() [Bjorn]
-
- drivers/remoteproc/qcom_q6v5_pas.c | 43 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
-index 6ae39c5653b1..297700f87fe8 100644
---- a/drivers/remoteproc/qcom_q6v5_pas.c
-+++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -8,6 +8,7 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/firmware.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
-@@ -29,6 +30,8 @@
- #include "qcom_q6v5.h"
- #include "remoteproc_internal.h"
- 
-+#define ADSP_DECRYPT_SHUTDOWN_DELAY_MS	100
+--- /dev/null
++++ b/tools/testing/selftests/rseq/rseq-abi.h
+@@ -0,0 +1,151 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++#ifndef _RSEQ_ABI_H
++#define _RSEQ_ABI_H
 +
- struct adsp_data {
- 	int crash_reason_smem;
- 	const char *firmware_name;
-@@ -36,6 +39,7 @@ struct adsp_data {
- 	unsigned int minidump_id;
- 	bool has_aggre2_clk;
- 	bool auto_boot;
-+	bool decrypt_shutdown;
- 
- 	char **proxy_pd_names;
- 
-@@ -65,6 +69,7 @@ struct qcom_adsp {
- 	unsigned int minidump_id;
- 	int crash_reason_smem;
- 	bool has_aggre2_clk;
-+	bool decrypt_shutdown;
- 	const char *info_name;
- 
- 	struct completion start_done;
-@@ -128,6 +133,19 @@ static void adsp_pds_disable(struct qcom_adsp *adsp, struct device **pds,
- 	}
- }
- 
-+static int adsp_shutdown_poll_decrypt(struct qcom_adsp *adsp)
-+{
-+	unsigned int retry_num = 50;
-+	int ret;
++/*
++ * rseq-abi.h
++ *
++ * Restartable sequences system call API
++ *
++ * Copyright (c) 2015-2022 Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
++ */
 +
-+	do {
-+		msleep(ADSP_DECRYPT_SHUTDOWN_DELAY_MS);
-+		ret = qcom_scm_pas_shutdown(adsp->pas_id);
-+	} while (ret == -EINVAL && --retry_num);
++#include <linux/types.h>
++#include <asm/byteorder.h>
 +
-+	return ret;
-+}
-+
- static int adsp_unprepare(struct rproc *rproc)
- {
- 	struct qcom_adsp *adsp = (struct qcom_adsp *)rproc->priv;
-@@ -249,6 +267,9 @@ static int adsp_stop(struct rproc *rproc)
- 		dev_err(adsp->dev, "timed out on wait\n");
- 
- 	ret = qcom_scm_pas_shutdown(adsp->pas_id);
-+	if (ret && adsp->decrypt_shutdown)
-+		ret = adsp_shutdown_poll_decrypt(adsp);
-+
- 	if (ret)
- 		dev_err(adsp->dev, "failed to shutdown: %d\n", ret);
- 
-@@ -459,6 +480,7 @@ static int adsp_probe(struct platform_device *pdev)
- 	adsp->pas_id = desc->pas_id;
- 	adsp->has_aggre2_clk = desc->has_aggre2_clk;
- 	adsp->info_name = desc->sysmon_name;
-+	adsp->decrypt_shutdown = desc->decrypt_shutdown;
- 	platform_set_drvdata(pdev, adsp);
- 
- 	device_wakeup_enable(adsp->dev);
-@@ -877,6 +899,25 @@ static const struct adsp_data sdx55_mpss_resource = {
- 	.ssctl_id = 0x22,
- };
- 
-+static const struct adsp_data sm8450_mpss_resource = {
-+	.crash_reason_smem = 421,
-+	.firmware_name = "modem.mdt",
-+	.pas_id = 4,
-+	.minidump_id = 3,
-+	.has_aggre2_clk = false,
-+	.auto_boot = false,
-+	.decrypt_shutdown = true,
-+	.proxy_pd_names = (char*[]){
-+		"cx",
-+		"mss",
-+		NULL
-+	},
-+	.load_state = "modem",
-+	.ssr_name = "mpss",
-+	.sysmon_name = "modem",
-+	.ssctl_id = 0x12,
++enum rseq_abi_cpu_id_state {
++	RSEQ_ABI_CPU_ID_UNINITIALIZED			= -1,
++	RSEQ_ABI_CPU_ID_REGISTRATION_FAILED		= -2,
 +};
 +
- static const struct of_device_id adsp_of_match[] = {
- 	{ .compatible = "qcom,msm8226-adsp-pil", .data = &adsp_resource_init},
- 	{ .compatible = "qcom,msm8974-adsp-pil", .data = &adsp_resource_init},
-@@ -916,7 +957,7 @@ static const struct of_device_id adsp_of_match[] = {
- 	{ .compatible = "qcom,sm8450-adsp-pas", .data = &sm8350_adsp_resource},
- 	{ .compatible = "qcom,sm8450-cdsp-pas", .data = &sm8350_cdsp_resource},
- 	{ .compatible = "qcom,sm8450-slpi-pas", .data = &sm8350_slpi_resource},
--	{ .compatible = "qcom,sm8450-mpss-pas", .data = &mpss_resource_init},
-+	{ .compatible = "qcom,sm8450-mpss-pas", .data = &sm8450_mpss_resource},
- 	{ },
++enum rseq_abi_flags {
++	RSEQ_ABI_FLAG_UNREGISTER = (1 << 0),
++};
++
++enum rseq_abi_cs_flags_bit {
++	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT	= 0,
++	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT	= 1,
++	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT	= 2,
++};
++
++enum rseq_abi_cs_flags {
++	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT	=
++		(1U << RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT),
++	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL	=
++		(1U << RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT),
++	RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE	=
++		(1U << RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT),
++};
++
++/*
++ * struct rseq_abi_cs is aligned on 4 * 8 bytes to ensure it is always
++ * contained within a single cache-line. It is usually declared as
++ * link-time constant data.
++ */
++struct rseq_abi_cs {
++	/* Version of this structure. */
++	__u32 version;
++	/* enum rseq_abi_cs_flags */
++	__u32 flags;
++	__u64 start_ip;
++	/* Offset from start_ip. */
++	__u64 post_commit_offset;
++	__u64 abort_ip;
++} __attribute__((aligned(4 * sizeof(__u64))));
++
++/*
++ * struct rseq_abi is aligned on 4 * 8 bytes to ensure it is always
++ * contained within a single cache-line.
++ *
++ * A single struct rseq_abi per thread is allowed.
++ */
++struct rseq_abi {
++	/*
++	 * Restartable sequences cpu_id_start field. Updated by the
++	 * kernel. Read by user-space with single-copy atomicity
++	 * semantics. This field should only be read by the thread which
++	 * registered this data structure. Aligned on 32-bit. Always
++	 * contains a value in the range of possible CPUs, although the
++	 * value may not be the actual current CPU (e.g. if rseq is not
++	 * initialized). This CPU number value should always be compared
++	 * against the value of the cpu_id field before performing a rseq
++	 * commit or returning a value read from a data structure indexed
++	 * using the cpu_id_start value.
++	 */
++	__u32 cpu_id_start;
++	/*
++	 * Restartable sequences cpu_id field. Updated by the kernel.
++	 * Read by user-space with single-copy atomicity semantics. This
++	 * field should only be read by the thread which registered this
++	 * data structure. Aligned on 32-bit. Values
++	 * RSEQ_CPU_ID_UNINITIALIZED and RSEQ_CPU_ID_REGISTRATION_FAILED
++	 * have a special semantic: the former means "rseq uninitialized",
++	 * and latter means "rseq initialization failed". This value is
++	 * meant to be read within rseq critical sections and compared
++	 * with the cpu_id_start value previously read, before performing
++	 * the commit instruction, or read and compared with the
++	 * cpu_id_start value before returning a value loaded from a data
++	 * structure indexed using the cpu_id_start value.
++	 */
++	__u32 cpu_id;
++	/*
++	 * Restartable sequences rseq_cs field.
++	 *
++	 * Contains NULL when no critical section is active for the current
++	 * thread, or holds a pointer to the currently active struct rseq_cs.
++	 *
++	 * Updated by user-space, which sets the address of the currently
++	 * active rseq_cs at the beginning of assembly instruction sequence
++	 * block, and set to NULL by the kernel when it restarts an assembly
++	 * instruction sequence block, as well as when the kernel detects that
++	 * it is preempting or delivering a signal outside of the range
++	 * targeted by the rseq_cs. Also needs to be set to NULL by user-space
++	 * before reclaiming memory that contains the targeted struct rseq_cs.
++	 *
++	 * Read and set by the kernel. Set by user-space with single-copy
++	 * atomicity semantics. This field should only be updated by the
++	 * thread which registered this data structure. Aligned on 64-bit.
++	 */
++	union {
++		__u64 ptr64;
++
++		/*
++		 * The "arch" field provides architecture accessor for
++		 * the ptr field based on architecture pointer size and
++		 * endianness.
++		 */
++		struct {
++#ifdef __LP64__
++			__u64 ptr;
++#elif defined(__BYTE_ORDER) ? (__BYTE_ORDER == __BIG_ENDIAN) : defined(__BIG_ENDIAN)
++			__u32 padding;		/* Initialized to zero. */
++			__u32 ptr;
++#else
++			__u32 ptr;
++			__u32 padding;		/* Initialized to zero. */
++#endif
++		} arch;
++	} rseq_cs;
++
++	/*
++	 * Restartable sequences flags field.
++	 *
++	 * This field should only be updated by the thread which
++	 * registered this data structure. Read by the kernel.
++	 * Mainly used for single-stepping through rseq critical sections
++	 * with debuggers.
++	 *
++	 * - RSEQ_ABI_CS_FLAG_NO_RESTART_ON_PREEMPT
++	 *     Inhibit instruction sequence block restart on preemption
++	 *     for this thread.
++	 * - RSEQ_ABI_CS_FLAG_NO_RESTART_ON_SIGNAL
++	 *     Inhibit instruction sequence block restart on signal
++	 *     delivery for this thread.
++	 * - RSEQ_ABI_CS_FLAG_NO_RESTART_ON_MIGRATE
++	 *     Inhibit instruction sequence block restart on migration for
++	 *     this thread.
++	 */
++	__u32 flags;
++} __attribute__((aligned(4 * sizeof(__u64))));
++
++#endif /* _RSEQ_ABI_H */
+--- a/tools/testing/selftests/rseq/rseq.c
++++ b/tools/testing/selftests/rseq/rseq.c
+@@ -30,8 +30,8 @@
+ #include "../kselftest.h"
+ #include "rseq.h"
+ 
+-__thread volatile struct rseq __rseq_abi = {
+-	.cpu_id = RSEQ_CPU_ID_UNINITIALIZED,
++__thread volatile struct rseq_abi __rseq_abi = {
++	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
  };
- MODULE_DEVICE_TABLE(of, adsp_of_match);
--- 
-2.7.4
+ 
+ /*
+@@ -66,7 +66,7 @@ static void signal_restore(sigset_t olds
+ 		abort();
+ }
+ 
+-static int sys_rseq(volatile struct rseq *rseq_abi, uint32_t rseq_len,
++static int sys_rseq(volatile struct rseq_abi *rseq_abi, uint32_t rseq_len,
+ 		    int flags, uint32_t sig)
+ {
+ 	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
+@@ -86,13 +86,13 @@ int rseq_register_current_thread(void)
+ 	}
+ 	if (__rseq_refcount++)
+ 		goto end;
+-	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq), 0, RSEQ_SIG);
++	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), 0, RSEQ_SIG);
+ 	if (!rc) {
+ 		assert(rseq_current_cpu_raw() >= 0);
+ 		goto end;
+ 	}
+ 	if (errno != EBUSY)
+-		__rseq_abi.cpu_id = RSEQ_CPU_ID_REGISTRATION_FAILED;
++		__rseq_abi.cpu_id = RSEQ_ABI_CPU_ID_REGISTRATION_FAILED;
+ 	ret = -1;
+ 	__rseq_refcount--;
+ end:
+@@ -114,8 +114,8 @@ int rseq_unregister_current_thread(void)
+ 	}
+ 	if (--__rseq_refcount)
+ 		goto end;
+-	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq),
+-		      RSEQ_FLAG_UNREGISTER, RSEQ_SIG);
++	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi),
++		      RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
+ 	if (!rc)
+ 		goto end;
+ 	__rseq_refcount = 1;
+--- a/tools/testing/selftests/rseq/rseq.h
++++ b/tools/testing/selftests/rseq/rseq.h
+@@ -16,7 +16,7 @@
+ #include <errno.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+-#include <linux/rseq.h>
++#include "rseq-abi.h"
+ 
+ /*
+  * Empty code injection macros, override when testing.
+@@ -43,7 +43,7 @@
+ #define RSEQ_INJECT_FAILED
+ #endif
+ 
+-extern __thread volatile struct rseq __rseq_abi;
++extern __thread volatile struct rseq_abi __rseq_abi;
+ extern int __rseq_handled;
+ 
+ #define rseq_likely(x)		__builtin_expect(!!(x), 1)
+@@ -139,11 +139,7 @@ static inline uint32_t rseq_current_cpu(
+ 
+ static inline void rseq_clear_rseq_cs(void)
+ {
+-#ifdef __LP64__
+-	__rseq_abi.rseq_cs.ptr = 0;
+-#else
+-	__rseq_abi.rseq_cs.ptr.ptr32 = 0;
+-#endif
++	__rseq_abi.rseq_cs.arch.ptr = 0;
+ }
+ 
+ /*
+
 
