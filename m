@@ -2,106 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A89D3CCA496
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D725CCA494
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Jul 2022 12:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239467AbiGEMen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Jul 2022 08:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
+        id S239345AbiGEMei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Jul 2022 08:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237661AbiGEMZn (ORCPT
+        with ESMTP id S237617AbiGEMZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Jul 2022 08:25:43 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24D117A96;
-        Tue,  5 Jul 2022 05:18:10 -0700 (PDT)
-Received: from HP-EliteBook-840-G7.. (1-171-254-213.dynamic-ip.hinet.net [1.171.254.213])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F501164;
+        Tue,  5 Jul 2022 05:18:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id E6DAA3F382;
-        Tue,  5 Jul 2022 12:18:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1657023486;
-        bh=iTvnrtGJmHbu5jxs176IxAoGznZUm87Bg9lJ9yagBe8=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=Ofam5KN6BRYtLrlpL0lFvS+M/JTyxh0GjX+aWo6NbSF3kpgWTJaNjvDlgb+LsQtJ6
-         FBoXELSK4q1KeQbdnS6rihONcCuK98wXPjgFz6+Ug5KDOu3gVSUlf3pXMv2y+CAbpP
-         XuWSLbese+hF0Rd365DfL9l03szZlVB0n7HTU+ADc9lsWwzR9QCBduKbNgfP8bxnJN
-         VVGzFLlSamjwM8AIpOahwXKi5zZqBPcxNsvTIC7alkSz5QYdCGOljDUrgeGw/sBifi
-         Jgf7Cre/uYZFcz+ynVl/nViyJJgrO5UoUTuEZkCzNxL4PGBTIdGLP3n502SQN3cZGD
-         95t+OpFULNKFw==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     ktsai@capellamicro.com, jic23@kernel.org, lars@metafoo.de
-Cc:     hdegoede@redhat.com, Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: light: cm32181: Add PM support
-Date:   Tue,  5 Jul 2022 20:17:56 +0800
-Message-Id: <20220705121756.41660-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.36.1
+        by sin.source.kernel.org (Postfix) with ESMTPS id A6D57CE1A4A;
+        Tue,  5 Jul 2022 12:18:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40F73C341C7;
+        Tue,  5 Jul 2022 12:18:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657023485;
+        bh=Oawlwwo/4Hrt5C49vgCr5vZAAwjn3HytdMXcRZDPBi8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fObLtPwvy1Onux9qKDnIqYthdCqHW8dmFKIynssgk22Qk7fGLFZ8vzNF6zBu/R92w
+         ycAKf147F5h39iX3jyAbRJwOQWAZGyYJyboM3f14tEPqWDoXpvldxxU/z4yaqi6Xse
+         pLVxdR1J9T9YXRIJU9MqjabIKdHcgOsLxAfNH+hc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.18 075/102] fanotify: refine the validation checks on non-dir inode mask
+Date:   Tue,  5 Jul 2022 13:58:41 +0200
+Message-Id: <20220705115620.539139567@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220705115618.410217782@linuxfoundation.org>
+References: <20220705115618.410217782@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The read on in_illuminance_input keeps at 0 after system sleep.
+From: Amir Goldstein <amir73il@gmail.com>
 
-So add proper suspend and resume callback to make the sensor keep
-working after system sleep.
+commit 8698e3bab4dd7968666e84e111d0bfd17c040e77 upstream.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Commit ceaf69f8eadc ("fanotify: do not allow setting dirent events in
+mask of non-dir") added restrictions about setting dirent events in the
+mask of a non-dir inode mark, which does not make any sense.
+
+For backward compatibility, these restictions were added only to new
+(v5.17+) APIs.
+
+It also does not make any sense to set the flags FAN_EVENT_ON_CHILD or
+FAN_ONDIR in the mask of a non-dir inode.  Add these flags to the
+dir-only restriction of the new APIs as well.
+
+Move the check of the dir-only flags for new APIs into the helper
+fanotify_events_supported(), which is only called for FAN_MARK_ADD,
+because there is no need to error on an attempt to remove the dir-only
+flags from non-dir inode.
+
+Fixes: ceaf69f8eadc ("fanotify: do not allow setting dirent events in mask of non-dir")
+Link: https://lore.kernel.org/linux-fsdevel/20220627113224.kr2725conevh53u4@quack3.lan/
+Link: https://lore.kernel.org/r/20220627174719.2838175-1-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/light/cm32181.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ fs/notify/fanotify/fanotify_user.c |   34 +++++++++++++++++++---------------
+ include/linux/fanotify.h           |    4 ++++
+ 2 files changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 97649944f1df6..e46bc6a54f199 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -460,6 +460,8 @@ static int cm32181_probe(struct i2c_client *client)
- 			return PTR_ERR(client);
- 	}
- 
-+	i2c_set_clientdata(client, indio_dev);
-+
- 	cm32181 = iio_priv(indio_dev);
- 	cm32181->client = client;
- 	cm32181->dev = dev;
-@@ -486,6 +488,25 @@ static int cm32181_probe(struct i2c_client *client)
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -1483,8 +1483,15 @@ static int fanotify_test_fid(struct dent
  	return 0;
  }
  
-+static int cm32181_suspend(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
+-static int fanotify_events_supported(struct path *path, __u64 mask)
++static int fanotify_events_supported(struct fsnotify_group *group,
++				     struct path *path, __u64 mask,
++				     unsigned int flags)
+ {
++	unsigned int mark_type = flags & FANOTIFY_MARK_TYPE_BITS;
++	/* Strict validation of events in non-dir inode mask with v5.17+ APIs */
++	bool strict_dir_events = FAN_GROUP_FLAG(group, FAN_REPORT_TARGET_FID) ||
++				 (mask & FAN_RENAME);
 +
-+	return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-+					 CM32181_CMD_ALS_DISABLE);
-+}
+ 	/*
+ 	 * Some filesystems such as 'proc' acquire unusual locks when opening
+ 	 * files. For them fanotify permission events have high chances of
+@@ -1496,6 +1503,16 @@ static int fanotify_events_supported(str
+ 	if (mask & FANOTIFY_PERM_EVENTS &&
+ 	    path->mnt->mnt_sb->s_type->fs_flags & FS_DISALLOW_NOTIFY_PERM)
+ 		return -EINVAL;
 +
-+static int cm32181_resume(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct cm32181_chip *cm32181 = iio_priv(i2c_get_clientdata(client));
++	/*
++	 * We shouldn't have allowed setting dirent events and the directory
++	 * flags FAN_ONDIR and FAN_EVENT_ON_CHILD in mask of non-dir inode,
++	 * but because we always allowed it, error only when using new APIs.
++	 */
++	if (strict_dir_events && mark_type == FAN_MARK_INODE &&
++	    !d_is_dir(path->dentry) && (mask & FANOTIFY_DIRONLY_EVENT_BITS))
++		return -ENOTDIR;
 +
-+	return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-+					 cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
-+}
+ 	return 0;
+ }
+ 
+@@ -1634,7 +1651,7 @@ static int do_fanotify_mark(int fanotify
+ 		goto fput_and_out;
+ 
+ 	if (flags & FAN_MARK_ADD) {
+-		ret = fanotify_events_supported(&path, mask);
++		ret = fanotify_events_supported(group, &path, mask, flags);
+ 		if (ret)
+ 			goto path_put_and_out;
+ 	}
+@@ -1657,19 +1674,6 @@ static int do_fanotify_mark(int fanotify
+ 	else
+ 		mnt = path.mnt;
+ 
+-	/*
+-	 * FAN_RENAME is not allowed on non-dir (for now).
+-	 * We shouldn't have allowed setting any dirent events in mask of
+-	 * non-dir, but because we always allowed it, error only if group
+-	 * was initialized with the new flag FAN_REPORT_TARGET_FID.
+-	 */
+-	ret = -ENOTDIR;
+-	if (inode && !S_ISDIR(inode->i_mode) &&
+-	    ((mask & FAN_RENAME) ||
+-	     ((mask & FANOTIFY_DIRENT_EVENTS) &&
+-	      FAN_GROUP_FLAG(group, FAN_REPORT_TARGET_FID))))
+-		goto path_put_and_out;
+-
+ 	/* Mask out FAN_EVENT_ON_CHILD flag for sb/mount/non-dir marks */
+ 	if (mnt || !S_ISDIR(inode->i_mode)) {
+ 		mask &= ~FAN_EVENT_ON_CHILD;
+--- a/include/linux/fanotify.h
++++ b/include/linux/fanotify.h
+@@ -110,6 +110,10 @@
+ 					 FANOTIFY_PERM_EVENTS | \
+ 					 FAN_Q_OVERFLOW | FAN_ONDIR)
+ 
++/* Events and flags relevant only for directories */
++#define FANOTIFY_DIRONLY_EVENT_BITS	(FANOTIFY_DIRENT_EVENTS | \
++					 FAN_EVENT_ON_CHILD | FAN_ONDIR)
 +
-+DEFINE_SIMPLE_DEV_PM_OPS(cm32181_pm_ops, cm32181_suspend, cm32181_resume);
-+
- static const struct of_device_id cm32181_of_match[] = {
- 	{ .compatible = "capella,cm3218" },
- 	{ .compatible = "capella,cm32181" },
-@@ -506,6 +527,7 @@ static struct i2c_driver cm32181_driver = {
- 		.name	= "cm32181",
- 		.acpi_match_table = ACPI_PTR(cm32181_acpi_match),
- 		.of_match_table = cm32181_of_match,
-+		.pm = pm_sleep_ptr(&cm32181_pm_ops),
- 	},
- 	.probe_new	= cm32181_probe,
- };
--- 
-2.36.1
+ #define ALL_FANOTIFY_EVENT_BITS		(FANOTIFY_OUTGOING_EVENTS | \
+ 					 FANOTIFY_EVENT_FLAGS)
+ 
+
 
